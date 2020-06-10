@@ -1,9 +1,9 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "medusa-admin",
   "private": true,
-  "description": "A simple starter to get up and developing quickly with Gatsby",
+  "description": "A proprietary Admin system to manage Medusa Stores",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "@medusajs",
   "dependencies": {
     "gatsby": "^2.22.15",
     "gatsby-image": "^2.4.5",
@@ -21,10 +21,6 @@
   "devDependencies": {
     "prettier": "2.0.5"
   },
-  "keywords": [
-    "gatsby"
-  ],
-  "license": "MIT",
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop",
@@ -36,9 +32,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
+    "url": "https://github.com/medusajs/admin"
   },
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/medusajs/admin/issues"
   }
 }
