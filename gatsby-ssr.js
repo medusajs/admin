@@ -1,3 +1,4 @@
+import React from "react"
 import { ThemeProvider } from "./src/services/theme"
 
 export const wrapRootElement = ({ element }) => {
