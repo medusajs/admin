@@ -1,11 +1,10 @@
 import React from "react"
 import { storiesOf } from "@storybook/react"
 
-import Input from "./index"
+import InputField from "./index"
 
 export default {
   title: `Input`,
 }
 
-export const light = () => <Button>Click Me</Button>
-
+export const light = () => <InputField />
