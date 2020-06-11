@@ -16,6 +16,5 @@ export const Main = styled(Box)`
 `
 
 export const Content = styled(Box)`
-  ${props => console.log(props)}
-  background-color: ${props => props.theme.colors.light};
+  background-color: ${props => props.theme.colors.lightest};
 `

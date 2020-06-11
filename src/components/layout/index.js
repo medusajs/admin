@@ -23,7 +23,7 @@ const Layout = ({ children }) => {
     <Container>
       <Main>
         <Sidebar />
-        <Content>{children}</Content>
+        <Content fonts={"body"}>{children}</Content>
       </Main>
     </Container>
   )

@@ -1,4 +1,6 @@
 import React from "react"
+import breakpoints from "./breakpoints"
+import spacing from "./spacing"
 import { ThemeProvider as Provider } from "emotion-theming"
 
 export const theme = {
@@ -11,7 +13,20 @@ export const theme = {
     darkest: "#212121",
     placeholder: "#a3acb9",
   },
-
+  fontSizes: [12, 14, 16, 18, 22],
+  fonts: {
+    body:
+      "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Ubuntu, sans-serif",
+    heading: "system-ui, sans-serif",
+    monospace: "Menlo, monospace",
+  },
+  breakpoints,
+  spacing,
+  mediaQueries: {
+    small: `@media screen and (min-width: ${breakpoints[0]})`,
+    medium: `@media screen and (min-width: ${breakpoints[1]})`,
+    large: `@media screen and (min-width: ${breakpoints[2]})`,
+  },
   shadows: {
     inputBoxShadow: `
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,
