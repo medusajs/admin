@@ -5,6 +5,11 @@
   "version": "0.1.0",
   "author": "@medusajs",
   "dependencies": {
+    "@emotion/core": "^10.0.28",
+    "@emotion/styled": "^10.0.27",
+    "@rebass/preset": "^4.0.5",
+    "@storybook/theming": "^5.3.19",
+    "emotion-theming": "^10.0.27",
     "gatsby": "^2.22.15",
     "gatsby-image": "^2.4.5",
     "gatsby-plugin-manifest": "^2.4.9",
@@ -16,9 +21,17 @@
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-helmet": "^6.0.0"
+    "react-helmet": "^6.0.0",
+    "rebass": "^4.0.7"
   },
   "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@storybook/addon-actions": "^5.3.19",
+    "@storybook/addon-backgrounds": "^5.3.19",
+    "@storybook/addon-links": "^5.3.19",
+    "@storybook/addons": "^5.3.19",
+    "@storybook/react": "^5.3.19",
+    "babel-loader": "^8.1.0",
     "prettier": "2.0.5"
   },
   "scripts": {
@@ -28,7 +41,9 @@
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "repository": {
     "type": "git",

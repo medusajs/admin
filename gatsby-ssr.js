@@ -1,7 +1,5 @@
-/**
- * Implement Gatsby's SSR (Server Side Rendering) APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/ssr-apis/
- */
+import { ThemeProvider } from "./src/services/theme"
 
-// You can delete this file if you're not using it
+export const wrapRootElement = ({ element }) => {
+  return <ThemeProvider>{element}</ThemeProvider>
+}
