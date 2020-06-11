@@ -7,13 +7,12 @@ const StyledInput = styled(Input)`
   ${Typography.Base}
 `
 
-const InputField = ({ dark, placeholder }) => {
+const InputField = ({ placeholder, ...props }) => {
   return (
     <StyledInput
       variant="input"
-      width={350}
-      height={30}
       placeholder={placeholder ? placeholder : "Placeholder"}
+      {...props}
     />
   )
 }

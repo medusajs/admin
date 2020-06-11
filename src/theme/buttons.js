@@ -1,0 +1,48 @@
+export default {
+  primary: {
+    color: "dark",
+    backgroundColor: "lightest",
+
+    border: 0,
+    outline: 0,
+
+    paddingTop: "3px",
+    paddingBottom: "3px",
+
+    cursor: "pointer",
+
+    borderRadius: "3px",
+    boxShadow: "buttonPrimaryBoxShadow",
+
+    "&:hover": {
+      color: "darkest",
+      boxShadow: "buttonPrimaryBoxShadowHover",
+    },
+
+    "&:active": {
+      boxShadow: "buttonPrimaryBoxShadowActive",
+    },
+  },
+
+  secondary: {
+    color: "light",
+    backgroundColor: "dark",
+
+    border: 0,
+    outline: 0,
+
+    paddingTop: "3px",
+    paddingBottom: "3px",
+
+    cursor: "pointer",
+    transition: "all 1s ease",
+
+    borderRadius: "3px",
+    "&:focus": {
+      boxShadow: "buttonBoxShadowFocus",
+    },
+    "&:active": {
+      boxShadow: "buttonBoxShadowActive",
+    },
+  },
+}
