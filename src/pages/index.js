@@ -7,7 +7,6 @@ import InputField from "../components/input"
 const IndexPage = () => (
   <Layout>
     <SEO title="Home" />
-    <InputField />
   </Layout>
 )
 
