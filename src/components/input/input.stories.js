@@ -7,4 +7,4 @@ export default {
   title: `Input`,
 }
 
-export const light = () => <InputField />
+export const Primary = () => <InputField />

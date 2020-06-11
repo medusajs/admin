@@ -10,7 +10,7 @@ const StyledInput = styled(Input)`
 const InputField = ({ dark, placeholder }) => {
   return (
     <StyledInput
-      variant="largeInput"
+      variant="input"
       width={350}
       height={30}
       placeholder={placeholder ? placeholder : "Placeholder"}

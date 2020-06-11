@@ -1,12 +1,14 @@
 import React from "react"
-import { ButtonContainer } from "./elements"
+import { Button as RebassButton } from "rebass"
+import styled from "@emotion/styled"
+import Typography from "../typography"
 
-const Button = ({ children, className, dark, large }) => {
-  return (
-    <ButtonContainer dark={dark} large={large} className={className}>
-      {children}
-    </ButtonContainer>
-  )
+const StyledButton = styled(RebassButton)`
+  ${Typography.Base}
+`
+
+const Button = ({ children, variant }) => {
+  return <StyledButton variant={`buttons.${variant}`}>{children}</StyledButton>
 }
 
 export default Button

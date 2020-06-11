@@ -7,6 +7,5 @@ export default {
   title: `Button`,
 }
 
-export const light = () => <Button>Click Me</Button>
-export const dark = () => <Button dark>Click Me</Button>
-export const withEmoji = () => <Button>😃</Button>
+export const Primary = () => <Button variant="primary">Click Me</Button>
+export const Secondary = () => <Button variant="secondary">Click Me</Button>
