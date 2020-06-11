@@ -7,6 +7,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
+    "@rebass/forms": "^4.0.6",
     "@rebass/preset": "^4.0.5",
     "@storybook/theming": "^5.3.19",
     "emotion-theming": "^10.0.27",
