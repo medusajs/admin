@@ -13554,6 +13554,11 @@ react-clientside-effect@^1.2.2:
   dependencies:
     "@babel/runtime" "^7.0.0"
 
+react-collapsible@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/react-collapsible/-/react-collapsible-2.8.0.tgz#dce2ff7703d4456c5bb70cc1b53d3f80acf76526"
+  integrity sha512-QTxGyp4iL8N57FcU1RGt4wD7vqOTRYAHNukxtSeVMkZ+/d1WNWXRIakzhYhC/5TDERihPdp1IvKIJlrLLPyQ/A==
+
 react-dev-utils@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-4.2.3.tgz#5b42d9ea58d5e9e017a2f57a40a8af408a3a46fb"

@@ -7,4 +7,4 @@ export default {
   title: `Input`,
 }
 
-export const Primary = () => <InputField />
+export const Primary = () => <InputField width={350} height={30} />
