@@ -15,6 +15,17 @@ export const Main = styled(Box)`
   flex: 1;
 `
 
-export const Content = styled(Box)`
+export const Body = styled(Box)`
+  width: 100%;
+  max-width: 1200px;
+  background-color: hotpink;
+  height: 120vh;
+`
+
+export const Content = styled(Flex)`
+  overflow-y: scroll;
+  height: 100vh;
   background-color: ${props => props.theme.colors.lightest};
+  box-shadow: rgba(0, 0, 0, 0.03) -1px 0px 99px 0px,
+    rgba(0, 0, 0, 0.02) -1px 0px 2px 0px;
 `

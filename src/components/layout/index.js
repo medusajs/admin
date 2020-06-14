@@ -4,7 +4,7 @@ import PropTypes from "prop-types"
 
 import Sidebar from "../sidebar"
 
-import { Container, Main, Content } from "./elements"
+import { Container, Main, Content, Body } from "./elements"
 
 import "./layout.css"
 
@@ -23,7 +23,11 @@ const Layout = ({ children }) => {
     <Container>
       <Main>
         <Sidebar />
-        <Content fonts={"body"}>{children}</Content>
+        <Content fontFamily={"body"} p={5}>
+          <Body p={3} mx="auto">
+            {children}
+          </Body>
+        </Content>
       </Main>
     </Container>
   )
