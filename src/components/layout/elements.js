@@ -18,7 +18,6 @@ export const Main = styled(Box)`
 export const Body = styled(Box)`
   width: 100%;
   max-width: 1200px;
-  background-color: hotpink;
   height: 120vh;
 `
 
