@@ -11,6 +11,9 @@ export default {
 
     borderRadius: "3px",
     boxShadow: "inputBoxShadow",
+    "&.tag__focus": {
+      boxShadow: "inputBoxShadowHover",
+    },
     "&:focus": {
       boxShadow: "inputBoxShadowHover",
     },

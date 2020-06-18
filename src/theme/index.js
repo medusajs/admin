@@ -1,6 +1,7 @@
 import React from "react"
 import breakpoints from "./breakpoints"
 import spacing from "./spacing"
+import forms from "./forms"
 import { ThemeProvider as Provider } from "emotion-theming"
 
 export const theme = {
@@ -74,29 +75,7 @@ export const theme = {
       rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
     `,
   },
-
-  forms: {
-    input: {
-      color: "dark",
-      backgroundColor: "lightest",
-
-      border: 0,
-      outline: 0,
-
-      cursor: "text",
-      transition: "all 0.2s ease",
-
-      borderRadius: "3px",
-      boxShadow: "inputBoxShadow",
-      "&:focus": {
-        boxShadow: "inputBoxShadowHover",
-      },
-      "&::placeholder": {
-        color: "placeholder",
-      },
-    },
-  },
-
+  forms,
   buttons: {
     primary: {
       color: "dark",

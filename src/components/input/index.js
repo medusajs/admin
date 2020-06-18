@@ -1,5 +1,5 @@
 import React from "react"
-import { Input } from "@rebass/forms"
+import { Input, Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Typography from "../typography"
 
@@ -7,13 +7,27 @@ const StyledInput = styled(Input)`
   ${Typography.Base}
 `
 
-const InputField = ({ placeholder, ...props }) => {
+const StyledLabel = styled.div`
+  ${Typography.Base}
+  padding-bottom: 10px;
+`
+
+const InputField = ({ ref, placeholder, label, name, ...props }) => {
   return (
-    <StyledInput
-      variant="input"
-      placeholder={placeholder ? placeholder : "Placeholder"}
-      {...props}
-    />
+    <>
+      {label && (
+        <Label htmlFor={name}>
+          <StyledLabel>{label}</StyledLabel>
+        </Label>
+      )}
+      <StyledInput
+        ref={ref}
+        variant="input"
+        name={name}
+        placeholder={placeholder ? placeholder : "Placeholder"}
+        {...props}
+      />
+    </>
   )
 }
 

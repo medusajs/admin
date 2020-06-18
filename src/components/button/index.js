@@ -7,8 +7,16 @@ const StyledButton = styled(RebassButton)`
   ${Typography.Base}
 `
 
-const Button = ({ children, variant }) => {
-  return <StyledButton variant={`buttons.${variant}`}>{children}</StyledButton>
+const Button = ({ children, variant, type, onClick }) => {
+  return (
+    <StyledButton
+      onClick={onClick}
+      type={type || "button"}
+      variant={`buttons.${variant}`}
+    >
+      {children}
+    </StyledButton>
+  )
 }
 
 export default Button
