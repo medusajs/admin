@@ -19,6 +19,12 @@ const TextWrapper = styled.div`
 
 const TagBox = styled(Box)`
   white-space: nowrap;
+
+  ${props =>
+    props.highlighted &&
+    `
+      box-shadow: ${props.theme.shadows.tagBoxShadow};
+  `}
 `
 
 const StyledInput = styled.input`
@@ -36,10 +42,31 @@ const StyledInput = styled.input`
 const TagInput = ({ ...props }) => {
   const [values, setValues] = useState([])
   const [isFocused, setFocused] = useState(false)
+  const [highlighted, setHighlighted] = useState(1000)
   const containerRef = useRef()
   const inputRef = useRef()
 
+  useEffect(() => {
+    if (highlighted) {
+    }
+  }, [highlighted])
+
   const handleKeyDown = e => {
+    // Arrow left
+    if (e.keyCode === 37 && highlighted !== 1000) {
+      if (highlighted > 0) {
+        setHighlighted(highlighted - 1)
+      }
+    }
+
+    // Arrow right
+    if (e.keyCode === 39 && highlighted !== 1000) {
+      if (highlighted < values.length - 1) {
+        setHighlighted(highlighted + 1)
+      }
+    }
+
+    // Add to values
     if (e.keyCode === ENTER_KEY || e.keyCode === TAB_KEY) {
       const value = inputRef.current.value
       setValues([...values, value])
@@ -47,9 +74,18 @@ const TagInput = ({ ...props }) => {
       e.preventDefault()
     }
 
+    // Focus last element if first time, second time delete
     if (e.keyCode === BACKSPACE_KEY) {
-      // if last value hihglighted delete it
-      // else Hightlight last of values
+      if (!inputRef.current.value && highlighted === 1000) {
+        setHighlighted(values.length - 1)
+        e.preventDefault()
+      }
+      if (!inputRef.current.value && highlighted !== 1000) {
+        const newValues = [...values]
+        newValues.splice(highlighted, 1)
+        setValues(newValues)
+        setHighlighted(1000)
+      }
     }
   }
 
@@ -68,12 +104,6 @@ const TagInput = ({ ...props }) => {
   }
 
   const handleInput = e => {
-    if (e.keyCode === 9) {
-      const value = inputRef.current.value
-      setValues([...values, value])
-      inputRef.current.value = ""
-      e.preventDefault()
-    }
     const value = inputRef.current.value
     if (value.endsWith(",")) {
       setValues([...values, value.slice(0, -1)])
@@ -92,7 +122,13 @@ const TagInput = ({ ...props }) => {
       style={{ position: "relative" }}
     >
       {values.map((v, index) => (
-        <TagBox lineHeight="1.5" my={1} ml={1} variant="badge">
+        <TagBox
+          lineHeight="1.5"
+          my={1}
+          ml={1}
+          variant="badge"
+          highlighted={index === highlighted}
+        >
           <TextWrapper>{v}</TextWrapper>
           <Remove onClick={() => handleRemove(index)}>&times;</Remove>
         </TagBox>
@@ -102,6 +138,7 @@ const TagInput = ({ ...props }) => {
         onBlur={handleBlur}
         onFocus={handleFocus}
         onKeyDown={handleKeyDown}
+        onChange={handleInput}
         type="text"
       />
     </Flex>

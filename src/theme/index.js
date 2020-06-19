@@ -74,6 +74,15 @@ export const theme = {
       rgba(60, 66, 87, 0.08) 0px 3px 9px 0px;
       rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
     `,
+    tagBoxShadow: `
+      rgba(0,0,0,0) 0px 0px 0px 0px, 
+      rgb(190, 191, 208) 0px 0px 0px 2px, 
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+      rgba(60, 62, 87, 0.22) 0px 0px 0px 2px, 
+      rgba(0,0,0,0) 0px 0px 0px 0px, 
+      rgba(0,0,0,0) 0px 0px 0px 0px, 
+      rgba(0,0,0,0) 0px 0px 0px 0px;
+    `,
   },
   variants: {
     badge: {
