@@ -1,5 +1,6 @@
-export default {
+export const buttons = {
   primary: {
+    height: "30px",
     color: "dark",
     backgroundColor: "lightest",
 
@@ -25,6 +26,7 @@ export default {
   },
 
   secondary: {
+    height: "30px",
     color: "light",
     backgroundColor: "dark",
 
