@@ -8,7 +8,7 @@ export const Container = styled(Flex)`
 
 export const Main = styled(Box)`
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 250px 1fr;
   grid-template-rows: 1fr;
 
   min-height: 100vh;
@@ -18,11 +18,12 @@ export const Main = styled(Box)`
 export const Body = styled(Box)`
   width: 100%;
   max-width: 1200px;
-  height: 120vh;
+  // height: 120vh;
 `
 
 export const Content = styled(Flex)`
   overflow-y: scroll;
+  // overflow-x: hidden;
   height: 100vh;
   background-color: ${props => props.theme.colors.lightest};
   box-shadow: rgba(0, 0, 0, 0.03) -1px 0px 99px 0px,

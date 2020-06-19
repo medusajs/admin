@@ -67,6 +67,20 @@ const TagInput = ({ ...props }) => {
     setFocused(true)
   }
 
+  const handleInput = e => {
+    if (e.keyCode === 9) {
+      const value = inputRef.current.value
+      setValues([...values, value])
+      inputRef.current.value = ""
+      e.preventDefault()
+    }
+    const value = inputRef.current.value
+    if (value.endsWith(",")) {
+      setValues([...values, value.slice(0, -1)])
+      inputRef.current.value = ""
+    }
+  }
+
   return (
     <Flex
       fontSize={1}
@@ -75,6 +89,7 @@ const TagInput = ({ ...props }) => {
       focused={isFocused}
       height="30px"
       variant="forms.input"
+      style={{ position: "relative" }}
     >
       {values.map((v, index) => (
         <TagBox lineHeight="1.5" my={1} ml={1} variant="badge">

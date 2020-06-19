@@ -6,6 +6,7 @@ import Button from "../../components/button"
 import Input from "../../components/input"
 import TagInput from "../../components/tag-input"
 import ImageUpload from "../../components/image-upload"
+import TextArea from "../../components/textarea"
 
 const NewProduct = ({}) => {
   const [options, setOptions] = useState([])
@@ -55,7 +56,11 @@ const NewProduct = ({}) => {
       <Flex mb={5}>
         <Box width={4 / 7}>
           <Input mb={4} label="Name" name="title" register={register} />
-          <Input label="Description" name="description" register={register} />
+          <TextArea
+            label="Description"
+            name="description"
+            register={register}
+          />
         </Box>
         <Flex justifyContent="center" alignItems="center" width={3 / 7}>
           <ImageUpload name="images" label="Images" />
