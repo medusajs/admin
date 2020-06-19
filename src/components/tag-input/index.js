@@ -4,12 +4,21 @@ import styled from "@emotion/styled"
 import Typography from "../typography"
 
 const ENTER_KEY = 13
+const TAB_KEY = 9
 const BACKSPACE_KEY = 8
 
 const Remove = styled.div`
   cursor: pointer;
-  display: inline;
+  display: inline-block;
   padding-left: 5px;
+`
+
+const TextWrapper = styled.div`
+  display: inline-block;
+`
+
+const TagBox = styled(Box)`
+  white-space: nowrap;
 `
 
 const StyledInput = styled.input`
@@ -31,10 +40,11 @@ const TagInput = ({ ...props }) => {
   const inputRef = useRef()
 
   const handleKeyDown = e => {
-    if (e.keyCode === ENTER_KEY) {
+    if (e.keyCode === ENTER_KEY || e.keyCode === TAB_KEY) {
       const value = inputRef.current.value
       setValues([...values, value])
       inputRef.current.value = ""
+      e.preventDefault()
     }
 
     if (e.keyCode === BACKSPACE_KEY) {
@@ -67,16 +77,10 @@ const TagInput = ({ ...props }) => {
       variant="forms.input"
     >
       {values.map((v, index) => (
-        <Box
-          display="inline-block"
-          lineHeight="1.5"
-          my={1}
-          ml={1}
-          variant="badge"
-        >
-          {v}
+        <TagBox lineHeight="1.5" my={1} ml={1} variant="badge">
+          <TextWrapper>{v}</TextWrapper>
           <Remove onClick={() => handleRemove(index)}>&times;</Remove>
-        </Box>
+        </TagBox>
       ))}
       <StyledInput
         ref={inputRef}
