@@ -1,14 +1,33 @@
-import React, { useState, useRef } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { Box, Flex } from "rebass"
 import styled from "@emotion/styled"
-import Tag, { Cross } from "../tag"
+import Typography from "../typography"
+
+const ENTER_KEY = 13
+const TAB_KEY = 9
+const BACKSPACE_KEY = 8
+
+const Remove = styled.div`
+  cursor: pointer;
+  display: inline-block;
+  padding-left: 5px;
+`
+
+const TextWrapper = styled.div`
+  display: inline-block;
+`
+
+const TagBox = styled(Box)`
+  white-space: nowrap;
+`
 
 const StyledInput = styled.input`
+  ${Typography.Base}
   width: 100%;
-  height: 30px;
+  height: 100%;
   background-color: transparent;
   border: none;
-  margin: 2px 5px;
+  padding: 8px;
   &:focus {
     outline: none;
   }
@@ -19,6 +38,26 @@ const TagInput = ({ ...props }) => {
   const [isFocused, setFocused] = useState(false)
   const containerRef = useRef()
   const inputRef = useRef()
+
+  const handleKeyDown = e => {
+    if (e.keyCode === ENTER_KEY || e.keyCode === TAB_KEY) {
+      const value = inputRef.current.value
+      setValues([...values, value])
+      inputRef.current.value = ""
+      e.preventDefault()
+    }
+
+    if (e.keyCode === BACKSPACE_KEY) {
+      // if last value hihglighted delete it
+      // else Hightlight last of values
+    }
+  }
+
+  const handleRemove = index => {
+    const newValues = [...values]
+    newValues.splice(index, 1)
+    setValues(newValues)
+  }
 
   const handleBlur = () => {
     setFocused(false)
@@ -43,31 +82,29 @@ const TagInput = ({ ...props }) => {
   }
 
   return (
-    <Box
+    <Flex
       fontSize={1}
+      alignItems="center"
       className={isFocused ? "tag__focus" : ""}
       focused={isFocused}
-      height="100%"
+      height="30px"
       variant="forms.input"
       style={{ position: "relative" }}
     >
-      <Flex>
-        {values.map(v => (
-          <Tag px={1} m={1}>
-            {v}
-          </Tag>
-        ))}
-      </Flex>
+      {values.map((v, index) => (
+        <TagBox lineHeight="1.5" my={1} ml={1} variant="badge">
+          <TextWrapper>{v}</TextWrapper>
+          <Remove onClick={() => handleRemove(index)}>&times;</Remove>
+        </TagBox>
+      ))}
       <StyledInput
-        contentEditable={true}
-        onInput={handleInput}
-        onKeyDown={handleInput}
+        ref={inputRef}
         onBlur={handleBlur}
         onFocus={handleFocus}
-        ref={inputRef}
+        onKeyDown={handleKeyDown}
         type="text"
       />
-    </Box>
+    </Flex>
   )
 }
 
