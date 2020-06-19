@@ -75,6 +75,17 @@ export const theme = {
       rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
     `,
   },
+  variants: {
+    badge: {
+      fontSize: "0",
+      color: "dark",
+      backgroundColor: "lightest",
+      boxShadow: "buttonBoxShadow",
+      borderRadius: "3px",
+      minWidth: "unset",
+      px: "1",
+    },
+  },
   forms,
   buttons: {
     primary: {
