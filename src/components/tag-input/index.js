@@ -73,12 +73,13 @@ const TagInput = ({ ...props }) => {
         }
         break
       case ENTER_KEY: // Fall through
+        e.preventDefault()
       case TAB_KEY:
         if (value) {
           setValues([...values, value])
           inputRef.current.value = ""
+          e.preventDefault()
         }
-        e.preventDefault()
         break
 
       case BACKSPACE_KEY:
@@ -127,7 +128,6 @@ const TagInput = ({ ...props }) => {
       alignItems="center"
       className={isFocused ? "tag__focus" : ""}
       focused={isFocused}
-      height="30px"
       variant="forms.input"
       style={{ position: "relative" }}
     >

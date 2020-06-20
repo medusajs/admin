@@ -12,12 +12,11 @@ const NewProduct = ({}) => {
   const [options, setOptions] = useState([])
   const { register } = useForm()
 
-  const updateOptionValue = e => {
-    const element = e.target
+  const updateOptionValue = (index, values) => {
     const newOptions = [...options]
-    newOptions[parseInt(element.name)] = {
-      ...newOptions[parseInt(element.name)],
-      value: element.value,
+    newOptions[index] = {
+      ...newOptions[index],
+      value: values,
     }
 
     setOptions(newOptions)
