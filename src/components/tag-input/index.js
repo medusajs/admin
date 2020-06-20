@@ -6,6 +6,8 @@ import Typography from "../typography"
 const ENTER_KEY = 13
 const TAB_KEY = 9
 const BACKSPACE_KEY = 8
+const ARROW_LEFT_KEY = 37
+const ARROW_RIGHT_KEY = 39
 
 const Remove = styled.div`
   cursor: pointer;
@@ -42,50 +44,57 @@ const StyledInput = styled.input`
 const TagInput = ({ ...props }) => {
   const [values, setValues] = useState([])
   const [isFocused, setFocused] = useState(false)
-  const [highlighted, setHighlighted] = useState(1000)
+  const [highlighted, setHighlighted] = useState(-1)
   const containerRef = useRef()
   const inputRef = useRef()
 
-  useEffect(() => {
-    if (highlighted) {
-    }
-  }, [highlighted])
-
   const handleKeyDown = e => {
-    // Arrow left
-    if (e.keyCode === 37 && highlighted !== 1000) {
-      if (highlighted > 0) {
-        setHighlighted(highlighted - 1)
-      }
-    }
+    const value = inputRef.current.value
 
-    // Arrow right
-    if (e.keyCode === 39 && highlighted !== 1000) {
-      if (highlighted < values.length - 1) {
-        setHighlighted(highlighted + 1)
-      }
-    }
-
-    // Add to values
-    if (e.keyCode === ENTER_KEY || e.keyCode === TAB_KEY) {
-      const value = inputRef.current.value
-      setValues([...values, value])
-      inputRef.current.value = ""
-      e.preventDefault()
-    }
-
-    // Focus last element if first time, second time delete
-    if (e.keyCode === BACKSPACE_KEY) {
-      if (!inputRef.current.value && highlighted === 1000) {
-        setHighlighted(values.length - 1)
+    switch (e.keyCode) {
+      case ARROW_LEFT_KEY:
+        if (highlighted !== -1) {
+          if (highlighted > 0) {
+            setHighlighted(highlighted - 1)
+          }
+        } else if (!inputRef.current.selectionStart) {
+          setHighlighted(values.length - 1)
+          e.preventDefault()
+        }
+        break
+      case ARROW_RIGHT_KEY:
+        if (highlighted !== -1) {
+          if (highlighted < values.length - 1) {
+            setHighlighted(highlighted + 1)
+            e.preventDefault()
+          } else {
+            setHighlighted(-1)
+          }
+        }
+        break
+      case ENTER_KEY: // Fall through
+      case TAB_KEY:
+        if (value) {
+          setValues([...values, value])
+          inputRef.current.value = ""
+        }
         e.preventDefault()
-      }
-      if (!inputRef.current.value && highlighted !== 1000) {
-        const newValues = [...values]
-        newValues.splice(highlighted, 1)
-        setValues(newValues)
-        setHighlighted(1000)
-      }
+        break
+
+      case BACKSPACE_KEY:
+        if (!inputRef.current.selectionStart && highlighted === -1) {
+          setHighlighted(values.length - 1)
+          e.preventDefault()
+        }
+        if (highlighted !== -1) {
+          const newValues = [...values]
+          newValues.splice(highlighted, 1)
+          setValues(newValues)
+          setHighlighted(-1)
+        }
+        break
+      default:
+        setHighlighted(-1)
     }
   }
 
@@ -96,6 +105,7 @@ const TagInput = ({ ...props }) => {
   }
 
   const handleBlur = () => {
+    setHighlighted(-1)
     setFocused(false)
   }
 
@@ -123,6 +133,7 @@ const TagInput = ({ ...props }) => {
     >
       {values.map((v, index) => (
         <TagBox
+          key={index}
           lineHeight="1.5"
           my={1}
           ml={1}
