@@ -28,6 +28,36 @@ export const theme = {
     medium: `@media screen and (min-width: ${breakpoints[1]})`,
     large: `@media screen and (min-width: ${breakpoints[2]})`,
   },
+  grid: {
+    selectedShadow: `
+      inset rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      inset rgba(206, 208, 190, 0.56) 0px 0px 0px 2px,
+      inset rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+      inset rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+      inset rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+      inset rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      inset rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+    `,
+    headColShadow: `
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
+      rgba(0, 0, 0, 0.12) 0px 1px 1px 0px,
+      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(60, 66, 87, 0.08) 0px 3px 9px 0px;
+      rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
+    `,
+    header: {
+      padding: 2,
+      fontSize: 1,
+      fontFamily: "body",
+    },
+    data: {
+      padding: 2,
+      fontSize: 1,
+      fontFamily: "body",
+    },
+  },
   shadows: {
     inputBoxShadow: `
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,

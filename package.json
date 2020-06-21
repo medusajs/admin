@@ -11,8 +11,6 @@
     "@rebass/preset": "^4.0.5",
     "@storybook/theming": "^5.3.19",
     "@svgr/webpack": "^5.4.0",
-    "ag-grid-community": "^23.2.1",
-    "ag-grid-react": "^23.2.1",
     "emotion-theming": "^10.0.27",
     "gatsby": "^2.22.15",
     "gatsby-image": "^2.4.5",

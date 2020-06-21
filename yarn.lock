@@ -3295,18 +3295,6 @@ after@0.8.2:
   resolved "https://registry.yarnpkg.com/after/-/after-0.8.2.tgz#fedb394f9f0e02aa9768e702bda23b505fae7e1f"
   integrity sha1-/ts5T58OAqqXaOcCvaI7UF+ufh8=
 
-ag-grid-community@^23.2.1:
-  version "23.2.1"
-  resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-23.2.1.tgz#0cf2beb7ba2fcf66a4865e45faabdbea173d59b6"
-  integrity sha512-WHfDV7mFsd6eQJ5yOu26nnpnW7Gd02zcp9LHHfKQky8lfgTEo382qcja7MibHzB2f5vOCBdQnOPsWrbBNKRzhQ==
-
-ag-grid-react@^23.2.1:
-  version "23.2.1"
-  resolved "https://registry.yarnpkg.com/ag-grid-react/-/ag-grid-react-23.2.1.tgz#da5d72d50d7fe1c1936860ea4690bc407811d606"
-  integrity sha512-tLbgIyjea5Alt2WsPWVDlfCNkI4gIxg8kWcpl1yTsVboVSwAnagpzFpNpIKsjbf/y4WAuKIQFfA0YXPVw4YRSg==
-  dependencies:
-    prop-types "^15.6.2"
-
 aggregate-error@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/aggregate-error/-/aggregate-error-3.0.1.tgz#db2fe7246e536f40d9b5442a39e117d7dd6a24e0"

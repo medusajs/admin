@@ -47,14 +47,13 @@ const NewProduct = ({}) => {
 
     const newVariants = combinations.map(optionValues => {
       optionValues = optionValues || []
-      const v = []
 
       const existing =
         variants.find(v =>
-          v[0].every((value, index) => optionValues[index] === value)
-        ) || []
+          v.options.every((value, index) => optionValues[index] === value)
+        ) || {}
 
-      existing[0] = optionValues.filter(v => v !== "")
+      existing.options = optionValues.filter(v => v !== "")
 
       return existing
     })
@@ -100,7 +99,7 @@ const NewProduct = ({}) => {
   }
 
   return (
-    <form>
+    <Flex as="form" flexDirection="column">
       <Text mb={4}>Product Details</Text>
       <Flex mb={5}>
         <Box width={4 / 7}>
@@ -147,11 +146,15 @@ const NewProduct = ({}) => {
           + Add an option
         </Button>
       </Flex>
-      <Text mb={4}>Variants</Text>
-      <Flex flexDirection="column">
-        <VariantGrid variants={variants} />
-      </Flex>
-    </form>
+      {variants && variants.length > 0 && (
+        <>
+          <Text mb={4}>Variants</Text>
+          <Flex flexDirection="column" flexGrow="1">
+            <VariantGrid variants={variants} onChange={vs => setVariants(vs)} />
+          </Flex>
+        </>
+      )}
+    </Flex>
   )
 }
 
