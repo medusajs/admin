@@ -7,8 +7,12 @@ const TAB_KEY = 9
 const ARROW_UP_KEY = 38
 const ARROW_DOWN_KEY = 40
 
-const StyledTable = styled(Box)`
+const Wrapper = styled.div`
   position: relative;
+  overflow-x: scroll;
+`
+
+const StyledTable = styled(Box)`
   width: 100%;
   border-collapse: collapse;
 `
@@ -17,6 +21,8 @@ const Th = styled.th`
   background-color: ${props => props.theme.colors.light};
   border: 1px solid rgba(0, 0, 0, 0.2);
   padding: 4px;
+  text-align: center;
+  font-weight: normal;
 
   ${props =>
     props.head &&
@@ -40,7 +46,7 @@ const DragHandle = styled.div`
 const Td = styled.td`
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  min-width: 150px;
+  width: 200px;
 
   padding: 8px;
   font-size: 14px;
@@ -52,8 +58,9 @@ const Td = styled.td`
   ${props =>
     props.head &&
     `
+    text-align:center;
     position: sticky;
-    width: 10rem;
+    width: 50px;
     left: 0;
     top: auto;
     box-shadow: ${props => props.theme.grid.headColShadow};
@@ -113,6 +120,10 @@ const VariantGrid = ({ variants, onChange }) => {
       [field]: element.value,
     }
 
+    setSelectedCell({
+      ...selectedCell,
+      value: element.value,
+    })
     onChange(newVariants)
   }
 
@@ -221,58 +232,62 @@ const VariantGrid = ({ variants, onChange }) => {
   }
 
   return (
-    <StyledTable as="table">
-      <thead>
-        <tr>
-          {columns.map(c => (
-            <Th head={c.headCol} key={c.field}>
-              {c.header}
-            </Th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {variants.map((v, row) => (
-          <tr key={row}>
-            {columns.map((c, col) => (
-              <Td
-                key={`${row}-${col}`}
-                data-col={col}
-                data-row={row}
-                dragover={isDraggedOver({ col, row })}
-                onDragEnter={handleDragEnter}
-                onClick={() =>
-                  !c.readOnly &&
-                  setSelectedCell({
-                    field: c.field,
-                    value: v[c.field],
-                    row,
-                    col,
-                  })
-                }
-                selected={selectedCell.row === row && selectedCell.col === col}
-                head={c.headCol}
-              >
-                {!(selectedCell.row === row && selectedCell.col === col) &&
-                  getDisplayValue(v, c, isDraggedOver({ col, row }))}
-                {selectedCell.row === row && selectedCell.col === col && (
-                  <>
-                    <InputField
-                      ref={setRef}
-                      onKeyDown={handleKey}
-                      name={`${row}.${c.field}`}
-                      value={v[c.field] || ""}
-                      onChange={handleChange}
-                    />
-                    <DragHandle draggable onDragEnd={handleDragEnd} />
-                  </>
-                )}
-              </Td>
+    <Wrapper>
+      <StyledTable as="table">
+        <thead>
+          <tr>
+            {columns.map(c => (
+              <Th head={c.headCol} key={c.field}>
+                {c.header}
+              </Th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </StyledTable>
+        </thead>
+        <tbody>
+          {variants.map((v, row) => (
+            <tr key={row}>
+              {columns.map((c, col) => (
+                <Td
+                  key={`${row}-${col}`}
+                  data-col={col}
+                  data-row={row}
+                  dragover={isDraggedOver({ col, row })}
+                  onDragEnter={handleDragEnter}
+                  onClick={() =>
+                    !c.readOnly &&
+                    setSelectedCell({
+                      field: c.field,
+                      value: v[c.field],
+                      row,
+                      col,
+                    })
+                  }
+                  selected={
+                    selectedCell.row === row && selectedCell.col === col
+                  }
+                  head={c.headCol}
+                >
+                  {!(selectedCell.row === row && selectedCell.col === col) &&
+                    getDisplayValue(v, c, isDraggedOver({ col, row }))}
+                  {selectedCell.row === row && selectedCell.col === col && (
+                    <>
+                      <InputField
+                        ref={setRef}
+                        onKeyDown={handleKey}
+                        name={`${row}.${c.field}`}
+                        value={v[c.field] || ""}
+                        onChange={handleChange}
+                      />
+                      <DragHandle draggable onDragEnd={handleDragEnd} />
+                    </>
+                  )}
+                </Td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </StyledTable>
+    </Wrapper>
   )
 }
 
