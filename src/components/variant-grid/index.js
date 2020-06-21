@@ -123,6 +123,24 @@ const VariantGrid = ({ variants, onChange }) => {
     }
   }
 
+  const handleDragEnd = () => {
+    if (selectedCell.row === dragEnd) {
+      return
+    }
+
+    const bounds = [selectedCell.row, dragEnd]
+    const newVariants = [...variants]
+    for (let i = Math.min(...bounds); i <= Math.max(...bounds); i++) {
+      newVariants[i] = {
+        ...newVariants[i],
+        [selectedCell.field]: selectedCell.value,
+      }
+    }
+
+    onChange(newVariants)
+    setDragEnd(undefined)
+  }
+
   const isDraggedOver = cell => {
     if (selectedCell.col === cell.col) {
       if (dragEnd > selectedCell.row) {
@@ -193,6 +211,15 @@ const VariantGrid = ({ variants, onChange }) => {
     }
   }
 
+  const getDisplayValue = (variant, column, isDragged) => {
+    const { formatter, field } = column
+    if (isDragged) {
+      return formatter ? formatter(selectedCell.value) : selectedCell.value
+    } else {
+      return formatter ? formatter(variant[field]) : variant[field]
+    }
+  }
+
   return (
     <StyledTable as="table">
       <thead>
@@ -214,12 +241,20 @@ const VariantGrid = ({ variants, onChange }) => {
                 data-row={row}
                 dragover={isDraggedOver({ col, row })}
                 onDragEnter={handleDragEnter}
-                onClick={() => !c.readOnly && setSelectedCell({ row, col })}
+                onClick={() =>
+                  !c.readOnly &&
+                  setSelectedCell({
+                    field: c.field,
+                    value: v[c.field],
+                    row,
+                    col,
+                  })
+                }
                 selected={selectedCell.row === row && selectedCell.col === col}
                 head={c.headCol}
               >
                 {!(selectedCell.row === row && selectedCell.col === col) &&
-                  (c.formatter ? c.formatter(v[c.field]) : v[c.field])}
+                  getDisplayValue(v, c, isDraggedOver({ col, row }))}
                 {selectedCell.row === row && selectedCell.col === col && (
                   <>
                     <InputField
@@ -229,10 +264,7 @@ const VariantGrid = ({ variants, onChange }) => {
                       value={v[c.field] || ""}
                       onChange={handleChange}
                     />
-                    <DragHandle
-                      draggable
-                      onDragEnd={() => setDragEnd(undefined)}
-                    />
+                    <DragHandle draggable onDragEnd={handleDragEnd} />
                   </>
                 )}
               </Td>
