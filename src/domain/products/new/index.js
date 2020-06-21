@@ -3,40 +3,17 @@ import { useForm } from "react-hook-form"
 import { Text, Flex, Box } from "rebass"
 
 import Button from "../../../components/button"
+import Pill from "../../../components/pill"
 import Input from "../../../components/input"
 import TagInput from "../../../components/tag-input"
 import ImageUpload from "../../../components/image-upload"
 import TextArea from "../../../components/textarea"
 import VariantGrid from "../../../components/variant-grid"
 
+import getCombinations from "./utils/get-combinations"
+
 const NewProduct = ({}) => {
-  const getCombinations = options => {
-    if (options.length === 0) {
-      return []
-    }
-
-    if (options.length === 1) {
-      const values = options.shift().values
-      if (values.length > 0) {
-        return values.map(v => [v])
-      }
-
-      return [""]
-    }
-
-    const combinations = []
-    const theseValues = options.shift().values
-
-    const lowerCombinations = getCombinations(options)
-    for (const v of theseValues) {
-      for (const second of lowerCombinations) {
-        combinations.push([v, second].flat())
-      }
-    }
-
-    return combinations
-  }
-
+  const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])
   const { register } = useForm()
@@ -109,48 +86,76 @@ const NewProduct = ({}) => {
             name="description"
             register={register}
           />
+          <Flex mt={4}>
+            <Pill
+              onClick={() => setHasVariants(false)}
+              active={!hasVariants}
+              mr={4}
+            >
+              Simple Product
+            </Pill>
+            <Pill onClick={() => setHasVariants(true)} active={hasVariants}>
+              Product with Variants
+            </Pill>
+          </Flex>
         </Box>
-        <Flex justifyContent="center" alignItems="center" width={3 / 7}>
+        <Flex justifyContent="center" width={3 / 7}>
           <ImageUpload name="images" label="Images" />
         </Flex>
       </Flex>
-      <Text mb={4}>Options</Text>
-      <Flex mb={5} flexDirection="column">
-        {options.map((o, index) => (
-          <Flex mb={4} key={index} alignItems="flex-end">
-            <Box>
-              <Input
-                name={index}
-                onChange={updateOptionName}
-                label="Option Name"
-                value={o.name}
-              />
-            </Box>
-            <Box mx={3} flexGrow="1">
-              <TagInput
-                values={o.values}
-                onChange={values => updateOptionValue(index, values)}
-              />
-            </Box>
-            <Box>
-              <Button
-                variant="primary"
-                onClick={() => handleRemoveOption(index)}
-              >
-                Remove
-              </Button>
-            </Box>
-          </Flex>
-        ))}
-        <Button onClick={handleAddOption} variant="primary">
-          + Add an option
-        </Button>
-      </Flex>
-      {variants && variants.length > 0 && (
+      {hasVariants ? (
         <>
-          <Text mb={4}>Variants</Text>
-          <Flex flexDirection="column" flexGrow="1">
-            <VariantGrid variants={variants} onChange={vs => setVariants(vs)} />
+          <Text mb={4}>Options</Text>
+          <Flex mb={5} flexDirection="column">
+            {options.map((o, index) => (
+              <Flex mb={4} key={index} alignItems="flex-end">
+                <Box>
+                  <Input
+                    name={index}
+                    onChange={updateOptionName}
+                    label="Option Name"
+                    value={o.name}
+                  />
+                </Box>
+                <Box mx={3} flexGrow="1">
+                  <TagInput
+                    values={o.values}
+                    onChange={values => updateOptionValue(index, values)}
+                  />
+                </Box>
+                <Box>
+                  <Button
+                    variant="primary"
+                    onClick={() => handleRemoveOption(index)}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              </Flex>
+            ))}
+            <Button onClick={handleAddOption} variant="primary">
+              + Add an option
+            </Button>
+          </Flex>
+          {variants && variants.length > 0 && (
+            <>
+              <Text mb={4}>Variants</Text>
+              <Flex flexDirection="column" flexGrow="1">
+                <VariantGrid
+                  variants={variants}
+                  onChange={vs => setVariants(vs)}
+                />
+              </Flex>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <Text mb={4}>Price</Text>
+          <Flex mb={5}>
+            <Box>
+              <Input label="Price" ref={register} />
+            </Box>
           </Flex>
         </>
       )}

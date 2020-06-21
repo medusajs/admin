@@ -1,90 +1,19 @@
 import React, { useState, useRef, useCallback } from "react"
-import styled from "@emotion/styled"
 import { Text, Flex, Box } from "rebass"
+
+import {
+  Th,
+  Td,
+  Wrapper,
+  StyledTable,
+  DragHandle,
+  InputField,
+} from "./elements"
 
 const ENTER_KEY = 13
 const TAB_KEY = 9
 const ARROW_UP_KEY = 38
 const ARROW_DOWN_KEY = 40
-
-const Wrapper = styled.div`
-  position: relative;
-  overflow-x: scroll;
-`
-
-const StyledTable = styled(Box)`
-  width: 100%;
-  border-collapse: collapse;
-`
-
-const Th = styled.th`
-  background-color: ${props => props.theme.colors.light};
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  padding: 4px;
-  text-align: center;
-  font-weight: normal;
-
-  ${props =>
-    props.head &&
-    `
-    background-color: transparent;
-    border: none;
-  `}
-`
-
-const DragHandle = styled.div`
-  cursor: pointer;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 5px;
-  height: 5px;
-  background-color: rgba(206, 208, 190, 1);
-  border: 1px solid white;
-`
-
-const Td = styled.td`
-  position: relative;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  width: 200px;
-
-  padding: 8px;
-  font-size: 14px;
-  font-family: ${props => props.theme.fonts.body};
-
-  ${props =>
-    props.selected && `box-shadow: ${props.theme.grid.selectedShadow}`};
-
-  ${props =>
-    props.head &&
-    `
-    text-align:center;
-    position: sticky;
-    width: 50px;
-    left: 0;
-    top: auto;
-    box-shadow: ${props => props.theme.grid.headColShadow};
-  `}
-
-  ${props =>
-    props.dragover &&
-    `
-    background-color: rgba(206, 208, 190, 0.22);
-  `}
-`
-
-const InputField = styled.input`
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 0;
-  background-color: transparent;
-  padding: 0;
-  font-size: 14px;
-  &:focus {
-    outline: none;
-  }
-`
 
 const VariantGrid = ({ variants, onChange }) => {
   const [dragEnd, setDragEnd] = useState()
@@ -108,7 +37,9 @@ const VariantGrid = ({ variants, onChange }) => {
       headCol: true,
     },
     { header: "SKU", field: "sku" },
-    { header: "Price", field: "price" },
+    { header: "PRICE", field: "price" },
+    { header: "EAN", field: "ean" },
+    { header: "INVENTORY", field: "inventory" },
   ]
 
   const handleChange = e => {

@@ -7,12 +7,12 @@ const StyledButton = styled(RebassButton)`
   ${Typography.Base}
 `
 
-const Button = ({ children, variant, type, onClick, ...props }) => {
+const Button = ({ active, children, type, onClick, ...props }) => {
   return (
     <StyledButton
       onClick={onClick}
       type={type || "button"}
-      variant={`buttons.${variant}`}
+      variant={active ? `pillActive` : `pill`}
       {...props}
     >
       {children}

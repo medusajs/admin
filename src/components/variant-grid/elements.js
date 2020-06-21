@@ -1,0 +1,76 @@
+import { Box } from "rebass"
+import styled from "@emotion/styled"
+
+export const Wrapper = styled.div`
+  position: relative;
+  overflow-x: scroll;
+  padding: 1px;
+`
+
+export const StyledTable = styled(Box)`
+  width: 100%;
+  border-collapse: collapse;
+`
+
+export const Th = styled.th`
+  background-color: ${props => props.theme.colors.light};
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 2px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: 500;
+`
+
+export const DragHandle = styled.div`
+  cursor: pointer;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 5px;
+  height: 5px;
+  background-color: rgba(206, 208, 190, 1);
+  border: 1px solid white;
+`
+
+export const Td = styled.td`
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  min-width: 200px;
+
+  padding: 8px;
+  font-size: 14px;
+  font-family: ${props => props.theme.fonts.body};
+
+  ${props =>
+    props.selected && `box-shadow: ${props.theme.grid.selectedShadow}`};
+
+  ${props =>
+    props.head &&
+    `
+    min-width: 50px;
+    text-align:center;
+    position: sticky;
+    width: 50px;
+    left: 0;
+    top: auto;
+  `}
+
+  ${props =>
+    props.dragover &&
+    `
+    background-color: rgba(206, 208, 190, 0.22);
+  `}
+`
+
+export const InputField = styled.input`
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  padding: 0;
+  font-size: 14px;
+  &:focus {
+    outline: none;
+  }
+`

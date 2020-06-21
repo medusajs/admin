@@ -1,6 +1,7 @@
 import React from "react"
 import breakpoints from "./breakpoints"
 import spacing from "./spacing"
+import shadows from "./shadows"
 import forms from "./forms"
 import { ThemeProvider as Provider } from "emotion-theming"
 
@@ -38,15 +39,6 @@ export const theme = {
       inset rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       inset rgba(0, 0, 0, 0) 0px 0px 0px 0px;
     `,
-    headColShadow: `
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
-      rgba(0, 0, 0, 0.12) 0px 1px 1px 0px,
-      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(60, 66, 87, 0.08) 0px 3px 9px 0px;
-      rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
-    `,
     header: {
       padding: 2,
       fontSize: 1,
@@ -58,62 +50,7 @@ export const theme = {
       fontFamily: "body",
     },
   },
-  shadows: {
-    inputBoxShadow: `
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
-      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px;
-    `,
-    inputBoxShadowHover: `
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
-      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px;
-    `,
-    buttonBoxShadow: `
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0.12) 0px 1px 1px 0px,
-      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
-    `,
-    buttonBoxShadowHover: `
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0.12) 0px 1px 1px 0px,
-      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(60, 66, 87, 0.08) 0px 3px 9px 0px,
-      rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
-    `,
-    buttonBoxShadowActive: `
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
-      rgba(0, 0, 0, 0.12) 0px 1px 1px 0px,
-      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(60, 66, 87, 0.08) 0px 3px 9px 0px;
-      rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
-    `,
-    tagBoxShadow: `
-      rgba(0,0,0,0) 0px 0px 0px 0px, 
-      rgb(190, 191, 208) 0px 0px 0px 2px, 
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
-      rgba(60, 62, 87, 0.22) 0px 0px 0px 2px, 
-      rgba(0,0,0,0) 0px 0px 0px 0px, 
-      rgba(0,0,0,0) 0px 0px 0px 0px, 
-      rgba(0,0,0,0) 0px 0px 0px 0px;
-    `,
-  },
+  shadows,
   variants: {
     badge: {
       fontSize: "0",
@@ -127,6 +64,36 @@ export const theme = {
   },
   forms,
   buttons: {
+    pillActive: {
+      cursor: "pointer",
+      backgroundColor: "transparent",
+      color: "dark",
+      height: "40px",
+      outline: 0,
+      border: "1px solid",
+      borderColor: "#53725d",
+      borderRadius: "3px",
+      paddingTop: "3px",
+      paddingBottom: "3px",
+      boxShadow: "pillActive",
+    },
+    pill: {
+      cursor: "pointer",
+      backgroundColor: "transparent",
+      color: "dark",
+      height: "40px",
+      outline: 0,
+      border: "1px solid",
+      borderColor: "#53725d",
+      borderRadius: "3px",
+      paddingTop: "3px",
+      paddingBottom: "3px",
+      boxShadow: "buttonBoxShadow",
+      "&:hover": {
+        color: "darkest",
+        boxShadow: "buttonBoxShadowHover",
+      },
+    },
     primary: {
       height: "30px",
       color: "dark",
