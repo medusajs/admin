@@ -41,8 +41,7 @@ const StyledInput = styled.input`
   }
 `
 
-const TagInput = ({ ...props }) => {
-  const [values, setValues] = useState([])
+const TagInput = ({ onChange, values, ...props }) => {
   const [isFocused, setFocused] = useState(false)
   const [highlighted, setHighlighted] = useState(-1)
   const containerRef = useRef()
@@ -76,7 +75,7 @@ const TagInput = ({ ...props }) => {
         e.preventDefault()
       case TAB_KEY:
         if (value) {
-          setValues([...values, value])
+          onChange([...values, value])
           inputRef.current.value = ""
           e.preventDefault()
         }
@@ -90,7 +89,7 @@ const TagInput = ({ ...props }) => {
         if (highlighted !== -1) {
           const newValues = [...values]
           newValues.splice(highlighted, 1)
-          setValues(newValues)
+          onChange(newValues)
           setHighlighted(-1)
         }
         break
@@ -102,7 +101,7 @@ const TagInput = ({ ...props }) => {
   const handleRemove = index => {
     const newValues = [...values]
     newValues.splice(index, 1)
-    setValues(newValues)
+    onChange(newValues)
   }
 
   const handleBlur = () => {
@@ -117,7 +116,7 @@ const TagInput = ({ ...props }) => {
   const handleInput = e => {
     const value = inputRef.current.value
     if (value.endsWith(",")) {
-      setValues([...values, value.slice(0, -1)])
+      onChange([...values, value.slice(0, -1)])
       inputRef.current.value = ""
     }
   }
