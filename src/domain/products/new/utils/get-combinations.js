@@ -1,4 +1,4 @@
-export default options => {
+export function getCombinations(options) {
   if (options.length === 0) {
     return []
   }

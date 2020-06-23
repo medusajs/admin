@@ -10,7 +10,7 @@ import ImageUpload from "../../../components/image-upload"
 import TextArea from "../../../components/textarea"
 import VariantGrid from "../../../components/variant-grid"
 
-import getCombinations from "./utils/get-combinations"
+import { getCombinations } from "./utils/get-combinations"
 
 const NewProduct = ({}) => {
   const [hasVariants, setHasVariants] = useState(false)
