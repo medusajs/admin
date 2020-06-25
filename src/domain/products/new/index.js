@@ -23,7 +23,9 @@ const NewProduct = ({}) => {
     const combinations = getCombinations(os)
 
     const newVariants = combinations.map(optionValues => {
-      optionValues = optionValues || []
+      if (!optionValues) {
+        return null
+      }
 
       const existing =
         variants.find(v =>
@@ -35,7 +37,7 @@ const NewProduct = ({}) => {
       return existing
     })
 
-    setVariants(newVariants)
+    setVariants(newVariants.filter(v => !!v))
   }, [options])
 
   const updateOptionValue = (index, values) => {
@@ -76,7 +78,7 @@ const NewProduct = ({}) => {
   }
 
   return (
-    <Flex as="form" flexDirection="column">
+    <Flex as="form" flexDirection="column" pb={6}>
       <Text mb={4}>Product Details</Text>
       <Flex mb={5}>
         <Box width={4 / 7}>

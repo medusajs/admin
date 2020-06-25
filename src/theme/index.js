@@ -52,6 +52,10 @@ export const theme = {
   },
   shadows,
   variants: {
+    loginCard: {
+      boxShadow: "buttonBoxShadow",
+      borderRadius: "3px",
+    },
     badge: {
       fontSize: "0",
       color: "dark",
@@ -70,12 +74,13 @@ export const theme = {
       color: "dark",
       height: "40px",
       outline: 0,
-      border: "1px solid",
-      borderColor: "#53725d",
       borderRadius: "3px",
       paddingTop: "3px",
       paddingBottom: "3px",
       boxShadow: "pillActive",
+      "&:focus": {
+        boxShadow: "pillActiveFocus",
+      },
     },
     pill: {
       cursor: "pointer",
@@ -83,15 +88,12 @@ export const theme = {
       color: "dark",
       height: "40px",
       outline: 0,
-      border: "1px solid",
-      borderColor: "#53725d",
       borderRadius: "3px",
       paddingTop: "3px",
       paddingBottom: "3px",
-      boxShadow: "buttonBoxShadow",
-      "&:hover": {
-        color: "darkest",
-        boxShadow: "buttonBoxShadowHover",
+      boxShadow: "pill",
+      "&:focus": {
+        boxShadow: "buttonBoxShadowActive",
       },
     },
     primary: {
@@ -108,6 +110,23 @@ export const theme = {
       "&:hover": {
         color: "darkest",
         boxShadow: "buttonBoxShadowHover",
+      },
+      "&:active": {
+        boxShadow: "buttonBoxShadowActive",
+      },
+    },
+    green: {
+      height: "30px",
+      color: "lightest",
+      backgroundColor: "#53725D",
+      border: 0,
+      outline: 0,
+      paddingTop: "3px",
+      paddingBottom: "3px",
+      cursor: "pointer",
+      borderRadius: "3px",
+      "&:focus": {
+        boxShadow: "buttonBoxShadowFocus",
       },
       "&:active": {
         boxShadow: "buttonBoxShadowActive",
