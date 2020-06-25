@@ -47,4 +47,30 @@ export const buttons = {
       boxShadow: "buttonBoxShadowActive",
     },
   },
+  cta: {
+    height: "30px",
+    color: "white",
+    backgroundColor: "medusaGreen",
+    fontWeight: 600,
+
+    border: 0,
+    outline: 0,
+
+    paddingTop: "3px",
+    paddingBottom: "3px",
+
+    cursor: "pointer",
+
+    borderRadius: "3px",
+    boxShadow: "buttonPrimaryBoxShadow",
+
+    "&:hover": {
+      color: "darkest",
+      boxShadow: "buttonPrimaryBoxShadowHover",
+    },
+
+    "&:active": {
+      boxShadow: "buttonPrimaryBoxShadowActive",
+    },
+  },
 }

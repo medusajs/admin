@@ -1,14 +1,14 @@
 import React from "react"
 import { storiesOf } from "@storybook/react"
 
-import Dropdown from "./index"
+import Select from "./index"
 
 export default {
-  title: `Dropdown`,
+  title: `Select`,
 }
 
 export const Primary = () => (
-  <Dropdown
+  <Select
     defaultValue="Choose ..."
     options={[
       { key: "1", value: "Michael Jordan" },

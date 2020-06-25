@@ -9,6 +9,7 @@ export const theme = {
   colors: {
     primary: "#B27979",
     secondary: "#79B28A",
+    medusaGreen: "#3ecf8e",
     lightest: "#fefefe",
     light: "#f0f0f0",
     dark: "#454545",
@@ -95,7 +96,6 @@ export const theme = {
       },
     },
     primary: {
-      height: "30px",
       color: "dark",
       backgroundColor: "lightest",
       border: 0,
@@ -128,6 +128,27 @@ export const theme = {
       },
       "&:active": {
         boxShadow: "buttonBoxShadowActive",
+      },
+    },
+    cta: {
+      height: "30px",
+      color: "white",
+      backgroundColor: "medusaGreen",
+      fontWeight: 600,
+
+      border: 0,
+      outline: 0,
+
+      paddingTop: "3px",
+      paddingBottom: "3px",
+
+      cursor: "pointer",
+
+      borderRadius: "3px",
+      boxShadow: "ctaBoxShadow",
+
+      "&:hover": {
+        boxShadow: "ctaBoxShadowHover",
       },
     },
   },

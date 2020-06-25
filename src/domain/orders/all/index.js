@@ -6,7 +6,7 @@ import {
   TableRow,
   TableHeaderCell,
   TableDataCell,
-} from "../../components/table"
+} from "../../../components/table"
 import { Text } from "rebass"
 
 const AllProducts = ({}) => {
