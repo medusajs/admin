@@ -1,4 +1,4 @@
-export function getCombinations(options) {
+const getCombinations = options => {
   if (options.length === 0) {
     return []
   }
@@ -24,3 +24,5 @@ export function getCombinations(options) {
 
   return combinations
 }
+
+export default getCombinations

@@ -1,6 +1,25 @@
 export default {
+  pill: `
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(0, 0, 0, 0.12) 0px 1px 1px 0px,
+      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(60, 66, 87, 0.08) 0px 0px 5px 0px;
+  `,
   pillActive: `
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(83, 114, 93, 0.8) 0px 0px 0px 2px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px
+  `,
+  pillActiveFocus: `
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
       rgba(83, 114, 93, 0.8) 0px 0px 0px 2px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
       rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
