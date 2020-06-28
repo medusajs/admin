@@ -1,5 +1,5 @@
 import React from "react"
-import { Box } from "rebass"
+import { Box, Flex } from "rebass"
 import styled from "@emotion/styled"
 
 const StyledTable = styled(Box)`
@@ -7,7 +7,7 @@ const StyledTable = styled(Box)`
     0 1px 3px 0 rgba(63, 63, 68, 0.15);
 `
 
-const StyledTableRow = styled(Box)`
+const StyledTableRow = styled(Flex)`
   td:nth-child(1) {
     padding-left: 15px;
   }
@@ -74,10 +74,6 @@ export const TableHeaderRow = React.forwardRef((props, ref) => (
   />
 ))
 
-export const TableHeaderCell = React.forwardRef((props, ref) => (
-  <Box ref={ref} as="th" variant="th" {...props} sx={{}} width={1 / 12} />
-))
-
 export const TableDataCell = React.forwardRef((props, ref) => (
-  <Box ref={ref} as="td" variant="td" {...props} sx={{}} width={1 / 12} />
+  <Box ref={ref} as="td" variant="td" {...props} sx={{}} width={1 / 6} />
 ))
