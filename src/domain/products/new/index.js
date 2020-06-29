@@ -16,9 +16,20 @@ const NewProduct = ({}) => {
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])
-  const { register } = useForm()
+  const { register, handleSubmit, setValue } = useForm()
 
+  /**
+   * Will be called everytime an option has changed. It will then recalculate
+   * the combinations of variants that may exist.
+   */
   useEffect(() => {
+    options.forEach((o, index) => {
+      register({ name: `options[${index}].name` })
+      setValue(`options[${index}].name`, o.name)
+      register({ name: `options[${index}].values` })
+      setValue(`options[${index}].values`, o.values)
+    })
+
     const os = [...options]
     const combinations = getCombinations(os)
 
@@ -40,6 +51,9 @@ const NewProduct = ({}) => {
     setVariants(newVariants.filter(v => !!v))
   }, [options])
 
+  /**
+   * Updates one of the values in a option.
+   */
   const updateOptionValue = (index, values) => {
     const newOptions = [...options]
     newOptions[index] = {
@@ -47,17 +61,19 @@ const NewProduct = ({}) => {
       values,
     }
 
+    setValue(`options[${index}].values`, values)
     setOptions(newOptions)
   }
 
-  const updateOptionName = e => {
+  const updateOptionName = (e, index) => {
     const element = e.target
     const newOptions = [...options]
-    newOptions[parseInt(element.name)] = {
-      ...newOptions[parseInt(element.name)],
+    newOptions[index] = {
+      ...newOptions[index],
       name: element.value,
     }
 
+    setValue(`options[${index}].name`, element.value)
     setOptions(newOptions)
   }
 
@@ -77,17 +93,22 @@ const NewProduct = ({}) => {
     ])
   }
 
+  const submit = data => {
+    console.log(data)
+  }
+
   return (
-    <Flex as="form" flexDirection="column" pb={6}>
+    <Flex
+      as="form"
+      flexDirection="column"
+      pb={6}
+      onSubmit={handleSubmit(submit)}
+    >
       <Text mb={4}>Product Details</Text>
       <Flex mb={5}>
         <Box width={4 / 7}>
-          <Input mb={4} label="Name" name="title" register={register} />
-          <TextArea
-            label="Description"
-            name="description"
-            register={register}
-          />
+          <Input mb={4} label="Name" name="title" ref={register} />
+          <TextArea label="Description" name="description" ref={register} />
           <Flex mt={4}>
             <Pill
               onClick={() => setHasVariants(false)}
@@ -113,8 +134,8 @@ const NewProduct = ({}) => {
               <Flex mb={4} key={index} alignItems="flex-end">
                 <Box>
                   <Input
-                    name={index}
-                    onChange={updateOptionName}
+                    name={`options[${index}].name`}
+                    onChange={e => updateOptionName(e, index)}
                     label="Option Name"
                     value={o.name}
                   />
@@ -156,11 +177,20 @@ const NewProduct = ({}) => {
           <Text mb={4}>Price</Text>
           <Flex mb={5}>
             <Box>
-              <Input label="Price" ref={register} />
+              <Input name="price" label="Price" ref={register} />
             </Box>
           </Flex>
         </>
       )}
+
+      <Flex pt={5}>
+        <Button mr={2} variant={"primary"}>
+          Save and add more
+        </Button>
+        <Button variant={"secondary"} type="submit">
+          Save
+        </Button>
+      </Flex>
     </Flex>
   )
 }

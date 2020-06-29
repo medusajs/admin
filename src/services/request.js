@@ -1,9 +1,6 @@
 import axios from "axios"
 
-const STORE_URL =
-  process.env.NODE_ENV === "development"
-    ? "something"
-    : process.env.GATSBY_STORE_URL
+const STORE_URL = process.env.GATSBY_STORE_URL || "http://localhost:9000"
 
 const client = axios.create({
   baseURL: STORE_URL,
@@ -12,10 +9,9 @@ const client = axios.create({
 export default function medusaRequest(method, path = "", payload = {}) {
   const options = {
     method,
+    withCredentials: true,
     url: path,
-    data: {
-      data: payload,
-    },
+    data: payload,
     json: true,
   }
 

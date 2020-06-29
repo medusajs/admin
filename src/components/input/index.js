@@ -12,23 +12,25 @@ const StyledLabel = styled.div`
   padding-bottom: 10px;
 `
 
-const InputField = ({ ref, placeholder, label, name, ...props }) => {
-  return (
-    <>
-      {label && (
-        <Label htmlFor={name}>
-          <StyledLabel>{label}</StyledLabel>
-        </Label>
-      )}
-      <StyledInput
-        ref={ref}
-        variant="input"
-        name={name}
-        placeholder={placeholder ? placeholder : "Placeholder"}
-        {...props}
-      />
-    </>
-  )
-}
+const InputField = React.forwardRef(
+  ({ placeholder, label, name, ...props }, ref) => {
+    return (
+      <>
+        {label && (
+          <Label htmlFor={name}>
+            <StyledLabel>{label}</StyledLabel>
+          </Label>
+        )}
+        <StyledInput
+          ref={ref}
+          variant="input"
+          name={name}
+          placeholder={placeholder ? placeholder : "Placeholder"}
+          {...props}
+        />
+      </>
+    )
+  }
+)
 
 export default InputField

@@ -1,9 +1,9 @@
 import React from "react"
-import { Select } from "@rebass/forms"
+import { Select as RebassSelect } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Typography from "../typography"
 
-const StyledSelect = styled(Select)`
+const StyledSelect = styled(RebassSelect)`
   ${Typography.Base}
 `
 

@@ -1,6 +1,32 @@
 import medusaRequest from "./request"
 
-export default Medusa = {
+export default {
+  auth: {
+    session() {
+      const path = `/admin/auth`
+      return medusaRequest("GET", path)
+    },
+    authenticate(details) {
+      const path = `/admin/auth`
+      return medusaRequest("POST", path, details)
+    },
+    deauthenticate(details) {
+      return Promise.resolve()
+      // const path = `/admin/auth`
+      // return medusaRequest("DELETE", path)
+    },
+  },
+  store: {
+    retrieve() {
+      const path = `/admin/store`
+      return medusaRequest("GET", path)
+    },
+
+    update(update) {
+      const path = `/admin/store`
+      return medusaRequest("POST", path, update)
+    },
+  },
   products: {
     create(product) {
       const path = `/admin/products`

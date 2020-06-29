@@ -21,13 +21,7 @@ const Layout = ({ children }) => {
     <Container>
       <Main>
         <Content fontFamily={"body"} p={4}>
-          <Body
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            p={3}
-            mx="auto"
-          >
+          <Body p={3} mx="auto">
             {children}
           </Body>
         </Content>

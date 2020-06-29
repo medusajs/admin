@@ -1,5 +1,6 @@
 import React from "react"
-import { Flex, Box, Text, Link } from "rebass"
+import { Flex, Box, Text } from "rebass"
+import { Link } from "gatsby"
 import styled from "@emotion/styled"
 import { Container, InlineLogoContainer, LogoContainer } from "./elements"
 import { ReactComponent as Settings } from "../../assets/svg/settings.svg"
@@ -10,10 +11,16 @@ import { ReactComponent as Discounts } from "../../assets/svg/discounts.svg"
 import { ReactComponent as Logo } from "../../assets/svg/logo.svg"
 import { ReactComponent as LogoInline } from "../../assets/svg/logo-horizontal.svg"
 
-const StyledLink = styled(Link)`
+const MuteLink = styled(Link)`
   text-decoration: none;
   color: inherit;
 `
+
+const StyledLink = ({ to, children, ...rest }) => (
+  <Box {...rest}>
+    <MuteLink to={to}>{children}</MuteLink>
+  </Box>
+)
 
 const Sidebar = ({}) => {
   return (
@@ -30,25 +37,25 @@ const Sidebar = ({}) => {
       <Flex py={4} mx={-1} flexDirection="column" flex={1}>
         <Flex py={1} alignItems="center">
           <Orders />
-          <StyledLink width={9 / 10} ml={2} variant="nav" href="/a/orders">
+          <StyledLink width={9 / 10} ml={2} variant="nav" to="/a/orders">
             Orders
           </StyledLink>
         </Flex>
         <Flex py={1} alignItems="center">
           <Products />
-          <StyledLink ml={2} variant="nav" href="/a/products">
+          <StyledLink ml={2} variant="nav" to="/a/products">
             Products
           </StyledLink>
         </Flex>
         <Flex py={1} alignItems="center">
           <Customers />
-          <StyledLink ml={2} variant="nav" href="/a/customers">
+          <StyledLink ml={2} variant="nav" to="/a/customers">
             Customers
           </StyledLink>
         </Flex>
         <Flex py={1} alignItems="center">
           <Discounts />
-          <StyledLink ml={2} variant="nav" href="/a/discounts">
+          <StyledLink ml={2} variant="nav" to="/a/discounts">
             Discounts
           </StyledLink>
         </Flex>

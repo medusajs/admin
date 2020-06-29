@@ -98,6 +98,7 @@ const VariantGrid = ({ variants, onChange }) => {
   const handleKey = e => {
     switch (e.keyCode) {
       case ENTER_KEY:
+        e.preventDefault()
         if (e.shiftKey) {
           if (selectedCell.row > 0) {
             setSelectedCell({
