@@ -7,4 +7,12 @@ export default {
   title: `Input`,
 }
 
-export const Primary = () => <InputField width={350} height={30} />
+export const Primary = () => (
+  <InputField label="Default" width={350} height={30} />
+)
+
+export const Inline = () => (
+  <div style={{ width: "500px" }}>
+    <InputField inline label="Inline" width={350} height={30} />
+  </div>
+)

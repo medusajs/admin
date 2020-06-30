@@ -3,7 +3,7 @@ import styled from "@emotion/styled"
 
 import { ReactComponent as Ellipsis } from "../../assets/svg/ellipsis.svg"
 
-import Button from "../button/index"
+import Button from "../button"
 
 const DropdownContainer = styled.div`
   ${props => `
@@ -19,6 +19,9 @@ const DropdownContainer = styled.div`
   top: 0;
   border-radius: 5px;
   right: 0;
+
+  max-height: 80vh;
+  overflow: auto;
 
   &::before {
     content: "";
@@ -44,7 +47,7 @@ const DropdownItem = styled.a`
   cursor: pointer;
 `
 
-const Dropdown = ({ children, ...props }) => {
+const Dropdown = ({ children, toggleText, ...props }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const ref = useRef(null)
@@ -74,18 +77,13 @@ const Dropdown = ({ children, ...props }) => {
     <div style={{ position: "relative" }}>
       <Button
         mr={3}
-        p={0}
         alignItems="center"
         variant="primary"
-        height="20px"
-        width="35px"
         onClick={() => handleOpen()}
       >
-        <Ellipsis height="20px" />
+        {toggleText || <Ellipsis height="20px" />}
       </Button>
       <DropdownContainer ref={ref} isOpen={isOpen}>
-        {" "}
-        {/* {children && children.map(el => <DropdownItem>{el}</DropdownItem>)} */}
         {React.Children.map(children, child => (
           <DropdownItem>{child}</DropdownItem>
         ))}

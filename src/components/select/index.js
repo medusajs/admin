@@ -1,5 +1,6 @@
 import React from "react"
-import { Select as RebassSelect } from "@rebass/forms"
+import { Flex } from "rebass"
+import { Label, Select as RebassSelect } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Typography from "../typography"
 
@@ -7,19 +8,27 @@ const StyledSelect = styled(RebassSelect)`
   ${Typography.Base}
 `
 
-const Select = ({ name = "", defaultValue = "", options = [], ...props }) => {
+const Select = ({
+  name = "",
+  label = "",
+  defaultValue = "",
+  options = [],
+  ...props
+}) => {
   return (
-    <StyledSelect
-      variant="dropdown"
-      name={name}
-      defaultValue={defaultValue}
-      {...props}
-    >
-      {console.log(options)}
-      {options.map(option => (
-        <option key={option.key}>{option.value}</option>
-      ))}
-    </StyledSelect>
+    <Flex>
+      {label && <Label htmlFor={name}>{label}</Label>}
+      <StyledSelect
+        variant="dropdown"
+        name={name}
+        defaultValue={defaultValue}
+        {...props}
+      >
+        {options.map(option => (
+          <option key={option.key}>{option.value}</option>
+        ))}
+      </StyledSelect>
+    </Flex>
   )
 }
 

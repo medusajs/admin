@@ -36,6 +36,7 @@ const VariantGrid = ({ variants, onChange }) => {
       readOnly: true,
       headCol: true,
     },
+    { header: "TITLE", field: "title" },
     { header: "SKU", field: "sku" },
     { header: "PRICE", field: "price" },
     { header: "EAN", field: "ean" },

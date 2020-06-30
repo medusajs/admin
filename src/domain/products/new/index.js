@@ -10,10 +10,12 @@ import ImageUpload from "../../../components/image-upload"
 import TextArea from "../../../components/textarea"
 import VariantGrid from "../../../components/variant-grid"
 
+import Medusa from "../../../services/api"
+
 import { getCombinations } from "./utils/get-combinations"
 
 const NewProduct = ({}) => {
-  const [hasVariants, setHasVariants] = useState(false)
+  const [hasVariants, setHasVariants] = useState(true)
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])
   const { register, handleSubmit, setValue } = useForm()
@@ -23,13 +25,6 @@ const NewProduct = ({}) => {
    * the combinations of variants that may exist.
    */
   useEffect(() => {
-    options.forEach((o, index) => {
-      register({ name: `options[${index}].name` })
-      setValue(`options[${index}].name`, o.name)
-      register({ name: `options[${index}].values` })
-      setValue(`options[${index}].values`, o.values)
-    })
-
     const os = [...options]
     const combinations = getCombinations(os)
 
@@ -94,7 +89,26 @@ const NewProduct = ({}) => {
   }
 
   const submit = data => {
-    console.log(data)
+    const product = {
+      title: data.title,
+      description: data.description,
+      options: options.map(o => ({ title: o.name })),
+      variants: variants.map(v => ({
+        title: v.title,
+        sku: v.sku,
+        ean: v.ean,
+        inventory_quantity: v.inventory,
+        prices: [
+          {
+            currency_code: "DKK",
+            amount: v.price,
+          },
+        ],
+        options: v.options.map(o => ({ value: o })),
+      })),
+    }
+
+    Medusa.products.create(product)
   }
 
   return (
@@ -109,7 +123,7 @@ const NewProduct = ({}) => {
         <Box width={4 / 7}>
           <Input mb={4} label="Name" name="title" ref={register} />
           <TextArea label="Description" name="description" ref={register} />
-          <Flex mt={4}>
+          {/*<Flex mt={4}>
             <Pill
               onClick={() => setHasVariants(false)}
               active={!hasVariants}
@@ -120,7 +134,7 @@ const NewProduct = ({}) => {
             <Pill onClick={() => setHasVariants(true)} active={hasVariants}>
               Product with Variants
             </Pill>
-          </Flex>
+          </Flex>*/}
         </Box>
         <Flex justifyContent="center" width={3 / 7}>
           <ImageUpload name="images" label="Images" />

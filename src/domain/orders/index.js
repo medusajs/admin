@@ -5,12 +5,10 @@ import All from "./all"
 
 const Orders = () => {
   return (
-    <>
-      <Router>
-        <All path="/" />
-        <Details path=":id" />
-      </Router>
-    </>
+    <Router>
+      <All path="/" />
+      <Details path=":id" />
+    </Router>
   )
 }
 

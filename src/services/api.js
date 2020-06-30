@@ -26,6 +26,16 @@ export default {
       const path = `/admin/store`
       return medusaRequest("POST", path, update)
     },
+
+    addCurrency(code) {
+      const path = `/admin/store/currencies/${code}`
+      return medusaRequest("POST", path)
+    },
+
+    removeCurrency(code) {
+      const path = `/admin/store/currencies/${code}`
+      return medusaRequest("DELETE", path)
+    },
   },
   products: {
     create(product) {
