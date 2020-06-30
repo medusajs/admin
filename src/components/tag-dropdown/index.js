@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react"
 import { Box, Flex } from "rebass"
+import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Typography from "../typography"
 
@@ -10,6 +11,30 @@ const TAB_KEY = 9
 const BACKSPACE_KEY = 8
 const ARROW_LEFT_KEY = 37
 const ARROW_RIGHT_KEY = 39
+
+const StyledLabel = styled.div`
+  ${Typography.Base}
+  ${props =>
+    props.inline
+      ? `
+      text-align: right;
+      padding-right: 15px;
+  `
+      : `
+  padding-bottom: 10px;
+  `}
+`
+
+const Container = styled(Flex)`
+  ${Typography.Base}
+  ${props =>
+    props.inline &&
+    `
+  max-width: 350px;
+  flex-grow: 1;
+  margin-left: 5px;
+  `}
+`
 
 const TagContainer = styled(Box)`
   display: flex;
@@ -60,6 +85,8 @@ const StyledInput = styled.input`
 
 const TagInput = ({
   children,
+  inline,
+  label,
   options,
   toggleText,
   valueRender,
@@ -169,34 +196,45 @@ const TagInput = ({
 
   return (
     <Flex
-      fontSize={1}
-      alignItems="center"
-      className={isFocused ? "tag__focus" : ""}
-      focused={isFocused}
-      style={{ position: "relative" }}
+      alignItems={inline && "center"}
+      flexDirection={inline ? "row" : "column"}
+      {...props}
     >
-      <TagContainer variant={"forms.input"}>
-        {values.map((v, index) => (
-          <TagBox
-            key={index}
-            lineHeight="1.5"
-            my={1}
-            ml={1}
-            variant="badge"
-            highlighted={index === highlighted}
-          >
-            <TextWrapper>{handleValueRender(v)}</TextWrapper>
-            <Remove onClick={() => handleRemove(index)}>&times;</Remove>
-          </TagBox>
-        ))}
-      </TagContainer>
-      <Dropdown toggleText={toggleText}>
-        {availableOptions.map(option => (
-          <div onClick={() => onChange([option, ...values])}>
-            {handleOptionRender(option)}
-          </div>
-        ))}
-      </Dropdown>
+      {label && (
+        <Label maxWidth={"200px"} display={inline && "inline !important"}>
+          <StyledLabel inline={inline}>{label}</StyledLabel>
+        </Label>
+      )}
+      <Container
+        fontSize={1}
+        alignItems="center"
+        className={isFocused ? "tag__focus" : ""}
+        focused={isFocused}
+        style={{ position: "relative" }}
+      >
+        <TagContainer variant={"forms.input"}>
+          {values.map((v, index) => (
+            <TagBox
+              key={index}
+              lineHeight="1.5"
+              my={1}
+              ml={1}
+              variant="badge"
+              highlighted={index === highlighted}
+            >
+              <TextWrapper>{handleValueRender(v)}</TextWrapper>
+              <Remove onClick={() => handleRemove(index)}>&times;</Remove>
+            </TagBox>
+          ))}
+        </TagContainer>
+        <Dropdown toggleText={toggleText}>
+          {availableOptions.map(option => (
+            <div onClick={() => onChange([option, ...values])}>
+              {handleOptionRender(option)}
+            </div>
+          ))}
+        </Dropdown>
+      </Container>
     </Flex>
   )
 }

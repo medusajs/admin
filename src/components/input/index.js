@@ -37,7 +37,11 @@ const InputField = React.forwardRef(
         {...props}
       >
         {label && (
-          <Label htmlFor={name} display={inline && "inline !important"}>
+          <Label
+            maxWidth={"200px"}
+            htmlFor={name}
+            display={inline && "inline !important"}
+          >
             <StyledLabel inline={inline}>{label}</StyledLabel>
           </Label>
         )}

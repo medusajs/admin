@@ -17,26 +17,22 @@ const useMedusa = (endpoint, query) => {
 
       if (!query) {
         if (subcomponent.list) {
-          const { data } = await subcomponent
-            .list()
-            .finally(() => setLoading(false))
+          const { data } = await subcomponent.list()
           setResult(data)
+          setLoading(false)
         } else {
-          const { data } = await subcomponent
-            .retrieve()
-            .finally(() => setLoading(false))
+          const { data } = await subcomponent.retrieve()
           setResult(data)
+          setLoading(false)
         }
       } else if (query.id) {
-        const { data } = await subcomponent
-          .retrieve(query.id)
-          .finally(() => setLoading(false))
+        const { data } = await subcomponent.retrieve(query.id)
         setResult(data)
+        setLoading(false)
       } else if (!query.id && query.search) {
-        const { data } = await subcomponent
-          .list(query.search)
-          .finally(() => setLoading(false))
+        const { data } = await subcomponent.list(query.search)
         setResult(data)
+        setLoading(false)
       }
     }
     fetchData()

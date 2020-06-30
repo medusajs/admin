@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
 import { Box, Flex } from "rebass"
+import { useForm } from "react-hook-form"
 
 import useMedusa from "../../hooks/use-medusa"
 import Select from "../../components/select"
@@ -31,11 +32,18 @@ const Currency = styled.div`
 
 const AccountDetails = () => {
   const [selectedCurrencies, setCurrencies] = useState([])
-  const { store, isLoading, addCurrency, removeCurrency } = useMedusa("store")
+  const { register, handleSubmit } = useForm()
+  const { store, isLoading, update } = useMedusa("store")
 
   useEffect(() => {
     if (isLoading) return
-    setCurrencies(store.currencies)
+    setCurrencies(
+      store.currencies.map(c => ({
+        symbol: currencies[c].symbol_native,
+        value: c,
+        code: c,
+      }))
+    )
   }, [store])
 
   const options = Object.keys(currencies).map(k => {
@@ -50,8 +58,15 @@ const AccountDetails = () => {
     setCurrencies(currencies)
   }
 
+  const onSubmit = data => {
+    update({
+      default_currency: data.default_currency,
+      currencies: selectedCurrencies.map(c => c.value),
+    })
+  }
+
   return (
-    <Flex flexDirection={"column"}>
+    <Flex as="form" flexDirection={"column"} onSubmit={handleSubmit(onSubmit)}>
       <Card>
         <Card.Header>Store Currencies</Card.Header>
         <Card.Body px={3}>
@@ -61,30 +76,35 @@ const AccountDetails = () => {
             <Flex width={1} flexDirection="column">
               <Box mb={3}>
                 <Select
+                  inline
                   label="Default Currency"
                   name="default_currency"
-                  value={"USD"}
                   options={options}
+                  ref={register}
                 />
               </Box>
-              <TagDropdown
-                toggleText="Choose currencies"
-                values={selectedCurrencies}
-                onChange={handleChange}
-                options={options}
-                optionRender={o => (
-                  <Currency>
-                    <span>{o.symbol}</span>
-                    <span>{o.code}</span>
-                  </Currency>
-                )}
-                valueRender={o => (
-                  <Currency>
-                    <span>{o.symbol}</span>
-                    <span>{o.code}</span>
-                  </Currency>
-                )}
-              />
+              <Box>
+                <TagDropdown
+                  inline
+                  label={"Store currencies"}
+                  toggleText="Choose currencies"
+                  values={selectedCurrencies}
+                  onChange={handleChange}
+                  options={options}
+                  optionRender={o => (
+                    <Currency>
+                      <span>{o.symbol}</span>
+                      <span>{o.code}</span>
+                    </Currency>
+                  )}
+                  valueRender={o => (
+                    <Currency>
+                      <span>{o.symbol}</span>
+                      <span>{o.code}</span>
+                    </Currency>
+                  )}
+                />
+              </Box>
             </Flex>
           )}
         </Card.Body>
