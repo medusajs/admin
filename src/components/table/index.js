@@ -8,10 +8,10 @@ const StyledTable = styled(Box)`
 `
 
 const StyledTableRow = styled(Flex)`
-  td:nth-child(1) {
+  td:nth-of-type(1) {
     padding-left: 15px;
   }
-  th:nth-child(1) {
+  th:nth-of-type(1) {
     padding-left: 15px;
   }
 `
@@ -23,6 +23,7 @@ export const Table = React.forwardRef((props, ref) => (
     variant="table"
     {...props}
     sx={{
+      position: "relative",
       fontSize: "12px",
       display: "block",
       height: "800px",
@@ -61,7 +62,7 @@ export const TableRow = React.forwardRef((props, ref) => (
 export const TableHeaderRow = React.forwardRef((props, ref) => (
   <StyledTableRow
     ref={ref}
-    as="th"
+    as="thead"
     variant="th"
     p={0}
     {...props}
@@ -75,5 +76,5 @@ export const TableHeaderRow = React.forwardRef((props, ref) => (
 ))
 
 export const TableDataCell = React.forwardRef((props, ref) => (
-  <Box ref={ref} as="td" variant="td" {...props} sx={{}} width={1 / 6} />
+  <Box ref={ref} as="td" variant="td" {...props} width={1 / 6} height="100%" />
 ))
