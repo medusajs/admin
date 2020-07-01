@@ -1,6 +1,10 @@
 import React, { useState, useRef, useCallback } from "react"
 import { Text, Flex, Box } from "rebass"
 
+import GridEditor from "./editors"
+import DefaultEditor from "./editors/default"
+import OptionEditor from "./editors/option"
+
 import {
   Th,
   Td,
@@ -19,7 +23,6 @@ const getColumns = (product, edit) => {
   const defaultFields = [
     { header: "TITLE", field: "title" },
     { header: "SKU", field: "sku" },
-    { header: "PRICE", field: "price" },
     { header: "EAN", field: "ean" },
     { header: "INVENTORY", field: "inventory_quantity" },
   ]
@@ -28,13 +31,28 @@ const getColumns = (product, edit) => {
     const optionColumns = product.options.map(o => ({
       header: o.title,
       field: "options",
-      changeField: "value",
+      editor: "option",
+      option_id: o._id,
       formatter: variantOptions => {
         return variantOptions.find(val => val.option_id === o._id).value
       },
     }))
 
-    return [...optionColumns, ...defaultFields]
+    return [
+      ...optionColumns,
+      {
+        header: "PRICES",
+        field: "prices",
+        editor: "prices",
+        buttonText: "Edit",
+        formatter: prices => {
+          return prices
+            .map(({ currency_code, amount }) => `${amount} ${currency_code}`)
+            .join(", ")
+        },
+      },
+      ...defaultFields,
+    ]
   } else {
     return [
       {
@@ -54,6 +72,7 @@ const getColumns = (product, edit) => {
         headCol: true,
       },
       ...defaultFields,
+      { header: "PRICE", field: "price" },
     ]
   }
 }
@@ -72,22 +91,6 @@ const VariantGrid = ({ product, variants, onChange, edit }) => {
 
     inputRef.current = node
   }, [])
-
-  const handleChange = e => {
-    const element = e.target
-    const [index, field] = e.target.name.split(".")
-    const newVariants = [...variants]
-    newVariants[index] = {
-      ...newVariants[index],
-      [field]: element.value,
-    }
-
-    setSelectedCell({
-      ...selectedCell,
-      value: element.value,
-    })
-    onChange(newVariants)
-  }
 
   const handleDragEnter = e => {
     const element = e.target
@@ -112,6 +115,16 @@ const VariantGrid = ({ product, variants, onChange, edit }) => {
 
     onChange(newVariants)
     setDragEnd(undefined)
+  }
+
+  const handleChange = (index, field, value) => {
+    const newVariants = [...variants]
+    newVariants[index] = {
+      ...newVariants[index],
+      [field]: value,
+    }
+
+    onChange(newVariants)
   }
 
   const isDraggedOver = cell => {
@@ -234,11 +247,12 @@ const VariantGrid = ({ product, variants, onChange, edit }) => {
                     getDisplayValue(v, c, isDraggedOver({ col, row }))}
                   {selectedCell.row === row && selectedCell.col === col && (
                     <>
-                      <InputField
+                      <GridEditor
                         ref={setRef}
+                        column={c}
+                        index={row}
+                        value={v[c.field]}
                         onKeyDown={handleKey}
-                        name={`${row}.${c.field}`}
-                        value={v[c.field] || ""}
                         onChange={handleChange}
                       />
                       <DragHandle draggable onDragEnd={handleDragEnd} />

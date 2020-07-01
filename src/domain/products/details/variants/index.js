@@ -20,8 +20,13 @@ const Variants = ({ product, isLoading }) => {
     { label: "Add option...", onClick: () => console.log("New option") },
   ]
 
+  const handleSubmit = e => {
+    e.preventDefault()
+    // TODO: Hit the server
+  }
+
   return (
-    <Card as="form">
+    <Card as="form" onSubmit={handleSubmit}>
       <Card.Header dropdownOptions={dropdownOptions}>Variants</Card.Header>
       <Card.Body px={3}>
         {isLoading ? (
