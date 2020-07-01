@@ -16,8 +16,8 @@ export const Th = styled.th`
   background-color: ${props => props.theme.colors.light};
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   padding: 2px;
+  padding-left: 8px;
   font-size: 12px;
-  text-align: center;
   font-weight: 500;
 `
 

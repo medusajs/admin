@@ -2,6 +2,8 @@ import React from "react"
 import {
   Table,
   TableBody,
+  TableHead,
+  TableHeaderCell,
   TableHeaderRow,
   TableRow,
   TableDataCell,
@@ -40,23 +42,22 @@ const AllProducts = ({}) => {
     <>
       <Text mb={4}>Orders</Text>
       <Table>
-        <TableBody>
+        <TableHead>
           <TableRow
             p={0}
             sx={{
-              top: 0,
-              display: "block",
-              position: "sticky",
               background: "white",
             }}
           >
-            <TableDataCell>Order</TableDataCell>
-            <TableDataCell>Date</TableDataCell>
-            <TableDataCell>Customer</TableDataCell>
-            <TableDataCell>Payment</TableDataCell>
-            <TableDataCell>Fulfillment</TableDataCell>
-            <TableDataCell>Items</TableDataCell>
+            <TableHeaderCell>Order</TableHeaderCell>
+            <TableHeaderCell>Date</TableHeaderCell>
+            <TableHeaderCell>Customer</TableHeaderCell>
+            <TableHeaderCell>Payment</TableHeaderCell>
+            <TableHeaderCell>Fulfillment</TableHeaderCell>
+            <TableHeaderCell>Items</TableHeaderCell>
           </TableRow>
+        </TableHead>
+        <TableBody>
           {Array(40)
             .fill()
             .map((el, i) => (

@@ -23,10 +23,21 @@ export const Table = React.forwardRef((props, ref) => (
     variant="table"
     {...props}
     sx={{
+      width: "100%",
       position: "relative",
       fontSize: "12px",
-      display: "block",
-      height: "800px",
+    }}
+  />
+))
+
+export const TableHead = React.forwardRef((props, ref) => (
+  <Box
+    ref={ref}
+    as="thead"
+    variant="thead"
+    {...props}
+    sx={{
+      whiteSpace: "nowrap",
     }}
   />
 ))
@@ -38,43 +49,56 @@ export const TableBody = React.forwardRef((props, ref) => (
     variant="tbody"
     {...props}
     sx={{
-      display: "block",
-      overflowY: "scroll",
-      overflowX: "scroll",
       whiteSpace: "nowrap",
-      height: "800px",
     }}
   />
 ))
 
 export const TableRow = React.forwardRef((props, ref) => (
   <StyledTableRow
+    tabIndex="1"
     ref={ref}
     as="tr"
     variant="tr"
-    {...props}
     sx={{
-      display: "block",
+      top: 0,
     }}
+    {...props}
   />
 ))
 
 export const TableHeaderRow = React.forwardRef((props, ref) => (
   <StyledTableRow
     ref={ref}
-    as="thead"
-    variant="th"
+    as="tr"
+    variant="tr"
     p={0}
     {...props}
     sx={{
-      top: 0,
-      display: "block",
-      position: "sticky",
       background: "white",
     }}
   />
 ))
 
+export const TableHeaderCell = React.forwardRef((props, ref) => (
+  <Box
+    ref={ref}
+    as="th"
+    variant="th"
+    {...props}
+    height="30px"
+    lineHeight="30px"
+    p={0}
+    px={3}
+    width="100%"
+    color={"dark"}
+    fontSize={0}
+    sx={{
+      textTransform: "uppercase",
+    }}
+  />
+))
+
 export const TableDataCell = React.forwardRef((props, ref) => (
-  <Box ref={ref} as="td" variant="td" {...props} width={1 / 6} height="100%" />
+  <Box ref={ref} as="td" variant="td" {...props} height="100%" width="100%" />
 ))

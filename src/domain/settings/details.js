@@ -16,7 +16,7 @@ const AccountDetails = () => {
     reset({
       name: store.name,
     })
-  }, [store])
+  }, [store, isLoading])
 
   const onSubmit = data => {
     update({

@@ -15,9 +15,54 @@ const TAB_KEY = 9
 const ARROW_UP_KEY = 38
 const ARROW_DOWN_KEY = 40
 
-const VariantGrid = ({ variants, onChange }) => {
+const getColumns = (product, edit) => {
+  const defaultFields = [
+    { header: "TITLE", field: "title" },
+    { header: "SKU", field: "sku" },
+    { header: "PRICE", field: "price" },
+    { header: "EAN", field: "ean" },
+    { header: "INVENTORY", field: "inventory_quantity" },
+  ]
+
+  if (edit) {
+    const optionColumns = product.options.map(o => ({
+      header: o.title,
+      field: "options",
+      changeField: "value",
+      formatter: variantOptions => {
+        return variantOptions.find(val => val.option_id === o._id).value
+      },
+    }))
+
+    return [...optionColumns, ...defaultFields]
+  } else {
+    return [
+      {
+        header: "",
+        field: "options",
+        formatter: value => {
+          const options = value.map(v => {
+            if (v.value) {
+              return v.value
+            }
+            return v
+          })
+
+          return options.join(" / ")
+        },
+        readOnly: true,
+        headCol: true,
+      },
+      ...defaultFields,
+    ]
+  }
+}
+
+const VariantGrid = ({ product, variants, onChange, edit }) => {
   const [dragEnd, setDragEnd] = useState()
   const [selectedCell, setSelectedCell] = useState({})
+
+  const columns = getColumns(product, edit)
 
   const inputRef = useRef()
   const setRef = useCallback(node => {
@@ -27,21 +72,6 @@ const VariantGrid = ({ variants, onChange }) => {
 
     inputRef.current = node
   }, [])
-
-  const columns = [
-    {
-      header: "",
-      field: "options",
-      formatter: value => value.join(" / "),
-      readOnly: true,
-      headCol: true,
-    },
-    { header: "TITLE", field: "title" },
-    { header: "SKU", field: "sku" },
-    { header: "PRICE", field: "price" },
-    { header: "EAN", field: "ean" },
-    { header: "INVENTORY", field: "inventory" },
-  ]
 
   const handleChange = e => {
     const element = e.target
@@ -135,7 +165,7 @@ const VariantGrid = ({ variants, onChange }) => {
       case TAB_KEY:
         e.preventDefault()
         if (e.shiftKey) {
-          if (selectedCell.col > 1) {
+          if (selectedCell.col > (edit ? 0 : 1)) {
             setSelectedCell({
               ...selectedCell,
               col: selectedCell.col - 1,

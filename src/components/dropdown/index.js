@@ -81,7 +81,7 @@ const Dropdown = ({ children, toggleText, ...props }) => {
         variant="primary"
         onClick={() => handleOpen()}
       >
-        {toggleText || <Ellipsis height="20px" />}
+        {toggleText || <Ellipsis height="10px" />}
       </Button>
       <DropdownContainer ref={ref} isOpen={isOpen}>
         {React.Children.map(children, child => (
