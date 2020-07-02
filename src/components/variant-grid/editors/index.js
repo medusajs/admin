@@ -1,10 +1,23 @@
 import React from "react"
 
 import OptionEditor from "./option"
+import PricesEditor from "./prices"
 import DefaultEditor from "./default"
 
 const GridEditor = React.forwardRef(
   ({ column, value, index, onChange, ...rest }, ref) => {
+    if (column.editor === "prices") {
+      return (
+        <PricesEditor
+          ref={ref}
+          value={value}
+          onChange={onChange}
+          index={index}
+          {...rest}
+        />
+      )
+    }
+
     if (column.editor === "option") {
       return (
         <OptionEditor
