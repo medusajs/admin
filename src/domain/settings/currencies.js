@@ -44,7 +44,7 @@ const AccountDetails = () => {
         code: c,
       }))
     )
-  }, [store])
+  }, [store, isLoading])
 
   const options = Object.keys(currencies).map(k => {
     return {

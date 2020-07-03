@@ -6,8 +6,7 @@ import Typography from "../typography"
 
 const StyledSelect = styled(RebassSelect)`
   ${Typography.Base}
-  max-width: 350px;
-  flex-grow: 1;
+  padding-right: 28px;
 `
 
 const StyledLabel = styled.div`
@@ -30,6 +29,8 @@ const Select = React.forwardRef(
       label = "",
       defaultValue = "",
       options = [],
+      value,
+      onChange,
       inline,
       ...props
     },
@@ -51,14 +52,18 @@ const Select = React.forwardRef(
           </Label>
         )}
         <StyledSelect
-          pr={4}
           variant="buttons.primary"
           name={name}
+          width={"unset"}
           ref={ref}
+          value={value}
           defaultValue={defaultValue}
+          onChange={onChange}
         >
-          {options.map(option => (
-            <option key={option.key}>{option.value}</option>
+          {options.map((option, index) => (
+            <option key={index} value={option.value}>
+              {option.lable || option.value}
+            </option>
           ))}
         </StyledSelect>
       </Flex>

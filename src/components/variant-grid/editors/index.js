@@ -11,7 +11,7 @@ const GridEditor = React.forwardRef(
         <PricesEditor
           ref={ref}
           value={value}
-          onChange={onChange}
+          onChange={value => onChange(index, column.field, value)}
           index={index}
           {...rest}
         />

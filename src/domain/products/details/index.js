@@ -15,6 +15,10 @@ const ProductDetail = ({ id }) => {
     update(data)
   }
 
+  const handleVariantsSubmit = data => {
+    update(data)
+  }
+
   return (
     <Flex flexDirection="column">
       <Information
@@ -27,6 +31,7 @@ const ProductDetail = ({ id }) => {
         product={product}
         isLoading={isLoading}
         onChange={vs => setVariants(vs)}
+        onSubmit={handleVariantsSubmit}
       />
     </Flex>
   )

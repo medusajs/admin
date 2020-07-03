@@ -2,7 +2,6 @@ import { Box } from "rebass"
 import styled from "@emotion/styled"
 
 export const Wrapper = styled.div`
-  position: relative;
   overflow-x: scroll;
   padding: 1px;
 `

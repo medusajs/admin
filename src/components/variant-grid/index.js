@@ -5,6 +5,8 @@ import GridEditor from "./editors"
 import DefaultEditor from "./editors/default"
 import OptionEditor from "./editors/option"
 
+import Button from "../button"
+
 import {
   Th,
   Td,
@@ -34,7 +36,7 @@ const getColumns = (product, edit) => {
       editor: "option",
       option_id: o._id,
       formatter: variantOptions => {
-        return variantOptions.find(val => val.option_id === o._id).value
+        return (variantOptions.find(val => val.option_id === o._id) || {}).value
       },
     }))
 
@@ -77,7 +79,7 @@ const getColumns = (product, edit) => {
   }
 }
 
-const VariantGrid = ({ product, variants, onChange, edit }) => {
+const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
   const [dragEnd, setDragEnd] = useState()
   const [selectedCell, setSelectedCell] = useState({})
 
@@ -260,6 +262,31 @@ const VariantGrid = ({ product, variants, onChange, edit }) => {
                   )}
                 </Td>
               ))}
+              {onEdit && (
+                <Box
+                  as="td"
+                  sx={{
+                    padding: "4px",
+                    borderTop: "2px solid transparent",
+                    backgroundColor: "white",
+                    position: "sticky !important",
+                    right: 0,
+                  }}
+                >
+                  <Button
+                    onClick={() => onEdit(row)}
+                    variant="primary"
+                    fontSize={1}
+                    height="24px"
+                    sx={{
+                      lineHeight: "20px",
+                      height: "24px !important",
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </Box>
+              )}
             </tr>
           ))}
         </tbody>

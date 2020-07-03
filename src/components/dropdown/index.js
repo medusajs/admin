@@ -47,7 +47,7 @@ const DropdownItem = styled.a`
   cursor: pointer;
 `
 
-const Dropdown = ({ children, toggleText, ...props }) => {
+const Dropdown = ({ children, toggleText, sx, ...rest }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const ref = useRef(null)
@@ -76,10 +76,11 @@ const Dropdown = ({ children, toggleText, ...props }) => {
   return (
     <div style={{ position: "relative" }}>
       <Button
-        mr={3}
+        sx={sx}
         alignItems="center"
         variant="primary"
         onClick={() => handleOpen()}
+        {...rest}
       >
         {toggleText || <Ellipsis height="10px" />}
       </Button>

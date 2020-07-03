@@ -6,7 +6,7 @@ const OptionEditor = React.forwardRef(
   ({ onKeyDown, optionId, value, onChange }, ref) => {
     const editIndex = value.findIndex(val => optionId === val.option_id)
     let inputVal = ""
-    if (!editIndex !== -1) {
+    if (editIndex !== -1) {
       inputVal = value[editIndex].value
     }
 
@@ -15,6 +15,7 @@ const OptionEditor = React.forwardRef(
       const newValue = [...value]
       newValue[editIndex] = {
         ...newValue[editIndex],
+        option_id: optionId,
         value: element.value,
       }
 
