@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from "react"
-import styled from "@emotion/styled"
 import { Text, Flex, Box, Image } from "rebass"
 
-import { ReactComponent as Ellipsis } from "../../../assets/svg/ellipsis.svg"
 import testThumbnail from "./thumbnail-test.jpg"
 
-import Dropdown from "../../../components/dropdown"
 import Card from "../../../components/card"
-import Cta from "../../../components/cta"
-import Button from "../../../components/button"
-import Typography from "../../../components/typography"
-import Badge from "../../../components/badge"
+import Spinner from "../../../components/spinner"
 
-const LineItem = () => (
+import useMedusa from "../../../hooks/use-medusa"
+
+const LineItem = ({ lineItem }) => (
   <Flex pl={3} pt={3} alignItems="center">
     <Flex alignItems="center" pr={3}>
       <Image
@@ -22,24 +18,40 @@ const LineItem = () => (
           height: 50,
         }}
       />
-      <Text ml={3}>Lavender / Duvet / 220x180</Text>
+      <Text ml={3}>{lineItem.title}</Text>
     </Flex>
     <Flex px={3} py={3}>
-      <Text color="gray">1495 DKK</Text>
+      <Text color="gray">
+        {!Array.isArray(lineItem.content) && lineItem.content.unit_price}
+      </Text>
       <Text px={2} color="gray">
         {" "}
         x{" "}
       </Text>
-      <Text color="gray"> 1 </Text>
-      <Text pl={5}>1495 DKK</Text>
+      <Text color="gray">{lineItem.quantity}</Text>
+      <Text pl={5}>
+        {!Array.isArray(lineItem.content) &&
+          lineItem.content.unit_price * lineItem.quantity}
+      </Text>
     </Flex>
   </Flex>
 )
 
-const OrderDetails = () => {
+const OrderDetails = ({ id }) => {
+  const { order, isLoading } = useMedusa("orders", { id })
+
   const dropdownOptions = [
     { label: "lol", onClick: () => console.log("ROFLMAO") },
   ]
+
+  if (isLoading) {
+    return (
+      <Flex flexDirection="column" mb={5}>
+        <Spinner dark />
+      </Flex>
+    )
+  }
+
   return (
     <Flex flexDirection="column" mb={5}>
       <Card mb={2}>
@@ -53,11 +65,11 @@ const OrderDetails = () => {
             },
           }}
         >
-          #42
+          {order._id}
         </Card.Header>
         <Box>
           <Text p={3} fontWeight="bold">
-            4485.00 DKK
+            3000 DKK (ADD TOTAL HERE)
           </Text>
         </Box>
         <Card.Body>
@@ -72,14 +84,14 @@ const OrderDetails = () => {
             <Text pb={1} color="gray">
               Customer
             </Text>
-            <Text>oliver@medusa.com</Text>
+            <Text>{order.email}</Text>
           </Box>
           <Card.VerticalDivider mx={3} />
           <Box pl={3} pr={2}>
             <Text pb={1} color="gray">
               Payment
             </Text>
-            <Text>Stripe</Text>
+            <Text>{order.payment_method.provider_id}</Text>
           </Box>
         </Card.Body>
       </Card>
@@ -87,15 +99,13 @@ const OrderDetails = () => {
       <Card mb={2}>
         <Card.Header dropdownOptions={dropdownOptions}>Items</Card.Header>
         <Card.Body flexDirection="column">
-          {Array(3)
-            .fill(0)
-            .map(lineItem => (
-              <LineItem />
-            ))}
+          {order.items.map((lineItem, i) => (
+            <LineItem key={i} lineItem={lineItem} />
+          ))}
 
           <Flex px={3} pt={3}>
             <Text pr={5}>Total</Text>
-            <Text>4.485 DKK</Text>
+            <Text>4.485 DKK (ADD SUBTOTAL HERE)</Text>
           </Flex>
         </Card.Body>
       </Card>
