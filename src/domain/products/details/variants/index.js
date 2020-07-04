@@ -126,7 +126,9 @@ const Variants = ({
           )}
         </Card.Body>
         <Card.Footer px={3} justifyContent="flex-end">
-          <Button type="submit">Save</Button>
+          <Button variant={"cta"} type="submit">
+            Save
+          </Button>
         </Card.Footer>
       </Card>
       {showAddOption && (

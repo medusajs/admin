@@ -98,7 +98,9 @@ export const theme = {
       },
     },
     primary: {
+      height: "30px",
       color: "dark",
+      fontSize: "16px",
       backgroundColor: "lightest",
       border: 0,
       outline: 0,
@@ -154,6 +156,7 @@ export const theme = {
       color: "white",
       backgroundColor: "medusaGreen",
       fontWeight: 600,
+      fontSize: "16px",
 
       border: 0,
       outline: 0,
