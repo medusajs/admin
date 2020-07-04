@@ -131,9 +131,9 @@ const Variants = ({
       </Card>
       {showAddOption && (
         <NewOption
+          optionMethods={optionMethods}
           options={product.options}
           onClick={() => setShowAddOption(null)}
-          onSubmit={handleCreateOption}
         />
       )}
       {editVariant && (
