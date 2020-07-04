@@ -9,7 +9,13 @@ import useMedusa from "../../../hooks/use-medusa"
 
 const ProductDetail = ({ id }) => {
   const details = useForm()
-  const { product, isLoading, update } = useMedusa("products", { id })
+  const {
+    product,
+    variants,
+    options,
+    isLoading,
+    update,
+  } = useMedusa("products", { id })
 
   const handleDetailsSubmit = data => {
     update(data)
@@ -28,6 +34,8 @@ const ProductDetail = ({ id }) => {
       />
       <Variants
         edit
+        optionMethods={options}
+        variantMethods={variants}
         product={product}
         isLoading={isLoading}
         onChange={vs => setVariants(vs)}

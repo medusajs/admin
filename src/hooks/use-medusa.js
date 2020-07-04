@@ -43,6 +43,13 @@ const useMedusa = (endpoint, query) => {
     isLoading,
   }
 
+  if (subcomponent.update && query && query.id) {
+    value.update = updateData =>
+      subcomponent.update(query.id, updateData).then(({ data }) => {
+        setResult(data)
+      })
+  }
+
   switch (endpoint) {
     case "store":
       value.update = updateData => {
@@ -59,13 +66,71 @@ const useMedusa = (endpoint, query) => {
           setResult(data)
         })
       break
-    default:
-      if (subcomponent.update && query && query.id) {
-        value.update = updateData =>
-          subcomponent.update(query.id, updateData).then(({ data }) => {
-            setResult(data)
-          })
+    case "products":
+      if (query && query.id) {
+        const variantMethods = {
+          create: variant => {
+            return subcomponent.variants
+              .create(query.id, variant)
+              .then(({ data }) => {
+                setResult(data)
+              })
+          },
+          retrieve: variantId => {
+            return subcomponent.variants
+              .retrieve(query.id, variantId)
+              .then(({ data }) => {
+                setResult(data)
+              })
+          },
+          update: (variantId, update) => {
+            return subcomponent.variants
+              .update(query.id, variantId, update)
+              .then(({ data }) => {
+                setResult(data)
+              })
+          },
+          delete: variantId => {
+            return subcomponent.variants
+              .delete(query.id, variantId)
+              .then(({ data }) => {
+                setResult(data)
+              })
+          },
+          list: () => {
+            return subcomponent.variants.delete(query.id)
+          },
+        }
+        value.variants = variantMethods
+
+        const optionMethods = {
+          create: option => {
+            return subcomponent.options
+              .create(query.id, option)
+              .then(({ data }) => {
+                setResult(data)
+              })
+          },
+          update: (optionId, update) => {
+            return subcomponent.options
+              .update(query.id, optionId, update)
+              .then(({ data }) => {
+                setResult(data)
+              })
+          },
+          delete: optionId => {
+            return subcomponent.options
+              .delete(query.id, optionId)
+              .then(({ data }) => {
+                setResult(data)
+              })
+          },
+        }
+        value.options = optionMethods
       }
+      break
+    default:
+      break
   }
 
   return value

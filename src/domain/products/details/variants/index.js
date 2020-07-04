@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { Text, Flex, Box } from "rebass"
 
-import VariantEditor from "./modal"
+import NewOption from "./option-edit"
+import VariantEditor from "./variant-editor"
 import VariantGrid from "../../../../components/variant-grid"
 import Button from "../../../../components/button"
 import Card from "../../../../components/card"
@@ -9,7 +10,14 @@ import Input from "../../../../components/input"
 import TextArea from "../../../../components/textarea"
 import Spinner from "../../../../components/spinner"
 
-const Variants = ({ product, isLoading, onSubmit }) => {
+const Variants = ({
+  product,
+  isLoading,
+  variantMethods,
+  optionMethods,
+  onSubmit,
+}) => {
+  const [showAddOption, setShowAddOption] = useState(false)
   const [editVariant, setEditVariant] = useState("")
   const [editIndex, setEditIndex] = useState("")
   const [variants, setVariants] = useState([])
@@ -29,7 +37,6 @@ const Variants = ({ product, isLoading, onSubmit }) => {
   }, [product, isLoading])
 
   const dropdownOptions = [
-    { label: "Add option...", onClick: () => console.log("New option") },
     {
       label: "Add variant",
       onClick: () =>
@@ -45,6 +52,12 @@ const Variants = ({ product, isLoading, onSubmit }) => {
           },
         ]),
     },
+    {
+      label: "Edit options...",
+      onClick: () => {
+        setShowAddOption(true)
+      },
+    },
   ]
 
   const handleSubmit = e => {
@@ -53,8 +66,8 @@ const Variants = ({ product, isLoading, onSubmit }) => {
     const payload = variants.map(v => ({
       _id: v._id,
       title: v.title,
-      sku: v.sku,
-      ean: v.ean,
+      sku: v.sku || undefined,
+      ean: v.ean || undefined,
       inventory_quantity: v.inventory_quantity,
       prices: v.prices.map(price => ({
         amount: parseFloat(price.amount),
@@ -70,9 +83,24 @@ const Variants = ({ product, isLoading, onSubmit }) => {
     onSubmit({ variants: payload })
   }
 
-  const handleVariantEdited = (data) => {
+  const handleVariantEdited = data => {
+    const newVs = [...variants]
+    newVs[editIndex] = {
+      ...newVs[editIndex],
+      ...data,
+    }
 
+    setVariants(newVs)
+    setEditVariant(null)
+  }
 
+  const handleDeleteVariant = () => {
+    variantMethods.delete(editVariant._id)
+    setEditVariant(null)
+  }
+
+  const handleCreateOption = data => {
+    optionMethods.create(data)
   }
 
   return (
@@ -101,11 +129,19 @@ const Variants = ({ product, isLoading, onSubmit }) => {
           <Button type="submit">Save</Button>
         </Card.Footer>
       </Card>
+      {showAddOption && (
+        <NewOption
+          options={product.options}
+          onClick={() => setShowAddOption(null)}
+          onSubmit={handleCreateOption}
+        />
+      )}
       {editVariant && (
         <VariantEditor
           variant={editVariant}
           options={product.options}
-          onSubmit={data => handleVariantEditted(data)}
+          onDelete={handleDeleteVariant}
+          onSubmit={data => handleVariantEdited(data)}
           onClick={() => setEditVariant(null)}
         />
       )}

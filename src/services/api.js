@@ -91,7 +91,7 @@ export default {
     },
 
     options: {
-      add(productId, option) {
+      create(productId, option) {
         const path = `/admin/products/${productId}/options`
         return medusaRequest("POST", path, option)
       },
