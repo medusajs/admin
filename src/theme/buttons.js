@@ -52,6 +52,7 @@ export const buttons = {
     color: "white",
     backgroundColor: "medusaGreen",
     fontWeight: 600,
+    fontSize: "22px",
 
     border: 0,
     outline: 0,

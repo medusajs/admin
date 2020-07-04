@@ -149,4 +149,50 @@ export default {
       return medusaRequest("POST", path, {})
     },
   },
+
+  discounts: {
+    create(discount) {
+      const path = `/admin/discounts`
+      return medusaRequest("POST", path, discount)
+    },
+
+    retrieve(discountId) {
+      const path = `/admin/discounts/${discountId}`
+      return medusaRequest("GET", path)
+    },
+
+    update(discountId, update) {
+      const path = `/admin/discounts/${discountId}`
+      return medusaRequest("POST", path, update)
+    },
+
+    delete(discountId) {
+      const path = `/admin/discounts/${discountId}`
+      return medusaRequest("POST", path, update)
+    },
+
+    list() {
+      const path = `/admin/orders`
+      return medusaRequest("GET", path)
+    },
+  },
+
+  discounts: {
+    retrieve(discountId) {
+      const path = `/admin/discounts/${discountId}`
+      return medusaRequest("GET", path)
+    },
+
+    list() {
+      const path = `/admin/discounts`
+      return medusaRequest("GET", path)
+    },
+  },
+
+  regions: {
+    list() {
+      const path = `/admin/regions`
+      return medusaRequest("GET", path)
+    },
+  },
 }

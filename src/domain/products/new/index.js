@@ -201,7 +201,7 @@ const NewProduct = ({}) => {
         <Button mr={2} variant={"primary"}>
           Save and add more
         </Button>
-        <Button variant={"secondary"} type="submit">
+        <Button variant={"cta"} type="submit">
           Save
         </Button>
       </Flex>
