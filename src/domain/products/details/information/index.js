@@ -24,7 +24,7 @@ const Information = ({ isLoading, product, onSubmit }) => {
   ]
 
   return (
-    <Card as="form" onSubmit={handleSubmit(onSubmit)}>
+    <Card as="form" onSubmit={handleSubmit(onSubmit)} mb={2}>
       <Card.Header dropdownOptions={dropdownOptions}>
         Product Information
       </Card.Header>

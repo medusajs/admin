@@ -100,5 +100,13 @@ export const TableHeaderCell = React.forwardRef((props, ref) => (
 ))
 
 export const TableDataCell = React.forwardRef((props, ref) => (
-  <Box ref={ref} as="td" variant="td" {...props} height="100%" width="100%" />
+  <Box
+    ref={ref}
+    as="td"
+    variant="td"
+    {...props}
+    height="100%"
+    width="100%"
+    sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+  />
 ))
