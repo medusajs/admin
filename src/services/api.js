@@ -172,18 +172,6 @@ export default {
     },
 
     list() {
-      const path = `/admin/orders`
-      return medusaRequest("GET", path)
-    },
-  },
-
-  discounts: {
-    retrieve(discountId) {
-      const path = `/admin/discounts/${discountId}`
-      return medusaRequest("GET", path)
-    },
-
-    list() {
       const path = `/admin/discounts`
       return medusaRequest("GET", path)
     },
