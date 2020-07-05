@@ -1963,6 +1963,11 @@
   resolved "https://registry.yarnpkg.com/@rebass/preset/-/preset-4.0.5.tgz#f4fb9bec85efa1eb658b92fc64fbb4250d0af2fb"
   integrity sha512-RsNZ6r6GjJj7dvis7J+fniekpzqGh+tQ+slIbSX0vUjoB9XTJrRHPnNAf2fcWJHxVfCbZWY1JNsuq3Fcdj1oJA==
 
+"@rooks/use-outside-click@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@rooks/use-outside-click/-/use-outside-click-3.6.0.tgz#4189dc16b92f13c25f1c8e161c8aef6945aff486"
+  integrity sha512-DDxdcD9bDDArV2tBmh5okaJNee/7EWaC5DsPrjTxIhhvXPpUatizcn2qYLcvX7y1vYpd64Wyqvkb87E6fsIfEQ==
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -8786,6 +8791,11 @@ globby@^6.1.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
+goober@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/goober/-/goober-1.8.0.tgz#ed97e40e87300c6d1c8304a9d4b0f1398ff7669a"
+  integrity sha512-9ZFoOkBccexjqIgcwlhq7C/eCSkgTZX0BdNUkOnBFLedrJgo3R8lp9ckd/qqtngtF/JDyXSxJzwMU98kNjZ4Mw==
+
 good-listener@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/good-listener/-/good-listener-1.2.2.tgz#d53b30cdf9313dffb7dc9a0d477096aa6d145c50"
@@ -13757,6 +13767,14 @@ react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+
+react-multi-select-component@^2.0.12:
+  version "2.0.12"
+  resolved "https://registry.yarnpkg.com/react-multi-select-component/-/react-multi-select-component-2.0.12.tgz#c24b76637f4b5f248d1a1b2be7c646bdf83db95b"
+  integrity sha512-QcOc8zQgz9AQQkX51EuDokqPi8BIRGBQdvnn1im3d1gsSIIY2W09jkvd9+/ByVk6NiL4XjygJtwCGJSGQcr3+A==
+  dependencies:
+    "@rooks/use-outside-click" "^3.6.0"
+    goober "^1.8.0"
 
 react-popper-tooltip@^2.8.3:
   version "2.11.1"

@@ -103,7 +103,7 @@ export default {
 
       update(productId, optionId, update) {
         const path = `/admin/products/${productId}/options/${optionId}`
-        return medusaRequest("DELETE", path, update)
+        return medusaRequest("POST", path, update)
       },
     },
   },
