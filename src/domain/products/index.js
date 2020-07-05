@@ -1,6 +1,6 @@
 import React from "react"
 import { navigate } from "gatsby"
-import { Flex, Text } from "rebass"
+import { Flex, Text, Box } from "rebass"
 import { Router } from "@reach/router"
 
 import Spinner from "../../components/spinner"
@@ -18,13 +18,20 @@ import New from "./new"
 import Details from "./details"
 
 import useMedusa from "../../hooks/use-medusa"
+import Button from "../../components/button"
 
 const ProductIndex = () => {
   const { products, isLoading } = useMedusa("products")
 
   return (
     <Flex flexDirection="column">
-      <Text mb={4}>Products</Text>
+      <Flex>
+        <Text mb={4}>Products</Text>
+        <Box ml="auto" />
+        <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
+          New product
+        </Button>
+      </Flex>
       {isLoading ? (
         <Spinner />
       ) : (

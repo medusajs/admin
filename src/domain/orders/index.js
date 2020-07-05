@@ -1,7 +1,7 @@
 import React from "react"
 import { navigate } from "gatsby"
 import { Router } from "@reach/router"
-import { Text, Box } from "rebass"
+import { Text, Box, Flex } from "rebass"
 import styled from "@emotion/styled"
 
 import Details from "./details"
@@ -17,6 +17,7 @@ import Badge from "../../components/badge"
 
 import useMedusa from "../../hooks/use-medusa"
 import Spinner from "../../components/spinner"
+import Button from "../../components/button"
 
 const OrderNumCell = styled(Text)`
   color: #006fbb;
@@ -32,7 +33,13 @@ const OrderIndex = ({}) => {
 
   return (
     <>
-      <Text mb={4}>Orders</Text>
+      <Flex>
+        <Text mb={4}>Orders</Text>
+        <Box ml="auto" />
+        <Button onClick={() => navigate(`/a/orders/new`)} variant={"cta"}>
+          New draft order
+        </Button>
+      </Flex>
       {isLoading ? (
         <Spinner />
       ) : (
