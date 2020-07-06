@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
 import _ from "lodash"
 import { useForm } from "react-hook-form"
-import { Label } from "@rebass/forms"
+import { Label, Radio } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Medusa from "../../../services/api"
 
@@ -51,9 +51,16 @@ const StyledMultiSelect = styled(MultiSelect)`
   }
 `
 
-const StyledLabel = styled.div`
+const StyledRadio = styled(Radio)`
   ${Typography.Base}
-  padding-bottom: 10px;
+`
+
+const StyledLabel = styled(Label)`
+  ${Typography.Base}
+
+  input[type="radio"]:checked ~ svg {
+    color: #79b28a;
+  }
 `
 
 const NewDiscount = ({}) => {
@@ -95,7 +102,9 @@ const NewDiscount = ({}) => {
       regions: data.regions || [],
     }
 
-    Medusa.discounts.create(discount)
+    console.log(discount)
+
+    // Medusa.discounts.create(discount)
   }
 
   if (isLoadingProducts || isLoadingRegions) {
@@ -115,9 +124,7 @@ const NewDiscount = ({}) => {
               placeholder="SUMMER10%"
               ref={register}
             />
-            <Label htmlFor="regions">
-              <StyledLabel>Choose valid regions</StyledLabel>
-            </Label>
+            <StyledLabel pb={2}>Choose valid regions</StyledLabel>
             <StyledMultiSelect
               options={regions.map(el => ({
                 label: el.name,
@@ -147,24 +154,61 @@ const NewDiscount = ({}) => {
             placeholder="10"
             ref={register}
           />
-          <Input
-            mb={3}
-            label="Type (fixed or percentage)"
-            name="discount_rule.type"
-            placeholder="percentage"
-            ref={register}
-          />
-          <Input
-            mb={3}
-            label="Allocation"
-            name="discount_rule.allocation"
-            ref={register}
-          />
-          <Label pb={0}>
-            <StyledLabel style={{ paddingBottom: 0 }}>
-              Choose valid products
-            </StyledLabel>
-          </Label>
+          <StyledLabel pb={2}>Type</StyledLabel>
+          <StyledLabel>
+            <Flex alignItems="center">
+              <StyledRadio
+                name="discount_rule.type"
+                id="percentage"
+                value="percentage"
+                ref={register}
+              />
+              <Text fontSize="12px" color="gray" height="100%">
+                Percentage
+              </Text>
+            </Flex>
+          </StyledLabel>
+          <StyledLabel mb={3} fontSize="10px" color="gray">
+            <Flex alignItems="center">
+              <StyledRadio
+                name="discount_rule.type"
+                id="fixed"
+                value="fixed"
+                ref={register}
+              />
+              <Text fontSize="12px" color="gray" height="100%">
+                Fixed amount
+              </Text>
+            </Flex>
+          </StyledLabel>
+          <StyledLabel pb={2}>Allocation</StyledLabel>
+          <StyledLabel fontSize="10px" color="gray">
+            <Flex alignItems="center">
+              <StyledRadio
+                name="discount_rule.allocation"
+                id="Total"
+                value="total"
+                ref={register}
+              />
+              <Text fontSize="12px" color="gray" height="100%">
+                Total (discount is applied to the total amount)
+              </Text>
+            </Flex>
+          </StyledLabel>
+          <StyledLabel mb={3} fontSize="10px" color="gray">
+            <Flex alignItems="center">
+              <StyledRadio
+                name="discount_rule.type"
+                id="item"
+                value="item"
+                ref={register}
+              />
+              <Text fontSize="12px" color="gray" height="100%">
+                Item (discount is applied to specific items)
+              </Text>
+            </Flex>
+          </StyledLabel>
+          <StyledLabel pb={0}>Choose valid products</StyledLabel>
           <Text fontSize="10px" color="gray">
             Leaving it empty will make the discount available for all products
           </Text>

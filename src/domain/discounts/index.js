@@ -1,6 +1,6 @@
 import React from "react"
 import { Router } from "@reach/router"
-import { Text, Box } from "rebass"
+import { Text, Box, Flex } from "rebass"
 import New from "./new"
 import Details from "./details"
 
@@ -17,13 +17,20 @@ import {
 import Spinner from "../../components/spinner"
 import Badge from "../../components/badge"
 import { navigate } from "gatsby"
+import Button from "../../components/button"
 
 const DiscountIndex = () => {
   const { discounts, isLoading } = useMedusa("discounts")
 
   return (
     <>
-      <Text mb={4}>Discounts</Text>
+      <Flex>
+        <Text mb={4}>Discounts</Text>
+        <Box ml="auto" />
+        <Button onClick={() => navigate(`/a/discounts/new`)} variant={"cta"}>
+          New discount
+        </Button>
+      </Flex>
       {isLoading ? (
         <Spinner />
       ) : (
