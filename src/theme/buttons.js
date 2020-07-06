@@ -27,6 +27,28 @@ export const buttons = {
       boxShadow: "buttonBoxShadowActive",
     },
   },
+  danger: {
+    minHeight: "28px",
+    fontWeight: "500",
+    color: "light",
+    fontSize: "14px",
+    lineHeight: "14px",
+    backgroundColor: "danger",
+    border: 0,
+    outline: 0,
+    paddingTop: "3px",
+    paddingBottom: "3px",
+    cursor: "pointer",
+    borderRadius: "3px",
+    boxShadow: "buttonBoxShadow",
+    "&:hover": {
+      color: "darkest",
+      boxShadow: "buttonBoxShadowHover",
+    },
+    "&:active": {
+      boxShadow: "buttonBoxShadowActive",
+    },
+  },
   primary: {
     minHeight: "28px",
     fontWeight: "500",

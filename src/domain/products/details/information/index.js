@@ -20,7 +20,11 @@ const Information = ({ isLoading, product, onSubmit }) => {
   }, [product, isLoading])
 
   const dropdownOptions = [
-    { label: "Delete product...", onClick: () => console.log("EDIT") },
+    {
+      variant: "danger",
+      label: "Delete product...",
+      onClick: () => console.log("EDIT"),
+    },
   ]
 
   return (

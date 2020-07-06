@@ -19,11 +19,25 @@ const EditShipping = ({
   onDelete,
   onClick,
 }) => {
-  const { register, setValue, reset, handleSubmit } = useForm()
+  const { control, register, setValue, reset, handleSubmit } = useForm()
   const { store, isLoading } = useMedusa("store")
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "requirements",
+  })
 
   useEffect(() => {
     reset(shippingOption)
+
+    if (shippingOption.requirements.length) {
+      shippingOption.requirements.map((r, index) => {
+        register({ name: `requirements.${index}.value` })
+        register({ name: `requirements.${index}.type` })
+
+        setValue(`requirements.${index}.value`, r.value)
+        setValue(`requirements.${index}.type`, r.type)
+      })
+    }
   }, [shippingOption])
 
   const handleDelete = () => {
@@ -42,6 +56,7 @@ const EditShipping = ({
         type: "flat_rate",
         amount: data.price.amount,
       },
+      requirements: data.requirements || [],
     }
 
     Medusa.shippingOptions.update(shippingOption._id, payload).then(() => {
@@ -80,7 +95,9 @@ const EditShipping = ({
             <Input mt={2} label="Name" name="name" ref={register} />
           </Box>
           <Box mb={4}>
-            <Text fontSize={1}>Price</Text>
+            <Text fontSize={1} fontWeight={300} mb={1}>
+              Price
+            </Text>
             <CurrencyInput
               ref={register}
               label={"price"}
@@ -88,9 +105,52 @@ const EditShipping = ({
               currency={region.currency_code}
             />
           </Box>
+          <Flex mb={4} flexDirection="column">
+            <Text fontSize={1} fontWeight={300} mb={1}>
+              Requirement
+            </Text>
+            {fields.map((req, index) => (
+              <Flex justifyContent="space-between">
+                <Select
+                  mr={3}
+                  name={`requirements.${index}.type`}
+                  options={[
+                    {
+                      label: "Minimum subtotal",
+                      value: "min_subtotal",
+                    },
+                    {
+                      label: "Maximum subtotal",
+                      value: "max_subtotal",
+                    },
+                  ]}
+                  ref={register()}
+                />
+                <CurrencyInput
+                  height={"28px"}
+                  name={`requirements.${index}.value`}
+                  currency={region.currency_code}
+                  ref={register()}
+                />
+                <Text onClick={() => remove(0)} sx={{ cursor: "pointer" }}>
+                  &times;
+                </Text>
+              </Flex>
+            ))}
+            {fields.length === 0 && (
+              <Button
+                onClick={() => append({ type: "min_subtotal", value: "" })}
+                variant="primary"
+              >
+                + Add requirement
+              </Button>
+            )}
+          </Flex>
           <Box mb={4}>
             <Text fontSize={1}>Danger Zone</Text>
-            <Button onClick={handleDelete}>Delete Shipping Option</Button>
+            <Button onClick={handleDelete} variant="danger">
+              Delete Shipping Option
+            </Button>
           </Box>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">

@@ -19,8 +19,12 @@ const NewShipping = ({
   onDelete,
   onClick,
 }) => {
-  const { register, handleSubmit } = useForm()
+  const { control, register, handleSubmit } = useForm()
   const { store, isLoading } = useMedusa("store")
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "requirements",
+  })
 
   const handleSave = data => {
     const [providerIndex, optionIndex] = data.fulfillment_option.split(".")
@@ -29,6 +33,7 @@ const NewShipping = ({
       name: data.name,
       data: options[optionIndex],
       region_id: region._id,
+      requirements: data.requirements || [],
       price: {
         type: "flat_rate",
         amount: data.price.amount,
@@ -79,6 +84,47 @@ const NewShipping = ({
               currency={region.currency_code}
             />
           </Box>
+          <Flex mb={4} flexDirection="column">
+            <Text fontSize={1} fontWeight={300} mb={1}>
+              Requirement
+            </Text>
+            {fields.map((req, index) => (
+              <Flex justifyContent="space-between">
+                <Select
+                  mr={3}
+                  name={`requirements.${index}.type`}
+                  options={[
+                    {
+                      label: "Minimum subtotal",
+                      value: "min_subtotal",
+                    },
+                    {
+                      label: "Maximum subtotal",
+                      value: "max_subtotal",
+                    },
+                  ]}
+                  ref={register()}
+                />
+                <CurrencyInput
+                  height={"28px"}
+                  name={`requirements.${index}.value`}
+                  currency={region.currency_code}
+                  ref={register()}
+                />
+                <Text onClick={() => remove(0)} sx={{ cursor: "pointer" }}>
+                  &times;
+                </Text>
+              </Flex>
+            ))}
+            {fields.length === 0 && (
+              <Button
+                onClick={() => append({ type: "min_subtotal", value: "" })}
+                variant="primary"
+              >
+                + Add requirement
+              </Button>
+            )}
+          </Flex>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button type="submit" variant="primary">

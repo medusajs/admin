@@ -43,7 +43,9 @@ Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
       {dropdownOptions && dropdownOptions.length > 0 && (
         <Dropdown mr={3}>
           {dropdownOptions.map(o => (
-            <Text onClick={o.onClick}>{o.label}</Text>
+            <Text color={o.variant} onClick={o.onClick}>
+              {o.label}
+            </Text>
           ))}
         </Dropdown>
       )}
