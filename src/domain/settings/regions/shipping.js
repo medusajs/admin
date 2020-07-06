@@ -4,6 +4,7 @@ import { Flex, Text, Box } from "rebass"
 import useMedusa from "../../../hooks/use-medusa"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
+import Spinner from "../../../components/spinner"
 
 import NewShipping from "./new-shipping"
 
@@ -36,9 +37,11 @@ const Shipping = ({ region, fulfillmentMethods }) => {
           Shipping Options
         </Card.Header>
         <Card.Body flexDirection="column">
-          {shipping_options.map(option => (
-            <Flex px={3}>{option.name}</Flex>
-          ))}
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            shipping_options.map(option => <Flex px={3}>{option.name}</Flex>)
+          )}
         </Card.Body>
         <Card.Footer px={3} justifyContent="flex-end">
           <Button type="submit" variant="primary">
