@@ -11,35 +11,37 @@ const useMedusa = (endpoint, query) => {
     throw Error(`Endpoint: "${endpoint}", does not exist`)
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
+  const fetchData = async () => {
+    setLoading(true)
 
-      if (!query) {
-        if (subcomponent.list) {
-          const { data } = await subcomponent.list()
-          setResult(data)
-          setLoading(false)
-        } else {
-          const { data } = await subcomponent.retrieve()
-          setResult(data)
-          setLoading(false)
-        }
-      } else if (query.id) {
-        const { data } = await subcomponent.retrieve(query.id)
+    if (!query) {
+      if (subcomponent.list) {
+        const { data } = await subcomponent.list()
         setResult(data)
         setLoading(false)
-      } else if (!query.id && query.search) {
-        const { data } = await subcomponent.list(query.search)
+      } else {
+        const { data } = await subcomponent.retrieve()
         setResult(data)
         setLoading(false)
       }
+    } else if (query.id) {
+      const { data } = await subcomponent.retrieve(query.id)
+      setResult(data)
+      setLoading(false)
+    } else if (!query.id && query.search) {
+      const { data } = await subcomponent.list(query.search)
+      setResult(data)
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchData()
   }, [])
 
   let value = {
     ...result,
+    refresh: fetchData,
     isLoading,
   }
 

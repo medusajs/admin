@@ -155,9 +155,15 @@ export default {
       const path = `/admin/shipping-options`
       return medusaRequest("POST", path, shippingOption)
     },
+
     retrieve(id) {
       const path = `/admin/shipping-options/${id}`
-      return medusaRequest("POST", path, shippingOption)
+      return medusaRequest("POST", path)
+    },
+
+    delete(id) {
+      const path = `/admin/shipping-options/${id}`
+      return medusaRequest("DELETE", path)
     },
 
     list(search) {
@@ -212,9 +218,19 @@ export default {
       return medusaRequest("GET", path)
     },
 
+    create(region) {
+      const path = `/admin/regions`
+      return medusaRequest("POST", path, region)
+    },
+
     update(id, region) {
       const path = `/admin/regions/${id}`
       return medusaRequest("POST", path, region)
+    },
+
+    delete(id) {
+      const path = `/admin/regions/${id}`
+      return medusaRequest("DELETE", path)
     },
 
     fulfillmentOptions: {

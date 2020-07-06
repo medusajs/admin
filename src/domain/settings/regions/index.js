@@ -16,7 +16,10 @@ const Regions = () => {
     <Flex flexDirection="column">
       <Card>
         <Card.Header
-          action={{ label: "+ Add region", onClick: () => console.log("new") }}
+          action={{
+            label: "+ Add region",
+            onClick: () => navigate("a/settings/regions/new"),
+          }}
         >
           Regions
         </Card.Header>

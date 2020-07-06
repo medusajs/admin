@@ -30,6 +30,7 @@ const CurrencyInput = React.forwardRef(
     {
       edit,
       name,
+      label,
       currencyOptions,
       onCurrencySelected,
       onChange,

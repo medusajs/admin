@@ -11,34 +11,42 @@ import Select from "../../../components/select"
 import useMedusa from "../../../hooks/use-medusa"
 import Medusa from "../../../services/api"
 
-const NewShipping = ({
+const EditShipping = ({
+  shippingOption,
   fulfillmentOptions,
   region,
-  onCreated,
-  onSubmit,
+  onDone,
   onDelete,
   onClick,
 }) => {
-  const { register, handleSubmit } = useForm()
+  const { register, setValue, reset, handleSubmit } = useForm()
   const { store, isLoading } = useMedusa("store")
 
+  useEffect(() => {
+    reset(shippingOption)
+  }, [shippingOption])
+
+  const handleDelete = () => {
+    Medusa.shippingOptions.delete(shippingOption._id).then(() => {
+      if (onDone) {
+        onDone()
+      }
+      onClick()
+    })
+  }
+
   const handleSave = data => {
-    const [providerIndex, optionIndex] = data.fulfillment_option.split(".")
-    const { provider_id, options } = fulfillmentOptions[providerIndex]
     const payload = {
       name: data.name,
-      data: options[optionIndex],
-      region_id: region._id,
       price: {
         type: "flat_rate",
         amount: data.price.amount,
       },
-      provider_id,
     }
 
-    Medusa.shippingOptions.create(payload).then(() => {
-      if (onCreated) {
-        onCreated()
+    Medusa.shippingOptions.update(shippingOption._id, payload).then(() => {
+      if (onDone) {
+        onDone()
       }
       onClick()
     })
@@ -57,27 +65,32 @@ const NewShipping = ({
     <Modal onClick={onClick}>
       <Modal.Body as="form" onSubmit={handleSubmit(handleSave)}>
         <Modal.Header>
-          <Text>Add Shipping Option</Text>
+          <Text>Edit Shipping Option</Text>
         </Modal.Header>
         <Modal.Content flexDirection="column">
-          <Box mb={4}>
-            <Input mt={2} mb={3} label="Name" name="name" ref={register} />
+          <Box mb={3}>
+            <Text fontSize={2}>
+              Fulfillment Method
+              <Text fontSize={1} sx={{ fontWeight: "300" }}>
+                {shippingOption.data.id} via {shippingOption.provider_id}
+              </Text>
+            </Text>
           </Box>
           <Box mb={4}>
-            <Text mb={3}>Fulfillment Method</Text>
-            <Select
-              name="fulfillment_option"
-              options={options}
-              ref={register}
-            />
+            <Input mt={2} label="Name" name="name" ref={register} />
           </Box>
           <Box mb={4}>
-            <Text mb={3}>Price</Text>
+            <Text fontSize={1}>Price</Text>
             <CurrencyInput
               ref={register}
+              label={"price"}
               name={"price.amount"}
               currency={region.currency_code}
             />
+          </Box>
+          <Box mb={4}>
+            <Text fontSize={1}>Danger Zone</Text>
+            <Button onClick={handleDelete}>Delete Shipping Option</Button>
           </Box>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
@@ -90,4 +103,4 @@ const NewShipping = ({
   )
 }
 
-export default NewShipping
+export default EditShipping

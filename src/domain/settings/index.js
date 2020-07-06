@@ -7,6 +7,7 @@ import Card from "../../components/card"
 
 import Regions from "./regions"
 import RegionDetails from "./regions/details"
+import NewRegion from "./regions/new"
 import Details from "./details"
 import Currencies from "./currencies"
 
@@ -37,6 +38,7 @@ const Settings = () => (
     <Details path="details" />
     <Currencies path="currencies" />
     <Regions path="regions" />
+    <NewRegion path="regions/new" />
     <RegionDetails path="regions/:id" />
   </Router>
 )
