@@ -1,5 +1,6 @@
 import React from "react"
 import breakpoints from "./breakpoints"
+import buttons from "./buttons"
 import spacing from "./spacing"
 import shadows from "./shadows"
 import forms from "./forms"
@@ -7,9 +8,10 @@ import { ThemeProvider as Provider } from "emotion-theming"
 
 export const theme = {
   colors: {
-    primary: "#B27979",
+    primary: "#53725D",
     secondary: "#79B28A",
-    medusaGreen: "#3ecf8e",
+    medusaGreen: "#53725D",
+    muted: "#E3E8EE",
     lightest: "#fefefe",
     light: "#f0f0f0",
     dark: "#454545",
@@ -68,112 +70,7 @@ export const theme = {
     },
   },
   forms,
-  buttons: {
-    pillActive: {
-      cursor: "pointer",
-      backgroundColor: "transparent",
-      color: "dark",
-      height: "40px",
-      outline: 0,
-      borderRadius: "3px",
-      paddingTop: "3px",
-      paddingBottom: "3px",
-      boxShadow: "pillActive",
-      "&:focus": {
-        boxShadow: "pillActiveFocus",
-      },
-    },
-    pill: {
-      cursor: "pointer",
-      backgroundColor: "transparent",
-      color: "dark",
-      height: "40px",
-      outline: 0,
-      borderRadius: "3px",
-      paddingTop: "3px",
-      paddingBottom: "3px",
-      boxShadow: "pill",
-      "&:focus": {
-        boxShadow: "buttonBoxShadowActive",
-      },
-    },
-    primary: {
-      height: "30px",
-      color: "dark",
-      fontSize: "16px",
-      backgroundColor: "lightest",
-      border: 0,
-      outline: 0,
-      paddingTop: "3px",
-      paddingBottom: "3px",
-      cursor: "pointer",
-      borderRadius: "3px",
-      boxShadow: "buttonBoxShadow",
-      "&:hover": {
-        color: "darkest",
-        boxShadow: "buttonBoxShadowHover",
-      },
-      "&:active": {
-        boxShadow: "buttonBoxShadowActive",
-      },
-    },
-    green: {
-      height: "30px",
-      color: "lightest",
-      backgroundColor: "#53725D",
-      border: 0,
-      outline: 0,
-      paddingTop: "3px",
-      paddingBottom: "3px",
-      cursor: "pointer",
-      borderRadius: "3px",
-      "&:focus": {
-        boxShadow: "buttonBoxShadowFocus",
-      },
-      "&:active": {
-        boxShadow: "buttonBoxShadowActive",
-      },
-    },
-    secondary: {
-      height: "30px",
-      color: "light",
-      backgroundColor: "dark",
-      border: 0,
-      outline: 0,
-      paddingTop: "3px",
-      paddingBottom: "3px",
-      cursor: "pointer",
-      borderRadius: "3px",
-      "&:focus": {
-        boxShadow: "buttonBoxShadowFocus",
-      },
-      "&:active": {
-        boxShadow: "buttonBoxShadowActive",
-      },
-    },
-    cta: {
-      height: "30px",
-      color: "white",
-      backgroundColor: "medusaGreen",
-      fontWeight: 600,
-      fontSize: "16px",
-
-      border: 0,
-      outline: 0,
-
-      paddingTop: "3px",
-      paddingBottom: "3px",
-
-      cursor: "pointer",
-
-      borderRadius: "3px",
-      boxShadow: "ctaBoxShadow",
-
-      "&:hover": {
-        boxShadow: "ctaBoxShadowHover",
-      },
-    },
-  },
+  buttons,
 }
 
 export const ThemeProvider = ({ children }) => (

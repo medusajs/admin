@@ -129,6 +129,9 @@ const useMedusa = (endpoint, query) => {
         value.options = optionMethods
       }
       break
+    case "regions":
+      value.fulfillmentOptions = subcomponent.fulfillmentOptions
+      break
     default:
       break
   }

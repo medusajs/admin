@@ -150,6 +150,30 @@ export default {
     },
   },
 
+  shippingOptions: {
+    create(shippingOption) {
+      const path = `/admin/shipping-options`
+      return medusaRequest("POST", path, shippingOption)
+    },
+    retrieve(id) {
+      const path = `/admin/shipping-options/${id}`
+      return medusaRequest("POST", path, shippingOption)
+    },
+
+    list(search) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      const path = `/admin/shipping-options${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+
+    update(id, update) {
+      const path = `/admin/shipping-options/${id}`
+      return medusaRequest("POST", path, update)
+    },
+  },
+
   discounts: {
     create(discount) {
       const path = `/admin/discounts`
@@ -181,6 +205,23 @@ export default {
     list() {
       const path = `/admin/regions`
       return medusaRequest("GET", path)
+    },
+
+    retrieve(id) {
+      const path = `/admin/regions/${id}`
+      return medusaRequest("GET", path)
+    },
+
+    update(id, region) {
+      const path = `/admin/regions/${id}`
+      return medusaRequest("POST", path, region)
+    },
+
+    fulfillmentOptions: {
+      list(regionId) {
+        const path = `/admin/regions/${regionId}/fulfillment-options`
+        return medusaRequest("GET", path)
+      },
     },
   },
 }

@@ -11,7 +11,6 @@ const StyledInput = styled(Input)`
     `
   max-width: 350px;
   flex-grow: 1;
-  margin-left: 5px;
   `}
 `
 
@@ -29,7 +28,7 @@ const StyledLabel = styled.div`
 `
 
 const InputField = React.forwardRef(
-  ({ placeholder, inline, label, name, type, ...props }, ref) => {
+  ({ placeholder, step, min, max, inline, label, name, type, ...props }, ref) => {
     return (
       <Flex
         alignItems={inline && "center"}
@@ -51,6 +50,9 @@ const InputField = React.forwardRef(
           variant="input"
           name={name}
           type={type}
+          min={min}
+          max={max}
+          step={step || "1"}
           placeholder={placeholder ? placeholder : "Placeholder"}
         />
       </Flex>

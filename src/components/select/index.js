@@ -62,7 +62,7 @@ const Select = React.forwardRef(
         >
           {options.map((option, index) => (
             <option key={index} value={option.value}>
-              {option.lable || option.value}
+              {option.label || option.value}
             </option>
           ))}
         </StyledSelect>
