@@ -39,7 +39,7 @@ const Container = styled(Flex)`
   }
 `
 
-const ImageUpload = ({ label, name }) => {
+const ImageUpload = ({ label, name, onChange }) => {
   const [focus, setFocus] = useState(false)
   const dropRef = useRef()
   const inputRef = useRef()
@@ -56,7 +56,6 @@ const ImageUpload = ({ label, name }) => {
   const handleUnhighlight = e => {
     e.stopPropagation()
     e.preventDefault()
-    console.log(e)
     setFocus(false)
   }
 
@@ -70,8 +69,6 @@ const ImageUpload = ({ label, name }) => {
 
     const transfer = e.dataTransfer
     const files = transfer.files
-
-    console.log(files)
 
     handleUnhighlight()
   }
@@ -94,7 +91,14 @@ const ImageUpload = ({ label, name }) => {
         justifyContent="center"
         alignItems="center"
       >
-        <input ref={inputRef} name={name} type="file" accept="image/*" />
+        <input
+          multiple
+          ref={inputRef}
+          onChange={onChange}
+          name={name}
+          type="file"
+          accept="image/*"
+        />
         <div>Upload</div>
       </Container>
     </Flex>

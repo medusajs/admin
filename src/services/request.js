@@ -14,6 +14,16 @@ export default function medusaRequest(method, path = "", payload = {}) {
     data: payload,
     json: true,
   }
-
   return client(options)
+}
+
+export const multipartRequest = (path, payload) => {
+  const options = {
+    withCredentials: true,
+    headers: {
+      "content-type": "multipart/form-data",
+    },
+  }
+
+  return client.post(path, payload, options)
 }

@@ -1,4 +1,4 @@
-import medusaRequest from "./request"
+import medusaRequest, { multipartRequest } from "./request"
 
 export default {
   auth: {
@@ -238,6 +238,17 @@ export default {
         const path = `/admin/regions/${regionId}/fulfillment-options`
         return medusaRequest("GET", path)
       },
+    },
+  },
+
+  uploads: {
+    create(files) {
+      const formData = new FormData()
+      for (const f of files) {
+        formData.append("files", f)
+      }
+
+      return multipartRequest("/admin/uploads", formData)
     },
   },
 }

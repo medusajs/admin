@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react"
+import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
 import { Text, Flex, Box } from "rebass"
+import { navigate } from "gatsby"
 
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
@@ -14,11 +16,35 @@ import Medusa from "../../../services/api"
 
 import { getCombinations } from "./utils/get-combinations"
 
+const StyledImageBox = styled(Flex)`
+  padding: 20px;
+  flex-wrap: wrap;
+  .img-container {
+    border: 1px solid black;
+    background-color: ${props => props.theme.colors.light};
+    height: 50px;
+    width: 50px;
+
+    &:first-of-type {
+      height: 230px;
+      width: 100%;
+      object-fit: contain;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+`
+
 const NewProduct = ({}) => {
   const [hasVariants, setHasVariants] = useState(true)
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])
-  const { register, handleSubmit, setValue } = useForm()
+  const [images, setImages] = useState([])
+  const { register, handleSubmit, reset, setValue } = useForm()
 
   /**
    * Will be called everytime an option has changed. It will then recalculate
@@ -88,8 +114,9 @@ const NewProduct = ({}) => {
     ])
   }
 
-  const submit = data => {
-    const product = {
+  const parseProduct = data => {
+    return {
+      images,
       title: data.title,
       description: data.description,
       options: options.map(o => ({ title: o.name })),
@@ -107,8 +134,28 @@ const NewProduct = ({}) => {
         options: v.options.map(o => ({ value: o })),
       })),
     }
+  }
 
-    Medusa.products.create(product)
+  const onAddMore = data => {
+    const product = parseProduct(data)
+    Medusa.products.create(product).then(({ data }) => {
+      reset()
+      setVariants([])
+      setOptions([])
+    })
+  }
+
+  const submit = data => {
+    const product = parseProduct(data)
+    Medusa.products.create(product).then(({ data }) => {
+      navigate(`a/products/${data.product._id}`)
+    })
+  }
+
+  const onImageChange = e => {
+    Medusa.uploads.create(e.target.files).then(({ data }) => {
+      setImages(data.uploads.map(({ url }) => url))
+    })
   }
 
   return (
@@ -137,7 +184,16 @@ const NewProduct = ({}) => {
           </Flex>*/}
         </Box>
         <Flex justifyContent="center" width={3 / 7}>
-          <ImageUpload name="images" label="Images" />
+          <StyledImageBox>
+            {images.map(url => (
+              <div className="img-container">
+                <Box as="img" src={url} sx={{}} />
+              </div>
+            ))}
+          </StyledImageBox>
+          {!images.length && (
+            <ImageUpload onChange={onImageChange} name="files" label="Images" />
+          )}
         </Flex>
       </Flex>
       {hasVariants ? (
@@ -161,12 +217,13 @@ const NewProduct = ({}) => {
                   />
                 </Box>
                 <Box>
-                  <Button
-                    variant="primary"
+                  <Text
+                    fontSize={4}
                     onClick={() => handleRemoveOption(index)}
+                    sx={{ cursor: "pointer", height: "28px" }}
                   >
-                    Remove
-                  </Button>
+                    &times;
+                  </Text>
                 </Box>
               </Flex>
             ))}
@@ -198,7 +255,7 @@ const NewProduct = ({}) => {
       )}
 
       <Flex pt={5}>
-        <Button mr={2} variant={"primary"}>
+        <Button mr={2} onClick={handleSubmit(onAddMore)} variant={"primary"}>
           Save and add more
         </Button>
         <Button variant={"cta"} type="submit">

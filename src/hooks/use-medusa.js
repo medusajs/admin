@@ -52,6 +52,10 @@ const useMedusa = (endpoint, query) => {
       })
   }
 
+  if (subcomponent.delete && query && query.id) {
+    value.delete = () => subcomponent.delete(query.id)
+  }
+
   switch (endpoint) {
     case "store":
       value.update = updateData => {

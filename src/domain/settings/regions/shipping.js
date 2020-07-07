@@ -39,6 +39,15 @@ const Shipping = ({ region, fulfillmentMethods }) => {
     },
   ]
 
+  const prettify = (snakeCase, cap = true) => {
+    const parts = snakeCase.split("_")
+    if (!cap) {
+      return parts.join(" ")
+    }
+    const capParts = parts.map(w => w[0].toUpperCase() + w.slice(1))
+    return capParts.join(" ")
+  }
+
   return (
     <>
       <Card>
@@ -62,7 +71,27 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                   borderColor: "muted",
                 }}
               >
-                {option.name}
+                <Box>
+                  <Text>
+                    {option.name} ({option.data.name})
+                  </Text>
+                  <Text>
+                    {prettify(option.price.type)}
+                    {option.price.amount !== undefined &&
+                      ` — ${region.currency_code} ${option.price.amount}`}
+                  </Text>
+                  <Text>
+                    {!!option.requirements
+                      ? option.requirements.map(r => {
+                          return `Order must have a ${prettify(
+                            r.type,
+                            false
+                          )} of ${region.currency_code} ${r.value}`
+                        })
+                      : "No requirements"}
+                  </Text>
+                </Box>
+
                 <Button variant="primary" onClick={() => setEditOption(option)}>
                   Edit
                 </Button>

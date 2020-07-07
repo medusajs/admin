@@ -8,7 +8,7 @@ import Input from "../../../../components/input"
 import TextArea from "../../../../components/textarea"
 import Spinner from "../../../../components/spinner"
 
-const Information = ({ isLoading, product, onSubmit }) => {
+const Information = ({ isLoading, product, onSubmit, onDelete }) => {
   const { register, reset, handleSubmit } = useForm()
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const Information = ({ isLoading, product, onSubmit }) => {
     {
       variant: "danger",
       label: "Delete product...",
-      onClick: () => console.log("EDIT"),
+      onClick: () => onDelete(),
     },
   ]
 

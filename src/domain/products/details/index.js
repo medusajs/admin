@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { Text, Flex, Box } from "rebass"
+import { navigate } from "gatsby"
 
 import Information from "./information"
 import Variants from "./variants"
@@ -14,8 +15,13 @@ const ProductDetail = ({ id }) => {
     variants,
     options,
     isLoading,
+    delete: productDelete,
     update,
   } = useMedusa("products", { id })
+
+  const handleProductDelete = () => {
+    productDelete().then(() => navigate("a/products"))
+  }
 
   const handleDetailsSubmit = data => {
     update(data)
@@ -31,6 +37,7 @@ const ProductDetail = ({ id }) => {
         product={product}
         isLoading={isLoading}
         onSubmit={handleDetailsSubmit}
+        onDelete={handleProductDelete}
       />
       <Variants
         edit
