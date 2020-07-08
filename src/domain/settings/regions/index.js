@@ -18,7 +18,7 @@ const Regions = () => {
         <Card.Header
           action={{
             label: "+ Add region",
-            onClick: () => navigate("a/settings/regions/new"),
+            onClick: () => navigate("/a/settings/regions/new"),
           }}
         >
           Regions
@@ -58,7 +58,7 @@ const Regions = () => {
                 <Box>
                   <Button
                     variant="primary"
-                    onClick={() => navigate(`a/settings/regions/${r._id}`)}
+                    onClick={() => navigate(`/a/settings/regions/${r._id}`)}
                   >
                     Edit
                   </Button>

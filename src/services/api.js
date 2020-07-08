@@ -16,6 +16,16 @@ export default {
       // return medusaRequest("DELETE", path)
     },
   },
+  customers: {
+    retrieve(customerId) {
+      const path = `/admin/customers/${customerId}`
+      return medusaRequest("GET", path)
+    },
+    list() {
+      const path = `/admin/customers`
+      return medusaRequest("GET", path)
+    },
+  },
   store: {
     retrieve() {
       const path = `/admin/store`

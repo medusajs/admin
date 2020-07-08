@@ -65,9 +65,9 @@ const Sidebar = ({}) => {
           <LogoInline height={10} />
         </InlineLogoContainer>
         <InlineLogoContainer mx={1}>
-          <Link to="a/settings">
+          <StyledLink variant="nav" to="/a/settings">
             <Settings />
-          </Link>
+          </StyledLink>
         </InlineLogoContainer>
       </Flex>
     </Container>
