@@ -6,7 +6,7 @@ import Spinner from "../../../components/spinner"
 
 import useMedusa from "../../../hooks/use-medusa"
 
-const CustomerDetails = ({ id }) => {
+const CustomerDetail = ({ id }) => {
   const { customer, isLoading } = useMedusa("customers", { id })
 
   if (isLoading) {
@@ -20,16 +20,7 @@ const CustomerDetails = ({ id }) => {
   return (
     <Flex flexDirection="column" mb={5}>
       <Card mb={2}>
-        <Card.Header
-          action={{
-            label: "Disable",
-            onClick: () => {
-              console.log("complete")
-            },
-          }}
-        >
-          {customer._id}
-        </Card.Header>
+        <Card.Header>{customer._id}</Card.Header>
         <Box>
           <Text p={3} fontWeight="bold">
             {customer.email}
@@ -60,4 +51,4 @@ const CustomerDetails = ({ id }) => {
   )
 }
 
-export default CustomerDetails
+export default CustomerDetail
