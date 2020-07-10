@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 
+import moment from "moment"
+
 import testThumbnail from "./thumbnail-test.jpg"
 
 import Card from "../../../components/card"
 import Spinner from "../../../components/spinner"
 
+import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 
 const LineItem = ({ lineItem }) => (
@@ -56,12 +59,12 @@ const OrderDetails = ({ id }) => {
     <Flex flexDirection="column" mb={5}>
       <Card mb={2}>
         <Card.Header
-          badge={{ label: "Pending" }}
+          badge={{ label: order.status }}
           dropdownOptions={dropdownOptions}
           action={{
             label: "Complete Order",
             onClick: () => {
-              console.log("complete")
+              Medusa.orders.completeOrder(order._id)
             },
           }}
         >
@@ -69,7 +72,7 @@ const OrderDetails = ({ id }) => {
         </Card.Header>
         <Box>
           <Text p={3} fontWeight="bold">
-            3000 DKK (ADD TOTAL HERE)
+            {order.total} {order.region.currency_code}
           </Text>
         </Box>
         <Card.Body>
@@ -77,7 +80,7 @@ const OrderDetails = ({ id }) => {
             <Text pb={1} color="gray">
               Date
             </Text>
-            <Text>Thursday, 25 June 2020 at 11.52</Text>
+            <Text>{moment(order.created).format("MMMM Do YYYY, h:mm:ss")}</Text>
           </Box>
           <Card.VerticalDivider mx={3} />
           <Box pl={3} pr={2}>
@@ -105,19 +108,16 @@ const OrderDetails = ({ id }) => {
 
           <Flex px={3} pt={3}>
             <Text pr={5}>Total</Text>
-            <Text>4.485 DKK (ADD SUBTOTAL HERE)</Text>
+            <Text>
+              {order.subtotal} {order.region.currency_code}
+            </Text>
           </Flex>
         </Card.Body>
       </Card>
       {/* PAYMENT */}
       <Card mb={2}>
         <Card.Header
-          badge={{ label: "Awaiting" }}
-          action={{
-            label: "Capture",
-            type: "primary",
-            onClick: () => console.log("Capture"),
-          }}
+          badge={{ label: order.payment_status }}
           dropdownOptions={dropdownOptions}
         >
           Payment
@@ -134,22 +134,25 @@ const OrderDetails = ({ id }) => {
             <Text pt={2}>Total</Text>
           </Box>
           <Box px={3}>
-            <Text>4485.00 DKK</Text>
-            <Text pt={1}>FREE</Text>
-            <Text pt={1}>846.25 DKK</Text>
-            <Text pt={2}>4485.00 DKK</Text>
+            <Text>
+              {order.subtotal} {order.region.currency_code}
+            </Text>
+            <Text pt={1}>
+              {order.shipping_total} {order.region.currency_code}
+            </Text>
+            <Text pt={1}>
+              {order.tax_total} {order.region.currency_code}
+            </Text>
+            <Text pt={2}>
+              {order.total} {order.region.currency_code}
+            </Text>
           </Box>
         </Card.Body>
       </Card>
       {/* FULFILLMENT */}
       <Card mb={2}>
         <Card.Header
-          badge={{ label: "Not fulfilled" }}
-          action={{
-            label: "Fulfill",
-            type: "primary",
-            onClick: () => console.log("Fulfill"),
-          }}
+          badge={{ label: order.fulfillment_status }}
           dropdownOptions={dropdownOptions}
         >
           Fulfillment
@@ -175,24 +178,28 @@ const OrderDetails = ({ id }) => {
         <Card.Body>
           <Box px={3}>
             <Text color="gray">Contact</Text>
-            <Text pt={3}>Oliver Juhl</Text>
-            <Text pt={2}>oliver@medusa.com</Text>
+            <Text pt={3}>
+              {order.first_name} {order.last_name}
+            </Text>
+            <Text pt={2}>{order.email}</Text>
           </Box>
           <Card.VerticalDivider mx={3} />
           <Box px={3}>
             <Text color="gray">Shipping</Text>
-            <Text pt={3}>Att.: Tekla</Text>
-            <Text pt={2}>Frederiksholm Kanal 4</Text>
-            <Text pt={2}>1220 Copenhagen</Text>
-            <Text pt={2}>Denmark</Text>
+            <Text pt={3}>{order.shipping_address.address_1}</Text>
+            <Text pt={2}>
+              {order.shipping_address.postal_code} {order.shipping_address.city}
+            </Text>
+            <Text pt={2}>{order.shipping_address.country}</Text>
           </Box>
           <Card.VerticalDivider mx={3} />
           <Box px={3}>
             <Text color="gray">Billing</Text>
-            <Text pt={3}>Oliver Windall Juhl</Text>
-            <Text pt={2}>Faksegade 7, 5. th</Text>
-            <Text pt={2}>2100 Copenhagen</Text>
-            <Text pt={2}>Denmark</Text>
+            <Text pt={3}>{order.billing_address.address_1}</Text>
+            <Text pt={2}>
+              {order.billing_address.postal_code} {order.billing_address.city}
+            </Text>
+            <Text pt={2}>{order.billing_address.country}</Text>
           </Box>
         </Card.Body>
       </Card>
