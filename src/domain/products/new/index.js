@@ -148,7 +148,7 @@ const NewProduct = ({}) => {
   const submit = data => {
     const product = parseProduct(data)
     Medusa.products.create(product).then(({ data }) => {
-      navigate(`a/products/${data.product._id}`)
+      navigate(`/a/products/${data.product._id}`)
     })
   }
 

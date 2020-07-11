@@ -139,8 +139,13 @@ export default {
       return medusaRequest("GET", path)
     },
 
-    completeOrder(orderId) {
+    complete(orderId) {
       const path = `/admin/orders/${orderId}/complete`
+      return medusaRequest("POST", path, {})
+    },
+
+    archive(orderId) {
+      const path = `/admin/orders/${orderId}/archive`
       return medusaRequest("POST", path, {})
     },
 

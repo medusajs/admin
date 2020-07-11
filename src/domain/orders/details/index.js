@@ -41,7 +41,8 @@ const LineItem = ({ lineItem }) => (
 )
 
 const OrderDetails = ({ id }) => {
-  const { order, isLoading } = useMedusa("orders", { id })
+  const [isHandlingOrder, setIsHandlingOrder] = useState(false)
+  const { order, isLoading, refresh } = useMedusa("orders", { id })
 
   const dropdownOptions = [
     { label: "lol", onClick: () => console.log("ROFLMAO") },
@@ -49,8 +50,10 @@ const OrderDetails = ({ id }) => {
 
   if (isLoading) {
     return (
-      <Flex flexDirection="column" mb={5}>
-        <Spinner dark />
+      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
+        <Box height="75px" width="75px" mt="50%">
+          <Spinner dark />
+        </Box>
       </Flex>
     )
   }
@@ -61,12 +64,22 @@ const OrderDetails = ({ id }) => {
         <Card.Header
           badge={{ label: order.status }}
           dropdownOptions={dropdownOptions}
-          action={{
-            label: "Complete Order",
-            onClick: () => {
-              Medusa.orders.completeOrder(order._id)
-            },
-          }}
+          action={
+            order.status !== "archived" && {
+              type: "",
+              label: order.status === "completed" ? "Archive" : "Complete",
+              onClick: () => {
+                setIsHandlingOrder(true)
+                if (order.status === "completed") {
+                  Medusa.orders.archive(order._id).then(refresh)
+                } else if (order.status === "pending") {
+                  Medusa.orders.complete(order._id).then(refresh)
+                }
+                setIsHandlingOrder(false)
+              },
+              isLoading: isHandlingOrder,
+            }
+          }
         >
           {order._id}
         </Card.Header>

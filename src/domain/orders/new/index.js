@@ -70,9 +70,7 @@ const NewOrder = ({}) => {
   const { register, handleSubmit } = useForm()
 
   const { regions, isLoading: isLoadingRegions } = useMedusa("regions")
-  const { products, isLoading: isLoadingProducts } = useMedusa(
-    "products.variants"
-  )
+  const { products, isLoading: isLoadingProducts } = useMedusa("products")
 
   useEffect(() => {}, [])
 
@@ -224,4 +222,4 @@ const NewOrder = ({}) => {
   )
 }
 
-export default NewDiscount
+export default NewOrder

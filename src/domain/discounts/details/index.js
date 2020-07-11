@@ -12,8 +12,10 @@ const DiscountDetails = ({ id }) => {
 
   if (isLoading) {
     return (
-      <Flex flexDirection="column" mb={5}>
-        <Spinner dark />
+      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
+        <Box height="75px" width="75px" mt="50%">
+          <Spinner dark />
+        </Box>
       </Flex>
     )
   }

@@ -109,7 +109,11 @@ const Variants = ({
         <Card.Header dropdownOptions={dropdownOptions}>Variants</Card.Header>
         <Card.Body px={3}>
           {isLoading ? (
-            <Spinner />
+            <Flex flexDirection="column" alignItems="center" mt="auto" ml="50%">
+              <Box height="75px" width="75px">
+                <Spinner dark />
+              </Box>
+            </Flex>
           ) : (
             <Flex width={1} flexDirection={"column"}>
               <VariantGrid
