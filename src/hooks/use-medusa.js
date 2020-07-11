@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react"
+import { useToasts } from "react-toast-notifications"
 
 import Medusa from "../services/api"
+import ToastLabel from "../components/toast"
+import NotFound from "../components/not-found"
 
 const useMedusa = (endpoint, query) => {
   const [isLoading, setLoading] = useState(true)
+  const [didFail, setDidFail] = useState(false)
   const [result, setResult] = useState({})
+
+  const { addToast } = useToasts()
 
   const subcomponent = Medusa[endpoint]
   if (!subcomponent) {
@@ -13,26 +19,34 @@ const useMedusa = (endpoint, query) => {
 
   const fetchData = async () => {
     setLoading(true)
-
-    if (!query) {
-      if (subcomponent.list) {
-        const { data } = await subcomponent.list()
+    try {
+      if (!query) {
+        if (subcomponent.list) {
+          const { data } = await subcomponent.list()
+          setResult(data)
+          setLoading(false)
+        } else {
+          const { data } = await subcomponent.retrieve()
+          setResult(data)
+          setLoading(false)
+        }
+      } else if (query.id) {
+        const { data } = await subcomponent.retrieve(query.id)
         setResult(data)
         setLoading(false)
-      } else {
-        const { data } = await subcomponent.retrieve()
+      } else if (!query.id && query.search) {
+        const { data } = await subcomponent.list(query.search)
         setResult(data)
-        setLoading(false)
       }
-    } else if (query.id) {
-      const { data } = await subcomponent.retrieve(query.id)
-      setResult(data)
       setLoading(false)
-    } else if (!query.id && query.search) {
-      const { data } = await subcomponent.list(query.search)
-      setResult(data)
+    } catch (error) {
+      setDidFail(true)
       setLoading(false)
     }
+  }
+
+  const toaster = (text, type) => {
+    return addToast(<ToastLabel>{text}</ToastLabel>, { appearance: type })
   }
 
   useEffect(() => {
@@ -43,6 +57,8 @@ const useMedusa = (endpoint, query) => {
     ...result,
     refresh: fetchData,
     isLoading,
+    toaster,
+    didFail,
   }
 
   if (subcomponent.update && query && query.id) {

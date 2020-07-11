@@ -105,7 +105,7 @@ const Variants = ({
 
   return (
     <>
-      <Card as="form" onSubmit={handleSubmit}>
+      <Card as="form" onSubmit={handleSubmit} mb={2}>
         <Card.Header dropdownOptions={dropdownOptions}>Variants</Card.Header>
         <Card.Body px={3}>
           {isLoading ? (

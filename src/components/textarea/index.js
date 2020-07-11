@@ -11,7 +11,6 @@ const StyledTextArea = styled(Textarea)`
     `
   max-width: 350px;
   flex-grow: 1;
-  margin-left: 5px;
   `}
 `
 
