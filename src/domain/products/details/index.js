@@ -5,8 +5,10 @@ import { navigate } from "gatsby"
 
 import Information from "./information"
 import Variants from "./variants"
+import Images from "./images"
 
 import useMedusa from "../../../hooks/use-medusa"
+import NotFound from "../../../components/not-found"
 
 const ProductDetail = ({ id }) => {
   const details = useForm()
@@ -17,10 +19,13 @@ const ProductDetail = ({ id }) => {
     isLoading,
     delete: productDelete,
     update,
+    refresh,
+    toaster,
+    didFail,
   } = useMedusa("products", { id })
 
   const handleProductDelete = () => {
-    productDelete().then(() => navigate("a/products"))
+    productDelete().then(() => navigate("/a/products"))
   }
 
   const handleDetailsSubmit = data => {
@@ -29,6 +34,10 @@ const ProductDetail = ({ id }) => {
 
   const handleVariantsSubmit = data => {
     update(data)
+  }
+
+  if (didFail) {
+    return <NotFound />
   }
 
   return (
@@ -47,6 +56,12 @@ const ProductDetail = ({ id }) => {
         isLoading={isLoading}
         onChange={vs => setVariants(vs)}
         onSubmit={handleVariantsSubmit}
+      />
+      <Images
+        product={product}
+        isLoading={isLoading}
+        refresh={refresh}
+        toaster={toaster}
       />
     </Flex>
   )

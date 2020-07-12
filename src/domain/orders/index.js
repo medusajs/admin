@@ -5,6 +5,7 @@ import { Text, Box, Flex } from "rebass"
 import styled from "@emotion/styled"
 
 import Details from "./details"
+import New from "./new"
 import {
   Table,
   TableBody,
@@ -99,6 +100,7 @@ const Orders = () => {
   return (
     <Router>
       <OrderIndex path="/" />
+      <New path="/new" />
       <Details path=":id" />
     </Router>
   )

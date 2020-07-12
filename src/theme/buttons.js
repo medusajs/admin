@@ -128,6 +128,29 @@ export const buttons = {
       boxShadow: "ctaBoxShadowHover",
     },
   },
+  delete: {
+    height: "30px",
+    color: "white",
+    backgroundColor: "#b02b13",
+    fontWeight: 600,
+    fontSize: "14px",
+    lineHeight: "14px",
+
+    border: 0,
+    outline: 0,
+
+    paddingTop: "3px",
+    paddingBottom: "3px",
+
+    cursor: "pointer",
+
+    borderRadius: "3px",
+    boxShadow: "ctaBoxShadow",
+
+    "&:hover": {
+      boxShadow: "ctaBoxShadowHover",
+    },
+  },
 }
 
 export default buttons

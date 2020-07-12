@@ -16,8 +16,38 @@ import Medusa from "../../../services/api"
 
 import { getCombinations } from "./utils/get-combinations"
 
+const Cross = styled.span`
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 5px;
+  cursor: pointer;
+`
+
+const ImageCardWrapper = styled(Box)`
+  position: relative;
+  display: inline-block;
+  height: 200px;
+  width: 200px;
+`
+
+const StyledImageCard = styled(Box)`
+  height: 200px;
+  width: 200px;
+
+  border: ${props => (props.selected ? "1px solid #53725D" : "none")};
+
+  object-fit: contain;
+
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 1px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.08) 0px 3px 9px 0px,
+    rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
+
+  border-radius: 3px;
+`
+
 const StyledImageBox = styled(Flex)`
-  padding: 20px;
   flex-wrap: wrap;
   .img-container {
     border: 1px solid black;
@@ -148,13 +178,20 @@ const NewProduct = ({}) => {
   const submit = data => {
     const product = parseProduct(data)
     Medusa.products.create(product).then(({ data }) => {
-      navigate(`a/products/${data.product._id}`)
+      navigate(`/a/products/${data.product._id}`)
     })
   }
 
   const onImageChange = e => {
     Medusa.uploads.create(e.target.files).then(({ data }) => {
-      setImages(data.uploads.map(({ url }) => url))
+      const uploaded = data.uploads.map(({ url }) => url)
+      setImages(images.concat(uploaded))
+    })
+  }
+
+  const handleImageDelete = url => {
+    Medusa.uploads.delete(url[0]).then(() => {
+      setImages(images.filter(im => im !== url))
     })
   }
 
@@ -183,18 +220,19 @@ const NewProduct = ({}) => {
             </Pill>
           </Flex>*/}
         </Box>
-        <Flex justifyContent="center" width={3 / 7}>
-          <StyledImageBox>
-            {images.map(url => (
-              <div className="img-container">
-                <Box as="img" src={url} sx={{}} />
-              </div>
-            ))}
-          </StyledImageBox>
-          {!images.length && (
-            <ImageUpload onChange={onImageChange} name="files" label="Images" />
-          )}
-        </Flex>
+      </Flex>
+      <Flex mb={3}>
+        <ImageUpload onChange={onImageChange} name="files" label="Images" />
+      </Flex>
+      <Flex mb={5}>
+        <StyledImageBox>
+          {images.map((url, i) => (
+            <ImageCardWrapper key={i} mr={3}>
+              <StyledImageCard key={i} as="img" src={url} sx={{}} />
+              <Cross onClick={() => handleImageDelete(url)}>&#x2715;</Cross>
+            </ImageCardWrapper>
+          ))}
+        </StyledImageBox>
       </Flex>
       {hasVariants ? (
         <>

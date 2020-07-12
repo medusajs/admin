@@ -14,6 +14,7 @@ import Typography from "../../../components/typography"
 
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
+import { navigate } from "gatsby"
 
 const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
@@ -102,11 +103,19 @@ const NewDiscount = ({}) => {
       regions: data.regions || [],
     }
 
-    return Medusa.discounts.create(discount)
+    Medusa.discounts.create(discount).then(() => {
+      navigate("/a/discounts")
+    })
   }
 
   if (isLoadingProducts || isLoadingRegions) {
-    return <Spinner />
+    return (
+      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
+        <Box height="75px" width="75px" mt="50%">
+          <Spinner dark />
+        </Box>
+      </Flex>
+    )
   }
 
   return (
@@ -161,7 +170,7 @@ const NewDiscount = ({}) => {
                 value="percentage"
                 ref={register}
               />
-              <Text fontSize="12px" color="gray" height="100%">
+              <Text fontSize="12px" color="gray">
                 Percentage
               </Text>
             </Flex>
@@ -174,7 +183,7 @@ const NewDiscount = ({}) => {
                 value="fixed"
                 ref={register}
               />
-              <Text fontSize="12px" color="gray" height="100%">
+              <Text fontSize="12px" color="gray">
                 Fixed amount
               </Text>
             </Flex>
@@ -188,7 +197,7 @@ const NewDiscount = ({}) => {
                 value="total"
                 ref={register}
               />
-              <Text fontSize="12px" color="gray" height="100%">
+              <Text fontSize="12px" color="gray">
                 Total (discount is applied to the total amount)
               </Text>
             </Flex>
@@ -201,7 +210,7 @@ const NewDiscount = ({}) => {
                 value="item"
                 ref={register}
               />
-              <Text fontSize="12px" color="gray" height="100%">
+              <Text fontSize="12px" color="gray">
                 Item (discount is applied to specific items)
               </Text>
             </Flex>
