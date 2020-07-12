@@ -102,9 +102,7 @@ const NewDiscount = ({}) => {
       regions: data.regions || [],
     }
 
-    console.log(discount)
-
-    // Medusa.discounts.create(discount)
+    return Medusa.discounts.create(discount)
   }
 
   if (isLoadingProducts || isLoadingRegions) {
