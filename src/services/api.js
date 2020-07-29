@@ -47,6 +47,12 @@ export default {
       return medusaRequest("DELETE", path)
     },
   },
+  shippingProfiles: {
+    list() {
+      const path = `/admin/shipping-profiles`
+      return medusaRequest("GET", path)
+    },
+  },
   products: {
     create(product) {
       const path = `/admin/products`
