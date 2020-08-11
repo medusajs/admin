@@ -28,7 +28,21 @@ const StyledLabel = styled.div`
 `
 
 const InputField = React.forwardRef(
-  ({ placeholder, step, min, max, inline, label, name, type, ...props }, ref) => {
+  (
+    {
+      placeholder,
+      defaultValue,
+      step,
+      min,
+      max,
+      inline,
+      label,
+      name,
+      type,
+      ...props
+    },
+    ref
+  ) => {
     return (
       <Flex
         alignItems={inline && "center"}
@@ -46,6 +60,7 @@ const InputField = React.forwardRef(
         )}
         <StyledInput
           ref={ref}
+          defaultValue={defaultValue}
           inline={inline}
           variant="input"
           name={name}

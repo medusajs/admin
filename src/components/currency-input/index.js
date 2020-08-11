@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react"
 import { Box, Flex, Text } from "rebass"
+import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Typography from "../typography"
 import Select from "../select"
@@ -11,6 +12,12 @@ const TextWrapper = styled(Text)`
 const CurrencyBox = styled(Box)`
   white-space: nowrap;
   color: gray;
+  ${props =>
+    props.inline &&
+    `
+  max-width: 350px;
+  flex-grow: 1;
+  `}
 `
 
 const StyledInput = styled.input`
@@ -25,12 +32,26 @@ const StyledInput = styled.input`
   }
 `
 
+const StyledLabel = styled.div`
+  ${Typography.Base}
+  ${props =>
+    props.inline
+      ? `
+  text-align: right;
+  padding-right: 15px;
+  `
+      : `
+  padding-bottom: 10px;
+  `}
+`
+
 const CurrencyInput = React.forwardRef(
   (
     {
       edit,
       name,
       label,
+      inline,
       currencyOptions,
       onCurrencySelected,
       onChange,
@@ -66,40 +87,57 @@ const CurrencyInput = React.forwardRef(
 
     return (
       <Flex
-        fontSize={1}
-        alignItems="center"
-        className={isFocused ? "tag__focus" : ""}
-        focused={isFocused}
-        variant="forms.input"
+        alignItems={inline && "center"}
+        flexDirection={inline ? "row" : "column"}
         {...props}
       >
-        <CurrencyBox
-          mr={edit && currencyOptions.length > 0 && "28px"}
-          lineHeight="1.5"
-          my={1}
-          ml={1}
+        {label && (
+          <Label
+            flex={"30% 0 0"}
+            maxWidth={"200px"}
+            htmlFor={name}
+            display={inline && "inline !important"}
+          >
+            <StyledLabel inline={inline}>{label}</StyledLabel>
+          </Label>
+        )}
+        <Flex
+          fontSize={1}
+          flex={"50% 0 0"}
+          alignItems="center"
+          className={isFocused ? "tag__focus" : ""}
+          focused={isFocused}
+          variant="forms.input"
         >
-          {edit && currencyOptions.length > 0 ? (
-            <Select
-              inline
-              width={"3.3rem"}
-              value={currency}
-              options={currencyOptions}
-              onChange={handleCurrencySelected}
-            />
-          ) : (
-            <TextWrapper>{currency}</TextWrapper>
-          )}
-        </CurrencyBox>
-        <StyledInput
-          ref={ref}
-          name={name}
-          value={value}
-          onBlur={handleBlur}
-          onFocus={handleFocus}
-          onChange={onChange}
-          type="number"
-        />
+          <CurrencyBox
+            mr={edit && currencyOptions.length > 0 && "28px"}
+            lineHeight="1.5"
+            my={1}
+            ml={1}
+          >
+            {edit && currencyOptions.length > 0 ? (
+              <Select
+                inline
+                width={"3.3rem"}
+                value={currency}
+                options={currencyOptions}
+                onChange={handleCurrencySelected}
+              />
+            ) : (
+              <TextWrapper>{currency}</TextWrapper>
+            )}
+          </CurrencyBox>
+          <StyledInput
+            ref={ref}
+            name={name}
+            value={value}
+            onBlur={handleBlur}
+            onFocus={handleFocus}
+            onChange={onChange}
+            step="0.01"
+            type="number"
+          />
+        </Flex>
       </Flex>
     )
   }

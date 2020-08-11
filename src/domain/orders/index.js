@@ -3,6 +3,7 @@ import { navigate } from "gatsby"
 import { Router } from "@reach/router"
 import { Text, Box, Flex } from "rebass"
 import styled from "@emotion/styled"
+import ReactTooltip from "react-tooltip"
 
 import Details from "./details"
 import New from "./new"
@@ -67,10 +68,16 @@ const OrderIndex = ({}) => {
                 key={i}
                 onClick={() => navigate(`/a/orders/${el._id}`)}
               >
+                <ReactTooltip id={el._id} place="top" effect="solid" />
                 <TableDataCell>
-                  <OrderNumCell>#{el._id}</OrderNumCell>
+                  <OrderNumCell>#{el.display_id}</OrderNumCell>
                 </TableDataCell>
-                <TableDataCell>{new Date().toDateString()}</TableDataCell>
+                <TableDataCell
+                  data-for={el._id}
+                  data-tip={new Date(el.created * 1).toTimeString()}
+                >
+                  {new Date(el.created * 1).toDateString()}
+                </TableDataCell>
                 <TableDataCell>{el.email}</TableDataCell>
                 <TableDataCell>
                   <Box>

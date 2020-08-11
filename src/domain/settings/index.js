@@ -10,6 +10,7 @@ import RegionDetails from "./regions/details"
 import NewRegion from "./regions/new"
 import Details from "./details"
 import Currencies from "./currencies"
+import Apps from "./apps"
 
 const SettingsIndex = () => {
   return (
@@ -38,6 +39,7 @@ const Settings = () => (
     <Details path="details" />
     <Currencies path="currencies" />
     <Regions path="regions" />
+    <Apps path="apps" />
     <NewRegion path="regions/new" />
     <RegionDetails path="regions/:id" />
   </Router>

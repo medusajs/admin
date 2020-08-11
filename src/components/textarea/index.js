@@ -10,7 +10,7 @@ const StyledTextArea = styled(Textarea)`
     props.inline &&
     `
   max-width: 350px;
-  flex-grow: 1;
+  flex: 50% 0 0;
   `}
 `
 
@@ -37,6 +37,7 @@ const TextArea = React.forwardRef(
       >
         {label && (
           <Label
+            flex={"30% 0 0"}
             maxWidth={"200px"}
             htmlFor={name}
             display={inline && "inline !important"}

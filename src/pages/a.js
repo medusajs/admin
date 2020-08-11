@@ -1,6 +1,7 @@
 import React from "react"
 import { Router } from "@reach/router"
 
+import Oauth from "../domain/oauth"
 import Products from "../domain/products"
 import Orders from "../domain/orders"
 import Discounts from "../domain/discounts"
@@ -14,6 +15,7 @@ const IndexPage = () => (
   <Layout>
     <SEO title="Home" />
     <Router basepath="a">
+      <PrivateRoute path="oauth/:app_name" component={Oauth} />
       <PrivateRoute path="products/*" component={Products} />
       <PrivateRoute path="orders/*" component={Orders} />
       <PrivateRoute path="discounts/*" component={Discounts} />
