@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react"
 import { Text, Flex, Box, Image } from "rebass"
-
+import ReactJson from "react-json-view"
 import moment from "moment"
 
 import testThumbnail from "./thumbnail-test.jpg"
 
 import Card from "../../../components/card"
 import Spinner from "../../../components/spinner"
+import Modal from "../../../components/modal"
+import Button from "../../../components/button"
 
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
@@ -15,7 +17,7 @@ const LineItem = ({ lineItem }) => (
   <Flex pl={3} pt={3} alignItems="center">
     <Flex alignItems="center" pr={3}>
       <Image
-        src={testThumbnail}
+        src={lineItem.thumbnail || ""}
         sx={{
           width: 50,
           height: 50,
@@ -40,12 +42,34 @@ const LineItem = ({ lineItem }) => (
   </Flex>
 )
 
+const EditJsonModal = ({ json }) => {
+  return (
+    <Modal>
+      <Modal.Body as="form" onSubmit={() => console.log("test")}>
+        <Modal.Header>
+          <Text>Edit metadata</Text>
+        </Modal.Header>
+        <Modal.Content flexDirection="column">
+          <ReactJson src={json} />
+        </Modal.Content>
+        <Modal.Footer justifyContent="flex-end">
+          <Button type="submit" variant="primary">
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal.Body>
+    </Modal>
+  )
+}
+
 const OrderDetails = ({ id }) => {
   const [isHandlingOrder, setIsHandlingOrder] = useState(false)
+  const [showMetadataEdit, setShowMetadataEdit] = useState(false)
+
   const { order, isLoading, refresh } = useMedusa("orders", { id })
 
   const dropdownOptions = [
-    { label: "lol", onClick: () => console.log("ROFLMAO") },
+    { label: "Edit", onClick: () => setShowMetadataEdit(true) },
   ]
 
   if (isLoading) {
@@ -129,10 +153,7 @@ const OrderDetails = ({ id }) => {
       </Card>
       {/* PAYMENT */}
       <Card mb={2}>
-        <Card.Header
-          badge={{ label: order.payment_status }}
-          dropdownOptions={dropdownOptions}
-        >
+        <Card.Header badge={{ label: order.payment_status }}>
           Payment
         </Card.Header>
         <Card.Body>
@@ -164,10 +185,7 @@ const OrderDetails = ({ id }) => {
       </Card>
       {/* FULFILLMENT */}
       <Card mb={2}>
-        <Card.Header
-          badge={{ label: order.fulfillment_status }}
-          dropdownOptions={dropdownOptions}
-        >
+        <Card.Header badge={{ label: order.fulfillment_status }}>
           Fulfillment
         </Card.Header>
         <Card.Body>
@@ -186,8 +204,8 @@ const OrderDetails = ({ id }) => {
         </Card.Body>
       </Card>
       {/* CUSTOMER */}
-      <Card mr={3} width="100%">
-        <Card.Header dropdownOptions={dropdownOptions}>Customer</Card.Header>
+      <Card mr={3} width="100%" mb={2}>
+        <Card.Header>Customer</Card.Header>
         <Card.Body>
           <Box px={3}>
             <Text color="gray">Contact</Text>
@@ -216,6 +234,19 @@ const OrderDetails = ({ id }) => {
           </Box>
         </Card.Body>
       </Card>
+      {/* METADATA */}
+      <Card mr={3} width="100%">
+        <Card.Header dropdownOptions={dropdownOptions}>Metadata</Card.Header>
+        <Card.Body>
+          <ReactJson
+            name={false}
+            collapsed={true}
+            src={order.metadata}
+            style={{ marginLeft: "20px" }}
+          />
+        </Card.Body>
+      </Card>
+      {showMetadataEdit && <EditJsonModal json={order.metadata} />}
     </Flex>
   )
 }

@@ -66,7 +66,7 @@ const AccountDetails = () => {
   }
 
   return (
-    <Flex as="form" flexDirection={"column"} onSubmit={handleSubmit(onSubmit)}>
+    <Flex as="form" flexDirection={"column"} onSubmit={handleSubmit(onSubmit)} mb={2}>
       <Card>
         <Card.Header>Store Currencies</Card.Header>
         <Card.Body px={3}>

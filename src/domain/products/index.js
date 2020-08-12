@@ -1,6 +1,8 @@
-import React from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import { navigate } from "gatsby"
+import _ from "lodash"
 import { Flex, Text, Box } from "rebass"
+import { Input } from "@rebass/forms"
 import { Router } from "@reach/router"
 
 import Spinner from "../../components/spinner"
@@ -21,16 +23,45 @@ import useMedusa from "../../hooks/use-medusa"
 import Button from "../../components/button"
 
 const ProductIndex = () => {
-  const { products, isLoading } = useMedusa("products")
+  const { products, isLoading, refresh } = useMedusa("products")
+  const [query, setQuery] = useState("")
+
+  const searchQuery = search => {
+    refresh({ search })
+  }
+
+  const delayedQuery = useCallback(
+    _.debounce(q => searchQuery(q), 500),
+    []
+  )
+
+  useEffect(() => {
+    delayedQuery(query)
+  }, [query])
 
   return (
     <Flex flexDirection="column">
       <Flex>
-        <Text mb={4}>Products</Text>
+        <Text mb={3}>Products</Text>
         <Box ml="auto" />
         <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
           New product
         </Button>
+      </Flex>
+      <Flex>
+        <Box ml="auto" />
+        <Box mb={3} sx={{ maxWidth: "300px" }} mr={3}>
+          <Input
+            height="28px"
+            fontSize="12px"
+            id="email"
+            name="q"
+            type="text"
+            placeholder="Search products"
+            onChange={e => setQuery(e.target.value)}
+            value={query}
+          />
+        </Box>
       </Flex>
       {isLoading ? (
         <Spinner />

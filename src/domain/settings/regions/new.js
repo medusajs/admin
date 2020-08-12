@@ -86,7 +86,7 @@ const NewRegion = ({ id }) => {
 
   const onSave = data => {
     Medusa.regions.create(data).then(({ data }) => {
-      navigate(`/a/settings/regions/${data.region._id}`)
+      navigate(`/a/settings`)
     })
   }
 

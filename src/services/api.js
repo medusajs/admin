@@ -68,8 +68,12 @@ export default {
       return medusaRequest("DELETE", path)
     },
 
-    list() {
-      const path = `/admin/products`
+    list(search = "") {
+      let path = `/admin/products`
+      if (search) {
+        path += `?q=${search}`
+      }
+
       return medusaRequest("GET", path)
     },
 
@@ -134,8 +138,19 @@ export default {
       return medusaRequest("POST", path, update)
     },
 
-    list() {
-      const path = `/admin/orders`
+    list(search = "", filters = "") {
+      let path = `/admin/orders`
+      if (search && !filters) {
+        path += `?q=${search}`
+      }
+
+      if (!search && filters) {
+        path += `?${filters}`
+      }
+
+      if (search && filters) {
+        path += `?q=${search}&${filters}`
+      }
       return medusaRequest("GET", path)
     },
 

@@ -137,6 +137,10 @@ const NewDiscount = ({}) => {
                 label: el.name,
                 value: el._id,
               }))}
+              selectAllLabel={"All"}
+              overrideStrings={{
+                allItemsAreSelected: "All regions",
+              }}
               value={selectedRegions}
               onChange={setSelectedRegions}
             />
@@ -205,7 +209,7 @@ const NewDiscount = ({}) => {
           <StyledLabel mb={3} fontSize="10px" color="gray">
             <Flex alignItems="center">
               <StyledRadio
-                name="discount_rule.type"
+                name="discount_rule.allocation"
                 id="item"
                 value="item"
                 ref={register}
@@ -224,6 +228,10 @@ const NewDiscount = ({}) => {
               label: el.title,
               value: el._id,
             }))}
+            selectAllLabel={"All"}
+            overrideStrings={{
+              allItemsAreSelected: "All products",
+            }}
             value={selectedProducts}
             onChange={setSelectedProducts}
           />

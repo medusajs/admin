@@ -11,23 +11,37 @@ import NewRegion from "./regions/new"
 import Details from "./details"
 import Currencies from "./currencies"
 
+// const SettingsIndex = () => {
+//   return (
+//     <Flex flexDirection={"column"}>
+//       <Card>
+//         <Card.Header>Business Settings</Card.Header>
+//         <Card.Body>
+//           <Box px={3}>
+//             <Link to="/a/settings/details">Account details</Link>
+//             <Link to="/a/settings/currencies">Currencies</Link>
+//           </Box>
+//           <Card.VerticalDivider mx={3} />
+//           <Box px={3}>
+//             <Link to="/a/settings/regions">Region Settings</Link>
+//           </Box>
+//           <Card.VerticalDivider mx={3} />
+//         </Card.Body>
+//       </Card>
+//     </Flex>
+//   )
+// }
+
+
 const SettingsIndex = () => {
   return (
     <Flex flexDirection={"column"}>
-      <Card>
+      <Card mb={2}>
         <Card.Header>Business Settings</Card.Header>
-        <Card.Body>
-          <Box px={3}>
-            <Link to="/a/settings/details">Account details</Link>
-            <Link to="/a/settings/currencies">Currencies</Link>
-          </Box>
-          <Card.VerticalDivider mx={3} />
-          <Box px={3}>
-            <Link to="/a/settings/regions">Region Settings</Link>
-          </Box>
-          <Card.VerticalDivider mx={3} />
-        </Card.Body>
       </Card>
+      <Details/>
+      <Currencies/>
+      <Regions/>
     </Flex>
   )
 }
@@ -35,9 +49,6 @@ const SettingsIndex = () => {
 const Settings = () => (
   <Router>
     <SettingsIndex path="/" />
-    <Details path="details" />
-    <Currencies path="currencies" />
-    <Regions path="regions" />
     <NewRegion path="regions/new" />
     <RegionDetails path="regions/:id" />
   </Router>
