@@ -18,6 +18,8 @@ import {
 
 import New from "./new"
 import Details from "./details"
+import GiftCard from "./gift-card"
+import GiftCardDetail from "./gift-card/detail"
 
 import useMedusa from "../../hooks/use-medusa"
 import Button from "../../components/button"
@@ -80,7 +82,11 @@ const ProductIndex = () => {
                 sx={{
                   cursor: "pointer",
                 }}
-                onClick={() => navigate(`/a/products/${p._id}`)}
+                onClick={() =>
+                  navigate(
+                    `/a/products${p.is_giftcard ? "/gift-card" : ""}/${p._id}`
+                  )
+                }
               >
                 <TableDataCell>{p.title}</TableDataCell>
                 <TableDataCell>
@@ -102,13 +108,12 @@ const ProductIndex = () => {
 
 const Products = () => {
   return (
-    <>
-      <Router>
-        <ProductIndex path="/" />
-        <Details path=":id" />
-        <New path="new" />
-      </Router>
-    </>
+    <Router>
+      <ProductIndex path="/" />
+      <GiftCard path="gift-card/*" />
+      <Details path=":id" />
+      <New path="new" />
+    </Router>
   )
 }
 

@@ -6,6 +6,7 @@ import { Text, Box, Flex } from "rebass"
 import { Input } from "@rebass/forms"
 import styled from "@emotion/styled"
 import moment from "moment"
+import ReactTooltip from "react-tooltip"
 
 import Details from "./details"
 import New from "./new"
@@ -146,8 +147,15 @@ const OrderIndex = ({}) => {
                 key={i}
                 onClick={() => navigate(`/a/orders/${el._id}`)}
               >
+                <ReactTooltip id={el._id} place="top" effect="solid" />
                 <TableDataCell>
-                  <OrderNumCell>#{el._id}</OrderNumCell>
+                  <OrderNumCell>#{el.display_id}</OrderNumCell>
+                </TableDataCell>
+                <TableDataCell
+                  data-for={el._id}
+                  data-tip={new Date(el.created * 1).toTimeString()}
+                >
+                  {new Date(el.created * 1).toDateString()}
                 </TableDataCell>
                 <TableDataCell>
                   {moment(el.created).format("MMMM Do YYYY")}

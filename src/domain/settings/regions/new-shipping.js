@@ -7,6 +7,7 @@ import Input from "../../../components/input"
 import CurrencyInput from "../../../components/currency-input"
 import Button from "../../../components/button"
 import Select from "../../../components/select"
+import Spinner from "../../../components/spinner"
 
 import useMedusa from "../../../hooks/use-medusa"
 import Medusa from "../../../services/api"
@@ -21,6 +22,10 @@ const NewShipping = ({
 }) => {
   const { control, register, handleSubmit } = useForm()
   const { store, isLoading } = useMedusa("store")
+  const { shipping_profiles, isLoading: isProfilesLoading } = useMedusa(
+    "shippingProfiles"
+  )
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "requirements",
@@ -33,6 +38,7 @@ const NewShipping = ({
       name: data.name,
       data: options[optionIndex],
       region_id: region._id,
+      profile_id: data.profile_id,
       requirements: data.requirements || [],
       price: {
         type: "flat_rate",
@@ -58,6 +64,13 @@ const NewShipping = ({
     )
   }, [])
 
+  const profileOptions = isProfilesLoading
+    ? []
+    : shipping_profiles.map(p => ({
+        label: p.name,
+        value: p._id,
+      }))
+
   return (
     <Modal onClick={onClick}>
       <Modal.Body as="form" onSubmit={handleSubmit(handleSave)}>
@@ -67,6 +80,18 @@ const NewShipping = ({
         <Modal.Content flexDirection="column">
           <Box mb={4}>
             <Input mt={2} mb={3} label="Name" name="name" ref={register} />
+          </Box>
+          <Box mb={4}>
+            <Text mb={3}>Shipping Profile</Text>
+            {isProfilesLoading ? (
+              <Spinner />
+            ) : (
+              <Select
+                name="profile_id"
+                options={profileOptions}
+                ref={register}
+              />
+            )}
           </Box>
           <Box mb={4}>
             <Text mb={3}>Fulfillment Method</Text>

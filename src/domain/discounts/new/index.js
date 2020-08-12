@@ -67,7 +67,11 @@ const StyledLabel = styled(Label)`
 const NewDiscount = ({}) => {
   const [selectedRegions, setSelectedRegions] = useState([])
   const [selectedProducts, setSelectedProducts] = useState([])
-  const { register, handleSubmit } = useForm()
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      is_dynamic: false,
+    },
+  })
 
   const { products, isLoading: isLoadingProducts } = useMedusa("products")
   const { regions, isLoading: isLoadingRegions } = useMedusa("regions")
@@ -99,6 +103,7 @@ const NewDiscount = ({}) => {
 
     const discount = {
       code: data.code,
+      is_dynamic: data.is_dynamic === "true",
       discount_rule: data.discount_rule,
       regions: data.regions || [],
     }
@@ -145,6 +150,37 @@ const NewDiscount = ({}) => {
               onChange={setSelectedRegions}
             />
           </Box>
+          <Box>
+            <Text fontSize={2} mb={2}>
+              Is this a dynamic discount?
+            </Text>
+          </Box>
+          <StyledLabel>
+            <Flex alignItems="center">
+              <StyledRadio
+                name="is_dynamic"
+                id="dynamic_false"
+                value="false"
+                ref={register}
+              />
+              <Text fontSize="12px" color="gray">
+                No
+              </Text>
+            </Flex>
+          </StyledLabel>
+          <StyledLabel mb={3}>
+            <Flex alignItems="center">
+              <StyledRadio
+                name="is_dynamic"
+                id="dynamic_true"
+                value="true"
+                ref={register}
+              />
+              <Text fontSize="12px" color="gray">
+                Yes
+              </Text>
+            </Flex>
+          </StyledLabel>
           <Box>
             <Text fontSize={2} mb={2}>
               Discount rule

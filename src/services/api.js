@@ -1,6 +1,17 @@
 import medusaRequest, { multipartRequest } from "./request"
 
 export default {
+  apps: {
+    authorize(data) {
+      const path = `/admin/apps/authorizations`
+      return medusaRequest("POST", path, data)
+    },
+
+    list() {
+      const path = `/admin/apps`
+      return medusaRequest("GET", path)
+    },
+  },
   auth: {
     session() {
       const path = `/admin/auth`
@@ -45,6 +56,12 @@ export default {
     removeCurrency(code) {
       const path = `/admin/store/currencies/${code}`
       return medusaRequest("DELETE", path)
+    },
+  },
+  shippingProfiles: {
+    list() {
+      const path = `/admin/shipping-profiles`
+      return medusaRequest("GET", path)
     },
   },
   products: {
@@ -174,9 +191,14 @@ export default {
       return medusaRequest("POST", path, {})
     },
 
-    return(orderId, items) {
+    refund(orderId, payload) {
+      const path = `/admin/orders/${orderId}/refund`
+      return medusaRequest("POST", path, payload)
+    },
+
+    return(orderId, payload) {
       const path = `/admin/orders/${orderId}/return`
-      return medusaRequest("POST", path, items)
+      return medusaRequest("POST", path, payload)
     },
 
     cancel(orderId) {

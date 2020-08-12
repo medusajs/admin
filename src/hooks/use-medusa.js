@@ -75,6 +75,27 @@ const useMedusa = (endpoint, query) => {
   }
 
   switch (endpoint) {
+    case "orders":
+      if (query && query.id) {
+        value.capturePayment = () => {
+          return subcomponent.capturePayment(query.id).then(({ data }) => {
+            setResult(data)
+          })
+        }
+
+        value.refund = payload => {
+          return subcomponent
+            .refund(query.id, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.return = payload => {
+          return subcomponent
+            .return(query.id, payload)
+            .then(({ data }) => setResult(data))
+        }
+      }
+      break
     case "store":
       value.update = updateData => {
         return subcomponent.update(updateData).then(({ data }) => {

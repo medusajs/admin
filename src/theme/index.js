@@ -19,6 +19,9 @@ export const theme = {
     darkest: "#212121",
     placeholder: "#a3acb9",
   },
+  borders: {
+    hairline: "1px solid #E3E8EE",
+  },
   fontSizes: [12, 14, 16, 18, 22],
   fonts: {
     body:

@@ -44,6 +44,7 @@ const Select = React.forwardRef(
       >
         {label && (
           <Label
+            flex={"30% 0 0"}
             maxWidth={"200px"}
             htmlFor={name}
             display={inline && "inline !important"}
@@ -52,8 +53,10 @@ const Select = React.forwardRef(
           </Label>
         )}
         <StyledSelect
+          flex="50% 0 0"
           variant="buttons.primary"
           name={name}
+          minWidth={"unset"}
           width={"unset"}
           ref={ref}
           value={value}
