@@ -83,7 +83,6 @@ const OrderDetails = ({ id }) => {
   const [isHandlingOrder, setIsHandlingOrder] = useState(false)
   const [showMetadataEdit, setShowMetadataEdit] = useState(false)
 
-  const { order, isLoading, refresh } = useMedusa("orders", { id })
   const {
     order,
     capturePayment,
@@ -144,7 +143,7 @@ const OrderDetails = ({ id }) => {
   })
 
   return (
-    <>
+    <Flex flexDirection="column" mb={5}>
       <Flex flexDirection="column" mb={5}>
         <Card mb={2}>
           <Card.Header
@@ -323,7 +322,7 @@ const OrderDetails = ({ id }) => {
         </Card.Body>
       </Card>
       {/* CUSTOMER */}
-      <Card mr={3} width="100%">
+      <Card mr={3} mb={2} width="100%">
         <Card.Header dropdownOptions={dropdownOptions}>Customer</Card.Header>
         <Card.Body>
           <Box px={3}>
@@ -355,17 +354,17 @@ const OrderDetails = ({ id }) => {
       </Card>
       {/* METADATA */}
       <Card mr={3} width="100%">
-        <Card.Header dropdownOptions={dropdownOptions}>Metadata</Card.Header>
+        <Card.Header>Raw order</Card.Header>
         <Card.Body>
           <ReactJson
             name={false}
             collapsed={true}
-            src={order.metadata}
+            src={order}
             style={{ marginLeft: "20px" }}
           />
         </Card.Body>
       </Card>
-      {showMetadataEdit && <EditJsonModal json={order.metadata} />}
+      {/* {showMetadataEdit && <EditJsonModal json={order.metadata} />} */}
       {showReturnMenu && (
         <ReturnMenu
           onReturn={returnOrder}
@@ -380,7 +379,7 @@ const OrderDetails = ({ id }) => {
           onDismiss={() => setShowRefund(false)}
         />
       )}
-    </>
+    </Flex>
   )
 }
 

@@ -37,7 +37,7 @@ const Sidebar = ({}) => {
       <Flex py={4} mx={-1} flexDirection="column" flex={1}>
         <Flex py={1} alignItems="center">
           <Orders />
-          <StyledLink width={9 / 10} ml={2} variant="nav" to="/a/orders">
+          <StyledLink ml={2} variant="nav" to="/a/orders">
             Orders
           </StyledLink>
         </Flex>

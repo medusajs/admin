@@ -127,6 +127,12 @@ export const buttons = {
     "&:hover": {
       boxShadow: "ctaBoxShadowHover",
     },
+
+    "&:disabled": {
+      cursor: "not-allowed",
+      pointerEvents: "none",
+      opacity: 0.5,
+    },
   },
   delete: {
     height: "30px",

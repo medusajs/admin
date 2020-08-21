@@ -65,6 +65,7 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
         <input
           id={filterTitle}
           checked={open}
+          onChange={() => {}}
           type="checkbox"
           style={{ marginRight: "5px" }}
         />
@@ -73,6 +74,7 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
       <Collapse isOpened={open}>
         {filters.map((el, i) => (
           <CollapseContainer
+            key={i}
             onClick={() => onCheck(el)}
             last={i === filters.length - 1}
           >
@@ -81,6 +83,7 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
               id={el}
               name={el}
               value={el}
+              onChange={() => {}}
               checked={checked === el}
               style={{ marginRight: "5px" }}
             />

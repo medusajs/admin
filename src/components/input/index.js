@@ -25,6 +25,15 @@ const StyledLabel = styled.div`
       : `
   padding-bottom: 10px;
   `}
+  
+  ${props =>
+    props.required &&
+    `
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+  `}
 `
 
 const InputField = React.forwardRef(
@@ -39,6 +48,8 @@ const InputField = React.forwardRef(
       label,
       name,
       type,
+      inputStyle,
+      required,
       ...props
     },
     ref
@@ -55,7 +66,9 @@ const InputField = React.forwardRef(
             htmlFor={name}
             display={inline && "inline !important"}
           >
-            <StyledLabel inline={inline}>{label}</StyledLabel>
+            <StyledLabel required={required} inline={inline}>
+              {label}
+            </StyledLabel>
           </Label>
         )}
         <StyledInput
@@ -67,6 +80,7 @@ const InputField = React.forwardRef(
           type={type}
           min={min}
           max={max}
+          sx={inputStyle}
           step={step || "1"}
           placeholder={placeholder ? placeholder : "Placeholder"}
         />

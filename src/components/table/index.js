@@ -62,6 +62,7 @@ export const TableRow = React.forwardRef((props, ref) => (
     variant="tr"
     sx={{
       top: 0,
+      cursor: "pointer",
     }}
     {...props}
   />

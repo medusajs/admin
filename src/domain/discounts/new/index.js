@@ -64,10 +64,28 @@ const StyledLabel = styled(Label)`
   }
 `
 
+const RequiredLabel = styled.div`
+  ${Typography.Base}
+  ${props =>
+    props.inline
+      ? `
+  text-align: right;
+  padding-right: 15px;
+  `
+      : `
+  padding-bottom: 10px;
+  `}
+
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+`
+
 const NewDiscount = ({}) => {
   const [selectedRegions, setSelectedRegions] = useState([])
   const [selectedProducts, setSelectedProducts] = useState([])
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, getValues, errors, setValue } = useForm({
     defaultValues: {
       is_dynamic: false,
     },
@@ -123,6 +141,13 @@ const NewDiscount = ({}) => {
     )
   }
 
+  const onRegionSelect = data => {
+    if (data.length > 1) {
+      setValue("discount_rule.type", "percentage")
+    }
+    setSelectedRegions(data)
+  }
+
   return (
     <Flex as="form" flexDirection="column" onSubmit={handleSubmit(submit)}>
       <Text mb={4}>Discount details</Text>
@@ -132,11 +157,12 @@ const NewDiscount = ({}) => {
             <Input
               mb={3}
               label="Code"
+              required={true}
               name="code"
               placeholder="SUMMER10%"
-              ref={register}
+              ref={register({ required: true })}
             />
-            <StyledLabel pb={2}>Choose valid regions</StyledLabel>
+            <RequiredLabel pb={2}>Choose valid regions</RequiredLabel>
             <StyledMultiSelect
               options={regions.map(el => ({
                 label: el.name,
@@ -147,34 +173,36 @@ const NewDiscount = ({}) => {
                 allItemsAreSelected: "All regions",
               }}
               value={selectedRegions}
-              onChange={setSelectedRegions}
+              onChange={onRegionSelect}
             />
           </Box>
           <Box>
-            <Text fontSize={2} mb={2}>
-              Is this a dynamic discount?
-            </Text>
+            <RequiredLabel>Is this a dynamic discount?</RequiredLabel>
           </Box>
           <StyledLabel>
             <Flex alignItems="center">
-              <StyledRadio
-                name="is_dynamic"
-                id="dynamic_false"
+              <input
+                type="radio"
+                ref={register({ required: true })}
+                id="dynamic_true"
+                name="dynamic_true"
                 value="false"
-                ref={register}
+                style={{ marginRight: "5px" }}
               />
               <Text fontSize="12px" color="gray">
                 No
               </Text>
             </Flex>
           </StyledLabel>
-          <StyledLabel mb={3}>
+          <StyledLabel mt={2} mb={3}>
             <Flex alignItems="center">
-              <StyledRadio
-                name="is_dynamic"
+              <input
+                type="radio"
+                ref={register({ required: true })}
                 id="dynamic_true"
+                name="dynamic_true"
                 value="true"
-                ref={register}
+                style={{ marginRight: "5px" }}
               />
               <Text fontSize="12px" color="gray">
                 Yes
@@ -189,66 +217,84 @@ const NewDiscount = ({}) => {
           <Input
             mb={3}
             label="Description"
+            required={true}
             name="discount_rule.description"
             placeholder="Summer sale 2020"
-            ref={register}
+            ref={register({ required: true })}
           />
           <Input
             mb={3}
             label="Value"
             type="number"
+            required={true}
             name="discount_rule.value"
             placeholder="10"
-            ref={register}
+            ref={register({ required: true })}
           />
-          <StyledLabel pb={2}>Type</StyledLabel>
+          <RequiredLabel pb={2}>Type</RequiredLabel>
           <StyledLabel>
             <Flex alignItems="center">
-              <StyledRadio
-                name="discount_rule.type"
+              <input
+                type="radio"
+                ref={register({ required: true })}
                 id="percentage"
+                name="discount_rule.type"
                 value="percentage"
-                ref={register}
+                style={{ marginRight: "5px" }}
               />
               <Text fontSize="12px" color="gray">
                 Percentage
               </Text>
             </Flex>
           </StyledLabel>
-          <StyledLabel mb={3} fontSize="10px" color="gray">
+          <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
             <Flex alignItems="center">
-              <StyledRadio
-                name="discount_rule.type"
+              <input
+                type="radio"
+                ref={register({ required: true })}
                 id="fixed"
+                name="discount_rule.type"
                 value="fixed"
-                ref={register}
+                disabled={selectedRegions.length > 1}
+                style={{ marginRight: "5px" }}
               />
               <Text fontSize="12px" color="gray">
-                Fixed amount
+                Fixed amount{" "}
+                {selectedRegions.length > 1 ? (
+                  <span style={{ fontSize: "8px" }}>
+                    (not allowed for multi-regional discounts)
+                  </span>
+                ) : (
+                  ""
+                )}
               </Text>
             </Flex>
           </StyledLabel>
-          <StyledLabel pb={2}>Allocation</StyledLabel>
+          <RequiredLabel pb={2}>Allocation</RequiredLabel>
           <StyledLabel fontSize="10px" color="gray">
             <Flex alignItems="center">
-              <StyledRadio
+              <input
+                type="radio"
+                ref={register({ required: true })}
+                id="total"
                 name="discount_rule.allocation"
-                id="Total"
                 value="total"
-                ref={register}
+                style={{ marginRight: "5px" }}
               />
               <Text fontSize="12px" color="gray">
                 Total (discount is applied to the total amount)
               </Text>
             </Flex>
           </StyledLabel>
-          <StyledLabel mb={3} fontSize="10px" color="gray">
+          <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
             <Flex alignItems="center">
-              <StyledRadio
-                name="discount_rule.allocation"
+              <input
+                type="radio"
+                ref={register({ required: true })}
                 id="item"
+                name="discount_rule.item"
                 value="item"
-                ref={register}
+                style={{ marginRight: "5px" }}
               />
               <Text fontSize="12px" color="gray">
                 Item (discount is applied to specific items)

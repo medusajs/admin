@@ -3,6 +3,7 @@ import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
 import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
+import Typography from "../../../components/typography"
 
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
@@ -66,6 +67,24 @@ const StyledImageBox = styled(Flex)`
       height: 100%;
       object-fit: contain;
     }
+  }
+`
+
+const RequiredLabel = styled.div`
+  ${Typography.Base}
+  ${props =>
+    props.inline
+      ? `
+  text-align: right;
+  padding-right: 15px;
+  `
+      : `
+  padding-bottom: 10px;
+  `}
+
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
   }
 `
 
@@ -205,8 +224,19 @@ const NewProduct = ({}) => {
       <Text mb={4}>Product Details</Text>
       <Flex mb={5}>
         <Box width={4 / 7}>
-          <Input mb={4} label="Name" name="title" ref={register} />
-          <TextArea label="Description" name="description" ref={register} />
+          <Input
+            required={true}
+            mb={4}
+            label="Name"
+            name="title"
+            ref={register({ required: true })}
+          />
+          <TextArea
+            required={true}
+            label="Description"
+            name="description"
+            ref={register({ required: true })}
+          />
           {/*<Flex mt={4}>
             <Pill
               onClick={() => setHasVariants(false)}
@@ -236,7 +266,9 @@ const NewProduct = ({}) => {
       </Flex>
       {hasVariants ? (
         <>
-          <Text mb={4}>Options</Text>
+          <Text fontSize={2} mb={3}>
+            Options
+          </Text>
           <Flex mb={5} flexDirection="column">
             {options.map((o, index) => (
               <Flex mb={4} key={index} alignItems="flex-end">
@@ -245,6 +277,7 @@ const NewProduct = ({}) => {
                     name={`options[${index}].name`}
                     onChange={e => updateOptionName(e, index)}
                     label="Option Name"
+                    required={true}
                     value={o.name}
                   />
                 </Box>
@@ -293,6 +326,7 @@ const NewProduct = ({}) => {
       )}
 
       <Flex pt={5}>
+        <Box ml="auto" />
         <Button mr={2} onClick={handleSubmit(onAddMore)} variant={"primary"}>
           Save and add more
         </Button>

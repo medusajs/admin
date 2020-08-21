@@ -17,6 +17,7 @@ import {
   TableHeaderCell,
   TableRow,
   TableDataCell,
+  TableHeaderRow,
 } from "../../components/table"
 import Badge from "../../components/badge"
 
@@ -88,11 +89,15 @@ const OrderIndex = ({}) => {
   }
 
   return (
-    <>
+    <Flex flexDirection="column">
       <Flex>
-        <Text mb={4}>Orders</Text>
+        <Text mb={3}>Orders</Text>
         <Box ml="auto" />
-        <Button onClick={() => navigate(`/a/orders/new`)} variant={"cta"}>
+        <Button
+          disabled={true}
+          onClick={() => navigate(`/a/orders/new`)}
+          variant={"cta"}
+        >
           New draft order
         </Button>
       </Flex>
@@ -126,28 +131,18 @@ const OrderIndex = ({}) => {
       ) : (
         <Table>
           <TableHead>
-            <TableRow
-              p={0}
-              sx={{
-                background: "white",
-              }}
-            >
+            <TableHeaderRow>
               <TableHeaderCell>Order</TableHeaderCell>
               <TableHeaderCell>Date</TableHeaderCell>
               <TableHeaderCell>Customer</TableHeaderCell>
               <TableHeaderCell>Payment</TableHeaderCell>
               <TableHeaderCell>Fulfillment</TableHeaderCell>
               <TableHeaderCell>Items</TableHeaderCell>
-            </TableRow>
+            </TableHeaderRow>
           </TableHead>
           <TableBody>
             {orders.map((el, i) => (
-              <TableRow
-                sx={{ cursor: "pointer" }}
-                key={i}
-                onClick={() => navigate(`/a/orders/${el._id}`)}
-              >
-                <ReactTooltip id={el._id} place="top" effect="solid" />
+              <TableRow key={i} onClick={() => navigate(`/a/orders/${el._id}`)}>
                 <TableDataCell>
                   <OrderNumCell>#{el.display_id}</OrderNumCell>
                 </TableDataCell>
@@ -155,6 +150,7 @@ const OrderIndex = ({}) => {
                   data-for={el._id}
                   data-tip={new Date(el.created * 1).toTimeString()}
                 >
+                  <ReactTooltip id={el._id} place="top" effect="solid" />
                   {new Date(el.created * 1).toDateString()}
                 </TableDataCell>
                 <TableDataCell>
@@ -181,7 +177,7 @@ const OrderIndex = ({}) => {
           </TableBody>
         </Table>
       )}
-    </>
+    </Flex>
   )
 }
 
@@ -189,8 +185,8 @@ const Orders = () => {
   return (
     <Router>
       <OrderIndex path="/" />
-      <New path="/new" />
       <Details path=":id" />
+      <New path="/new" />
     </Router>
   )
 }

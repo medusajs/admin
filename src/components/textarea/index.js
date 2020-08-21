@@ -25,10 +25,19 @@ const StyledLabel = styled.div`
       : `
   padding-bottom: 10px;
   `}
+  
+  ${props =>
+    props.required &&
+    `
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+  `}
 `
 
 const TextArea = React.forwardRef(
-  ({ placeholder, inline, label, name, ...props }, ref) => {
+  ({ placeholder, inline, label, name, required, ...props }, ref) => {
     return (
       <Flex
         alignItems={inline && "start"}
@@ -42,7 +51,9 @@ const TextArea = React.forwardRef(
             htmlFor={name}
             display={inline && "inline !important"}
           >
-            <StyledLabel inline={inline}>{label}</StyledLabel>
+            <StyledLabel required={required} inline={inline}>
+              {label}
+            </StyledLabel>
           </Label>
         )}
         <StyledTextArea

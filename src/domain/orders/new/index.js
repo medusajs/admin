@@ -6,6 +6,7 @@ import { Label, Radio } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Medusa from "../../../services/api"
 
+import ProductSelector from "./product-selector"
 import Button from "../../../components/button"
 import MultiSelect from "react-multi-select-component"
 import Input from "../../../components/input"
@@ -15,7 +16,7 @@ import Typography from "../../../components/typography"
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
 
-const StyledMultiSelect = styled(MultiSelect)`
+export const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
 
   color: black;
@@ -63,49 +64,65 @@ const StyledLabel = styled(Label)`
   }
 `
 
+const RequiredLabel = styled.div`
+  ${Typography.Base}
+  ${props =>
+    props.inline
+      ? `
+  text-align: right;
+  padding-right: 15px;
+  `
+      : `
+  padding-bottom: 10px;
+  `}
+
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+`
+
 const NewOrder = ({}) => {
   const [selectedRegions, setSelectedRegions] = useState([])
+  const [selectedProducts, setSelectedProducts] = useState([])
   const [selectedVariants, setSelectedVariants] = useState([])
+  const [variants, setVariants] = useState([])
+  const [showProductSelector, setShowProductSelector] = useState(false)
 
   const { register, handleSubmit } = useForm()
 
-  const { regions, isLoading: isLoadingRegions } = useMedusa("regions")
   const { products, isLoading: isLoadingProducts } = useMedusa("products")
 
-  useEffect(() => {}, [])
-
-  const validRegions = () => {
-    let formattedRegions = regions.map(r => ({
-      label: r.name,
-      value: r._id,
-    }))
-    return _.intersectionBy(formattedRegions, selectedRegions, "value").map(
-      v => v.value
-    )
-  }
-
-  const submit = data => {
-    data.discount_rule.value = parseInt(data.discount_rule.value)
-    data.discount_rule.valid_for = validProducts()
-    data.regions = validRegions()
-
-    const discount = {
-      code: data.code,
-      discount_rule: data.discount_rule,
-      regions: data.regions || [],
+  useEffect(() => {
+    const fetchAllVariants = async () => {
+      const newVariants = []
+      Promise.all(
+        selectedProducts.map(async product => {
+          const p = await Medusa.products.retrieve(product._id)
+          newVariants.push(p.variant)
+        })
+      )
+      setVariants(newVariants)
     }
-    // Medusa.discounts.create(discount)
-  }
 
-  if (isLoadingProducts || isLoadingRegions) {
+    fetchAllVariants()
+  }, [selectedProducts])
+
+  if (isLoadingProducts) {
     return <Spinner />
   }
 
   return (
-    <Flex as="form" flexDirection="column" onSubmit={handleSubmit(submit)}>
-      <Text mb={4}>Discount details</Text>
+    <Flex as="form" flexDirection="column" onSubmit={handleSubmit}>
+      <Text mb={4}>Order details</Text>
       <Flex mb={5}>
         <Box width={4 / 7}>
+          <Button
+            variant={"primary"}
+            onClick={() => setShowProductSelector(!showProductSelector)}
+          >
+            Select items
+          </Button>
           <Box mb={4}>
             <Input
               mb={3}
@@ -113,15 +130,6 @@ const NewOrder = ({}) => {
               name="code"
               placeholder="SUMMER10%"
               ref={register}
-            />
-            <StyledLabel pb={2}>Choose valid regions</StyledLabel>
-            <StyledMultiSelect
-              options={regions.map(el => ({
-                label: el.name,
-                value: el._id,
-              }))}
-              value={selectedRegions}
-              onChange={setSelectedRegions}
             />
           </Box>
           <Box>
@@ -198,18 +206,6 @@ const NewOrder = ({}) => {
               </Text>
             </Flex>
           </StyledLabel>
-          <StyledLabel pb={0}>Choose valid products</StyledLabel>
-          <Text fontSize="10px" color="gray">
-            Leaving it empty will make the discount available for all products
-          </Text>
-          <StyledMultiSelect
-            options={products.map(el => ({
-              label: el.title,
-              value: el._id,
-            }))}
-            value={selectedProducts}
-            onChange={setSelectedProducts}
-          />
           <Flex mt={4}>
             <Box ml="auto" />
             <Button variant={"cta"} type="submit">
@@ -218,6 +214,14 @@ const NewOrder = ({}) => {
           </Flex>
         </Box>
       </Flex>
+      {showProductSelector && (
+        <ProductSelector
+          onClick={() => setShowProductSelector(null)}
+          selectedProducts={selectedProducts}
+          setSelectedProducts={setSelectedProducts}
+          products={products}
+        />
+      )}
     </Flex>
   )
 }

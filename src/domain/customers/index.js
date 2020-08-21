@@ -1,7 +1,8 @@
-import React from "react"
-import { Router } from "@reach/router"
+import React, { useState, useCallback, useEffect } from "react"
 import { navigate } from "gatsby"
-import { Text, Flex } from "rebass"
+import { Router } from "@reach/router"
+import { Input } from "@rebass/forms"
+import { Text, Flex, Box } from "rebass"
 import Details from "./details"
 
 import useMedusa from "../../hooks/use-medusa"
@@ -13,50 +14,77 @@ import {
   TableHeaderCell,
   TableRow,
   TableDataCell,
+  TableHeaderRow,
 } from "../../components/table"
 import Spinner from "../../components/spinner"
 
 const CustomerIndex = () => {
-  const { customers, isLoading } = useMedusa("customers")
+  const { customers, isLoading, refresh } = useMedusa("customers")
+
+  const [query, setQuery] = useState("")
+
+  const searchQuery = search => {
+    refresh({ search })
+  }
+
+  const delayedQuery = useCallback(
+    _.debounce(q => searchQuery(q), 500),
+    []
+  )
+
+  useEffect(() => {
+    delayedQuery(query)
+  }, [query])
 
   return (
-    <>
+    <Flex flexDirection="column">
       <Flex>
-        <Text mb={4}>Customers</Text>
+        <Text mb={3}>Customers</Text>
+      </Flex>
+      <Flex>
+        <Box ml="auto" />
+        <Box mb={3} sx={{ maxWidth: "300px" }} mr={3}>
+          <Input
+            height="28px"
+            fontSize="12px"
+            name="q"
+            type="text"
+            placeholder="Search customers"
+            onChange={e => setQuery(e.target.value)}
+            value={query}
+          />
+        </Box>
       </Flex>
       {isLoading ? (
         <Spinner />
       ) : (
         <Table>
           <TableHead>
-            <TableRow
-              p={0}
-              sx={{
-                background: "white",
-              }}
-            >
+            <TableHeaderRow>
               <TableHeaderCell>Email</TableHeaderCell>
               <TableHeaderCell>First name</TableHeaderCell>
               <TableHeaderCell>Last name</TableHeaderCell>
-            </TableRow>
+            </TableHeaderRow>
           </TableHead>
           <TableBody>
-            {customers &&
-              customers.map((el, i) => (
-                <TableRow
-                  sx={{ cursor: "pointer" }}
-                  key={i}
-                  onClick={() => navigate(`/a/customers/${el._id}`)}
-                >
-                  <TableDataCell>{el.email}</TableDataCell>
-                  <TableDataCell>{el.first_name}</TableDataCell>
-                  <TableDataCell>{el.last_name}</TableDataCell>
-                </TableRow>
-              ))}
+            {customers.map((el, i) => (
+              <TableRow
+                key={i}
+                onClick={() => navigate(`/a/customers/${el._id}`)}
+              >
+                <TableDataCell>{el.email ? el.email : ""}</TableDataCell>
+                <TableDataCell>
+                  {el.first_name ? el.first_name : "John"}
+                </TableDataCell>
+                <TableDataCell>
+                  {el.last_name ? el.last_name : "Doe"}
+                </TableDataCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       )}
-    </>
+    </Flex>
   )
 }
 

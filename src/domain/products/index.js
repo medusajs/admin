@@ -52,11 +52,10 @@ const ProductIndex = () => {
       </Flex>
       <Flex>
         <Box ml="auto" />
-        <Box mb={3} sx={{ maxWidth: "300px" }} mr={3}>
+        <Box mb={3} sx={{ maxWidth: "300px" }}>
           <Input
             height="28px"
             fontSize="12px"
-            id="email"
             name="q"
             type="text"
             placeholder="Search products"
@@ -79,9 +78,6 @@ const ProductIndex = () => {
             {products.map(p => (
               <TableRow
                 key={p._id}
-                sx={{
-                  cursor: "pointer",
-                }}
                 onClick={() =>
                   navigate(
                     `/a/products${p.is_giftcard ? "/gift-card" : ""}/${p._id}`
