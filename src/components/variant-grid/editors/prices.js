@@ -33,8 +33,10 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
   }, [store, isLoading, prices])
 
   useEffect(() => {
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", onKeyDown)
+      return () => window.removeEventListener("keydown", onKeyDown)
+    }
   }, [])
 
   const handleScroll = e => {
