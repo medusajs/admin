@@ -55,9 +55,9 @@ const CustomerDetail = ({ id }) => {
       </Card>
       <Card mr={3} mb={2} width="100%">
         <Card.Header>Orders</Card.Header>
-        <Card.Body>
+        <Card.Body flexDirection="column">
           {customer.orders.map(order => (
-            <Box pl={3} pr={2} display="flex" justifyContent="center">
+            <Box pl={3} pr={2} py={2} display="flex">
               <OrderNumLink onClick={() => navigate(`/a/orders/${order._id}`)}>
                 Order #{order.display_id}
               </OrderNumLink>
