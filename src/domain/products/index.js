@@ -65,7 +65,16 @@ const ProductIndex = () => {
         </Box>
       </Flex>
       {isLoading ? (
-        <Spinner />
+        <Flex
+          flexDirection="column"
+          alignItems="center"
+          height="100vh"
+          mt="auto"
+        >
+          <Box height="75px" width="75px" mt="50%">
+            <Spinner dark />
+          </Box>
+        </Flex>
       ) : (
         <Table>
           <TableHead>

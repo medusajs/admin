@@ -77,7 +77,16 @@ const AccountDetails = () => {
         <Card.Header>Store Currencies</Card.Header>
         <Card.Body px={3}>
           {isLoading ? (
-            <Spinner />
+            <Flex
+              flexDirection="column"
+              alignItems="center"
+              height="100vh"
+              mt="auto"
+            >
+              <Box height="75px" width="75px" mt="50%">
+                <Spinner dark />
+              </Box>
+            </Flex>
           ) : (
             <Flex width={1} flexDirection="column">
               <Box mb={3}>

@@ -84,7 +84,16 @@ const NewShipping = ({
           <Box mb={4}>
             <Text mb={3}>Shipping Profile</Text>
             {isProfilesLoading ? (
-              <Spinner />
+              <Flex
+                flexDirection="column"
+                alignItems="center"
+                height="100vh"
+                mt="auto"
+              >
+                <Box height="75px" width="75px" mt="50%">
+                  <Spinner dark />
+                </Box>
+              </Flex>
             ) : (
               <Select
                 name="profile_id"

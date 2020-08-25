@@ -112,7 +112,16 @@ const Regions = ({ id }) => {
         <Card.Header>Region Details</Card.Header>
         <Card.Body flexDirection="column">
           {isLoading || storeIsLoading ? (
-            <Spinner />
+            <Flex
+              flexDirection="column"
+              alignItems="center"
+              height="100vh"
+              mt="auto"
+            >
+              <Box height="75px" width="75px" mt="50%">
+                <Spinner dark />
+              </Box>
+            </Flex>
           ) : (
             <Box width={1 / 2}>
               <Input inline mb={3} name="name" label="Name" ref={register} />
