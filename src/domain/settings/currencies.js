@@ -32,11 +32,12 @@ const Currency = styled.div`
 
 const AccountDetails = () => {
   const [selectedCurrencies, setCurrencies] = useState([])
-  const { register, handleSubmit } = useForm()
+  const { register, setValue, handleSubmit } = useForm()
   const { store, isLoading, update } = useMedusa("store")
 
   useEffect(() => {
     if (isLoading) return
+    setValue("default_currency", store.default_currency)
     setCurrencies(
       store.currencies.map(c => ({
         symbol: currencies[c].symbol_native,
@@ -66,7 +67,12 @@ const AccountDetails = () => {
   }
 
   return (
-    <Flex as="form" flexDirection={"column"} onSubmit={handleSubmit(onSubmit)} mb={2}>
+    <Flex
+      as="form"
+      flexDirection={"column"}
+      onSubmit={handleSubmit(onSubmit)}
+      mb={2}
+    >
       <Card>
         <Card.Header>Store Currencies</Card.Header>
         <Card.Body px={3}>

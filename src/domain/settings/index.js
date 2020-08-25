@@ -33,16 +33,15 @@ import Apps from "./apps"
 //   )
 // }
 
-
 const SettingsIndex = () => {
   return (
     <Flex flexDirection={"column"}>
       <Card mb={2}>
         <Card.Header>Business Settings</Card.Header>
       </Card>
-      <Details/>
-      <Currencies/>
-      <Regions/>
+      <Details />
+      <Currencies />
+      <Regions />
     </Flex>
   )
 }

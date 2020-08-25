@@ -166,7 +166,7 @@ const OrderDetails = ({ id }) => {
               }
             }
           >
-            {order._id}
+            #{order.display_id}
           </Card.Header>
           <Box>
             <Text p={3} fontWeight="bold">
@@ -306,19 +306,41 @@ const OrderDetails = ({ id }) => {
         >
           Fulfillment
         </Card.Header>
-        <Card.Body>
-          <Box pl={3} pr={5}>
-            <Text pt={1} color="gray">
-              Tracking #
-            </Text>
-            <Text pt={1} color="gray">
-              Method
-            </Text>
-          </Box>
-          <Box px={3}>
-            <Text pt={1}>123456789</Text>
-            <Text pt={1}>GLS Express</Text>
-          </Box>
+        <Card.Body flexDirection="column">
+          <Flex
+            pb={3}
+            sx={{
+              borderBottom: "hairline",
+            }}
+          >
+            {order.shipping_methods.map(method => (
+              <Box key={method._id}>
+                <Box pl={3} pr={2}>
+                  <Text pb={1} color="gray">
+                    Shipping Method
+                  </Text>
+                  <Text>{method.name}</Text>
+                </Box>
+                <Card.VerticalDivider mx={3} />
+              </Box>
+            ))}
+          </Flex>
+          <Flex p={3} width={1}>
+            {order.fulfillments.length > 0 ? (
+              order.fulfillments.map(fulfillment => (
+                <Box key={fulfillment._id}>
+                  <Text>Fulfilled by provider {fulfillment.provider_id}</Text>
+                  <Text>
+                    Tracking Number: {fulfillment.tracking_numbers.join(", ")}
+                  </Text>
+                </Box>
+              ))
+            ) : (
+              <Text alignSelf={"center"} justifySelf={"center"}>
+                Not yet fulfilled
+              </Text>
+            )}
+          </Flex>
         </Card.Body>
       </Card>
       {/* CUSTOMER */}

@@ -31,8 +31,7 @@ const Container = styled(Flex)`
     props.inline &&
     `
   max-width: 350px;
-  flex-grow: 1;
-  margin-left: 5px;
+  flex: 50% 0 0;
   `}
 `
 
@@ -201,7 +200,11 @@ const TagInput = ({
       {...props}
     >
       {label && (
-        <Label maxWidth={"200px"} display={inline && "inline !important"}>
+        <Label
+          flex={"30% 0 0"}
+          maxWidth={"200px"}
+          display={inline && "inline !important"}
+        >
           <StyledLabel inline={inline}>{label}</StyledLabel>
         </Label>
       )}

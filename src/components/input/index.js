@@ -10,7 +10,7 @@ const StyledInput = styled(Input)`
     props.inline &&
     `
   max-width: 350px;
-  flex-grow: 1;
+  flex: 50% 0 0;
   `}
 `
 
@@ -62,7 +62,7 @@ const InputField = React.forwardRef(
       >
         {label && (
           <Label
-            maxWidth={"200px"}
+            flex={"30% 0 0"}
             htmlFor={name}
             display={inline && "inline !important"}
           >

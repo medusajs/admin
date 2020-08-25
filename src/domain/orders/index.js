@@ -148,13 +148,10 @@ const OrderIndex = ({}) => {
                 </TableDataCell>
                 <TableDataCell
                   data-for={el._id}
-                  data-tip={new Date(el.created * 1).toTimeString()}
+                  data-tip={moment(el.created).format("MMMM Do YYYY HH:mm a")}
                 >
                   <ReactTooltip id={el._id} place="top" effect="solid" />
-                  {new Date(el.created * 1).toDateString()}
-                </TableDataCell>
-                <TableDataCell>
-                  {moment(el.created).format("MMMM Do YYYY")}
+                  {moment(el.created).format("MMM Do YYYY")}
                 </TableDataCell>
                 <TableDataCell>{el.email}</TableDataCell>
                 <TableDataCell>
