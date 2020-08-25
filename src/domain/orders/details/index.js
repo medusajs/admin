@@ -350,7 +350,8 @@ const OrderDetails = ({ id }) => {
           <Box px={3}>
             <Text color="gray">Contact</Text>
             <Text pt={3}>
-              {order.first_name} {order.last_name}
+              {order.shipping_address.first_name}{" "}
+              {order.shipping_address.last_name}
             </Text>
             <Text pt={2}>{order.email}</Text>
           </Box>
@@ -358,8 +359,12 @@ const OrderDetails = ({ id }) => {
           <Box px={3}>
             <Text color="gray">Shipping</Text>
             <Text pt={3}>{order.shipping_address.address_1}</Text>
+            {order.shipping_address.address_2 && (
+              <Text pt={2}>{order.shipping_address.address_2}</Text>
+            )}
             <Text pt={2}>
               {order.shipping_address.postal_code} {order.shipping_address.city}
+              , {order.shipping_address.country_code}
             </Text>
             <Text pt={2}>{order.shipping_address.country}</Text>
           </Box>
@@ -367,8 +372,12 @@ const OrderDetails = ({ id }) => {
           <Box px={3}>
             <Text color="gray">Billing</Text>
             <Text pt={3}>{order.billing_address.address_1}</Text>
+            {order.billing_address.address_2 && (
+              <Text pt={2}>{order.billing_address.address_2}</Text>
+            )}
             <Text pt={2}>
-              {order.billing_address.postal_code} {order.billing_address.city}
+              {order.billing_address.postal_code} {order.billing_address.city},{" "}
+              {order.billing_address.country_code}
             </Text>
             <Text pt={2}>{order.billing_address.country}</Text>
           </Box>

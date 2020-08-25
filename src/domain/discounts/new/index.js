@@ -292,7 +292,7 @@ const NewDiscount = ({}) => {
                 type="radio"
                 ref={register({ required: true })}
                 id="item"
-                name="discount_rule.item"
+                name="discount_rule.allocation"
                 value="item"
                 style={{ marginRight: "5px" }}
               />

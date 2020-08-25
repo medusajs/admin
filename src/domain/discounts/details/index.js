@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { Text, Flex, Box, Image } from "rebass"
+import ReactJson from "react-json-view"
 
 import Card from "../../../components/card"
 import Spinner from "../../../components/spinner"
@@ -82,6 +83,17 @@ const DiscountDetails = ({ id }) => {
             <Text pt={1}>{discount.discount_rule.value}</Text>
             <Text pt={1}>{discount.discount_rule.allocation}</Text>
           </Box>
+        </Card.Body>
+      </Card>
+      <Card mr={3} width="100%">
+        <Card.Header>Raw discount</Card.Header>
+        <Card.Body>
+          <ReactJson
+            name={false}
+            collapsed={true}
+            src={discount}
+            style={{ marginLeft: "20px" }}
+          />
         </Card.Body>
       </Card>
     </Flex>

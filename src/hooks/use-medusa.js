@@ -3,7 +3,6 @@ import { useToasts } from "react-toast-notifications"
 
 import Medusa from "../services/api"
 import ToastLabel from "../components/toast"
-import NotFound from "../components/not-found"
 
 const useMedusa = (endpoint, query) => {
   const [isLoading, setLoading] = useState(true)

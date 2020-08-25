@@ -1,47 +1,29 @@
 import React from "react"
 import { Router } from "@reach/router"
-import { Text, Flex, Box } from "rebass"
+import { Flex } from "rebass"
 
-import Link from "../../components/link"
 import Card from "../../components/card"
 
 import Regions from "./regions"
+import ShippingProfiles from "./shipping-profiles"
+import NewShippingProfile from "./shipping-profiles/new"
+import ShippingProfileDetail from "./shipping-profiles/details"
 import RegionDetails from "./regions/details"
 import NewRegion from "./regions/new"
 import Details from "./details"
 import Currencies from "./currencies"
 import Apps from "./apps"
 
-// const SettingsIndex = () => {
-//   return (
-//     <Flex flexDirection={"column"}>
-//       <Card>
-//         <Card.Header>Business Settings</Card.Header>
-//         <Card.Body>
-//           <Box px={3}>
-//             <Link to="/a/settings/details">Account details</Link>
-//             <Link to="/a/settings/currencies">Currencies</Link>
-//           </Box>
-//           <Card.VerticalDivider mx={3} />
-//           <Box px={3}>
-//             <Link to="/a/settings/regions">Region Settings</Link>
-//           </Box>
-//           <Card.VerticalDivider mx={3} />
-//         </Card.Body>
-//       </Card>
-//     </Flex>
-//   )
-// }
-
 const SettingsIndex = () => {
   return (
-    <Flex flexDirection={"column"}>
+    <Flex flexDirection={"column"} mb={5}>
       <Card mb={2}>
         <Card.Header>Business Settings</Card.Header>
       </Card>
       <Details />
       <Currencies />
       <Regions />
+      <ShippingProfiles />
     </Flex>
   )
 }
@@ -52,6 +34,8 @@ const Settings = () => (
     <Details path="details" />
     <Currencies path="currencies" />
     <Regions path="regions" />
+    <NewShippingProfile path="shipping-profiles/new" />
+    <ShippingProfileDetail path="shipping-profiles/:id" />
     <Apps path="apps" />
     <NewRegion path="regions/new" />
     <RegionDetails path="regions/:id" />

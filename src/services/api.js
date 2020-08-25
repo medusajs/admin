@@ -63,6 +63,21 @@ export default {
       const path = `/admin/shipping-profiles`
       return medusaRequest("GET", path)
     },
+
+    create(data) {
+      const path = `/admin/shipping-profiles`
+      return medusaRequest("POST", path, data)
+    },
+
+    retrieve(profileId) {
+      const path = `/admin/shipping-profiles/${profileId}`
+      return medusaRequest("GET", path)
+    },
+
+    update(profileId, update) {
+      const path = `/admin/shipping-profiles/${profileId}`
+      return medusaRequest("POST", path, update)
+    },
   },
   products: {
     create(product) {
