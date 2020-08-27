@@ -5,6 +5,7 @@ import Typography from "../typography"
 
 const StyledText = styled(Text)`
   ${Typography.Base};
+  font-size: 12px;
 `
 
 const ToastLabel = ({ children, ...props }) => {

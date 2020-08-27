@@ -91,7 +91,9 @@ const NewDiscount = ({}) => {
     },
   })
 
-  const { products, isLoading: isLoadingProducts } = useMedusa("products")
+  const { products, isLoading: isLoadingProducts, toaster } = useMedusa(
+    "products"
+  )
   const { regions, isLoading: isLoadingRegions } = useMedusa("regions")
 
   const validProducts = () => {
@@ -126,9 +128,11 @@ const NewDiscount = ({}) => {
       regions: data.regions || [],
     }
 
-    Medusa.discounts.create(discount).then(() => {
-      navigate("/a/discounts")
-    })
+    Medusa.discounts
+      .create(discount)
+      .then(() => toaster("Successfully created discount", "success"))
+      .then(() => navigate("/a/discounts"))
+      .catch(() => toaster("Error creating discount", "error"))
   }
 
   if (isLoadingProducts || isLoadingRegions) {

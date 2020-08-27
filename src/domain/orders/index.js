@@ -6,6 +6,7 @@ import { Text, Box, Flex } from "rebass"
 import { Input } from "@rebass/forms"
 import styled from "@emotion/styled"
 import moment from "moment"
+import qs from "query-string"
 import ReactTooltip from "react-tooltip"
 
 import Details from "./details"
@@ -36,8 +37,10 @@ const OrderNumCell = styled(Text)`
 `
 
 const OrderIndex = ({}) => {
-  const { orders, isLoading, refresh } = useMedusa("orders")
+  const { orders, total_count, isLoading, refresh } = useMedusa("orders")
   const [query, setQuery] = useState("")
+  const [limit, setLimit] = useState(50)
+  const [offset, setOffset] = useState(0)
   const [statusFilter, setStatusFilter] = useState({ open: false, filter: "" })
   const [fulfillmentFilter, setFulfillmentFilter] = useState({
     open: false,
@@ -48,43 +51,106 @@ const OrderIndex = ({}) => {
     filter: "",
   })
 
-  const getFilterString = () => {
-    let filterString = ""
-    if (statusFilter.filter) {
-      filterString += `&status=${statusFilter.filter}`
-    }
-    if (fulfillmentFilter.filter) {
-      filterString += `&fulfillment_status=${fulfillmentFilter.filter}`
-    }
-    if (paymentFilter.filter) {
-      filterString += `&payment_status=${paymentFilter.filter}`
-    }
-    return filterString
-  }
-
-  const searchQuery = search => {
-    const filters = getFilterString()
-    if (filters) {
-      refresh({ search, filters: getFilterString() })
-    } else {
-      refresh({ search })
+  const onKeyDown = event => {
+    // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
+    if (event.key === "Enter") {
+      event.preventDefault()
+      event.stopPropagation()
+      searchQuery()
     }
   }
 
-  const delayedQuery = useCallback(
-    _.debounce(q => searchQuery(q), 500),
-    [statusFilter, fulfillmentFilter, paymentFilter]
-  )
+  const searchQuery = () => {
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    const prepared = qs.stringify(
+      {
+        q: query,
+        payment_status: paymentFilter.filter || "",
+        fulfillment_status: fulfillmentFilter.filter || "",
+        status: statusFilter.filter || "",
+        offset,
+        limit,
+      },
+      { skipNull: true, skipEmptyString: true }
+    )
+
+    window.history.replaceState(baseUrl, "", `?${prepared}`)
+    refresh({ search: `?${prepared}` })
+  }
+
+  const handlePagination = direction => {
+    const updatedOffset = direction === "next" ? offset + limit : offset - limit
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    const prepared = qs.stringify(
+      {
+        q: query,
+        payment_status: paymentFilter.filter || "",
+        fulfillment_status: fulfillmentFilter.filter || "",
+        status: statusFilter.filter || "",
+        offset: updatedOffset,
+        limit,
+      },
+      { skipNull: true, skipEmptyString: true }
+    )
+
+    window.history.replaceState(baseUrl, "", `?${prepared}`)
+
+    refresh({ search: `?${prepared}` }).then(() => {
+      setOffset(updatedOffset)
+    })
+  }
 
   useEffect(() => {
-    delayedQuery(query)
-  }, [query])
+    filtersOnLoad()
+  }, [isLoading])
+
+  const filtersOnLoad = () => {
+    const existing = qs.parse(window.location.search)
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    if (!existing.offset) {
+      existing.offset = offset
+    }
+
+    if (!existing.limit) {
+      existing.limit = limit
+    }
+
+    const prepared = qs.stringify(existing, {
+      skipNull: true,
+      skipEmptyString: true,
+    })
+
+    window.history.pushState(baseUrl, "", `?${prepared}`)
+
+    refresh({ search: `?${prepared}` })
+  }
 
   const submit = () => {
-    refresh({ filters: getFilterString() })
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    const prepared = qs.stringify(
+      {
+        q: query,
+        payment_status: paymentFilter.filter || "",
+        fulfillment_status: fulfillmentFilter.filter || "",
+        status: statusFilter.filter || "",
+        offset,
+        limit,
+      },
+      { skipNull: true, skipEmptyString: true }
+    )
+
+    window.history.replaceState(baseUrl, "", `?${prepared}`)
+    refresh({ search: `?${prepared}` })
   }
 
   const clear = () => {
+    const baseUrl = qs.parseUrl(window.location.href).url
+    setQuery("")
+    window.history.replaceState(baseUrl, "", `?limit=${limit}&offset=${offset}`)
     refresh()
   }
 
@@ -103,7 +169,7 @@ const OrderIndex = ({}) => {
       </Flex>
       <Flex>
         <Box ml="auto" />
-        <Box mb={3} sx={{ maxWidth: "300px" }} mr={3}>
+        <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
           <Input
             height="28px"
             fontSize="12px"
@@ -111,10 +177,19 @@ const OrderIndex = ({}) => {
             name="q"
             type="text"
             placeholder="Search orders"
+            onKeyDown={onKeyDown}
             onChange={e => setQuery(e.target.value)}
             value={query}
           />
         </Box>
+        <Button
+          onClick={() => searchQuery()}
+          variant={"primary"}
+          fontSize="12px"
+          mr={2}
+        >
+          Search
+        </Button>
         <Filter
           submitFilters={submit}
           clearFilters={clear}
@@ -183,6 +258,29 @@ const OrderIndex = ({}) => {
           </TableBody>
         </Table>
       )}
+      <Flex mt={2}>
+        <Box ml="auto" />
+        <Button
+          onClick={() => handlePagination("previous")}
+          disabled={offset === 0}
+          variant={"primary"}
+          fontSize="12px"
+          height="24px"
+          mr={1}
+        >
+          Previous
+        </Button>
+        <Button
+          onClick={() => handlePagination("next")}
+          disabled={total_count && total_count <= offset + limit}
+          variant={"primary"}
+          fontSize="12px"
+          height="24px"
+          ml={1}
+        >
+          Next
+        </Button>
+      </Flex>
     </Flex>
   )
 }

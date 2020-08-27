@@ -101,11 +101,7 @@ export default {
     },
 
     list(search = "") {
-      let path = `/admin/products`
-      if (search) {
-        path += `?q=${search}`
-      }
-
+      let path = `/admin/products${search}`
       return medusaRequest("GET", path)
     },
 
@@ -170,19 +166,8 @@ export default {
       return medusaRequest("POST", path, update)
     },
 
-    list(search = "", filters = "") {
-      let path = `/admin/orders`
-      if (search && !filters) {
-        path += `?q=${search}`
-      }
-
-      if (!search && filters) {
-        path += `?${filters}`
-      }
-
-      if (search && filters) {
-        path += `?q=${search}&${filters}`
-      }
+    list(search = "") {
+      let path = `/admin/orders${search}`
       return medusaRequest("GET", path)
     },
 

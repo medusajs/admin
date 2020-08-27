@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import ReactJson from "react-json-view"
+import styled from "@emotion/styled"
 import moment from "moment"
 
 import testThumbnail from "./thumbnail-test.jpg"
@@ -9,71 +10,77 @@ import RefundMenu from "./refund"
 
 import Card from "../../../components/card"
 import Spinner from "../../../components/spinner"
-import Modal from "../../../components/modal"
-import Button from "../../../components/button"
 
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
+import Typography from "../../../components/typography"
+import { navigate } from "gatsby"
 
-const LineItem = ({ lineItem, currency }) => (
-  <Flex pl={3} pt={3} alignItems="center">
-    <Flex flex="50% 0 0" alignItems="center" pr={3}>
-      <Image
-        src={lineItem.thumbnail || ""}
-        sx={{
-          width: 50,
-          height: 50,
-        }}
-      />
-      <Text ml={3} mr={5}>
-        <Box>{lineItem.title}</Box>
-        <Box>{lineItem.content.variant.sku}</Box>
-      </Text>
-      <Text color="gray">
-        {!Array.isArray(lineItem.content) && lineItem.content.unit_price}{" "}
-        {currency}
-      </Text>
-      <Text px={2} color="gray">
-        x
-      </Text>
-      <Text color="gray">
-        {lineItem.returned_quantity ? (
-          <>
-            <strike>{lineItem.quantity}</strike>{" "}
-            {lineItem.quantity - lineItem.returned_quantity}
-          </>
-        ) : (
-          lineItem.quantity
-        )}
-      </Text>
-    </Flex>
-    <Flex flex="30% 0 0" px={3} py={3}>
-      <Text pl={5}>
-        {!Array.isArray(lineItem.content) &&
-          lineItem.content.unit_price * lineItem.quantity}{" "}
-        {currency}
-      </Text>
-    </Flex>
-  </Flex>
+const CustomerEmailLabel = styled(Text)`
+  ${props =>
+    props.customerExist &&
+    `
+  color: #006fbb;
+  z-index: 1000;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+  `}
+`
+
+const LineItemLabel = styled(Text)`
+  ${Typography.Base};
+
+  cursor: pointer;
+
+  font-size: 10px;
+`
+
+const Divider = props => (
+  <Box
+    {...props}
+    as="hr"
+    m={props.m}
+    sx={{
+      bg: "#e3e8ee",
+      border: 0,
+      height: 1,
+    }}
+  />
 )
 
-const EditJsonModal = ({ json }) => {
+const LineItem = ({ lineItem, currency, taxRate }) => {
+  const productId = Array.isArray(lineItem.content)
+    ? lineItem.content[0].product._id
+    : lineItem.content.product._id
+
   return (
-    <Modal>
-      <Modal.Body as="form" onSubmit={() => console.log("test")}>
-        <Modal.Header>
-          <Text>Edit metadata</Text>
-        </Modal.Header>
-        <Modal.Content flexDirection="column">
-          <ReactJson src={json} />
-        </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
-          <Button type="submit" variant="primary">
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal.Body>
-    </Modal>
+    <Flex pl={3} alignItems="center">
+      <Flex pr={3}>
+        {lineItem.quantity} x{" "}
+        <Image
+          ml={3}
+          src={lineItem.thumbnail || ""}
+          sx={{
+            objectFit: "contain",
+            width: 35,
+            height: 35,
+          }}
+        />
+        <LineItemLabel
+          ml={2}
+          mr={5}
+          onClick={() => navigate(`/a/products/${productId}`)}
+        >
+          {lineItem.title}
+          <br /> {lineItem.content.variant.sku}
+          <br />
+          {(1 + taxRate) * lineItem.content.unit_price} {currency}
+        </LineItemLabel>
+      </Flex>
+    </Flex>
   )
 }
 
@@ -93,30 +100,6 @@ const OrderDetails = ({ id }) => {
   } = useMedusa("orders", {
     id,
   })
-
-  const dropdownOptions = [
-    { label: "Edit", onClick: () => setShowMetadataEdit(true) },
-  ]
-
-  const itemOptions = [
-    { label: "Register returns...", onClick: () => setShowReturnMenu(true) },
-  ]
-
-  const paymentOptions = []
-
-  if (!isLoading && order) {
-    if (order.payment_status !== "captured") {
-      paymentOptions.push({
-        label: "Capture Payment",
-        onClick: () => capturePayment(),
-      })
-    } else {
-      paymentOptions.push({
-        label: "Create Refund...",
-        onClick: () => setShowRefund(true),
-      })
-    }
-  }
 
   if (isLoading) {
     return (
@@ -139,6 +122,7 @@ const OrderDetails = ({ id }) => {
     return {
       items,
       refund_amount: r.refund_amount,
+      created: r.created,
     }
   })
 
@@ -148,7 +132,6 @@ const OrderDetails = ({ id }) => {
         <Card mb={2}>
           <Card.Header
             badge={{ label: order.status }}
-            dropdownOptions={dropdownOptions}
             action={
               order.status !== "archived" && {
                 type: "",
@@ -201,109 +184,150 @@ const OrderDetails = ({ id }) => {
       </Flex>
       {/* Line items */}
       <Card mb={2}>
-        <Card.Header dropdownOptions={itemOptions}>Items</Card.Header>
+        <Card.Header
+          action={{
+            type: "primary",
+            label: "Register returns",
+            onClick: () => setShowReturnMenu(!showReturnMenu),
+          }}
+        >
+          Timeline
+        </Card.Header>
         <Card.Body flexDirection="column">
+          <Text ml={3} fontSize={1} color="grey">
+            Placed
+          </Text>
+          <Text fontSize="11px" color="grey" ml={3} mb={3}>
+            {moment(order.created).format("MMMM Do YYYY, H:mm:ss")}
+          </Text>
           {order.items.map((lineItem, i) => (
             <LineItem
               key={i}
               currency={order.currency_code}
               lineItem={lineItem}
+              taxRate={order.region.tax_rate}
             />
           ))}
-          {returns.map(r => (
-            <Flex flexDirection="column" width={1}>
-              <Box
-                px={3}
-                mx={2}
-                my={3}
-                sx={{ borderRight: "hairline" }}
-                height={30}
-                width={"1px"}
-              />
-              <Box px={3}>Return</Box>
-              <Flex pl={3} mt={3} width={1}>
-                <Flex flex="50% 0 0" pr={3}>
-                  <Image
-                    src={testThumbnail}
-                    sx={{
-                      width: 50,
-                      height: 50,
-                    }}
+          {returns.length > 0 && <Divider m={3} />}
+          {returns &&
+            returns.map(r => (
+              <>
+                <Text ml={3} fontSize={1} color="grey">
+                  Items returned
+                </Text>
+                <Text fontSize="11px" color="grey" ml={3} mb={3}>
+                  {moment(parseInt(r.created)).format("MMMM Do YYYY, H:mm:ss")}
+                </Text>
+                {r.items.map((item, i) => (
+                  <LineItem
+                    key={i}
+                    currency={order.currency_code}
+                    lineItem={item.item}
+                    taxRate={order.region.tax_rate}
                   />
-                  <Box ml={3} mr={5}>
-                    {r.items.map(i => (
-                      <>
-                        <Box>
-                          {i.quantity} x {i.item.title}
-                        </Box>
-                        <Box>{i.item.content.variant.sku}</Box>
-                      </>
-                    ))}
-                  </Box>
-                </Flex>
-                <Flex flex="30% 0 0" px={3} py={3}>
-                  <Text pl={5}>
-                    {r.refund_amount} {order.currency_code}
-                  </Text>
-                </Flex>
-              </Flex>
-            </Flex>
-          ))}
-          <Flex px={3} pt={3}>
-            <Text pr={5}>Total</Text>
-            <Text>
-              {order.subtotal} {order.region.currency_code}
-            </Text>
-          </Flex>
+                ))}
+                {/* <Flex px={3} py={3}>
+                <Text pl={5}>
+                  {r.refund_amount} {order.currency_code}
+                </Text>
+              </Flex> */}
+              </>
+            ))}
+          {order.fulfillments.length > 0 && <Divider m={3} />}
+          {order.fulfillments &&
+            order.fulfillments.map(f => (
+              <>
+                <Text ml={3} fontSize={1} color="grey">
+                  Fulfilled
+                </Text>
+                <Text fontSize="11px" color="grey" ml={3} mb={3}>
+                  {moment(parseInt(f.created)).format("MMMM Do YYYY, H:mm:ss")}
+                </Text>
+                {f.items.map((item, i) => (
+                  <LineItem
+                    key={i}
+                    currency={order.currency_code}
+                    lineItem={item}
+                    taxRate={order.region.tax_rate}
+                  />
+                ))}
+              </>
+            ))}
         </Card.Body>
       </Card>
       {/* PAYMENT */}
       <Card mb={2}>
         <Card.Header
           badge={{ label: order.payment_status }}
-          dropdownOptions={paymentOptions}
+          action={
+            order.payment_status !== "captured"
+              ? {
+                  type: "",
+                  label: "Capture",
+                  onClick: () => capturePayment(),
+                  isLoading: isHandlingOrder,
+                }
+              : {
+                  type: "primary",
+                  label: "Refund",
+                  onClick: () => setShowRefund(!showRefund),
+                }
+          }
         >
           Payment
         </Card.Header>
-        <Card.Body>
-          <Box pl={3} pr={5}>
-            <Text color="gray">Subtotal</Text>
-            <Text pt={1} color="gray">
-              Shipping
-            </Text>
-            <Text pt={1} color="gray">
-              Tax
-            </Text>
-            <Text pt={2}>Total</Text>
-            {order.refunded_total > 0 && <Text pt={2}>Refunded</Text>}
-          </Box>
-          <Box px={3}>
-            <Text>
-              {order.subtotal} {order.region.currency_code}
-            </Text>
-            <Text pt={1}>
-              {order.shipping_total} {order.region.currency_code}
-            </Text>
-            <Text pt={1}>
-              {order.tax_total} {order.region.currency_code}
-            </Text>
-            <Text pt={2}>
-              {order.total} {order.region.currency_code}
-            </Text>
-            {order.refunded_total > 0 && (
-              <Text pt={2}>
-                {order.refunded_total} {order.currency_code}
+        <Card.Body flexDirection="column">
+          <Flex>
+            <Box pl={3} pr={5}>
+              <Text color="gray">Subtotal</Text>
+              <Text pt={1} color="gray">
+                Shipping
               </Text>
-            )}
-          </Box>
+              <Text pt={1} color="gray">
+                Tax
+              </Text>
+              <Text pt={1} color="gray">
+                Total
+              </Text>
+            </Box>
+            <Box px={3}>
+              <Text>
+                {order.subtotal * (1 + order.region.tax_rate)}{" "}
+                {order.region.currency_code}
+              </Text>
+              <Text pt={1}>
+                {order.shipping_total} {order.region.currency_code}
+              </Text>
+              <Text pt={1}>
+                {order.tax_total} {order.region.currency_code}
+              </Text>
+              <Text pt={1}>
+                {order.total} {order.region.currency_code}
+              </Text>
+            </Box>
+          </Flex>
+          <Divider mt={3} mb={1} mx={3} />
+          <Flex>
+            <Box pl={3} pr={5}>
+              <Text pt={2}>Amount paid</Text>
+              {order.refunded_total > 0 && <Text pt={2}>Refunded</Text>}
+            </Box>
+            <Box>
+              <Text pt={2}>
+                {order.total} {order.region.currency_code}
+              </Text>
+              {order.refunded_total > 0 && (
+                <Text pt={2}>
+                  {order.refunded_total} {order.currency_code}
+                </Text>
+              )}
+            </Box>
+          </Flex>
         </Card.Body>
       </Card>
       {/* FULFILLMENT */}
       <Card mb={2}>
-        <Card.Header
-          badge={{ label: order.fulfillment_status }}
-          dropdownOptions={dropdownOptions}
-        >
+        <Card.Header badge={{ label: order.fulfillment_status }}>
           Fulfillment
         </Card.Header>
         <Card.Body flexDirection="column">
@@ -345,15 +369,27 @@ const OrderDetails = ({ id }) => {
       </Card>
       {/* CUSTOMER */}
       <Card mr={3} mb={2} width="100%">
-        <Card.Header dropdownOptions={dropdownOptions}>Customer</Card.Header>
+        <Card.Header>Customer</Card.Header>
         <Card.Body>
           <Box px={3}>
             <Text color="gray">Contact</Text>
-            <Text pt={3}>
+            <CustomerEmailLabel
+              pt={3}
+              customerExist={order.customer}
+              onClick={() => {
+                if (order.customer) {
+                  navigate(`/a/customers/${order.customer._id}`)
+                } else {
+                  return
+                }
+              }}
+            >
+              {order.customer.email}
+            </CustomerEmailLabel>
+            <Text pt={2}>
               {order.shipping_address.first_name}{" "}
               {order.shipping_address.last_name}
             </Text>
-            <Text pt={2}>{order.email}</Text>
           </Box>
           <Card.VerticalDivider mx={3} />
           <Box px={3}>
@@ -395,7 +431,6 @@ const OrderDetails = ({ id }) => {
           />
         </Card.Body>
       </Card>
-      {/* {showMetadataEdit && <EditJsonModal json={order.metadata} />} */}
       {showReturnMenu && (
         <ReturnMenu
           onReturn={returnOrder}

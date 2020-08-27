@@ -115,10 +115,16 @@ const OrderFilterButton = ({
     }
   })
 
+  const submit = () => {
+    setIsOpen(false)
+    submitFilters()
+  }
+
   const clear = () => {
     setFulfillmentFilter({ open: false, filter: "" })
+    setStatusFilter({ open: false, filter: "" })
     setPaymentFilter({ open: false, filter: "" })
-    setPaymentFilter({ open: false, filter: "" })
+    setIsOpen(false)
     clearFilters()
   }
 
@@ -137,7 +143,7 @@ const OrderFilterButton = ({
         <ButtonContainer p={2}>
           <ClearButton onClick={() => clear()}>Clear</ClearButton>
           <Box ml="auto" />
-          <DoneButton onClick={() => submitFilters()}>Done</DoneButton>
+          <DoneButton onClick={() => submit()}>Done</DoneButton>
         </ButtonContainer>
         <FilterDropdownItem
           filterTitle="Status"

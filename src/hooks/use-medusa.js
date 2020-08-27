@@ -16,7 +16,7 @@ const useMedusa = (endpoint, query) => {
     throw Error(`Endpoint: "${endpoint}", does not exist`)
   }
 
-  const fetchData = async (refresh, query) => {
+  const fetchData = async (refresh, query, offset, limit) => {
     if (!refresh) {
       setLoading(true)
     }
@@ -36,7 +36,7 @@ const useMedusa = (endpoint, query) => {
         setResult(data)
         setLoading(false)
       } else if (!query.id) {
-        const { data } = await subcomponent.list(query.search, query.filters)
+        const { data } = await subcomponent.list(query.search)
         setResult(data)
       }
       setLoading(false)

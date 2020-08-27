@@ -50,7 +50,8 @@ export const buttons = {
     },
   },
   primary: {
-    minHeight: "28px",
+    minHeight: "24px",
+    height: "28px",
     fontWeight: "500",
     color: "dark",
     fontSize: "14px",
@@ -69,6 +70,11 @@ export const buttons = {
     },
     "&:active": {
       boxShadow: "buttonBoxShadowActive",
+    },
+    "&:disabled": {
+      cursor: "not-allowed",
+      pointerEvents: "none",
+      opacity: 0.5,
     },
   },
   green: {
