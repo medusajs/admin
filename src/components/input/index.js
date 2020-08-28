@@ -50,6 +50,8 @@ const InputField = React.forwardRef(
       type,
       inputStyle,
       required,
+      value,
+      onChange,
       ...props
     },
     ref
@@ -81,8 +83,10 @@ const InputField = React.forwardRef(
           min={min}
           max={max}
           sx={inputStyle}
+          value={value}
           step={step || "1"}
           placeholder={placeholder ? placeholder : "Placeholder"}
+          onChange={onChange}
         />
       </Flex>
     )
