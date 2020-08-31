@@ -116,6 +116,7 @@ const NewRegion = ({ id }) => {
           label="Tax Rate"
           ref={register}
         />
+        <Input mb={3} name="tax_code" label="Tax Code" ref={register} />
         <TagDropdown
           mb={3}
           label={"Countries"}

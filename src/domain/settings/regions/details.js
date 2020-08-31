@@ -144,6 +144,13 @@ const Regions = ({ id }) => {
                 label="Tax Rate"
                 ref={register}
               />
+              <Input
+                inline
+                mb={3}
+                name="tax_code"
+                label="Tax Code"
+                ref={register}
+              />
               <TagDropdown
                 inline
                 mb={3}
