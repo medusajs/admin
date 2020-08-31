@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, Fragment } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import ReactJson from "react-json-view"
 import styled from "@emotion/styled"
@@ -210,8 +210,8 @@ const OrderDetails = ({ id }) => {
           ))}
           {returns.length > 0 && <Divider m={3} />}
           {returns &&
-            returns.map(r => (
-              <>
+            returns.map((r, i) => (
+              <Fragment key={i}>
                 <Text ml={3} fontSize={1} color="grey">
                   Items returned
                 </Text>
@@ -231,12 +231,12 @@ const OrderDetails = ({ id }) => {
                   {r.refund_amount} {order.currency_code}
                 </Text>
               </Flex> */}
-              </>
+              </Fragment>
             ))}
           {order.fulfillments.length > 0 && <Divider m={3} />}
           {order.fulfillments &&
             order.fulfillments.map(f => (
-              <>
+              <Fragment key={f._id}>
                 <Text ml={3} fontSize={1} color="grey">
                   Fulfilled
                 </Text>
@@ -251,7 +251,7 @@ const OrderDetails = ({ id }) => {
                     taxRate={order.region.tax_rate}
                   />
                 ))}
-              </>
+              </Fragment>
             ))}
         </Card.Body>
       </Card>
@@ -307,22 +307,24 @@ const OrderDetails = ({ id }) => {
             </Box>
           </Flex>
           <Divider mt={3} mb={1} mx={3} />
-          <Flex>
-            <Box pl={3} pr={5}>
-              <Text pt={2}>Amount paid</Text>
-              {order.refunded_total > 0 && <Text pt={2}>Refunded</Text>}
-            </Box>
-            <Box>
-              <Text pt={2}>
-                {order.total} {order.region.currency_code}
-              </Text>
-              {order.refunded_total > 0 && (
+          {order.payment_status === "captured" && (
+            <Flex>
+              <Box pl={3} pr={5}>
+                <Text pt={2}>Amount paid</Text>
+                {order.refunded_total > 0 && <Text pt={2}>Refunded</Text>}
+              </Box>
+              <Box>
                 <Text pt={2}>
-                  {order.refunded_total} {order.currency_code}
+                  {order.total} {order.region.currency_code}
                 </Text>
-              )}
-            </Box>
-          </Flex>
+                {order.refunded_total > 0 && (
+                  <Text pt={2}>
+                    {order.refunded_total} {order.currency_code}
+                  </Text>
+                )}
+              </Box>
+            </Flex>
+          )}
         </Card.Body>
       </Card>
       {/* FULFILLMENT */}
@@ -384,7 +386,7 @@ const OrderDetails = ({ id }) => {
                 }
               }}
             >
-              {order.customer.email}
+              {order.email}
             </CustomerEmailLabel>
             <Text pt={2}>
               {order.shipping_address.first_name}{" "}
