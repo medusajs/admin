@@ -1,23 +1,30 @@
-import React, { useEffect } from "react"
-import { Text, Flex, Box } from "rebass"
+import React, { useEffect, useState } from "react"
+import { Flex, Box } from "rebass"
 import { useForm } from "react-hook-form"
+
+import Medusa from "../../../../services/api"
 
 import Button from "../../../../components/button"
 import Card from "../../../../components/card"
 import Input from "../../../../components/input"
 import TextArea from "../../../../components/textarea"
+import ImageUpload from "../../../../components/image-upload"
 import Spinner from "../../../../components/spinner"
 
 const Information = ({ isLoading, product, onSubmit, onDelete }) => {
   const { register, reset, handleSubmit } = useForm()
+  const [thumbnail, setThumbnail] = useState("")
 
   useEffect(() => {
-    if (isLoading) return
-    reset({
-      title: product.title,
-      description: product.description,
-    })
-  }, [product, isLoading])
+    if (product) {
+      reset({
+        title: product.title,
+        description: product.description,
+        thumbnail: product.thumbnail,
+      })
+      setThumbnail(product.thumbnail)
+    }
+  }, [product])
 
   const dropdownOptions = [
     {
@@ -27,12 +34,40 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
     },
   ]
 
+  const onImageChange = e => {
+    if (e.target.files.length > 0) {
+      Medusa.uploads.create(e.target.files).then(({ data }) => {
+        const uploaded = data.uploads.map(({ url }) => url)
+        setThumbnail(uploaded[0])
+      })
+    }
+  }
+
+  const handleOnSubmit = data => {
+    const updateData = {
+      ...data,
+      thumbnail,
+    }
+
+    onSubmit(updateData)
+  }
+
+  if (isLoading) {
+    return (
+      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
+        <Box height="75px" width="75px" mt="50%">
+          <Spinner dark />
+        </Box>
+      </Flex>
+    )
+  }
+
   return (
-    <Card as="form" onSubmit={handleSubmit(onSubmit)} mb={2}>
+    <Card as="form" onSubmit={handleSubmit(handleOnSubmit)} mb={2}>
       <Card.Header dropdownOptions={dropdownOptions}>
         Product Information
       </Card.Header>
-      <Card.Body px={3}>
+      <Card.Body px={3} flexDirection="column">
         <Flex width={1} flexDirection={"column"}>
           <Box mb={3} width={1 / 2}>
             <Input inline name="title" label="Name" ref={register} />
@@ -45,6 +80,14 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
               ref={register}
             />
           </Box>
+        </Flex>
+        <Flex mb={3}>
+          <ImageUpload
+            onChange={onImageChange}
+            name="files"
+            label="Thumbnail"
+            value={thumbnail}
+          />
         </Flex>
       </Card.Body>
       <Card.Footer px={3} justifyContent="flex-end">

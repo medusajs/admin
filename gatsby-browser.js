@@ -11,7 +11,7 @@ export const shouldUpdateScroll = ({ routerProps: { location } }) => {
 export const wrapPageElement = ({ element }) => {
   return (
     <AccountProvider>
-      <ToastProvider autoDismiss={true}>
+      <ToastProvider autoDismiss={true} placement="bottom-left">
         <Provider>{element}</Provider>
       </ToastProvider>
     </AccountProvider>

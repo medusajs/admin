@@ -96,7 +96,9 @@ const OrderDetails = ({ id }) => {
     return: returnOrder,
     refund,
     isLoading,
-    refresh,
+    archive,
+    complete,
+    toaster,
   } = useMedusa("orders", {
     id,
   })
@@ -139,9 +141,17 @@ const OrderDetails = ({ id }) => {
                 onClick: () => {
                   setIsHandlingOrder(true)
                   if (order.status === "completed") {
-                    Medusa.orders.archive(order._id).then(refresh)
+                    archive(order._id)
+                      .then(() =>
+                        toaster("Order successfully archived", "success")
+                      )
+                      .catch(() => toaster("Failed to archive order", "error"))
                   } else if (order.status === "pending") {
-                    Medusa.orders.complete(order._id).then(refresh)
+                    complete(order._id)
+                      .then(() =>
+                        toaster("Order successfully completed", "success")
+                      )
+                      .catch(() => toaster("Failed to complete order", "error"))
                   }
                   setIsHandlingOrder(false)
                 },
@@ -264,7 +274,15 @@ const OrderDetails = ({ id }) => {
               ? {
                   type: "",
                   label: "Capture",
-                  onClick: () => capturePayment(),
+                  onClick: () => {
+                    capturePayment()
+                      .then(() =>
+                        toaster("Succesfully captured payment", "success")
+                      )
+                      .catch(() =>
+                        toaster("Failed to capture payment", "error")
+                      )
+                  },
                   isLoading: isHandlingOrder,
                 }
               : {
@@ -438,6 +456,7 @@ const OrderDetails = ({ id }) => {
           onReturn={returnOrder}
           order={order}
           onDismiss={() => setShowReturnMenu(false)}
+          toaster={toaster}
         />
       )}
       {showRefund && (
@@ -445,6 +464,7 @@ const OrderDetails = ({ id }) => {
           onRefund={refund}
           order={order}
           onDismiss={() => setShowRefund(false)}
+          toaster={toaster}
         />
       )}
     </Flex>

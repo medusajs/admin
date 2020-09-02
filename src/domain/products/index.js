@@ -46,8 +46,8 @@ const ProductIndex = () => {
     const prepared = qs.stringify(
       {
         q: query,
-        offset,
-        limit,
+        offset: 0,
+        limit: 50,
       },
       { skipNull: true, skipEmptyString: true }
     )

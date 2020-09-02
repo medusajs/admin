@@ -69,8 +69,6 @@ const OrderIndex = ({}) => {
         payment_status: paymentFilter.filter || "",
         fulfillment_status: fulfillmentFilter.filter || "",
         status: statusFilter.filter || "",
-        offset,
-        limit,
       },
       { skipNull: true, skipEmptyString: true }
     )
@@ -155,7 +153,7 @@ const OrderIndex = ({}) => {
   }
 
   return (
-    <Flex flexDirection="column">
+    <Flex flexDirection="column" mb={5}>
       <Flex>
         <Text mb={3}>Orders</Text>
         <Box ml="auto" />

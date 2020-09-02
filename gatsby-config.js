@@ -21,6 +21,14 @@ module.exports = {
       },
     },
     `gatsby-transformer-sharp`,
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `medusa-admin`,
+        short_name: `medusa`,
+        icon: `src/images/logo.svg`,
+      },
+    },
     `gatsby-plugin-sharp`,
     {
       resolve: `gatsby-plugin-create-client-paths`,
