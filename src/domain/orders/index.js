@@ -69,6 +69,8 @@ const OrderIndex = ({}) => {
         payment_status: paymentFilter.filter || "",
         fulfillment_status: fulfillmentFilter.filter || "",
         status: statusFilter.filter || "",
+        offset: 0,
+        limit: 50,
       },
       { skipNull: true, skipEmptyString: true }
     )
