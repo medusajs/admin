@@ -21,11 +21,24 @@ import Button from "../../components/button"
 import Spinner from "../../components/spinner"
 
 const CustomerIndex = () => {
-  const LIMIT = 50
+  const filtersOnLoad = qs.parse(window.location.search)
 
-  const { customers, isLoading, refresh, total_count } = useMedusa("customers")
+  if (!filtersOnLoad.offset) {
+    filtersOnLoad.offset = 0
+  }
+
+  if (!filtersOnLoad.limit) {
+    filtersOnLoad.limit = 50
+  }
+
+  const { customers, isLoading, refresh, total_count } = useMedusa(
+    "customers",
+    {
+      search: `?${qs.stringify(filtersOnLoad)}`,
+    }
+  )
   const [offset, setOffset] = useState(0)
-  const [hasNextPage, setHasNextPage] = useState(false)
+  const [limit, setLimit] = useState(50)
   const [query, setQuery] = useState("")
 
   const onKeyDown = event => {
@@ -45,7 +58,7 @@ const CustomerIndex = () => {
       {
         q: query,
         offset: 0,
-        limit: LIMIT,
+        limit,
       },
       { skipNull: true, skipEmptyString: true }
     )
@@ -55,52 +68,26 @@ const CustomerIndex = () => {
   }
 
   const handlePagination = direction => {
-    const updatedOffset = direction === "next" ? offset + LIMIT : offset - LIMIT
+    const updatedOffset = direction === "next" ? offset + limit : offset - limit
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const prepared = qs.stringify(
       {
         q: query,
         offset: updatedOffset,
-        limit: LIMIT,
+        limit,
       },
       { skipNull: true, skipEmptyString: true }
     )
 
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
+    window.history.pushState(baseUrl, "", `?${prepared}`)
 
     refresh({ search: `?${prepared}` }).then(() => {
       setOffset(updatedOffset)
     })
   }
 
-  useEffect(() => {
-    filtersOnLoad()
-  }, [isLoading])
-
-  const filtersOnLoad = () => {
-    const existing = qs.parse(window.location.search)
-    const baseUrl = qs.parseUrl(window.location.href).url
-
-    if (!existing.offset) {
-      existing.offset = offset
-    }
-
-    if (!existing.limit) {
-      existing.limit = LIMIT
-    }
-
-    const prepared = qs.stringify(existing, {
-      skipNull: true,
-      skipEmptyString: true,
-    })
-
-    window.history.pushState(baseUrl, "", `?${prepared}`)
-
-    refresh({ search: `?${prepared}` })
-  }
-
-  const moreResults = total_count > offset + LIMIT
+  const moreResults = customers && customers.length >= limit
 
   return (
     <Flex flexDirection="column" mb={5}>

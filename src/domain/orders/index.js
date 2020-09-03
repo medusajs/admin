@@ -37,7 +37,20 @@ const OrderNumCell = styled(Text)`
 `
 
 const OrderIndex = ({}) => {
-  const { orders, total_count, isLoading, refresh } = useMedusa("orders")
+  const filtersOnLoad = qs.parse(window.location.search)
+
+  if (!filtersOnLoad.offset) {
+    filtersOnLoad.offset = 0
+  }
+
+  if (!filtersOnLoad.limit) {
+    filtersOnLoad.limit = 50
+  }
+
+  const { orders, total_count, isLoading, refresh } = useMedusa("orders", {
+    search: `?${qs.stringify(filtersOnLoad)}`,
+  })
+
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(50)
   const [offset, setOffset] = useState(0)
@@ -103,32 +116,6 @@ const OrderIndex = ({}) => {
     })
   }
 
-  useEffect(() => {
-    filtersOnLoad()
-  }, [isLoading])
-
-  const filtersOnLoad = () => {
-    const existing = qs.parse(window.location.search)
-    const baseUrl = qs.parseUrl(window.location.href).url
-
-    if (!existing.offset) {
-      existing.offset = offset
-    }
-
-    if (!existing.limit) {
-      existing.limit = limit
-    }
-
-    const prepared = qs.stringify(existing, {
-      skipNull: true,
-      skipEmptyString: true,
-    })
-
-    window.history.pushState(baseUrl, "", `?${prepared}`)
-
-    refresh({ search: `?${prepared}` })
-  }
-
   const submit = () => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
@@ -154,6 +141,8 @@ const OrderIndex = ({}) => {
     window.history.replaceState(baseUrl, "", `?limit=${limit}&offset=${offset}`)
     refresh()
   }
+
+  const moreResults = orders && orders.length >= limit
 
   return (
     <Flex flexDirection="column" mb={5}>
@@ -288,7 +277,7 @@ const OrderIndex = ({}) => {
         </Button>
         <Button
           onClick={() => handlePagination("next")}
-          disabled={total_count && total_count <= offset + limit}
+          disabled={!moreResults}
           variant={"primary"}
           fontSize="12px"
           height="24px"

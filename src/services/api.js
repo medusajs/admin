@@ -32,8 +32,8 @@ export default {
       const path = `/admin/customers/${customerId}`
       return medusaRequest("GET", path)
     },
-    list() {
-      const path = `/admin/customers`
+    list(search = "") {
+      const path = `/admin/customers${search}`
       return medusaRequest("GET", path)
     },
   },

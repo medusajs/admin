@@ -26,7 +26,19 @@ import Button from "../../components/button"
 import qs from "query-string"
 
 const ProductIndex = () => {
-  const { products, total_count, isLoading, refresh } = useMedusa("products")
+  const filtersOnLoad = qs.parse(window.location.search)
+
+  if (!filtersOnLoad.offset) {
+    filtersOnLoad.offset = 0
+  }
+
+  if (!filtersOnLoad.limit) {
+    filtersOnLoad.limit = 50
+  }
+
+  const { products, total_count, isLoading, refresh } = useMedusa("products", {
+    search: `?${qs.stringify(filtersOnLoad)}`,
+  })
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(50)
   const [offset, setOffset] = useState(0)
@@ -70,40 +82,14 @@ const ProductIndex = () => {
       { skipNull: true, skipEmptyString: true }
     )
 
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
+    window.history.pushState(baseUrl, "", `?${prepared}`)
 
     refresh({ search: `?${prepared}` }).then(() => {
       setOffset(updatedOffset)
     })
   }
 
-  useEffect(() => {
-    filtersOnLoad()
-  }, [isLoading])
-
-  const filtersOnLoad = () => {
-    const existing = qs.parse(window.location.search)
-    const baseUrl = qs.parseUrl(window.location.href).url
-
-    if (!existing.offset) {
-      existing.offset = offset
-    }
-
-    if (!existing.limit) {
-      existing.limit = limit
-    }
-
-    const prepared = qs.stringify(existing, {
-      skipNull: true,
-      skipEmptyString: true,
-    })
-
-    window.history.pushState(baseUrl, "", `?${prepared}`)
-
-    refresh({ search: `?${prepared}` })
-  }
-
-  const moreResults = total_count > offset + limit
+  const moreResults = products && products.length >= limit
 
   return (
     <Flex flexDirection="column" mb={5}>
