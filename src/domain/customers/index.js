@@ -3,6 +3,7 @@ import { navigate } from "gatsby"
 import { Router } from "@reach/router"
 import { Input } from "@rebass/forms"
 import { Text, Flex, Box } from "rebass"
+import qs from "query-string"
 import Details from "./details"
 
 import useMedusa from "../../hooks/use-medusa"
@@ -16,28 +17,93 @@ import {
   TableDataCell,
   TableHeaderRow,
 } from "../../components/table"
+import Button from "../../components/button"
 import Spinner from "../../components/spinner"
 
 const CustomerIndex = () => {
-  const { customers, isLoading, refresh } = useMedusa("customers")
+  const LIMIT = 50
 
+  const { customers, isLoading, refresh, total_count } = useMedusa("customers")
+  const [offset, setOffset] = useState(0)
+  const [hasNextPage, setHasNextPage] = useState(false)
   const [query, setQuery] = useState("")
 
-  const searchQuery = search => {
-    refresh({ search })
+  const onKeyDown = event => {
+    // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
+    if (event.key === "Enter") {
+      event.preventDefault()
+      event.stopPropagation()
+      searchQuery()
+    }
   }
 
-  const delayedQuery = useCallback(
-    _.debounce(q => searchQuery(q), 500),
-    []
-  )
+  const searchQuery = () => {
+    setOffset(0)
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    const prepared = qs.stringify(
+      {
+        q: query,
+        offset: 0,
+        limit: LIMIT,
+      },
+      { skipNull: true, skipEmptyString: true }
+    )
+
+    window.history.pushState(baseUrl, "", `?${prepared}`)
+    refresh({ search: `?${prepared}` })
+  }
+
+  const handlePagination = direction => {
+    const updatedOffset = direction === "next" ? offset + LIMIT : offset - LIMIT
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    const prepared = qs.stringify(
+      {
+        q: query,
+        offset: updatedOffset,
+        limit: LIMIT,
+      },
+      { skipNull: true, skipEmptyString: true }
+    )
+
+    window.history.replaceState(baseUrl, "", `?${prepared}`)
+
+    refresh({ search: `?${prepared}` }).then(() => {
+      setOffset(updatedOffset)
+    })
+  }
 
   useEffect(() => {
-    delayedQuery(query)
-  }, [query])
+    filtersOnLoad()
+  }, [isLoading])
+
+  const filtersOnLoad = () => {
+    const existing = qs.parse(window.location.search)
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    if (!existing.offset) {
+      existing.offset = offset
+    }
+
+    if (!existing.limit) {
+      existing.limit = LIMIT
+    }
+
+    const prepared = qs.stringify(existing, {
+      skipNull: true,
+      skipEmptyString: true,
+    })
+
+    window.history.pushState(baseUrl, "", `?${prepared}`)
+
+    refresh({ search: `?${prepared}` })
+  }
+
+  const moreResults = total_count > offset + LIMIT
 
   return (
-    <Flex flexDirection="column">
+    <Flex flexDirection="column" mb={5}>
       <Flex>
         <Text mb={3}>Customers</Text>
       </Flex>
@@ -50,10 +116,19 @@ const CustomerIndex = () => {
             name="q"
             type="text"
             placeholder="Search customers"
+            onKeyDown={onKeyDown}
             onChange={e => setQuery(e.target.value)}
             value={query}
           />
         </Box>
+        <Button
+          onClick={() => searchQuery()}
+          variant={"primary"}
+          fontSize="12px"
+          ml={2}
+        >
+          Search
+        </Button>
       </Flex>
       {isLoading ? (
         <Flex
@@ -93,6 +168,29 @@ const CustomerIndex = () => {
           </TableBody>
         </Table>
       )}
+      <Flex mt={2}>
+        <Box ml="auto" />
+        <Button
+          onClick={() => handlePagination("previous")}
+          disabled={offset === 0}
+          variant={"primary"}
+          fontSize="12px"
+          height="24px"
+          mr={1}
+        >
+          Previous
+        </Button>
+        <Button
+          onClick={() => handlePagination("next")}
+          disabled={!moreResults}
+          variant={"primary"}
+          fontSize="12px"
+          height="24px"
+          ml={1}
+        >
+          Next
+        </Button>
+      </Flex>
     </Flex>
   )
 }
