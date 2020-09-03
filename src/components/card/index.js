@@ -31,7 +31,11 @@ Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
       <Text p={3} flexGrow="1" fontWeight="bold">
         {children}
         {!!badge && (
-          <Badge ml={3} color="#4f566b" bg="#e3e8ee">
+          <Badge
+            ml={3}
+            color={badge.color || "#4f566b"}
+            bg={badge.bgColor || "#e3e8ee"}
+          >
             {badge.label}
           </Badge>
         )}

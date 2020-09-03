@@ -128,6 +128,15 @@ const OrderDetails = ({ id }) => {
     }
   })
 
+  const fulfillmentBgColor =
+    order.fulfillment_status === "fulfilled" ? "#4BB543" : "#e3e8ee"
+  const fulfillmentColor =
+    order.fulfillment_status === "fulfilled" ? "white" : "#4f566b"
+
+  const paymentBgColor =
+    order.payment_status === "captured" ? "#4BB543" : "#e3e8ee"
+  const paymentColor = order.payment_status === "captured" ? "white" : "#4f566b"
+
   return (
     <Flex flexDirection="column" mb={5}>
       <Flex flexDirection="column" mb={5}>
@@ -268,7 +277,11 @@ const OrderDetails = ({ id }) => {
       {/* PAYMENT */}
       <Card mb={2}>
         <Card.Header
-          badge={{ label: order.payment_status }}
+          badge={{
+            label: order.payment_status,
+            color: paymentColor,
+            bgColor: paymentBgColor,
+          }}
           action={
             order.payment_status !== "captured"
               ? {
@@ -347,7 +360,13 @@ const OrderDetails = ({ id }) => {
       </Card>
       {/* FULFILLMENT */}
       <Card mb={2}>
-        <Card.Header badge={{ label: order.fulfillment_status }}>
+        <Card.Header
+          badge={{
+            label: order.fulfillment_status,
+            color: fulfillmentColor,
+            bgColor: fulfillmentBgColor,
+          }}
+        >
           Fulfillment
         </Card.Header>
         <Card.Body flexDirection="column">
