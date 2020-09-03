@@ -13,7 +13,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
   const [editOption, setEditOption] = useState(null)
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [showAddOption, setAddOption] = useState(false)
-  const { shipping_options, refresh, isLoading } = useMedusa(
+  const { shipping_options, refresh, isLoading, toaster } = useMedusa(
     "shippingOptions",
     {
       search: {
@@ -29,7 +29,13 @@ const Shipping = ({ region, fulfillmentMethods }) => {
   }, [])
 
   const handleShippingUpdated = () => {
-    refresh()
+    refresh({
+      search: {
+        region_id: region._id,
+      },
+    })
+      .then(() => toaster("Successfully updated shipping options", "success"))
+      .catch(() => toaster("Failed to update shipping options", "error"))
   }
 
   const dropdownOptions = [

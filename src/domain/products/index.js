@@ -41,13 +41,14 @@ const ProductIndex = () => {
   }
 
   const searchQuery = () => {
+    setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const prepared = qs.stringify(
       {
         q: query,
-        offset,
-        limit,
+        offset: 0,
+        limit: 50,
       },
       { skipNull: true, skipEmptyString: true }
     )

@@ -96,7 +96,9 @@ const OrderDetails = ({ id }) => {
     return: returnOrder,
     refund,
     isLoading,
-    refresh,
+    archive,
+    complete,
+    toaster,
   } = useMedusa("orders", {
     id,
   })
@@ -126,6 +128,15 @@ const OrderDetails = ({ id }) => {
     }
   })
 
+  const fulfillmentBgColor =
+    order.fulfillment_status === "fulfilled" ? "#4BB543" : "#e3e8ee"
+  const fulfillmentColor =
+    order.fulfillment_status === "fulfilled" ? "white" : "#4f566b"
+
+  const paymentBgColor =
+    order.payment_status === "captured" ? "#4BB543" : "#e3e8ee"
+  const paymentColor = order.payment_status === "captured" ? "white" : "#4f566b"
+
   return (
     <Flex flexDirection="column" mb={5}>
       <Flex flexDirection="column" mb={5}>
@@ -139,9 +150,17 @@ const OrderDetails = ({ id }) => {
                 onClick: () => {
                   setIsHandlingOrder(true)
                   if (order.status === "completed") {
-                    Medusa.orders.archive(order._id).then(refresh)
+                    archive(order._id)
+                      .then(() =>
+                        toaster("Order successfully archived", "success")
+                      )
+                      .catch(() => toaster("Failed to archive order", "error"))
                   } else if (order.status === "pending") {
-                    Medusa.orders.complete(order._id).then(refresh)
+                    complete(order._id)
+                      .then(() =>
+                        toaster("Order successfully completed", "success")
+                      )
+                      .catch(() => toaster("Failed to complete order", "error"))
                   }
                   setIsHandlingOrder(false)
                 },
@@ -258,13 +277,25 @@ const OrderDetails = ({ id }) => {
       {/* PAYMENT */}
       <Card mb={2}>
         <Card.Header
-          badge={{ label: order.payment_status }}
+          badge={{
+            label: order.payment_status,
+            color: paymentColor,
+            bgColor: paymentBgColor,
+          }}
           action={
             order.payment_status !== "captured"
               ? {
                   type: "",
                   label: "Capture",
-                  onClick: () => capturePayment(),
+                  onClick: () => {
+                    capturePayment()
+                      .then(() =>
+                        toaster("Succesfully captured payment", "success")
+                      )
+                      .catch(() =>
+                        toaster("Failed to capture payment", "error")
+                      )
+                  },
                   isLoading: isHandlingOrder,
                 }
               : {
@@ -329,7 +360,13 @@ const OrderDetails = ({ id }) => {
       </Card>
       {/* FULFILLMENT */}
       <Card mb={2}>
-        <Card.Header badge={{ label: order.fulfillment_status }}>
+        <Card.Header
+          badge={{
+            label: order.fulfillment_status,
+            color: fulfillmentColor,
+            bgColor: fulfillmentBgColor,
+          }}
+        >
           Fulfillment
         </Card.Header>
         <Card.Body flexDirection="column">
@@ -438,6 +475,7 @@ const OrderDetails = ({ id }) => {
           onReturn={returnOrder}
           order={order}
           onDismiss={() => setShowReturnMenu(false)}
+          toaster={toaster}
         />
       )}
       {showRefund && (
@@ -445,6 +483,7 @@ const OrderDetails = ({ id }) => {
           onRefund={refund}
           order={order}
           onDismiss={() => setShowRefund(false)}
+          toaster={toaster}
         />
       )}
     </Flex>

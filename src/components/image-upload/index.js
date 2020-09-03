@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react"
-import { Flex } from "rebass"
+import { Flex, Image } from "rebass"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Typography from "../typography"
@@ -39,7 +39,7 @@ const Container = styled(Flex)`
   }
 `
 
-const ImageUpload = ({ label, name, onChange }) => {
+const ImageUpload = ({ label, name, onChange, value }) => {
   const [focus, setFocus] = useState(false)
   const dropRef = useRef()
   const inputRef = useRef()
@@ -99,7 +99,7 @@ const ImageUpload = ({ label, name, onChange }) => {
           type="file"
           accept="image/*"
         />
-        <div>Upload</div>
+        {value ? <Image src={value} /> : <div>Upload</div>}
       </Container>
     </Flex>
   )

@@ -6,6 +6,7 @@ import ToastLabel from "../components/toast"
 
 const useMedusa = (endpoint, query) => {
   const [isLoading, setLoading] = useState(true)
+  const [isReloading, setReloading] = useState(false)
   const [didFail, setDidFail] = useState(false)
   const [result, setResult] = useState({})
 
@@ -19,6 +20,8 @@ const useMedusa = (endpoint, query) => {
   const fetchData = async (refresh, query, offset, limit) => {
     if (!refresh) {
       setLoading(true)
+    } else {
+      setReloading(true)
     }
     try {
       if (!query) {
@@ -26,23 +29,28 @@ const useMedusa = (endpoint, query) => {
           const { data } = await subcomponent.list()
           setResult(data)
           setLoading(false)
+          setReloading(false)
         } else {
           const { data } = await subcomponent.retrieve()
           setResult(data)
           setLoading(false)
+          setReloading(false)
         }
       } else if (query.id) {
         const { data } = await subcomponent.retrieve(query.id)
         setResult(data)
         setLoading(false)
+        setReloading(false)
       } else if (!query.id) {
         const { data } = await subcomponent.list(query.search)
         setResult(data)
       }
       setLoading(false)
+      setReloading(false)
     } catch (error) {
       setDidFail(true)
       setLoading(false)
+      setReloading(false)
     }
   }
 
@@ -58,6 +66,7 @@ const useMedusa = (endpoint, query) => {
     ...result,
     refresh: query => fetchData(true, query),
     isLoading,
+    isReloading,
     toaster,
     didFail,
   }
@@ -78,6 +87,18 @@ const useMedusa = (endpoint, query) => {
       if (query && query.id) {
         value.capturePayment = () => {
           return subcomponent.capturePayment(query.id).then(({ data }) => {
+            setResult(data)
+          })
+        }
+
+        value.archive = () => {
+          return subcomponent.archive(query.id).then(({ data }) => {
+            setResult(data)
+          })
+        }
+
+        value.complete = () => {
+          return subcomponent.complete(query.id).then(({ data }) => {
             setResult(data)
           })
         }

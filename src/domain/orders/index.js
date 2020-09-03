@@ -61,6 +61,7 @@ const OrderIndex = ({}) => {
   }
 
   const searchQuery = () => {
+    setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const prepared = qs.stringify(
@@ -69,8 +70,8 @@ const OrderIndex = ({}) => {
         payment_status: paymentFilter.filter || "",
         fulfillment_status: fulfillmentFilter.filter || "",
         status: statusFilter.filter || "",
-        offset,
-        limit,
+        offset: 0,
+        limit: 50,
       },
       { skipNull: true, skipEmptyString: true }
     )
@@ -155,7 +156,7 @@ const OrderIndex = ({}) => {
   }
 
   return (
-    <Flex flexDirection="column">
+    <Flex flexDirection="column" mb={5}>
       <Flex>
         <Text mb={3}>Orders</Text>
         <Box ml="auto" />
@@ -225,36 +226,51 @@ const OrderIndex = ({}) => {
             </TableHeaderRow>
           </TableHead>
           <TableBody>
-            {orders.map((el, i) => (
-              <TableRow key={i} onClick={() => navigate(`/a/orders/${el._id}`)}>
-                <TableDataCell>
-                  <OrderNumCell>#{el.display_id}</OrderNumCell>
-                </TableDataCell>
-                <TableDataCell
-                  data-for={el._id}
-                  data-tip={moment(el.created).format("MMMM Do YYYY HH:mm a")}
+            {orders.map((el, i) => {
+              const fulfillmentBgColor =
+                el.fulfillment_status === "fulfilled" ? "#4BB543" : "#e3e8ee"
+              const fulfillmentColor =
+                el.fulfillment_status === "fulfilled" ? "white" : "#4f566b"
+
+              const paymentBgColor =
+                el.payment_status === "captured" ? "#4BB543" : "#e3e8ee"
+              const paymentColor =
+                el.payment_status === "captured" ? "white" : "#4f566b"
+
+              return (
+                <TableRow
+                  key={i}
+                  onClick={() => navigate(`/a/orders/${el._id}`)}
                 >
-                  <ReactTooltip id={el._id} place="top" effect="solid" />
-                  {moment(el.created).format("MMM Do YYYY")}
-                </TableDataCell>
-                <TableDataCell>{el.email}</TableDataCell>
-                <TableDataCell>
-                  <Box>
-                    <Badge color="#4f566b" bg="#e3e8ee">
-                      {el.payment_status}
-                    </Badge>
-                  </Box>
-                </TableDataCell>
-                <TableDataCell>
-                  <Box>
-                    <Badge color="#4f566b" bg="#e3e8ee">
-                      {el.fulfillment_status}
-                    </Badge>
-                  </Box>
-                </TableDataCell>
-                <TableDataCell>{el.items.length || 0}</TableDataCell>
-              </TableRow>
-            ))}
+                  <TableDataCell>
+                    <OrderNumCell>#{el.display_id}</OrderNumCell>
+                  </TableDataCell>
+                  <TableDataCell
+                    data-for={el._id}
+                    data-tip={moment(el.created).format("MMMM Do YYYY HH:mm a")}
+                  >
+                    <ReactTooltip id={el._id} place="top" effect="solid" />
+                    {moment(el.created).format("MMM Do YYYY")}
+                  </TableDataCell>
+                  <TableDataCell>{el.email}</TableDataCell>
+                  <TableDataCell>
+                    <Box>
+                      <Badge color={paymentColor} bg={paymentBgColor}>
+                        {el.payment_status}
+                      </Badge>
+                    </Box>
+                  </TableDataCell>
+                  <TableDataCell>
+                    <Box>
+                      <Badge color={fulfillmentColor} bg={fulfillmentBgColor}>
+                        {el.fulfillment_status}
+                      </Badge>
+                    </Box>
+                  </TableDataCell>
+                  <TableDataCell>{el.items.length || 0}</TableDataCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       )}

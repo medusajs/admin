@@ -9,7 +9,7 @@ import Select from "../../../../components/select"
 
 import useMedusa from "../../../../hooks/use-medusa"
 
-const RefundMenu = ({ order, onRefund, onDismiss }) => {
+const RefundMenu = ({ order, onRefund, onDismiss, toaster }) => {
   const [note, setNote] = useState("")
   const [reason, setReason] = useState("discount")
   const [refundAmount, setRefundAmount] = useState(0)
@@ -27,6 +27,9 @@ const RefundMenu = ({ order, onRefund, onDismiss }) => {
         reason,
         note,
       })
+        .then(() => onDismiss())
+        .then(() => toaster("Successfully refunded order", "success"))
+        .catch(() => toaster("Failed to refund order", "error"))
     }
   }
 
