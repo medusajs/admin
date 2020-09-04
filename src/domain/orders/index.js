@@ -209,9 +209,9 @@ const OrderIndex = ({}) => {
               <TableHeaderCell>Order</TableHeaderCell>
               <TableHeaderCell>Date</TableHeaderCell>
               <TableHeaderCell>Customer</TableHeaderCell>
-              <TableHeaderCell>Payment</TableHeaderCell>
               <TableHeaderCell>Fulfillment</TableHeaderCell>
-              <TableHeaderCell>Items</TableHeaderCell>
+              <TableHeaderCell>Payment status</TableHeaderCell>
+              <TableHeaderCell>Payment provider</TableHeaderCell>
             </TableHeaderRow>
           </TableHead>
           <TableBody>
@@ -244,19 +244,19 @@ const OrderIndex = ({}) => {
                   <TableDataCell>{el.email}</TableDataCell>
                   <TableDataCell>
                     <Box>
-                      <Badge color={paymentColor} bg={paymentBgColor}>
-                        {el.payment_status}
-                      </Badge>
-                    </Box>
-                  </TableDataCell>
-                  <TableDataCell>
-                    <Box>
                       <Badge color={fulfillmentColor} bg={fulfillmentBgColor}>
                         {el.fulfillment_status}
                       </Badge>
                     </Box>
                   </TableDataCell>
-                  <TableDataCell>{el.items.length || 0}</TableDataCell>
+                  <TableDataCell>
+                    <Box>
+                      <Badge color={paymentColor} bg={paymentBgColor}>
+                        {el.payment_status}
+                      </Badge>
+                    </Box>
+                  </TableDataCell>
+                  <TableDataCell>{el.payment_method.provider_id}</TableDataCell>
                 </TableRow>
               )
             })}
