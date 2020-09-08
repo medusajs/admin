@@ -186,9 +186,14 @@ export default {
       return medusaRequest("POST", path, {})
     },
 
-    createFulfillment(orderId) {
+    createShipment(orderId, payload) {
+      const path = `/admin/orders/${orderId}/shipment`
+      return medusaRequest("POST", path, payload)
+    },
+
+    createFulfillment(orderId, payload) {
       const path = `/admin/orders/${orderId}/fulfillment`
-      return medusaRequest("POST", path, {})
+      return medusaRequest("POST", path, payload)
     },
 
     refund(orderId, payload) {

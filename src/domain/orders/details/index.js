@@ -7,8 +7,12 @@ import moment from "moment"
 import testThumbnail from "./thumbnail-test.jpg"
 import ReturnMenu from "./returns"
 import RefundMenu from "./refund"
+import FulfillmentMenu from "./fulfillment"
+import FulfillmentEdit from "./fulfillment/edit"
 
+import Badge from "../../../components/badge"
 import Card from "../../../components/card"
+import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 
 import Medusa from "../../../services/api"
@@ -87,6 +91,8 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
 const OrderDetails = ({ id }) => {
   const [showRefund, setShowRefund] = useState(false)
   const [showReturnMenu, setShowReturnMenu] = useState(false)
+  const [showFulfillmentMenu, setShowFulfillmentMenu] = useState(false)
+  const [updateFulfillment, setUpdateFulfillment] = useState(false)
   const [isHandlingOrder, setIsHandlingOrder] = useState(false)
   const [showMetadataEdit, setShowMetadataEdit] = useState(false)
 
@@ -94,6 +100,8 @@ const OrderDetails = ({ id }) => {
     order,
     capturePayment,
     return: returnOrder,
+    createFulfillment,
+    createShipment,
     refund,
     isLoading,
     archive,
@@ -361,6 +369,11 @@ const OrderDetails = ({ id }) => {
       {/* FULFILLMENT */}
       <Card mb={2}>
         <Card.Header
+          action={{
+            type: "primary",
+            label: "Create Fulfillment...",
+            onClick: () => setShowFulfillmentMenu(!showFulfillmentMenu),
+          }}
           badge={{
             label: order.fulfillment_status,
             color: fulfillmentColor,
@@ -371,6 +384,7 @@ const OrderDetails = ({ id }) => {
         </Card.Header>
         <Card.Body flexDirection="column">
           <Flex
+            flexDirection="column"
             pb={3}
             sx={{
               borderBottom: "hairline",
@@ -383,25 +397,52 @@ const OrderDetails = ({ id }) => {
                     Shipping Method
                   </Text>
                   <Text>{method.name}</Text>
+                  <Text pt={3} pb={1} color="gray">
+                    Data
+                  </Text>
+                  <ReactJson name={false} collapsed={true} src={method.data} />
                 </Box>
                 <Card.VerticalDivider mx={3} />
               </Box>
             ))}
           </Flex>
-          <Flex p={3} width={1}>
+          <Flex p={3} width={1} flexDirection="column">
             {order.fulfillments.length > 0 ? (
               order.fulfillments.map(fulfillment => (
-                <Box key={fulfillment._id}>
-                  <Text>Fulfilled by provider {fulfillment.provider_id}</Text>
-                  <Text>
-                    Tracking Number: {fulfillment.tracking_numbers.join(", ")}
-                  </Text>
-                </Box>
+                <Flex justifyContent="space-between">
+                  <Box key={fulfillment._id}>
+                    <Text>Fulfilled by provider {fulfillment.provider_id}</Text>
+                    {fulfillment.tracking_numbers.length > 0 ? (
+                      <>
+                        <Text my={1} color="gray">
+                          Tracking Number
+                        </Text>
+                        <Text>{fulfillment.tracking_numbers.join(", ")}</Text>
+                      </>
+                    ) : (
+                      <Text my={1} color="gray">
+                        Not shipped
+                      </Text>
+                    )}
+                  </Box>
+                  {!fulfillment.shipped_at && (
+                    <Button
+                      variant={"primary"}
+                      onClick={() => setUpdateFulfillment(fulfillment)}
+                    >
+                      Mark Shipped
+                    </Button>
+                  )}
+                </Flex>
               ))
             ) : (
-              <Text alignSelf={"center"} justifySelf={"center"}>
-                Not yet fulfilled
-              </Text>
+              <Flex
+                alignSelf={"center"}
+                justifySelf={"center"}
+                justifyContent="space-between"
+              >
+                <Text color="gray">Not yet fulfilled</Text>
+              </Flex>
             )}
           </Flex>
         </Card.Body>
@@ -470,6 +511,14 @@ const OrderDetails = ({ id }) => {
           />
         </Card.Body>
       </Card>
+      {showFulfillmentMenu && (
+        <FulfillmentMenu
+          onFulfill={createFulfillment}
+          order={order}
+          onDismiss={() => setShowFulfillmentMenu(false)}
+          toaster={toaster}
+        />
+      )}
       {showReturnMenu && (
         <ReturnMenu
           onReturn={returnOrder}
@@ -483,6 +532,15 @@ const OrderDetails = ({ id }) => {
           onRefund={refund}
           order={order}
           onDismiss={() => setShowRefund(false)}
+          toaster={toaster}
+        />
+      )}
+      {updateFulfillment && (
+        <FulfillmentEdit
+          order={order}
+          fulfillment={updateFulfillment}
+          onCreateShipment={createShipment}
+          onDismiss={() => setUpdateFulfillment(false)}
           toaster={toaster}
         />
       )}

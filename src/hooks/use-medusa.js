@@ -109,6 +109,18 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
+        value.createShipment = payload => {
+          return subcomponent
+            .createShipment(query.id, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.createFulfillment = payload => {
+          return subcomponent
+            .createFulfillment(query.id, payload)
+            .then(({ data }) => setResult(data))
+        }
+
         value.return = payload => {
           return subcomponent
             .return(query.id, payload)
