@@ -42,6 +42,21 @@ const LineItemLabel = styled(Text)`
   font-size: 10px;
 `
 
+const AlignedDecimal = ({ value, currency }) => {
+  const fixed = value.toFixed(2)
+  const [numPart, decimalPart] = fixed.split(".")
+
+  return (
+    <Flex>
+      <Box flex={1} textAlign="right">
+        {numPart}
+      </Box>
+      .<div>{decimalPart}</div>
+      <Box ml={2}>{currency}</Box>
+    </Flex>
+  )
+}
+
 const Divider = props => (
   <Box
     {...props}
@@ -323,9 +338,9 @@ const OrderDetails = ({ id }) => {
                 Shipping
               </Text>
               <Text pt={1} color="gray">
-                Tax
+                Tax Amount
               </Text>
-              {order.discount_total && (
+              {order.discount_total > 0 && (
                 <Text pt={1} color="gray">
                   Discount
                 </Text>
@@ -336,25 +351,34 @@ const OrderDetails = ({ id }) => {
             </Box>
             <Box px={3}>
               <Text>
-                {(order.subtotal * (1 + order.region.tax_rate)).toFixed(2)}{" "}
-                {order.region.currency_code}
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.subtotal * (1 + order.tax_rate)}
+                />
               </Text>
               <Text pt={1}>
-                {(order.shipping_total * (1 + order.tax_rate)).toFixed(2)}{" "}
-                {order.region.currency_code}
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.shipping_total * (1 + order.tax_rate)}
+                />
               </Text>
               <Text pt={1}>
-                {order.tax_total.toFixed(2)} {order.region.currency_code}
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.tax_total}
+                />
               </Text>
-              {order.discount_total && (
-                <Text pt={1}>
-                  -{order.discount_total.toFixed(2)}{" "}
-                  {order.region.currency_code}
-                </Text>
+              {order.discount_total > 0 && (
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={-order.discount_total}
+                />
               )}
-
               <Text pt={1}>
-                {order.total.toFixed(2)} {order.region.currency_code}
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.total}
+                />
               </Text>
             </Box>
           </Flex>
