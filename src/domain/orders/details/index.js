@@ -103,7 +103,7 @@ const OrderDetails = ({ id }) => {
     id,
   })
 
-  if (isLoading) {
+  if (isLoading || isHandlingOrder) {
     return (
       <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
         <Box height="75px" width="75px" mt="50%">
@@ -136,6 +136,32 @@ const OrderDetails = ({ id }) => {
   const paymentBgColor =
     order.payment_status === "captured" ? "#4BB543" : "#e3e8ee"
   const paymentColor = order.payment_status === "captured" ? "white" : "#4f566b"
+
+  const decidePaymentButton = paymentStatus => {
+    switch (true) {
+      case paymentStatus === "captured" ||
+        paymentStatus === "partially_refunded": {
+        return {
+          type: "primary",
+          label: "Refund",
+          onClick: () => setShowRefund(!showRefund),
+        }
+      }
+      case paymentStatus === "awaiting": {
+        return {
+          label: "Capture",
+          onClick: () => {
+            capturePayment()
+              .then(() => toaster("Succesfully captured payment", "success"))
+              .catch(() => toaster("Failed to capture payment", "error"))
+          },
+          isLoading: isHandlingOrder,
+        }
+      }
+      default:
+        break
+    }
+  }
 
   return (
     <Flex flexDirection="column" mb={5}>
@@ -282,28 +308,7 @@ const OrderDetails = ({ id }) => {
             color: paymentColor,
             bgColor: paymentBgColor,
           }}
-          action={
-            order.payment_status !== "captured"
-              ? {
-                  type: "",
-                  label: "Capture",
-                  onClick: () => {
-                    capturePayment()
-                      .then(() =>
-                        toaster("Succesfully captured payment", "success")
-                      )
-                      .catch(() =>
-                        toaster("Failed to capture payment", "error")
-                      )
-                  },
-                  isLoading: isHandlingOrder,
-                }
-              : {
-                  type: "primary",
-                  label: "Refund",
-                  onClick: () => setShowRefund(!showRefund),
-                }
-          }
+          action={decidePaymentButton(order.payment_status)}
         >
           Payment
         </Card.Header>

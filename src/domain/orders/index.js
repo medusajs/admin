@@ -22,6 +22,7 @@ import {
 } from "../../components/table"
 import Badge from "../../components/badge"
 
+import { decideBadgeColor } from "../../utils/decide-badge-color"
 import useMedusa from "../../hooks/use-medusa"
 import Spinner from "../../components/spinner"
 import Button from "../../components/button"
@@ -244,7 +245,10 @@ const OrderIndex = ({}) => {
                   <TableDataCell>{el.email}</TableDataCell>
                   <TableDataCell>
                     <Box>
-                      <Badge color={fulfillmentColor} bg={fulfillmentBgColor}>
+                      <Badge
+                        color={decideBadgeColor(el.fulfillment_status).color}
+                        bg={decideBadgeColor(el.fulfillment_status).bgColor}
+                      >
                         {el.fulfillment_status}
                       </Badge>
                     </Box>
