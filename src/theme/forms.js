@@ -1,4 +1,26 @@
 export default {
+  invalidInput: {
+    color: "dark",
+    backgroundColor: "lightest",
+
+    border: 0,
+    outline: 0,
+
+    cursor: "text",
+    transition: "all 0.2s ease",
+
+    borderRadius: "3px",
+    boxShadow: "invalidBoxShadow",
+    "&.tag__focus": {
+      boxShadow: "inputBoxShadowHover",
+    },
+    "&:focus": {
+      boxShadow: "inputBoxShadowHover",
+    },
+    "&::placeholder": {
+      color: "danger",
+    },
+  },
   input: {
     color: "dark",
     backgroundColor: "lightest",

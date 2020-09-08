@@ -7,8 +7,12 @@ import moment from "moment"
 import testThumbnail from "./thumbnail-test.jpg"
 import ReturnMenu from "./returns"
 import RefundMenu from "./refund"
+import FulfillmentMenu from "./fulfillment"
+import FulfillmentEdit from "./fulfillment/edit"
 
+import Badge from "../../../components/badge"
 import Card from "../../../components/card"
+import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 
 import Medusa from "../../../services/api"
@@ -38,6 +42,21 @@ const LineItemLabel = styled(Text)`
   font-size: 10px;
 `
 
+const AlignedDecimal = ({ value, currency }) => {
+  const fixed = value.toFixed(2)
+  const [numPart, decimalPart] = fixed.split(".")
+
+  return (
+    <Flex>
+      <Box flex={1} textAlign="right">
+        {numPart}
+      </Box>
+      .<div>{decimalPart}</div>
+      <Box ml={2}>{currency}</Box>
+    </Flex>
+  )
+}
+
 const Divider = props => (
   <Box
     {...props}
@@ -59,26 +78,30 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
   return (
     <Flex pl={3} alignItems="center">
       <Flex pr={3}>
-        {lineItem.quantity} x{" "}
-        <Image
-          ml={3}
-          src={lineItem.thumbnail || ""}
-          sx={{
-            objectFit: "contain",
-            width: 35,
-            height: 35,
-          }}
-        />
-        <LineItemLabel
-          ml={2}
-          mr={5}
-          onClick={() => navigate(`/a/products/${productId}`)}
-        >
-          {lineItem.title}
-          <br /> {lineItem.content.variant.sku}
-          <br />
-          {(1 + taxRate) * lineItem.content.unit_price} {currency}
-        </LineItemLabel>
+        <Box>{lineItem.quantity} x</Box>
+        <Box mx={2}>
+          <Image
+            ml={3}
+            src={lineItem.thumbnail || ""}
+            sx={{
+              objectFit: "contain",
+              width: 35,
+              height: 35,
+            }}
+          />
+        </Box>
+        <Box>
+          <LineItemLabel
+            ml={2}
+            mr={5}
+            onClick={() => navigate(`/a/products/${productId}`)}
+          >
+            {lineItem.title}
+            <br /> {lineItem.content.variant.sku}
+            <br />
+            {(1 + taxRate) * lineItem.content.unit_price} {currency}
+          </LineItemLabel>
+        </Box>
       </Flex>
     </Flex>
   )
@@ -87,6 +110,8 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
 const OrderDetails = ({ id }) => {
   const [showRefund, setShowRefund] = useState(false)
   const [showReturnMenu, setShowReturnMenu] = useState(false)
+  const [showFulfillmentMenu, setShowFulfillmentMenu] = useState(false)
+  const [updateFulfillment, setUpdateFulfillment] = useState(false)
   const [isHandlingOrder, setIsHandlingOrder] = useState(false)
   const [showMetadataEdit, setShowMetadataEdit] = useState(false)
 
@@ -94,6 +119,8 @@ const OrderDetails = ({ id }) => {
     order,
     capturePayment,
     return: returnOrder,
+    createFulfillment,
+    createShipment,
     refund,
     isLoading,
     archive,
@@ -198,7 +225,7 @@ const OrderDetails = ({ id }) => {
           </Card.Header>
           <Box>
             <Text p={3} fontWeight="bold">
-              {order.total} {order.region.currency_code}
+              {order.total.toFixed(2)} {order.region.currency_code}
             </Text>
           </Box>
           <Card.Body>
@@ -320,25 +347,47 @@ const OrderDetails = ({ id }) => {
                 Shipping
               </Text>
               <Text pt={1} color="gray">
-                Tax
+                Tax Amount
               </Text>
+              {order.discount_total > 0 && (
+                <Text pt={1} color="gray">
+                  Discount
+                </Text>
+              )}
               <Text pt={1} color="gray">
                 Total
               </Text>
             </Box>
             <Box px={3}>
               <Text>
-                {order.subtotal * (1 + order.region.tax_rate)}{" "}
-                {order.region.currency_code}
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.subtotal * (1 + order.tax_rate)}
+                />
               </Text>
               <Text pt={1}>
-                {order.shipping_total} {order.region.currency_code}
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.shipping_total * (1 + order.tax_rate)}
+                />
               </Text>
               <Text pt={1}>
-                {order.tax_total} {order.region.currency_code}
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.tax_total}
+                />
               </Text>
+              {order.discount_total > 0 && (
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={-order.discount_total}
+                />
+              )}
               <Text pt={1}>
-                {order.total} {order.region.currency_code}
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.total}
+                />
               </Text>
             </Box>
           </Flex>
@@ -351,11 +400,11 @@ const OrderDetails = ({ id }) => {
               </Box>
               <Box>
                 <Text pt={2}>
-                  {order.total} {order.region.currency_code}
+                  {order.total.toFixed(2)} {order.region.currency_code}
                 </Text>
                 {order.refunded_total > 0 && (
                   <Text pt={2}>
-                    {order.refunded_total} {order.currency_code}
+                    {order.refunded_total.toFixed(2)} {order.currency_code}
                   </Text>
                 )}
               </Box>
@@ -366,6 +415,11 @@ const OrderDetails = ({ id }) => {
       {/* FULFILLMENT */}
       <Card mb={2}>
         <Card.Header
+          action={{
+            type: "primary",
+            label: "Create Fulfillment...",
+            onClick: () => setShowFulfillmentMenu(!showFulfillmentMenu),
+          }}
           badge={{
             label: order.fulfillment_status,
             color: fulfillmentColor,
@@ -376,6 +430,7 @@ const OrderDetails = ({ id }) => {
         </Card.Header>
         <Card.Body flexDirection="column">
           <Flex
+            flexDirection="column"
             pb={3}
             sx={{
               borderBottom: "hairline",
@@ -388,25 +443,52 @@ const OrderDetails = ({ id }) => {
                     Shipping Method
                   </Text>
                   <Text>{method.name}</Text>
+                  <Text pt={3} pb={1} color="gray">
+                    Data
+                  </Text>
+                  <ReactJson name={false} collapsed={true} src={method.data} />
                 </Box>
                 <Card.VerticalDivider mx={3} />
               </Box>
             ))}
           </Flex>
-          <Flex p={3} width={1}>
+          <Flex p={3} width={1} flexDirection="column">
             {order.fulfillments.length > 0 ? (
               order.fulfillments.map(fulfillment => (
-                <Box key={fulfillment._id}>
-                  <Text>Fulfilled by provider {fulfillment.provider_id}</Text>
-                  <Text>
-                    Tracking Number: {fulfillment.tracking_numbers.join(", ")}
-                  </Text>
-                </Box>
+                <Flex justifyContent="space-between">
+                  <Box key={fulfillment._id}>
+                    <Text>Fulfilled by provider {fulfillment.provider_id}</Text>
+                    {fulfillment.tracking_numbers.length > 0 ? (
+                      <>
+                        <Text my={1} color="gray">
+                          Tracking Number
+                        </Text>
+                        <Text>{fulfillment.tracking_numbers.join(", ")}</Text>
+                      </>
+                    ) : (
+                      <Text my={1} color="gray">
+                        Not shipped
+                      </Text>
+                    )}
+                  </Box>
+                  {!fulfillment.shipped_at && (
+                    <Button
+                      variant={"primary"}
+                      onClick={() => setUpdateFulfillment(fulfillment)}
+                    >
+                      Mark Shipped
+                    </Button>
+                  )}
+                </Flex>
               ))
             ) : (
-              <Text alignSelf={"center"} justifySelf={"center"}>
-                Not yet fulfilled
-              </Text>
+              <Flex
+                alignSelf={"center"}
+                justifySelf={"center"}
+                justifyContent="space-between"
+              >
+                <Text color="gray">Not yet fulfilled</Text>
+              </Flex>
             )}
           </Flex>
         </Card.Body>
@@ -475,6 +557,14 @@ const OrderDetails = ({ id }) => {
           />
         </Card.Body>
       </Card>
+      {showFulfillmentMenu && (
+        <FulfillmentMenu
+          onFulfill={createFulfillment}
+          order={order}
+          onDismiss={() => setShowFulfillmentMenu(false)}
+          toaster={toaster}
+        />
+      )}
       {showReturnMenu && (
         <ReturnMenu
           onReturn={returnOrder}
@@ -488,6 +578,15 @@ const OrderDetails = ({ id }) => {
           onRefund={refund}
           order={order}
           onDismiss={() => setShowRefund(false)}
+          toaster={toaster}
+        />
+      )}
+      {updateFulfillment && (
+        <FulfillmentEdit
+          order={order}
+          fulfillment={updateFulfillment}
+          onCreateShipment={createShipment}
+          onDismiss={() => setUpdateFulfillment(false)}
           toaster={toaster}
         />
       )}

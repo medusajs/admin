@@ -1,5 +1,5 @@
 import React from "react"
-import { Flex } from "rebass"
+import { Text, Flex } from "rebass"
 import { Input, Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Typography from "../typography"
@@ -39,6 +39,7 @@ const StyledLabel = styled.div`
 const InputField = React.forwardRef(
   (
     {
+      invalid,
       placeholder,
       defaultValue,
       step,
@@ -51,6 +52,8 @@ const InputField = React.forwardRef(
       inputStyle,
       required,
       value,
+      deletable,
+      onDelete,
       onChange,
       ...props
     },
@@ -77,7 +80,7 @@ const InputField = React.forwardRef(
           ref={ref}
           defaultValue={defaultValue}
           inline={inline}
-          variant="input"
+          variant={invalid ? "invalidInput" : "input"}
           name={name}
           type={type}
           min={min}
@@ -88,6 +91,11 @@ const InputField = React.forwardRef(
           placeholder={placeholder ? placeholder : "Placeholder"}
           onChange={onChange}
         />
+        {deletable && (
+          <Text ml={2} onClick={onDelete} sx={{ cursor: "pointer" }}>
+            &times;
+          </Text>
+        )}
       </Flex>
     )
   }
