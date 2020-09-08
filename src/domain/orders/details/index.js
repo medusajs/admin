@@ -180,7 +180,7 @@ const OrderDetails = ({ id }) => {
           </Card.Header>
           <Box>
             <Text p={3} fontWeight="bold">
-              {order.total} {order.region.currency_code}
+              {order.total.toFixed(2)} {order.region.currency_code}
             </Text>
           </Box>
           <Card.Body>
@@ -325,23 +325,36 @@ const OrderDetails = ({ id }) => {
               <Text pt={1} color="gray">
                 Tax
               </Text>
+              {order.discount_total && (
+                <Text pt={1} color="gray">
+                  Discount
+                </Text>
+              )}
               <Text pt={1} color="gray">
                 Total
               </Text>
             </Box>
             <Box px={3}>
               <Text>
-                {order.subtotal * (1 + order.region.tax_rate)}{" "}
+                {(order.subtotal * (1 + order.region.tax_rate)).toFixed(2)}{" "}
                 {order.region.currency_code}
               </Text>
               <Text pt={1}>
-                {order.shipping_total} {order.region.currency_code}
+                {(order.shipping_total * (1 + order.tax_rate)).toFixed(2)}{" "}
+                {order.region.currency_code}
               </Text>
               <Text pt={1}>
-                {order.tax_total} {order.region.currency_code}
+                {order.tax_total.toFixed(2)} {order.region.currency_code}
               </Text>
+              {order.discount_total && (
+                <Text pt={1}>
+                  -{order.discount_total.toFixed(2)}{" "}
+                  {order.region.currency_code}
+                </Text>
+              )}
+
               <Text pt={1}>
-                {order.total} {order.region.currency_code}
+                {order.total.toFixed(2)} {order.region.currency_code}
               </Text>
             </Box>
           </Flex>
@@ -354,11 +367,11 @@ const OrderDetails = ({ id }) => {
               </Box>
               <Box>
                 <Text pt={2}>
-                  {order.total} {order.region.currency_code}
+                  {order.total.toFixed(2)} {order.region.currency_code}
                 </Text>
                 {order.refunded_total > 0 && (
                   <Text pt={2}>
-                    {order.refunded_total} {order.currency_code}
+                    {order.refunded_total.toFixed(2)} {order.currency_code}
                   </Text>
                 )}
               </Box>
