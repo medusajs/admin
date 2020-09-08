@@ -78,26 +78,30 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
   return (
     <Flex pl={3} alignItems="center">
       <Flex pr={3}>
-        {lineItem.quantity} x{" "}
-        <Image
-          ml={3}
-          src={lineItem.thumbnail || ""}
-          sx={{
-            objectFit: "contain",
-            width: 35,
-            height: 35,
-          }}
-        />
-        <LineItemLabel
-          ml={2}
-          mr={5}
-          onClick={() => navigate(`/a/products/${productId}`)}
-        >
-          {lineItem.title}
-          <br /> {lineItem.content.variant.sku}
-          <br />
-          {(1 + taxRate) * lineItem.content.unit_price} {currency}
-        </LineItemLabel>
+        <Box>{lineItem.quantity} x</Box>
+        <Box mx={2}>
+          <Image
+            ml={3}
+            src={lineItem.thumbnail || ""}
+            sx={{
+              objectFit: "contain",
+              width: 35,
+              height: 35,
+            }}
+          />
+        </Box>
+        <Box>
+          <LineItemLabel
+            ml={2}
+            mr={5}
+            onClick={() => navigate(`/a/products/${productId}`)}
+          >
+            {lineItem.title}
+            <br /> {lineItem.content.variant.sku}
+            <br />
+            {(1 + taxRate) * lineItem.content.unit_price} {currency}
+          </LineItemLabel>
+        </Box>
       </Flex>
     </Flex>
   )
