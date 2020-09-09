@@ -19,6 +19,7 @@ import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 import Typography from "../../../components/typography"
 import { navigate } from "gatsby"
+import { decideBadgeColor } from "../../../utils/decide-badge-color"
 
 const CustomerEmailLabel = styled(Text)`
   ${props =>
@@ -195,7 +196,11 @@ const OrderDetails = ({ id }) => {
       <Flex flexDirection="column" mb={5}>
         <Card mb={2}>
           <Card.Header
-            badge={{ label: order.status }}
+            badge={{
+              label: order.status,
+              color: decideBadgeColor(order.status).color,
+              bgColor: decideBadgeColor(order.status).bgColor,
+            }}
             action={
               order.status !== "archived" && {
                 type: "",
@@ -332,8 +337,8 @@ const OrderDetails = ({ id }) => {
         <Card.Header
           badge={{
             label: order.payment_status,
-            color: paymentColor,
-            bgColor: paymentBgColor,
+            color: decideBadgeColor(order.payment_status).color,
+            bgColor: decideBadgeColor(order.payment_status).bgColor,
           }}
           action={decidePaymentButton(order.payment_status)}
         >
@@ -422,8 +427,8 @@ const OrderDetails = ({ id }) => {
           }}
           badge={{
             label: order.fulfillment_status,
-            color: fulfillmentColor,
-            bgColor: fulfillmentBgColor,
+            color: decideBadgeColor(order.fulfillment_status).color,
+            bgColor: decideBadgeColor(order.fulfillment_status).bgColor,
           }}
         >
           Fulfillment

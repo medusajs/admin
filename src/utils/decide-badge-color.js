@@ -1,24 +1,27 @@
 export function decideBadgeColor(batchLabel) {
   switch (batchLabel) {
-    case "captured" || "completed" || "shipped":
+    case "captured":
+    case "completed":
+    case "shipped":
       return {
         bgColor: "#4BB543",
         color: "white",
       }
-    case "partially_refunded" ||
-      "refunded" ||
-      "fulfilled" ||
-      "partially_fulfilled" ||
-      "partially_shipped" ||
-      "returned":
+    case "partially_refunded":
+    case "refunded":
+    case "fulfilled":
+    case "partially_fulfilled":
+    case "partially_shipped":
+    case "returned":
       return {
-        bgColor: "yellow",
+        bgColor: "#ffd733",
         color: "black",
       }
-    case "cancelled" || "failed":
+    case "cancelled":
+    case "failed":
       return {
-        bgColor: "yellow",
-        color: "black",
+        bgColor: "#ff4133",
+        color: "white",
       }
     default:
       return {

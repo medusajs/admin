@@ -255,7 +255,10 @@ const OrderIndex = ({}) => {
                   </TableDataCell>
                   <TableDataCell>
                     <Box>
-                      <Badge color={paymentColor} bg={paymentBgColor}>
+                      <Badge
+                        color={decideBadgeColor(el.payment_status).color}
+                        bg={decideBadgeColor(el.payment_status).bgColor}
+                      >
                         {el.payment_status}
                       </Badge>
                     </Box>
