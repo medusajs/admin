@@ -156,15 +156,6 @@ const OrderDetails = ({ id }) => {
     }
   })
 
-  const fulfillmentBgColor =
-    order.fulfillment_status === "fulfilled" ? "#4BB543" : "#e3e8ee"
-  const fulfillmentColor =
-    order.fulfillment_status === "fulfilled" ? "white" : "#4f566b"
-
-  const paymentBgColor =
-    order.payment_status === "captured" ? "#4BB543" : "#e3e8ee"
-  const paymentColor = order.payment_status === "captured" ? "white" : "#4f566b"
-
   const decidePaymentButton = paymentStatus => {
     switch (true) {
       case paymentStatus === "captured" ||
@@ -397,7 +388,9 @@ const OrderDetails = ({ id }) => {
             </Box>
           </Flex>
           <Divider mt={3} mb={1} mx={3} />
-          {order.payment_status === "captured" && (
+          {(order.payment_status === "captured" ||
+            order.payment_status === "refunded" ||
+            order.payment_status === "partially_refunded") && (
             <Flex>
               <Box pl={3} pr={5}>
                 <Text pt={2}>Amount paid</Text>
@@ -405,7 +398,19 @@ const OrderDetails = ({ id }) => {
               </Box>
               <Box>
                 <Text pt={2}>
-                  {order.total.toFixed(2)} {order.region.currency_code}
+                  {order.refunded_total > 0 ? (
+                    <>
+                      <strike style={{ marginRight: "10px" }}>
+                        {order.total.toFixed(2)} {order.region.currency_code}
+                      </strike>
+                      <>
+                        {(order.total - order.refunded_total).toFixed(2)}{" "}
+                        {order.region.currency_code}
+                      </>
+                    </>
+                  ) : (
+                    `${order.total.toFixed(2)}`
+                  )}
                 </Text>
                 {order.refunded_total > 0 && (
                   <Text pt={2}>

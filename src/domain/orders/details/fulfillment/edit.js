@@ -16,6 +16,7 @@ const FulfillmentEdit = ({
   onCreateShipment,
   onDismiss,
   toaster,
+  refresh,
 }) => {
   const { control, errors, register, setValue, handleSubmit } = useForm({})
 
