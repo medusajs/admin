@@ -4,9 +4,8 @@ import styled from "@emotion/styled"
 
 import Badge from "../badge"
 import Dropdown from "../dropdown"
-import Cta from "../cta"
+import Button from "../button"
 import Typography from "../typography"
-import Spinner from "../spinner"
 
 const Card = styled(RebassCard)`
   ${Typography.Base}
@@ -40,16 +39,16 @@ Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
           </Badge>
         )}
       </Text>
-      {!!action &&
-        (action.isLoading ? (
-          <Box m={1} height="20px" width="20px">
-            <Spinner dark={true} />
-          </Box>
-        ) : (
-          <Cta onClick={action.onClick} mr={3} variant={action.type || "cta"}>
-            {action.label}
-          </Cta>
-        ))}
+      {!!action && (
+        <Button
+          loading={action.isLoading}
+          onClick={action.onClick}
+          mr={3}
+          variant={action.type || "cta"}
+        >
+          {action.label}
+        </Button>
+      )}
       {dropdownOptions && dropdownOptions.length > 0 && (
         <Dropdown mr={3}>
           {dropdownOptions.map(o => (

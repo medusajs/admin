@@ -11,6 +11,7 @@ import Button from "../../../../components/button"
 import useMedusa from "../../../../hooks/use-medusa"
 
 const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
+  const [submitting, setSubmitting] = useState(false)
   const [itemError, setItemError] = useState("")
   const [fulfillAll, setFulfillAll] = useState(false)
   const [toFulfill, setToFulfill] = useState([])
@@ -85,6 +86,7 @@ const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
     }
 
     if (onFulfill) {
+      setSubmitting(true)
       return onFulfill({
         items,
         metadata,
@@ -92,6 +94,7 @@ const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
         .then(() => onDismiss())
         .then(() => toaster("Successfully fulfilled order", "success"))
         .catch(() => toaster("Failed to fulfill order", "error"))
+        .finally(() => setSubmitting(false))
     }
   }
 
@@ -220,7 +223,7 @@ const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
           </Flex>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
-          <Button type="submit" variant="primary">
+          <Button loading={submitting} type="submit" variant="primary">
             Complete
           </Button>
         </Modal.Footer>

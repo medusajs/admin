@@ -1,10 +1,7 @@
 import React from "react"
-import styled from "@emotion/styled"
 import { Box } from "rebass"
 
 import { ReactComponent as Oval } from "../../assets/svg/oval.svg"
-
-const SpinContent = styled.div``
 
 const Spinner = ({ dark, ...props }) => {
   return (

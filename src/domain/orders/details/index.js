@@ -2,6 +2,7 @@ import React, { useState, useEffect, Fragment } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import ReactJson from "react-json-view"
 import styled from "@emotion/styled"
+import { navigate } from "gatsby"
 import moment from "moment"
 
 import testThumbnail from "./thumbnail-test.jpg"
@@ -9,6 +10,7 @@ import ReturnMenu from "./returns"
 import RefundMenu from "./refund"
 import FulfillmentMenu from "./fulfillment"
 import FulfillmentEdit from "./fulfillment/edit"
+import buildTimeline from "./utils/build-timeline"
 
 import Badge from "../../../components/badge"
 import Card from "../../../components/card"
@@ -18,7 +20,6 @@ import Spinner from "../../../components/spinner"
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 import Typography from "../../../components/typography"
-import { navigate } from "gatsby"
 
 const CustomerEmailLabel = styled(Text)`
   ${props =>
@@ -113,6 +114,7 @@ const OrderDetails = ({ id }) => {
   const [showFulfillmentMenu, setShowFulfillmentMenu] = useState(false)
   const [updateFulfillment, setUpdateFulfillment] = useState(false)
   const [isHandlingOrder, setIsHandlingOrder] = useState(false)
+  const [captureLoading, setCaptureLoading] = useState(false)
   const [showMetadataEdit, setShowMetadataEdit] = useState(false)
 
   const {
@@ -140,20 +142,7 @@ const OrderDetails = ({ id }) => {
     )
   }
 
-  const returns = order.returns.map(r => {
-    const items = r.items.map(i => {
-      const line = order.items.find(({ _id }) => i.item_id === _id)
-      return {
-        item: line,
-        quantity: i.quantity,
-      }
-    })
-    return {
-      items,
-      refund_amount: r.refund_amount,
-      created: r.created,
-    }
-  })
+  const events = buildTimeline(order)
 
   const fulfillmentBgColor =
     order.fulfillment_status === "fulfilled" ? "#4BB543" : "#e3e8ee"
@@ -164,9 +153,21 @@ const OrderDetails = ({ id }) => {
     order.payment_status === "captured" ? "#4BB543" : "#e3e8ee"
   const paymentColor = order.payment_status === "captured" ? "white" : "#4f566b"
 
+  let fulfillmentAction
+  const canFulfill = order.items.reduce((acc, i) => {
+    return acc && i.fulfilled_quantity !== i.quantity
+  }, true)
+  if (canFulfill) {
+    fulfillmentAction = {
+      type: "primary",
+      label: "Create Fulfillment",
+      onClick: () => setShowFulfillmentMenu(!showFulfillmentMenu),
+    }
+  }
+
   return (
     <Flex flexDirection="column" mb={5}>
-      <Flex flexDirection="column" mb={5}>
+      <Flex flexDirection="column" mb={2}>
         <Card mb={2}>
           <Card.Header
             badge={{ label: order.status }}
@@ -240,65 +241,24 @@ const OrderDetails = ({ id }) => {
           Timeline
         </Card.Header>
         <Card.Body flexDirection="column">
-          <Text ml={3} fontSize={1} color="grey">
-            Placed
-          </Text>
-          <Text fontSize="11px" color="grey" ml={3} mb={3}>
-            {moment(order.created).format("MMMM Do YYYY, H:mm:ss")}
-          </Text>
-          {order.items.map((lineItem, i) => (
-            <LineItem
-              key={i}
-              currency={order.currency_code}
-              lineItem={lineItem}
-              taxRate={order.region.tax_rate}
-            />
+          {events.map(event => (
+            <Box sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
+              <Text ml={3} fontSize={1} color="grey">
+                {event.event}
+              </Text>
+              <Text fontSize="11px" color="grey" ml={3} mb={3}>
+                {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+              </Text>
+              {event.items.map((lineItem, i) => (
+                <LineItem
+                  key={i}
+                  currency={order.currency_code}
+                  lineItem={lineItem}
+                  taxRate={order.region.tax_rate}
+                />
+              ))}
+            </Box>
           ))}
-          {returns.length > 0 && <Divider m={3} />}
-          {returns &&
-            returns.map((r, i) => (
-              <Fragment key={i}>
-                <Text ml={3} fontSize={1} color="grey">
-                  Items returned
-                </Text>
-                <Text fontSize="11px" color="grey" ml={3} mb={3}>
-                  {moment(parseInt(r.created)).format("MMMM Do YYYY, H:mm:ss")}
-                </Text>
-                {r.items.map((item, i) => (
-                  <LineItem
-                    key={i}
-                    currency={order.currency_code}
-                    lineItem={item.item}
-                    taxRate={order.region.tax_rate}
-                  />
-                ))}
-                {/* <Flex px={3} py={3}>
-                <Text pl={5}>
-                  {r.refund_amount} {order.currency_code}
-                </Text>
-              </Flex> */}
-              </Fragment>
-            ))}
-          {order.fulfillments.length > 0 && <Divider m={3} />}
-          {order.fulfillments &&
-            order.fulfillments.map(f => (
-              <Fragment key={f._id}>
-                <Text ml={3} fontSize={1} color="grey">
-                  Fulfilled
-                </Text>
-                <Text fontSize="11px" color="grey" ml={3} mb={3}>
-                  {moment(parseInt(f.created)).format("MMMM Do YYYY, H:mm:ss")}
-                </Text>
-                {f.items.map((item, i) => (
-                  <LineItem
-                    key={i}
-                    currency={order.currency_code}
-                    lineItem={item}
-                    taxRate={order.region.tax_rate}
-                  />
-                ))}
-              </Fragment>
-            ))}
         </Card.Body>
       </Card>
       {/* PAYMENT */}
@@ -315,6 +275,7 @@ const OrderDetails = ({ id }) => {
                   type: "",
                   label: "Capture",
                   onClick: () => {
+                    setCaptureLoading(true)
                     capturePayment()
                       .then(() =>
                         toaster("Succesfully captured payment", "success")
@@ -322,8 +283,11 @@ const OrderDetails = ({ id }) => {
                       .catch(() =>
                         toaster("Failed to capture payment", "error")
                       )
+                      .finally(() => {
+                        setCaptureLoading(false)
+                      })
                   },
-                  isLoading: isHandlingOrder,
+                  isLoading: captureLoading,
                 }
               : {
                   type: "primary",
@@ -410,11 +374,7 @@ const OrderDetails = ({ id }) => {
       {/* FULFILLMENT */}
       <Card mb={2}>
         <Card.Header
-          action={{
-            type: "primary",
-            label: "Create Fulfillment...",
-            onClick: () => setShowFulfillmentMenu(!showFulfillmentMenu),
-          }}
+          action={fulfillmentAction}
           badge={{
             label: order.fulfillment_status,
             color: fulfillmentColor,

@@ -11,6 +11,7 @@ import Button from "../../../../components/button"
 import useMedusa from "../../../../hooks/use-medusa"
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
+  const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
   const [returnAll, setReturnAll] = useState(false)
   const [refundable, setRefundable] = useState(0)
@@ -73,6 +74,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }))
 
     if (onReturn) {
+      setSubmitting(true)
       return onReturn({
         items,
         refund: refundAmount,
@@ -80,6 +82,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
         .catch(() => toaster("Failed to return order", "error"))
+        .finally(() => setSubmitting(false))
     }
   }
 
@@ -200,7 +203,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
           )}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
-          <Button type="submit" variant="primary">
+          <Button loading={submitting} type="submit" variant="primary">
             Complete
           </Button>
         </Modal.Footer>

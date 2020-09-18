@@ -30,7 +30,7 @@ const Regions = ({ id }) => {
     fulfillmentOptions: fulfillmentEndpoint,
     update,
   } = useMedusa("regions", { id })
-  const { register, reset, setValue, getValues, handleSubmit } = useForm()
+  const { register, reset, setValue, handleSubmit } = useForm()
 
   useEffect(() => {
     if (storeIsLoading) return
