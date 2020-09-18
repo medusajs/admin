@@ -76,15 +76,17 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
   return (
     <Flex pl={3} alignItems="center">
       <Flex pr={3}>
-        <Box minWidth={"35px"}>{lineItem.quantity} x</Box>
+        <Box alignSelf={"center"} minWidth={"35px"}>
+          {lineItem.quantity} x
+        </Box>
         <Box mx={2}>
           <Image
-            ml={3}
             src={lineItem.thumbnail || ""}
             sx={{
               objectFit: "contain",
               objectPosition: "center",
               width: 35,
+              height: 35,
             }}
           />
         </Box>
