@@ -1,23 +1,20 @@
-import React, { useState, useEffect, Fragment } from "react"
+import React, { useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import ReactJson from "react-json-view"
 import styled from "@emotion/styled"
 import { navigate } from "gatsby"
 import moment from "moment"
 
-import testThumbnail from "./thumbnail-test.jpg"
 import ReturnMenu from "./returns"
 import RefundMenu from "./refund"
 import FulfillmentMenu from "./fulfillment"
 import FulfillmentEdit from "./fulfillment/edit"
 import buildTimeline from "./utils/build-timeline"
 
-import Badge from "../../../components/badge"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 
-import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 import Typography from "../../../components/typography"
 
@@ -79,15 +76,15 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
   return (
     <Flex pl={3} alignItems="center">
       <Flex pr={3}>
-        <Box>{lineItem.quantity} x</Box>
+        <Box minWidth={"35px"}>{lineItem.quantity} x</Box>
         <Box mx={2}>
           <Image
             ml={3}
             src={lineItem.thumbnail || ""}
             sx={{
               objectFit: "contain",
+              objectPosition: "center",
               width: 35,
-              height: 35,
             }}
           />
         </Box>
