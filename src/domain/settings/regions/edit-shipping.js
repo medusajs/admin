@@ -30,7 +30,9 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   useEffect(() => {
     const option = {
       ...shippingOption,
-      metadata: Object.entries(shippingOption.metadata).map(
+    }
+    if (!_.isEmpty(shippingOption.metadata)) {
+      option.metadata = Object.entries(shippingOption.metadata).map(
         ([key, value], index) => {
           return {
             id: index,
@@ -38,8 +40,9 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
             value,
           }
         }
-      ),
+      )
     }
+
     reset(option)
 
     if (shippingOption.requirements.length) {
