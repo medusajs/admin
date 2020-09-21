@@ -16,7 +16,7 @@ const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
   const [fulfillAll, setFulfillAll] = useState(false)
   const [toFulfill, setToFulfill] = useState([])
   const [quantities, setQuantities] = useState({})
-  const { control, errors, register, setValue, handleSubmit } = useForm()
+  const { control, errors, register, handleSubmit } = useForm()
 
   const { fields, append, remove } = useFieldArray({
     control,

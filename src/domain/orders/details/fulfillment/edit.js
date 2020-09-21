@@ -54,7 +54,7 @@ const FulfillmentEdit = ({
         <Modal.Header>Mark fulfillment shipped</Modal.Header>
         <Modal.Content flexDirection="column">
           <Flex my={3} flexDirection="column">
-            {trackingNumbers.map((req, index) => (
+            {trackingNumbers.map((_, index) => (
               <Flex mb={3}>
                 <Box flex={1}>
                   <Input
