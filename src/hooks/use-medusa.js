@@ -126,6 +126,12 @@ const useMedusa = (endpoint, query) => {
             .return(query.id, payload)
             .then(({ data }) => setResult(data))
         }
+
+        value.cancel = () => {
+          return subcomponent
+            .cancel(query.id)
+            .then(({ data }) => setResult(data))
+        }
       }
       break
     case "store":

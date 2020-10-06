@@ -31,6 +31,8 @@ const OrderNumCell = styled(Text)`
   color: #006fbb;
   z-index: 1000;
 
+  ${props => props.isCanceled && "text-decoration: line-through;"}
+
   &:hover {
     text-decoration: underline;
   }
@@ -232,7 +234,9 @@ const OrderIndex = ({}) => {
                   onClick={() => navigate(`/a/orders/${el._id}`)}
                 >
                   <TableDataCell>
-                    <OrderNumCell>#{el.display_id}</OrderNumCell>
+                    <OrderNumCell isCanceled={el.status === "canceled"}>
+                      #{el.display_id}
+                    </OrderNumCell>
                   </TableDataCell>
                   <TableDataCell
                     data-for={el._id}

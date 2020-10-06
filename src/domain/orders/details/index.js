@@ -11,6 +11,7 @@ import FulfillmentMenu from "./fulfillment"
 import FulfillmentEdit from "./fulfillment/edit"
 import buildTimeline from "./utils/build-timeline"
 
+import Dialog from "../../../components/dialog"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
@@ -114,6 +115,8 @@ const OrderDetails = ({ id }) => {
   const [updateFulfillment, setUpdateFulfillment] = useState(false)
   const [isHandlingOrder, setIsHandlingOrder] = useState(false)
   const [captureLoading, setCaptureLoading] = useState(false)
+  const [showCancelDialog, setCancelDialog] = useState(false)
+  const [isCancelling, setCancelling] = useState(false)
   const [showMetadataEdit, setShowMetadataEdit] = useState(false)
 
   const {
@@ -126,6 +129,7 @@ const OrderDetails = ({ id }) => {
     isLoading,
     archive,
     complete,
+    cancel,
     toaster,
   } = useMedusa("orders", {
     id,
@@ -152,15 +156,61 @@ const OrderDetails = ({ id }) => {
     order.payment_status === "captured" ? "#4BB543" : "#e3e8ee"
   const paymentColor = order.payment_status === "captured" ? "white" : "#4f566b"
 
+  let paymentAction
+  if (order.status !== "canceled") {
+    if (order.payment_status !== "captured") {
+      paymentAction = {
+        type: "",
+        label: "Capture",
+        onClick: () => {
+          setCaptureLoading(true)
+          capturePayment()
+            .then(() => toaster("Succesfully captured payment", "success"))
+            .catch(() => toaster("Failed to capture payment", "error"))
+            .finally(() => {
+              setCaptureLoading(false)
+            })
+        },
+        isLoading: captureLoading,
+      }
+    } else {
+      paymentAction = {
+        type: "primary",
+        label: "Refund",
+        onClick: () => setShowRefund(!showRefund),
+      }
+    }
+  }
+
   let fulfillmentAction
   const canFulfill = order.items.reduce((acc, i) => {
     return acc && i.fulfilled_quantity !== i.quantity
   }, true)
-  if (canFulfill) {
+  if (canFulfill && order.status !== "canceled") {
     fulfillmentAction = {
       type: "primary",
       label: "Create Fulfillment",
       onClick: () => setShowFulfillmentMenu(!showFulfillmentMenu),
+    }
+  }
+
+  const orderDropdown = []
+  if (order.payment_status === "awaiting") {
+    orderDropdown.push({
+      type: "danger",
+      label: "Cancel order",
+      onClick: () => {
+        setCancelDialog(true)
+      },
+    })
+  }
+
+  let lineAction
+  if (order.status !== "canceled") {
+    lineAction = {
+      type: "primary",
+      label: "Register returns",
+      onClick: () => setShowReturnMenu(!showReturnMenu),
     }
   }
 
@@ -170,8 +220,10 @@ const OrderDetails = ({ id }) => {
         <Card mb={2}>
           <Card.Header
             badge={{ label: order.status }}
+            dropdownOptions={orderDropdown}
             action={
-              order.status !== "archived" && {
+              order.status !== "archived" &&
+              order.status !== "canceled" && {
                 type: "",
                 label: order.status === "completed" ? "Archive" : "Complete",
                 onClick: () => {
@@ -230,15 +282,7 @@ const OrderDetails = ({ id }) => {
       </Flex>
       {/* Line items */}
       <Card mb={2}>
-        <Card.Header
-          action={{
-            type: "primary",
-            label: "Register returns",
-            onClick: () => setShowReturnMenu(!showReturnMenu),
-          }}
-        >
-          Timeline
-        </Card.Header>
+        <Card.Header action={lineAction}>Timeline</Card.Header>
         <Card.Body flexDirection="column">
           {events.map(event => (
             <Box sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
@@ -268,32 +312,7 @@ const OrderDetails = ({ id }) => {
             color: paymentColor,
             bgColor: paymentBgColor,
           }}
-          action={
-            order.payment_status !== "captured"
-              ? {
-                  type: "",
-                  label: "Capture",
-                  onClick: () => {
-                    setCaptureLoading(true)
-                    capturePayment()
-                      .then(() =>
-                        toaster("Succesfully captured payment", "success")
-                      )
-                      .catch(() =>
-                        toaster("Failed to capture payment", "error")
-                      )
-                      .finally(() => {
-                        setCaptureLoading(false)
-                      })
-                  },
-                  isLoading: captureLoading,
-                }
-              : {
-                  type: "primary",
-                  label: "Refund",
-                  onClick: () => setShowRefund(!showRefund),
-                }
-          }
+          action={paymentAction}
         >
           Payment
         </Card.Header>
@@ -425,7 +444,7 @@ const OrderDetails = ({ id }) => {
                       </Text>
                     )}
                   </Box>
-                  {!fulfillment.shipped_at && (
+                  {!fulfillment.shipped_at && order.status !== "canceled" && (
                     <Button
                       variant={"primary"}
                       onClick={() => setUpdateFulfillment(fulfillment)}
@@ -543,6 +562,37 @@ const OrderDetails = ({ id }) => {
           onDismiss={() => setUpdateFulfillment(false)}
           toaster={toaster}
         />
+      )}
+      {showCancelDialog && (
+        <Dialog
+          title="Cancel order"
+          submitText={"Cancel order"}
+          cancelText={"Not now"}
+          submitLoading={isCancelling}
+          onSubmit={() => {
+            setCancelling(true)
+            cancel()
+              .then(() => {
+                toaster("Order was canceled", "success")
+              })
+              .catch(() => {
+                toaster("Could not cancel order", "error")
+              })
+              .finally(() => {
+                setCancelDialog(false)
+                setCancelling(false)
+              })
+          }}
+          onCancel={() => {
+            setCancelDialog(false)
+          }}
+        >
+          <Flex fontSize={2} flexDirection="column">
+            <div>Are you sure you want to cancel?</div>
+            This will unauthorize the payment and delete any cancellable
+            fulfillments.
+          </Flex>
+        </Dialog>
       )}
     </Flex>
   )

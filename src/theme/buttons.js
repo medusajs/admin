@@ -78,8 +78,11 @@ export const buttons = {
     },
   },
   green: {
-    height: "30px",
+    minHeight: "24px",
+    height: "28px",
     color: "lightest",
+    fontSize: "14px",
+    lineHeight: "14px",
     backgroundColor: "#53725D",
     border: 0,
     outline: 0,
