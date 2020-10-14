@@ -121,9 +121,15 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
-        value.return = payload => {
+        value.requestReturn = payload => {
           return subcomponent
-            .return(query.id, payload)
+            .requestReturn(query.id, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.receiveReturn = (returnId, payload) => {
+          return subcomponent
+            .receiveReturn(query.id, returnId, payload)
             .then(({ data }) => setResult(data))
         }
 

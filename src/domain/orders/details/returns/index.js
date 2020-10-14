@@ -7,8 +7,8 @@ import Modal from "../../../../components/modal"
 import CurrencyInput from "../../../../components/currency-input"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
-
-import useMedusa from "../../../../hooks/use-medusa"
+import Select from "../../../../components/select"
+import Medusa from "../../../../services/api"
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
@@ -18,6 +18,12 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [refundAmount, setRefundAmount] = useState(0)
   const [toReturn, setToReturn] = useState([])
   const [quantities, setQuantities] = useState({})
+
+  const [shippingLoading, setShippingLoading] = useState(true)
+  const [shippingOptions, setShippingOptions] = useState([])
+  const [shippingMethod, setShippingMethod] = useState()
+  const [shippingPrice, setShippingPrice] = useState()
+
   const { register, setValue, handleSubmit } = useForm()
 
   const handleReturnToggle = item => {
@@ -45,17 +51,30 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }
 
   useEffect(() => {
+    Medusa.shippingOptions
+      .list({
+        region_id: order.region_id,
+        is_return: true,
+      })
+      .then(({ data }) => {
+        setShippingOptions(data.shipping_options)
+        setShippingLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
     const items = toReturn.map(t => order.items.find(i => i._id === t))
-    const total = items.reduce((acc, next) => {
-      return acc + (next.refundable / next.quantity) * quantities[next._id]
-    }, 0)
+    const total =
+      items.reduce((acc, next) => {
+        return acc + (next.refundable / next.quantity) * quantities[next._id]
+      }, 0) - (shippingPrice || 0)
 
     setRefundable(total)
 
     if (!refundEdited || total < refundAmount) {
       setRefundAmount(total)
     }
-  }, [toReturn, quantities])
+  }, [toReturn, quantities, shippingPrice])
 
   const handleQuantity = (e, item) => {
     const element = e.target
@@ -73,12 +92,18 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       quantity: quantities[t],
     }))
 
+    let data = {
+      items,
+      refund: refundAmount,
+    }
+    if (shippingMethod) {
+      data.shipping_method = shippingMethod
+      data.shipping_price = shippingPrice
+    }
+
     if (onReturn) {
       setSubmitting(true)
-      return onReturn({
-        items,
-        refund: refundAmount,
-      })
+      return onReturn(data)
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
         .catch(() => toaster("Failed to return order", "error"))
@@ -115,72 +140,139 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
   }
 
+  const handleShippingSelected = e => {
+    const element = e.target
+    if (element.value !== "Add a shipping method") {
+      setShippingMethod(element.value)
+      const method = shippingOptions.find(o => element.value === o._id)
+      setShippingPrice(method.price.amount)
+    } else {
+      setShippingMethod()
+      setShippingPrice(0)
+    }
+  }
+
+  const handleUpdateShippingPrice = e => {
+    const element = e.target
+    const value = parseFloat(element.value) || ""
+    if (value === "" || value >= 0) {
+      setShippingPrice(value)
+    }
+  }
+
   return (
     <Modal onClick={onDismiss}>
       <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
-        <Modal.Header>Register Return</Modal.Header>
+        <Modal.Header>Request Return</Modal.Header>
         <Modal.Content flexDirection="column">
-          <Flex
-            sx={{
-              borderBottom: "hairline",
-            }}
-            justifyContent="space-between"
-            fontSize={1}
-            py={2}
-          >
-            <Box width={30} px={2} py={1}>
-              <input
-                checked={returnAll}
-                onChange={handleReturnAll}
-                type="checkbox"
-              />
-            </Box>
-            <Box width={400} px={2} py={1}></Box>
-            <Box width={75} px={2} py={1}>
-              Quantity
-            </Box>
-            <Box px={2} py={1}>
-              Refundable
-            </Box>
-          </Flex>
-          {order.items.map(item => {
-            // Only show items that have not been returned
-            if (item.returned) {
-              return
-            }
+          <Box mb={3}>
+            <Text px={2}>Items to return</Text>
+            <Flex
+              sx={{
+                borderBottom: "hairline",
+              }}
+              justifyContent="space-between"
+              fontSize={1}
+              py={2}
+            >
+              <Box width={30} px={2} py={1}>
+                <input
+                  checked={returnAll}
+                  onChange={handleReturnAll}
+                  type="checkbox"
+                />
+              </Box>
+              <Box width={400} px={2} py={1}>
+                Details
+              </Box>
+              <Box width={75} px={2} py={1}>
+                Quantity
+              </Box>
+              <Box width={110} px={2} py={1}>
+                Refundable
+              </Box>
+            </Flex>
+            {order.items.map(item => {
+              // Only show items that have not been returned
+              if (item.returned) {
+                return
+              }
 
-            return (
-              <Flex justifyContent="space-between" fontSize={2} py={2}>
-                <Box width={30} px={2} py={1}>
-                  <input
-                    checked={toReturn.includes(item._id)}
-                    onChange={() => handleReturnToggle(item)}
-                    type="checkbox"
-                  />
-                </Box>
-                <Box width={400} px={2} py={1}>
-                  {item.title}
-                </Box>
-                <Box width={60} px={2} py={1}>
-                  {toReturn.includes(item._id) ? (
-                    <Input
-                      type="number"
-                      onChange={e => handleQuantity(e, item)}
-                      value={quantities[item._id] || ""}
-                      min={1}
-                      max={item.quantity - item.returned_quantity}
-                      defaultValue={item.quantity - item.returned_quantity}
+              return (
+                <Flex
+                  key={item._id}
+                  justifyContent="space-between"
+                  fontSize={2}
+                  py={2}
+                >
+                  <Box width={30} px={2} py={1}>
+                    <input
+                      checked={toReturn.includes(item._id)}
+                      onChange={() => handleReturnToggle(item)}
+                      type="checkbox"
                     />
-                  ) : (
-                    item.quantity - item.returned_quantity
-                  )}
-                </Box>
-                <Box px={2} py={1}>
-                  {item.refundable} {order.currency_code}
-                </Box>
-              </Flex>
-            )
-          })}
+                  </Box>
+                  <Box width={400} px={2} py={1}>
+                    <Text fontSize={1} lineHeight={"14px"}>
+                      {item.title}
+                    </Text>
+                    <Text fontSize={0}>{item.content.variant.sku}</Text>
+                  </Box>
+                  <Box width={75} px={2} py={1}>
+                    {toReturn.includes(item._id) ? (
+                      <Input
+                        type="number"
+                        onChange={e => handleQuantity(e, item)}
+                        value={quantities[item._id] || ""}
+                        min={1}
+                        max={item.quantity - item.returned_quantity}
+                      />
+                    ) : (
+                      item.quantity - item.returned_quantity
+                    )}
+                  </Box>
+                  <Box width={110} px={2} py={1}>
+                    <Text fontSize={1}>
+                      {item.refundable.toFixed(2)} {order.currency_code}
+                    </Text>
+                  </Box>
+                </Flex>
+              )
+            })}
+          </Box>
+
+          <Box mb={3}>
+            <Text>Shipping method</Text>
+            <Flex w={1} pt={2} justifyContent="space-between">
+              <Select
+                mr={3}
+                height={"32px"}
+                fontSize={1}
+                placeholder={"Add a shipping method"}
+                value={shippingMethod}
+                onChange={handleShippingSelected}
+                options={shippingOptions.map(o => ({
+                  label: o.name,
+                  value: o._id,
+                }))}
+              />
+              {shippingMethod && (
+                <Flex>
+                  <Box px={2} fontSize={1}>
+                    Shipping price
+                  </Box>
+                  <Box px={2} width={110}>
+                    <CurrencyInput
+                      currency={order.currency_code}
+                      value={shippingPrice}
+                      onChange={handleUpdateShippingPrice}
+                    />
+                  </Box>
+                </Flex>
+              )}
+            </Flex>
+          </Box>
+
           {refundable > 0 && (
             <Flex
               sx={{
@@ -189,9 +281,11 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
               w={1}
               mt={3}
               pt={3}
-              justifyContent="space-between"
+              justifyContent="flex-end"
             >
-              <Box px={2}>To refund</Box>
+              <Box px={2} fontSize={1}>
+                To refund
+              </Box>
               <Box px={2} width={110}>
                 <CurrencyInput
                   currency={order.currency_code}

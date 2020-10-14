@@ -29,6 +29,7 @@ const Select = React.forwardRef(
       label = "",
       defaultValue = "",
       options = [],
+      placeholder = "",
       value,
       onChange,
       inline,
@@ -63,6 +64,7 @@ const Select = React.forwardRef(
           defaultValue={defaultValue}
           onChange={onChange}
         >
+          {placeholder && <option>{placeholder}</option>}
           {options.map((option, index) => (
             <option key={index} value={option.value}>
               {option.label || option.value}

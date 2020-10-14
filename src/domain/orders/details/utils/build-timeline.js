@@ -6,13 +6,18 @@ const buildTimeline = order => {
       const line = order.items.find(({ _id }) => i.item_id === _id)
       return {
         ...line,
+        is_registered: i.is_registered,
+        is_requested: i.is_requested,
+        quantity_requested: i.quantity_requested,
         quantity: i.quantity,
       }
     })
     return {
       items,
+      status: r.status,
       refund_amount: r.refund_amount,
       created: r.created,
+      raw: r,
     }
   })
 
@@ -25,9 +30,13 @@ const buildTimeline = order => {
   if (returns.length) {
     for (const r of returns) {
       events.push({
+        type: "return",
         event: "Items returned",
         items: r.items,
+        refund_amount: r.refund_amount,
+        status: r.status,
         time: parseInt(r.created),
+        raw: r.raw,
       })
     }
   }

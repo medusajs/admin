@@ -6,9 +6,11 @@ import { navigate } from "gatsby"
 import moment from "moment"
 
 import ReturnMenu from "./returns"
+import ReceiveMenu from "./returns/receive-menu"
 import RefundMenu from "./refund"
 import FulfillmentMenu from "./fulfillment"
 import FulfillmentEdit from "./fulfillment/edit"
+import Timeline from "./timeline"
 import buildTimeline from "./utils/build-timeline"
 
 import Dialog from "../../../components/dialog"
@@ -17,7 +19,6 @@ import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 
 import useMedusa from "../../../hooks/use-medusa"
-import Typography from "../../../components/typography"
 
 const CustomerEmailLabel = styled(Text)`
   ${props =>
@@ -31,14 +32,6 @@ const CustomerEmailLabel = styled(Text)`
     text-decoration: underline;
   }
   `}
-`
-
-const LineItemLabel = styled(Text)`
-  ${Typography.Base};
-
-  cursor: pointer;
-
-  font-size: 10px;
 `
 
 const AlignedDecimal = ({ value, currency }) => {
@@ -69,45 +62,6 @@ const Divider = props => (
   />
 )
 
-const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = Array.isArray(lineItem.content)
-    ? lineItem.content[0].product._id
-    : lineItem.content.product._id
-
-  return (
-    <Flex pl={3} alignItems="center">
-      <Flex pr={3}>
-        <Box alignSelf={"center"} minWidth={"35px"}>
-          {lineItem.quantity} x
-        </Box>
-        <Box mx={2}>
-          <Image
-            src={lineItem.thumbnail || ""}
-            sx={{
-              objectFit: "contain",
-              objectPosition: "center",
-              width: 35,
-              height: 35,
-            }}
-          />
-        </Box>
-        <Box>
-          <LineItemLabel
-            ml={2}
-            mr={5}
-            onClick={() => navigate(`/a/products/${productId}`)}
-          >
-            {lineItem.title}
-            <br /> {lineItem.content.variant.sku}
-            <br />
-            {(1 + taxRate) * lineItem.content.unit_price} {currency}
-          </LineItemLabel>
-        </Box>
-      </Flex>
-    </Flex>
-  )
-}
-
 const OrderDetails = ({ id }) => {
   const [showRefund, setShowRefund] = useState(false)
   const [showReturnMenu, setShowReturnMenu] = useState(false)
@@ -117,12 +71,13 @@ const OrderDetails = ({ id }) => {
   const [captureLoading, setCaptureLoading] = useState(false)
   const [showCancelDialog, setCancelDialog] = useState(false)
   const [isCancelling, setCancelling] = useState(false)
-  const [showMetadataEdit, setShowMetadataEdit] = useState(false)
+  const [toReceive, setToReceive] = useState(false)
 
   const {
     order,
     capturePayment,
-    return: returnOrder,
+    requestReturn,
+    receiveReturn,
     createFulfillment,
     createShipment,
     refund,
@@ -206,10 +161,10 @@ const OrderDetails = ({ id }) => {
   }
 
   let lineAction
-  if (order.status !== "canceled") {
+  if (order.status !== "canceled" && order.fulfillment_status !== "returned") {
     lineAction = {
       type: "primary",
-      label: "Register returns",
+      label: "Request return",
       onClick: () => setShowReturnMenu(!showReturnMenu),
     }
   }
@@ -284,24 +239,11 @@ const OrderDetails = ({ id }) => {
       <Card mb={2}>
         <Card.Header action={lineAction}>Timeline</Card.Header>
         <Card.Body flexDirection="column">
-          {events.map(event => (
-            <Box sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
-              <Text ml={3} fontSize={1} color="grey">
-                {event.event}
-              </Text>
-              <Text fontSize="11px" color="grey" ml={3} mb={3}>
-                {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
-              </Text>
-              {event.items.map((lineItem, i) => (
-                <LineItem
-                  key={i}
-                  currency={order.currency_code}
-                  lineItem={lineItem}
-                  taxRate={order.region.tax_rate}
-                />
-              ))}
-            </Box>
-          ))}
+          <Timeline
+            events={events}
+            order={order}
+            onReceiveReturn={ret => setToReceive(ret)}
+          />
         </Card.Body>
       </Card>
       {/* PAYMENT */}
@@ -428,8 +370,8 @@ const OrderDetails = ({ id }) => {
           <Flex p={3} width={1} flexDirection="column">
             {order.fulfillments.length > 0 ? (
               order.fulfillments.map(fulfillment => (
-                <Flex justifyContent="space-between">
-                  <Box key={fulfillment._id}>
+                <Flex key={fulfillment._id} justifyContent="space-between">
+                  <Box>
                     <Text>Fulfilled by provider {fulfillment.provider_id}</Text>
                     {fulfillment.tracking_numbers.length > 0 ? (
                       <>
@@ -540,7 +482,7 @@ const OrderDetails = ({ id }) => {
       )}
       {showReturnMenu && (
         <ReturnMenu
-          onReturn={returnOrder}
+          onReturn={requestReturn}
           order={order}
           onDismiss={() => setShowReturnMenu(false)}
           toaster={toaster}
@@ -560,6 +502,15 @@ const OrderDetails = ({ id }) => {
           fulfillment={updateFulfillment}
           onCreateShipment={createShipment}
           onDismiss={() => setUpdateFulfillment(false)}
+          toaster={toaster}
+        />
+      )}
+      {toReceive && (
+        <ReceiveMenu
+          order={order}
+          returnRequest={toReceive}
+          onReceiveReturn={receiveReturn}
+          onDismiss={() => setToReceive(false)}
           toaster={toaster}
         />
       )}
