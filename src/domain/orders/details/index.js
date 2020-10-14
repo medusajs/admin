@@ -398,7 +398,6 @@ const OrderDetails = ({ id }) => {
               ))
             ) : (
               <Flex
-                key={fulfillment._id}
                 alignSelf={"center"}
                 justifySelf={"center"}
                 justifyContent="space-between"
