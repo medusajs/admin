@@ -82,7 +82,7 @@ const ReceiveMenu = ({
     setRefundable(total)
 
     if (!refundEdited || total < refundAmount) {
-      setRefundAmount(total)
+      setRefundAmount(refundAmount < 0 ? 0 : total)
     }
   }, [toReturn, quantities])
 
@@ -238,28 +238,26 @@ const ReceiveMenu = ({
                 </Box>
               </Flex>
             )}
-          {refundable > 0 && (
-            <Flex
-              sx={{
-                borderTop: "hairline",
-              }}
-              w={1}
-              mt={3}
-              pt={3}
-              justifyContent="flex-end"
-            >
-              <Box fontSize={1} px={2}>
-                To refund
-              </Box>
-              <Box px={2} width={110}>
-                <CurrencyInput
-                  currency={order.currency_code}
-                  value={refundAmount}
-                  onChange={handleRefundUpdated}
-                />
-              </Box>
-            </Flex>
-          )}
+          <Flex
+            sx={{
+              borderTop: "hairline",
+            }}
+            w={1}
+            mt={3}
+            pt={3}
+            justifyContent="flex-end"
+          >
+            <Box fontSize={1} px={2}>
+              To refund
+            </Box>
+            <Box px={2} width={110}>
+              <CurrencyInput
+                currency={order.currency_code}
+                value={refundAmount}
+                onChange={handleRefundUpdated}
+              />
+            </Box>
+          </Flex>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button loading={submitting} type="submit" variant="primary">
