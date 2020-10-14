@@ -201,8 +201,13 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
-    return(orderId, payload) {
+    requestReturn(orderId, payload) {
       const path = `/admin/orders/${orderId}/return`
+      return medusaRequest("POST", path, payload)
+    },
+
+    receiveReturn(orderId, returnId, payload) {
+      const path = `/admin/orders/${orderId}/return/${returnId}/receive`
       return medusaRequest("POST", path, payload)
     },
 

@@ -55,6 +55,7 @@ const InputField = React.forwardRef(
       deletable,
       onDelete,
       onChange,
+      textAlign,
       ...props
     },
     ref
@@ -80,6 +81,7 @@ const InputField = React.forwardRef(
           ref={ref}
           defaultValue={defaultValue}
           inline={inline}
+          textAlign={textAlign || "left"}
           variant={invalid ? "invalidInput" : "input"}
           name={name}
           type={type}
