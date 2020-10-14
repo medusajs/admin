@@ -3,15 +3,19 @@ import { Text, Flex, Box, Image } from "rebass"
 import { navigate } from "gatsby"
 import ReactJson from "react-json-view"
 import styled from "@emotion/styled"
+import MultiSelect from "react-multi-select-component"
+import _ from "lodash"
 
 import Card from "../../../components/card"
 import Spinner from "../../../components/spinner"
 import Badge from "../../../components/badge"
+import Button from "../../../components/button"
 import EditableInput from "../../../components/editable-input"
 
 import useMedusa from "../../../hooks/use-medusa"
 import DiscountRuleModal from "./discount-rule"
 import { Input } from "@rebass/forms"
+import Typography from "../../../components/typography"
 
 const ProductLink = styled(Text)`
   color: #006fbb;
@@ -21,6 +25,47 @@ const ProductLink = styled(Text)`
   &:hover {
     text-decoration: underline;
   `
+
+const StyledMultiSelect = styled(MultiSelect)`
+  ${Typography.Base}
+
+  color: black;
+  background-color: white;
+
+  max-width: 400px;
+  text-overflow: ellipsis;
+
+  min-width: 200px;
+
+  line-height: 1.5;
+  margin-top: 8px;
+  border: none;
+  outline: 0;
+
+  transition: all 0.2s ease;
+
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+
+  &:focus: {
+    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+  }
+  &::placeholder: {
+    color: #a3acb9;
+  }
+
+  .go3433208811 {
+    border: none;
+    border-radius: 3px;
+  }
+`
 
 const Divider = props => (
   <Box
@@ -36,13 +81,14 @@ const Divider = props => (
 )
 
 const DiscountDetails = ({ id }) => {
-  const [selectedRegions, setSelectedRegions] = useState([])
   const [selectedProducts, setSelectedProducts] = useState(
     discount && discount.discount_rule ? discount.discount_rule.valid_for : []
   )
   const [updating, setUpdating] = useState(false)
   const [showRuleEdit, setShowRuleEdit] = useState(false)
   const [code, setCode] = useState(discount && discount.code)
+
+  const [selectedRegions, setSelectedRegions] = useState([])
 
   const discountCodeRef = useRef()
 
@@ -53,6 +99,7 @@ const DiscountDetails = ({ id }) => {
     }
   )
   const { products, isLoading: isLoadingProducts } = useMedusa("products")
+  const { regions } = useMedusa("regions")
 
   useEffect(() => {
     if (discount) {
@@ -60,7 +107,19 @@ const DiscountDetails = ({ id }) => {
     }
   }, [discount])
 
-  if (isLoading || updating || !discount) {
+  useEffect(() => {
+    if (regions && discount && discount.regions) {
+      const temp = regions.reduce((acc, next) => {
+        if (discount.regions.includes(next._id)) {
+          acc.push({ label: next.name, value: next._id })
+        }
+        return acc
+      }, [])
+      setSelectedRegions(temp)
+    }
+  }, [regions, discount])
+
+  if (isLoading || updating || !discount || !regions) {
     return (
       <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
         <Box height="75px" width="75px" mt="50%">
@@ -70,7 +129,7 @@ const DiscountDetails = ({ id }) => {
     )
   }
 
-  const onTitleBlue = () => {
+  const onTitleBlur = () => {
     if (discount.code === code) return
 
     update({
@@ -121,6 +180,29 @@ const DiscountDetails = ({ id }) => {
       })
   }
 
+  const handleRegionUpdate = data => {
+    const toUpdateWith = regions.reduce((acc, next) => {
+      if (data.map(el => el.value).includes(next._id)) {
+        acc.push(next._id)
+      }
+      return acc
+    }, [])
+
+    setUpdating(true)
+    update({
+      regions: toUpdateWith,
+    })
+      .then(() => {
+        refresh({ id })
+        setUpdating(false)
+        toaster("Discount updated", "success")
+      })
+      .catch(() => {
+        setUpdating(false)
+        toaster("Discount update failed", "error")
+      })
+  }
+
   return (
     <Flex flexDirection="column" mb={5}>
       <Card mb={2}>
@@ -139,7 +221,7 @@ const DiscountDetails = ({ id }) => {
               childRef={discountCodeRef}
               type="input"
               style={{ maxWidth: "400px" }}
-              onBlur={onTitleBlue}
+              onBlur={onTitleBlur}
             >
               <Input
                 m={3}
@@ -160,7 +242,7 @@ const DiscountDetails = ({ id }) => {
             <Text pb={1} color="gray">
               Disabled
             </Text>
-            <Text pt={1} width="100%" textAlign="center">
+            <Text pt={1} width="100%" textAlign="center" mt={2}>
               <Badge width="100%" color="#4f566b" bg="#e3e8ee">
                 {`${discount.disabled}`}
               </Badge>
@@ -171,13 +253,36 @@ const DiscountDetails = ({ id }) => {
             <Text pb={1} color="gray">
               Valid regions
             </Text>
-            {discount.regions.map((r, i) => (
-              <Text key={i} pt={1}>
-                {r}
-              </Text>
-            ))}
+            <StyledMultiSelect
+              options={
+                regions &&
+                regions.map(el => ({
+                  label: el.name,
+                  value: el._id,
+                }))
+              }
+              selectAllLabel={"All"}
+              overrideStrings={{
+                allItemsAreSelected: "All regions",
+              }}
+              value={selectedRegions}
+              onChange={setSelectedRegions}
+            />
           </Box>
           <Card.VerticalDivider mx={3} />
+          <Box ml="auto" />
+          <Flex mr={3} mt="auto">
+            <Button
+              disabled={_.isEqual(
+                selectedRegions.map(el => el.value),
+                discount.regions
+              )}
+              variant="primary"
+              onClick={() => handleRegionUpdate(selectedRegions)}
+            >
+              Save valid regions
+            </Button>
+          </Flex>
         </Card.Body>
       </Card>
       <Card mb={2}>
