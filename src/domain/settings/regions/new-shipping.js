@@ -38,12 +38,7 @@ const NewShipping = ({
         o => !!o.is_return === !!isReturn
       )
 
-      return acc.concat(
-        filtered.map((option, o) => ({
-          label: `${option.id} via ${provider.provider_id}`,
-          value: `${p}.${o}`,
-        }))
-      )
+      return acc.concat(filtered)
     }, [])
 
     const [providerIndex, optionIndex] = data.fulfillment_option.split(".")
