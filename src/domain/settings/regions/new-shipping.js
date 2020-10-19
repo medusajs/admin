@@ -33,13 +33,16 @@ const NewShipping = ({
   })
 
   const handleSave = data => {
-    const fOptions = fulfillmentOptions.reduce((acc, provider, p) => {
+    const fOptions = fulfillmentOptions.map(provider => {
       const filtered = provider.options.filter(
         o => !!o.is_return === !!isReturn
       )
 
-      return acc.concat(filtered)
-    }, [])
+      return {
+        ...provider,
+        options: filtered,
+      }
+    })
 
     const [providerIndex, optionIndex] = data.fulfillment_option.split(".")
     const { provider_id, options } = fOptions[providerIndex]
