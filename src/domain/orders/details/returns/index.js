@@ -114,10 +114,10 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const handleRefundUpdated = e => {
     setRefundEdited(true)
     const element = e.target
-    const value = parseFloat(element.value) || ""
+    const value = element.value
 
-    if (value === "" || (value < order.refundable_amount && value >= 0)) {
-      setRefundAmount(value)
+    if (value < order.refundable_amount && value >= 0) {
+      setRefundAmount(parseFloat(element.value))
     }
   }
 
@@ -154,9 +154,9 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   const handleUpdateShippingPrice = e => {
     const element = e.target
-    const value = parseFloat(element.value) || ""
-    if (value === "" || value >= 0) {
-      setShippingPrice(value)
+    const value = element.value
+    if (value >= 0) {
+      setShippingPrice(parseFloat(value))
     }
   }
 
@@ -273,7 +273,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
             </Flex>
           </Box>
 
-          {refundable > 0 && (
+          {refundable >= 0 && (
             <Flex
               sx={{
                 borderTop: "hairline",
