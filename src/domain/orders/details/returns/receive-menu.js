@@ -118,10 +118,10 @@ const ReceiveMenu = ({
   const handleRefundUpdated = e => {
     setRefundEdited(true)
     const element = e.target
-    const value = parseFloat(element.value) || ""
+    const value = element.value
 
-    if (value === "" || (value < order.refundable_amount && value >= 0)) {
-      setRefundAmount(value)
+    if (value < order.refundable_amount && value >= 0) {
+      setRefundAmount(parseFloat(element.value))
     }
   }
 
