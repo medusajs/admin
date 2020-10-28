@@ -9,6 +9,7 @@ import { ReactComponent as Products } from "../../assets/svg/products.svg"
 import { ReactComponent as Customers } from "../../assets/svg/customers.svg"
 import { ReactComponent as Discounts } from "../../assets/svg/discounts.svg"
 import { ReactComponent as Logo } from "../../assets/svg/logo.svg"
+import { ReactComponent as GiftCard } from "../../assets/svg/gift-card.svg"
 import { ReactComponent as LogoInline } from "../../assets/svg/logo-horizontal.svg"
 
 const MuteLink = styled(Link)`
@@ -57,6 +58,12 @@ const Sidebar = ({}) => {
           <Discounts />
           <StyledLink ml={2} variant="nav" to="/a/discounts">
             Discounts
+          </StyledLink>
+        </Flex>
+        <Flex py={1} alignItems="center">
+          <GiftCard />
+          <StyledLink ml={2} variant="nav" to="/a/gift-cards">
+            Gift Cards
           </StyledLink>
         </Flex>
       </Flex>

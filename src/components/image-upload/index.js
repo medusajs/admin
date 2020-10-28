@@ -99,7 +99,18 @@ const ImageUpload = ({ label, name, onChange, value }) => {
           type="file"
           accept="image/*"
         />
-        {value ? <Image src={value} /> : <div>Upload</div>}
+        {value ? (
+          <Image
+            sx={{
+              height: "100%",
+              width: "100%",
+              objectFit: "contain",
+            }}
+            src={value}
+          />
+        ) : (
+          <div>Upload</div>
+        )}
       </Container>
     </Flex>
   )

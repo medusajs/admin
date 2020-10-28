@@ -100,8 +100,11 @@ export default {
       return medusaRequest("DELETE", path)
     },
 
-    list(search = "") {
-      let path = `/admin/products${search}`
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      let path = `/admin/products${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
 
@@ -233,7 +236,7 @@ export default {
       return medusaRequest("DELETE", path)
     },
 
-    list(search) {
+    list(search = {}) {
       const params = Object.keys(search)
         .map(k => `${k}=${search[k]}`)
         .join("&")
@@ -268,8 +271,11 @@ export default {
       return medusaRequest("POST", path, update)
     },
 
-    list() {
-      const path = `/admin/discounts`
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      const path = `/admin/discounts${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
   },

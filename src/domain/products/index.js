@@ -18,9 +18,6 @@ import {
 
 import New from "./new"
 import Details from "./details"
-import GiftCard from "./gift-card"
-import GiftCardDetail from "./gift-card/detail"
-
 import useMedusa from "../../hooks/use-medusa"
 import Button from "../../components/button"
 import qs from "query-string"
@@ -37,7 +34,7 @@ const ProductIndex = () => {
   }
 
   const { products, total_count, isLoading, refresh } = useMedusa("products", {
-    search: `?${qs.stringify(filtersOnLoad)}`,
+    search: filtersOnLoad,
   })
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(50)
@@ -84,7 +81,7 @@ const ProductIndex = () => {
 
     window.history.pushState(baseUrl, "", `?${prepared}`)
 
-    refresh({ search: `?${prepared}` }).then(() => {
+    refresh({ search: prepared }).then(() => {
       setOffset(updatedOffset)
     })
   }
@@ -197,7 +194,6 @@ const Products = () => {
   return (
     <Router>
       <ProductIndex path="/" />
-      <GiftCard path="gift-card/*" />
       <Details path=":id" />
       <New path="new" />
     </Router>

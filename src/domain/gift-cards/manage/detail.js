@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form"
 import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
 
-import Information from "../details/information"
-import Images from "../details/images"
+import Information from "../../products/details/information"
+import Images from "../../products/details/images"
 
 import useMedusa from "../../../hooks/use-medusa"
 import NotFound from "../../../components/not-found"
@@ -13,7 +13,7 @@ import Card from "../../../components/card"
 import Button from "../../../components/button"
 import PriceEditor from "../../../components/variant-grid/editors/prices"
 
-const ProductDetail = ({ id }) => {
+const GiftCardDetail = ({ id }) => {
   const [productVariants, setProductVariants] = useState([])
   const details = useForm()
   const {
@@ -169,4 +169,4 @@ const ProductDetail = ({ id }) => {
   )
 }
 
-export default ProductDetail
+export default GiftCardDetail

@@ -26,6 +26,7 @@ export const Table = React.forwardRef((props, ref) => (
       width: "100%",
       position: "relative",
       fontSize: "12px",
+      emptyCells: "show",
     }}
   />
 ))

@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import styled from "@emotion/styled"
 import { useForm, useFieldArray } from "react-hook-form"
 import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
-import { Router } from "@reach/router"
 
 import Button from "../../../components/button"
-import Pill from "../../../components/pill"
 import Input from "../../../components/input"
-import TagInput from "../../../components/tag-input"
 import ImageUpload from "../../../components/image-upload"
 import TextArea from "../../../components/textarea"
-import VariantGrid from "../../../components/variant-grid"
+import Spinner from "../../../components/spinner"
 
 import Medusa from "../../../services/api"
+import useMedusa from "../../../hooks/use-medusa"
 
 import GiftCardDetail from "./detail"
 
@@ -177,13 +175,28 @@ const NewGiftCard = ({}) => {
   )
 }
 
-const GiftCard = () => {
-  return (
-    <Router>
-      <NewGiftCard path="new" />
-      <GiftCardDetail path=":id" />
-    </Router>
-  )
+const Manage = () => {
+  const { products, isLoading } = useMedusa("products", {
+    search: {
+      is_giftcard: true,
+    },
+  })
+
+  if (isLoading) {
+    return (
+      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
+        <Box height="75px" width="75px" mt="50%">
+          <Spinner dark />
+        </Box>
+      </Flex>
+    )
+  }
+
+  if (products.length > 0) {
+    return <GiftCardDetail id={products[0]._id} />
+  }
+
+  return <NewGiftCard />
 }
 
-export default GiftCard
+export default Manage
