@@ -76,7 +76,7 @@ const Index = () => {
                 <TableRow
                   sx={{ cursor: "pointer" }}
                   key={i}
-                  onClick={() => navigate(`/a/discounts/${el._id}`)}
+                  onClick={() => navigate(`/a/gift-cards/${el._id}`)}
                 >
                   <TableDataCell>{el.code}</TableDataCell>
                   <TableDataCell>
