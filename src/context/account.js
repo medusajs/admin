@@ -50,12 +50,14 @@ export const AccountProvider = ({ children }) => {
             return data
           })
         },
+
         handleLogout: details => {
           return Medusa.auth.deauthenticate(details).then(() => {
             dispatch({ type: "userLoggedOut" })
             return data
           })
         },
+
         handleLogin: details => {
           return Medusa.auth.authenticate(details).then(({ data }) => {
             dispatch({ type: "userLoggedIn", payload: data.user })
