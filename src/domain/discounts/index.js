@@ -20,7 +20,11 @@ import { navigate } from "gatsby"
 import Button from "../../components/button"
 
 const DiscountIndex = () => {
-  const { discounts, isLoading } = useMedusa("discounts")
+  const { discounts, isLoading } = useMedusa("discounts", {
+    search: {
+      is_giftcard: "false",
+    },
+  })
 
   return (
     <>
