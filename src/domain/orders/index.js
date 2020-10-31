@@ -50,7 +50,11 @@ const OrderIndex = ({}) => {
   }
 
   const { orders, total_count, isLoading, refresh } = useMedusa("orders", {
-    search: `?${qs.stringify(filtersOnLoad)}`,
+    search: {
+      ...filtersOnLoad,
+      fields:
+        "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
+    },
   })
 
   const [query, setQuery] = useState("")
@@ -79,41 +83,56 @@ const OrderIndex = ({}) => {
     setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
-    const prepared = qs.stringify(
-      {
-        q: query,
-        payment_status: paymentFilter.filter || "",
-        fulfillment_status: fulfillmentFilter.filter || "",
-        status: statusFilter.filter || "",
-        offset: 0,
-        limit: 50,
-      },
-      { skipNull: true, skipEmptyString: true }
-    )
+    const queryParts = {
+      q: query,
+      payment_status: paymentFilter.filter || "",
+      fulfillment_status: fulfillmentFilter.filter || "",
+      status: statusFilter.filter || "",
+      offset,
+      limit,
+    }
+    const prepared = qs.stringify(queryParts, {
+      skipNull: true,
+      skipEmptyString: true,
+    })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({ search: `?${prepared}` })
+    refresh({
+      search: {
+        ...queryParts,
+        fields:
+          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
+      },
+    })
   }
 
   const handlePagination = direction => {
     const updatedOffset = direction === "next" ? offset + limit : offset - limit
     const baseUrl = qs.parseUrl(window.location.href).url
 
-    const prepared = qs.stringify(
-      {
-        q: query,
-        payment_status: paymentFilter.filter || "",
-        fulfillment_status: fulfillmentFilter.filter || "",
-        status: statusFilter.filter || "",
-        offset: updatedOffset,
-        limit,
-      },
-      { skipNull: true, skipEmptyString: true }
-    )
+    const queryParts = {
+      q: query,
+      payment_status: paymentFilter.filter || "",
+      fulfillment_status: fulfillmentFilter.filter || "",
+      status: statusFilter.filter || "",
+      offset: updatedOffset,
+      limit,
+    }
+
+    const prepared = qs.stringify(queryParts, {
+      skipNull: true,
+      skipEmptyString: true,
+    })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
-    refresh({ search: `?${prepared}` }).then(() => {
+    refresh({
+      search: {
+        ...queryParts,
+        fields:
+          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
+      },
+    }).then(() => {
       setOffset(updatedOffset)
     })
   }
@@ -121,20 +140,28 @@ const OrderIndex = ({}) => {
   const submit = () => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
-    const prepared = qs.stringify(
-      {
-        q: query,
-        payment_status: paymentFilter.filter || "",
-        fulfillment_status: fulfillmentFilter.filter || "",
-        status: statusFilter.filter || "",
-        offset,
-        limit,
-      },
-      { skipNull: true, skipEmptyString: true }
-    )
+    const queryParts = {
+      q: query,
+      payment_status: paymentFilter.filter || "",
+      fulfillment_status: fulfillmentFilter.filter || "",
+      status: statusFilter.filter || "",
+      offset,
+      limit,
+    }
+
+    const prepared = qs.stringify(queryParts, {
+      skipNull: true,
+      skipEmptyString: true,
+    })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({ search: `?${prepared}` })
+    refresh({
+      search: {
+        ...queryParts,
+        fields:
+          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
+      },
+    })
   }
 
   const clear = () => {
@@ -260,7 +287,9 @@ const OrderIndex = ({}) => {
                       </Badge>
                     </Box>
                   </TableDataCell>
-                  <TableDataCell>{el.payment_method.provider_id}</TableDataCell>
+                  <TableDataCell>
+                    {el.payment_method.provider_id || <>&nbsp;</>}
+                  </TableDataCell>
                 </TableRow>
               )
             })}

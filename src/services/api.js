@@ -169,8 +169,17 @@ export default {
       return medusaRequest("POST", path, update)
     },
 
-    list(search = "") {
-      let path = `/admin/orders${search}`
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => {
+          if (search[k] === "" || search[k] === null) {
+            return null
+          }
+          return `${k}=${search[k]}`
+        })
+        .filter(s => !!s)
+        .join("&")
+      let path = `/admin/orders${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
 
