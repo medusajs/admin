@@ -49,13 +49,16 @@ const OrderIndex = ({}) => {
     filtersOnLoad.limit = 50
   }
 
-  const { orders, total_count, isLoading, refresh } = useMedusa("orders", {
-    search: {
-      ...filtersOnLoad,
-      fields:
-        "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
-    },
-  })
+  const { orders, total_count, hasCache, isLoading, refresh } = useMedusa(
+    "orders",
+    {
+      search: {
+        ...filtersOnLoad,
+        fields:
+          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
+      },
+    }
+  )
 
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(50)
@@ -220,7 +223,7 @@ const OrderIndex = ({}) => {
           setFulfillmentFilter={setFulfillmentFilter}
         />
       </Flex>
-      {isLoading ? (
+      {isLoading && !hasCache ? (
         <Flex
           flexDirection="column"
           alignItems="center"

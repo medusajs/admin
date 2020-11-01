@@ -1,14 +1,33 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { useToasts } from "react-toast-notifications"
 
+import { CacheContext } from "../context/cache"
 import Medusa from "../services/api"
 import ToastLabel from "../components/toast"
 
+const getCacheKey = (endpoint, subcomponent, query) => {
+  if (!query) {
+    if (subcomponent.list) {
+      return `${endpoint}.list`
+    } else {
+      return `${endpoint}.retrieve`
+    }
+  } else if (query.id) {
+    return `${endpoint}.retrieve.${query.id}`
+  } else if (!query.id) {
+    return `${endpoint}.list.${JSON.stringify(query.search)}`
+  }
+}
+
 const useMedusa = (endpoint, query) => {
+  const cacheKey = getCacheKey(endpoint, subcomponent, query)
+  const { cache, setCache } = useContext(CacheContext)
+
+  const [hasCache, setHasCache] = useState(!!cache[cacheKey])
   const [isLoading, setLoading] = useState(true)
   const [isReloading, setReloading] = useState(false)
   const [didFail, setDidFail] = useState(false)
-  const [result, setResult] = useState({})
+  const [result, setResult] = useState(hasCache ? cache[cacheKey] : {})
 
   const { addToast } = useToasts()
 
@@ -18,10 +37,10 @@ const useMedusa = (endpoint, query) => {
   }
 
   const fetchData = async (refresh, query, offset, limit) => {
-    if (!refresh) {
-      setLoading(true)
-    } else {
+    if (refresh) {
       setReloading(true)
+    } else {
+      setLoading(true)
     }
     try {
       if (!query) {
@@ -42,7 +61,12 @@ const useMedusa = (endpoint, query) => {
         setLoading(false)
         setReloading(false)
       } else if (!query.id) {
+        if (cache[cacheKey]) {
+          setResult(cache[cacheKey])
+          setLoading(false)
+        }
         const { data } = await subcomponent.list(query.search)
+        setCache(cacheKey, data)
         setResult(data)
       }
       setLoading(false)
@@ -65,6 +89,7 @@ const useMedusa = (endpoint, query) => {
   let value = {
     ...result,
     refresh: query => fetchData(true, query),
+    hasCache,
     isLoading,
     isReloading,
     toaster,
