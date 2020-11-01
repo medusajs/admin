@@ -20,6 +20,11 @@ const getCacheKey = (endpoint, subcomponent, query) => {
 }
 
 const useMedusa = (endpoint, query) => {
+  const subcomponent = Medusa[endpoint]
+  if (!subcomponent) {
+    throw Error(`Endpoint: "${endpoint}", does not exist`)
+  }
+
   const cacheKey = getCacheKey(endpoint, subcomponent, query)
   const { cache, setCache } = useContext(CacheContext)
 
@@ -30,11 +35,6 @@ const useMedusa = (endpoint, query) => {
   const [result, setResult] = useState(hasCache ? cache[cacheKey] : {})
 
   const { addToast } = useToasts()
-
-  const subcomponent = Medusa[endpoint]
-  if (!subcomponent) {
-    throw Error(`Endpoint: "${endpoint}", does not exist`)
-  }
 
   const fetchData = async (refresh, query, offset, limit) => {
     if (refresh) {
