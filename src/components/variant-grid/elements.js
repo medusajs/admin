@@ -1,14 +1,15 @@
 import { Box } from "rebass"
 import styled from "@emotion/styled"
+import { TableDataCell } from "../table"
 
 export const Wrapper = styled.div`
-  overflow-x: scroll;
   padding: 1px;
 `
 
 export const StyledTable = styled(Box)`
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 `
 
 export const Th = styled.th`
@@ -31,7 +32,7 @@ export const DragHandle = styled.div`
   border: 1px solid white;
 `
 
-export const Td = styled.td`
+export const Td = styled(TableDataCell)`
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   min-width: 200px;

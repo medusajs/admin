@@ -15,6 +15,7 @@ import {
   DragHandle,
   InputField,
 } from "./elements"
+import { TableDataCell, TableHead, TableHeaderCell } from "../table"
 
 const ENTER_KEY = 13
 const TAB_KEY = 9
@@ -212,15 +213,17 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
   return (
     <Wrapper>
       <StyledTable as="table">
-        <thead>
+        {console.log(columns)}
+        <TableHead>
           <tr>
             {columns.map(c => (
-              <Th head={c.headCol} key={c.field}>
+              <TableHeaderCell head={c.headCol} key={c.field}>
                 {c.header}
-              </Th>
+              </TableHeaderCell>
             ))}
+            <TableHeaderCell width="100px" />
           </tr>
-        </thead>
+        </TableHead>
         <tbody>
           {variants.map((v, row) => (
             <tr key={row}>
@@ -267,7 +270,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
                   as="td"
                   sx={{
                     padding: "4px",
-                    borderTop: "2px solid transparent",
+                    borderBottom: "1px solid rgba(0,0,0,0.2)",
                     backgroundColor: "white",
                     position: "sticky !important",
                     right: 0,

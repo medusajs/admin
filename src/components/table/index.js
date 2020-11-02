@@ -87,7 +87,6 @@ export const TableHeaderCell = React.forwardRef((props, ref) => (
     ref={ref}
     as="th"
     variant="th"
-    {...props}
     height="30px"
     lineHeight="30px"
     p={0}
@@ -97,7 +96,9 @@ export const TableHeaderCell = React.forwardRef((props, ref) => (
     fontSize={0}
     sx={{
       textTransform: "uppercase",
+      ...props.sx,
     }}
+    {...props}
   />
 ))
 
