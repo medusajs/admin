@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Flex, Box, Text } from "rebass"
 import { Link } from "gatsby"
 import styled from "@emotion/styled"
@@ -11,6 +11,7 @@ import { ReactComponent as Discounts } from "../../assets/svg/discounts.svg"
 import { ReactComponent as Logo } from "../../assets/svg/logo.svg"
 import { ReactComponent as GiftCard } from "../../assets/svg/gift-card.svg"
 import { ReactComponent as LogoInline } from "../../assets/svg/logo-horizontal.svg"
+import Medusa from "../../services/api"
 
 const MuteLink = styled(Link)`
   text-decoration: none;
@@ -24,6 +25,25 @@ const StyledLink = ({ to, children, ...rest }) => (
 )
 
 const Sidebar = ({}) => {
+  const [storeName, setStoreName] = useState("")
+
+  const fetchStore = async () => {
+    const cache = localStorage.getItem("medusa::cache::store")
+    if (cache) {
+      setStoreName(cache)
+    } else {
+      const { data } = await Medusa.store.retrieve(({ data }) => data.store)
+      if (data.store) {
+        localStorage.setItem("medusa::cache::store", data.store.name)
+        setStoreName(data.store.name)
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetchStore()
+  }, [])
+
   return (
     <Container fontSize={1} fontFamily={"body"} p={4}>
       <Flex mx={-2} alignItems="center">
@@ -31,7 +51,7 @@ const Sidebar = ({}) => {
           <Logo />
         </LogoContainer>
         <Box mx={1}>
-          <Text fontWeight="200">Tekla Fabrics</Text>
+          <Text fontWeight="200">{storeName || "Medusa store"}</Text>
         </Box>
       </Flex>
 

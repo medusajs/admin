@@ -19,13 +19,20 @@ const AccountDetails = () => {
   }, [store, isLoading])
 
   const onSubmit = data => {
+    localStorage.removeItem("medusa::cache::store")
+
     update({
       name: data.name,
     })
   }
 
   return (
-    <Flex flexDirection="column" as="form" onSubmit={handleSubmit(onSubmit)} mb={2}>
+    <Flex
+      flexDirection="column"
+      as="form"
+      onSubmit={handleSubmit(onSubmit)}
+      mb={2}
+    >
       <Card>
         <Card.Header>Account Details</Card.Header>
         <Card.Body>
