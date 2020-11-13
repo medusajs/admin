@@ -2,11 +2,6 @@ export function decideBadgeColor(batchLabel) {
   switch (batchLabel) {
     case "captured":
     case "completed":
-    case "requires_action":
-      return {
-        bgColor: "#ff4133",
-        color: "white",
-      }
     case "shipped":
       return {
         bgColor: "#4BB543",
@@ -23,6 +18,7 @@ export function decideBadgeColor(batchLabel) {
         color: "black",
       }
     case "cancelled":
+    case "requires_action":
     case "failed":
       return {
         bgColor: "#ff4133",
