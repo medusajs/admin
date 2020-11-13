@@ -114,7 +114,8 @@ const OrderDetails = ({ id }) => {
           onClick: () => setShowRefund(!showRefund),
         }
       }
-      case paymentStatus === "awaiting": {
+      case paymentStatus === "awaiting" ||
+        paymentStatus === "requires_action": {
         return {
           label: "Capture",
           onClick: () => {
