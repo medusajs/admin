@@ -12,6 +12,7 @@ import FulfillmentMenu from "./fulfillment"
 import FulfillmentEdit from "./fulfillment/edit"
 import Timeline from "./timeline"
 import buildTimeline from "./utils/build-timeline"
+import SwapMenu from "./swap/create"
 
 import Dialog from "../../../components/dialog"
 import Card from "../../../components/card"
@@ -70,6 +71,7 @@ const OrderDetails = ({ id }) => {
   const [isHandlingOrder, setIsHandlingOrder] = useState(false)
   const [captureLoading, setCaptureLoading] = useState(false)
   const [showCancelDialog, setCancelDialog] = useState(false)
+  const [showSwap, setShowSwap] = useState(false)
   const [isCancelling, setCancelling] = useState(false)
   const [toReceive, setToReceive] = useState(false)
 
@@ -161,12 +163,21 @@ const OrderDetails = ({ id }) => {
   }
 
   let lineAction
+  let lineDropdown = []
   if (order.status !== "canceled" && order.fulfillment_status !== "returned") {
     lineAction = {
       type: "primary",
       label: "Request return",
       onClick: () => setShowReturnMenu(!showReturnMenu),
     }
+
+    lineDropdown.push({
+      type: "primary",
+      label: "Register swap...",
+      onClick: () => {
+        setShowSwap(true)
+      },
+    })
   }
 
   return (
@@ -237,7 +248,9 @@ const OrderDetails = ({ id }) => {
       </Flex>
       {/* Line items */}
       <Card mb={2}>
-        <Card.Header action={lineAction}>Timeline</Card.Header>
+        <Card.Header dropdownOptions={lineDropdown} action={lineAction}>
+          Timeline
+        </Card.Header>
         <Card.Body flexDirection="column">
           <Timeline
             events={events}
@@ -511,6 +524,14 @@ const OrderDetails = ({ id }) => {
           returnRequest={toReceive}
           onReceiveReturn={receiveReturn}
           onDismiss={() => setToReceive(false)}
+          toaster={toaster}
+        />
+      )}
+      {showSwap && (
+        <SwapMenu
+          order={order}
+          onCreate={console.log}
+          onDismiss={() => setShowSwap(false)}
           toaster={toaster}
         />
       )}
