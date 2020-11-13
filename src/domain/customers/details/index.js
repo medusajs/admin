@@ -4,6 +4,7 @@ import { Text, Flex, Box } from "rebass"
 import styled from "@emotion/styled"
 import ReactJson from "react-json-view"
 import moment from "moment"
+import _ from "lodash"
 
 import Card from "../../../components/card"
 import Badge from "../../../components/badge"
@@ -15,6 +16,7 @@ const OrderNumLink = styled(Text)`
   color: #006fbb;
   z-index: 1000;
   cursor: pointer;
+  width: 100px;
 
   &:hover {
     text-decoration: underline;
@@ -58,21 +60,27 @@ const CustomerDetail = ({ id }) => {
       <Card mr={3} mb={2} width="100%">
         <Card.Header>Orders</Card.Header>
         <Card.Body flexDirection="column">
-          {customer.orders.map(order => (
-            <Box pl={3} pr={2} py={2} display="flex">
-              <OrderNumLink onClick={() => navigate(`/a/orders/${order._id}`)}>
-                Order #{order.display_id}
-              </OrderNumLink>
-              <Card.VerticalDivider mx={3} />
-              <Text>
-                {order.total} {order.currency_code}
-              </Text>
-              <Card.VerticalDivider mx={3} />
-              <Text>
-                {moment(order.created).format("MMMM Do YYYY HH:mm a")}
-              </Text>
-            </Box>
-          ))}
+          {_.sortBy(customer.orders, "created")
+            .reverse()
+            .map(order => (
+              <Flex pl={3} pr={2} py={2} display="flex">
+                <OrderNumLink
+                  onClick={() => navigate(`/a/orders/${order._id}`)}
+                >
+                  Order #{order.display_id}
+                </OrderNumLink>
+                <Card.VerticalDivider mx={3} />
+                <Flex width="100px" justifyContent="center">
+                  <Text ml={2}>{parseInt(order.total).toFixed(2)}</Text>
+                  <Box ml="auto" />
+                  <Text mr={2}>{order.currency_code}</Text>
+                </Flex>
+                <Card.VerticalDivider mx={3} />
+                <Text>
+                  {moment(order.created).format("MMMM Do YYYY HH:mm a")}
+                </Text>
+              </Flex>
+            ))}
         </Card.Body>
       </Card>
       <Card mr={3} mb={2} width="100%">

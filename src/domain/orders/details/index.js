@@ -19,6 +19,7 @@ import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 
+import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
 
 const CustomerEmailLabel = styled(Text)`
@@ -74,6 +75,7 @@ const OrderDetails = ({ id }) => {
   const [showSwap, setShowSwap] = useState(false)
   const [isCancelling, setCancelling] = useState(false)
   const [toReceive, setToReceive] = useState(false)
+  const [isFulfilling, setIsFulfilling] = useState(false)
 
   const {
     order,
@@ -104,45 +106,38 @@ const OrderDetails = ({ id }) => {
 
   const events = buildTimeline(order)
 
-  const fulfillmentBgColor =
-    order.fulfillment_status === "fulfilled" ? "#4BB543" : "#e3e8ee"
-  const fulfillmentColor =
-    order.fulfillment_status === "fulfilled" ? "white" : "#4f566b"
-
-  const paymentBgColor =
-    order.payment_status === "captured" ? "#4BB543" : "#e3e8ee"
-  const paymentColor = order.payment_status === "captured" ? "white" : "#4f566b"
-
-  let paymentAction
-  if (order.status !== "canceled") {
-    if (order.payment_status !== "captured") {
-      paymentAction = {
-        type: "",
-        label: "Capture",
-        onClick: () => {
-          setCaptureLoading(true)
-          capturePayment()
-            .then(() => toaster("Succesfully captured payment", "success"))
-            .catch(() => toaster("Failed to capture payment", "error"))
-            .finally(() => {
-              setCaptureLoading(false)
-            })
-        },
-        isLoading: captureLoading,
+  const decidePaymentButton = paymentStatus => {
+    switch (true) {
+      case paymentStatus === "captured" ||
+        paymentStatus === "partially_refunded": {
+        return {
+          type: "primary",
+          label: "Refund",
+          onClick: () => setShowRefund(!showRefund),
+        }
       }
-    } else {
-      paymentAction = {
-        type: "primary",
-        label: "Refund",
-        onClick: () => setShowRefund(!showRefund),
+      case paymentStatus === "awaiting" ||
+        paymentStatus === "requires_action": {
+        return {
+          label: "Capture",
+          onClick: () => {
+            capturePayment()
+              .then(() => toaster("Succesfully captured payment", "success"))
+              .catch(() => toaster("Failed to capture payment", "error"))
+          },
+          isLoading: isHandlingOrder,
+        }
       }
+      default:
+        break
     }
   }
 
   let fulfillmentAction
-  const canFulfill = order.items.reduce((acc, i) => {
-    return acc && i.fulfilled_quantity !== i.quantity
-  }, true)
+  const canFulfill = order.items.some(
+    item => item.fulfilled_quantity !== item.quantity
+  )
+
   if (canFulfill && order.status !== "canceled") {
     fulfillmentAction = {
       type: "primary",
@@ -185,7 +180,11 @@ const OrderDetails = ({ id }) => {
       <Flex flexDirection="column" mb={2}>
         <Card mb={2}>
           <Card.Header
-            badge={{ label: order.status }}
+            badge={{
+              label: order.status,
+              color: decideBadgeColor(order.status).color,
+              bgColor: decideBadgeColor(order.status).bgColor,
+            }}
             dropdownOptions={orderDropdown}
             action={
               order.status !== "archived" &&
@@ -264,10 +263,13 @@ const OrderDetails = ({ id }) => {
         <Card.Header
           badge={{
             label: order.payment_status,
-            color: paymentColor,
-            bgColor: paymentBgColor,
+            color: decideBadgeColor(order.payment_status).color,
+            bgColor: decideBadgeColor(order.payment_status).bgColor,
           }}
-          action={paymentAction}
+          action={
+            order.total !== order.refunded_total &&
+            decidePaymentButton(order.payment_status)
+          }
         >
           Payment
         </Card.Header>
@@ -324,7 +326,9 @@ const OrderDetails = ({ id }) => {
             </Box>
           </Flex>
           <Divider mt={3} mb={1} mx={3} />
-          {order.payment_status === "captured" && (
+          {(order.payment_status === "captured" ||
+            order.payment_status === "refunded" ||
+            order.payment_status === "partially_refunded") && (
             <Flex>
               <Box pl={3} pr={5}>
                 <Text pt={2}>Amount paid</Text>
@@ -332,7 +336,19 @@ const OrderDetails = ({ id }) => {
               </Box>
               <Box>
                 <Text pt={2}>
-                  {order.total.toFixed(2)} {order.region.currency_code}
+                  {order.refunded_total > 0 ? (
+                    <>
+                      <strike style={{ marginRight: "10px" }}>
+                        {order.total.toFixed(2)} {order.region.currency_code}
+                      </strike>
+                      <>
+                        {(order.total - order.refunded_total).toFixed(2)}{" "}
+                        {order.region.currency_code}
+                      </>
+                    </>
+                  ) : (
+                    `${order.total.toFixed(2)}`
+                  )}
                 </Text>
                 {order.refunded_total > 0 && (
                   <Text pt={2}>
@@ -350,8 +366,8 @@ const OrderDetails = ({ id }) => {
           action={fulfillmentAction}
           badge={{
             label: order.fulfillment_status,
-            color: fulfillmentColor,
-            bgColor: fulfillmentBgColor,
+            color: decideBadgeColor(order.fulfillment_status).color,
+            bgColor: decideBadgeColor(order.fulfillment_status).bgColor,
           }}
         >
           Fulfillment
