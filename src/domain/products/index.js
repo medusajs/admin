@@ -53,23 +53,29 @@ const ProductIndex = () => {
     setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
-    const prepared = qs.stringify(
-      {
-        q: query,
-        offset: 0,
-        limit: 50,
-      },
-      { skipNull: true, skipEmptyString: true }
-    )
+    const search = {
+      q: query,
+      offset: 0,
+      limit: 50,
+    }
+    const prepared = qs.stringify(search, {
+      skipNull: true,
+      skipEmptyString: true,
+    })
 
     window.history.pushState(baseUrl, "", `?${prepared}`)
-    refresh({ search: `?${prepared}` })
+    refresh({ search })
   }
 
   const handlePagination = direction => {
     const updatedOffset = direction === "next" ? offset + limit : offset - limit
     const baseUrl = qs.parseUrl(window.location.href).url
 
+    const search = {
+      q: query,
+      offset: 0,
+      limit: 50,
+    }
     const prepared = qs.stringify(
       {
         q: query,
@@ -81,7 +87,7 @@ const ProductIndex = () => {
 
     window.history.pushState(baseUrl, "", `?${prepared}`)
 
-    refresh({ search: prepared }).then(() => {
+    refresh({ search }).then(() => {
       setOffset(updatedOffset)
     })
   }

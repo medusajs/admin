@@ -22,9 +22,6 @@ const DropdownContainer = styled(Box)`
   border-radius: 5px;
   ${props => (props.leftAlign ? "left" : "right")}: 0;
 
-  max-height: 80vh;
-  overflow: auto;
-
   &::before {
     content: "";
     position: absolute;
@@ -39,6 +36,11 @@ const DropdownContainer = styled(Box)`
     border-bottom-color: #fefefe;
     filter: drop-shadow(0px 8px 16px 0px rgba(0, 0, 0, 0.2));
   }
+`
+
+const Scrollable = styled(Box)`
+  max-height: 80vh;
+  overflow: auto;
 `
 
 const DropdownItem = styled.a`
@@ -105,7 +107,7 @@ const Dropdown = ({
     }
   })
 
-  const spacingProps = ["m", "mr", "ml", "mx", "mt", "mb", "my"]
+  const spacingProps = ["m", "mr", "ml", "mx"]
 
   return (
     <div style={{ position: "relative" }}>
@@ -131,9 +133,11 @@ const Dropdown = ({
             onChange={handleSearch}
           />
         )}
-        {React.Children.map(children, child => (
-          <DropdownItem>{child}</DropdownItem>
-        ))}
+        <Scrollable>
+          {React.Children.map(children, child => (
+            <DropdownItem>{child}</DropdownItem>
+          ))}
+        </Scrollable>
       </DropdownContainer>
     </div>
   )
