@@ -48,13 +48,19 @@ const CustomerDetail = ({ id }) => {
         <Card.Body>
           <Box pl={3} pr={2}>
             <Text pb={1} color="gray">
-              Registered
-              <Badge ml={3} color="#4f566b" bg="#e3e8ee">
-                {`${customer.has_account}`}
-              </Badge>
+              Registered user
             </Text>
+            <Badge ml={3} color="#4f566b" bg="#e3e8ee">
+              {`${customer.has_account}`}
+            </Badge>
           </Box>
           <Card.VerticalDivider mx={3} />
+          <Box pl={3} pr={2}>
+            <Text pb={1} color="gray">
+              Phone
+            </Text>
+            <Text pb={1}>{customer.phone || "N / A"}</Text>
+          </Box>
         </Card.Body>
       </Card>
       <Card mr={3} mb={2} width="100%">

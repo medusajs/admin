@@ -7,6 +7,7 @@ import { Input } from "@rebass/forms"
 import styled from "@emotion/styled"
 import moment from "moment"
 import qs from "query-string"
+import ReactCountryFlag from "react-country-flag"
 import ReactTooltip from "react-tooltip"
 
 import Details from "./details"
@@ -56,7 +57,7 @@ const OrderIndex = ({}) => {
       search: {
         ...filtersOnLoad,
         fields:
-          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
+          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
       },
     }
   )
@@ -105,7 +106,7 @@ const OrderIndex = ({}) => {
       search: {
         ...queryParts,
         fields:
-          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
+          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
       },
     })
   }
@@ -134,7 +135,7 @@ const OrderIndex = ({}) => {
       search: {
         ...queryParts,
         fields:
-          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
+          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
       },
     }).then(() => {
       setOffset(updatedOffset)
@@ -163,7 +164,7 @@ const OrderIndex = ({}) => {
       search: {
         ...queryParts,
         fields:
-          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method",
+          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
       },
     })
   }
@@ -244,21 +245,14 @@ const OrderIndex = ({}) => {
               <TableHeaderCell>Customer</TableHeaderCell>
               <TableHeaderCell>Fulfillment</TableHeaderCell>
               <TableHeaderCell>Payment status</TableHeaderCell>
-              <TableHeaderCell>Payment provider</TableHeaderCell>
+              {/* <TableHeaderCell>Payment provider</TableHeaderCell> */}
+              <TableHeaderCell>Total</TableHeaderCell>
+              <TableHeaderCell sx={{ maxWidth: "75px" }} />
             </TableHeaderRow>
           </TableHead>
+          {console.log(orders[0])}
           <TableBody>
             {orders.map((el, i) => {
-              const fulfillmentBgColor =
-                el.fulfillment_status === "fulfilled" ? "#4BB543" : "#e3e8ee"
-              const fulfillmentColor =
-                el.fulfillment_status === "fulfilled" ? "white" : "#4f566b"
-
-              const paymentBgColor =
-                el.payment_status === "captured" ? "#4BB543" : "#e3e8ee"
-              const paymentColor =
-                el.payment_status === "captured" ? "white" : "#4f566b"
-
               return (
                 <TableRow
                   key={i}
@@ -298,7 +292,18 @@ const OrderIndex = ({}) => {
                     </Box>
                   </TableDataCell>
                   <TableDataCell>
-                    {el.payment_method.provider_id || <>&nbsp;</>}
+                    {parseInt(el.total).toFixed(2)} {el.currency_code}
+                  </TableDataCell>
+                  <TableDataCell maxWidth="75px">
+                    {el.shipping_address.country_code ? (
+                      <ReactCountryFlag
+                        style={{ maxHeight: "100%", marginBottom: "0px" }}
+                        svg
+                        countryCode={el.shipping_address.country_code}
+                      />
+                    ) : (
+                      ""
+                    )}
                   </TableDataCell>
                 </TableRow>
               )

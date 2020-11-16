@@ -110,6 +110,7 @@ export const TableDataCell = React.forwardRef((props, ref) => (
     {...props}
     height="100%"
     width="100%"
+    maxWidth={props.maxWidth ? props.maxWidth : "100%"}
     sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
   />
 ))
