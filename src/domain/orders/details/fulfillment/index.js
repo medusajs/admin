@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { Text, Flex, Box } from "rebass"
 import { Radio } from "@rebass/forms"
 import { useForm, useFieldArray } from "react-hook-form"
 
 import Modal from "../../../../components/modal"
-import CurrencyInput from "../../../../components/currency-input"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 
-import useMedusa from "../../../../hooks/use-medusa"
-
-const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
+const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
   const [itemError, setItemError] = useState("")
   const [fulfillAll, setFulfillAll] = useState(false)
@@ -60,6 +57,30 @@ const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
   }
 
   const onSubmit = data => {
+    let metadata = {}
+    if (data.metadata) {
+      metadata = data.metadata.reduce((acc, next) => {
+        return {
+          ...acc,
+          [next.key]: next.value,
+        }
+      }, {})
+    }
+
+    console.log(isSwap)
+    console.log(onFulfill)
+
+    if (isSwap && onFulfill) {
+      setSubmitting(true)
+      return onFulfill(order._id, {
+        metadata,
+      })
+        .then(() => onDismiss())
+        .then(() => toaster("Successfully fulfilled swap", "success"))
+        .catch(() => toaster("Failed to fulfill swap", "error"))
+        .finally(() => setSubmitting(false))
+    }
+
     const items = toFulfill
       .map(t => {
         if (quantities[t]) {
@@ -73,16 +94,6 @@ const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
 
     if (!items.length) {
       setItemError("You must select at least one item to fulfill")
-    }
-
-    let metadata = {}
-    if (data.metadata) {
-      metadata = data.metadata.reduce((acc, next) => {
-        return {
-          ...acc,
-          [next.key]: next.value,
-        }
-      }, {})
     }
 
     if (onFulfill) {
@@ -117,6 +128,8 @@ const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
     }
   }
 
+  const items = isSwap ? order.additional_items : order.items
+
   return (
     <Modal onClick={onDismiss}>
       <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
@@ -138,18 +151,22 @@ const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
             py={2}
           >
             <Box width={30} px={2} py={1}>
-              <input
-                checked={fulfillAll}
-                onChange={handleFulfillAll}
-                type="checkbox"
-              />
+              {!isSwap && (
+                <input
+                  checked={fulfillAll}
+                  onChange={handleFulfillAll}
+                  type="checkbox"
+                />
+              )}
             </Box>
-            <Box width={400} px={2} py={1}></Box>
-            <Box width={75} px={2} py={1}>
+            <Box width={400} px={2} py={1}>
+              Details
+            </Box>
+            <Box textAlign="center" width={75} px={2} py={1}>
               Quantity
             </Box>
           </Flex>
-          {order.items.map(item => {
+          {items.map(item => {
             // Only show items that have not been fulfilled
             if (item.fulfilled) {
               return
@@ -158,16 +175,18 @@ const FulfillMenu = ({ order, onFulfill, onDismiss, toaster }) => {
             return (
               <Flex justifyContent="space-between" fontSize={2} py={2}>
                 <Box width={30} px={2} py={1}>
-                  <input
-                    checked={toFulfill.includes(item._id)}
-                    onChange={() => handleFulfillToggle(item)}
-                    type="checkbox"
-                  />
+                  {!isSwap && (
+                    <input
+                      checked={toFulfill.includes(item._id)}
+                      onChange={() => handleFulfillToggle(item)}
+                      type="checkbox"
+                    />
+                  )}
                 </Box>
                 <Box width={400} px={2} py={1}>
                   {item.title}
                 </Box>
-                <Box width={60} px={2} py={1}>
+                <Box textAlign="center" width={75} px={2} py={1}>
                   {toFulfill.includes(item._id) ? (
                     <Input
                       type="number"

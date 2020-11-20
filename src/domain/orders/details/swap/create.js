@@ -14,8 +14,8 @@ import Typography from "../../../../components/typography"
 import Medusa from "../../../../services/api"
 
 const Dot = styled(Box)`
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
 `
 
@@ -58,12 +58,24 @@ const StyledMultiSelect = styled(MultiSelect)`
   }
 `
 
+const extractPrice = (prices, order) => {
+  let price = prices.find(ma => ma.region_id === order.region_id)
+
+  if (!price) {
+    price = prices.find(ma => ma.currency_code === order.currency_code)
+  }
+
+  if (price) {
+    return price.amount * (1 + order.tax_rate)
+  }
+
+  return 0
+}
+
 const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
-  const [refundEdited, setRefundEdited] = useState(false)
   const [returnAll, setReturnAll] = useState(false)
-  const [refundable, setRefundable] = useState(0)
-  const [refundAmount, setRefundAmount] = useState(0)
+  const [toPay, setToPay] = useState(0)
   const [toReturn, setToReturn] = useState([])
   const [quantities, setQuantities] = useState({})
 
@@ -75,6 +87,10 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [searchResults, setSearchResults] = useState([])
 
   const { register, setValue, handleSubmit } = useForm()
+
+  const handleAddItemToSwap = variant => {
+    setItemsToAdd([...itemsToAdd, { ...variant, quantity: 1 }])
+  }
 
   const handleReturnToggle = item => {
     const id = item._id
@@ -114,17 +130,19 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     const items = toReturn.map(t => order.items.find(i => i._id === t))
-    const total =
+    const returnTotal =
       items.reduce((acc, next) => {
         return acc + (next.refundable / next.quantity) * quantities[next._id]
       }, 0) - (shippingPrice || 0)
 
-    setRefundable(total)
+    const newItemsTotal = itemsToAdd.reduce((acc, next) => {
+      const price = extractPrice(next.prices, order)
+      const lineTotal = price * next.quantity
+      return acc + lineTotal
+    }, 0)
 
-    if (!refundEdited || total < refundAmount) {
-      setRefundAmount(total)
-    }
-  }, [toReturn, quantities, shippingPrice])
+    setToPay(newItemsTotal - returnTotal)
+  }, [toReturn, quantities, shippingPrice, itemsToAdd])
 
   const handleQuantity = (e, item) => {
     const element = e.target
@@ -137,38 +155,48 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }
 
   const onSubmit = () => {
-    const items = toReturn.map(t => ({
-      item_id: t,
-      quantity: quantities[t],
-    }))
-
-    let data = {
-      items,
-      refund: refundAmount,
+    const data = {
+      return_items: toReturn.map(t => ({
+        item_id: t,
+        quantity: quantities[t],
+      })),
+      additional_items: itemsToAdd.map(i => ({
+        variant_id: i.variant_id,
+        quantity: i.quantity,
+      })),
     }
+
     if (shippingMethod) {
-      data.shipping_method = shippingMethod
-      data.shipping_price = shippingPrice
+      data.return_shipping = {
+        id: shippingMethod,
+        price: shippingPrice,
+      }
     }
 
     if (onCreate) {
       setSubmitting(true)
       return onCreate(data)
         .then(() => onDismiss())
-        .then(() => toaster("Successfully returned order", "success"))
-        .catch(() => toaster("Failed to return order", "error"))
+        .then(() => toaster("Successfully created swap", "success"))
+        .catch(() => toaster("Failed to create swap order", "error"))
         .finally(() => setSubmitting(false))
     }
   }
 
-  const handleRefundUpdated = e => {
-    setRefundEdited(true)
-    const element = e.target
-    const value = element.value
-
-    if (value < order.refundable_amount && value >= 0) {
-      setRefundAmount(parseFloat(element.value))
+  const handleToAddQuantity = (e, index) => {
+    const updated = [...itemsToAdd]
+    updated[index] = {
+      ...itemsToAdd[index],
+      quantity: parseInt(e.target.value),
     }
+
+    setItemsToAdd(updated)
+  }
+
+  const handleRemoveItem = index => {
+    const updated = [...itemsToAdd]
+    updated.splice(index, 1)
+    setItemsToAdd(updated)
   }
 
   const handleReturnAll = () => {
@@ -220,6 +248,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
           return acc.concat(
             next.variants.map(v => ({
               title: `${next.title} - ${v.title}`,
+              prices: v.prices,
               inventory_quantity: v.inventory_quantity,
               sku: v.sku,
               variant_id: v._id,
@@ -354,50 +383,104 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 searchPlaceholder={"Search by SKU, Name, etch."}
               >
                 {searchResults.map(s => (
-                  <Flex alignItems="center">
+                  <Flex
+                    key={s.variant_id}
+                    alignItems="center"
+                    onClick={() => handleAddItemToSwap(s)}
+                  >
                     <Dot
-                      mr={2}
+                      mr={3}
                       bg={s.inventory_quantity > 0 ? "green" : "danger"}
                     />
                     <Box>
-                      <Text fontSize={0} mb={0}>
+                      <Text fontSize={0} mb={0} lineHeight={1}>
                         {s.title}
                       </Text>
-                      <Text mt={0} fontSize={"10px"}>
-                        {s.sku}
-                      </Text>
+                      <Flex>
+                        <Text width={"100px"} mt={0} fontSize={"10px"}>
+                          {s.sku}
+                        </Text>
+                        <Text ml={2} mt={0} fontSize={"10px"}>
+                          In stock: {s.inventory_quantity}
+                        </Text>
+                      </Flex>
                     </Box>
                   </Flex>
                 ))}
               </Dropdown>
             </Box>
-            {itemsToAdd.map(i => {
-              return <div>{i._id}</div>
-            })}
+            <Box mt={3}>
+              {itemsToAdd.length > 0 && (
+                <Flex
+                  sx={{
+                    borderBottom: "hairline",
+                  }}
+                  justifyContent="space-between"
+                  fontSize={1}
+                  py={2}
+                >
+                  <Box width={30} px={2} py={1}></Box>
+                  <Box width={400} px={2} py={1}>
+                    Details
+                  </Box>
+                  <Box width={75} px={2} py={1}>
+                    Quantity
+                  </Box>
+                  <Box width={110} px={2} py={1}>
+                    Price
+                  </Box>
+                </Flex>
+              )}
+              {itemsToAdd.map((item, index) => {
+                return (
+                  <Flex
+                    key={item.variant_id}
+                    justifyContent="space-between"
+                    fontSize={2}
+                    py={2}
+                  >
+                    <Box width={30} px={2} py={1}></Box>
+                    <Box width={400} px={2} py={1}>
+                      <Text fontSize={1} lineHeight={"14px"}>
+                        {item.title}
+                      </Text>
+                      <Text fontSize={0}>{item.sku}</Text>
+                    </Box>
+                    <Box width={75} px={2} py={1}>
+                      <Input
+                        type="number"
+                        onChange={e => handleToAddQuantity(e, index)}
+                        value={item.quantity || ""}
+                        min={1}
+                      />
+                    </Box>
+                    <Box width={110} px={2} py={1}>
+                      <Text fontSize={1}>
+                        {extractPrice(item.prices, order)} {order.currency_code}
+                      </Text>
+                    </Box>
+                    <Box onClick={() => handleRemoveItem(index)}>&times;</Box>
+                  </Flex>
+                )
+              })}
+            </Box>
           </Box>
-
-          {refundable >= 0 && (
-            <Flex
-              sx={{
-                borderTop: "hairline",
-              }}
-              w={1}
-              mt={3}
-              pt={3}
-              justifyContent="flex-end"
-            >
-              <Box px={2} fontSize={1}>
-                To refund
-              </Box>
-              <Box px={2} width={110}>
-                <CurrencyInput
-                  currency={order.currency_code}
-                  value={refundAmount}
-                  onChange={handleRefundUpdated}
-                />
-              </Box>
-            </Flex>
-          )}
+          <Flex
+            sx={{
+              borderTop: "hairline",
+            }}
+            w={1}
+            mt={3}
+            pt={3}
+            justifyContent="flex-end"
+          >
+            <Box px={2} fontSize={1}>
+              Difference
+            </Box>
+            <Box px={2} width={110} fontSize={1}>
+              {toPay} {order.currency_code}
+            </Box>
+          </Flex>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button loading={submitting} type="submit" variant="primary">

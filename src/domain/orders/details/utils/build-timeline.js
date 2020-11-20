@@ -22,6 +22,7 @@ const buildTimeline = order => {
   })
 
   events.push({
+    id: `${order._id}-placed`,
     event: "Placed",
     items: order.items,
     time: order.created,
@@ -30,6 +31,7 @@ const buildTimeline = order => {
   if (returns.length) {
     for (const r of returns) {
       events.push({
+        id: r._id,
         type: "return",
         event: "Items returned",
         items: r.items,
@@ -44,6 +46,7 @@ const buildTimeline = order => {
   if (order.fulfillments.length) {
     for (const fulfillment of order.fulfillments) {
       events.push({
+        id: `${fulfillment._id}-fulfill`,
         event: "Items fulfilled",
         items: fulfillment.items,
         time: parseInt(fulfillment.created),
@@ -51,11 +54,30 @@ const buildTimeline = order => {
 
       if (fulfillment.shipped_at) {
         events.push({
+          id: `${fulfillment._id}-ship`,
           event: "Items shipped",
           items: fulfillment.items,
           time: parseInt(fulfillment.shipped_at),
         })
       }
+    }
+  }
+
+  if (order.swaps.length) {
+    for (const swap of order.swaps) {
+      const returnLines = swap.return_items.map(i => {
+        const line = order.items.find(({ _id }) => i.item_id === _id)
+        return line
+      })
+      events.push({
+        id: swap._id,
+        type: "swap",
+        event: "Items swapped",
+        items: swap.additional_items,
+        return_lines: returnLines,
+        time: parseInt(swap.created),
+        raw: swap,
+      })
     }
   }
 

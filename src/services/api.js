@@ -203,6 +203,31 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
+    createSwap(orderId, payload) {
+      const path = `/admin/orders/${orderId}/swaps`
+      return medusaRequest("POST", path, payload)
+    },
+
+    createSwapShipment(orderId, swapId, payload) {
+      const path = `/admin/orders/${orderId}/swaps/${swapId}/shipments`
+      return medusaRequest("POST", path, payload)
+    },
+
+    fulfillSwap(orderId, swapId, payload) {
+      const path = `/admin/orders/${orderId}/swaps/${swapId}/fulfillments`
+      return medusaRequest("POST", path, payload)
+    },
+
+    receiveSwap(orderId, swapId, payload) {
+      const path = `/admin/orders/${orderId}/swaps/${swapId}/receive`
+      return medusaRequest("POST", path, payload)
+    },
+
+    captureSwap(orderId, swapId) {
+      const path = `/admin/orders/${orderId}/swaps/${swapId}/capture`
+      return medusaRequest("POST", path)
+    },
+
     createFulfillment(orderId, payload) {
       const path = `/admin/orders/${orderId}/fulfillment`
       return medusaRequest("POST", path, payload)

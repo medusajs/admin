@@ -250,7 +250,6 @@ const OrderIndex = ({}) => {
               <TableHeaderCell sx={{ maxWidth: "75px" }} />
             </TableHeaderRow>
           </TableHead>
-          {console.log(orders[0])}
           <TableBody>
             {orders.map((el, i) => {
               return (
