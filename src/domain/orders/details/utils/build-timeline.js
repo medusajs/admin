@@ -63,7 +63,7 @@ const buildTimeline = order => {
     }
   }
 
-  if (order.swaps.length) {
+  if (order.swaps && order.swaps.length) {
     for (const swap of order.swaps) {
       const returnLines = swap.return_items.map(i => {
         const line = order.items.find(({ _id }) => i.item_id === _id)

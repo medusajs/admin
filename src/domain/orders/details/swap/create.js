@@ -169,7 +169,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (shippingMethod) {
       data.return_shipping = {
         id: shippingMethod,
-        price: shippingPrice,
+        price: shippingPrice / (1 + order.tax_rate),
       }
     }
 
@@ -358,7 +358,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               {shippingMethod && (
                 <Flex>
                   <Box px={2} fontSize={1}>
-                    Shipping price
+                    Shipping price (incl. taxes)
                   </Box>
                   <Box px={2} width={110}>
                     <CurrencyInput

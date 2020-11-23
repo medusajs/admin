@@ -2,12 +2,15 @@ import React, { useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import styled from "@emotion/styled"
 import moment from "moment"
+import ReactTooltip from "react-tooltip"
 
 import { decideBadgeColor } from "../../../../utils/decide-badge-color"
 import Typography from "../../../../components/typography"
 import Badge from "../../../../components/badge"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
+
+import useMedusa from "../../../../hooks/use-medusa"
 
 const LineItemLabel = styled(Text)`
   ${Typography.Base};
@@ -64,6 +67,8 @@ export default ({
   onReceiveReturn,
   onCancelSwap,
 }) => {
+  const { store, isLoading, toaster } = useMedusa("store")
+
   const payStatusColors = decideBadgeColor(event.raw.payment_status)
   const returnStatusColors = decideBadgeColor(event.raw.return.status)
   const fulfillStatusColors = decideBadgeColor(event.raw.fulfillment_status)
@@ -80,7 +85,6 @@ export default ({
     actions.push({
       label: "Fulfill Swap...",
       onClick: () => {
-        console.log(event.raw.additional_items)
         onFulfillSwap(event.raw)
       },
     })
@@ -109,19 +113,82 @@ export default ({
   return (
     <Flex>
       <Box width={"100%"} sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
-        <Flex mb={3} px={3} width={"100%"} justifyContent="space-between">
+        <Flex mb={4} px={3} width={"100%"} justifyContent="space-between">
           <Box>
             <Flex mb={2}>
-              <Text mr={3} fontSize={1} color="grey">
-                Swap
+              <Text mr={100} fontSize={1} color="grey">
+                Swap Requested
               </Text>
-              <Badge color={payStatusColors.color} bg={payStatusColors.bgColor}>
-                {event.raw.payment_status}
-              </Badge>
+              <Box>
+                {!isLoading && store.swap_link_template && (
+                  <Text
+                    sx={{
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      var tempInput = document.createElement("input")
+                      tempInput.value = store.swap_link_template.replace(
+                        /\{cart_id\}/,
+                        event.raw.cart_id
+                      )
+                      document.body.appendChild(tempInput)
+
+                      tempInput.select()
+                      document.execCommand("copy")
+                      document.body.removeChild(tempInput)
+                      toaster("Link copied to clipboard", "success")
+                    }}
+                    color="grey"
+                    data-for={event.raw.cart_id}
+                    data-tip={store.swap_link_template.replace(
+                      /\{cart_id\}/,
+                      event.raw.cart_id
+                    )}
+                  >
+                    <ReactTooltip
+                      id={event.raw.cart_id}
+                      place="top"
+                      effect="solid"
+                    />
+                    Copy Payment Link
+                  </Text>
+                )}
+              </Box>
             </Flex>
             <Text fontSize="11px" color="grey">
               {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
             </Text>
+            <Flex mt={4}>
+              <Text mr={2} fontSize={1} color="grey">
+                Payment Status
+              </Text>
+              <Badge
+                mr={4}
+                color={payStatusColors.color}
+                bg={payStatusColors.bgColor}
+              >
+                {event.raw.is_paid ? event.raw.payment_status : "not_paid"}
+              </Badge>
+              <Text mr={2} fontSize={1} color="grey">
+                Return Status
+              </Text>
+              <Badge
+                mr={4}
+                color={returnStatusColors.color}
+                bg={returnStatusColors.bgColor}
+              >
+                {event.raw.return.status}
+              </Badge>
+              <Text mr={2} fontSize={1} color="grey">
+                Fulfillment Status
+              </Text>
+              <Badge
+                color={fulfillStatusColors.color}
+                bg={fulfillStatusColors.bgColor}
+              >
+                {event.raw.fulfillment_status}
+              </Badge>
+            </Flex>
           </Box>
           <Dropdown>
             {actions.map(o => (
@@ -135,12 +202,6 @@ export default ({
           <Box>
             <Flex mb={2}>
               <Text mr={2}>Return items</Text>
-              <Badge
-                color={returnStatusColors.color}
-                bg={returnStatusColors.bgColor}
-              >
-                {event.raw.return.status}
-              </Badge>
             </Flex>
             {event.return_lines.map((lineItem, i) => (
               <LineItem
@@ -158,12 +219,6 @@ export default ({
           <Box>
             <Flex mt={3} mb={2}>
               <Text mr={2}>New items</Text>
-              <Badge
-                color={fulfillStatusColors.color}
-                bg={fulfillStatusColors.bgColor}
-              >
-                {event.raw.fulfillment_status}
-              </Badge>
             </Flex>
             {event.items.map((lineItem, i) => (
               <LineItem
