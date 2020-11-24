@@ -9,6 +9,7 @@ import moment from "moment"
 import qs from "query-string"
 import ReactCountryFlag from "react-country-flag"
 import ReactTooltip from "react-tooltip"
+import { useHotkeys } from "react-hotkeys-hook"
 
 import Details from "./details"
 import New from "./new"
@@ -51,16 +52,30 @@ const OrderIndex = ({}) => {
     filtersOnLoad.limit = 50
   }
 
-  const { orders, total_count, hasCache, isLoading, refresh } = useMedusa(
-    "orders",
-    {
-      search: {
-        ...filtersOnLoad,
-        fields:
-          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
-      },
-    }
-  )
+  const {
+    orders,
+    total_count,
+    hasCache,
+    isLoading,
+    refresh,
+    toaster,
+  } = useMedusa("orders", {
+    search: {
+      ...filtersOnLoad,
+      fields:
+        "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
+    },
+  })
+
+  const handleCopyToClip = val => {
+    var tempInput = document.createElement("input")
+    tempInput.value = val
+    document.body.appendChild(tempInput)
+    tempInput.select()
+    document.execCommand("copy")
+    document.body.removeChild(tempInput)
+    toaster("Copied!", "success")
+  }
 
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(50)
@@ -74,6 +89,30 @@ const OrderIndex = ({}) => {
     open: false,
     filter: "",
   })
+
+  const [activeIndex, setActiveIndex] = useState(-1)
+  useHotkeys("j", () => setActiveIndex(i => Math.min(i + 1, 50)))
+  useHotkeys("k", () => setActiveIndex(i => Math.max(i - 1, 0)))
+  useHotkeys(
+    "command+i",
+    () => {
+      if (activeIndex === -1) return
+      const o = orders[activeIndex]
+      handleCopyToClip(o.display_id)
+    },
+    {},
+    [activeIndex]
+  )
+  useHotkeys(
+    "enter",
+    () => {
+      if (activeIndex === -1) return
+      const o = orders[activeIndex]
+      navigate(`/a/orders/${o._id}`)
+    },
+    {},
+    [activeIndex]
+  )
 
   const onKeyDown = event => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
@@ -245,7 +284,6 @@ const OrderIndex = ({}) => {
               <TableHeaderCell>Customer</TableHeaderCell>
               <TableHeaderCell>Fulfillment</TableHeaderCell>
               <TableHeaderCell>Payment status</TableHeaderCell>
-              {/* <TableHeaderCell>Payment provider</TableHeaderCell> */}
               <TableHeaderCell>Total</TableHeaderCell>
               <TableHeaderCell sx={{ maxWidth: "75px" }} />
             </TableHeaderRow>
@@ -255,6 +293,7 @@ const OrderIndex = ({}) => {
               return (
                 <TableRow
                   key={i}
+                  isHighlighted={i === activeIndex}
                   onClick={() => navigate(`/a/orders/${el._id}`)}
                 >
                   <TableDataCell>

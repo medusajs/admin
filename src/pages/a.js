@@ -1,5 +1,7 @@
 import React from "react"
 import { Router } from "@reach/router"
+import { navigate } from "gatsby"
+import { useHotkeys } from "react-hotkeys-hook"
 
 import Oauth from "../domain/oauth"
 import GiftCards from "../domain/gift-cards"
@@ -13,6 +15,8 @@ import SEO from "../components/seo"
 import Customers from "../domain/customers"
 
 const IndexPage = () => {
+  useHotkeys("g + o", () => navigate("/a/orders"))
+  useHotkeys("g + p", () => navigate("/a/products"))
   return (
     <Layout>
       <SEO title="Home" />

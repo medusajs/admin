@@ -5,6 +5,7 @@ import styled from "@emotion/styled"
 import { navigate } from "gatsby"
 import moment from "moment"
 import ReactTooltip from "react-tooltip"
+import { useHotkeys } from "react-hotkeys-hook"
 
 import ReturnMenu from "./returns"
 import ReceiveMenu from "./returns/receive-menu"
@@ -140,6 +141,9 @@ const OrderDetails = ({ id }) => {
     document.body.removeChild(tempInput)
     toaster("Copied!", "success")
   }
+
+  useHotkeys("esc", () => navigate("/a/orders"))
+  useHotkeys("command+i", () => handleCopyToClip(order.display_id), {}, [order])
 
   if (isLoading) {
     return (

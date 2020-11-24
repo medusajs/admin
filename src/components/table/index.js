@@ -8,6 +8,19 @@ const StyledTable = styled(Box)`
 `
 
 const StyledTableRow = styled(Flex)`
+  position: relative;
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    height: 100%;
+    background-color: ${props =>
+      props.isHighlighted ? "#454545" : "transparent"};
+  }
   td:nth-of-type(1) {
     padding-left: 15px;
   }
