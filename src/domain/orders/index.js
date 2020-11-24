@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { navigate } from "gatsby"
 import _ from "lodash"
 import { Router } from "@reach/router"
@@ -91,6 +91,17 @@ const OrderIndex = ({}) => {
     filter: "",
   })
 
+  const isInViewport = el => {
+    const rect = el.getBoundingClientRect()
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    )
+  }
+
   const [activeIndex, setActiveIndex] = useState(-1)
   useHotkeys(
     "/",
@@ -124,6 +135,19 @@ const OrderIndex = ({}) => {
     {},
     [activeIndex]
   )
+
+  useEffect(() => {
+    if (activeIndex === -1) {
+      return
+    }
+    const o = orders[activeIndex]
+    const el = document.querySelector(`#order-${o._id}`)
+    if (!isInViewport(el)) {
+      el.scrollIntoView({
+        behavior: "smooth",
+      })
+    }
+  }, [activeIndex])
 
   const onKeyDown = event => {
     switch (event.key) {
@@ -312,6 +336,7 @@ const OrderIndex = ({}) => {
               return (
                 <TableRow
                   key={i}
+                  id={`order-${el._id}`}
                   isHighlighted={i === activeIndex}
                   onClick={() => navigate(`/a/orders/${el._id}`)}
                 >
