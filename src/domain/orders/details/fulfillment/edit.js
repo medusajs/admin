@@ -12,7 +12,10 @@ import useMedusa from "../../../../hooks/use-medusa"
 
 const FulfillmentEdit = ({
   order,
+  isSwap,
+  swap,
   fulfillment,
+  onCreateSwapShipment,
   onCreateShipment,
   onDismiss,
   toaster,
@@ -36,6 +39,16 @@ const FulfillmentEdit = ({
 
   const onSubmit = data => {
     const tracking_numbers = data.tracking_numbers.map(({ value }) => value)
+
+    if (isSwap && onCreateSwapShipment) {
+      return onCreateSwapShipment(swap._id, {
+        fulfillment_id: fulfillment._id,
+        tracking_numbers,
+      })
+        .then(() => onDismiss())
+        .then(() => toaster("Fulfillment was marked shipped", "success"))
+        .catch(() => toaster("Failed to mark fulfillment shipped", "error"))
+    }
 
     if (onCreateShipment) {
       return onCreateShipment({

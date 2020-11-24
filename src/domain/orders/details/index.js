@@ -12,6 +12,7 @@ import FulfillmentMenu from "./fulfillment"
 import FulfillmentEdit from "./fulfillment/edit"
 import Timeline from "./timeline"
 import buildTimeline from "./utils/build-timeline"
+import SwapMenu from "./swap/create"
 
 import Dialog from "../../../components/dialog"
 import Card from "../../../components/card"
@@ -63,7 +64,36 @@ const Divider = props => (
   />
 )
 
+const gatherFulfillments = order => {
+  const toReturn = []
+  order.fulfillments.forEach((f, index) => {
+    toReturn.push({
+      title: `Fulfillment #${index + 1}`,
+      is_swap: false,
+      fulfillment: f,
+    })
+  })
+
+  if (order.swaps.length) {
+    order.swaps.forEach(s => {
+      if (s.fulfillment_status !== "not_fulfilled") {
+        s.fulfillments.forEach((f, index) => {
+          toReturn.push({
+            title: `Swap Fulfillment #${index + 1}`,
+            is_swap: true,
+            fulfillment: f,
+            swap: s,
+          })
+        })
+      }
+    })
+  }
+
+  return toReturn
+}
+
 const OrderDetails = ({ id }) => {
+  const [swapToFulfill, setSwapToFulfill] = useState(false)
   const [showRefund, setShowRefund] = useState(false)
   const [showReturnMenu, setShowReturnMenu] = useState(false)
   const [showFulfillmentMenu, setShowFulfillmentMenu] = useState(false)
@@ -71,6 +101,7 @@ const OrderDetails = ({ id }) => {
   const [isHandlingOrder, setIsHandlingOrder] = useState(false)
   const [captureLoading, setCaptureLoading] = useState(false)
   const [showCancelDialog, setCancelDialog] = useState(false)
+  const [showSwap, setShowSwap] = useState(false)
   const [isCancelling, setCancelling] = useState(false)
   const [toReceive, setToReceive] = useState(false)
   const [isFulfilling, setIsFulfilling] = useState(false)
@@ -80,8 +111,13 @@ const OrderDetails = ({ id }) => {
     capturePayment,
     requestReturn,
     receiveReturn,
+    receiveSwap,
     createFulfillment,
+    captureSwap,
     createShipment,
+    createSwap,
+    createSwapShipment,
+    fulfillSwap,
     refund,
     isLoading,
     archive,
@@ -156,13 +192,24 @@ const OrderDetails = ({ id }) => {
   }
 
   let lineAction
+  let lineDropdown = []
   if (order.status !== "canceled" && order.fulfillment_status !== "returned") {
     lineAction = {
       type: "primary",
       label: "Request return",
       onClick: () => setShowReturnMenu(!showReturnMenu),
     }
+
+    lineDropdown.push({
+      type: "primary",
+      label: "Register swap...",
+      onClick: () => {
+        setShowSwap(true)
+      },
+    })
   }
+
+  const fulfillments = gatherFulfillments(order)
 
   return (
     <Flex flexDirection="column" mb={5}>
@@ -236,11 +283,15 @@ const OrderDetails = ({ id }) => {
       </Flex>
       {/* Line items */}
       <Card mb={2}>
-        <Card.Header action={lineAction}>Timeline</Card.Header>
+        <Card.Header dropdownOptions={lineDropdown} action={lineAction}>
+          Timeline
+        </Card.Header>
         <Card.Body flexDirection="column">
           <Timeline
             events={events}
             order={order}
+            onCaptureSwap={captureSwap}
+            onFulfillSwap={swap => setSwapToFulfill(swap)}
             onReceiveReturn={ret => setToReceive(ret)}
           />
         </Card.Body>
@@ -383,18 +434,31 @@ const OrderDetails = ({ id }) => {
               </Box>
             ))}
           </Flex>
-          <Flex p={3} width={1} flexDirection="column">
-            {order.fulfillments.length > 0 ? (
-              order.fulfillments.map(fulfillment => (
-                <Flex key={fulfillment._id} justifyContent="space-between">
+          <Flex width={1} flexDirection="column">
+            {fulfillments.length > 0 ? (
+              fulfillments.map(f => (
+                <Flex
+                  key={f.fulfillment._id}
+                  sx={{
+                    ":not(:last-of-type)": {
+                      borderBottom: "hairline",
+                    },
+                  }}
+                  p={3}
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
                   <Box>
-                    <Text>Fulfilled by provider {fulfillment.provider_id}</Text>
-                    {fulfillment.tracking_numbers.length > 0 ? (
+                    <Text>
+                      {f.title} Fulfilled by provider{" "}
+                      {f.fulfillment.provider_id}
+                    </Text>
+                    {f.fulfillment.tracking_numbers.length > 0 ? (
                       <>
                         <Text my={1} color="gray">
                           Tracking Number
                         </Text>
-                        <Text>{fulfillment.tracking_numbers.join(", ")}</Text>
+                        <Text>{f.fulfillment.tracking_numbers.join(", ")}</Text>
                       </>
                     ) : (
                       <Text my={1} color="gray">
@@ -402,10 +466,10 @@ const OrderDetails = ({ id }) => {
                       </Text>
                     )}
                   </Box>
-                  {!fulfillment.shipped_at && order.status !== "canceled" && (
+                  {!f.fulfillment.shipped_at && order.status !== "canceled" && (
                     <Button
                       variant={"primary"}
-                      onClick={() => setUpdateFulfillment(fulfillment)}
+                      onClick={() => setUpdateFulfillment(f)}
                     >
                       Mark Shipped
                     </Button>
@@ -488,6 +552,15 @@ const OrderDetails = ({ id }) => {
           />
         </Card.Body>
       </Card>
+      {swapToFulfill && (
+        <FulfillmentMenu
+          isSwap
+          onFulfill={fulfillSwap}
+          order={swapToFulfill}
+          onDismiss={() => setSwapToFulfill(false)}
+          toaster={toaster}
+        />
+      )}
       {showFulfillmentMenu && (
         <FulfillmentMenu
           onFulfill={createFulfillment}
@@ -515,7 +588,10 @@ const OrderDetails = ({ id }) => {
       {updateFulfillment && (
         <FulfillmentEdit
           order={order}
-          fulfillment={updateFulfillment}
+          swap={updateFulfillment.swap}
+          fulfillment={updateFulfillment.fulfillment}
+          isSwap={updateFulfillment.is_swap}
+          onCreateSwapShipment={createSwapShipment}
           onCreateShipment={createShipment}
           onDismiss={() => setUpdateFulfillment(false)}
           toaster={toaster}
@@ -526,7 +602,16 @@ const OrderDetails = ({ id }) => {
           order={order}
           returnRequest={toReceive}
           onReceiveReturn={receiveReturn}
+          onReceiveSwap={receiveSwap}
           onDismiss={() => setToReceive(false)}
+          toaster={toaster}
+        />
+      )}
+      {showSwap && (
+        <SwapMenu
+          order={order}
+          onCreate={createSwap}
+          onDismiss={() => setShowSwap(false)}
           toaster={toaster}
         />
       )}

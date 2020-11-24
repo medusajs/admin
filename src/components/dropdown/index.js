@@ -1,16 +1,18 @@
 import React, { useState, useRef, useEffect } from "react"
 import styled from "@emotion/styled"
+import _ from "lodash"
+import { Box } from "rebass"
 
 import { ReactComponent as Ellipsis } from "../../assets/svg/ellipsis.svg"
 
 import Button from "../button"
 
-const DropdownContainer = styled.div`
+const DropdownContainer = styled(Box)`
   ${props => `
     display: ${props.isOpen ? "block" : "none"};
-    transform: translate3d(-15px, 32px, 0px);  
   `};
 
+  transform: translateY(32px);
   position: absolute;
   background-color: #fefefe;
   min-width: 160px;
@@ -18,10 +20,7 @@ const DropdownContainer = styled.div`
   z-index: 1;
   top: 0;
   border-radius: 5px;
-  right: 0;
-
-  max-height: 80vh;
-  overflow: auto;
+  ${props => (props.leftAlign ? "left" : "right")}: 0;
 
   &::before {
     content: "";
@@ -39,6 +38,11 @@ const DropdownContainer = styled.div`
   }
 `
 
+const Scrollable = styled(Box)`
+  max-height: 80vh;
+  overflow: auto;
+`
+
 const DropdownItem = styled.a`
   padding: 12px 16px;
   text-decoration: none;
@@ -47,8 +51,29 @@ const DropdownItem = styled.a`
   cursor: pointer;
 `
 
-const Dropdown = ({ children, toggleText, sx, ...rest }) => {
+const StyledInput = styled.input`
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  font-size: 0.8em;
+  padding: 5px 12px;
+  color: #454545;
+
+  outline: none;
+`
+
+const Dropdown = ({
+  children,
+  searchPlaceholder,
+  showSearch,
+  onSearchChange,
+  toggleText,
+  leftAlign,
+  sx,
+  ...rest
+}) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [search, setSearch] = useState("")
 
   const ref = useRef(null)
 
@@ -66,12 +91,23 @@ const Dropdown = ({ children, toggleText, sx, ...rest }) => {
     }
   }
 
+  const handleSearch = e => {
+    const element = e.target
+    if (onSearchChange) {
+      onSearchChange(element.value)
+    }
+
+    setSearch(element.value)
+  }
+
   useEffect(() => {
     document.addEventListener("click", handleClickOutside)
     return () => {
       document.removeEventListener("click", handleClickOutside)
     }
   })
+
+  const spacingProps = ["m", "mr", "ml", "mx"]
 
   return (
     <div style={{ position: "relative" }}>
@@ -84,10 +120,24 @@ const Dropdown = ({ children, toggleText, sx, ...rest }) => {
       >
         {toggleText || <Ellipsis height="10px" />}
       </Button>
-      <DropdownContainer ref={ref} isOpen={isOpen}>
-        {React.Children.map(children, child => (
-          <DropdownItem>{child}</DropdownItem>
-        ))}
+      <DropdownContainer
+        leftAlign={leftAlign}
+        ref={ref}
+        isOpen={isOpen}
+        {..._.pick(rest, spacingProps)}
+      >
+        {showSearch && (
+          <StyledInput
+            placeholder={searchPlaceholder}
+            value={search}
+            onChange={handleSearch}
+          />
+        )}
+        <Scrollable>
+          {React.Children.map(children, child => (
+            <DropdownItem>{child}</DropdownItem>
+          ))}
+        </Scrollable>
       </DropdownContainer>
     </div>
   )

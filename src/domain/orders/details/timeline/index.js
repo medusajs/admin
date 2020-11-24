@@ -3,6 +3,7 @@ import { Text, Flex, Box, Image } from "rebass"
 import styled from "@emotion/styled"
 import moment from "moment"
 
+import SwapTimeline from "../swap/timeline"
 import ReturnTimeline from "../returns/timeline"
 import Typography from "../../../../components/typography"
 
@@ -53,36 +54,63 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
   )
 }
 
-export default ({ events, order, onReceiveReturn }) => {
+export default ({
+  events,
+  order,
+  onFulfillSwap,
+  onCaptureSwap,
+  onReceiveReturn,
+}) => {
   return (
     <Box>
-      {events.map((event, i) =>
-        event.type === "return" ? (
-          <ReturnTimeline
-            key={i}
-            event={event}
-            order={order}
-            onReceiveReturn={onReceiveReturn}
-          />
-        ) : (
-          <Box key={i} sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
-            <Text ml={3} fontSize={1} color="grey">
-              {event.event}
-            </Text>
-            <Text fontSize="11px" color="grey" ml={3} mb={3}>
-              {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
-            </Text>
-            {event.items.map((lineItem, i) => (
-              <LineItem
-                key={i}
-                currency={order.currency_code}
-                lineItem={lineItem}
-                taxRate={order.region.tax_rate}
+      {events.map(event => {
+        switch (event.type) {
+          case "return":
+            return (
+              <ReturnTimeline
+                key={event.id}
+                event={event}
+                order={order}
+                onReceiveReturn={onReceiveReturn}
               />
-            ))}
-          </Box>
-        )
-      )}
+            )
+          case "swap":
+            return (
+              <SwapTimeline
+                key={event.id}
+                event={event}
+                order={order}
+                onCapturePayment={onCaptureSwap}
+                onFulfillSwap={onFulfillSwap}
+                onReceiveReturn={onReceiveReturn}
+              />
+            )
+          default:
+            return (
+              <Box
+                key={event.id}
+                sx={{ borderBottom: "hairline" }}
+                pb={3}
+                mb={3}
+              >
+                <Text ml={3} fontSize={1} color="grey">
+                  {event.event}
+                </Text>
+                <Text fontSize="11px" color="grey" ml={3} mb={3}>
+                  {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+                </Text>
+                {event.items.map((lineItem, i) => (
+                  <LineItem
+                    key={i}
+                    currency={order.currency_code}
+                    lineItem={lineItem}
+                    taxRate={order.region.tax_rate}
+                  />
+                ))}
+              </Box>
+            )
+        }
+      })}
     </Box>
   )
 }

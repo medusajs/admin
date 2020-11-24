@@ -98,7 +98,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
     if (shippingMethod) {
       data.shipping_method = shippingMethod
-      data.shipping_price = shippingPrice
+      data.shipping_price = shippingPrice / (1 + order.tax_rate)
     }
 
     if (onReturn) {
@@ -259,7 +259,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
               {shippingMethod && (
                 <Flex>
                   <Box px={2} fontSize={1}>
-                    Shipping price
+                    Shipping price (incl. taxes)
                   </Box>
                   <Box px={2} width={110}>
                     <CurrencyInput

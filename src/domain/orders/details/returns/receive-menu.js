@@ -12,6 +12,7 @@ const ReceiveMenu = ({
   order,
   returnRequest,
   onReceiveReturn,
+  onReceiveSwap,
   onDismiss,
   toaster,
 }) => {
@@ -102,7 +103,18 @@ const ReceiveMenu = ({
       quantity: quantities[t],
     }))
 
-    if (onReceiveReturn) {
+    if (returnRequest.is_swap && onReceiveSwap) {
+      setSubmitting(true)
+      return onReceiveSwap(returnRequest.swap_id, {
+        items,
+      })
+        .then(() => onDismiss())
+        .then(() => toaster("Successfully returned order", "success"))
+        .catch(() => toaster("Failed to return order", "error"))
+        .finally(() => setSubmitting(false))
+    }
+
+    if (!returnRequest.is_swap && onReceiveReturn) {
       setSubmitting(true)
       return onReceiveReturn(returnRequest._id, {
         items,
@@ -158,13 +170,17 @@ const ReceiveMenu = ({
             py={2}
           >
             <Box width={30} px={2} py={1}>
-              <input
-                checked={returnAll}
-                onChange={handleReturnAll}
-                type="checkbox"
-              />
+              {!returnRequest.is_swap && (
+                <input
+                  checked={returnAll}
+                  onChange={handleReturnAll}
+                  type="checkbox"
+                />
+              )}
             </Box>
-            <Box width={400} px={2} py={1}></Box>
+            <Box width={400} px={2} py={1}>
+              Details
+            </Box>
             <Box width={75} px={2} py={1}>
               Quantity
             </Box>
@@ -178,6 +194,11 @@ const ReceiveMenu = ({
               return
             }
 
+            // Swap returns should only show lines associated with the swap
+            if (returnRequest.is_swap && !toReturn.includes(item._id)) {
+              return
+            }
+
             return (
               <Flex
                 key={item._id}
@@ -186,11 +207,13 @@ const ReceiveMenu = ({
                 py={2}
               >
                 <Box width={30} px={2} py={1}>
-                  <input
-                    checked={toReturn.includes(item._id)}
-                    onChange={() => handleReturnToggle(item)}
-                    type="checkbox"
-                  />
+                  {!returnRequest.is_swap && (
+                    <input
+                      checked={toReturn.includes(item._id)}
+                      onChange={() => handleReturnToggle(item)}
+                      type="checkbox"
+                    />
+                  )}
                 </Box>
                 <Box width={400} px={2} py={1}>
                   <Text fontSize={1} lineHeight={"14px"}>
@@ -199,7 +222,9 @@ const ReceiveMenu = ({
                   <Text fontSize={0}>{item.content.variant.sku}</Text>
                 </Box>
                 <Box fontSize={1} width={75} px={2} py={1}>
-                  {toReturn.includes(item._id) ? (
+                  {returnRequest.is_swap ? (
+                    quantities[item._id]
+                  ) : toReturn.includes(item._id) ? (
                     <Input
                       textAlign={"center"}
                       type="number"
@@ -218,8 +243,28 @@ const ReceiveMenu = ({
               </Flex>
             )
           })}
-          {returnRequest.shipping_method &&
-            returnRequest.shipping_method.price !== undefined && (
+          {!returnRequest.is_swap && (
+            <>
+              {returnRequest.shipping_method &&
+                returnRequest.shipping_method.price !== undefined && (
+                  <Flex
+                    sx={{
+                      borderTop: "hairline",
+                    }}
+                    w={1}
+                    mt={3}
+                    pt={3}
+                    justifyContent="flex-end"
+                  >
+                    <Box fontSize={1} px={2}>
+                      Shipping cost
+                    </Box>
+                    <Box px={2} fontSize={1} width={110}>
+                      {returnRequest.shipping_method.price.toFixed(2)}{" "}
+                      {order.currency_code}
+                    </Box>
+                  </Flex>
+                )}
               <Flex
                 sx={{
                   borderTop: "hairline",
@@ -230,34 +275,18 @@ const ReceiveMenu = ({
                 justifyContent="flex-end"
               >
                 <Box fontSize={1} px={2}>
-                  Shipping cost
+                  To refund
                 </Box>
-                <Box px={2} fontSize={1} width={110}>
-                  {returnRequest.shipping_method.price.toFixed(2)}{" "}
-                  {order.currency_code}
+                <Box px={2} width={110}>
+                  <CurrencyInput
+                    currency={order.currency_code}
+                    value={refundAmount}
+                    onChange={handleRefundUpdated}
+                  />
                 </Box>
               </Flex>
-            )}
-          <Flex
-            sx={{
-              borderTop: "hairline",
-            }}
-            w={1}
-            mt={3}
-            pt={3}
-            justifyContent="flex-end"
-          >
-            <Box fontSize={1} px={2}>
-              To refund
-            </Box>
-            <Box px={2} width={110}>
-              <CurrencyInput
-                currency={order.currency_code}
-                value={refundAmount}
-                onChange={handleRefundUpdated}
-              />
-            </Box>
-          </Flex>
+            </>
+          )}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button loading={submitting} type="submit" variant="primary">

@@ -140,6 +140,30 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
+        value.captureSwap = swapId => {
+          return subcomponent
+            .captureSwap(query.id, swapId)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.createSwapShipment = (swapId, payload) => {
+          return subcomponent
+            .createSwapShipment(query.id, swapId, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.createSwap = payload => {
+          return subcomponent
+            .createSwap(query.id, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.fulfillSwap = (swapId, payload) => {
+          return subcomponent
+            .fulfillSwap(query.id, swapId, payload)
+            .then(({ data }) => setResult(data))
+        }
+
         value.createFulfillment = payload => {
           return subcomponent
             .createFulfillment(query.id, payload)
@@ -155,6 +179,12 @@ const useMedusa = (endpoint, query) => {
         value.receiveReturn = (returnId, payload) => {
           return subcomponent
             .receiveReturn(query.id, returnId, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.receiveSwap = (swapId, payload) => {
+          return subcomponent
+            .receiveSwap(query.id, swapId, payload)
             .then(({ data }) => setResult(data))
         }
 

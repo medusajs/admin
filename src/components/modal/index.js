@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "@emotion/styled"
-import { Flex, Box } from "rebass"
+import { Flex } from "rebass"
 
 const Modal = styled(Flex)`
   position: fixed;
