@@ -1,9 +1,10 @@
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import ReactJson from "react-json-view"
 import styled from "@emotion/styled"
 import { navigate } from "gatsby"
 import moment from "moment"
+import ReactTooltip from "react-tooltip"
 
 import ReturnMenu from "./returns"
 import ReceiveMenu from "./returns/receive-menu"
@@ -14,8 +15,10 @@ import Timeline from "./timeline"
 import buildTimeline from "./utils/build-timeline"
 import SwapMenu from "./swap/create"
 
+import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
 import Dialog from "../../../components/dialog"
 import Card from "../../../components/card"
+import Badge from "../../../components/badge"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 
@@ -128,6 +131,16 @@ const OrderDetails = ({ id }) => {
     id,
   })
 
+  const handleCopyToClip = val => {
+    var tempInput = document.createElement("input")
+    tempInput.value = val
+    document.body.appendChild(tempInput)
+    tempInput.select()
+    document.execCommand("copy")
+    document.body.removeChild(tempInput)
+    toaster("Copied!", "success")
+  }
+
   if (isLoading) {
     return (
       <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
@@ -216,11 +229,6 @@ const OrderDetails = ({ id }) => {
       <Flex flexDirection="column" mb={2}>
         <Card mb={2}>
           <Card.Header
-            badge={{
-              label: order.status,
-              color: decideBadgeColor(order.status).color,
-              bgColor: decideBadgeColor(order.status).bgColor,
-            }}
             dropdownOptions={orderDropdown}
             action={
               order.status !== "archived" &&
@@ -248,7 +256,42 @@ const OrderDetails = ({ id }) => {
               }
             }
           >
-            #{order.display_id}
+            <Flex alignItems="center">
+              <Flex
+                onClick={() => handleCopyToClip(order.display_id)}
+                sx={{
+                  cursor: "pointer",
+                }}
+                data-for={"order-display_id"}
+                data-tip={"Click to copy"}
+              >
+                <ReactTooltip
+                  id={"order-display_id"}
+                  place="top"
+                  effect="solid"
+                />
+                <Box>#{order.display_id}</Box>
+                <Box ml={1}>
+                  <Clipboard
+                    style={{
+                      ":hover": {
+                        fill: "#454545",
+                      },
+                    }}
+                    fill={"#848484"}
+                    width="8"
+                    height="8"
+                  />
+                </Box>
+              </Flex>
+              <Badge
+                ml={3}
+                color={decideBadgeColor(order.status).color}
+                bg={decideBadgeColor(order.status).bgColor}
+              >
+                {order.status}
+              </Badge>
+            </Flex>
           </Card.Header>
           <Box>
             <Text p={3} fontWeight="bold">
