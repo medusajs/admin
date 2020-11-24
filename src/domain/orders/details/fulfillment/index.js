@@ -67,9 +67,6 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
       }, {})
     }
 
-    console.log(isSwap)
-    console.log(onFulfill)
-
     if (isSwap && onFulfill) {
       setSubmitting(true)
       return onFulfill(order._id, {

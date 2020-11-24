@@ -211,8 +211,6 @@ const OrderDetails = ({ id }) => {
 
   const fulfillments = gatherFulfillments(order)
 
-  console.log(fulfillments)
-
   return (
     <Flex flexDirection="column" mb={5}>
       <Flex flexDirection="column" mb={2}>
