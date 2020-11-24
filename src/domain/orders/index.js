@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useRef } from "react"
 import { navigate } from "gatsby"
 import _ from "lodash"
 import { Router } from "@reach/router"
@@ -77,6 +77,7 @@ const OrderIndex = ({}) => {
     toaster("Copied!", "success")
   }
 
+  const searchRef = useRef(null)
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(50)
   const [offset, setOffset] = useState(0)
@@ -91,6 +92,16 @@ const OrderIndex = ({}) => {
   })
 
   const [activeIndex, setActiveIndex] = useState(-1)
+  useHotkeys(
+    "/",
+    () => {
+      if (searchRef && searchRef.current) {
+        searchRef.current.focus()
+      }
+    },
+    {},
+    [searchRef]
+  )
   useHotkeys("j", () => setActiveIndex(i => Math.min(i + 1, 50)))
   useHotkeys("k", () => setActiveIndex(i => Math.max(i - 1, 0)))
   useHotkeys(
@@ -115,11 +126,18 @@ const OrderIndex = ({}) => {
   )
 
   const onKeyDown = event => {
-    // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
-    if (event.key === "Enter") {
-      event.preventDefault()
-      event.stopPropagation()
-      searchQuery()
+    switch (event.key) {
+      case "Enter":
+        event.preventDefault()
+        event.stopPropagation()
+        searchQuery()
+        break
+      case "Esc":
+      case "Escape":
+        searchRef.current.blur()
+        break
+      default:
+        break
     }
   }
 
@@ -234,6 +252,7 @@ const OrderIndex = ({}) => {
         <Box ml="auto" />
         <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
           <Input
+            ref={searchRef}
             height="28px"
             fontSize="12px"
             id="email"
