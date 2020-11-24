@@ -4,6 +4,7 @@ import styled from "@emotion/styled"
 import moment from "moment"
 import ReactTooltip from "react-tooltip"
 
+import { ReactComponent as Clipboard } from "../../../../assets/svg/clipboard.svg"
 import { decideBadgeColor } from "../../../../utils/decide-badge-color"
 import Typography from "../../../../components/typography"
 import Badge from "../../../../components/badge"
@@ -150,7 +151,12 @@ export default ({
                       place="top"
                       effect="solid"
                     />
-                    Copy Payment Link
+                    <Flex>
+                      Copy Payment Link
+                      <Box ml={1}>
+                        <Clipboard fill="grey" width="8" height="8" />
+                      </Box>
+                    </Flex>
                   </Text>
                 )}
               </Box>
