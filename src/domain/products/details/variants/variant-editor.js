@@ -9,7 +9,14 @@ import Button from "../../../../components/button"
 
 import useMedusa from "../../../../hooks/use-medusa"
 
-const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
+const VariantEditor = ({
+  variant,
+  options,
+  onSubmit,
+  onDelete,
+  onClick,
+  onProductVariantEdit,
+}) => {
   const { store, isLoading } = useMedusa("store")
 
   const [currencyOptions, setCurrencyOptions] = useState([])
@@ -83,18 +90,31 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
     setPrices(newPrices)
   }
 
-  const handleSave = data => {
+  const handleProductVariantEdit = data => {
     data.prices = prices.map(({ currency_code, region_id, amount }) => ({
       currency_code,
       region_id,
       amount: parseFloat(amount),
     }))
-    onSubmit(data)
+    data.inventory_quantity = parseInt(data.inventory_quantity) || 0
+
+    data.ean = data.ean || undefined
+
+    onProductVariantEdit(variant._id, data)
   }
+
+  // const handleSave = data => {
+  //   data.prices = prices.map(({ currency_code, region_id, amount }) => ({
+  //     currency_code,
+  //     region_id,
+  //     amount: parseFloat(amount),
+  //   }))
+  //   onSubmit(data)
+  // }
 
   return (
     <Modal onClick={onClick}>
-      <Modal.Body as="form" onSubmit={handleSubmit(handleSave)}>
+      <Modal.Body as="form" onSubmit={handleSubmit(handleProductVariantEdit)}>
         <Modal.Header>
           <Text>Edit Variant</Text>
         </Modal.Header>
@@ -149,6 +169,13 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
             <Text mb={3}>Stock & Inventory</Text>
             <Input mb={3} label="SKU" name="sku" ref={register} />
             <Input mb={3} label="EAN" name="ean" ref={register} />
+            <Input
+              type="number"
+              mb={3}
+              label="Inventory"
+              name="inventory_quantity"
+              ref={register}
+            />
           </Box>
           <Box>
             <Text mb={3}>Danger Zone</Text>

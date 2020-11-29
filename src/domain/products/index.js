@@ -143,6 +143,7 @@ const ProductIndex = () => {
             <TableHeaderRow>
               <TableHeaderCell>Name</TableHeaderCell>
               <TableHeaderCell>Inventory</TableHeaderCell>
+              <TableHeaderCell>Prices</TableHeaderCell>
             </TableHeaderRow>
           </TableHead>
           <TableBody>
@@ -163,6 +164,22 @@ const ProductIndex = () => {
                   )}
                   {" in stock for "}
                   {p.variants.length} variants
+                </TableDataCell>
+                <TableDataCell>
+                  {p.variants[0].prices.length > 0
+                    ? p.variants[0].prices
+                        .sort((a, b) => {
+                          if (a.currency_code < b.currency_code) {
+                            return -1
+                          }
+                          if (a.currency_code > b.currency_code) {
+                            return 1
+                          }
+                          return 0
+                        })
+                        .map(price => `${price.amount} ${price.currency_code}`)
+                        .join(", ")
+                    : "N / A"}
                 </TableDataCell>
               </TableRow>
             ))}

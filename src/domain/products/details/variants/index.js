@@ -16,6 +16,7 @@ const Variants = ({
   variantMethods,
   optionMethods,
   onSubmit,
+  onVariantEdit,
 }) => {
   const [showAddOption, setShowAddOption] = useState(false)
   const [editVariant, setEditVariant] = useState("")
@@ -59,6 +60,15 @@ const Variants = ({
       },
     },
   ]
+
+  const handleProductVariantEdit = (variantId, update) => {
+    if (!variantId) {
+      variantMethods.create(update)
+    } else {
+      variantMethods.update(variantId, update)
+    }
+    setEditVariant(null)
+  }
 
   const handleSubmit = e => {
     e.preventDefault()
@@ -145,6 +155,7 @@ const Variants = ({
       {editVariant && (
         <VariantEditor
           variant={editVariant}
+          onProductVariantEdit={handleProductVariantEdit}
           options={product.options}
           onDelete={handleDeleteVariant}
           onSubmit={data => handleVariantEdited(data)}

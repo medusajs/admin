@@ -225,73 +225,83 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
           </tr>
         </TableHead>
         <tbody>
-          {variants.map((v, row) => (
-            <tr key={row}>
-              {columns.map((c, col) => (
-                <Td
-                  key={`${row}-${col}`}
-                  data-col={col}
-                  data-row={row}
-                  dragover={isDraggedOver({ col, row })}
-                  onDragEnter={handleDragEnter}
-                  onClick={() =>
-                    !c.readOnly &&
-                    setSelectedCell({
-                      field: c.field,
-                      value: v[c.field],
-                      row,
-                      col,
-                    })
-                  }
-                  selected={
-                    selectedCell.row === row && selectedCell.col === col
-                  }
-                  head={c.headCol}
-                >
-                  {!(selectedCell.row === row && selectedCell.col === col) &&
-                    getDisplayValue(v, c, isDraggedOver({ col, row }))}
-                  {selectedCell.row === row && selectedCell.col === col && (
-                    <>
-                      <GridEditor
-                        ref={setRef}
-                        column={c}
-                        index={row}
-                        value={v[c.field]}
-                        onKeyDown={handleKey}
-                        onChange={handleChange}
-                      />
-                      <DragHandle draggable onDragEnd={handleDragEnd} />
-                    </>
-                  )}
-                </Td>
-              ))}
-              {onEdit && (
-                <Box
-                  as="td"
-                  sx={{
-                    padding: "4px",
-                    borderBottom: "1px solid rgba(0,0,0,0.2)",
-                    backgroundColor: "white",
-                    position: "sticky !important",
-                    right: 0,
-                  }}
-                >
-                  <Button
-                    onClick={() => onEdit(row)}
-                    variant="primary"
-                    fontSize={1}
-                    height="24px"
+          {variants
+            .sort((a, b) => {
+              if (a.title < b.title) {
+                return -1
+              }
+              if (a.title > b.title) {
+                return 1
+              }
+              return 0
+            })
+            .map((v, row) => (
+              <tr key={row}>
+                {columns.map((c, col) => (
+                  <Td
+                    key={`${row}-${col}`}
+                    data-col={col}
+                    data-row={row}
+                    dragover={isDraggedOver({ col, row })}
+                    onDragEnter={handleDragEnter}
+                    onClick={() =>
+                      !c.readOnly &&
+                      setSelectedCell({
+                        field: c.field,
+                        value: v[c.field],
+                        row,
+                        col,
+                      })
+                    }
+                    selected={
+                      selectedCell.row === row && selectedCell.col === col
+                    }
+                    head={c.headCol}
+                  >
+                    {!(selectedCell.row === row && selectedCell.col === col) &&
+                      getDisplayValue(v, c, isDraggedOver({ col, row }))}
+                    {selectedCell.row === row && selectedCell.col === col && (
+                      <>
+                        <GridEditor
+                          ref={setRef}
+                          column={c}
+                          index={row}
+                          value={v[c.field]}
+                          onKeyDown={handleKey}
+                          onChange={handleChange}
+                        />
+                        <DragHandle draggable onDragEnd={handleDragEnd} />
+                      </>
+                    )}
+                  </Td>
+                ))}
+                {onEdit && (
+                  <Box
+                    as="td"
                     sx={{
-                      lineHeight: "20px",
-                      height: "24px !important",
+                      padding: "4px",
+                      borderBottom: "1px solid rgba(0,0,0,0.2)",
+                      backgroundColor: "white",
+                      position: "sticky !important",
+                      right: 0,
                     }}
                   >
-                    Edit
-                  </Button>
-                </Box>
-              )}
-            </tr>
-          ))}
+                    <Button
+                      onClick={() => onEdit(row)}
+                      variant="primary"
+                      fontSize={1}
+                      height="24px"
+                      sx={{
+                        lineHeight: "20px",
+                        height: "24px !important",
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </Box>
+                )}
+              </tr>
+            ))}
         </tbody>
       </StyledTable>
     </Wrapper>
