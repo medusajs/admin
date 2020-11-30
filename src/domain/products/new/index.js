@@ -8,12 +8,15 @@ import Typography from "../../../components/typography"
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
 import Input from "../../../components/input"
+import Spinner from "../../../components/spinner"
+import CurrencyInput from "../../../components/currency-input"
 import TagInput from "../../../components/tag-input"
 import ImageUpload from "../../../components/image-upload"
 import TextArea from "../../../components/textarea"
 import VariantGrid from "../../../components/variant-grid"
 
 import Medusa from "../../../services/api"
+import useMedusa from "../../../hooks/use-medusa"
 
 import { getCombinations } from "./utils/get-combinations"
 
@@ -93,6 +96,7 @@ const NewProduct = ({}) => {
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])
   const [images, setImages] = useState([])
+  const { store, isLoading } = useMedusa("store")
   const { register, handleSubmit, reset, setValue } = useForm()
 
   /**
@@ -215,124 +219,171 @@ const NewProduct = ({}) => {
   }
 
   return (
-    <Flex
-      as="form"
-      flexDirection="column"
-      pb={6}
-      onSubmit={handleSubmit(submit)}
-    >
-      <Text mb={4}>Product Details</Text>
-      <Flex mb={5}>
-        <Box width={4 / 7}>
-          <Input
-            required={true}
-            mb={4}
-            label="Name"
-            name="title"
-            ref={register({ required: true })}
-          />
-          <TextArea
-            required={true}
-            label="Description"
-            name="description"
-            ref={register({ required: true })}
-          />
-          {/*<Flex mt={4}>
-            <Pill
-              onClick={() => setHasVariants(false)}
-              active={!hasVariants}
-              mr={4}
-            >
-              Simple Product
-            </Pill>
-            <Pill onClick={() => setHasVariants(true)} active={hasVariants}>
-              Product with Variants
-            </Pill>
-          </Flex>*/}
-        </Box>
-      </Flex>
-      <Flex mb={3}>
-        <ImageUpload onChange={onImageChange} name="files" label="Images" />
-      </Flex>
-      <Flex mb={5}>
-        <StyledImageBox>
-          {images.map((url, i) => (
-            <ImageCardWrapper key={i} mr={3}>
-              <StyledImageCard key={i} as="img" src={url} sx={{}} />
-              <Cross onClick={() => handleImageDelete(url)}>&#x2715;</Cross>
-            </ImageCardWrapper>
-          ))}
-        </StyledImageBox>
-      </Flex>
-      {hasVariants ? (
-        <>
-          <Text fontSize={2} mb={3}>
-            Options
-          </Text>
-          <Flex mb={5} flexDirection="column">
-            {options.map((o, index) => (
-              <Flex mb={4} key={index} alignItems="flex-end">
-                <Box>
-                  <Input
-                    name={`options[${index}].name`}
-                    onChange={e => updateOptionName(e, index)}
-                    label="Option Name"
-                    required={true}
-                    value={o.name}
-                  />
-                </Box>
-                <Box mx={3} flexGrow="1">
-                  <TagInput
-                    values={o.values}
-                    onChange={values => updateOptionValue(index, values)}
-                  />
-                </Box>
-                <Box>
-                  <Text
-                    fontSize={4}
-                    onClick={() => handleRemoveOption(index)}
-                    sx={{ cursor: "pointer", height: "28px" }}
-                  >
-                    &times;
-                  </Text>
-                </Box>
-              </Flex>
+    <Flex as="form" pb={6} onSubmit={handleSubmit(submit)}>
+      <Flex mx="auto" width="100%" maxWidth="750px" flexDirection="column">
+        <Text mb={4}>Product Details</Text>
+        <Flex mb={5}>
+          <Box width={4 / 7}>
+            <Input
+              required={true}
+              mb={4}
+              label="Name"
+              placeholder="Jacket, sunglasses, etc."
+              name="title"
+              ref={register({ required: true })}
+            />
+            <TextArea
+              required={true}
+              label="Description"
+              placeholder="Short description of the product"
+              name="description"
+              ref={register({ required: true })}
+            />
+            <Flex mt={4} alignItems="center">
+              <Pill
+                onClick={() => setHasVariants(false)}
+                active={!hasVariants}
+                mr={4}
+              >
+                Simple Product
+              </Pill>
+              <Pill onClick={() => setHasVariants(true)} active={hasVariants}>
+                Product with Variants
+              </Pill>
+            </Flex>
+          </Box>
+        </Flex>
+        <hr />
+        <Flex mb={3}>
+          <ImageUpload onChange={onImageChange} name="files" label="Images" />
+        </Flex>
+        <Flex mb={5}>
+          <StyledImageBox>
+            {images.map((url, i) => (
+              <ImageCardWrapper key={i} mr={3}>
+                <StyledImageCard key={i} as="img" src={url} sx={{}} />
+                <Cross onClick={() => handleImageDelete(url)}>&#x2715;</Cross>
+              </ImageCardWrapper>
             ))}
-            <Button onClick={handleAddOption} variant="primary">
-              + Add an option
-            </Button>
-          </Flex>
-          {variants && variants.length > 0 && (
-            <>
-              <Text mb={4}>Variants</Text>
-              <Flex flexDirection="column" flexGrow="1">
-                <VariantGrid
-                  variants={variants}
-                  onChange={vs => setVariants(vs)}
-                />
-              </Flex>
-            </>
-          )}
-        </>
-      ) : (
-        <>
-          <Text mb={4}>Price</Text>
-          <Flex mb={5}>
-            <Box>
-              <Input name="price" label="Price" ref={register} />
-            </Box>
-          </Flex>
-        </>
-      )}
+          </StyledImageBox>
+        </Flex>
+        <hr />
+        {hasVariants ? (
+          <>
+            <Text fontSize={2} mb={3}>
+              Options
+            </Text>
+            <Flex mb={5} flexDirection="column">
+              {options.map((o, index) => (
+                <Flex mb={4} key={index} alignItems="flex-end">
+                  <Box>
+                    <Input
+                      name={`options[${index}].name`}
+                      onChange={e => updateOptionName(e, index)}
+                      label="Option Name"
+                      required={true}
+                      value={o.name}
+                    />
+                  </Box>
+                  <Box mx={3} flexGrow="1">
+                    <TagInput
+                      values={o.values}
+                      onChange={values => updateOptionValue(index, values)}
+                    />
+                  </Box>
+                  <Box>
+                    <Text
+                      fontSize={4}
+                      onClick={() => handleRemoveOption(index)}
+                      sx={{ cursor: "pointer", height: "28px" }}
+                    >
+                      &times;
+                    </Text>
+                  </Box>
+                </Flex>
+              ))}
+              <Button onClick={handleAddOption} variant="primary">
+                + Add an option
+              </Button>
+            </Flex>
+            {variants && variants.length > 0 && (
+              <>
+                <Text mb={4}>Variants</Text>
+                <Flex flexDirection="column" flexGrow="1">
+                  <VariantGrid
+                    variants={variants}
+                    onChange={vs => setVariants(vs)}
+                  />
+                </Flex>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <Text mb={5}>Additional Options</Text>
+            <Flex mb={5}>
+              {isLoading ? (
+                <Spinner />
+              ) : (
+                <Flex flexDirection="column">
+                  <CurrencyInput
+                    inline
+                    width="600px"
+                    currency={store.default_currency}
+                    name="price"
+                    label="Price"
+                    ref={register({ required: true })}
+                  />
+                  <Flex mt={3}>
+                    <Box flex={"30% 0 0"} />
+                    <Button
+                      flex={"0 0 auto"}
+                      onClick={() => appendTracking({ key: "", value: "" })}
+                      variant="primary"
+                    >
+                      + Add more prices
+                    </Button>
+                  </Flex>
+                  <Input
+                    inline
+                    mt={4}
+                    placeholder={"SUN-G, JK1234, etc."}
+                    name={`sku`}
+                    label="Stock Keeping Unit (SKU)"
+                    ref={register}
+                  />
+                  <Input
+                    inline
+                    mt={4}
+                    placeholder={"1231231231234, etc."}
+                    name={`ean`}
+                    label="Barcode (EAN)"
+                    ref={register}
+                  />
+                  <Input
+                    inline
+                    mt={4}
+                    type="number"
+                    placeholder={"0-∞"}
+                    name={`inventory_quantity`}
+                    label="Quantity in stock"
+                    ref={register}
+                  />
+                </Flex>
+              )}
+            </Flex>
+          </>
+        )}
 
-      <Flex pt={5}>
-        <Box ml="auto" />
-        <Button mr={2} onClick={handleSubmit(onAddMore)} variant={"primary"}>
-          Save and add more
-        </Button>
-        <Button variant={"cta"} type="submit">
-          Save
-        </Button>
+        <Flex pt={5}>
+          <Box ml="auto" />
+          <Button mr={2} onClick={handleSubmit(onAddMore)} variant={"primary"}>
+            Save and add more
+          </Button>
+          <Button variant={"cta"} type="submit">
+            Save
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   )
