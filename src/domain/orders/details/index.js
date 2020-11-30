@@ -78,7 +78,7 @@ const gatherFulfillments = order => {
     })
   })
 
-  if (order.swaps.length) {
+  if (order.swaps && order.swaps.length) {
     order.swaps.forEach(s => {
       if (s.fulfillment_status !== "not_fulfilled") {
         s.fulfillments.forEach((f, index) => {
