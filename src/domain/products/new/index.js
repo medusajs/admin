@@ -96,6 +96,8 @@ const NewProduct = ({}) => {
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])
   const [images, setImages] = useState([])
+  const [prices, setPrices] = useState([])
+  const [currencyOptions, setCurrencyOptions] = useState([])
   const { store, isLoading } = useMedusa("store")
   const { register, handleSubmit, reset, setValue } = useForm()
 
@@ -112,10 +114,9 @@ const NewProduct = ({}) => {
         return null
       }
 
-      const existing =
-        variants.find(v =>
-          v.options.every((value, index) => optionValues[index] === value)
-        ) || {}
+      const existing = variants.find(v =>
+        v.options.every((value, index) => optionValues[index] === value)
+      ) || { prices: [] }
 
       existing.options = optionValues.filter(v => v !== "")
 
@@ -124,6 +125,79 @@ const NewProduct = ({}) => {
 
     setVariants(newVariants.filter(v => !!v))
   }, [options])
+
+  const getCurrencyOptions = () => {
+    return ((store && store.currencies) || [])
+      .map(v => ({
+        value: v,
+      }))
+      .filter(o => !prices.find(p => !p.edit && p.currency_code === o.value))
+  }
+
+  /**
+   * Determines the currency options.
+   */
+  useEffect(() => {
+    // Add the default currency
+    if (store && prices.length === 0) {
+      setPrices([
+        {
+          currency_code: store.default_currency,
+          amount: "",
+          edit: false,
+        },
+      ])
+    }
+    setCurrencyOptions(getCurrencyOptions())
+  }, [store, isLoading, prices])
+
+  const handlePriceChange = (index, e) => {
+    const element = e.target
+    const value = element.value
+
+    const newPrices = [...prices]
+    newPrices[index] = {
+      ...newPrices[index],
+      amount: value,
+    }
+
+    setPrices(newPrices)
+  }
+
+  const onSave = () => {
+    onChange(prices)
+    setShow(false)
+  }
+
+  const removePrice = index => {
+    const newPrices = [...prices]
+    newPrices.splice(index, 1)
+    setPrices(newPrices)
+  }
+
+  const addPrice = () => {
+    const newPrices = [
+      ...prices,
+      {
+        edit: true,
+        region: "",
+        currency_code: currencyOptions[0].value,
+        amount: "",
+      },
+    ]
+
+    setPrices(newPrices)
+  }
+
+  const handleCurrencySelected = (index, currency) => {
+    const newPrices = [...prices]
+    newPrices[index] = {
+      ...newPrices[index],
+      currency_code: currency,
+    }
+
+    setPrices(newPrices)
+  }
 
   /**
    * Updates one of the values in a option.
@@ -168,24 +242,47 @@ const NewProduct = ({}) => {
   }
 
   const parseProduct = data => {
+    let parseOptions = [
+      {
+        name: "Default Option",
+      },
+    ]
+
+    let parseVariants = [
+      {
+        title: data.title,
+        sku: data.sku,
+        ean: data.ean,
+        inventory_quantity: data.inventory_quantity,
+        prices: prices.map(({ currency_code, amount }) => ({
+          currency_code,
+          amount,
+        })),
+        options: [{ value: "Default Variant" }],
+      },
+    ]
+
+    if (hasVariants) {
+      parseOptions = options
+      parseVariants = variants.map(v => ({
+        title: v.title,
+        sku: v.sku,
+        ean: v.ean,
+        inventory_quantity: v.inventory_quantity,
+        prices: v.prices.map(({ currency_code, amount }) => ({
+          currency_code,
+          amount,
+        })),
+        options: v.options.map(o => ({ value: o })),
+      }))
+    }
+
     return {
       images,
       title: data.title,
       description: data.description,
-      options: options.map(o => ({ title: o.name })),
-      variants: variants.map(v => ({
-        title: v.title,
-        sku: v.sku,
-        ean: v.ean,
-        inventory_quantity: v.inventory,
-        prices: [
-          {
-            currency_code: "DKK",
-            amount: v.price,
-          },
-        ],
-        options: v.options.map(o => ({ value: o })),
-      })),
+      options: parseOptions.map(o => ({ title: o.name })),
+      variants: parseVariants,
     }
   }
 
@@ -193,6 +290,7 @@ const NewProduct = ({}) => {
     const product = parseProduct(data)
     Medusa.products.create(product).then(({ data }) => {
       reset()
+      setPrices([])
       setVariants([])
       setOptions([])
     })
@@ -326,19 +424,32 @@ const NewProduct = ({}) => {
                 <Spinner />
               ) : (
                 <Flex flexDirection="column">
-                  <CurrencyInput
-                    inline
-                    width="600px"
-                    currency={store.default_currency}
-                    name="price"
-                    label="Price"
-                    ref={register({ required: true })}
-                  />
-                  <Flex mt={3}>
+                  {prices.map((p, index) => (
+                    <Flex mb={3} key={`${p.currency_code}${index}`}>
+                      <Box>
+                        <CurrencyInput
+                          edit={p.edit}
+                          inline
+                          width="600px"
+                          currency={p.currency_code}
+                          currencyOptions={currencyOptions}
+                          value={p.amount}
+                          onCurrencySelected={currency =>
+                            handleCurrencySelected(index, currency)
+                          }
+                          onChange={e => handlePriceChange(index, e)}
+                          label={index === 0 ? "Price" : " "}
+                          removable={index !== 0}
+                          onRemove={() => removePrice(index)}
+                        />
+                      </Box>
+                    </Flex>
+                  ))}
+                  <Flex>
                     <Box flex={"30% 0 0"} />
                     <Button
                       flex={"0 0 auto"}
-                      onClick={() => appendTracking({ key: "", value: "" })}
+                      onClick={addPrice}
                       variant="primary"
                     >
                       + Add more prices
