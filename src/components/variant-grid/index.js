@@ -75,7 +75,20 @@ const getColumns = (product, edit) => {
         headCol: true,
       },
       ...defaultFields,
-      { header: "PRICE", field: "price" },
+      {
+        header: "PRICES",
+        field: "prices",
+        editor: "prices",
+        buttonText: "Edit",
+        formatter: prices => {
+          if (!prices) {
+            return ""
+          }
+          return prices
+            .map(({ currency_code, amount }) => `${amount} ${currency_code}`)
+            .join(", ")
+        },
+      },
     ]
   }
 }
@@ -213,7 +226,6 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
   return (
     <Wrapper>
       <StyledTable as="table">
-        {console.log(columns)}
         <TableHead>
           <tr>
             {columns.map(c => (
