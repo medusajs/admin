@@ -63,7 +63,7 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
 export default ({
   event,
   order,
-  onCapturePayment,
+  onProcessPayment,
   onFulfillSwap,
   onReceiveReturn,
   onCancelSwap,
@@ -75,10 +75,16 @@ export default ({
   const fulfillStatusColors = decideBadgeColor(event.raw.fulfillment_status)
 
   const actions = []
-  if (event.raw.payment_status !== "captured") {
+  if (
+    event.raw.payment_status !== "captured" &&
+    event.raw.payment_status !== "difference_refunded" &&
+    event.raw.is_paid &&
+    event.raw.amount_paid !== 0
+  ) {
     actions.push({
-      label: "Capture Payment",
-      onClick: () => onCapturePayment(event.raw._id),
+      label:
+        event.raw.amount_paid > 0 ? "Capture Payment" : "Refund Difference",
+      onClick: () => onProcessPayment(event.raw._id),
     })
   }
 
@@ -196,13 +202,15 @@ export default ({
               </Badge>
             </Flex>
           </Box>
-          <Dropdown>
-            {actions.map(o => (
-              <Text color={o.variant} onClick={o.onClick}>
-                {o.label}
-              </Text>
-            ))}
-          </Dropdown>
+          {actions.length > 0 && (
+            <Dropdown>
+              {actions.map(o => (
+                <Text color={o.variant} onClick={o.onClick}>
+                  {o.label}
+                </Text>
+              ))}
+            </Dropdown>
+          )}
         </Flex>
         <Flex mx={3} justifyContent="space-between" alignItems="center">
           <Box>

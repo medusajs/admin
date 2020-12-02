@@ -223,8 +223,8 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
-    captureSwap(orderId, swapId) {
-      const path = `/admin/orders/${orderId}/swaps/${swapId}/capture`
+    processSwapPayment(orderId, swapId) {
+      const path = `/admin/orders/${orderId}/swaps/${swapId}/process-payment`
       return medusaRequest("POST", path)
     },
 

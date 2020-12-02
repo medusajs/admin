@@ -58,7 +58,7 @@ export default ({
   events,
   order,
   onFulfillSwap,
-  onCaptureSwap,
+  onProcessSwapPayment,
   onReceiveReturn,
 }) => {
   return (
@@ -80,7 +80,7 @@ export default ({
                 key={event.id}
                 event={event}
                 order={order}
-                onCapturePayment={onCaptureSwap}
+                onProcessPayment={onProcessSwapPayment}
                 onFulfillSwap={onFulfillSwap}
                 onReceiveReturn={onReceiveReturn}
               />

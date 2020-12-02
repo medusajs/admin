@@ -3,6 +3,7 @@ export function decideBadgeColor(batchLabel) {
     case "captured":
     case "completed":
     case "shipped":
+    case "difference_refunded":
     case "received":
       return {
         bgColor: "#4BB543",

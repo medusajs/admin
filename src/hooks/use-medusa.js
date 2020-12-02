@@ -140,9 +140,9 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
-        value.captureSwap = swapId => {
+        value.processSwapPayment = swapId => {
           return subcomponent
-            .captureSwap(query.id, swapId)
+            .processSwapPayment(query.id, swapId)
             .then(({ data }) => setResult(data))
         }
 

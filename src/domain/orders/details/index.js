@@ -117,7 +117,7 @@ const OrderDetails = ({ id }) => {
     receiveReturn,
     receiveSwap,
     createFulfillment,
-    captureSwap,
+    processSwapPayment,
     createShipment,
     createSwap,
     createSwapShipment,
@@ -337,7 +337,7 @@ const OrderDetails = ({ id }) => {
           <Timeline
             events={events}
             order={order}
-            onCaptureSwap={captureSwap}
+            onProcessSwapPayment={processSwapPayment}
             onFulfillSwap={swap => setSwapToFulfill(swap)}
             onReceiveReturn={ret => setToReceive(ret)}
           />
