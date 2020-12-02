@@ -13,7 +13,6 @@ import NotFound from "../../../components/not-found"
 import Card from "../../../components/card"
 
 const ProductDetail = ({ id }) => {
-  const details = useForm()
   const {
     product,
     variants,
@@ -27,15 +26,22 @@ const ProductDetail = ({ id }) => {
   } = useMedusa("products", { id })
 
   const handleProductDelete = () => {
-    productDelete().then(() => navigate("/a/products"))
+    productDelete().then(() => {
+      toaster("The product was deleted", "success")
+      navigate("/a/products")
+    })
   }
 
   const handleDetailsSubmit = data => {
-    update(data)
+    update(data).then(() => {
+      toaster("Successfully updated the prouct", "success")
+    })
   }
 
   const handleVariantsSubmit = data => {
-    update(data)
+    update(data).then(() => {
+      toaster("Successfully updated the prouct", "success")
+    })
   }
 
   if (didFail) {
