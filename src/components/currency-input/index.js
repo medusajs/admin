@@ -56,6 +56,8 @@ const CurrencyInput = React.forwardRef(
       onCurrencySelected,
       onChange,
       currency,
+      removable,
+      onRemove,
       value,
       ...props
     },
@@ -138,6 +140,11 @@ const CurrencyInput = React.forwardRef(
             type="number"
           />
         </Flex>
+        {removable && (
+          <Text ml={2} onClick={onRemove} sx={{ cursor: "pointer" }}>
+            &times;
+          </Text>
+        )}
       </Flex>
     )
   }
