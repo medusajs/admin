@@ -77,6 +77,7 @@ export const TableRow = React.forwardRef((props, ref) => (
     sx={{
       top: 0,
       cursor: "pointer",
+      height: "55px",
     }}
     {...props}
   />

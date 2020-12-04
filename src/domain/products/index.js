@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react"
 import { navigate } from "gatsby"
 import _ from "lodash"
-import { Flex, Text, Box } from "rebass"
+import { Flex, Text, Box, Image } from "rebass"
 import { Input } from "@rebass/forms"
 import { Router } from "@reach/router"
+
+import ImagePlaceholder from "../../assets/svg/image-placeholder.svg"
 
 import Spinner from "../../components/spinner"
 import {
@@ -141,28 +143,13 @@ const ProductIndex = () => {
         <Table>
           <TableHead>
             <TableHeaderRow>
+              <TableHeaderCell sx={{ maxWidth: "75px" }} />
               <TableHeaderCell>Name</TableHeaderCell>
               <TableHeaderCell>Inventory</TableHeaderCell>
-              <TableHeaderCell>Prices</TableHeaderCell>
             </TableHeaderRow>
           </TableHead>
           <TableBody>
             {products.map(p => {
-              const prices =
-                p.variants[0].prices.length > 0
-                  ? p.variants[0].prices
-                      .sort((a, b) => {
-                        if (a.currency_code < b.currency_code) {
-                          return -1
-                        }
-                        if (a.currency_code > b.currency_code) {
-                          return 1
-                        }
-                        return 0
-                      })
-                      .map(price => `${price.amount} ${price.currency_code}`)
-                  : []
-
               return (
                 <TableRow
                   key={p._id}
@@ -172,6 +159,19 @@ const ProductIndex = () => {
                     )
                   }
                 >
+                  <TableDataCell
+                    maxWidth="75px"
+                    p={2}
+                    height="100%"
+                    textAlign="center"
+                  >
+                    <Image
+                      mt={p.thumbnail ? "" : "10px"}
+                      src={p.thumbnail || ImagePlaceholder}
+                      height={p.thumbnail ? "100%" : "20px"}
+                      width={p.thumbnail ? "100%" : "20px"}
+                    />
+                  </TableDataCell>
                   <TableDataCell>{p.title}</TableDataCell>
                   <TableDataCell>
                     {p.variants.reduce(
@@ -180,32 +180,6 @@ const ProductIndex = () => {
                     )}
                     {" in stock for "}
                     {p.variants.length} variants
-                  </TableDataCell>
-                  <TableDataCell>
-                    <Flex justifyContent="flex-start">
-                      {p.variants[0].prices.length > 0
-                        ? p.variants[0].prices
-                            .sort((a, b) => {
-                              if (a.currency_code < b.currency_code) {
-                                return -1
-                              }
-                              if (a.currency_code > b.currency_code) {
-                                return 1
-                              }
-                              return 0
-                            })
-                            .map((price, i) => (
-                              <Flex
-                                key={i}
-                                width="70px"
-                                justifyContent="center"
-                              >
-                                <Text mr={1}>{price.amount} </Text>
-                                <Text>{price.currency_code}</Text>
-                              </Flex>
-                            ))
-                        : "N / A"}
-                    </Flex>
                   </TableDataCell>
                 </TableRow>
               )
