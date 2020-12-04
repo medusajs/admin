@@ -170,7 +170,7 @@ const ProductIndex = () => {
                       src={p.thumbnail || ImagePlaceholder}
                       height={38}
                       width={38}
-                      p={!!p.thumbnail && 8}
+                      p={!p.thumbnail && "8px"}
                       sx={{
                         objectFit: "contain",
                         border: "1px solid lightgray",
