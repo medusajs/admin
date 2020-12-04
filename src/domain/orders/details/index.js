@@ -231,7 +231,7 @@ const OrderDetails = ({ id }) => {
   return (
     <Flex flexDirection="column" mb={5}>
       <Flex flexDirection="column" mb={2}>
-        <Card mb={2}>
+        <Card mb={4}>
           <Card.Header
             dropdownOptions={orderDropdown}
             action={
@@ -329,7 +329,7 @@ const OrderDetails = ({ id }) => {
         </Card>
       </Flex>
       {/* Line items */}
-      <Card mb={2}>
+      <Card mb={4}>
         <Card.Header dropdownOptions={lineDropdown} action={lineAction}>
           Timeline
         </Card.Header>
@@ -344,7 +344,7 @@ const OrderDetails = ({ id }) => {
         </Card.Body>
       </Card>
       {/* PAYMENT */}
-      <Card mb={2}>
+      <Card mb={4}>
         <Card.Header
           badge={{
             label: order.payment_status,
@@ -410,7 +410,7 @@ const OrderDetails = ({ id }) => {
               </Text>
             </Box>
           </Flex>
-          <Divider mt={3} mb={1} mx={3} />
+          <Divider mt={3} mb={1} />
           {(order.payment_status === "captured" ||
             order.payment_status === "refunded" ||
             order.payment_status === "partially_refunded") && (
@@ -446,7 +446,7 @@ const OrderDetails = ({ id }) => {
         </Card.Body>
       </Card>
       {/* FULFILLMENT */}
-      <Card mb={2}>
+      <Card mb={4}>
         <Card.Header
           action={fulfillmentAction}
           badge={{
@@ -482,61 +482,55 @@ const OrderDetails = ({ id }) => {
             ))}
           </Flex>
           <Flex width={1} flexDirection="column">
-            {fulfillments.length > 0 ? (
-              fulfillments.map(f => (
-                <Flex
-                  key={f.fulfillment._id}
-                  sx={{
-                    ":not(:last-of-type)": {
-                      borderBottom: "hairline",
-                    },
-                  }}
-                  p={3}
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Box>
-                    <Text>
-                      {f.title} Fulfilled by provider{" "}
-                      {f.fulfillment.provider_id}
-                    </Text>
-                    {f.fulfillment.tracking_numbers.length > 0 ? (
-                      <>
-                        <Text my={1} color="gray">
-                          Tracking Number
-                        </Text>
-                        <Text>{f.fulfillment.tracking_numbers.join(", ")}</Text>
-                      </>
-                    ) : (
-                      <Text my={1} color="gray">
-                        Not shipped
+            {fulfillments.length > 0
+              ? fulfillments.map(f => (
+                  <Flex
+                    key={f.fulfillment._id}
+                    sx={{
+                      ":not(:last-of-type)": {
+                        borderBottom: "hairline",
+                      },
+                    }}
+                    p={3}
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Box>
+                      <Text>
+                        {f.title} Fulfilled by provider{" "}
+                        {f.fulfillment.provider_id}
                       </Text>
+                      {f.fulfillment.tracking_numbers.length > 0 ? (
+                        <>
+                          <Text my={1} color="gray">
+                            Tracking Number
+                          </Text>
+                          <Text>
+                            {f.fulfillment.tracking_numbers.join(", ")}
+                          </Text>
+                        </>
+                      ) : (
+                        <Text my={1} color="gray">
+                          Not shipped
+                        </Text>
+                      )}
+                    </Box>
+                    {!f.fulfillment.shipped_at && order.status !== "canceled" && (
+                      <Button
+                        variant={"primary"}
+                        onClick={() => setUpdateFulfillment(f)}
+                      >
+                        Mark Shipped
+                      </Button>
                     )}
-                  </Box>
-                  {!f.fulfillment.shipped_at && order.status !== "canceled" && (
-                    <Button
-                      variant={"primary"}
-                      onClick={() => setUpdateFulfillment(f)}
-                    >
-                      Mark Shipped
-                    </Button>
-                  )}
-                </Flex>
-              ))
-            ) : (
-              <Flex
-                alignSelf={"center"}
-                justifySelf={"center"}
-                justifyContent="space-between"
-              >
-                <Text color="gray">Not yet fulfilled</Text>
-              </Flex>
-            )}
+                  </Flex>
+                ))
+              : null}
           </Flex>
         </Card.Body>
       </Card>
       {/* CUSTOMER */}
-      <Card mr={3} mb={2} width="100%">
+      <Card mr={3} mb={4} width="100%">
         <Card.Header>Customer</Card.Header>
         <Card.Body>
           <Box px={3}>

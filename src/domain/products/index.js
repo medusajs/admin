@@ -143,29 +143,73 @@ const ProductIndex = () => {
             <TableHeaderRow>
               <TableHeaderCell>Name</TableHeaderCell>
               <TableHeaderCell>Inventory</TableHeaderCell>
+              <TableHeaderCell>Prices</TableHeaderCell>
             </TableHeaderRow>
           </TableHead>
           <TableBody>
-            {products.map(p => (
-              <TableRow
-                key={p._id}
-                onClick={() =>
-                  navigate(
-                    `/a/products${p.is_giftcard ? "/gift-card" : ""}/${p._id}`
-                  )
-                }
-              >
-                <TableDataCell>{p.title}</TableDataCell>
-                <TableDataCell>
-                  {p.variants.reduce(
-                    (acc, next) => acc + next.inventory_quantity,
-                    0
-                  )}
-                  {" in stock for "}
-                  {p.variants.length} variants
-                </TableDataCell>
-              </TableRow>
-            ))}
+            {products.map(p => {
+              const prices =
+                p.variants[0].prices.length > 0
+                  ? p.variants[0].prices
+                      .sort((a, b) => {
+                        if (a.currency_code < b.currency_code) {
+                          return -1
+                        }
+                        if (a.currency_code > b.currency_code) {
+                          return 1
+                        }
+                        return 0
+                      })
+                      .map(price => `${price.amount} ${price.currency_code}`)
+                  : []
+
+              return (
+                <TableRow
+                  key={p._id}
+                  onClick={() =>
+                    navigate(
+                      `/a/products${p.is_giftcard ? "/gift-card" : ""}/${p._id}`
+                    )
+                  }
+                >
+                  <TableDataCell>{p.title}</TableDataCell>
+                  <TableDataCell>
+                    {p.variants.reduce(
+                      (acc, next) => acc + next.inventory_quantity,
+                      0
+                    )}
+                    {" in stock for "}
+                    {p.variants.length} variants
+                  </TableDataCell>
+                  <TableDataCell>
+                    <Flex justifyContent="flex-start">
+                      {p.variants[0].prices.length > 0
+                        ? p.variants[0].prices
+                            .sort((a, b) => {
+                              if (a.currency_code < b.currency_code) {
+                                return -1
+                              }
+                              if (a.currency_code > b.currency_code) {
+                                return 1
+                              }
+                              return 0
+                            })
+                            .map((price, i) => (
+                              <Flex
+                                key={i}
+                                width="70px"
+                                justifyContent="center"
+                              >
+                                <Text mr={1}>{price.amount} </Text>
+                                <Text>{price.currency_code}</Text>
+                              </Flex>
+                            ))
+                        : "N / A"}
+                    </Flex>
+                  </TableDataCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       )}
