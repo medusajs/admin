@@ -28,7 +28,7 @@ Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
   return (
     <StyledHeader alignItems="center" {...rest}>
       <Text p={3} flexGrow="1" fontWeight="bold">
-        {children}
+        <Text fontSize={12}>{children}</Text>
         {!!badge && (
           <Badge
             ml={3}
