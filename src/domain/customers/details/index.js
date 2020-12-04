@@ -66,27 +66,25 @@ const CustomerDetail = ({ id }) => {
       <Card mr={3} mb={2} width="100%">
         <Card.Header>Orders</Card.Header>
         <Card.Body flexDirection="column">
-          {_.sortBy(customer.orders, "created")
-            .reverse()
-            .map(order => (
-              <Flex pl={3} pr={2} py={2} display="flex">
-                <OrderNumLink
-                  onClick={() => navigate(`/a/orders/${order._id}`)}
-                >
-                  Order #{order.display_id}
-                </OrderNumLink>
-                <Card.VerticalDivider mx={3} />
-                <Flex width="100px" justifyContent="center">
-                  <Text ml={2}>{parseInt(order.total).toFixed(2)}</Text>
-                  <Box ml="auto" />
-                  <Text mr={2}>{order.currency_code}</Text>
-                </Flex>
-                <Card.VerticalDivider mx={3} />
-                <Text>
-                  {moment(order.created).format("MMMM Do YYYY HH:mm a")}
-                </Text>
+          {customer.orders.map(order => (
+            <Flex pl={3} pr={2} py={2} display="flex">
+              <OrderNumLink onClick={() => navigate(`/a/orders/${order._id}`)}>
+                Order #{order.display_id}
+              </OrderNumLink>
+              <Card.VerticalDivider mx={3} />
+              <Flex width="100px" justifyContent="center">
+                <Text ml={2}>{parseInt(order.total).toFixed(2)}</Text>
+                <Box ml="auto" />
+                <Text mr={2}>{order.currency_code}</Text>
               </Flex>
-            ))}
+              <Card.VerticalDivider mx={3} />
+              <Box ml="auto" />
+              <Flex width="100px" justifyContent="space-evenly">
+                <Text>{moment.unix(order.created).format("D MMM")},</Text>
+                <Text>{moment.unix(order.created).format("HH:mm")}</Text>
+              </Flex>
+            </Flex>
+          ))}
         </Card.Body>
       </Card>
       <Card mr={3} mb={2} width="100%">

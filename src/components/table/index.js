@@ -3,8 +3,8 @@ import { Box, Flex } from "rebass"
 import styled from "@emotion/styled"
 
 const StyledTable = styled(Box)`
-  box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
-    0 1px 3px 0 rgba(63, 63, 68, 0.15);
+  // box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
+  //   0 1px 3px 0 rgba(63, 63, 68, 0.15);
 `
 
 const StyledTableRow = styled(Flex)`

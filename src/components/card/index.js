@@ -9,9 +9,9 @@ import Typography from "../typography"
 
 const Card = styled(RebassCard)`
   ${Typography.Base}
-  box-shadow:
-    0 7px 13px 0 rgba(60,66,87,.03),
-    0 3px 6px 0 rgba(0,0,0,.08);
+  // box-shadow:
+  //   0 7px 13px 0 rgba(60,66,87,.03),
+  //   0 3px 6px 0 rgba(0,0,0,.08);
   border-radius: 2px;
   height: 100%;
 `
