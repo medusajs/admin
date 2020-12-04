@@ -166,7 +166,6 @@ const ProductIndex = () => {
                     textAlign="center"
                   >
                     <Image
-                      mt={10}
                       src={p.thumbnail || ImagePlaceholder}
                       height={38}
                       width={38}
