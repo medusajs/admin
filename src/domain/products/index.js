@@ -163,10 +163,14 @@ const ProductIndex = () => {
                     textAlign="center"
                   >
                     <Image
-                      mt={p.thumbnail ? "" : "10px"}
                       src={p.thumbnail || ImagePlaceholder}
-                      height={p.thumbnail ? "100%" : "20px"}
-                      width={p.thumbnail ? "100%" : "20px"}
+                      height={38}
+                      width={38}
+                      p={!p.thumbnail && "8px"}
+                      sx={{
+                        objectFit: "contain",
+                        border: "1px solid lightgray",
+                      }}
                     />
                   </TableDataCell>
                   <TableDataCell>{p.title}</TableDataCell>
