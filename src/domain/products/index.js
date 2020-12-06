@@ -57,15 +57,16 @@ const ProductIndex = () => {
 
     const search = {
       q: query,
-      offset: 0,
-      limit: 50,
+      offset,
+      limit,
     }
+
     const prepared = qs.stringify(search, {
       skipNull: true,
       skipEmptyString: true,
     })
 
-    window.history.pushState(baseUrl, "", `?${prepared}`)
+    window.history.replace(baseUrl, "", `?${prepared}`)
     refresh({ search })
   }
 
@@ -75,19 +76,15 @@ const ProductIndex = () => {
 
     const search = {
       q: query,
-      offset: 0,
-      limit: 50,
+      offset: updatedOffset,
+      limit,
     }
-    const prepared = qs.stringify(
-      {
-        q: query,
-        offset: updatedOffset,
-        limit,
-      },
-      { skipNull: true, skipEmptyString: true }
-    )
+    const prepared = qs.stringify(search, {
+      skipNull: true,
+      skipEmptyString: true,
+    })
 
-    window.history.pushState(baseUrl, "", `?${prepared}`)
+    window.history.replaceState(baseUrl, "", `?${prepared}`)
 
     refresh({ search }).then(() => {
       setOffset(updatedOffset)
