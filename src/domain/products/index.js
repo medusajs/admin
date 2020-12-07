@@ -66,7 +66,7 @@ const ProductIndex = () => {
       skipEmptyString: true,
     })
 
-    window.history.replace(baseUrl, "", `?${prepared}`)
+    window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({ search })
   }
 
