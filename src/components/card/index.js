@@ -27,7 +27,7 @@ const StyledHeader = styled(Flex)`
 Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
   return (
     <StyledHeader alignItems="center" {...rest}>
-      <Flex p={3} flexGrow="1" fontWeight="bold">
+      <Flex p={3} flexGrow="1" fontWeight="bold" alignItems="center">
         <Text fontSize={20}>{children}</Text>
         {!!badge && (
           <Badge
