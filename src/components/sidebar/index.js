@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Flex, Box, Text } from "rebass"
-import { Link } from "gatsby"
+import { navigate } from "gatsby"
 import styled from "@emotion/styled"
 import { Container, InlineLogoContainer, LogoContainer } from "./elements"
 import { ReactComponent as Settings } from "../../assets/svg/settings.svg"
@@ -13,19 +13,33 @@ import { ReactComponent as GiftCard } from "../../assets/svg/gift-card.svg"
 import { ReactComponent as LogoInline } from "../../assets/svg/logo-horizontal.svg"
 import Medusa from "../../services/api"
 
-const MuteLink = styled(Link)`
-  text-decoration: none;
-  color: inherit;
-`
+const StyledItemContainer = styled(Flex)`
+  align-items: center;
+  border-radius: 5pt;
+  cursor: pointer;
 
-const StyledLink = ({ to, children, ...rest }) => (
-  <Box {...rest}>
-    <MuteLink to={to}>{children}</MuteLink>
-  </Box>
-)
+  [fill*="red"] {
+    fill: #454545;
+  }
+
+  &:hover {
+    ${props =>
+      !props.active &&
+      `
+      background-color: #e0e0e059;
+    `}
+  }
+
+  ${props =>
+    props.active &&
+    `
+    background-color: #e0e0e0;
+  `}
+`
 
 const Sidebar = ({}) => {
   const [storeName, setStoreName] = useState("")
+  const [path, setPath] = useState("")
 
   const fetchStore = async () => {
     const cache = localStorage.getItem("medusa::cache::store")
@@ -40,61 +54,108 @@ const Sidebar = ({}) => {
     }
   }
 
+  const handleOnClick = async route => {
+    navigate(`/a/${route}`)
+    setPath(route)
+  }
+
   useEffect(() => {
     fetchStore()
   }, [])
 
+  // useEffect(() => {
+  //   if (window) {
+  //     setPath(window.location.pathname)
+  //   }
+  // }, [window])
+
   return (
     <Container fontSize={1} fontFamily={"body"} p={4}>
       <Flex mx={-2} alignItems="center">
-        <LogoContainer width={1 / 12} mx={1}>
-          <Logo />
+        <LogoContainer width={1 / 12} mx={2}>
+          <Logo style={{ transform: "scale(1.5)" }} />
         </LogoContainer>
         <Box mx={1}>
-          <Text fontWeight="200">{storeName || "Medusa store"}</Text>
+          <Text>{storeName || "Medusa store"}</Text>
         </Box>
       </Flex>
-
       <Flex py={4} mx={-1} flexDirection="column" flex={1}>
-        <Flex py={1} alignItems="center">
+        <StyledItemContainer
+          mb={1}
+          py={1}
+          px={2}
+          active={path.includes("orders")}
+          onClick={() => handleOnClick("orders")}
+        >
           <Orders />
-          <StyledLink ml={2} variant="nav" to="/a/orders">
+          <Text ml={2} variant="nav">
             Orders
-          </StyledLink>
-        </Flex>
-        <Flex py={1} alignItems="center">
+          </Text>
+        </StyledItemContainer>
+        <StyledItemContainer
+          mb={1}
+          py={1}
+          px={2}
+          active={path.includes("products")}
+          onClick={() => handleOnClick("products")}
+        >
           <Products />
-          <StyledLink ml={2} variant="nav" to="/a/products">
+          <Text ml={2} variant="nav">
             Products
-          </StyledLink>
-        </Flex>
-        <Flex py={1} alignItems="center">
+          </Text>
+        </StyledItemContainer>
+        <StyledItemContainer
+          mb={1}
+          py={1}
+          px={2}
+          active={path.includes("customers")}
+          onClick={() => handleOnClick("customers")}
+        >
           <Customers />
-          <StyledLink ml={2} variant="nav" to="/a/customers">
+          <Text ml={2} variant="nav">
             Customers
-          </StyledLink>
-        </Flex>
-        <Flex py={1} alignItems="center">
+          </Text>
+        </StyledItemContainer>
+        <StyledItemContainer
+          mb={1}
+          py={1}
+          px={2}
+          active={path.includes("discounts")}
+          onClick={() => handleOnClick("discounts")}
+        >
           <Discounts />
-          <StyledLink ml={2} variant="nav" to="/a/discounts">
+          <Text ml={2} variant="nav">
             Discounts
-          </StyledLink>
-        </Flex>
-        <Flex py={1} alignItems="center">
+          </Text>
+        </StyledItemContainer>
+        <StyledItemContainer
+          mb={1}
+          py={1}
+          px={2}
+          active={path.includes("giftcards")}
+          onClick={() => handleOnClick("giftcards")}
+        >
           <GiftCard />
-          <StyledLink ml={2} variant="nav" to="/a/gift-cards">
+          <Text ml={2} variant="nav">
             Gift Cards
-          </StyledLink>
-        </Flex>
+          </Text>
+        </StyledItemContainer>
+        <StyledItemContainer
+          mb={1}
+          py={1}
+          px={2}
+          active={path.includes("settings")}
+          onClick={() => handleOnClick("settings")}
+        >
+          <Settings />
+          <Text ml={2} variant="nav">
+            Settings
+          </Text>
+        </StyledItemContainer>
       </Flex>
-      <Flex mx={-1} alignItems="center" justifyContent="space-between ">
-        <InlineLogoContainer mx={1}>
-          <LogoInline height={10} />
-        </InlineLogoContainer>
-        <InlineLogoContainer mx={1}>
-          <StyledLink variant="nav" to="/a/settings">
-            <Settings />
-          </StyledLink>
+      <Flex mx={-1} alignItems="center">
+        <InlineLogoContainer px={2}>
+          <LogoInline height={13} />
         </InlineLogoContainer>
       </Flex>
     </Container>

@@ -48,7 +48,7 @@ const Select = React.forwardRef(
             flex={"30% 0 0"}
             maxWidth={"200px"}
             htmlFor={name}
-            display={inline && "inline !important"}
+            display={props.start ? "flex" : inline && "inline !important"}
           >
             <StyledLabel inline={inline}>{label}</StyledLabel>
           </Label>

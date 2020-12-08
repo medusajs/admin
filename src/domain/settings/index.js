@@ -17,9 +17,9 @@ import Apps from "./apps"
 const SettingsIndex = () => {
   return (
     <Flex flexDirection={"column"} mb={5}>
-      <Card mb={2}>
+      {/* <Card mb={2}>
         <Card.Header>Business Settings</Card.Header>
-      </Card>
+      </Card> */}
       <Details />
       <Currencies />
       <Regions />

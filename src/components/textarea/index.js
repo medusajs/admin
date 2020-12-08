@@ -57,6 +57,7 @@ const TextArea = React.forwardRef(
           </Label>
         )}
         <StyledTextArea
+          minHeight={props.minHeight}
           inline={inline}
           ref={ref}
           variant="textarea"

@@ -15,6 +15,7 @@ const ShippingProfiles = () => {
       <Card>
         <Card.Header
           action={{
+            type: "primary",
             label: "+ Add shipping profile",
             onClick: () => navigate("/a/settings/shipping-profiles/new"),
           }}

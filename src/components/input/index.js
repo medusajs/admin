@@ -64,13 +64,14 @@ const InputField = React.forwardRef(
       <Flex
         alignItems={inline && "center"}
         flexDirection={inline ? "row" : "column"}
+        width={props.width}
         {...props}
       >
         {label && (
           <Label
             flex={"30% 0 0"}
             htmlFor={name}
-            display={inline && "inline !important"}
+            display={props.start ? "flex" : inline && "inline !important"}
           >
             <StyledLabel required={required} inline={inline}>
               {label}

@@ -8,25 +8,47 @@ import Select from "../../components/select"
 import Card from "../../components/card"
 import Button from "../../components/button"
 import Spinner from "../../components/spinner"
-import Input from "../../components/input"
-import TagDropdown from "../../components/tag-dropdown"
+import MultiSelect from "react-multi-select-component"
+import Typography from "../../components/typography"
 
 import { currencies } from "../../utils/currencies"
+import { Label } from "@rebass/forms"
 
-const Currency = styled.div`
-  display: flex;
-  span {
-    &:first-of-type {
-      flex: 1;
-      text-alignment: center;
-      padding-right: 5px;
-      border-right: 1px solid ${props => props.theme.colors.dark};
-    }
+const StyledMultiSelect = styled(MultiSelect)`
+  ${Typography.Base}
 
-    &:last-of-type {
-      padding-left: 8px;
-      flex: 2;
-    }
+  color: black;
+  background-color: white;
+
+  width: 150px;
+
+  line-height: 1.22;
+
+  border: none;
+  outline: 0;
+
+  transition: all 0.2s ease;
+
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+
+  &:focus: {
+    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+  }
+  &::placeholder: {
+    color: #a3acb9;
+  }
+
+  .go3433208811 {
+    border: none;
+    border-radius: 3px;
   }
 `
 
@@ -40,18 +62,16 @@ const AccountDetails = () => {
     setValue("default_currency", store.default_currency)
     setCurrencies(
       store.currencies.map(c => ({
-        symbol: currencies[c].symbol_native,
         value: c,
-        code: c,
+        label: c,
       }))
     )
   }, [store, isLoading])
 
   const options = Object.keys(currencies).map(k => {
     return {
-      symbol: currencies[k].symbol_native,
       value: k,
-      code: k,
+      label: k,
     }
   })
 
@@ -71,7 +91,7 @@ const AccountDetails = () => {
       as="form"
       flexDirection={"column"}
       onSubmit={handleSubmit(onSubmit)}
-      mb={2}
+      mb={4}
     >
       <Card>
         <Card.Header>Store Currencies</Card.Header>
@@ -91,40 +111,33 @@ const AccountDetails = () => {
             <Flex width={1} flexDirection="column">
               <Box mb={3}>
                 <Select
-                  inline
-                  label="Default Currency"
+                  width="300px"
+                  label="Default store currency"
                   name="default_currency"
                   options={options}
                   ref={register}
                 />
               </Box>
               <Box>
-                <TagDropdown
-                  inline
-                  label={"Store currencies"}
-                  toggleText="Choose currencies"
-                  values={selectedCurrencies}
-                  onChange={handleChange}
-                  options={options}
-                  optionRender={o => (
-                    <Currency>
-                      <span>{o.symbol}</span>
-                      <span>{o.code}</span>
-                    </Currency>
-                  )}
-                  valueRender={o => (
-                    <Currency>
-                      <span>{o.symbol}</span>
-                      <span>{o.code}</span>
-                    </Currency>
-                  )}
-                />
+                <Flex flexDirection="column">
+                  <Label mb={2}>Store currencies</Label>
+                  <StyledMultiSelect
+                    options={Object.keys(currencies).map(currency => ({
+                      label: currency,
+                      value: currency,
+                    }))}
+                    value={selectedCurrencies}
+                    onChange={handleChange}
+                  />
+                </Flex>
               </Box>
             </Flex>
           )}
         </Card.Body>
-        <Card.Footer mx={3} justifyContent="flex-end">
-          <Button type="submit">Save</Button>
+        <Card.Footer justifyContent="flex-end">
+          <Button mr={3} type="submit" fontWeight="bold">
+            Save
+          </Button>
         </Card.Footer>
       </Card>
     </Flex>

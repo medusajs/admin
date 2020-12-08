@@ -8,9 +8,9 @@ import { ThemeProvider as Provider } from "emotion-theming"
 
 export const theme = {
   colors: {
-    primary: "#53725D",
+    primary: "#3b77ff",
     secondary: "#79B28A",
-    medusaGreen: "#53725D",
+    medusaGreen: "#3b77ff",
     danger: "#FF7675",
     muted: "#E3E8EE",
     lightest: "#fefefe",

@@ -13,10 +13,11 @@ const Regions = () => {
   const { regions, isLoading } = useMedusa("regions")
 
   return (
-    <Flex flexDirection="column">
+    <Flex flexDirection="column" mb={4}>
       <Card>
         <Card.Header
           action={{
+            type: "primary",
             label: "+ Add region",
             onClick: () => navigate("/a/settings/regions/new"),
           }}

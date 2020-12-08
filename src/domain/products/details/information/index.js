@@ -19,8 +19,8 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
     if (product) {
       reset({
         title: product.title,
-        description: product.description,
         thumbnail: product.thumbnail,
+        description: product.description,
       })
       setThumbnail(product.thumbnail)
     }
@@ -70,14 +70,14 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
       <Card.Body px={3} flexDirection="column">
         <Flex width={1} flexDirection={"column"}>
           <Box mb={3} width={1 / 2}>
-            <Input inline name="title" label="Name" ref={register} />
+            <Input name="title" label="Name" ref={register} />
           </Box>
           <Box mb={3} width={1 / 2}>
             <TextArea
-              inline
               name="description"
               label="Description"
               ref={register}
+              minHeight="120px"
             />
           </Box>
         </Flex>

@@ -31,36 +31,47 @@ const AccountDetails = () => {
       flexDirection="column"
       as="form"
       onSubmit={handleSubmit(onSubmit)}
-      mb={2}
+      mb={4}
     >
       <Card>
         <Card.Header>Account Details</Card.Header>
         <Card.Body flexDirection="column">
-          <Flex width={1}>
+          <Flex width={1} ml={3}>
             <Box width={1 / 2}>
-              <Input inline ref={register} name="name" label="Store name" />
+              <Input
+                inline
+                start={true}
+                label="Store name"
+                name="name"
+                placeholder="Medusa Store"
+                ref={register}
+              />
             </Box>
           </Flex>
-          <Flex mt={4} width={1} justifyContent="center">
+          <Flex mt={4} width={1} ml={3}>
             <Text onClick={() => setShowAdvanced(!showAdvanced)}>
               {showAdvanced ? "Hide" : "Advanced settings"}
             </Text>
           </Flex>
           {showAdvanced && (
-            <Flex py={3}>
+            <Flex width="100%" ml={3} mt={2}>
               <Box width={1 / 2}>
                 <Input
                   inline
-                  ref={register}
-                  name="swap_link_template"
+                  start={true}
                   label="Swap link template"
+                  name="swap_link_template"
+                  placeholder="https://acme.inc/swap"
+                  ref={register}
                 />
               </Box>
             </Flex>
           )}
         </Card.Body>
         <Card.Footer justifyContent="flex-end" px={3}>
-          <Button type="submit">Save</Button>
+          <Button type="submit" fontWeight="bold">
+            Save
+          </Button>
         </Card.Footer>
       </Card>
     </Flex>
