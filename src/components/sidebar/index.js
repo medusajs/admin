@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Flex, Box, Text } from "rebass"
-import { navigate } from "gatsby"
+import { Link, navigate } from "gatsby"
 import styled from "@emotion/styled"
 import { Container, InlineLogoContainer, LogoContainer } from "./elements"
 import { ReactComponent as Settings } from "../../assets/svg/settings.svg"
@@ -13,10 +13,18 @@ import { ReactComponent as GiftCard } from "../../assets/svg/gift-card.svg"
 import { ReactComponent as LogoInline } from "../../assets/svg/logo-horizontal.svg"
 import Medusa from "../../services/api"
 
-const StyledItemContainer = styled(Flex)`
+const StyledItemContainer = styled(Link)`
+  display: flex;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-bottom: 5px;
   align-items: center;
   border-radius: 5pt;
   cursor: pointer;
+
+  text-decoration: none;
+  color: black;
+  height: 30px;
 
   [fill*="red"] {
     fill: #454545;
@@ -30,11 +38,9 @@ const StyledItemContainer = styled(Flex)`
     `}
   }
 
-  ${props =>
-    props.active &&
-    `
+  &.active {
     background-color: #e0e0e0;
-  `}
+  }
 `
 
 const Sidebar = ({}) => {
@@ -63,12 +69,6 @@ const Sidebar = ({}) => {
     fetchStore()
   }, [])
 
-  // useEffect(() => {
-  //   if (window) {
-  //     setPath(window.location.pathname)
-  //   }
-  // }, [window])
-
   return (
     <Container fontSize={1} fontFamily={"body"} p={4}>
       <Flex mx={-2} alignItems="center">
@@ -81,11 +81,9 @@ const Sidebar = ({}) => {
       </Flex>
       <Flex py={4} mx={-1} flexDirection="column" flex={1}>
         <StyledItemContainer
-          mb={1}
-          py={1}
-          px={2}
-          active={path.includes("orders")}
-          onClick={() => handleOnClick("orders")}
+          to="/a/orders"
+          activeClassName="active"
+          partiallyActive
         >
           <Orders />
           <Text ml={2} variant="nav">
@@ -93,11 +91,9 @@ const Sidebar = ({}) => {
           </Text>
         </StyledItemContainer>
         <StyledItemContainer
-          mb={1}
-          py={1}
-          px={2}
-          active={path.includes("products")}
-          onClick={() => handleOnClick("products")}
+          to="/a/products"
+          activeClassName="active"
+          partiallyActive
         >
           <Products />
           <Text ml={2} variant="nav">
@@ -105,11 +101,9 @@ const Sidebar = ({}) => {
           </Text>
         </StyledItemContainer>
         <StyledItemContainer
-          mb={1}
-          py={1}
-          px={2}
-          active={path.includes("customers")}
-          onClick={() => handleOnClick("customers")}
+          to="/a/customers"
+          activeClassName="active"
+          partiallyActive
         >
           <Customers />
           <Text ml={2} variant="nav">
@@ -117,11 +111,9 @@ const Sidebar = ({}) => {
           </Text>
         </StyledItemContainer>
         <StyledItemContainer
-          mb={1}
-          py={1}
-          px={2}
-          active={path.includes("discounts")}
-          onClick={() => handleOnClick("discounts")}
+          to="/a/discounts"
+          activeClassName="active"
+          partiallyActive
         >
           <Discounts />
           <Text ml={2} variant="nav">
@@ -129,11 +121,9 @@ const Sidebar = ({}) => {
           </Text>
         </StyledItemContainer>
         <StyledItemContainer
-          mb={1}
-          py={1}
-          px={2}
-          active={path.includes("giftcards")}
-          onClick={() => handleOnClick("giftcards")}
+          to="/a/gift-cards"
+          activeClassName="active"
+          partiallyActive
         >
           <GiftCard />
           <Text ml={2} variant="nav">
@@ -141,11 +131,9 @@ const Sidebar = ({}) => {
           </Text>
         </StyledItemContainer>
         <StyledItemContainer
-          mb={1}
-          py={1}
-          px={2}
-          active={path.includes("settings")}
-          onClick={() => handleOnClick("settings")}
+          to="/a/settings"
+          activeClassName="active"
+          partiallyActive
         >
           <Settings />
           <Text ml={2} variant="nav">
