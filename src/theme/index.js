@@ -10,7 +10,7 @@ export const theme = {
   colors: {
     primary: "#3b77ff",
     secondary: "#79B28A",
-    medusaGreen: "#3b77ff",
+    medusaGreen: "#454B54",
     danger: "#FF7675",
     muted: "#E3E8EE",
     lightest: "#fefefe",
