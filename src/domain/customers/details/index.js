@@ -36,6 +36,12 @@ const CustomerDetail = ({ id }) => {
     )
   }
 
+  const phone = customer.phone
+    ? customer.phone
+    : customer.shipping_addresses[0]
+    ? customer.shipping_addresses[0].phone
+    : "N / A"
+
   return (
     <Flex flexDirection="column" mb={5}>
       <Card mb={2}>
@@ -59,7 +65,7 @@ const CustomerDetail = ({ id }) => {
             <Text pb={1} color="gray">
               Phone
             </Text>
-            <Text pb={1}>{customer.phone || "N / A"}</Text>
+            <Text pb={1}>{phone}</Text>
           </Box>
         </Card.Body>
       </Card>
@@ -67,7 +73,7 @@ const CustomerDetail = ({ id }) => {
         <Card.Header>Orders</Card.Header>
         <Card.Body flexDirection="column">
           {customer.orders.map(order => (
-            <Flex pl={3} pr={2} py={2} display="flex">
+            <Flex pl={3} pr={2} py={2}>
               <OrderNumLink onClick={() => navigate(`/a/orders/${order._id}`)}>
                 Order #{order.display_id}
               </OrderNumLink>
@@ -77,11 +83,10 @@ const CustomerDetail = ({ id }) => {
                 <Box ml="auto" />
                 <Text mr={2}>{order.currency_code}</Text>
               </Flex>
-              <Card.VerticalDivider mx={3} />
               <Box ml="auto" />
               <Flex width="100px" justifyContent="space-evenly">
-                <Text>{moment.unix(order.created).format("D MMM")},</Text>
-                <Text>{moment.unix(order.created).format("HH:mm")}</Text>
+                <Text>{moment(order.created).format("D MMM")},</Text>
+                <Text>{moment(order.created).format("HH:mm")}</Text>
               </Flex>
             </Flex>
           ))}
@@ -89,19 +94,27 @@ const CustomerDetail = ({ id }) => {
       </Card>
       <Card mr={3} mb={2} width="100%">
         <Card.Header>Shipping addresses</Card.Header>
-        <Card.Body>
-          {customer.shipping_addresses.map(sa => (
-            <Box px={3}>
-              <Text pt={2}>
-                {sa.first_name} {sa.last_name}
-              </Text>
-              <Text pt={2}>{sa.address_1}</Text>
-              {sa.address_2 && <Text pt={2}>{sa.address_2}</Text>}
-              <Text pt={2}>
-                {sa.postal_code} {sa.city}, {sa.country_code}
-              </Text>
-              <Text pt={2}>{sa.country}</Text>
-            </Box>
+        <Card.Body flexDirection="column">
+          {_.uniqBy(customer.shipping_addresses, val =>
+            [val.address_1, val.first_name, val.last_name].join()
+          ).map(sa => (
+            <Flex pl={3} pr={2} py={2} flexDirection="column">
+              <Flex>
+                <Text pt={2} mr={1}>
+                  {sa.first_name} {sa.last_name},
+                </Text>
+                <Text pt={2} mr={1}>
+                  {sa.address_1},
+                </Text>
+                {sa.address_2 && <Text pt={2}>{sa.address_2}</Text>}
+              </Flex>
+              <Flex>
+                <Text pt={2} mr={1}>
+                  {sa.postal_code} {sa.city}, {sa.country_code}
+                </Text>
+                <Text pt={2}>{sa.country}</Text>
+              </Flex>
+            </Flex>
           ))}
         </Card.Body>
       </Card>

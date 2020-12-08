@@ -314,9 +314,20 @@ const OrderDetails = ({ id }) => {
             <Card.VerticalDivider mx={3} />
             <Box pl={3} pr={2}>
               <Text pb={1} color="gray">
-                Customer
+                Email
               </Text>
               <Text>{order.email}</Text>
+            </Box>
+            <Card.VerticalDivider mx={3} />
+            <Box pl={3} pr={2}>
+              <Text pb={1} color="gray">
+                Phone
+              </Text>
+              <Text>
+                {order.shipping_address.phone
+                  ? order.shipping_address.phone
+                  : "N / A"}
+              </Text>
             </Box>
             <Card.VerticalDivider mx={3} />
             <Box pl={3} pr={2}>
