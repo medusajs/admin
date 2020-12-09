@@ -16,6 +16,7 @@ import { currencies as currencyData } from "../../../utils/currencies"
 import { countries as countryData } from "../../../utils/countries"
 
 import Shipping from "./shipping"
+import MultiSelect from "../../../components/multi-select"
 
 const NewRegion = ({ id }) => {
   const [currencies, setCurrencies] = useState([])
@@ -26,13 +27,7 @@ const NewRegion = ({ id }) => {
   const [fulfillmentProviders, setFulfillmentProviders] = useState([])
 
   const { store, isLoading: storeIsLoading } = useMedusa("store")
-  const {
-    region,
-    isLoading,
-    fulfillmentOptions: fulfillmentEndpoint,
-    update,
-  } = useMedusa("regions", { id })
-  const { register, reset, setValue, getValues, handleSubmit } = useForm()
+  const { register, setValue, handleSubmit } = useForm()
 
   useEffect(() => {
     if (storeIsLoading) return
@@ -96,9 +91,22 @@ const NewRegion = ({ id }) => {
   }))
 
   return (
-    <Flex as="form" onSubmit={handleSubmit(onSave)} flexDirection="column">
-      <Box width={3 / 7}>
-        <Input mb={3} name="name" label="Name" ref={register} />
+    <Flex
+      as="form"
+      onSubmit={handleSubmit(onSave)}
+      flexDirection="column"
+      pt={5}
+      alignItems="center"
+      justifyContent="center"
+      width="100%"
+    >
+      <Flex width={3 / 5} justifyContent="flex-start">
+        <Text mb={4} fontWeight="bold" fontSize={20}>
+          Region details
+        </Text>
+      </Flex>
+      <Flex mb={5} width={3 / 5} flexDirection="column">
+        <Input mb={3} name="name" label="Name" ref={register} width="75%" />
         <Select
           mb={3}
           label="Currency"
@@ -112,26 +120,32 @@ const NewRegion = ({ id }) => {
           step="0.01"
           min={0}
           max={1}
+          width="75%"
           name="tax_rate"
           label="Tax Rate"
           ref={register}
         />
-        <Input mb={3} name="tax_code" label="Tax Code" ref={register} />
-        <TagDropdown
+        <Input
           mb={3}
-          label={"Countries"}
-          toggleText="Select Countries"
-          values={countries}
-          onChange={handleChange}
+          name="tax_code"
+          label="Tax Code"
+          ref={register}
+          width="75%"
+        />
+        <MultiSelect
+          mb={3}
+          label="Countries"
+          selectOptions={{ hasSelectAll: false }}
           options={countryOptions}
-          optionRender={o => <span>{o.label}</span>}
-          valueRender={o => <span>{o.value}</span>}
+          value={countries}
+          onChange={handleChange}
         />
         {!!paymentOptions.length && (
           <TagDropdown
+            width="100%"
             mb={3}
             label={"Payment Providers"}
-            toggleText="Select Providers"
+            toggleText="Select"
             values={paymentProviders}
             onChange={handlePaymentChange}
             options={paymentOptions}
@@ -143,7 +157,7 @@ const NewRegion = ({ id }) => {
           <TagDropdown
             mb={3}
             label={"Fulfillment Providers"}
-            toggleText="Select Providers"
+            toggleText="Select"
             values={fulfillmentProviders}
             onChange={handleFulfillmentChange}
             options={fulfillmentOptions}
@@ -151,10 +165,13 @@ const NewRegion = ({ id }) => {
             valueRender={o => <span>{o.value}</span>}
           />
         )}
-      </Box>
-      <Box width={"70px"}>
-        <Button type="submit">Save</Button>
-      </Box>
+        <Flex mt={4} width="75%">
+          <Box ml="auto" />
+          <Button variant={"cta"} type="submit">
+            Save
+          </Button>
+        </Flex>
+      </Flex>
     </Flex>
   )
 }

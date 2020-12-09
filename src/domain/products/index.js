@@ -94,9 +94,11 @@ const ProductIndex = () => {
   const moreResults = products && products.length >= limit
 
   return (
-    <Flex flexDirection="column" mb={5}>
+    <Flex flexDirection="column" mb={5} pt={5}>
       <Flex>
-        <Text mb={3}>Products</Text>
+        <Text mb={3} fontSize={20} fontWeight="bold">
+          Products
+        </Text>
         <Box ml="auto" />
         <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
           New product

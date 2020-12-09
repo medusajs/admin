@@ -229,7 +229,7 @@ const OrderDetails = ({ id }) => {
   const fulfillments = gatherFulfillments(order)
 
   return (
-    <Flex flexDirection="column" mb={5}>
+    <Flex flexDirection="column" mb={5} pt={5}>
       <Flex flexDirection="column" mb={2}>
         <Card mb={4}>
           <Card.Header

@@ -23,8 +23,8 @@ const Layout = ({ children }) => {
     <Container>
       <Main>
         <Sidebar />
-        <Content fontFamily={"body"} p={4}>
-          <Body p={3} mx="auto">
+        <Content fontFamily={"body"} pb={4} pl={4} pr={4}>
+          <Body pl={3} pr={3} pb={3} mx="auto">
             {children}
           </Body>
         </Content>

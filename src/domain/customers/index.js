@@ -90,9 +90,11 @@ const CustomerIndex = () => {
   const moreResults = customers && customers.length >= limit
 
   return (
-    <Flex flexDirection="column" mb={5}>
+    <Flex flexDirection="column" mb={5} pt={5}>
       <Flex>
-        <Text mb={3}>Customers</Text>
+        <Text fontSize={20} fontWeight="bold" mb={3}>
+          Customers
+        </Text>
       </Flex>
       <Flex>
         <Box ml="auto" />

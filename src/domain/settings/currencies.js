@@ -8,7 +8,7 @@ import Select from "../../components/select"
 import Card from "../../components/card"
 import Button from "../../components/button"
 import Spinner from "../../components/spinner"
-import MultiSelect from "react-multi-select-component"
+import MultiSelect from "../../components/multi-select"
 import Typography from "../../components/typography"
 
 import { currencies } from "../../utils/currencies"
@@ -109,7 +109,7 @@ const AccountDetails = () => {
             </Flex>
           ) : (
             <Flex width={1} flexDirection="column">
-              <Box mb={3}>
+              <Box mb={3} width={1 / 4}>
                 <Select
                   width="300px"
                   label="Default store currency"
@@ -118,24 +118,25 @@ const AccountDetails = () => {
                   ref={register}
                 />
               </Box>
-              <Box>
-                <Flex flexDirection="column">
-                  <Label mb={2}>Store currencies</Label>
-                  <StyledMultiSelect
-                    options={Object.keys(currencies).map(currency => ({
-                      label: currency,
-                      value: currency,
-                    }))}
-                    value={selectedCurrencies}
-                    onChange={handleChange}
-                  />
-                </Flex>
+              <Box width={1 / 4}>
+                <MultiSelect
+                  start={true}
+                  mb={3}
+                  label="Store currencies"
+                  selectOptions={{ hasSelectAll: false }}
+                  options={Object.keys(currencies).map(currency => ({
+                    label: currency,
+                    value: currency,
+                  }))}
+                  value={selectedCurrencies}
+                  onChange={handleChange}
+                />
               </Box>
             </Flex>
           )}
         </Card.Body>
         <Card.Footer justifyContent="flex-end">
-          <Button mr={3} type="submit" fontWeight="bold">
+          <Button mr={3} type="submit" fontWeight="bold" variant="cta">
             Save
           </Button>
         </Card.Footer>

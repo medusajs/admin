@@ -49,7 +49,7 @@ const ProductDetail = ({ id }) => {
   }
 
   return (
-    <Flex flexDirection="column" mb={5}>
+    <Flex flexDirection="column" mb={5} pt={5}>
       <Information
         product={product}
         isLoading={isLoading}

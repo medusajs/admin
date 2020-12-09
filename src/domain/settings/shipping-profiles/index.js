@@ -37,6 +37,7 @@ const ShippingProfiles = () => {
           ) : (
             shipping_profiles.map(sp => (
               <Flex
+                key={sp._id}
                 py={3}
                 px={3}
                 width={1}

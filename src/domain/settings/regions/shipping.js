@@ -77,7 +77,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
 
   return (
     <>
-      <Card>
+      <Card mb={5}>
         <Card.Header dropdownOptions={dropdownOptions}>
           Shipping Options
         </Card.Header>

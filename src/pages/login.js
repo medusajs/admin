@@ -60,7 +60,7 @@ const IndexPage = () => {
                 name="password"
                 ref={register}
               />
-              <Button type="submit" variant={"green"} mt={4} width={1}>
+              <Button type="submit" variant={"cta"} mt={4} width={1}>
                 Continue
               </Button>
             </>

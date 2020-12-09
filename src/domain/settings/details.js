@@ -69,7 +69,7 @@ const AccountDetails = () => {
           )}
         </Card.Body>
         <Card.Footer justifyContent="flex-end" px={3}>
-          <Button type="submit" fontWeight="bold">
+          <Button type="submit" fontWeight="bold" variant="cta">
             Save
           </Button>
         </Card.Footer>
