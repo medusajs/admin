@@ -260,7 +260,7 @@ const OrderIndex = ({}) => {
   const moreResults = orders && orders.length >= limit
 
   return (
-    <Flex flexDirection="column" mb={5} pt={5}>
+    <Flex flexDirection="column" pb={5} pt={5}>
       <Flex>
         <Text mb={3} fontSize={20} fontWeight="bold">
           Orders

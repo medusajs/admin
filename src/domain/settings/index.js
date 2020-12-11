@@ -16,7 +16,7 @@ import Apps from "./apps"
 
 const SettingsIndex = () => {
   return (
-    <Flex flexDirection={"column"} mb={5} pt={5}>
+    <Flex flexDirection={"column"} pb={5} pt={5}>
       <Details />
       <Currencies />
       <Regions />

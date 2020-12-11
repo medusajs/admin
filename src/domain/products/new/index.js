@@ -317,7 +317,7 @@ const NewProduct = ({}) => {
   }
 
   return (
-    <Flex as="form" pb={6} onSubmit={handleSubmit(submit)}>
+    <Flex as="form" pb={6} onSubmit={handleSubmit(submit)} pt={5}>
       <Flex mx="auto" width="100%" maxWidth="750px" flexDirection="column">
         <Text mb={4}>Product Details</Text>
         <Flex mb={5}>
