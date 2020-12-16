@@ -34,8 +34,10 @@ const Index = () => {
 
   return (
     <div>
-      <Flex>
-        <Text mb={4}>Gift Cards</Text>
+      <Flex pt={5}>
+        <Text fontSize={20} fontWeight="bold" mb={4}>
+          Gift Cards
+        </Text>
         <Box ml="auto" />
         <Button
           onClick={() => navigate(`/a/gift-cards/manage`)}

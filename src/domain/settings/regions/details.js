@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react"
 import { Flex, Text, Box } from "rebass"
+import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
+import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 
+import MultiSelect from "../../../components/multi-select"
 import useMedusa from "../../../hooks/use-medusa"
 import Input from "../../../components/input"
 import Select from "../../../components/select"
@@ -42,10 +45,7 @@ const Regions = ({ id }) => {
       }))
     )
     setPaymentOptions(
-      store.payment_providers.map(c => ({
-        value: c,
-        label: c,
-      }))
+      store.payment_providers.map(c => paymentProvidersMapper(c))
     )
     setFulfillmentOptions(
       store.fulfillment_providers.map(c => ({
@@ -63,10 +63,16 @@ const Regions = ({ id }) => {
     register({ name: "fulfillment_providers" })
 
     setValue("countries", region.countries)
-    setCountries(region.countries.map(v => ({ value: v })))
+    const selectedCountries = region.countries.map(c =>
+      countryData.find(cd => cd.alpha2 === c)
+    )
+    setCountries(
+      selectedCountries.map(v => ({ value: v.alpha2, label: v.name }))
+    )
 
     setValue("payment_providers", region.payment_providers)
     setPaymentProviders(region.payment_providers.map(v => ({ value: v })))
+
     setValue("fulfillment_providers", region.fulfillment_providers)
     setFulfillmentProviders(
       region.fulfillment_providers.map(v => ({ value: v }))
@@ -98,6 +104,7 @@ const Regions = ({ id }) => {
   }
 
   const onSave = data => {
+    console.log(data)
     update(data)
   }
 
@@ -107,7 +114,7 @@ const Regions = ({ id }) => {
   }))
 
   return (
-    <Flex flexDirection="column">
+    <Flex flexDirection="column" pt={5} mb={5}>
       <Card as="form" mb={3} onSubmit={handleSubmit(onSave)}>
         <Card.Header>Region Details</Card.Header>
         <Card.Body flexDirection="column">
@@ -123,9 +130,17 @@ const Regions = ({ id }) => {
               </Box>
             </Flex>
           ) : (
-            <Box width={1 / 2}>
-              <Input inline mb={3} name="name" label="Name" ref={register} />
+            <Box width={1 / 2} ml={3}>
+              <Input
+                start={true}
+                inline
+                mb={3}
+                name="name"
+                label="Name"
+                ref={register}
+              />
               <Select
+                start={true}
                 inline
                 mb={3}
                 label="Currency"
@@ -134,9 +149,11 @@ const Regions = ({ id }) => {
                 ref={register}
               />
               <Input
+                start={true}
                 inline
                 mb={3}
                 type="number"
+                placeholder="0.25"
                 step="0.01"
                 min={0}
                 max={1}
@@ -145,29 +162,31 @@ const Regions = ({ id }) => {
                 ref={register}
               />
               <Input
+                start={true}
                 inline
                 mb={3}
+                placeholder="1000"
                 name="tax_code"
                 label="Tax Code"
                 ref={register}
               />
-              <TagDropdown
+              <MultiSelect
                 inline
+                start={true}
                 mb={3}
-                label={"Countries"}
-                toggleText="Select Countries"
-                values={countries}
-                onChange={handleChange}
+                label="Countries"
+                selectOptions={{ hasSelectAll: false }}
                 options={countryOptions}
-                optionRender={o => <span>{o.label}</span>}
-                valueRender={o => <span>{o.value}</span>}
+                value={countries}
+                onChange={handleChange}
               />
               {!!paymentOptions.length && (
                 <TagDropdown
                   inline
+                  start={true}
                   mb={3}
                   label={"Payment Providers"}
-                  toggleText="Select Providers"
+                  toggleText="Select"
                   values={paymentProviders}
                   onChange={handlePaymentChange}
                   options={paymentOptions}
@@ -178,9 +197,10 @@ const Regions = ({ id }) => {
               {!!fulfillmentOptions.length && (
                 <TagDropdown
                   inline
+                  start={true}
                   mb={3}
                   label={"Fulfillment Providers"}
-                  toggleText="Select Providers"
+                  toggleText="Select"
                   values={fulfillmentProviders}
                   onChange={handleFulfillmentChange}
                   options={fulfillmentOptions}
@@ -192,7 +212,7 @@ const Regions = ({ id }) => {
           )}
         </Card.Body>
         <Card.Footer px={3} justifyContent="flex-end">
-          <Button type="submit" variant="primary">
+          <Button type="submit" variant="primary" variant="cta">
             Save
           </Button>
         </Card.Footer>

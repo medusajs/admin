@@ -28,8 +28,10 @@ const DiscountIndex = () => {
 
   return (
     <>
-      <Flex>
-        <Text mb={4}>Discounts</Text>
+      <Flex pt={5}>
+        <Text mb={4} fontSize={20} fontWeight="bold">
+          Discounts
+        </Text>
         <Box ml="auto" />
         <Button onClick={() => navigate(`/a/discounts/new`)} variant={"cta"}>
           New discount

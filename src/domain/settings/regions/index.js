@@ -13,7 +13,7 @@ const Regions = () => {
   const { regions, isLoading } = useMedusa("regions")
 
   return (
-    <Flex flexDirection="column" mb={4}>
+    <Flex flexDirection="column" mb={5}>
       <Card>
         <Card.Header
           action={{
@@ -39,6 +39,7 @@ const Regions = () => {
           ) : (
             regions.map(r => (
               <Flex
+                key={r._id}
                 py={3}
                 px={3}
                 width={1}

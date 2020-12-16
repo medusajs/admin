@@ -16,26 +16,12 @@ const DropdownContainer = styled(Box)`
   position: absolute;
   background-color: #fefefe;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  // box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1);
   z-index: 1;
-  top: 0;
+  top: 10px;
   border-radius: 5px;
   ${props => (props.leftAlign ? "left" : "right")}: 0;
-
-  &::before {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 0;
-    bottom: 100%;
-    right: 0.4rem;
-    border: 0.4rem solid transparent;
-    border-top: none;
-    color: #fefefe;
-
-    border-bottom-color: #fefefe;
-    filter: drop-shadow(0px 8px 16px 0px rgba(0, 0, 0, 0.2));
-  }
 `
 
 const Scrollable = styled(Box)`
@@ -49,6 +35,10 @@ const DropdownItem = styled.a`
   display: block;
   text-align: left;
   cursor: pointer;
+
+  &:hover {
+    background: #f1f3f5;
+  }
 `
 
 const StyledInput = styled.input`
@@ -113,6 +103,7 @@ const Dropdown = ({
     <div style={{ position: "relative" }}>
       <Button
         sx={sx}
+        minHeight="33px"
         alignItems="center"
         variant="primary"
         onClick={() => handleOpen()}

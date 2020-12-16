@@ -43,7 +43,7 @@ const CustomerDetail = ({ id }) => {
     : "N / A"
 
   return (
-    <Flex flexDirection="column" mb={5}>
+    <Flex flexDirection="column" mb={5} pt={5}>
       <Card mb={2}>
         <Card.Header>{customer._id}</Card.Header>
         <Box>

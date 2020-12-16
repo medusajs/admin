@@ -27,6 +27,8 @@ const StyledLabel = styled.div`
 
 const Container = styled(Flex)`
   ${Typography.Base}
+  max-width: 350px;
+  flex: 50% 0 0;
   ${props =>
     props.inline &&
     `
@@ -37,10 +39,10 @@ const Container = styled(Flex)`
 
 const TagContainer = styled(Box)`
   display: flex;
+  flex-wrap: wrap;
   min-width: 200px;
-  max-width: 270px;
-  min-height: 28px;
-  margin-right: 10px;
+  width: 100%;
+  min-height: 33px;
   overflow: auto;
   padding-left: 5px;
 `
@@ -67,18 +69,6 @@ const TagBox = styled(Box)`
 
   &:last-of-type {
     margin-right: 5px;
-  }
-`
-
-const StyledInput = styled.input`
-  ${Typography.Base}
-  width: 100%;
-  height: 100%;
-  background-color: transparent;
-  border: none;
-  padding: 8px;
-  &:focus {
-    outline: none;
   }
 `
 
@@ -197,6 +187,7 @@ const TagInput = ({
     <Flex
       alignItems={inline && "center"}
       flexDirection={inline ? "row" : "column"}
+      width={props.width}
       {...props}
     >
       {label && (
@@ -208,36 +199,39 @@ const TagInput = ({
           <StyledLabel inline={inline}>{label}</StyledLabel>
         </Label>
       )}
-      <Container
-        fontSize={1}
-        alignItems="center"
-        className={isFocused ? "tag__focus" : ""}
-        focused={isFocused}
-        style={{ position: "relative" }}
-      >
-        <TagContainer variant={"forms.input"}>
-          {values.map((v, index) => (
-            <TagBox
-              key={index}
-              lineHeight="1.5"
-              my={1}
-              ml={1}
-              variant="badge"
-              highlighted={index === highlighted}
-            >
-              <TextWrapper>{handleValueRender(v)}</TextWrapper>
-              <Remove onClick={() => handleRemove(index)}>&times;</Remove>
-            </TagBox>
-          ))}
-        </TagContainer>
-        <Dropdown toggleText={toggleText}>
+      <Flex flexDirection="row" flex={"100% 0 0"}>
+        <Container
+          fontSize={1}
+          alignItems="center"
+          className={isFocused ? "tag__focus" : ""}
+          focused={isFocused}
+          // flex={"50% 0 0"}
+          style={{ position: "relative" }}
+        >
+          <TagContainer variant={"forms.input"} p={2}>
+            {values.map((v, index) => (
+              <TagBox
+                key={index}
+                lineHeight="1.5"
+                mb={1}
+                ml={1}
+                variant="badge"
+                highlighted={index === highlighted}
+              >
+                <TextWrapper>{handleValueRender(v)}</TextWrapper>
+                <Remove onClick={() => handleRemove(index)}>&times;</Remove>
+              </TagBox>
+            ))}
+          </TagContainer>
+        </Container>
+        <Dropdown toggleText={toggleText} sx={{ marginLeft: "10px" }}>
           {availableOptions.map(option => (
             <div onClick={() => onChange([option, ...values])}>
               {handleOptionRender(option)}
             </div>
           ))}
         </Dropdown>
-      </Container>
+      </Flex>
     </Flex>
   )
 }
