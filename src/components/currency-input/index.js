@@ -27,6 +27,7 @@ const StyledInput = styled.input`
   background-color: transparent;
   border: none;
   padding: 8px;
+  padding-left: 15px;
   &:focus {
     outline: none;
   }
@@ -112,6 +113,8 @@ const CurrencyInput = React.forwardRef(
           variant="forms.input"
         >
           <CurrencyBox
+            textAlign="center"
+            width={"3.3rem"}
             mr={edit && currencyOptions.length > 0 && "28px"}
             lineHeight="1.5"
             my={1}

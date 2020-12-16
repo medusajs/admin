@@ -63,22 +63,47 @@ const Variants = ({
   const handleSubmit = e => {
     e.preventDefault()
 
-    const payload = variants.map(v => ({
-      _id: v._id,
-      title: v.title,
-      sku: v.sku || undefined,
-      ean: v.ean || undefined,
-      inventory_quantity: v.inventory_quantity,
-      prices: v.prices.map(price => ({
-        amount: parseFloat(price.amount),
-        currency_code: price.region_id ? undefined : price.currency_code,
-        region_id: price.region_id,
-      })),
-      options: v.options.map(o => ({
-        value: o.value,
-        option_id: o.option_id,
-      })),
-    }))
+    const payload = variants.map(v => {
+      let cleanPrices = v.prices.map(rawPrice => {
+        if (typeof rawPrice.amount === "undefined" || rawPrice.amount === "") {
+          return null
+        }
+
+        const p = {
+          amount: parseFloat(rawPrice.amount),
+          currency_code: rawPrice.region_id
+            ? undefined
+            : rawPrice.currency_code,
+          region_id: rawPrice.region_id,
+        }
+
+        if (
+          typeof rawPrice.sale_amount !== "undefined" &&
+          rawPrice.sale_price !== ""
+        ) {
+          const amount = parseFloat(rawPrice.sale_amount)
+          if (!isNaN(amount)) {
+            p.sale_amount = amount
+          }
+        }
+
+        return p
+      })
+      cleanPrices = cleanPrices.filter(Boolean)
+
+      return {
+        _id: v._id,
+        title: v.title,
+        sku: v.sku || undefined,
+        ean: v.ean || undefined,
+        prices: cleanPrices,
+        inventory_quantity: v.inventory_quantity,
+        options: v.options.map(o => ({
+          value: o.value,
+          option_id: o.option_id,
+        })),
+      }
+    })
 
     onSubmit({ variants: payload })
   }

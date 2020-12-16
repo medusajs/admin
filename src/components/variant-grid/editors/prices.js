@@ -43,6 +43,19 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
     e.preventDefault()
   }
 
+  const handleSalePriceChange = (index, e) => {
+    const element = e.target
+    const value = element.value
+
+    const newPrices = [...prices]
+    newPrices[index] = {
+      ...newPrices[index],
+      sale_amount: value,
+    }
+
+    setPrices(newPrices)
+  }
+
   const handlePriceChange = (index, e) => {
     const element = e.target
     const value = element.value
@@ -57,7 +70,29 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
   }
 
   const onSave = () => {
-    onChange(prices)
+    let cleanPrices = prices.map(p => {
+      if (typeof p.amount === "undefined" || p.amount === "") {
+        return null
+      }
+
+      const clean = {
+        amount: parseFloat(p.amount),
+        currency_code: p.region_id ? undefined : p.currency_code,
+        region_id: p.region_id,
+      }
+
+      if (typeof p.sale_amount !== "undefined" && p.sale_price !== "") {
+        const amount = parseFloat(p.sale_amount)
+        if (!isNaN(amount)) {
+          clean.sale_amount = amount
+        }
+      }
+
+      return clean
+    })
+    cleanPrices = cleanPrices.filter(Boolean)
+
+    onChange(cleanPrices)
     setShow(false)
   }
 
@@ -75,6 +110,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
         region: "",
         currency_code: currencyOptions[0].value,
         amount: "",
+        sale_amount: "",
       },
     ]
 
@@ -103,9 +139,16 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
               <Text fontSize={3}>Prices</Text>
             </Modal.Header>
             <Modal.Content flexDirection="column">
+              <Flex mb={3}>
+                <Text width={150}>Amount</Text>
+                <Text ml={3} width={120}>
+                  Sale Amount (optional)
+                </Text>
+              </Flex>
               {prices.map((p, index) => (
                 <Flex mb={3} key={`${p.currency_code}${index}`}>
                   <CurrencyInput
+                    width={"150px"}
                     edit={p.edit}
                     currency={p.currency_code}
                     currencyOptions={currencyOptions}
@@ -115,11 +158,15 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
                     }
                     onChange={e => handlePriceChange(index, e)}
                   />
-                  <Button
-                    ml={2}
-                    onClick={() => removePrice(index)}
-                    variant="primary"
-                  >
+                  <Input
+                    width={"120px"}
+                    type="number"
+                    mx={3}
+                    placeholder="Sale Amount"
+                    onChange={e => handleSalePriceChange(index, e)}
+                    value={p.sale_amount}
+                  />
+                  <Button onClick={() => removePrice(index)} variant="primary">
                     Remove
                   </Button>
                 </Flex>
