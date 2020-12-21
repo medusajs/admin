@@ -44,6 +44,15 @@ const StyledLabel = styled.div`
       : `
   padding-bottom: 10px;
   `}
+  
+  ${props =>
+    props.required &&
+    `
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+  `}
 `
 
 const CurrencyInput = React.forwardRef(
@@ -60,6 +69,7 @@ const CurrencyInput = React.forwardRef(
       removable,
       onRemove,
       value,
+      required,
       ...props
     },
     ref
@@ -101,7 +111,9 @@ const CurrencyInput = React.forwardRef(
             htmlFor={name}
             display={inline && "inline !important"}
           >
-            <StyledLabel inline={inline}>{label}</StyledLabel>
+            <StyledLabel required={required} inline={inline}>
+              {label}
+            </StyledLabel>
           </Label>
         )}
         <Flex
