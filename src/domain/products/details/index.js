@@ -34,12 +34,14 @@ const ProductDetail = ({ id }) => {
 
   const handleDetailsSubmit = data => {
     update(data).then(() => {
+      refresh({ id })
       toaster("Successfully updated the prouct", "success")
     })
   }
 
   const handleVariantsSubmit = data => {
     update(data).then(() => {
+      refresh({ id })
       toaster("Successfully updated the prouct", "success")
     })
   }

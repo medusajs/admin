@@ -35,9 +35,9 @@ const getColumns = (product, edit) => {
       header: o.title,
       field: "options",
       editor: "option",
-      option_id: o._id,
+      option_id: o.id,
       formatter: variantOptions => {
-        return (variantOptions.find(val => val.option_id === o._id) || {}).value
+        return (variantOptions.find(val => val.option_id === o.id) || {}).value
       },
     }))
 
@@ -260,6 +260,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
                   }
                   head={c.headCol}
                 >
+                  {/* {console.log(v.)} */}
                   {!(selectedCell.row === row && selectedCell.col === col) &&
                     getDisplayValue(v, c, isDraggedOver({ col, row }))}
                   {selectedCell.row === row && selectedCell.col === col && (
@@ -277,7 +278,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
                   )}
                 </Td>
               ))}
-              {onEdit && (
+              {onEdit ? (
                 <Box
                   as="td"
                   sx={{
@@ -301,6 +302,12 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
                     Edit
                   </Button>
                 </Box>
+              ) : (
+                <Box
+                  as="td"
+                  height="24px"
+                  sx={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}
+                />
               )}
             </tr>
           ))}

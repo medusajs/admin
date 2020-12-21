@@ -142,7 +142,7 @@ const NewProduct = ({}) => {
     if (store && prices.length === 0) {
       setPrices([
         {
-          currency_code: store.default_currency,
+          currency_code: store.default_currency_code,
           amount: "",
           edit: false,
         },
@@ -299,7 +299,7 @@ const NewProduct = ({}) => {
   const submit = data => {
     const product = parseProduct(data)
     Medusa.products.create(product).then(({ data }) => {
-      navigate(`/a/products/${data.product._id}`)
+      navigate(`/a/products/${data.product.id}`)
     })
   }
 
@@ -424,6 +424,7 @@ const NewProduct = ({}) => {
                 <Spinner />
               ) : (
                 <Flex flexDirection="column">
+                  {console.log("Prices: ", prices)}
                   {prices.map((p, index) => (
                     <Flex mb={3} key={`${p.currency_code}${index}`}>
                       <Box>
@@ -431,7 +432,7 @@ const NewProduct = ({}) => {
                           edit={p.edit}
                           inline
                           width="600px"
-                          currency={p.currency_code}
+                          currency={p.currency_code.toUpperCase()}
                           currencyOptions={currencyOptions}
                           value={p.amount}
                           onCurrencySelected={currency =>

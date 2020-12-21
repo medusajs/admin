@@ -59,12 +59,14 @@ const AccountDetails = () => {
 
   useEffect(() => {
     if (isLoading) return
-    setValue("default_currency", store.default_currency)
+    setValue("default_currency_code", store.default_currency_code.toUpperCase())
     setCurrencies(
-      store.currencies.map(c => ({
-        value: c,
-        label: c,
-      }))
+      store.currencies
+        ? store.currencies.map(c => ({
+            value: c,
+            label: c,
+          }))
+        : []
     )
   }, [store, isLoading])
 
@@ -81,7 +83,7 @@ const AccountDetails = () => {
 
   const onSubmit = data => {
     update({
-      default_currency: data.default_currency,
+      default_currency_code: data.default_currency_code,
       currencies: selectedCurrencies.map(c => c.value),
     })
   }
@@ -113,7 +115,7 @@ const AccountDetails = () => {
                 <Select
                   width="300px"
                   label="Default store currency"
-                  name="default_currency"
+                  name="default_currency_code"
                   options={options}
                   ref={register}
                 />

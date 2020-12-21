@@ -46,7 +46,10 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
   const handleOnSubmit = data => {
     const updateData = {
       ...data,
-      thumbnail,
+    }
+
+    if (thumbnail) {
+      updateData.thumbnail = thumbnail
     }
 
     onSubmit(updateData)

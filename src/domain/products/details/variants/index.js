@@ -29,7 +29,7 @@ const Variants = ({
       ...v,
       options: v.options.map(o => ({
         ...o,
-        title: product.options.find(po => po._id === o.option_id).title,
+        title: product.options.find(po => po.id === o.option_id).title,
       })),
     }))
 
@@ -46,7 +46,7 @@ const Variants = ({
             options: product.options.map(o => ({
               value: "",
               name: o.title,
-              option_id: o._id,
+              option_id: o.id,
             })),
             prices: [],
           },
@@ -74,7 +74,10 @@ const Variants = ({
           currency_code: rawPrice.region_id
             ? undefined
             : rawPrice.currency_code,
-          region_id: rawPrice.region_id,
+        }
+
+        if (rawPrice.region_id) {
+          p.region_id = rawPrice.region_id
         }
 
         if (
@@ -92,7 +95,7 @@ const Variants = ({
       cleanPrices = cleanPrices.filter(Boolean)
 
       return {
-        _id: v._id,
+        id: v.id,
         title: v.title,
         sku: v.sku || undefined,
         ean: v.ean || undefined,
@@ -120,7 +123,7 @@ const Variants = ({
   }
 
   const handleDeleteVariant = () => {
-    variantMethods.delete(editVariant._id)
+    variantMethods.delete(editVariant.id)
     setEditVariant(null)
   }
 

@@ -154,7 +154,7 @@ const ProductIndex = () => {
                   key={p._id}
                   onClick={() =>
                     navigate(
-                      `/a/products${p.is_giftcard ? "/gift-card" : ""}/${p._id}`
+                      `/a/products${p.is_giftcard ? "/gift-card" : ""}/${p.id}`
                     )
                   }
                 >
