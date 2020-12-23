@@ -70,6 +70,7 @@ const CurrencyInput = React.forwardRef(
       onRemove,
       value,
       required,
+      fontSize,
       ...props
     },
     ref
@@ -109,9 +110,13 @@ const CurrencyInput = React.forwardRef(
             flex={"30% 0 0"}
             maxWidth={"200px"}
             htmlFor={name}
-            display={inline && "inline !important"}
+            display={props.start ? "flex" : inline && "inline !important"}
           >
-            <StyledLabel required={required} inline={inline}>
+            <StyledLabel
+              style={fontSize && { fontSize }}
+              required={required}
+              inline={inline}
+            >
               {label}
             </StyledLabel>
           </Label>
