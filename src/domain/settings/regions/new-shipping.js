@@ -42,17 +42,17 @@ const NewShipping = ({
     const [providerIndex, optionIndex] = data.fulfillment_option.split(".")
     const { provider_id, options } = fOptions[providerIndex]
 
-    const reqs = Object.entries(data.requirements).reduce(
-      (acc, [key, value]) => {
+    let reqs = []
+    if (data.requirements) {
+      reqs = Object.entries(data.requirements).reduce((acc, [key, value]) => {
         if (parseInt(value) && parseInt(value) > 0) {
           acc.push({ type: key, value })
           return acc
         } else {
           return acc
         }
-      },
-      []
-    )
+      }, [])
+    }
 
     const payload = {
       name: data.name,
