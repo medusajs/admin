@@ -30,6 +30,26 @@ import Spinner from "../../components/spinner"
 import Button from "../../components/button"
 import Filter from "./filter-dropdown"
 
+const TabButton = styled.button`
+  border-radius: 0pt;
+  border: none;
+  width: 120px;
+  height: 30px;
+  font-size: 12px;
+  background-color: #fefefe;
+
+  ${props =>
+    props.active &&
+    `
+    border-bottom: 1px solid black;
+  `}
+
+  p {
+    cursor: pointer;
+    display: inline-block;
+  }
+`
+
 const OrderNumCell = styled(Text)`
   color: #006fbb;
   z-index: 1000;
@@ -76,6 +96,8 @@ const OrderIndex = ({}) => {
     document.body.removeChild(tempInput)
     toaster("Copied!", "success")
   }
+
+  const [activeTab, setActiveTab] = useState("new")
 
   const searchRef = useRef(null)
   const [query, setQuery] = useState("")
@@ -308,6 +330,20 @@ const OrderIndex = ({}) => {
           setPaymentFilter={setPaymentFilter}
           setFulfillmentFilter={setFulfillmentFilter}
         />
+      </Flex>
+      <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
+        <TabButton active={true}>
+          <p>New</p>
+        </TabButton>
+        <TabButton>
+          <p>Returns</p>
+        </TabButton>
+        <TabButton>
+          <p>Requires action</p>
+        </TabButton>
+        <TabButton>
+          <p>All</p>
+        </TabButton>
       </Flex>
       {isLoading && !hasCache ? (
         <Flex
