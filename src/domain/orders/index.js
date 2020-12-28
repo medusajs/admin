@@ -33,16 +33,17 @@ import Filter from "./filter-dropdown"
 const TabButton = styled.button`
   border-radius: 0pt;
   border: none;
-  width: 120px;
   height: 30px;
-  font-size: 12px;
+  font-size: 14px;
   background-color: #fefefe;
+  text-align: left;
+  margin-right: 15px;
 
   ${props =>
     props.active &&
     `
     border-bottom: 1px solid black;
-    font-weight: bold;
+    // font-weight: bold;
   `}
 
   p {
