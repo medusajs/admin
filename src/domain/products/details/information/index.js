@@ -12,8 +12,13 @@ import ImageUpload from "../../../../components/image-upload"
 import Spinner from "../../../../components/spinner"
 
 const Information = ({ isLoading, product, onSubmit, onDelete }) => {
-  const { register, reset, handleSubmit } = useForm()
+  const { register, reset, handleSubmit, watch } = useForm()
   const [thumbnail, setThumbnail] = useState("")
+  const [saveButtonDisabled, setSaveButtonDisabled] = useState(true)
+
+  const titleWatch = watch("title")
+  const descriptionWatch = watch("description")
+  const thumbnailWatch = watch("thumbnail")
 
   useEffect(() => {
     if (product) {
@@ -23,8 +28,23 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
         description: product.description,
       })
       setThumbnail(product.thumbnail)
+      setSaveButtonDisabled(true)
     }
   }, [product])
+
+  useEffect(() => {
+    if (product) {
+      if (
+        titleWatch != product.title ||
+        descriptionWatch != product.description ||
+        thumbnailWatch != product.thumbnail
+      ) {
+        setSaveButtonDisabled(false)
+      } else {
+        setSaveButtonDisabled(true)
+      }
+    }
+  }, [titleWatch, descriptionWatch, thumbnailWatch])
 
   const dropdownOptions = [
     {
@@ -91,7 +111,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
         </Flex>
       </Card.Body>
       <Card.Footer px={3} justifyContent="flex-end">
-        <Button variant={"cta"} type="submit">
+        <Button variant={"cta"} type="submit" disabled={saveButtonDisabled}>
           Save
         </Button>
       </Card.Footer>
