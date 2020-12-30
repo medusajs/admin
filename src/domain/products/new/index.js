@@ -98,8 +98,15 @@ const NewProduct = ({}) => {
   const [images, setImages] = useState([])
   const [prices, setPrices] = useState([])
   const [currencyOptions, setCurrencyOptions] = useState([])
-  const { store, isLoading } = useMedusa("store")
-  const { register, handleSubmit, reset, setValue } = useForm()
+  const { store, isLoading, toaster } = useMedusa("store")
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    errors,
+    clearErrors,
+  } = useForm()
 
   /**
    * Will be called everytime an option has changed. It will then recalculate
@@ -296,11 +303,25 @@ const NewProduct = ({}) => {
     })
   }
 
-  const submit = data => {
+  const submit = async data => {
     const product = parseProduct(data)
-    Medusa.products.create(product).then(({ data }) => {
+
+    if (!variants.length) {
+      toaster(
+        `Missing variants. Consider using the simple product, if only one variant should exists`,
+        "error"
+      )
+      return
+    }
+
+    try {
+      const { data } = await Medusa.products.create(product)
       navigate(`/a/products/${data.product.id}`)
-    })
+    } catch (error) {
+      console.log(error.response)
+      const errorData = error.response.data.message
+      toaster(`${errorData[0].message}`, "error")
+    }
   }
 
   const onImageChange = e => {
@@ -316,6 +337,18 @@ const NewProduct = ({}) => {
     })
   }
 
+  useEffect(() => {
+    if (Object.keys(errors).length) {
+      const requiredErrors = Object.keys(errors).map(err => {
+        if (errors[err].type === "required") {
+          return err
+        }
+      })
+
+      toaster(`Missing info: ${requiredErrors.join(", ")}`, "error")
+    }
+  }, [errors])
+
   return (
     <Flex as="form" pb={6} onSubmit={handleSubmit(submit)} pt={5}>
       <Flex mx="auto" width="100%" maxWidth="750px" flexDirection="column">
@@ -328,24 +361,33 @@ const NewProduct = ({}) => {
               label="Name"
               placeholder="Jacket, sunglasses, etc."
               name="title"
-              ref={register({ required: true })}
+              ref={register({ required: "Title is required" })}
             />
             <TextArea
               required={true}
               label="Description"
               placeholder="Short description of the product"
               name="description"
-              ref={register({ required: true })}
+              ref={register({ required: "Description is required" })}
             />
             <Flex mt={4} alignItems="center">
               <Pill
-                onClick={() => setHasVariants(false)}
+                onClick={() => {
+                  clearErrors()
+                  setHasVariants(false)
+                }}
                 active={!hasVariants}
                 mr={4}
               >
                 Simple Product
               </Pill>
-              <Pill onClick={() => setHasVariants(true)} active={hasVariants}>
+              <Pill
+                onClick={() => {
+                  setHasVariants(true)
+                  clearErrors()
+                }}
+                active={hasVariants}
+              >
                 Product with Variants
               </Pill>
             </Flex>
@@ -431,6 +473,7 @@ const NewProduct = ({}) => {
                         <CurrencyInput
                           edit={p.edit}
                           inline
+                          required={true}
                           width="600px"
                           currency={p.currency_code.toUpperCase()}
                           currencyOptions={currencyOptions}
@@ -459,27 +502,30 @@ const NewProduct = ({}) => {
                   <Input
                     inline
                     mt={4}
+                    required={true}
                     placeholder={"SUN-G, JK1234, etc."}
                     name={`sku`}
                     label="Stock Keeping Unit (SKU)"
-                    ref={register}
+                    ref={register({ required: true })}
                   />
                   <Input
                     inline
                     mt={4}
+                    required={true}
                     placeholder={"1231231231234, etc."}
                     name={`ean`}
                     label="Barcode (EAN)"
-                    ref={register}
+                    ref={register({ required: true })}
                   />
                   <Input
                     inline
                     mt={4}
+                    required={true}
                     type="number"
                     placeholder={"0-∞"}
                     name={`inventory_quantity`}
                     label="Quantity in stock"
-                    ref={register}
+                    ref={register({ required: true })}
                   />
                 </Flex>
               )}

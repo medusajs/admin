@@ -12,11 +12,15 @@ import Select from "../../../components/select"
 import Medusa from "../../../services/api"
 
 const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
-  const { control, errors, register, setValue, reset, handleSubmit } = useForm()
-  const { fields, append, remove } = useFieldArray({
+  const {
     control,
-    name: "requirements",
-  })
+    errors,
+    register,
+    setValue,
+    reset,
+    handleSubmit,
+    getValues,
+  } = useForm()
 
   const {
     fields: metaFields,
@@ -43,17 +47,22 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       )
     }
 
-    reset(option)
-
     if (shippingOption.requirements.length) {
-      shippingOption.requirements.map((r, index) => {
-        register({ name: `requirements.${index}.value` })
-        register({ name: `requirements.${index}.type` })
-
-        setValue(`requirements.${index}.value`, r.value)
-        setValue(`requirements.${index}.type`, r.type)
-      })
+      const minSubtotal = shippingOption.requirements.find(
+        req => req.type === "min_subtotal"
+      )
+      if (minSubtotal) {
+        option.requirements.min_subtotal = minSubtotal.value
+      }
+      const maxSubtotal = shippingOption.requirements.find(
+        req => req.type === "max_subtotal"
+      )
+      if (maxSubtotal) {
+        option.requirements.max_subtotal = maxSubtotal.value
+      }
     }
+
+    reset(option)
 
     if (!_.isEmpty(shippingOption.metadata)) {
       let index = 0
@@ -80,13 +89,25 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   }
 
   const handleSave = data => {
+    const reqs = Object.entries(data.requirements).reduce(
+      (acc, [key, value]) => {
+        if (parseInt(value) && parseInt(value) > 0) {
+          acc.push({ type: key, value })
+          return acc
+        } else {
+          return acc
+        }
+      },
+      []
+    )
+
     const payload = {
       name: data.name,
       price: {
         type: "flat_rate",
         amount: data.price.amount,
       },
-      requirements: data.requirements || [],
+      requirements: reqs,
     }
 
     if (data.metadata) {
@@ -105,8 +126,6 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       onClick()
     })
   }
-
-  console.log(errors)
 
   return (
     <Modal onClick={onClick}>
@@ -132,51 +151,38 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
             </Text>
             <CurrencyInput
               ref={register}
-              label={"price"}
               name={"price.amount"}
               currency={region.currency_code}
             />
           </Box>
           <Flex mb={4} flexDirection="column">
             <Text fontSize={1} fontWeight={300} mb={1}>
-              Requirement
+              Requirements
             </Text>
-            {fields.map((_, index) => (
-              <Flex key={index} justifyContent="space-between">
-                <Select
-                  mr={3}
-                  name={`requirements.${index}.type`}
-                  options={[
-                    {
-                      label: "Minimum subtotal",
-                      value: "min_subtotal",
-                    },
-                    {
-                      label: "Maximum subtotal",
-                      value: "max_subtotal",
-                    },
-                  ]}
-                  ref={register()}
-                />
-                <CurrencyInput
-                  height={"28px"}
-                  name={`requirements.${index}.value`}
-                  currency={region.currency_code}
-                  ref={register()}
-                />
-                <Text onClick={() => remove(0)} sx={{ cursor: "pointer" }}>
-                  &times;
-                </Text>
-              </Flex>
-            ))}
-            {fields.length === 0 && (
-              <Button
-                onClick={() => append({ type: "min_subtotal", value: "" })}
-                variant="primary"
-              >
-                + Add requirement
-              </Button>
-            )}
+            <Flex justifyContent="space-between" mt={2} width="100%">
+              <CurrencyInput
+                inline
+                start={true}
+                width="100%"
+                fontSize="12px"
+                label="Min. subtotal"
+                name={`requirements.min_subtotal`}
+                currency={region.currency_code}
+                ref={register}
+              />
+            </Flex>
+            <Flex justifyContent="space-between" mt={2} width="100%">
+              <CurrencyInput
+                inline
+                width="100%"
+                start={true}
+                label="Max. subtotal"
+                fontSize="12px"
+                name={`requirements.max_subtotal`}
+                currency={region.currency_code}
+                ref={register}
+              />
+            </Flex>
           </Flex>
           <Flex mb={4} flexDirection="column">
             <Text fontSize={1} fontWeight={300} mb={1}>
