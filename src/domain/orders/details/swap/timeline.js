@@ -71,7 +71,13 @@ export default ({
   const { store, isLoading, toaster } = useMedusa("store")
 
   const payStatusColors = decideBadgeColor(event.raw.payment_status)
-  const returnStatusColors = decideBadgeColor(event.raw.return.status)
+  const returnStatusColors =
+    event.raw.return && event.raw.return.status
+      ? decideBadgeColor(event.raw.return.status)
+      : {
+          bgColor: "#e3e8ee",
+          color: "#4f566b",
+        }
   const fulfillStatusColors = decideBadgeColor(event.raw.fulfillment_status)
 
   const actions = []
