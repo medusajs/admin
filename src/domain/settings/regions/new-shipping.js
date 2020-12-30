@@ -11,6 +11,7 @@ import Spinner from "../../../components/spinner"
 
 import useMedusa from "../../../hooks/use-medusa"
 import Medusa from "../../../services/api"
+import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 
 const NewShipping = ({
   isReturn,
@@ -73,7 +74,9 @@ const NewShipping = ({
 
     return acc.concat(
       filtered.map((option, o) => ({
-        label: `${option.id} via ${provider.provider_id}`,
+        label: `${option.id} via ${
+          fulfillmentProvidersMapper(provider.provider_id).label
+        }`,
         value: `${p}.${o}`,
       }))
     )
@@ -83,8 +86,10 @@ const NewShipping = ({
     ? []
     : shipping_profiles.map(p => ({
         label: p.name,
-        value: p._id,
+        value: p.id,
       }))
+
+  console.log(fulfillmentOptions)
 
   return (
     <Modal onClick={onClick}>
@@ -94,11 +99,18 @@ const NewShipping = ({
         </Modal.Header>
         <Modal.Content flexDirection="column">
           <Box mb={4}>
-            <Input mt={2} mb={3} label="Name" name="name" ref={register} />
+            <Input
+              mt={2}
+              mb={3}
+              label="Name"
+              name="name"
+              ref={register({ required: true })}
+              required={true}
+            />
           </Box>
           {!isReturn && (
             <Box mb={4}>
-              <Text mb={3}>Shipping Profile</Text>
+              <Text mb={3}>Shipping profile</Text>
               {isProfilesLoading ? (
                 <Flex
                   fmlexDirection="column"
@@ -120,7 +132,7 @@ const NewShipping = ({
             </Box>
           )}
           <Box mb={4}>
-            <Text mb={3}>Fulfillment Method</Text>
+            <Text mb={3}>Fulfillment method</Text>
             <Select
               name="fulfillment_option"
               options={options}
@@ -132,7 +144,7 @@ const NewShipping = ({
             <CurrencyInput
               ref={register}
               name={"price.amount"}
-              currency={region.currency_code}
+              currency={region.currency_code.toUpperCase()}
             />
           </Box>
           {!isReturn && (

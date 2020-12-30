@@ -23,6 +23,15 @@ const StyledLabel = styled.div`
       : `
   padding-bottom: 10px;
   `}
+  
+  ${props =>
+    props.required &&
+    `
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+  `}
 `
 
 const Container = styled(Flex)`
@@ -81,6 +90,7 @@ const TagInput = ({
   valueRender,
   optionRender,
   onChange,
+  required,
   values,
   ...props
 }) => {
@@ -196,7 +206,9 @@ const TagInput = ({
           maxWidth={"200px"}
           display={props.start ? "flex" : inline && "inline !important"}
         >
-          <StyledLabel inline={inline}>{label}</StyledLabel>
+          <StyledLabel required={required} inline={inline}>
+            {label}
+          </StyledLabel>
         </Label>
       )}
       <Flex flexDirection="row" flex={"100% 0 0"}>
@@ -213,7 +225,6 @@ const TagInput = ({
               <TagBox
                 key={index}
                 lineHeight="1.5"
-                mb={1}
                 ml={1}
                 variant="badge"
                 highlighted={index === highlighted}

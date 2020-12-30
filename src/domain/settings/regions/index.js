@@ -8,6 +8,8 @@ import Input from "../../../components/input"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
+import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
+import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 
 const Regions = () => {
   const { regions, isLoading } = useMedusa("regions")
@@ -39,7 +41,7 @@ const Regions = () => {
           ) : (
             regions.map(r => (
               <Flex
-                key={r._id}
+                key={r.id}
                 py={3}
                 px={3}
                 width={1}
@@ -53,23 +55,27 @@ const Regions = () => {
               >
                 <Box>
                   <Box width={1}>
-                    {r.name} ({r.countries.join(", ")})
+                    {r.name} ({r.countries.map(c => c.display_name).join(", ")})
                   </Box>
                   <Box width={1} mt={1}>
                     <Text color="gray">
                       Payment providers:{" "}
-                      {r.payment_providers.join(", ") || "not configured"}
+                      {r.payment_providers
+                        .map(pp => paymentProvidersMapper(pp.id).label)
+                        .join(", ") || "not configured"}
                     </Text>
                     <Text color="gray">
                       Fulfillment providers:{" "}
-                      {r.fulfillment_providers.join(", ") || "not configured"}
+                      {r.fulfillment_providers
+                        .map(fp => fulfillmentProvidersMapper(fp.id).label)
+                        .join(", ") || "not configured"}
                     </Text>
                   </Box>
                 </Box>
                 <Box>
                   <Button
                     variant="primary"
-                    onClick={() => navigate(`/a/settings/regions/${r._id}`)}
+                    onClick={() => navigate(`/a/settings/regions/${r.id}`)}
                   >
                     Edit
                   </Button>

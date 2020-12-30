@@ -20,6 +20,15 @@ const StyledLabel = styled.div`
       : `
   padding-bottom: 10px;
   `}
+  
+  ${props =>
+    props.required &&
+    `
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+  `}
 `
 
 const Select = React.forwardRef(
@@ -33,6 +42,7 @@ const Select = React.forwardRef(
       value,
       onChange,
       inline,
+      required,
       ...props
     },
     ref
@@ -50,7 +60,9 @@ const Select = React.forwardRef(
             htmlFor={name}
             display={props.start ? "flex" : inline && "inline !important"}
           >
-            <StyledLabel inline={inline}>{label}</StyledLabel>
+            <StyledLabel required={required} inline={inline}>
+              {label}
+            </StyledLabel>
           </Label>
         )}
         <StyledSelect

@@ -57,6 +57,11 @@ export default {
       const path = `/admin/store/currencies/${code}`
       return medusaRequest("DELETE", path)
     },
+
+    listPaymentProviders() {
+      const path = `/admin/store/payment-providers`
+      return medusaRequest("GET", path)
+    },
   },
   shippingProfiles: {
     list() {

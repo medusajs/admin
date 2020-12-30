@@ -13,10 +13,10 @@ import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import TagDropdown from "../../../components/tag-dropdown"
 
-import { currencies as currencyData } from "../../../utils/currencies"
 import { countries as countryData } from "../../../utils/countries"
 
 import Shipping from "./shipping"
+import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 
 const Regions = ({ id }) => {
   const [currencies, setCurrencies] = useState([])
@@ -38,20 +38,18 @@ const Regions = ({ id }) => {
   useEffect(() => {
     if (storeIsLoading) return
     setCurrencies(
-      store.currencies.map(c => ({
-        symbol: currencyData[c].symbol_native,
-        value: c,
-        code: c,
-      }))
+      store.currencies
+        ? store.currencies.map(c => ({
+            value: c.code,
+            label: c.code.toUpperCase(),
+          }))
+        : []
     )
     setPaymentOptions(
-      store.payment_providers.map(c => paymentProvidersMapper(c))
+      store.payment_providers.map(c => paymentProvidersMapper(c.id))
     )
     setFulfillmentOptions(
-      store.fulfillment_providers.map(c => ({
-        value: c,
-        label: c,
-      }))
+      store.fulfillment_providers.map(c => fulfillmentProvidersMapper(c.id))
     )
   }, [store, storeIsLoading])
 
@@ -63,19 +61,16 @@ const Regions = ({ id }) => {
     register({ name: "fulfillment_providers" })
 
     setValue("countries", region.countries)
-    const selectedCountries = region.countries.map(c =>
-      countryData.find(cd => cd.alpha2 === c)
-    )
     setCountries(
-      selectedCountries.map(v => ({ value: v.alpha2, label: v.name }))
+      region.countries.map(c => ({ value: c.iso_2, label: c.display_name }))
     )
 
     setValue("payment_providers", region.payment_providers)
-    setPaymentProviders(region.payment_providers.map(v => ({ value: v })))
+    setPaymentProviders(region.payment_providers.map(v => ({ value: v.id })))
 
     setValue("fulfillment_providers", region.fulfillment_providers)
     setFulfillmentProviders(
-      region.fulfillment_providers.map(v => ({ value: v }))
+      region.fulfillment_providers.map(v => ({ value: v.id }))
     )
   }, [region, isLoading])
 

@@ -19,13 +19,13 @@ const Shipping = ({ region, fulfillmentMethods }) => {
     "shippingOptions",
     {
       search: {
-        region_id: region._id,
+        region_id: region.id,
       },
     }
   )
 
   useEffect(() => {
-    Medusa.regions.fulfillmentOptions.list(region._id).then(({ data }) => {
+    Medusa.regions.fulfillmentOptions.list(region.id).then(({ data }) => {
       setFulfillmentOptions(data.fulfillment_options)
     })
   }, [])
@@ -33,7 +33,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
   const handleShippingUpdated = () => {
     refresh({
       search: {
-        region_id: region._id,
+        region_id: region.id,
       },
     })
       .then(() => toaster("Successfully updated shipping options", "success"))

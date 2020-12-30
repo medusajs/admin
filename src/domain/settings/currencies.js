@@ -58,13 +58,13 @@ const AccountDetails = () => {
   const { store, isLoading, update } = useMedusa("store")
 
   useEffect(() => {
-    if (isLoading) return
+    if (isLoading || !store) return
     setValue("default_currency_code", store.default_currency_code.toUpperCase())
     setCurrencies(
       store.currencies
         ? store.currencies.map(c => ({
-            value: c,
-            label: c,
+            value: c.code,
+            label: c.code.toUpperCase(),
           }))
         : []
     )
