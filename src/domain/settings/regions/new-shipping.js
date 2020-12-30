@@ -22,8 +22,7 @@ const NewShipping = ({
   onDelete,
   onClick,
 }) => {
-  const { control, register, handleSubmit } = useForm()
-  const { store, isLoading } = useMedusa("store")
+  const { register, handleSubmit } = useForm()
   const { shipping_profiles, isLoading: isProfilesLoading } = useMedusa(
     "shippingProfiles"
   )
@@ -58,13 +57,11 @@ const NewShipping = ({
     const payload = {
       name: data.name,
       data: options[optionIndex],
-      region_id: region._id,
+      region_id: region.id,
       profile_id: data.profile_id,
       requirements: reqs,
-      price: {
-        type: "flat_rate",
-        amount: data.price.amount,
-      },
+      price_type: "flat_rate",
+      amount: data.price.amount,
       is_return: isReturn,
       provider_id,
     }
@@ -97,8 +94,6 @@ const NewShipping = ({
         value: p.id,
       }))
 
-  console.log(fulfillmentOptions)
-
   return (
     <Modal onClick={onClick}>
       <Modal.Body as="form" onSubmit={handleSubmit(handleSave)}>
@@ -106,7 +101,7 @@ const NewShipping = ({
           <Text>Add Shipping Option</Text>
         </Modal.Header>
         <Modal.Content flexDirection="column">
-          <Box mb={4}>
+          <Box mb={3}>
             <Input
               mt={2}
               mb={3}
@@ -118,7 +113,9 @@ const NewShipping = ({
           </Box>
           {!isReturn && (
             <Box mb={4}>
-              <Text mb={3}>Shipping profile</Text>
+              <Text fontSize={1} fontWeight={300} mb={2}>
+                Shipping profile
+              </Text>
               {isProfilesLoading ? (
                 <Flex
                   fmlexDirection="column"
@@ -141,7 +138,9 @@ const NewShipping = ({
             </Box>
           )}
           <Box mb={4}>
-            <Text mb={3}>Fulfillment method</Text>
+            <Text fontSize={1} fontWeight={300} mb={2}>
+              Fulfillment method
+            </Text>
             <Select
               required={true}
               name="fulfillment_option"
@@ -150,11 +149,12 @@ const NewShipping = ({
             />
           </Box>
           <Box mb={4}>
-            <Text mb={3} fontSize={2}>
+            <Text fontSize={1} fontWeight={300} mb={2} className="required">
               Price
             </Text>
             <CurrencyInput
-              ref={register}
+              ref={register({ required: true })}
+              required={true}
               name={"price.amount"}
               currency={region.currency_code.toUpperCase()}
             />
@@ -172,7 +172,7 @@ const NewShipping = ({
                   fontSize="12px"
                   label="Min. subtotal"
                   name={`requirements.min_subtotal`}
-                  currency={region.currency_code}
+                  currency={region.currency_code.toUpperCase()}
                   ref={register}
                 />
               </Flex>
@@ -184,7 +184,7 @@ const NewShipping = ({
                   label="Max. subtotal"
                   fontSize="12px"
                   name={`requirements.max_subtotal`}
-                  currency={region.currency_code}
+                  currency={region.currency_code.toUpperCase()}
                   ref={register}
                 />
               </Flex>

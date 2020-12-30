@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Flex, Box } from "rebass"
+import { Flex, Box, Text } from "rebass"
 
 export const Container = styled(Flex)`
   flex-direction: column;

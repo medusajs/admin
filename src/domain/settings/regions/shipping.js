@@ -112,9 +112,11 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                     {option.name} ({option.data.name})
                   </Text>
                   <Text>
-                    {prettify(option.price.type)}
-                    {option.price.amount !== undefined &&
-                      ` — ${option.price.amount} ${region.currency_code}`}
+                    {prettify(option.price_type)}
+                    {option.amount !== undefined &&
+                      ` — ${
+                        option.amount
+                      } ${region.currency_code.toUpperCase()}`}
                   </Text>
                 </Box>
 

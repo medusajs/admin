@@ -7,7 +7,6 @@ import Modal from "../../../components/modal"
 import Input from "../../../components/input"
 import CurrencyInput from "../../../components/currency-input"
 import Button from "../../../components/button"
-import Select from "../../../components/select"
 
 import Medusa from "../../../services/api"
 
@@ -22,14 +21,14 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
     getValues,
   } = useForm()
 
-  const {
-    fields: metaFields,
-    append: metaAppend,
-    remove: metaRemove,
-  } = useFieldArray({
-    control,
-    name: "metadata",
-  })
+  // const {
+  //   fields: metaFields,
+  //   append: metaAppend,
+  //   remove: metaRemove,
+  // } = useFieldArray({
+  //   control,
+  //   name: "metadata",
+  // })
 
   useEffect(() => {
     const option = {
@@ -47,7 +46,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       )
     }
 
-    if (shippingOption.requirements.length) {
+    if (shippingOption.requirements) {
       const minSubtotal = shippingOption.requirements.find(
         req => req.type === "min_subtotal"
       )
@@ -80,7 +79,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   }, [shippingOption])
 
   const handleDelete = () => {
-    Medusa.shippingOptions.delete(shippingOption._id).then(() => {
+    Medusa.shippingOptions.delete(shippingOption.id).then(() => {
       if (onDone) {
         onDone()
       }
@@ -103,10 +102,8 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
 
     const payload = {
       name: data.name,
-      price: {
-        type: "flat_rate",
-        amount: data.price.amount,
-      },
+      price_type: "flat_rate",
+      amount: data.price.amount,
       requirements: reqs,
     }
 
@@ -119,7 +116,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       }, {})
     }
 
-    Medusa.shippingOptions.update(shippingOption._id, payload).then(() => {
+    Medusa.shippingOptions.update(shippingOption.id, payload).then(() => {
       if (onDone) {
         onDone()
       }
@@ -142,21 +139,21 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
               </Text>
             </Text>
           </Box>
-          <Box mb={4}>
+          <Box mb={3}>
             <Input mt={2} label="Name" name="name" ref={register} />
           </Box>
-          <Box mb={4}>
-            <Text fontSize={1} fontWeight={300} mb={1}>
+          <Box mb={3}>
+            <Text fontSize={1} fontWeight={300} mb={2}>
               Price
             </Text>
             <CurrencyInput
               ref={register}
               name={"price.amount"}
-              currency={region.currency_code}
+              currency={region.currency_code.toUpperCase()}
             />
           </Box>
           <Flex mb={4} flexDirection="column">
-            <Text fontSize={1} fontWeight={300} mb={1}>
+            <Text fontSize={1} fontWeight={300} mb={2}>
               Requirements
             </Text>
             <Flex justifyContent="space-between" mt={2} width="100%">
@@ -167,7 +164,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                 fontSize="12px"
                 label="Min. subtotal"
                 name={`requirements.min_subtotal`}
-                currency={region.currency_code}
+                currency={region.currency_code.toUpperCase()}
                 ref={register}
               />
             </Flex>
@@ -179,16 +176,16 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                 label="Max. subtotal"
                 fontSize="12px"
                 name={`requirements.max_subtotal`}
-                currency={region.currency_code}
+                currency={region.currency_code.toUpperCase()}
                 ref={register}
               />
             </Flex>
           </Flex>
           <Flex mb={4} flexDirection="column">
-            <Text fontSize={1} fontWeight={300} mb={1}>
+            <Text fontSize={1} fontWeight={300} mb={2}>
               Metadata
             </Text>
-            {metaFields.map((field, index) => (
+            {/* {metaFields.map((field, index) => (
               <Flex key={field.id} my={3} justifyContent="space-between">
                 <Input
                   mr={4}
@@ -223,15 +220,15 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                   &times;
                 </Text>
               </Flex>
-            ))}
-            <Button
+            ))} */}
+            {/* <Button
               onClick={() =>
                 metaAppend({ id: metaFields.length, key: "", value: "" })
               }
               variant="primary"
             >
               + Add metadata
-            </Button>
+            </Button> */}
           </Flex>
           <Box mb={4}>
             <Text fontSize={1}>Danger Zone</Text>
