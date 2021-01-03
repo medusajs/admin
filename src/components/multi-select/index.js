@@ -87,6 +87,7 @@ const MultiSelect = React.forwardRef(
       required,
       value,
       selectOptions,
+      overrideStrings,
       ...props
     },
     ref
@@ -117,6 +118,7 @@ const MultiSelect = React.forwardRef(
           value={value}
           options={options}
           onChange={onChange}
+          overrideStrings={overrideStrings}
           {...selectOptions}
         />
       </Flex>

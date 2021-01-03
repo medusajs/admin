@@ -129,9 +129,11 @@ const Shipping = ({ region, fulfillmentMethods }) => {
         </Card.Body>
       </Card>
       <Card>
-        <Card.Header dropdownOptions={inboundDropdownOptions}>
-          Return Shipping Options
-        </Card.Header>
+        {inbound && inbound.length ? (
+          <Card.Header dropdownOptions={inboundDropdownOptions}>
+            Return Shipping Options
+          </Card.Header>
+        ) : null}
         <Card.Body py={0} flexDirection="column">
           {isLoading ? (
             <Flex
@@ -144,7 +146,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                 <Spinner dark />
               </Box>
             </Flex>
-          ) : (
+          ) : inbound && inbound.length ? (
             inbound.map(option => (
               <Flex
                 py={3}
@@ -163,9 +165,11 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                     {option.name} ({option.data.name})
                   </Text>
                   <Text>
-                    {prettify(option.price.type)}
-                    {option.price.amount !== undefined &&
-                      ` — ${region.currency_code} ${option.price.amount}`}
+                    {prettify(option.price_type)}
+                    {option.amount !== undefined &&
+                      ` — ${
+                        option.amount
+                      } ${region.currency_code.toUpperCase()}`}
                   </Text>
                   <Text>
                     {!!option.requirements
@@ -173,7 +177,9 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                           return `Order must have a ${prettify(
                             r.type,
                             false
-                          )} of ${region.currency_code} ${r.value}`
+                          )} of ${region.currency_code.toUpperCase()} ${
+                            r.value
+                          }`
                         })
                       : "No requirements"}
                   </Text>
@@ -184,7 +190,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                 </Button>
               </Flex>
             ))
-          )}
+          ) : null}
         </Card.Body>
       </Card>
       {editOption && (

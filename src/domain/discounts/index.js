@@ -70,7 +70,7 @@ const DiscountIndex = () => {
                 <TableRow
                   sx={{ cursor: "pointer" }}
                   key={i}
-                  onClick={() => navigate(`/a/discounts/${el._id}`)}
+                  onClick={() => navigate(`/a/discounts/${el.id}`)}
                 >
                   <TableDataCell>{el.code}</TableDataCell>
                   <TableDataCell>{el.discount_rule.description}</TableDataCell>
@@ -79,7 +79,7 @@ const DiscountIndex = () => {
                   <TableDataCell>
                     <Box>
                       <Badge color="#4f566b" bg="#e3e8ee">
-                        {`${el.disabled}`}
+                        {`${el.is_disabled}`}
                       </Badge>
                     </Box>
                   </TableDataCell>

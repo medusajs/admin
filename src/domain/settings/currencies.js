@@ -55,7 +55,7 @@ const StyledMultiSelect = styled(MultiSelect)`
 const AccountDetails = () => {
   const [selectedCurrencies, setCurrencies] = useState([])
   const { register, setValue, handleSubmit } = useForm()
-  const { store, isLoading, update } = useMedusa("store")
+  const { store, isLoading, update, toaster } = useMedusa("store")
 
   useEffect(() => {
     if (isLoading || !store) return
@@ -63,7 +63,7 @@ const AccountDetails = () => {
     setCurrencies(
       store.currencies
         ? store.currencies.map(c => ({
-            value: c.code,
+            value: c.code.toUpperCase(),
             label: c.code.toUpperCase(),
           }))
         : []
@@ -82,10 +82,15 @@ const AccountDetails = () => {
   }
 
   const onSubmit = data => {
-    update({
-      default_currency_code: data.default_currency_code,
-      currencies: selectedCurrencies.map(c => c.value),
-    })
+    try {
+      update({
+        default_currency_code: data.default_currency_code,
+        currencies: selectedCurrencies.map(c => c.value),
+      })
+      toaster("Successfully updated currencies", "success")
+    } catch (error) {
+      toaster("Failed to update currencies", "error")
+    }
   }
 
   return (

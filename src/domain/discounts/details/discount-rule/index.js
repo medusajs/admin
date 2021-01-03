@@ -85,8 +85,8 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   )
 
   const [selectedProducts, setSelectedProducts] = useState(
-    discount.discount_rule.valid_for.map(({ _id, title }) => ({
-      value: _id,
+    discount.discount_rule.valid_for.map(({ id, title }) => ({
+      value: id,
       label: title,
     }))
   )
@@ -99,7 +99,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const validProducts = () => {
     let formattedProducts = products.map(p => ({
       label: p.title,
-      value: p._id,
+      value: p.id,
     }))
     return _.intersectionBy(formattedProducts, selectedProducts, "value").map(
       v => v.value
@@ -109,6 +109,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const onSubmit = data => {
     data.value = parseInt(data.value)
     data.valid_for = validProducts()
+    data.id = discount.discount_rule.id
     onUpdate(data)
   }
 
@@ -117,7 +118,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
       <Modal.Body
         as="form"
         onSubmit={handleSubmit(onSubmit)}
-        sx={{ height: "90vh" }}
+        sx={{ height: "75vh" }}
       >
         <Modal.Header>Update discount rule</Modal.Header>
         <Modal.Content flexDirection="column">
@@ -225,7 +226,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
           <StyledMultiSelect
             options={products.map(el => ({
               label: el.title,
-              value: el._id,
+              value: el.id,
             }))}
             selectAllLabel={"All"}
             overrideStrings={{

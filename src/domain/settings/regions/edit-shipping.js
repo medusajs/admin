@@ -102,8 +102,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
 
     const payload = {
       name: data.name,
-      price_type: "flat_rate",
-      amount: data.price.amount,
+      amount: data.amount,
       requirements: reqs,
     }
 
@@ -148,7 +147,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
             </Text>
             <CurrencyInput
               ref={register}
-              name={"price.amount"}
+              name={"amount"}
               currency={region.currency_code.toUpperCase()}
             />
           </Box>

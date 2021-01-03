@@ -26,6 +26,12 @@ const ProductLink = styled(Text)`
     text-decoration: underline;
   `
 
+const ProductThumbnail = styled(Image)`
+  object-fit: contain;
+  width: 35px;
+  height: 35px;
+`
+
 const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
 
@@ -110,8 +116,8 @@ const DiscountDetails = ({ id }) => {
   useEffect(() => {
     if (regions && discount && discount.regions) {
       const temp = regions.reduce((acc, next) => {
-        if (discount.regions.includes(next._id)) {
-          acc.push({ label: next.name, value: next._id })
+        if (discount.regions.map(r => r.id).includes(next.id)) {
+          acc.push({ label: next.name, value: next.id })
         }
         return acc
       }, [])
@@ -149,7 +155,7 @@ const DiscountDetails = ({ id }) => {
   const handleDisabled = () => {
     setUpdating(true)
     update({
-      disabled: discount.disabled ? false : true,
+      disabled: discount.is_disabled ? false : true,
     })
       .then(() => {
         refresh({ id })
@@ -182,8 +188,8 @@ const DiscountDetails = ({ id }) => {
 
   const handleRegionUpdate = data => {
     const toUpdateWith = regions.reduce((acc, next) => {
-      if (data.map(el => el.value).includes(next._id)) {
-        acc.push(next._id)
+      if (data.map(el => el.value).includes(next.id)) {
+        acc.push(next.id)
       }
       return acc
     }, [])
@@ -204,15 +210,15 @@ const DiscountDetails = ({ id }) => {
   }
 
   return (
-    <Flex flexDirection="column" mb={5}>
+    <Flex flexDirection="column" mb={5} pt={5}>
       <Card mb={2}>
         <Card.Header
           action={{
-            label: discount.disabled ? "Enable" : "Disable",
+            label: discount.is_disabled ? "Enable" : "Disable",
             onClick: () => handleDisabled(),
           }}
         >
-          {discount._id}
+          {discount.id}
         </Card.Header>
         <Box>
           {code && (
@@ -233,9 +239,6 @@ const DiscountDetails = ({ id }) => {
               />
             </EditableInput>
           )}
-          {/* <Text p={3} fontWeight="bold">
-            {discount.code}
-          </Text> */}
         </Box>
         <Card.Body>
           <Box pl={3} pr={2}>
@@ -244,7 +247,7 @@ const DiscountDetails = ({ id }) => {
             </Text>
             <Text pt={1} width="100%" textAlign="center" mt={2}>
               <Badge width="100%" color="#4f566b" bg="#e3e8ee">
-                {`${discount.disabled}`}
+                {`${discount.is_disabled}`}
               </Badge>
             </Text>
           </Box>
@@ -258,7 +261,7 @@ const DiscountDetails = ({ id }) => {
                 regions &&
                 regions.map(el => ({
                   label: el.name,
-                  value: el._id,
+                  value: el.id,
                 }))
               }
               selectAllLabel={"All"}
@@ -274,8 +277,8 @@ const DiscountDetails = ({ id }) => {
           <Flex mr={3} mt="auto">
             <Button
               disabled={_.isEqual(
-                selectedRegions.map(el => el.value),
-                discount.regions
+                selectedRegions.map(r => r.value),
+                discount.regions.map(r => r.id)
               )}
               variant="primary"
               onClick={() => handleRegionUpdate(selectedRegions)}
@@ -318,37 +321,37 @@ const DiscountDetails = ({ id }) => {
           </Box>
           <Divider m={3} />
           <Box>
-            <Text ml={3} mb={2}>
-              Applicable product(s)
-            </Text>
-            {discount.discount_rule.valid_for.map(product => (
-              <Box
-                key={product._id}
-                pl={3}
-                pr={2}
-                py={2}
-                display="flex"
-                alignItems="center"
-              >
-                <Image
-                  ml={3}
-                  src={product.thumbnail || ""}
-                  sx={{
-                    objectFit: "contain",
-                    width: 35,
-                    height: 35,
-                  }}
-                />
-                <Card.VerticalDivider mx={3} height="35px" />
-                <ProductLink
-                  onClick={() => navigate(`/a/products/${product._id}`)}
-                >
-                  {product.title}
-                </ProductLink>
-                <Card.VerticalDivider mx={3} height="35px" />
-                <Text>{product.variants.length} variant(s)</Text>
-              </Box>
-            ))}
+            {discount.discount_rule.valid_for.length ? (
+              <>
+                <Text ml={3} mb={2}>
+                  Applicable product(s)
+                </Text>
+                {discount.discount_rule.valid_for.map(product => (
+                  <Box
+                    key={product.id}
+                    pl={3}
+                    pr={2}
+                    py={2}
+                    display="flex"
+                    alignItems="center"
+                  >
+                    <ProductThumbnail ml={3} src={product.thumbnail || ""} />
+                    <Card.VerticalDivider mx={3} height="35px" />
+                    <ProductLink
+                      onClick={() => navigate(`/a/products/${product.id}`)}
+                    >
+                      {product.title}
+                    </ProductLink>
+                    <Card.VerticalDivider mx={3} height="35px" />
+                    <Text>{product.variants.length} variant(s)</Text>
+                  </Box>
+                ))}
+              </>
+            ) : (
+              <Text ml={3} mb={2}>
+                Applicable for all products
+              </Text>
+            )}
           </Box>
         </Card.Body>
       </Card>

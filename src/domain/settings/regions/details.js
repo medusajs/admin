@@ -99,7 +99,10 @@ const Regions = ({ id }) => {
   }
 
   const onSave = data => {
-    console.log(data)
+    data.payment_providers = data.payment_providers.map(pp => pp.id)
+    data.fulfillment_providers = data.fulfillment_providers.map(fp => fp.id)
+    data.countries = data.countries.map(c => c.iso_2)
+
     update(data)
   }
 

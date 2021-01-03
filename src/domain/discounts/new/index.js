@@ -109,7 +109,7 @@ const NewDiscount = ({}) => {
   const validRegions = () => {
     let formattedRegions = regions.map(r => ({
       label: r.name,
-      value: r._id,
+      value: r.id,
     }))
     return _.intersectionBy(formattedRegions, selectedRegions, "value").map(
       v => v.value
@@ -149,6 +149,7 @@ const NewDiscount = ({}) => {
     if (data.length > 1) {
       setValue("discount_rule.type", "percentage")
     }
+    console.log(data)
     setSelectedRegions(data)
   }
 
@@ -181,11 +182,11 @@ const NewDiscount = ({}) => {
           <MultiSelect
             options={regions.map(el => ({
               label: el.name,
-              value: el._id,
+              value: el.id,
             }))}
-            selectAllLabel={"All"}
             overrideStrings={{
               allItemsAreSelected: "All regions",
+              selectAll: "Select all",
             }}
             value={selectedRegions}
             onChange={onRegionSelect}

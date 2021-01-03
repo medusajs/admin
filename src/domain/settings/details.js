@@ -9,7 +9,7 @@ import Button from "../../components/button"
 
 const AccountDetails = () => {
   const { register, reset, handleSubmit } = useForm()
-  const { store, isLoading, update } = useMedusa("store")
+  const { store, isLoading, update, toaster } = useMedusa("store")
   const [showAdvanced, setShowAdvanced] = useState(false)
 
   useEffect(() => {
@@ -21,9 +21,14 @@ const AccountDetails = () => {
   }, [store, isLoading])
 
   const onSubmit = data => {
-    localStorage.removeItem("medusa::cache::store")
+    try {
+      localStorage.removeItem("medusa::cache::store")
 
-    update(data)
+      update(data)
+      toaster("Successfully updated store", "success")
+    } catch (error) {
+      toaster("Failed to update store", "error")
+    }
   }
 
   return (
