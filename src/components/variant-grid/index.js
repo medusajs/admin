@@ -85,7 +85,10 @@ const getColumns = (product, edit) => {
             return ""
           }
           return prices
-            .map(({ currency_code, amount }) => `${amount} ${currency_code}`)
+            .map(
+              ({ currency_code, amount }) =>
+                `${amount} ${currency_code.toUpperCase()}`
+            )
             .join(", ")
         },
       },
@@ -260,7 +263,6 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
                   }
                   head={c.headCol}
                 >
-                  {/* {console.log(v.)} */}
                   {!(selectedCell.row === row && selectedCell.col === col) &&
                     getDisplayValue(v, c, isDraggedOver({ col, row }))}
                   {selectedCell.row === row && selectedCell.col === col && (

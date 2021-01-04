@@ -7,6 +7,12 @@ import Typography from "../typography"
 const StyledLabel = styled.div`
   ${Typography.Base}
   padding-bottom: 10px;
+
+  ${props =>
+    props.boldLabel &&
+    `
+    font-weight: 500;
+  `}
 `
 
 const Wrap = styled(Flex)``
@@ -39,7 +45,7 @@ const Container = styled(Flex)`
   }
 `
 
-const ImageUpload = ({ label, name, onChange, value }) => {
+const ImageUpload = ({ label, boldLabel, name, onChange, value }) => {
   const [focus, setFocus] = useState(false)
   const dropRef = useRef()
   const inputRef = useRef()
@@ -76,7 +82,7 @@ const ImageUpload = ({ label, name, onChange, value }) => {
   return (
     <Flex flexDirection="column">
       <Label htmlFor={name}>
-        <StyledLabel>{label}</StyledLabel>
+        <StyledLabel boldLabel={boldLabel}>{label}</StyledLabel>
       </Label>
       <Container
         onDrop={handleDrop}

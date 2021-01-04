@@ -24,7 +24,7 @@ export const buttons = {
     paddingBottom: "3px",
     boxShadow: "pill",
     "&:focus": {
-      boxShadow: "buttonBoxShadowActive",
+      boxShadow: "pillActiveFocus",
     },
   },
   danger: {
@@ -51,7 +51,7 @@ export const buttons = {
   },
   primary: {
     minHeight: "24px",
-    height: "28px",
+    height: "30px",
     fontWeight: "500",
     color: "dark",
     fontSize: "14px",

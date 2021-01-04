@@ -84,6 +84,37 @@ export default {
       return medusaRequest("POST", path, update)
     },
   },
+
+  giftCards: {
+    create(giftCard) {
+      const path = `/admin/gift-cards`
+      return medusaRequest("POST", path, giftCard)
+    },
+
+    retrieve(giftCardId) {
+      const path = `/admin/gift-cards/${giftCardId}`
+      return medusaRequest("GET", path)
+    },
+
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      const path = `/admin/gift-cards${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+
+    update(giftCardId, update) {
+      const path = `/admin/gift-cards/${giftCardId}`
+      return medusaRequest("POST", path, update)
+    },
+
+    delete(giftCardId) {
+      const path = `/admin/gift-cards/${giftCardId}`
+      return medusaRequest("DELETE", path)
+    },
+  },
+
   products: {
     create(product) {
       const path = `/admin/products`

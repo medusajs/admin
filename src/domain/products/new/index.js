@@ -92,7 +92,7 @@ const RequiredLabel = styled.div`
 `
 
 const NewProduct = ({}) => {
-  const [hasVariants, setHasVariants] = useState(true)
+  const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])
   const [images, setImages] = useState([])
@@ -260,7 +260,9 @@ const NewProduct = ({}) => {
         title: data.title,
         sku: data.sku,
         ean: data.ean,
-        inventory_quantity: data.inventory_quantity,
+        inventory_quantity: data.inventory_quantity
+          ? parseInt(data.inventory_quantity)
+          : 0,
         prices: prices.map(({ currency_code, amount }) => ({
           currency_code,
           amount,
@@ -306,13 +308,15 @@ const NewProduct = ({}) => {
   const submit = async data => {
     const product = parseProduct(data)
 
-    if (!variants.length) {
+    if (!variants.length && hasVariants) {
       toaster(
         `Missing variants. Consider using the simple product, if only one variant should exists`,
         "error"
       )
       return
     }
+
+    console.log(product)
 
     try {
       const { data } = await Medusa.products.create(product)
@@ -352,19 +356,21 @@ const NewProduct = ({}) => {
   return (
     <Flex as="form" pb={6} onSubmit={handleSubmit(submit)} pt={5}>
       <Flex mx="auto" width="100%" maxWidth="750px" flexDirection="column">
-        <Text mb={4}>Product Details</Text>
+        <Text mb={4}>Product details</Text>
         <Flex mb={5}>
           <Box width={4 / 7}>
             <Input
               required={true}
               mb={4}
+              boldLabel={true}
               label="Name"
               placeholder="Jacket, sunglasses, etc."
               name="title"
               ref={register({ required: "Title is required" })}
             />
-            <TextArea
+            <Input
               required={true}
+              boldLabel={true}
               label="Description"
               placeholder="Short description of the product"
               name="description"
@@ -372,6 +378,7 @@ const NewProduct = ({}) => {
             />
             <Flex mt={4} alignItems="center">
               <Pill
+                width="50%"
                 onClick={() => {
                   clearErrors()
                   setHasVariants(false)
@@ -379,25 +386,31 @@ const NewProduct = ({}) => {
                 active={!hasVariants}
                 mr={4}
               >
-                Simple Product
+                Simple product
               </Pill>
               <Pill
+                width="50%"
                 onClick={() => {
                   setHasVariants(true)
                   clearErrors()
                 }}
                 active={hasVariants}
               >
-                Product with Variants
+                Product with variants
               </Pill>
             </Flex>
           </Box>
         </Flex>
         <hr />
         <Flex mb={3}>
-          <ImageUpload onChange={onImageChange} name="files" label="Images" />
+          <ImageUpload
+            onChange={onImageChange}
+            name="files"
+            label="Images"
+            boldLabel={true}
+          />
         </Flex>
-        <Flex mb={5}>
+        <Flex mb={4}>
           <StyledImageBox>
             {images.map((url, i) => (
               <ImageCardWrapper key={i} mr={3}>
@@ -411,7 +424,7 @@ const NewProduct = ({}) => {
         {hasVariants ? (
           <>
             <Text fontSize={2} mb={3}>
-              Options
+              Product options
             </Text>
             <Flex mb={5} flexDirection="column">
               {options.map((o, index) => (
@@ -420,13 +433,15 @@ const NewProduct = ({}) => {
                     <Input
                       name={`options[${index}].name`}
                       onChange={e => updateOptionName(e, index)}
-                      label="Option Name"
+                      label="Option title"
+                      placeholder="Color"
                       required={true}
                       value={o.name}
                     />
                   </Box>
                   <Box mx={3} flexGrow="1">
                     <TagInput
+                      placeholder="Blue, Green"
                       values={o.values}
                       onChange={values => updateOptionValue(index, values)}
                     />
@@ -442,7 +457,7 @@ const NewProduct = ({}) => {
                   </Box>
                 </Flex>
               ))}
-              <Button onClick={handleAddOption} variant="primary">
+              <Button width="163px" onClick={handleAddOption} variant="primary">
                 + Add an option
               </Button>
             </Flex>
@@ -460,37 +475,33 @@ const NewProduct = ({}) => {
           </>
         ) : (
           <>
-            <Text mb={5}>Additional Options</Text>
+            <Text mb={3}>Additional Options</Text>
             <Flex mb={5}>
               {isLoading ? (
                 <Spinner />
               ) : (
-                <Flex flexDirection="column">
-                  {console.log("Prices: ", prices)}
+                <Flex flexDirection="column" width={4 / 7}>
                   {prices.map((p, index) => (
                     <Flex mb={3} key={`${p.currency_code}${index}`}>
-                      <Box>
-                        <CurrencyInput
-                          edit={p.edit}
-                          inline
-                          required={true}
-                          width="600px"
-                          currency={p.currency_code.toUpperCase()}
-                          currencyOptions={currencyOptions}
-                          value={p.amount}
-                          onCurrencySelected={currency =>
-                            handleCurrencySelected(index, currency)
-                          }
-                          onChange={e => handlePriceChange(index, e)}
-                          label={index === 0 ? "Price" : " "}
-                          removable={index !== 0}
-                          onRemove={() => removePrice(index)}
-                        />
-                      </Box>
+                      <CurrencyInput
+                        boldLabel={true}
+                        edit={p.edit}
+                        required={true}
+                        width="100%"
+                        currency={p.currency_code.toUpperCase()}
+                        currencyOptions={currencyOptions}
+                        value={p.amount}
+                        onCurrencySelected={currency =>
+                          handleCurrencySelected(index, currency)
+                        }
+                        onChange={e => handlePriceChange(index, e)}
+                        label={index === 0 ? "Price" : " "}
+                        removable={index !== 0}
+                        onRemove={() => removePrice(index)}
+                      />
                     </Flex>
                   ))}
                   <Flex>
-                    <Box flex={"30% 0 0"} />
                     <Button
                       flex={"0 0 auto"}
                       onClick={addPrice}
@@ -500,32 +511,29 @@ const NewProduct = ({}) => {
                     </Button>
                   </Flex>
                   <Input
-                    inline
+                    boldLabel={true}
                     mt={4}
-                    required={true}
                     placeholder={"SUN-G, JK1234, etc."}
                     name={`sku`}
                     label="Stock Keeping Unit (SKU)"
-                    ref={register({ required: true })}
+                    ref={register}
                   />
                   <Input
-                    inline
+                    boldLabel={true}
                     mt={4}
-                    required={true}
                     placeholder={"1231231231234, etc."}
                     name={`ean`}
                     label="Barcode (EAN)"
-                    ref={register({ required: true })}
+                    ref={register}
                   />
                   <Input
-                    inline
+                    boldLabel={true}
                     mt={4}
-                    required={true}
                     type="number"
                     placeholder={"0-∞"}
                     name={`inventory_quantity`}
                     label="Quantity in stock"
-                    ref={register({ required: true })}
+                    ref={register}
                   />
                 </Flex>
               )}

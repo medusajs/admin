@@ -75,8 +75,8 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
           <Box mb={3} width={1 / 2}>
             <Input name="title" label="Name" ref={register} />
           </Box>
-          <Box mb={3} width={1 / 2}>
-            <TextArea
+          <Box width={1 / 2}>
+            <Input
               name="description"
               label="Description"
               ref={register}

@@ -43,6 +43,7 @@ const Select = React.forwardRef(
       onChange,
       inline,
       required,
+      selectHeight,
       ...props
     },
     ref
@@ -69,6 +70,7 @@ const Select = React.forwardRef(
           flex="50% 0 0"
           variant="buttons.primary"
           name={name}
+          height={selectHeight || "inherit"}
           minWidth={"unset"}
           width={"unset"}
           ref={ref}

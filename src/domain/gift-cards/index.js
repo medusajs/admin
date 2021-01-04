@@ -13,7 +13,6 @@ import {
   Table,
   TableHead,
   TableHeaderCell,
-  TableHeaderRow,
   TableBody,
   TableRow,
   TableDataCell,
@@ -25,25 +24,20 @@ import Button from "../../components/button"
 import useMedusa from "../../hooks/use-medusa"
 
 const Index = () => {
-  const { discounts, isLoading } = useMedusa("discounts", {
-    search: {
-      is_giftcard: "true",
-      expand_fields: "regions",
-    },
-  })
+  const { giftCards, isLoading } = useMedusa("giftCards")
 
   return (
     <div>
       <Flex pt={5}>
         <Text fontSize={20} fontWeight="bold" mb={4}>
-          Gift Cards
+          Gift cards
         </Text>
         <Box ml="auto" />
         <Button
           onClick={() => navigate(`/a/gift-cards/manage`)}
           variant={"cta"}
         >
-          Manage Gift Card
+          Manage gift cards
         </Button>
       </Flex>
       {isLoading ? (
@@ -73,29 +67,26 @@ const Index = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {discounts &&
-              discounts.map((el, i) => (
+            {giftCards &&
+              giftCards.map((el, i) => (
                 <TableRow
                   sx={{ cursor: "pointer" }}
                   key={i}
-                  onClick={() => navigate(`/a/gift-cards/${el._id}`)}
+                  onClick={() => navigate(`/a/gift-cards/${el.id}`)}
                 >
                   <TableDataCell>{el.code}</TableDataCell>
                   <TableDataCell>
-                    {(el.original_amount && el.original_amount.toFixed(2)) || (
-                      <>&nbsp;</>
-                    )}{" "}
-                    {el.original_amount && el.regions[0].currency_code}
+                    {(el.value && el.value.toFixed(2)) || <>&nbsp;</>}{" "}
+                    {el.value && el.region.currency_code}
                   </TableDataCell>
                   <TableDataCell>
-                    {(el.discount_rule.value || 0).toFixed(2)}{" "}
-                    {el.regions[0].currency_code}
+                    {(el.balance || 0).toFixed(2)} {el.region.currency_code}
                   </TableDataCell>
                   <TableDataCell
-                    data-for={el._id}
+                    data-for={el.id}
                     data-tip={moment(el.created).format("MMMM Do YYYY HH:mm a")}
                   >
-                    <ReactTooltip id={el._id} place="top" effect="solid" />
+                    <ReactTooltip id={el.id} place="top" effect="solid" />
                     {moment(parseInt(el.created)).format("MMM Do YYYY")}
                   </TableDataCell>
                 </TableRow>

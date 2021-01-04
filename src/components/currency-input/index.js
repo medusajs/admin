@@ -34,7 +34,14 @@ const StyledInput = styled.input`
 `
 
 const StyledLabel = styled.div`
-  ${Typography.Base}
+  ${Typography.Base};
+  
+  ${props =>
+    props.boldLabel &&
+    `
+    font-weight: 500;
+  `}
+  
   ${props =>
     props.inline
       ? `
@@ -61,6 +68,7 @@ const CurrencyInput = React.forwardRef(
       edit,
       name,
       label,
+      boldLabel,
       inline,
       currencyOptions,
       onCurrencySelected,
@@ -116,6 +124,7 @@ const CurrencyInput = React.forwardRef(
               style={fontSize && { fontSize }}
               required={required}
               inline={inline}
+              boldLabel={boldLabel}
             >
               {label}
             </StyledLabel>
@@ -128,6 +137,7 @@ const CurrencyInput = React.forwardRef(
           className={isFocused ? "tag__focus" : ""}
           focused={isFocused}
           variant="forms.input"
+          height={props.height || "inherit"}
         >
           <CurrencyBox
             textAlign="center"
@@ -141,6 +151,7 @@ const CurrencyInput = React.forwardRef(
               <Select
                 inline
                 width={"3.3rem"}
+                selectHeight="24px"
                 value={currency}
                 options={currencyOptions}
                 onChange={handleCurrencySelected}

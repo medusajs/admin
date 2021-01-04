@@ -19,7 +19,7 @@ export default {
   `,
   pillActiveFocus: `
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
+      rgba(206, 208, 190, 0.36) 0px 0px 0px 2px,
       rgba(69,69,69, 0.8) 0px 0px 0px 2px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
       rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,

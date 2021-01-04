@@ -126,9 +126,10 @@ const NewGiftCard = ({}) => {
       as="form"
       flexDirection="column"
       pb={6}
+      pt={5}
       onSubmit={handleSubmit(submit)}
     >
-      <Text mb={4}>Product Details</Text>
+      <Text mb={4}>Gift card product details</Text>
       <Flex mb={5}>
         <Box width={4 / 7}>
           <Input mb={4} label="Name" name="title" ref={register} />
