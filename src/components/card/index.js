@@ -72,9 +72,9 @@ Card.VerticalDivider = styled(Box)`
 Card.Footer = ({ children, borderBottom, borderTop = true, ...rest }) => (
   <StyledFooter
     py={3}
-    {...rest}
     borderBottom={borderBottom}
     borderTop={borderTop}
+    {...rest}
   >
     {children}
   </StyledFooter>
