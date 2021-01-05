@@ -17,6 +17,7 @@ const Card = styled(RebassCard)`
 `
 
 const StyledFooter = styled(Flex)`
+  padding: 10px 0px;
   ${props => props.borderTop && `border-top: 1px solid #e3e8ee;`}
   ${props => props.borderBottom && `border-bottom: 1px solid #e3e8ee;`}
 `

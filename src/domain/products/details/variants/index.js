@@ -159,10 +159,18 @@ const Variants = ({
             </Flex>
           )}
         </Card.Body>
-        <Card.Footer px={3} justifyContent="flex-end">
-          <Button variant={"cta"} type="submit" disabled={saveButtonDisabled}>
-            Save
-          </Button>
+        <Card.Footer
+          px={3}
+          justifyContent="flex-end"
+          height="50px"
+          borderTop={false}
+          borderBottom={true}
+        >
+          {saveButtonDisabled === false && (
+            <Button variant={"cta"} type="submit" disabled={saveButtonDisabled}>
+              Save
+            </Button>
+          )}
         </Card.Footer>
       </Card>
       {showAddOption && (
