@@ -136,7 +136,8 @@ const NewProduct = ({}) => {
   const getCurrencyOptions = () => {
     return ((store && store.currencies) || [])
       .map(v => ({
-        value: v,
+        value: v.code,
+        label: v.code.toUpperCase(),
       }))
       .filter(o => !prices.find(p => !p.edit && p.currency_code === o.value))
   }
@@ -149,8 +150,9 @@ const NewProduct = ({}) => {
     if (store && prices.length === 0) {
       setPrices([
         {
-          currency_code: store.default_currency_code,
+          ...store.default_currency,
           amount: "",
+          sale_amount: "",
           edit: false,
         },
       ])
@@ -188,8 +190,9 @@ const NewProduct = ({}) => {
       {
         edit: true,
         region: "",
-        currency_code: currencyOptions[0].value,
+        code: currencyOptions[0].value,
         amount: "",
+        sale_amount: "",
       },
     ]
 
@@ -482,20 +485,20 @@ const NewProduct = ({}) => {
               ) : (
                 <Flex flexDirection="column" width={4 / 7}>
                   {prices.map((p, index) => (
-                    <Flex mb={3} key={`${p.currency_code}${index}`}>
+                    <Flex mb={3} key={`${p.code}${index}`}>
                       <CurrencyInput
                         boldLabel={true}
                         edit={p.edit}
                         required={true}
                         width="100%"
-                        currency={p.currency_code.toUpperCase()}
+                        currency={p.code.toUpperCase()}
                         currencyOptions={currencyOptions}
                         value={p.amount}
                         onCurrencySelected={currency =>
                           handleCurrencySelected(index, currency)
                         }
                         onChange={e => handlePriceChange(index, e)}
-                        label={index === 0 ? "Price" : " "}
+                        label={index === 0 ? "Price" : ""}
                         removable={index !== 0}
                         onRemove={() => removePrice(index)}
                       />

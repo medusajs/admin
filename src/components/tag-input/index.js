@@ -153,7 +153,7 @@ const TagInput = ({ onChange, values, ...props }) => {
         onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         onChange={handleInput}
-        placeholder={props.placeholder || ""}
+        placeholder={!values.length ? props.placeholder : ""}
         type="text"
       />
     </Flex>

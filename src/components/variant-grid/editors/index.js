@@ -7,7 +7,6 @@ import DefaultEditor from "./default"
 const GridEditor = React.forwardRef(
   ({ column, value, index, onChange, ...rest }, ref) => {
     if (column.editor === "prices") {
-      console.log(value)
       return (
         <PricesEditor
           ref={ref}

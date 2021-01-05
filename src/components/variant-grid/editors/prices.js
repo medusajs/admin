@@ -115,7 +115,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
       {
         edit: true,
         region: "",
-        currency_code: currencyOptions[0].value,
+        code: currencyOptions[0].value,
         amount: "",
         sale_amount: "",
       },
@@ -137,7 +137,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
   return (
     <>
       <Button ref={ref} variant="primary" onClick={() => setShow(!show)}>
-        Update
+        Edit
       </Button>
       {show && (
         <Modal onClick={() => setShow(!show)} onScroll={handleScroll}>
@@ -158,6 +158,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
                     <CurrencyInput
                       height="33px"
                       width={"150px"}
+                      placeholder="100.00"
                       edit={p.edit}
                       currency={p.code.toUpperCase()}
                       currencyOptions={currencyOptions}
@@ -171,7 +172,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
                       width={"120px"}
                       type="number"
                       mx={3}
-                      placeholder="Sale Amount"
+                      placeholder="50.00"
                       onChange={e => handleSalePriceChange(index, e)}
                       value={p.sale_amount}
                     />
@@ -183,7 +184,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
                     </Button>
                   </Flex>
                 ))}
-              {!!currencyOptions.length && (
+              {currencyOptions.length > 1 && (
                 <Flex>
                   <Button onClick={addPrice} variant="primary">
                     + Add a price

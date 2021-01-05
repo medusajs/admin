@@ -31,6 +31,10 @@ const StyledInput = styled.input`
   &:focus {
     outline: none;
   }
+
+  &::placeholder {
+    opacity: 0.2;
+  }
 `
 
 const StyledLabel = styled.div`
@@ -79,6 +83,7 @@ const CurrencyInput = React.forwardRef(
       value,
       required,
       fontSize,
+      placeholder,
       ...props
     },
     ref
@@ -147,7 +152,7 @@ const CurrencyInput = React.forwardRef(
             my={1}
             ml={1}
           >
-            {edit && currencyOptions.length > 0 ? (
+            {edit && currencyOptions.length > 1 ? (
               <Select
                 inline
                 width={"3.3rem"}
@@ -167,6 +172,7 @@ const CurrencyInput = React.forwardRef(
             onBlur={handleBlur}
             onFocus={handleFocus}
             onChange={onChange}
+            placeholder={placeholder || ""}
             step="0.01"
             type="number"
           />
