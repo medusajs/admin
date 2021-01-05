@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react"
-import { Flex, Box } from "rebass"
 import { useForm } from "react-hook-form"
-
-import Medusa from "../../../../services/api"
-
+import { Box, Flex } from "rebass"
 import Button from "../../../../components/button"
 import Card from "../../../../components/card"
-import Input from "../../../../components/input"
-import TextArea from "../../../../components/textarea"
 import ImageUpload from "../../../../components/image-upload"
+import Input from "../../../../components/input"
 import Spinner from "../../../../components/spinner"
+import TextArea from "../../../../components/textarea"
+import Medusa from "../../../../services/api"
 
 const Information = ({ isLoading, product, onSubmit, onDelete }) => {
   const { register, reset, handleSubmit, watch } = useForm()
@@ -110,10 +108,18 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
           />
         </Flex>
       </Card.Body>
-      <Card.Footer px={3} justifyContent="flex-end">
-        <Button variant={"cta"} type="submit" disabled={saveButtonDisabled}>
-          Save
-        </Button>
+      <Card.Footer
+        px={3}
+        justifyContent="flex-end"
+        height="50px"
+        borderBottom={true}
+        borderTop={false}
+      >
+        {saveButtonDisabled === false && (
+          <Button variant={"cta"} type="submit" disabled={saveButtonDisabled}>
+            Save
+          </Button>
+        )}
       </Card.Footer>
     </Card>
   )

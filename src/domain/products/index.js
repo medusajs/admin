@@ -1,28 +1,24 @@
-import React, { useState, useCallback, useEffect } from "react"
-import { navigate } from "gatsby"
-import _ from "lodash"
-import { Flex, Text, Box, Image } from "rebass"
-import { Input } from "@rebass/forms"
 import { Router } from "@reach/router"
-
+import { Input } from "@rebass/forms"
+import { navigate } from "gatsby"
+import qs from "query-string"
+import React, { useState } from "react"
+import { Box, Flex, Image, Text } from "rebass"
 import ImagePlaceholder from "../../assets/svg/image-placeholder.svg"
-
+import Button from "../../components/button"
 import Spinner from "../../components/spinner"
 import {
   Table,
+  TableBody,
+  TableDataCell,
   TableHead,
   TableHeaderCell,
   TableHeaderRow,
-  TableBody,
   TableRow,
-  TableDataCell,
 } from "../../components/table"
-
-import New from "./new"
-import Details from "./details"
 import useMedusa from "../../hooks/use-medusa"
-import Button from "../../components/button"
-import qs from "query-string"
+import Details from "./details"
+import New from "./new"
 
 const ProductIndex = () => {
   const filtersOnLoad = qs.parse(window.location.search)

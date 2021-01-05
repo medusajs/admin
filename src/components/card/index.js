@@ -17,7 +17,8 @@ const Card = styled(RebassCard)`
 `
 
 const StyledFooter = styled(Flex)`
-  border-top: 1px solid #e3e8ee;
+  ${props => props.borderTop && `border-top: 1px solid #e3e8ee;`}
+  ${props => props.borderBottom && `border-bottom: 1px solid #e3e8ee;`}
 `
 
 const StyledHeader = styled(Flex)`
@@ -67,8 +68,13 @@ Card.VerticalDivider = styled(Box)`
   width: 1px;
 `
 
-Card.Footer = ({ children, ...rest }) => (
-  <StyledFooter py={3} {...rest}>
+Card.Footer = ({ children, borderBottom, borderTop = true, ...rest }) => (
+  <StyledFooter
+    py={3}
+    {...rest}
+    borderBottom={borderBottom}
+    borderTop={borderTop}
+  >
     {children}
   </StyledFooter>
 )

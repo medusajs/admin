@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react"
-import { Text, Flex, Box } from "rebass"
-
-import NewOption from "./option-edit"
-import VariantEditor from "./variant-editor"
-import VariantGrid from "../../../../components/variant-grid"
+import { Box, Flex } from "rebass"
 import Button from "../../../../components/button"
 import Card from "../../../../components/card"
-import Input from "../../../../components/input"
-import TextArea from "../../../../components/textarea"
 import Spinner from "../../../../components/spinner"
+import VariantGrid from "../../../../components/variant-grid"
+import NewOption from "./option-edit"
+import VariantEditor from "./variant-editor"
 
 const Variants = ({
   product,
@@ -107,6 +104,7 @@ const Variants = ({
     })
 
     onSubmit({ variants: payload })
+    setSaveButtonDisabled(true)
   }
 
   const handleVariantEdited = data => {
