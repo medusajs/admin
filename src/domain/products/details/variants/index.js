@@ -21,6 +21,7 @@ const Variants = ({
   const [editVariant, setEditVariant] = useState("")
   const [editIndex, setEditIndex] = useState("")
   const [variants, setVariants] = useState([])
+  const [saveButtonDisabled, setSaveButtonDisabled] = useState(true)
 
   useEffect(() => {
     if (isLoading) return
@@ -115,6 +116,7 @@ const Variants = ({
       ...data,
     }
 
+    setSaveButtonDisabled(false)
     setVariants(newVs)
     setEditVariant(null)
   }
@@ -126,6 +128,11 @@ const Variants = ({
 
   const handleCreateOption = data => {
     optionMethods.create(data)
+  }
+
+  const handleChange = vs => {
+    setVariants(vs)
+    setSaveButtonDisabled(false)
   }
 
   return (
@@ -149,13 +156,13 @@ const Variants = ({
                 }}
                 product={product}
                 variants={variants}
-                onChange={vs => setVariants(vs)}
+                onChange={vs => handleChange(vs)}
               />
             </Flex>
           )}
         </Card.Body>
         <Card.Footer px={3} justifyContent="flex-end">
-          <Button variant={"cta"} type="submit">
+          <Button variant={"cta"} type="submit" disabled={saveButtonDisabled}>
             Save
           </Button>
         </Card.Footer>
