@@ -235,7 +235,11 @@ const TagInput = ({
             ))}
           </TagContainer>
         </Container>
-        <Dropdown toggleText={toggleText} sx={{ marginLeft: "10px" }}>
+        <Dropdown
+          disabled={availableOptions.length === 0}
+          toggleText={toggleText}
+          sx={{ marginLeft: "10px" }}
+        >
           {availableOptions.map(option => (
             <div onClick={() => onChange([option, ...values])}>
               {handleOptionRender(option)}

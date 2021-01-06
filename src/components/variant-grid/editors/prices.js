@@ -84,7 +84,11 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
 
       const clean = {
         amount: parseFloat(p.amount),
-        currency_code: p.region_id ? undefined : p.code,
+        currency_code: p.region_id
+          ? undefined
+          : p.code
+          ? p.code
+          : p.currency_code,
         region_id: p.region_id,
       }
 
@@ -110,18 +114,28 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
   }
 
   const addPrice = () => {
+    const currency = currencyOptions.find(
+      co => !prices.map(p => p.currency_code).includes(co.value)
+    )
+
     const newPrices = [
       ...prices,
       {
         edit: true,
         region: "",
-        code: currencyOptions[0].value,
+        code: currency.value,
         amount: "",
         sale_amount: "",
       },
     ]
 
-    setPrices(newPrices)
+    const editable = currencyOptions.length !== newPrices.length
+
+    if (editable) {
+      setPrices(newPrices)
+    } else {
+      setPrices(newPrices.map(p => ({ ...p, edit: false })))
+    }
   }
 
   const handleCurrencySelected = (index, currency) => {
@@ -160,7 +174,11 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
                       width={"150px"}
                       placeholder="100.00"
                       edit={p.edit}
-                      currency={p.code.toUpperCase()}
+                      currency={
+                        p.code
+                          ? p.code.toUpperCase()
+                          : p.currency_code.toUpperCase()
+                      }
                       currencyOptions={currencyOptions}
                       value={p.amount}
                       onCurrencySelected={currency =>

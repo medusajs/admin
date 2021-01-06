@@ -120,7 +120,7 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
               <Flex mb={3} key={`${p.currency_code}${index}`}>
                 <CurrencyInput
                   edit={p.edit}
-                  currency={p.currency_code}
+                  currency={p.currency_code.toUpperCase()}
                   currencyOptions={currencyOptions}
                   value={p.amount}
                   onCurrencySelected={currency =>
@@ -149,6 +149,13 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
             <Text mb={3}>Stock & Inventory</Text>
             <Input mb={3} label="SKU" name="sku" ref={register} />
             <Input mb={3} label="EAN" name="ean" ref={register} />
+            <Input
+              mb={3}
+              label="Inventory"
+              name="inventory_quantity"
+              type="number"
+              ref={register}
+            />
           </Box>
           <Box>
             <Text mb={3}>Danger Zone</Text>

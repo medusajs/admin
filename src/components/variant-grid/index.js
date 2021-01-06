@@ -50,7 +50,10 @@ const getColumns = (product, edit) => {
         buttonText: "Edit",
         formatter: prices => {
           return prices
-            .map(({ currency_code, amount }) => `${amount} ${currency_code}`)
+            .map(
+              ({ currency_code, amount }) =>
+                `${amount} ${currency_code.toUpperCase()}`
+            )
             .join(", ")
         },
       },

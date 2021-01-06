@@ -32,19 +32,19 @@ const Regions = ({ id }) => {
     isLoading,
     fulfillmentOptions: fulfillmentEndpoint,
     update,
+    toaster,
   } = useMedusa("regions", { id })
   const { register, reset, setValue, handleSubmit } = useForm()
 
   useEffect(() => {
     if (storeIsLoading) return
-    setCurrencies(
-      store.currencies
-        ? store.currencies.map(c => ({
-            value: c.code,
-            label: c.code.toUpperCase(),
-          }))
-        : []
-    )
+    if (store.currencies && region) {
+      setCurrencies(getCurrencies(store.currencies))
+    }
+  }, [store, region, storeIsLoading])
+
+  useEffect(() => {
+    if (storeIsLoading) return
     setPaymentOptions(
       store.payment_providers.map(c => paymentProvidersMapper(c.id))
     )
@@ -60,33 +60,58 @@ const Regions = ({ id }) => {
     register({ name: "payment_providers" })
     register({ name: "fulfillment_providers" })
 
-    setValue("countries", region.countries)
+    setValue(
+      "countries",
+      region.countries.map(c => c.iso_2)
+    )
     setCountries(
       region.countries.map(c => ({ value: c.iso_2, label: c.display_name }))
     )
 
-    setValue("payment_providers", region.payment_providers)
+    setValue(
+      "payment_providers",
+      region.payment_providers.map(v => v.id)
+    )
     setPaymentProviders(region.payment_providers.map(v => ({ value: v.id })))
 
-    setValue("fulfillment_providers", region.fulfillment_providers)
+    setValue(
+      "fulfillment_providers",
+      region.fulfillment_providers.map(v => v.id)
+    )
     setFulfillmentProviders(
       region.fulfillment_providers.map(v => ({ value: v.id }))
     )
   }, [region, isLoading])
 
+  const getCurrencies = storeCurrencies => {
+    let currs = storeCurrencies
+      .filter(item => item.code !== region.currency_code)
+      .map(el => el.code)
+    currs.unshift(region.currency_code)
+    console.log(currs)
+    return (
+      currs.map(c => ({
+        value: c,
+        label: c.toUpperCase(),
+      })) || []
+    )
+  }
+
   const handlePaymentChange = values => {
-    setPaymentProviders(values)
+    const providers = values.map(v => ({ value: v.value }))
+    setPaymentProviders(providers)
     setValue(
       "payment_providers",
-      values.map(c => c.value)
+      values.map(v => v.value)
     )
   }
 
   const handleFulfillmentChange = values => {
-    setFulfillmentProviders(values)
+    const providers = values.map(v => ({ value: v.value }))
+    setFulfillmentProviders(providers)
     setValue(
       "fulfillment_providers",
-      values.map(c => c.value)
+      values.map(v => v.value)
     )
   }
 
@@ -98,18 +123,29 @@ const Regions = ({ id }) => {
     )
   }
 
-  const onSave = data => {
-    data.payment_providers = data.payment_providers.map(pp => pp.id)
-    data.fulfillment_providers = data.fulfillment_providers.map(fp => fp.id)
-    data.countries = data.countries.map(c => c.iso_2)
-
-    update(data)
+  const onSave = async data => {
+    try {
+      await update(data)
+      toaster("Successfully updated region", "success")
+    } catch (error) {
+      toaster("Failed to update region", "error")
+    }
   }
 
   const countryOptions = countryData.map(c => ({
     label: c.name,
-    value: c.alpha2,
+    value: c.alpha2.toLowerCase(),
   }))
+
+  if (isLoading || !currencies.length) {
+    return (
+      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
+        <Box height="75px" width="75px" mt="50%">
+          <Spinner dark />
+        </Box>
+      </Flex>
+    )
+  }
 
   return (
     <Flex flexDirection="column" pt={5} mb={5}>

@@ -258,6 +258,8 @@ const NewProduct = ({}) => {
       },
     ]
 
+    console.log(prices)
+
     let parseVariants = [
       {
         title: data.title,
@@ -266,8 +268,8 @@ const NewProduct = ({}) => {
         inventory_quantity: data.inventory_quantity
           ? parseInt(data.inventory_quantity)
           : 0,
-        prices: prices.map(({ currency_code, amount }) => ({
-          currency_code,
+        prices: prices.map(({ code, amount }) => ({
+          currency_code: code,
           amount,
         })),
         options: [{ value: "Default Variant" }],
@@ -325,7 +327,6 @@ const NewProduct = ({}) => {
       const { data } = await Medusa.products.create(product)
       navigate(`/a/products/${data.product.id}`)
     } catch (error) {
-      console.log(error.response)
       const errorData = error.response.data.message
       toaster(`${errorData[0].message}`, "error")
     }
