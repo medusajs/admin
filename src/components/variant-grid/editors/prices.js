@@ -202,7 +202,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
                     </Button>
                   </Flex>
                 ))}
-              {currencyOptions.length > 1 && (
+              {currencyOptions.length !== prices.length && (
                 <Flex>
                   <Button onClick={addPrice} variant="primary">
                     + Add a price
@@ -212,7 +212,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
             </Modal.Content>
             <Modal.Footer justifyContent="flex-end">
               <Button onClick={onSave} variant="primary">
-                Save
+                Close
               </Button>
             </Modal.Footer>
           </Modal.Body>

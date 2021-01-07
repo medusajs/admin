@@ -99,11 +99,20 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
           <Text>Edit Variant</Text>
         </Modal.Header>
         <Modal.Content flexDirection="column">
-          <Box mb={4}>
-            <Input mt={2} mb={3} label="Title" name="title" ref={register} />
+          <Box mb={2}>
+            <Input
+              mt={2}
+              mb={3}
+              label="Title"
+              name="title"
+              ref={register}
+              boldLabel={true}
+            />
           </Box>
-          <Box mb={4}>
-            <Text mb={3}>Options</Text>
+          <Box mb={2}>
+            <Text fontSize={2} mb={3}>
+              Options
+            </Text>
             {options.map((o, index) => (
               <Input
                 mb={3}
@@ -111,10 +120,11 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
                 label={o.title}
                 name={`options.${index}.value`}
                 ref={register}
+                boldLabel={true}
               />
             ))}
           </Box>
-          <Box mb={4}>
+          <Box mb={2}>
             <Text mb={3}>Prices</Text>
             {prices.map((p, index) => (
               <Flex mb={3} key={`${p.currency_code}${index}`}>
@@ -137,7 +147,7 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
                 </Button>
               </Flex>
             ))}
-            {!!currencyOptions.length && (
+            {currencyOptions.length !== prices.length && (
               <Flex mb={3}>
                 <Button onClick={addPrice} variant="primary">
                   + Add a price
@@ -145,15 +155,28 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
               </Flex>
             )}
           </Box>
-          <Box mb={4}>
+          <Box mb={2}>
             <Text mb={3}>Stock & Inventory</Text>
-            <Input mb={3} label="SKU" name="sku" ref={register} />
-            <Input mb={3} label="EAN" name="ean" ref={register} />
+            <Input
+              mb={3}
+              label="SKU"
+              name="sku"
+              boldLabel={true}
+              ref={register}
+            />
+            <Input
+              mb={3}
+              label="EAN"
+              name="ean"
+              boldLabel={true}
+              ref={register}
+            />
             <Input
               mb={3}
               label="Inventory"
               name="inventory_quantity"
               type="number"
+              boldLabel={true}
               ref={register}
             />
           </Box>
@@ -166,7 +189,7 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button type="submit" variant="primary">
-            Save
+            Close
           </Button>
         </Modal.Footer>
       </Modal.Body>
