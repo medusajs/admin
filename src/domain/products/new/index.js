@@ -306,7 +306,7 @@ const NewProduct = ({}) => {
   const submit = async data => {
     const product = parseProduct(data)
 
-    if (!variants.length) {
+    if (!variants.length && hasVariants) {
       toaster(
         `Missing variants. Consider using the simple product, if only one variant should exists`,
         "error"
