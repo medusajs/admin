@@ -87,19 +87,13 @@ const OrderIndex = ({}) => {
 
   const {
     orders,
-    total_count,
+    count,
     hasCache,
     isLoading,
     refresh,
     isReloading,
     toaster,
-  } = useMedusa("orders", {
-    search: {
-      ...filtersOnLoad,
-      fields:
-        "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
-    },
-  })
+  } = useMedusa("orders", { search: { ...filtersOnLoad } })
 
   const handleCopyToClip = val => {
     var tempInput = document.createElement("input")
@@ -170,7 +164,7 @@ const OrderIndex = ({}) => {
     () => {
       if (activeIndex === -1) return
       const o = orders[activeIndex]
-      navigate(`/a/orders/${o._id}`)
+      navigate(`/a/orders/${o.id}`)
     },
     {},
     [activeIndex]
@@ -181,7 +175,7 @@ const OrderIndex = ({}) => {
       return
     }
     const o = orders[activeIndex]
-    const el = document.querySelector(`#order-${o._id}`)
+    const el = document.querySelector(`#order-${o.id}`)
     if (!isInViewport(el)) {
       el.scrollIntoView({
         behavior: "smooth",
@@ -223,13 +217,7 @@ const OrderIndex = ({}) => {
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({
-      search: {
-        ...queryParts,
-        fields:
-          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
-      },
-    })
+    refresh({ search: { ...queryParts } })
   }
 
   const handlePagination = direction => {
@@ -256,13 +244,7 @@ const OrderIndex = ({}) => {
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
-    refresh({
-      search: {
-        ...queryParts,
-        fields:
-          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
-      },
-    }).then(() => {
+    refresh({ search: { ...queryParts } }).then(() => {
       setOffset(updatedOffset)
     })
   }
@@ -289,13 +271,7 @@ const OrderIndex = ({}) => {
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({
-      search: {
-        ...queryParts,
-        fields:
-          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
-      },
-    })
+    refresh({ search: { ...queryParts } })
   }
 
   const handleTabClick = tab => {
@@ -316,13 +292,7 @@ const OrderIndex = ({}) => {
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({
-      search: {
-        ...queryParts,
-        fields:
-          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
-      },
-    })
+    refresh({ search: { ...queryParts } })
   }
 
   const clear = () => {
@@ -429,9 +399,9 @@ const OrderIndex = ({}) => {
               return (
                 <TableRow
                   key={i}
-                  id={`order-${el._id}`}
+                  id={`order-${el.id}`}
                   isHighlighted={i === activeIndex}
-                  onClick={() => navigate(`/a/orders/${el._id}`)}
+                  onClick={() => navigate(`/a/orders/${el.id}`)}
                 >
                   <TableDataCell>
                     <OrderNumCell isCanceled={el.status === "canceled"}>
@@ -439,11 +409,13 @@ const OrderIndex = ({}) => {
                     </OrderNumCell>
                   </TableDataCell>
                   <TableDataCell
-                    data-for={el._id}
-                    data-tip={moment(el.created).format("MMMM Do YYYY HH:mm a")}
+                    data-for={el.id}
+                    data-tip={moment(el.created_at).format(
+                      "MMMM Do YYYY HH:mm a"
+                    )}
                   >
-                    <ReactTooltip id={el._id} place="top" effect="solid" />
-                    {moment(el.created).format("MMM Do YYYY")}
+                    <ReactTooltip id={el.id} place="top" effect="solid" />
+                    {moment(el.created_at).format("MMM Do YYYY")}
                   </TableDataCell>
                   <TableDataCell>{el.email}</TableDataCell>
                   <TableDataCell>

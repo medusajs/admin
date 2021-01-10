@@ -242,13 +242,13 @@ const OrderDetails = ({ id }) => {
                 onClick: () => {
                   setIsHandlingOrder(true)
                   if (order.status === "completed") {
-                    archive(order._id)
+                    archive(order.id)
                       .then(() =>
                         toaster("Order successfully archived", "success")
                       )
                       .catch(() => toaster("Failed to archive order", "error"))
                   } else if (order.status === "pending") {
-                    complete(order._id)
+                    complete(order.id)
                       .then(() =>
                         toaster("Order successfully completed", "success")
                       )
