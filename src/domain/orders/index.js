@@ -30,6 +30,31 @@ import Spinner from "../../components/spinner"
 import Button from "../../components/button"
 import Filter from "./filter-dropdown"
 
+const TabButton = styled.button`
+  border-radius: 0pt;
+  border: none;
+  height: 30px;
+  font-size: 14px;
+  background-color: #fefefe;
+  text-align: left;
+  margin-right: 15px;
+
+  ${props =>
+    props.active &&
+    `
+    border-bottom: 1px solid black;
+    // font-weight: bold;
+  `}
+
+  p {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0px;
+  }
+
+  outline: none;
+`
+
 const OrderNumCell = styled(Text)`
   color: #006fbb;
   z-index: 1000;
@@ -40,6 +65,14 @@ const OrderNumCell = styled(Text)`
     text-decoration: underline;
   }
 `
+
+const Tabs = [
+  { label: "New", value: "new" },
+  { label: "Returns", value: "returns" },
+  { label: "Swaps", value: "swaps" },
+  { label: "Requires action", value: "requires_action" },
+  { label: "All", value: "all" },
+]
 
 const OrderIndex = ({}) => {
   const filtersOnLoad = qs.parse(window.location.search)
@@ -58,6 +91,7 @@ const OrderIndex = ({}) => {
     hasCache,
     isLoading,
     refresh,
+    isReloading,
     toaster,
   } = useMedusa("orders", {
     search: {
@@ -76,6 +110,12 @@ const OrderIndex = ({}) => {
     document.body.removeChild(tempInput)
     toaster("Copied!", "success")
   }
+
+  const [activeTab, setActiveTab] = useState(
+    window.location.search && qs.parse(window.location.search).status
+      ? qs.parse(window.location.search).status
+      : "all"
+  )
 
   const searchRef = useRef(null)
   const [query, setQuery] = useState("")
@@ -200,7 +240,11 @@ const OrderIndex = ({}) => {
       q: query,
       payment_status: paymentFilter.filter || "",
       fulfillment_status: fulfillmentFilter.filter || "",
-      status: statusFilter.filter || "",
+      status: statusFilter.filter
+        ? statusFilter.filter
+        : activeTab !== "all"
+        ? activeTab
+        : "",
       offset: updatedOffset,
       limit,
     }
@@ -230,8 +274,39 @@ const OrderIndex = ({}) => {
       q: query,
       payment_status: paymentFilter.filter || "",
       fulfillment_status: fulfillmentFilter.filter || "",
-      status: statusFilter.filter || "",
+      status: statusFilter.filter
+        ? statusFilter.filter
+        : activeTab
+        ? activeTab
+        : "",
       offset,
+      limit,
+    }
+
+    const prepared = qs.stringify(queryParts, {
+      skipNull: true,
+      skipEmptyString: true,
+    })
+
+    window.history.replaceState(baseUrl, "", `?${prepared}`)
+    refresh({
+      search: {
+        ...queryParts,
+        fields:
+          "_id,display_id,created,email,fulfillment_status,payment_status,payment_method,total,shipping_address",
+      },
+    })
+  }
+
+  const handleTabClick = tab => {
+    if (activeTab === tab) return
+    setActiveTab(tab)
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    const queryParts = {
+      q: query,
+      status: tab !== "all" ? tab : "",
+      offset: 0,
       limit,
     }
 
@@ -309,7 +384,17 @@ const OrderIndex = ({}) => {
           setFulfillmentFilter={setFulfillmentFilter}
         />
       </Flex>
-      {isLoading && !hasCache ? (
+      <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
+        {Tabs.map(tab => (
+          <TabButton
+            active={tab.value === activeTab}
+            onClick={() => handleTabClick(tab.value)}
+          >
+            <p>{tab.label}</p>
+          </TabButton>
+        ))}
+      </Flex>
+      {(isLoading && !hasCache) || isReloading ? (
         <Flex
           flexDirection="column"
           alignItems="center"
@@ -320,6 +405,12 @@ const OrderIndex = ({}) => {
             <Spinner dark />
           </Box>
         </Flex>
+      ) : !orders.length ? (
+        <Flex alignItems="center" justifyContent="center" mt="10%">
+          <Text height="75px" fontSize="16px">
+            No orders found
+          </Text>
+        </Flex>
       ) : (
         <Table>
           <TableHead>
@@ -328,7 +419,7 @@ const OrderIndex = ({}) => {
               <TableHeaderCell>Date</TableHeaderCell>
               <TableHeaderCell>Customer</TableHeaderCell>
               <TableHeaderCell>Fulfillment</TableHeaderCell>
-              <TableHeaderCell>Payment status</TableHeaderCell>
+              <TableHeaderCell>Payment</TableHeaderCell>
               <TableHeaderCell>Total</TableHeaderCell>
               <TableHeaderCell sx={{ maxWidth: "75px" }} />
             </TableHeaderRow>

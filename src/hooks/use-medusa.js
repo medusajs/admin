@@ -36,7 +36,7 @@ const useMedusa = (endpoint, query) => {
 
   const { addToast } = useToasts()
 
-  const fetchData = async (refresh, query, offset, limit) => {
+  const fetchData = async (refresh, query) => {
     if (refresh) {
       setReloading(true)
     } else {
