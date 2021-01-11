@@ -16,9 +16,7 @@ const LineItemLabel = styled(Text)`
 `
 
 const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = Array.isArray(lineItem.content)
-    ? lineItem.content[0].product._id
-    : lineItem.content.product._id
+  const productId = lineItem.variant.product_id
 
   return (
     <Flex pl={3} alignItems="center">
@@ -44,9 +42,9 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
             onClick={() => navigate(`/a/products/${productId}`)}
           >
             {lineItem.title}
-            <br /> {lineItem.content.variant.sku}
+            <br /> {lineItem.variant.sku}
             <br />
-            {(1 + taxRate) * lineItem.content.unit_price} {currency}
+            {(1 + taxRate / 100) * (lineItem.unit_price / 100)} {currency}
           </LineItemLabel>
         </Box>
       </Flex>
@@ -104,7 +102,7 @@ export default ({
                     key={i}
                     currency={order.currency_code}
                     lineItem={lineItem}
-                    taxRate={order.region.tax_rate}
+                    taxRate={order.tax_rate}
                   />
                 ))}
               </Box>

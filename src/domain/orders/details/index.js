@@ -41,7 +41,7 @@ const CustomerEmailLabel = styled(Text)`
 `
 
 const AlignedDecimal = ({ value, currency }) => {
-  const fixed = value.toFixed(2)
+  const fixed = (value / 100).toFixed(2)
   const [numPart, decimalPart] = fixed.split(".")
 
   return (
@@ -50,7 +50,7 @@ const AlignedDecimal = ({ value, currency }) => {
         {numPart}
       </Box>
       .<div>{decimalPart}</div>
-      <Box ml={2}>{currency}</Box>
+      <Box ml={2}>{currency.toUpperCase()}</Box>
     </Flex>
   )
 }
@@ -299,7 +299,8 @@ const OrderDetails = ({ id }) => {
           </Card.Header>
           <Box>
             <Text p={3} fontWeight="bold">
-              {order.total.toFixed(2)} {order.region.currency_code}
+              {(order.total / 100).toFixed(2)}{" "}
+              {order.currency_code.toUpperCase()}
             </Text>
           </Box>
           <Card.Body>
@@ -334,7 +335,11 @@ const OrderDetails = ({ id }) => {
               <Text pb={1} color="gray">
                 Payment
               </Text>
-              <Text>{order.payment_method.provider_id}</Text>
+              <Text>
+                {order.payments
+                  .map(({ provider_id }) => provider_id)
+                  .join(", ")}
+              </Text>
             </Box>
           </Card.Body>
         </Card>
@@ -371,13 +376,10 @@ const OrderDetails = ({ id }) => {
         </Card.Header>
         <Card.Body flexDirection="column">
           <Flex>
-            <Box pl={3} pr={5}>
+            <Box flex={"0 20%"} pl={3} pr={5}>
               <Text color="gray">Subtotal</Text>
               <Text pt={1} color="gray">
                 Shipping
-              </Text>
-              <Text pt={1} color="gray">
-                Tax Amount
               </Text>
               {order.discount_total > 0 && (
                 <Text pt={1} color="gray">
@@ -387,36 +389,41 @@ const OrderDetails = ({ id }) => {
               <Text pt={1} color="gray">
                 Total
               </Text>
+              <Text pt={1} color="gray" fontSize={0} fontStyle={"italic"}>
+                Tax Amount
+              </Text>
             </Box>
             <Box px={3}>
               <Text>
                 <AlignedDecimal
                   currency={order.currency_code}
-                  value={order.subtotal * (1 + order.tax_rate)}
+                  value={order.subtotal * (1 + order.tax_rate / 100)}
                 />
               </Text>
               <Text pt={1}>
                 <AlignedDecimal
                   currency={order.currency_code}
-                  value={order.shipping_total * (1 + order.tax_rate)}
-                />
-              </Text>
-              <Text pt={1}>
-                <AlignedDecimal
-                  currency={order.currency_code}
-                  value={order.tax_total}
+                  value={order.shipping_total * (1 + order.tax_rate / 100)}
                 />
               </Text>
               {order.discount_total > 0 && (
-                <AlignedDecimal
-                  currency={order.currency_code}
-                  value={-order.discount_total}
-                />
+                <Text pt={1}>
+                  <AlignedDecimal
+                    currency={order.currency_code}
+                    value={-order.discount_total * (1 + order.tax_rate / 100)}
+                  />
+                </Text>
               )}
               <Text pt={1}>
                 <AlignedDecimal
                   currency={order.currency_code}
                   value={order.total}
+                />
+              </Text>
+              <Text pt={1} fontSize={0} fontStyle={"italic"}>
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.tax_total}
                 />
               </Text>
             </Box>
@@ -426,29 +433,23 @@ const OrderDetails = ({ id }) => {
             order.payment_status === "refunded" ||
             order.payment_status === "partially_refunded") && (
             <Flex>
-              <Box pl={3} pr={5}>
+              <Box flex={"0 20%"} pl={3} pr={5}>
                 <Text pt={2}>Amount paid</Text>
                 {order.refunded_total > 0 && <Text pt={2}>Refunded</Text>}
               </Box>
-              <Box>
+              <Box px={3}>
                 <Text pt={2}>
-                  {order.refunded_total > 0 ? (
-                    <>
-                      <strike style={{ marginRight: "10px" }}>
-                        {order.total.toFixed(2)} {order.region.currency_code}
-                      </strike>
-                      <>
-                        {(order.total - order.refunded_total).toFixed(2)}{" "}
-                        {order.region.currency_code}
-                      </>
-                    </>
-                  ) : (
-                    `${order.total.toFixed(2)}`
-                  )}
+                  <AlignedDecimal
+                    currency={order.currency_code}
+                    value={order.total}
+                  />
                 </Text>
                 {order.refunded_total > 0 && (
-                  <Text pt={2}>
-                    {order.refunded_total.toFixed(2)} {order.currency_code}
+                  <Text pt={1}>
+                    <AlignedDecimal
+                      currency={order.currency_code}
+                      value={order.refunded_total}
+                    />
                   </Text>
                 )}
               </Box>
