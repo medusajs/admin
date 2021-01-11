@@ -3,7 +3,7 @@ const buildTimeline = order => {
 
   const returns = order.returns.map(r => {
     const items = r.items.map(i => {
-      const line = order.items.find(({ _id }) => i.item_id === _id)
+      const line = order.items.find(({ id }) => i.item_id === id)
       return {
         ...line,
         is_registered: i.is_registered,
@@ -16,28 +16,28 @@ const buildTimeline = order => {
       items,
       status: r.status,
       refund_amount: r.refund_amount,
-      created: r.created,
+      created: r.created_at,
       raw: r,
     }
   })
 
   events.push({
-    id: `${order._id}-placed`,
+    id: `${order.id}-placed`,
     event: "Placed",
     items: order.items,
-    time: order.created,
+    time: order.created_at,
   })
 
   if (returns.length) {
     for (const r of returns) {
       events.push({
-        id: r._id,
+        id: r.id,
         type: "return",
         event: "Items returned",
         items: r.items,
         refund_amount: r.refund_amount,
         status: r.status,
-        time: parseInt(r.created),
+        time: r.created_at,
         raw: r.raw,
       })
     }
@@ -45,19 +45,26 @@ const buildTimeline = order => {
 
   if (order.fulfillments.length) {
     for (const fulfillment of order.fulfillments) {
+      const items = fulfillment.items.map(i => {
+        const line = order.items.find(({ id }) => i.item_id === id)
+        return {
+          ...line,
+          quantity: i.quantity,
+        }
+      })
       events.push({
-        id: `${fulfillment._id}-fulfill`,
+        id: `${fulfillment.id}-fulfill`,
         event: "Items fulfilled",
-        items: fulfillment.items,
-        time: parseInt(fulfillment.created),
+        items,
+        time: fulfillment.created_at,
       })
 
       if (fulfillment.shipped_at) {
         events.push({
-          id: `${fulfillment._id}-ship`,
+          id: `${fulfillment.id}-ship`,
           event: "Items shipped",
-          items: fulfillment.items,
-          time: parseInt(fulfillment.shipped_at),
+          items,
+          time: fulfillment.shipped_at,
         })
       }
     }
@@ -65,17 +72,20 @@ const buildTimeline = order => {
 
   if (order.swaps && order.swaps.length) {
     for (const swap of order.swaps) {
-      const returnLines = swap.return_items.map(i => {
-        const line = order.items.find(({ _id }) => i.item_id === _id)
-        return line
+      const returnLines = swap.return.items.map(i => {
+        const line = order.items.find(({ id }) => i.item_id === id)
+        return {
+          ...line,
+          quantity: i.quantity,
+        }
       })
       events.push({
-        id: swap._id,
+        id: swap.id,
         type: "swap",
         event: "Items swapped",
         items: swap.additional_items,
         return_lines: returnLines,
-        time: parseInt(swap.created),
+        time: swap.created_at,
         raw: swap,
       })
     }

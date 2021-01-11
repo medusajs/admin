@@ -93,7 +93,14 @@ const OrderIndex = ({}) => {
     refresh,
     isReloading,
     toaster,
-  } = useMedusa("orders", { search: { ...filtersOnLoad } })
+  } = useMedusa("orders", {
+    search: {
+      ...filtersOnLoad,
+      expand: "shipping_address",
+      fields:
+        "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+    },
+  })
 
   const handleCopyToClip = val => {
     var tempInput = document.createElement("input")
@@ -439,7 +446,8 @@ const OrderIndex = ({}) => {
                     </Box>
                   </TableDataCell>
                   <TableDataCell>
-                    {parseInt(el.total).toFixed(2)} {el.currency_code}
+                    {(el.total / 100).toFixed(2)}{" "}
+                    {el.currency_code.toUpperCase()}
                   </TableDataCell>
                   <TableDataCell maxWidth="75px">
                     {el.shipping_address.country_code ? (
