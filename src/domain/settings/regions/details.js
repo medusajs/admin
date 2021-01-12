@@ -187,10 +187,10 @@ const Regions = ({ id }) => {
                 inline
                 mb={3}
                 type="number"
-                placeholder="0.25"
-                step="0.01"
+                placeholder="25"
+                step="0.1"
                 min={0}
-                max={1}
+                max={100}
                 name="tax_rate"
                 label="Tax Rate"
                 ref={register}

@@ -189,9 +189,10 @@ const TagInput = ({
     }
   }
 
-  const availableOptions = options.filter(
-    o => !values.find(v => v.value === o.value)
-  )
+  const availableOptions = options
+    .filter(o => !values.find(v => v.value === o.value))
+    .filter(el => !!el)
+  console.log(availableOptions)
 
   return (
     <Flex
