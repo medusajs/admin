@@ -66,7 +66,7 @@ const extractPrice = (prices, order) => {
   }
 
   if (price) {
-    return price.amount * (1 + order.tax_rate)
+    return price.amount * (1 + order.tax_rate / 100)
   }
 
   return 0
@@ -161,7 +161,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
         quantity: quantities[t],
       })),
       additional_items: itemsToAdd.map(i => ({
-        variant_id: i.variant_id,
+        variant_id: i.id,
         quantity: i.quantity,
       })),
     }
@@ -223,7 +223,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (element.value !== "Add a shipping method") {
       setShippingMethod(element.value)
       const method = shippingOptions.find(o => element.value === o.id)
-      setShippingPrice(method.price.amount)
+      console.log(method)
+      setShippingPrice(method.amount)
     } else {
       setShippingMethod()
       setShippingPrice(0)
@@ -239,23 +240,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }
 
   const handleProductSearch = val => {
-    Medusa.products
+    Medusa.variants
       .list({
         q: val,
       })
       .then(({ data }) => {
-        const variants = data.products.reduce((acc, next) => {
-          return acc.concat(
-            next.variants.map(v => ({
-              title: `${next.title} - ${v.title}`,
-              prices: v.prices,
-              inventory_quantity: v.inventory_quantity,
-              sku: v.sku,
-              variant_id: v.id,
-            }))
-          )
-        }, [])
-        setSearchResults(variants)
+        setSearchResults(data.variants)
       })
   }
 
@@ -394,7 +384,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                     />
                     <Box>
                       <Text fontSize={0} mb={0} lineHeight={1}>
-                        {s.title}
+                        {s.product.title} - {s.title}
                       </Text>
                       <Flex>
                         <Text width={"100px"} mt={0} fontSize={"10px"}>

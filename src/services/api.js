@@ -115,6 +115,16 @@ export default {
     },
   },
 
+  variants: {
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      let path = `/admin/variants${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+  },
+
   products: {
     create(product) {
       const path = `/admin/products`
