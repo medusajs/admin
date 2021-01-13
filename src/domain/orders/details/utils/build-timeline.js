@@ -12,11 +12,12 @@ const buildTimeline = order => {
         quantity: i.quantity,
       }
     })
+
     return {
       items,
       status: r.status,
       refund_amount: r.refund_amount,
-      created: r.created_at,
+      created_at: r.created_at,
       raw: r,
     }
   })

@@ -27,7 +27,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const { register, setValue, handleSubmit } = useForm()
 
   const handleReturnToggle = item => {
-    const id = item._id
+    const id = item.id
     const idx = toReturn.indexOf(id)
     if (idx !== -1) {
       const newReturns = [...toReturn]
@@ -43,7 +43,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
       const newQuantities = {
         ...quantities,
-        [item._id]: item.quantity - item.returned_quantity,
+        [item.id]: item.quantity - item.returned_quantity,
       }
 
       setQuantities(newQuantities)
@@ -63,10 +63,10 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }, [])
 
   useEffect(() => {
-    const items = toReturn.map(t => order.items.find(i => i._id === t))
+    const items = toReturn.map(t => order.items.find(i => i.id === t))
     const total =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next._id]
+        return acc + (next.refundable / next.quantity) * quantities[next.id]
       }, 0) - (shippingPrice || 0)
 
     setRefundable(total)
@@ -80,7 +80,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const element = e.target
     const newQuantities = {
       ...quantities,
-      [item._id]: parseInt(element.value),
+      [item.id]: parseInt(element.value),
     }
 
     setQuantities(newQuantities)
@@ -130,8 +130,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       const newQuantities = {}
       for (const item of order.items) {
         if (!item.returned) {
-          newReturns.push(item._id)
-          newQuantities[item._id] = item.quantity - item.returned_quantity
+          newReturns.push(item.id)
+          newQuantities[item.id] = item.quantity - item.returned_quantity
         }
       }
       setQuantities(newQuantities)
@@ -144,7 +144,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const element = e.target
     if (element.value !== "Add a shipping method") {
       setShippingMethod(element.value)
-      const method = shippingOptions.find(o => element.value === o._id)
+      const method = shippingOptions.find(o => element.value === o.id)
       setShippingPrice(method.price.amount)
     } else {
       setShippingMethod()
@@ -200,14 +200,14 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
               return (
                 <Flex
-                  key={item._id}
+                  key={item.id}
                   justifyContent="space-between"
                   fontSize={2}
                   py={2}
                 >
                   <Box width={30} px={2} py={1}>
                     <input
-                      checked={toReturn.includes(item._id)}
+                      checked={toReturn.includes(item.id)}
                       onChange={() => handleReturnToggle(item)}
                       type="checkbox"
                     />
@@ -216,14 +216,14 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                     <Text fontSize={1} lineHeight={"14px"}>
                       {item.title}
                     </Text>
-                    <Text fontSize={0}>{item.content.variant.sku}</Text>
+                    <Text fontSize={0}>{item.variant.sku}</Text>
                   </Box>
                   <Box width={75} px={2} py={1}>
-                    {toReturn.includes(item._id) ? (
+                    {toReturn.includes(item.id) ? (
                       <Input
                         type="number"
                         onChange={e => handleQuantity(e, item)}
-                        value={quantities[item._id] || ""}
+                        value={quantities[item.id] || ""}
                         min={1}
                         max={item.quantity - item.returned_quantity}
                       />
@@ -253,7 +253,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                 onChange={handleShippingSelected}
                 options={shippingOptions.map(o => ({
                   label: o.name,
-                  value: o._id,
+                  value: o.id,
                 }))}
               />
               {shippingMethod && (

@@ -483,7 +483,7 @@ const OrderDetails = ({ id }) => {
                   <Text pb={1} color="gray">
                     Shipping Method
                   </Text>
-                  <Text>{method.name}</Text>
+                  <Text>{method.shipping_option.name}</Text>
                   <Text pt={3} pb={1} color="gray">
                     Data
                   </Text>
@@ -579,18 +579,24 @@ const OrderDetails = ({ id }) => {
             <Text pt={2}>{order.shipping_address.country}</Text>
           </Box>
           <Card.VerticalDivider mx={3} />
-          <Box px={3}>
-            <Text color="gray">Billing</Text>
-            <Text pt={3}>{order.billing_address.address_1}</Text>
-            {order.billing_address.address_2 && (
-              <Text pt={2}>{order.billing_address.address_2}</Text>
-            )}
-            <Text pt={2}>
-              {order.billing_address.postal_code} {order.billing_address.city},{" "}
-              {order.billing_address.country_code}
-            </Text>
-            <Text pt={2}>{order.billing_address.country}</Text>
-          </Box>
+          <Text color="gray">Billing</Text>
+          {order.billing_address_id ? (
+            <Box px={3}>
+              <Text pt={3}>{order.billing_address.address_1}</Text>
+              {order.billing_address.address_2 && (
+                <Text pt={2}>{order.billing_address.address_2}</Text>
+              )}
+              <Text pt={2}>
+                {order.billing_address.postal_code} {order.billing_address.city}
+                , {order.billing_address.country_code}
+              </Text>
+              <Text pt={2}>{order.billing_address.country}</Text>
+            </Box>
+          ) : (
+            <Box px={3}>
+              <Text pt={3}>No billing address</Text>
+            </Box>
+          )}
         </Card.Body>
       </Card>
       {/* METADATA */}
