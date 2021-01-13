@@ -23,7 +23,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
   const handleFulfillToggle = item => {
     setItemError("")
 
-    const id = item._id
+    const id = item.id
     const idx = toFulfill.indexOf(id)
     if (idx !== -1) {
       const newFulfills = [...toFulfill]
@@ -39,7 +39,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
 
       const newQuantities = {
         ...quantities,
-        [item._id]: item.quantity - item.fulfilled_quantity,
+        [item.id]: item.quantity - item.fulfilled_quantity,
       }
 
       setQuantities(newQuantities)
@@ -50,7 +50,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
     const element = e.target
     const newQuantities = {
       ...quantities,
-      [item._id]: parseInt(element.value),
+      [item.id]: parseInt(element.value),
     }
 
     setQuantities(newQuantities)
@@ -69,7 +69,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
 
     if (isSwap && onFulfill) {
       setSubmitting(true)
-      return onFulfill(order._id, {
+      return onFulfill(order.id, {
         metadata,
       })
         .then(() => onDismiss())
@@ -115,8 +115,8 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
       const newQuantities = {}
       for (const item of order.items) {
         if (!item.fulfilled) {
-          newFulfills.push(item._id)
-          newQuantities[item._id] = item.quantity - item.fulfilled_quantity
+          newFulfills.push(item.id)
+          newQuantities[item.id] = item.quantity - item.fulfilled_quantity
         }
       }
       setQuantities(newQuantities)
@@ -174,7 +174,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
                 <Box width={30} px={2} py={1}>
                   {!isSwap && (
                     <input
-                      checked={toFulfill.includes(item._id)}
+                      checked={toFulfill.includes(item.id)}
                       onChange={() => handleFulfillToggle(item)}
                       type="checkbox"
                     />
@@ -184,11 +184,11 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
                   {item.title}
                 </Box>
                 <Box textAlign="center" width={75} px={2} py={1}>
-                  {toFulfill.includes(item._id) ? (
+                  {toFulfill.includes(item.id) ? (
                     <Input
                       type="number"
                       onChange={e => handleQuantity(e, item)}
-                      value={quantities[item._id] || ""}
+                      value={quantities[item.id] || ""}
                       min={1}
                       max={item.quantity - item.fulfilled_quantity}
                       defaultValue={item.quantity - item.fulfilled_quantity}

@@ -26,7 +26,7 @@ const ReceiveMenu = ({
   const { register, setValue, handleSubmit } = useForm()
 
   const handleReturnToggle = item => {
-    const id = item._id
+    const id = item.id
     const idx = toReturn.indexOf(id)
     if (idx !== -1) {
       const newReturns = [...toReturn]
@@ -42,7 +42,7 @@ const ReceiveMenu = ({
 
       const newQuantities = {
         ...quantities,
-        [item._id]: item.quantity - item.returned_quantity,
+        [item.id]: item.quantity - item.returned_quantity,
       }
 
       setQuantities(newQuantities)
@@ -53,7 +53,7 @@ const ReceiveMenu = ({
     let returns = []
     let qty = {}
     returnRequest.items.forEach(i => {
-      const item = order.items.find(l => l._id === i.item_id)
+      const item = order.items.find(l => l.id === i.item_id)
       if (
         item &&
         !item.returned &&
@@ -72,10 +72,10 @@ const ReceiveMenu = ({
   }, [])
 
   useEffect(() => {
-    const items = toReturn.map(t => order.items.find(i => i._id === t))
+    const items = toReturn.map(t => order.items.find(i => i.id === t))
     const total =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next._id]
+        return acc + (next.refundable / next.quantity) * quantities[next.id]
       }, 0) -
       ((returnRequest.shipping_method && returnRequest.shipping_method.price) ||
         0)
@@ -91,7 +91,7 @@ const ReceiveMenu = ({
     const element = e.target
     const newQuantities = {
       ...quantities,
-      [item._id]: parseInt(element.value),
+      [item.id]: parseInt(element.value),
     }
 
     setQuantities(newQuantities)
@@ -116,7 +116,7 @@ const ReceiveMenu = ({
 
     if (!returnRequest.is_swap && onReceiveReturn) {
       setSubmitting(true)
-      return onReceiveReturn(returnRequest._id, {
+      return onReceiveReturn(returnRequest.id, {
         items,
         refund: refundAmount,
       })
@@ -146,8 +146,8 @@ const ReceiveMenu = ({
       const newQuantities = {}
       for (const item of order.items) {
         if (!item.returned) {
-          newReturns.push(item._id)
-          newQuantities[item._id] = item.quantity - item.returned_quantity
+          newReturns.push(item.id)
+          newQuantities[item.id] = item.quantity - item.returned_quantity
         }
       }
       setQuantities(newQuantities)
@@ -195,13 +195,13 @@ const ReceiveMenu = ({
             }
 
             // Swap returns should only show lines associated with the swap
-            if (returnRequest.is_swap && !toReturn.includes(item._id)) {
+            if (returnRequest.is_swap && !toReturn.includes(item.id)) {
               return
             }
 
             return (
               <Flex
-                key={item._id}
+                key={item.id}
                 justifyContent="space-between"
                 fontSize={2}
                 py={2}
@@ -209,7 +209,7 @@ const ReceiveMenu = ({
                 <Box width={30} px={2} py={1}>
                   {!returnRequest.is_swap && (
                     <input
-                      checked={toReturn.includes(item._id)}
+                      checked={toReturn.includes(item.id)}
                       onChange={() => handleReturnToggle(item)}
                       type="checkbox"
                     />
@@ -219,17 +219,17 @@ const ReceiveMenu = ({
                   <Text fontSize={1} lineHeight={"14px"}>
                     {item.title}
                   </Text>
-                  <Text fontSize={0}>{item.content.variant.sku}</Text>
+                  <Text fontSize={0}>{item.variant.sku}</Text>
                 </Box>
                 <Box fontSize={1} width={75} px={2} py={1}>
                   {returnRequest.is_swap ? (
-                    quantities[item._id]
-                  ) : toReturn.includes(item._id) ? (
+                    quantities[item.id]
+                  ) : toReturn.includes(item.id) ? (
                     <Input
                       textAlign={"center"}
                       type="number"
                       onChange={e => handleQuantity(e, item)}
-                      value={quantities[item._id] || ""}
+                      value={quantities[item.id] || ""}
                       min={1}
                       max={item.quantity - item.returned_quantity}
                     />
@@ -238,7 +238,8 @@ const ReceiveMenu = ({
                   )}
                 </Box>
                 <Box width={110} fontSize={1} px={2} py={1}>
-                  {item.refundable.toFixed(2)} {order.currency_code}
+                  {(item.refundable / 100).toFixed(2)}{" "}
+                  {order.currency_code.toUpperCase()}
                 </Box>
               </Flex>
             )

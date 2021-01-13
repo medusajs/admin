@@ -162,7 +162,7 @@ const CurrencyInput = React.forwardRef(
                 onChange={handleCurrencySelected}
               />
             ) : (
-              <TextWrapper>{currency}</TextWrapper>
+              <TextWrapper>{currency.toUpperCase()}</TextWrapper>
             )}
           </CurrencyBox>
           <StyledInput

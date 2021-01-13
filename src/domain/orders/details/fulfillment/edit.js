@@ -41,8 +41,8 @@ const FulfillmentEdit = ({
     const tracking_numbers = data.tracking_numbers.map(({ value }) => value)
 
     if (isSwap && onCreateSwapShipment) {
-      return onCreateSwapShipment(swap._id, {
-        fulfillment_id: fulfillment._id,
+      return onCreateSwapShipment(swap.id, {
+        fulfillment_id: fulfillment.id,
         tracking_numbers,
       })
         .then(() => onDismiss())
@@ -52,7 +52,7 @@ const FulfillmentEdit = ({
 
     if (onCreateShipment) {
       return onCreateShipment({
-        fulfillment_id: fulfillment._id,
+        fulfillment_id: fulfillment.id,
         tracking_numbers,
       })
         .then(() => onDismiss())
