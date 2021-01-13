@@ -54,7 +54,15 @@ const Regions = () => {
                 }}
               >
                 <Box>
-                  <Box width={1}>
+                  <Box
+                    width={1}
+                    maxWidth="400px"
+                    sx={{
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                    }}
+                  >
                     {r.name} ({r.countries.map(c => c.display_name).join(", ")})
                   </Box>
                   <Box width={1} mt={1}>

@@ -229,7 +229,7 @@ const OrderDetails = ({ id }) => {
   const fulfillments = gatherFulfillments(order)
 
   return (
-    <Flex flexDirection="column" mb={5} pt={5}>
+    <Flex flexDirection="column" mb={5} py={5}>
       <Flex flexDirection="column" mb={2}>
         <Card mb={4}>
           <Card.Header
@@ -439,19 +439,34 @@ const OrderDetails = ({ id }) => {
               </Box>
               <Box px={3}>
                 <Text pt={2}>
-                  <AlignedDecimal
-                    currency={order.currency_code}
-                    value={order.total}
-                  />
+                  {order.refunded_total > 0 ? (
+                    <Flex>
+                      <strike style={{ marginRight: "10px" }}>
+                        <AlignedDecimal
+                          currency={order.currency_code}
+                          value={order.total}
+                        />
+                      </strike>
+                      <AlignedDecimal
+                        currency={order.currency_code}
+                        value={order.total - order.refunded_total}
+                      />
+                    </Flex>
+                  ) : (
+                    <AlignedDecimal
+                      currency={order.currency_code}
+                      value={order.total}
+                    />
+                  )}
                 </Text>
-                {order.refunded_total > 0 && (
-                  <Text pt={1}>
+                <Flex pt={2}>
+                  {order.refunded_total > 0 && (
                     <AlignedDecimal
                       currency={order.currency_code}
                       value={order.refunded_total}
                     />
-                  </Text>
-                )}
+                  )}
+                </Flex>
               </Box>
             </Flex>
           )}
