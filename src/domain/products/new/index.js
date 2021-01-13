@@ -263,8 +263,8 @@ const NewProduct = ({}) => {
     let parseVariants = [
       {
         title: data.title,
-        sku: data.sku,
-        ean: data.ean,
+        sku: data.sku || null,
+        ean: data.ean || null,
         inventory_quantity: data.inventory_quantity
           ? parseInt(data.inventory_quantity)
           : 0,
@@ -280,8 +280,8 @@ const NewProduct = ({}) => {
       parseOptions = options
       parseVariants = variants.map(v => ({
         title: v.title,
-        sku: v.sku,
-        ean: v.ean,
+        sku: v.sku || null,
+        ean: v.ean || null,
         inventory_quantity: v.inventory_quantity,
         prices: v.prices.map(({ currency_code, amount }) => ({
           currency_code,

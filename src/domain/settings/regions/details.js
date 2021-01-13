@@ -88,7 +88,7 @@ const Regions = ({ id }) => {
       .filter(item => item.code !== region.currency_code)
       .map(el => el.code)
     currs.unshift(region.currency_code)
-    console.log(currs)
+
     return (
       currs.map(c => ({
         value: c,
@@ -125,6 +125,8 @@ const Regions = ({ id }) => {
 
   const onSave = async data => {
     try {
+      data.tax_rate = data.tax_rate * 100
+
       await update(data)
       toaster("Successfully updated region", "success")
     } catch (error) {
@@ -148,7 +150,7 @@ const Regions = ({ id }) => {
   }
 
   return (
-    <Flex flexDirection="column" pt={5} mb={5}>
+    <Flex flexDirection="column" py={5} mb={5}>
       <Card as="form" mb={3} onSubmit={handleSubmit(onSave)}>
         <Card.Header>Region Details</Card.Header>
         <Card.Body flexDirection="column">
@@ -188,7 +190,7 @@ const Regions = ({ id }) => {
                 mb={3}
                 type="number"
                 placeholder="0.25"
-                step="0.01"
+                step="0.1"
                 min={0}
                 max={1}
                 name="tax_rate"

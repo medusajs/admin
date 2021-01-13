@@ -189,9 +189,9 @@ const TagInput = ({
     }
   }
 
-  const availableOptions = options.filter(
-    o => !values.find(v => v.value === o.value)
-  )
+  const availableOptions = options
+    .filter(o => !values.find(v => v.value === o.value))
+    .filter(el => !!el)
 
   return (
     <Flex
@@ -217,7 +217,6 @@ const TagInput = ({
           alignItems="center"
           className={isFocused ? "tag__focus" : ""}
           focused={isFocused}
-          // flex={"50% 0 0"}
           style={{ position: "relative" }}
         >
           <TagContainer variant={"forms.input"} p={2}>
@@ -226,6 +225,7 @@ const TagInput = ({
                 key={index}
                 lineHeight="1.5"
                 ml={1}
+                mt={1}
                 variant="badge"
                 highlighted={index === highlighted}
               >
