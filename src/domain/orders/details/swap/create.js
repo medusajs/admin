@@ -169,8 +169,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
     if (shippingMethod) {
       data.return_shipping = {
-        id: shippingMethod,
-        price: shippingPrice / (1 + order.tax_rate),
+        option_id: shippingMethod,
+        price: shippingPrice / (1 + order.tax_rate / 100),
       }
     }
 

@@ -97,8 +97,10 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       refund: refundAmount,
     }
     if (shippingMethod) {
-      data.shipping_method = shippingMethod
-      data.shipping_price = shippingPrice / (1 + order.tax_rate)
+      data.return_shipping = {
+        option_id: shippingMethod,
+        price: shippingPrice / (1 + order.tax_rate / 100),
+      }
     }
 
     if (onReturn) {
@@ -145,7 +147,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     if (element.value !== "Add a shipping method") {
       setShippingMethod(element.value)
       const method = shippingOptions.find(o => element.value === o.id)
-      setShippingPrice(method.price.amount)
+      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
       setShippingPrice(0)
