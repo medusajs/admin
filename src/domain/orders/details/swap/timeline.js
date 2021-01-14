@@ -82,12 +82,11 @@ export default ({
   if (
     event.raw.payment_status !== "captured" &&
     event.raw.payment_status !== "difference_refunded" &&
-    event.raw.is_paid &&
-    event.raw.amount_paid !== 0
+    event.raw.difference_due !== 0
   ) {
     actions.push({
       label:
-        event.raw.amount_paid > 0 ? "Capture Payment" : "Refund Difference",
+        event.raw.difference_due > 0 ? "Capture Payment" : "Refund Difference",
       onClick: () => onProcessPayment(event.raw.id),
     })
   }
@@ -183,7 +182,7 @@ export default ({
                 color={payStatusColors.color}
                 bg={payStatusColors.bgColor}
               >
-                {event.raw.is_paid ? event.raw.payment_status : "not_paid"}
+                {event.raw.payment_status}
               </Badge>
               <Text mr={2} fontSize={1} color="grey">
                 Return Status
