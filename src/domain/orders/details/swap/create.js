@@ -323,7 +323,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   </Box>
                   <Box width={110} px={2} py={1}>
                     <Text fontSize={1}>
-                      {(item.refundable / 100).toFixed(2)} {order.currency_code}
+                      {(item.refundable / 100).toFixed(2)}{" "}
+                      {order.currency_code.toUpperCase()}
                     </Text>
                   </Box>
                 </Flex>
@@ -448,7 +449,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                     <Box width={110} px={2} py={1}>
                       <Text fontSize={1}>
                         {extractPrice(item.prices, order).toFixed(2)}{" "}
-                        {order.currency_code}
+                        {order.currency_code.toUpperCase()}
                       </Text>
                     </Box>
                     <Box onClick={() => handleRemoveItem(index)}>&times;</Box>
@@ -470,7 +471,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               Difference
             </Box>
             <Box px={2} width={110} fontSize={1}>
-              {(toPay / 100).toFixed(2)} {order.currency_code}
+              {(toPay / 100).toFixed(2)} {order.currency_code.toUpperCase()}
             </Box>
           </Flex>
         </Modal.Content>
