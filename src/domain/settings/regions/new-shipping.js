@@ -77,6 +77,8 @@ const NewShipping = ({
   const options = fulfillmentOptions.reduce((acc, provider, p) => {
     const filtered = provider.options.filter(o => !!o.is_return === !!isReturn)
 
+    console.log(provider.options)
+
     return acc.concat(
       filtered.map((option, o) => ({
         label: `${option.id} via ${

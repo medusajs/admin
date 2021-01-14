@@ -125,8 +125,6 @@ const Regions = ({ id }) => {
 
   const onSave = async data => {
     try {
-      data.tax_rate = data.tax_rate * 100
-
       await update(data)
       toaster("Successfully updated region", "success")
     } catch (error) {
@@ -192,7 +190,7 @@ const Regions = ({ id }) => {
                 placeholder="0.25"
                 step="0.1"
                 min={0}
-                max={1}
+                max={100}
                 name="tax_rate"
                 label="Tax Rate"
                 ref={register}

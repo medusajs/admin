@@ -66,7 +66,7 @@ const extractPrice = (prices, order) => {
   }
 
   if (price) {
-    return price.amount * (1 + order.tax_rate / 100)
+    return (price.amount * (1 + order.tax_rate / 100)) / 100
   }
 
   return 0
@@ -137,9 +137,10 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
     const newItemsTotal = itemsToAdd.reduce((acc, next) => {
       const price = extractPrice(next.prices, order)
-      const lineTotal = price * next.quantity
+      const lineTotal = price * 100 * next.quantity
       return acc + lineTotal
     }, 0)
+    console.log(newItemsTotal)
 
     setToPay(newItemsTotal - returnTotal)
   }, [toReturn, quantities, shippingPrice, itemsToAdd])
@@ -322,7 +323,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   </Box>
                   <Box width={110} px={2} py={1}>
                     <Text fontSize={1}>
-                      {item.refundable.toFixed(2)} {order.currency_code}
+                      {(item.refundable / 100).toFixed(2)} {order.currency_code}
                     </Text>
                   </Box>
                 </Flex>
@@ -446,7 +447,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                     </Box>
                     <Box width={110} px={2} py={1}>
                       <Text fontSize={1}>
-                        {extractPrice(item.prices, order)} {order.currency_code}
+                        {extractPrice(item.prices, order).toFixed(2)}{" "}
+                        {order.currency_code}
                       </Text>
                     </Box>
                     <Box onClick={() => handleRemoveItem(index)}>&times;</Box>
@@ -468,7 +470,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               Difference
             </Box>
             <Box px={2} width={110} fontSize={1}>
-              {toPay} {order.currency_code}
+              {(toPay / 100).toFixed(2)} {order.currency_code}
             </Box>
           </Flex>
         </Modal.Content>
