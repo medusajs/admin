@@ -93,7 +93,7 @@ export default ({
 
   if (event.raw.fulfillment_status === "not_fulfilled") {
     actions.push({
-      label: "Fulfill Swap...",
+      label: "Fulfill Swap",
       onClick: () => {
         onFulfillSwap(event.raw)
       },
@@ -102,7 +102,7 @@ export default ({
 
   if (event.raw.return_order.status === "requested") {
     actions.push({
-      label: "Receive Return...",
+      label: "Receive Return",
       onClick: () =>
         onReceiveReturn({
           ...event.raw.return_order,

@@ -30,7 +30,9 @@ const Scrollable = styled(Box)`
 `
 
 const DropdownItem = styled.a`
-  padding: 12px 16px;
+  div {
+    padding: 12px 16px;
+  }
   text-decoration: none;
   display: block;
   text-align: left;
