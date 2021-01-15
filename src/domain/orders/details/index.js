@@ -161,11 +161,18 @@ const OrderDetails = ({ id }) => {
         return {
           label: "Capture",
           onClick: () => {
+            setCaptureLoading(true)
             capturePayment()
-              .then(() => toaster("Succesfully captured payment", "success"))
-              .catch(() => toaster("Failed to capture payment", "error"))
+              .then(() => {
+                toaster("Succesfully captured payment", "success")
+                setCaptureLoading(true)
+              })
+              .catch(() => {
+                toaster("Failed to capture payment", "error")
+                setCaptureLoading(true)
+              })
           },
-          isLoading: isHandlingOrder,
+          isLoading: captureLoading,
         }
       }
       default:

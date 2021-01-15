@@ -44,7 +44,7 @@ const Button = ({
             height: "100%",
           }}
         >
-          <Spinner height={"65%"} dark />
+          <Spinner height={"65%"} dark={variant === "cta" ? false : true} />
         </Flex>
       )}
       <Box
