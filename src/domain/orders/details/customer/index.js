@@ -31,13 +31,11 @@ const CustomerInformation = ({
   return (
     <Card mr={3} mb={4} width="100%">
       <Card.Header
-        dropdownOptions={[
-          {
-            type: "primary",
-            label: "Edit",
-            onClick: () => setShow(true),
-          },
-        ]}
+        action={{
+          type: "primary",
+          label: "Edit",
+          onClick: () => setShow(true),
+        }}
       >
         Customer
       </Card.Header>
