@@ -140,7 +140,6 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       const lineTotal = price * 100 * next.quantity
       return acc + lineTotal
     }, 0)
-    console.log(newItemsTotal)
 
     setToPay(newItemsTotal - returnTotal)
   }, [toReturn, quantities, shippingPrice, itemsToAdd])

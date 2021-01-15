@@ -15,6 +15,7 @@ import FulfillmentEdit from "./fulfillment/edit"
 import Timeline from "./timeline"
 import buildTimeline from "./utils/build-timeline"
 import SwapMenu from "./swap/create"
+import CustomerInformation from "./customer"
 
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
 import Dialog from "../../../components/dialog"
@@ -25,20 +26,6 @@ import Spinner from "../../../components/spinner"
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
-
-const CustomerEmailLabel = styled(Text)`
-  ${props =>
-    props.customerExist &&
-    `
-  color: #006fbb;
-  z-index: 1000;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-  `}
-`
 
 const AlignedDecimal = ({ value, currency }) => {
   const fixed = (value / 100).toFixed(2)
@@ -106,12 +93,14 @@ const OrderDetails = ({ id }) => {
   const [captureLoading, setCaptureLoading] = useState(false)
   const [showCancelDialog, setCancelDialog] = useState(false)
   const [showSwap, setShowSwap] = useState(false)
+  const [showEditCustomer, setShowEditCustomer] = useState(false)
   const [isCancelling, setCancelling] = useState(false)
   const [toReceive, setToReceive] = useState(false)
   const [isFulfilling, setIsFulfilling] = useState(false)
 
   const {
     order,
+    update: updateOrder,
     capturePayment,
     requestReturn,
     receiveReturn,
@@ -557,63 +546,13 @@ const OrderDetails = ({ id }) => {
         </Card.Body>
       </Card>
       {/* CUSTOMER */}
-      <Card mr={3} mb={4} width="100%">
-        <Card.Header>Customer</Card.Header>
-        <Card.Body>
-          <Box px={3}>
-            <Text color="gray">Contact</Text>
-            <CustomerEmailLabel
-              pt={3}
-              customerExist={order.customer}
-              onClick={() => {
-                if (order.customer) {
-                  navigate(`/a/customers/${order.customer._id}`)
-                } else {
-                  return
-                }
-              }}
-            >
-              {order.email}
-            </CustomerEmailLabel>
-            <Text pt={2}>
-              {order.shipping_address.first_name}{" "}
-              {order.shipping_address.last_name}
-            </Text>
-          </Box>
-          <Card.VerticalDivider mx={3} />
-          <Box px={3}>
-            <Text color="gray">Shipping</Text>
-            <Text pt={3}>{order.shipping_address.address_1}</Text>
-            {order.shipping_address.address_2 && (
-              <Text pt={2}>{order.shipping_address.address_2}</Text>
-            )}
-            <Text pt={2}>
-              {order.shipping_address.postal_code} {order.shipping_address.city}
-              , {order.shipping_address.country_code}
-            </Text>
-            <Text pt={2}>{order.shipping_address.country}</Text>
-          </Box>
-          <Card.VerticalDivider mx={3} />
-          <Text color="gray">Billing</Text>
-          {order.billing_address_id ? (
-            <Box px={3}>
-              <Text pt={3}>{order.billing_address.address_1}</Text>
-              {order.billing_address.address_2 && (
-                <Text pt={2}>{order.billing_address.address_2}</Text>
-              )}
-              <Text pt={2}>
-                {order.billing_address.postal_code} {order.billing_address.city}
-                , {order.billing_address.country_code}
-              </Text>
-              <Text pt={2}>{order.billing_address.country}</Text>
-            </Box>
-          ) : (
-            <Box px={3}>
-              <Text pt={3}>No billing address</Text>
-            </Box>
-          )}
-        </Card.Body>
-      </Card>
+      <CustomerInformation
+        order={order}
+        updateOrder={updateOrder}
+        show={showEditCustomer}
+        setShow={setShowEditCustomer}
+        toaster={toaster}
+      />
       {/* METADATA */}
       <Card mr={3} width="100%">
         <Card.Header>Raw order</Card.Header>
