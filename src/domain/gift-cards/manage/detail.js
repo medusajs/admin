@@ -15,6 +15,7 @@ import PriceEditor from "../../../components/variant-grid/editors/prices"
 
 const GiftCardDetail = ({ id }) => {
   const [productVariants, setProductVariants] = useState([])
+
   const {
     product,
     isLoading,
@@ -121,7 +122,7 @@ const GiftCardDetail = ({ id }) => {
                   {v.prices
                     .map(
                       ({ currency_code, amount }) =>
-                        `${amount} ${currency_code}`
+                        `${amount / 100} ${currency_code.toUpperCase()}`
                     )
                     .join(", ")}
                 </Box>
@@ -156,7 +157,7 @@ const GiftCardDetail = ({ id }) => {
           </Button>
         </Card.Footer>
       </Card>
-      {product.images && (
+      {product && product.images && (
         <Images
           product={product}
           isLoading={isLoading}

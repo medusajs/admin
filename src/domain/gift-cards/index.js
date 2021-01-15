@@ -24,7 +24,7 @@ import Button from "../../components/button"
 import useMedusa from "../../hooks/use-medusa"
 
 const Index = () => {
-  const { giftCards, isLoading } = useMedusa("giftCards")
+  const { gift_cards, isLoading } = useMedusa("giftCards")
 
   return (
     <div>
@@ -67,27 +67,35 @@ const Index = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {giftCards &&
-              giftCards.map((el, i) => (
+            {gift_cards &&
+              gift_cards.map(el => (
                 <TableRow
                   sx={{ cursor: "pointer" }}
-                  key={i}
+                  key={el.id}
                   onClick={() => navigate(`/a/gift-cards/${el.id}`)}
                 >
                   <TableDataCell>{el.code}</TableDataCell>
                   <TableDataCell>
-                    {(el.value && el.value.toFixed(2)) || <>&nbsp;</>}{" "}
-                    {el.value && el.region.currency_code}
+                    {(el.value &&
+                      (
+                        ((1 + el.region.tax_rate / 100) * el.value) /
+                        100
+                      ).toFixed(2)) || <>&nbsp;</>}{" "}
+                    {el.value && el.region.currency_code.toUpperCase()}
                   </TableDataCell>
                   <TableDataCell>
-                    {(el.balance || 0).toFixed(2)} {el.region.currency_code}
+                    {(
+                      ((1 + el.region.tax_rate / 100) * el.balance) /
+                      100
+                    ).toFixed(2)}{" "}
+                    {el.region.currency_code.toUpperCase()}
                   </TableDataCell>
                   <TableDataCell
                     data-for={el.id}
                     data-tip={moment(el.created).format("MMMM Do YYYY HH:mm a")}
                   >
                     <ReactTooltip id={el.id} place="top" effect="solid" />
-                    {moment(parseInt(el.created)).format("MMM Do YYYY")}
+                    {moment(el.created).format("MMM Do YYYY")}
                   </TableDataCell>
                 </TableRow>
               ))}
