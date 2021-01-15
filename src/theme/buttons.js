@@ -42,7 +42,6 @@ export const buttons = {
     borderRadius: "3px",
     boxShadow: "buttonBoxShadow",
     "&:hover": {
-      color: "darkest",
       boxShadow: "buttonBoxShadowHover",
     },
     "&:active": {

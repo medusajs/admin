@@ -42,14 +42,14 @@ const Shipping = ({ region, fulfillmentMethods }) => {
 
   const dropdownOptions = [
     {
-      label: "Add option...",
+      label: "Add option",
       onClick: () => setAddOption(true),
     },
   ]
 
   const inboundDropdownOptions = [
     {
-      label: "Add return option...",
+      label: "Add return option",
       onClick: () => setAddReturnOption(true),
     },
   ]
@@ -115,7 +115,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                     {prettify(option.price_type)}
                     {option.amount !== undefined &&
                       ` — ${
-                        option.amount
+                        option.amount / 100
                       } ${region.currency_code.toUpperCase()}`}
                   </Text>
                 </Box>
@@ -168,7 +168,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                     {prettify(option.price_type)}
                     {option.amount !== undefined &&
                       ` — ${
-                        option.amount
+                        option.amount / 100
                       } ${region.currency_code.toUpperCase()}`}
                   </Text>
                   <Text>

@@ -46,7 +46,7 @@ const NewShipping = ({
     if (data.requirements) {
       reqs = Object.entries(data.requirements).reduce((acc, [key, value]) => {
         if (parseInt(value) && parseInt(value) > 0) {
-          acc.push({ type: key, value })
+          acc.push({ type: key, amount: value * 100 })
           return acc
         } else {
           return acc
@@ -61,7 +61,7 @@ const NewShipping = ({
       profile_id: data.profile_id,
       requirements: reqs,
       price_type: "flat_rate",
-      amount: data.price.amount,
+      amount: data.price.amount * 100,
       is_return: isReturn,
       provider_id,
     }
@@ -76,8 +76,6 @@ const NewShipping = ({
 
   const options = fulfillmentOptions.reduce((acc, provider, p) => {
     const filtered = provider.options.filter(o => !!o.is_return === !!isReturn)
-
-    console.log(provider.options)
 
     return acc.concat(
       filtered.map((option, o) => ({

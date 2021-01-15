@@ -55,7 +55,7 @@ const Regions = ({ id }) => {
 
   useEffect(() => {
     if (isLoading) return
-    reset(region)
+    reset({ ...region, tax_rate: region.tax_rate / 100 })
     register({ name: "countries" })
     register({ name: "payment_providers" })
     register({ name: "fulfillment_providers" })
@@ -125,7 +125,7 @@ const Regions = ({ id }) => {
 
   const onSave = async data => {
     try {
-      await update(data)
+      await update({ ...data, tax_rate: data.tax_rate * 100 })
       toaster("Successfully updated region", "success")
     } catch (error) {
       toaster("Failed to update region", "error")
@@ -188,9 +188,9 @@ const Regions = ({ id }) => {
                 mb={3}
                 type="number"
                 placeholder="0.25"
-                step="0.1"
+                step="0.01"
                 min={0}
-                max={100}
+                max={1}
                 name="tax_rate"
                 label="Tax Rate"
                 ref={register}
