@@ -235,7 +235,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   </Box>
                   <Box width={110} px={2} py={1}>
                     <Text fontSize={1}>
-                      {item.refundable.toFixed(2)} {order.currency_code}
+                      {(item.refundable / 100).toFixed(2)}{" "}
+                      {order.currency_code.toUpperCase()}
                     </Text>
                   </Box>
                 </Flex>
