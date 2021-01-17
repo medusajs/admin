@@ -10,6 +10,7 @@ import qs from "query-string"
 import ReactCountryFlag from "react-country-flag"
 import ReactTooltip from "react-tooltip"
 import { useHotkeys } from "react-hotkeys-hook"
+import Medusa from "../../services/api"
 
 import Details from "./details"
 import New from "./new"
@@ -70,8 +71,8 @@ const Tabs = [
   { label: "New", value: "new" },
   { label: "Returns", value: "returns" },
   { label: "Swaps", value: "swaps" },
-  { label: "Requires action", value: "requires_action" },
-  { label: "All", value: "all" },
+  // { label: "Requires action", value: "requires_action" },
+  { label: "All", value: "orders" },
 ]
 
 const OrderIndex = ({}) => {
@@ -86,7 +87,7 @@ const OrderIndex = ({}) => {
   }
 
   const {
-    orders,
+    orders: allOrders,
     count,
     hasCache,
     isLoading,
@@ -112,16 +113,15 @@ const OrderIndex = ({}) => {
     toaster("Copied!", "success")
   }
 
-  const [activeTab, setActiveTab] = useState(
-    window.location.search && qs.parse(window.location.search).status
-      ? qs.parse(window.location.search).status
-      : "all"
-  )
-
   const searchRef = useRef(null)
+
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(50)
   const [offset, setOffset] = useState(0)
+  const [orders, setOrders] = useState([])
+  const [activeTab, setActiveTab] = useState("orders")
+  const [fetching, setFetching] = useState(false)
+
   const [statusFilter, setStatusFilter] = useState({ open: false, filter: "" })
   const [fulfillmentFilter, setFulfillmentFilter] = useState({
     open: false,
@@ -189,6 +189,12 @@ const OrderIndex = ({}) => {
       })
     }
   }, [activeIndex])
+
+  useEffect(() => {
+    if (allOrders) {
+      setOrders(allOrders)
+    }
+  }, [allOrders])
 
   const onKeyDown = event => {
     switch (event.key) {
@@ -281,25 +287,48 @@ const OrderIndex = ({}) => {
     refresh({ search: { ...queryParts } })
   }
 
-  const handleTabClick = tab => {
+  const handleTabClick = async tab => {
     if (activeTab === tab) return
+    setFetching(true)
     setActiveTab(tab)
-    const baseUrl = qs.parseUrl(window.location.href).url
-
-    const queryParts = {
-      q: query,
-      status: tab !== "all" ? tab : "",
-      offset: 0,
-      limit,
+    switch (tab) {
+      case "swaps":
+        const swaps = await Medusa.swaps.list()
+        setOrders(swaps.data.swaps)
+        setFetching(false)
+        break
+      case "returns":
+        const returns = await Medusa.returns.list()
+        setOrders(returns.data.returns)
+        setFetching(false)
+        break
+      case "new":
+        refresh({
+          search: {
+            new: true,
+            expand: "shipping_address",
+            fields:
+              "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+          },
+        })
+        setOrders(allOrders)
+        setFetching(false)
+        break
+      case "orders":
+        refresh({
+          search: {
+            expand: "shipping_address",
+            fields:
+              "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+          },
+        })
+        setOrders(allOrders)
+        setFetching(false)
+        break
+      default:
+        setFetching(false)
+        break
     }
-
-    const prepared = qs.stringify(queryParts, {
-      skipNull: true,
-      skipEmptyString: true,
-    })
-
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({ search: { ...queryParts } })
   }
 
   const clear = () => {
@@ -371,7 +400,7 @@ const OrderIndex = ({}) => {
           </TabButton>
         ))}
       </Flex>
-      {(isLoading && !hasCache) || isReloading ? (
+      {(isLoading && !hasCache) || isReloading || fetching ? (
         <Flex
           flexDirection="column"
           alignItems="center"
@@ -394,25 +423,49 @@ const OrderIndex = ({}) => {
             <TableHeaderRow>
               <TableHeaderCell>Order</TableHeaderCell>
               <TableHeaderCell>Date</TableHeaderCell>
-              <TableHeaderCell>Customer</TableHeaderCell>
-              <TableHeaderCell>Fulfillment</TableHeaderCell>
-              <TableHeaderCell>Payment</TableHeaderCell>
-              <TableHeaderCell>Total</TableHeaderCell>
+              {activeTab === "orders" ||
+                (activeTab === "new" && (
+                  <TableHeaderCell>Customer</TableHeaderCell>
+                ))}
+              <TableHeaderCell>
+                {activeTab === "returns" ? "Status" : "Fulfillment"}
+              </TableHeaderCell>
+              {activeTab !== "returns" && (
+                <TableHeaderCell>Payment</TableHeaderCell>
+              )}
+              <TableHeaderCell>
+                {activeTab === "orders" || activeTab === "new"
+                  ? "Total"
+                  : activeTab === "swaps"
+                  ? "Difference due"
+                  : "Refund amount"}
+              </TableHeaderCell>
               <TableHeaderCell sx={{ maxWidth: "75px" }} />
             </TableHeaderRow>
           </TableHead>
           <TableBody>
             {orders.map((el, i) => {
+              const goToId =
+                activeTab === "swaps"
+                  ? el.order_id
+                  : activeTab === "returns" && el.swap
+                  ? el.swap.order_id
+                  : activeTab === "returns"
+                  ? el.order_id
+                  : el.id
+
               return (
                 <TableRow
                   key={i}
                   id={`order-${el.id}`}
                   isHighlighted={i === activeIndex}
-                  onClick={() => navigate(`/a/orders/${el.id}`)}
+                  onClick={() => navigate(`/a/orders/${goToId}`)}
                 >
                   <TableDataCell>
                     <OrderNumCell isCanceled={el.status === "canceled"}>
-                      #{el.display_id}
+                      {activeTab === "orders" || activeTab === "new"
+                        ? `#${el.display_id}`
+                        : `Go to order`}
                     </OrderNumCell>
                   </TableDataCell>
                   <TableDataCell
@@ -424,33 +477,48 @@ const OrderIndex = ({}) => {
                     <ReactTooltip id={el.id} place="top" effect="solid" />
                     {moment(el.created_at).format("MMM Do YYYY")}
                   </TableDataCell>
-                  <TableDataCell>{el.email}</TableDataCell>
+                  {activeTab === "orders" ||
+                    (activeTab === "new" && (
+                      <TableDataCell>{el.email}</TableDataCell>
+                    ))}
                   <TableDataCell>
                     <Box>
                       <Badge
                         color={decideBadgeColor(el.fulfillment_status).color}
                         bg={decideBadgeColor(el.fulfillment_status).bgColor}
                       >
-                        {el.fulfillment_status}
+                        {activeTab === "returns"
+                          ? el.status
+                          : el.fulfillment_status}
                       </Badge>
                     </Box>
                   </TableDataCell>
+                  {activeTab !== "returns" && (
+                    <TableDataCell>
+                      <Box>
+                        <Badge
+                          color={decideBadgeColor(el.payment_status).color}
+                          bg={decideBadgeColor(el.payment_status).bgColor}
+                        >
+                          {el.payment_status}
+                        </Badge>
+                      </Box>
+                    </TableDataCell>
+                  )}
                   <TableDataCell>
-                    <Box>
-                      <Badge
-                        color={decideBadgeColor(el.payment_status).color}
-                        bg={decideBadgeColor(el.payment_status).bgColor}
-                      >
-                        {el.payment_status}
-                      </Badge>
-                    </Box>
-                  </TableDataCell>
-                  <TableDataCell>
-                    {(el.total / 100).toFixed(2)}{" "}
-                    {el.currency_code.toUpperCase()}
+                    {activeTab === "orders" || activeTab === "new" ? (
+                      <>
+                        {(el.total / 100).toFixed(2)}{" "}
+                        {el.currency_code.toUpperCase()}
+                      </>
+                    ) : activeTab === "swaps" ? (
+                      <>{(el.difference_due / 100).toFixed(2)} </>
+                    ) : (
+                      <>{(el.refund_amount / 100).toFixed(2)} </>
+                    )}
                   </TableDataCell>
                   <TableDataCell maxWidth="75px">
-                    {el.shipping_address.country_code ? (
+                    {el.shipping_address?.country_code ? (
                       <ReactCountryFlag
                         style={{ maxHeight: "100%", marginBottom: "0px" }}
                         svg

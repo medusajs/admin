@@ -126,7 +126,7 @@ export default ({
         <Flex mb={4} px={3} width={"100%"} justifyContent="space-between">
           <Box>
             <Flex mb={2}>
-              <Text mr={100} fontSize={1} color="grey">
+              <Text mr={100} fontSize={1} color="grey" fontWeight="500">
                 Swap Requested
               </Text>
               <Box>

@@ -91,7 +91,7 @@ export default ({
                 pb={3}
                 mb={3}
               >
-                <Text ml={3} fontSize={1} color="grey">
+                <Text ml={3} fontSize={1} color="grey" fontWeight="500" mb={2}>
                   {event.event}
                 </Text>
                 <Text fontSize="11px" color="grey" ml={3} mb={3}>

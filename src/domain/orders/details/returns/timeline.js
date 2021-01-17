@@ -55,7 +55,7 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
 export default ({ event, order, onReceiveReturn }) => {
   return (
     <Box sx={{ borderBottom: "hairline" }} pb={3} mb={3} px={3}>
-      <Text fontSize={1} color="grey">
+      <Text fontSize={1} color="grey" fontWeight="500">
         Return {event.status}
       </Text>
       <Text fontSize="11px" color="grey" mb={3}>
