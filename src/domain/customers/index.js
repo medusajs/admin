@@ -143,7 +143,7 @@ const CustomerIndex = () => {
             {customers.map((el, i) => (
               <TableRow
                 key={i}
-                onClick={() => navigate(`/a/customers/${el._id}`)}
+                onClick={() => navigate(`/a/customers/${el.id}`)}
               >
                 <TableDataCell>{el.email ? el.email : ""}</TableDataCell>
                 <TableDataCell>
