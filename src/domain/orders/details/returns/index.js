@@ -119,7 +119,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const value = element.value
 
     if (value < order.refundable_amount && value >= 0) {
-      setRefundAmount(parseFloat(element.value))
+      setRefundAmount(parseFloat(element.value) * 100)
     }
   }
 
@@ -158,7 +158,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const element = e.target
     const value = element.value
     if (value >= 0) {
-      setShippingPrice(parseFloat(value))
+      setShippingPrice(parseFloat(value) * 100)
     }
   }
 
@@ -267,7 +267,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   <Box px={2} width={110}>
                     <CurrencyInput
                       currency={order.currency_code}
-                      value={shippingPrice}
+                      value={shippingPrice / 100}
                       onChange={handleUpdateShippingPrice}
                     />
                   </Box>
@@ -292,7 +292,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
               <Box px={2} width={110}>
                 <CurrencyInput
                   currency={order.currency_code}
-                  value={refundAmount}
+                  value={refundAmount / 100}
                   onChange={handleRefundUpdated}
                 />
               </Box>

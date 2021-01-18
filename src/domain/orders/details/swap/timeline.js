@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
+import { navigate } from "gatsby"
 import styled from "@emotion/styled"
 import moment from "moment"
 import ReactTooltip from "react-tooltip"
@@ -50,7 +51,8 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
             {lineItem.title}
             <br /> {lineItem.variant.sku}
             <br />
-            {(1 + taxRate) * lineItem.unit_price} {currency}
+            {((100 + taxRate) * lineItem.unit_price) / 10000}{" "}
+            {currency.toUpperCase()}
           </LineItemLabel>
         </Box>
       </Flex>

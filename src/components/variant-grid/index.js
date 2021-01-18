@@ -52,7 +52,7 @@ const getColumns = (product, edit) => {
           return prices
             .map(
               ({ currency_code, amount }) =>
-                `${amount} ${currency_code.toUpperCase()}`
+                `${(amount / 100).toFixed(2)} ${currency_code.toUpperCase()}`
             )
             .join(", ")
         },

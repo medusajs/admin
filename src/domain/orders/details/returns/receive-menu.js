@@ -72,12 +72,15 @@ const ReceiveMenu = ({
   }, [])
 
   useEffect(() => {
+    if (!toReturn.length) return
+
     const items = toReturn.map(t => order.items.find(i => i.id === t))
     const total =
       items.reduce((acc, next) => {
         return acc + (next.refundable / next.quantity) * quantities[next.id]
       }, 0) -
-      ((returnRequest.shipping_method && returnRequest.shipping_method.price) ||
+      ((returnRequest.shipping_method &&
+        returnRequest.shipping_method.price * (1 + order.tax_rate / 100)) ||
         0)
 
     setRefundable(total)
@@ -133,7 +136,7 @@ const ReceiveMenu = ({
     const value = element.value
 
     if (value < order.refundable_amount && value >= 0) {
-      setRefundAmount(parseFloat(element.value))
+      setRefundAmount(parseFloat(element.value) * 100)
     }
   }
 
@@ -261,8 +264,11 @@ const ReceiveMenu = ({
                       Shipping cost
                     </Box>
                     <Box px={2} fontSize={1} width={110}>
-                      {returnRequest.shipping_method.price.toFixed(2)}{" "}
-                      {order.currency_code}
+                      {(
+                        (returnRequest.shipping_method.price / 100) *
+                        (1 + order.tax_rate / 100)
+                      ).toFixed(2)}{" "}
+                      {order.currency_code.toUpperCase()}
                     </Box>
                   </Flex>
                 )}
@@ -281,7 +287,7 @@ const ReceiveMenu = ({
                 <Box px={2} width={110}>
                   <CurrencyInput
                     currency={order.currency_code}
-                    value={refundAmount}
+                    value={refundAmount / 100}
                     onChange={handleRefundUpdated}
                   />
                 </Box>
