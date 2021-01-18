@@ -223,8 +223,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (element.value !== "Add a shipping method") {
       setShippingMethod(element.value)
       const method = shippingOptions.find(o => element.value === o.id)
-      console.log(method)
-      setShippingPrice(method.amount)
+      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
       setShippingPrice(0)
@@ -235,7 +234,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     const element = e.target
     const value = element.value
     if (value >= 0) {
-      setShippingPrice(parseFloat(value))
+      setShippingPrice(parseFloat(value) * 100)
     }
   }
 
@@ -354,7 +353,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   <Box px={2} width={110}>
                     <CurrencyInput
                       currency={order.currency_code}
-                      value={shippingPrice}
+                      value={shippingPrice / 100}
                       onChange={handleUpdateShippingPrice}
                     />
                   </Box>

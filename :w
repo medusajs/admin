@@ -119,7 +119,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const value = element.value
 
     if (value < order.refundable_amount && value >= 0) {
-      setRefundAmount(parseFloat(element.value) * 100)
+      setRefundAmount(parseFloat(element.value))
     }
   }
 
@@ -147,6 +147,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     if (element.value !== "Add a shipping method") {
       setShippingMethod(element.value)
       const method = shippingOptions.find(o => element.value === o.id)
+      console.log(method.amount)
       setShippingPrice(method.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
@@ -158,7 +159,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const element = e.target
     const value = element.value
     if (value >= 0) {
-      setShippingPrice(parseFloat(value) * 100)
+      setShippingPrice(parseFloat(value))
     }
   }
 
@@ -267,7 +268,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   <Box px={2} width={110}>
                     <CurrencyInput
                       currency={order.currency_code}
-                      value={shippingPrice / 100}
+                      value={shippingPrice}
                       onChange={handleUpdateShippingPrice}
                     />
                   </Box>
@@ -292,7 +293,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
               <Box px={2} width={110}>
                 <CurrencyInput
                   currency={order.currency_code}
-                  value={refundAmount / 100}
+                  value={refundAmount}
                   onChange={handleRefundUpdated}
                 />
               </Box>
