@@ -57,7 +57,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
     const newPrices = [...prices]
     newPrices[index] = {
       ...newPrices[index],
-      sale_amount: value,
+      sale_amount: Math.floor(value * 100),
     }
 
     setPrices(newPrices)
@@ -70,7 +70,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
     const newPrices = [...prices]
     newPrices[index] = {
       ...newPrices[index],
-      amount: value,
+      amount: Math.floor(value * 100),
     }
 
     setPrices(newPrices)
@@ -83,7 +83,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
       }
 
       const clean = {
-        amount: parseFloat(p.amount),
+        amount: parseInt(p.amount),
         currency_code: p.region_id
           ? undefined
           : p.code
@@ -93,7 +93,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
       }
 
       if (typeof p.sale_amount !== "undefined" && p.sale_price !== "") {
-        const amount = parseFloat(p.sale_amount)
+        const amount = parseInt(p.sale_amount)
         if (!isNaN(amount)) {
           clean.sale_amount = amount
         }
@@ -180,7 +180,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
                           : p.currency_code.toUpperCase()
                       }
                       currencyOptions={currencyOptions}
-                      value={p.amount}
+                      value={p.amount / 100}
                       onCurrencySelected={currency =>
                         handleCurrencySelected(index, currency)
                       }
@@ -192,7 +192,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
                       mx={3}
                       placeholder="50.00"
                       onChange={e => handleSalePriceChange(index, e)}
-                      value={p.sale_amount}
+                      value={p.sale_amount && p.sale_amount / 100}
                     />
                     <Button
                       onClick={() => removePrice(index)}
