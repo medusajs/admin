@@ -22,6 +22,7 @@ import {
   TableRow,
   TableDataCell,
   TableHeaderRow,
+  TableLinkRow,
 } from "../../components/table"
 import Badge from "../../components/badge"
 
@@ -71,7 +72,6 @@ const Tabs = [
   { label: "New", value: "new" },
   { label: "Returns", value: "returns" },
   { label: "Swaps", value: "swaps" },
-  // { label: "Requires action", value: "requires_action" },
   { label: "All", value: "orders" },
 ]
 
@@ -88,7 +88,6 @@ const OrderIndex = ({}) => {
 
   const {
     orders: allOrders,
-    count,
     hasCache,
     isLoading,
     refresh,
@@ -116,8 +115,8 @@ const OrderIndex = ({}) => {
   const searchRef = useRef(null)
 
   const [query, setQuery] = useState("")
-  const [limit, setLimit] = useState(50)
-  const [offset, setOffset] = useState(0)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 0)
+  const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [orders, setOrders] = useState([])
   const [activeTab, setActiveTab] = useState("orders")
   const [fetching, setFetching] = useState(false)
@@ -218,11 +217,8 @@ const OrderIndex = ({}) => {
 
     const queryParts = {
       q: query,
-      payment_status: paymentFilter.filter || "",
-      fulfillment_status: fulfillmentFilter.filter || "",
-      status: statusFilter.filter || "",
-      offset,
-      limit,
+      offset: 0,
+      limit: 50,
     }
     const prepared = qs.stringify(queryParts, {
       skipNull: true,
@@ -230,7 +226,14 @@ const OrderIndex = ({}) => {
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({ search: { ...queryParts } })
+    refresh({
+      search: {
+        ...queryParts,
+        expand: "shipping_address",
+        fields:
+          "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+      },
+    })
   }
 
   const handlePagination = direction => {
@@ -257,7 +260,14 @@ const OrderIndex = ({}) => {
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
-    refresh({ search: { ...queryParts } }).then(() => {
+    refresh({
+      search: {
+        ...queryParts,
+        expand: "shipping_address",
+        fields:
+          "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+      },
+    }).then(() => {
       setOffset(updatedOffset)
     })
   }
@@ -374,6 +384,7 @@ const OrderIndex = ({}) => {
         <Button
           onClick={() => searchQuery()}
           variant={"primary"}
+          disabled={activeTab !== "orders" && activeTab !== "new"}
           fontSize="12px"
           mr={2}
         >
@@ -423,10 +434,9 @@ const OrderIndex = ({}) => {
             <TableHeaderRow>
               <TableHeaderCell>Order</TableHeaderCell>
               <TableHeaderCell>Date</TableHeaderCell>
-              {activeTab === "orders" ||
-                (activeTab === "new" && (
-                  <TableHeaderCell>Customer</TableHeaderCell>
-                ))}
+              {(activeTab === "orders" || activeTab === "new") && (
+                <TableHeaderCell>Customer</TableHeaderCell>
+              )}
               <TableHeaderCell>
                 {activeTab === "returns" ? "Status" : "Fulfillment"}
               </TableHeaderCell>
@@ -455,11 +465,11 @@ const OrderIndex = ({}) => {
                   : el.id
 
               return (
-                <TableRow
+                <TableLinkRow
                   key={i}
+                  to={`/a/orders/${goToId}`}
                   id={`order-${el.id}`}
                   isHighlighted={i === activeIndex}
-                  onClick={() => navigate(`/a/orders/${goToId}`)}
                 >
                   <TableDataCell>
                     <OrderNumCell isCanceled={el.status === "canceled"}>
@@ -477,10 +487,9 @@ const OrderIndex = ({}) => {
                     <ReactTooltip id={el.id} place="top" effect="solid" />
                     {moment(el.created_at).format("MMM Do YYYY")}
                   </TableDataCell>
-                  {activeTab === "orders" ||
-                    (activeTab === "new" && (
-                      <TableDataCell>{el.email}</TableDataCell>
-                    ))}
+                  {(activeTab === "orders" || activeTab === "new") && (
+                    <TableDataCell>{el.email}</TableDataCell>
+                  )}
                   <TableDataCell>
                     <Box>
                       <Badge
@@ -528,7 +537,7 @@ const OrderIndex = ({}) => {
                       ""
                     )}
                   </TableDataCell>
-                </TableRow>
+                </TableLinkRow>
               )
             })}
           </TableBody>

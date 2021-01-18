@@ -1,6 +1,7 @@
 import React from "react"
 import { Box, Flex } from "rebass"
 import styled from "@emotion/styled"
+import { Link } from "gatsby"
 
 const StyledTable = styled(Box)`
   // box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
@@ -8,6 +9,40 @@ const StyledTable = styled(Box)`
 `
 
 const StyledTableRow = styled(Flex)`
+  position: relative;
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    height: 100%;
+    background-color: ${props =>
+      props.isHighlighted ? "#454545" : "transparent"};
+  }
+  td:nth-of-type(1) {
+    padding-left: 15px;
+  }
+  th:nth-of-type(1) {
+    padding-left: 15px;
+  }
+`
+
+const StyledTableLinkRow = styled(Link)`
+  display: flex;
+  text-decoration: none;
+  color: black;
+
+  > div {
+    color: blue;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
   position: relative;
   &::before {
     content: "";
@@ -72,9 +107,24 @@ export const TableRow = React.forwardRef((props, ref) => (
   <StyledTableRow
     tabIndex="1"
     ref={ref}
-    as="tr"
+    as={props.to ? "a" : "tr"}
+    href={props.to}
     variant="tr"
     sx={{
+      top: 0,
+      cursor: "pointer",
+      height: "55px",
+    }}
+    {...props}
+  />
+))
+
+export const TableLinkRow = React.forwardRef((props, ref) => (
+  <StyledTableLinkRow
+    tabIndex="1"
+    ref={ref}
+    to={props.to}
+    style={{
       top: 0,
       cursor: "pointer",
       height: "55px",

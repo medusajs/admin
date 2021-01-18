@@ -258,8 +258,6 @@ const NewProduct = ({}) => {
       },
     ]
 
-    console.log(prices)
-
     let parseVariants = [
       {
         title: data.title,
@@ -270,7 +268,7 @@ const NewProduct = ({}) => {
           : 0,
         prices: prices.map(({ code, amount }) => ({
           currency_code: code,
-          amount,
+          amount: amount * 100,
         })),
         options: [{ value: "Default Variant" }],
       },
@@ -285,7 +283,7 @@ const NewProduct = ({}) => {
         inventory_quantity: v.inventory_quantity,
         prices: v.prices.map(({ currency_code, amount }) => ({
           currency_code,
-          amount,
+          amount: amount * 100,
         })),
         options: v.options.map(o => ({ value: o })),
       }))

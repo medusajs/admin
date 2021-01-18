@@ -115,7 +115,7 @@ const CurrencyInput = React.forwardRef(
     return (
       <Flex
         alignItems={inline && "center"}
-        flexDirection={inline ? "row" : "column"}
+        flexDirection={inline || removable ? "row" : "column"}
         {...props}
       >
         {label && (
@@ -137,7 +137,7 @@ const CurrencyInput = React.forwardRef(
         )}
         <Flex
           fontSize={1}
-          flex={"50% 0 0"}
+          flex={removable ? "auto" : "50% 0 0"}
           alignItems="center"
           className={isFocused ? "tag__focus" : ""}
           focused={isFocused}
