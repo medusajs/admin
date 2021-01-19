@@ -73,7 +73,7 @@ const DiscountIndex = () => {
                   onClick={() => navigate(`/a/discounts/${el.id}`)}
                 >
                   <TableDataCell>{el.code}</TableDataCell>
-                  <TableDataCell>{el.discount_rule.description}</TableDataCell>
+                  <TableDataCell>{el.rule.description}</TableDataCell>
                   <TableDataCell>{new Date().toLocaleString()}</TableDataCell>
                   <TableDataCell>{new Date().toLocaleString()}</TableDataCell>
                   <TableDataCell>

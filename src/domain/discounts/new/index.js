@@ -117,14 +117,14 @@ const NewDiscount = ({}) => {
   }
 
   const submit = data => {
-    data.discount_rule.value = parseInt(data.discount_rule.value)
-    data.discount_rule.valid_for = validProducts()
+    data.rule.value = parseInt(data.rule.value)
+    data.rule.valid_for = validProducts()
     data.regions = validRegions()
 
     const discount = {
       code: data.code,
       is_dynamic: data.is_dynamic === "true",
-      discount_rule: data.discount_rule,
+      rule: data.rule,
       regions: data.regions || [],
     }
 
@@ -147,7 +147,7 @@ const NewDiscount = ({}) => {
 
   const onRegionSelect = data => {
     if (data.length > 1) {
-      setValue("discount_rule.type", "percentage")
+      setValue("rule.type", "percentage")
     }
     console.log(data)
     setSelectedRegions(data)
@@ -235,7 +235,7 @@ const NewDiscount = ({}) => {
           width="75%"
           label="Description"
           required={true}
-          name="discount_rule.description"
+          name="rule.description"
           placeholder="Summer sale 2020"
           ref={register({ required: true })}
         />
@@ -245,7 +245,7 @@ const NewDiscount = ({}) => {
           width="75%"
           type="number"
           required={true}
-          name="discount_rule.value"
+          name="rule.value"
           placeholder="10"
           ref={register({ required: true })}
         />
@@ -256,7 +256,7 @@ const NewDiscount = ({}) => {
               type="radio"
               ref={register({ required: true })}
               id="percentage"
-              name="discount_rule.type"
+              name="rule.type"
               value="percentage"
               style={{ marginRight: "5px" }}
             />
@@ -271,7 +271,7 @@ const NewDiscount = ({}) => {
               type="radio"
               ref={register({ required: true })}
               id="fixed"
-              name="discount_rule.type"
+              name="rule.type"
               value="fixed"
               disabled={selectedRegions.length > 1}
               style={{ marginRight: "5px" }}
@@ -295,7 +295,7 @@ const NewDiscount = ({}) => {
               type="radio"
               ref={register({ required: true })}
               id="total"
-              name="discount_rule.allocation"
+              name="rule.allocation"
               value="total"
               style={{ marginRight: "5px" }}
             />
@@ -310,7 +310,7 @@ const NewDiscount = ({}) => {
               type="radio"
               ref={register({ required: true })}
               id="item"
-              name="discount_rule.allocation"
+              name="rule.allocation"
               value="item"
               style={{ marginRight: "5px" }}
             />

@@ -146,7 +146,7 @@ const NewOrder = ({}) => {
           <Input
             mb={3}
             label="Description"
-            name="discount_rule.description"
+            name="rule.description"
             placeholder="Summer sale 2020"
             ref={register}
           />
@@ -154,7 +154,7 @@ const NewOrder = ({}) => {
             mb={3}
             label="Value"
             type="number"
-            name="discount_rule.value"
+            name="rule.value"
             placeholder="10"
             ref={register}
           />
@@ -162,7 +162,7 @@ const NewOrder = ({}) => {
           <StyledLabel>
             <Flex alignItems="center">
               <StyledRadio
-                name="discount_rule.type"
+                name="rule.type"
                 id="percentage"
                 value="percentage"
                 ref={register}
@@ -175,7 +175,7 @@ const NewOrder = ({}) => {
           <StyledLabel mb={3} fontSize="10px" color="gray">
             <Flex alignItems="center">
               <StyledRadio
-                name="discount_rule.type"
+                name="rule.type"
                 id="fixed"
                 value="fixed"
                 ref={register}
@@ -189,7 +189,7 @@ const NewOrder = ({}) => {
           <StyledLabel fontSize="10px" color="gray">
             <Flex alignItems="center">
               <StyledRadio
-                name="discount_rule.allocation"
+                name="rule.allocation"
                 id="Total"
                 value="total"
                 ref={register}
@@ -202,7 +202,7 @@ const NewOrder = ({}) => {
           <StyledLabel mb={3} fontSize="10px" color="gray">
             <Flex alignItems="center">
               <StyledRadio
-                name="discount_rule.type"
+                name="rule.type"
                 id="item"
                 value="item"
                 ref={register}

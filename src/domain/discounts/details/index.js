@@ -88,7 +88,7 @@ const Divider = props => (
 
 const DiscountDetails = ({ id }) => {
   const [selectedProducts, setSelectedProducts] = useState(
-    discount && discount.discount_rule ? discount.discount_rule.valid_for : []
+    discount && discount.rule ? discount.rule.valid_for : []
   )
   const [updating, setUpdating] = useState(false)
   const [showRuleEdit, setShowRuleEdit] = useState(false)
@@ -171,7 +171,7 @@ const DiscountDetails = ({ id }) => {
   const handleDiscountRuleUpdate = data => {
     setUpdating(true)
     update({
-      discount_rule: data,
+      rule: data,
     })
       .then(() => {
         refresh({ id })
@@ -313,20 +313,20 @@ const DiscountDetails = ({ id }) => {
               </Text>
             </Box>
             <Box px={3}>
-              <Text>{discount.discount_rule.description}</Text>
-              <Text pt={1}>{discount.discount_rule.type}</Text>
-              <Text pt={1}>{discount.discount_rule.value}</Text>
-              <Text pt={1}>{discount.discount_rule.allocation}</Text>
+              <Text>{discount.rule.description}</Text>
+              <Text pt={1}>{discount.rule.type}</Text>
+              <Text pt={1}>{discount.rule.value}</Text>
+              <Text pt={1}>{discount.rule.allocation}</Text>
             </Box>
           </Box>
           <Divider m={3} />
           <Box>
-            {discount.discount_rule.valid_for.length ? (
+            {discount.rule.valid_for.length ? (
               <>
                 <Text ml={3} mb={2}>
                   Applicable product(s)
                 </Text>
-                {discount.discount_rule.valid_for.map(product => (
+                {discount.rule.valid_for.map(product => (
                   <Box
                     key={product.id}
                     pl={3}

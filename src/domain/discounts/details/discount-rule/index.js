@@ -78,14 +78,12 @@ const RequiredLabel = styled.div`
 
 const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const { register, handleSubmit } = useForm()
-  const [discountRule, setDiscountRule] = useState(discount.discount_rule)
-  const [type, setType] = useState(discount.discount_rule.type)
-  const [allocation, setAllocation] = useState(
-    discount.discount_rule.allocation
-  )
+  const [discountRule, setDiscountRule] = useState(discount.rule)
+  const [type, setType] = useState(discount.rule.type)
+  const [allocation, setAllocation] = useState(discount.rule.allocation)
 
   const [selectedProducts, setSelectedProducts] = useState(
-    discount.discount_rule.valid_for.map(({ id, title }) => ({
+    discount.rule.valid_for.map(({ id, title }) => ({
       value: id,
       label: title,
     }))
@@ -109,7 +107,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const onSubmit = data => {
     data.value = parseInt(data.value)
     data.valid_for = validProducts()
-    data.id = discount.discount_rule.id
+    data.id = discount.rule.id
     onUpdate(data)
   }
 

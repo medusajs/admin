@@ -117,7 +117,7 @@ const GiftCardDetail = ({ id }) => {
   const handleDiscountRuleUpdate = data => {
     setUpdating(true)
     update({
-      discount_rule: data,
+      rule: data,
     })
       .then(() => {
         refresh({ id })
