@@ -229,32 +229,32 @@ const OrderDetails = ({ id }) => {
       <Flex flexDirection="column" mb={2}>
         <Card mb={4}>
           <Card.Header
-          // dropdownOptions={orderDropdown}
-          // action={
-          //   order.status !== "archived" &&
-          //   order.status !== "canceled" && {
-          //     type: "",
-          //     label: order.status === "completed" ? "Archive" : "Complete",
-          //     onClick: () => {
-          //       setIsHandlingOrder(true)
-          //       if (order.status === "completed") {
-          //         archive(order.id)
-          //           .then(() =>
-          //             toaster("Order successfully archived", "success")
-          //           )
-          //           .catch(() => toaster("Failed to archive order", "error"))
-          //       } else if (order.status === "pending") {
-          //         complete(order.id)
-          //           .then(() =>
-          //             toaster("Order successfully completed", "success")
-          //           )
-          //           .catch(() => toaster("Failed to complete order", "error"))
-          //       }
-          //       setIsHandlingOrder(false)
-          //     },
-          //     isLoading: isHandlingOrder,
-          //   }
-          // }
+            dropdownOptions={orderDropdown}
+            // action={
+            //   order.status !== "archived" &&
+            //   order.status !== "canceled" && {
+            //     type: "",
+            //     label: order.status === "completed" ? "Archive" : "Complete",
+            //     onClick: () => {
+            //       setIsHandlingOrder(true)
+            //       if (order.status === "completed") {
+            //         archive(order.id)
+            //           .then(() =>
+            //             toaster("Order successfully archived", "success")
+            //           )
+            //           .catch(() => toaster("Failed to archive order", "error"))
+            //       } else if (order.status === "pending") {
+            //         complete(order.id)
+            //           .then(() =>
+            //             toaster("Order successfully completed", "success")
+            //           )
+            //           .catch(() => toaster("Failed to complete order", "error"))
+            //       }
+            //       setIsHandlingOrder(false)
+            //     },
+            //     isLoading: isHandlingOrder,
+            //   }
+            // }
           >
             <Flex alignItems="center">
               <Flex

@@ -3,11 +3,12 @@ import { useForm } from "react-hook-form"
 import _ from "lodash"
 import Modal from "../../../../components/modal"
 import Button from "../../../../components/button"
+import Select from "../../../../components/select"
 import { Input } from "@rebass/forms"
 import { Flex, Text } from "rebass"
 
 const CustomerInformationEdit = ({
-  orderId,
+  order,
   customerData,
   billingData,
   shippingData,
@@ -78,6 +79,18 @@ const CustomerInformationEdit = ({
               label="Address 2"
               name="shipping_address.address_2"
               defaultValue={shipping.address_2}
+            />
+          </Flex>
+          <Flex flexDirection="row" alignItems="baseline" mb={3}>
+            <Text height="100%" minWidth="100px">
+              State
+            </Text>
+            <Input
+              mb={1}
+              ref={register}
+              label="Province"
+              name="shipping_address.province"
+              defaultValue={shipping.province}
             />
           </Flex>
           <Flex flexDirection="row" alignItems="baseline" mb={3}>

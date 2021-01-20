@@ -231,8 +231,17 @@ export default {
       return medusaRequest("POST", path, order)
     },
 
-    retrieve(orderId) {
-      const path = `/admin/orders/${orderId}`
+    retrieve(orderId, search = {}) {
+      const params = Object.keys(search)
+        .map(k => {
+          if (search[k] === "" || search[k] === null) {
+            return null
+          }
+          return `${k}=${search[k]}`
+        })
+        .filter(s => !!s)
+        .join("&")
+      const path = `/admin/orders/${orderId}${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
 

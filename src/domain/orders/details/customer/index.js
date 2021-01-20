@@ -95,6 +95,7 @@ const CustomerInformation = ({
       </Card.Body>
       {show && (
         <CustomerInformationEdit
+          order={order}
           toaster={toaster}
           onUpdate={updateOrder}
           customerData={{ email: order.email }}
