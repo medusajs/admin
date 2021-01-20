@@ -7,6 +7,17 @@ import Typography from "../typography"
 const StyledSelect = styled(RebassSelect)`
   ${Typography.Base}
   padding-right: 28px;
+
+  ${props =>
+    props.isCurrencyInput &&
+    `
+    box-shadow: none;
+    border: none;
+    
+    &:hover {
+      box-shadow: none;
+    }
+  `}
 `
 
 const StyledLabel = styled.div`
@@ -44,6 +55,7 @@ const Select = React.forwardRef(
       inline,
       required,
       selectHeight,
+      isCurrencyInput,
       ...props
     },
     ref
@@ -67,6 +79,7 @@ const Select = React.forwardRef(
           </Label>
         )}
         <StyledSelect
+          isCurrencyInput={isCurrencyInput}
           flex="50% 0 0"
           variant="buttons.primary"
           name={name}

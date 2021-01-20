@@ -5,19 +5,24 @@ import styled from "@emotion/styled"
 import Typography from "../typography"
 import Select from "../select"
 
-const TextWrapper = styled(Text)`
-  display: inline-block;
+const TextWrapper = styled(Flex)`
+  margin-left: 8px;
+  margin-top: 6px;
 `
 
 const CurrencyBox = styled(Box)`
   white-space: nowrap;
   color: gray;
+  margin-right: 0px;
   ${props =>
     props.inline &&
     `
   max-width: 350px;
   flex-grow: 1;
   `}
+
+  border-right: 1px solid rgb(60 66 87 / 16%);
+  min-width: 75px;
 `
 
 const StyledInput = styled.input`
@@ -27,7 +32,7 @@ const StyledInput = styled.input`
   background-color: transparent;
   border: none;
   padding: 8px;
-  padding-left: 15px;
+  // padding-left: 15px;
   &:focus {
     outline: none;
   }
@@ -89,8 +94,6 @@ const CurrencyInput = React.forwardRef(
     ref
   ) => {
     const [isFocused, setFocused] = useState(false)
-    const [highlighted, setHighlighted] = useState(-1)
-    const containerRef = useRef()
 
     const handleRemove = index => {
       const newValues = [...values]
@@ -99,7 +102,6 @@ const CurrencyInput = React.forwardRef(
     }
 
     const handleBlur = () => {
-      setHighlighted(-1)
       setFocused(false)
     }
 
@@ -149,20 +151,22 @@ const CurrencyInput = React.forwardRef(
             width={"3.3rem"}
             mr={edit && currencyOptions.length > 0 && "28px"}
             lineHeight="1.5"
-            my={1}
+            height="100%"
             ml={1}
           >
             {edit && currencyOptions.length > 1 ? (
               <Select
+                isCurrencyInput={true}
                 inline
                 width={"3.3rem"}
-                selectHeight="24px"
+                height="100%"
+                selectHeight="100%"
                 value={currency}
                 options={currencyOptions}
                 onChange={handleCurrencySelected}
               />
             ) : (
-              <TextWrapper>{currency.toUpperCase()}</TextWrapper>
+              <TextWrapper height="100%">{currency.toUpperCase()}</TextWrapper>
             )}
           </CurrencyBox>
           <StyledInput
@@ -178,7 +182,7 @@ const CurrencyInput = React.forwardRef(
           />
         </Flex>
         {removable && (
-          <Text ml={2} onClick={onRemove} sx={{ cursor: "pointer" }}>
+          <Text ml={2} mt={1} onClick={onRemove} sx={{ cursor: "pointer" }}>
             &times;
           </Text>
         )}

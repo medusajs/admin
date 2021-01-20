@@ -136,10 +136,16 @@ const NewProduct = ({}) => {
   const getCurrencyOptions = () => {
     return ((store && store.currencies) || [])
       .map(v => ({
-        value: v.code,
+        value: v.code.toUpperCase(),
         label: v.code.toUpperCase(),
       }))
-      .filter(o => !prices.find(p => !p.edit && p.currency_code === o.value))
+      .filter(
+        o =>
+          !prices.find(
+            p =>
+              !p.edit && p.currency_code.toUpperCase() === o.value.toUpperCase()
+          )
+      )
   }
 
   /**
@@ -150,13 +156,14 @@ const NewProduct = ({}) => {
     if (store && prices.length === 0) {
       setPrices([
         {
-          ...store.default_currency,
+          currency_code: store.default_currency_code,
           amount: "",
           sale_amount: "",
           edit: false,
         },
       ])
     }
+
     setCurrencyOptions(getCurrencyOptions())
   }, [store, isLoading, prices])
 
@@ -173,11 +180,6 @@ const NewProduct = ({}) => {
     setPrices(newPrices)
   }
 
-  const onSave = () => {
-    onChange(prices)
-    setShow(false)
-  }
-
   const removePrice = index => {
     const newPrices = [...prices]
     newPrices.splice(index, 1)
@@ -190,7 +192,7 @@ const NewProduct = ({}) => {
       {
         edit: true,
         region: "",
-        code: currencyOptions[0].value,
+        currency_code: currencyOptions[0].value.toLowerCase(),
         amount: "",
         sale_amount: "",
       },
@@ -201,10 +203,13 @@ const NewProduct = ({}) => {
 
   const handleCurrencySelected = (index, currency) => {
     const newPrices = [...prices]
-    newPrices[index] = {
+
+    const newPrice = {
       ...newPrices[index],
-      currency_code: currency,
+      currency_code: currency.toLowerCase(),
     }
+
+    newPrices[index] = newPrice
 
     setPrices(newPrices)
   }
@@ -266,8 +271,8 @@ const NewProduct = ({}) => {
         inventory_quantity: data.inventory_quantity
           ? parseInt(data.inventory_quantity)
           : 0,
-        prices: prices.map(({ code, amount }) => ({
-          currency_code: code,
+        prices: prices.map(({ currency_code, amount }) => ({
+          currency_code,
           amount: amount * 100,
         })),
         options: [{ value: "Default Variant" }],
@@ -308,6 +313,9 @@ const NewProduct = ({}) => {
     })
   }
 
+  const priceFormatter = value =>
+    value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+
   const submit = async data => {
     const product = parseProduct(data)
 
@@ -318,8 +326,6 @@ const NewProduct = ({}) => {
       )
       return
     }
-
-    console.log(product)
 
     try {
       const { data } = await Medusa.products.create(product)
@@ -484,13 +490,13 @@ const NewProduct = ({}) => {
               ) : (
                 <Flex flexDirection="column" width={4 / 7}>
                   {prices.map((p, index) => (
-                    <Flex mb={3} key={`${p.code}${index}`}>
+                    <Flex mb={3} key={`${p.currency_code}${index}`}>
                       <CurrencyInput
                         boldLabel={true}
                         edit={p.edit}
                         required={true}
                         width="100%"
-                        currency={p.code.toUpperCase()}
+                        currency={p.currency_code.toUpperCase()}
                         currencyOptions={currencyOptions}
                         value={p.amount}
                         onCurrencySelected={currency =>
@@ -509,7 +515,7 @@ const NewProduct = ({}) => {
                       onClick={addPrice}
                       variant="primary"
                     >
-                      + Add more prices
+                      + Add price
                     </Button>
                   </Flex>
                   <Input
