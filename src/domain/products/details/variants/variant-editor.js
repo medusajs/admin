@@ -31,7 +31,8 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
   const getCurrencyOptions = () => {
     return ((store && store.currencies) || [])
       .map(v => ({
-        value: v,
+        value: v.code.toUpperCase(),
+        label: v.code.toUpperCase(),
       }))
       .filter(o => !prices.find(p => !p.edit && p.currency_code === o.value))
   }
