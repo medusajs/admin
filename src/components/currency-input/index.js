@@ -7,7 +7,6 @@ import Select from "../select"
 
 const TextWrapper = styled(Flex)`
   margin-left: 8px;
-  margin-top: 6px;
 `
 
 const CurrencyBox = styled(Box)`
@@ -166,13 +165,15 @@ const CurrencyInput = React.forwardRef(
                 onChange={handleCurrencySelected}
               />
             ) : (
-              <TextWrapper height="100%">{currency.toUpperCase()}</TextWrapper>
+              <TextWrapper marginTop={inline ? "0px" : "6px"} height="100%">
+                {currency.toUpperCase()}
+              </TextWrapper>
             )}
           </CurrencyBox>
           <StyledInput
             ref={ref}
             name={name}
-            value={value}
+            value={value ? value : ""}
             onBlur={handleBlur}
             onFocus={handleFocus}
             onChange={onChange}

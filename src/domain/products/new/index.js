@@ -206,7 +206,7 @@ const NewProduct = ({}) => {
 
     const newPrice = {
       ...newPrices[index],
-      currency_code: currency.toLowerCase(),
+      currency_code: currency,
     }
 
     newPrices[index] = newPrice
@@ -288,7 +288,7 @@ const NewProduct = ({}) => {
         inventory_quantity: v.inventory_quantity,
         prices: v.prices.map(({ currency_code, amount }) => ({
           currency_code,
-          amount: amount * 100,
+          amount: amount,
         })),
         options: v.options.map(o => ({ value: o })),
       }))
