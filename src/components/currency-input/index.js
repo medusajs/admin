@@ -7,7 +7,7 @@ import Select from "../select"
 
 const TextWrapper = styled(Flex)`
   margin-left: 8px;
-  margin-top: 6px;
+  align-items: center;
 `
 
 const CurrencyBox = styled(Box)`
