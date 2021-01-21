@@ -276,7 +276,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               <Box width={75} px={2} py={1}>
                 Quantity
               </Box>
-              <Box width={110} px={2} py={1}>
+              <Box width={170} px={2} py={1}>
                 Refundable
               </Box>
             </Flex>
@@ -319,7 +319,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                       item.quantity - item.returned_quantity
                     )}
                   </Box>
-                  <Box width={110} px={2} py={1}>
+                  <Box width={170} px={2} py={1}>
                     <Text fontSize={1}>
                       {(item.refundable / 100).toFixed(2)}{" "}
                       {order.currency_code.toUpperCase()}
@@ -350,7 +350,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   <Box px={2} fontSize={1}>
                     Shipping price (incl. taxes)
                   </Box>
-                  <Box px={2} width={110}>
+                  <Box px={2} width={170}>
                     <CurrencyInput
                       currency={order.currency_code}
                       value={shippingPrice / 100}
@@ -416,7 +416,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   <Box width={75} px={2} py={1}>
                     Quantity
                   </Box>
-                  <Box width={110} px={2} py={1}>
+                  <Box width={170} px={2} py={1}>
                     Price
                   </Box>
                 </Flex>
@@ -444,7 +444,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                         min={1}
                       />
                     </Box>
-                    <Box width={110} px={2} py={1}>
+                    <Box width={170} px={2} py={1}>
                       <Text fontSize={1}>
                         {extractPrice(item.prices, order).toFixed(2)}{" "}
                         {order.currency_code.toUpperCase()}
@@ -468,7 +468,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
             <Box px={2} fontSize={1}>
               Difference
             </Box>
-            <Box px={2} width={110} fontSize={1}>
+            <Box px={2} width={170} fontSize={1}>
               {(toPay / 100).toFixed(2)} {order.currency_code.toUpperCase()}
             </Box>
           </Flex>

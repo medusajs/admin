@@ -264,7 +264,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   <Box px={2} fontSize={1}>
                     Shipping price (incl. taxes)
                   </Box>
-                  <Box px={2} width={110}>
+                  <Box px={2} width={"170px"}>
                     <CurrencyInput
                       currency={order.currency_code}
                       value={shippingPrice / 100}
@@ -289,7 +289,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
               <Box px={2} fontSize={1}>
                 To refund
               </Box>
-              <Box px={2} width={110}>
+              <Box px={2} width={"170px"}>
                 <CurrencyInput
                   currency={order.currency_code}
                   value={refundAmount / 100}
