@@ -38,6 +38,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
     if (e.target.files.length > 0) {
       Medusa.uploads.create(e.target.files).then(({ data }) => {
         const uploaded = data.uploads.map(({ url }) => url)
+        console.log(uploaded)
         setThumbnail(uploaded[0])
       })
     }
@@ -51,6 +52,8 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
     if (thumbnail) {
       updateData.thumbnail = thumbnail
     }
+
+    console.log(updateData)
 
     onSubmit(updateData)
   }
