@@ -35,12 +35,19 @@ const ProductIndex = () => {
     filtersOnLoad.limit = 50
   }
 
-  const { products, total_count, isLoading, refresh } = useMedusa("products", {
+  const {
+    products,
+    hasCache,
+    total_count,
+    isLoading,
+    refresh,
+    isReloading,
+  } = useMedusa("products", {
     search: filtersOnLoad,
   })
   const [query, setQuery] = useState("")
-  const [limit, setLimit] = useState(50)
-  const [offset, setOffset] = useState(0)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 50)
+  const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
 
   const onKeyDown = event => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
@@ -57,8 +64,8 @@ const ProductIndex = () => {
 
     const search = {
       q: query,
-      offset,
-      limit,
+      offset: 0,
+      limit: 50,
     }
 
     const prepared = qs.stringify(search, {
@@ -127,7 +134,7 @@ const ProductIndex = () => {
           Search
         </Button>
       </Flex>
-      {isLoading ? (
+      {(isLoading && !hasCache) || isReloading ? (
         <Flex
           flexDirection="column"
           alignItems="center"
