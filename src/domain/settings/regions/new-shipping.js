@@ -46,7 +46,7 @@ const NewShipping = ({
     if (data.requirements) {
       reqs = Object.entries(data.requirements).reduce((acc, [key, value]) => {
         if (parseInt(value) && parseInt(value) > 0) {
-          acc.push({ type: key, amount: value * 100 })
+          acc.push({ type: key, amount: Math.round(value * 100) })
           return acc
         } else {
           return acc
@@ -61,7 +61,7 @@ const NewShipping = ({
       profile_id: data.profile_id,
       requirements: reqs,
       price_type: "flat_rate",
-      amount: data.price.amount * 100,
+      amount: Math.round(data.price.amount * 100),
       is_return: isReturn,
       provider_id,
     }

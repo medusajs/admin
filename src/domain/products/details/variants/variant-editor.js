@@ -53,7 +53,7 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
 
   const handlePriceChange = (index, e) => {
     const element = e.target
-    const value = element.value * 100
+    const value = Math.round(element.value * 100)
 
     const newPrices = [...prices]
     newPrices[index] = {
@@ -89,7 +89,7 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
     data.prices = prices.map(({ currency_code, region_id, amount }) => ({
       currency_code,
       region_id,
-      amount: amount,
+      amount: Math.round(amount),
     }))
     onSubmit(data)
   }

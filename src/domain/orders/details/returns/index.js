@@ -94,7 +94,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
     let data = {
       items,
-      refund: refundAmount,
+      refund: Math.round(refundAmount),
     }
     if (shippingMethod) {
       data.return_shipping = {

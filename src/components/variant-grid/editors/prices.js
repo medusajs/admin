@@ -57,7 +57,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
     const newPrices = [...prices]
     newPrices[index] = {
       ...newPrices[index],
-      sale_amount: Math.floor(value * 100),
+      sale_amount: Math.round(value * 100),
     }
 
     setPrices(newPrices)
@@ -70,7 +70,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
     const newPrices = [...prices]
     newPrices[index] = {
       ...newPrices[index],
-      amount: Math.floor(value * 100),
+      amount: Math.round(value * 100),
     }
 
     setPrices(newPrices)

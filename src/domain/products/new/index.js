@@ -273,7 +273,7 @@ const NewProduct = ({}) => {
           : 0,
         prices: prices.map(({ currency_code, amount }) => ({
           currency_code,
-          amount: amount * 100,
+          amount: Math.round(amount * 100),
         })),
         options: [{ value: "Default Variant" }],
       },
@@ -288,7 +288,7 @@ const NewProduct = ({}) => {
         inventory_quantity: v.inventory_quantity,
         prices: v.prices.map(({ currency_code, amount }) => ({
           currency_code,
-          amount: amount,
+          amount: Math.round(amount),
         })),
         options: v.options.map(o => ({ value: o })),
       }))

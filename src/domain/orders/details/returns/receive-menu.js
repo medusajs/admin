@@ -121,7 +121,7 @@ const ReceiveMenu = ({
       setSubmitting(true)
       return onReceiveReturn(returnRequest.id, {
         items,
-        refund: refundAmount,
+        refund: Math.round(refundAmount),
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))

@@ -93,7 +93,11 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
             req => req.type === key
           )
           if (reqType) {
-            acc.push({ type: key, amount: value.amount * 100, id: reqType.id })
+            acc.push({
+              type: key,
+              amount: Math.round(value.amount * 100),
+              id: reqType.id,
+            })
           }
           return acc
         } else {
@@ -105,7 +109,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
 
     const payload = {
       name: data.name,
-      amount: data.amount * 100,
+      amount: Math.round(data.amount * 100),
       requirements: reqs,
     }
 

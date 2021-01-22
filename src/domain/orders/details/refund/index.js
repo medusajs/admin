@@ -23,7 +23,7 @@ const RefundMenu = ({ order, onRefund, onDismiss, toaster }) => {
     e.preventDefault()
     if (onRefund) {
       return onRefund({
-        amount: refundAmount * 100,
+        amount: Math.round(refundAmount * 100),
         reason,
         note,
       })
