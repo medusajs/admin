@@ -187,7 +187,7 @@ const ReceiveMenu = ({
             <Box width={75} px={2} py={1}>
               Quantity
             </Box>
-            <Box width={110} px={2} py={1}>
+            <Box width={170} px={2} py={1}>
               Refundable
             </Box>
           </Flex>
@@ -240,7 +240,7 @@ const ReceiveMenu = ({
                     item.quantity - item.returned_quantity
                   )}
                 </Box>
-                <Box width={110} fontSize={1} px={2} py={1}>
+                <Box width={170} fontSize={1} px={2} py={1}>
                   {(item.refundable / 100).toFixed(2)}{" "}
                   {order.currency_code.toUpperCase()}
                 </Box>
@@ -263,7 +263,7 @@ const ReceiveMenu = ({
                     <Box fontSize={1} px={2}>
                       Shipping cost
                     </Box>
-                    <Box px={2} fontSize={1} width={110}>
+                    <Box px={2} fontSize={1} width={170}>
                       {(
                         (returnRequest.shipping_method.price / 100) *
                         (1 + order.tax_rate / 100)
@@ -284,7 +284,7 @@ const ReceiveMenu = ({
                 <Box fontSize={1} px={2}>
                   To refund
                 </Box>
-                <Box px={2} width={110}>
+                <Box px={2} width={170}>
                   <CurrencyInput
                     currency={order.currency_code}
                     value={refundAmount / 100}
