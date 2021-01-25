@@ -6,6 +6,8 @@ import shadows from "./shadows"
 import forms from "./forms"
 import { ThemeProvider as Provider } from "emotion-theming"
 
+import "../fonts/index.css"
+
 export const theme = {
   colors: {
     primary: "#3b77ff",

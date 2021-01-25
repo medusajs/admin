@@ -143,7 +143,14 @@ const Sidebar = ({}) => {
       </Flex>
       <Flex mx={-1} alignItems="center">
         <InlineLogoContainer px={2}>
-          <LogoInline height={13} />
+          <Text
+            fontFamily="Medusa"
+            fontSize="26px"
+            color="#454b54"
+            fontWeight={300}
+          >
+            MEDUSA
+          </Text>
         </InlineLogoContainer>
       </Flex>
     </Container>
