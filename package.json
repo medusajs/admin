@@ -31,7 +31,7 @@
     "query-string": "^6.13.1",
     "react": "^16.12.0",
     "react-collapse": "^5.0.1",
-    "react-collapsible": "^2.8.0",
+    "react-collapsible": "^2.8.1",
     "react-country-flag": "^2.3.0",
     "react-dom": "^16.12.0",
     "react-helmet": "^6.0.0",

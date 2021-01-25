@@ -237,7 +237,10 @@ const OrderIndex = ({}) => {
   }
 
   const handlePagination = direction => {
-    const updatedOffset = direction === "next" ? offset + limit : offset - limit
+    const updatedOffset =
+      direction === "next"
+        ? parseInt(offset) + parseInt(limit)
+        : parseInt(offset) - parseInt(limit)
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const queryParts = {
@@ -260,14 +263,7 @@ const OrderIndex = ({}) => {
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
-    refresh({
-      search: {
-        ...queryParts,
-        expand: "shipping_address",
-        fields:
-          "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
-      },
-    }).then(() => {
+    handleTabClick(activeTab, queryParts).then(() => {
       setOffset(updatedOffset)
     })
   }
@@ -294,27 +290,27 @@ const OrderIndex = ({}) => {
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({ search: { ...queryParts } })
+    handleTabClick(activeTab, queryParts)
   }
 
-  const handleTabClick = async tab => {
-    if (activeTab === tab) return
+  const handleTabClick = async (tab, query) => {
     setFetching(true)
     setActiveTab(tab)
     switch (tab) {
       case "swaps":
-        const swaps = await Medusa.swaps.list()
+        const swaps = await Medusa.swaps.list(query)
         setOrders(swaps.data.swaps)
         setFetching(false)
         break
       case "returns":
-        const returns = await Medusa.returns.list()
+        const returns = await Medusa.returns.list(query)
         setOrders(returns.data.returns)
         setFetching(false)
         break
       case "new":
         refresh({
           search: {
+            ...query,
             new: true,
             expand: "shipping_address",
             fields:
@@ -327,6 +323,7 @@ const OrderIndex = ({}) => {
       case "orders":
         refresh({
           search: {
+            ...query,
             expand: "shipping_address",
             fields:
               "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
@@ -493,8 +490,20 @@ const OrderIndex = ({}) => {
                   <TableDataCell>
                     <Box>
                       <Badge
-                        color={decideBadgeColor(el.fulfillment_status).color}
-                        bg={decideBadgeColor(el.fulfillment_status).bgColor}
+                        color={
+                          decideBadgeColor(
+                            activeTab === "returns"
+                              ? el.status
+                              : el.fulfillment_status
+                          ).color
+                        }
+                        bg={
+                          decideBadgeColor(
+                            activeTab === "returns"
+                              ? el.status
+                              : el.fulfillment_status
+                          ).bgColor
+                        }
                       >
                         {activeTab === "returns"
                           ? el.status

@@ -210,17 +210,33 @@ export default {
       return medusaRequest("POST", path, update)
     },
 
-    list() {
-      const params = ``
-      let path = `/admin/swaps`
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => {
+          if (search[k] === "" || search[k] === null) {
+            return null
+          }
+          return `${k}=${search[k]}`
+        })
+        .filter(s => !!s)
+        .join("&")
+      let path = `/admin/swaps${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
   },
 
   returns: {
-    list() {
-      const params = ``
-      let path = `/admin/returns`
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => {
+          if (search[k] === "" || search[k] === null) {
+            return null
+          }
+          return `${k}=${search[k]}`
+        })
+        .filter(s => !!s)
+        .join("&")
+      let path = `/admin/returns${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
   },
