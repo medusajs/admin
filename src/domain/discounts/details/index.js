@@ -87,9 +87,6 @@ const Divider = props => (
 )
 
 const DiscountDetails = ({ id }) => {
-  const [selectedProducts, setSelectedProducts] = useState(
-    discount && discount.rule ? discount.rule.valid_for : []
-  )
   const [updating, setUpdating] = useState(false)
   const [showRuleEdit, setShowRuleEdit] = useState(false)
   const [code, setCode] = useState(discount && discount.code)
@@ -310,37 +307,9 @@ const DiscountDetails = ({ id }) => {
           </Box>
           <Divider m={3} />
           <Box>
-            {discount.rule.valid_for && discount.rule.valid_for.length ? (
-              <>
-                <Text ml={3} mb={2}>
-                  Applicable product(s)
-                </Text>
-                {discount.rule.valid_for.map(product => (
-                  <Box
-                    key={product.id}
-                    pl={3}
-                    pr={2}
-                    py={2}
-                    display="flex"
-                    alignItems="center"
-                  >
-                    <ProductThumbnail ml={3} src={product.thumbnail || ""} />
-                    <Card.VerticalDivider mx={3} height="35px" />
-                    <ProductLink
-                      onClick={() => navigate(`/a/products/${product.id}`)}
-                    >
-                      {product.title}
-                    </ProductLink>
-                    <Card.VerticalDivider mx={3} height="35px" />
-                    <Text>{product.variants.length} variant(s)</Text>
-                  </Box>
-                ))}
-              </>
-            ) : (
-              <Text ml={3} mb={2}>
-                Applicable for all products
-              </Text>
-            )}
+            <Text ml={3} mb={2}>
+              Applicable for all products
+            </Text>
           </Box>
         </Card.Body>
       </Card>
