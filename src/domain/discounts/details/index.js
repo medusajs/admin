@@ -243,17 +243,6 @@ const DiscountDetails = ({ id }) => {
         <Card.Body>
           <Box pl={3} pr={2}>
             <Text pb={1} color="gray">
-              Disabled
-            </Text>
-            <Text pt={1} width="100%" textAlign="center" mt={2}>
-              <Badge width="100%" color="#4f566b" bg="#e3e8ee">
-                {`${discount.is_disabled}`}
-              </Badge>
-            </Text>
-          </Box>
-          <Card.VerticalDivider mx={3} />
-          <Box pl={3} pr={2}>
-            <Text pb={1} color="gray">
               Valid regions
             </Text>
             <StyledMultiSelect
@@ -321,7 +310,7 @@ const DiscountDetails = ({ id }) => {
           </Box>
           <Divider m={3} />
           <Box>
-            {discount.rule.valid_for.length ? (
+            {discount.rule.valid_for && discount.rule.valid_for.length ? (
               <>
                 <Text ml={3} mb={2}>
                   Applicable product(s)

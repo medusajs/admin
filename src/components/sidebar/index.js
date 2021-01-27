@@ -70,7 +70,7 @@ const Sidebar = ({}) => {
   }, [])
 
   return (
-    <Container fontSize={1} fontFamily={"body"} p={4}>
+    <Container fontSize={1} fontFamily={"body"} pb={3} pt={4} px={4}>
       <Flex mx={-2} alignItems="center">
         <LogoContainer width={1 / 12} mx={2}>
           <Logo style={{ transform: "scale(1.5)" }} />
@@ -141,11 +141,11 @@ const Sidebar = ({}) => {
           </Text>
         </StyledItemContainer>
       </Flex>
-      <Flex mx={-1} alignItems="center">
+      <Flex mx={-1} alignItems="center" justifyContent="center">
         <InlineLogoContainer px={2}>
           <Text
             fontFamily="Medusa"
-            fontSize="26px"
+            fontSize="18px"
             color="#454b54"
             fontWeight={300}
           >
