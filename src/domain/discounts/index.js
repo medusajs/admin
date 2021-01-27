@@ -121,7 +121,9 @@ const DiscountIndex = () => {
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
-    refresh({ search: { ...queryParts, is_giftcard: "false" } }).then(() => {
+    refresh({
+      search: { ...queryParts, is_dynamic: showDynamic, is_giftcard: "false" },
+    }).then(() => {
       setOffset(updatedOffset)
     })
   }
