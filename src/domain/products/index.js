@@ -125,14 +125,14 @@ const ProductIndex = () => {
             value={query}
           />
         </Box>
-        <Button
+        {/* <Button
           onClick={() => searchQuery()}
           variant={"primary"}
           fontSize="12px"
           ml={2}
         >
           Search
-        </Button>
+        </Button> */}
       </Flex>
       {(isLoading && !hasCache) || isReloading ? (
         <Flex
