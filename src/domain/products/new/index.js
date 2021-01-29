@@ -5,6 +5,7 @@ import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
 import Typography from "../../../components/typography"
 
+import Select from "../../../components/select"
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
 import Input from "../../../components/input"
@@ -18,7 +19,10 @@ import VariantGrid from "../../../components/variant-grid"
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 
+import Creatable from "react-select/creatable"
+
 import { getCombinations } from "./utils/get-combinations"
+import { Label } from "@rebass/forms"
 
 const Cross = styled.span`
   position: absolute;
@@ -26,6 +30,15 @@ const Cross = styled.span`
   right: 0;
   margin-right: 5px;
   cursor: pointer;
+`
+
+const StyledCreatableSelect = styled(Creatable)`
+  font-size: 14px;
+  color: #454545;
+
+  > div {
+    height: 33px;
+  }
 `
 
 const ImageCardWrapper = styled(Box)`
@@ -97,8 +110,14 @@ const NewProduct = ({}) => {
   const [options, setOptions] = useState([])
   const [images, setImages] = useState([])
   const [prices, setPrices] = useState([])
+  const [type, setSelectedType] = useState(null)
+  const [collection, setCollection] = useState({})
+  const [tags, setTags] = useState([])
   const [currencyOptions, setCurrencyOptions] = useState([])
   const { store, isLoading, toaster } = useMedusa("store")
+  const { collections, isLoading: isLoadingCollections } = useMedusa(
+    "collections"
+  )
   const {
     register,
     handleSubmit,
@@ -294,13 +313,36 @@ const NewProduct = ({}) => {
       }))
     }
 
-    return {
+    const p = {
       images,
       title: data.title,
       description: data.description,
       options: parseOptions.map(o => ({ title: o.name })),
       variants: parseVariants,
     }
+
+    if (collection && !_.isEmpty(collection)) {
+      p.collection = collection
+    }
+
+    if (type) {
+      if (type.__isNew__) {
+        p.type = {
+          value: type.label,
+        }
+      } else {
+        p.type = {
+          value: type.label,
+          id: type.value,
+        }
+      }
+    }
+
+    if (tags && tags.length) {
+      p.tags = tags.map(t => ({ value: t }))
+    }
+
+    return p
   }
 
   const onAddMore = data => {
@@ -349,6 +391,14 @@ const NewProduct = ({}) => {
     })
   }
 
+  const handleTypeChange = selectedOption => {
+    setSelectedType(selectedOption)
+  }
+
+  const handleTagChange = newTags => {
+    setTags(newTags)
+  }
+
   useEffect(() => {
     if (Object.keys(errors).length) {
       const requiredErrors = Object.keys(errors).map(err => {
@@ -382,7 +432,38 @@ const NewProduct = ({}) => {
               label="Description"
               placeholder="Short description of the product"
               name="description"
+              mb={4}
               ref={register({ required: "Description is required" })}
+            />
+            <Text fontSize={1} mb={1} fontWeight="500">
+              Collection
+            </Text>
+            <Select
+              fontWeight="500"
+              name="collection"
+              options={[{ value: "test", label: "test" }]}
+              // options={collections.map(({ title, id }) => ({
+              //   value: id,
+              //   label: title,
+              // }))}
+            />
+            <Text fontSize={1} mb={1} mt={4} fontWeight="500">
+              Type
+            </Text>
+            <StyledCreatableSelect
+              value={type}
+              placeholder="Select type..."
+              onChange={handleTypeChange}
+              options={[{ value: "test", label: "test" }]}
+              label="Type"
+            />
+            <Text mt={4} fontSize={1} mb={1} fontWeight="500">
+              Tags (separated by comma)
+            </Text>
+            <TagInput
+              placeholder="Spring, summer..."
+              values={tags}
+              onChange={values => handleTagChange(values)}
             />
             <Flex mt={4} alignItems="center">
               <Pill

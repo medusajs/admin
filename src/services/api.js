@@ -241,6 +241,13 @@ export default {
     },
   },
 
+  collections: {
+    list(search = {}) {
+      let path = `/admin/collections`
+      return medusaRequest("GET", path)
+    },
+  },
+
   orders: {
     create(order) {
       const path = `/admin/orders`
