@@ -113,7 +113,7 @@ const ProductIndex = () => {
       </Flex>
       <Flex>
         <Box ml="auto" />
-        <Box mb={3} sx={{ maxWidth: "300px" }}>
+        {/* <Box mb={3} sx={{ maxWidth: "300px" }}>
           <Input
             height="28px"
             fontSize="12px"
@@ -124,7 +124,7 @@ const ProductIndex = () => {
             onChange={e => setQuery(e.target.value)}
             value={query}
           />
-        </Box>
+        </Box> */}
         {/* <Button
           onClick={() => searchQuery()}
           variant={"primary"}
