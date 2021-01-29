@@ -330,8 +330,8 @@ const DiscountDetails = ({ id }) => {
           onUpdate={handleDiscountRuleUpdate}
           onDismiss={() => setShowRuleEdit(false)}
           products={products}
-          selectedProducts={selectedProducts}
-          setSelectedProducts={setSelectedProducts}
+          // selectedProducts={selectedProducts}
+          // setSelectedProducts={setSelectedProducts}
         />
       )}
     </Flex>

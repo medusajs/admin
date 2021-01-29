@@ -319,7 +319,7 @@ const NewDiscount = ({}) => {
             </Text>
           </Flex>
         </StyledLabel>
-        <StyledLabel pb={0}>Choose valid products</StyledLabel>
+        {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
         <Text fontSize="10px" color="gray">
           Leaving it empty will make the discount available for all products
         </Text>
@@ -335,7 +335,7 @@ const NewDiscount = ({}) => {
           }}
           value={selectedProducts}
           onChange={setSelectedProducts}
-        />
+        /> */}
         <Flex mt={4}>
           <Box ml="auto" />
           <Button variant={"cta"} type="submit">
