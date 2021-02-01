@@ -83,10 +83,10 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const [allocation, setAllocation] = useState(discount.rule.allocation)
 
   const [selectedProducts, setSelectedProducts] = useState(
-    discount.rule.valid_for.map(({ id, title }) => ({
+    discount.rule.valid_for?.map(({ id, title }) => ({
       value: id,
       label: title,
-    }))
+    })) || []
   )
 
   const onChange = e => {
@@ -217,7 +217,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
               </Text>
             </Flex>
           </StyledLabel>
-          <StyledLabel pb={0}>Choose valid products</StyledLabel>
+          {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
           <Text fontSize="10px" color="gray">
             Leaving it empty will make the discount available for all products
           </Text>
@@ -232,7 +232,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
             }}
             value={selectedProducts}
             onChange={setSelectedProducts}
-          />
+          /> */}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button type="submit" variant="primary">

@@ -240,17 +240,6 @@ const DiscountDetails = ({ id }) => {
         <Card.Body>
           <Box pl={3} pr={2}>
             <Text pb={1} color="gray">
-              Disabled
-            </Text>
-            <Text pt={1} width="100%" textAlign="center" mt={2}>
-              <Badge width="100%" color="#4f566b" bg="#e3e8ee">
-                {`${discount.is_disabled}`}
-              </Badge>
-            </Text>
-          </Box>
-          <Card.VerticalDivider mx={3} />
-          <Box pl={3} pr={2}>
-            <Text pb={1} color="gray">
               Valid regions
             </Text>
             <StyledMultiSelect
@@ -341,8 +330,8 @@ const DiscountDetails = ({ id }) => {
           onUpdate={handleDiscountRuleUpdate}
           onDismiss={() => setShowRuleEdit(false)}
           products={products}
-          selectedProducts={selectedProducts}
-          setSelectedProducts={setSelectedProducts}
+          // selectedProducts={selectedProducts}
+          // setSelectedProducts={setSelectedProducts}
         />
       )}
     </Flex>
