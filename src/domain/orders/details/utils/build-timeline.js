@@ -92,6 +92,28 @@ const buildTimeline = order => {
     }
   }
 
+  if (order.claims && order.claims.length) {
+    for (const claim of order.claims) {
+      const claimLines = claim.claim_items.map(i => {
+        const line = order.items.find(({ id }) => i.item_id === id)
+        return {
+          ...line,
+          ...i,
+        }
+      })
+      events.push({
+        id: claim.id,
+        type: "claim",
+        claim_type: claim.type,
+        event: "Items claimed",
+        items: claim.additional_items,
+        claim_items: claimLines,
+        time: claim.created_at,
+        raw: claim,
+      })
+    }
+  }
+
   events.sort((a, b) => {
     if (a.time < b.time) {
       return -1

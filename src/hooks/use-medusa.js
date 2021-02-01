@@ -158,9 +158,21 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
+        value.createClaim = payload => {
+          return subcomponent
+            .createClaim(query.id, payload)
+            .then(({ data }) => setResult(data))
+        }
+
         value.fulfillSwap = (swapId, payload) => {
           return subcomponent
             .fulfillSwap(query.id, swapId, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.fulfillClaim = (claimId, payload) => {
+          return subcomponent
+            .fulfillClaim(query.id, claimId, payload)
             .then(({ data }) => setResult(data))
         }
 
