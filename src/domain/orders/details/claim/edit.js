@@ -274,7 +274,7 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button loading={submitting} type="submit" variant="primary">
-            Complete
+            Save
           </Button>
         </Modal.Footer>
       </Modal.Body>

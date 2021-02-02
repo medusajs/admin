@@ -416,7 +416,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   </Box>
                   {item.id in toReturn && (
                     <Flex height="300px" py={3} width="100%">
-                      <Flex flexDirection="column">
+                      <Flex flex={"0 50%"} flexDirection="column">
                         <Box mt={4} px={2}>
                           <Select
                             inline
@@ -433,44 +433,39 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                         <Box mt={4} px={2}>
                           <TextArea
                             inline
+                            minHeight={"100px"}
                             label="Note"
-                            value={toReturn[item.id].reason}
+                            value={toReturn[item.id].note}
                             onChange={e => handleNoteChange(e, item)}
                           />
                         </Box>
                       </Flex>
-                      <Flex flexDirection="column" height="100%">
-                        <Flex
-                          height="100%"
-                          flexWrap="wrap"
-                          flexDirection="column"
-                          mb={4}
-                        >
-                          <Box height="100%">
-                            <ImageUpload
-                              onChange={e => handleAddImage(e, item)}
-                              name="files"
-                              label="Images"
-                            />
-                          </Box>
-                          <StyledImageBox p={3}>
-                            {toReturn[item.id].images.map((url, i) => (
-                              <ImageCardWrapper key={i} m={"5px"}>
-                                <StyledImageCard
-                                  key={i}
-                                  as="img"
-                                  src={url}
-                                  sx={{}}
-                                />
-                                <Cross
-                                  onClick={() => handleImageDelete(url, item)}
-                                >
-                                  &#x2715;
-                                </Cross>
-                              </ImageCardWrapper>
-                            ))}
-                          </StyledImageBox>
-                        </Flex>
+                      <Flex flexDirection="column" height="100%" flex={1}>
+                        <Box width="min-content">
+                          <ImageUpload
+                            button={toReturn[item.id].images?.length > 0}
+                            onChange={e => handleAddImage(e, item)}
+                            name="files"
+                            label="Images"
+                          />
+                        </Box>
+                        <StyledImageBox mt={4}>
+                          {toReturn[item.id].images?.map((url, i) => (
+                            <ImageCardWrapper mr={3} key={i}>
+                              <StyledImageCard
+                                key={i}
+                                as="img"
+                                src={url}
+                                sx={{}}
+                              />
+                              <Cross
+                                onClick={() => handleImageDelete(url, item)}
+                              >
+                                &#x2715;
+                              </Cross>
+                            </ImageCardWrapper>
+                          ))}
+                        </StyledImageBox>
                       </Flex>
                     </Flex>
                   )}
