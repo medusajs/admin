@@ -134,6 +134,12 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
+        value.updateClaim = (claimId, payload) => {
+          return subcomponent
+            .updateClaim(query.id, claimId, payload)
+            .then(({ data }) => setResult(data))
+        }
+
         value.createShipment = payload => {
           return subcomponent
             .createShipment(query.id, payload)

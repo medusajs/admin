@@ -56,6 +56,7 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
 export default ({
   events,
   order,
+  onSaveClaim,
   onFulfillClaim,
   onFulfillSwap,
   onProcessSwapPayment,
@@ -80,6 +81,7 @@ export default ({
                 key={event.id}
                 event={event}
                 order={order}
+                onSaveClaim={onSaveClaim}
                 onFulfillClaim={onFulfillClaim}
                 onReceiveReturn={onReceiveReturn}
               />

@@ -14,6 +14,8 @@ import Dropdown from "../../../../components/dropdown"
 
 import useMedusa from "../../../../hooks/use-medusa"
 
+import ClaimEdit from "./edit"
+
 const LineItemLabel = styled(Text)`
   ${Typography.Base};
 
@@ -60,29 +62,20 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
   )
 }
 
-export default ({ event, order, onFulfillClaim, onReceiveReturn }) => {
-  //const returnStatusColors =
-  //  event.raw.return_order && event.raw.return_order.status
-  //    ? decideBadgeColor(event.raw.return_order.status)
-  //    : {
-  //        bgColor: "#e3e8ee",
-  //        color: "#4f566b",
-  //      }
+export default ({
+  event,
+  order,
+  onSaveClaim,
+  onFulfillClaim,
+  onReceiveReturn,
+}) => {
+  const { toaster } = useMedusa("store")
+  const [showEditClaim, setShowEditClaim] = useState(false)
+
   const payStatusColors = decideBadgeColor(event.raw.payment_status)
   const fulfillStatusColors = decideBadgeColor(event.raw.fulfillment_status)
 
   const actions = []
-  //if (
-  //  event.raw.payment_status !== "captured" &&
-  //  event.raw.payment_status !== "difference_refunded" &&
-  //  event.raw.difference_due !== 0
-  //) {
-  //  actions.push({
-  //    label:
-  //      event.raw.difference_due > 0 ? "Capture Payment" : "Refund Difference",
-  //    onClick: () => onProcessPayment(event.raw.id),
-  //  })
-  //}
 
   if (
     event.claim_type === "replace" &&
@@ -95,26 +88,6 @@ export default ({ event, order, onFulfillClaim, onReceiveReturn }) => {
       },
     })
   }
-
-  //if (event.raw.return_order.status === "requested") {
-  //  actions.push({
-  //    label: "Receive Return",
-  //    onClick: () =>
-  //      onReceiveReturn({
-  //        ...event.raw.return_order,
-  //        swap_id: event.raw.id,
-  //        is_swap: true,
-  //      }),
-  //  })
-  //}
-
-  //if (event.raw.status === "pending") {
-  //  actions.push({
-  //    label: "Cancel swap",
-  //    variant: "danger",
-  //    onClick: onCancelSwap,
-  //  })
-  //}
 
   return (
     <Flex>
@@ -181,6 +154,11 @@ export default ({ event, order, onFulfillClaim, onReceiveReturn }) => {
               />
             ))}
           </Box>
+          <Box>
+            <Button onClick={() => setShowEditClaim(true)} variant="primary">
+              Edit
+            </Button>
+          </Box>
         </Flex>
         {event.claim_type === "replace" ? (
           <Flex mx={3} justifyContent="space-between" alignItems="center">
@@ -212,6 +190,15 @@ export default ({ event, order, onFulfillClaim, onReceiveReturn }) => {
           </Flex>
         )}
       </Box>
+      {showEditClaim && (
+        <ClaimEdit
+          toaster={toaster}
+          claim={event.raw}
+          order={order}
+          onSave={onSaveClaim}
+          onDismiss={() => setShowEditClaim(false)}
+        />
+      )}
     </Flex>
   )
 }

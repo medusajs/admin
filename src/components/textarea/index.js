@@ -45,7 +45,7 @@ const StyledLabel = styled.div`
 
 const TextArea = React.forwardRef(
   (
-    { placeholder, inline, label, name, required, boldLabel, ...props },
+    { value, placeholder, inline, label, name, required, boldLabel, ...props },
     ref
   ) => {
     return (
@@ -74,6 +74,7 @@ const TextArea = React.forwardRef(
           minHeight={props.minHeight}
           inline={inline}
           ref={ref}
+          value={value}
           variant="textarea"
           name={name}
           placeholder={placeholder ? placeholder : "Placeholder"}

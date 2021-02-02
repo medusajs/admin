@@ -135,6 +135,7 @@ const OrderDetails = ({ id }) => {
     createClaimShipment,
     refund,
     isLoading,
+    updateClaim,
     archive,
     complete,
     cancel,
@@ -379,6 +380,7 @@ const OrderDetails = ({ id }) => {
           <Timeline
             events={events}
             order={order}
+            onSaveClaim={updateClaim}
             onFulfillClaim={claim => setClaimToFulfill(claim)}
             onReceiveClaim={receiveClaim}
             onProcessSwapPayment={processSwapPayment}
