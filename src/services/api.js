@@ -154,6 +154,16 @@ export default {
       return medusaRequest("GET", path)
     },
 
+    listTypes() {
+      let path = `/admin/products/types`
+      return medusaRequest("GET", path)
+    },
+
+    listTagsByUsage() {
+      let path = `/admin/products/tag-usage`
+      return medusaRequest("GET", path)
+    },
+
     variants: {
       create(productId, variant) {
         const path = `/admin/products/${productId}/variants`
@@ -242,6 +252,16 @@ export default {
   },
 
   collections: {
+    create(payload) {
+      const path = `/admin/collections`
+      return medusaRequest("POST", path, payload)
+    },
+
+    retrieve(id) {
+      const path = `/admin/collections/${id}`
+      return medusaRequest("GET", path)
+    },
+
     list(search = {}) {
       let path = `/admin/collections`
       return medusaRequest("GET", path)
