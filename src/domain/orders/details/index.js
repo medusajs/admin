@@ -15,6 +15,7 @@ import FulfillmentEdit from "./fulfillment/edit"
 import Timeline from "./timeline"
 import buildTimeline from "./utils/build-timeline"
 import SwapMenu from "./swap/create"
+import ClaimMenu from "./claim/create"
 import CustomerInformation from "./customer"
 
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
@@ -60,10 +61,25 @@ const gatherFulfillments = order => {
   order.fulfillments.forEach((f, index) => {
     toReturn.push({
       title: `Fulfillment #${index + 1}`,
-      is_swap: false,
+      type: "default",
       fulfillment: f,
     })
   })
+
+  if (order.claims && order.claims.length) {
+    order.claims.forEach(s => {
+      if (s.fulfillment_status !== "not_fulfilled") {
+        s.fulfillments.forEach((f, index) => {
+          toReturn.push({
+            title: `Claim Fulfillment #${index + 1}`,
+            type: "claim",
+            fulfillment: f,
+            claim: s,
+          })
+        })
+      }
+    })
+  }
 
   if (order.swaps && order.swaps.length) {
     order.swaps.forEach(s => {
@@ -71,7 +87,7 @@ const gatherFulfillments = order => {
         s.fulfillments.forEach((f, index) => {
           toReturn.push({
             title: `Swap Fulfillment #${index + 1}`,
-            is_swap: true,
+            type: "swap",
             fulfillment: f,
             swap: s,
           })
@@ -85,6 +101,7 @@ const gatherFulfillments = order => {
 
 const OrderDetails = ({ id }) => {
   const [swapToFulfill, setSwapToFulfill] = useState(false)
+  const [claimToFulfill, setClaimToFulfill] = useState(false)
   const [showRefund, setShowRefund] = useState(false)
   const [showReturnMenu, setShowReturnMenu] = useState(false)
   const [showFulfillmentMenu, setShowFulfillmentMenu] = useState(false)
@@ -93,6 +110,7 @@ const OrderDetails = ({ id }) => {
   const [captureLoading, setCaptureLoading] = useState(false)
   const [showCancelDialog, setCancelDialog] = useState(false)
   const [showSwap, setShowSwap] = useState(false)
+  const [showClaim, setShowClaim] = useState(false)
   const [showEditCustomer, setShowEditCustomer] = useState(false)
   const [isCancelling, setCancelling] = useState(false)
   const [toReceive, setToReceive] = useState(false)
@@ -105,14 +123,19 @@ const OrderDetails = ({ id }) => {
     requestReturn,
     receiveReturn,
     receiveSwap,
+    receiveClaim,
     createFulfillment,
     processSwapPayment,
     createShipment,
     createSwap,
+    createClaim,
     createSwapShipment,
     fulfillSwap,
+    fulfillClaim,
+    createClaimShipment,
     refund,
     isLoading,
+    updateClaim,
     archive,
     complete,
     cancel,
@@ -220,6 +243,14 @@ const OrderDetails = ({ id }) => {
         setShowSwap(true)
       },
     })
+
+    lineDropdown.push({
+      type: "primary",
+      label: "Register claim",
+      onClick: () => {
+        setShowClaim(true)
+      },
+    })
   }
 
   const fulfillments = gatherFulfillments(order)
@@ -305,7 +336,7 @@ const OrderDetails = ({ id }) => {
                 Date
               </Text>
               <Text>
-                {moment(order.created).format("MMMM Do YYYY, h:mm:ss")}
+                {moment(order.created_at).format("MMMM Do YYYY, h:mm:ss")}
               </Text>
             </Box>
             <Card.VerticalDivider mx={3} />
@@ -349,6 +380,9 @@ const OrderDetails = ({ id }) => {
           <Timeline
             events={events}
             order={order}
+            onSaveClaim={updateClaim}
+            onFulfillClaim={claim => setClaimToFulfill(claim)}
+            onReceiveClaim={receiveClaim}
             onProcessSwapPayment={processSwapPayment}
             onFulfillSwap={swap => setSwapToFulfill(swap)}
             onReceiveReturn={ret => setToReceive(ret)}
@@ -572,9 +606,18 @@ const OrderDetails = ({ id }) => {
           />
         </Card.Body>
       </Card>
+      {claimToFulfill && (
+        <FulfillmentMenu
+          type={"claim"}
+          onFulfill={fulfillClaim}
+          order={claimToFulfill}
+          onDismiss={() => setClaimToFulfill(false)}
+          toaster={toaster}
+        />
+      )}
       {swapToFulfill && (
         <FulfillmentMenu
-          isSwap
+          type={"claim"}
           onFulfill={fulfillSwap}
           order={swapToFulfill}
           onDismiss={() => setSwapToFulfill(false)}
@@ -583,6 +626,7 @@ const OrderDetails = ({ id }) => {
       )}
       {showFulfillmentMenu && (
         <FulfillmentMenu
+          type={"default"}
           onFulfill={createFulfillment}
           order={order}
           onDismiss={() => setShowFulfillmentMenu(false)}
@@ -609,8 +653,10 @@ const OrderDetails = ({ id }) => {
         <FulfillmentEdit
           order={order}
           swap={updateFulfillment.swap}
+          claim={updateFulfillment.claim}
           fulfillment={updateFulfillment.fulfillment}
-          isSwap={updateFulfillment.is_swap}
+          type={updateFulfillment.type}
+          onCreateClaimShipment={createClaimShipment}
           onCreateSwapShipment={createSwapShipment}
           onCreateShipment={createShipment}
           onDismiss={() => setUpdateFulfillment(false)}
@@ -624,6 +670,14 @@ const OrderDetails = ({ id }) => {
           onReceiveReturn={receiveReturn}
           onReceiveSwap={receiveSwap}
           onDismiss={() => setToReceive(false)}
+          toaster={toaster}
+        />
+      )}
+      {showClaim && (
+        <ClaimMenu
+          order={order}
+          onCreate={createClaim}
+          onDismiss={() => setShowClaim(false)}
           toaster={toaster}
         />
       )}

@@ -7,7 +7,7 @@ import Modal from "../../../../components/modal"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 
-const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
+const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
   const [itemError, setItemError] = useState("")
   const [fulfillAll, setFulfillAll] = useState(false)
@@ -67,42 +67,44 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
       }, {})
     }
 
-    if (isSwap && onFulfill) {
-      setSubmitting(true)
-      return onFulfill(order.id, {
-        metadata,
-      })
-        .then(() => onDismiss())
-        .then(() => toaster("Successfully fulfilled swap", "success"))
-        .catch(() => toaster("Failed to fulfill swap", "error"))
-        .finally(() => setSubmitting(false))
-    }
+    switch (type) {
+      case "claim":
+      case "swap":
+        setSubmitting(true)
+        return onFulfill(order.id, {
+          metadata,
+        })
+          .then(() => onDismiss())
+          .then(() => toaster(`Successfully fulfilled ${type}`, "success"))
+          .catch(() => toaster(`Failed to fulfill ${type}`, "error"))
+          .finally(() => setSubmitting(false))
+      default:
+        const items = toFulfill
+          .map(t => {
+            if (quantities[t]) {
+              return {
+                item_id: t,
+                quantity: quantities[t],
+              }
+            }
+          })
+          .filter(t => !!t)
 
-    const items = toFulfill
-      .map(t => {
-        if (quantities[t]) {
-          return {
-            item_id: t,
-            quantity: quantities[t],
-          }
+        if (!items.length) {
+          setItemError("You must select at least one item to fulfill")
         }
-      })
-      .filter(t => !!t)
 
-    if (!items.length) {
-      setItemError("You must select at least one item to fulfill")
-    }
-
-    if (onFulfill) {
-      setSubmitting(true)
-      return onFulfill({
-        items,
-        metadata,
-      })
-        .then(() => onDismiss())
-        .then(() => toaster("Successfully fulfilled order", "success"))
-        .catch(() => toaster("Failed to fulfill order", "error"))
-        .finally(() => setSubmitting(false))
+        if (onFulfill) {
+          setSubmitting(true)
+          return onFulfill({
+            items,
+            metadata,
+          })
+            .then(() => onDismiss())
+            .then(() => toaster("Successfully fulfilled order", "success"))
+            .catch(() => toaster("Failed to fulfill order", "error"))
+            .finally(() => setSubmitting(false))
+        }
     }
   }
 
@@ -125,7 +127,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
     }
   }
 
-  const items = isSwap ? order.additional_items : order.items
+  const items = type === "default" ? order.items : order.additional_items
 
   return (
     <Modal onClick={onDismiss}>
@@ -148,7 +150,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
             py={2}
           >
             <Box width={30} px={2} py={1}>
-              {!isSwap && (
+              {type === "default" && (
                 <input
                   checked={fulfillAll}
                   onChange={handleFulfillAll}
@@ -172,7 +174,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
             return (
               <Flex justifyContent="space-between" fontSize={2} py={2}>
                 <Box width={30} px={2} py={1}>
-                  {!isSwap && (
+                  {type === "default" && (
                     <input
                       checked={toFulfill.includes(item.id)}
                       onChange={() => handleFulfillToggle(item)}

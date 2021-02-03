@@ -12,8 +12,9 @@ import useMedusa from "../../../../hooks/use-medusa"
 
 const FulfillmentEdit = ({
   order,
-  isSwap,
   swap,
+  claim,
+  type,
   fulfillment,
   onCreateSwapShipment,
   onCreateShipment,
@@ -40,24 +41,42 @@ const FulfillmentEdit = ({
   const onSubmit = data => {
     const tracking_numbers = data.tracking_numbers.map(({ value }) => value)
 
-    if (isSwap && onCreateSwapShipment) {
-      return onCreateSwapShipment(swap.id, {
-        fulfillment_id: fulfillment.id,
-        tracking_numbers,
-      })
-        .then(() => onDismiss())
-        .then(() => toaster("Fulfillment was marked shipped", "success"))
-        .catch(() => toaster("Failed to mark fulfillment shipped", "error"))
-    }
+    switch (type) {
+      case "swap":
+        if (onCreateSwapShipment) {
+          return onCreateSwapShipment(swap.id, {
+            fulfillment_id: fulfillment.id,
+            tracking_numbers,
+          })
+            .then(() => onDismiss())
+            .then(() => toaster("Fulfillment was marked shipped", "success"))
+            .catch(() => toaster("Failed to mark fulfillment shipped", "error"))
+        }
+        break
 
-    if (onCreateShipment) {
-      return onCreateShipment({
-        fulfillment_id: fulfillment.id,
-        tracking_numbers,
-      })
-        .then(() => onDismiss())
-        .then(() => toaster("Fulfillment was marked shipped", "success"))
-        .catch(() => toaster("Failed to mark fulfillment shipped", "error"))
+      case "claim":
+        if (onCreateClaimShipment) {
+          return onCreateClaimShipment(claim.id, {
+            fulfillment_id: fulfillment.id,
+            tracking_numbers,
+          })
+            .then(() => onDismiss())
+            .then(() => toaster("Fulfillment was marked shipped", "success"))
+            .catch(() => toaster("Failed to mark fulfillment shipped", "error"))
+        }
+        break
+
+      default:
+        if (onCreateShipment) {
+          return onCreateShipment({
+            fulfillment_id: fulfillment.id,
+            tracking_numbers,
+          })
+            .then(() => onDismiss())
+            .then(() => toaster("Fulfillment was marked shipped", "success"))
+            .catch(() => toaster("Failed to mark fulfillment shipped", "error"))
+        }
+        break
     }
   }
 

@@ -3,6 +3,7 @@ import { Text, Flex, Box, Image } from "rebass"
 import styled from "@emotion/styled"
 import moment from "moment"
 
+import ClaimTimeline from "../claim/timeline"
 import SwapTimeline from "../swap/timeline"
 import ReturnTimeline from "../returns/timeline"
 import Typography from "../../../../components/typography"
@@ -55,6 +56,8 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
 export default ({
   events,
   order,
+  onSaveClaim,
+  onFulfillClaim,
   onFulfillSwap,
   onProcessSwapPayment,
   onReceiveReturn,
@@ -69,6 +72,17 @@ export default ({
                 key={event.id}
                 event={event}
                 order={order}
+                onReceiveReturn={onReceiveReturn}
+              />
+            )
+          case "claim":
+            return (
+              <ClaimTimeline
+                key={event.id}
+                event={event}
+                order={order}
+                onSaveClaim={onSaveClaim}
+                onFulfillClaim={onFulfillClaim}
                 onReceiveReturn={onReceiveReturn}
               />
             )
