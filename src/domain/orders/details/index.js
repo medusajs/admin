@@ -336,7 +336,7 @@ const OrderDetails = ({ id }) => {
                 Date
               </Text>
               <Text>
-                {moment(order.created).format("MMMM Do YYYY, h:mm:ss")}
+                {moment(order.created_at).format("MMMM Do YYYY, h:mm:ss")}
               </Text>
             </Box>
             <Card.VerticalDivider mx={3} />
