@@ -113,8 +113,8 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
             id: k,
             reason: v.reason,
             note: v.note,
-            tags: v.tags.map(t => removeNullish({ id: t.id, value: t.value })),
-            images: v.images.map(i => removeNullish({ id: i.id, url: i.url })),
+            tags: v.tags?.map(t => removeNullish({ id: t.id, value: t.value })) || [],
+            images: v.images?.map(i => removeNullish({ id: i.id, url: i.url })) || [],
           })
         }),
       })
