@@ -16,6 +16,7 @@ const FulfillmentEdit = ({
   claim,
   type,
   fulfillment,
+  onCreateClaimShipment,
   onCreateSwapShipment,
   onCreateShipment,
   onDismiss,

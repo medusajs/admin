@@ -158,6 +158,12 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
+        value.createClaimShipment = (claim, payload) => {
+          return subcomponent
+            .createClaimShipment(query.id, claim, payload)
+            .then(({ data }) => setResult(data))
+        }
+
         value.createSwap = payload => {
           return subcomponent
             .createSwap(query.id, payload)

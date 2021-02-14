@@ -347,6 +347,11 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
+    createClaimShipment(orderId, cId, payload) {
+      const path = `/admin/orders/${orderId}/claims/${cId}/shipments`
+      return medusaRequest("POST", path, payload)
+    },
+
     createSwapShipment(orderId, swapId, payload) {
       const path = `/admin/orders/${orderId}/swaps/${swapId}/shipments`
       return medusaRequest("POST", path, payload)
