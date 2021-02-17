@@ -1,5 +1,17 @@
-const buildTimeline = order => {
+const buildTimeline = (order, notifications) => {
   const events = []
+
+  for (const n of notifications) {
+    events.push({
+      id: n.id,
+      type: "notification",
+      event_name: n.event_name,
+      provider_id: n.provider_id,
+      created_at: n.created_at,
+      time: n.created_at,
+      raw: n,
+    })
+  }
 
   const returns = order.returns.map(r => {
     const items = r.items.map(i => {
