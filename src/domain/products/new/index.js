@@ -516,7 +516,7 @@ const NewProduct = ({}) => {
               values={tags}
               onChange={values => handleTagChange(values)}
             />
-            {frequentTags?.length && (
+            {frequentTags && frequentTags.length ? (
               <Flex mt={1}>
                 <Text mr={2} fontSize="10px">
                   Frequently used tags:{" "}
@@ -525,7 +525,7 @@ const NewProduct = ({}) => {
                   {frequentTags.map(t => t.value).join(", ")}
                 </Text>
               </Flex>
-            )}
+            ) : null}
             <Flex mt={4} alignItems="center">
               <Pill
                 width="50%"
