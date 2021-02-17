@@ -268,6 +268,57 @@ export default {
     },
   },
 
+  draftOrders: {
+    create(draftOrder) {
+      const path = `/admin/draft-orders`
+      return medusaRequest("POST", path, draftOrder)
+    },
+
+    addLineItem(draftOrderId, line) {
+      const path = `/admin/draft-orders/${draftOrderId}/line-items`
+      return medusaRequest("POST", path, draftOrder)
+    },
+
+    deleteLineItem(draftOrderId, lineId) {
+      const path = `/admin/draft-orders/${draftOrderId}/line-items/${lineId}`
+      return medusaRequest("DELETE", path)
+    },
+
+    retrieve(id) {
+      const path = `/admin/draft-orders/${id}`
+      return medusaRequest("GET", path)
+    },
+
+    delete(id) {
+      const path = `/admin/draft-orders/${id}`
+      return medusaRequest("DELETE", path)
+    },
+
+    update(id, payload) {
+      const path = `/admin/draft-orders/${id}`
+      return medusaRequest("POST", path, payload)
+    },
+
+    registerSystemPayment(id) {
+      const path = `/admin/draft-orders/${id}/register-payment`
+      return medusaRequest("POST", path)
+    },
+
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => {
+          if (search[k] === "" || search[k] === null) {
+            return null
+          }
+          return `${k}=${search[k]}`
+        })
+        .filter(s => !!s)
+        .join("&")
+      let path = `/admin/draft-orders${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+  },
+
   orders: {
     create(order) {
       const path = `/admin/orders`

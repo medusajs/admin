@@ -166,7 +166,7 @@ const CurrencyInput = React.forwardRef(
                 onChange={handleCurrencySelected}
               />
             ) : (
-              <TextWrapper marginTop={inline ? "0px" : "6px"} height="100%">
+              <TextWrapper marginTop={"0px"} height="100%">
                 {currency.toUpperCase()}
               </TextWrapper>
             )}

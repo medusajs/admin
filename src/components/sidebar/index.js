@@ -82,7 +82,7 @@ const Sidebar = ({}) => {
           <Logo style={{ transform: "scale(1.5)" }} />
         </LogoContainer>
         <Box mx={1}>
-          <Text>{storeName || "Medusa store"}</Text>
+          <Text fontWeight="600">{storeName || "Medusa store"}</Text>
         </Box>
       </Flex>
       <Flex py={4} mx={-1} flexDirection="column" flex={1}>
@@ -160,13 +160,21 @@ const Sidebar = ({}) => {
       <Flex mx={-1} alignItems="center" justifyContent="center">
         <InlineLogoContainer px={2}>
           <Text
+            color="#454B54"
+            fontSize="18px"
+            fontWeight="600"
+            fontFamily="'Lato', sans-serif;"
+          >
+            medusa
+          </Text>
+          {/* <Text
             fontFamily="Medusa"
             fontSize="18px"
             color="#454b54"
             fontWeight={300}
           >
             MEDUSA
-          </Text>
+          </Text> */}
         </InlineLogoContainer>
       </Flex>
     </Container>

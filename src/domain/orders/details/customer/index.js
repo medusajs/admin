@@ -26,16 +26,19 @@ const CustomerInformation = ({
   updateOrder,
   setShow,
   show,
+  canEdit = true,
   toaster,
 }) => {
   return (
     <Card mr={3} mb={4} width="100%">
       <Card.Header
-        action={{
-          type: "primary",
-          label: "Edit",
-          onClick: () => setShow(true),
-        }}
+        action={
+          canEdit && {
+            type: "primary",
+            label: "Edit",
+            onClick: () => setShow(true),
+          }
+        }
       >
         Customer
       </Card.Header>

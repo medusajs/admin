@@ -31,6 +31,9 @@ import useMedusa from "../../hooks/use-medusa"
 import Spinner from "../../components/spinner"
 import Button from "../../components/button"
 import Filter from "./filter-dropdown"
+import NewOrder from "./new/new-order"
+import DraftOrders from "./draft-orders"
+import DraftOrderDetails from "./draft-orders/details"
 
 const TabButton = styled.button`
   border-radius: 0pt;
@@ -57,7 +60,7 @@ const TabButton = styled.button`
   outline: none;
 `
 
-const OrderNumCell = styled(Text)`
+export const OrderNumCell = styled(Text)`
   color: #006fbb;
   z-index: 1000;
 
@@ -73,6 +76,7 @@ const Tabs = [
   { label: "Returns", value: "returns" },
   { label: "Swaps", value: "swaps" },
   { label: "All", value: "orders" },
+  { label: "Draft", value: "draft-orders" },
 ]
 
 const OrderIndex = ({}) => {
@@ -118,8 +122,13 @@ const OrderIndex = ({}) => {
   const [limit, setLimit] = useState(filtersOnLoad.limit || 0)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [orders, setOrders] = useState([])
-  const [activeTab, setActiveTab] = useState("orders")
+  const [draftOrders, setDraftOrders] = useState([])
+  const [activeTab, setActiveTab] = useState(
+    filtersOnLoad.tab ? filtersOnLoad.tab : "orders"
+  )
   const [fetching, setFetching] = useState(false)
+
+  const [showNewOrder, setShowNewOrder] = useState(false)
 
   const [statusFilter, setStatusFilter] = useState({ open: false, filter: "" })
   const [fulfillmentFilter, setFulfillmentFilter] = useState({
@@ -175,6 +184,12 @@ const OrderIndex = ({}) => {
     {},
     [activeIndex]
   )
+
+  useEffect(() => {
+    if (activeTab) {
+      handleTabClick(activeTab, query)
+    }
+  }, [activeTab])
 
   useEffect(() => {
     if (activeIndex === -1) {
@@ -294,20 +309,24 @@ const OrderIndex = ({}) => {
   }
 
   const handleTabClick = async (tab, query) => {
+    const baseUrl = qs.parseUrl(window.location.href).url
     setFetching(true)
     setActiveTab(tab)
     switch (tab) {
       case "swaps":
+        setDraftOrders([])
         const swaps = await Medusa.swaps.list(query)
         setOrders(swaps.data.swaps)
         setFetching(false)
         break
       case "returns":
+        setDraftOrders([])
         const returns = await Medusa.returns.list(query)
         setOrders(returns.data.returns)
         setFetching(false)
         break
       case "new":
+        setDraftOrders([])
         refresh({
           search: {
             ...query,
@@ -321,6 +340,7 @@ const OrderIndex = ({}) => {
         setFetching(false)
         break
       case "orders":
+        setDraftOrders([])
         refresh({
           search: {
             ...query,
@@ -332,10 +352,17 @@ const OrderIndex = ({}) => {
         setOrders(allOrders)
         setFetching(false)
         break
+      case "draft-orders":
+        const draftOrders = await Medusa.draftOrders.list(query)
+        setDraftOrders(draftOrders.data.draft_orders)
+        setFetching(false)
+        break
       default:
         setFetching(false)
         break
     }
+
+    window.history.replaceState(baseUrl, "", `?tab=${tab}`)
   }
 
   const clear = () => {
@@ -354,11 +381,7 @@ const OrderIndex = ({}) => {
           Orders
         </Text>
         <Box ml="auto" />
-        <Button
-          disabled={true}
-          onClick={() => navigate(`/a/orders/new`)}
-          variant={"cta"}
-        >
+        <Button onClick={() => setShowNewOrder(true)} variant={"cta"}>
           New draft order
         </Button>
       </Flex>
@@ -399,8 +422,9 @@ const OrderIndex = ({}) => {
         />
       </Flex>
       <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
-        {Tabs.map(tab => (
+        {Tabs.map((tab, i) => (
           <TabButton
+            key={i}
             active={tab.value === activeTab}
             onClick={() => handleTabClick(tab.value)}
           >
@@ -419,12 +443,14 @@ const OrderIndex = ({}) => {
             <Spinner dark />
           </Box>
         </Flex>
-      ) : !orders.length ? (
+      ) : !orders.length && !draftOrders.length ? (
         <Flex alignItems="center" justifyContent="center" mt="10%">
           <Text height="75px" fontSize="16px">
             No orders found
           </Text>
         </Flex>
+      ) : draftOrders.length ? (
+        <DraftOrders draftOrders={draftOrders} />
       ) : (
         <Table>
           <TableHead>
@@ -575,6 +601,7 @@ const OrderIndex = ({}) => {
           Next
         </Button>
       </Flex>
+      {showNewOrder && <NewOrder onDismiss={() => setShowNewOrder(false)} />}
     </Flex>
   )
 }
@@ -584,6 +611,7 @@ const Orders = () => {
     <Router>
       <OrderIndex path="/" />
       <Details path=":id" />
+      <DraftOrderDetails path="/draft/:id" />
       <New path="/new" />
     </Router>
   )

@@ -43,21 +43,38 @@ const IndexPage = () => {
         onSubmit={handleSubmit(handleLogin)}
       >
         <Flex alignItems="center" justifyContent="center" p={4}>
-          <LogoInline stroke="#53725D" height={15} />
+          <Text
+            color="#454B54"
+            fontSize="30px"
+            fontFamily="'Lato', sans-serif;"
+          >
+            medusa
+          </Text>
         </Flex>
         <Box variant={"loginCard"} p={5}>
-          <Text mb={4}>Sign in</Text>
+          <Text mb={4} fontWeight="600">
+            Sign in to your account
+          </Text>
           {loading ? (
             <Flex justifyContent="center">
               <Spinner dark width="20px" height="20px" />
             </Flex>
           ) : (
             <>
-              <InputField mb={3} label="Email" name="email" ref={register} />
+              <InputField
+                mb={3}
+                boldLabel={true}
+                label="Email"
+                name="email"
+                ref={register}
+                placeholder=" "
+              />
               <InputField
                 type="password"
+                boldLabel={true}
                 label="Password"
                 name="password"
+                placeholder=" "
                 ref={register}
               />
               <Button type="submit" variant={"cta"} mt={4} width={1}>

@@ -12,7 +12,8 @@ const DropdownContainer = styled(Box)`
     display: ${props.isOpen ? "block" : "none"};
   `};
 
-  transform: translateY(32px);
+  transform: ${props =>
+    props.dropUp ? "translateY(-180px)" : "translateY(32px)"};
   position: absolute;
   background-color: #fefefe;
   min-width: 160px;
@@ -61,6 +62,9 @@ const Dropdown = ({
   onSearchChange,
   toggleText,
   leftAlign,
+  dropdownWidth,
+  dropdownHeight,
+  dropUp = false,
   sx,
   ...rest
 }) => {
@@ -114,7 +118,9 @@ const Dropdown = ({
         {toggleText || <Ellipsis height="10px" />}
       </Button>
       <DropdownContainer
+        dropUp={dropUp}
         leftAlign={leftAlign}
+        minWidth={dropdownWidth || "160px"}
         ref={ref}
         isOpen={isOpen}
         {..._.pick(rest, spacingProps)}
@@ -126,7 +132,7 @@ const Dropdown = ({
             onChange={handleSearch}
           />
         )}
-        <Scrollable>
+        <Scrollable maxHeight={dropdownHeight || "80vh"}>
           {React.Children.map(children, child => (
             <DropdownItem>{child}</DropdownItem>
           ))}

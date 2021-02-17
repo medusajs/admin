@@ -14,7 +14,7 @@ const StyledInput = styled(Input)`
   `}
 `
 
-const StyledLabel = styled.div`
+export const StyledLabel = styled.div`
   ${Typography.Base}
   ${props =>
     props.boldLabel &&
@@ -91,6 +91,7 @@ const InputField = React.forwardRef(
         <StyledInput
           ref={ref}
           defaultValue={defaultValue}
+          autoComplete="off"
           inline={inline}
           textAlign={textAlign || "left"}
           variant={invalid ? "invalidInput" : "input"}

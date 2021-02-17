@@ -43,6 +43,7 @@ Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
         <Button
           loading={action.isLoading}
           onClick={action.onClick}
+          disabled={action.disabled}
           mr={3}
           variant={action.type || "cta"}
         >
