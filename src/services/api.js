@@ -27,6 +27,19 @@ export default {
       // return medusaRequest("DELETE", path)
     },
   },
+  notifications: {
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      let path = `/admin/notifications${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+    resend(id, config) {
+      let path = `/admin/notifications/${id}/resend`
+      return medusaRequest("POST", path, config)
+    },
+  },
   customers: {
     retrieve(customerId) {
       const path = `/admin/customers/${customerId}`
