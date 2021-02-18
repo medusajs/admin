@@ -11,6 +11,7 @@ import ReactCountryFlag from "react-country-flag"
 import ReactTooltip from "react-tooltip"
 import { useHotkeys } from "react-hotkeys-hook"
 import Medusa from "../../services/api"
+import { ReactComponent as Cross } from "../../assets/svg/cross.svg"
 
 import Details from "./details"
 import New from "./new"
@@ -41,11 +42,22 @@ const TabButton = styled.button`
   text-align: left;
   margin-right: 15px;
 
+  .cross-icon {
+    display: none;
+    height: 10px;
+    margin-left: 3px;
+    cursor: pointer;
+  }
+
   ${props =>
     props.active &&
     `
     border-bottom: 1px solid black;
     // font-weight: bold;
+    .cross-icon {
+      display: inline-block;
+    }
+
   `}
 
   p {
@@ -302,11 +314,11 @@ const OrderIndex = ({}) => {
     handleTabClick(activeTab, handleQueryParts())
   }
 
-  const handleTabClick = async (tab, query) => {
+  const handleTabClick = async tab => {
     setFetching(true)
     setActiveTab(tab)
-    console.log("tab clicked: ", tab, query)
-
+    const baseUrl = qs.parseUrl(window.location.href).url
+    let replaceUrl = `?tab=${tab.toLowerCase()}`
     switch (tab) {
       case "swaps":
         const swaps = await Medusa.swaps.list(query)
@@ -345,11 +357,12 @@ const OrderIndex = ({}) => {
         break
       default:
         const baseUrl = qs.parseUrl(window.location.href).url
-        window.history.replaceState(baseUrl, "", `?${tab}`)
+        replaceUrl = `?${tab.toLowerCase()}`
 
         setFetching(false)
         break
     }
+    window.history.replaceState(baseUrl, "", replaceUrl)
   }
 
   const clear = () => {
@@ -381,8 +394,7 @@ const OrderIndex = ({}) => {
 
     const newTabs = tabs
     newTabs.push({ label: saveValue, value: prepared })
-    console.log("newTabs: ", newTabs)
-    console.log("oldTabs: ", tabs)
+
     setTabs(newTabs)
 
     const filters = JSON.parse(localStorage.getItem("orders::filters"))
@@ -456,12 +468,33 @@ const OrderIndex = ({}) => {
       </Flex>
       <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
         {tabs &&
-          tabs.map(tab => (
+          tabs.map((tab, i) => (
             <TabButton
               active={tab.value === activeTab}
               onClick={() => handleTabClick(tab.value)}
             >
-              <p>{tab.label}</p>
+              <>
+                <p>{tab.label}</p>
+                {i > 3 && (
+                  <Cross
+                    className="cross-icon"
+                    onClick={() => {
+                      const newTabs = JSON.parse(
+                        localStorage.getItem("orders::filters")
+                      )
+
+                      delete newTabs[tab.label]
+
+                      localStorage.setItem(
+                        "orders::filters",
+                        JSON.stringify(newTabs)
+                      )
+
+                      setTabs(DefaultTabs.concat(getLocalStorageFilters()))
+                    }}
+                  />
+                )}
+              </>
             </TabButton>
           ))}
       </Flex>
