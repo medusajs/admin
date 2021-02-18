@@ -68,7 +68,7 @@ const OrderNumCell = styled(Text)`
   }
 `
 
-const Tabs = [
+const DefaultTabs = [
   { label: "New", value: "new" },
   { label: "Returns", value: "returns" },
   { label: "Swaps", value: "swaps" },
@@ -113,7 +113,7 @@ const OrderIndex = ({}) => {
   }
 
   const searchRef = useRef(null)
-
+  const [tabs, setTabs] = useState(DefaultTabs)
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(filtersOnLoad.limit || 0)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
@@ -194,6 +194,11 @@ const OrderIndex = ({}) => {
       setOrders(allOrders)
     }
   }, [allOrders])
+
+  useEffect(() => {
+    const newTabs = DefaultTabs.concat(getLocalStorageFilters())
+    setTabs(newTabs)
+  }, [])
 
   const onKeyDown = event => {
     switch (event.key) {
@@ -368,6 +373,33 @@ const OrderIndex = ({}) => {
     return []
   }
 
+  const handleSaveTab = saveValue => {
+    const prepared = qs.stringify(handleQueryParts(), {
+      skipNull: true,
+      skipEmptyString: true,
+    })
+
+    const newTabs = tabs
+    newTabs.push({ label: saveValue, value: prepared })
+    console.log("newTabs: ", newTabs)
+    console.log("oldTabs: ", tabs)
+    setTabs(newTabs)
+
+    const filters = JSON.parse(localStorage.getItem("orders::filters"))
+
+    if (filters) {
+      filters[saveValue] = prepared
+      localStorage.setItem("orders::filters", JSON.stringify(filters))
+    } else {
+      const newFilters = {}
+      newFilters[saveValue] = prepared
+      localStorage.setItem("orders::filters", JSON.stringify(newFilters))
+    }
+
+    submit()
+    setActiveTab(prepared)
+  }
+
   const moreResults = orders && orders.length >= limit
 
   return (
@@ -419,18 +451,19 @@ const OrderIndex = ({}) => {
           setStatusFilter={setStatusFilter}
           setPaymentFilter={setPaymentFilter}
           setFulfillmentFilter={setFulfillmentFilter}
-          handleQueryParts={handleQueryParts}
+          handleSaveTab={value => handleSaveTab(value)}
         />
       </Flex>
       <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
-        {Tabs.concat(getLocalStorageFilters()).map(tab => (
-          <TabButton
-            active={tab.value === activeTab}
-            onClick={() => handleTabClick(tab.value)}
-          >
-            <p>{tab.label}</p>
-          </TabButton>
-        ))}
+        {tabs &&
+          tabs.map(tab => (
+            <TabButton
+              active={tab.value === activeTab}
+              onClick={() => handleTabClick(tab.value)}
+            >
+              <p>{tab.label}</p>
+            </TabButton>
+          ))}
       </Flex>
       {(isLoading && !hasCache) || isReloading || fetching ? (
         <Flex

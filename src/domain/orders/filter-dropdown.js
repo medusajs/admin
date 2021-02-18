@@ -88,7 +88,7 @@ const OrderFilterButton = ({
   statusFilter,
   fulfillmentFilter,
   paymentFilter,
-  handleQueryParts,
+  handleSaveTab,
   sx,
   ...rest
 }) => {
@@ -130,26 +130,6 @@ const OrderFilterButton = ({
     clearFilters()
   }
 
-  const handleSaveFilter = () => {
-    const prepared = qs.stringify(handleQueryParts(), {
-      skipNull: true,
-      skipEmptyString: true,
-    })
-
-    const filters = JSON.parse(localStorage.getItem("orders::filters"))
-
-    if (filters) {
-      filters[saveValue] = prepared
-      localStorage.setItem("orders::filters", JSON.stringify(filters))
-    } else {
-      const newFilters = {}
-      newFilters[saveValue] = prepared
-      localStorage.setItem("orders::filters", JSON.stringify(newFilters))
-    }
-
-    submit()
-  }
-
   return (
     <Box style={{ position: "relative" }}>
       <Button
@@ -189,8 +169,9 @@ const OrderFilterButton = ({
           <InputField
             value={saveValue}
             onChange={e => setSaveValue(e.target.value)}
+            sx={{ flex: "1" }}
           />
-          <Button onClick={handleSaveFilter}>Save</Button>
+          <Button onClick={() => handleSaveTab(saveValue)}>Save</Button>
         </Flex>
       </DropdownContainer>
     </Box>
