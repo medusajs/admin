@@ -300,6 +300,8 @@ const OrderIndex = ({}) => {
   const handleTabClick = async (tab, query) => {
     setFetching(true)
     setActiveTab(tab)
+    console.log("tab clicked: ", tab, query)
+
     switch (tab) {
       case "swaps":
         const swaps = await Medusa.swaps.list(query)
@@ -337,6 +339,9 @@ const OrderIndex = ({}) => {
         setFetching(false)
         break
       default:
+        const baseUrl = qs.parseUrl(window.location.href).url
+        window.history.replaceState(baseUrl, "", `?${tab}`)
+
         setFetching(false)
         break
     }
@@ -347,6 +352,20 @@ const OrderIndex = ({}) => {
     setQuery("")
     window.history.replaceState(baseUrl, "", `?limit=${limit}&offset=${offset}`)
     refresh()
+  }
+
+  const getLocalStorageFilters = () => {
+    const filters = JSON.parse(localStorage.getItem("orders::filters"))
+
+    if (filters) {
+      const array = Object.entries(filters).map(([key, value]) => {
+        return { label: key, value: value }
+      })
+
+      return array
+    }
+
+    return []
   }
 
   const moreResults = orders && orders.length >= limit
@@ -404,7 +423,7 @@ const OrderIndex = ({}) => {
         />
       </Flex>
       <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
-        {Tabs.map(tab => (
+        {Tabs.concat(getLocalStorageFilters()).map(tab => (
           <TabButton
             active={tab.value === activeTab}
             onClick={() => handleTabClick(tab.value)}
