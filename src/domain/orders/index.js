@@ -356,8 +356,7 @@ const OrderIndex = ({}) => {
         setFetching(false)
         break
       default:
-        const baseUrl = qs.parseUrl(window.location.href).url
-        replaceUrl = `?${tab.toLowerCase()}`
+        replaceUrl = `?${tab}`
 
         setFetching(false)
         break
@@ -392,11 +391,6 @@ const OrderIndex = ({}) => {
       skipEmptyString: true,
     })
 
-    const newTabs = tabs
-    newTabs.push({ label: saveValue, value: prepared })
-
-    setTabs(newTabs)
-
     const filters = JSON.parse(localStorage.getItem("orders::filters"))
 
     if (filters) {
@@ -408,7 +402,10 @@ const OrderIndex = ({}) => {
       localStorage.setItem("orders::filters", JSON.stringify(newFilters))
     }
 
-    submit()
+    const newTabs = DefaultTabs.concat(getLocalStorageFilters())
+    const baseUrl = qs.parseUrl(window.location.href).url
+    window.history.replaceState(baseUrl, "", `?${prepared}`)
+    setTabs(newTabs)
     setActiveTab(prepared)
   }
 
@@ -491,6 +488,7 @@ const OrderIndex = ({}) => {
                       )
 
                       setTabs(DefaultTabs.concat(getLocalStorageFilters()))
+                      handleTabClick("orders")
                     }}
                   />
                 )}
