@@ -40,25 +40,45 @@ const CollapseContainer = styled.div`
 `
 
 const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
-  const [checked, setChecked] = useState("")
+  const [checked, setChecked] = useState({})
 
   const onCheck = filter => {
-    setChecked(filter)
-    setFilter(prevState => ({ ...prevState, filter }))
+    console.log("filter: ", filter)
+    const checkedState = checked
+    console.log("checkedState0, ", checkedState)
+    if (!checkedState[filter]) {
+      checkedState[filter] = true
+    } else {
+      checkedState[filter] = false
+    }
+
+    console.log("checkedState1, ", checkedState)
+    const newFilter = Object.entries(checkedState).reduce(
+      (acc, [key, value]) => {
+        console.log("key value", key, value)
+        if (value === true) {
+          acc.push(key)
+        }
+        return acc
+      },
+      []
+    )
+
+    console.log("filter: ", newFilter, newFilter.join(","))
+    setChecked(checkedState)
+
+    setFilter({ open: open, filter: newFilter.join(",").toString() })
   }
 
   useEffect(() => {
-    if (!open) {
-      setFilter(prevState => ({ ...prevState, filter: "" }))
-    }
-  }, [open])
+    console.log("render")
+  }, [checked, filters])
 
   return (
     <DropdownItemWrapper>
       <DropdownItem
         onClick={() => {
           setFilter(prevState => ({ ...prevState, open: !open }))
-          setChecked(3)
         }}
         open={open}
       >
@@ -72,6 +92,7 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
         {filterTitle}
       </DropdownItem>
       <Collapse isOpened={open}>
+        {console.log("filters render: ", filters)}
         {filters.map((el, i) => (
           <CollapseContainer
             key={i}
@@ -83,8 +104,7 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
               id={el}
               name={el}
               value={el}
-              onChange={() => {}}
-              checked={checked === el}
+              checked={checked[el] === true}
               style={{ marginRight: "5px" }}
             />
             {el}

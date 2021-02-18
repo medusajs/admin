@@ -143,6 +143,8 @@ const OrderIndex = ({}) => {
     filter: "",
   })
 
+  console.log("main filters: ", statusFilter, fulfillmentFilter, paymentFilter)
+
   const isInViewport = el => {
     const rect = el.getBoundingClientRect()
     return (
