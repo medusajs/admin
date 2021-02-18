@@ -143,8 +143,6 @@ const OrderIndex = ({}) => {
     filter: "",
   })
 
-  console.log("main filters: ", statusFilter, fulfillmentFilter, paymentFilter)
-
   const isInViewport = el => {
     const rect = el.getBoundingClientRect()
     return (
@@ -287,16 +285,12 @@ const OrderIndex = ({}) => {
     })
   }
 
-  const handleQueryParts = () => {
+  const handleQueryParts = (refresh = false) => {
     const queryParts = {
       q: query,
       payment_status: paymentFilter.filter || "",
       fulfillment_status: fulfillmentFilter.filter || "",
-      status: statusFilter.filter
-        ? statusFilter.filter
-        : activeTab
-        ? activeTab
-        : "",
+      status: statusFilter.filter || "",
       offset,
       limit,
     }

@@ -43,9 +43,8 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
   const [checked, setChecked] = useState({})
 
   const onCheck = filter => {
-    console.log("filter: ", filter)
     const checkedState = checked
-    console.log("checkedState0, ", checkedState)
+
     if (!checkedState[filter]) {
       checkedState[filter] = true
     } else {
@@ -55,7 +54,6 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
     console.log("checkedState1, ", checkedState)
     const newFilter = Object.entries(checkedState).reduce(
       (acc, [key, value]) => {
-        console.log("key value", key, value)
         if (value === true) {
           acc.push(key)
         }
@@ -69,10 +67,6 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
 
     setFilter({ open: open, filter: newFilter.join(",").toString() })
   }
-
-  useEffect(() => {
-    console.log("render")
-  }, [checked, filters])
 
   return (
     <DropdownItemWrapper>
@@ -92,7 +86,6 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
         {filterTitle}
       </DropdownItem>
       <Collapse isOpened={open}>
-        {console.log("filters render: ", filters)}
         {filters.map((el, i) => (
           <CollapseContainer
             key={i}
