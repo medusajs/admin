@@ -268,9 +268,7 @@ const OrderIndex = ({}) => {
     })
   }
 
-  const submit = () => {
-    const baseUrl = qs.parseUrl(window.location.href).url
-
+  const handleQueryParts = () => {
     const queryParts = {
       q: query,
       payment_status: paymentFilter.filter || "",
@@ -284,13 +282,19 @@ const OrderIndex = ({}) => {
       limit,
     }
 
-    const prepared = qs.stringify(queryParts, {
+    return queryParts
+  }
+
+  const submit = () => {
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    const prepared = qs.stringify(handleQueryParts(), {
       skipNull: true,
       skipEmptyString: true,
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    handleTabClick(activeTab, queryParts)
+    handleTabClick(activeTab, handleQueryParts())
   }
 
   const handleTabClick = async (tab, query) => {
@@ -396,6 +400,7 @@ const OrderIndex = ({}) => {
           setStatusFilter={setStatusFilter}
           setPaymentFilter={setPaymentFilter}
           setFulfillmentFilter={setFulfillmentFilter}
+          handleQueryParts={handleQueryParts}
         />
       </Flex>
       <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>

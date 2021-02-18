@@ -4,8 +4,9 @@ import { Flex, Box } from "rebass"
 
 import Button from "../../components/button"
 import FilterDropdownItem from "../../components/filter-dropdown-item"
-
+import qs from "query-string"
 import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
+import InputField from "../../components/input"
 
 const statusFilters = ["pending", "completed", "cancelled"]
 const paymentFilters = ["awaiting", "captured", "refunded"]
@@ -87,11 +88,12 @@ const OrderFilterButton = ({
   statusFilter,
   fulfillmentFilter,
   paymentFilter,
+  handleQueryParts,
   sx,
   ...rest
 }) => {
   const [isOpen, setIsOpen] = useState(false)
-
+  const [saveValue, setSaveValue] = useState("")
   const ref = useRef(null)
 
   const handleClickOutside = event => {
@@ -126,6 +128,26 @@ const OrderFilterButton = ({
     setPaymentFilter({ open: false, filter: "" })
     setIsOpen(false)
     clearFilters()
+  }
+
+  const handleSaveFilter = () => {
+    const prepared = qs.stringify(handleQueryParts(), {
+      skipNull: true,
+      skipEmptyString: true,
+    })
+
+    const filters = JSON.parse(localStorage.getItem("orders::filters"))
+
+    if (filters) {
+      filters[saveValue] = prepared
+      localStorage.setItem("orders::filters", JSON.stringify(filters))
+    } else {
+      const newFilters = {}
+      newFilters[saveValue] = prepared
+      localStorage.setItem("orders::filters", JSON.stringify(newFilters))
+    }
+
+    submit()
   }
 
   return (
@@ -163,6 +185,13 @@ const OrderFilterButton = ({
           open={fulfillmentFilter.open}
           setFilter={setFulfillmentFilter}
         />
+        <Flex>
+          <InputField
+            value={saveValue}
+            onChange={e => setSaveValue(e.target.value)}
+          />
+          <Button onClick={handleSaveFilter}>Save</Button>
+        </Flex>
       </DropdownContainer>
     </Box>
   )
