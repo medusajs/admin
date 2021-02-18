@@ -183,9 +183,16 @@ const OrderDetails = ({ id }) => {
         !systemPaymentMenu)
 
     switch (true) {
-      case shouldShowNotice: {
+      case paymentStatus === "captured" ||
+        paymentStatus === "partially_refunded": {
         return {
           type: "primary",
+          label: "Refund",
+          onClick: () => setShowRefund(!showRefund),
+        }
+      }
+      case shouldShowNotice: {
+        return {
           label: "Capture",
           onClick: () => setSystemPaymentMenu(true),
         }

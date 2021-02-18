@@ -10,7 +10,6 @@ import Button from "../../../../components/button"
 import Medusa from "../../../../services/api"
 
 const PaymentMenu = ({ order, onDismiss, onSubmit }) => {
-  console.log(onSubmit)
   return (
     <Modal onClick={onDismiss}>
       <Modal.Body width={"600px"} as="form" onSubmit={onSubmit}>
@@ -18,9 +17,15 @@ const PaymentMenu = ({ order, onDismiss, onSubmit }) => {
         <Modal.Content flexDirection="column">
           <Flex my={3} flexDirection="column">
             <Flex mb={3}>
-              <Text fontSize={2}>
-                You are currently dealing with a system payment. Be aware, that
-                captures and refunds should be handled manually.
+              <Text
+                fontSize={1}
+                fontStyle="italic"
+                width="100%"
+                textAlign="center"
+              >
+                One or more of your payments is a system payment. Be aware, that
+                captures and refunds are not handled by Medusa for such
+                payments.
               </Text>
             </Flex>
           </Flex>
