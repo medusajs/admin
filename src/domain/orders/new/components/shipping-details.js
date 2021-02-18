@@ -159,7 +159,10 @@ const ShippingDetails = ({
                 flexDirection="column"
                 key={i}
                 p={2}
-                selected={selectedAddress && sa.id === selectedAddress.id}
+                selected={
+                  selectedAddress &&
+                  sa.id === selectedAddress.shipping_address.id
+                }
                 onClick={() => setSelectedAddress({ shipping_address: sa })}
               >
                 <Flex>

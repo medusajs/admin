@@ -601,7 +601,12 @@ const OrderIndex = ({}) => {
           Next
         </Button>
       </Flex>
-      {showNewOrder && <NewOrder onDismiss={() => setShowNewOrder(false)} />}
+      {showNewOrder && (
+        <NewOrder
+          onDismiss={() => setShowNewOrder(false)}
+          refresh={() => handleTabClick("draft-orders", query)}
+        />
+      )}
     </Flex>
   )
 }

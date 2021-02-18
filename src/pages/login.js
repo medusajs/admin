@@ -46,7 +46,7 @@ const IndexPage = () => {
           <Text
             color="#454B54"
             fontSize="30px"
-            fontFamily="'Lato', sans-serif;"
+            fontFamily="'Helvetica Neue', sans-serif;"
           >
             medusa
           </Text>

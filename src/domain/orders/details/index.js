@@ -27,6 +27,7 @@ import Spinner from "../../../components/spinner"
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
+import PaymentMenu from "./payment-menu"
 
 const AlignedDecimal = ({ value, currency }) => {
   const fixed = (value / 100).toFixed(2)
@@ -115,6 +116,7 @@ const OrderDetails = ({ id }) => {
   const [isCancelling, setCancelling] = useState(false)
   const [toReceive, setToReceive] = useState(false)
   const [isFulfilling, setIsFulfilling] = useState(false)
+  const [systemPaymentMenu, setSystemPaymentMenu] = useState(false)
 
   const {
     order,
@@ -170,13 +172,22 @@ const OrderDetails = ({ id }) => {
   const events = buildTimeline(order)
 
   const decidePaymentButton = paymentStatus => {
+    const isSystemPayment = order?.payments?.some(
+      p => p.provider_id === "system"
+    )
+
+    const shouldShowNotice =
+      (paymentStatus === "awaiting" && isSystemPayment && !systemPaymentMenu) ||
+      (paymentStatus === "requires_action" &&
+        isSystemPayment &&
+        !systemPaymentMenu)
+
     switch (true) {
-      case paymentStatus === "captured" ||
-        paymentStatus === "partially_refunded": {
+      case shouldShowNotice: {
         return {
           type: "primary",
-          label: "Refund",
-          onClick: () => setShowRefund(!showRefund),
+          label: "Capture",
+          onClick: () => setSystemPaymentMenu(true),
         }
       }
       case paymentStatus === "awaiting" ||
@@ -518,25 +529,37 @@ const OrderDetails = ({ id }) => {
           <Flex
             flexDirection="column"
             pb={3}
-            sx={{
-              borderBottom: "hairline",
-            }}
+            sx={
+              fulfillments?.length && {
+                borderBottom: "hairline",
+              }
+            }
           >
-            {order.shipping_methods.map(method => (
-              <Box key={method._id}>
-                <Box pl={3} pr={2}>
-                  <Text pb={1} color="gray">
-                    Shipping Method
-                  </Text>
-                  <Text>{method.shipping_option.name}</Text>
-                  <Text pt={3} pb={1} color="gray">
-                    Data
-                  </Text>
-                  <ReactJson name={false} collapsed={true} src={method.data} />
+            {order?.shipping_methods?.length ? (
+              order.shipping_methods.map(method => (
+                <Box key={method._id}>
+                  <Box pl={3} pr={2}>
+                    <Text pb={1} color="gray">
+                      Shipping Method
+                    </Text>
+                    <Text>{method.shipping_option.name}</Text>
+                    <Text pt={3} pb={1} color="gray">
+                      Data
+                    </Text>
+                    <ReactJson
+                      name={false}
+                      collapsed={true}
+                      src={method.data}
+                    />
+                  </Box>
+                  <Card.VerticalDivider mx={3} />
                 </Box>
-                <Card.VerticalDivider mx={3} />
-              </Box>
-            ))}
+              ))
+            ) : (
+              <Text pl={3} fontStyle="italic" color="gray">
+                No shipping for this order
+              </Text>
+            )}
           </Flex>
           <Flex width={1} flexDirection="column">
             {fulfillments.length > 0
@@ -687,6 +710,12 @@ const OrderDetails = ({ id }) => {
           onCreate={createSwap}
           onDismiss={() => setShowSwap(false)}
           toaster={toaster}
+        />
+      )}
+      {systemPaymentMenu && (
+        <PaymentMenu
+          onDismiss={() => setSystemPaymentMenu(false)}
+          onSubmit={() => decidePaymentButton(order.payment_status).onClick()}
         />
       )}
       {showCancelDialog && (

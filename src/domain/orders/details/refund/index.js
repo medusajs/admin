@@ -48,11 +48,19 @@ const RefundMenu = ({ order, onRefund, onDismiss, toaster }) => {
     }
   }
 
+  const isSystemPayment = order.payments.some(p => p.provider_id === "system")
+
   return (
     <Modal onClick={onDismiss}>
       <Modal.Body as="form" onSubmit={onSubmit}>
         <Modal.Header>Create a refund</Modal.Header>
         <Modal.Content flexDirection="column">
+          {isSystemPayment && (
+            <Text fontSize={1} fontStyle="italic" mb={4}>
+              One or more of your payments is a system payment. Be aware, that
+              captures and refunds should be handled manually.
+            </Text>
+          )}
           <Box px={2}>
             <CurrencyInput
               inline

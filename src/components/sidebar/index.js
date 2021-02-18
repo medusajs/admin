@@ -161,9 +161,9 @@ const Sidebar = ({}) => {
         <InlineLogoContainer px={2}>
           <Text
             color="#454B54"
-            fontSize="18px"
+            fontSize="20px"
             fontWeight="600"
-            fontFamily="'Lato', sans-serif;"
+            fontFamily="'Helvetica Neue', sans-serif;"
           >
             medusa
           </Text>

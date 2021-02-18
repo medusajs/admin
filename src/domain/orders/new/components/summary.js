@@ -8,6 +8,7 @@ const Summary = ({
   requireShipping,
   handleAddQuantity,
   selectedAddress,
+  billingAddress,
   shippingOption,
   showCustomPrice,
   customOptionPrice,
@@ -15,6 +16,7 @@ const Summary = ({
   email,
   regions,
 }) => {
+  console.log("BILLING: ", billingAddress)
   const extractOptionPrice = price => {
     const r = regions.find(reg => reg.id === region.id)
     let amount = price
@@ -178,15 +180,15 @@ const Summary = ({
             Address:
           </Text>
           <Text fontSize="12px" mr={3}>
-            {selectedAddress.shipping_address.first_name}{" "}
-            {selectedAddress.shipping_address.last_name}
+            {billingAddress.billing_address.first_name}{" "}
+            {billingAddress.billing_address.last_name}
           </Text>
           <Text fontSize="12px">
-            {selectedAddress.shipping_address.address_1},{" "}
-            {selectedAddress.shipping_address.address_2}{" "}
-            {selectedAddress.shipping_address.postal_code}{" "}
-            {selectedAddress.shipping_address.city}{" "}
-            {selectedAddress.shipping_address.country_code.toUpperCase()}
+            {billingAddress.billing_address.address_1},{" "}
+            {billingAddress.billing_address.address_2}{" "}
+            {billingAddress.billing_address.postal_code}{" "}
+            {billingAddress.billing_address.city}{" "}
+            {billingAddress.billing_address.country_code.toUpperCase()}
           </Text>
         </Flex>
       </Flex>

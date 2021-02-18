@@ -99,6 +99,7 @@ const DraftOrderDetails = ({ id }) => {
   const [searchResults, setSearchResults] = useState([])
   const [paymentType, setPaymentType] = useState("")
 
+  const { store } = useMedusa("store")
   const { draft_order: draftOrder, update, isLoading, toaster } = useMedusa(
     "draftOrders",
     {
@@ -141,7 +142,7 @@ const DraftOrderDetails = ({ id }) => {
     await Medusa.draftOrders
       .delete(id)
       .then(() => {
-        navigate("/a/orders")
+        navigate("/a/orders?tab=draft-orders")
         setDeletingOrder(false)
       })
       .catch(() => setDeletingOrder(false))
@@ -175,6 +176,7 @@ const DraftOrderDetails = ({ id }) => {
       switch (type) {
         case "system": {
           const { data } = await Medusa.draftOrders.registerSystemPayment(id)
+          toaster("Payment successfully handled", "success")
           navigate(`/a/orders/${data.order.id}`)
           break
         }
@@ -182,15 +184,24 @@ const DraftOrderDetails = ({ id }) => {
           break
         }
         case "link": {
+          var tempInput = document.createElement("input")
+          tempInput.value = store.payment_link_template.replace(
+            /\{cart_id\}/,
+            draftOrder.cart_id
+          )
+          document.body.appendChild(tempInput)
+
+          tempInput.select()
+          document.execCommand("copy")
+          document.body.removeChild(tempInput)
+          toaster("Link copied to clipboard", "success")
           break
         }
         default:
           break
       }
       setHandlingPayment(false)
-      toaster("Payment successfully handled", "success")
     } catch (error) {
-      console.log(error)
       setHandlingPayment(false)
       toaster("Failed to handle payment", "error")
     }
@@ -449,8 +460,7 @@ const DraftOrderDetails = ({ id }) => {
               <Flex mt={4} pl={3}>
                 {[
                   { label: "Mark as paid", type: "system" },
-                  { label: "Pay with credit card", type: "creditcard" },
-                  { label: "Send payment link", type: "link" },
+                  { label: "Payment link", type: "link" },
                 ].map((b, i) => (
                   <Button
                     key={i}
@@ -458,8 +468,31 @@ const DraftOrderDetails = ({ id }) => {
                     mr={3}
                     onClick={() => handlePayment(b.type)}
                     loading={handlingPayment && b.type === paymentType}
+                    data-for={draftOrder.cart_id}
+                    data-tip={store.payment_link_template.replace(
+                      /\{cart_id\}/,
+                      draftOrder.cart_id
+                    )}
                   >
+                    {b.type === "link" && (
+                      <ReactTooltip
+                        id={draftOrder.cart_id}
+                        place="top"
+                        effect="solid"
+                      />
+                    )}
                     {b.label}
+                    {b.type === "link" && (
+                      <Clipboard
+                        style={{
+                          marginLeft: "5px",
+                          ":hover": { fill: "#454545" },
+                        }}
+                        fill={"#848484"}
+                        width="8"
+                        height="8"
+                      />
+                    )}
                   </Button>
                 ))}
               </Flex>
