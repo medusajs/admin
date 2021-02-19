@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
 import Typography from "../../../components/typography"
+import Select from "react-select"
 
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
@@ -18,7 +19,15 @@ import VariantGrid from "../../../components/variant-grid"
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 
+import Creatable from "react-select/creatable"
+
 import { getCombinations } from "./utils/get-combinations"
+import { Label } from "@rebass/forms"
+
+const StyledSelect = styled(Select)`
+  font-size: 14px;
+  color: #454545;
+`
 
 const Cross = styled.span`
   position: absolute;
@@ -26,6 +35,15 @@ const Cross = styled.span`
   right: 0;
   margin-right: 5px;
   cursor: pointer;
+`
+
+const StyledCreatableSelect = styled(Creatable)`
+  font-size: 14px;
+  color: #454545;
+
+.css-yk16xz-control 
+  box-shadow: none;
+}
 `
 
 const ImageCardWrapper = styled(Box)`
@@ -97,8 +115,16 @@ const NewProduct = ({}) => {
   const [options, setOptions] = useState([])
   const [images, setImages] = useState([])
   const [prices, setPrices] = useState([])
+  const [type, setSelectedType] = useState(null)
+  const [types, setTypes] = useState([])
+  const [collection, setCollection] = useState(null)
+  const [tags, setTags] = useState([])
+  const [frequentTags, setFrequentTags] = useState([])
   const [currencyOptions, setCurrencyOptions] = useState([])
   const { store, isLoading, toaster } = useMedusa("store")
+  const { collections, isLoading: isLoadingCollections } = useMedusa(
+    "collections"
+  )
   const {
     register,
     handleSubmit,
@@ -107,6 +133,22 @@ const NewProduct = ({}) => {
     errors,
     clearErrors,
   } = useForm()
+
+  const fetchTypes = async () => {
+    const productTypes = await Medusa.products
+      .listTypes()
+      .then(({ data }) => data.types)
+
+    setTypes(productTypes)
+  }
+
+  const fetchTags = async () => {
+    const productTags = await Medusa.products
+      .listTagsByUsage()
+      .then(({ data }) => data.tags)
+
+    setFrequentTags(productTags)
+  }
 
   /**
    * Will be called everytime an option has changed. It will then recalculate
@@ -147,6 +189,11 @@ const NewProduct = ({}) => {
           )
       )
   }
+
+  useEffect(() => {
+    fetchTags()
+    fetchTypes()
+  }, [])
 
   /**
    * Determines the currency options.
@@ -294,13 +341,39 @@ const NewProduct = ({}) => {
       }))
     }
 
-    return {
+    const p = {
       images,
       title: data.title,
       description: data.description,
       options: parseOptions.map(o => ({ title: o.name })),
       variants: parseVariants,
     }
+
+    if (collection && !_.isEmpty(collection)) {
+      const coll = collections.find(c => c.id === collection.value)
+      if (coll) {
+        p.collection_id = coll.id
+      }
+    }
+
+    if (type) {
+      if (type.__isNew__) {
+        p.type = {
+          value: type.label,
+        }
+      } else {
+        p.type = {
+          value: type.label,
+          id: type.value,
+        }
+      }
+    }
+
+    if (tags && tags.length) {
+      p.tags = tags.map(t => ({ value: t }))
+    }
+
+    return p
   }
 
   const onAddMore = data => {
@@ -349,6 +422,18 @@ const NewProduct = ({}) => {
     })
   }
 
+  const handleTypeChange = selectedOption => {
+    setSelectedType(selectedOption)
+  }
+
+  const handleTagChange = newTags => {
+    setTags(newTags)
+  }
+
+  const handleCollectionChange = selectedOption => {
+    setCollection(selectedOption)
+  }
+
   useEffect(() => {
     if (Object.keys(errors).length) {
       const requiredErrors = Object.keys(errors).map(err => {
@@ -382,8 +467,65 @@ const NewProduct = ({}) => {
               label="Description"
               placeholder="Short description of the product"
               name="description"
+              mb={4}
               ref={register({ required: "Description is required" })}
             />
+            <Input
+              boldLabel={true}
+              label="Handle"
+              placeholder="bathrobes"
+              name="handle"
+              mb={4}
+              ref={register}
+            />
+            <Text fontSize={1} mb={1} fontWeight="500">
+              Collection
+            </Text>
+            <StyledSelect
+              isClearable={true}
+              value={collection}
+              placeholder="Select collection..."
+              onChange={handleCollectionChange}
+              options={
+                collections?.map(col => ({
+                  value: col.id,
+                  label: col.title,
+                })) || []
+              }
+            />
+            <Text fontSize={1} mb={1} mt={4} fontWeight="500">
+              Type
+            </Text>
+            <StyledCreatableSelect
+              value={type}
+              placeholder="Select type..."
+              onChange={handleTypeChange}
+              options={
+                types?.map(typ => ({
+                  value: typ.value,
+                  label: typ.value,
+                })) || []
+              }
+              label="Type"
+            />
+            <Text mt={4} fontSize={1} mb={1} fontWeight="500">
+              Tags (separated by comma)
+            </Text>
+            <TagInput
+              placeholder="Spring, summer..."
+              values={tags}
+              onChange={values => handleTagChange(values)}
+            />
+            {frequentTags && frequentTags.length ? (
+              <Flex mt={1}>
+                <Text mr={2} fontSize="10px">
+                  Frequently used tags:{" "}
+                </Text>
+                <Text fontSize="10px">
+                  {frequentTags.map(t => t.value).join(", ")}
+                </Text>
+              </Flex>
+            ) : null}
             <Flex mt={4} alignItems="center">
               <Pill
                 width="50%"

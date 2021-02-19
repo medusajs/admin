@@ -111,9 +111,9 @@ const ProductIndex = () => {
           New product
         </Button>
       </Flex>
-      <Flex>
-        <Box ml="auto" />
-        {/* <Box mb={3} sx={{ maxWidth: "300px" }}>
+      {/* <Flex> */}
+      {/* <Box ml="auto" /> */}
+      {/* <Box mb={3} sx={{ maxWidth: "300px" }}>
           <Input
             height="28px"
             fontSize="12px"
@@ -125,7 +125,7 @@ const ProductIndex = () => {
             value={query}
           />
         </Box> */}
-        {/* <Button
+      {/* <Button
           onClick={() => searchQuery()}
           variant={"primary"}
           fontSize="12px"
@@ -133,7 +133,7 @@ const ProductIndex = () => {
         >
           Search
         </Button> */}
-      </Flex>
+      {/* </Flex> */}
       {(isLoading && !hasCache) || isReloading ? (
         <Flex
           flexDirection="column"
