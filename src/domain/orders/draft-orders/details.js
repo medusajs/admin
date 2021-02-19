@@ -11,10 +11,8 @@ import CustomerInformation from "../details/customer"
 
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
 import ImagePlaceholder from "../../../assets/svg/image-placeholder.svg"
-// import Dialog from "../../../components/dialog"
 import Card from "../../../components/card"
 import Badge from "../../../components/badge"
-// import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
@@ -23,6 +21,13 @@ import Typography from "../../../components/typography"
 import Modal from "../../../components/modal"
 import Items from "../new/components/items"
 import Button from "../../../components/button"
+
+const LineItemImage = styled(Image)`
+  height: 30px;
+  width: 30px;
+  object-fit: contain;
+  border: 1px solid lightgray;
+`
 
 const LineItemLabel = styled(Text)`
   ${Typography.Base};
@@ -335,15 +340,9 @@ const DraftOrderDetails = ({ id }) => {
                   </Box>
                   <Box mx={2}>
                     <Flex width="30px" height="30px">
-                      <Image
+                      <LineItemImage
                         src={lineItem.thumbnail || ImagePlaceholder}
-                        height={30}
-                        width={30}
                         p={!lineItem.thumbnail && "8px"}
-                        sx={{
-                          objectFit: "contain",
-                          border: "1px solid lightgray",
-                        }}
                       />
                     </Flex>
                   </Box>
@@ -458,43 +457,41 @@ const DraftOrderDetails = ({ id }) => {
             </Flex>
             {draftOrder.status !== "completed" && (
               <Flex mt={4} pl={3}>
-                {[
-                  { label: "Mark as paid", type: "system" },
-                  { label: "Payment link", type: "link" },
-                ].map((b, i) => (
-                  <Button
-                    key={i}
-                    variant="primary"
-                    mr={3}
-                    onClick={() => handlePayment(b.type)}
-                    loading={handlingPayment && b.type === paymentType}
-                    data-for={draftOrder.cart_id}
-                    data-tip={store.payment_link_template.replace(
-                      /\{cart_id\}/,
-                      draftOrder.cart_id
-                    )}
-                  >
-                    {b.type === "link" && (
-                      <ReactTooltip
-                        id={draftOrder.cart_id}
-                        place="top"
-                        effect="solid"
-                      />
-                    )}
-                    {b.label}
-                    {b.type === "link" && (
-                      <Clipboard
-                        style={{
-                          marginLeft: "5px",
-                          ":hover": { fill: "#454545" },
-                        }}
-                        fill={"#848484"}
-                        width="8"
-                        height="8"
-                      />
-                    )}
-                  </Button>
-                ))}
+                <Button
+                  variant="primary"
+                  mr={3}
+                  onClick={() => handlePayment("system")}
+                  loading={handlingPayment && "system" === paymentType}
+                >
+                  Mark as paid
+                </Button>
+                <Button
+                  variant="primary"
+                  mr={3}
+                  onClick={() => handlePayment("link")}
+                  loading={handlingPayment && "link" === paymentType}
+                  data-for={draftOrder.cart_id}
+                  data-tip={store.payment_link_template.replace(
+                    /\{cart_id\}/,
+                    draftOrder.cart_id
+                  )}
+                >
+                  <ReactTooltip
+                    id={draftOrder.cart_id}
+                    place="top"
+                    effect="solid"
+                  />
+                  Payment link
+                  <Clipboard
+                    style={{
+                      marginLeft: "5px",
+                      ":hover": { fill: "#454545" },
+                    }}
+                    fill={"#848484"}
+                    width="8"
+                    height="8"
+                  />
+                </Button>
               </Flex>
             )}
           </Card.Body>

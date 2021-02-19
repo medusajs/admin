@@ -30,21 +30,17 @@ const DraftOrders = ({ draftOrders }) => {
       </TableHead>
       <TableBody>
         {draftOrders.map((el, i) => {
-          const goToId = el.id
-
           return (
             <TableLinkRow
               key={i}
-              to={`/a/orders/draft/${goToId}`}
+              to={`/a/orders/draft/${el.id}`}
               id={`draft-order-${el.id}`}
             >
               <TableDataCell>
                 <OrderNumCell>{`#${el.display_id}`}</OrderNumCell>
               </TableDataCell>
               <TableDataCell>
-                <OrderNumCell>
-                  {el.order_id ? `#${el.order.display_id}` : "-"}
-                </OrderNumCell>
+                {el.order_id ? `#${el.order.display_id}` : "-"}
               </TableDataCell>
               <TableDataCell
                 data-for={el.id}

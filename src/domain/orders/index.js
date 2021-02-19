@@ -19,7 +19,6 @@ import {
   TableBody,
   TableHead,
   TableHeaderCell,
-  TableRow,
   TableDataCell,
   TableHeaderRow,
   TableLinkRow,
@@ -48,7 +47,6 @@ const TabButton = styled.button`
     props.active &&
     `
     border-bottom: 1px solid black;
-    // font-weight: bold;
   `}
 
   p {
@@ -70,6 +68,9 @@ export const OrderNumCell = styled(Text)`
     text-decoration: underline;
   }
 `
+
+const OrderFields =
+  "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code"
 
 const Tabs = [
   { label: "New", value: "new" },
@@ -101,8 +102,7 @@ const OrderIndex = ({}) => {
     search: {
       ...filtersOnLoad,
       expand: "shipping_address",
-      fields:
-        "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+      fields: OrderFields,
     },
   })
 
@@ -123,9 +123,7 @@ const OrderIndex = ({}) => {
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [orders, setOrders] = useState([])
   const [draftOrders, setDraftOrders] = useState([])
-  const [activeTab, setActiveTab] = useState(
-    filtersOnLoad.tab ? filtersOnLoad.tab : "orders"
-  )
+  const [activeTab, setActiveTab] = useState(filtersOnLoad.tab || "orders")
   const [fetching, setFetching] = useState(false)
 
   const [showNewOrder, setShowNewOrder] = useState(false)
@@ -245,8 +243,7 @@ const OrderIndex = ({}) => {
       search: {
         ...queryParts,
         expand: "shipping_address",
-        fields:
-          "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+        fields: OrderFields,
       },
     })
   }
@@ -332,8 +329,7 @@ const OrderIndex = ({}) => {
             ...query,
             new: true,
             expand: "shipping_address",
-            fields:
-              "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+            fields: OrderFields,
           },
         })
         setOrders(allOrders)
@@ -345,8 +341,7 @@ const OrderIndex = ({}) => {
           search: {
             ...query,
             expand: "shipping_address",
-            fields:
-              "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+            fields: OrderFields,
           },
         })
         setOrders(allOrders)
@@ -370,6 +365,18 @@ const OrderIndex = ({}) => {
     setQuery("")
     window.history.replaceState(baseUrl, "", `?limit=${limit}&offset=${offset}`)
     refresh()
+  }
+
+  const decideRowLink = rowObject => {
+    switch (true) {
+      case activeTab === "swaps":
+      case activeTab === "returns":
+        return rowObject.order_id
+      case activeTab === "returns" && rowObject.swap:
+        return rowObject.swap.order_id
+      default:
+        return rowObject.id
+    }
   }
 
   const moreResults = orders && orders.length >= limit
@@ -478,19 +485,10 @@ const OrderIndex = ({}) => {
           </TableHead>
           <TableBody>
             {orders.map((el, i) => {
-              const goToId =
-                activeTab === "swaps"
-                  ? el.order_id
-                  : activeTab === "returns" && el.swap
-                  ? el.swap.order_id
-                  : activeTab === "returns"
-                  ? el.order_id
-                  : el.id
-
               return (
                 <TableLinkRow
                   key={i}
-                  to={`/a/orders/${goToId}`}
+                  to={`/a/orders/${decideRowLink(el)}`}
                   id={`order-${el.id}`}
                   isHighlighted={i === activeIndex}
                 >
@@ -569,7 +567,7 @@ const OrderIndex = ({}) => {
                         countryCode={el.shipping_address.country_code}
                       />
                     ) : (
-                      ""
+                      "-"
                     )}
                   </TableDataCell>
                 </TableLinkRow>
