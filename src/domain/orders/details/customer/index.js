@@ -42,8 +42,16 @@ const CustomerInformation = ({
       <Card.Body>
         <Box px={3}>
           <Text color="gray">Contact</Text>
-          <CustomerEmailLabel
+          <Text
             pt={3}
+            sx={{
+              cursor: "pointer",
+              fontWeight: 500,
+              color: "link",
+              ":hover": {
+                color: "medusa",
+              },
+            }}
             customerExist={order.customer}
             onClick={() => {
               if (order.customer) {
@@ -54,7 +62,7 @@ const CustomerInformation = ({
             }}
           >
             {order.email}
-          </CustomerEmailLabel>
+          </Text>
           <Text pt={2}>
             {order.shipping_address.first_name}{" "}
             {order.shipping_address.last_name}
