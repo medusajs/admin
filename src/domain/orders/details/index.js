@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import ReactJson from "react-json-view"
 import styled from "@emotion/styled"
@@ -16,6 +16,7 @@ import Timeline from "./timeline"
 import buildTimeline from "./utils/build-timeline"
 import SwapMenu from "./swap/create"
 import ClaimMenu from "./claim/create"
+import NotificationResend from "./notification/resend-menu"
 import CustomerInformation from "./customer"
 
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
@@ -28,6 +29,7 @@ import Spinner from "../../../components/spinner"
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
 import PaymentMenu from "./payment-menu"
+import Medusa from "../../../services/api"
 
 const AlignedDecimal = ({ value, currency }) => {
   const fixed = (value / 100).toFixed(2)
@@ -118,6 +120,10 @@ const OrderDetails = ({ id }) => {
   const [isFulfilling, setIsFulfilling] = useState(false)
   const [systemPaymentMenu, setSystemPaymentMenu] = useState(false)
 
+  const [notifications, setNotifications] = useState([])
+  const [notificationsLoaded, setNotificationsLoaded] = useState(false)
+  const [notificationResend, setNotificationResend] = useState(false)
+
   const {
     order,
     update: updateOrder,
@@ -138,13 +144,25 @@ const OrderDetails = ({ id }) => {
     refund,
     isLoading,
     updateClaim,
-    archive,
-    complete,
     cancel,
     toaster,
   } = useMedusa("orders", {
     id,
   })
+
+  useEffect(() => {
+    if (order?.id && !notificationsLoaded) {
+      Medusa.notifications
+        .list({
+          resource_type: "order",
+          resource_id: order.id,
+        })
+        .then(({ data }) => {
+          setNotifications(data.notifications)
+        })
+        .finally(() => setNotificationsLoaded(true))
+    }
+  }, [order])
 
   const handleCopyToClip = val => {
     var tempInput = document.createElement("input")
@@ -169,7 +187,7 @@ const OrderDetails = ({ id }) => {
     )
   }
 
-  const events = buildTimeline(order)
+  const events = buildTimeline(order, notifications)
 
   const decidePaymentButton = paymentStatus => {
     const isSystemPayment = order?.payments?.some(
@@ -398,6 +416,7 @@ const OrderDetails = ({ id }) => {
           <Timeline
             events={events}
             order={order}
+            onResendNotification={n => setNotificationResend(n)}
             onSaveClaim={updateClaim}
             onFulfillClaim={claim => setClaimToFulfill(claim)}
             onReceiveClaim={receiveClaim}
@@ -708,6 +727,13 @@ const OrderDetails = ({ id }) => {
           order={order}
           onCreate={createClaim}
           onDismiss={() => setShowClaim(false)}
+          toaster={toaster}
+        />
+      )}
+      {notificationResend && (
+        <NotificationResend
+          notification={notificationResend}
+          onDismiss={() => setNotificationResend(false)}
           toaster={toaster}
         />
       )}

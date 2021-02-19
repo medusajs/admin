@@ -5,6 +5,7 @@ import moment from "moment"
 
 import ImagePlaceholder from "../../../../assets/svg/image-placeholder.svg"
 
+import NotificationTimeline from "../notification/timeline"
 import ClaimTimeline from "../claim/timeline"
 import SwapTimeline from "../swap/timeline"
 import ReturnTimeline from "../returns/timeline"
@@ -69,6 +70,7 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
 export default ({
   events,
   order,
+  onResendNotification,
   onSaveClaim,
   onFulfillClaim,
   onFulfillSwap,
@@ -79,6 +81,14 @@ export default ({
     <Box>
       {events.map(event => {
         switch (event.type) {
+          case "notification":
+            return (
+              <NotificationTimeline
+                key={event.id}
+                event={event}
+                onResend={onResendNotification}
+              />
+            )
           case "return":
             return (
               <ReturnTimeline
