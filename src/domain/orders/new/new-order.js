@@ -88,6 +88,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const [selectedShippingOption, setSelectedShippingOption] = useState(
     undefined
   )
+  const [loadingOptions, setLoadingOptions] = useState(false)
 
   const { register, getValues, reset } = useForm()
 
@@ -106,7 +107,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
   const addCustomItem = ({ title, price, quantity }) => {
     const item = { title, unit_price: price, quantity: quantity || 1 }
-    console.log(item)
     setItems([...items, { title, unit_price: price, quantity: quantity || 1 }])
   }
 
@@ -122,7 +122,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
   }
 
   const handleAddItem = variant => {
-    console.log(variant)
     setItems([...items, { ...variant, quantity: 1 }])
   }
 
@@ -142,17 +141,21 @@ const NewOrder = ({ onDismiss, refresh }) => {
     setItems(updated)
   }
 
-  const fetchShippingOptions = async () => {
+  const fetchShippingOptions = async adminOnly => {
+    setLoadingOptions(true)
     const r = regions.find(reg => reg.id === selectedRegion.value)
 
     Medusa.shippingOptions
       .list({
         region_id: r.id,
         is_return: false,
+        admin_only: adminOnly,
       })
       .then(({ data }) => {
         setShippingOptions(data.shipping_options)
+        setLoadingOptions(false)
       })
+      .catch(() => setLoadingOptions(false))
   }
 
   useEffect(() => {
@@ -167,7 +170,11 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
   useEffect(() => {
     if (selectedRegion && requireShipping) {
-      fetchShippingOptions()
+      fetchShippingOptions(false)
+    }
+
+    if (selectedRegion && !requireShipping) {
+      fetchShippingOptions(true)
     }
   }, [selectedRegion, requireShipping])
 
@@ -232,7 +239,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
     const draftOrder = {
       region_id: region.id,
       items: doItems,
-      requires_shipping: requireShipping,
       email,
     }
 
@@ -246,23 +252,30 @@ const NewOrder = ({ onDismiss, refresh }) => {
       draftOrder.billing_address = billingAddress.billing_address
     }
 
-    if (requireShipping) {
-      const shippingMethod = shippingOptions.find(
-        so => so.id === selectedShippingOption.value
-      )
+    const shippingMethod = shippingOptions.find(
+      so => so.id === selectedShippingOption.value
+    )
 
-      const option = {
-        option_id: shippingMethod.id,
-        data: shippingMethod.data,
-      }
+    const option = {
+      option_id: shippingMethod.id,
+      data: shippingMethod.data,
+    }
 
-      draftOrder.shipping_methods = [option]
+    draftOrder.shipping_methods = [option]
 
-      if (selectedAddress.shipping_address.id) {
-        draftOrder.shipping_address_id = selectedAddress.shipping_address.id
-      } else {
-        draftOrder.shipping_address = selectedAddress.shipping_address
-      }
+    if (selectedAddress.shipping_address.id) {
+      draftOrder.shipping_address_id = selectedAddress.shipping_address.id
+    } else if (_.isEmpty(selectedAddress.shipping_address)) {
+      draftOrder.shipping_address = billingAddress.billing_address
+    } else {
+      draftOrder.shipping_address = selectedAddress.shipping_address
+    }
+
+    if (
+      !selectedAddress.shipping_address.id &&
+      selectedAddress.shipping_address
+    ) {
+      draftOrder.shipping_address_id = selectedAddress.shipping_address.id
     }
 
     setCreatingOrder(true)
@@ -322,21 +335,14 @@ const NewOrder = ({ onDismiss, refresh }) => {
           return false
         }
       }
-      case step === 4 && requireShipping: {
+      case step === 4: {
         if (!selectedShippingOption) {
           return true
         } else {
           return false
         }
       }
-      case step === 4 && !requireShipping: {
-        if (_.isEmpty(billingAddress.billing_address)) {
-          return true
-        } else {
-          return false
-        }
-      }
-      case step === 5 && requireShipping: {
+      case step === 5: {
         if (_.isEmpty(billingAddress.billing_address)) {
           return true
         } else {
@@ -349,10 +355,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
   }
 
   const buttonAction = () => {
-    if (step === 5 && !requireShipping) {
-      handleSubmit()
-    }
-
     if (step === 6) {
       handleSubmit()
     }
@@ -431,7 +433,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
               handleAddressChange={handleAddressChange}
             />
           )}
-          {step === 4 && requireShipping && (
+          {step === 4 && (
             <Flex flexDirection="column" minHeight="200px">
               <Flex>
                 <Text fontSize={1} mb={2} fontWeight="600">
@@ -441,68 +443,92 @@ const NewOrder = ({ onDismiss, refresh }) => {
               <Text fontSize={1} mb={2}>
                 Choose one
               </Text>
-              <StyledSelect
-                styles={{ ...selectStyles }}
-                menuPortalTarget={bodyElement}
-                isClearable={false}
-                value={selectedShippingOption}
-                placeholder="Select shipping..."
-                onChange={val => setSelectedShippingOption(val)}
-                options={
-                  shippingOptions?.map(so => ({
-                    value: so.id,
-                    label: `${so.name} - ${extractOptionPrice(so.amount)}`,
-                  })) || []
-                }
-              />
-              <Flex>
-                <Text fontStyle="italic" fontSize={1} mt={1} color="#a2a1a1">
-                  Shipping to Denmark
+              {!shippingOptions?.length ? (
+                <Text
+                  textAlign="center"
+                  fontStyle="italic"
+                  fontSize={1}
+                  mt={1}
+                  color="#a2a1a1"
+                  maxWidth="500px"
+                >
+                  You don't have any options for orders without shipping. Please
+                  add one (e.g. "In-store fulfillment") with "Show on website"
+                  unchecked in region settings and continue.
                 </Text>
-                <Box ml="auto" />
-                <Flex flexDirection="column">
-                  {!showCustomPrice && (
-                    <Button
-                      mt={2}
-                      fontSize="12px"
-                      variant="primary"
-                      width="140px"
-                      mb={2}
-                      disabled={!selectedShippingOption}
-                      onClick={() => setShowCustomPrice(true)}
+              ) : (
+                <StyledSelect
+                  styles={{ ...selectStyles }}
+                  menuPortalTarget={bodyElement}
+                  isClearable={false}
+                  value={selectedShippingOption}
+                  placeholder="Select shipping..."
+                  onChange={val => setSelectedShippingOption(val)}
+                  options={
+                    shippingOptions?.map(so => ({
+                      value: so.id,
+                      label: `${so.name} - ${extractOptionPrice(so.amount)}`,
+                    })) || []
+                  }
+                />
+              )}
+              <Flex>
+                {shippingOptions?.length ? (
+                  <>
+                    <Text
+                      fontStyle="italic"
+                      fontSize={1}
+                      mt={1}
+                      color="#a2a1a1"
                     >
-                      {showCustomPrice ? "Submit" : "Set custom price"}
-                    </Button>
-                  )}
-                  {showCustomPrice && (
+                      Shipping to Denmark
+                    </Text>
+                    <Box ml="auto" />
                     <Flex flexDirection="column">
-                      <Flex width="140px" mt={3}>
-                        <Input
-                          type="number"
+                      {!showCustomPrice && (
+                        <Button
+                          mt={2}
                           fontSize="12px"
-                          onChange={({ currentTarget }) =>
-                            setCustomOptionPrice(currentTarget.value)
-                          }
-                          value={customOptionPrice || null}
-                        />
-                        <Flex
-                          px={2}
-                          alignItems="center"
-                          onClick={() => setShowCustomPrice(false)}
+                          variant="primary"
+                          width="140px"
+                          mb={2}
+                          disabled={!selectedShippingOption}
+                          onClick={() => setShowCustomPrice(true)}
                         >
-                          &times;
+                          {showCustomPrice ? "Submit" : "Set custom price"}
+                        </Button>
+                      )}
+                      {showCustomPrice && (
+                        <Flex flexDirection="column">
+                          <Flex width="140px" mt={3}>
+                            <Input
+                              type="number"
+                              fontSize="12px"
+                              onChange={({ currentTarget }) =>
+                                setCustomOptionPrice(currentTarget.value)
+                              }
+                              value={customOptionPrice || null}
+                            />
+                            <Flex
+                              px={2}
+                              alignItems="center"
+                              onClick={() => setShowCustomPrice(false)}
+                            >
+                              &times;
+                            </Flex>
+                          </Flex>
+                          <Text fontSize="10px" fontStyle="italic">
+                            Custom price
+                          </Text>
                         </Flex>
-                      </Flex>
-                      <Text fontSize="10px" fontStyle="italic">
-                        Custom price
-                      </Text>
+                      )}
                     </Flex>
-                  )}
-                </Flex>
+                  </>
+                ) : null}
               </Flex>
             </Flex>
           )}
-          {step === 4 && !requireShipping && (
+          {step === 5 && (
             <Billing
               requireShipping={requireShipping}
               billingAddress={billingAddress}
@@ -512,32 +538,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
               region={regions.find(r => r.id === selectedRegion.value)}
             />
           )}
-          {step === 5 && requireShipping && (
-            <Billing
-              requireShipping={requireShipping}
-              billingAddress={billingAddress}
-              handleBillingChange={handleBillingChange}
-              setBillingAddress={setBillingAddress}
-              shippingAddress={selectedAddress}
-              region={regions.find(r => r.id === selectedRegion.value)}
-            />
-          )}
-          {step === 5 && !requireShipping && (
-            <Summary
-              billingAddress={billingAddress}
-              items={items}
-              requireShipping={requireShipping}
-              region={region}
-              regions={regions}
-              handleAddQuantity={handleAddQuantity}
-              selectedAddress={selectedAddress}
-              shippingOption={shippingOption}
-              showCustomPrice={showCustomPrice}
-              customOptionPrice={customOptionPrice}
-              email={email}
-            />
-          )}
-          {step === 6 && requireShipping && (
+          {step === 6 && (
             <Summary
               billingAddress={billingAddress}
               items={items}
@@ -572,11 +573,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
             disabled={decideNextButton()}
             onClick={() => buttonAction()}
           >
-            {step === 5 && !requireShipping
-              ? "Submit"
-              : step === 6
-              ? "Submit"
-              : "Next"}
+            {step === 6 ? "Submit" : "Next"}
           </Button>
         </Modal.Footer>
       </Modal.Body>

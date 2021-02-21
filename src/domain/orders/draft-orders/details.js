@@ -497,6 +497,34 @@ const DraftOrderDetails = ({ id }) => {
           </Card.Body>
         </Card>
       </Flex>
+      <Card mb={4}>
+        <Card.Header>Shipping</Card.Header>
+        <Card.Body flexDirection="column">
+          <Flex flexDirection="column" pb={3}>
+            {draftOrder.cart?.shipping_methods?.length
+              ? draftOrder.cart.shipping_methods.map(method => (
+                  <Box key={method._id}>
+                    <Box pl={3} pr={2}>
+                      <Text pb={1} color="gray">
+                        Shipping Method
+                      </Text>
+                      <Text>{method.shipping_option.name}</Text>
+                      <Text pt={3} pb={1} color="gray">
+                        Data
+                      </Text>
+                      <ReactJson
+                        name={false}
+                        collapsed={true}
+                        src={method.data}
+                      />
+                    </Box>
+                    <Card.VerticalDivider mx={3} />
+                  </Box>
+                ))
+              : null}
+          </Flex>
+        </Card.Body>
+      </Card>
       {/* METADATA */}
       <Card mr={3} width="100%">
         <Card.Header>Raw draft order</Card.Header>
