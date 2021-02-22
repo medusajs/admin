@@ -4,22 +4,7 @@ import { navigate } from "gatsby"
 import React, { useState } from "react"
 import { Box, Text } from "rebass"
 import Card from "../../../../components/card"
-import EditableInput from "../../../../components/editable-input"
 import CustomerInformationEdit from "./edit"
-
-const CustomerEmailLabel = styled(Text)`
-  ${props =>
-    props.customerExist &&
-    `
-  color: #006fbb;
-  z-index: 1000;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-  `}
-`
 
 const CustomerInformation = ({
   order,
