@@ -6,6 +6,7 @@ import { Input } from "@rebass/forms"
 import { Router } from "@reach/router"
 
 import ImagePlaceholder from "../../assets/svg/image-placeholder.svg"
+import ImportProducts from "./import"
 
 import Spinner from "../../components/spinner"
 import {
@@ -220,6 +221,7 @@ const ProductIndex = () => {
           Next
         </Button>
       </Flex>
+      <ImportProducts />
     </Flex>
   )
 }
