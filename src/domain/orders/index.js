@@ -319,7 +319,6 @@ const OrderIndex = ({}) => {
       skipEmptyString: true,
     })
 
-    console.log("prepared: ", prepared)
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     handleTabClick(activeTab, handleQueryParts())
   }
@@ -422,8 +421,6 @@ const OrderIndex = ({}) => {
       },
       { skipNull: true, skipEmptyString: true }
     )
-
-    console.log("prepared: ", prepared)
 
     const filters = JSON.parse(localStorage.getItem("orders::filters"))
 

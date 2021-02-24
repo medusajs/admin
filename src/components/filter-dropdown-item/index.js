@@ -83,7 +83,6 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
         <input
           id={filterTitle}
           checked={open}
-          onChange={() => {}}
           type="checkbox"
           style={{ marginRight: "5px" }}
         />
@@ -152,7 +151,10 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
           console.error("select ref not existing")
           break
         }
-        setFilter({ open: true, filter: `${handleDateFormat(value)}` })
+        setFilter({
+          open: true,
+          filter: `${handleDateFormat(value)}`,
+        })
         break
     }
   }
@@ -190,6 +192,7 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
         return (
           <Flex>
             <InputField
+              ref={input_ref}
               width="60px"
               placeholder="2"
               inputStyle={{
@@ -204,7 +207,7 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
               ref={select_ref}
               options={[{ value: "days" }, { value: "months" }]}
               defaultValue={"days"}
-              onChange
+              onChange={() => handleSetFilter(input_ref?.current?.value)}
               selectStyle={{
                 ml: "5px",
                 width: "50px",
