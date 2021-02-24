@@ -144,49 +144,48 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
   const select_ref = useRef()
   const input_ref = useRef()
 
-  console.log("filters: ", filters)
-
   const handleSetFilter = value => {
-    console.log("value and current filter: ", value, currentFilter)
-    console.log("refs: ", date_1_ref, date_2_ref, select_ref)
-
     switch (currentFilter) {
       case DateFilters.InTheLast:
         if (!select_ref) {
           console.error("select ref not existing")
           break
         }
-        setFilter({ open: true, filter: `[lt]=${handleDateFormat(value)}` })
+        setFilter({ open: true, filter: `${handleDateFormat(value)}` })
         break
     }
   }
 
+  /**
+   * Takes the current selection of dates and formats it.
+   * Since the date can be absolute in terms of a date or relative in terms of "3 days old", we have to account for both
+   * the output should follow this format: [lt|gt|eq|gte|lte]=unixTimestamp | number_option_filter
+   * e.g: [lt]=124323459 or [lt]={3:days:is_in_the_last}
+   * @param value
+   *
+   */
   const handleDateFormat = value => {
+    let option =
+      select_ref?.current.options[select_ref.current.options.selectedIndex]
+        ?.label
     switch (currentFilter) {
       case DateFilters.InTheLast:
-        const date = new Date()
-        const option =
-          select_ref.current.options[select_ref.current.options.selectedIndex]
-            ?.label
+        // Relative date
+        return `[gt]=${value}_${option}`
 
-        switch (option) {
-          case "days":
-            date.setDate(date.getDate() - value)
-            break
-          case "months":
-            date.setDate(date.getMonth() - value)
-            break
-          default:
-            break
-        }
-        return dateToUnixTimestamp(date)
+      case DateFilters.OlderThan:
+        // Relative date:
+        return `[lt]=${value}_${option}`
+
+      default:
+        return ""
     }
   }
 
   const handleFilterContent = () => {
-    console.log("current filter, ", currentFilter)
     switch (currentFilter) {
       case DateFilters.InTheLast:
+      case DateFilters.OlderThan:
         return (
           <Flex>
             <InputField

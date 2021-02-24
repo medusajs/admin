@@ -32,6 +32,7 @@ import useMedusa from "../../hooks/use-medusa"
 import Spinner from "../../components/spinner"
 import Button from "../../components/button"
 import Filter from "./filter-dropdown"
+import { relativeDateFormatToTimestamp } from "../../utils/time"
 
 const TabButton = styled.button`
   border-radius: 0pt;
@@ -290,14 +291,19 @@ const OrderIndex = ({}) => {
     })
   }
 
-  const handleQueryParts = (refresh = false) => {
-    console.log("datefilter: ", dateFilter)
+  const handleQueryParts = () => {
+    // if the datefilter includes "_" it is a relative date and we have to format it to timestamp
+    let dateFormatted = dateFilter.filter
+    if (dateFilter?.filter?.includes("_")) {
+      dateFormatted = relativeDateFormatToTimestamp(dateFilter.filter)
+    }
+
     const queryParts = {
       q: query,
       payment_status: paymentFilter.filter || "",
       fulfillment_status: fulfillmentFilter.filter || "",
       status: statusFilter.filter || "",
-      created_at: dateFilter.filter || "",
+      created_at: dateFormatted || "",
       offset,
       limit,
     }
@@ -360,7 +366,17 @@ const OrderIndex = ({}) => {
         setFetching(false)
         break
       default:
-        replaceUrl = `?${tab}`
+        console.log("parsed tab: ", qs.parse(tab), tab)
+        const parsedTab = qs.parse(tab)
+
+        // if the date is relative it contains colon = ":"
+        if (parsedTab.created_at.includes("_")) {
+          const result = relativeDateFormatToTimestamp(parsedTab.created_at)
+          parsedTab.created_at = result
+          replaceUrl = `?${qs.stringify(parsedTab)}`
+        } else {
+          replaceUrl = `?${tab}`
+        }
 
         setFetching(false)
         break
@@ -395,16 +411,29 @@ const OrderIndex = ({}) => {
       skipEmptyString: true,
     })
 
+    const localStorageUrl = qs.stringify(
+      {
+        q: query,
+        payment_status: paymentFilter.filter || "",
+        fulfillment_status: fulfillmentFilter.filter || "",
+        status: statusFilter.filter || "",
+        created_at: dateFilter.filter || "",
+        offset,
+        limit,
+      },
+      { skipNull: true, skipEmptyString: true }
+    )
+
     console.log("prepared: ", prepared)
 
     const filters = JSON.parse(localStorage.getItem("orders::filters"))
 
     if (filters) {
-      filters[saveValue] = prepared
+      filters[saveValue] = localStorageUrl
       localStorage.setItem("orders::filters", JSON.stringify(filters))
     } else {
       const newFilters = {}
-      newFilters[saveValue] = prepared
+      newFilters[saveValue] = localStorageUrl
       localStorage.setItem("orders::filters", JSON.stringify(newFilters))
     }
 

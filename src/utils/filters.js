@@ -3,15 +3,15 @@ export const DateFilterIsInTheLast = "is in the last"
 export const DateFilters = {
   InTheLast: "is in the last",
   OlderThan: "is older than",
-  Between: "in between",
+  Between: "is between",
   After: "is after",
   Before: "is before",
   EqualTo: "is equal to",
 }
 
 export const FulfilmentFilters = {
-  NotFulfilled: "not_fulfilled",
-  PartiallyFulfilled: "partially_fulfilled",
+  NotFulfilled: "not fulfilled",
+  PartiallyFulfilled: "partially fulfilled",
   Fulfilled: "fulfilled",
   Returned: "returned",
 }
