@@ -370,7 +370,7 @@ const OrderIndex = ({}) => {
         const parsedTab = qs.parse(tab)
 
         // if the date is relative it contains colon = ":"
-        if (parsedTab.created_at.includes("_")) {
+        if (parsedTab?.created_at?.includes("_")) {
           const result = relativeDateFormatToTimestamp(parsedTab.created_at)
           parsedTab.created_at = result
           replaceUrl = `?${qs.stringify(parsedTab)}`

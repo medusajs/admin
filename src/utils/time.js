@@ -19,15 +19,14 @@ export const relativeDateFormatToTimestamp = dateFormat => {
 
   // relative days are always subtract
   let date = moment()
-  console.log("date: ", date)
 
   date.subtract(count, option)
   date.hour(0)
   date.minute(0)
   date.second(0)
   date.millisecond(0)
-  console.log("date formatted: ", date, date.format("X"))
+
   const result = `${modifier}=${date.format("X")}`
-  console.log("result: ", result)
+
   return result
 }

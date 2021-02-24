@@ -147,6 +147,7 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
   const handleSetFilter = value => {
     switch (currentFilter) {
       case DateFilters.InTheLast:
+      case DateFilters.OlderThan:
         if (!select_ref) {
           console.error("select ref not existing")
           break
