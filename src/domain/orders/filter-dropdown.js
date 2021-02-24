@@ -150,6 +150,7 @@ const OrderFilterButton = ({
     setFulfillmentFilter({ open: false, filter: "" })
     setStatusFilter({ open: false, filter: "" })
     setPaymentFilter({ open: false, filter: "" })
+    setDateFilter({ open: false, filter: "" })
     setIsOpen(false)
     clearFilters()
   }

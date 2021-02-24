@@ -291,11 +291,13 @@ const OrderIndex = ({}) => {
   }
 
   const handleQueryParts = (refresh = false) => {
+    console.log("datefilter: ", dateFilter)
     const queryParts = {
       q: query,
       payment_status: paymentFilter.filter || "",
       fulfillment_status: fulfillmentFilter.filter || "",
       status: statusFilter.filter || "",
+      created_at: dateFilter.filter || "",
       offset,
       limit,
     }
@@ -311,6 +313,7 @@ const OrderIndex = ({}) => {
       skipEmptyString: true,
     })
 
+    console.log("prepared: ", prepared)
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     handleTabClick(activeTab, handleQueryParts())
   }
@@ -391,6 +394,8 @@ const OrderIndex = ({}) => {
       skipNull: true,
       skipEmptyString: true,
     })
+
+    console.log("prepared: ", prepared)
 
     const filters = JSON.parse(localStorage.getItem("orders::filters"))
 

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import styled from "@emotion/styled"
 import { Collapse } from "react-collapse"
 import { Box, Text, Flex } from "rebass"
 import Select from "../select"
-
+import { DateFilters } from "../../utils/filters"
+import { dateToUnixTimestamp } from "../../utils/time"
 import InputField from "../input"
 
 const DropdownItemWrapper = styled(Text)`
@@ -138,7 +139,50 @@ const DateFilterContainer = styled(Box)`
 
 const DateFilter = ({ filters, setFilter, filterTitle }) => {
   const [currentFilter, setCurrentFilter] = useState(filters[0])
+  const date_1_ref = useRef()
+  const date_2_ref = useRef()
+  const select_ref = useRef()
+  const input_ref = useRef()
+
   console.log("filters: ", filters)
+
+  const handleSetFilter = value => {
+    console.log("value and current filter: ", value, currentFilter)
+    console.log("refs: ", date_1_ref, date_2_ref, select_ref)
+
+    switch (currentFilter) {
+      case DateFilters.InTheLast:
+        if (!select_ref) {
+          console.error("select ref not existing")
+          break
+        }
+        setFilter({ open: true, filter: `[lt]=${handleDateFormat(value)}` })
+        break
+    }
+  }
+
+  const handleDateFormat = value => {
+    switch (currentFilter) {
+      case DateFilters.InTheLast:
+        const date = new Date()
+        const option =
+          select_ref.current.options[select_ref.current.options.selectedIndex]
+            ?.label
+
+        switch (option) {
+          case "days":
+            date.setDate(date.getDate() - value)
+            break
+          case "months":
+            date.setDate(date.getMonth() - value)
+            break
+          default:
+            break
+        }
+        return dateToUnixTimestamp(date)
+    }
+  }
+
   const handleFilterContent = () => {
     console.log("current filter, ", currentFilter)
     switch (currentFilter) {
@@ -147,11 +191,15 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
           <Flex>
             <InputField
               width="60px"
+              placeholder="2"
               inputStyle={{ padding: "2px", fontSize: "10px", height: "25px" }}
+              onChange={e => handleSetFilter(e.target.value)}
             />
             <Select
+              ref={select_ref}
               options={[{ value: "days" }, { value: "months" }]}
               defaultValue={"days"}
+              onChange
               selectStyle={{
                 ml: "5px",
                 width: "50px",
@@ -175,7 +223,7 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
         options={filters.map(filter => {
           return { value: filter }
         })}
-        onChange={filter => setCurrentFilter(filter)}
+        onChange={e => setCurrentFilter(e.target.value)}
       />
       <Box className="content">{handleFilterContent()}</Box>
     </DateFilterContainer>
