@@ -192,7 +192,12 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
             <InputField
               width="60px"
               placeholder="2"
-              inputStyle={{ padding: "2px", fontSize: "10px", height: "25px" }}
+              inputStyle={{
+                p: "2px",
+                fontSize: "10px",
+                height: "25px",
+                marginRight: "2px;",
+              }}
               onChange={e => handleSetFilter(e.target.value)}
             />
             <Select
@@ -211,7 +216,7 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
         )
 
       default:
-        return <Box>{currentFilter}</Box>
+        return <Box>{currentFilter} - comming soon!</Box>
     }
   }
   return (
