@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
 import { Collapse } from "react-collapse"
-import { Text } from "rebass"
+import { Box, Text, Flex } from "rebass"
+import Select from "../select"
+
+import InputField from "../input"
 
 const DropdownItemWrapper = styled(Text)`
   font-size: 12px;
   line-height: 100%;
-  padding-left: 7px;
-  padding-right: 7px;
-  padding-top: 7px;
+
   text-decoration: none;
   display: block;
   text-align: left;
@@ -20,6 +21,7 @@ const DropdownItem = styled.div`
   padding-bottom: 8px;
   display: flex;
   align-items: center;
+  padding: 7px;
 
   input {
     margin-right: 5px;
@@ -27,10 +29,13 @@ const DropdownItem = styled.div`
 `
 
 const CollapseContainer = styled.div`
-  padding-left: 10px;
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
+
+  background-color: ${props => props.theme.colors.gray};
+  padding: 7px;
+  padding-left: 10px;
+
   ${props =>
     props.last &&
     `
@@ -51,7 +56,6 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
       checkedState[filter] = false
     }
 
-    console.log("checkedState1, ", checkedState)
     const newFilter = Object.entries(checkedState).reduce(
       (acc, [key, value]) => {
         if (value === true) {
@@ -62,7 +66,6 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
       []
     )
 
-    console.log("filter: ", newFilter, newFilter.join(","))
     setChecked(checkedState)
 
     setFilter({ open: open, filter: newFilter.join(",").toString() })
@@ -86,26 +89,95 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
         {filterTitle}
       </DropdownItem>
       <Collapse isOpened={open}>
-        {filters.map((el, i) => (
-          <CollapseContainer
-            key={i}
-            onClick={() => onCheck(el)}
-            last={i === filters.length - 1}
-          >
-            <input
-              type="checkbox"
-              id={el}
-              name={el}
-              value={el}
-              checked={checked[el] === true}
-              style={{ marginRight: "5px" }}
-            />
-            {el}
-          </CollapseContainer>
-        ))}
+        {filterTitle === "Date" ? (
+          <DateFilter
+            filters={filters}
+            setFilter={setFilter}
+            filterTitle={filterTitle}
+          />
+        ) : (
+          filters.map((el, i) => (
+            <CollapseContainer
+              key={i}
+              onClick={() => onCheck(el)}
+              last={i === filters.length - 1}
+            >
+              <input
+                type="checkbox"
+                id={el}
+                name={el}
+                value={el}
+                checked={checked[el] === true}
+                style={{ marginRight: "5px" }}
+              />
+              {el}
+            </CollapseContainer>
+          ))
+        )}
       </Collapse>
     </DropdownItemWrapper>
   )
 }
 
 export default FilterDropdownItem
+
+const DateFilterContainer = styled(Box)`
+  background-color: ${props => props.theme.colors.gray};
+  padding: 7px;
+  padding-left: 10px;
+  padding-right: 10px;
+
+  .date-select {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .content {
+  }
+`
+
+const DateFilter = ({ filters, setFilter, filterTitle }) => {
+  const [currentFilter, setCurrentFilter] = useState(filters[0])
+  console.log("filters: ", filters)
+  const handleFilterContent = () => {
+    console.log("current filter, ", currentFilter)
+    switch (currentFilter) {
+      case DateFilters.InTheLast:
+        return (
+          <Flex>
+            <InputField
+              width="60px"
+              inputStyle={{ padding: "2px", fontSize: "10px", height: "25px" }}
+            />
+            <Select
+              options={[{ value: "days" }, { value: "months" }]}
+              defaultValue={"days"}
+              selectStyle={{
+                ml: "5px",
+                width: "50px",
+                fontSize: "10px",
+                height: "25px",
+              }}
+            />
+          </Flex>
+        )
+
+      default:
+        return <Box>{currentFilter}</Box>
+    }
+  }
+  return (
+    <DateFilterContainer>
+      <Select
+        className="date-select"
+        name={currentFilter}
+        flex="1"
+        options={filters.map(filter => {
+          return { value: filter }
+        })}
+        onChange={filter => setCurrentFilter(filter)}
+      />
+      <Box className="content">{handleFilterContent()}</Box>
+    </DateFilterContainer>
+  )
+}

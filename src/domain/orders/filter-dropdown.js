@@ -7,14 +7,36 @@ import FilterDropdownItem from "../../components/filter-dropdown-item"
 import qs from "query-string"
 import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
 import InputField from "../../components/input"
+import {
+  DateFilters,
+  StatusFilters,
+  PaymentFilters,
+  FulfilmentFilters,
+} from "../../utils/filters"
 
-const statusFilters = ["pending", "completed", "cancelled"]
-const paymentFilters = ["awaiting", "captured", "refunded"]
+const statusFilters = [
+  StatusFilters.Completed,
+  StatusFilters.Pending,
+  StatusFilters.Cancelled,
+]
+const paymentFilters = [
+  PaymentFilters.Awaiting,
+  PaymentFilters.Captured,
+  PaymentFilters.Refunded,
+]
 const fulfillmentFilters = [
-  "not_fulfilled",
-  "partially_fulfilled",
-  "fulfilled",
-  "returned",
+  FulfilmentFilters.Fulfilled,
+  FulfilmentFilters.NotFulfilled,
+  FulfilmentFilters.PartiallyFulfilled,
+  FulfilmentFilters.Returned,
+]
+const dateFilters = [
+  DateFilters.After,
+  DateFilters.Before,
+  DateFilters.Between,
+  DateFilters.EqualTo,
+  DateFilters.InTheLast,
+  DateFilters.OlderThan,
 ]
 
 const DropdownContainer = styled.div`
@@ -83,10 +105,12 @@ const OrderFilterButton = ({
   setStatusFilter,
   setPaymentFilter,
   setFulfillmentFilter,
+  setDateFilter,
   submitFilters,
   clearFilters,
   statusFilter,
   fulfillmentFilter,
+  dateFilter,
   paymentFilter,
   handleSaveTab,
   sx,
@@ -147,6 +171,12 @@ const OrderFilterButton = ({
           <Box ml="auto" />
           <DoneButton onClick={() => submit()}>Done</DoneButton>
         </ButtonContainer>
+        <FilterDropdownItem
+          filterTitle="Date"
+          filters={dateFilters}
+          open={dateFilter.open}
+          setFilter={setDateFilter}
+        />
         <FilterDropdownItem
           filterTitle="Status"
           filters={statusFilters}

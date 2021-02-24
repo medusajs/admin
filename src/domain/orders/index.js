@@ -143,6 +143,11 @@ const OrderIndex = ({}) => {
     filter: "",
   })
 
+  const [dateFilter, setDateFilter] = useState({
+    open: false,
+    filter: "",
+  })
+
   const isInViewport = el => {
     const rect = el.getBoundingClientRect()
     return (
@@ -453,6 +458,8 @@ const OrderIndex = ({}) => {
           statusFilter={statusFilter}
           fulfillmentFilter={fulfillmentFilter}
           paymentFilter={paymentFilter}
+          dateFilter={dateFilter}
+          setDateFilter={setDateFilter}
           setStatusFilter={setStatusFilter}
           setPaymentFilter={setPaymentFilter}
           setFulfillmentFilter={setFulfillmentFilter}
