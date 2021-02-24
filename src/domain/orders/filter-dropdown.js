@@ -196,13 +196,19 @@ const OrderFilterButton = ({
           open={fulfillmentFilter.open}
           setFilter={setFulfillmentFilter}
         />
-        <Flex>
+        <Flex m={2} alignItems="center" height="30px">
           <InputField
             value={saveValue}
+            placeholder="Name"
             onChange={e => setSaveValue(e.target.value)}
-            sx={{ flex: "1" }}
+            sx={{ flex: "1", marginRight: "5px" }}
           />
-          <Button onClick={() => handleSaveTab(saveValue)}>Save</Button>
+          <Button
+            onClick={() => handleSaveTab(saveValue)}
+            sx={{ height: "100%", p: "0", px: 2 }}
+          >
+            Save
+          </Button>
         </Flex>
       </DropdownContainer>
     </Box>

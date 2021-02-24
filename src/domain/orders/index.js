@@ -366,7 +366,6 @@ const OrderIndex = ({}) => {
         setFetching(false)
         break
       default:
-        console.log("parsed tab: ", qs.parse(tab), tab)
         const parsedTab = qs.parse(tab)
 
         // if the date is relative it contains colon = ":"
