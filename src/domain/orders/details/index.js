@@ -22,9 +22,10 @@ import CustomerInformation from "./customer"
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
 import Dialog from "../../../components/dialog"
 import Card from "../../../components/card"
-import Badge from "../../../components/badge"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
+
+import { ReactComponent as ExternalLink } from "../../../assets/svg/external-link.svg"
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
@@ -41,6 +42,89 @@ const AlignedDecimal = ({ value, currency }) => {
       </Box>
       .<div>{decimalPart}</div>
       <Box ml={2}>{currency.toUpperCase()}</Box>
+    </Flex>
+  )
+}
+
+const TrackingLink = ({ trackingLink }) => {
+  if (trackingLink.url) {
+    return (
+      <a
+        style={{ textDecoration: "none" }}
+        target="_blank"
+        href={trackingLink.url}
+      >
+        <Text
+          sx={{
+            fontWeight: "500",
+            color: "link",
+            svg: {
+              stroke: "link",
+              strokeWidth: "3",
+            },
+            ":hover": {
+              color: "medusa",
+              svg: {
+                stroke: "medusa",
+              },
+            },
+          }}
+        >
+          {trackingLink.tracking_number}
+          <Box display="inline" ml={1}>
+            <ExternalLink width="12" height="12" stroke="#5469D4" />
+          </Box>
+        </Text>
+      </a>
+    )
+  } else {
+    return <Text>{trackingLink.tracking_number}</Text>
+  }
+}
+
+const Fulfillment = ({ details, order, onUpdate }) => {
+  const { title, fulfillment } = details
+
+  const hasLinks =
+    fulfillment?.shipped_at && !!fulfillment?.tracking_links?.length
+
+  return (
+    <Flex
+      sx={{
+        ":not(:last-of-type)": {
+          borderBottom: "hairline",
+        },
+      }}
+      p={3}
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      <Box>
+        <Text>
+          {title} Fulfilled by provider {fulfillment.provider_id}
+        </Text>
+        {!fulfillment.shipped_at ? (
+          <Text my={1} color="gray">
+            Not shipped
+          </Text>
+        ) : (
+          <Text mt={1} color="grey">
+            Tracking
+          </Text>
+        )}
+        {hasLinks
+          ? fulfillment.tracking_links.map(tl => (
+              <TrackingLink trackingLink={tl} />
+            ))
+          : fulfillment.tracking_numbers.length > 0 && (
+              <Text>{fulfillment.tracking_numbers.join(", ")}</Text>
+            )}
+      </Box>
+      {!fulfillment.shipped_at && order.status !== "canceled" && (
+        <Button variant={"primary"} onClick={() => onUpdate(details)}>
+          Mark Shipped
+        </Button>
+      )}
     </Flex>
   )
 }
@@ -560,46 +644,12 @@ const OrderDetails = ({ id }) => {
           <Flex width={1} flexDirection="column">
             {fulfillments.length > 0
               ? fulfillments.map(f => (
-                  <Flex
-                    key={f.fulfillment._id}
-                    sx={{
-                      ":not(:last-of-type)": {
-                        borderBottom: "hairline",
-                      },
-                    }}
-                    p={3}
-                    alignItems="center"
-                    justifyContent="space-between"
-                  >
-                    <Box>
-                      <Text>
-                        {f.title} Fulfilled by provider{" "}
-                        {f.fulfillment.provider_id}
-                      </Text>
-                      {f.fulfillment.tracking_numbers.length > 0 ? (
-                        <>
-                          <Text my={1} color="gray">
-                            Tracking Number
-                          </Text>
-                          <Text>
-                            {f.fulfillment.tracking_numbers.join(", ")}
-                          </Text>
-                        </>
-                      ) : (
-                        <Text my={1} color="gray">
-                          Not shipped
-                        </Text>
-                      )}
-                    </Box>
-                    {!f.fulfillment.shipped_at && order.status !== "canceled" && (
-                      <Button
-                        variant={"primary"}
-                        onClick={() => setUpdateFulfillment(f)}
-                      >
-                        Mark Shipped
-                      </Button>
-                    )}
-                  </Flex>
+                  <Fulfillment
+                    key={f.fulfillment.id}
+                    details={f}
+                    order={order}
+                    onUpdate={setUpdateFulfillment}
+                  />
                 ))
               : null}
           </Flex>

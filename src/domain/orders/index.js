@@ -58,14 +58,9 @@ const TabButton = styled.button`
 `
 
 const OrderNumCell = styled(Text)`
-  color: #006fbb;
   z-index: 1000;
 
   ${props => props.isCanceled && "text-decoration: line-through;"}
-
-  &:hover {
-    text-decoration: underline;
-  }
 `
 
 const Tabs = [
@@ -469,7 +464,19 @@ const OrderIndex = ({}) => {
                   isHighlighted={i === activeIndex}
                 >
                   <TableDataCell>
-                    <OrderNumCell isCanceled={el.status === "canceled"}>
+                    <OrderNumCell
+                      fontWeight={500}
+                      color={"link"}
+                      sx={{
+                        cursor: "pointer",
+                        fontWeight: 500,
+                        color: "link",
+                        ":hover": {
+                          color: "medusa",
+                        },
+                      }}
+                      isCanceled={el.status === "canceled"}
+                    >
                       {activeTab === "orders" || activeTab === "new"
                         ? `#${el.display_id}`
                         : `Go to order`}
