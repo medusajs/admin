@@ -92,10 +92,12 @@ const Index = () => {
                   </TableDataCell>
                   <TableDataCell
                     data-for={el.id}
-                    data-tip={moment(el.created).format("MMMM Do YYYY HH:mm a")}
+                    data-tip={moment(el.created_at).format(
+                      "MMMM Do YYYY HH:mm a"
+                    )}
                   >
                     <ReactTooltip id={el.id} place="top" effect="solid" />
-                    {moment(el.created).format("MMM Do YYYY")}
+                    {moment(el.created_at).format("MMM Do YYYY")}
                   </TableDataCell>
                 </TableRow>
               ))}
