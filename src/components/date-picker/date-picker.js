@@ -34,6 +34,7 @@ const DatePickerWrapper = styled(Box)`
       position: relative;
       padding-top: 12px;
       line-height: 1;
+      border-radius: 0;
 
       :hover {
         border-radius: 0;
@@ -41,8 +42,7 @@ const DatePickerWrapper = styled(Box)`
       }
     }
     .chosen {
-      border-radius: 0;
-      background-color: ${props => props.theme.colors.blue} !important;
+      background-color: ${props => props.theme.colors.medusa} !important;
       color: white;
     }
   }

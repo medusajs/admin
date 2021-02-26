@@ -169,7 +169,9 @@ const OrderFilterButton = ({
         <ButtonContainer p={2}>
           <ClearButton onClick={() => clear()}>Clear</ClearButton>
           <Box ml="auto" />
-          <DoneButton onClick={() => submit()}>Done</DoneButton>
+          <DoneButton onClick={() => submit()} variant="cta">
+            Done
+          </DoneButton>
         </ButtonContainer>
         <FilterDropdownItem
           filterTitle="Date"
