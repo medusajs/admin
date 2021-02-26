@@ -213,7 +213,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
               onChange={values => handleTagChange(values)}
               boldLabel={"true"}
             />
-            {frequentTags?.length && (
+            {frequentTags?.length ? (
               <Flex mt={1}>
                 <Text mr={2} fontSize="10px">
                   Frequently used tags:{" "}
@@ -222,7 +222,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   {frequentTags.map(t => t.value).join(", ")}
                 </Text>
               </Flex>
-            )}
+            ) : null}
           </Box>
           <Box width={1 / 2} mb={3}>
             <Text fontSize={1} mb={2} fontWeight="500">
