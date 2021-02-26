@@ -41,6 +41,7 @@
     "react-hotkeys-hook": "^2.4.0",
     "react-json-view": "^1.19.1",
     "react-multi-select-component": "^2.0.12",
+    "react-select": "^4.0.2",
     "react-toast-notifications": "^2.4.0",
     "react-tooltip": "^4.2.10",
     "rebass": "^4.0.7"

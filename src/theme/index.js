@@ -10,9 +10,11 @@ import "../fonts/index.css"
 
 export const theme = {
   colors: {
+    link: "#5469D3",
     primary: "#3b77ff",
     secondary: "#79B28A",
     medusaGreen: "#454B54",
+    medusa: "#454B54",
     danger: "#FF7675",
     muted: "#E3E8EE",
     lightest: "#fefefe",

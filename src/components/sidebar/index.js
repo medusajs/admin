@@ -6,6 +6,7 @@ import { Container, InlineLogoContainer, LogoContainer } from "./elements"
 import { ReactComponent as Settings } from "../../assets/svg/settings.svg"
 import { ReactComponent as Orders } from "../../assets/svg/orders.svg"
 import { ReactComponent as Products } from "../../assets/svg/products.svg"
+import { ReactComponent as Collections } from "../../assets/svg/collection.svg"
 import { ReactComponent as Customers } from "../../assets/svg/customers.svg"
 import { ReactComponent as Discounts } from "../../assets/svg/discounts.svg"
 import { ReactComponent as Logo } from "../../assets/svg/logo.svg"
@@ -25,6 +26,11 @@ const StyledItemContainer = styled(Link)`
   text-decoration: none;
   color: black;
   height: 30px;
+
+  svg {
+    max-height: 20px;
+    max-width: 20px;
+  }
 
   [fill*="red"] {
     fill: #454545;
@@ -98,6 +104,16 @@ const Sidebar = ({}) => {
           <Products />
           <Text ml={2} variant="nav">
             Products
+          </Text>
+        </StyledItemContainer>
+        <StyledItemContainer
+          to="/a/collections"
+          activeClassName="active"
+          partiallyActive
+        >
+          <Collections />
+          <Text ml={2} variant="nav">
+            Collections
           </Text>
         </StyledItemContainer>
         <StyledItemContainer

@@ -27,6 +27,19 @@ export default {
       // return medusaRequest("DELETE", path)
     },
   },
+  notifications: {
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      let path = `/admin/notifications${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+    resend(id, config) {
+      let path = `/admin/notifications/${id}/resend`
+      return medusaRequest("POST", path, config)
+    },
+  },
   customers: {
     retrieve(customerId) {
       const path = `/admin/customers/${customerId}`
@@ -154,6 +167,16 @@ export default {
       return medusaRequest("GET", path)
     },
 
+    listTypes() {
+      let path = `/admin/products/types`
+      return medusaRequest("GET", path)
+    },
+
+    listTagsByUsage() {
+      let path = `/admin/products/tag-usage`
+      return medusaRequest("GET", path)
+    },
+
     variants: {
       create(productId, variant) {
         const path = `/admin/products/${productId}/variants`
@@ -237,6 +260,23 @@ export default {
         .filter(s => !!s)
         .join("&")
       let path = `/admin/returns${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+  },
+
+  collections: {
+    create(payload) {
+      const path = `/admin/collections`
+      return medusaRequest("POST", path, payload)
+    },
+
+    retrieve(id) {
+      const path = `/admin/collections/${id}`
+      return medusaRequest("GET", path)
+    },
+
+    list(search = {}) {
+      let path = `/admin/collections`
       return medusaRequest("GET", path)
     },
   },
