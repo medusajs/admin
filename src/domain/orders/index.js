@@ -366,6 +366,7 @@ const OrderIndex = ({}) => {
         break
       default:
         const parsedTab = qs.parse(tab)
+        console.log("parsedTab:", parsedTab)
 
         // if the date is relative it contains colon = ":"
         if (parsedTab?.created_at?.includes("_")) {

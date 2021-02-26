@@ -25,7 +25,7 @@ export const relativeDateFormatToTimestamp = dateFormat => {
   date.minute(0)
   date.second(0)
   date.millisecond(0)
-
+  console.log("modifier: ")
   const result = `${modifier}=${date.format("X")}`
 
   return result

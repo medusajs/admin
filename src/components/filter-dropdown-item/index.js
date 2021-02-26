@@ -6,6 +6,8 @@ import Select from "../select"
 import { DateFilters } from "../../utils/filters"
 import { dateToUnixTimestamp } from "../../utils/time"
 import InputField from "../input"
+import ReactDatePicker from "react-datepicker"
+import DatePicker from "../date-picker/date-picker"
 
 const DropdownItemWrapper = styled(Text)`
   font-size: 12px;
@@ -138,8 +140,8 @@ const DateFilterContainer = styled(Box)`
 
 const DateFilter = ({ filters, setFilter, filterTitle }) => {
   const [currentFilter, setCurrentFilter] = useState(filters[0])
-  const date_1_ref = useRef()
-  const date_2_ref = useRef()
+  const [startDate, setStartDate] = useState(new Date())
+  const [endDate, setEndDate] = useState(new Date())
   const select_ref = useRef()
   const input_ref = useRef()
 
@@ -214,6 +216,15 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
                 fontSize: "10px",
                 height: "25px",
               }}
+            />
+          </Flex>
+        )
+      case DateFilters.EqualTo:
+        return (
+          <Flex>
+            <DatePicker
+              date={startDate}
+              onChange={date => setStartDate(date)}
             />
           </Flex>
         )

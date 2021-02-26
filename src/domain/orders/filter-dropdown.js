@@ -55,7 +55,6 @@ const DropdownContainer = styled.div`
   right: 0;
 
   max-height: 80vh;
-  overflow: auto;
 
   &::before {
     content: "";
