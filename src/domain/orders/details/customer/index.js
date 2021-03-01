@@ -4,22 +4,7 @@ import { navigate } from "gatsby"
 import React, { useState } from "react"
 import { Box, Text } from "rebass"
 import Card from "../../../../components/card"
-import EditableInput from "../../../../components/editable-input"
 import CustomerInformationEdit from "./edit"
-
-const CustomerEmailLabel = styled(Text)`
-  ${props =>
-    props.customerExist &&
-    `
-  color: #006fbb;
-  z-index: 1000;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-  `}
-`
 
 const CustomerInformation = ({
   order,
@@ -45,8 +30,16 @@ const CustomerInformation = ({
       <Card.Body>
         <Box px={3}>
           <Text color="gray">Contact</Text>
-          <CustomerEmailLabel
+          <Text
             pt={3}
+            sx={{
+              cursor: "pointer",
+              fontWeight: 500,
+              color: "link",
+              ":hover": {
+                color: "medusa",
+              },
+            }}
             customerExist={order.customer}
             onClick={() => {
               if (order.customer) {
@@ -57,7 +50,7 @@ const CustomerInformation = ({
             }}
           >
             {order.email}
-          </CustomerEmailLabel>
+          </Text>
           <Text pt={2}>
             {order.shipping_address.first_name}{" "}
             {order.shipping_address.last_name}

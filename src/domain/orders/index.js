@@ -63,10 +63,6 @@ export const OrderNumCell = styled(Text)`
   z-index: 1000;
 
   ${props => props.isCanceled && "text-decoration: line-through;"}
-
-  &:hover {
-    text-decoration: underline;
-  }
 `
 
 const OrderFields =
@@ -493,7 +489,19 @@ const OrderIndex = ({}) => {
                   isHighlighted={i === activeIndex}
                 >
                   <TableDataCell>
-                    <OrderNumCell isCanceled={el.status === "canceled"}>
+                    <OrderNumCell
+                      fontWeight={500}
+                      color={"link"}
+                      sx={{
+                        cursor: "pointer",
+                        fontWeight: 500,
+                        color: "link",
+                        ":hover": {
+                          color: "medusa",
+                        },
+                      }}
+                      isCanceled={el.status === "canceled"}
+                    >
                       {activeTab === "orders" || activeTab === "new"
                         ? `#${el.display_id}`
                         : `Go to order`}

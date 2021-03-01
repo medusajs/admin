@@ -43,7 +43,11 @@ const ProductIndex = () => {
     refresh,
     isReloading,
   } = useMedusa("products", {
-    search: filtersOnLoad,
+    search: {
+      ...filtersOnLoad,
+      fields: "id,title,thumbnail",
+      expand: "variants",
+    },
   })
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(filtersOnLoad.limit || 50)
@@ -63,6 +67,8 @@ const ProductIndex = () => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
+      fields: "id,title,thumbnail",
+      expand: "variants",
       q: query,
       offset: 0,
       limit: 50,
@@ -82,6 +88,8 @@ const ProductIndex = () => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
+      fields: "id,title,thumbnail",
+      expand: "variants",
       q: query,
       offset: updatedOffset,
       limit,
@@ -111,9 +119,9 @@ const ProductIndex = () => {
           New product
         </Button>
       </Flex>
-      {/* <Flex> */}
-      {/* <Box ml="auto" /> */}
-      {/* <Box mb={3} sx={{ maxWidth: "300px" }}>
+      <Flex>
+        <Box ml="auto" />
+        <Box mb={3} sx={{ maxWidth: "300px" }}>
           <Input
             height="28px"
             fontSize="12px"
@@ -124,16 +132,16 @@ const ProductIndex = () => {
             onChange={e => setQuery(e.target.value)}
             value={query}
           />
-        </Box> */}
-      {/* <Button
+        </Box>
+        <Button
           onClick={() => searchQuery()}
           variant={"primary"}
           fontSize="12px"
           ml={2}
         >
           Search
-        </Button> */}
-      {/* </Flex> */}
+        </Button>
+      </Flex>
       {(isLoading && !hasCache) || isReloading ? (
         <Flex
           flexDirection="column"
