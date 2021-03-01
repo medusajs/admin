@@ -183,11 +183,11 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
     switch (currentFilter) {
       case DateFilters.InTheLast:
         // Relative date
-        return `[gt]=${value}|${option}`
+        return { gt: `${value}|${option}` }
 
       case DateFilters.OlderThan:
         // Relative date:
-        return `[lt]=${value}|${option}`
+        return { lt: `${value}|${option}` }
 
       case DateFilters.EqualTo:
         value = atMidnight(value)
