@@ -329,19 +329,19 @@ const OrderIndex = ({}) => {
     let replaceUrl = `?tab=${tab.toLowerCase()}`
     switch (tab) {
       case "swaps":
-        const swaps = await Medusa.swaps.list(query)
+        const swaps = await Medusa.swaps.list(query || "")
         setOrders(swaps.data.swaps)
         setFetching(false)
         break
       case "returns":
-        const returns = await Medusa.returns.list(query)
+        const returns = await Medusa.returns.list(query || "")
         setOrders(returns.data.returns)
         setFetching(false)
         break
       case "new":
         refresh({
           search: {
-            ...query,
+            ...(query || ""),
             new: true,
             expand: "shipping_address",
             fields:
@@ -354,7 +354,7 @@ const OrderIndex = ({}) => {
       case "orders":
         refresh({
           search: {
-            ...query,
+            ...(query || ""),
             expand: "shipping_address",
             fields:
               "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
@@ -368,13 +368,13 @@ const OrderIndex = ({}) => {
         console.log("parsedTab:", parsedTab)
 
         // if the date is relative it contains colon = ":"
-        if (parsedTab?.created_at?.includes("|")) {
-          const result = relativeDateFormatToTimestamp(parsedTab.created_at)
-          parsedTab.created_at = result
-          replaceUrl = `?${qs.stringify(parsedTab)}`
-        } else {
-          replaceUrl = `?${tab}`
-        }
+        // if (parsedTab?.created_at?.includes("|")) {
+        //   const result = relativeDateFormatToTimestamp(parsedTab.created_at)
+        //   parsedTab.created_at = result
+        //   replaceUrl = `?${qs.stringify(parsedTab)}`
+        // } else {
+        // }
+        replaceUrl = `?${tab}`
 
         setFetching(false)
         break
