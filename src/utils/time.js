@@ -7,25 +7,41 @@ export const dateToUnixTimestamp = date => {
   return null
 }
 
+export const atMidnight = date => {
+  let result = moment(date)
+  if (!moment.isMoment(result)) {
+    console.log("date is not instance of Moment: ", date)
+    return null
+  }
+  result.hour(0)
+  result.minute(0)
+  result.second(0)
+  result.millisecond(0)
+
+  return result
+}
+
+export const addHours = (date, hours) => {
+  const result = moment(date)
+  return moment(date).add(hours, "hours")
+}
+
 /**
- * The format is: [gt]=number_option
- * e.g: [gt]=2_days
+ * The format is: [gt]=number|option
+ * e.g: [gt]=2|days
  * @param {*} value
  */
 
 export const relativeDateFormatToTimestamp = dateFormat => {
   let [modifier, value] = dateFormat.split("=")
-  let [count, option] = value.split("_")
+  let [count, option] = value.split("|")
 
   // relative days are always subtract
   let date = moment()
 
   date.subtract(count, option)
-  date.hour(0)
-  date.minute(0)
-  date.second(0)
-  date.millisecond(0)
-  console.log("modifier: ")
+  date = atMidnight(date)
+
   const result = `${modifier}=${date.format("X")}`
 
   return result

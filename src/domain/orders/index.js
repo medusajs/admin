@@ -6,7 +6,7 @@ import { Text, Box, Flex } from "rebass"
 import { Input } from "@rebass/forms"
 import styled from "@emotion/styled"
 import moment from "moment"
-import qs from "query-string"
+import qs from "qs"
 import ReactCountryFlag from "react-country-flag"
 import ReactTooltip from "react-tooltip"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -122,26 +122,29 @@ const OrderIndex = ({}) => {
 
   const searchRef = useRef(null)
   const [tabs, setTabs] = useState(DefaultTabs)
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState(null)
   const [limit, setLimit] = useState(filtersOnLoad.limit || 0)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [orders, setOrders] = useState([])
   const [activeTab, setActiveTab] = useState("orders")
   const [fetching, setFetching] = useState(false)
 
-  const [statusFilter, setStatusFilter] = useState({ open: false, filter: "" })
+  const [statusFilter, setStatusFilter] = useState({
+    open: false,
+    filter: null,
+  })
   const [fulfillmentFilter, setFulfillmentFilter] = useState({
     open: false,
-    filter: "",
+    filter: null,
   })
   const [paymentFilter, setPaymentFilter] = useState({
     open: false,
-    filter: "",
+    filter: null,
   })
 
   const [dateFilter, setDateFilter] = useState({
     open: false,
-    filter: "",
+    filter: {},
   })
 
   const isInViewport = el => {
@@ -231,7 +234,7 @@ const OrderIndex = ({}) => {
 
   const searchQuery = () => {
     setOffset(0)
-    const baseUrl = qs.parseUrl(window.location.href).url
+    const baseUrl = qs.parse(window.location.href).url
 
     const queryParts = {
       q: query,
@@ -239,8 +242,7 @@ const OrderIndex = ({}) => {
       limit: 50,
     }
     const prepared = qs.stringify(queryParts, {
-      skipNull: true,
-      skipEmptyString: true,
+      skipNulls: true,
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
@@ -259,7 +261,7 @@ const OrderIndex = ({}) => {
       direction === "next"
         ? parseInt(offset) + parseInt(limit)
         : parseInt(offset) - parseInt(limit)
-    const baseUrl = qs.parseUrl(window.location.href).url
+    const baseUrl = qs.parse(window.location.href).url
 
     const queryParts = {
       q: query,
@@ -287,18 +289,21 @@ const OrderIndex = ({}) => {
   }
 
   const handleQueryParts = () => {
-    // if the datefilter includes "_" it is a relative date and we have to format it to timestamp
+    // if the datefilter includes "|" it is a relative date and we have to format it to timestamp
+    console.log("handle query: ", dateFilter)
     let dateFormatted = dateFilter.filter
-    if (dateFilter?.filter?.includes("_")) {
-      dateFormatted = relativeDateFormatToTimestamp(dateFilter.filter)
+    if (typeof dateFilter.filter === "string") {
+      if (dateFilter?.filter?.includes("|")) {
+        dateFormatted = relativeDateFormatToTimestamp(dateFilter.filter)
+      }
     }
 
     const queryParts = {
       q: query,
-      payment_status: paymentFilter.filter || "",
-      fulfillment_status: fulfillmentFilter.filter || "",
-      status: statusFilter.filter || "",
-      created_at: dateFormatted || "",
+      payment_status: paymentFilter.filter,
+      fulfillment_status: fulfillmentFilter.filter,
+      status: statusFilter.filter,
+      created_at: dateFormatted,
       offset,
       limit,
     }
@@ -307,11 +312,10 @@ const OrderIndex = ({}) => {
   }
 
   const submit = () => {
-    const baseUrl = qs.parseUrl(window.location.href).url
+    const baseUrl = qs.parse(window.location.href).url
 
     const prepared = qs.stringify(handleQueryParts(), {
-      skipNull: true,
-      skipEmptyString: true,
+      skipNulls: true,
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
@@ -321,7 +325,7 @@ const OrderIndex = ({}) => {
   const handleTabClick = async tab => {
     setFetching(true)
     setActiveTab(tab)
-    const baseUrl = qs.parseUrl(window.location.href).url
+    const baseUrl = qs.parse(window.location.href).url
     let replaceUrl = `?tab=${tab.toLowerCase()}`
     switch (tab) {
       case "swaps":
@@ -364,7 +368,7 @@ const OrderIndex = ({}) => {
         console.log("parsedTab:", parsedTab)
 
         // if the date is relative it contains colon = ":"
-        if (parsedTab?.created_at?.includes("_")) {
+        if (parsedTab?.created_at?.includes("|")) {
           const result = relativeDateFormatToTimestamp(parsedTab.created_at)
           parsedTab.created_at = result
           replaceUrl = `?${qs.stringify(parsedTab)}`
@@ -379,7 +383,7 @@ const OrderIndex = ({}) => {
   }
 
   const clear = () => {
-    const baseUrl = qs.parseUrl(window.location.href).url
+    const baseUrl = qs.parse(window.location.href).url
     setQuery("")
     window.history.replaceState(baseUrl, "", `?limit=${limit}&offset=${offset}`)
     refresh()
@@ -401,21 +405,22 @@ const OrderIndex = ({}) => {
 
   const handleSaveTab = saveValue => {
     const prepared = qs.stringify(handleQueryParts(), {
-      skipNull: true,
-      skipEmptyString: true,
+      skipNulls: true,
     })
+
+    console.log("prepared:", prepared)
 
     const localStorageUrl = qs.stringify(
       {
         q: query,
-        payment_status: paymentFilter.filter || "",
-        fulfillment_status: fulfillmentFilter.filter || "",
-        status: statusFilter.filter || "",
-        created_at: dateFilter.filter || "",
+        payment_status: paymentFilter.filter,
+        fulfillment_status: fulfillmentFilter.filter,
+        status: statusFilter.filter,
+        created_at: dateFilter.filter,
         offset,
         limit,
       },
-      { skipNull: true, skipEmptyString: true }
+      { skipNulls: true }
     )
 
     const filters = JSON.parse(localStorage.getItem("orders::filters"))
@@ -430,7 +435,7 @@ const OrderIndex = ({}) => {
     }
 
     const newTabs = DefaultTabs.concat(getLocalStorageFilters())
-    const baseUrl = qs.parseUrl(window.location.href).url
+    const baseUrl = qs.parse(window.location.href).url
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     setTabs(newTabs)
     setActiveTab(prepared)

@@ -4,10 +4,11 @@ import { Collapse } from "react-collapse"
 import { Box, Text, Flex } from "rebass"
 import Select from "../select"
 import { DateFilters } from "../../utils/filters"
-import { dateToUnixTimestamp } from "../../utils/time"
+import { addHours, atMidnight, dateToUnixTimestamp } from "../../utils/time"
 import InputField from "../input"
 import ReactDatePicker from "react-datepicker"
 import DatePicker from "../date-picker/date-picker"
+import moment from "moment"
 
 const DropdownItemWrapper = styled(Text)`
   font-size: 12px;
@@ -155,7 +156,13 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
         }
         setFilter({
           open: true,
-          filter: `${handleDateFormat(value)}`,
+          filter: handleDateFormat(value),
+        })
+        break
+      case DateFilters.EqualTo:
+        setFilter({
+          open: true,
+          filter: handleDateFormat(value),
         })
         break
     }
@@ -171,16 +178,22 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
    */
   const handleDateFormat = value => {
     let option =
-      select_ref?.current.options[select_ref.current.options.selectedIndex]
+      select_ref?.current?.options[select_ref.current.options.selectedIndex]
         ?.label
     switch (currentFilter) {
       case DateFilters.InTheLast:
         // Relative date
-        return `[gt]=${value}_${option}`
+        return `[gt]=${value}|${option}`
 
       case DateFilters.OlderThan:
         // Relative date:
-        return `[lt]=${value}_${option}`
+        return `[lt]=${value}|${option}`
+
+      case DateFilters.EqualTo:
+        value = atMidnight(value)
+        let day = dateToUnixTimestamp(value.toDate())
+        let nextDay = dateToUnixTimestamp(addHours(value, 24).toDate())
+        return { gt: day, lt: nextDay }
 
       default:
         return ""
@@ -224,7 +237,10 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
           <Flex>
             <DatePicker
               date={startDate}
-              onChange={date => setStartDate(date)}
+              onChange={date => {
+                handleSetFilter(date)
+                setStartDate(date)
+              }}
             />
           </Flex>
         )
