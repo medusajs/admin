@@ -22,8 +22,7 @@ export const atMidnight = date => {
 }
 
 export const addHours = (date, hours) => {
-  const result = moment(date)
-  return moment(date).add(hours, "hours")
+  return moment(date)?.add(hours, "hours")
 }
 
 /**
