@@ -46,7 +46,7 @@ const ProductIndex = () => {
     search: {
       ...filtersOnLoad,
       fields: "id,title,thumbnail",
-      expand: "variants",
+      expand: "variants,collection",
     },
   })
   const [query, setQuery] = useState("")
@@ -68,7 +68,7 @@ const ProductIndex = () => {
 
     const search = {
       fields: "id,title,thumbnail",
-      expand: "variants",
+      expand: "variants,collection",
       q: query,
       offset: 0,
       limit: 50,
@@ -89,7 +89,7 @@ const ProductIndex = () => {
 
     const search = {
       fields: "id,title,thumbnail",
-      expand: "variants",
+      expand: "variants,collection",
       q: query,
       offset: updatedOffset,
       limit,
