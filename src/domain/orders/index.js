@@ -42,6 +42,8 @@ const TabButton = styled.button`
   background-color: #fefefe;
   text-align: left;
   margin-right: 15px;
+  width: 100%;
+  white-space: nowrap;
 
   .cross-icon {
     display: none;
@@ -499,7 +501,13 @@ const OrderIndex = ({}) => {
           handleSaveTab={value => handleSaveTab(value)}
         />
       </Flex>
-      <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
+      <Flex
+        mb={3}
+        sx={{
+          borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)",
+          overflow: "scroll",
+        }}
+      >
         {tabs &&
           tabs.map((tab, i) => (
             <TabButton
