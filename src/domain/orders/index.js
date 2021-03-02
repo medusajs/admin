@@ -258,7 +258,6 @@ const OrderIndex = ({}) => {
 
   const formatDateFilter = filter => {
     let dateFormatted = Object.entries(filter).reduce((acc, [key, value]) => {
-      console.log("k,v, ", key, value)
       if (value.includes("|")) {
         acc[key] = relativeDateFormatToTimestamp(value)
       } else {
@@ -304,10 +303,7 @@ const OrderIndex = ({}) => {
 
   const handleQueryParts = () => {
     // if the datefilter includes "|" it is a relative date and we have to format it to timestamp
-    console.log("handle query: ", dateFilter)
     let dateFormatted = formatDateFilter(dateFilter.filter)
-
-    console.log("formatted: ", dateFormatted)
 
     const queryParts = {
       q: query,
@@ -376,24 +372,13 @@ const OrderIndex = ({}) => {
         break
       default:
         const parsedTab = qs.parse(tab)
-        console.log("parsedTab:", parsedTab)
 
         if (parsedTab?.created_at) {
           parsedTab.created_at = formatDateFilter(parsedTab.created_at) || null
           replaceUrl = `?${qs.stringify(parsedTab)}`
-
-          console.log("formatted parsed tab: ", parsedTab)
         } else {
           replaceUrl = `?${tab}`
         }
-
-        // if the date is relative it contains colon = ":"
-        // if (parsedTab?.created_at?.includes("|")) {
-        //   const result = relativeDateFormatToTimestamp(parsedTab.created_at)
-        //   parsedTab.created_at = result
-        //   replaceUrl = `?${qs.stringify(parsedTab)}`
-        // } else {
-        // }
 
         setFetching(false)
         break
@@ -426,8 +411,6 @@ const OrderIndex = ({}) => {
     const prepared = qs.stringify(handleQueryParts(), {
       skipNulls: true,
     })
-
-    console.log("prepared:", prepared)
 
     const localStorageUrl = qs.stringify(
       {

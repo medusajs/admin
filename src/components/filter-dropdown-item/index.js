@@ -165,6 +165,11 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
           filter: handleDateFormat(value),
         })
         break
+      default:
+        setFilter({
+          open: true,
+          filter: handleDateFormat(value),
+        })
     }
   }
 
@@ -180,6 +185,7 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
     let option =
       select_ref?.current?.options[select_ref.current.options.selectedIndex]
         ?.label
+
     switch (currentFilter) {
       case DateFilters.InTheLast:
         // Relative date
@@ -194,6 +200,14 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
         let day = dateToUnixTimestamp(value.toDate())
         let nextDay = dateToUnixTimestamp(addHours(value, 24).toDate())
         return { gt: day, lt: nextDay }
+
+      case DateFilters.After:
+        value = atMidnight(value)
+        return { gt: dateToUnixTimestamp(value.toDate()) }
+
+      case DateFilters.Before:
+        value = atMidnight(value)
+        return { lt: dateToUnixTimestamp(value.toDate()) }
 
       default:
         return ""
@@ -233,6 +247,8 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
           </Flex>
         )
       case DateFilters.EqualTo:
+      case DateFilters.After:
+      case DateFilters.Before:
         return (
           <Flex>
             <DatePicker
