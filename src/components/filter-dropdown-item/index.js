@@ -146,6 +146,10 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
   const select_ref = useRef()
   const input_ref = useRef()
 
+  useEffect(() => {
+    handleSetFilter(startDate)
+  }, [currentFilter])
+
   const handleSetFilter = value => {
     switch (currentFilter) {
       case DateFilters.InTheLast:

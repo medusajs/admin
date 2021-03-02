@@ -41,8 +41,7 @@ const TabButton = styled.button`
   font-size: 14px;
   background-color: #fefefe;
   text-align: left;
-  margin-right: 15px;
-  width: 100%;
+  padding-right: 15px;
   white-space: nowrap;
 
   .cross-icon {
