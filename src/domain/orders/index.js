@@ -315,7 +315,7 @@ const OrderIndex = ({}) => {
 
     if (typeof tab === "object") {
       replaceUrl = `?tab=${tab.label.toLowerCase()}`
-      setActiveFilterTab(tab.label)
+      setActiveFilterTab(tab)
     } else {
       replaceUrl = `?tab=${tab.toLowerCase()}&${qs.stringify({
         ...queryParts,
