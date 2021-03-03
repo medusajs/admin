@@ -7,10 +7,10 @@ import { Input } from "@rebass/forms"
 import styled from "@emotion/styled"
 import moment from "moment"
 import qs from "qs"
+import { default as queryString } from "query-string"
 import ReactCountryFlag from "react-country-flag"
 import ReactTooltip from "react-tooltip"
 import { useHotkeys } from "react-hotkeys-hook"
-import Medusa from "../../services/api"
 import { ReactComponent as Cross } from "../../assets/svg/cross.svg"
 
 import Details from "./details"
@@ -20,7 +20,6 @@ import {
   TableBody,
   TableHead,
   TableHeaderCell,
-  TableRow,
   TableDataCell,
   TableHeaderRow,
   TableLinkRow,
@@ -34,19 +33,28 @@ import Button from "../../components/button"
 import Filter from "./filter-dropdown"
 import { relativeDateFormatToTimestamp } from "../../utils/time"
 
-const TabButton = styled.button`
+const defaultQueryProps = {
+  expand: "shipping_address",
+  fields:
+    "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+}
+
+const TabButton = styled(Flex)`
+  align-items: center;
+  justify-content: center;
   border-radius: 0pt;
   border: none;
   height: 30px;
-  font-size: 14px;
+  font-size: 12px;
   background-color: #fefefe;
   text-align: left;
   margin-right: 15px;
+  min-width: 50px;
 
   .cross-icon {
-    display: none;
-    height: 10px;
-    margin-left: 3px;
+    display: inline-block;
+    height: 8px;
+    margin-left: 5px;
     cursor: pointer;
   }
 
@@ -54,10 +62,6 @@ const TabButton = styled.button`
     props.active &&
     `
     border-bottom: 1px solid black;
-    // font-weight: bold;
-    .cross-icon {
-      display: inline-block;
-    }
 
   `}
 
@@ -72,19 +76,18 @@ const TabButton = styled.button`
 
 const OrderNumCell = styled(Text)`
   z-index: 1000;
+  cursor: pointer;
+  font-weight: 500;
+
+  &:hover {
+    color: #454b54;
+  }
 
   ${props => props.isCanceled && "text-decoration: line-through;"}
 `
 
-const DefaultTabs = [
-  { label: "New", value: "new" },
-  { label: "Returns", value: "returns" },
-  { label: "Swaps", value: "swaps" },
-  { label: "All", value: "orders" },
-]
-
 const OrderIndex = ({}) => {
-  const filtersOnLoad = qs.parse(window.location.search)
+  const filtersOnLoad = queryString.parse(window.location.search)
 
   if (!filtersOnLoad.offset) {
     filtersOnLoad.offset = 0
@@ -93,6 +96,8 @@ const OrderIndex = ({}) => {
   if (!filtersOnLoad.limit) {
     filtersOnLoad.limit = 50
   }
+
+  const { tab: onLoadTab, ...rest } = filtersOnLoad
 
   const {
     orders: allOrders,
@@ -103,10 +108,8 @@ const OrderIndex = ({}) => {
     toaster,
   } = useMedusa("orders", {
     search: {
-      ...filtersOnLoad,
-      expand: "shipping_address",
-      fields:
-        "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+      ...rest,
+      ...defaultQueryProps,
     },
   })
 
@@ -121,12 +124,12 @@ const OrderIndex = ({}) => {
   }
 
   const searchRef = useRef(null)
-  const [tabs, setTabs] = useState(DefaultTabs)
   const [query, setQuery] = useState(null)
-  const [limit, setLimit] = useState(filtersOnLoad.limit || 0)
-  const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
+  const [limit, setLimit] = useState(rest.limit || 0)
+  const [offset, setOffset] = useState(rest.offset || 0)
   const [orders, setOrders] = useState([])
-  const [activeTab, setActiveTab] = useState("orders")
+  const [filterTabs, setFilterTabs] = useState()
+  const [activeFilterTab, setActiveFilterTab] = useState(onLoadTab || "all")
   const [fetching, setFetching] = useState(false)
 
   const [statusFilter, setStatusFilter] = useState({
@@ -212,8 +215,8 @@ const OrderIndex = ({}) => {
   }, [allOrders])
 
   useEffect(() => {
-    const newTabs = DefaultTabs.concat(getLocalStorageFilters())
-    setTabs(newTabs)
+    const savedTabs = getLocalStorageFilters()
+    setFilterTabs(savedTabs)
   }, [])
 
   const onKeyDown = event => {
@@ -234,26 +237,14 @@ const OrderIndex = ({}) => {
 
   const searchQuery = () => {
     setOffset(0)
-    const baseUrl = qs.parse(window.location.href).url
 
     const queryParts = {
       q: query,
       offset: 0,
       limit: 50,
     }
-    const prepared = qs.stringify(queryParts, {
-      skipNulls: true,
-    })
 
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({
-      search: {
-        ...queryParts,
-        expand: "shipping_address",
-        fields:
-          "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
-      },
-    })
+    handleTabClick(activeFilterTab, queryParts)
   }
 
   const formatDateFilter = filter => {
@@ -274,116 +265,124 @@ const OrderIndex = ({}) => {
       direction === "next"
         ? parseInt(offset) + parseInt(limit)
         : parseInt(offset) - parseInt(limit)
-    const baseUrl = qs.parse(window.location.href).url
 
-    const queryParts = {
-      q: query,
-      payment_status: paymentFilter.filter || "",
-      fulfillment_status: fulfillmentFilter.filter || "",
-      status: statusFilter.filter
-        ? statusFilter.filter
-        : activeTab !== "all"
-        ? activeTab
-        : "",
+    console.log(activeFilterTab)
+    handleTabClick(activeFilterTab, {
       offset: updatedOffset,
-      limit,
-    }
-
-    const prepared = qs.stringify(queryParts, {
-      skipNull: true,
-      skipEmptyString: true,
-    })
-
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
-
-    handleTabClick(activeTab, queryParts).then(() => {
+    }).then(() => {
       setOffset(updatedOffset)
     })
   }
 
   const handleQueryParts = () => {
     // if the datefilter includes "|" it is a relative date and we have to format it to timestamp
-    let dateFormatted = formatDateFilter(dateFilter.filter)
 
     const queryParts = {
-      q: query,
-      payment_status: paymentFilter.filter,
-      fulfillment_status: fulfillmentFilter.filter,
-      status: statusFilter.filter,
-      created_at: dateFormatted,
+      q: query || "",
       offset,
       limit,
+    }
+
+    if (!_.isEmpty(dateFilter.filter)) {
+      let dateFormatted = formatDateFilter(dateFilter.filter)
+      queryParts.created_at = dateFormatted
+    }
+
+    if (paymentFilter.filter) {
+      queryParts["payment_status[]"] = paymentFilter.filter
+    }
+
+    if (fulfillmentFilter.filter) {
+      queryParts["fulfillment_status[]"] = fulfillmentFilter.filter
+    }
+
+    if (statusFilter.filter) {
+      queryParts["status[]"] = statusFilter.filter
     }
 
     return queryParts
   }
 
   const submit = () => {
-    const baseUrl = qs.parse(window.location.href).url
-
-    const prepared = qs.stringify(handleQueryParts(), {
-      skipNulls: true,
-    })
-
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
-    handleTabClick(activeTab, handleQueryParts())
+    handleTabClick(activeFilterTab, handleQueryParts())
   }
 
-  const handleTabClick = async tab => {
+  const handleTabClick = async (tab, queryParts = {}) => {
     setFetching(true)
-    setActiveTab(tab)
     const baseUrl = qs.parse(window.location.href).url
-    let replaceUrl = `?tab=${tab.toLowerCase()}`
+
+    let replaceUrl
+
+    if (typeof tab === "object") {
+      replaceUrl = `?tab=${tab.label.toLowerCase()}`
+      setActiveFilterTab(tab.label)
+    } else {
+      replaceUrl = `?tab=${tab.toLowerCase()}&${qs.stringify({
+        ...queryParts,
+      })}`
+      setActiveFilterTab(tab)
+    }
+
     switch (tab) {
-      case "swaps":
-        const swaps = await Medusa.swaps.list(query || "")
-        setOrders(swaps.data.swaps)
-        setFetching(false)
-        break
-      case "returns":
-        const returns = await Medusa.returns.list(query || "")
-        setOrders(returns.data.returns)
-        setFetching(false)
-        break
-      case "new":
+      case "completed":
         refresh({
           search: {
-            ...(query || ""),
-            new: true,
-            expand: "shipping_address",
-            fields:
-              "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+            ...queryParts,
+            ...defaultQueryProps,
+            fulfillment_status: "shipped",
+            payment_status: "captured",
           },
         })
         setOrders(allOrders)
-        setFetching(false)
         break
-      case "orders":
+      case "incomplete":
         refresh({
           search: {
-            ...(query || ""),
-            expand: "shipping_address",
-            fields:
-              "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+            ...queryParts,
+            ...defaultQueryProps,
+            "fulfillment_status[]": ["not_fulfilled", "fulfilled"],
+            payment_status: "awaiting",
           },
         })
         setOrders(allOrders)
-        setFetching(false)
+        break
+      case "all":
+        refresh({
+          search: {
+            ...queryParts,
+            ...defaultQueryProps,
+          },
+        })
+        setOrders(allOrders)
         break
       default:
-        const parsedTab = qs.parse(tab)
+        const fs = qs.parse(tab.value)
 
-        if (parsedTab?.created_at) {
-          parsedTab.created_at = formatDateFilter(parsedTab.created_at) || null
-          replaceUrl = `?${qs.stringify(parsedTab)}`
-        } else {
-          replaceUrl = `?${tab}`
+        for (const [key, value] of Object.entries(fs)) {
+          if (key === "created_at") {
+            fs[key] = formatDateFilter(value) || null
+          }
         }
 
-        setFetching(false)
+        setActiveFilterTab(tab)
+
+        const stringifiedFilters = qs.stringify({ ...fs, ...queryParts })
+        const toSend = queryString.parse(stringifiedFilters)
+
+        const search = {
+          ...toSend,
+          ...defaultQueryProps,
+        }
+
+        refresh({ search })
+
+        replaceUrl = `?${stringifiedFilters}`
         break
     }
+
     window.history.replaceState(baseUrl, "", replaceUrl)
+    setOrders(allOrders)
+    setFetching(false)
   }
 
   const clear = () => {
@@ -408,16 +407,12 @@ const OrderIndex = ({}) => {
   }
 
   const handleSaveTab = saveValue => {
-    const prepared = qs.stringify(handleQueryParts(), {
-      skipNulls: true,
-    })
-
     const localStorageUrl = qs.stringify(
       {
         q: query,
-        payment_status: paymentFilter.filter,
-        fulfillment_status: fulfillmentFilter.filter,
-        status: statusFilter.filter,
+        "payment_status[]": paymentFilter.filter,
+        "fulfillment_status[]": fulfillmentFilter.filter,
+        "status[]": statusFilter.filter,
         created_at: dateFilter.filter,
         offset,
         limit,
@@ -436,11 +431,22 @@ const OrderIndex = ({}) => {
       localStorage.setItem("orders::filters", JSON.stringify(newFilters))
     }
 
-    const newTabs = DefaultTabs.concat(getLocalStorageFilters())
-    const baseUrl = qs.parse(window.location.href).url
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
-    setTabs(newTabs)
-    setActiveTab(prepared)
+    let newTabs = [...getLocalStorageFilters()]
+    setFilterTabs(newTabs)
+
+    handleTabClick({ label: saveValue }, handleQueryParts())
+  }
+
+  const handleDeleteFilter = (tab, e) => {
+    e.stopPropagation()
+    const newTabs = JSON.parse(localStorage.getItem("orders::filters"))
+
+    delete newTabs[tab.label]
+
+    localStorage.setItem("orders::filters", JSON.stringify(newTabs))
+
+    setFilterTabs(getLocalStorageFilters())
+    handleTabClick("all")
   }
 
   const moreResults = orders && orders.length >= limit
@@ -465,7 +471,7 @@ const OrderIndex = ({}) => {
         <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
           <Input
             ref={searchRef}
-            height="28px"
+            height="30px"
             fontSize="12px"
             id="email"
             name="q"
@@ -479,7 +485,6 @@ const OrderIndex = ({}) => {
         <Button
           onClick={() => searchQuery()}
           variant={"primary"}
-          disabled={activeTab !== "orders" && activeTab !== "new"}
           fontSize="12px"
           mr={2}
         >
@@ -500,37 +505,56 @@ const OrderIndex = ({}) => {
         />
       </Flex>
       <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
-        {tabs &&
-          tabs.map((tab, i) => (
-            <TabButton
-              active={tab.value === activeTab}
-              onClick={() => handleTabClick(tab.value)}
-            >
-              <>
-                <p>{tab.label}</p>
-                {i > 3 && (
-                  <Cross
-                    className="cross-icon"
-                    onClick={() => {
-                      const newTabs = JSON.parse(
-                        localStorage.getItem("orders::filters")
-                      )
-
-                      delete newTabs[tab.label]
-
-                      localStorage.setItem(
-                        "orders::filters",
-                        JSON.stringify(newTabs)
-                      )
-
-                      setTabs(DefaultTabs.concat(getLocalStorageFilters()))
-                      handleTabClick("orders")
-                    }}
-                  />
-                )}
-              </>
-            </TabButton>
-          ))}
+        <TabButton
+          active={"all" === activeFilterTab}
+          onClick={() => handleTabClick("all")}
+        >
+          <p>All</p>
+        </TabButton>
+        <TabButton
+          active={"incomplete" === activeFilterTab}
+          onClick={() => handleTabClick("incomplete")}
+        >
+          <p>Incomplete</p>
+        </TabButton>
+        <TabButton
+          active={"completed" === activeFilterTab}
+          onClick={() => handleTabClick("completed")}
+        >
+          <p>Completed</p>
+        </TabButton>
+        <Box ml="auto" />
+        <Flex fontSize="10px" alignItems="flex-end" mr={2}>
+          <Text color="#c4c4c4">SAVED FILTERS</Text>
+        </Flex>
+        <Flex overflowY="scroll" maxWidth="50%" maxHeight="30px">
+          {filterTabs &&
+            filterTabs.map((tab, i) => (
+              <TabButton
+                key={i}
+                active={tab.label === activeFilterTab.label}
+                onClick={() => handleTabClick(tab)}
+              >
+                <Text
+                  height="25px"
+                  sx={{
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                  }}
+                >
+                  {tab.label}
+                </Text>
+                <Cross
+                  className="cross-icon"
+                  onClick={e => handleDeleteFilter(tab, e)}
+                  data-for={tab.value}
+                  data-tip="Delete filter"
+                />
+                <ReactTooltip id={tab.value} place="top" effect="solid" />
+              </TabButton>
+            ))}
+        </Flex>
       </Flex>
       {(isLoading && !hasCache) || isReloading || fetching ? (
         <Flex
@@ -555,40 +579,19 @@ const OrderIndex = ({}) => {
             <TableHeaderRow>
               <TableHeaderCell>Order</TableHeaderCell>
               <TableHeaderCell>Date</TableHeaderCell>
-              {(activeTab === "orders" || activeTab === "new") && (
-                <TableHeaderCell>Customer</TableHeaderCell>
-              )}
-              <TableHeaderCell>
-                {activeTab === "returns" ? "Status" : "Fulfillment"}
-              </TableHeaderCell>
-              {activeTab !== "returns" && (
-                <TableHeaderCell>Payment</TableHeaderCell>
-              )}
-              <TableHeaderCell>
-                {activeTab === "orders" || activeTab === "new"
-                  ? "Total"
-                  : activeTab === "swaps"
-                  ? "Difference due"
-                  : "Refund amount"}
-              </TableHeaderCell>
+              <TableHeaderCell>Customer</TableHeaderCell>
+              <TableHeaderCell>Fulfillment</TableHeaderCell>
+              <TableHeaderCell>Payment</TableHeaderCell>
+              <TableHeaderCell>Total</TableHeaderCell>
               <TableHeaderCell sx={{ maxWidth: "75px" }} />
             </TableHeaderRow>
           </TableHead>
           <TableBody>
             {orders.map((el, i) => {
-              const goToId =
-                activeTab === "swaps"
-                  ? el.order_id
-                  : activeTab === "returns" && el.swap
-                  ? el.swap.order_id
-                  : activeTab === "returns"
-                  ? el.order_id
-                  : el.id
-
               return (
                 <TableLinkRow
                   key={i}
-                  to={`/a/orders/${goToId}`}
+                  to={`/a/orders/${el.id}`}
                   id={`order-${el.id}`}
                   isHighlighted={i === activeIndex}
                 >
@@ -596,19 +599,9 @@ const OrderIndex = ({}) => {
                     <OrderNumCell
                       fontWeight={500}
                       color={"link"}
-                      sx={{
-                        cursor: "pointer",
-                        fontWeight: 500,
-                        color: "link",
-                        ":hover": {
-                          color: "medusa",
-                        },
-                      }}
                       isCanceled={el.status === "canceled"}
                     >
-                      {activeTab === "orders" || activeTab === "new"
-                        ? `#${el.display_id}`
-                        : `Go to order`}
+                      #{el.display_id}
                     </OrderNumCell>
                   </TableDataCell>
                   <TableDataCell
@@ -620,56 +613,30 @@ const OrderIndex = ({}) => {
                     <ReactTooltip id={el.id} place="top" effect="solid" />
                     {moment(el.created_at).format("MMM Do YYYY")}
                   </TableDataCell>
-                  {(activeTab === "orders" || activeTab === "new") && (
-                    <TableDataCell>{el.email}</TableDataCell>
-                  )}
+                  <TableDataCell>{el.email}</TableDataCell>
                   <TableDataCell>
                     <Box>
                       <Badge
-                        color={
-                          decideBadgeColor(
-                            activeTab === "returns"
-                              ? el.status
-                              : el.fulfillment_status
-                          ).color
-                        }
-                        bg={
-                          decideBadgeColor(
-                            activeTab === "returns"
-                              ? el.status
-                              : el.fulfillment_status
-                          ).bgColor
-                        }
+                        color={decideBadgeColor(el.fulfillment_status).color}
+                        bg={decideBadgeColor(el.fulfillment_status).bgColor}
                       >
-                        {activeTab === "returns"
-                          ? el.status
-                          : el.fulfillment_status}
+                        {el.fulfillment_status}
                       </Badge>
                     </Box>
                   </TableDataCell>
-                  {activeTab !== "returns" && (
-                    <TableDataCell>
-                      <Box>
-                        <Badge
-                          color={decideBadgeColor(el.payment_status).color}
-                          bg={decideBadgeColor(el.payment_status).bgColor}
-                        >
-                          {el.payment_status}
-                        </Badge>
-                      </Box>
-                    </TableDataCell>
-                  )}
                   <TableDataCell>
-                    {activeTab === "orders" || activeTab === "new" ? (
-                      <>
-                        {(el.total / 100).toFixed(2)}{" "}
-                        {el.currency_code.toUpperCase()}
-                      </>
-                    ) : activeTab === "swaps" ? (
-                      <>{(el.difference_due / 100).toFixed(2)} </>
-                    ) : (
-                      <>{(el.refund_amount / 100).toFixed(2)} </>
-                    )}
+                    <Box>
+                      <Badge
+                        color={decideBadgeColor(el.payment_status).color}
+                        bg={decideBadgeColor(el.payment_status).bgColor}
+                      >
+                        {el.payment_status}
+                      </Badge>
+                    </Box>
+                  </TableDataCell>
+                  <TableDataCell>
+                    {(el.total / 100).toFixed(2)}{" "}
+                    {el.currency_code.toUpperCase()}
                   </TableDataCell>
                   <TableDataCell maxWidth="75px">
                     {el.shipping_address?.country_code ? (

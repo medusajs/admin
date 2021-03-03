@@ -17,18 +17,29 @@ import {
 const statusFilters = [
   StatusFilters.Completed,
   StatusFilters.Pending,
-  StatusFilters.Cancelled,
+  StatusFilters.Canceled,
+  StatusFilters.Archived,
+  StatusFilters.RequiresAction,
 ]
 const paymentFilters = [
   PaymentFilters.Awaiting,
   PaymentFilters.Captured,
   PaymentFilters.Refunded,
+  PaymentFilters.Canceled,
+  PaymentFilters.PartiallyRefunded,
+  PaymentFilters.RequiresAction,
+  PaymentFilters.NotPaid,
 ]
 const fulfillmentFilters = [
   FulfilmentFilters.Fulfilled,
   FulfilmentFilters.NotFulfilled,
   FulfilmentFilters.PartiallyFulfilled,
   FulfilmentFilters.Returned,
+  FulfilmentFilters.PartiallyReturned,
+  FulfilmentFilters.Shipped,
+  FulfilmentFilters.PartiallyShipped,
+  FulfilmentFilters.RequiresAction,
+  FulfilmentFilters.Canceled,
 ]
 const dateFilters = [
   DateFilters.After,
@@ -141,6 +152,10 @@ const OrderFilterButton = ({
   })
 
   const submit = () => {
+    setFulfillmentFilter({ open: false, filter: "" })
+    setStatusFilter({ open: false, filter: "" })
+    setPaymentFilter({ open: false, filter: "" })
+    setDateFilter({ open: false, filter: "" })
     setIsOpen(false)
     submitFilters()
   }
@@ -152,6 +167,16 @@ const OrderFilterButton = ({
     setDateFilter({ open: false, filter: "" })
     setIsOpen(false)
     clearFilters()
+  }
+
+  const saveTab = val => {
+    setFulfillmentFilter({ open: false, filter: "" })
+    setStatusFilter({ open: false, filter: "" })
+    setPaymentFilter({ open: false, filter: "" })
+    setDateFilter({ open: false, filter: "" })
+    setSaveValue("")
+    setIsOpen(false)
+    handleSaveTab(val)
   }
 
   return (
@@ -202,11 +227,17 @@ const OrderFilterButton = ({
             value={saveValue}
             placeholder="Name"
             onChange={e => setSaveValue(e.target.value)}
-            sx={{ flex: "1", marginRight: "5px" }}
+            sx={{ flex: "1", marginRight: "5px", height: "25px" }}
+            inputStyle={{ height: "25px", fontSize: "10px !important" }}
           />
           <Button
-            onClick={() => handleSaveTab(saveValue)}
-            sx={{ height: "100%", p: "0", px: 2 }}
+            onClick={() => saveTab(saveValue)}
+            sx={{ p: "0", px: 2 }}
+            variant="cta"
+            fontSize="10px"
+            disabled={!saveValue}
+            width="50px"
+            height="25px"
           >
             Save
           </Button>

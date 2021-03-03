@@ -10,20 +10,31 @@ export const DateFilters = {
 }
 
 export const FulfilmentFilters = {
-  NotFulfilled: "not fulfilled",
-  PartiallyFulfilled: "partially fulfilled",
+  NotFulfilled: "not_fulfilled",
   Fulfilled: "fulfilled",
+  PartiallyFulfilled: "partially_fulfilled",
   Returned: "returned",
+  PartiallyReturned: "partially_returned",
+  Shipped: "shipped",
+  PartiallyShipped: "partially_shipped",
+  Canceled: "Canceled",
+  RequiresAction: "requires_action",
 }
 
 export const PaymentFilters = {
   Awaiting: "awaiting",
   Captured: "captured",
   Refunded: "refunded",
+  NotPaid: "not_paid",
+  PartiallyRefunded: "partially_refunded",
+  Canceled: "canceled",
+  RequiresAction: "requires_action",
 }
 
 export const StatusFilters = {
   Pending: "pending",
   Completed: "completed",
-  Cancelled: "cancelled",
+  Canceled: "canceled",
+  Archived: "archived",
+  RequiresAction: "requires_action",
 }

@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react"
 import { Flex, Box, Text } from "rebass"
 import { Link, navigate } from "gatsby"
 import styled from "@emotion/styled"
+import Collapsible from "react-collapsible"
 import { Container, InlineLogoContainer, LogoContainer } from "./elements"
 import { ReactComponent as Settings } from "../../assets/svg/settings.svg"
 import { ReactComponent as Orders } from "../../assets/svg/orders.svg"
+import { ReactComponent as Returns } from "../../assets/svg/return.svg"
+import { ReactComponent as Swaps } from "../../assets/svg/swap.svg"
 import { ReactComponent as Products } from "../../assets/svg/products.svg"
 import { ReactComponent as Collections } from "../../assets/svg/collection.svg"
 import { ReactComponent as Customers } from "../../assets/svg/customers.svg"
@@ -52,6 +55,7 @@ const StyledItemContainer = styled(Link)`
 const Sidebar = ({}) => {
   const [storeName, setStoreName] = useState("")
   const [path, setPath] = useState("")
+  const [orderOpen, setOrderOpen] = useState(false)
 
   const fetchStore = async () => {
     const cache = localStorage.getItem("medusa::cache::store")
@@ -86,16 +90,46 @@ const Sidebar = ({}) => {
         </Box>
       </Flex>
       <Flex py={4} mx={-1} flexDirection="column" flex={1}>
-        <StyledItemContainer
-          to="/a/orders"
-          activeClassName="active"
-          partiallyActive
+        <Collapsible
+          transitionTime={200}
+          trigger={
+            <StyledItemContainer
+              to="/a/orders"
+              activeClassName="active"
+              partiallyActive
+            >
+              <Orders />
+              <Text ml={2} variant="nav">
+                Orders
+              </Text>
+            </StyledItemContainer>
+          }
         >
-          <Orders />
-          <Text ml={2} variant="nav">
-            Orders
-          </Text>
-        </StyledItemContainer>
+          <StyledItemContainer
+            to="/a/swaps"
+            activeClassName="active"
+            partiallyActive
+          >
+            <Flex alignItems="center" pl={3} width="100%">
+              <Swaps />
+              <Text ml={2} variant="nav" fontSize="12px">
+                Swaps
+              </Text>
+            </Flex>
+          </StyledItemContainer>
+          <StyledItemContainer
+            to="/a/returns"
+            activeClassName="active"
+            partiallyActive
+          >
+            <Flex alignItems="center" pl={3} width="100%" height="14px">
+              <Returns />
+              <Text ml={2} variant="nav" fontSize="12px">
+                Returns
+              </Text>
+            </Flex>
+          </StyledItemContainer>
+        </Collapsible>
         <StyledItemContainer
           to="/a/products"
           activeClassName="active"

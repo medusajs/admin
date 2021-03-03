@@ -230,6 +230,7 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
                 height: "25px",
                 marginRight: "2px;",
               }}
+              height="25px"
               onChange={e => handleSetFilter(e.target.value)}
             />
             <Select
