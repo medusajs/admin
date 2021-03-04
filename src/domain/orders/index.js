@@ -100,6 +100,7 @@ const allowedFilters = [
   "created_at[lte]",
   "created_at[gt]",
   "created_at[gte]",
+  "q",
 ]
 
 const OrderIndex = ({}) => {
@@ -343,7 +344,8 @@ const OrderIndex = ({}) => {
 
   const searchQuery = () => {
     setOffset(0)
-    handleTabClick(activeFilterTab, handleQueryParts())
+    resetFilters()
+    handleTabClick("all", { q: query })
   }
 
   function formatDateFilter(filter) {
@@ -379,6 +381,10 @@ const OrderIndex = ({}) => {
     if (!_.isEmpty(dateFilter.filter)) {
       let dateFormatted = formatDateFilter(dateFilter.filter)
       queryParts.created_at = dateFormatted
+    }
+
+    if (query) {
+      queryParts.q = query
     }
 
     if (paymentFilter.filter) {
@@ -441,16 +447,19 @@ const OrderIndex = ({}) => {
 
     switch (tab) {
       case "completed":
+        setQuery("")
         searchObject.fulfillment_status = "shipped"
         searchObject.payment_status = "captured"
         break
       case "incomplete":
+        setQuery("")
         searchObject["fulfillment_status[]"] = ["not_fulfilled", "fulfilled"]
         searchObject.payment_status = "awaiting"
         break
       case "all":
         break
       default:
+        setQuery("")
         const toSend = prepareSearchParams(tab.value, queryParts)
 
         if (!tab.value) {
