@@ -104,18 +104,19 @@ const allowedFilters = [
 ]
 
 const OrderIndex = ({}) => {
-  const filtersOnLoad = prepareSearchParams(
-    window.location.search.substring(1),
-    {}
-  )
+  let filtersOnLoad = {}
 
-  if (!filtersOnLoad.offset) {
-    filtersOnLoad.offset = 0
-  }
+  useEffect(() => {
+    filtersOnLoad = prepareSearchParams(window.location.search.substring(1), {})
 
-  if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 50
-  }
+    if (!filtersOnLoad.offset) {
+      filtersOnLoad.offset = 0
+    }
+
+    if (!filtersOnLoad.limit) {
+      filtersOnLoad.limit = 50
+    }
+  }, [])
 
   const {
     orders: allOrders,
@@ -195,7 +196,7 @@ const OrderIndex = ({}) => {
     const fs = qs.parse(str)
 
     for (const [key, value] of Object.entries(fs)) {
-      if (key === "created_at") {
+      if (key.startsWith("created_at")) {
         fs[key] = formatDateFilter(value) || null
       }
     }
@@ -210,6 +211,7 @@ const OrderIndex = ({}) => {
     const queries = decodeURIComponent(window.location.search.substring(1))
     const filters = {}
 
+    let createdFilters = []
     queries.split("&").map(query => {
       const [k, v] = query.split("=")
       if (allowedFilters.includes(k)) {
@@ -217,8 +219,12 @@ const OrderIndex = ({}) => {
           setFulfillmentFilter({ open: true, filter: v })
         if (k.startsWith("payment")) setPaymentFilter({ open: true, filter: v })
         if (k.startsWith("status")) setStatusFilter({ open: true, filter: v })
-        if (k.startsWith("created_at")) setDateFilter({ open: true, filter: v })
+        if (k.startsWith("created_at")) createdFilters.push(v)
         filters[k] = v
+      }
+
+      if (createdFilters.length) {
+        setDateFilter({ open: true, filter: createdFilters.join(",") })
       }
     })
 
@@ -239,8 +245,8 @@ const OrderIndex = ({}) => {
     }
 
     switch (true) {
-      case filtersFromUrl["fulfillment_status"] === "shipped" &&
-        filtersFromUrl["payment_status"] === "captured":
+      case filtersFromUrl["fulfillment_status[]"] === "shipped" &&
+        filtersFromUrl["payment_status[]"] === "captured":
         setActiveFilterTab("completed")
         break
       case (filtersFromUrl["fulfillment_status[]"] ===
@@ -452,6 +458,7 @@ const OrderIndex = ({}) => {
 
   const handleTabClick = async (tab, queryParts = {}) => {
     setFetching(true)
+    resetFilters()
 
     let searchObject = {
       ...queryParts,
@@ -463,18 +470,15 @@ const OrderIndex = ({}) => {
     switch (tab) {
       case "completed":
         setQuery("")
-        resetFilters()
-        searchObject.fulfillment_status = "shipped"
-        searchObject.payment_status = "captured"
+        searchObject["fulfillment_status[]"] = "shipped"
+        searchObject["payment_status[]"] = "captured"
         break
       case "incomplete":
         setQuery("")
-        resetFilters()
         searchObject["fulfillment_status[]"] = ["not_fulfilled", "fulfilled"]
-        searchObject.payment_status = "awaiting"
+        searchObject["payment_status[]"] = "awaiting"
         break
       case "all":
-        resetFilters()
         break
       default:
         setQuery("")

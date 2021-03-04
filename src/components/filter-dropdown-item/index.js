@@ -9,6 +9,7 @@ import InputField from "../input"
 import ReactDatePicker from "react-datepicker"
 import DatePicker from "../date-picker/date-picker"
 import moment from "moment"
+import { instanceOf } from "prop-types"
 
 const DropdownItemWrapper = styled(Text)`
   font-size: 12px;
@@ -125,6 +126,7 @@ const FilterDropdownItem = ({
             options={options}
             open={open}
             setFilter={setFilter}
+            existingDate={filters}
             filterTitle={filterTitle}
           />
         ) : (
@@ -168,12 +170,33 @@ const DateFilterContainer = styled(Box)`
   }
 `
 
-const DateFilter = ({ options, open, setFilter, filterTitle }) => {
-  const [currentFilter, setCurrentFilter] = useState()
+const DateFilter = ({
+  options,
+  open,
+  setFilter,
+  existingDate,
+  existingFilter,
+  filterTitle,
+}) => {
+  const [currentFilter, setCurrentFilter] = useState(
+    existingFilter || undefined
+  )
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(new Date())
   const select_ref = useRef()
   const input_ref = useRef()
+
+  console.log(existingDate)
+
+  useEffect(() => {
+    if (existingDate && typeof existingDate === "string") {
+      const [start] = existingDate.split(",")
+      const parsed = moment.unix(start).toDate()
+      if (parsed instanceof Date && !isNaN(parsed)) {
+        setStartDate(parsed)
+      }
+    }
+  }, [existingDate])
 
   useEffect(() => {
     handleSetFilter(startDate)
@@ -187,7 +210,6 @@ const DateFilter = ({ options, open, setFilter, filterTitle }) => {
 
   useEffect(() => {
     if (!open) {
-      // setCurrentFilter(undefined)
       setStartDate(null)
     }
   }, [open])
