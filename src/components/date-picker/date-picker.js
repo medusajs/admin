@@ -73,7 +73,9 @@ const DatePicker = ({ date, onChange }) => {
             ? "date chosen"
             : "date"
         }
-        customInput={<InputField />}
+        customInput={
+          <InputField placeholder={"Select date"} placeholder="Select date" />
+        }
         renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
           <CustomHeader
             date={date}

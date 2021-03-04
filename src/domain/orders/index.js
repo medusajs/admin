@@ -39,6 +39,9 @@ const defaultQueryProps = {
     "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
 }
 
+const removeNullish = obj =>
+  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
+
 const TabButton = styled(Flex)`
   align-items: center;
   justify-content: center;
@@ -86,8 +89,24 @@ const OrderNumCell = styled(Text)`
   ${props => props.isCanceled && "text-decoration: line-through;"}
 `
 
+const allowedFilters = [
+  "status",
+  "fulfillment_status",
+  "payment_status",
+  "status[]",
+  "fulfillment_status[]",
+  "payment_status[]",
+  "created_at[lt]",
+  "created_at[lte]",
+  "created_at[gt]",
+  "created_at[gte]",
+]
+
 const OrderIndex = ({}) => {
-  const filtersOnLoad = queryString.parse(window.location.search)
+  const filtersOnLoad = prepareSearchParams(
+    window.location.search.substring(1),
+    {}
+  )
 
   if (!filtersOnLoad.offset) {
     filtersOnLoad.offset = 0
@@ -97,7 +116,7 @@ const OrderIndex = ({}) => {
     filtersOnLoad.limit = 50
   }
 
-  const { tab: onLoadTab, ...rest } = filtersOnLoad
+  console.log(filtersOnLoad)
 
   const {
     orders: allOrders,
@@ -108,7 +127,7 @@ const OrderIndex = ({}) => {
     toaster,
   } = useMedusa("orders", {
     search: {
-      ...rest,
+      ...filtersOnLoad,
       ...defaultQueryProps,
     },
   })
@@ -125,11 +144,11 @@ const OrderIndex = ({}) => {
 
   const searchRef = useRef(null)
   const [query, setQuery] = useState(null)
-  const [limit, setLimit] = useState(rest.limit || 0)
-  const [offset, setOffset] = useState(rest.offset || 0)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 50)
+  const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [orders, setOrders] = useState([])
   const [filterTabs, setFilterTabs] = useState()
-  const [activeFilterTab, setActiveFilterTab] = useState(onLoadTab || "all")
+  const [activeFilterTab, setActiveFilterTab] = useState("all")
   const [fetching, setFetching] = useState(false)
 
   const [statusFilter, setStatusFilter] = useState({
@@ -147,8 +166,95 @@ const OrderIndex = ({}) => {
 
   const [dateFilter, setDateFilter] = useState({
     open: false,
-    filter: {},
+    filter: null,
   })
+
+  const resetFilters = () => {
+    setStatusFilter({
+      open: false,
+      filter: null,
+    })
+    setFulfillmentFilter({
+      open: false,
+      filter: null,
+    })
+    setPaymentFilter({
+      open: false,
+      filter: null,
+    })
+    setDateFilter({
+      open: false,
+      filter: null,
+    })
+  }
+
+  useEffect(() => {
+    decideTab()
+  }, [])
+
+  function prepareSearchParams(str, queryParts = {}) {
+    const fs = qs.parse(str)
+
+    for (const [key, value] of Object.entries(fs)) {
+      if (key === "created_at") {
+        fs[key] = formatDateFilter(value) || null
+      }
+    }
+
+    const stringifiedFilters = qs.stringify({ ...fs, ...queryParts })
+    const toSend = queryString.parse(stringifiedFilters)
+
+    return toSend
+  }
+
+  const deconstructQueryString = () => {
+    const queries = decodeURIComponent(window.location.search.substring(1))
+    const filters = {}
+
+    queries.split("&").map(query => {
+      const [k, v] = query.split("=")
+      if (allowedFilters.includes(k)) {
+        if (k.startsWith("fulfillment"))
+          setFulfillmentFilter({ open: true, filter: v })
+        if (k.startsWith("payment")) setPaymentFilter({ open: true, filter: v })
+        if (k.startsWith("status")) setStatusFilter({ open: true, filter: v })
+        if (k.startsWith("created_at")) setDateFilter({ open: true, filter: v })
+        filters[k] = v
+      }
+    })
+
+    return filters
+  }
+
+  const decideTab = () => {
+    const filtersFromUrl = deconstructQueryString()
+    const savedTabs = getLocalStorageFilters()
+
+    const existsInSaved = savedTabs.find(
+      el => el.value === qs.stringify(filtersFromUrl)
+    )
+
+    if (existsInSaved) {
+      setActiveFilterTab(existsInSaved)
+      return
+    }
+
+    switch (true) {
+      case filtersFromUrl["fulfillment_status"] === "shipped" &&
+        filtersFromUrl["payment_status"] === "captured":
+        setActiveFilterTab("completed")
+        break
+      case (filtersFromUrl["fulfillment_status[]"] ===
+        "not_fulfilled,fulfilled" ||
+        filtersFromUrl["fulfillment_status[]"] === "fulfilled,not_fulfilled") &&
+        (filtersFromUrl["payment_status"] === "awaiting" ||
+          filtersFromUrl["payment_status[]"] === "awaiting"):
+        setActiveFilterTab("incomplete")
+        break
+      default:
+        break
+    }
+  }
 
   const isInViewport = el => {
     const rect = el.getBoundingClientRect()
@@ -237,17 +343,10 @@ const OrderIndex = ({}) => {
 
   const searchQuery = () => {
     setOffset(0)
-
-    const queryParts = {
-      q: query,
-      offset: 0,
-      limit: 50,
-    }
-
-    handleTabClick(activeFilterTab, queryParts)
+    handleTabClick(activeFilterTab, handleQueryParts())
   }
 
-  const formatDateFilter = filter => {
+  function formatDateFilter(filter) {
     let dateFormatted = Object.entries(filter).reduce((acc, [key, value]) => {
       if (value.includes("|")) {
         acc[key] = relativeDateFormatToTimestamp(value)
@@ -266,7 +365,6 @@ const OrderIndex = ({}) => {
         ? parseInt(offset) + parseInt(limit)
         : parseInt(offset) - parseInt(limit)
 
-    console.log(activeFilterTab)
     handleTabClick(activeFilterTab, {
       offset: updatedOffset,
     }).then(() => {
@@ -276,12 +374,7 @@ const OrderIndex = ({}) => {
 
   const handleQueryParts = () => {
     // if the datefilter includes "|" it is a relative date and we have to format it to timestamp
-
-    const queryParts = {
-      q: query || "",
-      offset,
-      limit,
-    }
+    const queryParts = {}
 
     if (!_.isEmpty(dateFilter.filter)) {
       let dateFormatted = formatDateFilter(dateFilter.filter)
@@ -304,84 +397,82 @@ const OrderIndex = ({}) => {
   }
 
   const submit = () => {
-    handleTabClick(activeFilterTab, handleQueryParts())
+    handleTabClick("all", handleQueryParts())
+  }
+
+  const replaceQueryString = queryObject => {
+    let params = ""
+    if (_.isEmpty(queryObject)) {
+      window.history.replaceState(
+        `/a/orders`,
+        "",
+        `?offset=${offset}&limit=${limit}`
+      )
+      resetFilters()
+    } else {
+      const clean = removeNullish(queryObject)
+      params = Object.keys(clean)
+        .map(k => `${k}=${clean[k]}`)
+        .filter(s => !!s)
+        .join("&")
+      window.history.replaceState(
+        `/a/orders`,
+        "",
+        `${
+          params
+            ? `?${params}&offset=${offset}&limit=${limit}`
+            : `?offset=${offset}&limit=${limit}`
+        }`
+      )
+    }
+
+    return params
   }
 
   const handleTabClick = async (tab, queryParts = {}) => {
     setFetching(true)
-    const baseUrl = qs.parse(window.location.href).url
 
-    let replaceUrl
-
-    if (typeof tab === "object") {
-      replaceUrl = `?tab=${tab.label.toLowerCase()}`
-      setActiveFilterTab(tab)
-    } else {
-      replaceUrl = `?tab=${tab.toLowerCase()}&${qs.stringify({
-        ...queryParts,
-      })}`
-      setActiveFilterTab(tab)
+    let searchObject = {
+      ...queryParts,
+      ...defaultQueryProps,
     }
+
+    setActiveFilterTab(tab)
 
     switch (tab) {
       case "completed":
-        refresh({
-          search: {
-            ...queryParts,
-            ...defaultQueryProps,
-            fulfillment_status: "shipped",
-            payment_status: "captured",
-          },
-        })
-        setOrders(allOrders)
+        searchObject.fulfillment_status = "shipped"
+        searchObject.payment_status = "captured"
         break
       case "incomplete":
-        refresh({
-          search: {
-            ...queryParts,
-            ...defaultQueryProps,
-            "fulfillment_status[]": ["not_fulfilled", "fulfilled"],
-            payment_status: "awaiting",
-          },
-        })
-        setOrders(allOrders)
+        searchObject["fulfillment_status[]"] = ["not_fulfilled", "fulfilled"]
+        searchObject.payment_status = "awaiting"
         break
       case "all":
-        refresh({
-          search: {
-            ...queryParts,
-            ...defaultQueryProps,
-          },
-        })
-        setOrders(allOrders)
         break
       default:
-        const fs = qs.parse(tab.value)
+        const toSend = prepareSearchParams(tab.value, queryParts)
 
-        for (const [key, value] of Object.entries(fs)) {
-          if (key === "created_at") {
-            fs[key] = formatDateFilter(value) || null
-          }
+        if (!tab.value) {
+          replaceQueryString(toSend)
+        } else {
+          window.history.replaceState(
+            `/a/orders`,
+            ``,
+            `?${tab.value}&offset=${offset}&limit=${limit}`
+          )
         }
 
-        setActiveFilterTab(tab)
-
-        const stringifiedFilters = qs.stringify({ ...fs, ...queryParts })
-        const toSend = queryString.parse(stringifiedFilters)
-
-        const search = {
-          ...toSend,
-          ...defaultQueryProps,
-        }
-
-        refresh({ search })
-
-        replaceUrl = `?${stringifiedFilters}`
-        break
+        decideTab()
+        refresh({ search: { offset, limit, ...toSend, ...defaultQueryProps } })
+        setFetching(false)
+        return
     }
 
-    window.history.replaceState(baseUrl, "", replaceUrl)
-    setOrders(allOrders)
+    const urlFilters = _.pick(searchObject, allowedFilters)
+    replaceQueryString(urlFilters)
+    refresh({ search: { ...urlFilters, ...defaultQueryProps, offset, limit } })
+    decideTab()
     setFetching(false)
   }
 
@@ -409,13 +500,10 @@ const OrderIndex = ({}) => {
   const handleSaveTab = saveValue => {
     const localStorageUrl = qs.stringify(
       {
-        q: query,
         "payment_status[]": paymentFilter.filter,
         "fulfillment_status[]": fulfillmentFilter.filter,
         "status[]": statusFilter.filter,
         created_at: dateFilter.filter,
-        offset,
-        limit,
       },
       { skipNulls: true }
     )
@@ -434,7 +522,10 @@ const OrderIndex = ({}) => {
     let newTabs = [...getLocalStorageFilters()]
     setFilterTabs(newTabs)
 
-    handleTabClick({ label: saveValue }, handleQueryParts())
+    handleTabClick(
+      { label: saveValue, value: localStorageUrl },
+      handleQueryParts()
+    )
   }
 
   const handleDeleteFilter = (tab, e) => {
@@ -445,6 +536,7 @@ const OrderIndex = ({}) => {
 
     localStorage.setItem("orders::filters", JSON.stringify(newTabs))
 
+    resetFilters()
     setFilterTabs(getLocalStorageFilters())
     handleTabClick("all")
   }
@@ -467,7 +559,6 @@ const OrderIndex = ({}) => {
         </Button>
       </Flex>
       <Flex>
-        <Box ml="auto" />
         <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
           <Input
             ref={searchRef}
@@ -490,6 +581,7 @@ const OrderIndex = ({}) => {
         >
           Search
         </Button>
+        <Box ml="auto" />
         <Filter
           submitFilters={submit}
           clearFilters={clear}
@@ -501,6 +593,7 @@ const OrderIndex = ({}) => {
           setStatusFilter={setStatusFilter}
           setPaymentFilter={setPaymentFilter}
           setFulfillmentFilter={setFulfillmentFilter}
+          resetFilters={resetFilters}
           handleSaveTab={value => handleSaveTab(value)}
         />
       </Flex>

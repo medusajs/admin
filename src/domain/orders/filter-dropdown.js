@@ -50,16 +50,21 @@ const dateFilters = [
   DateFilters.OlderThan,
 ]
 
+const Divider = styled(Box)`
+  box-shadow: inset -1px 0 #a3acb9;
+  width: 1px;
+`
+
 const DropdownContainer = styled.div`
   ${props => `
     display: ${props.isOpen ? "block" : "none"};
-    transform: translate3d(-15px, 32px, 0px);  
+    transform: translate3d(-20px, 44px, 0px);  
   `};
 
   position: absolute;
   background-color: #fefefe;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  min-width: 225px;
+  box-shadow: 4px 8px 16px 8px rgba(0, 0, 0, 0.2);
   z-index: 1;
   top: 0;
   border-radius: 5px;
@@ -117,10 +122,10 @@ const OrderFilterButton = ({
   setFulfillmentFilter,
   setDateFilter,
   submitFilters,
-  clearFilters,
   statusFilter,
   fulfillmentFilter,
   dateFilter,
+  resetFilters,
   paymentFilter,
   handleSaveTab,
   sx,
@@ -128,6 +133,7 @@ const OrderFilterButton = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [saveValue, setSaveValue] = useState("")
+  const [numFilters, setNumFilters] = useState()
   const ref = useRef(null)
 
   const handleClickOutside = event => {
@@ -151,32 +157,59 @@ const OrderFilterButton = ({
     }
   })
 
+  useEffect(() => {
+    setDateFilter({ open: false, filter: null })
+    calcNumFilters()
+  }, [])
+
+  useEffect(() => {
+    calcNumFilters()
+  }, [
+    paymentFilter.open,
+    dateFilter.open,
+    fulfillmentFilter.open,
+    statusFilter.open,
+  ])
+
   const submit = () => {
-    setFulfillmentFilter({ open: false, filter: "" })
-    setStatusFilter({ open: false, filter: "" })
-    setPaymentFilter({ open: false, filter: "" })
-    setDateFilter({ open: false, filter: "" })
     setIsOpen(false)
     submitFilters()
   }
 
-  const clear = () => {
-    setFulfillmentFilter({ open: false, filter: "" })
-    setStatusFilter({ open: false, filter: "" })
-    setPaymentFilter({ open: false, filter: "" })
-    setDateFilter({ open: false, filter: "" })
-    setIsOpen(false)
-    clearFilters()
-  }
-
   const saveTab = val => {
-    setFulfillmentFilter({ open: false, filter: "" })
-    setStatusFilter({ open: false, filter: "" })
-    setPaymentFilter({ open: false, filter: "" })
-    setDateFilter({ open: false, filter: "" })
+    resetFilters()
     setSaveValue("")
     setIsOpen(false)
     handleSaveTab(val)
+  }
+
+  const calcNumFilters = () => {
+    let num = 0
+    if (fulfillmentFilter.open) {
+      num += 1
+    } else {
+      setFulfillmentFilter({ open: false, filters: null })
+    }
+
+    if (paymentFilter.open) {
+      num += 1
+    } else {
+      setPaymentFilter({ open: false, filters: null })
+    }
+
+    if (statusFilter.open) {
+      num += 1
+    } else {
+      setStatusFilter({ open: false, filters: null })
+    }
+
+    if (dateFilter.open) {
+      num += 1
+    } else {
+      setDateFilter({ open: false, filters: null })
+    }
+
+    setNumFilters(num)
   }
 
   return (
@@ -185,14 +218,26 @@ const OrderFilterButton = ({
         sx={sx}
         alignItems="center"
         variant="primary"
+        fontSize="12px"
         onClick={() => handleOpen()}
+        paddingLeft="3px"
+        paddingRight="3px"
+        minWidth={numFilters > 0 ? "85px" : "60px"}
         {...rest}
       >
-        <Filter /> Filter
+        <Flex justifyContent="space-evenly" width="100%">
+          <Filter /> Filter
+          {numFilters > 0 ? (
+            <>
+              <Divider mx={1} />
+              {numFilters}
+            </>
+          ) : null}
+        </Flex>
       </Button>
       <DropdownContainer ref={ref} isOpen={isOpen}>
         <ButtonContainer p={2}>
-          <ClearButton onClick={() => clear()}>Clear</ClearButton>
+          <ClearButton onClick={() => resetFilters()}>Clear</ClearButton>
           <Box ml="auto" />
           <DoneButton onClick={() => submit()} variant="cta">
             Done
@@ -200,25 +245,29 @@ const OrderFilterButton = ({
         </ButtonContainer>
         <FilterDropdownItem
           filterTitle="Date"
-          filters={dateFilters}
+          options={dateFilters}
           open={dateFilter.open}
+          filters={dateFilter.filter}
           setFilter={setDateFilter}
         />
         <FilterDropdownItem
           filterTitle="Status"
-          filters={statusFilters}
+          options={statusFilters}
           open={statusFilter.open}
+          filters={statusFilter.filter}
           setFilter={setStatusFilter}
         />
         <FilterDropdownItem
           filterTitle="Payment status"
-          filters={paymentFilters}
+          options={paymentFilters}
+          filters={paymentFilter.filter}
           open={paymentFilter.open}
           setFilter={setPaymentFilter}
         />
         <FilterDropdownItem
           filterTitle="Fulfillment status"
-          filters={fulfillmentFilters}
+          options={fulfillmentFilters}
+          filters={fulfillmentFilter.filter}
           open={fulfillmentFilter.open}
           setFilter={setFulfillmentFilter}
         />

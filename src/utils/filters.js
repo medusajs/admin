@@ -17,7 +17,7 @@ export const FulfilmentFilters = {
   PartiallyReturned: "partially_returned",
   Shipped: "shipped",
   PartiallyShipped: "partially_shipped",
-  Canceled: "Canceled",
+  Canceled: "canceled",
   RequiresAction: "requires_action",
 }
 

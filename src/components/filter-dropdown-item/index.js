@@ -48,8 +48,38 @@ const CollapseContainer = styled.div`
   `}
 `
 
-const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
+const FilterDropdownItem = ({
+  filterTitle,
+  options,
+  filters,
+  open,
+  setFilter,
+}) => {
   const [checked, setChecked] = useState({})
+
+  const prefill = () => {
+    try {
+      const prefilled = filters.split(",").reduce((acc, f) => {
+        acc[f] = true
+        return acc
+      }, {})
+      setChecked(prefilled)
+    } catch (er) {
+      setChecked({})
+    }
+  }
+
+  useEffect(() => {
+    if (filters) {
+      prefill()
+    }
+  }, [filters])
+
+  useEffect(() => {
+    if (!open) {
+      setChecked({})
+    }
+  }, [open])
 
   const onCheck = filter => {
     const checkedState = checked
@@ -78,9 +108,7 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
   return (
     <DropdownItemWrapper>
       <DropdownItem
-        onClick={() => {
-          setFilter(prevState => ({ ...prevState, open: !open }))
-        }}
+        onClick={() => setFilter(prevState => ({ ...prevState, open: !open }))}
         open={open}
       >
         <input
@@ -94,16 +122,17 @@ const FilterDropdownItem = ({ filterTitle, filters, open, setFilter }) => {
       <Collapse isOpened={open}>
         {filterTitle === "Date" ? (
           <DateFilter
-            filters={filters}
+            options={options}
+            open={open}
             setFilter={setFilter}
             filterTitle={filterTitle}
           />
         ) : (
-          filters.map((el, i) => (
+          options.map((el, i) => (
             <CollapseContainer
               key={i}
               onClick={() => onCheck(el)}
-              last={i === filters.length - 1}
+              last={i === options.length - 1}
             >
               <input
                 type="checkbox"
@@ -139,9 +168,9 @@ const DateFilterContainer = styled(Box)`
   }
 `
 
-const DateFilter = ({ filters, setFilter, filterTitle }) => {
-  const [currentFilter, setCurrentFilter] = useState(filters[0])
-  const [startDate, setStartDate] = useState(new Date())
+const DateFilter = ({ options, open, setFilter, filterTitle }) => {
+  const [currentFilter, setCurrentFilter] = useState()
+  const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(new Date())
   const select_ref = useRef()
   const input_ref = useRef()
@@ -149,6 +178,12 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
   useEffect(() => {
     handleSetFilter(startDate)
   }, [currentFilter])
+
+  useEffect(() => {
+    if (open && !currentFilter) {
+      setCurrentFilter(options[0])
+    }
+  }, [open])
 
   const handleSetFilter = value => {
     switch (currentFilter) {
@@ -276,12 +311,12 @@ const DateFilter = ({ filters, setFilter, filterTitle }) => {
         className="date-select"
         name={currentFilter}
         flex="1"
-        options={filters.map(filter => {
+        options={options.map(filter => {
           return { value: filter }
         })}
         onChange={e => setCurrentFilter(e.target.value)}
       />
-      <Box className="content">{handleFilterContent()}</Box>
+      {currentFilter && <Box className="content">{handleFilterContent()}</Box>}
     </DateFilterContainer>
   )
 }

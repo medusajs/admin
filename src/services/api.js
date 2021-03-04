@@ -1,4 +1,23 @@
 import medusaRequest, { multipartRequest } from "./request"
+import qs from "qs"
+// import queryString from "query-string"
+import _ from "lodash"
+
+const removeNullish = obj =>
+  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
+
+const allowedFilters = [
+  "status",
+  "fulfillment_status",
+  "payment_status",
+  "status[]",
+  "fulfillment_status[]",
+  "payment_status[]",
+  "created_at[lt]",
+  "created_at[lte]",
+  "created_at[gt]",
+  "created_at[gte]",
+]
 
 export default {
   apps: {
@@ -307,15 +326,12 @@ export default {
     },
 
     list(search = {}) {
-      const params = Object.keys(search)
-        .map(k => {
-          if (search[k] === "" || search[k] === null) {
-            return null
-          }
-          return `${k}=${search[k]}`
-        })
+      const clean = removeNullish(search)
+      const params = Object.keys(clean)
+        .map(k => `${k}=${search[k]}`)
         .filter(s => !!s)
         .join("&")
+
       let path = `/admin/orders${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
