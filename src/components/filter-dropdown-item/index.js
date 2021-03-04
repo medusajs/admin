@@ -185,6 +185,13 @@ const DateFilter = ({ options, open, setFilter, filterTitle }) => {
     }
   }, [open])
 
+  useEffect(() => {
+    if (!open) {
+      // setCurrentFilter(undefined)
+      setStartDate(null)
+    }
+  }, [open])
+
   const handleSetFilter = value => {
     switch (currentFilter) {
       case DateFilters.InTheLast:

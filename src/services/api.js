@@ -1,23 +1,9 @@
 import medusaRequest, { multipartRequest } from "./request"
-import qs from "qs"
-// import queryString from "query-string"
+import qs from "query-string"
 import _ from "lodash"
 
 const removeNullish = obj =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
-
-const allowedFilters = [
-  "status",
-  "fulfillment_status",
-  "payment_status",
-  "status[]",
-  "fulfillment_status[]",
-  "payment_status[]",
-  "created_at[lt]",
-  "created_at[lte]",
-  "created_at[gt]",
-  "created_at[gte]",
-]
 
 export default {
   apps: {

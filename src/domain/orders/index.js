@@ -117,8 +117,6 @@ const OrderIndex = ({}) => {
     filtersOnLoad.limit = 50
   }
 
-  console.log(filtersOnLoad)
-
   const {
     orders: allOrders,
     hasCache,
@@ -403,7 +401,17 @@ const OrderIndex = ({}) => {
   }
 
   const submit = () => {
-    handleTabClick("all", handleQueryParts())
+    const url = qs.stringify(
+      {
+        "payment_status[]": paymentFilter.filter,
+        "fulfillment_status[]": fulfillmentFilter.filter,
+        "status[]": statusFilter.filter,
+        created_at: dateFilter.filter,
+      },
+      { skipNulls: true }
+    )
+
+    handleTabClick({ value: url }, handleQueryParts())
   }
 
   const replaceQueryString = queryObject => {
@@ -418,9 +426,16 @@ const OrderIndex = ({}) => {
     } else {
       const clean = removeNullish(queryObject)
       params = Object.keys(clean)
-        .map(k => `${k}=${clean[k]}`)
+        .map(k => {
+          if (k === "created_at") {
+            return qs.stringify({ [k]: clean[k] })
+          } else {
+            return `${k}=${clean[k]}`
+          }
+        })
         .filter(s => !!s)
         .join("&")
+
       window.history.replaceState(
         `/a/orders`,
         "",
@@ -448,15 +463,18 @@ const OrderIndex = ({}) => {
     switch (tab) {
       case "completed":
         setQuery("")
+        resetFilters()
         searchObject.fulfillment_status = "shipped"
         searchObject.payment_status = "captured"
         break
       case "incomplete":
         setQuery("")
+        resetFilters()
         searchObject["fulfillment_status[]"] = ["not_fulfilled", "fulfilled"]
         searchObject.payment_status = "awaiting"
         break
       case "all":
+        resetFilters()
         break
       default:
         setQuery("")

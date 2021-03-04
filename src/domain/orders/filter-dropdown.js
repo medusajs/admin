@@ -158,7 +158,6 @@ const OrderFilterButton = ({
   })
 
   useEffect(() => {
-    setDateFilter({ open: false, filter: null })
     calcNumFilters()
   }, [])
 
@@ -173,6 +172,7 @@ const OrderFilterButton = ({
 
   const submit = () => {
     setIsOpen(false)
+    resetFilters()
     submitFilters()
   }
 
