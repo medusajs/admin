@@ -202,7 +202,7 @@ const SwapIndex = ({}) => {
                     </OrderNumCell>
                   </TableDataCell>
                   <TableDataCell>
-                    {(el.difference_due || 0).toFixed(2)}
+                    {(el.difference_due / 100).toFixed(2)}{" "}
                   </TableDataCell>
                   <TableDataCell
                     data-for={el.id}
