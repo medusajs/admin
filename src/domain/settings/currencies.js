@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
-import { Box, Flex } from "rebass"
+import { Box, Flex, Text } from "rebass"
 import { useForm } from "react-hook-form"
 
 import useMedusa from "../../hooks/use-medusa"
@@ -98,11 +98,17 @@ const AccountDetails = () => {
       as="form"
       flexDirection={"column"}
       onSubmit={handleSubmit(onSubmit)}
-      mb={4}
+      pb={5}
+      pt={5}
     >
-      <Card>
-        <Card.Header>Store Currencies</Card.Header>
-        <Card.Body px={3}>
+      <Card px={0}>
+        <Flex>
+          <Text mb={3} fontSize={20} fontWeight="bold">
+            Currencies
+          </Text>
+          <Box ml="auto" />
+        </Flex>
+        <Card.Body>
           {isLoading ? (
             <Flex
               flexDirection="column"
@@ -142,7 +148,7 @@ const AccountDetails = () => {
             </Flex>
           )}
         </Card.Body>
-        <Card.Footer justifyContent="flex-end">
+        <Card.Footer justifyContent="flex-start">
           <Button mr={3} type="submit" fontWeight="bold" variant="cta">
             Save
           </Button>

@@ -28,8 +28,8 @@ const Container = styled(Flex)`
   cursor: pointer;
   border-radius: 3px;
   border: 1px dashed ${props => props.theme.colors.placeholder};
-  width: 150px;
-  height: 150px;
+  width: ${props => (props.width ? props.width : "150px")};
+  height: ${props => (props.height ? props.height : "150px")};
 
   input {
     display: none;
@@ -52,7 +52,16 @@ const Container = styled(Flex)`
   }
 `
 
-const ImageUpload = ({ label, boldLabel, name, button, onChange, value }) => {
+const ImageUpload = ({
+  label,
+  boldLabel,
+  name,
+  button,
+  onChange,
+  value,
+  height,
+  width,
+}) => {
   const [focus, setFocus] = useState(false)
   const dropRef = useRef()
   const inputRef = useRef()
@@ -116,6 +125,8 @@ const ImageUpload = ({ label, boldLabel, name, button, onChange, value }) => {
           color={"placeholder"}
           justifyContent="center"
           alignItems="center"
+          width={width}
+          height={height}
         >
           <input
             multiple

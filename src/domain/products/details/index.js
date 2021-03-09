@@ -11,6 +11,7 @@ import Images from "./images"
 import useMedusa from "../../../hooks/use-medusa"
 import NotFound from "../../../components/not-found"
 import Card from "../../../components/card"
+import Options from "./options"
 
 const ProductDetail = ({ id }) => {
   const {
