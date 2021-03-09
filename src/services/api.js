@@ -177,6 +177,11 @@ export default {
       return medusaRequest("GET", path)
     },
 
+    importProducts(products) {
+      let path = `/admin/products/import`
+      return medusaRequest("POST", path, { products })
+    },
+
     variants: {
       create(productId, variant) {
         const path = `/admin/products/${productId}/variants`

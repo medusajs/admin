@@ -221,7 +221,7 @@ const ProductIndex = () => {
           Next
         </Button>
       </Flex>
-      <ImportProducts />
+      {/* <ImportProducts /> */}
     </Flex>
   )
 }

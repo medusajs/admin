@@ -46,9 +46,12 @@ const ImportProducts = ({ onClick }) => {
             />
           )}
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
-          <Button type="submit" variant="primary">
-            Save
+        <Modal.Footer justifyContent="flex-end" alignItems="center">
+          <Text fontSize="14px" onClick={onClick} sx={{ cursor: "pointer" }}>
+            Cancel
+          </Text>
+          <Button type="submit" variant="primary" ml={4}>
+            Upload
           </Button>
         </Modal.Footer>
       </Modal.Body>
