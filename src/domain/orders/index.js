@@ -19,7 +19,6 @@ import {
   TableBody,
   TableHead,
   TableHeaderCell,
-  TableRow,
   TableDataCell,
   TableHeaderRow,
   TableLinkRow,
@@ -348,17 +347,8 @@ const OrderIndex = ({}) => {
         <Text mb={3} fontSize={20} fontWeight="bold">
           Orders
         </Text>
-        <Box ml="auto" />
-        <Button
-          disabled={true}
-          onClick={() => navigate(`/a/orders/new`)}
-          variant={"cta"}
-        >
-          New draft order
-        </Button>
       </Flex>
       <Flex>
-        <Box ml="auto" />
         <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
           <Input
             ref={searchRef}
@@ -382,6 +372,7 @@ const OrderIndex = ({}) => {
         >
           Search
         </Button>
+        <Box ml="auto" />
         <Filter
           submitFilters={submit}
           clearFilters={clear}
@@ -392,6 +383,14 @@ const OrderIndex = ({}) => {
           setPaymentFilter={setPaymentFilter}
           setFulfillmentFilter={setFulfillmentFilter}
         />
+        <Button
+          ml={2}
+          disabled={true}
+          onClick={() => navigate(`/a/orders/new`)}
+          variant={"cta"}
+        >
+          New draft order
+        </Button>
       </Flex>
       <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
         {Tabs.map(tab => (
@@ -408,9 +407,9 @@ const OrderIndex = ({}) => {
           flexDirection="column"
           alignItems="center"
           height="100vh"
-          mt="auto"
+          mt="20%"
         >
-          <Box height="75px" width="75px" mt="50%">
+          <Box height="50px" width="50px">
             <Spinner dark />
           </Box>
         </Flex>
