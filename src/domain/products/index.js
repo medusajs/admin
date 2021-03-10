@@ -207,7 +207,7 @@ const ProductIndex = () => {
                     />
                   </TableDataCell>
                   <TableDataCell>{p.title}</TableDataCell>
-                  <TableDataCell>{p.collection || "-"}</TableDataCell>
+                  <TableDataCell>{p.collection?.title || "-"}</TableDataCell>
                   <TableDataCell>
                     {p.variants.reduce(
                       (acc, next) => acc + next.inventory_quantity,
