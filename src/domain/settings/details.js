@@ -7,6 +7,19 @@ import Input from "../../components/input"
 import Card from "../../components/card"
 import Button from "../../components/button"
 
+const HorizontalDivider = props => (
+  <Box
+    {...props}
+    as="hr"
+    m={props.m}
+    sx={{
+      bg: "#e3e8ee",
+      border: 0,
+      height: 1,
+    }}
+  />
+)
+
 const AccountDetails = () => {
   const { register, reset, handleSubmit } = useForm()
   const { store, isLoading, update, toaster } = useMedusa("store")
@@ -37,16 +50,20 @@ const AccountDetails = () => {
       flexDirection="column"
       as="form"
       onSubmit={handleSubmit(onSubmit)}
-      mb={4}
+      py={5}
     >
       <Card>
-        <Card.Header>Account Details</Card.Header>
+        <Flex>
+          <Text mb={3} fontSize={20} fontWeight="bold">
+            Account details
+          </Text>
+          <Box ml="auto" />
+        </Flex>
         <Card.Body flexDirection="column">
-          <Flex width={1} ml={3}>
+          <Flex width={1} mb={4}>
             <Box width={1 / 2}>
               <Input
-                inline
-                start={true}
+                boldLabel={true}
                 label="Store name"
                 name="name"
                 placeholder="Medusa Store"
@@ -54,41 +71,36 @@ const AccountDetails = () => {
               />
             </Box>
           </Flex>
-          <Flex mt={4} width={1} ml={3}>
-            <Text onClick={() => setShowAdvanced(!showAdvanced)}>
-              {showAdvanced ? "Hide" : "Advanced settings"}
+          <HorizontalDivider />
+          <Flex>
+            <Text my={3} fontSize={14}>
+              Advanced settings
             </Text>
           </Flex>
-          {showAdvanced && (
-            <>
-              <Flex width="100%" ml={3} mt={2}>
-                <Box width={1 / 2}>
-                  <Input
-                    inline
-                    start={true}
-                    label="Swap link template"
-                    name="swap_link_template"
-                    placeholder="https://acme.inc/swap"
-                    ref={register}
-                  />
-                </Box>
-              </Flex>
-              <Flex width="100%" ml={3} mt={2}>
-                <Box width={1 / 2}>
-                  <Input
-                    inline
-                    start={true}
-                    label="Payment link template"
-                    name="payment_link_template"
-                    placeholder="https://acme.inc/payment-link"
-                    ref={register}
-                  />
-                </Box>
-              </Flex>
-            </>
-          )}
+          <Flex width={1}>
+            <Box width={1 / 2}>
+              <Input
+                boldLabel={true}
+                label="Swap link template"
+                name="swap_link_template"
+                placeholder="https://acme.inc/swap"
+                ref={register}
+              />
+            </Box>
+          </Flex>
+          <Flex width={1} mt={3}>
+            <Box width={1 / 2}>
+              <Input
+                boldLabel={true}
+                label="Draft order link template"
+                name="payment_link_template"
+                placeholder="https://acme.inc/swap"
+                ref={register}
+              />
+            </Box>
+          </Flex>
         </Card.Body>
-        <Card.Footer justifyContent="flex-end" px={3}>
+        <Card.Footer justifyContent="flex-start" mt={2}>
           <Button type="submit" fontWeight="bold" variant="cta">
             Save
           </Button>

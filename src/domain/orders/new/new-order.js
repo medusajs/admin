@@ -290,7 +290,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
     }
   }
 
-  const region = regions.find(reg => reg.id === selectedRegion.value)
+  const region = regions?.find(reg => reg.id === selectedRegion.value)
   const shippingOption =
     shippingOptions?.find(
       so => selectedShippingOption && so.id === selectedShippingOption.value

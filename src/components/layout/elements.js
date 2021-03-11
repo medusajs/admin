@@ -8,7 +8,7 @@ export const Container = styled(Flex)`
 
 export const Main = styled(Box)`
   display: grid;
-  grid-template-columns: 250px 1fr;
+  grid-template-columns: 325px 1fr;
   grid-template-rows: 1fr;
 
   min-height: 100vh;
