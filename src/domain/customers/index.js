@@ -19,6 +19,8 @@ import {
 } from "../../components/table"
 import Button from "../../components/button"
 import Spinner from "../../components/spinner"
+import Badge from "../../components/badge"
+import { decideBadgeColor } from "../../utils/decide-badge-color"
 
 const CustomerIndex = () => {
   const filtersOnLoad = qs.parse(window.location.search)
@@ -135,25 +137,37 @@ const CustomerIndex = () => {
           <TableHead>
             <TableHeaderRow>
               <TableHeaderCell>Email</TableHeaderCell>
-              <TableHeaderCell>First name</TableHeaderCell>
-              <TableHeaderCell>Last name</TableHeaderCell>
+              <TableHeaderCell>Name</TableHeaderCell>
+              <TableHeaderCell sx={{ width: "75px" }} />
             </TableHeaderRow>
           </TableHead>
           <TableBody>
-            {customers.map((el, i) => (
-              <TableRow
-                key={i}
-                onClick={() => navigate(`/a/customers/${el.id}`)}
-              >
-                <TableDataCell>{el.email ? el.email : ""}</TableDataCell>
-                <TableDataCell>
-                  {el.first_name ? el.first_name : "John"}
-                </TableDataCell>
-                <TableDataCell>
-                  {el.last_name ? el.last_name : "Doe"}
-                </TableDataCell>
-              </TableRow>
-            ))}
+            {customers.map((el, i) => {
+              const fullName = `${el.first_name || ""} ${el.last_name || ""}`
+
+              return (
+                <TableRow
+                  key={i}
+                  onClick={() => navigate(`/a/customers/${el.id}`)}
+                >
+                  <TableDataCell>{el.email ? el.email : "-"}</TableDataCell>
+                  <TableDataCell>
+                    {fullName !== " " ? fullName : "-"}
+                  </TableDataCell>
+                  <TableDataCell>
+                    {el.has_account ? (
+                      <Box>
+                        <Badge color="#ffffff" bg="#4BB543">
+                          Signed up
+                        </Badge>
+                      </Box>
+                    ) : (
+                      ""
+                    )}
+                  </TableDataCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       )}
