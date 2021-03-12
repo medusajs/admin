@@ -61,7 +61,7 @@ export const buttons = {
     paddingTop: "3px",
     paddingBottom: "3px",
     cursor: "pointer",
-    borderRadius: "3px",
+    borderRadius: "5px",
     boxShadow: "buttonBoxShadow",
     "&:hover": {
       color: "darkest",
@@ -105,7 +105,7 @@ export const buttons = {
     paddingTop: "3px",
     paddingBottom: "3px",
     cursor: "pointer",
-    borderRadius: "3px",
+    borderRadius: "5px",
     "&:focus": {
       boxShadow: "buttonBoxShadowFocus",
     },
@@ -129,7 +129,7 @@ export const buttons = {
 
     cursor: "pointer",
 
-    borderRadius: "3px",
+    borderRadius: "5px",
     boxShadow: "ctaBoxShadow",
 
     "&:hover": {

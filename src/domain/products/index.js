@@ -17,6 +17,7 @@ import {
   TableBody,
   TableRow,
   TableDataCell,
+  TableLinkRow,
 } from "../../components/table"
 
 import New from "./new"
@@ -36,20 +37,23 @@ const ProductIndex = () => {
     filtersOnLoad.limit = 50
   }
 
-  const {
-    products,
-    hasCache,
-    total_count,
-    isLoading,
-    refresh,
-    isReloading,
-  } = useMedusa("products", {
-    search: filtersOnLoad,
-  })
+  const { store } = useMedusa("store")
+
+  const { products, hasCache, isLoading, refresh, isReloading } = useMedusa(
+    "products",
+    {
+      search: {
+        ...filtersOnLoad,
+        fields: "id,title,thumbnail",
+        expand: "variants,variants.prices,collection",
+      },
+    }
+  )
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(filtersOnLoad.limit || 50)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [showImport, setShowImport] = useState(false)
+  const [storeCurrencies, setStoreCurrencies] = useState([])
 
   const onKeyDown = event => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
@@ -65,6 +69,8 @@ const ProductIndex = () => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
+      fields: "id,title,thumbnail",
+      expand: "variants,variants.prices,collection",
       q: query,
       offset: 0,
       limit: 50,
@@ -84,6 +90,8 @@ const ProductIndex = () => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
+      fields: "id,title,thumbnail",
+      expand: "variants,variants.prices,collection",
       q: query,
       offset: updatedOffset,
       limit,
@@ -101,6 +109,13 @@ const ProductIndex = () => {
   }
 
   const moreResults = products && products.length >= limit
+
+  useEffect(() => {
+    if (store?.currencies) {
+      const currencyCodes = store.currencies.map(c => c.code)
+      setStoreCurrencies(currencyCodes)
+    }
+  }, [store])
 
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
@@ -120,14 +135,37 @@ const ProductIndex = () => {
           New product
         </Button>
       </Flex>
+      <Flex>
+        <Box ml="auto" />
+        <Box mb={3} sx={{ maxWidth: "300px" }}>
+          <Input
+            height="28px"
+            fontSize="12px"
+            name="q"
+            type="text"
+            placeholder="Search products"
+            onKeyDown={onKeyDown}
+            onChange={e => setQuery(e.target.value)}
+            value={query}
+          />
+        </Box>
+        <Button
+          onClick={() => searchQuery()}
+          variant={"primary"}
+          fontSize="12px"
+          ml={2}
+        >
+          Search
+        </Button>
+      </Flex>
       {(isLoading && !hasCache) || isReloading ? (
         <Flex
           flexDirection="column"
           alignItems="center"
           height="100vh"
-          mt="auto"
+          mt="20%"
         >
-          <Box height="75px" width="75px" mt="50%">
+          <Box height="50px" width="50px">
             <Spinner dark />
           </Box>
         </Flex>
@@ -137,19 +175,28 @@ const ProductIndex = () => {
             <TableHeaderRow>
               <TableHeaderCell sx={{ maxWidth: "75px" }} />
               <TableHeaderCell>Name</TableHeaderCell>
+              <TableHeaderCell>Collection</TableHeaderCell>
               <TableHeaderCell>Inventory</TableHeaderCell>
+              <TableHeaderCell />
             </TableHeaderRow>
           </TableHead>
           <TableBody>
             {products.map(p => {
+              const missingVariantPrices = p.variants.map(v => {
+                const variantPriceCurrencies = v.prices.map(
+                  vp => vp.currency_code
+                )
+
+                return _.difference(storeCurrencies, variantPriceCurrencies)
+                  .length
+              })
+
+              const missingPrices = _.sum(missingVariantPrices)
+
               return (
-                <TableRow
-                  key={p._id}
-                  onClick={() =>
-                    navigate(
-                      `/a/products${p.is_giftcard ? "/gift-card" : ""}/${p.id}`
-                    )
-                  }
+                <TableLinkRow
+                  key={p.id}
+                  to={`/a/products${p.is_giftcard ? "/gift-card" : ""}/${p.id}`}
                 >
                   <TableDataCell
                     maxWidth="75px"
@@ -164,20 +211,26 @@ const ProductIndex = () => {
                       p={!p.thumbnail && "8px"}
                       sx={{
                         objectFit: "contain",
-                        border: "1px solid lightgray",
+                        border: "1px solid #f1f3f5",
                       }}
                     />
                   </TableDataCell>
                   <TableDataCell>{p.title}</TableDataCell>
+                  <TableDataCell>{p.collection?.title || "-"}</TableDataCell>
                   <TableDataCell>
                     {p.variants.reduce(
                       (acc, next) => acc + next.inventory_quantity,
                       0
                     )}
                     {" in stock for "}
-                    {p.variants.length} variants
+                    {p.variants.length} variant(s)
                   </TableDataCell>
-                </TableRow>
+                  <TableDataCell>
+                    {missingPrices > 0
+                      ? `${missingPrices} variant price(s) missing`
+                      : "-"}
+                  </TableDataCell>
+                </TableLinkRow>
               )
             })}
           </TableBody>
