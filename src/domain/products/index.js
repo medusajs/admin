@@ -49,6 +49,7 @@ const ProductIndex = () => {
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(filtersOnLoad.limit || 50)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
+  const [showImport, setShowImport] = useState(false)
 
   const onKeyDown = event => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
@@ -108,33 +109,17 @@ const ProductIndex = () => {
           Products
         </Text>
         <Box ml="auto" />
-        <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
+        <Button onClick={() => setShowImport(true)} variant={"primary"}>
+          Import products
+        </Button>
+        <Button
+          onClick={() => navigate(`/a/products/new`)}
+          variant={"cta"}
+          ml={3}
+        >
           New product
         </Button>
       </Flex>
-      {/* <Flex> */}
-      {/* <Box ml="auto" /> */}
-      {/* <Box mb={3} sx={{ maxWidth: "300px" }}>
-          <Input
-            height="28px"
-            fontSize="12px"
-            name="q"
-            type="text"
-            placeholder="Search products"
-            onKeyDown={onKeyDown}
-            onChange={e => setQuery(e.target.value)}
-            value={query}
-          />
-        </Box> */}
-      {/* <Button
-          onClick={() => searchQuery()}
-          variant={"primary"}
-          fontSize="12px"
-          ml={2}
-        >
-          Search
-        </Button> */}
-      {/* </Flex> */}
       {(isLoading && !hasCache) || isReloading ? (
         <Flex
           flexDirection="column"
@@ -221,7 +206,7 @@ const ProductIndex = () => {
           Next
         </Button>
       </Flex>
-      {/* <ImportProducts /> */}
+      {showImport && <ImportProducts />}
     </Flex>
   )
 }

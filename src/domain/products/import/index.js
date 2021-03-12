@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import _ from "lodash"
 import { Text, Flex } from "rebass"
 import useMedusa from "../../../hooks/use-medusa"
+import Medusa from "../../../services/api"
 
 import Modal from "../../../components/modal"
 import Button from "../../../components/button"
@@ -12,9 +13,17 @@ const ImportProducts = ({ onClick }) => {
   const [errorMessage, setErrorMessage] = useState(null)
   const { store } = useMedusa("store")
 
+  const handleSubmit = async () => {
+    try {
+      await Medusa.products.importProducts(json)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <Modal onClick={onClick}>
-      <Modal.Body maxWidth="">
+      <Modal.Body minWidth={json ? "800px !important" : "650px !important"}>
         <Modal.Header>
           <Text>Import products</Text>
         </Modal.Header>
@@ -26,13 +35,8 @@ const ImportProducts = ({ onClick }) => {
           ) : (
             <>
               <Text fontSize={1} mb={1}>
-                Products in Medusa are uniquely identified by their handle.
-                Therefore, when importing products, products will be grouped by
-                their handle.
-              </Text>
-              <Text fontSize={1} mb={4}>
-                Additionally, if some existing product has a handle from the CSV
-                file, the product import will fail.
+                Download a CSV template to see the product format required for
+                the import.
               </Text>
             </>
           )}
@@ -45,12 +49,20 @@ const ImportProducts = ({ onClick }) => {
               setErrorMessage={setErrorMessage}
             />
           )}
+          <Text fontSize={1} mt={4}>
+            Existing products will be updated based on their handle.
+          </Text>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end" alignItems="center">
           <Text fontSize="14px" onClick={onClick} sx={{ cursor: "pointer" }}>
             Cancel
           </Text>
-          <Button type="submit" variant="primary" ml={4}>
+          <Button
+            type="submit"
+            variant="primary"
+            ml={4}
+            onClick={() => handleSubmit()}
+          >
             Upload
           </Button>
         </Modal.Footer>

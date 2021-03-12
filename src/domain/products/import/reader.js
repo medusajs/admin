@@ -357,7 +357,7 @@ const CSVReader = ({
                             key={i}
                             onClick={() => setSelectedVariants(p[k])}
                           >
-                            See variants
+                            See
                           </StyledSeeMoreCell>
                         )
                       } else {
