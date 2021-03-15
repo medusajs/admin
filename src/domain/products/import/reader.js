@@ -31,7 +31,7 @@ const ALLOWED_PRODUCT_FIELDS = [
   "material",
 ]
 
-const REQUIRED_PRODUCT_FIELDS = ["title", "handle"]
+const REQUIRED_PRODUCT_FIELDS = ["handle"]
 
 const REQUIRED_VARIANT_FIELDS = ["title"]
 
@@ -68,6 +68,13 @@ const BackButton = styled(Text)`
   }
 `
 
+const CSVContainer = styled(Flex)`
+  > div {
+    height: 175px !important;
+    width: ${props => (props.hasJson ? "225px" : "100%")};
+  }
+`
+
 const CSVReader = ({
   setJson,
   json,
@@ -92,6 +99,11 @@ const CSVReader = ({
 
     let prod = {}
     for (const [, value] of Object.entries(groupedProducts)) {
+      const productWithTitle = value.find(el => el.title)
+      const hasTags = value.find(el => el.tags)
+      const hasType = value.find(el => el.type)
+      const hasCollection = value.find(el => el.collection)
+
       let variants = []
 
       for (const variant of value) {
@@ -136,15 +148,32 @@ const CSVReader = ({
 
         // Start product construction
         prod = rest3.reduce((acc, [propKey, propVal]) => {
+          if (propKey === "title") {
+            acc[propKey] = productWithTitle.title
+            return acc
+          }
+
+          if (propKey === "collection" && hasCollection) {
+            acc[propKey] = hasCollection.collection
+            return acc
+          }
+
+          if (propKey === "type" && hasType) {
+            acc[propKey] = hasType.type
+            return acc
+          }
+
+          if (propKey === "tags" && hasTags) {
+            const tags = hasTags.tags
+            acc[propKey] = tags.split(",")
+            return acc
+          }
+
           // If property value is empty, we don't add it
           if (!propVal) {
             return acc
           }
 
-          if (propKey === "tags") {
-            acc[propKey] = propVal.split(",")
-            return acc
-          }
           acc[propKey] = propVal
           return acc
         }, {})
@@ -334,7 +363,12 @@ const CSVReader = ({
   }
 
   return (
-    <Flex justifyContent="center" width="100%" flexDirection="column" px={4}>
+    <Flex
+      justifyContent="center"
+      width="100%"
+      flexDirection="column"
+      px={json ? 4 : 0}
+    >
       {json && json.length && (
         <Table>
           <TableHead>
@@ -389,9 +423,13 @@ const CSVReader = ({
           </TableBody>
         </Table>
       )}
-      <Flex width="100%" justifyContent="center" mt={4}>
+      <CSVContainer
+        hasJson={json !== null}
+        width="100%"
+        justifyContent="center"
+        mt={4}
+      >
         <CSV
-          styles={{ width: "215px" }}
           onDrop={handleOnDrop}
           onError={handleOnError}
           addRemoveButton
@@ -402,7 +440,7 @@ const CSVReader = ({
             Drop file or click to upload
           </Text>
         </CSV>
-      </Flex>
+      </CSVContainer>
     </Flex>
   )
 }

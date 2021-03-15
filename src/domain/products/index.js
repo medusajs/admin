@@ -4,6 +4,7 @@ import _ from "lodash"
 import { Flex, Text, Box, Image } from "rebass"
 import { Input } from "@rebass/forms"
 import { Router } from "@reach/router"
+import Medusa from "../../services/api"
 
 import ImagePlaceholder from "../../assets/svg/image-placeholder.svg"
 import ImportProducts from "./import"
@@ -53,6 +54,8 @@ const ProductIndex = () => {
   const [limit, setLimit] = useState(filtersOnLoad.limit || 50)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [showImport, setShowImport] = useState(false)
+  const [uploadedProducts, setUploadedProducts] = useState(0)
+  const [importing, setImporting] = useState(false)
   const [storeCurrencies, setStoreCurrencies] = useState([])
 
   const onKeyDown = event => {
@@ -108,6 +111,46 @@ const ProductIndex = () => {
     })
   }
 
+  const chunkArr = (array, size) => {
+    const chunked_arr = []
+    for (let i = 0; i < array.length; i++) {
+      const last = chunked_arr[chunked_arr.length - 1]
+      if (!last || last.length === size) {
+        chunked_arr.push([array[i]])
+      } else {
+        last.push(array[i])
+      }
+    }
+
+    return chunked_arr
+  }
+
+  const handleSubmitImport = async data => {
+    try {
+      setImporting(true)
+      const chunckedData = chunkArr(data, 25)
+
+      for (const chunk of chunckedData) {
+        await Medusa.products.importProducts(chunk)
+      }
+
+      setShowImport(false)
+      setImporting(false)
+
+      const search = {
+        fields: "id,title,thumbnail",
+        expand: "variants,variants.prices,collection",
+        offset: 0,
+        limit: 50,
+      }
+
+      refresh({ search })
+    } catch (error) {
+      setImporting(false)
+      console.log(error)
+    }
+  }
+
   const moreResults = products && products.length >= limit
 
   useEffect(() => {
@@ -123,20 +166,8 @@ const ProductIndex = () => {
         <Text mb={3} fontSize={20} fontWeight="bold">
           Products
         </Text>
-        <Box ml="auto" />
-        <Button onClick={() => setShowImport(true)} variant={"primary"}>
-          Import products
-        </Button>
-        <Button
-          onClick={() => navigate(`/a/products/new`)}
-          variant={"cta"}
-          ml={3}
-        >
-          New product
-        </Button>
       </Flex>
       <Flex>
-        <Box ml="auto" />
         <Box mb={3} sx={{ maxWidth: "300px" }}>
           <Input
             height="28px"
@@ -156,6 +187,18 @@ const ProductIndex = () => {
           ml={2}
         >
           Search
+        </Button>
+
+        <Box ml="auto" />
+        <Button onClick={() => setShowImport(true)} variant={"primary"}>
+          Import products
+        </Button>
+        <Button
+          onClick={() => navigate(`/a/products/new`)}
+          variant={"cta"}
+          ml={3}
+        >
+          New product
         </Button>
       </Flex>
       {(isLoading && !hasCache) || isReloading ? (
@@ -259,7 +302,13 @@ const ProductIndex = () => {
           Next
         </Button>
       </Flex>
-      {showImport && <ImportProducts />}
+      {showImport && (
+        <ImportProducts
+          dismiss={() => setShowImport(false)}
+          handleSubmit={handleSubmitImport}
+          importing={importing}
+        />
+      )}
     </Flex>
   )
 }

@@ -7,22 +7,15 @@ import Medusa from "../../../services/api"
 import Modal from "../../../components/modal"
 import Button from "../../../components/button"
 import CSVReader from "./reader"
+import Spinner from "../../../components/spinner"
 
-const ImportProducts = ({ onClick }) => {
+const ImportProducts = ({ dismiss, handleSubmit, importing }) => {
   const [json, setJson] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const { store } = useMedusa("store")
 
-  const handleSubmit = async () => {
-    try {
-      await Medusa.products.importProducts(json)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   return (
-    <Modal onClick={onClick}>
+    <Modal onClick={dismiss}>
       <Modal.Body minWidth={json ? "800px !important" : "650px !important"}>
         <Modal.Header>
           <Text>Import products</Text>
@@ -40,7 +33,7 @@ const ImportProducts = ({ onClick }) => {
               </Text>
             </>
           )}
-          {store?.currencies && (
+          {store?.currencies || false ? (
             <CSVReader
               json={json}
               setJson={setJson}
@@ -48,20 +41,27 @@ const ImportProducts = ({ onClick }) => {
               errorMessage={errorMessage}
               setErrorMessage={setErrorMessage}
             />
+          ) : (
+            <Flex width="100%" justifyContent="center" mt={3}>
+              <Flex height="50px" width="50px">
+                <Spinner dark={true} />
+              </Flex>
+            </Flex>
           )}
           <Text fontSize={1} mt={4}>
-            Existing products will be updated based on their handle.
+            Products will be updated, if matching handle is identified.
           </Text>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end" alignItems="center">
-          <Text fontSize="14px" onClick={onClick} sx={{ cursor: "pointer" }}>
+          <Text fontSize="14px" onClick={dismiss} sx={{ cursor: "pointer" }}>
             Cancel
           </Text>
           <Button
             type="submit"
             variant="primary"
             ml={4}
-            onClick={() => handleSubmit()}
+            loading={importing}
+            onClick={() => handleSubmit(json)}
           >
             Upload
           </Button>
