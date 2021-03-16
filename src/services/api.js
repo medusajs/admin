@@ -1,4 +1,9 @@
 import medusaRequest, { multipartRequest } from "./request"
+import qs from "query-string"
+import _ from "lodash"
+
+const removeNullish = obj =>
+  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
 export default {
   returnReasons: {
@@ -325,15 +330,12 @@ export default {
     },
 
     list(search = {}) {
-      const params = Object.keys(search)
-        .map(k => {
-          if (search[k] === "" || search[k] === null) {
-            return null
-          }
-          return `${k}=${search[k]}`
-        })
+      const clean = removeNullish(search)
+      const params = Object.keys(clean)
+        .map(k => `${k}=${search[k]}`)
         .filter(s => !!s)
         .join("&")
+
       let path = `/admin/orders${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
