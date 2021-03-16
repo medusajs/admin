@@ -1,6 +1,24 @@
 import medusaRequest, { multipartRequest } from "./request"
 
 export default {
+  returnReasons: {
+    retrieve(id) {
+      const path = `/admin/return-reasons/${id}`
+      return medusaRequest("GET", path)
+    },
+    list() {
+      const path = `/admin/return-reasons`
+      return medusaRequest("GET", path)
+    },
+    create(payload) {
+      const path = `/admin/return-reasons`
+      return medusaRequest("POST", path, payload)
+    },
+    update(id, payload) {
+      const path = `/admin/return-reasons/${id}`
+      return medusaRequest("POST", path, payload)
+    },
+  },
   apps: {
     authorize(data) {
       const path = `/admin/apps/authorizations`
