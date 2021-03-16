@@ -19,14 +19,46 @@ const StyledCreatableSelect = styled(Creatable)`
   font-size: 14px;
   color: #454545;
 
-  .css-yk16xz-control 
-    box-shadow: none;
+  border-radius: 3px;
+
+  > div {
+    border: none;
+    box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px,
+      rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(60 66 87 / 16%) 0px 0px 0px 1px,
+      rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px,
+      rgb(0 0 0 / 0%) 0px 0px 0px 0px;
+
+    &:hover {
+      outline: none;
+      box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+        rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
+        rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+        rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+        rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+    }
   }
 `
 
 const StyledSelect = styled(Select)`
   font-size: 14px;
   color: #454545;
+
+  > div {
+    border: none;
+    box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px,
+      rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(60 66 87 / 16%) 0px 0px 0px 1px,
+      rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px,
+      rgb(0 0 0 / 0%) 0px 0px 0px 0px;
+
+    &:hover {
+      outline: none;
+      box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+        rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
+        rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+        rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+        rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+    }
+  }
 `
 
 const Information = ({ isLoading, product, onSubmit, onDelete }) => {
@@ -213,7 +245,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
               onChange={values => handleTagChange(values)}
               boldLabel={"true"}
             />
-            {frequentTags?.length && (
+            {frequentTags?.length ? (
               <Flex mt={1}>
                 <Text mr={2} fontSize="10px">
                   Frequently used tags:{" "}
@@ -222,7 +254,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   {frequentTags.map(t => t.value).join(", ")}
                 </Text>
               </Flex>
-            )}
+            ) : null}
           </Box>
           <Box width={1 / 2} mb={3}>
             <Text fontSize={1} mb={2} fontWeight="500">
