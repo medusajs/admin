@@ -17,11 +17,13 @@ export const theme = {
     medusa: "#454B54",
     danger: "#FF7675",
     muted: "#E3E8EE",
+    gray: "#a3acb9",
     lightest: "#fefefe",
     light: "#f0f0f0",
     dark: "#454545",
     darkest: "#212121",
     placeholder: "#a3acb9",
+    blue: "#5469d4",
   },
   borders: {
     hairline: "1px solid #E3E8EE",

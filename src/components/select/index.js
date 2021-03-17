@@ -50,12 +50,14 @@ const Select = React.forwardRef(
       defaultValue = "",
       options = [],
       placeholder = "",
+      flex = "50% 0 0",
       value,
       onChange,
       inline,
       required,
       selectHeight,
       isCurrencyInput,
+      selectStyle,
       ...props
     },
     ref
@@ -80,7 +82,7 @@ const Select = React.forwardRef(
         )}
         <StyledSelect
           isCurrencyInput={isCurrencyInput}
-          flex="50% 0 0"
+          flex={flex}
           variant="buttons.primary"
           name={name}
           height={selectHeight || "inherit"}
@@ -90,6 +92,7 @@ const Select = React.forwardRef(
           value={value}
           defaultValue={defaultValue}
           onChange={onChange}
+          sx={selectStyle}
         >
           {placeholder && <option>{placeholder}</option>}
           {options.map((option, index) => (

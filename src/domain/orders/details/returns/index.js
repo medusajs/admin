@@ -96,6 +96,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       items,
       refund: Math.round(refundAmount),
     }
+
     if (shippingMethod) {
       data.return_shipping = {
         option_id: shippingMethod,
