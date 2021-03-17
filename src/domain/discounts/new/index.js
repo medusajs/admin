@@ -16,45 +16,18 @@ import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
 import { navigate } from "gatsby"
 
-const StyledMultiSelect = styled(MultiSelect)`
-  ${Typography.Base}
-
-  color: black;
-  background-color: white;
-
-  line-height: 1.22;
-
-  border: none;
-  outline: 0;
-
-  transition: all 0.2s ease;
-
-  border-radius: 3px;
-  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px;
-
-  &:focus: {
-    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px;
-  }
-  &::placeholder: {
-    color: #a3acb9;
-  }
-
-  .go3433208811 {
-    border: none;
-    border-radius: 3px;
-  }
-`
-
-const StyledRadio = styled(Radio)`
-  ${Typography.Base}
-`
+const HorizontalDivider = props => (
+  <Box
+    {...props}
+    as="hr"
+    m={props.m}
+    sx={{
+      bg: "#e3e8ee",
+      border: 0,
+      height: 1,
+    }}
+  />
+)
 
 const StyledLabel = styled(Label)`
   ${Typography.Base}
@@ -128,6 +101,10 @@ const NewDiscount = ({}) => {
       regions: data.regions || [],
     }
 
+    if (data.usage_limit) {
+      discount.usage_limit = data.usage_limit
+    }
+
     Medusa.discounts
       .create(discount)
       .then(() => toaster("Successfully created discount", "success"))
@@ -173,12 +150,15 @@ const NewDiscount = ({}) => {
           <Input
             mb={3}
             label="Code"
+            boldLabel={true}
             required={true}
             name="code"
             placeholder="SUMMER10%"
             ref={register({ required: true })}
           />
-          <RequiredLabel pb={2}>Choose valid regions</RequiredLabel>
+          <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+            Choose valid regions
+          </RequiredLabel>
           <MultiSelect
             options={regions.map(el => ({
               label: el.name,
@@ -193,7 +173,9 @@ const NewDiscount = ({}) => {
           />
         </Box>
         <Box>
-          <RequiredLabel>Is this a dynamic discount?</RequiredLabel>
+          <RequiredLabel style={{ fontWeight: 500 }}>
+            Is this a dynamic discount?
+          </RequiredLabel>
         </Box>
         <StyledLabel>
           <Flex alignItems="center">
@@ -225,12 +207,14 @@ const NewDiscount = ({}) => {
             </Text>
           </Flex>
         </StyledLabel>
+        <HorizontalDivider my={2} />
         <Box>
-          <Text fontSize={2} mb={2}>
+          <Text fontSize={2} mb={3} mt={2}>
             Discount rule
           </Text>
         </Box>
         <Input
+          boldLabel={true}
           mb={3}
           width="75%"
           label="Description"
@@ -240,6 +224,7 @@ const NewDiscount = ({}) => {
           ref={register({ required: true })}
         />
         <Input
+          boldLabel={true}
           mb={3}
           label="Value"
           width="75%"
@@ -247,9 +232,22 @@ const NewDiscount = ({}) => {
           required={true}
           name="rule.value"
           placeholder="10"
+          min="0"
           ref={register({ required: true })}
         />
-        <RequiredLabel pb={2}>Type</RequiredLabel>
+        <Input
+          boldLabel={true}
+          mb={3}
+          label="Usage limit"
+          width="75%"
+          type="number"
+          name="rule.usage_limit"
+          placeholder="5"
+          min="0"
+        />
+        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+          Type
+        </RequiredLabel>
         <StyledLabel>
           <Flex alignItems="center">
             <input
@@ -288,7 +286,9 @@ const NewDiscount = ({}) => {
             </Text>
           </Flex>
         </StyledLabel>
-        <RequiredLabel pb={2}>Allocation</RequiredLabel>
+        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+          Allocation
+        </RequiredLabel>
         <StyledLabel fontSize="10px" color="gray">
           <Flex alignItems="center">
             <input

@@ -139,6 +139,16 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
             value={discountRule.value}
             onChange={onChange}
           />
+          <Input
+            mb={3}
+            ref={register({ required: true })}
+            label="Usage limit"
+            type="number"
+            name="usage_limit"
+            min="0"
+            value={discountRule.usage_limit}
+            onChange={onChange}
+          />
           <RequiredLabel pb={2}>Type</RequiredLabel>
           <StyledLabel>
             <Flex alignItems="center">

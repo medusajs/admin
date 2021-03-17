@@ -17,21 +17,6 @@ import DiscountRuleModal from "./discount-rule"
 import { Input } from "@rebass/forms"
 import Typography from "../../../components/typography"
 
-const ProductLink = styled(Text)`
-  color: #006fbb;
-  z-index: 1000;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  `
-
-const ProductThumbnail = styled(Image)`
-  object-fit: contain;
-  width: 35px;
-  height: 35px;
-`
-
 const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
 
@@ -288,21 +273,29 @@ const DiscountDetails = ({ id }) => {
           <Box display="flex" flexDirection="row">
             <Box pl={3} pr={5}>
               <Text color="gray">Description</Text>
-              <Text pt={1} color="gray">
+              <Text pt={2} color="gray">
                 Type
               </Text>
-              <Text pt={1} color="gray">
+              <Text pt={2} color="gray">
                 Value
               </Text>
-              <Text pt={1} color="gray">
+              <Text pt={2} color="gray">
                 Allocation method
+              </Text>
+              <Text pt={2} color="gray">
+                Usage limit
+              </Text>
+              <Text pt={2} color="gray">
+                Usage count
               </Text>
             </Box>
             <Box px={3}>
               <Text>{discount.rule.description}</Text>
-              <Text pt={1}>{discount.rule.type}</Text>
-              <Text pt={1}>{discount.rule.value}</Text>
-              <Text pt={1}>{discount.rule.allocation}</Text>
+              <Text pt={2}>{discount.rule.type}</Text>
+              <Text pt={2}>{discount.rule.value}</Text>
+              <Text pt={2}>{discount.rule.allocation}</Text>
+              <Text pt={2}>{discount.rule.usage_limit || "Not set"}</Text>
+              <Text pt={2}>{discount.rule.usage_count}</Text>
             </Box>
           </Box>
           <Divider m={3} />
