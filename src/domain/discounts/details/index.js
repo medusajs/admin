@@ -137,7 +137,7 @@ const DiscountDetails = ({ id }) => {
   const handleDisabled = () => {
     setUpdating(true)
     update({
-      disabled: discount.is_disabled ? false : true,
+      is_disabled: discount.is_disabled ? false : true,
     })
       .then(() => {
         refresh({ id })
