@@ -186,8 +186,6 @@ const DateFilter = ({
   const select_ref = useRef()
   const input_ref = useRef()
 
-  console.log(existingDate)
-
   useEffect(() => {
     if (existingDate && typeof existingDate === "string") {
       const [start] = existingDate.split(",")
