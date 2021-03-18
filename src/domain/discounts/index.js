@@ -20,6 +20,7 @@ import Badge from "../../components/badge"
 import { navigate } from "gatsby"
 import Button from "../../components/button"
 import { Checkbox, Input, Label } from "@rebass/forms"
+import { decideBadgeColor } from "../../utils/decide-badge-color"
 
 const DiscountIndex = () => {
   const filtersOnLoad = qs.parse(window.location.search)
@@ -122,7 +123,11 @@ const DiscountIndex = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
     refresh({
-      search: { ...queryParts, is_dynamic: showDynamic, is_giftcard: "false" },
+      search: {
+        ...queryParts,
+        is_dynamic: showDynamic,
+        is_giftcard: "false",
+      },
     }).then(() => {
       setOffset(updatedOffset)
     })
@@ -216,6 +221,7 @@ const DiscountIndex = () => {
             >
               <TableHeaderCell>Code</TableHeaderCell>
               <TableHeaderCell>Rule</TableHeaderCell>
+              <TableHeaderCell>Disabled</TableHeaderCell>
               <TableHeaderCell>Starts at</TableHeaderCell>
               <TableHeaderCell>Ends at</TableHeaderCell>
             </TableRow>
@@ -230,6 +236,20 @@ const DiscountIndex = () => {
                 >
                   <TableDataCell>{el.code}</TableDataCell>
                   <TableDataCell>{el.rule.description}</TableDataCell>
+                  <TableDataCell>
+                    {el.is_disabled ? (
+                      <Box>
+                        <Badge
+                          color={decideBadgeColor(el.is_disabled).color}
+                          bg={decideBadgeColor(el.is_disabled).bgColor}
+                        >
+                          Disabled
+                        </Badge>
+                      </Box>
+                    ) : (
+                      "-"
+                    )}
+                  </TableDataCell>
                   <TableDataCell>
                     {new Date(el.starts_at).toDateString()}
                   </TableDataCell>
