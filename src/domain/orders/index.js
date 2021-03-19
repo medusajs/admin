@@ -123,7 +123,7 @@ const OrderIndex = ({}) => {
   }
 
   if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 13
+    filtersOnLoad.limit = 20
   }
 
   const {
@@ -152,7 +152,7 @@ const OrderIndex = ({}) => {
 
   const searchRef = useRef(null)
   const [query, setQuery] = useState(null)
-  const [limit, setLimit] = useState(filtersOnLoad.limit || 13)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [orders, setOrders] = useState([])
   const [filterTabs, setFilterTabs] = useState()
@@ -439,30 +439,20 @@ const OrderIndex = ({}) => {
       resetFilters()
     } else {
       const clean = removeNullish(queryObject)
-      params = Object.keys(clean)
-        .map(k => {
+      const query = { offset: offset || 0, ...clean }
+
+      params = Object.entries(query)
+        .map(([k, v]) => {
           if (k === "created_at") {
-            return qs.stringify({ [k]: clean[k] })
+            return qs.stringify({ [k]: v })
           } else {
-            return `${k}=${clean[k]}`
+            return `${k}=${v}`
           }
         })
         .filter(s => !!s)
         .join("&")
 
-      window.history.replaceState(
-        `/a/orders`,
-        "",
-        `${
-          params
-            ? `?${params}&offset=${queryObject.offset || 0}&limit=${
-                queryObject.limit || 0
-              }`
-            : `?offset=${queryObject.offset || 0}&limit=${
-                queryObject.limit || 0
-              }`
-        }`
-      )
+      window.history.replaceState(`/a/orders`, "", `${`?${params}`}`)
     }
 
     return params
@@ -513,17 +503,18 @@ const OrderIndex = ({}) => {
     }
 
     const urlFilters = _.pick(searchObject, allowedFilters)
-    console.log("here!", urlFilters)
-    console.log("here!", searchObject)
-    replaceQueryString(urlFilters)
 
     if (!urlFilters.offset) {
       urlFilters.offset = 0
     }
 
     if (!urlFilters.limit) {
-      urlFilters.limit = 13
+      urlFilters.limit = 20
     }
+
+    console.log(urlFilters)
+
+    replaceQueryString(urlFilters)
 
     refresh({ search: { ...urlFilters, ...defaultQueryProps } })
     decideTab()
