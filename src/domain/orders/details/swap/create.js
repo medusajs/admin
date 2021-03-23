@@ -474,7 +474,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
           </Flex>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
-          <Button loading={submitting} type="submit" variant="primary">
+          <Button
+            disabled={toReturn.length === 0 || itemsToAdd.length === 0}
+            loading={submitting}
+            type="submit"
+            variant="primary"
+          >
             Complete
           </Button>
         </Modal.Footer>
