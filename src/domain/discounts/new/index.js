@@ -91,6 +91,11 @@ const NewDiscount = ({}) => {
 
   const submit = data => {
     data.rule.value = parseInt(data.rule.value)
+
+    if (data.rule.type === "fixed") {
+      data.rule.value = data.rule.value * 100
+    }
+
     data.rule.valid_for = validProducts()
     data.regions = validRegions()
 

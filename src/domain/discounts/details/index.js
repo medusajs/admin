@@ -191,6 +191,22 @@ const DiscountDetails = ({ id }) => {
       })
   }
 
+  const renderDiscountValue = discountRule => {
+    const currency = discount.regions[0].currency_code
+    const vat = discount.regions[0].tax_rate
+
+    let val = discountRule.value
+
+    if (discountRule.type === "fixed") {
+      val = parseInt(val / 100)
+      return `${val.toFixed(2)} ${currency.toUpperCase()} ${
+        vat > 0 ? `(Excl. VAT)` : ``
+      }`
+    } else {
+      return `${val} %`
+    }
+  }
+
   return (
     <Flex flexDirection="column" mb={5} pt={5}>
       <Card mb={2}>
@@ -274,13 +290,10 @@ const DiscountDetails = ({ id }) => {
             <Box pl={3} pr={5}>
               <Text color="gray">Description</Text>
               <Text pt={2} color="gray">
-                Type
-              </Text>
-              <Text pt={2} color="gray">
                 Value
               </Text>
               <Text pt={2} color="gray">
-                Allocation method
+                Allocation
               </Text>
               <Text pt={2} color="gray">
                 Usage limit
@@ -291,9 +304,12 @@ const DiscountDetails = ({ id }) => {
             </Box>
             <Box px={3}>
               <Text>{discount.rule.description}</Text>
-              <Text pt={2}>{discount.rule.type}</Text>
-              <Text pt={2}>{discount.rule.value}</Text>
-              <Text pt={2}>{discount.rule.allocation}</Text>
+              <Text pt={2}>{renderDiscountValue(discount.rule)}</Text>
+              <Text pt={2}>
+                {discount.rule.allocation === "total"
+                  ? "Applies to total order amount"
+                  : "Applies to specified items"}
+              </Text>
               <Text pt={2}>{discount.rule.usage_limit || "Not set"}</Text>
               <Text pt={2}>{discount.rule.usage_count}</Text>
             </Box>

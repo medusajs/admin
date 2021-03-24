@@ -136,12 +136,17 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
             type="number"
             required={true}
             name="value"
-            value={discountRule.value}
+            value={
+              discountRule.type === "fixed"
+                ? parseInt(discountRule.value) / 100
+                : discountRule.value
+            }
             onChange={onChange}
           />
+          {console.log(discountRule)}
           <Input
             mb={3}
-            ref={register({ required: true })}
+            ref={register}
             label="Usage limit"
             type="number"
             name="usage_limit"
