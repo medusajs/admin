@@ -16,6 +16,8 @@ import {
   TableBody,
   TableRow,
   TableDataCell,
+  TableHeaderRow,
+  DefaultCellContent,
 } from "../../components/table"
 import Spinner from "../../components/spinner"
 import Badge from "../../components/badge"
@@ -54,41 +56,41 @@ const Index = () => {
       ) : (
         <Table>
           <TableHead>
-            <TableRow
-              p={0}
-              sx={{
-                background: "white",
-              }}
-            >
+            <TableHeaderRow>
               <TableHeaderCell>Code</TableHeaderCell>
               <TableHeaderCell>Original Amount</TableHeaderCell>
               <TableHeaderCell>Amount Left</TableHeaderCell>
               <TableHeaderCell>Created</TableHeaderCell>
-            </TableRow>
+            </TableHeaderRow>
           </TableHead>
           <TableBody>
             {gift_cards &&
               gift_cards.map(el => (
                 <TableRow
-                  sx={{ cursor: "pointer" }}
                   key={el.id}
                   onClick={() => navigate(`/a/gift-cards/${el.id}`)}
                 >
-                  <TableDataCell>{el.code}</TableDataCell>
                   <TableDataCell>
-                    {(el.value &&
-                      (
-                        ((1 + el.region.tax_rate / 100) * el.value) /
-                        100
-                      ).toFixed(2)) || <>&nbsp;</>}{" "}
-                    {el.value && el.region.currency_code.toUpperCase()}
+                    <DefaultCellContent>{el.code}</DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    {(
-                      ((1 + el.region.tax_rate / 100) * el.balance) /
-                      100
-                    ).toFixed(2)}{" "}
-                    {el.region.currency_code.toUpperCase()}
+                    <DefaultCellContent>
+                      {(el.value &&
+                        (
+                          ((1 + el.region.tax_rate / 100) * el.value) /
+                          100
+                        ).toFixed(2)) || <>&nbsp;</>}{" "}
+                      {el.value && el.region.currency_code.toUpperCase()}
+                    </DefaultCellContent>
+                  </TableDataCell>
+                  <TableDataCell>
+                    <DefaultCellContent>
+                      {(
+                        ((1 + el.region.tax_rate / 100) * el.balance) /
+                        100
+                      ).toFixed(2)}{" "}
+                      {el.region.currency_code.toUpperCase()}
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell
                     data-for={el.id}
@@ -97,7 +99,9 @@ const Index = () => {
                     )}
                   >
                     <ReactTooltip id={el.id} place="top" effect="solid" />
-                    {moment(el.created_at).format("MMM Do YYYY")}
+                    <DefaultCellContent>
+                      {moment(el.created_at).format("MMM Do YYYY")}
+                    </DefaultCellContent>
                   </TableDataCell>
                 </TableRow>
               ))}

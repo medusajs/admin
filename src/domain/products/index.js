@@ -17,6 +17,7 @@ import {
   TableRow,
   TableDataCell,
   TableLinkRow,
+  DefaultCellContent,
 } from "../../components/table"
 
 import New from "./new"
@@ -33,7 +34,7 @@ const ProductIndex = () => {
   }
 
   if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 50
+    filtersOnLoad.limit = 20
   }
 
   const { store } = useMedusa("store")
@@ -49,7 +50,7 @@ const ProductIndex = () => {
     }
   )
   const [query, setQuery] = useState("")
-  const [limit, setLimit] = useState(filtersOnLoad.limit || 50)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [storeCurrencies, setStoreCurrencies] = useState([])
 
@@ -71,7 +72,7 @@ const ProductIndex = () => {
       expand: "variants,variants.prices,collection",
       q: query,
       offset: 0,
-      limit: 50,
+      limit: 20,
     }
 
     const prepared = qs.stringify(search, {
@@ -121,13 +122,8 @@ const ProductIndex = () => {
         <Text mb={3} fontSize={20} fontWeight="bold">
           Products
         </Text>
-        <Box ml="auto" />
-        <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
-          New product
-        </Button>
       </Flex>
       <Flex>
-        <Box ml="auto" />
         <Box mb={3} sx={{ maxWidth: "300px" }}>
           <Input
             height="28px"
@@ -147,6 +143,10 @@ const ProductIndex = () => {
           ml={2}
         >
           Search
+        </Button>
+        <Box ml="auto" />
+        <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
+          New product
         </Button>
       </Flex>
       {(isLoading && !hasCache) || isReloading ? (
@@ -195,31 +195,43 @@ const ProductIndex = () => {
                     height="100%"
                     textAlign="center"
                   >
-                    <Image
-                      src={p.thumbnail || ImagePlaceholder}
-                      height={38}
-                      width={38}
-                      p={!p.thumbnail && "8px"}
-                      sx={{
-                        objectFit: "contain",
-                        border: "1px solid #f1f3f5",
-                      }}
-                    />
-                  </TableDataCell>
-                  <TableDataCell>{p.title}</TableDataCell>
-                  <TableDataCell>{p.collection?.title || "-"}</TableDataCell>
-                  <TableDataCell>
-                    {p.variants.reduce(
-                      (acc, next) => acc + next.inventory_quantity,
-                      0
-                    )}
-                    {" in stock for "}
-                    {p.variants.length} variant(s)
+                    <DefaultCellContent>
+                      <Image
+                        src={p.thumbnail || ImagePlaceholder}
+                        height={38}
+                        width={38}
+                        p={!p.thumbnail && "8px"}
+                        sx={{
+                          objectFit: "contain",
+                          border: "1px solid #f1f3f5",
+                        }}
+                      />
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    {missingPrices > 0
-                      ? `${missingPrices} variant price(s) missing`
-                      : "-"}
+                    <DefaultCellContent>{p.title}</DefaultCellContent>
+                  </TableDataCell>
+                  <TableDataCell>
+                    <DefaultCellContent>
+                      {p.collection?.title || "-"}
+                    </DefaultCellContent>
+                  </TableDataCell>
+                  <TableDataCell>
+                    <DefaultCellContent>
+                      {p.variants.reduce(
+                        (acc, next) => acc + next.inventory_quantity,
+                        0
+                      )}
+                      {" in stock for "}
+                      {p.variants.length} variant(s)
+                    </DefaultCellContent>
+                  </TableDataCell>
+                  <TableDataCell>
+                    <DefaultCellContent>
+                      {missingPrices > 0
+                        ? `${missingPrices} variant price(s) missing`
+                        : "-"}
+                    </DefaultCellContent>
                   </TableDataCell>
                 </TableLinkRow>
               )

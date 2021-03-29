@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Flex } from "rebass"
+import { Box, Flex, Text } from "rebass"
 import styled from "@emotion/styled"
 import { Link } from "gatsby"
 
@@ -62,6 +62,31 @@ const StyledTableLinkRow = styled(Link)`
   th:nth-of-type(1) {
     padding-left: 15px;
   }
+
+  td {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+`
+
+export const DefaultCellContent = styled(Text)`
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  align-items: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+export const BadgdeCellContent = styled(Box)`
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  align-items: center;
 `
 
 export const Table = React.forwardRef((props, ref) => (
@@ -113,7 +138,7 @@ export const TableRow = React.forwardRef((props, ref) => (
     sx={{
       top: 0,
       cursor: "pointer",
-      height: "55px",
+      height: "45px",
     }}
     {...props}
   />
@@ -127,7 +152,7 @@ export const TableLinkRow = React.forwardRef((props, ref) => (
     style={{
       top: 0,
       cursor: "pointer",
-      height: "55px",
+      height: "45px",
     }}
     {...props}
   />
