@@ -512,8 +512,6 @@ const OrderIndex = ({}) => {
       urlFilters.limit = 20
     }
 
-    console.log(urlFilters)
-
     replaceQueryString(urlFilters)
 
     refresh({ search: { ...urlFilters, ...defaultQueryProps } })

@@ -17,6 +17,8 @@ import {
   TableDataCell,
   TableHeaderRow,
   TableLinkRow,
+  DefaultCellContent,
+  BadgdeCellContent,
 } from "../../../components/table"
 import Badge from "../../../components/badge"
 
@@ -45,7 +47,7 @@ const SwapIndex = ({}) => {
   }
 
   if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 50
+    filtersOnLoad.limit = 20
   }
 
   const { swaps, isLoading, refresh, isReloading } = useMedusa("swaps", {
@@ -57,7 +59,7 @@ const SwapIndex = ({}) => {
 
   const searchRef = useRef(null)
   const [query, setQuery] = useState(null)
-  const [limit, setLimit] = useState(filtersOnLoad.limit || 0)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [fetching, setFetching] = useState(false)
 
@@ -84,7 +86,7 @@ const SwapIndex = ({}) => {
     const queryParts = {
       q: query,
       offset: 0,
-      limit: 50,
+      limit: 20,
     }
     const prepared = qs.stringify(queryParts, {
       skipNulls: true,
@@ -118,7 +120,7 @@ const SwapIndex = ({}) => {
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
-    handleTabClick(activeTab, queryParts).then(() => {
+    refresh({ search: queryParts }).then(() => {
       setOffset(updatedOffset)
     })
   }
@@ -131,11 +133,10 @@ const SwapIndex = ({}) => {
         </Text>
       </Flex>
       <Flex>
-        <Box ml="auto" />
         <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
           <Input
             ref={searchRef}
-            height="28px"
+            height="30px"
             fontSize="12px"
             id="email"
             name="q"
@@ -193,16 +194,20 @@ const SwapIndex = ({}) => {
                   id={`order-${el.id}`}
                 >
                   <TableDataCell>
-                    <OrderNumCell
-                      fontWeight={500}
-                      color={"link"}
-                      isCanceled={el.status === "canceled"}
-                    >
-                      Go to order
-                    </OrderNumCell>
+                    <DefaultCellContent>
+                      <OrderNumCell
+                        fontWeight={500}
+                        color={"link"}
+                        isCanceled={el.status === "canceled"}
+                      >
+                        Go to order
+                      </OrderNumCell>
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    {(el.difference_due / 100).toFixed(2)}{" "}
+                    <DefaultCellContent>
+                      {(el.difference_due / 100).toFixed(2)}{" "}
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell
                     data-for={el.id}
@@ -211,38 +216,42 @@ const SwapIndex = ({}) => {
                     )}
                   >
                     <ReactTooltip id={el.id} place="top" effect="solid" />
-                    {moment(el.created_at).format("MMM Do YYYY")}
+                    <DefaultCellContent>
+                      {moment(el.created_at).format("MMM Do YYYY")}
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    <Box>
+                    <BadgdeCellContent>
                       <Badge
                         color={decideBadgeColor(el.payment_status).color}
                         bg={decideBadgeColor(el.payment_status).bgColor}
                       >
                         {el.payment_status}
                       </Badge>
-                    </Box>
+                    </BadgdeCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    <Box>
+                    <BadgdeCellContent>
                       <Badge
                         color={decideBadgeColor(el.fulfillment_status).color}
                         bg={decideBadgeColor(el.fulfillment_status).bgColor}
                       >
                         {el.fulfillment_status}
                       </Badge>
-                    </Box>
+                    </BadgdeCellContent>
                   </TableDataCell>
                   <TableDataCell maxWidth="75px">
-                    {el.shipping_address?.country_code ? (
-                      <ReactCountryFlag
-                        style={{ maxHeight: "100%", marginBottom: "0px" }}
-                        svg
-                        countryCode={el.shipping_address.country_code}
-                      />
-                    ) : (
-                      "-"
-                    )}
+                    <DefaultCellContent>
+                      {el.shipping_address?.country_code ? (
+                        <ReactCountryFlag
+                          style={{ maxHeight: "100%", marginBottom: "0px" }}
+                          svg
+                          countryCode={el.shipping_address.country_code}
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </DefaultCellContent>
                   </TableDataCell>
                 </TableLinkRow>
               )
