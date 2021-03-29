@@ -192,12 +192,11 @@ const DiscountDetails = ({ id }) => {
   }
 
   const renderDiscountValue = discountRule => {
-    const currency = discount.regions[0].currency_code
-    const vat = discount.regions[0].tax_rate
-
     let val = discountRule.value
 
     if (discountRule.type === "fixed") {
+      const currency = discount.regions[0].currency_code
+      const vat = discount.regions[0].tax_rate
       val = parseInt(val / 100)
       return `${val.toFixed(2)} ${currency.toUpperCase()} ${
         vat > 0 ? `(Excl. VAT)` : ``
@@ -310,8 +309,8 @@ const DiscountDetails = ({ id }) => {
                   ? "Applies to total order amount"
                   : "Applies to specified items"}
               </Text>
-              <Text pt={2}>{discount.rule.usage_limit || "Not set"}</Text>
-              <Text pt={2}>{discount.rule.usage_count}</Text>
+              <Text pt={2}>{discount.usage_limit || "Not set"}</Text>
+              <Text pt={2}>{discount.usage_count}</Text>
             </Box>
           </Box>
           <Divider m={3} />
