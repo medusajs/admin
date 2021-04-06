@@ -631,7 +631,15 @@ const OrderDetails = ({ id }) => {
                   <Text pb={1} color="gray">
                     Shipping Method
                   </Text>
-                  <Text>{method.shipping_option.name}</Text>
+                  <Text>
+                    {method.shipping_option ? (
+                      method.shipping_option.name
+                    ) : (
+                      <span style={{ fontStyle: "italic" }}>
+                        Order was shipped with a now deleted option
+                      </span>
+                    )}
+                  </Text>
                   <Text pt={3} pb={1} color="gray">
                     Data
                   </Text>
