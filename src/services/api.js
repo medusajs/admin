@@ -391,8 +391,8 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
-    receiveSwap(orderId, swapId, payload) {
-      const path = `/admin/orders/${orderId}/swaps/${swapId}/receive`
+    receiveSwap(returnId, payload) {
+      const path = `/admin/returns/${returnId}/receive`
       return medusaRequest("POST", path, payload)
     },
 
@@ -416,8 +416,8 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
-    receiveReturn(orderId, returnId, payload) {
-      const path = `/admin/orders/${orderId}/return/${returnId}/receive`
+    receiveReturn(returnId, payload) {
+      const path = `/admin/returns/${returnId}/receive`
       return medusaRequest("POST", path, payload)
     },
 
