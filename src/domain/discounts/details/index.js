@@ -217,7 +217,7 @@ const DiscountDetails = ({ id }) => {
         >
           {discount.id}
         </Card.Header>
-        <Box>
+        <Box display="flex" flexDirection="column">
           {code && (
             <EditableInput
               text={code}
@@ -236,6 +236,20 @@ const DiscountDetails = ({ id }) => {
               />
             </EditableInput>
           )}
+          <Flex flexDirection="row" mb={3}>
+            <Box pl={3} pr={5}>
+              <Text pt={2} color="gray">
+                Usage limit
+              </Text>
+              <Text pt={2} color="gray">
+                Usage count
+              </Text>
+            </Box>
+            <Box px={3}>
+              <Text pt={2}>{discount.usage_limit || "Not set"}</Text>
+              <Text pt={2}>{discount.usage_count}</Text>
+            </Box>
+          </Flex>
         </Box>
         <Card.Body>
           <Box pl={3} pr={2}>
@@ -258,7 +272,6 @@ const DiscountDetails = ({ id }) => {
               onChange={setSelectedRegions}
             />
           </Box>
-          <Card.VerticalDivider mx={3} />
           <Box ml="auto" />
           <Flex mr={3} mt="auto">
             <Button
