@@ -10,11 +10,18 @@ export const StyledTable = styled(Box)`
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+
+  tr {
+    border-bottom: 1px solid #e3e8ee;
+  }
+
+  td {
+    border: none;
+  }
 `
 
 export const Th = styled.th`
   background-color: ${props => props.theme.colors.light};
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   padding: 2px;
   padding-left: 8px;
   font-size: 12px;
@@ -34,10 +41,8 @@ export const DragHandle = styled.div`
 
 export const Td = styled(TableDataCell)`
   position: relative;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   min-width: 200px;
 
-  padding: 8px;
   font-size: 14px;
   font-family: ${props => props.theme.fonts.body};
 
@@ -70,6 +75,10 @@ export const InputField = styled.input`
   background-color: transparent;
   padding: 0;
   font-size: 14px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   &:focus {
     outline: none;
   }

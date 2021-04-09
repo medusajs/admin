@@ -17,6 +17,8 @@ import {
   TableDataCell,
   TableHeaderRow,
   TableLinkRow,
+  DefaultCellContent,
+  BadgdeCellContent,
 } from "../../../components/table"
 import Badge from "../../../components/badge"
 
@@ -45,18 +47,16 @@ const ReturnIndex = ({}) => {
   }
 
   if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 50
+    filtersOnLoad.limit = 20
   }
 
   const { returns, isLoading, refresh, isReloading } = useMedusa("returns", {
-    search: {
-      ...filtersOnLoad,
-    },
+    search: filtersOnLoad,
   })
 
   const searchRef = useRef(null)
   const [query, setQuery] = useState(null)
-  const [limit, setLimit] = useState(filtersOnLoad.limit || 0)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [fetching, setFetching] = useState(false)
 
@@ -83,7 +83,7 @@ const ReturnIndex = ({}) => {
     const queryParts = {
       q: query,
       offset: 0,
-      limit: 50,
+      limit: 20,
     }
     const prepared = qs.stringify(queryParts, {
       skipNulls: true,
@@ -117,7 +117,7 @@ const ReturnIndex = ({}) => {
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
-    handleTabClick(activeTab, queryParts).then(() => {
+    refresh({ search: queryParts }).then(() => {
       setOffset(updatedOffset)
     })
   }
@@ -130,11 +130,10 @@ const ReturnIndex = ({}) => {
         </Text>
       </Flex>
       <Flex>
-        <Box ml="auto" />
         <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
           <Input
             ref={searchRef}
-            height="28px"
+            height="30px"
             fontSize="12px"
             id="email"
             name="q"
@@ -193,15 +192,21 @@ const ReturnIndex = ({}) => {
                   id={`order-${el.id}`}
                 >
                   <TableDataCell>
-                    <OrderNumCell
-                      fontWeight={500}
-                      color={"link"}
-                      isCanceled={el.status === "canceled"}
-                    >
-                      Go to order
-                    </OrderNumCell>
+                    <DefaultCellContent>
+                      <OrderNumCell
+                        fontWeight={500}
+                        color={"link"}
+                        isCanceled={el.status === "canceled"}
+                      >
+                        Go to order
+                      </OrderNumCell>
+                    </DefaultCellContent>
                   </TableDataCell>
-                  <TableDataCell>{el.swap ? "Swap" : "Default"}</TableDataCell>
+                  <TableDataCell>
+                    <DefaultCellContent>
+                      {el.swap ? "Swap" : "Return"}
+                    </DefaultCellContent>
+                  </TableDataCell>
                   <TableDataCell
                     data-for={el.id}
                     data-tip={moment(el.created_at).format(
@@ -209,31 +214,37 @@ const ReturnIndex = ({}) => {
                     )}
                   >
                     <ReactTooltip id={el.id} place="top" effect="solid" />
-                    {moment(el.created_at).format("MMM Do YYYY")}
+                    <DefaultCellContent>
+                      {moment(el.created_at).format("MMM Do YYYY")}
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    <Box>
+                    <BadgdeCellContent>
                       <Badge
                         color={decideBadgeColor(el.status).color}
                         bg={decideBadgeColor(el.status).bgColor}
                       >
                         {el.status}
                       </Badge>
-                    </Box>
+                    </BadgdeCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    {(el.refund_amount / 100).toFixed(2)}
+                    <DefaultCellContent>
+                      {(el.refund_amount / 100).toFixed(2)}
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell maxWidth="75px">
-                    {el.shipping_address?.country_code ? (
-                      <ReactCountryFlag
-                        style={{ maxHeight: "100%", marginBottom: "0px" }}
-                        svg
-                        countryCode={el.shipping_address.country_code}
-                      />
-                    ) : (
-                      "-"
-                    )}
+                    <DefaultCellContent>
+                      {el.shipping_address?.country_code ? (
+                        <ReactCountryFlag
+                          style={{ maxHeight: "100%", marginBottom: "0px" }}
+                          svg
+                          countryCode={el.shipping_address.country_code}
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </DefaultCellContent>
                   </TableDataCell>
                 </TableLinkRow>
               )

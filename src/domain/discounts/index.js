@@ -14,6 +14,9 @@ import {
   TableHeaderCell,
   TableRow,
   TableDataCell,
+  DefaultCellContent,
+  BadgdeCellContent,
+  TableHeaderRow,
 } from "../../components/table"
 import Spinner from "../../components/spinner"
 import Badge from "../../components/badge"
@@ -45,7 +48,7 @@ const DiscountIndex = () => {
   )
 
   const [query, setQuery] = useState("")
-  const [limit, setLimit] = useState(filtersOnLoad.limit || 0)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [showDynamic, setShowDynamic] = useState(false)
 
@@ -58,7 +61,7 @@ const DiscountIndex = () => {
     const queryParts = {
       q: query,
       offset: 0,
-      limit: 50,
+      limit: 20,
     }
     const prepared = qs.stringify(queryParts, {
       skipNull: true,
@@ -86,7 +89,7 @@ const DiscountIndex = () => {
     const queryParts = {
       is_dynamic: showDynamic,
       offset: 0,
-      limit: 50,
+      limit: 20,
     }
     const prepared = qs.stringify(queryParts, {
       skipNull: true,
@@ -154,7 +157,7 @@ const DiscountIndex = () => {
   return (
     <Flex flexDirection="column" pt={5} pb={5}>
       <Flex>
-        <Text mb={4} fontSize={20} fontWeight="bold">
+        <Text mb={3} fontSize={20} fontWeight="bold">
           Discounts
         </Text>
         <Box ml="auto" />
@@ -163,23 +166,10 @@ const DiscountIndex = () => {
         </Button>
       </Flex>
       <Flex>
-        <Flex maxHeight="18px" alignItems="center">
-          <Label fontSize={0} height="18px" alignItems="center">
-            <Checkbox
-              id="is_dynamic"
-              name="is_dynamic"
-              height="18px"
-              width="18px"
-              onChange={() => setShowDynamic(!showDynamic)}
-            />
-            Show dynamic discounts
-          </Label>
-        </Flex>
-        <Box ml="auto" />
         <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
           <Input
             ref={searchRef}
-            height="28px"
+            height="30px"
             fontSize="12px"
             id="email"
             name="q"
@@ -198,6 +188,19 @@ const DiscountIndex = () => {
         >
           Search
         </Button>
+        <Box ml="auto" />
+        <Flex maxHeight="18px" alignItems="center">
+          <Label fontSize={0} height="18px" alignItems="center">
+            <Checkbox
+              id="is_dynamic"
+              name="is_dynamic"
+              height="18px"
+              width="18px"
+              onChange={() => setShowDynamic(!showDynamic)}
+            />
+            Show dynamic discounts
+          </Label>
+        </Flex>
       </Flex>
       {isLoading || isReloading ? (
         <Flex
@@ -213,48 +216,52 @@ const DiscountIndex = () => {
       ) : (
         <Table>
           <TableHead>
-            <TableRow
-              p={0}
-              sx={{
-                background: "white",
-              }}
-            >
+            <TableHeaderRow>
               <TableHeaderCell>Code</TableHeaderCell>
               <TableHeaderCell>Rule</TableHeaderCell>
               <TableHeaderCell>Disabled</TableHeaderCell>
               <TableHeaderCell>Starts at</TableHeaderCell>
               <TableHeaderCell>Ends at</TableHeaderCell>
-            </TableRow>
+            </TableHeaderRow>
           </TableHead>
           <TableBody>
             {discounts &&
               discounts.map((el, i) => (
                 <TableRow
-                  sx={{ cursor: "pointer" }}
                   key={i}
                   onClick={() => navigate(`/a/discounts/${el.id}`)}
                 >
-                  <TableDataCell>{el.code}</TableDataCell>
-                  <TableDataCell>{el.rule.description}</TableDataCell>
+                  <TableDataCell>
+                    <DefaultCellContent>{el.code}</DefaultCellContent>
+                  </TableDataCell>
+                  <TableDataCell>
+                    <DefaultCellContent>
+                      {el.rule.description}
+                    </DefaultCellContent>
+                  </TableDataCell>
                   <TableDataCell>
                     {el.is_disabled ? (
-                      <Box>
+                      <BadgdeCellContent>
                         <Badge
                           color={decideBadgeColor(el.is_disabled).color}
                           bg={decideBadgeColor(el.is_disabled).bgColor}
                         >
                           Disabled
                         </Badge>
-                      </Box>
+                      </BadgdeCellContent>
                     ) : (
                       "-"
                     )}
                   </TableDataCell>
                   <TableDataCell>
-                    {new Date(el.starts_at).toDateString()}
+                    <DefaultCellContent>
+                      {new Date(el.starts_at).toDateString()}
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    {el.ends_at ? new Date(el.ends_at).toDateString() : "-"}
+                    <DefaultCellContent>
+                      {el.ends_at ? new Date(el.ends_at).toDateString() : "-"}
+                    </DefaultCellContent>
                   </TableDataCell>
                 </TableRow>
               ))}

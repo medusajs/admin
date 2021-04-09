@@ -23,6 +23,8 @@ import {
   TableDataCell,
   TableHeaderRow,
   TableLinkRow,
+  DefaultCellContent,
+  BadgdeCellContent,
 } from "../../components/table"
 import Badge from "../../components/badge"
 
@@ -82,6 +84,12 @@ const OrderNumCell = styled(Text)`
   cursor: pointer;
   font-weight: 500;
 
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  align-items: center;
+
   &:hover {
     color: #454b54;
   }
@@ -101,22 +109,22 @@ const allowedFilters = [
   "created_at[gt]",
   "created_at[gte]",
   "q",
+  "offset",
+  "limit",
 ]
 
 const OrderIndex = ({}) => {
-  let filtersOnLoad = {}
+  let filtersOnLoad = { offset: undefined, limit: undefined }
 
-  useEffect(() => {
-    filtersOnLoad = prepareSearchParams(window.location.search.substring(1), {})
+  filtersOnLoad = prepareSearchParams(window.location.search.substring(1), {})
 
-    if (!filtersOnLoad.offset) {
-      filtersOnLoad.offset = 0
-    }
+  if (!filtersOnLoad.offset) {
+    filtersOnLoad.offset = 0
+  }
 
-    if (!filtersOnLoad.limit) {
-      filtersOnLoad.limit = 50
-    }
-  }, [])
+  if (!filtersOnLoad.limit) {
+    filtersOnLoad.limit = 20
+  }
 
   const {
     orders: allOrders,
@@ -144,7 +152,7 @@ const OrderIndex = ({}) => {
 
   const searchRef = useRef(null)
   const [query, setQuery] = useState(null)
-  const [limit, setLimit] = useState(filtersOnLoad.limit || 50)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [orders, setOrders] = useState([])
   const [filterTabs, setFilterTabs] = useState()
@@ -431,26 +439,20 @@ const OrderIndex = ({}) => {
       resetFilters()
     } else {
       const clean = removeNullish(queryObject)
-      params = Object.keys(clean)
-        .map(k => {
+      const query = { offset: offset || 0, ...clean }
+
+      params = Object.entries(query)
+        .map(([k, v]) => {
           if (k === "created_at") {
-            return qs.stringify({ [k]: clean[k] })
+            return qs.stringify({ [k]: v })
           } else {
-            return `${k}=${clean[k]}`
+            return `${k}=${v}`
           }
         })
         .filter(s => !!s)
         .join("&")
 
-      window.history.replaceState(
-        `/a/orders`,
-        "",
-        `${
-          params
-            ? `?${params}&offset=${offset}&limit=${limit}`
-            : `?offset=${offset}&limit=${limit}`
-        }`
-      )
+      window.history.replaceState(`/a/orders`, "", `${`?${params}`}`)
     }
 
     return params
@@ -501,8 +503,18 @@ const OrderIndex = ({}) => {
     }
 
     const urlFilters = _.pick(searchObject, allowedFilters)
+
+    if (!urlFilters.offset) {
+      urlFilters.offset = 0
+    }
+
+    if (!urlFilters.limit) {
+      urlFilters.limit = 20
+    }
+
     replaceQueryString(urlFilters)
-    refresh({ search: { ...urlFilters, ...defaultQueryProps, offset, limit } })
+
+    refresh({ search: { ...urlFilters, ...defaultQueryProps } })
     decideTab()
     setFetching(false)
   }
@@ -735,40 +747,48 @@ const OrderIndex = ({}) => {
                     )}
                   >
                     <ReactTooltip id={el.id} place="top" effect="solid" />
-                    {moment(el.created_at).format("MMM Do YYYY")}
+                    <DefaultCellContent>
+                      {moment(el.created_at).format("MMM Do YYYY")}
+                    </DefaultCellContent>
                   </TableDataCell>
-                  <TableDataCell>{el.email}</TableDataCell>
                   <TableDataCell>
-                    <Box>
+                    <DefaultCellContent>{el.email}</DefaultCellContent>
+                  </TableDataCell>
+                  <TableDataCell>
+                    <BadgdeCellContent>
                       <Badge
                         color={decideBadgeColor(el.fulfillment_status).color}
                         bg={decideBadgeColor(el.fulfillment_status).bgColor}
                       >
                         {el.fulfillment_status}
                       </Badge>
-                    </Box>
+                    </BadgdeCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    <Box>
+                    <BadgdeCellContent>
                       <Badge
                         color={decideBadgeColor(el.payment_status).color}
                         bg={decideBadgeColor(el.payment_status).bgColor}
                       >
                         {el.payment_status}
                       </Badge>
-                    </Box>
+                    </BadgdeCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    {(el.total / 100).toFixed(2)}{" "}
-                    {el.currency_code.toUpperCase()}
+                    <DefaultCellContent>
+                      {(el.total / 100).toFixed(2)}{" "}
+                      {el.currency_code.toUpperCase()}
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell maxWidth="75px">
                     {el.shipping_address?.country_code ? (
-                      <ReactCountryFlag
-                        style={{ maxHeight: "100%", marginBottom: "0px" }}
-                        svg
-                        countryCode={el.shipping_address.country_code}
-                      />
+                      <DefaultCellContent>
+                        <ReactCountryFlag
+                          style={{ maxHeight: "100%", marginBottom: "0px" }}
+                          svg
+                          countryCode={el.shipping_address.country_code}
+                        />
+                      </DefaultCellContent>
                     ) : (
                       ""
                     )}

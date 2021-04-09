@@ -37,7 +37,7 @@ const CollapseContainer = styled.div`
   display: flex;
   align-items: center;
 
-  background-color: ${props => props.theme.colors.gray};
+  // background-color: ${props => props.theme.colors.gray};
   padding: 7px;
   padding-left: 10px;
 
@@ -185,8 +185,6 @@ const DateFilter = ({
   const [endDate, setEndDate] = useState(new Date())
   const select_ref = useRef()
   const input_ref = useRef()
-
-  console.log(existingDate)
 
   useEffect(() => {
     if (existingDate && typeof existingDate === "string") {

@@ -16,6 +16,8 @@ import {
   TableRow,
   TableDataCell,
   TableHeaderRow,
+  DefaultCellContent,
+  BadgdeCellContent,
 } from "../../components/table"
 import Button from "../../components/button"
 import Spinner from "../../components/spinner"
@@ -30,7 +32,7 @@ const CustomerIndex = () => {
   }
 
   if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 50
+    filtersOnLoad.limit = 20
   }
 
   const { customers, isLoading, refresh, total_count } = useMedusa(
@@ -40,7 +42,7 @@ const CustomerIndex = () => {
     }
   )
   const [offset, setOffset] = useState(0)
-  const [limit, setLimit] = useState(50)
+  const [limit, setLimit] = useState(20)
   const [query, setQuery] = useState("")
 
   const onKeyDown = event => {
@@ -99,10 +101,9 @@ const CustomerIndex = () => {
         </Text>
       </Flex>
       <Flex>
-        <Box ml="auto" />
-        <Box mb={3} sx={{ maxWidth: "300px" }} mr={3}>
+        <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
           <Input
-            height="28px"
+            height="30px"
             fontSize="12px"
             name="q"
             type="text"
@@ -116,7 +117,6 @@ const CustomerIndex = () => {
           onClick={() => searchQuery()}
           variant={"primary"}
           fontSize="12px"
-          ml={2}
         >
           Search
         </Button>
@@ -150,17 +150,23 @@ const CustomerIndex = () => {
                   key={i}
                   onClick={() => navigate(`/a/customers/${el.id}`)}
                 >
-                  <TableDataCell>{el.email ? el.email : "-"}</TableDataCell>
                   <TableDataCell>
-                    {fullName !== " " ? fullName : "-"}
+                    <DefaultCellContent>
+                      {el.email ? el.email : "-"}
+                    </DefaultCellContent>
+                  </TableDataCell>
+                  <TableDataCell>
+                    <DefaultCellContent>
+                      {fullName !== " " ? fullName : "-"}
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell>
                     {el.has_account ? (
-                      <Box>
+                      <BadgdeCellContent>
                         <Badge color="#ffffff" bg="#4BB543">
                           Signed up
                         </Badge>
-                      </Box>
+                      </BadgdeCellContent>
                     ) : (
                       ""
                     )}
