@@ -83,7 +83,6 @@ const ReceiveMenu = ({
       }
     })
 
-    console.log(returns)
     setToReturn(returns)
     setQuantities(qty)
   }, [allItems])
@@ -210,13 +209,12 @@ const ReceiveMenu = ({
             </Box>
           </Flex>
           {allItems.map(item => {
-            // Only show items that have not been returned
-            if (item.returned_quantity === item.quantity) {
+            // Swap returns should only show lines associated with the swap
+            if (!item.fulfilled_quantity) {
               return
             }
 
-            // Swap returns should only show lines associated with the swap
-            if (!item.fulfilled_quantity) {
+            if (item.returned_quantity === item.quantity) {
               return
             }
 
@@ -240,7 +238,7 @@ const ReceiveMenu = ({
                   <Text fontSize={1} lineHeight={"14px"}>
                     {item.title}
                   </Text>
-                  <Text fontSize={0}>{item.variant.sku}</Text>
+                  <Text fontSize={0}>{item?.variant?.sku || ""}</Text>
                 </Box>
                 <Box fontSize={1} width={75} px={2} py={1}>
                   {returnRequest.is_swap ? (
