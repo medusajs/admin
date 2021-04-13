@@ -394,7 +394,7 @@ export default {
     async receiveSwap(returnId, payload) {
       const path = `/admin/returns/${returnId}/receive`
       const received = await medusaRequest("POST", path, payload)
-      const orderId = received.data.return.order_id
+      const orderId = received.data.swap.order_id
 
       return this.retrieve(orderId)
     },

@@ -572,7 +572,20 @@ const OrderDetails = ({ id }) => {
               </Box>
               <Box px={3}>
                 <Text pt={2}>
-                  {order.refunded_total > 0 ? (
+                  {order.payments.length > 1 && order.refunded_total === 0 ? (
+                    <Flex>
+                      <strike style={{ marginRight: "10px" }}>
+                        <AlignedDecimal
+                          currency={order.currency_code}
+                          value={order.total}
+                        />
+                      </strike>
+                      <AlignedDecimal
+                        currency={order.currency_code}
+                        value={_.sum(order.payments.map(el => el.amount))}
+                      />
+                    </Flex>
+                  ) : order.refunded_total > 0 ? (
                     <Flex>
                       <strike style={{ marginRight: "10px" }}>
                         <AlignedDecimal
