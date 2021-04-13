@@ -113,7 +113,7 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
             <StyledImageCard
               key={i}
               m={2}
-              src={img}
+              src={img.url}
               selected={selectedImages.includes(img)}
               onClick={() => handleImageSelection(img)}
             />

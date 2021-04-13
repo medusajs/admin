@@ -177,7 +177,7 @@ const CurrencyInput = React.forwardRef(
           <StyledInput
             ref={ref}
             name={name}
-            value={value}
+            value={value || null}
             onBlur={handleBlur}
             onFocus={handleFocus}
             onChange={onChange}
