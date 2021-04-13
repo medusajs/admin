@@ -307,12 +307,6 @@ const DiscountDetails = ({ id }) => {
               <Text pt={2} color="gray">
                 Allocation
               </Text>
-              <Text pt={2} color="gray">
-                Usage limit
-              </Text>
-              <Text pt={2} color="gray">
-                Usage count
-              </Text>
             </Box>
             <Box px={3}>
               <Text>{discount.rule.description}</Text>
@@ -322,8 +316,6 @@ const DiscountDetails = ({ id }) => {
                   ? "Applies to total order amount"
                   : "Applies to specified items"}
               </Text>
-              <Text pt={2}>{discount.usage_limit || "Not set"}</Text>
-              <Text pt={2}>{discount.usage_count}</Text>
             </Box>
           </Box>
           <Divider m={3} />
