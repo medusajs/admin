@@ -175,8 +175,21 @@ const NewDiscount = ({}) => {
             }}
             value={selectedRegions}
             onChange={onRegionSelect}
+            mb={3}
+          />
+          <Input
+            boldLabel={true}
+            mb={3}
+            label="Usage limit"
+            width="75%"
+            type="number"
+            name="usage_limit"
+            placeholder="5"
+            min="0"
+            ref={register}
           />
         </Box>
+
         <Box>
           <RequiredLabel style={{ fontWeight: 500 }}>
             Is this a dynamic discount?
@@ -239,16 +252,6 @@ const NewDiscount = ({}) => {
           placeholder="10"
           min="0"
           ref={register({ required: true })}
-        />
-        <Input
-          boldLabel={true}
-          mb={3}
-          label="Usage limit"
-          width="75%"
-          type="number"
-          name="rule.usage_limit"
-          placeholder="5"
-          min="0"
         />
         <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
           Type
