@@ -28,8 +28,8 @@ const ProductDetail = ({ id }) => {
 
   const handleProductDelete = () => {
     productDelete().then(() => {
+      refresh({ id })
       toaster("The product was deleted", "success")
-      navigate("/a/products")
     })
   }
 
