@@ -192,12 +192,11 @@ const DiscountDetails = ({ id }) => {
   }
 
   const renderDiscountValue = discountRule => {
-    const currency = discount.regions[0].currency_code
-    const vat = discount.regions[0].tax_rate
-
     let val = discountRule.value
 
     if (discountRule.type === "fixed") {
+      const currency = discount.regions[0].currency_code
+      const vat = discount.regions[0].tax_rate
       val = parseInt(val / 100)
       return `${val.toFixed(2)} ${currency.toUpperCase()} ${
         vat > 0 ? `(Excl. VAT)` : ``
@@ -218,7 +217,7 @@ const DiscountDetails = ({ id }) => {
         >
           {discount.id}
         </Card.Header>
-        <Box>
+        <Box display="flex" flexDirection="column">
           {code && (
             <EditableInput
               text={code}
@@ -237,6 +236,20 @@ const DiscountDetails = ({ id }) => {
               />
             </EditableInput>
           )}
+          <Flex flexDirection="row" mb={3}>
+            <Box pl={3} pr={5}>
+              <Text pt={2} color="gray">
+                Usage limit
+              </Text>
+              <Text pt={2} color="gray">
+                Usage count
+              </Text>
+            </Box>
+            <Box px={3}>
+              <Text pt={2}>{discount.usage_limit || "Not set"}</Text>
+              <Text pt={2}>{discount.usage_count}</Text>
+            </Box>
+          </Flex>
         </Box>
         <Card.Body>
           <Box pl={3} pr={2}>
@@ -259,7 +272,6 @@ const DiscountDetails = ({ id }) => {
               onChange={setSelectedRegions}
             />
           </Box>
-          <Card.VerticalDivider mx={3} />
           <Box ml="auto" />
           <Flex mr={3} mt="auto">
             <Button
@@ -310,8 +322,8 @@ const DiscountDetails = ({ id }) => {
                   ? "Applies to total order amount"
                   : "Applies to specified items"}
               </Text>
-              <Text pt={2}>{discount.rule.usage_limit || "Not set"}</Text>
-              <Text pt={2}>{discount.rule.usage_count}</Text>
+              <Text pt={2}>{discount.usage_limit || "Not set"}</Text>
+              <Text pt={2}>{discount.usage_count}</Text>
             </Box>
           </Box>
           <Divider m={3} />
