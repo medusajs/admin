@@ -16,6 +16,7 @@ import Customers from "../domain/customers"
 import Collections from "../domain/collections"
 import Returns from "../domain/orders/returns"
 import Swaps from "../domain/orders/swaps"
+import Home from "../domain/home"
 
 const IndexPage = () => {
   useHotkeys("g + o", () => navigate("/a/orders"))
@@ -24,6 +25,7 @@ const IndexPage = () => {
     <Layout>
       <SEO title="Home" />
       <Router basepath="a">
+        <PrivateRoute path="/" component={Home} />
         <PrivateRoute path="oauth/:app_name" component={Oauth} />
         <PrivateRoute path="products/*" component={Products} />
         <PrivateRoute path="collections/*" component={Collections} />

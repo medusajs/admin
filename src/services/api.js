@@ -326,6 +326,7 @@ export default {
     },
 
     list(search = {}) {
+      console.log(search)
       const clean = removeNullish(search)
       const params = Object.keys(clean)
         .map(k => `${k}=${search[k]}`)
