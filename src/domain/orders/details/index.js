@@ -295,7 +295,6 @@ const OrderDetails = ({ id }) => {
     capturePayment,
     requestReturn,
     receiveReturn,
-    receiveSwap,
     receiveClaim,
     createFulfillment,
     processSwapPayment,
@@ -400,7 +399,10 @@ const OrderDetails = ({ id }) => {
     let fulfillmentStatus = order.fulfillment_status
 
     if (
-      allItems.every(item => item.returned_quantity === item.fulfilled_quantity)
+      allItems.every(
+        item => item.returned_quantity === item.fulfilled_quantity
+      ) &&
+      fulfillmentStatus !== "not_fulfilled"
     ) {
       fulfillmentStatus = "returned"
     }
@@ -819,7 +821,7 @@ const OrderDetails = ({ id }) => {
           order={order}
           returnRequest={toReceive}
           onReceiveReturn={receiveReturn}
-          onReceiveSwap={receiveSwap}
+          onReceiveSwap={receiveReturn}
           onDismiss={() => setToReceive(false)}
           toaster={toaster}
         />
