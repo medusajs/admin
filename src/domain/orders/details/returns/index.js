@@ -82,7 +82,11 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const items = toReturn.map(t => allItems.find(i => i.id === t))
     const total =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next.id]
+        return (
+          acc +
+          (next.refundable / (next.quantity - next.returned_quantity)) *
+            quantities[next.id]
+        )
       }, 0) - (shippingPrice || 0)
 
     setRefundable(total)
