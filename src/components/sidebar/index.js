@@ -88,7 +88,12 @@ const Sidebar = ({}) => {
 
   return (
     <Container fontSize={1} fontFamily={"body"} pb={3} pt={4} px={4}>
-      <Flex mx={-2} alignItems="center">
+      <Flex
+        mx={-2}
+        alignItems="center"
+        onClick={() => navigate("/")}
+        sx={{ cursor: "pointer" }}
+      >
         <LogoContainer width={2 / 12} mx={2}>
           <img src="https://img.icons8.com/ios/50/000000/online-shopping.png" />
         </LogoContainer>
