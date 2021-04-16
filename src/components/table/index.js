@@ -28,6 +28,10 @@ const StyledTableRow = styled(Flex)`
   th:nth-of-type(1) {
     padding-left: 15px;
   }
+
+  &:focus {
+    outline: none;
+  }
 `
 
 const StyledTableLinkRow = styled(Link)`
@@ -56,12 +60,12 @@ const StyledTableLinkRow = styled(Link)`
     background-color: ${props =>
       props.isHighlighted ? "#454545" : "transparent"};
   }
-  td:nth-of-type(1) {
-    padding-left: 15px;
-  }
-  th:nth-of-type(1) {
-    padding-left: 15px;
-  }
+  // td:nth-of-type(1) {
+  //   padding-left: 15px;
+  // }
+  // th:nth-of-type(1) {
+  //   padding-left: 15px;
+  // }
 
   td {
     padding-top: 0px;
@@ -200,6 +204,11 @@ export const TableDataCell = React.forwardRef((props, ref) => (
     height="100%"
     width="100%"
     maxWidth={props.maxWidth ? props.maxWidth : "100%"}
-    sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+    sx={{
+      ...props.sx,
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    }}
   />
 ))
