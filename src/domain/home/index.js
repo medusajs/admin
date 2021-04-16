@@ -7,6 +7,7 @@ import { Box, Flex, Text } from "rebass"
 import styled from "@emotion/styled"
 import useMedusa from "../../hooks/use-medusa"
 import { atMidnight, dateToUnixTimestamp, addHours } from "../../utils/time"
+import Spinner from "../../components/spinner"
 
 const HorizontalDivider = props => (
   <Box
@@ -57,8 +58,8 @@ const SubTitle = styled(Text)`
 `
 
 const SettingContainer = styled(Flex)`
-  width: 50%;
   min-height: 120px;
+  border-right: 1px solid #e3e8ee;
   flex-direction: ${props =>
     props.flexDirection ? props.flexDirection : "column"};
 `
@@ -78,7 +79,10 @@ const Overview = () => {
     return { gt: day, lt: nextDay }
   }
 
-  const { orders: incompleteOrders } = useMedusa("orders", {
+  const {
+    orders: incompleteOrders,
+    isLoading: isLoadingIncomplete,
+  } = useMedusa("orders", {
     search: {
       fields: "id",
       ["fulfillment_status[]"]: ["not_fulfilled", "fulfilled"],
@@ -86,17 +90,16 @@ const Overview = () => {
     },
   })
 
-  const { orders: ordersToday } = useMedusa("orders", {
-    search: {
-      fields: "id",
-      ["created_at[gt]"]: getToday().gt,
-      ["created_at[lt]"]: getToday().lt,
-    },
-  })
-
-  // useEffect(() => {
-  //   navigate("/a/orders")
-  // }, [])
+  const { orders: ordersToday, isLoading: isLoadingToday } = useMedusa(
+    "orders",
+    {
+      search: {
+        fields: "id",
+        ["created_at[gt]"]: getToday().gt,
+        ["created_at[lt]"]: getToday().lt,
+      },
+    }
+  )
 
   return (
     <>
@@ -111,94 +114,88 @@ const Overview = () => {
           </Text>
         </Flex>
         <HorizontalDivider />
-        <Flex width="100%" justifyContent="space-evenly">
-          <SettingContainer py={4} flexDirection="row">
-            <Flex flexDirection="column">
-              <SubTitle>
-                <StyledImg src="https://img.icons8.com/ios/50/000000/total-sales-1.png" />
-                Sales
-              </SubTitle>
-              <Text fontSize={14}>Today</Text>
-            </Flex>
-            <Box ml="auto" />
-            <Flex pr={4}>
-              <Text fontSize={"36px"} fontWeight="600" pr={2}>
-                $245.42
-              </Text>
-            </Flex>
-          </SettingContainer>
-          <VerticalDivider />
-          <SettingContainer p={4}>
-            <SubTitle>
-              <StyledImg src="https://img.icons8.com/ios/50/000000/currency-exchange.png" />
-              Orders
-            </SubTitle>
-            <Text fontSize={14}>Today</Text>
-          </SettingContainer>
-        </Flex>
-        <HorizontalDivider />
-        <Flex width="100%" justifyContent="space-evenly">
-          <SettingContainer pt={4}>
-            <SubTitle mb={2}>
-              <StyledImg src="https://img.icons8.com/ios/50/000000/merchant-account.png" />
-              Requires action
-            </SubTitle>
-            <Text fontSize={15}>
-              <b>20</b>{" "}
-              <GoTo onClick={() => navigate("/a/orders")}>Order(s)</GoTo> are
-              incomplete
-            </Text>
-            <Text fontSize={15}>
-              <b>14</b>{" "}
-              <GoTo onClick={() => navigate("/a/products")}>Product(s)</GoTo>{" "}
-              are out of stock
-            </Text>
-          </SettingContainer>
-          <VerticalDivider />
-          <SettingContainer p={4}>
-            <SubTitle>
-              <StyledImg src="https://img.icons8.com/ios/50/000000/document-delivery.png" />
-              Shipping
-            </SubTitle>
-            <Text fontSize={14}>Manage shipping profiles</Text>
-            <StyledLinkText
-              fontSize={14}
-              color="link"
-              sx={{ opacity: "0.5", pointerEvents: "none" }}
-              onClick={() => navigate(`/a/settings/shipping-profiles`)}
-            >
-              Edit shipping profiles
-            </StyledLinkText>
-          </SettingContainer>
-        </Flex>
-        <HorizontalDivider />
-        <Flex width="100%" justifyContent="space-evenly">
-          <SettingContainer pt={4}>
-            <SubTitle>
-              <StyledImg src="https://img.icons8.com/ios/50/000000/purchase-order.png" />
-              Orders
-            </SubTitle>
-            <Text fontSize={14}>Manage Order Settings</Text>
-            <StyledLinkText
-              fontSize={14}
-              color="link"
-              onClick={() => navigate(`/a/settings/return-reasons`)}
-            >
-              Manage Return Reasons
-            </StyledLinkText>
-          </SettingContainer>
-          <VerticalDivider />
-          <SettingContainer
-            p={4}
-            sx={{ opacity: "0.3", pointerEvents: "none" }}
+        {isLoadingIncomplete || isLoadingToday ? (
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            height="100vh"
+            mt="20%"
           >
-            <SubTitle>
-              <StyledImg src="https://img.icons8.com/ios/50/000000/user-group-man-man.png" />
-              Users
-            </SubTitle>
-            <Text fontSize={14}>Manage users of your Medusa store</Text>
-          </SettingContainer>
-        </Flex>
+            <Box height="50px" width="50px">
+              <Spinner dark />
+            </Box>
+          </Flex>
+        ) : (
+          <Flex flexDirection="row" width="100%">
+            <Flex flexDirection="column" width="50%">
+              <SettingContainer py={4} flexDirection="row">
+                <Flex flexDirection="column">
+                  <SubTitle>
+                    <StyledImg src="https://img.icons8.com/ios/50/000000/total-sales-1.png" />
+                    Sales
+                  </SubTitle>
+                  <Text fontSize={14}>Today</Text>
+                </Flex>
+                <Box ml="auto" />
+                <Flex pr={4}>
+                  <Text fontSize={"36px"} fontWeight="600" pr={2}>
+                    $245.42
+                  </Text>
+                </Flex>
+              </SettingContainer>
+              <HorizontalDivider />
+              <SettingContainer py={4} flexDirection="row">
+                <Flex flexDirection="column">
+                  <SubTitle>
+                    <StyledImg src="https://img.icons8.com/ios/50/000000/purchase-order.png" />
+                    Orders
+                  </SubTitle>
+                  <Text fontSize={14}>Today</Text>
+                </Flex>
+                <Box ml="auto" />
+                <Flex pr={4}>
+                  <Text fontSize={"36px"} fontWeight="600" pr={2}>
+                    {ordersToday && ordersToday.length}
+                  </Text>
+                </Flex>
+              </SettingContainer>
+              <VerticalDivider />
+              <Box width="100%" />
+              <HorizontalDivider />
+              <SettingContainer py={4}>
+                <SubTitle mb={2}>
+                  <StyledImg src="https://img.icons8.com/ios/50/000000/merchant-account.png" />
+                  Actionables
+                </SubTitle>
+                <Text fontSize={15}>
+                  {incompleteOrders && incompleteOrders.length === 50 ? (
+                    <b>Over 50 </b>
+                  ) : (
+                    <b>{incompleteOrders && incompleteOrders.length} </b>
+                  )}
+                  <GoTo onClick={() => navigate("/a/orders")}>Order(s)</GoTo>{" "}
+                  are incomplete
+                </Text>
+                {/* <Text fontSize={15}>
+                  <b>14</b>{" "}
+                  <GoTo onClick={() => navigate("/a/products")}>
+                    Product(s)
+                  </GoTo>{" "}
+                  are out of stock
+                </Text> */}
+              </SettingContainer>
+            </Flex>
+            <Flex flexDirection="column" width="50%">
+              <Flex flexDirection="column" p={4}>
+                <SubTitle>
+                  <StyledImg src="https://img.icons8.com/ios/50/000000/activity-history.png" />
+                  Order history
+                </SubTitle>
+                <Text fontSize={14}>Today</Text>
+              </Flex>
+            </Flex>
+          </Flex>
+        )}
       </Flex>
     </>
   )
