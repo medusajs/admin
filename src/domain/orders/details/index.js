@@ -223,11 +223,6 @@ const PaymentDetails = ({ order }) => {
             Refunded (manual)
           </Text>
         )}
-        {!!swapRefund && (
-          <Text pt={2} color="gray">
-            Refunded (swaps)
-          </Text>
-        )}
         {!!returnRefund && (
           <Text pt={2} color="gray">
             Refunded (returns)
@@ -245,7 +240,7 @@ const PaymentDetails = ({ order }) => {
           <Flex pt={2}>
             <AlignedDecimal
               currency={order.currency_code}
-              value={manualRefund}
+              value={-manualRefund}
             />
           </Flex>
         )}
@@ -253,7 +248,7 @@ const PaymentDetails = ({ order }) => {
           <Flex pt={2}>
             <AlignedDecimal
               currency={order.currency_code}
-              value={returnRefund}
+              value={-returnRefund}
             />
           </Flex>
         )}
