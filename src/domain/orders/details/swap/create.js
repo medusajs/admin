@@ -149,7 +149,11 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     const items = toReturn.map(t => allItems.find(i => i.id === t))
     const returnTotal =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next.id]
+        return (
+          acc +
+          (next.refundable / (next.quantity - next.returned_quantity)) *
+            quantities[next.id]
+        )
       }, 0) - (shippingPrice || 0)
 
     const newItemsTotal = itemsToAdd.reduce((acc, next) => {
