@@ -1,6 +1,13 @@
 const buildTimeline = (order, notifications) => {
   const events = []
 
+  let allItems = [...order.items]
+  if (order.swaps && order.swaps.length) {
+    for (const swap of order.swaps) {
+      allItems = [...allItems, ...swap.additional_items]
+    }
+  }
+
   for (const n of notifications) {
     events.push({
       id: n.id,
@@ -15,7 +22,7 @@ const buildTimeline = (order, notifications) => {
 
   const returns = order.returns.map(r => {
     const items = r.items.map(i => {
-      const line = order.items.find(({ id }) => i.item_id === id)
+      const line = allItems.find(({ id }) => i.item_id === id)
       return {
         ...line,
         is_registered: i.is_registered,
@@ -86,7 +93,7 @@ const buildTimeline = (order, notifications) => {
   if (order.swaps && order.swaps.length) {
     for (const swap of order.swaps) {
       const returnLines = swap.return_order.items.map(i => {
-        const line = order.items.find(({ id }) => i.item_id === id)
+        const line = allItems.find(({ id }) => i.item_id === id)
         return {
           ...line,
           quantity: i.quantity,

@@ -202,13 +202,7 @@ const useMedusa = (endpoint, query) => {
 
         value.receiveReturn = (returnId, payload) => {
           return subcomponent
-            .receiveReturn(query.id, returnId, payload)
-            .then(({ data }) => setResult(data))
-        }
-
-        value.receiveSwap = (swapId, payload) => {
-          return subcomponent
-            .receiveSwap(query.id, swapId, payload)
+            .receiveReturn(returnId, payload)
             .then(({ data }) => setResult(data))
         }
 

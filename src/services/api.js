@@ -306,6 +306,23 @@ export default {
       return medusaRequest("POST", path, order)
     },
 
+    async receiveReturn(returnId, payload) {
+      const path = `/admin/returns/${returnId}/receive`
+
+      const received = await medusaRequest("POST", path, payload)
+
+      let orderId
+      if (received.data.return?.order_id) {
+        orderId = received.data.return.order_id
+      }
+
+      if (received.data.return?.swap?.id) {
+        orderId = received.data.return?.swap?.order_id
+      }
+
+      return this.retrieve(orderId)
+    },
+
     retrieve(orderId, search = {}) {
       const params = Object.keys(search)
         .map(k => {
@@ -391,11 +408,6 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
-    receiveSwap(orderId, swapId, payload) {
-      const path = `/admin/orders/${orderId}/swaps/${swapId}/receive`
-      return medusaRequest("POST", path, payload)
-    },
-
     processSwapPayment(orderId, swapId) {
       const path = `/admin/orders/${orderId}/swaps/${swapId}/process-payment`
       return medusaRequest("POST", path)
@@ -413,11 +425,6 @@ export default {
 
     requestReturn(orderId, payload) {
       const path = `/admin/orders/${orderId}/return`
-      return medusaRequest("POST", path, payload)
-    },
-
-    receiveReturn(orderId, returnId, payload) {
-      const path = `/admin/orders/${orderId}/return/${returnId}/receive`
       return medusaRequest("POST", path, payload)
     },
 
