@@ -218,6 +218,10 @@ const ReceiveMenu = ({
               return
             }
 
+            if (returnRequest.is_swap && !quantities[item.id]) {
+              return
+            }
+
             return (
               <Flex
                 key={item.id}

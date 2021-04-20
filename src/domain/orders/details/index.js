@@ -393,6 +393,10 @@ const OrderDetails = ({ id }) => {
 
     let fulfillmentStatus = order.fulfillment_status
 
+    if (fulfillmentStatus === "requires_action") {
+      return fulfillmentStatus
+    }
+
     if (
       allItems.every(
         item => item.returned_quantity === item.fulfilled_quantity
