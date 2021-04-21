@@ -14,19 +14,11 @@ const LineItemLabel = styled(Text)`
   font-size: 10px;
 `
 
-const LineItem = ({
-  lineItem,
-  currency,
-  taxRate,
-  onReceiveReturn,
-  rawEvent,
-}) => {
-  const productId = Array.isArray(lineItem.content)
-    ? lineItem.content[0].product._id
-    : lineItem.content.product._id
+const LineItem = ({ lineItem, currency, taxRate }) => {
+  const productId = lineItem.variant.product_id
 
   return (
-    <Flex px={3} alignItems="center">
+    <Flex alignItems="center">
       <Flex flex={1} alignItems="center">
         <Box alignSelf={"center"} minWidth={"35px"}>
           {lineItem.quantity} x
@@ -49,42 +41,50 @@ const LineItem = ({
             onClick={() => navigate(`/a/products/${productId}`)}
           >
             {lineItem.title}
-            <br /> {lineItem.content.variant.sku}
+            <br /> {lineItem.variant.sku}
             <br />
-            {(1 + taxRate) * lineItem.content.unit_price} {currency}
+            {((1 + taxRate / 100) * lineItem.unit_price) / 100}{" "}
+            {currency.toUpperCase()}
           </LineItemLabel>
         </Box>
       </Flex>
-      {rawEvent.status !== "received" && (
-        <Flex>
-          <Button onClick={() => onReceiveReturn(rawEvent)} variant={"primary"}>
-            Receive return
-          </Button>
-        </Flex>
-      )}
     </Flex>
   )
 }
 
 export default ({ event, order, onReceiveReturn }) => {
   return (
-    <Box sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
-      <Text ml={3} fontSize={1} color="grey">
+    <Box sx={{ borderBottom: "hairline" }} pb={3} mb={3} px={3}>
+      <Text fontSize={1} color="grey" fontWeight="500">
         Return {event.status}
       </Text>
-      <Text fontSize="11px" color="grey" ml={3} mb={3}>
+      <Text fontSize="11px" color="grey" mb={3}>
         {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
       </Text>
-      {event.items.map(lineItem => (
-        <LineItem
-          key={lineItem._id}
-          currency={order.currency_code}
-          lineItem={lineItem}
-          taxRate={order.region.tax_rate}
-          onReceiveReturn={onReceiveReturn}
-          rawEvent={event.raw}
-        />
-      ))}
+      <Flex justifyContent="space-between">
+        <Box>
+          {event.items.map(lineItem => (
+            <LineItem
+              key={lineItem._id}
+              currency={order.currency_code}
+              lineItem={lineItem}
+              taxRate={order.region.tax_rate}
+              onReceiveReturn={onReceiveReturn}
+              rawEvent={event.raw}
+            />
+          ))}
+        </Box>
+        {event.raw.status !== "received" && (
+          <Flex>
+            <Button
+              onClick={() => onReceiveReturn(event.raw)}
+              variant={"primary"}
+            >
+              Receive return
+            </Button>
+          </Flex>
+        )}
+      </Flex>
     </Box>
   )
 }

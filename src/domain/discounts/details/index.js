@@ -17,15 +17,6 @@ import DiscountRuleModal from "./discount-rule"
 import { Input } from "@rebass/forms"
 import Typography from "../../../components/typography"
 
-const ProductLink = styled(Text)`
-  color: #006fbb;
-  z-index: 1000;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  `
-
 const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
 
@@ -81,9 +72,6 @@ const Divider = props => (
 )
 
 const DiscountDetails = ({ id }) => {
-  const [selectedProducts, setSelectedProducts] = useState(
-    discount && discount.discount_rule ? discount.discount_rule.valid_for : []
-  )
   const [updating, setUpdating] = useState(false)
   const [showRuleEdit, setShowRuleEdit] = useState(false)
   const [code, setCode] = useState(discount && discount.code)
@@ -110,8 +98,8 @@ const DiscountDetails = ({ id }) => {
   useEffect(() => {
     if (regions && discount && discount.regions) {
       const temp = regions.reduce((acc, next) => {
-        if (discount.regions.includes(next._id)) {
-          acc.push({ label: next.name, value: next._id })
+        if (discount.regions.map(r => r.id).includes(next.id)) {
+          acc.push({ label: next.name, value: next.id })
         }
         return acc
       }, [])
@@ -149,7 +137,7 @@ const DiscountDetails = ({ id }) => {
   const handleDisabled = () => {
     setUpdating(true)
     update({
-      disabled: discount.disabled ? false : true,
+      is_disabled: discount.is_disabled ? false : true,
     })
       .then(() => {
         refresh({ id })
@@ -165,7 +153,7 @@ const DiscountDetails = ({ id }) => {
   const handleDiscountRuleUpdate = data => {
     setUpdating(true)
     update({
-      discount_rule: data,
+      rule: data,
     })
       .then(() => {
         refresh({ id })
@@ -182,8 +170,8 @@ const DiscountDetails = ({ id }) => {
 
   const handleRegionUpdate = data => {
     const toUpdateWith = regions.reduce((acc, next) => {
-      if (data.map(el => el.value).includes(next._id)) {
-        acc.push(next._id)
+      if (data.map(el => el.value).includes(next.id)) {
+        acc.push(next.id)
       }
       return acc
     }, [])
@@ -203,18 +191,33 @@ const DiscountDetails = ({ id }) => {
       })
   }
 
+  const renderDiscountValue = discountRule => {
+    let val = discountRule.value
+
+    if (discountRule.type === "fixed") {
+      const currency = discount.regions[0].currency_code
+      const vat = discount.regions[0].tax_rate
+      val = parseInt(val / 100)
+      return `${val.toFixed(2)} ${currency.toUpperCase()} ${
+        vat > 0 ? `(Excl. VAT)` : ``
+      }`
+    } else {
+      return `${val} %`
+    }
+  }
+
   return (
-    <Flex flexDirection="column" mb={5}>
+    <Flex flexDirection="column" mb={5} pt={5}>
       <Card mb={2}>
         <Card.Header
           action={{
-            label: discount.disabled ? "Enable" : "Disable",
+            label: discount.is_disabled ? "Enable" : "Disable",
             onClick: () => handleDisabled(),
           }}
         >
-          {discount._id}
+          {discount.id}
         </Card.Header>
-        <Box>
+        <Box display="flex" flexDirection="column">
           {code && (
             <EditableInput
               text={code}
@@ -233,22 +236,22 @@ const DiscountDetails = ({ id }) => {
               />
             </EditableInput>
           )}
-          {/* <Text p={3} fontWeight="bold">
-            {discount.code}
-          </Text> */}
+          <Flex flexDirection="row" mb={3}>
+            <Box pl={3} pr={5}>
+              <Text pt={2} color="gray">
+                Usage limit
+              </Text>
+              <Text pt={2} color="gray">
+                Usage count
+              </Text>
+            </Box>
+            <Box px={3}>
+              <Text pt={2}>{discount.usage_limit || "Not set"}</Text>
+              <Text pt={2}>{discount.usage_count}</Text>
+            </Box>
+          </Flex>
         </Box>
         <Card.Body>
-          <Box pl={3} pr={2}>
-            <Text pb={1} color="gray">
-              Disabled
-            </Text>
-            <Text pt={1} width="100%" textAlign="center" mt={2}>
-              <Badge width="100%" color="#4f566b" bg="#e3e8ee">
-                {`${discount.disabled}`}
-              </Badge>
-            </Text>
-          </Box>
-          <Card.VerticalDivider mx={3} />
           <Box pl={3} pr={2}>
             <Text pb={1} color="gray">
               Valid regions
@@ -258,7 +261,7 @@ const DiscountDetails = ({ id }) => {
                 regions &&
                 regions.map(el => ({
                   label: el.name,
-                  value: el._id,
+                  value: el.id,
                 }))
               }
               selectAllLabel={"All"}
@@ -269,13 +272,12 @@ const DiscountDetails = ({ id }) => {
               onChange={setSelectedRegions}
             />
           </Box>
-          <Card.VerticalDivider mx={3} />
           <Box ml="auto" />
           <Flex mr={3} mt="auto">
             <Button
               disabled={_.isEqual(
-                selectedRegions.map(el => el.value),
-                discount.regions
+                selectedRegions.map(r => r.value),
+                discount.regions.map(r => r.id)
               )}
               variant="primary"
               onClick={() => handleRegionUpdate(selectedRegions)}
@@ -299,56 +301,28 @@ const DiscountDetails = ({ id }) => {
           <Box display="flex" flexDirection="row">
             <Box pl={3} pr={5}>
               <Text color="gray">Description</Text>
-              <Text pt={1} color="gray">
-                Type
-              </Text>
-              <Text pt={1} color="gray">
+              <Text pt={2} color="gray">
                 Value
               </Text>
-              <Text pt={1} color="gray">
-                Allocation method
+              <Text pt={2} color="gray">
+                Allocation
               </Text>
             </Box>
             <Box px={3}>
-              <Text>{discount.discount_rule.description}</Text>
-              <Text pt={1}>{discount.discount_rule.type}</Text>
-              <Text pt={1}>{discount.discount_rule.value}</Text>
-              <Text pt={1}>{discount.discount_rule.allocation}</Text>
+              <Text>{discount.rule.description}</Text>
+              <Text pt={2}>{renderDiscountValue(discount.rule)}</Text>
+              <Text pt={2}>
+                {discount.rule.allocation === "total"
+                  ? "Applies to total order amount"
+                  : "Applies to specified items"}
+              </Text>
             </Box>
           </Box>
           <Divider m={3} />
           <Box>
             <Text ml={3} mb={2}>
-              Applicable product(s)
+              Applicable for all products
             </Text>
-            {discount.discount_rule.valid_for.map(product => (
-              <Box
-                key={product._id}
-                pl={3}
-                pr={2}
-                py={2}
-                display="flex"
-                alignItems="center"
-              >
-                <Image
-                  ml={3}
-                  src={product.thumbnail || ""}
-                  sx={{
-                    objectFit: "contain",
-                    width: 35,
-                    height: 35,
-                  }}
-                />
-                <Card.VerticalDivider mx={3} height="35px" />
-                <ProductLink
-                  onClick={() => navigate(`/a/products/${product._id}`)}
-                >
-                  {product.title}
-                </ProductLink>
-                <Card.VerticalDivider mx={3} height="35px" />
-                <Text>{product.variants.length} variant(s)</Text>
-              </Box>
-            ))}
           </Box>
         </Card.Body>
       </Card>
@@ -369,8 +343,8 @@ const DiscountDetails = ({ id }) => {
           onUpdate={handleDiscountRuleUpdate}
           onDismiss={() => setShowRuleEdit(false)}
           products={products}
-          selectedProducts={selectedProducts}
-          setSelectedProducts={setSelectedProducts}
+          // selectedProducts={selectedProducts}
+          // setSelectedProducts={setSelectedProducts}
         />
       )}
     </Flex>

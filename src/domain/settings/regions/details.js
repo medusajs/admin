@@ -13,10 +13,10 @@ import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import TagDropdown from "../../../components/tag-dropdown"
 
-import { currencies as currencyData } from "../../../utils/currencies"
 import { countries as countryData } from "../../../utils/countries"
 
 import Shipping from "./shipping"
+import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 
 const Regions = ({ id }) => {
   const [currencies, setCurrencies] = useState([])
@@ -32,66 +32,86 @@ const Regions = ({ id }) => {
     isLoading,
     fulfillmentOptions: fulfillmentEndpoint,
     update,
+    toaster,
   } = useMedusa("regions", { id })
   const { register, reset, setValue, handleSubmit } = useForm()
 
   useEffect(() => {
     if (storeIsLoading) return
-    setCurrencies(
-      store.currencies.map(c => ({
-        symbol: currencyData[c].symbol_native,
-        value: c,
-        code: c,
-      }))
-    )
+    if (store.currencies && region) {
+      setCurrencies(getCurrencies(store.currencies))
+    }
+  }, [store, region, storeIsLoading])
+
+  useEffect(() => {
+    if (storeIsLoading) return
     setPaymentOptions(
-      store.payment_providers.map(c => paymentProvidersMapper(c))
+      store.payment_providers.map(c => paymentProvidersMapper(c.id))
     )
     setFulfillmentOptions(
-      store.fulfillment_providers.map(c => ({
-        value: c,
-        label: c,
-      }))
+      store.fulfillment_providers.map(c => fulfillmentProvidersMapper(c.id))
     )
   }, [store, storeIsLoading])
 
   useEffect(() => {
     if (isLoading) return
-    reset(region)
+    reset({ ...region, tax_rate: region.tax_rate / 100 })
     register({ name: "countries" })
     register({ name: "payment_providers" })
     register({ name: "fulfillment_providers" })
 
-    setValue("countries", region.countries)
-    const selectedCountries = region.countries.map(c =>
-      countryData.find(cd => cd.alpha2 === c)
+    setValue(
+      "countries",
+      region.countries.map(c => c.iso_2)
     )
     setCountries(
-      selectedCountries.map(v => ({ value: v.alpha2, label: v.name }))
+      region.countries.map(c => ({ value: c.iso_2, label: c.display_name }))
     )
 
-    setValue("payment_providers", region.payment_providers)
-    setPaymentProviders(region.payment_providers.map(v => ({ value: v })))
+    setValue(
+      "payment_providers",
+      region.payment_providers.map(v => v.id)
+    )
+    setPaymentProviders(region.payment_providers.map(v => ({ value: v.id })))
 
-    setValue("fulfillment_providers", region.fulfillment_providers)
+    setValue(
+      "fulfillment_providers",
+      region.fulfillment_providers.map(v => v.id)
+    )
     setFulfillmentProviders(
-      region.fulfillment_providers.map(v => ({ value: v }))
+      region.fulfillment_providers.map(v => ({ value: v.id }))
     )
   }, [region, isLoading])
 
+  const getCurrencies = storeCurrencies => {
+    let currs = storeCurrencies
+      .filter(item => item.code !== region.currency_code)
+      .map(el => el.code)
+    currs.unshift(region.currency_code)
+
+    return (
+      currs.map(c => ({
+        value: c,
+        label: c.toUpperCase(),
+      })) || []
+    )
+  }
+
   const handlePaymentChange = values => {
-    setPaymentProviders(values)
+    const providers = values.map(v => ({ value: v.value }))
+    setPaymentProviders(providers)
     setValue(
       "payment_providers",
-      values.map(c => c.value)
+      values.map(v => v.value)
     )
   }
 
   const handleFulfillmentChange = values => {
-    setFulfillmentProviders(values)
+    const providers = values.map(v => ({ value: v.value }))
+    setFulfillmentProviders(providers)
     setValue(
       "fulfillment_providers",
-      values.map(c => c.value)
+      values.map(v => v.value)
     )
   }
 
@@ -103,18 +123,32 @@ const Regions = ({ id }) => {
     )
   }
 
-  const onSave = data => {
-    console.log(data)
-    update(data)
+  const onSave = async data => {
+    try {
+      await update({ ...data, tax_rate: data.tax_rate * 100 })
+      toaster("Successfully updated region", "success")
+    } catch (error) {
+      toaster("Failed to update region", "error")
+    }
   }
 
   const countryOptions = countryData.map(c => ({
     label: c.name,
-    value: c.alpha2,
+    value: c.alpha2.toLowerCase(),
   }))
 
+  if (isLoading || !currencies.length) {
+    return (
+      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
+        <Box height="75px" width="75px" mt="50%">
+          <Spinner dark />
+        </Box>
+      </Flex>
+    )
+  }
+
   return (
-    <Flex flexDirection="column" pt={5} mb={5}>
+    <Flex flexDirection="column" py={5} mb={5}>
       <Card as="form" mb={3} onSubmit={handleSubmit(onSave)}>
         <Card.Header>Region Details</Card.Header>
         <Card.Body flexDirection="column">

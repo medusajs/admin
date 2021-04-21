@@ -39,6 +39,10 @@ const StyledInput = styled.input`
   &:focus {
     outline: none;
   }
+
+  &::placeholder {
+    opacity: 0.2;
+  }
 `
 
 const TagInput = ({ onChange, values, ...props }) => {
@@ -149,6 +153,7 @@ const TagInput = ({ onChange, values, ...props }) => {
         onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         onChange={handleInput}
+        placeholder={!values.length ? props.placeholder : ""}
         type="text"
       />
     </Flex>

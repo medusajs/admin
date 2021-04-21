@@ -3,6 +3,8 @@ import { Text, Flex, Box, Image } from "rebass"
 import styled from "@emotion/styled"
 import moment from "moment"
 
+import NotificationTimeline from "../notification/timeline"
+import ClaimTimeline from "../claim/timeline"
 import SwapTimeline from "../swap/timeline"
 import ReturnTimeline from "../returns/timeline"
 import Typography from "../../../../components/typography"
@@ -16,9 +18,7 @@ const LineItemLabel = styled(Text)`
 `
 
 const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = Array.isArray(lineItem.content)
-    ? lineItem.content[0].product._id
-    : lineItem.content.product._id
+  const productId = lineItem.variant.product_id
 
   return (
     <Flex pl={3} alignItems="center">
@@ -44,9 +44,9 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
             onClick={() => navigate(`/a/products/${productId}`)}
           >
             {lineItem.title}
-            <br /> {lineItem.content.variant.sku}
+            <br /> {lineItem.variant.sku}
             <br />
-            {(1 + taxRate) * lineItem.content.unit_price} {currency}
+            {(1 + taxRate / 100) * (lineItem.unit_price / 100)} {currency}
           </LineItemLabel>
         </Box>
       </Flex>
@@ -57,6 +57,9 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
 export default ({
   events,
   order,
+  onResendNotification,
+  onSaveClaim,
+  onFulfillClaim,
   onFulfillSwap,
   onProcessSwapPayment,
   onReceiveReturn,
@@ -65,12 +68,31 @@ export default ({
     <Box>
       {events.map(event => {
         switch (event.type) {
+          case "notification":
+            return (
+              <NotificationTimeline
+                key={event.id}
+                event={event}
+                onResend={onResendNotification}
+              />
+            )
           case "return":
             return (
               <ReturnTimeline
                 key={event.id}
                 event={event}
                 order={order}
+                onReceiveReturn={onReceiveReturn}
+              />
+            )
+          case "claim":
+            return (
+              <ClaimTimeline
+                key={event.id}
+                event={event}
+                order={order}
+                onSaveClaim={onSaveClaim}
+                onFulfillClaim={onFulfillClaim}
                 onReceiveReturn={onReceiveReturn}
               />
             )
@@ -93,7 +115,7 @@ export default ({
                 pb={3}
                 mb={3}
               >
-                <Text ml={3} fontSize={1} color="grey">
+                <Text ml={3} fontSize={1} color="grey" fontWeight="500" mb={2}>
                   {event.event}
                 </Text>
                 <Text fontSize="11px" color="grey" ml={3} mb={3}>
@@ -104,7 +126,7 @@ export default ({
                     key={i}
                     currency={order.currency_code}
                     lineItem={lineItem}
-                    taxRate={order.region.tax_rate}
+                    taxRate={order.tax_rate}
                   />
                 ))}
               </Box>

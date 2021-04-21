@@ -7,6 +7,17 @@ import Typography from "../typography"
 const StyledSelect = styled(RebassSelect)`
   ${Typography.Base}
   padding-right: 28px;
+
+  ${props =>
+    props.isCurrencyInput &&
+    `
+    box-shadow: none;
+    border: none;
+    
+    &:hover {
+      box-shadow: none;
+    }
+  `}
 `
 
 const StyledLabel = styled.div`
@@ -20,6 +31,15 @@ const StyledLabel = styled.div`
       : `
   padding-bottom: 10px;
   `}
+  
+  ${props =>
+    props.required &&
+    `
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+  `}
 `
 
 const Select = React.forwardRef(
@@ -30,9 +50,14 @@ const Select = React.forwardRef(
       defaultValue = "",
       options = [],
       placeholder = "",
+      flex = "50% 0 0",
       value,
       onChange,
       inline,
+      required,
+      selectHeight,
+      isCurrencyInput,
+      selectStyle,
       ...props
     },
     ref
@@ -50,19 +75,24 @@ const Select = React.forwardRef(
             htmlFor={name}
             display={props.start ? "flex" : inline && "inline !important"}
           >
-            <StyledLabel inline={inline}>{label}</StyledLabel>
+            <StyledLabel required={required} inline={inline}>
+              {label}
+            </StyledLabel>
           </Label>
         )}
         <StyledSelect
-          flex="50% 0 0"
+          isCurrencyInput={isCurrencyInput}
+          flex={flex}
           variant="buttons.primary"
           name={name}
+          height={selectHeight || "inherit"}
           minWidth={"unset"}
           width={"unset"}
           ref={ref}
           value={value}
           defaultValue={defaultValue}
           onChange={onChange}
+          sx={selectStyle}
         >
           {placeholder && <option>{placeholder}</option>}
           {options.map((option, index) => (

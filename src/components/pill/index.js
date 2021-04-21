@@ -5,6 +5,8 @@ import Typography from "../typography"
 
 const StyledButton = styled(RebassButton)`
   ${Typography.Base}
+
+  border-radius: 2px;
 `
 
 const Button = ({ active, children, type, onClick, ...props }) => {

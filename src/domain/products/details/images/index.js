@@ -1,16 +1,17 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import styled from "@emotion/styled"
 import _ from "lodash"
-import { Flex, Box, Image } from "rebass"
+import { Flex, Box, Image, Text } from "rebass"
 
 import Medusa from "../../../../services/api"
 
 import Card from "../../../../components/card"
 import Spinner from "../../../../components/spinner"
+import ImageUpload from "../../../../components/image-upload"
 
 const StyledImageCard = styled(Image)`
-  height: 200px;
-  width: 200px;
+  height: 150px;
+  width: 150px;
 
   border: ${props => (props.selected ? "1px solid #53725D" : "none")};
 
@@ -35,6 +36,7 @@ const StyledImageCard = styled(Image)`
 
 const Images = ({ isLoading, product, refresh, toaster }) => {
   const [selectedImages, setSelectedImages] = useState([])
+  const [images, setImages] = useState([])
   const [isDeletingImages, setIsDeletingImages] = useState(false)
 
   const handleImageSelection = image => {
@@ -45,30 +47,49 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
     }
   }
 
-  if (isLoading) {
-    return (
-      <Flex flexDirection="column" alignItems="center" mt="auto" ml="50%">
-        <Box height="75px" width="75px">
-          <Spinner dark />
-        </Box>
-      </Flex>
-    )
-  }
+  useEffect(() => {
+    if (product) {
+      let imgs = [product.thumbnail, ...product.images.map(img => img.url)]
+      imgs = [...new Set(imgs)]
+      setImages(imgs)
+    }
+  }, [product])
 
   const handleImageDelete = () => {
     setIsDeletingImages(true)
-    const newImages = _.difference(product.images, selectedImages)
+    const newImages = _.difference(images, selectedImages)
 
     Medusa.products
-      .update(product._id, { images: newImages })
+      .update(product.id, { images: newImages })
       .then(() => {
         setIsDeletingImages(false)
         setSelectedImages([])
-        refresh()
+        refresh({ id: product.id })
         toaster("Successfully deleted images", "success")
       })
       .catch(() => toaster("Failed to deleted images", "error"))
     setIsDeletingImages(false)
+  }
+
+  const onImageChange = e => {
+    Medusa.uploads
+      .create(e.target.files)
+      .then(({ data }) => {
+        const uploaded = data.uploads.map(({ url }) => url)
+        return uploaded[0]
+      })
+      .then(uploadedImage => {
+        const all = [...images, uploadedImage]
+
+        Medusa.products
+          .update(product.id, { images: all })
+          .then(() => {
+            setIsDeletingImages(false)
+            refresh({ id: product.id })
+            toaster("Successfully uploaded image", "success")
+          })
+          .catch(() => toaster("Failed to upload image", "error"))
+      })
   }
 
   return (
@@ -78,29 +99,27 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
           selectedImages.length > 0 && {
             type: "delete",
             label: "Delete images",
-            onClick: () => {
-              handleImageDelete()
-            },
+            onClick: () => handleImageDelete(),
             isLoading: isDeletingImages,
           }
         }
       >
         {selectedImages.length > 0
-          ? `${selectedImages.length} images selected`
+          ? `${selectedImages.length} image(s) selected`
           : "Images"}
       </Card.Header>
       <Card.Body px={3}>
         <Flex>
-          {product.images &&
-            product.images.map((img, i) => (
-              <StyledImageCard
-                key={i}
-                m={2}
-                src={img}
-                selected={selectedImages.includes(img)}
-                onClick={() => handleImageSelection(img)}
-              />
-            ))}
+          {images.map((img, i) => (
+            <StyledImageCard
+              key={i}
+              m={2}
+              src={img}
+              selected={selectedImages.includes(img)}
+              onClick={() => handleImageSelection(img)}
+            />
+          ))}
+          <ImageUpload onChange={e => onImageChange(e)} name="files" />
         </Flex>
       </Card.Body>
     </Card>

@@ -35,9 +35,9 @@ const getColumns = (product, edit) => {
       header: o.title,
       field: "options",
       editor: "option",
-      option_id: o._id,
+      option_id: o.id,
       formatter: variantOptions => {
-        return (variantOptions.find(val => val.option_id === o._id) || {}).value
+        return (variantOptions.find(val => val.option_id === o.id) || {}).value
       },
     }))
 
@@ -49,9 +49,13 @@ const getColumns = (product, edit) => {
         editor: "prices",
         buttonText: "Edit",
         formatter: prices => {
-          return prices
-            .map(({ currency_code, amount }) => `${amount} ${currency_code}`)
-            .join(", ")
+          return `${prices.length} price(s)`
+          // return prices
+          //   .map(
+          //     ({ currency_code, amount }) =>
+          //       `${(amount / 100).toFixed(2)} ${currency_code.toUpperCase()}`
+          //   )
+          //   .join(", ")
         },
       },
       ...defaultFields,
@@ -84,9 +88,13 @@ const getColumns = (product, edit) => {
           if (!prices) {
             return ""
           }
-          return prices
-            .map(({ currency_code, amount }) => `${amount} ${currency_code}`)
-            .join(", ")
+          return `${prices.length} price(s)`
+          // return prices
+          //   .map(
+          //     ({ currency_code, amount }) =>
+          //       `${amount / 100} ${currency_code.toUpperCase()}`
+          //   )
+          //   .join(", ")
         },
       },
     ]
@@ -277,7 +285,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
                   )}
                 </Td>
               ))}
-              {onEdit && (
+              {onEdit ? (
                 <Box
                   as="td"
                   sx={{
@@ -288,19 +296,27 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
                     right: 0,
                   }}
                 >
-                  <Button
-                    onClick={() => onEdit(row)}
-                    variant="primary"
-                    fontSize={1}
-                    height="24px"
-                    sx={{
-                      lineHeight: "20px",
-                      height: "24px !important",
-                    }}
-                  >
-                    Edit
-                  </Button>
+                  <Flex justifyContent="center">
+                    <Button
+                      onClick={() => onEdit(row)}
+                      variant="primary"
+                      fontSize={1}
+                      height="24px"
+                      sx={{
+                        lineHeight: "20px",
+                        height: "24px !important",
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </Flex>
                 </Box>
+              ) : (
+                <Box
+                  as="td"
+                  height="24px"
+                  sx={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}
+                />
               )}
             </tr>
           ))}

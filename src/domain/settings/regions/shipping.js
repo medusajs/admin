@@ -19,13 +19,13 @@ const Shipping = ({ region, fulfillmentMethods }) => {
     "shippingOptions",
     {
       search: {
-        region_id: region._id,
+        region_id: region.id,
       },
     }
   )
 
   useEffect(() => {
-    Medusa.regions.fulfillmentOptions.list(region._id).then(({ data }) => {
+    Medusa.regions.fulfillmentOptions.list(region.id).then(({ data }) => {
       setFulfillmentOptions(data.fulfillment_options)
     })
   }, [])
@@ -33,7 +33,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
   const handleShippingUpdated = () => {
     refresh({
       search: {
-        region_id: region._id,
+        region_id: region.id,
       },
     })
       .then(() => toaster("Successfully updated shipping options", "success"))
@@ -42,14 +42,14 @@ const Shipping = ({ region, fulfillmentMethods }) => {
 
   const dropdownOptions = [
     {
-      label: "Add option...",
+      label: "Add option",
       onClick: () => setAddOption(true),
     },
   ]
 
   const inboundDropdownOptions = [
     {
-      label: "Add return option...",
+      label: "Add return option",
       onClick: () => setAddReturnOption(true),
     },
   ]
@@ -112,9 +112,11 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                     {option.name} ({option.data.name})
                   </Text>
                   <Text>
-                    {prettify(option.price.type)}
-                    {option.price.amount !== undefined &&
-                      ` — ${option.price.amount} ${region.currency_code}`}
+                    {prettify(option.price_type)}
+                    {option.amount !== undefined &&
+                      ` — ${
+                        option.amount / 100
+                      } ${region.currency_code.toUpperCase()}`}
                   </Text>
                 </Box>
 
@@ -127,9 +129,11 @@ const Shipping = ({ region, fulfillmentMethods }) => {
         </Card.Body>
       </Card>
       <Card>
-        <Card.Header dropdownOptions={inboundDropdownOptions}>
-          Return Shipping Options
-        </Card.Header>
+        {inbound && inbound.length ? (
+          <Card.Header dropdownOptions={inboundDropdownOptions}>
+            Return Shipping Options
+          </Card.Header>
+        ) : null}
         <Card.Body py={0} flexDirection="column">
           {isLoading ? (
             <Flex
@@ -142,7 +146,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                 <Spinner dark />
               </Box>
             </Flex>
-          ) : (
+          ) : inbound && inbound.length ? (
             inbound.map(option => (
               <Flex
                 py={3}
@@ -161,9 +165,11 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                     {option.name} ({option.data.name})
                   </Text>
                   <Text>
-                    {prettify(option.price.type)}
-                    {option.price.amount !== undefined &&
-                      ` — ${region.currency_code} ${option.price.amount}`}
+                    {prettify(option.price_type)}
+                    {option.amount !== undefined &&
+                      ` — ${
+                        option.amount / 100
+                      } ${region.currency_code.toUpperCase()}`}
                   </Text>
                   <Text>
                     {!!option.requirements
@@ -171,7 +177,9 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                           return `Order must have a ${prettify(
                             r.type,
                             false
-                          )} of ${region.currency_code} ${r.value}`
+                          )} of ${region.currency_code.toUpperCase()} ${
+                            r.value
+                          }`
                         })
                       : "No requirements"}
                   </Text>
@@ -182,7 +190,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                 </Button>
               </Flex>
             ))
-          )}
+          ) : null}
         </Card.Body>
       </Card>
       {editOption && (

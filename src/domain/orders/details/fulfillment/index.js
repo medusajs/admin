@@ -7,7 +7,7 @@ import Modal from "../../../../components/modal"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 
-const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
+const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
   const [itemError, setItemError] = useState("")
   const [fulfillAll, setFulfillAll] = useState(false)
@@ -23,7 +23,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
   const handleFulfillToggle = item => {
     setItemError("")
 
-    const id = item._id
+    const id = item.id
     const idx = toFulfill.indexOf(id)
     if (idx !== -1) {
       const newFulfills = [...toFulfill]
@@ -39,7 +39,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
 
       const newQuantities = {
         ...quantities,
-        [item._id]: item.quantity - item.fulfilled_quantity,
+        [item.id]: item.quantity - item.fulfilled_quantity,
       }
 
       setQuantities(newQuantities)
@@ -50,7 +50,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
     const element = e.target
     const newQuantities = {
       ...quantities,
-      [item._id]: parseInt(element.value),
+      [item.id]: parseInt(element.value),
     }
 
     setQuantities(newQuantities)
@@ -67,42 +67,44 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
       }, {})
     }
 
-    if (isSwap && onFulfill) {
-      setSubmitting(true)
-      return onFulfill(order._id, {
-        metadata,
-      })
-        .then(() => onDismiss())
-        .then(() => toaster("Successfully fulfilled swap", "success"))
-        .catch(() => toaster("Failed to fulfill swap", "error"))
-        .finally(() => setSubmitting(false))
-    }
+    switch (type) {
+      case "claim":
+      case "swap":
+        setSubmitting(true)
+        return onFulfill(order.id, {
+          metadata,
+        })
+          .then(() => onDismiss())
+          .then(() => toaster(`Successfully fulfilled ${type}`, "success"))
+          .catch(() => toaster(`Failed to fulfill ${type}`, "error"))
+          .finally(() => setSubmitting(false))
+      default:
+        const items = toFulfill
+          .map(t => {
+            if (quantities[t]) {
+              return {
+                item_id: t,
+                quantity: quantities[t],
+              }
+            }
+          })
+          .filter(t => !!t)
 
-    const items = toFulfill
-      .map(t => {
-        if (quantities[t]) {
-          return {
-            item_id: t,
-            quantity: quantities[t],
-          }
+        if (!items.length) {
+          setItemError("You must select at least one item to fulfill")
         }
-      })
-      .filter(t => !!t)
 
-    if (!items.length) {
-      setItemError("You must select at least one item to fulfill")
-    }
-
-    if (onFulfill) {
-      setSubmitting(true)
-      return onFulfill({
-        items,
-        metadata,
-      })
-        .then(() => onDismiss())
-        .then(() => toaster("Successfully fulfilled order", "success"))
-        .catch(() => toaster("Failed to fulfill order", "error"))
-        .finally(() => setSubmitting(false))
+        if (onFulfill) {
+          setSubmitting(true)
+          return onFulfill({
+            items,
+            metadata,
+          })
+            .then(() => onDismiss())
+            .then(() => toaster("Successfully fulfilled order", "success"))
+            .catch(() => toaster("Failed to fulfill order", "error"))
+            .finally(() => setSubmitting(false))
+        }
     }
   }
 
@@ -115,8 +117,8 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
       const newQuantities = {}
       for (const item of order.items) {
         if (!item.fulfilled) {
-          newFulfills.push(item._id)
-          newQuantities[item._id] = item.quantity - item.fulfilled_quantity
+          newFulfills.push(item.id)
+          newQuantities[item.id] = item.quantity - item.fulfilled_quantity
         }
       }
       setQuantities(newQuantities)
@@ -125,7 +127,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
     }
   }
 
-  const items = isSwap ? order.additional_items : order.items
+  const items = type === "default" ? order.items : order.additional_items
 
   return (
     <Modal onClick={onDismiss}>
@@ -148,7 +150,7 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
             py={2}
           >
             <Box width={30} px={2} py={1}>
-              {!isSwap && (
+              {type === "default" && (
                 <input
                   checked={fulfillAll}
                   onChange={handleFulfillAll}
@@ -172,9 +174,9 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
             return (
               <Flex justifyContent="space-between" fontSize={2} py={2}>
                 <Box width={30} px={2} py={1}>
-                  {!isSwap && (
+                  {type === "default" && (
                     <input
-                      checked={toFulfill.includes(item._id)}
+                      checked={toFulfill.includes(item.id)}
                       onChange={() => handleFulfillToggle(item)}
                       type="checkbox"
                     />
@@ -184,11 +186,11 @@ const FulfillMenu = ({ isSwap, order, onFulfill, onDismiss, toaster }) => {
                   {item.title}
                 </Box>
                 <Box textAlign="center" width={75} px={2} py={1}>
-                  {toFulfill.includes(item._id) ? (
+                  {toFulfill.includes(item.id) ? (
                     <Input
                       type="number"
                       onChange={e => handleQuantity(e, item)}
-                      value={quantities[item._id] || ""}
+                      value={quantities[item.id] || ""}
                       min={1}
                       max={item.quantity - item.fulfilled_quantity}
                       defaultValue={item.quantity - item.fulfilled_quantity}

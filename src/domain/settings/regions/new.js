@@ -33,21 +33,22 @@ const NewRegion = ({ id }) => {
     if (storeIsLoading) return
     setCurrencies(
       store.currencies.map(c => ({
-        symbol: currencyData[c].symbol_native,
-        value: c,
-        code: c,
+        // symbol: c.symbol_native,
+        value: c.code,
+        label: c.code.toUpperCase(),
+        // code: c.code,
       }))
     )
     setPaymentOptions(
       store.payment_providers.map(c => ({
-        value: c,
-        label: c,
+        value: c.id,
+        label: c.id,
       }))
     )
     setFulfillmentOptions(
       store.fulfillment_providers.map(c => ({
-        value: c,
-        label: c,
+        value: c.id,
+        label: c.id,
       }))
     )
   }, [store, storeIsLoading])
@@ -106,17 +107,26 @@ const NewRegion = ({ id }) => {
         </Text>
       </Flex>
       <Flex mb={5} width={3 / 5} flexDirection="column">
-        <Input mb={3} name="name" label="Name" ref={register} width="75%" />
+        <Input
+          required={true}
+          mb={3}
+          name="name"
+          label="Name"
+          ref={register}
+          width="75%"
+        />
         <Select
           mb={3}
           label="Currency"
           name="currency_code"
           options={currencies}
+          required={true}
           ref={register}
         />
         <Input
           mb={3}
           type="number"
+          required={true}
           step="0.01"
           min={0}
           max={1}
@@ -134,6 +144,7 @@ const NewRegion = ({ id }) => {
         />
         <MultiSelect
           mb={3}
+          required={true}
           label="Countries"
           selectOptions={{ hasSelectAll: false }}
           options={countryOptions}
@@ -144,6 +155,7 @@ const NewRegion = ({ id }) => {
           <TagDropdown
             width="100%"
             mb={3}
+            required={true}
             label={"Payment Providers"}
             toggleText="Select"
             values={paymentProviders}
@@ -156,6 +168,7 @@ const NewRegion = ({ id }) => {
         {!!fulfillmentOptions.length && (
           <TagDropdown
             mb={3}
+            required={true}
             label={"Fulfillment Providers"}
             toggleText="Select"
             values={fulfillmentProviders}

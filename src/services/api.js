@@ -1,6 +1,29 @@
 import medusaRequest, { multipartRequest } from "./request"
+import qs from "query-string"
+import _ from "lodash"
+
+const removeNullish = obj =>
+  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
 export default {
+  returnReasons: {
+    retrieve(id) {
+      const path = `/admin/return-reasons/${id}`
+      return medusaRequest("GET", path)
+    },
+    list() {
+      const path = `/admin/return-reasons`
+      return medusaRequest("GET", path)
+    },
+    create(payload) {
+      const path = `/admin/return-reasons`
+      return medusaRequest("POST", path, payload)
+    },
+    update(id, payload) {
+      const path = `/admin/return-reasons/${id}`
+      return medusaRequest("POST", path, payload)
+    },
+  },
   apps: {
     authorize(data) {
       const path = `/admin/apps/authorizations`
@@ -25,6 +48,19 @@ export default {
       return Promise.resolve()
       // const path = `/admin/auth`
       // return medusaRequest("DELETE", path)
+    },
+  },
+  notifications: {
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      let path = `/admin/notifications${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+    resend(id, config) {
+      let path = `/admin/notifications/${id}/resend`
+      return medusaRequest("POST", path, config)
     },
   },
   customers: {
@@ -57,6 +93,11 @@ export default {
       const path = `/admin/store/currencies/${code}`
       return medusaRequest("DELETE", path)
     },
+
+    listPaymentProviders() {
+      const path = `/admin/store/payment-providers`
+      return medusaRequest("GET", path)
+    },
   },
   shippingProfiles: {
     list() {
@@ -79,6 +120,47 @@ export default {
       return medusaRequest("POST", path, update)
     },
   },
+
+  giftCards: {
+    create(giftCard) {
+      const path = `/admin/gift-cards`
+      return medusaRequest("POST", path, giftCard)
+    },
+
+    retrieve(giftCardId) {
+      const path = `/admin/gift-cards/${giftCardId}`
+      return medusaRequest("GET", path)
+    },
+
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      const path = `/admin/gift-cards${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+
+    update(giftCardId, update) {
+      const path = `/admin/gift-cards/${giftCardId}`
+      return medusaRequest("POST", path, update)
+    },
+
+    delete(giftCardId) {
+      const path = `/admin/gift-cards/${giftCardId}`
+      return medusaRequest("DELETE", path)
+    },
+  },
+
+  variants: {
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map(k => `${k}=${search[k]}`)
+        .join("&")
+      let path = `/admin/variants${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+  },
+
   products: {
     create(product) {
       const path = `/admin/products`
@@ -105,6 +187,16 @@ export default {
         .map(k => `${k}=${search[k]}`)
         .join("&")
       let path = `/admin/products${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+
+    listTypes() {
+      let path = `/admin/products/types`
+      return medusaRequest("GET", path)
+    },
+
+    listTagsByUsage() {
+      let path = `/admin/products/tag-usage`
       return medusaRequest("GET", path)
     },
 
@@ -153,12 +245,7 @@ export default {
     },
   },
 
-  orders: {
-    create(order) {
-      const path = `/admin/orders`
-      return medusaRequest("POST", path, order)
-    },
-
+  swaps: {
     retrieve(orderId) {
       const path = `/admin/orders/${orderId}`
       return medusaRequest("GET", path)
@@ -179,6 +266,89 @@ export default {
         })
         .filter(s => !!s)
         .join("&")
+      let path = `/admin/swaps${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+  },
+
+  returns: {
+    list(search = {}) {
+      const clean = removeNullish(search)
+      const params = Object.keys(clean)
+        .map(k => `${k}=${search[k]}`)
+        .filter(s => !!s)
+        .join("&")
+      let path = `/admin/returns${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+  },
+
+  collections: {
+    create(payload) {
+      const path = `/admin/collections`
+      return medusaRequest("POST", path, payload)
+    },
+
+    retrieve(id) {
+      const path = `/admin/collections/${id}`
+      return medusaRequest("GET", path)
+    },
+
+    list(search = {}) {
+      let path = `/admin/collections`
+      return medusaRequest("GET", path)
+    },
+  },
+
+  orders: {
+    create(order) {
+      const path = `/admin/orders`
+      return medusaRequest("POST", path, order)
+    },
+
+    async receiveReturn(returnId, payload) {
+      const path = `/admin/returns/${returnId}/receive`
+
+      const received = await medusaRequest("POST", path, payload)
+
+      let orderId
+      if (received.data.return?.order_id) {
+        orderId = received.data.return.order_id
+      }
+
+      if (received.data.return?.swap?.id) {
+        orderId = received.data.return?.swap?.order_id
+      }
+
+      return this.retrieve(orderId)
+    },
+
+    retrieve(orderId, search = {}) {
+      const params = Object.keys(search)
+        .map(k => {
+          if (search[k] === "" || search[k] === null) {
+            return null
+          }
+          return `${k}=${search[k]}`
+        })
+        .filter(s => !!s)
+        .join("&")
+      const path = `/admin/orders/${orderId}${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
+
+    update(orderId, update) {
+      const path = `/admin/orders/${orderId}`
+      return medusaRequest("POST", path, update)
+    },
+
+    list(search = {}) {
+      const clean = removeNullish(search)
+      const params = Object.keys(clean)
+        .map(k => `${k}=${search[k]}`)
+        .filter(s => !!s)
+        .join("&")
+
       let path = `/admin/orders${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
@@ -203,8 +373,28 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
+    updateClaim(orderId, claimId, payload) {
+      const path = `/admin/orders/${orderId}/claims/${claimId}`
+      return medusaRequest("POST", path, payload)
+    },
+
     createSwap(orderId, payload) {
       const path = `/admin/orders/${orderId}/swaps`
+      return medusaRequest("POST", path, payload)
+    },
+
+    createClaim(orderId, payload) {
+      const path = `/admin/orders/${orderId}/claims`
+      return medusaRequest("POST", path, payload)
+    },
+
+    fulfillClaim(orderId, claimId, payload) {
+      const path = `/admin/orders/${orderId}/claims/${claimId}/fulfillments`
+      return medusaRequest("POST", path, payload)
+    },
+
+    createClaimShipment(orderId, cId, payload) {
+      const path = `/admin/orders/${orderId}/claims/${cId}/shipments`
       return medusaRequest("POST", path, payload)
     },
 
@@ -215,11 +405,6 @@ export default {
 
     fulfillSwap(orderId, swapId, payload) {
       const path = `/admin/orders/${orderId}/swaps/${swapId}/fulfillments`
-      return medusaRequest("POST", path, payload)
-    },
-
-    receiveSwap(orderId, swapId, payload) {
-      const path = `/admin/orders/${orderId}/swaps/${swapId}/receive`
       return medusaRequest("POST", path, payload)
     },
 
@@ -240,11 +425,6 @@ export default {
 
     requestReturn(orderId, payload) {
       const path = `/admin/orders/${orderId}/return`
-      return medusaRequest("POST", path, payload)
-    },
-
-    receiveReturn(orderId, returnId, payload) {
-      const path = `/admin/orders/${orderId}/return/${returnId}/receive`
       return medusaRequest("POST", path, payload)
     },
 

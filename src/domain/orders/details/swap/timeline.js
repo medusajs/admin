@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
+import { navigate } from "gatsby"
 import styled from "@emotion/styled"
 import moment from "moment"
 import ReactTooltip from "react-tooltip"
@@ -22,9 +23,7 @@ const LineItemLabel = styled(Text)`
 `
 
 const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = Array.isArray(lineItem.content)
-    ? lineItem.content[0].product._id
-    : lineItem.content.product._id
+  const productId = lineItem.variant.product.id
 
   return (
     <Flex alignItems="center">
@@ -50,9 +49,10 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
             onClick={() => navigate(`/a/products/${productId}`)}
           >
             {lineItem.title}
-            <br /> {lineItem.content.variant.sku}
+            <br /> {lineItem.variant.sku}
             <br />
-            {(1 + taxRate) * lineItem.content.unit_price} {currency}
+            {((100 + taxRate) * lineItem.unit_price) / 10000}{" "}
+            {currency.toUpperCase()}
           </LineItemLabel>
         </Box>
       </Flex>
@@ -71,39 +71,44 @@ export default ({
   const { store, isLoading, toaster } = useMedusa("store")
 
   const payStatusColors = decideBadgeColor(event.raw.payment_status)
-  const returnStatusColors = decideBadgeColor(event.raw.return.status)
+  const returnStatusColors =
+    event.raw.return_order && event.raw.return_order.status
+      ? decideBadgeColor(event.raw.return_order.status)
+      : {
+          bgColor: "#e3e8ee",
+          color: "#4f566b",
+        }
   const fulfillStatusColors = decideBadgeColor(event.raw.fulfillment_status)
 
   const actions = []
   if (
     event.raw.payment_status !== "captured" &&
     event.raw.payment_status !== "difference_refunded" &&
-    event.raw.is_paid &&
-    event.raw.amount_paid !== 0
+    event.raw.difference_due !== 0
   ) {
     actions.push({
       label:
-        event.raw.amount_paid > 0 ? "Capture Payment" : "Refund Difference",
-      onClick: () => onProcessPayment(event.raw._id),
+        event.raw.difference_due > 0 ? "Capture Payment" : "Refund Difference",
+      onClick: () => onProcessPayment(event.raw.id),
     })
   }
 
   if (event.raw.fulfillment_status === "not_fulfilled") {
     actions.push({
-      label: "Fulfill Swap...",
+      label: "Fulfill Swap",
       onClick: () => {
         onFulfillSwap(event.raw)
       },
     })
   }
 
-  if (event.raw.return.status === "requested") {
+  if (event.raw.return_order.status === "requested") {
     actions.push({
-      label: "Receive Return...",
+      label: "Receive Return",
       onClick: () =>
         onReceiveReturn({
-          ...event.raw.return,
-          swap_id: event.raw._id,
+          ...event.raw.return_order,
+          swap_id: event.raw.id,
           is_swap: true,
         }),
     })
@@ -123,7 +128,7 @@ export default ({
         <Flex mb={4} px={3} width={"100%"} justifyContent="space-between">
           <Box>
             <Flex mb={2}>
-              <Text mr={100} fontSize={1} color="grey">
+              <Text mr={100} fontSize={1} color="grey" fontWeight="500">
                 Swap Requested
               </Text>
               <Box>
@@ -179,7 +184,7 @@ export default ({
                 color={payStatusColors.color}
                 bg={payStatusColors.bgColor}
               >
-                {event.raw.is_paid ? event.raw.payment_status : "not_paid"}
+                {event.raw.payment_status}
               </Badge>
               <Text mr={2} fontSize={1} color="grey">
                 Return Status
@@ -189,7 +194,7 @@ export default ({
                 color={returnStatusColors.color}
                 bg={returnStatusColors.bgColor}
               >
-                {event.raw.return.status}
+                {event.raw.return_order.status}
               </Badge>
               <Text mr={2} fontSize={1} color="grey">
                 Fulfillment Status
@@ -219,10 +224,10 @@ export default ({
             </Flex>
             {event.return_lines.map((lineItem, i) => (
               <LineItem
-                key={lineItem._id}
+                key={lineItem.id}
                 currency={order.currency_code}
                 lineItem={lineItem}
-                taxRate={order.region.tax_rate}
+                taxRate={order.tax_rate}
                 onReceiveReturn={onReceiveReturn}
                 rawEvent={event.raw}
               />
@@ -236,10 +241,10 @@ export default ({
             </Flex>
             {event.items.map((lineItem, i) => (
               <LineItem
-                key={lineItem._id}
+                key={lineItem.id}
                 currency={order.currency_code}
                 lineItem={lineItem}
-                taxRate={order.region.tax_rate}
+                taxRate={order.tax_rate}
                 onReceiveReturn={onReceiveReturn}
                 rawEvent={event.raw}
               />

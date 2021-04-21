@@ -3,20 +3,33 @@ import { Flex, Image } from "rebass"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Typography from "../typography"
+import Button from "../button"
 
 const StyledLabel = styled.div`
   ${Typography.Base}
   padding-bottom: 10px;
+
+  ${props =>
+    props.boldLabel &&
+    `
+    font-weight: 500;
+  `}
 `
 
 const Wrap = styled(Flex)``
+
+const StyledButton = styled(Button)`
+  input {
+    display: none;
+  }
+`
 
 const Container = styled(Flex)`
   cursor: pointer;
   border-radius: 3px;
   border: 1px dashed ${props => props.theme.colors.placeholder};
-  width: 150px;
-  height: 150px;
+  width: ${props => (props.width ? props.width : "150px")};
+  height: ${props => (props.height ? props.height : "150px")};
 
   input {
     display: none;
@@ -39,7 +52,16 @@ const Container = styled(Flex)`
   }
 `
 
-const ImageUpload = ({ label, name, onChange, value }) => {
+const ImageUpload = ({
+  label,
+  boldLabel,
+  name,
+  button,
+  onChange,
+  value,
+  height,
+  width,
+}) => {
   const [focus, setFocus] = useState(false)
   const dropRef = useRef()
   const inputRef = useRef()
@@ -76,42 +98,58 @@ const ImageUpload = ({ label, name, onChange, value }) => {
   return (
     <Flex flexDirection="column">
       <Label htmlFor={name}>
-        <StyledLabel>{label}</StyledLabel>
+        <StyledLabel boldLabel={boldLabel}>{label}</StyledLabel>
       </Label>
-      <Container
-        onDrop={handleDrop}
-        onDragEnter={handleHighlight}
-        onDragOver={handleHighlight}
-        onDragLeave={handleUnhighlight}
-        showFocus={focus}
-        onClick={handleFocus}
-        tabIndex="0"
-        fontSize={1}
-        color={"placeholder"}
-        justifyContent="center"
-        alignItems="center"
-      >
-        <input
-          multiple
-          ref={inputRef}
-          onChange={onChange}
-          name={name}
-          type="file"
-          accept="image/*"
-        />
-        {value ? (
-          <Image
-            sx={{
-              height: "100%",
-              width: "100%",
-              objectFit: "contain",
-            }}
-            src={value}
+      {button ? (
+        <StyledButton onClick={handleFocus} variant={"primary"}>
+          <input
+            multiple
+            ref={inputRef}
+            onChange={onChange}
+            name={name}
+            type="file"
+            accept="image/*"
           />
-        ) : (
-          <div>Upload</div>
-        )}
-      </Container>
+          Upload
+        </StyledButton>
+      ) : (
+        <Container
+          onDrop={handleDrop}
+          onDragEnter={handleHighlight}
+          onDragOver={handleHighlight}
+          onDragLeave={handleUnhighlight}
+          showFocus={focus}
+          onClick={handleFocus}
+          tabIndex="0"
+          fontSize={1}
+          color={"placeholder"}
+          justifyContent="center"
+          alignItems="center"
+          width={width}
+          height={height}
+        >
+          <input
+            multiple
+            ref={inputRef}
+            onChange={onChange}
+            name={name}
+            type="file"
+            accept="image/*"
+          />
+          {value ? (
+            <Image
+              sx={{
+                height: "100%",
+                width: "100%",
+                objectFit: "contain",
+              }}
+              src={value}
+            />
+          ) : (
+            <div>Upload</div>
+          )}
+        </Container>
+      )}
     </Flex>
   )
 }

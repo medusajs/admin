@@ -15,11 +15,9 @@ import PriceEditor from "../../../components/variant-grid/editors/prices"
 
 const GiftCardDetail = ({ id }) => {
   const [productVariants, setProductVariants] = useState([])
-  const details = useForm()
+
   const {
     product,
-    variants,
-    options,
     isLoading,
     delete: productDelete,
     update,
@@ -47,7 +45,7 @@ const GiftCardDetail = ({ id }) => {
     update({
       variants: productVariants.map((v, index) => ({
         ..._.pick(v, [
-          "_id",
+          "id",
           "published",
           "image",
           "barcode",
@@ -65,7 +63,7 @@ const GiftCardDetail = ({ id }) => {
         })),
         options: [
           {
-            option_id: product.options[0]._id,
+            option_id: product.options[0].id,
             value: index + 1,
           },
         ],
@@ -124,7 +122,7 @@ const GiftCardDetail = ({ id }) => {
                   {v.prices
                     .map(
                       ({ currency_code, amount }) =>
-                        `${amount} ${currency_code}`
+                        `${amount / 100} ${currency_code.toUpperCase()}`
                     )
                     .join(", ")}
                 </Box>
@@ -159,12 +157,14 @@ const GiftCardDetail = ({ id }) => {
           </Button>
         </Card.Footer>
       </Card>
-      <Images
-        product={product}
-        isLoading={isLoading}
-        refresh={refresh}
-        toaster={toaster}
-      />
+      {product && product.images && (
+        <Images
+          product={product}
+          isLoading={isLoading}
+          refresh={refresh}
+          toaster={toaster}
+        />
+      )}
     </Flex>
   )
 }

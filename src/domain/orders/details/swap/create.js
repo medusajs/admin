@@ -66,7 +66,7 @@ const extractPrice = (prices, order) => {
   }
 
   if (price) {
-    return price.amount * (1 + order.tax_rate)
+    return (price.amount * (1 + order.tax_rate / 100)) / 100
   }
 
   return 0
@@ -86,14 +86,31 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [shippingPrice, setShippingPrice] = useState()
   const [searchResults, setSearchResults] = useState([])
 
+  // Includes both order items and swap items
+  const [allItems, setAllItems] = useState([])
+
   const { register, setValue, handleSubmit } = useForm()
+
+  useEffect(() => {
+    if (order) {
+      let temp = [...order.items]
+
+      if (order.swaps && order.swaps.length) {
+        for (const s of order.swaps) {
+          temp = [...temp, ...s.additional_items]
+        }
+      }
+
+      setAllItems(temp)
+    }
+  }, [order])
 
   const handleAddItemToSwap = variant => {
     setItemsToAdd([...itemsToAdd, { ...variant, quantity: 1 }])
   }
 
   const handleReturnToggle = item => {
-    const id = item._id
+    const id = item.id
     const idx = toReturn.indexOf(id)
     if (idx !== -1) {
       const newReturns = [...toReturn]
@@ -109,7 +126,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
       const newQuantities = {
         ...quantities,
-        [item._id]: item.quantity - item.returned_quantity,
+        [item.id]: item.quantity - item.returned_quantity,
       }
 
       setQuantities(newQuantities)
@@ -129,15 +146,19 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }, [])
 
   useEffect(() => {
-    const items = toReturn.map(t => order.items.find(i => i._id === t))
+    const items = toReturn.map(t => allItems.find(i => i.id === t))
     const returnTotal =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next._id]
+        return (
+          acc +
+          (next.refundable / (next.quantity - next.returned_quantity)) *
+            quantities[next.id]
+        )
       }, 0) - (shippingPrice || 0)
 
     const newItemsTotal = itemsToAdd.reduce((acc, next) => {
       const price = extractPrice(next.prices, order)
-      const lineTotal = price * next.quantity
+      const lineTotal = price * 100 * next.quantity
       return acc + lineTotal
     }, 0)
 
@@ -148,7 +169,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     const element = e.target
     const newQuantities = {
       ...quantities,
-      [item._id]: parseInt(element.value),
+      [item.id]: parseInt(element.value),
     }
 
     setQuantities(newQuantities)
@@ -161,15 +182,15 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
         quantity: quantities[t],
       })),
       additional_items: itemsToAdd.map(i => ({
-        variant_id: i.variant_id,
+        variant_id: i.id,
         quantity: i.quantity,
       })),
     }
 
     if (shippingMethod) {
       data.return_shipping = {
-        id: shippingMethod,
-        price: shippingPrice / (1 + order.tax_rate),
+        option_id: shippingMethod,
+        price: Math.round(shippingPrice / (1 + order.tax_rate / 100)),
       }
     }
 
@@ -208,8 +229,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       const newQuantities = {}
       for (const item of order.items) {
         if (!item.returned) {
-          newReturns.push(item._id)
-          newQuantities[item._id] = item.quantity - item.returned_quantity
+          newReturns.push(item.id)
+          newQuantities[item.id] = item.quantity - item.returned_quantity
         }
       }
       setQuantities(newQuantities)
@@ -222,8 +243,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     const element = e.target
     if (element.value !== "Add a shipping method") {
       setShippingMethod(element.value)
-      const method = shippingOptions.find(o => element.value === o._id)
-      setShippingPrice(method.price.amount)
+      const method = shippingOptions.find(o => element.value === o.id)
+      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
       setShippingPrice(0)
@@ -234,28 +255,17 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     const element = e.target
     const value = element.value
     if (value >= 0) {
-      setShippingPrice(parseFloat(value))
+      setShippingPrice(parseFloat(value) * 100)
     }
   }
 
   const handleProductSearch = val => {
-    Medusa.products
+    Medusa.variants
       .list({
         q: val,
       })
       .then(({ data }) => {
-        const variants = data.products.reduce((acc, next) => {
-          return acc.concat(
-            next.variants.map(v => ({
-              title: `${next.title} - ${v.title}`,
-              prices: v.prices,
-              inventory_quantity: v.inventory_quantity,
-              sku: v.sku,
-              variant_id: v._id,
-            }))
-          )
-        }, [])
-        setSearchResults(variants)
+        setSearchResults(data.variants)
       })
   }
 
@@ -287,26 +297,26 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               <Box width={75} px={2} py={1}>
                 Quantity
               </Box>
-              <Box width={110} px={2} py={1}>
+              <Box width={170} px={2} py={1}>
                 Refundable
               </Box>
             </Flex>
-            {order.items.map(item => {
+            {allItems.map(item => {
               // Only show items that have not been returned
-              if (item.returned) {
+              if (item.returned_quantity === item.quantity) {
                 return
               }
 
               return (
                 <Flex
-                  key={item._id}
+                  key={item.id}
                   justifyContent="space-between"
                   fontSize={2}
                   py={2}
                 >
                   <Box width={30} px={2} py={1}>
                     <input
-                      checked={toReturn.includes(item._id)}
+                      checked={toReturn.includes(item.id)}
                       onChange={() => handleReturnToggle(item)}
                       type="checkbox"
                     />
@@ -315,14 +325,14 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                     <Text fontSize={1} lineHeight={"14px"}>
                       {item.title}
                     </Text>
-                    <Text fontSize={0}>{item.content.variant.sku}</Text>
+                    <Text fontSize={0}>{item.variant.sku}</Text>
                   </Box>
                   <Box width={75} px={2} py={1}>
-                    {toReturn.includes(item._id) ? (
+                    {toReturn.includes(item.id) ? (
                       <Input
                         type="number"
                         onChange={e => handleQuantity(e, item)}
-                        value={quantities[item._id] || ""}
+                        value={quantities[item.id] || ""}
                         min={1}
                         max={item.quantity - item.returned_quantity}
                       />
@@ -330,9 +340,10 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                       item.quantity - item.returned_quantity
                     )}
                   </Box>
-                  <Box width={110} px={2} py={1}>
+                  <Box width={170} px={2} py={1}>
                     <Text fontSize={1}>
-                      {item.refundable.toFixed(2)} {order.currency_code}
+                      {(item.refundable / 100).toFixed(2)}{" "}
+                      {order.currency_code.toUpperCase()}
                     </Text>
                   </Box>
                 </Flex>
@@ -352,7 +363,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 onChange={handleShippingSelected}
                 options={shippingOptions.map(o => ({
                   label: o.name,
-                  value: o._id,
+                  value: o.id,
                 }))}
               />
               {shippingMethod && (
@@ -360,10 +371,10 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   <Box px={2} fontSize={1}>
                     Shipping price (incl. taxes)
                   </Box>
-                  <Box px={2} width={110}>
+                  <Box px={2} width={170}>
                     <CurrencyInput
                       currency={order.currency_code}
-                      value={shippingPrice}
+                      value={shippingPrice / 100}
                       onChange={handleUpdateShippingPrice}
                     />
                   </Box>
@@ -394,7 +405,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                     />
                     <Box>
                       <Text fontSize={0} mb={0} lineHeight={1}>
-                        {s.title}
+                        {s.product.title} - {s.title}
                       </Text>
                       <Flex>
                         <Text width={"100px"} mt={0} fontSize={"10px"}>
@@ -426,7 +437,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   <Box width={75} px={2} py={1}>
                     Quantity
                   </Box>
-                  <Box width={110} px={2} py={1}>
+                  <Box width={170} px={2} py={1}>
                     Price
                   </Box>
                 </Flex>
@@ -454,9 +465,10 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                         min={1}
                       />
                     </Box>
-                    <Box width={110} px={2} py={1}>
+                    <Box width={170} px={2} py={1}>
                       <Text fontSize={1}>
-                        {extractPrice(item.prices, order)} {order.currency_code}
+                        {extractPrice(item.prices, order).toFixed(2)}{" "}
+                        {order.currency_code.toUpperCase()}
                       </Text>
                     </Box>
                     <Box onClick={() => handleRemoveItem(index)}>&times;</Box>
@@ -477,13 +489,18 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
             <Box px={2} fontSize={1}>
               Difference
             </Box>
-            <Box px={2} width={110} fontSize={1}>
-              {toPay} {order.currency_code}
+            <Box px={2} width={170} fontSize={1}>
+              {(toPay / 100).toFixed(2)} {order.currency_code.toUpperCase()}
             </Box>
           </Flex>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
-          <Button loading={submitting} type="submit" variant="primary">
+          <Button
+            disabled={toReturn.length === 0 || itemsToAdd.length === 0}
+            loading={submitting}
+            type="submit"
+            variant="primary"
+          >
             Complete
           </Button>
         </Modal.Footer>

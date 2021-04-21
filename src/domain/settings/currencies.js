@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
-import { Box, Flex } from "rebass"
+import { Box, Flex, Text } from "rebass"
 import { useForm } from "react-hook-form"
 
 import useMedusa from "../../hooks/use-medusa"
@@ -55,16 +55,18 @@ const StyledMultiSelect = styled(MultiSelect)`
 const AccountDetails = () => {
   const [selectedCurrencies, setCurrencies] = useState([])
   const { register, setValue, handleSubmit } = useForm()
-  const { store, isLoading, update } = useMedusa("store")
+  const { store, isLoading, update, toaster } = useMedusa("store")
 
   useEffect(() => {
-    if (isLoading) return
-    setValue("default_currency", store.default_currency)
+    if (isLoading || !store) return
+    setValue("default_currency_code", store.default_currency_code.toUpperCase())
     setCurrencies(
-      store.currencies.map(c => ({
-        value: c,
-        label: c,
-      }))
+      store.currencies
+        ? store.currencies.map(c => ({
+            value: c.code.toUpperCase(),
+            label: c.code.toUpperCase(),
+          }))
+        : []
     )
   }, [store, isLoading])
 
@@ -80,10 +82,15 @@ const AccountDetails = () => {
   }
 
   const onSubmit = data => {
-    update({
-      default_currency: data.default_currency,
-      currencies: selectedCurrencies.map(c => c.value),
-    })
+    try {
+      update({
+        default_currency_code: data.default_currency_code,
+        currencies: selectedCurrencies.map(c => c.value),
+      })
+      toaster("Successfully updated currencies", "success")
+    } catch (error) {
+      toaster("Failed to update currencies", "error")
+    }
   }
 
   return (
@@ -91,11 +98,17 @@ const AccountDetails = () => {
       as="form"
       flexDirection={"column"}
       onSubmit={handleSubmit(onSubmit)}
-      mb={4}
+      pb={5}
+      pt={5}
     >
-      <Card>
-        <Card.Header>Store Currencies</Card.Header>
-        <Card.Body px={3}>
+      <Card px={0}>
+        <Flex>
+          <Text mb={3} fontSize={20} fontWeight="bold">
+            Currencies
+          </Text>
+          <Box ml="auto" />
+        </Flex>
+        <Card.Body>
           {isLoading ? (
             <Flex
               flexDirection="column"
@@ -113,7 +126,7 @@ const AccountDetails = () => {
                 <Select
                   width="300px"
                   label="Default store currency"
-                  name="default_currency"
+                  name="default_currency_code"
                   options={options}
                   ref={register}
                 />
@@ -135,7 +148,7 @@ const AccountDetails = () => {
             </Flex>
           )}
         </Card.Body>
-        <Card.Footer justifyContent="flex-end">
+        <Card.Footer justifyContent="flex-start">
           <Button mr={3} type="submit" fontWeight="bold" variant="cta">
             Save
           </Button>

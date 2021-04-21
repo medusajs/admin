@@ -15,7 +15,14 @@ const StyledTextArea = styled(Textarea)`
 `
 
 const StyledLabel = styled.div`
-  ${Typography.Base}
+  ${Typography.Base};
+  
+  ${props =>
+    props.boldLabel &&
+    `
+    font-weight: bold;
+  `}
+  
   ${props =>
     props.inline
       ? `
@@ -37,7 +44,10 @@ const StyledLabel = styled.div`
 `
 
 const TextArea = React.forwardRef(
-  ({ placeholder, inline, label, name, required, ...props }, ref) => {
+  (
+    { value, placeholder, inline, label, name, required, boldLabel, ...props },
+    ref
+  ) => {
     return (
       <Flex
         alignItems={inline && "start"}
@@ -51,7 +61,11 @@ const TextArea = React.forwardRef(
             htmlFor={name}
             display={inline && "inline !important"}
           >
-            <StyledLabel required={required} inline={inline}>
+            <StyledLabel
+              required={required}
+              inline={inline}
+              boldLabel={boldLabel}
+            >
               {label}
             </StyledLabel>
           </Label>
@@ -60,6 +74,7 @@ const TextArea = React.forwardRef(
           minHeight={props.minHeight}
           inline={inline}
           ref={ref}
+          value={value}
           variant="textarea"
           name={name}
           placeholder={placeholder ? placeholder : "Placeholder"}

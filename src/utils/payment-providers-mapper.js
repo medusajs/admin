@@ -46,6 +46,9 @@ export default function (provider) {
         value: "ideal-adyen",
       }
     default:
-      return ""
+      return {
+        label: provider,
+        value: provider,
+      }
   }
 }

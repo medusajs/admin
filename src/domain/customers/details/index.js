@@ -38,8 +38,8 @@ const CustomerDetail = ({ id }) => {
 
   const phone = customer.phone
     ? customer.phone
-    : customer.shipping_addresses[0]
-    ? customer.shipping_addresses[0].phone
+    : customer.shipping_addresses && customer?.shipping_addresses[0]
+    ? customer?.shipping_addresses[0].phone
     : "N / A"
 
   return (

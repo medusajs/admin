@@ -19,14 +19,21 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
   const getCurrencyOptions = () => {
     return ((store && store.currencies) || [])
       .map(v => ({
-        value: v,
+        value: v.code.toUpperCase(),
+        label: v.code.toUpperCase(),
       }))
-      .filter(o => !prices.find(p => !p.edit && p.currency_code === o.value))
+      .filter(o => !prices.find(p => !p.edit && p.code === o.value))
   }
 
   useEffect(() => {
-    setPrices([...value])
-  }, [value])
+    if (!value.length && store) {
+      setPrices([
+        { ...store.default_currency, edit: true, amount: "", sale_amount: "" },
+      ])
+    } else {
+      setPrices([...value])
+    }
+  }, [value, store])
 
   useEffect(() => {
     setCurrencyOptions(getCurrencyOptions())
@@ -50,7 +57,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
     const newPrices = [...prices]
     newPrices[index] = {
       ...newPrices[index],
-      sale_amount: value,
+      sale_amount: Math.round(value * 100),
     }
 
     setPrices(newPrices)
@@ -63,7 +70,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
     const newPrices = [...prices]
     newPrices[index] = {
       ...newPrices[index],
-      amount: value,
+      amount: Math.round(value * 100),
     }
 
     setPrices(newPrices)
@@ -76,13 +83,17 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
       }
 
       const clean = {
-        amount: parseFloat(p.amount),
-        currency_code: p.region_id ? undefined : p.currency_code,
+        amount: parseInt(p.amount),
+        currency_code: p.region_id
+          ? undefined
+          : p.code
+          ? p.code
+          : p.currency_code,
         region_id: p.region_id,
       }
 
       if (typeof p.sale_amount !== "undefined" && p.sale_price !== "") {
-        const amount = parseFloat(p.sale_amount)
+        const amount = parseInt(p.sale_amount)
         if (!isNaN(amount)) {
           clean.sale_amount = amount
         }
@@ -108,7 +119,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
       {
         edit: true,
         region: "",
-        currency_code: currencyOptions[0].value,
+        currency_code: currencyOptions[0].value.toLowerCase(),
         amount: "",
         sale_amount: "",
       },
@@ -129,9 +140,20 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
 
   return (
     <>
-      <Button ref={ref} variant="primary" onClick={() => setShow(!show)}>
-        Update {value.length} prices
-      </Button>
+      <Flex justifyContent="center">
+        <Button
+          ref={ref}
+          variant="primary"
+          onClick={() => setShow(!show)}
+          height="24px"
+          sx={{
+            lineHeight: "20px",
+            height: "24px !important",
+          }}
+        >
+          Edit
+        </Button>
+      </Flex>
       {show && (
         <Modal onClick={() => setShow(!show)} onScroll={handleScroll}>
           <Modal.Body variant="card" onClick={e => e.stopPropagation()}>
@@ -145,33 +167,43 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
                   Sale Amount (optional)
                 </Text>
               </Flex>
-              {prices.map((p, index) => (
-                <Flex mb={3} key={`${p.currency_code}${index}`}>
-                  <CurrencyInput
-                    width={"150px"}
-                    edit={p.edit}
-                    currency={p.currency_code}
-                    currencyOptions={currencyOptions}
-                    value={p.amount}
-                    onCurrencySelected={currency =>
-                      handleCurrencySelected(index, currency)
-                    }
-                    onChange={e => handlePriceChange(index, e)}
-                  />
-                  <Input
-                    width={"120px"}
-                    type="number"
-                    mx={3}
-                    placeholder="Sale Amount"
-                    onChange={e => handleSalePriceChange(index, e)}
-                    value={p.sale_amount}
-                  />
-                  <Button onClick={() => removePrice(index)} variant="primary">
-                    Remove
-                  </Button>
-                </Flex>
-              ))}
-              {!!currencyOptions.length && (
+              {prices &&
+                prices.map((p, index) => (
+                  <Flex mb={3} key={`${p.code}${index}`}>
+                    <CurrencyInput
+                      height="33px"
+                      width={"150px"}
+                      placeholder="100.00"
+                      edit={p.edit}
+                      currency={
+                        p.code
+                          ? p.code.toUpperCase()
+                          : p.currency_code.toUpperCase()
+                      }
+                      currencyOptions={currencyOptions}
+                      value={p.amount / 100}
+                      onCurrencySelected={currency =>
+                        handleCurrencySelected(index, currency)
+                      }
+                      onChange={e => handlePriceChange(index, e)}
+                    />
+                    <Input
+                      width={"120px"}
+                      type="number"
+                      mx={3}
+                      placeholder="50.00"
+                      onChange={e => handleSalePriceChange(index, e)}
+                      value={p.sale_amount && p.sale_amount / 100}
+                    />
+                    <Button
+                      onClick={() => removePrice(index)}
+                      variant="primary"
+                    >
+                      Remove
+                    </Button>
+                  </Flex>
+                ))}
+              {currencyOptions.length !== prices.length && (
                 <Flex>
                   <Button onClick={addPrice} variant="primary">
                     + Add a price
@@ -181,7 +213,7 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
             </Modal.Content>
             <Modal.Footer justifyContent="flex-end">
               <Button onClick={onSave} variant="primary">
-                Save
+                Close
               </Button>
             </Modal.Footer>
           </Modal.Body>

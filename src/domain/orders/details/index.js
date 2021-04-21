@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import ReactJson from "react-json-view"
 import styled from "@emotion/styled"
@@ -15,33 +15,24 @@ import FulfillmentEdit from "./fulfillment/edit"
 import Timeline from "./timeline"
 import buildTimeline from "./utils/build-timeline"
 import SwapMenu from "./swap/create"
+import ClaimMenu from "./claim/create"
+import NotificationResend from "./notification/resend-menu"
+import CustomerInformation from "./customer"
 
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
 import Dialog from "../../../components/dialog"
 import Card from "../../../components/card"
-import Badge from "../../../components/badge"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 
+import { ReactComponent as ExternalLink } from "../../../assets/svg/external-link.svg"
+
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
-
-const CustomerEmailLabel = styled(Text)`
-  ${props =>
-    props.customerExist &&
-    `
-  color: #006fbb;
-  z-index: 1000;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-  `}
-`
+import Medusa from "../../../services/api"
 
 const AlignedDecimal = ({ value, currency }) => {
-  const fixed = value.toFixed(2)
+  const fixed = (value / 100).toFixed(2)
   const [numPart, decimalPart] = fixed.split(".")
 
   return (
@@ -50,7 +41,90 @@ const AlignedDecimal = ({ value, currency }) => {
         {numPart}
       </Box>
       .<div>{decimalPart}</div>
-      <Box ml={2}>{currency}</Box>
+      <Box ml={2}>{currency.toUpperCase()}</Box>
+    </Flex>
+  )
+}
+
+const TrackingLink = ({ trackingLink }) => {
+  if (trackingLink.url) {
+    return (
+      <a
+        style={{ textDecoration: "none" }}
+        target="_blank"
+        href={trackingLink.url}
+      >
+        <Text
+          sx={{
+            fontWeight: "500",
+            color: "link",
+            svg: {
+              stroke: "link",
+              strokeWidth: "3",
+            },
+            ":hover": {
+              color: "medusa",
+              svg: {
+                stroke: "medusa",
+              },
+            },
+          }}
+        >
+          {trackingLink.tracking_number}
+          <Box display="inline" ml={1}>
+            <ExternalLink width="12" height="12" stroke="#5469D4" />
+          </Box>
+        </Text>
+      </a>
+    )
+  } else {
+    return <Text>{trackingLink.tracking_number}</Text>
+  }
+}
+
+const Fulfillment = ({ details, order, onUpdate }) => {
+  const { title, fulfillment } = details
+
+  const hasLinks =
+    fulfillment?.shipped_at && !!fulfillment?.tracking_links?.length
+
+  return (
+    <Flex
+      sx={{
+        ":not(:last-of-type)": {
+          borderBottom: "hairline",
+        },
+      }}
+      p={3}
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      <Box>
+        <Text>
+          {title} Fulfilled by provider {fulfillment.provider_id}
+        </Text>
+        {!fulfillment.shipped_at ? (
+          <Text my={1} color="gray">
+            Not shipped
+          </Text>
+        ) : (
+          <Text mt={1} color="grey">
+            Tracking
+          </Text>
+        )}
+        {hasLinks
+          ? fulfillment.tracking_links.map(tl => (
+              <TrackingLink trackingLink={tl} />
+            ))
+          : fulfillment.tracking_numbers.length > 0 && (
+              <Text>{fulfillment.tracking_numbers.join(", ")}</Text>
+            )}
+      </Box>
+      {!fulfillment.shipped_at && order.status !== "canceled" && (
+        <Button variant={"primary"} onClick={() => onUpdate(details)}>
+          Mark Shipped
+        </Button>
+      )}
     </Flex>
   )
 }
@@ -73,10 +147,25 @@ const gatherFulfillments = order => {
   order.fulfillments.forEach((f, index) => {
     toReturn.push({
       title: `Fulfillment #${index + 1}`,
-      is_swap: false,
+      type: "default",
       fulfillment: f,
     })
   })
+
+  if (order.claims && order.claims.length) {
+    order.claims.forEach(s => {
+      if (s.fulfillment_status !== "not_fulfilled") {
+        s.fulfillments.forEach((f, index) => {
+          toReturn.push({
+            title: `Claim Fulfillment #${index + 1}`,
+            type: "claim",
+            fulfillment: f,
+            claim: s,
+          })
+        })
+      }
+    })
+  }
 
   if (order.swaps && order.swaps.length) {
     order.swaps.forEach(s => {
@@ -84,7 +173,7 @@ const gatherFulfillments = order => {
         s.fulfillments.forEach((f, index) => {
           toReturn.push({
             title: `Swap Fulfillment #${index + 1}`,
-            is_swap: true,
+            type: "swap",
             fulfillment: f,
             swap: s,
           })
@@ -96,8 +185,87 @@ const gatherFulfillments = order => {
   return toReturn
 }
 
+const PaymentDetails = ({ order }) => {
+  let manualRefund = 0
+  let swapRefund = 0
+  let returnRefund = 0
+
+  let swapAmount = 0
+
+  if (order?.refunds?.length) {
+    order.refunds.forEach(ref => {
+      if (ref.reason === "other" || ref.reason === "discount") {
+        manualRefund += ref.amount
+      }
+      if (ref.reason === "return") {
+        returnRefund += ref.amount
+      }
+      if (ref.reason === "swap") {
+        swapRefund += ref.amount
+      }
+    })
+  }
+
+  if (order?.swaps?.length) {
+    swapAmount = _.sum(order.swaps.map(el => el.difference_due))
+  }
+
+  return (
+    <Flex>
+      <Box flex={"0 20%"} pl={3} pr={5}>
+        {!!swapAmount && (
+          <Text pt={2} color="gray">
+            Total for swaps
+          </Text>
+        )}
+        {!!manualRefund && (
+          <Text pt={2} color="gray">
+            Refunded (manual)
+          </Text>
+        )}
+        {!!returnRefund && (
+          <Text pt={2} color="gray">
+            Refunded (returns)
+          </Text>
+        )}
+        <Text pt={2}>Net paid</Text>
+      </Box>
+      <Box px={3}>
+        {!!swapAmount && (
+          <Flex pt={2}>
+            <AlignedDecimal currency={order.currency_code} value={swapAmount} />
+          </Flex>
+        )}
+        {!!manualRefund && (
+          <Flex pt={2}>
+            <AlignedDecimal
+              currency={order.currency_code}
+              value={-manualRefund}
+            />
+          </Flex>
+        )}
+        {!!returnRefund && (
+          <Flex pt={2}>
+            <AlignedDecimal
+              currency={order.currency_code}
+              value={-returnRefund}
+            />
+          </Flex>
+        )}
+        <Flex pt={2}>
+          <AlignedDecimal
+            currency={order.currency_code}
+            value={order.paid_total - order.refunded_total}
+          />
+        </Flex>
+      </Box>
+    </Flex>
+  )
+}
+
 const OrderDetails = ({ id }) => {
   const [swapToFulfill, setSwapToFulfill] = useState(false)
+  const [claimToFulfill, setClaimToFulfill] = useState(false)
   const [showRefund, setShowRefund] = useState(false)
   const [showReturnMenu, setShowReturnMenu] = useState(false)
   const [showFulfillmentMenu, setShowFulfillmentMenu] = useState(false)
@@ -106,31 +274,54 @@ const OrderDetails = ({ id }) => {
   const [captureLoading, setCaptureLoading] = useState(false)
   const [showCancelDialog, setCancelDialog] = useState(false)
   const [showSwap, setShowSwap] = useState(false)
+  const [showClaim, setShowClaim] = useState(false)
+  const [showEditCustomer, setShowEditCustomer] = useState(false)
   const [isCancelling, setCancelling] = useState(false)
   const [toReceive, setToReceive] = useState(false)
   const [isFulfilling, setIsFulfilling] = useState(false)
 
+  const [notifications, setNotifications] = useState([])
+  const [notificationsLoaded, setNotificationsLoaded] = useState(false)
+  const [notificationResend, setNotificationResend] = useState(false)
+
   const {
     order,
+    update: updateOrder,
     capturePayment,
     requestReturn,
     receiveReturn,
-    receiveSwap,
+    receiveClaim,
     createFulfillment,
     processSwapPayment,
     createShipment,
     createSwap,
+    createClaim,
     createSwapShipment,
     fulfillSwap,
+    fulfillClaim,
+    createClaimShipment,
     refund,
     isLoading,
-    archive,
-    complete,
+    updateClaim,
     cancel,
     toaster,
   } = useMedusa("orders", {
     id,
   })
+
+  useEffect(() => {
+    if (order?.id && !notificationsLoaded) {
+      Medusa.notifications
+        .list({
+          resource_type: "order",
+          resource_id: order.id,
+        })
+        .then(({ data }) => {
+          setNotifications(data.notifications)
+        })
+        .finally(() => setNotificationsLoaded(true))
+    }
+  }, [order])
 
   const handleCopyToClip = val => {
     var tempInput = document.createElement("input")
@@ -155,7 +346,7 @@ const OrderDetails = ({ id }) => {
     )
   }
 
-  const events = buildTimeline(order)
+  const events = buildTimeline(order, notifications)
 
   const decidePaymentButton = paymentStatus => {
     switch (true) {
@@ -172,16 +363,57 @@ const OrderDetails = ({ id }) => {
         return {
           label: "Capture",
           onClick: () => {
+            setCaptureLoading(true)
             capturePayment()
-              .then(() => toaster("Succesfully captured payment", "success"))
-              .catch(() => toaster("Failed to capture payment", "error"))
+              .then(() => {
+                toaster("Succesfully captured payment", "success")
+                setCaptureLoading(true)
+              })
+              .catch(() => {
+                toaster("Failed to capture payment", "error")
+                setCaptureLoading(true)
+              })
           },
-          isLoading: isHandlingOrder,
+          isLoading: captureLoading,
         }
       }
       default:
         break
     }
+  }
+
+  const getFulfillmentStatus = () => {
+    let allItems = [...order.items]
+
+    if (order.swaps && order.swaps.length) {
+      for (const s of order.swaps) {
+        allItems = [...allItems, ...s.additional_items]
+      }
+    }
+
+    let fulfillmentStatus = order.fulfillment_status
+
+    if (fulfillmentStatus === "requires_action") {
+      return fulfillmentStatus
+    }
+
+    if (
+      allItems.every(
+        item => item.returned_quantity === item.fulfilled_quantity
+      ) &&
+      fulfillmentStatus !== "not_fulfilled"
+    ) {
+      fulfillmentStatus = "returned"
+    }
+
+    if (
+      allItems.find(item => !item.returned_quantity) &&
+      allItems.find(item => item.returned_quantity)
+    ) {
+      fulfillmentStatus = "partially_returned"
+    }
+
+    return fulfillmentStatus
   }
 
   let fulfillmentAction
@@ -210,7 +442,7 @@ const OrderDetails = ({ id }) => {
 
   let lineAction
   let lineDropdown = []
-  if (order.status !== "canceled" && order.fulfillment_status !== "returned") {
+  if (order.status !== "canceled" && getFulfillmentStatus() !== "returned") {
     lineAction = {
       type: "primary",
       label: "Request return",
@@ -219,9 +451,17 @@ const OrderDetails = ({ id }) => {
 
     lineDropdown.push({
       type: "primary",
-      label: "Register swap...",
+      label: "Register swap",
       onClick: () => {
         setShowSwap(true)
+      },
+    })
+
+    lineDropdown.push({
+      type: "primary",
+      label: "Register claim",
+      onClick: () => {
+        setShowClaim(true)
       },
     })
   }
@@ -229,36 +469,36 @@ const OrderDetails = ({ id }) => {
   const fulfillments = gatherFulfillments(order)
 
   return (
-    <Flex flexDirection="column" mb={5} pt={5}>
+    <Flex flexDirection="column" mb={5} py={5}>
       <Flex flexDirection="column" mb={2}>
         <Card mb={4}>
           <Card.Header
             dropdownOptions={orderDropdown}
-            action={
-              order.status !== "archived" &&
-              order.status !== "canceled" && {
-                type: "",
-                label: order.status === "completed" ? "Archive" : "Complete",
-                onClick: () => {
-                  setIsHandlingOrder(true)
-                  if (order.status === "completed") {
-                    archive(order._id)
-                      .then(() =>
-                        toaster("Order successfully archived", "success")
-                      )
-                      .catch(() => toaster("Failed to archive order", "error"))
-                  } else if (order.status === "pending") {
-                    complete(order._id)
-                      .then(() =>
-                        toaster("Order successfully completed", "success")
-                      )
-                      .catch(() => toaster("Failed to complete order", "error"))
-                  }
-                  setIsHandlingOrder(false)
-                },
-                isLoading: isHandlingOrder,
-              }
-            }
+            // action={
+            //   order.status !== "archived" &&
+            //   order.status !== "canceled" && {
+            //     type: "",
+            //     label: order.status === "completed" ? "Archive" : "Complete",
+            //     onClick: () => {
+            //       setIsHandlingOrder(true)
+            //       if (order.status === "completed") {
+            //         archive(order.id)
+            //           .then(() =>
+            //             toaster("Order successfully archived", "success")
+            //           )
+            //           .catch(() => toaster("Failed to archive order", "error"))
+            //       } else if (order.status === "pending") {
+            //         complete(order.id)
+            //           .then(() =>
+            //             toaster("Order successfully completed", "success")
+            //           )
+            //           .catch(() => toaster("Failed to complete order", "error"))
+            //       }
+            //       setIsHandlingOrder(false)
+            //     },
+            //     isLoading: isHandlingOrder,
+            //   }
+            // }
           >
             <Flex alignItems="center">
               <Flex
@@ -288,18 +528,19 @@ const OrderDetails = ({ id }) => {
                   />
                 </Box>
               </Flex>
-              <Badge
+              {/* <Badge
                 ml={3}
                 color={decideBadgeColor(order.status).color}
                 bg={decideBadgeColor(order.status).bgColor}
               >
                 {order.status}
-              </Badge>
+              </Badge> */}
             </Flex>
           </Card.Header>
           <Box>
             <Text p={3} fontWeight="bold">
-              {order.total.toFixed(2)} {order.region.currency_code}
+              {(order.total / 100).toFixed(2)}{" "}
+              {order.currency_code.toUpperCase()}
             </Text>
           </Box>
           <Card.Body>
@@ -308,7 +549,7 @@ const OrderDetails = ({ id }) => {
                 Date
               </Text>
               <Text>
-                {moment(order.created).format("MMMM Do YYYY, h:mm:ss")}
+                {moment(order.created_at).format("MMMM Do YYYY, h:mm:ss")}
               </Text>
             </Box>
             <Card.VerticalDivider mx={3} />
@@ -334,7 +575,11 @@ const OrderDetails = ({ id }) => {
               <Text pb={1} color="gray">
                 Payment
               </Text>
-              <Text>{order.payment_method.provider_id}</Text>
+              <Text>
+                {order.payments
+                  .map(({ provider_id }) => provider_id)
+                  .join(", ")}
+              </Text>
             </Box>
           </Card.Body>
         </Card>
@@ -348,6 +593,10 @@ const OrderDetails = ({ id }) => {
           <Timeline
             events={events}
             order={order}
+            onResendNotification={n => setNotificationResend(n)}
+            onSaveClaim={updateClaim}
+            onFulfillClaim={claim => setClaimToFulfill(claim)}
+            onReceiveClaim={receiveClaim}
             onProcessSwapPayment={processSwapPayment}
             onFulfillSwap={swap => setSwapToFulfill(swap)}
             onReceiveReturn={ret => setToReceive(ret)}
@@ -371,13 +620,10 @@ const OrderDetails = ({ id }) => {
         </Card.Header>
         <Card.Body flexDirection="column">
           <Flex>
-            <Box pl={3} pr={5}>
+            <Box flex={"0 20%"} pl={3} pr={5}>
               <Text color="gray">Subtotal</Text>
               <Text pt={1} color="gray">
                 Shipping
-              </Text>
-              <Text pt={1} color="gray">
-                Tax Amount
               </Text>
               {order.discount_total > 0 && (
                 <Text pt={1} color="gray">
@@ -387,36 +633,41 @@ const OrderDetails = ({ id }) => {
               <Text pt={1} color="gray">
                 Total
               </Text>
+              <Text pt={1} color="gray" fontSize={0} fontStyle={"italic"}>
+                Tax Amount
+              </Text>
             </Box>
             <Box px={3}>
               <Text>
                 <AlignedDecimal
                   currency={order.currency_code}
-                  value={order.subtotal * (1 + order.tax_rate)}
+                  value={order.subtotal * (1 + order.tax_rate / 100)}
                 />
               </Text>
               <Text pt={1}>
                 <AlignedDecimal
                   currency={order.currency_code}
-                  value={order.shipping_total * (1 + order.tax_rate)}
-                />
-              </Text>
-              <Text pt={1}>
-                <AlignedDecimal
-                  currency={order.currency_code}
-                  value={order.tax_total}
+                  value={order.shipping_total * (1 + order.tax_rate / 100)}
                 />
               </Text>
               {order.discount_total > 0 && (
-                <AlignedDecimal
-                  currency={order.currency_code}
-                  value={-order.discount_total}
-                />
+                <Text pt={1}>
+                  <AlignedDecimal
+                    currency={order.currency_code}
+                    value={-order.discount_total * (1 + order.tax_rate / 100)}
+                  />
+                </Text>
               )}
               <Text pt={1}>
                 <AlignedDecimal
                   currency={order.currency_code}
                   value={order.total}
+                />
+              </Text>
+              <Text pt={1} fontSize={0} fontStyle={"italic"}>
+                <AlignedDecimal
+                  currency={order.currency_code}
+                  value={order.tax_total}
                 />
               </Text>
             </Box>
@@ -425,34 +676,7 @@ const OrderDetails = ({ id }) => {
           {(order.payment_status === "captured" ||
             order.payment_status === "refunded" ||
             order.payment_status === "partially_refunded") && (
-            <Flex>
-              <Box pl={3} pr={5}>
-                <Text pt={2}>Amount paid</Text>
-                {order.refunded_total > 0 && <Text pt={2}>Refunded</Text>}
-              </Box>
-              <Box>
-                <Text pt={2}>
-                  {order.refunded_total > 0 ? (
-                    <>
-                      <strike style={{ marginRight: "10px" }}>
-                        {order.total.toFixed(2)} {order.region.currency_code}
-                      </strike>
-                      <>
-                        {(order.total - order.refunded_total).toFixed(2)}{" "}
-                        {order.region.currency_code}
-                      </>
-                    </>
-                  ) : (
-                    `${order.total.toFixed(2)}`
-                  )}
-                </Text>
-                {order.refunded_total > 0 && (
-                  <Text pt={2}>
-                    {order.refunded_total.toFixed(2)} {order.currency_code}
-                  </Text>
-                )}
-              </Box>
-            </Flex>
+            <PaymentDetails order={order} />
           )}
         </Card.Body>
       </Card>
@@ -461,9 +685,9 @@ const OrderDetails = ({ id }) => {
         <Card.Header
           action={fulfillmentAction}
           badge={{
-            label: order.fulfillment_status,
-            color: decideBadgeColor(order.fulfillment_status).color,
-            bgColor: decideBadgeColor(order.fulfillment_status).bgColor,
+            label: getFulfillmentStatus(),
+            color: decideBadgeColor(getFulfillmentStatus()).color,
+            bgColor: decideBadgeColor(getFulfillmentStatus()).bgColor,
           }}
         >
           Fulfillment
@@ -482,7 +706,15 @@ const OrderDetails = ({ id }) => {
                   <Text pb={1} color="gray">
                     Shipping Method
                   </Text>
-                  <Text>{method.name}</Text>
+                  <Text>
+                    {method.shipping_option ? (
+                      method.shipping_option.name
+                    ) : (
+                      <span style={{ fontStyle: "italic" }}>
+                        Order was shipped with a now deleted option
+                      </span>
+                    )}
+                  </Text>
                   <Text pt={3} pb={1} color="gray">
                     Data
                   </Text>
@@ -495,103 +727,25 @@ const OrderDetails = ({ id }) => {
           <Flex width={1} flexDirection="column">
             {fulfillments.length > 0
               ? fulfillments.map(f => (
-                  <Flex
-                    key={f.fulfillment._id}
-                    sx={{
-                      ":not(:last-of-type)": {
-                        borderBottom: "hairline",
-                      },
-                    }}
-                    p={3}
-                    alignItems="center"
-                    justifyContent="space-between"
-                  >
-                    <Box>
-                      <Text>
-                        {f.title} Fulfilled by provider{" "}
-                        {f.fulfillment.provider_id}
-                      </Text>
-                      {f.fulfillment.tracking_numbers.length > 0 ? (
-                        <>
-                          <Text my={1} color="gray">
-                            Tracking Number
-                          </Text>
-                          <Text>
-                            {f.fulfillment.tracking_numbers.join(", ")}
-                          </Text>
-                        </>
-                      ) : (
-                        <Text my={1} color="gray">
-                          Not shipped
-                        </Text>
-                      )}
-                    </Box>
-                    {!f.fulfillment.shipped_at && order.status !== "canceled" && (
-                      <Button
-                        variant={"primary"}
-                        onClick={() => setUpdateFulfillment(f)}
-                      >
-                        Mark Shipped
-                      </Button>
-                    )}
-                  </Flex>
+                  <Fulfillment
+                    key={f.fulfillment.id}
+                    details={f}
+                    order={order}
+                    onUpdate={setUpdateFulfillment}
+                  />
                 ))
               : null}
           </Flex>
         </Card.Body>
       </Card>
       {/* CUSTOMER */}
-      <Card mr={3} mb={4} width="100%">
-        <Card.Header>Customer</Card.Header>
-        <Card.Body>
-          <Box px={3}>
-            <Text color="gray">Contact</Text>
-            <CustomerEmailLabel
-              pt={3}
-              customerExist={order.customer}
-              onClick={() => {
-                if (order.customer) {
-                  navigate(`/a/customers/${order.customer._id}`)
-                } else {
-                  return
-                }
-              }}
-            >
-              {order.email}
-            </CustomerEmailLabel>
-            <Text pt={2}>
-              {order.shipping_address.first_name}{" "}
-              {order.shipping_address.last_name}
-            </Text>
-          </Box>
-          <Card.VerticalDivider mx={3} />
-          <Box px={3}>
-            <Text color="gray">Shipping</Text>
-            <Text pt={3}>{order.shipping_address.address_1}</Text>
-            {order.shipping_address.address_2 && (
-              <Text pt={2}>{order.shipping_address.address_2}</Text>
-            )}
-            <Text pt={2}>
-              {order.shipping_address.postal_code} {order.shipping_address.city}
-              , {order.shipping_address.country_code}
-            </Text>
-            <Text pt={2}>{order.shipping_address.country}</Text>
-          </Box>
-          <Card.VerticalDivider mx={3} />
-          <Box px={3}>
-            <Text color="gray">Billing</Text>
-            <Text pt={3}>{order.billing_address.address_1}</Text>
-            {order.billing_address.address_2 && (
-              <Text pt={2}>{order.billing_address.address_2}</Text>
-            )}
-            <Text pt={2}>
-              {order.billing_address.postal_code} {order.billing_address.city},{" "}
-              {order.billing_address.country_code}
-            </Text>
-            <Text pt={2}>{order.billing_address.country}</Text>
-          </Box>
-        </Card.Body>
-      </Card>
+      <CustomerInformation
+        order={order}
+        updateOrder={updateOrder}
+        show={showEditCustomer}
+        setShow={setShowEditCustomer}
+        toaster={toaster}
+      />
       {/* METADATA */}
       <Card mr={3} width="100%">
         <Card.Header>Raw order</Card.Header>
@@ -604,9 +758,18 @@ const OrderDetails = ({ id }) => {
           />
         </Card.Body>
       </Card>
+      {claimToFulfill && (
+        <FulfillmentMenu
+          type={"claim"}
+          onFulfill={fulfillClaim}
+          order={claimToFulfill}
+          onDismiss={() => setClaimToFulfill(false)}
+          toaster={toaster}
+        />
+      )}
       {swapToFulfill && (
         <FulfillmentMenu
-          isSwap
+          type={"claim"}
           onFulfill={fulfillSwap}
           order={swapToFulfill}
           onDismiss={() => setSwapToFulfill(false)}
@@ -615,6 +778,7 @@ const OrderDetails = ({ id }) => {
       )}
       {showFulfillmentMenu && (
         <FulfillmentMenu
+          type={"default"}
           onFulfill={createFulfillment}
           order={order}
           onDismiss={() => setShowFulfillmentMenu(false)}
@@ -641,8 +805,10 @@ const OrderDetails = ({ id }) => {
         <FulfillmentEdit
           order={order}
           swap={updateFulfillment.swap}
+          claim={updateFulfillment.claim}
           fulfillment={updateFulfillment.fulfillment}
-          isSwap={updateFulfillment.is_swap}
+          type={updateFulfillment.type}
+          onCreateClaimShipment={createClaimShipment}
           onCreateSwapShipment={createSwapShipment}
           onCreateShipment={createShipment}
           onDismiss={() => setUpdateFulfillment(false)}
@@ -654,8 +820,23 @@ const OrderDetails = ({ id }) => {
           order={order}
           returnRequest={toReceive}
           onReceiveReturn={receiveReturn}
-          onReceiveSwap={receiveSwap}
+          onReceiveSwap={receiveReturn}
           onDismiss={() => setToReceive(false)}
+          toaster={toaster}
+        />
+      )}
+      {showClaim && (
+        <ClaimMenu
+          order={order}
+          onCreate={createClaim}
+          onDismiss={() => setShowClaim(false)}
+          toaster={toaster}
+        />
+      )}
+      {notificationResend && (
+        <NotificationResend
+          notification={notificationResend}
+          onDismiss={() => setNotificationResend(false)}
           toaster={toaster}
         />
       )}

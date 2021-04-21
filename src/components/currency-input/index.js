@@ -5,19 +5,24 @@ import styled from "@emotion/styled"
 import Typography from "../typography"
 import Select from "../select"
 
-const TextWrapper = styled(Text)`
-  display: inline-block;
+const TextWrapper = styled(Flex)`
+  margin-left: 8px;
+  align-items: center;
 `
 
 const CurrencyBox = styled(Box)`
   white-space: nowrap;
   color: gray;
+  margin-right: 0px;
   ${props =>
     props.inline &&
     `
   max-width: 350px;
   flex-grow: 1;
   `}
+
+  border-right: 1px solid rgb(60 66 87 / 16%);
+  min-width: 75px;
 `
 
 const StyledInput = styled.input`
@@ -27,14 +32,25 @@ const StyledInput = styled.input`
   background-color: transparent;
   border: none;
   padding: 8px;
-  padding-left: 15px;
+  // padding-left: 15px;
   &:focus {
     outline: none;
+  }
+
+  &::placeholder {
+    opacity: 0.2;
   }
 `
 
 const StyledLabel = styled.div`
-  ${Typography.Base}
+  ${Typography.Base};
+  
+  ${props =>
+    props.boldLabel &&
+    `
+    font-weight: 500;
+  `}
+  
   ${props =>
     props.inline
       ? `
@@ -61,6 +77,7 @@ const CurrencyInput = React.forwardRef(
       edit,
       name,
       label,
+      boldLabel,
       inline,
       currencyOptions,
       onCurrencySelected,
@@ -71,13 +88,12 @@ const CurrencyInput = React.forwardRef(
       value,
       required,
       fontSize,
+      placeholder,
       ...props
     },
     ref
   ) => {
     const [isFocused, setFocused] = useState(false)
-    const [highlighted, setHighlighted] = useState(-1)
-    const containerRef = useRef()
 
     const handleRemove = index => {
       const newValues = [...values]
@@ -86,7 +102,6 @@ const CurrencyInput = React.forwardRef(
     }
 
     const handleBlur = () => {
-      setHighlighted(-1)
       setFocused(false)
     }
 
@@ -102,7 +117,7 @@ const CurrencyInput = React.forwardRef(
     return (
       <Flex
         alignItems={inline && "center"}
-        flexDirection={inline ? "row" : "column"}
+        flexDirection={inline || removable ? "row" : "column"}
         {...props}
       >
         {label && (
@@ -116,6 +131,7 @@ const CurrencyInput = React.forwardRef(
               style={fontSize && { fontSize }}
               required={required}
               inline={inline}
+              boldLabel={boldLabel}
             >
               {label}
             </StyledLabel>
@@ -123,45 +139,55 @@ const CurrencyInput = React.forwardRef(
         )}
         <Flex
           fontSize={1}
-          flex={"50% 0 0"}
+          flex={removable ? "auto" : "50% 0 0"}
           alignItems="center"
           className={isFocused ? "tag__focus" : ""}
           focused={isFocused}
           variant="forms.input"
+          height={props.height || "inherit"}
         >
           <CurrencyBox
             textAlign="center"
             width={"3.3rem"}
             mr={edit && currencyOptions.length > 0 && "28px"}
             lineHeight="1.5"
-            my={1}
+            height="100%"
             ml={1}
           >
-            {edit && currencyOptions.length > 0 ? (
+            {edit && currencyOptions.length > 1 ? (
               <Select
+                isCurrencyInput={true}
                 inline
                 width={"3.3rem"}
+                height="100%"
+                selectHeight="100%"
                 value={currency}
                 options={currencyOptions}
                 onChange={handleCurrencySelected}
               />
             ) : (
-              <TextWrapper>{currency}</TextWrapper>
+              <TextWrapper
+                marginTop={inline || !edit ? "0px" : "6px"}
+                height="100%"
+              >
+                {currency.toUpperCase()}
+              </TextWrapper>
             )}
           </CurrencyBox>
           <StyledInput
             ref={ref}
             name={name}
-            value={value}
+            value={value || null}
             onBlur={handleBlur}
             onFocus={handleFocus}
             onChange={onChange}
+            placeholder={placeholder || ""}
             step="0.01"
             type="number"
           />
         </Flex>
         {removable && (
-          <Text ml={2} onClick={onRemove} sx={{ cursor: "pointer" }}>
+          <Text ml={2} mt={1} onClick={onRemove} sx={{ cursor: "pointer" }}>
             &times;
           </Text>
         )}

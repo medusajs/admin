@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Flex, Box } from "rebass"
+import { Flex, Box, Text } from "rebass"
 
 export const Container = styled(Flex)`
   flex-direction: column;
@@ -8,7 +8,7 @@ export const Container = styled(Flex)`
 
 export const Main = styled(Box)`
   display: grid;
-  grid-template-columns: 250px 1fr;
+  grid-template-columns: 325px 1fr;
   grid-template-rows: 1fr;
 
   min-height: 100vh;

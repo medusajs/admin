@@ -13,10 +13,11 @@ import {
   Table,
   TableHead,
   TableHeaderCell,
-  TableHeaderRow,
   TableBody,
   TableRow,
   TableDataCell,
+  TableHeaderRow,
+  DefaultCellContent,
 } from "../../components/table"
 import Spinner from "../../components/spinner"
 import Badge from "../../components/badge"
@@ -25,25 +26,20 @@ import Button from "../../components/button"
 import useMedusa from "../../hooks/use-medusa"
 
 const Index = () => {
-  const { discounts, isLoading } = useMedusa("discounts", {
-    search: {
-      is_giftcard: "true",
-      expand_fields: "regions",
-    },
-  })
+  const { gift_cards, isLoading } = useMedusa("giftCards")
 
   return (
     <div>
       <Flex pt={5}>
         <Text fontSize={20} fontWeight="bold" mb={4}>
-          Gift Cards
+          Gift cards
         </Text>
         <Box ml="auto" />
         <Button
           onClick={() => navigate(`/a/gift-cards/manage`)}
           variant={"cta"}
         >
-          Manage Gift Card
+          Manage gift cards
         </Button>
       </Flex>
       {isLoading ? (
@@ -60,43 +56,52 @@ const Index = () => {
       ) : (
         <Table>
           <TableHead>
-            <TableRow
-              p={0}
-              sx={{
-                background: "white",
-              }}
-            >
+            <TableHeaderRow>
               <TableHeaderCell>Code</TableHeaderCell>
               <TableHeaderCell>Original Amount</TableHeaderCell>
               <TableHeaderCell>Amount Left</TableHeaderCell>
               <TableHeaderCell>Created</TableHeaderCell>
-            </TableRow>
+            </TableHeaderRow>
           </TableHead>
           <TableBody>
-            {discounts &&
-              discounts.map((el, i) => (
+            {gift_cards &&
+              gift_cards.map(el => (
                 <TableRow
-                  sx={{ cursor: "pointer" }}
-                  key={i}
-                  onClick={() => navigate(`/a/gift-cards/${el._id}`)}
+                  key={el.id}
+                  onClick={() => navigate(`/a/gift-cards/${el.id}`)}
                 >
-                  <TableDataCell>{el.code}</TableDataCell>
                   <TableDataCell>
-                    {(el.original_amount && el.original_amount.toFixed(2)) || (
-                      <>&nbsp;</>
-                    )}{" "}
-                    {el.original_amount && el.regions[0].currency_code}
+                    <DefaultCellContent>{el.code}</DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell>
-                    {(el.discount_rule.value || 0).toFixed(2)}{" "}
-                    {el.regions[0].currency_code}
+                    <DefaultCellContent>
+                      {(el.value &&
+                        (
+                          ((1 + el.region.tax_rate / 100) * el.value) /
+                          100
+                        ).toFixed(2)) || <>&nbsp;</>}{" "}
+                      {el.value && el.region.currency_code.toUpperCase()}
+                    </DefaultCellContent>
+                  </TableDataCell>
+                  <TableDataCell>
+                    <DefaultCellContent>
+                      {(
+                        ((1 + el.region.tax_rate / 100) * el.balance) /
+                        100
+                      ).toFixed(2)}{" "}
+                      {el.region.currency_code.toUpperCase()}
+                    </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell
-                    data-for={el._id}
-                    data-tip={moment(el.created).format("MMMM Do YYYY HH:mm a")}
+                    data-for={el.id}
+                    data-tip={moment(el.created_at).format(
+                      "MMMM Do YYYY HH:mm a"
+                    )}
                   >
-                    <ReactTooltip id={el._id} place="top" effect="solid" />
-                    {moment(parseInt(el.created)).format("MMM Do YYYY")}
+                    <ReactTooltip id={el.id} place="top" effect="solid" />
+                    <DefaultCellContent>
+                      {moment(el.created_at).format("MMM Do YYYY")}
+                    </DefaultCellContent>
                   </TableDataCell>
                 </TableRow>
               ))}

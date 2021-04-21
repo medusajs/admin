@@ -17,6 +17,11 @@ const StyledInput = styled(Input)`
 const StyledLabel = styled.div`
   ${Typography.Base}
   ${props =>
+    props.boldLabel &&
+    `
+    font-weight: 500;
+  `}
+  ${props =>
     props.inline
       ? `
   text-align: right;
@@ -47,6 +52,7 @@ const InputField = React.forwardRef(
       max,
       inline,
       label,
+      boldLabel,
       name,
       type,
       inputStyle,
@@ -73,7 +79,11 @@ const InputField = React.forwardRef(
             htmlFor={name}
             display={props.start ? "flex" : inline && "inline !important"}
           >
-            <StyledLabel required={required} inline={inline}>
+            <StyledLabel
+              required={required}
+              inline={inline}
+              boldLabel={boldLabel}
+            >
               {label}
             </StyledLabel>
           </Label>

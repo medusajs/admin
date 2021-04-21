@@ -78,17 +78,15 @@ const RequiredLabel = styled.div`
 
 const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const { register, handleSubmit } = useForm()
-  const [discountRule, setDiscountRule] = useState(discount.discount_rule)
-  const [type, setType] = useState(discount.discount_rule.type)
-  const [allocation, setAllocation] = useState(
-    discount.discount_rule.allocation
-  )
+  const [discountRule, setDiscountRule] = useState(discount.rule)
+  const [type, setType] = useState(discount.rule.type)
+  const [allocation, setAllocation] = useState(discount.rule.allocation)
 
   const [selectedProducts, setSelectedProducts] = useState(
-    discount.discount_rule.valid_for.map(({ _id, title }) => ({
-      value: _id,
+    discount.rule.valid_for?.map(({ id, title }) => ({
+      value: id,
       label: title,
-    }))
+    })) || []
   )
 
   const onChange = e => {
@@ -99,7 +97,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const validProducts = () => {
     let formattedProducts = products.map(p => ({
       label: p.title,
-      value: p._id,
+      value: p.id,
     }))
     return _.intersectionBy(formattedProducts, selectedProducts, "value").map(
       v => v.value
@@ -109,6 +107,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const onSubmit = data => {
     data.value = parseInt(data.value)
     data.valid_for = validProducts()
+    data.id = discount.rule.id
     onUpdate(data)
   }
 
@@ -117,7 +116,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
       <Modal.Body
         as="form"
         onSubmit={handleSubmit(onSubmit)}
-        sx={{ height: "90vh" }}
+        sx={{ height: "75vh" }}
       >
         <Modal.Header>Update discount rule</Modal.Header>
         <Modal.Content flexDirection="column">
@@ -137,7 +136,11 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
             type="number"
             required={true}
             name="value"
-            value={discountRule.value}
+            value={
+              discountRule.type === "fixed"
+                ? parseInt(discountRule.value) / 100
+                : discountRule.value
+            }
             onChange={onChange}
           />
           <RequiredLabel pb={2}>Type</RequiredLabel>
@@ -218,14 +221,14 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
               </Text>
             </Flex>
           </StyledLabel>
-          <StyledLabel pb={0}>Choose valid products</StyledLabel>
+          {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
           <Text fontSize="10px" color="gray">
             Leaving it empty will make the discount available for all products
           </Text>
           <StyledMultiSelect
             options={products.map(el => ({
               label: el.title,
-              value: el._id,
+              value: el.id,
             }))}
             selectAllLabel={"All"}
             overrideStrings={{
@@ -233,7 +236,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
             }}
             value={selectedProducts}
             onChange={setSelectedProducts}
-          />
+          /> */}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button type="submit" variant="primary">

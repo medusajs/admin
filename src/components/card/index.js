@@ -17,11 +17,19 @@ const Card = styled(RebassCard)`
 `
 
 const StyledFooter = styled(Flex)`
-  border-top: 1px solid #e3e8ee;
+  ${props =>
+    !props.hideBorder &&
+    `
+    border-top: 1px solid #e3e8ee;
+  `}
 `
 
 const StyledHeader = styled(Flex)`
-  border-bottom: 1px solid #e3e8ee;
+  ${props =>
+    !props.hideBorder &&
+    `
+  border-top: 1px solid #e3e8ee;
+`}
 `
 
 Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
@@ -52,7 +60,7 @@ Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
       {dropdownOptions && dropdownOptions.length > 0 && (
         <Dropdown mr={3}>
           {dropdownOptions.map(o => (
-            <Text color={o.variant} onClick={o.onClick}>
+            <Text p={0} color={o.variant} onClick={o.onClick}>
               {o.label}
             </Text>
           ))}

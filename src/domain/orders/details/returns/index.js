@@ -26,8 +26,24 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   const { register, setValue, handleSubmit } = useForm()
 
+  const [allItems, setAllItems] = useState([])
+
+  useEffect(() => {
+    if (order) {
+      let temp = [...order.items]
+
+      if (order.swaps && order.swaps.length) {
+        for (const s of order.swaps) {
+          temp = [...temp, ...s.additional_items]
+        }
+      }
+
+      setAllItems(temp)
+    }
+  }, [order])
+
   const handleReturnToggle = item => {
-    const id = item._id
+    const id = item.id
     const idx = toReturn.indexOf(id)
     if (idx !== -1) {
       const newReturns = [...toReturn]
@@ -43,7 +59,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
       const newQuantities = {
         ...quantities,
-        [item._id]: item.quantity - item.returned_quantity,
+        [item.id]: item.quantity - item.returned_quantity,
       }
 
       setQuantities(newQuantities)
@@ -63,10 +79,14 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }, [])
 
   useEffect(() => {
-    const items = toReturn.map(t => order.items.find(i => i._id === t))
+    const items = toReturn.map(t => allItems.find(i => i.id === t))
     const total =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next._id]
+        return (
+          acc +
+          (next.refundable / (next.quantity - next.returned_quantity)) *
+            quantities[next.id]
+        )
       }, 0) - (shippingPrice || 0)
 
     setRefundable(total)
@@ -80,7 +100,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const element = e.target
     const newQuantities = {
       ...quantities,
-      [item._id]: parseInt(element.value),
+      [item.id]: parseInt(element.value),
     }
 
     setQuantities(newQuantities)
@@ -94,11 +114,14 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
     let data = {
       items,
-      refund: refundAmount,
+      refund: Math.round(refundAmount),
     }
+
     if (shippingMethod) {
-      data.shipping_method = shippingMethod
-      data.shipping_price = shippingPrice / (1 + order.tax_rate)
+      data.return_shipping = {
+        option_id: shippingMethod,
+        price: shippingPrice / (1 + order.tax_rate / 100),
+      }
     }
 
     if (onReturn) {
@@ -117,7 +140,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const value = element.value
 
     if (value < order.refundable_amount && value >= 0) {
-      setRefundAmount(parseFloat(element.value))
+      setRefundAmount(parseFloat(element.value) * 100)
     }
   }
 
@@ -130,8 +153,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       const newQuantities = {}
       for (const item of order.items) {
         if (!item.returned) {
-          newReturns.push(item._id)
-          newQuantities[item._id] = item.quantity - item.returned_quantity
+          newReturns.push(item.id)
+          newQuantities[item.id] = item.quantity - item.returned_quantity
         }
       }
       setQuantities(newQuantities)
@@ -144,8 +167,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const element = e.target
     if (element.value !== "Add a shipping method") {
       setShippingMethod(element.value)
-      const method = shippingOptions.find(o => element.value === o._id)
-      setShippingPrice(method.price.amount)
+      const method = shippingOptions.find(o => element.value === o.id)
+      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
       setShippingPrice(0)
@@ -156,7 +179,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     const element = e.target
     const value = element.value
     if (value >= 0) {
-      setShippingPrice(parseFloat(value))
+      setShippingPrice(parseFloat(value) * 100)
     }
   }
 
@@ -192,22 +215,22 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                 Refundable
               </Box>
             </Flex>
-            {order.items.map(item => {
+            {allItems.map(item => {
               // Only show items that have not been returned
-              if (item.returned) {
+              if (item.returned_quantity === item.quantity) {
                 return
               }
 
               return (
                 <Flex
-                  key={item._id}
+                  key={item.id}
                   justifyContent="space-between"
                   fontSize={2}
                   py={2}
                 >
                   <Box width={30} px={2} py={1}>
                     <input
-                      checked={toReturn.includes(item._id)}
+                      checked={toReturn.includes(item.id)}
                       onChange={() => handleReturnToggle(item)}
                       type="checkbox"
                     />
@@ -216,14 +239,14 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                     <Text fontSize={1} lineHeight={"14px"}>
                       {item.title}
                     </Text>
-                    <Text fontSize={0}>{item.content.variant.sku}</Text>
+                    <Text fontSize={0}>{item.variant.sku}</Text>
                   </Box>
                   <Box width={75} px={2} py={1}>
-                    {toReturn.includes(item._id) ? (
+                    {toReturn.includes(item.id) ? (
                       <Input
                         type="number"
                         onChange={e => handleQuantity(e, item)}
-                        value={quantities[item._id] || ""}
+                        value={quantities[item.id] || ""}
                         min={1}
                         max={item.quantity - item.returned_quantity}
                       />
@@ -233,7 +256,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   </Box>
                   <Box width={110} px={2} py={1}>
                     <Text fontSize={1}>
-                      {item.refundable.toFixed(2)} {order.currency_code}
+                      {(item.refundable / 100).toFixed(2)}{" "}
+                      {order.currency_code.toUpperCase()}
                     </Text>
                   </Box>
                 </Flex>
@@ -253,7 +277,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                 onChange={handleShippingSelected}
                 options={shippingOptions.map(o => ({
                   label: o.name,
-                  value: o._id,
+                  value: o.id,
                 }))}
               />
               {shippingMethod && (
@@ -261,10 +285,10 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   <Box px={2} fontSize={1}>
                     Shipping price (incl. taxes)
                   </Box>
-                  <Box px={2} width={110}>
+                  <Box px={2} width={"170px"}>
                     <CurrencyInput
                       currency={order.currency_code}
-                      value={shippingPrice}
+                      value={shippingPrice / 100}
                       onChange={handleUpdateShippingPrice}
                     />
                   </Box>
@@ -286,10 +310,10 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
               <Box px={2} fontSize={1}>
                 To refund
               </Box>
-              <Box px={2} width={110}>
+              <Box px={2} width={"170px"}>
                 <CurrencyInput
                   currency={order.currency_code}
-                  value={refundAmount}
+                  value={refundAmount / 100}
                   onChange={handleRefundUpdated}
                 />
               </Box>

@@ -11,6 +11,7 @@ import Spinner from "../../../components/spinner"
 
 import useMedusa from "../../../hooks/use-medusa"
 import Medusa from "../../../services/api"
+import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 
 const NewShipping = ({
   isReturn,
@@ -21,8 +22,7 @@ const NewShipping = ({
   onDelete,
   onClick,
 }) => {
-  const { control, register, handleSubmit } = useForm()
-  const { store, isLoading } = useMedusa("store")
+  const { register, handleSubmit } = useForm()
   const { shipping_profiles, isLoading: isProfilesLoading } = useMedusa(
     "shippingProfiles"
   )
@@ -46,7 +46,7 @@ const NewShipping = ({
     if (data.requirements) {
       reqs = Object.entries(data.requirements).reduce((acc, [key, value]) => {
         if (parseInt(value) && parseInt(value) > 0) {
-          acc.push({ type: key, value })
+          acc.push({ type: key, amount: Math.round(value * 100) })
           return acc
         } else {
           return acc
@@ -57,13 +57,11 @@ const NewShipping = ({
     const payload = {
       name: data.name,
       data: options[optionIndex],
-      region_id: region._id,
+      region_id: region.id,
       profile_id: data.profile_id,
       requirements: reqs,
-      price: {
-        type: "flat_rate",
-        amount: data.price.amount,
-      },
+      price_type: "flat_rate",
+      amount: Math.round(data.price.amount * 100),
       is_return: isReturn,
       provider_id,
     }
@@ -81,7 +79,9 @@ const NewShipping = ({
 
     return acc.concat(
       filtered.map((option, o) => ({
-        label: `${option.id} via ${provider.provider_id}`,
+        label: `${option.id} via ${
+          fulfillmentProvidersMapper(provider.provider_id).label
+        }`,
         value: `${p}.${o}`,
       }))
     )
@@ -91,7 +91,7 @@ const NewShipping = ({
     ? []
     : shipping_profiles.map(p => ({
         label: p.name,
-        value: p._id,
+        value: p.id,
       }))
 
   return (
@@ -101,20 +101,20 @@ const NewShipping = ({
           <Text>Add Shipping Option</Text>
         </Modal.Header>
         <Modal.Content flexDirection="column">
-          <Box mb={4}>
+          <Box mb={3}>
             <Input
               mt={2}
               mb={3}
               label="Name"
               name="name"
-              required={true}
               ref={register({ required: true })}
+              required={true}
             />
           </Box>
           {!isReturn && (
             <Box mb={4}>
-              <Text mb={3} fontSize={2}>
-                Shipping Profile
+              <Text fontSize={1} fontWeight={300} mb={2}>
+                Shipping profile
               </Text>
               {isProfilesLoading ? (
                 <Flex
@@ -138,8 +138,8 @@ const NewShipping = ({
             </Box>
           )}
           <Box mb={4}>
-            <Text mb={3} fontSize={2}>
-              Fulfillment Method
+            <Text fontSize={1} fontWeight={300} mb={2}>
+              Fulfillment method
             </Text>
             <Select
               required={true}
@@ -149,13 +149,14 @@ const NewShipping = ({
             />
           </Box>
           <Box mb={4}>
-            <Text mb={3} fontSize={2}>
+            <Text fontSize={1} fontWeight={300} mb={2} className="required">
               Price
             </Text>
             <CurrencyInput
-              ref={register}
+              ref={register({ required: true })}
+              required={true}
               name={"price.amount"}
-              currency={region.currency_code}
+              currency={region.currency_code.toUpperCase()}
             />
           </Box>
           {!isReturn && (
@@ -171,7 +172,7 @@ const NewShipping = ({
                   fontSize="12px"
                   label="Min. subtotal"
                   name={`requirements.min_subtotal`}
-                  currency={region.currency_code}
+                  currency={region.currency_code.toUpperCase()}
                   ref={register}
                 />
               </Flex>
@@ -183,7 +184,7 @@ const NewShipping = ({
                   label="Max. subtotal"
                   fontSize="12px"
                   name={`requirements.max_subtotal`}
-                  currency={region.currency_code}
+                  currency={region.currency_code.toUpperCase()}
                   ref={register}
                 />
               </Flex>

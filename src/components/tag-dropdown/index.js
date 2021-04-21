@@ -23,6 +23,15 @@ const StyledLabel = styled.div`
       : `
   padding-bottom: 10px;
   `}
+  
+  ${props =>
+    props.required &&
+    `
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+  `}
 `
 
 const Container = styled(Flex)`
@@ -81,6 +90,7 @@ const TagInput = ({
   valueRender,
   optionRender,
   onChange,
+  required,
   values,
   ...props
 }) => {
@@ -179,9 +189,9 @@ const TagInput = ({
     }
   }
 
-  const availableOptions = options.filter(
-    o => !values.find(v => v.value === o.value)
-  )
+  const availableOptions = options
+    .filter(o => !values.find(v => v.value === o.value))
+    .filter(el => !!el)
 
   return (
     <Flex
@@ -196,7 +206,9 @@ const TagInput = ({
           maxWidth={"200px"}
           display={props.start ? "flex" : inline && "inline !important"}
         >
-          <StyledLabel inline={inline}>{label}</StyledLabel>
+          <StyledLabel required={required} inline={inline}>
+            {label}
+          </StyledLabel>
         </Label>
       )}
       <Flex flexDirection="row" flex={"100% 0 0"}>
@@ -205,7 +217,6 @@ const TagInput = ({
           alignItems="center"
           className={isFocused ? "tag__focus" : ""}
           focused={isFocused}
-          // flex={"50% 0 0"}
           style={{ position: "relative" }}
         >
           <TagContainer variant={"forms.input"} p={2}>
@@ -213,8 +224,8 @@ const TagInput = ({
               <TagBox
                 key={index}
                 lineHeight="1.5"
-                mb={1}
                 ml={1}
+                mt={1}
                 variant="badge"
                 highlighted={index === highlighted}
               >
@@ -224,7 +235,11 @@ const TagInput = ({
             ))}
           </TagContainer>
         </Container>
-        <Dropdown toggleText={toggleText} sx={{ marginLeft: "10px" }}>
+        <Dropdown
+          disabled={availableOptions.length === 0}
+          toggleText={toggleText}
+          sx={{ marginLeft: "10px" }}
+        >
           {availableOptions.map(option => (
             <div onClick={() => onChange([option, ...values])}>
               {handleOptionRender(option)}

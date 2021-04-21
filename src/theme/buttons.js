@@ -24,7 +24,7 @@ export const buttons = {
     paddingBottom: "3px",
     boxShadow: "pill",
     "&:focus": {
-      boxShadow: "buttonBoxShadowActive",
+      boxShadow: "pillActiveFocus",
     },
   },
   danger: {
@@ -42,7 +42,6 @@ export const buttons = {
     borderRadius: "3px",
     boxShadow: "buttonBoxShadow",
     "&:hover": {
-      color: "darkest",
       boxShadow: "buttonBoxShadowHover",
     },
     "&:active": {
@@ -51,7 +50,7 @@ export const buttons = {
   },
   primary: {
     minHeight: "24px",
-    height: "28px",
+    height: "30px",
     fontWeight: "500",
     color: "dark",
     fontSize: "14px",
@@ -62,7 +61,7 @@ export const buttons = {
     paddingTop: "3px",
     paddingBottom: "3px",
     cursor: "pointer",
-    borderRadius: "3px",
+    borderRadius: "5px",
     boxShadow: "buttonBoxShadow",
     "&:hover": {
       color: "darkest",
@@ -106,7 +105,7 @@ export const buttons = {
     paddingTop: "3px",
     paddingBottom: "3px",
     cursor: "pointer",
-    borderRadius: "3px",
+    borderRadius: "5px",
     "&:focus": {
       boxShadow: "buttonBoxShadowFocus",
     },
@@ -130,7 +129,7 @@ export const buttons = {
 
     cursor: "pointer",
 
-    borderRadius: "3px",
+    borderRadius: "5px",
     boxShadow: "ctaBoxShadow",
 
     "&:hover": {

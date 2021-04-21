@@ -25,8 +25,24 @@ const ReceiveMenu = ({
   const [quantities, setQuantities] = useState({})
   const { register, setValue, handleSubmit } = useForm()
 
+  const [allItems, setAllItems] = useState([])
+
+  useEffect(() => {
+    if (order) {
+      let temp = [...order.items]
+
+      if (order.swaps && order.swaps.length) {
+        for (const s of order.swaps) {
+          temp = [...temp, ...s.additional_items]
+        }
+      }
+
+      setAllItems(temp)
+    }
+  }, [order])
+
   const handleReturnToggle = item => {
-    const id = item._id
+    const id = item.id
     const idx = toReturn.indexOf(id)
     if (idx !== -1) {
       const newReturns = [...toReturn]
@@ -42,7 +58,7 @@ const ReceiveMenu = ({
 
       const newQuantities = {
         ...quantities,
-        [item._id]: item.quantity - item.returned_quantity,
+        [item.id]: item.quantity - item.returned_quantity,
       }
 
       setQuantities(newQuantities)
@@ -53,7 +69,7 @@ const ReceiveMenu = ({
     let returns = []
     let qty = {}
     returnRequest.items.forEach(i => {
-      const item = order.items.find(l => l._id === i.item_id)
+      const item = allItems.find(l => l.id === i.item_id)
       if (
         item &&
         !item.returned &&
@@ -69,15 +85,18 @@ const ReceiveMenu = ({
 
     setToReturn(returns)
     setQuantities(qty)
-  }, [])
+  }, [allItems])
 
   useEffect(() => {
-    const items = toReturn.map(t => order.items.find(i => i._id === t))
+    if (!toReturn.length) return
+
+    const items = toReturn.map(t => allItems.find(i => i.id === t))
     const total =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next._id]
+        return acc + (next.refundable / next.quantity) * quantities[next.id]
       }, 0) -
-      ((returnRequest.shipping_method && returnRequest.shipping_method.price) ||
+      ((returnRequest.shipping_method &&
+        returnRequest.shipping_method.price * (1 + order.tax_rate / 100)) ||
         0)
 
     setRefundable(total)
@@ -91,13 +110,14 @@ const ReceiveMenu = ({
     const element = e.target
     const newQuantities = {
       ...quantities,
-      [item._id]: parseInt(element.value),
+      [item.id]: parseInt(element.value),
     }
 
     setQuantities(newQuantities)
   }
 
   const onSubmit = () => {
+    console.log(toReturn)
     const items = toReturn.map(t => ({
       item_id: t,
       quantity: quantities[t],
@@ -105,7 +125,7 @@ const ReceiveMenu = ({
 
     if (returnRequest.is_swap && onReceiveSwap) {
       setSubmitting(true)
-      return onReceiveSwap(returnRequest.swap_id, {
+      return onReceiveReturn(returnRequest.id, {
         items,
       })
         .then(() => onDismiss())
@@ -116,9 +136,9 @@ const ReceiveMenu = ({
 
     if (!returnRequest.is_swap && onReceiveReturn) {
       setSubmitting(true)
-      return onReceiveReturn(returnRequest._id, {
+      return onReceiveReturn(returnRequest.id, {
         items,
-        refund: refundAmount,
+        refund: Math.round(refundAmount),
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
@@ -133,7 +153,7 @@ const ReceiveMenu = ({
     const value = element.value
 
     if (value < order.refundable_amount && value >= 0) {
-      setRefundAmount(parseFloat(element.value))
+      setRefundAmount(parseFloat(element.value) * 100)
     }
   }
 
@@ -146,8 +166,8 @@ const ReceiveMenu = ({
       const newQuantities = {}
       for (const item of order.items) {
         if (!item.returned) {
-          newReturns.push(item._id)
-          newQuantities[item._id] = item.quantity - item.returned_quantity
+          newReturns.push(item.id)
+          newQuantities[item.id] = item.quantity - item.returned_quantity
         }
       }
       setQuantities(newQuantities)
@@ -184,24 +204,27 @@ const ReceiveMenu = ({
             <Box width={75} px={2} py={1}>
               Quantity
             </Box>
-            <Box width={110} px={2} py={1}>
+            <Box width={170} px={2} py={1}>
               Refundable
             </Box>
           </Flex>
-          {order.items.map(item => {
-            // Only show items that have not been returned
-            if (item.returned) {
+          {allItems.map(item => {
+            // Swap returns should only show lines associated with the swap
+            if (!item.fulfilled_quantity) {
               return
             }
 
-            // Swap returns should only show lines associated with the swap
-            if (returnRequest.is_swap && !toReturn.includes(item._id)) {
+            if (item.returned_quantity === item.quantity) {
+              return
+            }
+
+            if (returnRequest.is_swap && !quantities[item.id]) {
               return
             }
 
             return (
               <Flex
-                key={item._id}
+                key={item.id}
                 justifyContent="space-between"
                 fontSize={2}
                 py={2}
@@ -209,7 +232,7 @@ const ReceiveMenu = ({
                 <Box width={30} px={2} py={1}>
                   {!returnRequest.is_swap && (
                     <input
-                      checked={toReturn.includes(item._id)}
+                      checked={toReturn.includes(item.id)}
                       onChange={() => handleReturnToggle(item)}
                       type="checkbox"
                     />
@@ -219,17 +242,17 @@ const ReceiveMenu = ({
                   <Text fontSize={1} lineHeight={"14px"}>
                     {item.title}
                   </Text>
-                  <Text fontSize={0}>{item.content.variant.sku}</Text>
+                  <Text fontSize={0}>{item?.variant?.sku || ""}</Text>
                 </Box>
                 <Box fontSize={1} width={75} px={2} py={1}>
                   {returnRequest.is_swap ? (
-                    quantities[item._id]
-                  ) : toReturn.includes(item._id) ? (
+                    quantities[item.id]
+                  ) : toReturn.includes(item.id) ? (
                     <Input
                       textAlign={"center"}
                       type="number"
                       onChange={e => handleQuantity(e, item)}
-                      value={quantities[item._id] || ""}
+                      value={quantities[item.id] || ""}
                       min={1}
                       max={item.quantity - item.returned_quantity}
                     />
@@ -237,8 +260,9 @@ const ReceiveMenu = ({
                     item.quantity - item.returned_quantity
                   )}
                 </Box>
-                <Box width={110} fontSize={1} px={2} py={1}>
-                  {item.refundable.toFixed(2)} {order.currency_code}
+                <Box width={170} fontSize={1} px={2} py={1}>
+                  {(item.refundable / 100).toFixed(2)}{" "}
+                  {order.currency_code.toUpperCase()}
                 </Box>
               </Flex>
             )
@@ -259,9 +283,12 @@ const ReceiveMenu = ({
                     <Box fontSize={1} px={2}>
                       Shipping cost
                     </Box>
-                    <Box px={2} fontSize={1} width={110}>
-                      {returnRequest.shipping_method.price.toFixed(2)}{" "}
-                      {order.currency_code}
+                    <Box px={2} fontSize={1} width={170}>
+                      {(
+                        (returnRequest.shipping_method.price / 100) *
+                        (1 + order.tax_rate / 100)
+                      ).toFixed(2)}{" "}
+                      {order.currency_code.toUpperCase()}
                     </Box>
                   </Flex>
                 )}
@@ -277,10 +304,10 @@ const ReceiveMenu = ({
                 <Box fontSize={1} px={2}>
                   To refund
                 </Box>
-                <Box px={2} width={110}>
+                <Box px={2} width={170}>
                   <CurrencyInput
                     currency={order.currency_code}
-                    value={refundAmount}
+                    value={refundAmount / 100}
                     onChange={handleRefundUpdated}
                   />
                 </Box>

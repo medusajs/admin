@@ -16,45 +16,18 @@ import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
 import { navigate } from "gatsby"
 
-const StyledMultiSelect = styled(MultiSelect)`
-  ${Typography.Base}
-
-  color: black;
-  background-color: white;
-
-  line-height: 1.22;
-
-  border: none;
-  outline: 0;
-
-  transition: all 0.2s ease;
-
-  border-radius: 3px;
-  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px;
-
-  &:focus: {
-    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px;
-  }
-  &::placeholder: {
-    color: #a3acb9;
-  }
-
-  .go3433208811 {
-    border: none;
-    border-radius: 3px;
-  }
-`
-
-const StyledRadio = styled(Radio)`
-  ${Typography.Base}
-`
+const HorizontalDivider = props => (
+  <Box
+    {...props}
+    as="hr"
+    m={props.m}
+    sx={{
+      bg: "#e3e8ee",
+      border: 0,
+      height: 1,
+    }}
+  />
+)
 
 const StyledLabel = styled(Label)`
   ${Typography.Base}
@@ -109,7 +82,7 @@ const NewDiscount = ({}) => {
   const validRegions = () => {
     let formattedRegions = regions.map(r => ({
       label: r.name,
-      value: r._id,
+      value: r.id,
     }))
     return _.intersectionBy(formattedRegions, selectedRegions, "value").map(
       v => v.value
@@ -117,15 +90,24 @@ const NewDiscount = ({}) => {
   }
 
   const submit = data => {
-    data.discount_rule.value = parseInt(data.discount_rule.value)
-    data.discount_rule.valid_for = validProducts()
+    data.rule.value = parseInt(data.rule.value)
+
+    if (data.rule.type === "fixed") {
+      data.rule.value = data.rule.value * 100
+    }
+
+    data.rule.valid_for = validProducts()
     data.regions = validRegions()
 
     const discount = {
       code: data.code,
       is_dynamic: data.is_dynamic === "true",
-      discount_rule: data.discount_rule,
+      rule: data.rule,
       regions: data.regions || [],
+    }
+
+    if (data.usage_limit) {
+      discount.usage_limit = data.usage_limit
     }
 
     Medusa.discounts
@@ -147,8 +129,9 @@ const NewDiscount = ({}) => {
 
   const onRegionSelect = data => {
     if (data.length > 1) {
-      setValue("discount_rule.type", "percentage")
+      setValue("rule.type", "percentage")
     }
+    console.log(data)
     setSelectedRegions(data)
   }
 
@@ -172,27 +155,45 @@ const NewDiscount = ({}) => {
           <Input
             mb={3}
             label="Code"
+            boldLabel={true}
             required={true}
             name="code"
             placeholder="SUMMER10%"
             ref={register({ required: true })}
           />
-          <RequiredLabel pb={2}>Choose valid regions</RequiredLabel>
+          <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+            Choose valid regions
+          </RequiredLabel>
           <MultiSelect
             options={regions.map(el => ({
               label: el.name,
-              value: el._id,
+              value: el.id,
             }))}
-            selectAllLabel={"All"}
             overrideStrings={{
               allItemsAreSelected: "All regions",
+              selectAll: "Select all",
             }}
             value={selectedRegions}
             onChange={onRegionSelect}
+            mb={3}
+          />
+          <Input
+            boldLabel={true}
+            mb={3}
+            label="Usage limit"
+            width="75%"
+            type="number"
+            name="usage_limit"
+            placeholder="5"
+            min="0"
+            ref={register}
           />
         </Box>
+
         <Box>
-          <RequiredLabel>Is this a dynamic discount?</RequiredLabel>
+          <RequiredLabel style={{ fontWeight: 500 }}>
+            Is this a dynamic discount?
+          </RequiredLabel>
         </Box>
         <StyledLabel>
           <Flex alignItems="center">
@@ -224,38 +225,44 @@ const NewDiscount = ({}) => {
             </Text>
           </Flex>
         </StyledLabel>
+        <HorizontalDivider my={2} />
         <Box>
-          <Text fontSize={2} mb={2}>
+          <Text fontSize={2} mb={3} mt={2}>
             Discount rule
           </Text>
         </Box>
         <Input
+          boldLabel={true}
           mb={3}
           width="75%"
           label="Description"
           required={true}
-          name="discount_rule.description"
+          name="rule.description"
           placeholder="Summer sale 2020"
           ref={register({ required: true })}
         />
         <Input
+          boldLabel={true}
           mb={3}
           label="Value"
           width="75%"
           type="number"
           required={true}
-          name="discount_rule.value"
+          name="rule.value"
           placeholder="10"
+          min="0"
           ref={register({ required: true })}
         />
-        <RequiredLabel pb={2}>Type</RequiredLabel>
+        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+          Type
+        </RequiredLabel>
         <StyledLabel>
           <Flex alignItems="center">
             <input
               type="radio"
               ref={register({ required: true })}
               id="percentage"
-              name="discount_rule.type"
+              name="rule.type"
               value="percentage"
               style={{ marginRight: "5px" }}
             />
@@ -270,7 +277,7 @@ const NewDiscount = ({}) => {
               type="radio"
               ref={register({ required: true })}
               id="fixed"
-              name="discount_rule.type"
+              name="rule.type"
               value="fixed"
               disabled={selectedRegions.length > 1}
               style={{ marginRight: "5px" }}
@@ -287,14 +294,16 @@ const NewDiscount = ({}) => {
             </Text>
           </Flex>
         </StyledLabel>
-        <RequiredLabel pb={2}>Allocation</RequiredLabel>
+        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+          Allocation
+        </RequiredLabel>
         <StyledLabel fontSize="10px" color="gray">
           <Flex alignItems="center">
             <input
               type="radio"
               ref={register({ required: true })}
               id="total"
-              name="discount_rule.allocation"
+              name="rule.allocation"
               value="total"
               style={{ marginRight: "5px" }}
             />
@@ -309,7 +318,7 @@ const NewDiscount = ({}) => {
               type="radio"
               ref={register({ required: true })}
               id="item"
-              name="discount_rule.allocation"
+              name="rule.allocation"
               value="item"
               style={{ marginRight: "5px" }}
             />
@@ -318,7 +327,7 @@ const NewDiscount = ({}) => {
             </Text>
           </Flex>
         </StyledLabel>
-        <StyledLabel pb={0}>Choose valid products</StyledLabel>
+        {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
         <Text fontSize="10px" color="gray">
           Leaving it empty will make the discount available for all products
         </Text>
@@ -334,7 +343,7 @@ const NewDiscount = ({}) => {
           }}
           value={selectedProducts}
           onChange={setSelectedProducts}
-        />
+        /> */}
         <Flex mt={4}>
           <Box ml="auto" />
           <Button variant={"cta"} type="submit">
