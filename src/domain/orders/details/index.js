@@ -401,7 +401,9 @@ const OrderDetails = ({ id }) => {
       allItems.every(
         item => item.returned_quantity === item.fulfilled_quantity
       ) &&
-      fulfillmentStatus !== "not_fulfilled"
+      fulfillmentStatus !== "not_fulfilled" &&
+      fulfillmentStatus !== "fulfilled" &&
+      fulfillmentStatus !== "shipped"
     ) {
       fulfillmentStatus = "returned"
     }
