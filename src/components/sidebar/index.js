@@ -3,18 +3,7 @@ import { Flex, Box, Text } from "rebass"
 import { Link, navigate } from "gatsby"
 import styled from "@emotion/styled"
 import Collapsible from "react-collapsible"
-import { Container, InlineLogoContainer, LogoContainer } from "./elements"
-import { ReactComponent as Settings } from "../../assets/svg/settings.svg"
-import { ReactComponent as Orders } from "../../assets/svg/orders.svg"
-import { ReactComponent as Returns } from "../../assets/svg/return.svg"
-import { ReactComponent as Swaps } from "../../assets/svg/swap.svg"
-import { ReactComponent as Products } from "../../assets/svg/products.svg"
-import { ReactComponent as Collections } from "../../assets/svg/collection.svg"
-import { ReactComponent as Customers } from "../../assets/svg/customers.svg"
-import { ReactComponent as Discounts } from "../../assets/svg/discounts.svg"
-import { ReactComponent as Logo } from "../../assets/svg/logo.svg"
-import { ReactComponent as GiftCard } from "../../assets/svg/gift-card.svg"
-import { ReactComponent as LogoInline } from "../../assets/svg/logo-horizontal.svg"
+import { Container } from "./elements"
 import Medusa from "../../services/api"
 
 const StyledItemContainer = styled(Link)`
@@ -61,8 +50,6 @@ const StyledItemContainer = styled(Link)`
 
 const Sidebar = ({}) => {
   const [storeName, setStoreName] = useState("")
-  const [path, setPath] = useState("")
-  const [orderOpen, setOrderOpen] = useState(false)
 
   const fetchStore = async () => {
     const cache = localStorage.getItem("medusa::cache::store")
@@ -77,11 +64,6 @@ const Sidebar = ({}) => {
     }
   }
 
-  const handleOnClick = async route => {
-    navigate(`/a/${route}`)
-    setPath(route)
-  }
-
   useEffect(() => {
     fetchStore()
   }, [])
@@ -94,14 +76,21 @@ const Sidebar = ({}) => {
         onClick={() => navigate("/")}
         sx={{ cursor: "pointer" }}
       >
-        <LogoContainer width={2 / 12} mx={2}>
-          <img src="https://img.icons8.com/ios/50/000000/online-shopping.png" />
-        </LogoContainer>
         <Box mx={1}>
           <Text fontWeight="500">{storeName || "Medusa store"}</Text>
         </Box>
       </Flex>
       <Flex py={4} mx={-1} flexDirection="column" flex={1}>
+        <StyledItemContainer
+          to="/a/home"
+          activeClassName="active"
+          partiallyActive
+        >
+          <img src="https://img.icons8.com/ios/50/000000/online-shopping.png" />
+          <Text ml={2} variant="nav">
+            Home
+          </Text>
+        </StyledItemContainer>
         <Collapsible
           transitionTime={150}
           transitionCloseTime={150}

@@ -8,13 +8,12 @@ import styled from "@emotion/styled"
 
 const IndexPage = () => {
   useEffect(() => {
-    navigate("/a")
+    navigate("/a/home")
   }, [])
 
   return (
     <Layout>
       <SEO title="Home" />
-      <div>hi index</div>
     </Layout>
   )
 }

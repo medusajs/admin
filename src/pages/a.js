@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Router } from "@reach/router"
 import { navigate } from "gatsby"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -21,11 +21,16 @@ import Home from "../domain/home"
 const IndexPage = () => {
   useHotkeys("g + o", () => navigate("/a/orders"))
   useHotkeys("g + p", () => navigate("/a/products"))
+
+  useEffect(() => {
+    navigate("/a/home")
+  }, [])
+
   return (
     <Layout>
       <SEO title="Home" />
       <Router basepath="a">
-        <PrivateRoute path="/" component={Home} />
+        <PrivateRoute path="home" component={Home} />
         <PrivateRoute path="oauth/:app_name" component={Oauth} />
         <PrivateRoute path="products/*" component={Products} />
         <PrivateRoute path="collections/*" component={Collections} />
