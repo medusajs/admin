@@ -25,6 +25,22 @@ const ReceiveMenu = ({
   const [quantities, setQuantities] = useState({})
   const { register, setValue, handleSubmit } = useForm()
 
+  const [allItems, setAllItems] = useState([])
+
+  useEffect(() => {
+    if (order) {
+      let temp = [...order.items]
+
+      if (order.swaps && order.swaps.length) {
+        for (const s of order.swaps) {
+          temp = [...temp, ...s.additional_items]
+        }
+      }
+
+      setAllItems(temp)
+    }
+  }, [order])
+
   const handleReturnToggle = item => {
     const id = item.id
     const idx = toReturn.indexOf(id)
@@ -53,7 +69,7 @@ const ReceiveMenu = ({
     let returns = []
     let qty = {}
     returnRequest.items.forEach(i => {
-      const item = order.items.find(l => l.id === i.item_id)
+      const item = allItems.find(l => l.id === i.item_id)
       if (
         item &&
         !item.returned &&
@@ -69,12 +85,12 @@ const ReceiveMenu = ({
 
     setToReturn(returns)
     setQuantities(qty)
-  }, [])
+  }, [allItems])
 
   useEffect(() => {
     if (!toReturn.length) return
 
-    const items = toReturn.map(t => order.items.find(i => i.id === t))
+    const items = toReturn.map(t => allItems.find(i => i.id === t))
     const total =
       items.reduce((acc, next) => {
         return acc + (next.refundable / next.quantity) * quantities[next.id]
@@ -101,6 +117,7 @@ const ReceiveMenu = ({
   }
 
   const onSubmit = () => {
+    console.log(toReturn)
     const items = toReturn.map(t => ({
       item_id: t,
       quantity: quantities[t],
@@ -108,7 +125,7 @@ const ReceiveMenu = ({
 
     if (returnRequest.is_swap && onReceiveSwap) {
       setSubmitting(true)
-      return onReceiveSwap(returnRequest.swap_id, {
+      return onReceiveReturn(returnRequest.id, {
         items,
       })
         .then(() => onDismiss())
@@ -191,14 +208,17 @@ const ReceiveMenu = ({
               Refundable
             </Box>
           </Flex>
-          {order.items.map(item => {
-            // Only show items that have not been returned
-            if (item.returned) {
+          {allItems.map(item => {
+            // Swap returns should only show lines associated with the swap
+            if (!item.fulfilled_quantity) {
               return
             }
 
-            // Swap returns should only show lines associated with the swap
-            if (returnRequest.is_swap && !toReturn.includes(item.id)) {
+            if (item.returned_quantity === item.quantity) {
+              return
+            }
+
+            if (returnRequest.is_swap && !quantities[item.id]) {
               return
             }
 
@@ -222,7 +242,7 @@ const ReceiveMenu = ({
                   <Text fontSize={1} lineHeight={"14px"}>
                     {item.title}
                   </Text>
-                  <Text fontSize={0}>{item.variant.sku}</Text>
+                  <Text fontSize={0}>{item?.variant?.sku || ""}</Text>
                 </Box>
                 <Box fontSize={1} width={75} px={2} py={1}>
                   {returnRequest.is_swap ? (

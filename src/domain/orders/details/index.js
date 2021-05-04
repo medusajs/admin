@@ -185,6 +185,84 @@ const gatherFulfillments = order => {
   return toReturn
 }
 
+const PaymentDetails = ({ order }) => {
+  let manualRefund = 0
+  let swapRefund = 0
+  let returnRefund = 0
+
+  let swapAmount = 0
+
+  if (order?.refunds?.length) {
+    order.refunds.forEach(ref => {
+      if (ref.reason === "other" || ref.reason === "discount") {
+        manualRefund += ref.amount
+      }
+      if (ref.reason === "return") {
+        returnRefund += ref.amount
+      }
+      if (ref.reason === "swap") {
+        swapRefund += ref.amount
+      }
+    })
+  }
+
+  if (order?.swaps?.length) {
+    swapAmount = _.sum(order.swaps.map(el => el.difference_due))
+  }
+
+  return (
+    <Flex>
+      <Box flex={"0 20%"} pl={3} pr={5}>
+        {!!swapAmount && (
+          <Text pt={2} color="gray">
+            Total for swaps
+          </Text>
+        )}
+        {!!manualRefund && (
+          <Text pt={2} color="gray">
+            Refunded (manual)
+          </Text>
+        )}
+        {!!returnRefund && (
+          <Text pt={2} color="gray">
+            Refunded (returns)
+          </Text>
+        )}
+        <Text pt={2}>Net paid</Text>
+      </Box>
+      <Box px={3}>
+        {!!swapAmount && (
+          <Flex pt={2}>
+            <AlignedDecimal currency={order.currency_code} value={swapAmount} />
+          </Flex>
+        )}
+        {!!manualRefund && (
+          <Flex pt={2}>
+            <AlignedDecimal
+              currency={order.currency_code}
+              value={-manualRefund}
+            />
+          </Flex>
+        )}
+        {!!returnRefund && (
+          <Flex pt={2}>
+            <AlignedDecimal
+              currency={order.currency_code}
+              value={-returnRefund}
+            />
+          </Flex>
+        )}
+        <Flex pt={2}>
+          <AlignedDecimal
+            currency={order.currency_code}
+            value={order.paid_total - order.refunded_total}
+          />
+        </Flex>
+      </Box>
+    </Flex>
+  )
+}
+
 const OrderDetails = ({ id }) => {
   const [swapToFulfill, setSwapToFulfill] = useState(false)
   const [claimToFulfill, setClaimToFulfill] = useState(false)
@@ -212,7 +290,6 @@ const OrderDetails = ({ id }) => {
     capturePayment,
     requestReturn,
     receiveReturn,
-    receiveSwap,
     receiveClaim,
     createFulfillment,
     processSwapPayment,
@@ -305,6 +382,42 @@ const OrderDetails = ({ id }) => {
     }
   }
 
+  const getFulfillmentStatus = () => {
+    let allItems = [...order.items]
+
+    if (order.swaps && order.swaps.length) {
+      for (const s of order.swaps) {
+        allItems = [...allItems, ...s.additional_items]
+      }
+    }
+
+    let fulfillmentStatus = order.fulfillment_status
+
+    if (fulfillmentStatus === "requires_action") {
+      return fulfillmentStatus
+    }
+
+    if (
+      allItems.every(
+        item => item.returned_quantity === item.fulfilled_quantity
+      ) &&
+      fulfillmentStatus !== "not_fulfilled" &&
+      fulfillmentStatus !== "fulfilled" &&
+      fulfillmentStatus !== "shipped"
+    ) {
+      fulfillmentStatus = "returned"
+    }
+
+    if (
+      allItems.find(item => !item.returned_quantity) &&
+      allItems.find(item => item.returned_quantity)
+    ) {
+      fulfillmentStatus = "partially_returned"
+    }
+
+    return fulfillmentStatus
+  }
+
   let fulfillmentAction
   const canFulfill = order.items.some(
     item => item.fulfilled_quantity !== item.quantity
@@ -331,7 +444,7 @@ const OrderDetails = ({ id }) => {
 
   let lineAction
   let lineDropdown = []
-  if (order.status !== "canceled" && order.fulfillment_status !== "returned") {
+  if (order.status !== "canceled" && getFulfillmentStatus() !== "returned") {
     lineAction = {
       type: "primary",
       label: "Request return",
@@ -565,43 +678,7 @@ const OrderDetails = ({ id }) => {
           {(order.payment_status === "captured" ||
             order.payment_status === "refunded" ||
             order.payment_status === "partially_refunded") && (
-            <Flex>
-              <Box flex={"0 20%"} pl={3} pr={5}>
-                <Text pt={2}>Amount paid</Text>
-                {order.refunded_total > 0 && <Text pt={2}>Refunded</Text>}
-              </Box>
-              <Box px={3}>
-                <Text pt={2}>
-                  {order.refunded_total > 0 ? (
-                    <Flex>
-                      <strike style={{ marginRight: "10px" }}>
-                        <AlignedDecimal
-                          currency={order.currency_code}
-                          value={order.total}
-                        />
-                      </strike>
-                      <AlignedDecimal
-                        currency={order.currency_code}
-                        value={order.total - order.refunded_total}
-                      />
-                    </Flex>
-                  ) : (
-                    <AlignedDecimal
-                      currency={order.currency_code}
-                      value={order.total}
-                    />
-                  )}
-                </Text>
-                <Flex pt={2}>
-                  {order.refunded_total > 0 && (
-                    <AlignedDecimal
-                      currency={order.currency_code}
-                      value={order.refunded_total}
-                    />
-                  )}
-                </Flex>
-              </Box>
-            </Flex>
+            <PaymentDetails order={order} />
           )}
         </Card.Body>
       </Card>
@@ -610,9 +687,9 @@ const OrderDetails = ({ id }) => {
         <Card.Header
           action={fulfillmentAction}
           badge={{
-            label: order.fulfillment_status,
-            color: decideBadgeColor(order.fulfillment_status).color,
-            bgColor: decideBadgeColor(order.fulfillment_status).bgColor,
+            label: getFulfillmentStatus(),
+            color: decideBadgeColor(getFulfillmentStatus()).color,
+            bgColor: decideBadgeColor(getFulfillmentStatus()).bgColor,
           }}
         >
           Fulfillment
@@ -745,7 +822,7 @@ const OrderDetails = ({ id }) => {
           order={order}
           returnRequest={toReceive}
           onReceiveReturn={receiveReturn}
-          onReceiveSwap={receiveSwap}
+          onReceiveSwap={receiveReturn}
           onDismiss={() => setToReceive(false)}
           toaster={toaster}
         />
