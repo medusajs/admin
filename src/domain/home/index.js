@@ -138,10 +138,7 @@ const Overview = () => {
     setCalcingSales(true)
 
     let total = 0
-
     let baseCurr = store?.default_currency?.code?.toUpperCase() || "USD"
-
-    let prevCurr = undefined
     let rates = undefined
 
     // pull rates from cache
@@ -157,6 +154,7 @@ const Overview = () => {
         rates = parsed.rates
       }
 
+      // if default store currency has changed, we clear the cached rates
       if (parsed.base && parsed.base !== baseCurr) {
         rates = undefined
       }
@@ -208,10 +206,10 @@ const Overview = () => {
   }
 
   useEffect(() => {
-    if (ordersToday) {
+    if (ordersToday && store) {
       calcTotalSales()
     }
-  }, [ordersToday])
+  }, [ordersToday, store])
 
   return (
     <>
