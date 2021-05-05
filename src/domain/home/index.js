@@ -104,8 +104,7 @@ const Overview = () => {
       search: {
         expand: "currency",
         fields: "id,display_id,created_at,total,currency_code",
-        // ["created_at[gt]"]: getToday().gt,
-        ["created_at[gt]"]: backInTime(100),
+        ["created_at[gt]"]: getToday().gt,
         ["created_at[lt]"]: getToday().lt,
       },
     }
