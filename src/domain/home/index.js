@@ -65,6 +65,9 @@ const GoTo = styled.span`
 
 const Overview = () => {
   const [totalSales, setTotalSales] = useState(0)
+  const [calcingSales, setCalcingSales] = useState(false)
+
+  const { store } = useMedusa("store")
 
   const {
     orders: incompleteOrders,
@@ -101,7 +104,8 @@ const Overview = () => {
       search: {
         expand: "currency",
         fields: "id,display_id,created_at,total,currency_code",
-        ["created_at[gt]"]: getToday().gt,
+        // ["created_at[gt]"]: getToday().gt,
+        ["created_at[gt]"]: backInTime(100),
         ["created_at[lt]"]: getToday().lt,
       },
     }
@@ -111,13 +115,12 @@ const Overview = () => {
     return Number(Math.round(v + "e2") + "e-2")
   }
 
-  const convert = async (rawCurrency, value) => {
+  const convert = async (rawCurrency, value, toCurrency) => {
     const fromCurrency = rawCurrency.toUpperCase()
     const date = "latest"
-    const toCurrency = "USD"
 
     if (fromCurrency === toCurrency) {
-      return rounded_(value)
+      return { val: rounded_(value), rate: 1 }
     }
 
     const exchangeRate = await axios
@@ -132,8 +135,13 @@ const Overview = () => {
   }
 
   const calcTotalSales = async () => {
+    setCalcingSales(true)
+
     let total = 0
 
+    let baseCurr = store?.default_currency?.code?.toUpperCase() || "USD"
+
+    let prevCurr = undefined
     let rates = undefined
 
     // pull rates from cache
@@ -148,6 +156,10 @@ const Overview = () => {
       if (parsed.expiry_date > nowUnix) {
         rates = parsed.rates
       }
+
+      if (parsed.base && parsed.base !== baseCurr) {
+        rates = undefined
+      }
     }
 
     for (const o of ordersToday) {
@@ -157,30 +169,42 @@ const Overview = () => {
         if (rates[o.currency_code]) {
           total += rounded_(o.total / 100 / rates[o.currency_code])
         } else {
-          const { val, rate } = await convert(o.currency_code, o.total / 100)
+          const { val, rate } = await convert(
+            o.currency_code,
+            o.total / 100,
+            baseCurr
+          )
+
           rates[o.currency_code] = rate
           total += val
         }
-
-        // save rates in cache that expires in 24 hours
-        let expiryDate = parseInt(now.getTime()) + 24 * 60 * 60 * 1000
-
-        localStorage.setItem(
-          `medusa::rts`,
-          JSON.stringify({ rates, expiry_date: expiryDate })
-        )
       } else {
         if (rates[o.currency_code]) {
           total += rounded_(o.total / 100 / rates[o.currency_code])
         } else {
-          const { val, rate } = await convert(o.currency_code, o.total / 100)
+          const { val, rate } = await convert(
+            o.currency_code,
+            o.total / 100,
+            baseCurr
+          )
+
           rates[o.currency_code] = rate
+
           total += val
         }
       }
     }
 
+    // save rates in cache that expires in 24 hours
+    let expiryDate = parseInt(now.getTime()) + 24 * 60 * 60 * 1000
+
+    localStorage.setItem(
+      `medusa::rts`,
+      JSON.stringify({ rates, expiry_date: expiryDate, base: baseCurr })
+    )
+
     setTotalSales(total)
+    setCalcingSales(false)
   }
 
   useEffect(() => {
@@ -214,8 +238,18 @@ const Overview = () => {
               </Flex>
               <Box ml="auto" />
               <Flex pr={4}>
-                <Text fontSize={"36px"} fontWeight="600" pr={2}>
-                  $ {totalSales.toFixed(2)}
+                <Text fontSize={"34px"} fontWeight="600" pr={2}>
+                  {isLoadingToday || calcingSales ? (
+                    <Box height="50px" width="50px">
+                      <Spinner dark />
+                    </Box>
+                  ) : (
+                    <>
+                      {store?.default_currency.symbol_native?.toUpperCase() ||
+                        "$"}{" "}
+                      {totalSales.toFixed(2)}
+                    </>
+                  )}
                 </Text>
               </Flex>
             </SettingContainer>
@@ -230,7 +264,7 @@ const Overview = () => {
               </Flex>
               <Box ml="auto" />
               <Flex pr={4}>
-                <Text fontSize={"36px"} fontWeight="600" pr={2}>
+                <Text fontSize={"34px"} fontWeight="600" pr={2}>
                   {isLoadingToday ? (
                     <Box height="50px" width="50px">
                       <Spinner dark />
