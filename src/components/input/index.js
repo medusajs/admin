@@ -62,6 +62,7 @@ const InputField = React.forwardRef(
       onDelete,
       onChange,
       textAlign,
+      disabled,
       ...props
     },
     ref
@@ -103,6 +104,7 @@ const InputField = React.forwardRef(
           step={step || "1"}
           placeholder={placeholder ? placeholder : "Placeholder"}
           onChange={onChange}
+          disabled={disabled}
         />
         {deletable && (
           <Text ml={2} onClick={onDelete} sx={{ cursor: "pointer" }}>
