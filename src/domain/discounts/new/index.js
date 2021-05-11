@@ -253,7 +253,6 @@ const NewDiscount = ({}) => {
           <Flex alignItems="center">
             <input
               type="radio"
-              checked={isFreeShipping}
               ref={register({ required: true })}
               id="dynamic_true"
               name="dynamic_true"
