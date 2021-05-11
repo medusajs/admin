@@ -311,9 +311,7 @@ const Overview = () => {
                     <b>{missingShipping && missingShipping.length} </b>
                     <GoTo
                       onClick={() =>
-                        navigate(
-                          "/a/orders?fulfillment_status[]=not_fulfilled,fulfilled&payment_status[]=awaiting"
-                        )
+                        navigate("/a/orders?fulfillment_status[]=fulfilled")
                       }
                     >
                       Order(s)
