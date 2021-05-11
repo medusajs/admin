@@ -246,7 +246,7 @@ const DiscountDetails = ({ id }) => {
               </Text>
             </Box>
             <Box px={3}>
-              <Text pt={2}>{discount.usage_limit || "Not set"}</Text>
+              <Text pt={2}>{discount.usage_limit || "N / A"}</Text>
               <Text pt={2}>{discount.usage_count}</Text>
             </Box>
           </Flex>
@@ -289,11 +289,13 @@ const DiscountDetails = ({ id }) => {
       </Card>
       <Card mb={2}>
         <Card.Header
-          action={{
-            label: "Edit",
-            type: "primary",
-            onClick: () => setShowRuleEdit(true),
-          }}
+          action={
+            discount.rule.type !== "free_shipping" && {
+              label: "Edit",
+              type: "primary",
+              onClick: () => setShowRuleEdit(true),
+            }
+          }
         >
           Discount rule
         </Card.Header>
@@ -301,21 +303,35 @@ const DiscountDetails = ({ id }) => {
           <Box display="flex" flexDirection="row">
             <Box pl={3} pr={5}>
               <Text color="gray">Description</Text>
-              <Text pt={2} color="gray">
-                Value
-              </Text>
-              <Text pt={2} color="gray">
-                Allocation
-              </Text>
+              {discount.rule.type !== "free_shipping" ? (
+                <>
+                  <Text pt={2} color="gray">
+                    Value
+                  </Text>
+                  <Text pt={2} color="gray">
+                    Allocation
+                  </Text>
+                </>
+              ) : (
+                <Text pt={2} color="gray">
+                  Type
+                </Text>
+              )}
             </Box>
             <Box px={3}>
-              <Text>{discount.rule.description}</Text>
-              <Text pt={2}>{renderDiscountValue(discount.rule)}</Text>
-              <Text pt={2}>
-                {discount.rule.allocation === "total"
-                  ? "Applies to total order amount"
-                  : "Applies to specified items"}
-              </Text>
+              <Text>{discount.rule.description || "Missing description"}</Text>
+              {discount.rule.type !== "free_shipping" ? (
+                <>
+                  <Text pt={2}>{renderDiscountValue(discount.rule)}</Text>
+                  <Text pt={2}>
+                    {discount.rule.allocation === "total"
+                      ? "Applies to total order amount"
+                      : "Applies to specified items"}
+                  </Text>
+                </>
+              ) : (
+                <Text pt={2}>Free shipping</Text>
+              )}
             </Box>
           </Box>
           <Divider m={3} />

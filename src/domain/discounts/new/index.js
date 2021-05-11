@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
 import _ from "lodash"
 import { useForm } from "react-hook-form"
-import { Label, Radio } from "@rebass/forms"
+import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Medusa from "../../../services/api"
 
 import Button from "../../../components/button"
+import Pill from "../../../components/pill"
 import MultiSelect from "../../../components/multi-select"
 import Input from "../../../components/input"
-import Select from "../../../components/select"
 import Typography from "../../../components/typography"
 
 import useMedusa from "../../../hooks/use-medusa"
@@ -58,7 +58,15 @@ const RequiredLabel = styled.div`
 const NewDiscount = ({}) => {
   const [selectedRegions, setSelectedRegions] = useState([])
   const [selectedProducts, setSelectedProducts] = useState([])
-  const { register, handleSubmit, getValues, errors, setValue } = useForm({
+  const [isFreeShipping, setIsFreeShipping] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    getValues,
+    errors,
+    setValue,
+  } = useForm({
     defaultValues: {
       is_dynamic: false,
     },
@@ -89,7 +97,38 @@ const NewDiscount = ({}) => {
     )
   }
 
-  const submit = data => {
+  const constructFreeShipping = data => {
+    const req = {
+      code: data.code,
+      is_dynamic: false,
+      regions: validRegions(),
+      rule: {
+        description: data.description,
+        value: 100,
+        valid_for: validProducts(),
+        allocation: "total",
+        type: "free_shipping",
+      },
+    }
+
+    if (data.usage_limit) {
+      req.usage_limit = data.usage_limit
+    }
+
+    return req
+  }
+
+  const submit = async data => {
+    if (isFreeShipping) {
+      const disc = constructFreeShipping(data)
+
+      return Medusa.discounts
+        .create(disc)
+        .then(() => toaster("Successfully created discount", "success"))
+        .then(() => navigate("/a/discounts"))
+        .catch(() => toaster("Error creating discount", "error"))
+    }
+
     data.rule.value = parseInt(data.rule.value)
 
     if (data.rule.type === "fixed") {
@@ -131,7 +170,7 @@ const NewDiscount = ({}) => {
     if (data.length > 1) {
       setValue("rule.type", "percentage")
     }
-    console.log(data)
+
     setSelectedRegions(data)
   }
 
@@ -179,7 +218,6 @@ const NewDiscount = ({}) => {
           />
           <Input
             boldLabel={true}
-            mb={3}
             label="Usage limit"
             width="75%"
             type="number"
@@ -189,7 +227,23 @@ const NewDiscount = ({}) => {
             ref={register}
           />
         </Box>
-
+        <Flex alignItems="center" mb={4}>
+          <Pill
+            width="30%"
+            onClick={() => setIsFreeShipping(false)}
+            active={!isFreeShipping}
+            mr={4}
+          >
+            <Text fontWeight="500">Discount</Text>
+          </Pill>
+          <Pill
+            width="30%"
+            onClick={() => setIsFreeShipping(true)}
+            active={isFreeShipping}
+          >
+            <Text fontWeight="500">Free shipping</Text>
+          </Pill>
+        </Flex>
         <Box>
           <RequiredLabel style={{ fontWeight: 500 }}>
             Is this a dynamic discount?
@@ -199,6 +253,7 @@ const NewDiscount = ({}) => {
           <Flex alignItems="center">
             <input
               type="radio"
+              checked={isFreeShipping}
               ref={register({ required: true })}
               id="dynamic_true"
               name="dynamic_true"
@@ -214,6 +269,7 @@ const NewDiscount = ({}) => {
           <Flex alignItems="center">
             <input
               type="radio"
+              disabled={isFreeShipping}
               ref={register({ required: true })}
               id="dynamic_true"
               name="dynamic_true"
@@ -245,13 +301,14 @@ const NewDiscount = ({}) => {
           boldLabel={true}
           mb={3}
           label="Value"
+          disabled={isFreeShipping}
           width="75%"
           type="number"
           required={true}
           name="rule.value"
-          placeholder="10"
+          placeholder={isFreeShipping ? "Free shipping" : "10"}
           min="0"
-          ref={register({ required: true })}
+          ref={register({ required: !isFreeShipping ? true : false })}
         />
         <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
           Type
@@ -260,9 +317,10 @@ const NewDiscount = ({}) => {
           <Flex alignItems="center">
             <input
               type="radio"
-              ref={register({ required: true })}
+              ref={register({ required: !isFreeShipping ? true : false })}
               id="percentage"
               name="rule.type"
+              disabled={isFreeShipping}
               value="percentage"
               style={{ marginRight: "5px" }}
             />
@@ -275,11 +333,11 @@ const NewDiscount = ({}) => {
           <Flex alignItems="center">
             <input
               type="radio"
-              ref={register({ required: true })}
+              ref={register({ required: !isFreeShipping ? true : false })}
               id="fixed"
               name="rule.type"
               value="fixed"
-              disabled={selectedRegions.length > 1}
+              disabled={selectedRegions.length > 1 || isFreeShipping}
               style={{ marginRight: "5px" }}
             />
             <Text fontSize="12px" color="gray">
@@ -301,9 +359,10 @@ const NewDiscount = ({}) => {
           <Flex alignItems="center">
             <input
               type="radio"
-              ref={register({ required: true })}
+              ref={register({ required: !isFreeShipping ? true : false })}
               id="total"
               name="rule.allocation"
+              disabled={isFreeShipping}
               value="total"
               style={{ marginRight: "5px" }}
             />
@@ -316,9 +375,10 @@ const NewDiscount = ({}) => {
           <Flex alignItems="center">
             <input
               type="radio"
-              ref={register({ required: true })}
+              ref={register({ required: !isFreeShipping ? true : false })}
               id="item"
               name="rule.allocation"
+              disabled={isFreeShipping}
               value="item"
               style={{ marginRight: "5px" }}
             />
