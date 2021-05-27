@@ -28,6 +28,7 @@ const ProductDetail = ({ id }) => {
 
   const handleProductDelete = () => {
     productDelete().then(() => {
+      refresh({ id })
       toaster("The product was deleted", "success")
       navigate("/a/products")
     })
@@ -36,14 +37,14 @@ const ProductDetail = ({ id }) => {
   const handleDetailsSubmit = data => {
     update(data).then(() => {
       refresh({ id })
-      toaster("Successfully updated the prouct", "success")
+      toaster("Successfully updated product", "success")
     })
   }
 
   const handleVariantsSubmit = data => {
     update(data).then(() => {
       refresh({ id })
-      toaster("Successfully updated the prouct", "success")
+      toaster("Successfully updated product", "success")
     })
   }
 

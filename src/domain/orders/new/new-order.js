@@ -178,7 +178,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
     }
   }, [selectedRegion, requireShipping])
 
-  if (isLoadingProducts) {
+  if (isLoadingProducts || !regions || !regions.length) {
     return (
       <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
         <Box height="75px" width="75px" mt="50%">
@@ -290,7 +290,10 @@ const NewOrder = ({ onDismiss, refresh }) => {
     }
   }
 
-  const region = regions?.find(reg => reg.id === selectedRegion.value)
+  const region =
+    regions &&
+    regions.length &&
+    regions.find(reg => reg.id === selectedRegion.value)
   const shippingOption =
     shippingOptions?.find(
       so => selectedShippingOption && so.id === selectedShippingOption.value

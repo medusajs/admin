@@ -2,7 +2,6 @@ import React from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import styled from "@emotion/styled"
 import moment from "moment"
-
 import ImagePlaceholder from "../../../../assets/svg/image-placeholder.svg"
 
 import NotificationTimeline from "../notification/timeline"
@@ -20,7 +19,7 @@ const LineItemLabel = styled(Text)`
 `
 
 const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = lineItem?.variant?.product_id || ""
+  const productId = lineItem?.variant?.product_id || undefined
 
   return (
     <Flex pl={3} alignItems="center" py={2}>
@@ -53,11 +52,7 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
             }}
           >
             {lineItem.title}
-            {lineItem.variant?.sku && (
-              <>
-                <br /> {lineItem.variant.sku}
-              </>
-            )}
+            <br /> {lineItem?.variant?.sku || "-"}
             <br />
             {(1 + taxRate / 100) * (lineItem.unit_price / 100)} {currency}
           </LineItemLabel>

@@ -136,7 +136,11 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
             type="number"
             required={true}
             name="value"
-            value={discountRule.value}
+            value={
+              discountRule.type === "fixed"
+                ? parseInt(discountRule.value) / 100
+                : discountRule.value
+            }
             onChange={onChange}
           />
           <RequiredLabel pb={2}>Type</RequiredLabel>

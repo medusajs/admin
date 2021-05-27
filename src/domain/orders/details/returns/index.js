@@ -26,6 +26,22 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   const { register, setValue, handleSubmit } = useForm()
 
+  const [allItems, setAllItems] = useState([])
+
+  useEffect(() => {
+    if (order) {
+      let temp = [...order.items]
+
+      if (order.swaps && order.swaps.length) {
+        for (const s of order.swaps) {
+          temp = [...temp, ...s.additional_items]
+        }
+      }
+
+      setAllItems(temp)
+    }
+  }, [order])
+
   const handleReturnToggle = item => {
     const id = item.id
     const idx = toReturn.indexOf(id)
@@ -63,10 +79,14 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }, [])
 
   useEffect(() => {
-    const items = toReturn.map(t => order.items.find(i => i.id === t))
+    const items = toReturn.map(t => allItems.find(i => i.id === t))
     const total =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next.id]
+        return (
+          acc +
+          (next.refundable / (next.quantity - next.returned_quantity)) *
+            quantities[next.id]
+        )
       }, 0) - (shippingPrice || 0)
 
     setRefundable(total)
@@ -96,6 +116,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       items,
       refund: Math.round(refundAmount),
     }
+
     if (shippingMethod) {
       data.return_shipping = {
         option_id: shippingMethod,
@@ -194,9 +215,9 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                 Refundable
               </Box>
             </Flex>
-            {order.items.map(item => {
+            {allItems.map(item => {
               // Only show items that have not been returned
-              if (item.returned) {
+              if (item.returned_quantity === item.quantity) {
                 return
               }
 

@@ -3,7 +3,18 @@ import { Flex, Box, Text } from "rebass"
 import { Link, navigate } from "gatsby"
 import styled from "@emotion/styled"
 import Collapsible from "react-collapsible"
-import { Container, LogoContainer } from "./elements"
+import { Container, InlineLogoContainer, LogoContainer } from "./elements"
+import { ReactComponent as Settings } from "../../assets/svg/settings.svg"
+import { ReactComponent as Orders } from "../../assets/svg/orders.svg"
+import { ReactComponent as Returns } from "../../assets/svg/return.svg"
+import { ReactComponent as Swaps } from "../../assets/svg/swap.svg"
+import { ReactComponent as Products } from "../../assets/svg/products.svg"
+import { ReactComponent as Collections } from "../../assets/svg/collection.svg"
+import { ReactComponent as Customers } from "../../assets/svg/customers.svg"
+import { ReactComponent as Discounts } from "../../assets/svg/discounts.svg"
+import { ReactComponent as Logo } from "../../assets/svg/logo.svg"
+import { ReactComponent as GiftCard } from "../../assets/svg/gift-card.svg"
+import { ReactComponent as LogoInline } from "../../assets/svg/logo-horizontal.svg"
 import Medusa from "../../services/api"
 
 const StyledItemContainer = styled(Link)`
@@ -50,6 +61,8 @@ const StyledItemContainer = styled(Link)`
 
 const Sidebar = ({}) => {
   const [storeName, setStoreName] = useState("")
+  const [path, setPath] = useState("")
+  const [orderOpen, setOrderOpen] = useState(false)
 
   const fetchStore = async () => {
     const cache = localStorage.getItem("medusa::cache::store")
@@ -95,7 +108,7 @@ const Sidebar = ({}) => {
             </StyledItemContainer>
           }
         >
-          {/* <StyledItemContainer
+          <StyledItemContainer
             to="/a/swaps"
             activeClassName="active"
             partiallyActive
@@ -116,8 +129,18 @@ const Sidebar = ({}) => {
                 Returns
               </Text>
             </Flex>
-          </StyledItemContainer> */}
+          </StyledItemContainer>
         </Collapsible>
+        <StyledItemContainer
+          to="/a/draft-orders"
+          activeClassName="active"
+          partiallyActive
+        >
+          <img src="https://img.icons8.com/ios/50/000000/settings--v1.png" />
+          <Text ml={2} variant="nav">
+            Draft orders
+          </Text>
+        </StyledItemContainer>
         <Collapsible
           transitionTime={150}
           transitionCloseTime={150}

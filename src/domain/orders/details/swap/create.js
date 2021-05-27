@@ -86,7 +86,24 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [shippingPrice, setShippingPrice] = useState()
   const [searchResults, setSearchResults] = useState([])
 
+  // Includes both order items and swap items
+  const [allItems, setAllItems] = useState([])
+
   const { register, setValue, handleSubmit } = useForm()
+
+  useEffect(() => {
+    if (order) {
+      let temp = [...order.items]
+
+      if (order.swaps && order.swaps.length) {
+        for (const s of order.swaps) {
+          temp = [...temp, ...s.additional_items]
+        }
+      }
+
+      setAllItems(temp)
+    }
+  }, [order])
 
   const handleAddItemToSwap = variant => {
     setItemsToAdd([...itemsToAdd, { ...variant, quantity: 1 }])
@@ -129,10 +146,14 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }, [])
 
   useEffect(() => {
-    const items = toReturn.map(t => order.items.find(i => i.id === t))
+    const items = toReturn.map(t => allItems.find(i => i.id === t))
     const returnTotal =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next.id]
+        return (
+          acc +
+          (next.refundable / (next.quantity - next.returned_quantity)) *
+            quantities[next.id]
+        )
       }, 0) - (shippingPrice || 0)
 
     const newItemsTotal = itemsToAdd.reduce((acc, next) => {
@@ -280,9 +301,9 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 Refundable
               </Box>
             </Flex>
-            {order.items.map(item => {
+            {allItems.map(item => {
               // Only show items that have not been returned
-              if (item.returned) {
+              if (item.returned_quantity === item.quantity) {
                 return
               }
 
@@ -474,7 +495,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
           </Flex>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
-          <Button loading={submitting} type="submit" variant="primary">
+          <Button
+            disabled={toReturn.length === 0 || itemsToAdd.length === 0}
+            loading={submitting}
+            type="submit"
+            variant="primary"
+          >
             Complete
           </Button>
         </Modal.Footer>

@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Flex } from "rebass"
+import { Box, Flex, Text } from "rebass"
 import styled from "@emotion/styled"
 import { Link } from "gatsby"
 
@@ -27,6 +27,10 @@ const StyledTableRow = styled(Flex)`
   }
   th:nth-of-type(1) {
     padding-left: 15px;
+  }
+
+  &:focus {
+    outline: none;
   }
 `
 
@@ -56,12 +60,37 @@ const StyledTableLinkRow = styled(Link)`
     background-color: ${props =>
       props.isHighlighted ? "#454545" : "transparent"};
   }
-  td:nth-of-type(1) {
-    padding-left: 15px;
+  // td:nth-of-type(1) {
+  //   padding-left: 15px;
+  // }
+  // th:nth-of-type(1) {
+  //   padding-left: 15px;
+  // }
+
+  td {
+    padding-top: 0px;
+    padding-bottom: 0px;
   }
-  th:nth-of-type(1) {
-    padding-left: 15px;
-  }
+`
+
+export const DefaultCellContent = styled(Text)`
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  align-items: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+export const BadgdeCellContent = styled(Box)`
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  align-items: center;
 `
 
 export const Table = React.forwardRef((props, ref) => (
@@ -113,7 +142,7 @@ export const TableRow = React.forwardRef((props, ref) => (
     sx={{
       top: 0,
       cursor: "pointer",
-      height: "55px",
+      height: "45px",
     }}
     {...props}
   />
@@ -127,7 +156,7 @@ export const TableLinkRow = React.forwardRef((props, ref) => (
     style={{
       top: 0,
       cursor: "pointer",
-      height: "55px",
+      height: "45px",
     }}
     {...props}
   />
@@ -175,6 +204,11 @@ export const TableDataCell = React.forwardRef((props, ref) => (
     height="100%"
     width="100%"
     maxWidth={props.maxWidth ? props.maxWidth : "100%"}
-    sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+    sx={{
+      ...props.sx,
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    }}
   />
 ))
