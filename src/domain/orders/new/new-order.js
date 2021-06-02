@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from "react"
-import { Text, Flex, Box, Image } from "rebass"
+import { Text, Flex, Box } from "rebass"
 import _ from "lodash"
 import { useForm } from "react-hook-form"
 import { Checkbox, Label } from "@rebass/forms"
 import styled from "@emotion/styled"
-import Medusa from "../../../services/api"
-
-import Button from "../../../components/button"
-import Select from "react-select"
 import MultiSelect from "react-multi-select-component"
+
+import Medusa from "../../../services/api"
+import Button from "../../../components/button"
 import Typography from "../../../components/typography"
 
 import useMedusa from "../../../hooks/use-medusa"
-import Spinner from "../../../components/spinner"
 import Modal from "../../../components/modal"
 import Input from "../../../components/input"
 import Items from "./components/items"
 import ShippingDetails from "./components/shipping-details"
-import Billing from "./components/billing"
-
-import ImagePlaceholder from "../../../assets/svg/image-placeholder.svg"
+import Billing from "./components/billing-details"
 import Summary from "./components/summary"
-import { navigate } from "gatsby"
+import { ReactSelect } from "../../../components/react-select"
+import Select from "../../../components/select"
+import { extractOptionPrice } from "../../../utils/prices"
 
 export const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
@@ -58,67 +56,61 @@ export const StyledMultiSelect = styled(MultiSelect)`
     border-radius: 3px;
   }
 `
+const defaultFormValues = {
+  region: null,
+  shipping: null,
+  billing: null,
+  email: "",
+  customerId: "",
+  customer: null,
+  shippingOption: null,
+  requireShipping: true,
+}
 
-const StyledSelect = styled(Select)`
-  font-size: 14px;
-  // color: #454545;
-`
+const removeEmpty = obj =>
+  Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null))
 
 const NewOrder = ({ onDismiss, refresh }) => {
   const [searchResults, setSearchResults] = useState([])
   const [customerAddresses, setCustomerAddresses] = useState([])
   const [items, setItems] = useState([])
   const [step, setStep] = useState(0)
-  const [selectedRegion, setSelectedRegion] = useState(undefined)
-  const [customerId, setCustomerId] = useState("")
-  const [email, setEmail] = useState("")
-  const [requireShipping, setRequireShipping] = useState(true)
   const [shippingOptions, setShippingOptions] = useState([])
-  const [selectedAddress, setSelectedAddress] = useState({
-    shipping_address: {},
-  })
-  const [billingAddress, setBillingAddress] = useState({
-    billing_address: {},
-  })
   const [customOptionPrice, setCustomOptionPrice] = useState()
   const [showCustomPrice, setShowCustomPrice] = useState(false)
   const [creatingOrder, setCreatingOrder] = useState(false)
   const [bodyElement, setBodyElement] = useState()
-  const [selectedCustomer, setSelectedCustomer] = useState()
-  const [selectedShippingOption, setSelectedShippingOption] = useState(
-    undefined
-  )
-  const [loadingOptions, setLoadingOptions] = useState(false)
 
-  const { register, getValues, reset } = useForm()
+  const form = useForm({
+    shouldUnregister: false,
+    defaultValues: defaultFormValues,
+  })
 
-  const { products, isLoading: isLoadingProducts } = useMedusa("products")
+  const {
+    shipping,
+    billing,
+    discount,
+    email,
+    customerId,
+    region,
+    shippingOption,
+    requireShipping,
+  } = form.watch()
+
   const { regions } = useMedusa("regions")
 
-  const handleProductSearch = val => {
-    Medusa.variants
-      .list({
-        q: val,
-      })
-      .then(({ data }) => {
-        setSearchResults(data.variants)
-      })
+  const handleProductSearch = async q => {
+    try {
+      const { data } = await Medusa.variants.list({ q })
+      setSearchResults(data.variants)
+    } catch (error) {
+      throw Error("Could not fetch products")
+    }
   }
 
   const addCustomItem = ({ title, price, quantity }) => {
     const item = { title, unit_price: price, quantity: quantity || 1 }
-    setItems([...items, { title, unit_price: price, quantity: quantity || 1 }])
-  }
-
-  const extractPrice = prices => {
-    const reg = regions.find(r => r.id === selectedRegion.value)
-    let price = prices.find(ma => ma.currency_code === reg.currency_code)
-
-    if (price) {
-      return (price.amount * (1 + reg.tax_rate / 100)) / 100
-    }
-
-    return 0
+    setItems([...items, item])
   }
 
   const handleAddItem = variant => {
@@ -142,84 +134,22 @@ const NewOrder = ({ onDismiss, refresh }) => {
   }
 
   const fetchShippingOptions = async adminOnly => {
-    setLoadingOptions(true)
-    const r = regions.find(reg => reg.id === selectedRegion.value)
-
-    Medusa.shippingOptions
-      .list({
-        region_id: r.id,
+    try {
+      const { data } = await Medusa.shippingOptions.list({
+        region_id: region.id,
         is_return: false,
         admin_only: adminOnly,
       })
-      .then(({ data }) => {
-        setShippingOptions(data.shipping_options)
-        setLoadingOptions(false)
-      })
-      .catch(() => setLoadingOptions(false))
-  }
 
-  useEffect(() => {
-    setBodyElement(document.body)
-  }, [])
-
-  useEffect(() => {
-    if (regions) {
-      setSelectedRegion({ value: regions[0].id, label: regions[0].name })
+      setShippingOptions(data.shipping_options)
+    } catch (error) {
+      throw Error("Could not fetch shipping options")
     }
-  }, [regions])
-
-  useEffect(() => {
-    if (selectedRegion && requireShipping) {
-      fetchShippingOptions(false)
-    }
-
-    if (selectedRegion && !requireShipping) {
-      fetchShippingOptions(true)
-    }
-  }, [selectedRegion, requireShipping])
-
-  if (isLoadingProducts || !regions || !regions.length) {
-    return (
-      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
-        <Box height="75px" width="75px" mt="50%">
-          <Spinner dark />
-        </Box>
-      </Flex>
-    )
   }
 
-  const extractOptionPrice = price => {
-    const r = regions.find(reg => reg.id === selectedRegion.value)
-    let amount = price
-
-    amount = (amount * (1 + r.tax_rate / 100)) / 100
-    return `${amount} ${r.currency_code.toUpperCase()}`
-  }
-
-  const handleAddressChange = (name, value) => {
-    setSelectedAddress({
-      ...selectedAddress,
-      shipping_address: {
-        ...selectedAddress.shipping_address,
-        [name]: value,
-      },
-    })
-  }
-
-  const handleBillingChange = (name, value) => {
-    setBillingAddress({
-      ...billingAddress,
-      billing_address: {
-        ...billingAddress.billing_address,
-        [name]: value,
-      },
-    })
-  }
-
-  const handleSubmit = async () => {
+  const submit = async () => {
     const doItems = items.map(i => {
       const obj = {
-        // variant id
         variant_id: i.id || "",
         quantity: i.quantity,
         title: i.title,
@@ -232,10 +162,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
       return obj
     })
 
-    if (customOptionPrice && showCustomPrice) {
-      option.price = customOptionPrice * 100
-    }
-
     const draftOrder = {
       region_id: region.id,
       items: doItems,
@@ -246,91 +172,63 @@ const NewOrder = ({ onDismiss, refresh }) => {
       draftOrder.customer_id = customerId
     }
 
-    if (billingAddress.billing_address.id) {
-      draftOrder.billing_address_id = billingAddress.billing_address.id
+    if (billing.id) {
+      draftOrder.billing_address_id = billing.id
     } else {
-      draftOrder.billing_address = billingAddress.billing_address
+      draftOrder.billing_address = removeEmpty(billing)
     }
 
-    const shippingMethod = shippingOptions.find(
-      so => so.id === selectedShippingOption.value
-    )
+    if (discount && discount.code) {
+      draftOrder.discounts = [{ code: discount.code }]
+    }
 
     const option = {
-      option_id: shippingMethod.id,
-      data: shippingMethod.data,
+      option_id: shippingOption.id,
+      data: shippingOption.data,
+    }
+
+    if (customOptionPrice && showCustomPrice) {
+      option.price = customOptionPrice * 100
     }
 
     draftOrder.shipping_methods = [option]
 
-    if (selectedAddress.shipping_address.id) {
-      draftOrder.shipping_address_id = selectedAddress.shipping_address.id
-    } else if (_.isEmpty(selectedAddress.shipping_address)) {
-      draftOrder.shipping_address = billingAddress.billing_address
+    if (shipping.id) {
+      draftOrder.shipping_address_id = shipping.id
+    } else if (_.isEmpty(shipping)) {
+      draftOrder.shipping_address = removeEmpty(billing)
     } else {
-      draftOrder.shipping_address = selectedAddress.shipping_address
+      draftOrder.shipping_address = removeEmpty(shipping)
     }
 
-    if (
-      !selectedAddress.shipping_address.id &&
-      selectedAddress.shipping_address
-    ) {
-      draftOrder.shipping_address_id = selectedAddress.shipping_address.id
+    if (!shipping.id && shipping) {
+      draftOrder.shipping_address_id = shipping.id
     }
 
     setCreatingOrder(true)
     try {
       await Medusa.draftOrders.create(draftOrder)
-      setCreatingOrder(false)
       refresh()
       onDismiss()
     } catch (error) {
-      setCreatingOrder(false)
       onDismiss()
     }
+
+    setCreatingOrder(false)
   }
 
-  const region =
-    regions &&
-    regions.length &&
-    regions.find(reg => reg.id === selectedRegion.value)
-  const shippingOption =
-    shippingOptions?.find(
-      so => selectedShippingOption && so.id === selectedShippingOption.value
-    ) || {}
-
-  const selectStyles = {
-    menuPortal: base => ({
-      ...base,
-      zIndex: 9999,
-      fontSize: "14px",
-      fontFamily:
-        "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Ubuntu,sans-serif;",
-    }),
-  }
-
-  const decideNextButton = () => {
+  const isDisabled = () => {
     switch (true) {
       case step === 0: {
-        if (!selectedRegion) {
-          return true
-        } else {
-          return false
-        }
+        return !region
       }
 
       case step === 2: {
-        if (!items.length) {
-          return true
-        } else {
-          return false
-        }
+        return !items.length
       }
+
       case step === 3: {
-        if (
-          !email ||
-          (_.isEmpty(selectedAddress.shipping_address) && requireShipping)
-        ) {
+        if (!email || (shipping && _.isEmpty(shipping) && requireShipping)) {
           return true
         } else if (!email && !requireShipping) {
           return true
@@ -338,50 +236,77 @@ const NewOrder = ({ onDismiss, refresh }) => {
           return false
         }
       }
+
       case step === 4: {
-        if (!selectedShippingOption) {
-          return true
-        } else {
-          return false
-        }
+        return !shippingOption
       }
+
       case step === 5: {
-        if (_.isEmpty(billingAddress.billing_address)) {
-          return true
-        } else {
-          return false
-        }
+        return _.isEmpty(billing)
       }
+
       default:
         return false
     }
   }
 
-  const buttonAction = () => {
+  const handleNext = async data => {
     if (step === 6) {
-      handleSubmit()
+      await submit(data)
+    } else {
+      setStep(step + 1)
     }
-
-    setStep(step + 1)
   }
 
+  const handleRegionSelect = regId => {
+    const reg = regions.find(r => r.id === regId)
+    form.setValue("region", reg)
+  }
+
+  const handleOptionSelect = so => {
+    const selectSo = shippingOptions?.find(s => so.value === s.id)
+    form.setValue("shippingOption", selectSo)
+  }
+
+  useEffect(() => {
+    setBodyElement(document.body)
+  }, [])
+
+  useEffect(() => {
+    if (regions) {
+      form.setValue("region", regions[0])
+    }
+  }, [regions])
+
+  useEffect(() => {
+    if (region && !requireShipping) {
+      fetchShippingOptions(true)
+    }
+
+    if (region && requireShipping) {
+      fetchShippingOptions(false)
+    }
+  }, [region, requireShipping])
+
   return (
-    <Modal onClick={onDismiss}>
+    <Modal as="form" onSubmit={form.handleSubmit(handleNext)}>
       <Modal.Body>
-        <Modal.Header>Create draft order</Modal.Header>
+        <Modal.Header sx={{ justifyContent: "space-between" }}>
+          <Text>Create draft order</Text>
+          <Text onClick={onDismiss} sx={{ fontSize: [0], cursor: "pointer" }}>
+            Close
+          </Text>
+        </Modal.Header>
         <Modal.Content flexDirection="column" minWidth="600px">
           {step === 0 && (
             <Flex flexDirection="column" minHeight="75px">
               <Text fontSize={1} mb={2}>
                 Choose region
               </Text>
-              <StyledSelect
-                styles={{ ...selectStyles }}
-                menuPortalTarget={bodyElement}
-                isClearable={false}
-                value={selectedRegion}
-                placeholder="Select collection..."
-                onChange={val => setSelectedRegion(val)}
+              <Select
+                value={region?.id}
+                placeholder="Select region"
+                onChange={e => handleRegionSelect(e.currentTarget.value)}
                 options={
                   regions?.map(r => ({
                     value: r.id,
@@ -395,11 +320,13 @@ const NewOrder = ({ onDismiss, refresh }) => {
             <Flex flexDirection="column" minHeight="75px">
               <Label width={"200px"} p={2} fontSize={1}>
                 <Checkbox
-                  id="true"
-                  name="requires_shipping"
-                  value="true"
+                  id="requireShipping"
+                  name="requireShipping"
+                  ref={form.register}
                   checked={requireShipping}
-                  onChange={() => setRequireShipping(!requireShipping)}
+                  onChange={() =>
+                    form.setValue("requireShipping", !requireShipping)
+                  }
                 />
                 Shipping required
               </Label>
@@ -412,28 +339,17 @@ const NewOrder = ({ onDismiss, refresh }) => {
               handleProductSearch={handleProductSearch}
               handleRemoveItem={handleRemoveItem}
               handleAddCustom={addCustomItem}
-              extractPrice={extractPrice}
-              selectedRegion={regions.find(r => r.id === selectedRegion.value)}
+              selectedRegion={region}
               searchResults={searchResults}
               items={items}
             />
           )}
           {step === 3 && (
             <ShippingDetails
-              register={register}
-              region={regions.find(r => r.id === selectedRegion.value)}
-              reset={reset}
-              setEmail={setEmail}
-              email={email}
-              setCustomerId={setCustomerId}
+              form={form}
               requireShipping={requireShipping}
-              setSelectedAddress={setSelectedAddress}
-              selectedAddress={selectedAddress}
               customerAddresses={customerAddresses}
               setCustomerAddresses={setCustomerAddresses}
-              setSelectedCustomer={setSelectedCustomer}
-              selectedCustomer={selectedCustomer}
-              handleAddressChange={handleAddressChange}
             />
           )}
           {step === 4 && (
@@ -446,7 +362,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
               <Text fontSize={1} mb={2}>
                 Choose one
               </Text>
-              {!shippingOptions?.length ? (
+              {!requireShipping && !shippingOptions?.length ? (
                 <Text
                   textAlign="center"
                   fontStyle="italic"
@@ -460,17 +376,18 @@ const NewOrder = ({ onDismiss, refresh }) => {
                   unchecked in region settings and continue.
                 </Text>
               ) : (
-                <StyledSelect
-                  styles={{ ...selectStyles }}
+                <ReactSelect
                   menuPortalTarget={bodyElement}
                   isClearable={false}
-                  value={selectedShippingOption}
                   placeholder="Select shipping..."
-                  onChange={val => setSelectedShippingOption(val)}
+                  onChange={so => handleOptionSelect(so)}
                   options={
                     shippingOptions?.map(so => ({
                       value: so.id,
-                      label: `${so.name} - ${extractOptionPrice(so.amount)}`,
+                      label: `${so.name} - ${extractOptionPrice(
+                        so.amount,
+                        region
+                      )}`,
                     })) || []
                   }
                 />
@@ -495,7 +412,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
                           variant="primary"
                           width="140px"
                           mb={2}
-                          disabled={!selectedShippingOption}
+                          disabled={!shippingOption}
                           onClick={() => setShowCustomPrice(true)}
                         >
                           {showCustomPrice ? "Submit" : "Set custom price"}
@@ -507,8 +424,8 @@ const NewOrder = ({ onDismiss, refresh }) => {
                             <Input
                               type="number"
                               fontSize="12px"
-                              onChange={({ currentTarget }) =>
-                                setCustomOptionPrice(currentTarget.value)
+                              onChange={e =>
+                                setCustomOptionPrice(e.currentTarget.value)
                               }
                               value={customOptionPrice || null}
                             />
@@ -531,50 +448,32 @@ const NewOrder = ({ onDismiss, refresh }) => {
               </Flex>
             </Flex>
           )}
-          {step === 5 && (
-            <Billing
-              requireShipping={requireShipping}
-              billingAddress={billingAddress}
-              handleBillingChange={handleBillingChange}
-              setBillingAddress={setBillingAddress}
-              shippingAddress={selectedAddress}
-              region={regions.find(r => r.id === selectedRegion.value)}
-            />
-          )}
+          {step === 5 && <Billing form={form} />}
           {step === 6 && (
             <Summary
-              billingAddress={billingAddress}
               items={items}
-              requireShipping={requireShipping}
-              region={region}
               regions={regions}
               handleAddQuantity={handleAddQuantity}
-              selectedAddress={selectedAddress}
-              shippingOption={shippingOption}
               showCustomPrice={showCustomPrice}
               customOptionPrice={customOptionPrice}
-              email={email}
+              form={form}
             />
           )}
         </Modal.Content>
-        <Modal.Footer justifyContent="">
+        <Modal.Footer>
           <Button
-            loading={false}
             variant="primary"
             disabled={step === 0}
-            onClick={() => {
-              setStep(step - 1)
-            }}
+            onClick={() => setStep(step - 1)}
           >
             Back
           </Button>
           <Box ml="auto" />
           <Button
-            loading={false}
             variant="cta"
             loading={creatingOrder}
-            disabled={decideNextButton()}
-            onClick={() => buttonAction()}
+            disabled={isDisabled()}
+            type="submit"
           >
             {step === 6 ? "Submit" : "Next"}
           </Button>

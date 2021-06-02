@@ -26,7 +26,12 @@ import Button from "../../../components/button"
 const DraftOrderIndex = ({}) => {
   const [showNewOrder, setShowNewOrder] = useState(false)
 
-  const { draft_orders: draftOrders, isLoading } = useMedusa("draftOrders", {
+  const {
+    draft_orders: draftOrders,
+    refresh,
+    isLoading,
+    isReloading,
+  } = useMedusa("draftOrders", {
     search: {
       limit: 20,
       offset: 0,
@@ -46,7 +51,7 @@ const DraftOrderIndex = ({}) => {
           New draft order
         </Button>
       </Flex>
-      {isLoading ? (
+      {isLoading || isReloading ? (
         <Flex
           flexDirection="column"
           alignItems="center"
@@ -122,7 +127,12 @@ const DraftOrderIndex = ({}) => {
           </TableBody>
         </Table>
       )}
-      {showNewOrder && <NewOrder onDismiss={() => setShowNewOrder(false)} />}
+      {showNewOrder && (
+        <NewOrder
+          onDismiss={() => setShowNewOrder(false)}
+          refresh={() => refresh()}
+        />
+      )}
     </Flex>
   )
 }

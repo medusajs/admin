@@ -61,6 +61,7 @@ const InputField = React.forwardRef(
       deletable,
       onDelete,
       onChange,
+      onFocus,
       textAlign,
       disabled,
       ...props
@@ -105,6 +106,7 @@ const InputField = React.forwardRef(
           step={step || "1"}
           placeholder={placeholder ? placeholder : "Placeholder"}
           onChange={onChange}
+          onFocus={onFocus}
           disabled={disabled}
         />
         {deletable && (

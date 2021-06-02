@@ -7,6 +7,7 @@ import Dropdown from "../../../../components/dropdown"
 import ImagePlaceholder from "../../../../assets/svg/image-placeholder.svg"
 import Button from "../../../../components/button"
 import CurrencyInput from "../../../../components/currency-input"
+import { displayUnitPrice } from "../../../../utils/prices"
 
 const Dot = styled(Box)`
   width: 10px;
@@ -20,7 +21,6 @@ const Items = ({
   handleAddQuantity,
   handleProductSearch,
   handleRemoveItem,
-  extractPrice,
   selectedRegion,
   searchResults,
   handleAddCustom,
@@ -192,10 +192,7 @@ const Items = ({
                   height={30}
                   width={30}
                   p={!item?.product?.thumbnail && "8px"}
-                  sx={{
-                    objectFit: "contain",
-                    border: "1px solid lightgray",
-                  }}
+                  sx={{ objectFit: "contain", border: "1px solid lightgray" }}
                 />
               </Flex>
               <Flex
@@ -225,10 +222,7 @@ const Items = ({
               </Box>
               <Box width={"30%"} px={2} py={1}>
                 <Text fontSize="12px">
-                  {item.unit_price
-                    ? item.unit_price.toFixed(2)
-                    : `${extractPrice(item.prices).toFixed(2)} `}{" "}
-                  {selectedRegion.currency_code.toUpperCase()}
+                  {displayUnitPrice(item, selectedRegion)}
                 </Text>
               </Box>
               <Flex alignItems="center" onClick={() => handleRemoveItem(index)}>

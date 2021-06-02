@@ -1,40 +1,87 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Box, Flex, Image, Text } from "rebass"
 import Input from "../../../../components/input"
 import ImagePlaceholder from "../../../../assets/svg/image-placeholder.svg"
+import Button from "../../../../components/button"
+import Medusa from "../../../../services/api"
+import styled from "@emotion/styled"
+import {
+  displayUnitPrice,
+  extractOptionPrice,
+  extractUnitPrice,
+} from "../../../../utils/prices"
+
+const Cross = styled.span`
+  margin-left: 5px;
+  cursor: pointer;
+`
 
 const Summary = ({
   items,
-  requireShipping,
   handleAddQuantity,
-  selectedAddress,
-  billingAddress,
-  shippingOption,
   showCustomPrice,
   customOptionPrice,
-  region,
-  email,
   regions,
+  form,
 }) => {
-  console.log("BILLING: ", billingAddress)
-  const extractOptionPrice = price => {
-    const r = regions.find(reg => reg.id === region.id)
-    let amount = price
+  const [showAddDiscount, setShowAddDiscount] = useState(false)
+  const [checkingDiscount, setCheckingDiscount] = useState(false)
+  const [discError, setDiscError] = useState(false)
+  const [code, setCode] = useState()
 
-    amount = (amount * (1 + r.tax_rate / 100)) / 100
-    return `${amount} ${r.currency_code.toUpperCase()}`
-  }
+  const {
+    shipping,
+    billing,
+    email,
+    region,
+    discount,
+    requireShipping,
+    shippingOption,
+  } = form.watch([
+    "shipping",
+    "billing",
+    "email",
+    "region",
+    "discount",
+    "requireShipping",
+    "shippingOption",
+  ])
 
-  const extractPrice = prices => {
-    const reg = regions.find(r => r.id === region.id)
-    let price = prices.find(ma => ma.currency_code === reg.currency_code)
+  const handleAddDiscount = async () => {
+    setCheckingDiscount(true)
 
-    if (price) {
-      return (price.amount * (1 + reg.tax_rate / 100)) / 100
+    try {
+      const { data } = await Medusa.discounts.retrieveByCode(code)
+      // if no discount is found
+      if (!data.discount) {
+        setDiscError(true)
+        return
+      }
+
+      // if discount is not available in region
+      if (!data.discount.regions.find(d => d.id === region.id)) {
+        setDiscError(true)
+      }
+
+      setCode("")
+      setShowAddDiscount(false)
+      form.setValue("discount", data.discount)
+    } catch (error) {
+      setDiscError(true)
+      console.log(error)
     }
-
-    return 0
+    setCheckingDiscount(false)
   }
+
+  const onDiscountRemove = () => {
+    form.setValue("discount", {})
+    setShowAddDiscount(false)
+    setCode("")
+  }
+
+  useEffect(() => {
+    form.register("discount")
+  }, [])
 
   return (
     <Flex flexDirection="column" minHeight="550px">
@@ -59,10 +106,7 @@ const Summary = ({
                 height={30}
                 width={30}
                 p={!item?.product?.thumbnail && "8px"}
-                sx={{
-                  objectFit: "contain",
-                  border: "1px solid lightgray",
-                }}
+                sx={{ objectFit: "contain", border: "1px solid lightgray" }}
               />
             </Flex>
             <Flex
@@ -90,16 +134,95 @@ const Summary = ({
               />
             </Box>
             <Box width={"30%"} px={2} py={1}>
-              <Text fontSize="12px">
-                {item.unit_price
-                  ? item.unit_price.toFixed(2)
-                  : `${extractPrice(item.prices).toFixed(2)} `}{" "}
-                {region.currency_code.toUpperCase()}
-              </Text>
+              <Text fontSize="12px">{displayUnitPrice(item, region)}</Text>
             </Box>
           </Flex>
         )
       })}
+      <Flex flexDirection="column">
+        {!showAddDiscount && !discount?.rule && (
+          <Button
+            mt={2}
+            fontSize="12px"
+            variant="primary"
+            width="140px"
+            mb={2}
+            onClick={() => setShowAddDiscount(true)}
+          >
+            {showAddDiscount ? "Submit" : "Add discount"}
+          </Button>
+        )}
+        {showAddDiscount && !discount?.rule && (
+          <Flex flexDirection="column">
+            <Flex width="140px" mt={2}>
+              <Input
+                type="text"
+                placeholder="SUMMER10"
+                invalid={discError}
+                onFocus={() => setDiscError(false)}
+                fontSize="12px"
+                onChange={({ currentTarget }) => setCode(currentTarget.value)}
+                value={code || null}
+              />
+              <Flex
+                px={2}
+                alignItems="center"
+                onClick={() => setShowAddDiscount(false)}
+              >
+                &times;
+              </Flex>
+            </Flex>
+            <Button
+              fontSize="10px"
+              mt={2}
+              variant="primary"
+              width="115px"
+              loading={checkingDiscount}
+              onClick={() => handleAddDiscount()}
+            >
+              Add
+            </Button>
+          </Flex>
+        )}
+      </Flex>
+      {discount?.rule && (
+        <Flex flexDirection="column" mt={2} pb={3}>
+          <Text
+            fontSize={1}
+            mb={2}
+            pt={3}
+            fontWeight="600"
+            sx={{ borderTop: "hairline" }}
+          >
+            Discount
+            <Cross onClick={() => onDiscountRemove()}>&times;</Cross>
+          </Text>
+          <Flex>
+            <Text fontSize="12px" mr={3} fontStyle="italic" width="70px">
+              Code
+            </Text>
+            <Text fontSize="12px" mr={3}>
+              {discount.code}
+            </Text>
+          </Flex>
+          <Flex>
+            <Text fontSize="12px" mr={3} fontStyle="italic" width="70px">
+              Type
+            </Text>
+            <Text fontSize="12px" mr={3}>
+              {discount.rule.type}
+            </Text>
+          </Flex>
+          <Flex>
+            <Text fontSize="12px" mr={3} fontStyle="italic" width="70px">
+              Value
+            </Text>
+            <Text fontSize="12px" mr={3}>
+              {discount.rule.value}
+            </Text>
+          </Flex>
+        </Flex>
+      )}
       <Flex flexDirection="column" mt={2} pb={3}>
         <Text
           fontSize={1}
@@ -140,15 +263,11 @@ const Summary = ({
               Address:
             </Text>
             <Text fontSize="12px" mr={3}>
-              {selectedAddress.shipping_address.first_name}{" "}
-              {selectedAddress.shipping_address.last_name}
+              {shipping.first_name} {shipping.last_name}
             </Text>
             <Text fontSize="12px">
-              {selectedAddress.shipping_address.address_1},{" "}
-              {selectedAddress.shipping_address.address_2}{" "}
-              {selectedAddress.shipping_address.postal_code}{" "}
-              {selectedAddress.shipping_address.city}{" "}
-              {selectedAddress.shipping_address.country_code.toUpperCase()}
+              {shipping.address_1}, {shipping.address_2} {shipping.postal_code}{" "}
+              {shipping.city} {shipping.country_code.toUpperCase()}
             </Text>
           </Flex>
           <Flex>
@@ -160,12 +279,12 @@ const Summary = ({
               {showCustomPrice && customOptionPrice ? (
                 <>
                   <strike style={{ marginRight: "5px" }}>
-                    {extractOptionPrice(shippingOption.amount)}
+                    {extractOptionPrice(shippingOption.amount, region)}
                   </strike>
                   {customOptionPrice} {region.currency_code.toUpperCase()}
                 </>
               ) : (
-                extractOptionPrice(shippingOption.amount)
+                extractOptionPrice(shippingOption.amount, region)
               )}
             </Text>
           </Flex>
@@ -180,15 +299,11 @@ const Summary = ({
             Address:
           </Text>
           <Text fontSize="12px" mr={3}>
-            {billingAddress.billing_address.first_name}{" "}
-            {billingAddress.billing_address.last_name}
+            {billing.first_name} {billing.last_name}
           </Text>
           <Text fontSize="12px">
-            {billingAddress.billing_address.address_1},{" "}
-            {billingAddress.billing_address.address_2}{" "}
-            {billingAddress.billing_address.postal_code}{" "}
-            {billingAddress.billing_address.city}{" "}
-            {billingAddress.billing_address.country_code.toUpperCase()}
+            {billing.address_1}, {billing.address_2} {billing.postal_code}{" "}
+            {billing.city} {billing.country_code.toUpperCase()}
           </Text>
         </Flex>
       </Flex>

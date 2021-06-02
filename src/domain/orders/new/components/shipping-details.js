@@ -1,30 +1,13 @@
-import React, { useState } from "react"
-import Input, { StyledLabel } from "../../../../components/input"
+import React, { useEffect, useState } from "react"
 import { Box, Flex, Text } from "rebass"
 import styled from "@emotion/styled"
 import qs from "query-string"
-import Dropdown from "../../../../components/dropdown"
-import AsyncCreatableSelect from "react-select/async-creatable"
-import Select from "react-select"
+import { ReactCreatableSelect } from "../../../../components/react-select"
 import Medusa from "../../../../services/api"
 import _ from "lodash"
 import Spinner from "../../../../components/spinner"
 import Button from "../../../../components/button"
-import { Label } from "@rebass/forms"
-
-const StyledCreatableSelect = styled(AsyncCreatableSelect)`
-  font-size: 14px;
-  color: #454545;
-
-.css-yk16xz-control 
-  box-shadow: none;
-}
-`
-
-const StyledSelect = styled(Select)`
-  font-size: 14px;
-  color: #454545;
-`
+import AddressForm from "../../../../components/address-form"
 
 const AddressContainer = styled(Flex)`
   ${props =>
@@ -38,22 +21,16 @@ const AddressContainer = styled(Flex)`
   `}
 `
 
-const ShippingDetails = ({
-  setCustomerId,
-  setEmail,
-  requireShipping,
-  region,
-  selectedAddress,
-  setSelectedAddress,
-  customerAddresses,
-  setCustomerAddresses,
-  setSelectedCustomer,
-  selectedCustomer,
-  handleAddressChange,
-}) => {
+const ShippingDetails = ({ customerAddresses, setCustomerAddresses, form }) => {
   const [addNew, setAddNew] = useState(false)
-  const [customerOptions, setCustomerOptions] = useState([])
   const [fetchingAddresses, setFetchingAddresses] = useState(false)
+
+  const {
+    shipping,
+    customer: selectedCustomer,
+    region,
+    requireShipping,
+  } = form.watch(["shipping", "customer", "region", "requireShipping"])
 
   const debouncedFetch = _.debounce((val, callback) => {
     const prepared = qs.stringify(
@@ -80,13 +57,14 @@ const ShippingDetails = ({
 
   const onCustomerSelect = async val => {
     if (!val) {
-      setSelectedCustomer(null)
+      form.setValue("customer", null)
       setCustomerAddresses([])
       return
     }
-    setSelectedCustomer(val)
-    setEmail(val.label)
-    setCustomerId(val.value)
+
+    form.setValue("customer", val)
+    form.setValue("email", val.label)
+    form.setValue("customerId", val.value)
 
     if (requireShipping) {
       setFetchingAddresses(true)
@@ -109,10 +87,15 @@ const ShippingDetails = ({
   }
 
   const onCustomerCreate = val => {
-    setSelectedCustomer({ value: val, label: val })
     setCustomerAddresses([])
     setAddNew(true)
-    setEmail(val)
+    form.setValue("email", val)
+    form.setValue("customer", val)
+  }
+
+  const onCreateNew = () => {
+    form.setValue("shipping", {})
+    setAddNew(true)
   }
 
   return (
@@ -126,16 +109,14 @@ const ShippingDetails = ({
       <Text fontSize={1} mb={2}>
         Find or create a customer
       </Text>
-      <StyledCreatableSelect
+      <ReactCreatableSelect
         cacheOptions={true}
         isClearable={true}
         placeholder="Search for customer"
         value={selectedCustomer}
         onChange={val => onCustomerSelect(val)}
         onCreateOption={val => onCustomerCreate(val)}
-        options={customerOptions}
         loadOptions={debouncedFetch}
-        label="Type"
       />
       {!requireShipping && (
         <Text fontStyle="italic" fontSize={1} mt={2} color="#a2a1a1">
@@ -159,11 +140,11 @@ const ShippingDetails = ({
                 flexDirection="column"
                 key={i}
                 p={2}
-                selected={
-                  selectedAddress &&
-                  sa.id === selectedAddress.shipping_address.id
-                }
-                onClick={() => setSelectedAddress({ shipping_address: sa })}
+                selected={shipping && sa.id === shipping.id}
+                onClick={() => {
+                  form.setValue("shipping", sa)
+                  form.setValue("billing", sa)
+                }}
               >
                 <Flex>
                   <Text fontSize="12px" mr={3}>
@@ -176,129 +157,18 @@ const ShippingDetails = ({
                 </Flex>
               </AddressContainer>
             ))}
-            <Button mt={3} variant="primary" onClick={() => setAddNew(true)}>
+            <Button mt={3} variant="primary" onClick={onCreateNew}>
               Create new
             </Button>
           </Flex>
         ) : (
-          <Flex flexDirection="column">
-            <Text my={3} fontSize={1}>
-              Shipping address
-            </Text>
-            <Flex
-              flexDirection="row"
-              mb={3}
-              width="100%"
-              justifyContent="space-between"
-            >
-              <Input
-                mb={1}
-                width="48%"
-                onChange={({ currentTarget }) =>
-                  handleAddressChange(currentTarget.name, currentTarget.value)
-                }
-                label="First name"
-                required={true}
-                name="first_name"
-              />
-              <Input
-                mb={1}
-                width="48%"
-                onChange={({ currentTarget }) =>
-                  handleAddressChange(currentTarget.name, currentTarget.value)
-                }
-                label="Last name"
-                required={true}
-                name="last_name"
-              />
-            </Flex>
-            <Flex flexDirection="row" mb={3} width="100%">
-              <Input
-                mb={1}
-                width="100%"
-                onChange={({ currentTarget }) =>
-                  handleAddressChange(currentTarget.name, currentTarget.value)
-                }
-                label="Address 1"
-                required={true}
-                name="address_1"
-              />
-            </Flex>
-            <Flex flexDirection="row" mb={3} width="100%">
-              <Input
-                mb={1}
-                width="100%"
-                onChange={({ currentTarget }) =>
-                  handleAddressChange(currentTarget.name, currentTarget.value)
-                }
-                label="Address 2"
-                name="address_2"
-              />
-            </Flex>
-            <Flex flexDirection="row" mb={3} width="100%">
-              <Input
-                mb={1}
-                onChange={({ currentTarget }) =>
-                  handleAddressChange(currentTarget.name, currentTarget.value)
-                }
-                width="100%"
-                label="Province"
-                name="province"
-              />
-            </Flex>
-            <Flex flexDirection="row" mb={3} width="100%">
-              <Input
-                mb={1}
-                onChange={({ currentTarget }) =>
-                  handleAddressChange(currentTarget.name, currentTarget.value)
-                }
-                label="City"
-                required={true}
-                width="100%"
-                name="city"
-              />
-            </Flex>
-            <Flex
-              flexDirection="row"
-              mb={3}
-              width="100%"
-              justifyContent="space-between"
-            >
-              <Input
-                mb={1}
-                onChange={({ currentTarget }) =>
-                  handleAddressChange(currentTarget.name, currentTarget.value)
-                }
-                label="Postal code"
-                width="48%"
-                required={true}
-                name="postal_code"
-              />
-              <Flex
-                flexDirection="column"
-                sx={{ flexBasis: "50%" }}
-                height="33px"
-              >
-                <Label flex={"30% 0 0"}>
-                  <StyledLabel required={true}>Country</StyledLabel>
-                </Label>
-                <StyledSelect
-                  height="33px"
-                  isClearable={false}
-                  placeholder="Select collection..."
-                  menuPlacement="top"
-                  onChange={val =>
-                    handleAddressChange("country_code", val.value)
-                  }
-                  options={
-                    region.countries?.map(c => ({
-                      value: c.iso_2,
-                      label: c.display_name,
-                    })) || []
-                  }
-                />
-              </Flex>
-            </Flex>
+          <Flex flexDirection="column" pt={3}>
+            <AddressForm
+              allowedCountries={region.countries?.map(c => c.iso_2) || []}
+              address={shipping}
+              form={form}
+              type="shipping"
+            />
           </Flex>
         ))}
     </Flex>

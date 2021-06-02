@@ -492,6 +492,11 @@ export default {
       const path = `/admin/discounts${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
+
+    retrieveByCode(code) {
+      const path = `/admin/discounts/code/${code}`
+      return medusaRequest("GET", path)
+    },
   },
 
   regions: {
@@ -543,7 +548,7 @@ export default {
       return medusaRequest("POST", path, { file })
     },
   },
-  
+
   draftOrders: {
     create(draftOrder) {
       const path = `/admin/draft-orders`

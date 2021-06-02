@@ -109,6 +109,17 @@ const Sidebar = ({}) => {
           }
         >
           <StyledItemContainer
+            to="/a/draft-orders"
+            activeClassName="active"
+            partiallyActive
+          >
+            <Flex alignItems="center" pl={3} width="100%">
+              <Text ml="14px" variant="nav" fontSize="12px">
+                Drafts
+              </Text>
+            </Flex>
+          </StyledItemContainer>
+          <StyledItemContainer
             to="/a/swaps"
             activeClassName="active"
             partiallyActive
@@ -131,16 +142,6 @@ const Sidebar = ({}) => {
             </Flex>
           </StyledItemContainer>
         </Collapsible>
-        <StyledItemContainer
-          to="/a/draft-orders"
-          activeClassName="active"
-          partiallyActive
-        >
-          <img src="https://img.icons8.com/ios/50/000000/settings--v1.png" />
-          <Text ml={2} variant="nav">
-            Draft orders
-          </Text>
-        </StyledItemContainer>
         <Collapsible
           transitionTime={150}
           transitionCloseTime={150}

@@ -816,7 +816,7 @@ const OrderIndex = ({}) => {
       {showNewOrder && (
         <NewOrder
           onDismiss={() => setShowNewOrder(false)}
-          refresh={() => handleTabClick("draft-orders", query)}
+          refresh={() => navigate(`/a/draft-orders`)}
         />
       )}
     </Flex>
