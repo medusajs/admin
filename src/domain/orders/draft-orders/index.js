@@ -89,7 +89,10 @@ const DraftOrderIndex = ({}) => {
                   id={`draft-order-${el.id}`}
                 >
                   <TableDataCell>
-                    <OrderNumCell>{`#${el.display_id}`}</OrderNumCell>
+                    <OrderNumCell
+                      fontWeight={500}
+                      color={"link"}
+                    >{`#${el.display_id}`}</OrderNumCell>
                   </TableDataCell>
                   <TableDataCell>
                     <DefaultCellContent>

@@ -52,56 +52,10 @@ const AlignedDecimal = ({ value, currency }) => {
   )
 }
 
-const AddItemModal = ({
-  handleAddItem,
-  handleAddQuantity,
-  handleProductSearch,
-  handleRemoveItem,
-  addCustomItem,
-  region,
-  items,
-  searchResults,
-  extractPrice,
-  isAddingItem,
-}) => {
-  return (
-    <Modal onClick={() => console.log("yello")}>
-      <Modal.Body>
-        <Modal.Header>Add item</Modal.Header>
-        <Modal.Content flexDirection="column" minWidth="600px">
-          <Items
-            handleAddItem={handleAddItem}
-            handleAddQuantity={handleAddQuantity}
-            handleProductSearch={handleProductSearch}
-            handleRemoveItem={handleRemoveItem}
-            handleAddCustom={addCustomItem}
-            extractPrice={extractPrice}
-            selectedRegion={region}
-            searchResults={searchResults}
-            items={items}
-          />
-        </Modal.Content>
-        <Modal.Footer justifyContent="">
-          <Button loading={false} variant="primary">
-            Cancel
-          </Button>
-          <Box ml="auto" />
-          <Button loading={isAddingItem} variant="cta">
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal.Body>
-    </Modal>
-  )
-}
-
 const DraftOrderDetails = ({ id }) => {
   const [showEditCustomer, setShowEditCustomer] = useState(false)
   const [deletingOrder, setDeletingOrder] = useState(false)
-  const [items, setItems] = useState([])
-  const [isAddingItem, setIsAddingItem] = useState(false)
   const [handlingPayment, setHandlingPayment] = useState(false)
-  const [searchResults, setSearchResults] = useState([])
   const [paymentType, setPaymentType] = useState("")
 
   const { store } = useMedusa("store")
@@ -112,66 +66,15 @@ const DraftOrderDetails = ({ id }) => {
     }
   )
 
-  const { regions } = useMedusa("regions")
-
-  const addCustomItem = async ({ title, price, quantity }) => {
-    try {
-      setIsAddingItem(true)
-      const line = { title, unit_price: price, quantity: quantity || 1 }
-      await Medusa.draftOrders.addLineItem(id, line)
-      setIsAddingItem(false)
-    } catch (error) {
-      setIsAddingItem(false)
-    }
-  }
-
-  const handleAddItem = async (variant, quantity) => {
-    try {
-      setIsAddingItem(true)
-      const line = { ...variant, quantity }
-      await Medusa.draftOrders.addLineItem(id, line)
-      setIsAddingItem(false)
-    } catch (error) {
-      setIsAddingItem(false)
-    }
-  }
-
-  const handleRemoveItem = index => {
-    const updated = [...items]
-    updated.splice(index, 1)
-    setItems(updated)
-  }
-
   const handleDeleteOrder = async () => {
     setDeletingOrder(true)
     await Medusa.draftOrders
       .delete(id)
       .then(() => {
-        navigate("/a/orders?tab=draft-orders")
+        navigate("/a/draft-orders")
         setDeletingOrder(false)
       })
       .catch(() => setDeletingOrder(false))
-  }
-
-  const handleProductSearch = val => {
-    Medusa.variants
-      .list({
-        q: val,
-      })
-      .then(({ data }) => {
-        setSearchResults(data.variants)
-      })
-  }
-
-  const extractPrice = prices => {
-    const reg = regions.find(r => r.id === draftOrder.cart.region_id)
-    let price = prices.find(ma => ma.currency_code === reg.currency_code)
-
-    if (price) {
-      return (price.amount * (1 + draftOrder.cart.region.tax_rate / 100)) / 100
-    }
-
-    return 0
   }
 
   const handlePayment = async type => {
@@ -316,22 +219,10 @@ const DraftOrderDetails = ({ id }) => {
       </Flex>
       {/* Line items */}
       <Card mb={4}>
-        <Card.Header
-        // action={{
-        //   type: "primary",
-        //   label: "+ Add item",
-        //   disabled: draftOrder.status !== "open",
-        //   onClick: () => console.log("hello"),
-        // }}
-        >
-          Items
-        </Card.Header>
+        <Card.Header>Items</Card.Header>
         <Card.Body flexDirection="column">
           {draftOrder.cart.items.map((lineItem, i) => {
-            const {
-              tax_rate: taxRate,
-              currency_code: currency,
-            } = draftOrder.cart.region
+            const { tax_rate: taxRate } = draftOrder.cart.region
             return (
               <Flex pl={3} alignItems="center" key={i} py={2}>
                 <Flex pr={3}>
@@ -360,7 +251,7 @@ const DraftOrderDetails = ({ id }) => {
                       )}
                       <br />
                       {(1 + taxRate / 100) * (lineItem.unit_price / 100)}{" "}
-                      {currency}
+                      {draftOrder.cart.region.currency}
                     </LineItemLabel>
                   </Box>
                 </Flex>
@@ -537,18 +428,6 @@ const DraftOrderDetails = ({ id }) => {
           />
         </Card.Body>
       </Card>
-      {/* <AddItemModal
-        handleAddItem={handleAddItem}
-        handleAddQuantity={() => console.log("log")}
-        handleProductSearch={handleProductSearch}
-        handleRemoveItem={handleRemoveItem}
-        handleAddCustom={addCustomItem}
-        extractPrice={extractPrice}
-        searchResults={searchResults}
-        items={items}
-        region={draftOrder.cart.region}
-        isAddingItem={isAddingItem}
-      /> */}
     </Flex>
   )
 }
