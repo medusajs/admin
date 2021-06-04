@@ -581,7 +581,7 @@ export default {
     },
 
     registerSystemPayment(id) {
-      const path = `/admin/draft-orders/${id}/register-payment`
+      const path = `/admin/draft-orders/${id}/pay`
       return medusaRequest("POST", path)
     },
 
