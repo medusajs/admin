@@ -557,7 +557,12 @@ export default {
 
     addLineItem(draftOrderId, line) {
       const path = `/admin/draft-orders/${draftOrderId}/line-items`
-      return medusaRequest("POST", path, draftOrder)
+      return medusaRequest("POST", path, line)
+    },
+
+    updateLineItem(draftOrderId, lineId, line) {
+      const path = `/admin/draft-orders/${draftOrderId}/line-items/${lineId}`
+      return medusaRequest("POST", path, line)
     },
 
     deleteLineItem(draftOrderId, lineId) {

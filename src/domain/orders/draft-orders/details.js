@@ -18,9 +18,8 @@ import Spinner from "../../../components/spinner"
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
 import Typography from "../../../components/typography"
-import Modal from "../../../components/modal"
-import Items from "../new/components/items"
 import Button from "../../../components/button"
+import ItemModal from "./components/item-modal"
 
 const LineItemImage = styled(Image)`
   height: 30px;
@@ -58,13 +57,24 @@ const DraftOrderDetails = ({ id }) => {
   const [handlingPayment, setHandlingPayment] = useState(false)
   const [paymentType, setPaymentType] = useState("")
 
+  const [editedItem, setEditedItem] = useState()
+  const [newItem, setNewItem] = useState()
+
   const { store } = useMedusa("store")
-  const { draft_order: draftOrder, update, isLoading, toaster } = useMedusa(
-    "draftOrders",
-    {
-      id,
-    }
-  )
+  const {
+    draft_order: draftOrder,
+    update,
+    isLoading,
+    toaster,
+    refresh,
+  } = useMedusa("draftOrders", {
+    id,
+  })
+
+  const handleDeleteItem = async itemId => {
+    await Medusa.draftOrders.deleteLineItem(id, itemId)
+    refresh({ id })
+  }
 
   const handleDeleteOrder = async () => {
     setDeletingOrder(true)
@@ -219,13 +229,40 @@ const DraftOrderDetails = ({ id }) => {
       </Flex>
       {/* Line items */}
       <Card mb={4}>
-        <Card.Header>Items</Card.Header>
+        <Card.Header
+          action={
+            draftOrder.status === "open" && {
+              type: "primary",
+              label: "Add item",
+              onClick: () => setNewItem(true),
+            }
+          }
+        >
+          Items
+        </Card.Header>
         <Card.Body flexDirection="column">
           {draftOrder.cart.items.map((lineItem, i) => {
             const { tax_rate: taxRate } = draftOrder.cart.region
             return (
-              <Flex pl={3} alignItems="center" key={i} py={2}>
-                <Flex pr={3}>
+              <Flex
+                pl={3}
+                alignItems="center"
+                key={i}
+                py={2}
+                sx={{
+                  [`.delete-item-button-${i}`]: {
+                    display: "none",
+                    fontSize: "12px",
+                    height: "25px",
+                  },
+                  ":hover": {
+                    [`.delete-item-button-${i}`]: {
+                      display: "inline-block",
+                    },
+                  },
+                }}
+              >
+                <Flex pr={3} sx={{ minWidth: "350px" }}>
                   <Box alignSelf={"center"} minWidth={"35px"}>
                     {lineItem.quantity} x
                   </Box>
@@ -255,6 +292,13 @@ const DraftOrderDetails = ({ id }) => {
                     </LineItemLabel>
                   </Box>
                 </Flex>
+                <Button
+                  variant="danger"
+                  className={`delete-item-button-${i}`}
+                  onClick={() => handleDeleteItem(lineItem.id)}
+                >
+                  Delete
+                </Button>
               </Flex>
             )
           })}
@@ -428,6 +472,17 @@ const DraftOrderDetails = ({ id }) => {
           />
         </Card.Body>
       </Card>
+      {editedItem && (
+        <ItemModal item={editedItem} draftOrderId={draftOrder.id} />
+      )}
+      {newItem && (
+        <ItemModal
+          draftOrderId={draftOrder.id}
+          region={draftOrder.cart.region}
+          refresh={refresh}
+          dismiss={() => setNewItem(false)}
+        />
+      )}
     </Flex>
   )
 }

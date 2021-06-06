@@ -1,8 +1,13 @@
-export const extractUnitPrice = (prices, region) => {
+export const extractUnitPrice = (prices, region, withTax = true) => {
   let price = prices.find(ma => ma.currency_code === region.currency_code)
 
   if (price) {
-    return (price.amount * (1 + region.tax_rate / 100)) / 100
+    console.log(withTax)
+    if (withTax) {
+      return (price.amount * (1 + region.tax_rate / 100)) / 100
+    } else {
+      return price.amount / 100
+    }
   }
 
   return 0
