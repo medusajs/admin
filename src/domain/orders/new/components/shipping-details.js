@@ -84,13 +84,14 @@ const ShippingDetails = ({ customerAddresses, setCustomerAddresses, form }) => {
         .catch(_ => setCustomerAddresses([]))
       setFetchingAddresses(false)
     }
+    console.log(selectedCustomer)
   }
 
   const onCustomerCreate = val => {
     setCustomerAddresses([])
     setAddNew(true)
     form.setValue("email", val)
-    form.setValue("customer", val)
+    form.setValue("customer", { label: val, value: "" })
   }
 
   const onCreateNew = () => {

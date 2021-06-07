@@ -20,6 +20,7 @@ import useMedusa from "../../../hooks/use-medusa"
 import Typography from "../../../components/typography"
 import Button from "../../../components/button"
 import ItemModal from "./components/item-modal"
+import { displayUnitPrice } from "../../../utils/prices"
 
 const LineItemImage = styled(Image)`
   height: 30px;
@@ -56,6 +57,7 @@ const DraftOrderDetails = ({ id }) => {
   const [deletingOrder, setDeletingOrder] = useState(false)
   const [handlingPayment, setHandlingPayment] = useState(false)
   const [paymentType, setPaymentType] = useState("")
+  const [deletingItem, setDeletingItem] = useState(false)
 
   const [editedItem, setEditedItem] = useState()
   const [newItem, setNewItem] = useState()
@@ -72,8 +74,10 @@ const DraftOrderDetails = ({ id }) => {
   })
 
   const handleDeleteItem = async itemId => {
+    setDeletingItem(itemId)
     await Medusa.draftOrders.deleteLineItem(id, itemId)
     refresh({ id })
+    setDeletingItem(null)
   }
 
   const handleDeleteOrder = async () => {
@@ -252,8 +256,9 @@ const DraftOrderDetails = ({ id }) => {
                 sx={{
                   [`.delete-item-button-${i}`]: {
                     display: "none",
-                    fontSize: "12px",
-                    height: "25px",
+                    fontSize: "10px",
+                    minHeight: "25px",
+                    width: "65px",
                   },
                   ":hover": {
                     [`.delete-item-button-${i}`]: {
@@ -275,30 +280,24 @@ const DraftOrderDetails = ({ id }) => {
                     </Flex>
                   </Box>
                   <Box>
-                    <LineItemLabel
-                      ml={2}
-                      mr={5}
-                      onClick={() => navigate(`/a/products/${productId}`)}
-                    >
-                      {lineItem.title}
-                      {lineItem.variant?.sku && (
-                        <>
-                          <br /> {lineItem.variant.sku}
-                        </>
-                      )}
+                    <LineItemLabel ml={2} mr={5}>
+                      {lineItem.title} <br />
+                      {lineItem.variant?.sku && lineItem.variant.sku}
                       <br />
-                      {(1 + taxRate / 100) * (lineItem.unit_price / 100)}{" "}
-                      {draftOrder.cart.region.currency}
+                      {displayUnitPrice(lineItem, draftOrder.cart.region)}
                     </LineItemLabel>
                   </Box>
                 </Flex>
-                <Button
-                  variant="danger"
-                  className={`delete-item-button-${i}`}
-                  onClick={() => handleDeleteItem(lineItem.id)}
-                >
-                  Delete
-                </Button>
+                {draftOrder.status === "open" && (
+                  <Button
+                    variant="danger"
+                    loading={deletingItem === lineItem.id}
+                    className={`delete-item-button-${i}`}
+                    onClick={() => handleDeleteItem(lineItem.id)}
+                  >
+                    Delete
+                  </Button>
+                )}
               </Flex>
             )
           })}
@@ -472,9 +471,6 @@ const DraftOrderDetails = ({ id }) => {
           />
         </Card.Body>
       </Card>
-      {editedItem && (
-        <ItemModal item={editedItem} draftOrderId={draftOrder.id} />
-      )}
       {newItem && (
         <ItemModal
           draftOrderId={draftOrder.id}

@@ -112,7 +112,9 @@ const Dropdown = ({
   const spacingProps = ["m", "mr", "ml", "mx"]
 
   return (
-    <Flex sx={{ position: "relative", width: "100%" }}>
+    <Flex
+      sx={{ position: "relative", width: showTrigger ? "inherit" : "100%" }}
+    >
       {showTrigger && (
         <Button
           sx={sx}
@@ -125,7 +127,6 @@ const Dropdown = ({
           {toggleText || <Ellipsis height="10px" />}
         </Button>
       )}
-      {console.log(topPlacement)}
       <DropdownContainer
         dropUp={dropUp}
         leftAlign={leftAlign}

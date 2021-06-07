@@ -3,17 +3,12 @@ import Input from "../../../../components/input"
 import { Box, Flex, Image, Text } from "rebass"
 import styled from "@emotion/styled"
 import Dropdown from "../../../../components/dropdown"
+import Dot from "../../../../components/dot"
 
 import ImagePlaceholder from "../../../../assets/svg/image-placeholder.svg"
 import Button from "../../../../components/button"
 import CurrencyInput from "../../../../components/currency-input"
-import { displayUnitPrice } from "../../../../utils/prices"
-
-const Dot = styled(Box)`
-  width: 10px;
-  height: 6px;
-  border-radius: 50%;
-`
+import { displayUnitPrice, extractUnitPrice } from "../../../../utils/prices"
 
 const Items = ({
   items,
@@ -23,11 +18,12 @@ const Items = ({
   handleRemoveItem,
   selectedRegion,
   searchResults,
+  handlePriceChange,
   handleAddCustom,
 }) => {
   const [addCustom, setAddCustom] = useState(false)
   const [title, setTitle] = useState("")
-  const [price, setPrice] = useState(0)
+  const [price, setPrice] = useState(null)
   const [quantity, setQuantity] = useState(1)
 
   const addCustomItem = () => {
@@ -129,7 +125,7 @@ const Items = ({
           toggleText={"+ Add existing"}
           showSearch
           onSearchChange={handleProductSearch}
-          dropdownWidth="225px !important"
+          dropdownWidth="275px !important"
           dropdownHeight="325px !important"
           searchPlaceholder={"Search by SKU, Name, etc."}
         >
@@ -165,15 +161,15 @@ const Items = ({
             fontSize={1}
             py={2}
           >
-            <Box width={"10%"} px={2} py={1}></Box>
-            <Box width={"35%"} px={2} py={1}>
+            <Box width={"5%"} px={2} py={1}></Box>
+            <Box width={"40%"} px={2} py={1}>
               Details
             </Box>
             <Box width={"20%"} px={2} py={1}>
               Quantity
             </Box>
-            <Box width={"30%"} px={2} py={1}>
-              Price
+            <Box width={"35%"} px={2} py={1}>
+              Price (excl. taxes)
             </Box>
           </Flex>
         )}
@@ -221,9 +217,22 @@ const Items = ({
                 />
               </Box>
               <Box width={"30%"} px={2} py={1}>
-                <Text fontSize="12px">
-                  {displayUnitPrice(item, selectedRegion)}
-                </Text>
+                <CurrencyInput
+                  edit={false}
+                  required={true}
+                  value={
+                    price !== null
+                      ? price
+                      : item.unit_price
+                      ? parseInt(item.unit_price).toFixed(2)
+                      : extractUnitPrice(item.prices, selectedRegion, false)
+                  }
+                  currency={selectedRegion.currency_code}
+                  onChange={({ currentTarget }) => {
+                    handlePriceChange(index, currentTarget.value)
+                    setPrice(currentTarget.value)
+                  }}
+                />
               </Box>
               <Flex alignItems="center" onClick={() => handleRemoveItem(index)}>
                 &times;

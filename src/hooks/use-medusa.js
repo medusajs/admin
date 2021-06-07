@@ -42,7 +42,6 @@ const useMedusa = (endpoint, query) => {
     } else {
       setLoading(true)
     }
-    console.log(query)
     try {
       if (!query) {
         if (subcomponent.list) {

@@ -20,6 +20,7 @@ import Summary from "./components/summary"
 import { ReactSelect } from "../../../components/react-select"
 import Select from "../../../components/select"
 import { extractOptionPrice } from "../../../utils/prices"
+import { removeNullish } from "../../../utils/remove-nullish"
 
 export const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
@@ -66,9 +67,6 @@ const defaultFormValues = {
   shippingOption: null,
   requireShipping: true,
 }
-
-const removeEmpty = obj =>
-  Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null))
 
 const NewOrder = ({ onDismiss, refresh }) => {
   const [searchResults, setSearchResults] = useState([])
@@ -117,6 +115,16 @@ const NewOrder = ({ onDismiss, refresh }) => {
     setItems([...items, { ...variant, quantity: 1 }])
   }
 
+  const handlePriceChange = (index, price) => {
+    const updated = [...items]
+    updated[index] = {
+      ...items[index],
+      unit_price: price * 100,
+    }
+
+    setItems(updated)
+  }
+
   const handleAddQuantity = (e, index) => {
     const updated = [...items]
     updated[index] = {
@@ -156,7 +164,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
       }
 
       if (i.unit_price) {
-        obj.unit_price = i.unit_price * 100
+        obj.unit_price = i.unit_price
       }
 
       return obj
@@ -175,7 +183,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
     if (billing.id) {
       draftOrder.billing_address_id = billing.id
     } else {
-      draftOrder.billing_address = removeEmpty(billing)
+      draftOrder.billing_address = billing
     }
 
     if (discount && discount.code) {
@@ -196,9 +204,17 @@ const NewOrder = ({ onDismiss, refresh }) => {
     if (shipping.id) {
       draftOrder.shipping_address_id = shipping.id
     } else if (_.isEmpty(shipping)) {
-      draftOrder.shipping_address = removeEmpty(billing)
+      draftOrder.shipping_address = billing
     } else {
-      draftOrder.shipping_address = removeEmpty(shipping)
+      draftOrder.shipping_address = shipping
+    }
+
+    // remove empty values from addresses
+    if (draftOrder.shipping_address) {
+      draftOrder.shipping_address = removeNullish(draftOrder.shipping_address)
+    }
+    if (draftOrder.billing_address) {
+      draftOrder.billing_address = removeNullish(draftOrder.billing_address)
     }
 
     if (!shipping.id && shipping) {
@@ -224,7 +240,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
       }
 
       case step === 2: {
-        return !items.length
+        return items.length > 0 ? false : true
       }
 
       case step === 3: {
@@ -276,7 +292,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
     if (regions) {
       form.setValue("region", regions[0])
     }
-  }, [regions])
+  }, [])
 
   useEffect(() => {
     if (region && !requireShipping) {
@@ -304,8 +320,8 @@ const NewOrder = ({ onDismiss, refresh }) => {
                 Choose region
               </Text>
               <Select
-                value={region?.id}
                 placeholder="Select region"
+                value={region?.id || null}
                 onChange={e => handleRegionSelect(e.currentTarget.value)}
                 options={
                   regions?.map(r => ({
@@ -325,7 +341,10 @@ const NewOrder = ({ onDismiss, refresh }) => {
                   ref={form.register}
                   checked={requireShipping}
                   onChange={() =>
-                    form.setValue("requireShipping", !requireShipping)
+                    form.setValue(
+                      "requireShipping",
+                      requireShipping ? false : true
+                    )
                   }
                 />
                 Shipping required
@@ -340,6 +359,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
               handleRemoveItem={handleRemoveItem}
               handleAddCustom={addCustomItem}
               selectedRegion={region}
+              handlePriceChange={handlePriceChange}
               searchResults={searchResults}
               items={items}
             />
@@ -401,7 +421,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
                       mt={1}
                       color="#a2a1a1"
                     >
-                      Shipping to Denmark
+                      Shipping to {region.name}
                     </Text>
                     <Box ml="auto" />
                     <Flex flexDirection="column">

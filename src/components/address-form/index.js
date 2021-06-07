@@ -13,7 +13,6 @@ const inputStyle = {
 const AddressForm = ({
   form = {},
   country,
-  address,
   allowedCountries,
   type = "address",
 }) => {
@@ -33,9 +32,7 @@ const AddressForm = ({
     .filter(Boolean)
 
   useEffect(() => {
-    if (!isEmpty(address)) {
-      form.reset({ [type]: { ...address } })
-    } else if (country) {
+    if (country) {
       form.setValue(`${[type].country_code}`, country)
     }
   }, [])
@@ -62,9 +59,10 @@ const AddressForm = ({
               ref={form.register}
               name={`${[type]}.country_code`}
               flex="50% 0 0"
+              value={country || null}
+              placeholder="Select country in region"
               selectStyle={{ maxWidth: "210px" }}
               options={countryOptions}
-              defaultValue="Choose a country"
             />
           )}
         </Flex>

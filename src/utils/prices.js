@@ -2,7 +2,6 @@ export const extractUnitPrice = (prices, region, withTax = true) => {
   let price = prices.find(ma => ma.currency_code === region.currency_code)
 
   if (price) {
-    console.log(withTax)
     if (withTax) {
       return (price.amount * (1 + region.tax_rate / 100)) / 100
     } else {
@@ -17,7 +16,11 @@ export const displayUnitPrice = (item, region) => {
   const currCode = region.currency_code.toUpperCase()
 
   if (item.unit_price) {
-    return `${item.unit_price.toFixed(2)} ${currCode}`
+    let tempPrices = [
+      { amount: item.unit_price, currency_code: region.currency_code },
+    ]
+
+    return `${extractUnitPrice(tempPrices, region).toFixed(2)} ${currCode}`
   } else {
     return `${extractUnitPrice(item.prices, region).toFixed(2)} ${currCode}`
   }

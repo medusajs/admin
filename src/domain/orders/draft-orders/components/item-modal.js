@@ -69,17 +69,9 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
     if (selected) {
       data.variant_id = selected.id
       data.quantity = selected.quantity
-
-      // if (price) {
-      //   data.unit_price = extractUnitPrice(
-      //     [{ amount: price * 100, currency_code: region.currency_code }],
-      //     region
-      //   )
-      // }
-      data.unit_price = price * 100
-    } else {
-      data.unit_price = price * 100
     }
+
+    data.unit_price = price * 100
 
     if (item.id) {
       await Medusa.draftOrders.updateLineItem(draftOrderId, item.id, data)
@@ -91,6 +83,7 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
       refresh({ id: draftOrderId })
       dismiss()
     }
+
     setIsLoading(false)
   }
 
@@ -298,7 +291,7 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
           </Box>
         </Modal.Content>
         <Modal.Footer justifyContent="">
-          <Button loading={false} variant="primary">
+          <Button loading={false} variant="primary" onClick={dismiss}>
             Cancel
           </Button>
           <Box ml="auto" />
