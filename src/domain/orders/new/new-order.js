@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Text, Flex, Box } from "rebass"
 import _ from "lodash"
 import { useForm } from "react-hook-form"
 import { Checkbox, Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import MultiSelect from "react-multi-select-component"
+import { debounce } from "lodash"
 
 import Medusa from "../../../services/api"
 import Button from "../../../components/button"
@@ -19,7 +20,7 @@ import Billing from "./components/billing-details"
 import Summary from "./components/summary"
 import { ReactSelect } from "../../../components/react-select"
 import Select from "../../../components/select"
-import { extractOptionPrice } from "../../../utils/prices"
+import { extractOptionPrice, extractUnitPrice } from "../../../utils/prices"
 import { removeNullish } from "../../../utils/remove-nullish"
 
 export const StyledMultiSelect = styled(MultiSelect)`
@@ -66,6 +67,7 @@ const defaultFormValues = {
   customer: null,
   shippingOption: null,
   requireShipping: true,
+  total: 0,
 }
 
 const NewOrder = ({ onDismiss, refresh }) => {
@@ -97,17 +99,23 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
   const { regions } = useMedusa("regions")
 
+  const fetchProduct = async q => {
+    const { data } = await Medusa.variants.list({ q })
+    setSearchResults(data.variants)
+  }
+
+  const debouncedProductSearch = useCallback(debounce(fetchProduct, 800), [])
+
   const handleProductSearch = async q => {
     try {
-      const { data } = await Medusa.variants.list({ q })
-      setSearchResults(data.variants)
+      debouncedProductSearch(q)
     } catch (error) {
       throw Error("Could not fetch products")
     }
   }
 
-  const addCustomItem = ({ title, price, quantity }) => {
-    const item = { title, unit_price: price, quantity: quantity || 1 }
+  const addCustomItem = ({ title, unit_price, quantity }) => {
+    const item = { title, unit_price, quantity: quantity || 1 }
     setItems([...items, item])
   }
 
@@ -119,7 +127,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
     const updated = [...items]
     updated[index] = {
       ...items[index],
-      unit_price: price * 100,
+      unit_price: parseInt(price),
     }
 
     setItems(updated)
@@ -149,7 +157,32 @@ const NewOrder = ({ onDismiss, refresh }) => {
         admin_only: adminOnly,
       })
 
-      setShippingOptions(data.shipping_options)
+      const total = calculateTotal()
+
+      // Filter out options
+      const options = data.shipping_options.reduce((acc, next) => {
+        if (next.requirements) {
+          const minSubtotal = next.requirements.find(
+            req => req.type === "min_subtotal"
+          )
+
+          if (minSubtotal) {
+            if (total <= minSubtotal.amount) return acc
+          }
+
+          const maxSubtotal = next.requirements.find(
+            req => req.type === "max_subtotal"
+          )
+          if (maxSubtotal) {
+            if (total >= maxSubtotal.amount) return acc
+          }
+        }
+
+        acc.push(next)
+        return acc
+      }, [])
+
+      setShippingOptions(options)
     } catch (error) {
       throw Error("Could not fetch shipping options")
     }
@@ -180,10 +213,10 @@ const NewOrder = ({ onDismiss, refresh }) => {
       draftOrder.customer_id = customerId
     }
 
-    if (billing.id) {
-      draftOrder.billing_address_id = billing.id
-    } else {
-      draftOrder.billing_address = billing
+    draftOrder.billing_address = billing
+
+    if (!_.isEmpty(shipping)) {
+      draftOrder.shipping_address = shipping
     }
 
     if (discount && discount.code) {
@@ -201,24 +234,12 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
     draftOrder.shipping_methods = [option]
 
-    if (shipping.id) {
-      draftOrder.shipping_address_id = shipping.id
-    } else if (_.isEmpty(shipping)) {
-      draftOrder.shipping_address = billing
-    } else {
-      draftOrder.shipping_address = shipping
-    }
-
     // remove empty values from addresses
     if (draftOrder.shipping_address) {
       draftOrder.shipping_address = removeNullish(draftOrder.shipping_address)
     }
     if (draftOrder.billing_address) {
       draftOrder.billing_address = removeNullish(draftOrder.billing_address)
-    }
-
-    if (!shipping.id && shipping) {
-      draftOrder.shipping_address_id = shipping.id
     }
 
     setCreatingOrder(true)
@@ -284,6 +305,20 @@ const NewOrder = ({ onDismiss, refresh }) => {
     form.setValue("shippingOption", selectSo)
   }
 
+  const calculateTotal = () => {
+    const tot = items.reduce((acc, next) => {
+      if (next.unit_price) {
+        acc = acc + next.unit_price
+      } else {
+        acc = acc + extractUnitPrice(next.prices, region, false)
+      }
+
+      return acc
+    }, 0)
+
+    return tot * 100
+  }
+
   useEffect(() => {
     setBodyElement(document.body)
   }, [])
@@ -295,14 +330,14 @@ const NewOrder = ({ onDismiss, refresh }) => {
   }, [])
 
   useEffect(() => {
-    if (region && !requireShipping) {
+    if (region && !requireShipping && items.length) {
       fetchShippingOptions(true)
     }
 
-    if (region && requireShipping) {
+    if (region && requireShipping && items.length) {
       fetchShippingOptions(false)
     }
-  }, [region, requireShipping])
+  }, [region, requireShipping, items])
 
   return (
     <Modal as="form" onSubmit={form.handleSubmit(handleNext)}>

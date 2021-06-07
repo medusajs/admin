@@ -29,13 +29,13 @@ const Items = ({
   const addCustomItem = () => {
     handleAddCustom({
       title,
-      price: parseInt(price),
+      unit_price: parseInt(price),
       quantity: parseInt(quantity),
     })
     setAddCustom(false)
     setTitle("")
     setQuantity(1)
-    setPrice()
+    setPrice(null)
   }
 
   if (addCustom) {
@@ -221,16 +221,13 @@ const Items = ({
                   edit={false}
                   required={true}
                   value={
-                    price !== null
-                      ? price
-                      : item.unit_price
-                      ? parseInt(item.unit_price).toFixed(2)
+                    item.unit_price
+                      ? item.unit_price
                       : extractUnitPrice(item.prices, selectedRegion, false)
                   }
                   currency={selectedRegion.currency_code}
                   onChange={({ currentTarget }) => {
                     handlePriceChange(index, currentTarget.value)
-                    setPrice(currentTarget.value)
                   }}
                 />
               </Box>
