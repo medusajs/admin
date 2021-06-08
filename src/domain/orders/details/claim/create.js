@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
 import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
-import MultiSelect from "react-multi-select-component"
 
 import Pill from "../../../../components/pill"
 import Modal from "../../../../components/modal"
@@ -13,8 +12,11 @@ import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
 import TextArea from "../../../../components/textarea"
 import Select from "../../../../components/select"
-import Typography from "../../../../components/typography"
+import AddressForm from "../address-form"
 import Medusa from "../../../../services/api"
+
+import { ReactComponent as Trash } from "../../../../assets/svg/trash.svg"
+import { ReactComponent as Edit } from "../../../../assets/svg/edit.svg"
 
 const removeNullish = obj =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -87,6 +89,9 @@ const extractPrice = (prices, order) => {
 }
 
 const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
+  const [shippingAddress, setShippingAddress] = useState({})
+  const [countries, setCountries] = useState([])
+  const [showAddress, setShowAddress] = useState(false)
   const [isReplace, toggleReplace] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [returnAll, setReturnAll] = useState(false)
@@ -101,7 +106,12 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [shippingPrice, setShippingPrice] = useState()
   const [searchResults, setSearchResults] = useState([])
 
-  const { register, setValue, handleSubmit } = useForm()
+  const addressForm = useForm()
+
+  const handleSaveAddress = data => {
+    setShippingAddress(data.address)
+    setShowAddress(false)
+  }
 
   const handleAddItemToClaim = variant => {
     setItemsToAdd([...itemsToAdd, { ...variant, quantity: 1 }])
@@ -127,7 +137,21 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     setToReturn(newReturns)
   }
 
+  const formatAddress = address => {
+    let addr = [address.address_1]
+    if (address.address_2) {
+      addr.push(address.address_2)
+    }
+
+    let city = `${address.postal_code} ${address.city}`
+
+    return `${addr.join(", ")}, ${city}, ${address.country_code?.toUpperCase()}`
+  }
+
   useEffect(() => {
+    Medusa.regions.retrieve(order.region_id).then(({ data }) => {
+      setCountries(data.region.countries.map(c => c.iso_2))
+    })
     Medusa.shippingOptions
       .list({
         region_id: order.region_id,
@@ -184,6 +208,10 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
         variant_id: i.id,
         quantity: i.quantity,
       })),
+    }
+
+    if (shippingAddress.address_1) {
+      data.shipping_address = shippingAddress
     }
 
     if (shippingMethod) {
@@ -338,11 +366,17 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   return (
     <Modal onClick={onDismiss}>
-      <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
+      <Modal.Body
+        onSubmit={e => {
+          e.preventDefault()
+          onSubmit()
+        }}
+        as="form"
+      >
         <Modal.Header>Create Claim</Modal.Header>
         <Modal.Content flexDirection="column">
           <Box mb={3}>
-            <Text px={2}>Items to claim</Text>
+            <Text sx={{ fontSize: 1, fontWeight: 600 }}>Items to claim</Text>
             <Flex
               sx={{
                 borderBottom: "hairline",
@@ -375,83 +409,86 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
               }
 
               return (
-                <Flex
-                  key={item.id}
-                  flexWrap="wrap"
-                  justifyContent="space-between"
-                  fontSize={2}
-                  py={2}
-                >
-                  <Box width={30} px={2} py={1}>
-                    <input
-                      checked={item.id in toReturn}
-                      onChange={() => handleReturnToggle(item)}
-                      type="checkbox"
-                    />
-                  </Box>
-                  <Box width={400} px={2} py={1}>
-                    <Text fontSize={1} lineHeight={"14px"}>
-                      {item.title}
-                    </Text>
-                    <Text fontSize={0}>{item.variant.sku}</Text>
-                  </Box>
-                  <Box width={75} px={2} py={1}>
-                    {item.id in toReturn ? (
-                      <Input
-                        type="number"
-                        onChange={e => handleQuantity(e, item)}
-                        value={toReturn[item.id].quantity || ""}
-                        min={1}
-                        max={item.quantity - item.returned_quantity}
+                <Flex sx={{ flexDirection: "column" }}>
+                  <Flex
+                    key={item.id}
+                    flexWrap="wrap"
+                    justifyContent="space-between"
+                    fontSize={2}
+                    py={2}
+                  >
+                    <Box width={30} px={2} py={1}>
+                      <input
+                        checked={item.id in toReturn}
+                        onChange={() => handleReturnToggle(item)}
+                        type="checkbox"
                       />
-                    ) : (
-                      item.quantity - item.returned_quantity
-                    )}
-                  </Box>
-                  <Box width={170} px={2} py={1}>
-                    <Text fontSize={1}>
-                      {(item.refundable / 100).toFixed(2)}{" "}
-                      {order.currency_code.toUpperCase()}
-                    </Text>
-                  </Box>
+                    </Box>
+                    <Box width={400} px={2} py={1}>
+                      <Text fontSize={1} lineHeight={"14px"}>
+                        {item.title}
+                      </Text>
+                      <Text fontSize={0}>{item.variant.sku}</Text>
+                    </Box>
+                    <Box width={75} px={2} py={1}>
+                      {item.id in toReturn ? (
+                        <Input
+                          type="number"
+                          onChange={e => handleQuantity(e, item)}
+                          value={toReturn[item.id].quantity || ""}
+                          min={1}
+                          max={item.quantity - item.returned_quantity}
+                        />
+                      ) : (
+                        item.quantity - item.returned_quantity
+                      )}
+                    </Box>
+                    <Box width={170} px={2} py={1}>
+                      <Text fontSize={1}>
+                        {(item.refundable / 100).toFixed(2)}{" "}
+                        {order.currency_code.toUpperCase()}
+                      </Text>
+                    </Box>
+                  </Flex>
                   {item.id in toReturn && (
-                    <Flex height="300px" py={3} width="100%">
-                      <Flex flex={"0 50%"} flexDirection="column">
-                        <Box mt={4} px={2}>
-                          <Select
-                            inline
-                            label="Reason"
-                            mr={3}
-                            height={"32px"}
-                            fontSize={1}
-                            placeholder={"Select reason"}
-                            value={toReturn[item.id].reason}
-                            onChange={e => handleReasonChange(e, item)}
-                            options={reasonOptions}
-                          />
-                        </Box>
-                        <Box mt={4} px={2}>
-                          <TextArea
-                            inline
-                            minHeight={"100px"}
-                            label="Note"
-                            value={toReturn[item.id].note}
-                            onChange={e => handleNoteChange(e, item)}
-                          />
-                        </Box>
-                      </Flex>
-                      <Flex flexDirection="column" height="100%" flex={1}>
-                        <Box width="min-content">
-                          <ImageUpload
-                            button={toReturn[item.id].images?.length > 0}
-                            onChange={e => handleAddImage(e, item)}
-                            name="files"
-                            label="Images"
-                          />
-                        </Box>
-                        <StyledImageBox mt={4}>
+                    <Flex
+                      mx={-3}
+                      sx={{
+                        backgroundColor: "#fafafa",
+                        justifyContent: "space-between",
+                      }}
+                      py={3}
+                      px={3}
+                    >
+                      <Select
+                        sx={{ flex: 1 }}
+                        selectStyle={{ width: "100%" }}
+                        label="Reason"
+                        height={"32px"}
+                        fontSize={1}
+                        placeholder={"Select reason"}
+                        value={toReturn[item.id].reason}
+                        onChange={e => handleReasonChange(e, item)}
+                        options={reasonOptions}
+                      />
+                      <Box mx={3} sx={{ flex: 1 }}>
+                        <TextArea
+                          maxWidth="180px"
+                          label="Note"
+                          value={toReturn[item.id].note}
+                          onChange={e => handleNoteChange(e, item)}
+                        />
+                      </Box>
+                      <Box sx={{ flex: 1 }}>
+                        <ImageUpload
+                          button={toReturn[item.id].images?.length > 0}
+                          onChange={e => handleAddImage(e, item)}
+                          name="files"
+                          label="Images"
+                        />
+                        <StyledImageBox mt={1}>
                           {toReturn[item.id].images?.map((url, i) => (
-                            <ImageCardWrapper mr={3} key={i}>
+                            <ImageCardWrapper mr={1} mt={1} key={i}>
                               <StyledImageCard
                                 key={i}
                                 as="img"
@@ -466,7 +503,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                             </ImageCardWrapper>
                           ))}
                         </StyledImageBox>
-                      </Flex>
+                      </Box>
                     </Flex>
                   )}
                 </Flex>
@@ -474,8 +511,10 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             })}
           </Box>
 
-          <Box mb={3}>
-            <Text>Return shipping method</Text>
+          <Box>
+            <Text sx={{ fontSize: 1, fontWeight: 600 }}>
+              Return shipping method
+            </Text>
             <Flex w={1} pt={2} justifyContent="space-between">
               <Select
                 mr={3}
@@ -506,18 +545,20 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             </Flex>
           </Box>
 
-          <Flex mt={4} alignItems="center">
+          <Flex mt={3} alignItems="center">
             <Pill
+              height="28px"
               width="50%"
               onClick={() => {
                 toggleReplace(true)
               }}
               active={isReplace}
-              mr={4}
+              mr={2}
             >
               Replace
             </Pill>
             <Pill
+              height="28px"
               width="50%"
               onClick={() => {
                 toggleReplace(false)
@@ -527,9 +568,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
               Refund
             </Pill>
           </Flex>
-          {isReplace ? (
+          {isReplace && (
             <Box my={3}>
-              <Text>Items to send</Text>
+              <Text sx={{ fontSize: 1, fontWeight: 600 }}>Items to send</Text>
               <Box mt={2}>
                 <Dropdown
                   leftAlign
@@ -591,6 +632,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   return (
                     <Flex
                       key={item.variant_id}
+                      sx={{ alignItems: "center" }}
                       justifyContent="space-between"
                       fontSize={2}
                       py={2}
@@ -616,14 +658,38 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                           {order.currency_code.toUpperCase()}
                         </Text>
                       </Box>
-                      <Box onClick={() => handleRemoveItem(index)}>&times;</Box>
+                      <Box
+                        variant={"buttons.link"}
+                        onClick={() => handleRemoveItem(index)}
+                      >
+                        <Trash />
+                      </Box>
                     </Flex>
                   )
                 })}
               </Box>
+              {shippingAddress.address_1 ? (
+                <Flex sx={{ alignItems: "center" }}>
+                  <Text sx={{ fontSize: 0 }}>
+                    Shipping to: {formatAddress(shippingAddress)}
+                  </Text>
+                  <Text
+                    ml={3}
+                    onClick={() => setShowAddress(true)}
+                    variant={"buttons.link"}
+                  >
+                    <Edit /> Edit
+                  </Text>
+                </Flex>
+              ) : (
+                <Text
+                  onClick={() => setShowAddress(true)}
+                  variant={"buttons.link"}
+                >
+                  Ship to a different address
+                </Text>
+              )}
             </Box>
-          ) : (
-            <Box my={3}>Refund amount</Box>
           )}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
@@ -632,6 +698,47 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
           </Button>
         </Modal.Footer>
       </Modal.Body>
+      {showAddress && (
+        <Modal
+          onClick={e => {
+            e.stopPropagation()
+            setShowAddress(false)
+          }}
+        >
+          <Modal.Body>
+            <Modal.Header fontSize={1}>Shipping address</Modal.Header>
+            <Modal.Content>
+              <AddressForm
+                address={shippingAddress}
+                country={order.shipping_address.country_code}
+                allowedCountries={countries}
+                form={addressForm}
+              />
+            </Modal.Content>
+            <Modal.Footer justifyContent="flex-end">
+              {shippingAddress.address_1 && (
+                <Text
+                  mr={3}
+                  onClick={() => {
+                    setShippingAddress({})
+                    setShowAddress(false)
+                  }}
+                  variant="buttons.link"
+                >
+                  Clear Address
+                </Text>
+              )}
+              <Button
+                onClick={addressForm.handleSubmit(handleSaveAddress)}
+                loading={submitting}
+                variant="primary"
+              >
+                Save
+              </Button>
+            </Modal.Footer>
+          </Modal.Body>
+        </Modal>
+      )}
     </Modal>
   )
 }
