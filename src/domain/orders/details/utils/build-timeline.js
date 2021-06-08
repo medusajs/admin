@@ -114,7 +114,7 @@ const buildTimeline = (order, notifications) => {
   if (order.claims && order.claims.length) {
     for (const claim of order.claims) {
       const claimLines = claim.claim_items.map(i => {
-        const line = order.items.find(({ id }) => i.item_id === id)
+        const line = allItems.find(({ id }) => i.item_id === id)
         return {
           ...line,
           ...i,
