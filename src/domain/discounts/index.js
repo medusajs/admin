@@ -218,10 +218,9 @@ const DiscountIndex = () => {
           <TableHead>
             <TableHeaderRow>
               <TableHeaderCell>Code</TableHeaderCell>
-              <TableHeaderCell>Rule</TableHeaderCell>
+              <TableHeaderCell>Description</TableHeaderCell>
               <TableHeaderCell>Disabled</TableHeaderCell>
-              <TableHeaderCell>Starts at</TableHeaderCell>
-              <TableHeaderCell>Ends at</TableHeaderCell>
+              <TableHeaderCell>Type</TableHeaderCell>
             </TableHeaderRow>
           </TableHead>
           <TableBody>
@@ -236,7 +235,7 @@ const DiscountIndex = () => {
                   </TableDataCell>
                   <TableDataCell>
                     <DefaultCellContent>
-                      {el.rule.description}
+                      {el.rule.description || "N / A"}
                     </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell>
@@ -254,14 +253,11 @@ const DiscountIndex = () => {
                     )}
                   </TableDataCell>
                   <TableDataCell>
-                    <DefaultCellContent>
-                      {new Date(el.starts_at).toDateString()}
-                    </DefaultCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    <DefaultCellContent>
-                      {el.ends_at ? new Date(el.ends_at).toDateString() : "-"}
-                    </DefaultCellContent>
+                    <BadgdeCellContent>
+                      <Badge color={"#4f566b"} bg={"#e3e8ee"}>
+                        {el.rule.type}
+                      </Badge>
+                    </BadgdeCellContent>
                   </TableDataCell>
                 </TableRow>
               ))}
