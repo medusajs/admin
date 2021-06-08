@@ -48,11 +48,25 @@ const RefundMenu = ({ order, onRefund, onDismiss, toaster }) => {
     }
   }
 
+  const isSystemPayment = order.payments.some(p => p.provider_id === "system")
+
   return (
     <Modal onClick={onDismiss}>
       <Modal.Body as="form" onSubmit={onSubmit}>
         <Modal.Header>Create a refund</Modal.Header>
-        <Modal.Content flexDirection="column">
+        <Modal.Content flexDirection="column" maxWidth="500px">
+          {isSystemPayment && (
+            <Text
+              fontSize={1}
+              fontStyle="italic"
+              mb={4}
+              width="100%"
+              textAlign="center"
+            >
+              One or more of your payments is a system payment. Be aware, that
+              captures and refunds are not handled by Medusa for such payments.
+            </Text>
+          )}
           <Box px={2}>
             <CurrencyInput
               inline

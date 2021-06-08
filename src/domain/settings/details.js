@@ -30,6 +30,7 @@ const AccountDetails = () => {
     reset({
       name: store.name,
       swap_link_template: store.swap_link_template,
+      payment_link_template: store.payment_link_template,
     })
   }, [store, isLoading])
 
@@ -82,6 +83,17 @@ const AccountDetails = () => {
                 boldLabel={true}
                 label="Swap link template"
                 name="swap_link_template"
+                placeholder="https://acme.inc/swap"
+                ref={register}
+              />
+            </Box>
+          </Flex>
+          <Flex width={1} mt={3}>
+            <Box width={1 / 2}>
+              <Input
+                boldLabel={true}
+                label="Draft order link template"
+                name="payment_link_template"
                 placeholder="https://acme.inc/swap"
                 ref={register}
               />

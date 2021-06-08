@@ -44,7 +44,10 @@ const Button = ({
             height: "100%",
           }}
         >
-          <Spinner height={"65%"} dark={variant === "cta" ? false : true} />
+          <Spinner
+            height={"65%"}
+            dark={variant === "cta" || variant === "danger" ? false : true}
+          />
         </Flex>
       )}
       <Box

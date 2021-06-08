@@ -1,25 +1,25 @@
 import React, { useState, useRef, useEffect } from "react"
 import styled from "@emotion/styled"
 import _ from "lodash"
-import { Box } from "rebass"
+import { Box, Flex } from "rebass"
 
 import { ReactComponent as Ellipsis } from "../../assets/svg/ellipsis.svg"
 
 import Button from "../button"
 
-const DropdownContainer = styled(Box)`
+export const DropdownContainer = styled(Box)`
   ${props => `
     display: ${props.isOpen ? "block" : "none"};
   `};
 
-  transform: translateY(32px);
+  transform: ${props =>
+    props.dropUp ? "translateY(-180px)" : "translateY(32px)"};
   position: absolute;
   background-color: #fefefe;
   min-width: 160px;
-  // box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1);
   z-index: 1;
-  top: 10px;
+  top: ${props => (props.topPlacement ? props.topPlacement : "10px")};
   border-radius: 5px;
   ${props => (props.leftAlign ? "left" : "right")}: 0;
 `
@@ -61,16 +61,26 @@ const Dropdown = ({
   onSearchChange,
   toggleText,
   leftAlign,
+  dropdownWidth,
+  dropdownHeight,
+  dropUp = false,
+  showTrigger = true,
+  topPlacement,
   sx,
   ...rest
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(showTrigger ? false : true)
   const [search, setSearch] = useState("")
 
   const ref = useRef(null)
 
   const handleClickOutside = event => {
-    if (ref.current && !ref.current.contains(event.target) && isOpen) {
+    if (
+      ref.current &&
+      !ref.current.contains(event.target) &&
+      isOpen &&
+      showTrigger
+    ) {
       setIsOpen(false)
     }
   }
@@ -102,21 +112,28 @@ const Dropdown = ({
   const spacingProps = ["m", "mr", "ml", "mx"]
 
   return (
-    <div style={{ position: "relative" }}>
-      <Button
-        sx={sx}
-        minHeight="33px"
-        alignItems="center"
-        variant="primary"
-        onClick={() => handleOpen()}
-        {...rest}
-      >
-        {toggleText || <Ellipsis height="10px" />}
-      </Button>
+    <Flex
+      sx={{ position: "relative", width: showTrigger ? "inherit" : "100%" }}
+    >
+      {showTrigger && (
+        <Button
+          sx={sx}
+          minHeight="33px"
+          alignItems="center"
+          variant="primary"
+          onClick={() => handleOpen()}
+          {...rest}
+        >
+          {toggleText || <Ellipsis height="10px" />}
+        </Button>
+      )}
       <DropdownContainer
+        dropUp={dropUp}
         leftAlign={leftAlign}
+        minWidth={dropdownWidth || "160px"}
         ref={ref}
         isOpen={isOpen}
+        topPlacement={topPlacement}
         {..._.pick(rest, spacingProps)}
       >
         {showSearch && (
@@ -126,13 +143,13 @@ const Dropdown = ({
             onChange={handleSearch}
           />
         )}
-        <Scrollable>
+        <Scrollable maxHeight={dropdownHeight || "80vh"}>
           {React.Children.map(children, child => (
             <DropdownItem>{child}</DropdownItem>
           ))}
         </Scrollable>
       </DropdownContainer>
-    </div>
+    </Flex>
   )
 }
 

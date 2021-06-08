@@ -170,7 +170,6 @@ const NewDiscount = ({}) => {
     if (data.length > 1) {
       setValue("rule.type", "percentage")
     }
-
     setSelectedRegions(data)
   }
 

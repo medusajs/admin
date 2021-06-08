@@ -77,11 +77,6 @@ const Sidebar = ({}) => {
     }
   }
 
-  const handleOnClick = async route => {
-    navigate(`/a/${route}`)
-    setPath(route)
-  }
-
   useEffect(() => {
     fetchStore()
   }, [])
@@ -113,6 +108,17 @@ const Sidebar = ({}) => {
             </StyledItemContainer>
           }
         >
+          <StyledItemContainer
+            to="/a/draft-orders"
+            activeClassName="active"
+            partiallyActive
+          >
+            <Flex alignItems="center" pl={3} width="100%">
+              <Text ml="14px" variant="nav" fontSize="12px">
+                Drafts
+              </Text>
+            </Flex>
+          </StyledItemContainer>
           <StyledItemContainer
             to="/a/swaps"
             activeClassName="active"
