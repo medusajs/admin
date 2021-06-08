@@ -9,6 +9,7 @@ import ImagePlaceholder from "../../../../assets/svg/image-placeholder.svg"
 import Button from "../../../../components/button"
 import CurrencyInput from "../../../../components/currency-input"
 import { displayUnitPrice, extractUnitPrice } from "../../../../utils/prices"
+import Spinner from "../../../../components/spinner"
 
 const Items = ({
   items,
@@ -18,6 +19,7 @@ const Items = ({
   handleRemoveItem,
   selectedRegion,
   searchResults,
+  searchingProducts,
   handlePriceChange,
   handleAddCustom,
 }) => {
@@ -129,28 +131,42 @@ const Items = ({
           dropdownHeight="325px !important"
           searchPlaceholder={"Search by SKU, Name, etc."}
         >
-          {searchResults.map(s => (
+          {searchingProducts ? (
             <Flex
-              key={s.variant_id}
               alignItems="center"
-              onClick={() => handleAddItem(s)}
+              justifyContent="center"
+              py={3}
+              sx={{ height: "75px" }}
             >
-              <Dot mr={3} bg={s.inventory_quantity > 0 ? "green" : "danger"} />
-              <Box>
-                <Text fontSize={0} mb={0} lineHeight={1}>
-                  {s.product.title} - {s.title}
-                </Text>
-                <Flex>
-                  <Text width={"100px"} mt={0} fontSize={"10px"}>
-                    {s.sku}
-                  </Text>
-                  <Text ml={2} mt={0} fontSize={"10px"}>
-                    In stock: {s.inventory_quantity}
-                  </Text>
-                </Flex>
-              </Box>
+              <Spinner dark sx={{ width: "40px", height: "40px" }} />
             </Flex>
-          ))}
+          ) : (
+            searchResults.map(s => (
+              <Flex
+                key={s.variant_id}
+                alignItems="center"
+                onClick={() => handleAddItem(s)}
+              >
+                <Dot
+                  mr={3}
+                  bg={s.inventory_quantity > 0 ? "green" : "danger"}
+                />
+                <Box>
+                  <Text fontSize={0} mb={0} lineHeight={1}>
+                    {s.product.title} - {s.title}
+                  </Text>
+                  <Flex>
+                    <Text width={"100px"} mt={0} fontSize={"10px"}>
+                      {s.sku}
+                    </Text>
+                    <Text ml={2} mt={0} fontSize={"10px"}>
+                      In stock: {s.inventory_quantity}
+                    </Text>
+                  </Flex>
+                </Box>
+              </Flex>
+            ))
+          )}
         </Dropdown>
       </Flex>
       <Box mt={3} mb={3}>

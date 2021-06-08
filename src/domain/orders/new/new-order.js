@@ -80,6 +80,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const [showCustomPrice, setShowCustomPrice] = useState(false)
   const [creatingOrder, setCreatingOrder] = useState(false)
   const [bodyElement, setBodyElement] = useState()
+  const [searchingProducts, setSearchingProducts] = useState(false)
 
   const form = useForm({
     shouldUnregister: false,
@@ -102,11 +103,14 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const fetchProduct = async q => {
     const { data } = await Medusa.variants.list({ q })
     setSearchResults(data.variants)
+    setSearchingProducts(false)
   }
 
-  const debouncedProductSearch = useCallback(debounce(fetchProduct, 800), [])
+  // Avoid search on every keyboard stroke by debouncing .5 sec
+  const debouncedProductSearch = useCallback(debounce(fetchProduct, 500), [])
 
   const handleProductSearch = async q => {
+    setSearchingProducts(true)
     try {
       debouncedProductSearch(q)
     } catch (error) {
@@ -159,7 +163,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
       const total = calculateTotal()
 
-      // Filter out options
+      // Filter out options by requirements
       const options = data.shipping_options.reduce((acc, next) => {
         if (next.requirements) {
           const minSubtotal = next.requirements.find(
@@ -213,10 +217,18 @@ const NewOrder = ({ onDismiss, refresh }) => {
       draftOrder.customer_id = customerId
     }
 
-    draftOrder.billing_address = billing
+    if ("id" in billing) {
+      draftOrder.billing_address = billing.id
+    } else {
+      draftOrder.billing_address = removeNullish(billing)
+    }
 
     if (!_.isEmpty(shipping)) {
-      draftOrder.shipping_address = shipping
+      if ("id" in shipping) {
+        draftOrder.shipping_address = shipping.id
+      } else {
+        draftOrder.shipping_address = removeNullish(shipping)
+      }
     }
 
     if (discount && discount.code) {
@@ -233,14 +245,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
     }
 
     draftOrder.shipping_methods = [option]
-
-    // remove empty values from addresses
-    if (draftOrder.shipping_address) {
-      draftOrder.shipping_address = removeNullish(draftOrder.shipping_address)
-    }
-    if (draftOrder.billing_address) {
-      draftOrder.billing_address = removeNullish(draftOrder.billing_address)
-    }
 
     setCreatingOrder(true)
     try {
@@ -396,6 +400,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
               selectedRegion={region}
               handlePriceChange={handlePriceChange}
               searchResults={searchResults}
+              searchingProducts={searchingProducts}
               items={items}
             />
           )}
