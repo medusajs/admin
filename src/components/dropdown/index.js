@@ -112,9 +112,7 @@ const Dropdown = ({
   const spacingProps = ["m", "mr", "ml", "mx"]
 
   return (
-    <Flex
-      sx={{ position: "relative", width: showTrigger ? "inherit" : "100%" }}
-    >
+    <Flex sx={{ position: "relative", width: showTrigger ? "auto" : "100%" }}>
       {showTrigger && (
         <Button
           sx={sx}
