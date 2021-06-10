@@ -9,6 +9,7 @@ import Medusa from "../../../services/api"
 
 import EditShipping from "./edit-shipping"
 import NewShipping from "./new-shipping"
+import Badge from "../../../components/badge"
 
 const Shipping = ({ region, fulfillmentMethods }) => {
   const [editOption, setEditOption] = useState(null)
@@ -109,7 +110,12 @@ const Shipping = ({ region, fulfillmentMethods }) => {
               >
                 <Box>
                   <Text>
-                    {option.name} ({option.data.name})
+                    {option.name} {option.data.name && `(${option.data.name})`}
+                    {option.admin_only && (
+                      <Badge bg="#e3e8ee" color="#4f566b" ml={2}>
+                        Not on website
+                      </Badge>
+                    )}
                   </Text>
                   <Text>
                     {prettify(option.price_type)}
@@ -162,7 +168,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
               >
                 <Box>
                   <Text>
-                    {option.name} ({option.data.name})
+                    {option.name} {option.data.name && `(${option.data.name})`}
                   </Text>
                   <Text>
                     {prettify(option.price_type)}

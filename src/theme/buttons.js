@@ -1,4 +1,14 @@
 export const buttons = {
+  link: {
+    cursor: "pointer",
+    color: "link",
+    fill: "link",
+    fontSize: 0,
+    "&:hover": {
+      color: "medusa",
+      fill: "medusa",
+    },
+  },
   pillActive: {
     cursor: "pointer",
     backgroundColor: "transparent",

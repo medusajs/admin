@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import _ from "lodash"
 import { Text, Flex, Box } from "rebass"
 import { useForm, useFieldArray } from "react-hook-form"
@@ -9,9 +9,11 @@ import CurrencyInput from "../../../components/currency-input"
 import Button from "../../../components/button"
 
 import Medusa from "../../../services/api"
+import { Checkbox, Label } from "@rebass/forms"
 
 const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   const { register, setValue, reset, handleSubmit } = useForm()
+  const [adminOnly, setAdminOnly] = useState(shippingOption?.admin_only)
 
   // const {
   //   fields: metaFields,
@@ -111,6 +113,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       name: data.name,
       amount: Math.round(data.amount * 100),
       requirements: reqs,
+      admin_only: adminOnly,
     }
 
     if (data.metadata) {
@@ -137,19 +140,25 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
           <Text>Edit Shipping Option</Text>
         </Modal.Header>
         <Modal.Content flexDirection="column">
-          <Box mb={3}>
-            <Text fontSize={2}>
+          <Box mb={2}>
+            <Text fontSize={1} fontWeight="500">
               Fulfillment Method
-              <Text fontSize={1} sx={{ fontWeight: "300" }}>
-                {shippingOption.data.id} via {shippingOption.provider_id}
-              </Text>
+            </Text>
+            <Text fontSize={1} sx={{ fontWeight: "300" }}>
+              {shippingOption.data.id} via {shippingOption.provider_id}
             </Text>
           </Box>
           <Box mb={3}>
-            <Input mt={2} label="Name" name="name" ref={register} />
+            <Input
+              mt={2}
+              label="Name"
+              name="name"
+              ref={register}
+              boldLabel={true}
+            />
           </Box>
-          <Box mb={3}>
-            <Text fontSize={1} fontWeight={300} mb={2}>
+          <Box mb={4}>
+            <Text fontSize={1} fontWeight={300} mb={2} fontWeight="500">
               Price
             </Text>
             <CurrencyInput
@@ -158,8 +167,20 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
               currency={region.currency_code.toUpperCase()}
             />
           </Box>
+          <Flex flexDirection="column" minHeight="50px">
+            <Label width={"200px"} fontSize={1}>
+              <Checkbox
+                id="true"
+                name="requires_shipping"
+                value="true"
+                checked={!adminOnly}
+                onChange={() => setAdminOnly(!adminOnly)}
+              />
+              Show on website
+            </Label>
+          </Flex>
           <Flex mb={4} flexDirection="column">
-            <Text fontSize={1} fontWeight={300} mb={2}>
+            <Text fontSize={1} fontWeight={300} mb={2} fontWeight="500">
               Requirements
             </Text>
             <Flex justifyContent="space-between" mt={2} width="100%">
@@ -172,6 +193,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                 name={`requirements.min_subtotal.amount`}
                 currency={region.currency_code.toUpperCase()}
                 ref={register}
+                boldLabel={true}
               />
             </Flex>
             <Flex justifyContent="space-between" mt={2} width="100%">
@@ -184,6 +206,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                 name={`requirements.max_subtotal.amount`}
                 currency={region.currency_code.toUpperCase()}
                 ref={register}
+                boldLabel={true}
               />
             </Flex>
           </Flex>
