@@ -13,6 +13,10 @@ import ReactTooltip from "react-tooltip"
 import { useHotkeys } from "react-hotkeys-hook"
 import { ReactComponent as Cross } from "../../assets/svg/cross.svg"
 
+import DraftOrders from "./draft-orders"
+import DraftOrderDetails from "./draft-orders/details"
+import NewOrder from "./new/new-order"
+
 import Details from "./details"
 import New from "./new"
 import {
@@ -55,45 +59,36 @@ const TabButton = styled(Flex)`
   text-align: left;
   margin-right: 15px;
   min-width: 50px;
-
   .cross-icon {
     display: inline-block;
     height: 8px;
     margin-left: 5px;
     cursor: pointer;
   }
-
   ${props =>
     props.active &&
     `
     border-bottom: 1px solid black;
-
   `}
-
   p {
     cursor: pointer;
     display: inline-block;
     margin: 0px;
   }
-
   outline: none;
 `
 
-const OrderNumCell = styled(Text)`
+export const OrderNumCell = styled(Text)`
   z-index: 1000;
   cursor: pointer;
   font-weight: 500;
-
   width: 100%;
   height: 100%;
   display: flex;
-
   align-items: center;
-
   &:hover {
     color: #454b54;
   }
-
   ${props => props.isCanceled && "text-decoration: line-through;"}
 `
 
@@ -158,6 +153,7 @@ const OrderIndex = ({}) => {
   const [filterTabs, setFilterTabs] = useState()
   const [activeFilterTab, setActiveFilterTab] = useState("all")
   const [fetching, setFetching] = useState(false)
+  const [showNewOrder, setShowNewOrder] = useState(false)
 
   const [statusFilter, setStatusFilter] = useState({
     open: false,
@@ -631,12 +627,7 @@ const OrderIndex = ({}) => {
           resetFilters={resetFilters}
           handleSaveTab={value => handleSaveTab(value)}
         />
-        <Button
-          ml={2}
-          disabled={true}
-          onClick={() => navigate(`/a/orders/new`)}
-          variant={"cta"}
-        >
+        <Button ml={2} onClick={() => setShowNewOrder(true)} variant={"cta"}>
           New draft order
         </Button>
       </Flex>
@@ -822,6 +813,12 @@ const OrderIndex = ({}) => {
           Next
         </Button>
       </Flex>
+      {showNewOrder && (
+        <NewOrder
+          onDismiss={() => setShowNewOrder(false)}
+          refresh={() => navigate(`/a/draft-orders`)}
+        />
+      )}
     </Flex>
   )
 }
@@ -831,6 +828,7 @@ const Orders = () => {
     <Router>
       <OrderIndex path="/" />
       <Details path=":id" />
+      <DraftOrderDetails path="/draft/:id" />
       <New path="/new" />
     </Router>
   )

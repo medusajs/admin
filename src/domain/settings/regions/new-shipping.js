@@ -12,6 +12,7 @@ import Spinner from "../../../components/spinner"
 import useMedusa from "../../../hooks/use-medusa"
 import Medusa from "../../../services/api"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
+import { Checkbox, Label } from "@rebass/forms"
 
 const NewShipping = ({
   isReturn,
@@ -26,6 +27,7 @@ const NewShipping = ({
   const { shipping_profiles, isLoading: isProfilesLoading } = useMedusa(
     "shippingProfiles"
   )
+  const [adminOnly, setAdminOnly] = useState(false)
 
   const handleSave = data => {
     const fOptions = fulfillmentOptions.map(provider => {
@@ -64,6 +66,7 @@ const NewShipping = ({
       amount: Math.round(data.price.amount * 100),
       is_return: isReturn,
       provider_id,
+      admin_only: adminOnly,
     }
 
     Medusa.shippingOptions.create(payload).then(() => {
@@ -106,14 +109,27 @@ const NewShipping = ({
               mt={2}
               mb={3}
               label="Name"
+              boldLabel={true}
               name="name"
               ref={register({ required: true })}
               required={true}
             />
           </Box>
+          <Flex flexDirection="column" minHeight="50px">
+            <Label width={"200px"} fontSize={1}>
+              <Checkbox
+                id="true"
+                name="requires_shipping"
+                value="true"
+                checked={!adminOnly}
+                onChange={() => setAdminOnly(!adminOnly)}
+              />
+              Show on website
+            </Label>
+          </Flex>
           {!isReturn && (
             <Box mb={4}>
-              <Text fontSize={1} fontWeight={300} mb={2}>
+              <Text fontSize={1} fontWeight={300} mb={2} fontWeight="500">
                 Shipping profile
               </Text>
               {isProfilesLoading ? (
@@ -138,7 +154,7 @@ const NewShipping = ({
             </Box>
           )}
           <Box mb={4}>
-            <Text fontSize={1} fontWeight={300} mb={2}>
+            <Text fontSize={1} fontWeight={300} mb={2} fontWeight="500">
               Fulfillment method
             </Text>
             <Select
@@ -149,7 +165,13 @@ const NewShipping = ({
             />
           </Box>
           <Box mb={4}>
-            <Text fontSize={1} fontWeight={300} mb={2} className="required">
+            <Text
+              fontSize={1}
+              fontWeight={300}
+              mb={2}
+              className="required"
+              fontWeight="500"
+            >
               Price
             </Text>
             <CurrencyInput
@@ -161,7 +183,7 @@ const NewShipping = ({
           </Box>
           {!isReturn && (
             <Flex mb={4} flexDirection="column">
-              <Text fontSize={1} fontWeight={300} mb={1}>
+              <Text fontSize={1} fontWeight={300} mb={1} fontWeight="500">
                 Requirements
               </Text>
               <Flex justifyContent="space-between" mt={2} width="100%">
@@ -170,6 +192,7 @@ const NewShipping = ({
                   start={true}
                   width="100%"
                   fontSize="12px"
+                  boldLabel={true}
                   label="Min. subtotal"
                   name={`requirements.min_subtotal`}
                   currency={region.currency_code.toUpperCase()}
@@ -180,6 +203,7 @@ const NewShipping = ({
                 <CurrencyInput
                   inline
                   width="100%"
+                  boldLabel={true}
                   start={true}
                   label="Max. subtotal"
                   fontSize="12px"

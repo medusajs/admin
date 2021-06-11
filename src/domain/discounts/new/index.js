@@ -170,7 +170,6 @@ const NewDiscount = ({}) => {
     if (data.length > 1) {
       setValue("rule.type", "percentage")
     }
-
     setSelectedRegions(data)
   }
 
@@ -253,7 +252,6 @@ const NewDiscount = ({}) => {
           <Flex alignItems="center">
             <input
               type="radio"
-              checked={isFreeShipping}
               ref={register({ required: true })}
               id="dynamic_true"
               name="dynamic_true"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react"
-import { Flex, Image } from "rebass"
+import { Text, Flex, Image } from "rebass"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Typography from "../typography"
@@ -16,9 +16,7 @@ const StyledLabel = styled.div`
   `}
 `
 
-const Wrap = styled(Flex)``
-
-const StyledButton = styled(Button)`
+const StyledButton = styled(Text)`
   input {
     display: none;
   }
@@ -101,7 +99,7 @@ const ImageUpload = ({
         <StyledLabel boldLabel={boldLabel}>{label}</StyledLabel>
       </Label>
       {button ? (
-        <StyledButton onClick={handleFocus} variant={"primary"}>
+        <StyledButton onClick={handleFocus} variant={"buttons.link"}>
           <input
             multiple
             ref={inputRef}
@@ -110,7 +108,7 @@ const ImageUpload = ({
             type="file"
             accept="image/*"
           />
-          Upload
+          Upload more
         </StyledButton>
       ) : (
         <Container
