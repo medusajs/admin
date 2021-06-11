@@ -50,6 +50,7 @@ const StyledItemContainer = styled(Link)`
 
 const Sidebar = ({}) => {
   const [storeName, setStoreName] = useState("")
+  const [activeTab, setActiveTab] = useState()
 
   const fetchStore = async () => {
     const cache = localStorage.getItem("medusa::cache::store")
@@ -68,6 +69,14 @@ const Sidebar = ({}) => {
     fetchStore()
   }, [])
 
+  const handleTabClick = (tab, isCollapse = false) => {
+    if (activeTab === tab && !isCollapse) {
+      setActiveTab()
+    } else {
+      setActiveTab(tab)
+    }
+  }
+
   return (
     <Container fontSize={1} fontFamily={"body"} pb={3} pt={4} px={4}>
       <Flex
@@ -77,7 +86,7 @@ const Sidebar = ({}) => {
         sx={{ cursor: "pointer" }}
       >
         <Box mx={1}>
-          <Text fontWeight="500">{storeName || "Medusa store"}</Text>
+          <Text fontWeight="500">{storeName || "-"}</Text>
         </Box>
       </Flex>
       <Flex py={4} mx={-1} flexDirection="column" flex={1}>
@@ -85,6 +94,7 @@ const Sidebar = ({}) => {
           to="/a/home"
           activeClassName="active"
           partiallyActive
+          onClick={() => handleTabClick("home")}
         >
           <img src="https://img.icons8.com/ios/50/000000/online-shopping.png" />
           <Text ml={2} variant="nav">
@@ -94,10 +104,12 @@ const Sidebar = ({}) => {
         <Collapsible
           transitionTime={150}
           transitionCloseTime={150}
+          open={activeTab === "orders"}
           trigger={
             <StyledItemContainer
               to="/a/orders"
               activeClassName="active"
+              onClick={() => handleTabClick("orders", true)}
               partiallyActive
             >
               <img src="https://img.icons8.com/ios/50/000000/purchase-order.png" />
@@ -144,11 +156,13 @@ const Sidebar = ({}) => {
         <Collapsible
           transitionTime={150}
           transitionCloseTime={150}
+          open={activeTab === "products"}
           trigger={
             <StyledItemContainer
               to="/a/products"
               activeClassName="active"
               partiallyActive
+              onClick={() => handleTabClick("products", true)}
             >
               <img src="https://img.icons8.com/ios/50/000000/product--v1.png" />
               <Text ml={2} variant="nav">
@@ -173,6 +187,7 @@ const Sidebar = ({}) => {
           to="/a/customers"
           activeClassName="active"
           partiallyActive
+          onClick={() => handleTabClick("customers")}
         >
           <img src="https://img.icons8.com/ios/50/000000/gender-neutral-user.png" />
           <Text ml={2} variant="nav">
@@ -183,6 +198,7 @@ const Sidebar = ({}) => {
           to="/a/discounts"
           activeClassName="active"
           partiallyActive
+          onClick={() => handleTabClick("discounts")}
         >
           <img src="https://img.icons8.com/ios/50/000000/discount.png" />
           <Text ml={2} variant="nav">
@@ -193,6 +209,7 @@ const Sidebar = ({}) => {
           to="/a/gift-cards"
           activeClassName="active"
           partiallyActive
+          onClick={() => handleTabClick("gift-cards")}
         >
           <img src="https://img.icons8.com/ios/50/000000/gift-card.png" />
           <Text ml={2} variant="nav">
@@ -203,6 +220,7 @@ const Sidebar = ({}) => {
           to="/a/settings"
           activeClassName="active"
           partiallyActive
+          onClick={() => handleTabClick("settings")}
         >
           <img src="https://img.icons8.com/ios/50/000000/settings--v1.png" />
           <Text ml={2} variant="nav">
