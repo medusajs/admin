@@ -79,6 +79,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const [customOptionPrice, setCustomOptionPrice] = useState()
   const [showCustomPrice, setShowCustomPrice] = useState(false)
   const [creatingOrder, setCreatingOrder] = useState(false)
+  const [noNotification, setNoNotification] = useState(false)
   const [bodyElement, setBodyElement] = useState()
   const [searchingProducts, setSearchingProducts] = useState(false)
 
@@ -243,6 +244,11 @@ const NewOrder = ({ onDismiss, refresh }) => {
     if (customOptionPrice && showCustomPrice) {
       option.price = customOptionPrice * 100
     }
+
+    if(noNotification){
+      draftOrder.no_notification_order = true
+    }
+
 
     draftOrder.shipping_methods = [option]
 
@@ -529,6 +535,22 @@ const NewOrder = ({ onDismiss, refresh }) => {
             Back
           </Button>
           <Box ml="auto" />
+          {(step === 6 && (
+            <Flex>
+            <Box px={0} py={1}>
+              <input 
+                id="noNotification"
+                name="noNotification"
+                checked={(noNotification)}
+                onChange={() => setNoNotification(!noNotification)}
+                type="checkbox"
+              />
+            </Box>
+            <Box px={2} py={1} >
+              <Text fontSize={1} >Disable notifications on order</Text>
+            </Box>
+          </Flex>
+          ))}
           <Button
             variant="cta"
             loading={creatingOrder}

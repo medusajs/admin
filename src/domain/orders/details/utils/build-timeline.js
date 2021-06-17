@@ -106,6 +106,7 @@ const buildTimeline = (order, notifications) => {
         items: swap.additional_items,
         return_lines: returnLines,
         time: swap.created_at,
+        no_notification: swap.no_notification,
         raw: swap,
       })
     }
@@ -128,6 +129,7 @@ const buildTimeline = (order, notifications) => {
         items: claim.additional_items,
         claim_items: claimLines,
         time: claim.created_at,
+        no_notification: claim.no_notification,
         raw: claim,
       })
     }
