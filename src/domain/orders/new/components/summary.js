@@ -92,7 +92,7 @@ const Summary = ({
         Items
       </Text>
       {items.map((item, index) => {
-        let displayPrice = extractOptionPrice(item, region)
+        let displayPrice = displayUnitPrice(item, region)
 
         return (
           <Flex

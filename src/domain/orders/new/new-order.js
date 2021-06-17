@@ -317,13 +317,13 @@ const NewOrder = ({ onDismiss, refresh }) => {
       if ("unit_price" in next) {
         acc = acc + next.unit_price
       } else {
-        acc = acc + extractUnitPrice(next.prices, region, false)
+        acc = acc + extractUnitPrice(next, region, false)
       }
 
       return acc
     }, 0)
 
-    return tot * 100
+    return tot
   }
 
   useEffect(() => {

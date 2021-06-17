@@ -11,9 +11,9 @@ export const extractUnitPrice = (item, region, withTax = true) => {
 
   if (itemPrice) {
     if (withTax) {
-      return item.price * (1 + region.tax_rate)
+      return itemPrice * (1 + region.tax_rate / 100)
     } else {
-      return item.price
+      return itemPrice
     }
   }
 

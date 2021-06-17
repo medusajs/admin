@@ -190,7 +190,7 @@ const Items = ({
           </Flex>
         )}
         {items.map((item, index) => {
-          let itemPrice = extractUnitPrice(item, selectedRegion)
+          let itemPrice = extractUnitPrice(item, selectedRegion, false)
 
           return (
             <Flex
