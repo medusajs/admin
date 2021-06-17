@@ -128,10 +128,12 @@ const NewOrder = ({ onDismiss, refresh }) => {
   }
 
   const handlePriceChange = (index, price) => {
+    const value = Math.round(price * 100)
+
     const updated = [...items]
     updated[index] = {
       ...items[index],
-      unit_price: parseInt(price),
+      unit_price: value,
     }
 
     setItems(updated)
@@ -188,6 +190,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
       setShippingOptions(options)
     } catch (error) {
+      console.log(error)
       throw Error("Could not fetch shipping options")
     }
   }
@@ -311,7 +314,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
   const calculateTotal = () => {
     const tot = items.reduce((acc, next) => {
-      if (next.unit_price) {
+      if ("unit_price" in next) {
         acc = acc + next.unit_price
       } else {
         acc = acc + extractUnitPrice(next.prices, region, false)

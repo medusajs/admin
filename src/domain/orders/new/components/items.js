@@ -31,7 +31,7 @@ const Items = ({
   const addCustomItem = () => {
     handleAddCustom({
       title,
-      unit_price: parseInt(price),
+      unit_price: price * 100,
       quantity: parseInt(quantity),
     })
     setAddCustom(false)
@@ -190,6 +190,8 @@ const Items = ({
           </Flex>
         )}
         {items.map((item, index) => {
+          let itemPrice = extractUnitPrice(item, selectedRegion)
+
           return (
             <Flex
               key={item.variant_id}
@@ -236,11 +238,7 @@ const Items = ({
                 <CurrencyInput
                   edit={false}
                   required={true}
-                  value={
-                    item.unit_price
-                      ? item.unit_price
-                      : extractUnitPrice(item.prices, selectedRegion, false)
-                  }
+                  value={itemPrice / 100}
                   currency={selectedRegion.currency_code}
                   onChange={({ currentTarget }) => {
                     handlePriceChange(index, currentTarget.value)

@@ -92,6 +92,8 @@ const Summary = ({
         Items
       </Text>
       {items.map((item, index) => {
+        let displayPrice = extractOptionPrice(item, region)
+
         return (
           <Flex
             key={item.variant_id}
@@ -134,7 +136,7 @@ const Summary = ({
               />
             </Box>
             <Box width={"30%"} px={2} py={1}>
-              <Text fontSize="12px">{displayUnitPrice(item, region)}</Text>
+              <Text fontSize="12px">{displayPrice}</Text>
             </Box>
           </Flex>
         )
