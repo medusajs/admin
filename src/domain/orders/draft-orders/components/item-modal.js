@@ -272,11 +272,7 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
                   <CurrencyInput
                     edit={false}
                     required={true}
-                    value={
-                      price !== null
-                        ? price
-                        : extractUnitPrice(selected.prices, region, false)
-                    }
+                    value={extractUnitPrice(selected, region, false) / 100}
                     currency={region.currency_code}
                     onChange={({ currentTarget }) =>
                       setPrice(currentTarget.value)
