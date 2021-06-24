@@ -118,7 +118,7 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
             images: v.images?.map(i => removeNullish({ id: i.id, url: i.url })) || [],
           })
         }),
-        no_notification: noNotification
+        no_notification: noNotification !== null ? noNotification : undefined,
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully updated claim", "success"))

@@ -209,7 +209,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
         variant_id: i.id,
         quantity: i.quantity,
       })),
-      no_notification: noNotification !== null ? noNotification : undefined ,
+      no_notification: noNotification !== null ? noNotification : undefined,
     }
 
     if (shippingAddress.address_1) {

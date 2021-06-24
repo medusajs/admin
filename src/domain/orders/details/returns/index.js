@@ -21,8 +21,9 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   const [shippingLoading, setShippingLoading] = useState(true)
   const [shippingOptions, setShippingOptions] = useState([])
-  const [shippingMethod, setShippingMethod] = useState()
+  const [noNotification, setNoNotification] = useState(order.no_notification)
   const [shippingPrice, setShippingPrice] = useState()
+  const [shippingMethod, setShippingMethod] = useState()
 
   const { register, setValue, handleSubmit } = useForm()
 
@@ -115,6 +116,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     let data = {
       items,
       refund: Math.round(refundAmount),
+      no_notification: noNotification !== null ? noNotification : undefined,
     }
 
     if (shippingMethod) {
@@ -321,6 +323,20 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
           )}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
+          <Flex>
+              <Box px={0} py={1}>
+                <input 
+                  id="noNotification"
+                  name="noNotification"
+                  checked={(order.no_notification ? !noNotification : noNotification)}
+                  onChange={() => setNoNotification(!noNotification)}
+                  type="checkbox"
+                />
+              </Box>
+              <Box px={2} py={1} >
+                <Text fontSize={1} >{order.no_notification ? "Enable"  : "Disable"} notifications on return</Text>
+              </Box>
+          </Flex> 
           <Button loading={submitting} type="submit" variant="primary">
             Complete
           </Button>

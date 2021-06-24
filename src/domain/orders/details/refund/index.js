@@ -13,6 +13,7 @@ const RefundMenu = ({ order, onRefund, onDismiss, toaster }) => {
   const [note, setNote] = useState("")
   const [reason, setReason] = useState("discount")
   const [refundAmount, setRefundAmount] = useState(0)
+  const [noNotification, setNoNotification] = useState(order.no_notification)
 
   const reasonOptions = [
     { label: "Discount", value: "discount" },
@@ -26,6 +27,7 @@ const RefundMenu = ({ order, onRefund, onDismiss, toaster }) => {
         amount: Math.round(refundAmount * 100),
         reason,
         note,
+        no_notification: noNotification !== null ? noNotification : undefined,
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully refunded order", "success"))
@@ -95,6 +97,20 @@ const RefundMenu = ({ order, onRefund, onDismiss, toaster }) => {
           </Box>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
+          <Flex>
+              <Box px={0} py={1}>
+                <input 
+                  id="noNotification"
+                  name="noNotification"
+                  checked={(order.no_notification ? !noNotification : noNotification)}
+                  onChange={() => setNoNotification(!noNotification)}
+                  type="checkbox"
+                />
+              </Box>
+              <Box px={2} py={1} >
+                <Text fontSize={1} >{order.no_notification ? "Enable"  : "Disable"} notifications on refund</Text>
+              </Box>
+          </Flex> 
           <Button type="submit" variant="primary">
             Complete
           </Button>

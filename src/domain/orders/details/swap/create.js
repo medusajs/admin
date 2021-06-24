@@ -177,7 +177,6 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }
 
   const onSubmit = () => {
-    console.log(noNotification)
     const data = {
       return_items: toReturn.map(t => ({
         item_id: t,
@@ -187,7 +186,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
         variant_id: i.id,
         quantity: i.quantity,
       })),
-      no_notification: noNotification !== null ? noNotification : undefined ,
+      no_notification: noNotification !== null ? noNotification : undefined,
     }
 
     if (shippingMethod) {
@@ -509,7 +508,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               />
             </Box>
             <Box px={2} py={1} >
-              <Text fontSize={1} >{order.no_notification ? "Enable notifications on swap" : "Disable notifications on swap"}</Text>
+              <Text fontSize={1} >{order.no_notification ? "Enable" : "Disable"} notifications on swap</Text>
             </Box>
           </Flex>          
           <Button

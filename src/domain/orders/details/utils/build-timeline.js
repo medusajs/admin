@@ -37,6 +37,7 @@ const buildTimeline = (order, notifications) => {
       status: r.status,
       refund_amount: r.refund_amount,
       created_at: r.created_at,
+      no_notification: r.no_notification,
       raw: r,
     }
   })
@@ -56,6 +57,7 @@ const buildTimeline = (order, notifications) => {
         event: "Items returned",
         items: r.items,
         refund_amount: r.refund_amount,
+        no_notification: r.no_notification,
         status: r.status,
         time: r.created_at,
         raw: r.raw,

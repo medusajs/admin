@@ -13,6 +13,7 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
   const [fulfillAll, setFulfillAll] = useState(false)
   const [toFulfill, setToFulfill] = useState([])
   const [quantities, setQuantities] = useState({})
+  const [noNotification, setNoNotification] = useState(order.no_notification)
   const { control, errors, register, handleSubmit } = useForm()
 
   const { fields, append, remove } = useFieldArray({
@@ -99,6 +100,7 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
           return onFulfill({
             items,
             metadata,
+            no_notification: noNotification !== null ? noNotification : undefined,
           })
             .then(() => onDismiss())
             .then(() => toaster("Successfully fulfilled order", "success"))
@@ -241,6 +243,22 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
           </Flex>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
+          { type !== "claim" && type !== "swap" &&
+           <Flex>
+              <Box px={0} py={1}>
+                <input 
+                  id="noNotification"
+                  name="noNotification"
+                  checked={(order.no_notification ? !noNotification : noNotification)}
+                  onChange={() => setNoNotification(!noNotification)}
+                  type="checkbox"
+                />
+              </Box>
+              <Box px={2} py={1} >
+                <Text fontSize={1} >{order.no_notification ? "Enable"  : "Disable"} notifications on fulfillment</Text>
+              </Box>
+          </Flex>  
+          }
           <Button loading={submitting} type="submit" variant="primary">
             Complete
           </Button>

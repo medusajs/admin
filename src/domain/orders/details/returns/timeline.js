@@ -6,6 +6,9 @@ import moment from "moment"
 import Typography from "../../../../components/typography"
 import Button from "../../../../components/button"
 
+import { ReactComponent as Silent} from "../../../../assets/svg/silent.svg"
+import { ReactComponent as Notification} from "../../../../assets/svg/notification.svg"
+
 const LineItemLabel = styled(Text)`
   ${Typography.Base};
 
@@ -61,6 +64,27 @@ export default ({ event, order, onReceiveReturn }) => {
       <Text fontSize="11px" color="grey" mb={3}>
         {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
       </Text>
+      {(event.no_notification | false) !== (order.no_notification | false)   &&  (
+              <Flex mt={15}> 
+                { event.no_notification ? (
+                  <Box pl={10} width={40} height={10}>
+                    <Silent viewBox="10 0 200 160" />
+                  </Box>
+                ) : (
+                  <Box pl={10} width={50} height={10}>
+                    <Notification viewBox="0 0 160 150" />
+                  </Box>    
+                )}
+              <Box mt={2} pr={2}> 
+                <Text color="gray"> 
+                  Notifications related to this return are 
+                  { event.no_notification ? " disabled" : " enabled" }
+                  .
+                </Text>
+                </Box>
+              </Flex>
+      )}
+      <br/>   
       <Flex justifyContent="space-between">
         <Box>
           {event.items.map(lineItem => (
