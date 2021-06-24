@@ -182,7 +182,7 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
       <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
         <Modal.Header>Claim</Modal.Header>
         <Modal.Content flexDirection="column">
-          <Box mb={3}>      
+          <Box mb={3}>
             <Text px={2}>Claim items</Text>
             <Flex
               sx={{

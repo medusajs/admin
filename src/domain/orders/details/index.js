@@ -548,8 +548,7 @@ const OrderDetails = ({ id }) => {
                     height="8"
                   />
                 </Box>
-              </Flex>
-              
+              </Flex>              
               {/* <Badge
                 ml={3}
                 color={decideBadgeColor(order.status).color}
@@ -614,8 +613,7 @@ const OrderDetails = ({ id }) => {
                   .map(({ provider_id }) => provider_id)
                   .join(", ")}
               </Text>
-            </Box>
-            
+            </Box>       
           </Card.Body>
         </Card>
       </Flex>

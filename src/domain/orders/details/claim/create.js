@@ -275,8 +275,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }
   }
 
-
-
   const handleNoteChange = (e, item) => {
     const element = e.target
 
