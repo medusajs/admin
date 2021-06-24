@@ -135,11 +135,9 @@ const Shipping = ({ region, fulfillmentMethods }) => {
         </Card.Body>
       </Card>
       <Card>
-        {inbound && inbound.length ? (
-          <Card.Header dropdownOptions={inboundDropdownOptions}>
-            Return Shipping Options
-          </Card.Header>
-        ) : null}
+        <Card.Header dropdownOptions={inboundDropdownOptions}>
+          Return Shipping Options
+        </Card.Header>
         <Card.Body py={0} flexDirection="column">
           {isLoading ? (
             <Flex

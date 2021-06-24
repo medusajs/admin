@@ -129,10 +129,12 @@ const NewOrder = ({ onDismiss, refresh }) => {
   }
 
   const handlePriceChange = (index, price) => {
+    const value = Math.round(price * 100)
+
     const updated = [...items]
     updated[index] = {
       ...items[index],
-      unit_price: parseInt(price),
+      unit_price: value,
     }
 
     setItems(updated)
@@ -249,7 +251,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
       draftOrder.no_notification_order = true
     }
 
-
     draftOrder.shipping_methods = [option]
 
     setCreatingOrder(true)
@@ -317,16 +318,16 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
   const calculateTotal = () => {
     const tot = items.reduce((acc, next) => {
-      if (next.unit_price) {
+      if ("unit_price" in next) {
         acc = acc + next.unit_price
       } else {
-        acc = acc + extractUnitPrice(next.prices, region, false)
+        acc = acc + extractUnitPrice(next, region, false)
       }
 
       return acc
     }, 0)
 
-    return tot * 100
+    return tot
   }
 
   useEffect(() => {
