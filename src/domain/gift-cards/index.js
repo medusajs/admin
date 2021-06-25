@@ -3,8 +3,10 @@ import { Router } from "@reach/router"
 import { navigate } from "gatsby"
 import qs from "query-string"
 import { Text, Flex, Box } from "rebass"
+import { Input } from "@rebass/forms"
 import ReactTooltip from "react-tooltip"
 import moment from "moment"
+import { OrderNumCell } from "../orders"
 
 import ManageGiftCard from "./manage"
 import GiftCardDetail from "./detail"
@@ -25,8 +27,42 @@ import Button from "../../components/button"
 
 import useMedusa from "../../hooks/use-medusa"
 
+
+
+
 const Index = () => {
-  const { gift_cards, isLoading } = useMedusa("giftCards")
+  const { gift_cards, isLoading, refresh } = useMedusa("giftCards")
+  const [query, setQuery] = useState("")
+
+
+  const searchQuery = () => {
+    const baseUrl = qs.parseUrl(window.location.href).url
+
+    const search = {
+      fields: "id,title,thumbnail",
+      expand: "variants,variants.prices,collection",
+      q: query,
+      offset: 0,
+      limit: 20,
+    }
+
+    const prepared = qs.stringify(search, {
+      skipNull: true,
+      skipEmptyString: true,
+    })
+
+    window.history.replaceState(baseUrl, "", `?${prepared}`)
+    refresh({ search })
+  }
+  
+  const onKeyDown = event => {
+    // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
+    if (event.key === "Enter") {
+      event.preventDefault()
+      event.stopPropagation()
+      searchQuery()
+    }
+  }
 
   return (
     <div>
@@ -40,6 +76,28 @@ const Index = () => {
           variant={"cta"}
         >
           Manage gift cards
+        </Button>
+      </Flex>
+      <Flex>
+      <Box mb={3} sx={{ maxWidth: "300px" }}>
+          <Input
+            height="28px"
+            fontSize="12px"
+            name="q"
+            type="text"
+            placeholder="Search products"
+            onKeyDown={onKeyDown}
+            onChange={e => setQuery(e.target.value)}
+            value={query}
+          />
+        </Box>
+        <Button
+          onClick={() => searchQuery()}
+          variant={"primary"}
+          fontSize="12px"
+          ml={2}
+        >
+          Search
         </Button>
       </Flex>
       {isLoading ? (
@@ -58,6 +116,7 @@ const Index = () => {
           <TableHead>
             <TableHeaderRow>
               <TableHeaderCell>Code</TableHeaderCell>
+              <TableHeaderCell>Order</TableHeaderCell>
               <TableHeaderCell>Original Amount</TableHeaderCell>
               <TableHeaderCell>Amount Left</TableHeaderCell>
               <TableHeaderCell>Created</TableHeaderCell>
@@ -72,6 +131,19 @@ const Index = () => {
                 >
                   <TableDataCell>
                     <DefaultCellContent>{el.code}</DefaultCellContent>
+                  </TableDataCell>
+                  <TableDataCell >
+                    <OrderNumCell 
+                      onClick={(e) => {
+                        navigate(`/a/orders/${el.order.id}`)
+                        e.stopPropagation()
+                      } }
+                      fontWeight={500}
+                      color={"link"}
+                      isCanceled={el.order.status === "canceled"}
+                    >
+                      #{el.order.display_id}
+                    </OrderNumCell>
                   </TableDataCell>
                   <TableDataCell>
                     <DefaultCellContent>
