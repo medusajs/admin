@@ -24,16 +24,12 @@ import {
 import Spinner from "../../components/spinner"
 import Badge from "../../components/badge"
 import Button from "../../components/button"
-
 import useMedusa from "../../hooks/use-medusa"
 
-
-
-
 const Index = () => {
+  
   const { gift_cards, isLoading, refresh } = useMedusa("giftCards")
   const [query, setQuery] = useState("")
-
 
   const searchQuery = () => {
     const baseUrl = qs.parseUrl(window.location.href).url

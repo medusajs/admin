@@ -51,7 +51,6 @@ const GiftCardDetail = ({ id }) => {
   const [showRuleEdit, setShowRuleEdit] = useState(false)
   const [code, setCode] = useState(discount && discount.code)
   const [balance, setBalance] = useState(0)
-
   const [selectedRegions, setSelectedRegions] = useState([])
 
   const balanceRef = useRef()
