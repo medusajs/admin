@@ -85,7 +85,7 @@ const Index = () => {
             fontSize="12px"
             name="q"
             type="text"
-            placeholder="Search products"
+            placeholder="Search gift cards"
             onKeyDown={onKeyDown}
             onChange={e => setQuery(e.target.value)}
             value={query}
