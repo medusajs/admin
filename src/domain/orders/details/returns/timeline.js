@@ -62,7 +62,6 @@ export default ({ event, order, onReceiveReturn }) => {
         {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
       </Text>
       {(event.no_notification | false) !== (order.no_notification | false)   &&  (
-                )}
               <Box mt={2} pr={2}> 
                 <Text color="gray"> 
                   Notifications related to this return are 
