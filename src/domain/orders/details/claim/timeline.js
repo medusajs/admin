@@ -4,7 +4,7 @@ import { navigate } from "gatsby"
 import styled from "@emotion/styled"
 import moment from "moment"
 
-import { decideBadgeColor } from "../../../../utils/decide-badge-color""
+import { decideBadgeColor } from "../../../../utils/decide-badge-color"
 import Typography from "../../../../components/typography"
 import Badge from "../../../../components/badge"
 import Button from "../../../../components/button"
