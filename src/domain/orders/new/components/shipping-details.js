@@ -57,7 +57,8 @@ const ShippingDetails = ({ customerAddresses, setCustomerAddresses, form }) => {
 
   const onCustomerSelect = async val => {
     if (!val) {
-      form.setValue("customer", null)
+      form.setValue("customer", "")
+      form.setValue("customerId", "")
       setCustomerAddresses([])
       return
     }
