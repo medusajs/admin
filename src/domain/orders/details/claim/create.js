@@ -216,10 +216,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       data.shipping_address = shippingAddress
     }
 
-    if (shippingAddress.address_1) {
-      data.shipping_address = shippingAddress
-    }
-
     if (shippingMethod) {
       data.return_shipping = {
         option_id: shippingMethod,

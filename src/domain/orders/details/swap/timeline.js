@@ -22,7 +22,7 @@ const LineItemLabel = styled(Text)`
 `
 
 const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = lineItem?.variant?.product.id || undefined
+  const productId = lineItem.variant.product.id
 
   return (
     <Flex alignItems="center">
@@ -48,7 +48,7 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
             onClick={() => navigate(`/a/products/${productId}`)}
           >
             {lineItem.title}
-            <br /> {lineItem.variant?.sku}
+            <br /> {lineItem.variant.sku}
             <br />
             {((100 + taxRate) * lineItem.unit_price) / 10000}{" "}
             {currency.toUpperCase()}
