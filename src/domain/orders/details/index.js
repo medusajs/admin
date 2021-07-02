@@ -20,7 +20,6 @@ import NotificationResend from "./notification/resend-menu"
 import CustomerInformation from "./customer"
 
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
-import {ReactComponent as Silent} from "../../../assets/svg/silent.svg"
 import Dialog from "../../../components/dialog"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
@@ -565,16 +564,11 @@ const OrderDetails = ({ id }) => {
             </Text>
           </Box>
           {order.no_notification && (
-              <Flex> 
-                <Box pl={10}  width={50} height={10}>
-                  <Silent  viewBox="0 0 200 150" />
-                </Box>
               <Box pt={2} pr={2}> 
                 <Text color="gray"> 
                   Notifications for this order are disabled.
                 </Text>
                 </Box>
-              </Flex>
             )}        
           <Card.Body>
             <Box pl={3} pr={2}>
