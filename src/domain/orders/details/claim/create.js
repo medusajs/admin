@@ -75,10 +75,6 @@ const StyledImageBox = styled(Flex)`
   }
 `
 
-const StyledPrice = styled.span(props => ({
-  textDecoration: props.overwritten && "line-through",
-}))
-
 const extractPrice = (prices, order) => {
   let price = prices.find(ma => ma.region_id === order.region_id)
 
