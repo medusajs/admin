@@ -174,15 +174,15 @@ export default ({
             <Text fontSize="11px" color="grey">
               {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
             </Text>
-            {(event.no_notification | false) !== (order.no_notification | false)   &&  (
-              <Box mt={2} pr={2}> 
-                <Text color="gray"> 
-                  Notifications related to this swap are 
-                  { event.no_notification ? " disabled" : " enabled" }
-                  .
+            {(event.no_notification || false) !==
+              (order.no_notification || false) && (
+              <Box mt={2} pr={2}>
+                <Text color="gray">
+                  Notifications related to this swap are
+                  {event.no_notification ? " disabled" : " enabled"}.
                 </Text>
-                </Box>
-            )}   
+              </Box>
+            )}
             <Flex mt={4}>
               <Text mr={2} fontSize={1} color="grey">
                 Payment Status
