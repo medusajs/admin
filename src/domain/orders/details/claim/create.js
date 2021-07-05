@@ -96,6 +96,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [isReplace, toggleReplace] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [returnAll, setReturnAll] = useState(false)
+  const [noNotification, setNoNotification] = useState(order.no_notification)
   const [toPay, setToPay] = useState(0)
   const [toReturn, setToReturn] = useState({})
   const [quantities, setQuantities] = useState({})
@@ -278,6 +279,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
         variant_id: i.id,
         quantity: i.quantity,
       })),
+      no_notification:
+        noNotification !== order.no_notification ? noNotification : undefined,
     }
 
     if (shippingAddress.address_1) {
@@ -926,7 +929,22 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             </>
           )}
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
+        <Modal.Footer>
+          <Flex>
+            <Box px={0} py={1}>
+              <input
+                id="noNotification"
+                name="noNotification"
+                checked={!noNotification}
+                onChange={() => setNoNotification(!noNotification)}
+                type="checkbox"
+              />
+            </Box>
+            <Box px={2} py={1}>
+              <Text fontSize={1}>Send notifications</Text>
+            </Box>
+          </Flex>
+          <Box ml="auto" />
           <Button
             disabled={!ready}
             loading={submitting}

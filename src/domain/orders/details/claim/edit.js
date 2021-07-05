@@ -75,6 +75,7 @@ const StyledImageBox = styled(Flex)`
 const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
   const [items, setItems] = useState({})
   const [submitting, setSubmitting] = useState(false)
+  const [noNotification, setNoNotification] = useState(claim.no_notification)
   const { handleSubmit } = useForm()
 
   useEffect(() => {
@@ -113,10 +114,14 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
             id: k,
             reason: v.reason,
             note: v.note,
-            tags: v.tags?.map(t => removeNullish({ id: t.id, value: t.value })) || [],
-            images: v.images?.map(i => removeNullish({ id: i.id, url: i.url })) || [],
+            tags:
+              v.tags?.map(t => removeNullish({ id: t.id, value: t.value })) ||
+              [],
+            images:
+              v.images?.map(i => removeNullish({ id: i.id, url: i.url })) || [],
           })
         }),
+        no_notification: noNotification !== null ? noNotification : undefined,
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully updated claim", "success"))
@@ -272,7 +277,21 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
             })}
           </Box>
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
+        <Modal.Footer justifyContent="space-between">
+          <Flex>
+            <Box px={0} py={1}>
+              <input
+                id="noNotification"
+                name="noNotification"
+                checked={!noNotification}
+                onChange={() => setNoNotification(!noNotification)}
+                type="checkbox"
+              />
+            </Box>
+            <Box px={2} py={1}>
+              <Text fontSize={1}>Send notifications</Text>
+            </Box>
+          </Flex>
           <Button loading={submitting} type="submit" variant="primary">
             Save
           </Button>

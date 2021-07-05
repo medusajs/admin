@@ -104,6 +104,15 @@ const Fulfillment = ({ details, order, onUpdate }) => {
         <Text>
           {title} Fulfilled by provider {fulfillment.provider_id}
         </Text>
+        {(fulfillment.no_notification || false) !==
+          (order.no_notification || false) && (
+          <Box mt={2} pr={2}>
+            <Text color="gray">
+              Notifications related to this fulfillment are
+              {fulfillment.no_notification ? " disabled" : " enabled"}.
+            </Text>
+          </Box>
+        )}
         {!fulfillment.shipped_at ? (
           <Text my={1} color="gray">
             Not shipped
@@ -563,6 +572,13 @@ const OrderDetails = ({ id }) => {
               {order.currency_code.toUpperCase()}
             </Text>
           </Box>
+          {order.no_notification && (
+            <Box pt={2} pr={2}>
+              <Text color="gray">
+                Notifications for this order are disabled.
+              </Text>
+            </Box>
+          )}
           <Card.Body>
             <Box pl={3} pr={2}>
               <Text pb={1} color="gray">

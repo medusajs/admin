@@ -37,6 +37,7 @@ const buildTimeline = (order, notifications) => {
       status: r.status,
       refund_amount: r.refund_amount,
       created_at: r.created_at,
+      no_notification: r.no_notification,
       raw: r,
     }
   })
@@ -56,6 +57,7 @@ const buildTimeline = (order, notifications) => {
         event: "Items returned",
         items: r.items,
         refund_amount: r.refund_amount,
+        no_notification: r.no_notification,
         status: r.status,
         time: r.created_at,
         raw: r.raw,
@@ -106,6 +108,7 @@ const buildTimeline = (order, notifications) => {
         items: swap.additional_items,
         return_lines: returnLines,
         time: swap.created_at,
+        no_notification: swap.no_notification,
         raw: swap,
       })
     }
@@ -128,6 +131,7 @@ const buildTimeline = (order, notifications) => {
         items: claim.additional_items,
         claim_items: claimLines,
         time: claim.created_at,
+        no_notification: claim.no_notification,
         raw: claim,
       })
     }
