@@ -198,7 +198,12 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (toReturn) {
-      if (isReplace && itemsToAdd.length > 0 && shippingMethod) {
+      if (
+        Object.keys(toReturn).length !== 0 &&
+        isReplace &&
+        itemsToAdd.length > 0 &&
+        shippingMethod
+      ) {
         setReady(true)
       } else if (!isReplace && Object.keys(toReturn).length !== 0) {
         setReady(true)
@@ -884,6 +889,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                                   })
                                 }
                                 value={customOptionPrice.standard || null}
+                                placeholder={order.currency_code.toUpperCase()}
                               />
                               <Flex
                                 px={2}
