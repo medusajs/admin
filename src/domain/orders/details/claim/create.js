@@ -813,6 +813,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   <Text
                     onClick={() => setShowAddress(true)}
                     variant={"buttons.link"}
+                    sx={{ display: "inline-block" }}
                   >
                     Ship to a different address
                   </Text>
