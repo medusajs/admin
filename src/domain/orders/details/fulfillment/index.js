@@ -100,7 +100,10 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
           return onFulfill({
             items,
             metadata,
-            no_notification: noNotification !== null ? noNotification : undefined,
+            no_notification:
+              noNotification !== order.no_notification
+                ? noNotification
+                : undefined,
           })
             .then(() => onDismiss())
             .then(() => toaster("Successfully fulfilled order", "success"))
@@ -242,23 +245,23 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
             </Button>
           </Flex>
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
-          { type !== "claim" && type !== "swap" &&
-           <Flex>
+        <Modal.Footer justifyContent="space-between">
+          {type !== "claim" && type !== "swap" && (
+            <Flex>
               <Box px={0} py={1}>
-                <input 
+                <input
                   id="noNotification"
                   name="noNotification"
-                  checked={(order.no_notification ? !noNotification : noNotification)}
+                  checked={!noNotification}
                   onChange={() => setNoNotification(!noNotification)}
                   type="checkbox"
                 />
               </Box>
-              <Box px={2} py={1} >
-                <Text fontSize={1} >{order.no_notification ? "Enable"  : "Disable"} notifications on fulfillment</Text>
+              <Box px={2} py={1}>
+                <Text fontSize={1}>Send notifications</Text>
               </Box>
-          </Flex>  
-          }
+            </Flex>
+          )}
           <Button loading={submitting} type="submit" variant="primary">
             Complete
           </Button>

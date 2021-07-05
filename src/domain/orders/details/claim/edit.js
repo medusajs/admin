@@ -114,8 +114,11 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
             id: k,
             reason: v.reason,
             note: v.note,
-            tags: v.tags?.map(t => removeNullish({ id: t.id, value: t.value })) || [],
-            images: v.images?.map(i => removeNullish({ id: i.id, url: i.url })) || [],
+            tags:
+              v.tags?.map(t => removeNullish({ id: t.id, value: t.value })) ||
+              [],
+            images:
+              v.images?.map(i => removeNullish({ id: i.id, url: i.url })) || [],
           })
         }),
         no_notification: noNotification !== null ? noNotification : undefined,
@@ -272,38 +275,23 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
                 </Flex>
               )
             })}
-             <Flex mt={2}>
-              <Box px={3} py={1}>
-                <Text fontSize={1} >Notifications related to claim</Text>
-              </Box>
-              <Flex alignItems="center">
-                <Pill
-                height="28px"
-                width="1/2"
-                onClick={() => {
-                  setNoNotification(false)
-                }}
-                active={!noNotification}
-                mr={2}
-                >
-                  Enabled
-                </Pill>
-                <Pill
-                height="28px"
-                width="1/2"
-                onClick={() => {
-                  setNoNotification(true)
-                }}
-                active={noNotification}
-                mr={3}
-                >
-                  Disabled
-                </Pill>
-                </Flex>
-            </Flex>   
           </Box>
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
+        <Modal.Footer justifyContent="space-between">
+          <Flex>
+            <Box px={0} py={1}>
+              <input
+                id="noNotification"
+                name="noNotification"
+                checked={!noNotification}
+                onChange={() => setNoNotification(!noNotification)}
+                type="checkbox"
+              />
+            </Box>
+            <Box px={2} py={1}>
+              <Text fontSize={1}>Send notifications</Text>
+            </Box>
+          </Flex>
           <Button loading={submitting} type="submit" variant="primary">
             Save
           </Button>

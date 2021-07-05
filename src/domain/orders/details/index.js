@@ -104,6 +104,15 @@ const Fulfillment = ({ details, order, onUpdate }) => {
         <Text>
           {title} Fulfilled by provider {fulfillment.provider_id}
         </Text>
+        {(fulfillment.no_notification || false) !==
+          (order.no_notification || false) && (
+          <Box mt={2} pr={2}>
+            <Text color="gray">
+              Notifications related to this fulfillment are
+              {fulfillment.no_notification ? " disabled" : " enabled"}.
+            </Text>
+          </Box>
+        )}
         {!fulfillment.shipped_at ? (
           <Text my={1} color="gray">
             Not shipped
@@ -547,7 +556,7 @@ const OrderDetails = ({ id }) => {
                     height="8"
                   />
                 </Box>
-              </Flex>              
+              </Flex>
               {/* <Badge
                 ml={3}
                 color={decideBadgeColor(order.status).color}
@@ -564,12 +573,12 @@ const OrderDetails = ({ id }) => {
             </Text>
           </Box>
           {order.no_notification && (
-              <Box pt={2} pr={2}> 
-                <Text color="gray"> 
-                  Notifications for this order are disabled.
-                </Text>
-                </Box>
-            )}        
+            <Box pt={2} pr={2}>
+              <Text color="gray">
+                Notifications for this order are disabled.
+              </Text>
+            </Box>
+          )}
           <Card.Body>
             <Box pl={3} pr={2}>
               <Text pb={1} color="gray">
@@ -607,7 +616,7 @@ const OrderDetails = ({ id }) => {
                   .map(({ provider_id }) => provider_id)
                   .join(", ")}
               </Text>
-            </Box>       
+            </Box>
           </Card.Body>
         </Card>
       </Flex>

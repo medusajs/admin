@@ -209,7 +209,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
         variant_id: i.id,
         quantity: i.quantity,
       })),
-      no_notification: noNotification !== order.no_notification ? noNotification : undefined,
+      no_notification:
+        noNotification !== order.no_notification ? noNotification : undefined,
     }
 
     if (shippingAddress.address_1) {
@@ -694,21 +695,22 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             </Box>
           )}
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
+        <Modal.Footer>
           <Flex>
             <Box px={0} py={1}>
-              <input 
+              <input
                 id="noNotification"
                 name="noNotification"
-                checked={(order.no_notification ? !noNotification : noNotification)}
+                checked={!noNotification}
                 onChange={() => setNoNotification(!noNotification)}
                 type="checkbox"
               />
             </Box>
-            <Box px={2} py={1} >
-              <Text fontSize={1} >{order.no_notification ? "Enable notifications on claim" : "Disable notifications on claim"}</Text>
+            <Box px={2} py={1}>
+              <Text fontSize={1}>Send notifications</Text>
             </Box>
-          </Flex>          
+          </Flex>
+          <Box ml="auto" />
           <Button loading={submitting} type="submit" variant="primary">
             Complete
           </Button>
