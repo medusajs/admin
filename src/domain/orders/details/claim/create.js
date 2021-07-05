@@ -113,7 +113,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     return: false,
   })
   const [customOptionPrice, setCustomOptionPrice] = useState({
-    standard: null,
+    standard: 0,
     return: null,
   })
   const [searchResults, setSearchResults] = useState([])
@@ -219,8 +219,19 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (!isReplace) {
       setShippingMethod()
       setShippingPrice()
+      setShowCustomPrice({
+        ...showCustomPrice,
+        standard: false,
+      })
     }
   }, [isReplace])
+
+  useEffect(() => {
+    setCustomOptionPrice({
+      ...customOptionPrice,
+      standard: 0,
+    })
+  }, [shippingMethod, showCustomPrice])
 
   //useEffect(() => {
   //  const items = toReturn.map(t => order.items.find(i => i.id === t))
@@ -287,10 +298,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       data.shipping_methods = [
         {
           option_id: shippingMethod.id,
-          price:
-            showCustomPrice.standard && customOptionPrice.standard
-              ? customOptionPrice.standard * 100
-              : Math.round(shippingPrice / (1 + order.tax_rate / 100)),
+          price: customOptionPrice.standard * 100,
         },
       ]
     }
@@ -838,10 +846,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   options={
                     shippingOptions?.map(so => ({
                       value: so.id,
-                      label: `${so.name} - ${extractOptionPrice(
-                        so.amount,
-                        so.region
-                      )}`,
+                      label: `${so.name}`,
                     })) || []
                   }
                 />
@@ -854,7 +859,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                         mt={1}
                         color="#a2a1a1"
                       >
-                        Shipping to {shippingMethod.region.name}
+                        Shipping new items is free pr. default. Use custom
+                        price, if this is not the case
                       </Text>
                       <Box ml="auto" />
                       <Flex flexDirection="column">
