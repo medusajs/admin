@@ -597,7 +597,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
           <Box>
             <Text sx={{ fontSize: 1, fontWeight: 600 }}>
-              Return shipping method
+              Shipping method for returning items:
             </Text>
             <ReactSelect
               menuPortalTarget={bodyElement}
@@ -653,6 +653,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                               })
                             }
                             value={customOptionPrice.return || null}
+                            placeholder={order.currency_code.toUpperCase()}
+                            min={0}
                           />
                           <Flex
                             px={2}
@@ -826,7 +828,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
               </Box>
               <Box>
                 <Text sx={{ fontSize: 1, fontWeight: 600 }} mb={2}>
-                  Shipping options
+                  Shipping method for new items:
                 </Text>
                 <ReactSelect
                   menuPortalTarget={bodyElement}
@@ -890,6 +892,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                                 }
                                 value={customOptionPrice.standard || null}
                                 placeholder={order.currency_code.toUpperCase()}
+                                min={0}
                               />
                               <Flex
                                 px={2}
