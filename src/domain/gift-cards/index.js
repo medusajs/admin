@@ -27,7 +27,6 @@ import Button from "../../components/button"
 import useMedusa from "../../hooks/use-medusa"
 
 const Index = () => {
-  
   const { gift_cards, isLoading, refresh } = useMedusa("giftCards")
   const [query, setQuery] = useState("")
 
@@ -50,7 +49,7 @@ const Index = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({ search })
   }
-  
+
   const onKeyDown = event => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
     if (event.key === "Enter") {
@@ -75,7 +74,7 @@ const Index = () => {
         </Button>
       </Flex>
       <Flex>
-      <Box mb={3} sx={{ maxWidth: "300px" }}>
+        <Box mb={3} sx={{ maxWidth: "300px" }}>
           <Input
             height="28px"
             fontSize="12px"
@@ -128,18 +127,20 @@ const Index = () => {
                   <TableDataCell>
                     <DefaultCellContent>{el.code}</DefaultCellContent>
                   </TableDataCell>
-                  <TableDataCell >
-                    <OrderNumCell 
-                      onClick={(e) => {
-                        navigate(`/a/orders/${el.order.id}`)
-                        e.stopPropagation()
-                      } }
-                      fontWeight={500}
-                      color={"link"}
-                      isCanceled={el.order.status === "canceled"}
-                    >
-                      #{el.order.display_id}
-                    </OrderNumCell>
+                  <TableDataCell>
+                    {el.order && (
+                      <OrderNumCell
+                        onClick={e => {
+                          navigate(`/a/orders/${el.order.id}`)
+                          e.stopPropagation()
+                        }}
+                        fontWeight={500}
+                        color={"link"}
+                        isCanceled={el.order.status === "canceled"}
+                      >
+                        #{el.order.display_id}
+                      </OrderNumCell>
+                    )}
                   </TableDataCell>
                   <TableDataCell>
                     <DefaultCellContent>
