@@ -6,6 +6,7 @@ import { Box, Text } from "rebass"
 import Card from "../../../../components/card"
 import CustomerInformationEdit from "./edit"
 import { countryLookup } from "../../../../utils/countries"
+import { isEmpty } from "lodash"
 
 const formatShippingOrBillingAddress = shippingOrBillingAddress => {
   const postalCode = shippingOrBillingAddress.postal_code || ""
@@ -68,7 +69,7 @@ const CustomerInformation = ({
         <Card.VerticalDivider mx={3} />
         <Box px={3}>
           <Text color="gray">Shipping</Text>
-          {order.shipping_address ? (
+          {isEmpty(order.shipping_address) ? (
             <>
               <Text pt={3}>{order.shipping_address.address_1}</Text>
               {order.shipping_address.address_2 && (
@@ -85,7 +86,7 @@ const CustomerInformation = ({
         <Card.VerticalDivider mx={3} />
         <Box px={3}>
           <Text color="gray">Billing</Text>
-          {order.billing_address ? (
+          {isEmpty(order.billing_address) ? (
             <>
               <Text pt={3}>{order.billing_address.address_1}</Text>
               {order.billing_address.address_2 && (
