@@ -69,7 +69,7 @@ const CustomerInformation = ({
         <Card.VerticalDivider mx={3} />
         <Box px={3}>
           <Text color="gray">Shipping</Text>
-          {isEmpty(order.shipping_address) ? (
+          {!isEmpty(order.shipping_address) ? (
             <>
               <Text pt={3}>{order.shipping_address.address_1}</Text>
               {order.shipping_address.address_2 && (
@@ -86,7 +86,7 @@ const CustomerInformation = ({
         <Card.VerticalDivider mx={3} />
         <Box px={3}>
           <Text color="gray">Billing</Text>
-          {isEmpty(order.billing_address) ? (
+          {!isEmpty(order.billing_address) ? (
             <>
               <Text pt={3}>{order.billing_address.address_1}</Text>
               {order.billing_address.address_2 && (
