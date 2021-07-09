@@ -666,6 +666,11 @@ const OrderDetails = ({ id }) => {
                   Discount
                 </Text>
               )}
+              {order.gift_card_total > 0 && (
+                <Text pt={1} color="gray">
+                  Gift card(s)
+                </Text>
+              )}
               <Text pt={1} color="gray">
                 Total
               </Text>
@@ -691,6 +696,14 @@ const OrderDetails = ({ id }) => {
                   <AlignedDecimal
                     currency={order.currency_code}
                     value={-order.discount_total * (1 + order.tax_rate / 100)}
+                  />
+                </Text>
+              )}
+              {order.gift_card_total > 0 && (
+                <Text pt={1}>
+                  <AlignedDecimal
+                    currency={order.currency_code}
+                    value={-order.gift_card_total * (1 + order.tax_rate / 100)}
                   />
                 </Text>
               )}
