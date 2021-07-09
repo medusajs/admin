@@ -5,6 +5,19 @@ import React, { useState } from "react"
 import { Box, Text } from "rebass"
 import Card from "../../../../components/card"
 import CustomerInformationEdit from "./edit"
+import { countryLookup } from "../../../../utils/countries"
+import { isEmpty } from "lodash"
+
+const formatShippingOrBillingAddress = shippingOrBillingAddress => {
+  const postalCode = shippingOrBillingAddress.postal_code || ""
+  const city = shippingOrBillingAddress.city || ""
+  const province = shippingOrBillingAddress.province || ""
+  const countryCode = shippingOrBillingAddress.country_code || ""
+  const countryName = countryLookup(countryCode)
+
+  const spaceIfProvince = province ? " " : ""
+  return `${postalCode} ${city}${spaceIfProvince}${province}, ${countryName}`
+}
 
 const CustomerInformation = ({
   order,
@@ -56,30 +69,32 @@ const CustomerInformation = ({
         <Card.VerticalDivider mx={3} />
         <Box px={3}>
           <Text color="gray">Shipping</Text>
-          <Text pt={3}>{order.shipping_address.address_1}</Text>
-          {order.shipping_address.address_2 && (
-            <Text pt={2}>{order.shipping_address.address_2}</Text>
+          {!isEmpty(order.shipping_address) ? (
+            <>
+              <Text pt={3}>{order.shipping_address.address_1}</Text>
+              {order.shipping_address.address_2 && (
+                <Text pt={2}>{order.shipping_address.address_2}</Text>
+              )}
+              <Text pt={2}>
+                {formatShippingOrBillingAddress(order.shipping_address)}
+              </Text>
+            </>
+          ) : (
+            <Text pt={3}>No shipping address</Text>
           )}
-          <Text pt={2}>
-            {order.shipping_address.postal_code} {order.shipping_address.city},{" "}
-            {order.shipping_address.country_code}
-          </Text>
-          <Text pt={2}>{order.shipping_address.country}</Text>
         </Box>
         <Card.VerticalDivider mx={3} />
         <Box px={3}>
           <Text color="gray">Billing</Text>
-          {order.billing_address_id ? (
+          {!isEmpty(order.billing_address) ? (
             <>
               <Text pt={3}>{order.billing_address.address_1}</Text>
               {order.billing_address.address_2 && (
                 <Text pt={2}>{order.billing_address.address_2}</Text>
               )}
               <Text pt={2}>
-                {order.billing_address.postal_code} {order.billing_address.city}
-                , {order.billing_address.country_code}
+                {formatShippingOrBillingAddress(order.billing_address)}
               </Text>
-              <Text pt={2}>{order.billing_address.country}</Text>
             </>
           ) : (
             <Text pt={3}>No billing address</Text>
