@@ -4,6 +4,9 @@ import { Box, Flex, Text } from "rebass"
 import { Link, navigate } from "gatsby"
 
 import Regions from "./regions"
+import ReturnReasons from "./return-reasons"
+import NewReturnReason from "./return-reasons/new"
+import EditReturnReason from "./return-reasons/edit"
 import ShippingProfiles from "./shipping-profiles"
 import NewShippingProfile from "./shipping-profiles/new"
 import ShippingProfileDetail from "./shipping-profiles/details"
@@ -149,20 +152,29 @@ const SettingsIndex = () => {
         </SettingContainer>
       </Flex>
       <HorizontalDivider />
-      <Flex
-        width="100%"
-        justifyContent="space-evenly"
-        sx={{ pointerEvents: "none" }}
-      >
-        <SettingContainer pt={4} sx={{ opacity: "0.3" }}>
+      <Flex width="100%" justifyContent="space-evenly">
+        <SettingContainer pt={4}>
+          <SubTitle>
+            <StyledImg src="https://img.icons8.com/ios/50/000000/purchase-order.png" />
+            Orders
+          </SubTitle>
+          <Text fontSize={14}>Manage Order Settings</Text>
+          <StyledLinkText
+            fontSize={14}
+            color="link"
+            onClick={() => navigate(`/a/settings/return-reasons`)}
+          >
+            Manage Return Reasons
+          </StyledLinkText>
+        </SettingContainer>
+        <VerticalDivider />
+        <SettingContainer p={4} sx={{ opacity: "0.3", pointerEvents: "none" }}>
           <SubTitle>
             <StyledImg src="https://img.icons8.com/ios/50/000000/user-group-man-man.png" />
             Users
           </SubTitle>
           <Text fontSize={14}>Manage users of your Medusa store</Text>
         </SettingContainer>
-        <VerticalDivider />
-        <SettingContainer p={4}></SettingContainer>
       </Flex>
     </Flex>
   )
@@ -171,14 +183,22 @@ const SettingsIndex = () => {
 const Settings = () => (
   <Router>
     <SettingsIndex path="/" />
+    <Apps path="apps" />
+
     <Details path="details" />
+
     <Currencies path="currencies" />
-    <Regions path="regions" />
+
+    <ReturnReasons path="return-reasons" />
+    <EditReturnReason path="return-reasons/:id" />
+    <NewReturnReason path="return-reasons/new" />
+
     <NewShippingProfile path="shipping-profiles/new" />
     <ShippingProfileDetail path="shipping-profiles/:id" />
-    <Apps path="apps" />
-    <NewRegion path="regions/new" />
+
+    <Regions path="regions" />
     <RegionDetails path="regions/:id" />
+    <NewRegion path="regions/new" />
   </Router>
 )
 

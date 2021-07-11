@@ -49,7 +49,8 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
 
   useEffect(() => {
     if (product) {
-      const imgs = [product.thumbnail, ...product.images].filter(Boolean)
+      let imgs = [product.thumbnail, ...product.images.map(img => img.url)]
+      imgs = [...new Set(imgs)]
       setImages(imgs)
     }
   }, [product])
@@ -63,7 +64,7 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
       .then(() => {
         setIsDeletingImages(false)
         setSelectedImages([])
-        refresh()
+        refresh({ id: product.id })
         toaster("Successfully deleted images", "success")
       })
       .catch(() => toaster("Failed to deleted images", "error"))
@@ -84,7 +85,7 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
           .update(product.id, { images: all })
           .then(() => {
             setIsDeletingImages(false)
-            refresh({ id: product.id, search: { expand: "images" } })
+            refresh({ id: product.id })
             toaster("Successfully uploaded image", "success")
           })
           .catch(() => toaster("Failed to upload image", "error"))

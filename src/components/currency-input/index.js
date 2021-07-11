@@ -166,7 +166,10 @@ const CurrencyInput = React.forwardRef(
                 onChange={handleCurrencySelected}
               />
             ) : (
-              <TextWrapper marginTop={inline ? "0px" : "6px"} height="100%">
+              <TextWrapper
+                marginTop={inline || !edit ? "0px" : "6px"}
+                height="100%"
+              >
                 {currency.toUpperCase()}
               </TextWrapper>
             )}
@@ -174,7 +177,7 @@ const CurrencyInput = React.forwardRef(
           <StyledInput
             ref={ref}
             name={name}
-            value={value}
+            value={value || null}
             onBlur={handleBlur}
             onFocus={handleFocus}
             onChange={onChange}

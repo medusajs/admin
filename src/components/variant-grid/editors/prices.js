@@ -140,9 +140,20 @@ const PricesEditor = React.forwardRef(({ onKeyDown, value, onChange }, ref) => {
 
   return (
     <>
-      <Button ref={ref} variant="primary" onClick={() => setShow(!show)}>
-        Edit
-      </Button>
+      <Flex justifyContent="center">
+        <Button
+          ref={ref}
+          variant="primary"
+          onClick={() => setShow(!show)}
+          height="24px"
+          sx={{
+            lineHeight: "20px",
+            height: "24px !important",
+          }}
+        >
+          Edit
+        </Button>
+      </Flex>
       {show && (
         <Modal onClick={() => setShow(!show)} onScroll={handleScroll}>
           <Modal.Body variant="card" onClick={e => e.stopPropagation()}>

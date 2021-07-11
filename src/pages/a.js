@@ -14,6 +14,9 @@ import PrivateRoute from "../components/private-route"
 import SEO from "../components/seo"
 import Customers from "../domain/customers"
 import Collections from "../domain/collections"
+import Returns from "../domain/orders/returns"
+import Swaps from "../domain/orders/swaps"
+import DraftOrders from "../domain/orders/draft-orders"
 
 const IndexPage = () => {
   useHotkeys("g + o", () => navigate("/a/orders"))
@@ -27,6 +30,9 @@ const IndexPage = () => {
         <PrivateRoute path="collections/*" component={Collections} />
         <PrivateRoute path="gift-cards/*" component={GiftCards} />
         <PrivateRoute path="orders/*" component={Orders} />
+        <PrivateRoute path="draft-orders/*" component={DraftOrders} />
+        <PrivateRoute path="returns" component={Returns} />
+        <PrivateRoute path="swaps" component={Swaps} />
         <PrivateRoute path="discounts/*" component={Discounts} />
         <PrivateRoute path="customers/*" component={Customers} />
         <PrivateRoute path="settings/*" component={Settings} />

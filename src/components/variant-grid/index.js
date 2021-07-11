@@ -49,12 +49,13 @@ const getColumns = (product, edit) => {
         editor: "prices",
         buttonText: "Edit",
         formatter: prices => {
-          return prices
-            .map(
-              ({ currency_code, amount }) =>
-                `${(amount / 100).toFixed(2)} ${currency_code.toUpperCase()}`
-            )
-            .join(", ")
+          return `${prices.length} price(s)`
+          // return prices
+          //   .map(
+          //     ({ currency_code, amount }) =>
+          //       `${(amount / 100).toFixed(2)} ${currency_code.toUpperCase()}`
+          //   )
+          //   .join(", ")
         },
       },
       ...defaultFields,
@@ -87,12 +88,13 @@ const getColumns = (product, edit) => {
           if (!prices) {
             return ""
           }
-          return prices
-            .map(
-              ({ currency_code, amount }) =>
-                `${amount / 100} ${currency_code.toUpperCase()}`
-            )
-            .join(", ")
+          return `${prices.length} price(s)`
+          // return prices
+          //   .map(
+          //     ({ currency_code, amount }) =>
+          //       `${amount / 100} ${currency_code.toUpperCase()}`
+          //   )
+          //   .join(", ")
         },
       },
     ]
@@ -294,18 +296,20 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
                     right: 0,
                   }}
                 >
-                  <Button
-                    onClick={() => onEdit(row)}
-                    variant="primary"
-                    fontSize={1}
-                    height="24px"
-                    sx={{
-                      lineHeight: "20px",
-                      height: "24px !important",
-                    }}
-                  >
-                    Edit
-                  </Button>
+                  <Flex justifyContent="center">
+                    <Button
+                      onClick={() => onEdit(row)}
+                      variant="primary"
+                      fontSize={1}
+                      height="24px"
+                      sx={{
+                        lineHeight: "20px",
+                        height: "24px !important",
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </Flex>
                 </Box>
               ) : (
                 <Box

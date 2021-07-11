@@ -15,6 +15,13 @@ import Typography from "../../../components/typography"
 
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
+import Dropdown from "../../../components/dropdown"
+
+const Dot = styled(Box)`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+`
 
 export const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
@@ -82,16 +89,68 @@ const RequiredLabel = styled.div`
   }
 `
 
+const ItemContainer = styled(Flex)``
+
 const NewOrder = ({}) => {
   const [selectedRegions, setSelectedRegions] = useState([])
   const [selectedProducts, setSelectedProducts] = useState([])
-  const [selectedVariants, setSelectedVariants] = useState([])
   const [variants, setVariants] = useState([])
+  const [searchResults, setSearchResults] = useState([])
   const [showProductSelector, setShowProductSelector] = useState(false)
+  const [items, setItems] = useState([])
+  const [selectedRegion, setSelectedRegion] = useState(undefined)
 
   const { register, handleSubmit } = useForm()
 
   const { products, isLoading: isLoadingProducts } = useMedusa("products")
+  const { regions } = useMedusa("regions")
+
+  const handleProductSearch = val => {
+    Medusa.variants
+      .list({
+        q: val,
+      })
+      .then(({ data }) => {
+        setSearchResults(data.variants)
+      })
+  }
+
+  const extractPrice = prices => {
+    const reg = regions.find(r => r.id === selectedRegion.value)
+    let price = prices.find(ma => ma.currency_code === reg.currency_code)
+
+    if (price) {
+      return (price.amount * (1 + reg.tax_rate / 100)) / 100
+    }
+
+    return 0
+  }
+
+  const handleAddItemToSwap = variant => {
+    setItems([...items, { ...variant, quantity: 1 }])
+  }
+
+  const handleToAddQuantity = (e, index) => {
+    const updated = [...items]
+    updated[index] = {
+      ...items[index],
+      quantity: parseInt(e.target.value),
+    }
+
+    setItems(updated)
+  }
+
+  const handleRemoveItem = index => {
+    const updated = [...items]
+    updated.splice(index, 1)
+    setItems(updated)
+  }
+
+  useEffect(() => {
+    if (regions) {
+      setSelectedRegion({ value: regions[0].id, name: regions[0].name })
+    }
+  }, [regions])
 
   useEffect(() => {
     const fetchAllVariants = async () => {
@@ -119,106 +178,138 @@ const NewOrder = ({}) => {
   }
 
   return (
-    <Flex as="form" flexDirection="column" onSubmit={handleSubmit}>
-      <Text mb={4}>Order details</Text>
-      <Flex mb={5}>
-        <Box width={4 / 7}>
-          <Button
-            variant={"primary"}
-            onClick={() => setShowProductSelector(!showProductSelector)}
-          >
-            Select items
-          </Button>
-          <Box mb={4}>
-            <Input
-              mb={3}
-              label="Code"
-              name="code"
-              placeholder="SUMMER10%"
-              ref={register}
-            />
+    <Flex
+      as="form"
+      flexDirection="column"
+      onSubmit={handleSubmit}
+      pb={5}
+      pt={5}
+    >
+      <Flex mx="auto" width="100%" maxWidth="750px" flexDirection="column">
+        <Text mb={4}>Create draft order</Text>
+        <Flex flexDirection="column">
+          <Text fontSize={1} mb={2}>
+            Select region
+          </Text>
+          <Box mb={3} width={1 / 4}>
+            {regions && (
+              <Select
+                width="300px"
+                name="region"
+                options={regions.map(r => ({
+                  value: r.id,
+                  label: r.name,
+                }))}
+                ref={register}
+              />
+            )}
           </Box>
-          <Box>
-            <Text fontSize={2} mb={2}>
-              Discount rule
-            </Text>
+        </Flex>
+        <Flex>
+          <Box width={4 / 7}>
+            <Text fontSize={1}>Items</Text>
+            <Box mt={3} mb={3}>
+              {items.length > 0 && (
+                <Flex
+                  sx={{
+                    borderBottom: "hairline",
+                  }}
+                  justifyContent="space-between"
+                  fontSize={1}
+                  py={2}
+                >
+                  <Box width={"10%"} px={2} py={1}></Box>
+                  <Box width={"50%"} px={2} py={1}>
+                    Details
+                  </Box>
+                  <Box width={"20%"} px={2} py={1}>
+                    Quantity
+                  </Box>
+                  <Box width={"20%"} px={2} py={1}>
+                    Price
+                  </Box>
+                </Flex>
+              )}
+              {items.map((item, index) => {
+                return (
+                  <ItemContainer
+                    key={item.variant_id}
+                    justifyContent="space-between"
+                    py={2}
+                    pr={2}
+                    alignItems="center"
+                  >
+                    <Box width={"10%"} px={2} py={1}></Box>
+                    <Flex
+                      width={"50%"}
+                      px={2}
+                      py={1}
+                      alignItems="center"
+                      height="100%"
+                    >
+                      <Text fontSize={1} lineHeight={"14px"}>
+                        {item.title}
+                      </Text>
+                    </Flex>
+                    <Box width={"20%"} px={2} py={1}>
+                      <Input
+                        type="number"
+                        onChange={e => handleToAddQuantity(e, index)}
+                        value={item.quantity || ""}
+                        min={1}
+                      />
+                    </Box>
+                    <Box width={"20%"} px={2} py={1}>
+                      <Text fontSize={1}>
+                        {extractPrice(item.prices).toFixed(2)}{" "}
+                      </Text>
+                    </Box>
+                    <Flex
+                      alignItems="center"
+                      onClick={() => handleRemoveItem(index)}
+                    >
+                      &times;
+                    </Flex>
+                  </ItemContainer>
+                )
+              })}
+            </Box>
+            <Dropdown
+              leftAlign
+              disabled={!selectedRegion}
+              toggleText={"+ Add product"}
+              showSearch
+              onSearchChange={handleProductSearch}
+              searchPlaceholder={"Search by SKU, Name, etch."}
+            >
+              {searchResults.map(s => (
+                <Flex
+                  key={s.variant_id}
+                  alignItems="center"
+                  onClick={() => handleAddItemToSwap(s)}
+                >
+                  <Dot
+                    mr={3}
+                    bg={s.inventory_quantity > 0 ? "green" : "danger"}
+                  />
+                  <Box>
+                    <Text fontSize={0} mb={0} lineHeight={1}>
+                      {s.product.title} - {s.title}
+                    </Text>
+                    <Flex>
+                      <Text width={"100px"} mt={0} fontSize={"10px"}>
+                        {s.sku}
+                      </Text>
+                      <Text ml={2} mt={0} fontSize={"10px"}>
+                        In stock: {s.inventory_quantity}
+                      </Text>
+                    </Flex>
+                  </Box>
+                </Flex>
+              ))}
+            </Dropdown>
           </Box>
-          <Input
-            mb={3}
-            label="Description"
-            name="rule.description"
-            placeholder="Summer sale 2020"
-            ref={register}
-          />
-          <Input
-            mb={3}
-            label="Value"
-            type="number"
-            name="rule.value"
-            placeholder="10"
-            ref={register}
-          />
-          <StyledLabel pb={2}>Type</StyledLabel>
-          <StyledLabel>
-            <Flex alignItems="center">
-              <StyledRadio
-                name="rule.type"
-                id="percentage"
-                value="percentage"
-                ref={register}
-              />
-              <Text fontSize="12px" color="gray" height="100%">
-                Percentage
-              </Text>
-            </Flex>
-          </StyledLabel>
-          <StyledLabel mb={3} fontSize="10px" color="gray">
-            <Flex alignItems="center">
-              <StyledRadio
-                name="rule.type"
-                id="fixed"
-                value="fixed"
-                ref={register}
-              />
-              <Text fontSize="12px" color="gray" height="100%">
-                Fixed amount
-              </Text>
-            </Flex>
-          </StyledLabel>
-          <StyledLabel pb={2}>Allocation</StyledLabel>
-          <StyledLabel fontSize="10px" color="gray">
-            <Flex alignItems="center">
-              <StyledRadio
-                name="rule.allocation"
-                id="Total"
-                value="total"
-                ref={register}
-              />
-              <Text fontSize="12px" color="gray" height="100%">
-                Total (discount is applied to the total amount)
-              </Text>
-            </Flex>
-          </StyledLabel>
-          <StyledLabel mb={3} fontSize="10px" color="gray">
-            <Flex alignItems="center">
-              <StyledRadio
-                name="rule.type"
-                id="item"
-                value="item"
-                ref={register}
-              />
-              <Text fontSize="12px" color="gray" height="100%">
-                Item (discount is applied to specific items)
-              </Text>
-            </Flex>
-          </StyledLabel>
-          <Flex mt={4}>
-            <Box ml="auto" />
-            <Button variant={"cta"} type="submit">
-              Save
-            </Button>
-          </Flex>
-        </Box>
+        </Flex>
       </Flex>
       {showProductSelector && (
         <ProductSelector

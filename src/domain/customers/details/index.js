@@ -13,13 +13,15 @@ import Spinner from "../../../components/spinner"
 import useMedusa from "../../../hooks/use-medusa"
 
 const OrderNumLink = styled(Text)`
-  color: #006fbb;
   z-index: 1000;
   cursor: pointer;
-  width: 100px;
+  font-weight: 500;
+  display: flex;
+
+  align-items: center;
 
   &:hover {
-    text-decoration: underline;
+    color: #454b54;
   }
 `
 
@@ -45,7 +47,7 @@ const CustomerDetail = ({ id }) => {
   return (
     <Flex flexDirection="column" mb={5} pt={5}>
       <Card mb={2}>
-        <Card.Header>{customer._id}</Card.Header>
+        <Card.Header>{customer.id}</Card.Header>
         <Box>
           <Text p={3} fontWeight="bold">
             {customer.email}
@@ -74,19 +76,17 @@ const CustomerDetail = ({ id }) => {
         <Card.Body flexDirection="column">
           {customer.orders.map(order => (
             <Flex pl={3} pr={2} py={2}>
-              <OrderNumLink onClick={() => navigate(`/a/orders/${order._id}`)}>
+              <OrderNumLink
+                onClick={() => navigate(`/a/orders/${order.id}`)}
+                color={"link"}
+              >
                 Order #{order.display_id}
               </OrderNumLink>
               <Card.VerticalDivider mx={3} />
-              <Flex width="100px" justifyContent="center">
-                <Text ml={2}>{parseInt(order.total).toFixed(2)}</Text>
-                <Box ml="auto" />
-                <Text mr={2}>{order.currency_code}</Text>
-              </Flex>
-              <Box ml="auto" />
-              <Flex width="100px" justifyContent="space-evenly">
-                <Text>{moment(order.created).format("D MMM")},</Text>
-                <Text>{moment(order.created).format("HH:mm")}</Text>
+              <Flex justifyContent="space-evenly">
+                <Text>
+                  {moment(order.created_at).format("MMMM Do YYYY HH:mm a")}
+                </Text>
               </Flex>
             </Flex>
           ))}

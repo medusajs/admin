@@ -3,9 +3,6 @@ import { Text, Flex, Box, Image } from "rebass"
 import { navigate } from "gatsby"
 import styled from "@emotion/styled"
 import moment from "moment"
-import ReactTooltip from "react-tooltip"
-
-import { ReactComponent as Clipboard } from "../../../../assets/svg/clipboard.svg"
 import { decideBadgeColor } from "../../../../utils/decide-badge-color"
 import Typography from "../../../../components/typography"
 import Badge from "../../../../components/badge"
@@ -102,6 +99,15 @@ export default ({
             <Text fontSize="11px" color="grey">
               {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
             </Text>
+            {(event.no_notification || false) !==
+              (order.no_notification || false) && (
+              <Box mt={2} pr={2}>
+                <Text color="gray">
+                  Notifications related to this claim are
+                  {event.no_notification ? " disabled" : " enabled"}.
+                </Text>
+              </Box>
+            )}
             {event.claim_type === "replace" ? (
               <Flex mt={4}>
                 <Text mr={2} fontSize={1} color="grey">

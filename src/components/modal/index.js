@@ -38,6 +38,7 @@ const StyledHeader = styled(Flex)`
 `
 
 const StyledFooter = styled(Flex)`
+  align-items: center;
   border-top: 1px solid #e3e8ee;
 `
 

@@ -61,6 +61,16 @@ export default ({ event, order, onReceiveReturn }) => {
       <Text fontSize="11px" color="grey" mb={3}>
         {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
       </Text>
+      {(event.no_notification || false) !==
+        (order.no_notification || false) && (
+        <Box mt={2} pr={2}>
+          <Text color="gray">
+            Notifications related to this return are
+            {event.no_notification ? " disabled" : " enabled"}.
+          </Text>
+        </Box>
+      )}
+      <br />
       <Flex justifyContent="space-between">
         <Box>
           {event.items.map(lineItem => (

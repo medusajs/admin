@@ -17,21 +17,6 @@ import DiscountRuleModal from "./discount-rule"
 import { Input } from "@rebass/forms"
 import Typography from "../../../components/typography"
 
-const ProductLink = styled(Text)`
-  color: #006fbb;
-  z-index: 1000;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  `
-
-const ProductThumbnail = styled(Image)`
-  object-fit: contain;
-  width: 35px;
-  height: 35px;
-`
-
 const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
 
@@ -152,7 +137,7 @@ const DiscountDetails = ({ id }) => {
   const handleDisabled = () => {
     setUpdating(true)
     update({
-      disabled: discount.is_disabled ? false : true,
+      is_disabled: discount.is_disabled ? false : true,
     })
       .then(() => {
         refresh({ id })
@@ -206,6 +191,21 @@ const DiscountDetails = ({ id }) => {
       })
   }
 
+  const renderDiscountValue = discountRule => {
+    let val = discountRule.value
+
+    if (discountRule.type === "fixed") {
+      const currency = discount.regions[0].currency_code
+      const vat = discount.regions[0].tax_rate
+      val = parseInt(val / 100)
+      return `${val.toFixed(2)} ${currency.toUpperCase()} ${
+        vat > 0 ? `(Excl. VAT)` : ``
+      }`
+    } else {
+      return `${val} %`
+    }
+  }
+
   return (
     <Flex flexDirection="column" mb={5} pt={5}>
       <Card mb={2}>
@@ -217,7 +217,7 @@ const DiscountDetails = ({ id }) => {
         >
           {discount.id}
         </Card.Header>
-        <Box>
+        <Box display="flex" flexDirection="column">
           {code && (
             <EditableInput
               text={code}
@@ -236,6 +236,20 @@ const DiscountDetails = ({ id }) => {
               />
             </EditableInput>
           )}
+          <Flex flexDirection="row" mb={3}>
+            <Box pl={3} pr={5}>
+              <Text pt={2} color="gray">
+                Usage limit
+              </Text>
+              <Text pt={2} color="gray">
+                Usage count
+              </Text>
+            </Box>
+            <Box px={3}>
+              <Text pt={2}>{discount.usage_limit || "N / A"}</Text>
+              <Text pt={2}>{discount.usage_count}</Text>
+            </Box>
+          </Flex>
         </Box>
         <Card.Body>
           <Box pl={3} pr={2}>
@@ -258,7 +272,6 @@ const DiscountDetails = ({ id }) => {
               onChange={setSelectedRegions}
             />
           </Box>
-          <Card.VerticalDivider mx={3} />
           <Box ml="auto" />
           <Flex mr={3} mt="auto">
             <Button
@@ -276,11 +289,13 @@ const DiscountDetails = ({ id }) => {
       </Card>
       <Card mb={2}>
         <Card.Header
-          action={{
-            label: "Edit",
-            type: "primary",
-            onClick: () => setShowRuleEdit(true),
-          }}
+          action={
+            discount.rule.type !== "free_shipping" && {
+              label: "Edit",
+              type: "primary",
+              onClick: () => setShowRuleEdit(true),
+            }
+          }
         >
           Discount rule
         </Card.Header>
@@ -288,21 +303,35 @@ const DiscountDetails = ({ id }) => {
           <Box display="flex" flexDirection="row">
             <Box pl={3} pr={5}>
               <Text color="gray">Description</Text>
-              <Text pt={1} color="gray">
-                Type
-              </Text>
-              <Text pt={1} color="gray">
-                Value
-              </Text>
-              <Text pt={1} color="gray">
-                Allocation method
-              </Text>
+              {discount.rule.type !== "free_shipping" ? (
+                <>
+                  <Text pt={2} color="gray">
+                    Value
+                  </Text>
+                  <Text pt={2} color="gray">
+                    Allocation
+                  </Text>
+                </>
+              ) : (
+                <Text pt={2} color="gray">
+                  Type
+                </Text>
+              )}
             </Box>
             <Box px={3}>
-              <Text>{discount.rule.description}</Text>
-              <Text pt={1}>{discount.rule.type}</Text>
-              <Text pt={1}>{discount.rule.value}</Text>
-              <Text pt={1}>{discount.rule.allocation}</Text>
+              <Text>{discount.rule.description || "Missing description"}</Text>
+              {discount.rule.type !== "free_shipping" ? (
+                <>
+                  <Text pt={2}>{renderDiscountValue(discount.rule)}</Text>
+                  <Text pt={2}>
+                    {discount.rule.allocation === "total"
+                      ? "Applies to total order amount"
+                      : "Applies to specified items"}
+                  </Text>
+                </>
+              ) : (
+                <Text pt={2}>Free shipping</Text>
+              )}
             </Box>
           </Box>
           <Divider m={3} />

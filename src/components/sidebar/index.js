@@ -6,6 +6,8 @@ import Collapsible from "react-collapsible"
 import { Container, InlineLogoContainer, LogoContainer } from "./elements"
 import { ReactComponent as Settings } from "../../assets/svg/settings.svg"
 import { ReactComponent as Orders } from "../../assets/svg/orders.svg"
+import { ReactComponent as Returns } from "../../assets/svg/return.svg"
+import { ReactComponent as Swaps } from "../../assets/svg/swap.svg"
 import { ReactComponent as Products } from "../../assets/svg/products.svg"
 import { ReactComponent as Collections } from "../../assets/svg/collection.svg"
 import { ReactComponent as Customers } from "../../assets/svg/customers.svg"
@@ -60,6 +62,7 @@ const StyledItemContainer = styled(Link)`
 const Sidebar = ({}) => {
   const [storeName, setStoreName] = useState("")
   const [path, setPath] = useState("")
+  const [orderOpen, setOrderOpen] = useState(false)
 
   const fetchStore = async () => {
     const cache = localStorage.getItem("medusa::cache::store")
@@ -72,11 +75,6 @@ const Sidebar = ({}) => {
         setStoreName(data.store.name)
       }
     }
-  }
-
-  const handleOnClick = async route => {
-    navigate(`/a/${route}`)
-    setPath(route)
   }
 
   useEffect(() => {
@@ -103,7 +101,6 @@ const Sidebar = ({}) => {
               activeClassName="active"
               partiallyActive
             >
-              {/* <Orders /> */}
               <img src="https://img.icons8.com/ios/50/000000/purchase-order.png" />
               <Text ml={2} variant="nav">
                 Orders
@@ -111,7 +108,18 @@ const Sidebar = ({}) => {
             </StyledItemContainer>
           }
         >
-          {/* <StyledItemContainer
+          <StyledItemContainer
+            to="/a/draft-orders"
+            activeClassName="active"
+            partiallyActive
+          >
+            <Flex alignItems="center" pl={3} width="100%">
+              <Text ml="14px" variant="nav" fontSize="12px">
+                Drafts
+              </Text>
+            </Flex>
+          </StyledItemContainer>
+          <StyledItemContainer
             to="/a/swaps"
             activeClassName="active"
             partiallyActive
@@ -132,7 +140,7 @@ const Sidebar = ({}) => {
                 Returns
               </Text>
             </Flex>
-          </StyledItemContainer> */}
+          </StyledItemContainer>
         </Collapsible>
         <Collapsible
           transitionTime={150}
@@ -144,7 +152,6 @@ const Sidebar = ({}) => {
               partiallyActive
             >
               <img src="https://img.icons8.com/ios/50/000000/product--v1.png" />
-              {/* <Products /> */}
               <Text ml={2} variant="nav">
                 Products
               </Text>
@@ -157,7 +164,6 @@ const Sidebar = ({}) => {
             partiallyActive
           >
             <Flex alignItems="center" pl={3} width="100%">
-              {/* <Collections /> */}
               <Text ml="14px" variant="nav" fontSize="12px">
                 Collections
               </Text>
@@ -169,7 +175,6 @@ const Sidebar = ({}) => {
           activeClassName="active"
           partiallyActive
         >
-          {/* <Customers /> */}
           <img src="https://img.icons8.com/ios/50/000000/gender-neutral-user.png" />
           <Text ml={2} variant="nav">
             Customers
@@ -180,7 +185,6 @@ const Sidebar = ({}) => {
           activeClassName="active"
           partiallyActive
         >
-          {/* <Discounts /> */}
           <img src="https://img.icons8.com/ios/50/000000/discount.png" />
           <Text ml={2} variant="nav">
             Discounts
@@ -191,7 +195,6 @@ const Sidebar = ({}) => {
           activeClassName="active"
           partiallyActive
         >
-          {/* <GiftCard /> */}
           <img src="https://img.icons8.com/ios/50/000000/gift-card.png" />
           <Text ml={2} variant="nav">
             Gift Cards
@@ -202,7 +205,6 @@ const Sidebar = ({}) => {
           activeClassName="active"
           partiallyActive
         >
-          {/* <Settings /> */}
           <img src="https://img.icons8.com/ios/50/000000/settings--v1.png" />
           <Text ml={2} variant="nav">
             Settings

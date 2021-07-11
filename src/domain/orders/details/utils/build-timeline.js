@@ -1,6 +1,13 @@
 const buildTimeline = (order, notifications) => {
   const events = []
 
+  let allItems = [...order.items]
+  if (order.swaps && order.swaps.length) {
+    for (const swap of order.swaps) {
+      allItems = [...allItems, ...swap.additional_items]
+    }
+  }
+
   for (const n of notifications) {
     events.push({
       id: n.id,
@@ -15,7 +22,7 @@ const buildTimeline = (order, notifications) => {
 
   const returns = order.returns.map(r => {
     const items = r.items.map(i => {
-      const line = order.items.find(({ id }) => i.item_id === id)
+      const line = allItems.find(({ id }) => i.item_id === id)
       return {
         ...line,
         is_registered: i.is_registered,
@@ -30,6 +37,7 @@ const buildTimeline = (order, notifications) => {
       status: r.status,
       refund_amount: r.refund_amount,
       created_at: r.created_at,
+      no_notification: r.no_notification,
       raw: r,
     }
   })
@@ -49,6 +57,7 @@ const buildTimeline = (order, notifications) => {
         event: "Items returned",
         items: r.items,
         refund_amount: r.refund_amount,
+        no_notification: r.no_notification,
         status: r.status,
         time: r.created_at,
         raw: r.raw,
@@ -86,7 +95,7 @@ const buildTimeline = (order, notifications) => {
   if (order.swaps && order.swaps.length) {
     for (const swap of order.swaps) {
       const returnLines = swap.return_order.items.map(i => {
-        const line = order.items.find(({ id }) => i.item_id === id)
+        const line = allItems.find(({ id }) => i.item_id === id)
         return {
           ...line,
           quantity: i.quantity,
@@ -99,6 +108,7 @@ const buildTimeline = (order, notifications) => {
         items: swap.additional_items,
         return_lines: returnLines,
         time: swap.created_at,
+        no_notification: swap.no_notification,
         raw: swap,
       })
     }
@@ -107,7 +117,7 @@ const buildTimeline = (order, notifications) => {
   if (order.claims && order.claims.length) {
     for (const claim of order.claims) {
       const claimLines = claim.claim_items.map(i => {
-        const line = order.items.find(({ id }) => i.item_id === id)
+        const line = allItems.find(({ id }) => i.item_id === id)
         return {
           ...line,
           ...i,
@@ -121,6 +131,7 @@ const buildTimeline = (order, notifications) => {
         items: claim.additional_items,
         claim_items: claimLines,
         time: claim.created_at,
+        no_notification: claim.no_notification,
         raw: claim,
       })
     }
