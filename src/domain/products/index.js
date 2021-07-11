@@ -79,6 +79,8 @@ const ProductIndex = () => {
   const [storeCurrencies, setStoreCurrencies] = useState([])
   const [selectedProduct, setSelectedProduct] = useState()
   const [copyingProduct, setCopyingProduct] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+  const [importing, setImporting] = useState(false)
 
   const onKeyDown = event => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
@@ -284,6 +286,7 @@ const ProductIndex = () => {
           onClick={() => searchQuery()}
           variant={"primary"}
           fontSize="12px"
+          height="28px"
           ml={2}
         >
           Search
@@ -292,6 +295,7 @@ const ProductIndex = () => {
         {selectedProduct && (
           <Button
             mr={3}
+            height="28px"
             onClick={() => handleCopyProduct()}
             variant={"primary"}
             loading={copyingProduct}
@@ -299,10 +303,19 @@ const ProductIndex = () => {
             Copy product
           </Button>
         )}
-        <Button onClick={() => setShowImport(true)} variant={"primary"}>
+        <Button
+          height="28px"
+          onClick={() => setShowImport(true)}
+          variant={"primary"}
+          mr={2}
+        >
           Import products
         </Button>
-        <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
+        <Button
+          height="28px"
+          onClick={() => navigate(`/a/products/new`)}
+          variant={"cta"}
+        >
           New product
         </Button>
       </Flex>
