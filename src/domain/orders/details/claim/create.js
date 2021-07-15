@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Text, Flex, Box } from "rebass"
 import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
@@ -118,13 +118,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   })
   const [searchResults, setSearchResults] = useState([])
   const [ready, setReady] = useState(false)
-  const [bodyElement, setBodyElement] = useState()
 
   const addressForm = useForm()
-
-  useEffect(() => {
-    setBodyElement(document.body)
-  }, [])
 
   const handleSaveAddress = data => {
     setShippingAddress(data.address)
@@ -608,7 +603,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
               Shipping method for returning items:
             </Text>
             <ReactSelect
-              menuPortalTarget={bodyElement}
               isClearable={false}
               placeholder="Select shipping..."
               onChange={so => handleReturnShippingSelected(so)}
@@ -839,7 +833,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   Shipping method for new items:
                 </Text>
                 <ReactSelect
-                  menuPortalTarget={bodyElement}
                   isClearable={false}
                   placeholder="Select shipping..."
                   onChange={so => handleShippingSelected(so)}
