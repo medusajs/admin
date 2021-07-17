@@ -170,9 +170,23 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
+        value.cancelSwap = swap => {
+          console.log(swap)
+          return subcomponent
+            .cancelReturn(swap.return_order.id)
+            .then(({ data }) => subcomponent.cancelSwap(query.id, swap.id))
+            .then(({ data }) => setResult(data))
+        }
+
         value.createClaim = payload => {
           return subcomponent
             .createClaim(query.id, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.cancelClaim = claimId => {
+          return subcomponent
+            .cancelClaim(query.id, claimId)
             .then(({ data }) => setResult(data))
         }
 
@@ -182,15 +196,33 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
+        value.cancelSwapFulfillment = (swapId, fulfillmentId) => {
+          return subcomponent
+            .cancelSwapFulfillment(query.id, swapId, fulfillmentId)
+            .then(({ data }) => setResult(data))
+        }
+
         value.fulfillClaim = (claimId, payload) => {
           return subcomponent
             .fulfillClaim(query.id, claimId, payload)
             .then(({ data }) => setResult(data))
         }
 
+        value.cancelClaimFulfillment = (claimId, fulfillmentId) => {
+          return subcomponent
+            .cancelClaimFulfillment(query.id, claimId, fulfillmentId)
+            .then(({ data }) => setResult(data))
+        }
+
         value.createFulfillment = payload => {
           return subcomponent
             .createFulfillment(query.id, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.cancelFulfillment = fulfillmentId => {
+          return subcomponent
+            .cancelFulfillment(query.id, fulfillmentId)
             .then(({ data }) => setResult(data))
         }
 
@@ -203,6 +235,12 @@ const useMedusa = (endpoint, query) => {
         value.receiveReturn = (returnId, payload) => {
           return subcomponent
             .receiveReturn(returnId, payload)
+            .then(({ data }) => setResult(data))
+        }
+
+        value.cancelReturn = returnId => {
+          return subcomponent
+            .cancelReturn(returnId)
             .then(({ data }) => setResult(data))
         }
 

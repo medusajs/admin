@@ -715,6 +715,7 @@ const OrderIndex = ({}) => {
           </TableHead>
           <TableBody>
             {orders.map((el, i) => {
+              console.log(el)
               return (
                 <TableLinkRow
                   key={i}
