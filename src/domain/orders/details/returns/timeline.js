@@ -68,6 +68,22 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
 
   return (
     <Box sx={{ borderBottom: "hairline" }} pb={3} mb={3} px={3}>
+      <Text fontSize={1} color="grey" fontWeight="500">
+        Return {event.status}
+      </Text>
+      <Text fontSize="11px" color="grey" mb={3}>
+        {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+      </Text>
+      {(event.no_notification || false) !==
+        (order.no_notification || false) && (
+        <Box mt={2} pr={2}>
+          <Text color="gray">
+            Notifications related to this return are
+            {event.no_notification ? " disabled" : " enabled"}.
+          </Text>
+        </Box>
+      )}
+      <br />
       <Flex justifyContent="space-between">
         <Text fontSize={1} color="grey" fontWeight="500">
           Return{" "}

@@ -184,7 +184,7 @@ const DraftOrderDetails = ({ id }) => {
                     width="8"
                     height="8"
                   />
-                </Box>
+                </Box>   
               </Flex>
               <Badge
                 ml={3}
@@ -195,6 +195,13 @@ const DraftOrderDetails = ({ id }) => {
               </Badge>
             </Flex>
           </Card.Header>
+          {draftOrder.no_notification_order && (
+            <Box pt={2} pr={2}> 
+              <Text color="gray"> 
+                Notifications for this draft order are disabled.
+              </Text>
+              </Box>
+            )} 
           <Box>
             <Text p={3} fontWeight="bold">
               {(draftOrder.cart.total / 100).toFixed(2)}{" "}
