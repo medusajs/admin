@@ -42,7 +42,7 @@ import { relativeDateFormatToTimestamp } from "../../utils/time"
 const defaultQueryProps = {
   expand: "shipping_address",
   fields:
-    "id,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+    "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
 }
 
 const removeNullish = obj =>
@@ -715,7 +715,6 @@ const OrderIndex = ({}) => {
           </TableHead>
           <TableBody>
             {orders.map((el, i) => {
-              console.log(el)
               return (
                 <TableLinkRow
                   key={i}
