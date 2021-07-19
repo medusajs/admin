@@ -119,6 +119,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [searchResults, setSearchResults] = useState([])
   const [ready, setReady] = useState(false)
 
+  // Includes both order items and swap items
+  const [allItems, setAllItems] = useState([])
+
   const addressForm = useForm()
 
   const handleSaveAddress = data => {
@@ -160,6 +163,20 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
     return `${addr.join(", ")}, ${city}, ${address.country_code?.toUpperCase()}`
   }
+
+  useEffect(() => {
+    if (order) {
+      let temp = [...order.items]
+
+      if (order.swaps && order.swaps.length) {
+        for (const s of order.swaps) {
+          temp = [...temp, ...s.additional_items]
+        }
+      }
+
+      setAllItems(temp)
+    }
+  }, [order])
 
   useEffect(() => {
     Medusa.regions.retrieve(order.region_id).then(({ data }) => {
@@ -489,9 +506,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 Refundable
               </Box>
             </Flex>
-            {order.items.map(item => {
+            {allItems.map(item => {
               // Only show items that have not been returned
-              if (item.returned) {
+              if (item.returned_quantity === item.quantity) {
                 return
               }
 
