@@ -110,8 +110,10 @@ const Fulfillment = ({
         break
       case "swap":
         cancel = id => onCancelSwapFulfillment(fulfillment.swap_id, id)
+        break
       default:
         cancel = onCancelOrderFulfillment
+        break
     }
 
     return cancel(fulfillment.id)
@@ -170,9 +172,9 @@ const Fulfillment = ({
           </>
         )}
       </Box>
-      {!canceled && (
-        <Flex>
-          {!fulfillment.shipped_at && order.status !== "canceled" && (
+      {!canceled ? (
+        !fulfillment.shipped_at && (
+          <Flex>
             <Button
               mr={3}
               variant={"primary"}
@@ -180,15 +182,16 @@ const Fulfillment = ({
             >
               Mark Shipped
             </Button>
-          )}
-          <Dropdown>
-            <Text color="danger" onClick={cancelFulfillment}>
-              Cancel fulfillment
-            </Text>
-          </Dropdown>
-        </Flex>
+            <Dropdown>
+              <Text color="danger" onClick={cancelFulfillment}>
+                Cancel fulfillment
+              </Text>
+            </Dropdown>
+          </Flex>
+        )
+      ) : (
+        <Text onClick={() => setExpanded(!expanded)}>toggle</Text>
       )}
-      {canceled && <Text onClick={() => setExpanded(!expanded)}>toggle</Text>}
     </Flex>
   )
 }
