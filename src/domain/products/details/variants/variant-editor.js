@@ -1,15 +1,41 @@
-import React, { useState, useEffect } from "react"
-import { Text, Flex, Box } from "rebass"
-import { useForm, useFieldArray } from "react-hook-form"
-
-import Modal from "../../../../components/modal"
-import Input from "../../../../components/input"
-import CurrencyInput from "../../../../components/currency-input"
+import styled from "@emotion/styled"
+import { Checkbox, Label } from "@rebass/forms"
+import React, { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { Box, Flex, Text } from "rebass"
+import { ReactComponent as CloseIcon } from "../../../../assets/svg/cross.svg"
+import { ReactComponent as DeleteIcon } from "../../../../assets/svg/delete.svg"
 import Button from "../../../../components/button"
-
+import CurrencyInput from "../../../../components/currency-input"
+import Input from "../../../../components/input"
+import Modal from "../../../../components/modal"
+import Typography from "../../../../components/typography"
 import useMedusa from "../../../../hooks/use-medusa"
 
-const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
+const TextButton = styled(Button)`
+  ${Typography.Base}
+  outline: none;
+  border: none;
+  box-shadow: none;
+  background: none;
+  font-weight: 500;
+  color: #5469d3;
+  padding: 2px;
+  transition: color 0.2s ease-in;
+  &:hover {
+    box-shadow: none;
+    color: #4354a8;
+  }
+`
+
+const VariantEditor = ({
+  variant,
+  options,
+  onSubmit,
+  onDelete,
+  onClick,
+  isCopy,
+}) => {
   const { store, isLoading } = useMedusa("store")
 
   const [currencyOptions, setCurrencyOptions] = useState([])
@@ -97,11 +123,22 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
   return (
     <Modal onClick={onClick}>
       <Modal.Body as="form" onSubmit={handleSubmit(handleSave)}>
-        <Modal.Header>
-          <Text>Edit Variant</Text>
+        <Modal.Header justifyContent="space-between" alignItems="center" px={4}>
+          <Text fontSize="18px" fontWeight={700}>
+            Product Variant Details
+          </Text>
+          <CloseIcon
+            style={{ cursor: "pointer" }}
+            onClick={onClick}
+            width={12}
+            height={12}
+          />
         </Modal.Header>
-        <Modal.Content flexDirection="column">
-          <Box mb={2}>
+        <Modal.Content px={4} flexDirection="column">
+          <Box mb={4}>
+            <Text fontWeight={700} fontSize={2} mb={3}>
+              Variant Information
+            </Text>
             <Input
               mt={2}
               mb={3}
@@ -110,11 +147,6 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
               ref={register}
               boldLabel={true}
             />
-          </Box>
-          <Box mb={2}>
-            <Text fontSize={2} mb={3}>
-              Options
-            </Text>
             {options.map((o, index) => (
               <Input
                 mb={3}
@@ -125,11 +157,75 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
                 boldLabel={true}
               />
             ))}
+            <Input
+              mb={3}
+              label="SKU"
+              name="sku"
+              placeholder="SKU"
+              boldLabel={true}
+              ref={register}
+            />
           </Box>
-          <Box mb={2}>
-            <Text mb={3}>Prices</Text>
+          <Box width={1 / 2} mb={4}>
+            <Text mb={3} fontSize={2} fontWeight={700}>
+              Inventory
+            </Text>
+            <Box mb={2}>
+              <Label
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  fontFamily:
+                    "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Ubuntu, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 300,
+                  lineHeight: 1.22,
+                  letterSpacing: "-0.25px",
+                }}
+              >
+                <Checkbox ref={register} mr={1} name="manage_inventory" />
+                Manage Inventory
+              </Label>
+            </Box>
+            <Box mb={3}>
+              <Label
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  fontFamily:
+                    "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Ubuntu, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 300,
+                  lineHeight: 1.22,
+                  letterSpacing: "-0.25px",
+                }}
+              >
+                <Checkbox ref={register} mr={1} name="allow_backorder" />
+                Allow backorders
+              </Label>
+            </Box>
+            <Box mb={3}>
+              <Input
+                mr={3}
+                label="Inventory quantity"
+                name="inventory_quantity"
+                placeholder="Inventory quantity"
+                type="number"
+                boldLabel={true}
+                ref={register}
+              />
+            </Box>
+          </Box>
+          <Box mb={4}>
+            <Text mb={3} fontSize={2} fontWeight={700}>
+              Prices
+            </Text>
             {prices.map((p, index) => (
-              <Flex mb={3} key={`${p.currency_code}${index}`}>
+              <Flex
+                alignItems="center"
+                mb={3}
+                key={`${p.currency_code}${index}`}
+              >
                 <CurrencyInput
                   edit={p.edit}
                   currency={p.currency_code.toUpperCase()}
@@ -140,58 +236,154 @@ const VariantEditor = ({ variant, options, onSubmit, onDelete, onClick }) => {
                   }
                   onChange={e => handlePriceChange(index, e)}
                 />
-                <Button
+
+                <Box
                   ml={2}
+                  sx={{
+                    cursor: "pointer",
+                    "& svg": {
+                      fill: "#5469D3",
+                      transition: "fill 0.2s ease-in",
+                    },
+                    ":hover svg": { fill: "#4354a8" },
+                  }}
                   onClick={() => removePrice(index)}
-                  variant="primary"
                 >
-                  Remove
-                </Button>
+                  <DeleteIcon />
+                </Box>
               </Flex>
             ))}
             {currencyOptions.length !== prices.length && (
               <Flex mb={3}>
-                <Button onClick={addPrice} variant="primary">
+                <TextButton onClick={addPrice} variant="primary">
                   + Add a price
-                </Button>
+                </TextButton>
               </Flex>
             )}
           </Box>
-          <Box mb={2}>
-            <Text mb={3}>Stock & Inventory</Text>
-            <Input
-              mb={3}
-              label="SKU"
-              name="sku"
-              boldLabel={true}
-              ref={register}
-            />
-            <Input
-              mb={3}
-              label="EAN"
-              name="ean"
-              boldLabel={true}
-              ref={register}
-            />
-            <Input
-              mb={3}
-              label="Inventory"
-              name="inventory_quantity"
-              type="number"
-              boldLabel={true}
-              ref={register}
-            />
+          <Box mb={4}>
+            <Text fontSize={2} fontWeight={700} mb={3}>
+              Stock
+            </Text>
+            <Flex mb={3}>
+              <Input
+                mr={3}
+                label="EAN"
+                name="ean"
+                placeholder="EAN"
+                boldLabel={true}
+                ref={register}
+              />
+              <Input
+                mr={3}
+                label="UPC Barcode"
+                name="barcode"
+                placeholder="Barcode"
+                type="number"
+                boldLabel={true}
+                ref={register}
+              />
+            </Flex>
           </Box>
-          <Box>
-            <Text mb={3}>Danger Zone</Text>
-            <Button onClick={onDelete} variant="danger">
-              Delete variant
-            </Button>
+          <Box mb={4}>
+            <Text fontSize={2} fontWeight={700} mb={3}>
+              Dimensions
+            </Text>
+            <Flex mb={3}>
+              <Input
+                mr={3}
+                label="Height"
+                placeholder="Product Height"
+                name="height"
+                boldLabel={true}
+                ref={register}
+              />
+              <Input
+                mr={3}
+                label="Width"
+                placeholder="Product Width"
+                name="width"
+                boldLabel={true}
+                ref={register}
+              />
+            </Flex>
+            <Flex mb={3}>
+              <Input
+                mr={3}
+                label="Length"
+                name="length"
+                placeholder="Product Length"
+                boldLabel={true}
+                ref={register}
+              />
+              <Input
+                mr={3}
+                label="Weight"
+                name="weight"
+                placeholder="Product Weight"
+                boldLabel={true}
+                ref={register}
+              />
+            </Flex>
           </Box>
+          <Box mb={4}>
+            <Text fontSize={2} fontWeight={700} mb={3}>
+              Customs
+            </Text>
+            <Flex mb={3}>
+              <Input
+                mr={3}
+                label="MID Code"
+                placeholder="MID Code"
+                name="mid_code"
+                boldLabel={true}
+                ref={register}
+              />
+              <Input
+                mr={3}
+                label="HS Code"
+                placeholder="HS Code"
+                name="hs_code"
+                boldLabel={true}
+                ref={register}
+              />
+            </Flex>
+            <Flex mb={4}>
+              <Input
+                mr={3}
+                label="Country of origin"
+                name="origin_country"
+                placeholder="Country of origin"
+                boldLabel={true}
+                ref={register}
+              />
+              <Input
+                mr={3}
+                label="Material"
+                name="material"
+                placeholder="Material"
+                boldLabel={true}
+                ref={register}
+              />
+            </Flex>
+          </Box>
+          {!isCopy && (
+            <Box>
+              <Text mb={3} fontWeight={700}>
+                Danger Zone
+              </Text>
+              <Button onClick={onDelete} variant="danger">
+                Delete variant
+              </Button>
+            </Box>
+          )}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
-          <Button type="submit" variant="primary">
-            Close
+          <Button mr={2} onClick={onClick} type="button" variant="primary">
+            Cancel
+          </Button>
+          <Button type="submit" variant="deep-blue">
+            Save
           </Button>
         </Modal.Footer>
       </Modal.Body>

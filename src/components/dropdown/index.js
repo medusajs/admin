@@ -16,7 +16,7 @@ export const DropdownContainer = styled(Box)`
     props.dropUp ? "translateY(-180px)" : "translateY(32px)"};
   position: absolute;
   background-color: #fefefe;
-  min-width: 160px;
+  min-width: ${props => props.dropdownWidth};
   box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1);
   z-index: 1;
   top: ${props => (props.topPlacement ? props.topPlacement : "10px")};

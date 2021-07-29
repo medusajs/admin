@@ -45,7 +45,19 @@ const StyledLabel = styled.div`
 
 const TextArea = React.forwardRef(
   (
-    { value, placeholder, inline, label, name, required, boldLabel, ...props },
+    {
+      value,
+      placeholder,
+      inline,
+      label,
+      name,
+      required,
+      boldLabel,
+      resize = "none",
+      rows,
+      cols,
+      ...props
+    },
     ref
   ) => {
     return (
@@ -77,7 +89,10 @@ const TextArea = React.forwardRef(
           value={value}
           variant="textarea"
           name={name}
+          rows={rows}
+          cols={cols}
           placeholder={placeholder ? placeholder : "Placeholder"}
+          sx={{ resize }}
         />
       </Flex>
     )
