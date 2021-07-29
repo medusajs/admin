@@ -3,9 +3,9 @@ import { Box, Button, Flex } from "rebass"
 import Modal from "../../../../../components/modal"
 import useMedusa from "../../../../../hooks/use-medusa"
 import useModal from "../../../../../hooks/use-modal"
-import NewItemsInformation from "./new-items-information"
+import NewItemsInformation from "./new-items"
 import PaymentInformation from "./payment-information"
-import ReturnOrderInformation from "./return-order-information"
+import ReturnOrderInformation from "./return-items"
 
 const SwapDetails = ({
   event,
