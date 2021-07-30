@@ -1,5 +1,7 @@
 import React from "react"
-import { Box, Text } from "rebass"
+import { Box, Text, Flex } from "rebass"
+import { ReactComponent as WarningIcon } from "../../../../../assets/svg/warning.svg"
+import { isEmpty } from "lodash"
 
 const formatDecimalAndCurrency = (amount, currency) => {
   const fixed = amount.toFixed(2)
@@ -10,7 +12,7 @@ const formatDecimalAndCurrency = (amount, currency) => {
 const SwapShippingMethods = ({ shipping_methods = [], taxRate, currency }) => {
   return (
     <>
-      {shipping_methods?.length ? (
+      {!isEmpty(shipping_methods) ? (
         shipping_methods.map(method => (
           <Box key={method._id}>
             <Box>
@@ -24,16 +26,19 @@ const SwapShippingMethods = ({ shipping_methods = [], taxRate, currency }) => {
                     )}
                   </>
                 ) : (
-                  <span style={{ fontStyle: "italic" }}>
-                    Order was shipped with a now deleted option
-                  </span>
+                  <Flex alignItems="center">
+                    <WarningIcon />
+                    <Text ml={2} color="#89959C">
+                      Order was shipped with a now deleted option
+                    </Text>
+                  </Flex>
                 )}
               </Text>
             </Box>
           </Box>
         ))
       ) : (
-        <Text fontSize={12} fontStyle="italic" color="#454B54">
+        <Text fontSize={12} color="#89959C">
           No shipping for this order
         </Text>
       )}

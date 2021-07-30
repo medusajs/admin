@@ -18,7 +18,9 @@ const SwapShippingInformation = ({ swap }) => {
           <Text pt={2}>{formatAddress(swap.shipping_address)}</Text>
         </Box>
       ) : (
-        <Text fontSize={12}>No shipping address</Text>
+        <Text fontSize={12} color="#89959C">
+          No shipping for this order
+        </Text>
       )}
     </Box>
   )

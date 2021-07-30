@@ -1,8 +1,7 @@
-import React, { useCallback, useMemo } from "react"
-import ReactTooltip from "react-tooltip"
+import React, { useMemo } from "react"
 import { Box, Flex, Text } from "rebass"
-import { ReactComponent as Clipboard } from "../../../../../assets/svg/clipboard.svg"
 import Badge from "../../../../../components/badge"
+import CopyToClipboard from "../../../../../components/copy-to-clipboard"
 import Divider from "../../../../../components/divider"
 import Dropdown from "../../../../../components/dropdown"
 import useMedusa from "../../../../../hooks/use-medusa"
@@ -126,33 +125,14 @@ const PaymentBreakdown = ({ swap, order, cart }) => {
   )
 }
 
-const useClipboard = (text, { onCopied = () => {} }) => {
-  const handleCopy = useCallback(() => {
-    var tempInput = document.createElement("input")
-    tempInput.value = text
-    document.body.appendChild(tempInput)
-    tempInput.select()
-    document.execCommand("copy")
-    document.body.removeChild(tempInput)
-    onCopied()
-  }, [text, onCopied])
-
-  return [handleCopy]
-}
-
 const PaymentInformation = ({ event, onProcessPayment, swap, order }) => {
-  const { store, toaster } = useMedusa("store")
+  const { store } = useMedusa("store")
 
   const payment_link = useMemo(() => {
-    if (!store) return ""
+    if (!store || !store.payment_link_template) return ""
 
     return store.payment_link_template.replace(/\{cart_id\}/, event.raw.cart_id)
   }, [store])
-  const [handleCopyToClipboard] = useClipboard(payment_link, {
-    onCopied: () => {
-      toaster("Link copied to clipboard", "success")
-    },
-  })
   const paymentStatusColors = decideBadgeColor(event.raw.payment_status)
 
   const actions = useMemo(() => {
@@ -204,30 +184,11 @@ const PaymentInformation = ({ event, onProcessPayment, swap, order }) => {
         ))}
       </Flex>
       <Box mb={2}>
-        <Flex alignItems="center" variant="primary">
-          <Box data-for={event.raw.cart_id} data-tip={payment_link}>
-            <Text
-              onClick={handleCopyToClipboard}
-              fontSize={10}
-              sx={{
-                cursor: "pointer",
-                ":hover": { textDecoration: "underline" },
-              }}
-            >
-              <ReactTooltip id={event.raw.cart_id} place="top" effect="solid" />
-              Copy payment link
-            </Text>
-          </Box>
-          <Clipboard
-            style={{
-              marginLeft: "5px",
-              ":hover": { fill: "#454545" },
-            }}
-            fill={"#848484"}
-            width="10"
-            height="10"
-          />
-        </Flex>
+        <CopyToClipboard
+          label="Copy payment link"
+          tooltipText={payment_link}
+          copyText={payment_link}
+        />
       </Box>
       <Box>
         <PaymentBreakdown order={order} swap={swap} cart={swap?.cart} />

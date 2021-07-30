@@ -6,6 +6,7 @@ import useModal from "../../../../../hooks/use-modal"
 import NewItemsInformation from "./new-items"
 import PaymentInformation from "./payment-information"
 import ReturnOrderInformation from "./return-items"
+import { ReactComponent as CloseIcon } from "../../../../../assets/svg/cross.svg"
 
 const SwapDetails = ({
   event,
@@ -31,8 +32,20 @@ const SwapDetails = ({
       {isOpen && (
         <Modal onClick={handleClose}>
           <Modal.Body>
-            <Modal.Header p={3} fontSize={18} fontWeight={500}>
+            <Modal.Header
+              justifyContent="space-between"
+              alignItems="center"
+              p={3}
+              fontSize={18}
+              fontWeight={500}
+            >
               Swap Details
+              <CloseIcon
+                style={{ cursor: "pointer" }}
+                onClick={handleClose}
+                width={12}
+                height={12}
+              />
             </Modal.Header>
             <Modal.Content flexDirection="column">
               <Flex mb={3} flexDirection="column">
