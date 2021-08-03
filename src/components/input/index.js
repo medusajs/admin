@@ -95,9 +95,16 @@ const InputField = React.forwardRef(
               {label}
             </StyledLabel>
             {withTooltip ? (
-              <Box pb="10px" ml={2}>
+              <Box
+                sx={{
+                  ":hover svg": { fill: "#454B54" },
+                  "& svg": { fill: "#c4c4c4", transition: "fill 0.2s ease-in" },
+                }}
+                pb="10px"
+                ml={2}
+              >
                 <InfoIcon
-                  style={{ display: "flex" }}
+                  style={{ display: "flex", cursor: "pointer" }}
                   data-for={tooltipText}
                   data-tip={tooltipText}
                 />

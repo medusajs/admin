@@ -20,7 +20,10 @@ import useMedusa from "../../../../hooks/use-medusa"
 import Medusa from "../../../../services/api"
 import SingleImageDropzone from "./image-dropzone"
 
-const TriggerElement = ({ label, icon }) => {
+const TriggerElement = ({ label, icon, isOpen }) => {
+  const colorOpened = "#453B54"
+  const colorClosed = "#89959C"
+  const color = isOpen ? colorOpened : colorClosed
   return (
     <Box mb={3}>
       <Box
@@ -28,9 +31,17 @@ const TriggerElement = ({ label, icon }) => {
         alignItems="center"
         display="inline-flex"
         sx={{
-          "&:hover": { borderBottom: "1px solid black" },
+          color,
           cursor: "pointer",
           borderBottom: "1px solid transparent",
+          "& *": { transition: "color 0.1s ease-out, fill 0.1s ease-out" },
+          "&:hover *": !isOpen
+            ? {
+                fill: colorOpened,
+                color: colorOpened,
+              }
+            : null,
+          "& svg": { fill: color },
         }}
       >
         <Text mr="6px">{label}</Text>
@@ -305,6 +316,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
               overflowWhenOpen="visible"
               triggerWhenOpen={
                 <TriggerElement
+                  isOpen
                   label="Hide additional details"
                   icon={<ArrowUp />}
                 />
@@ -329,7 +341,16 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   <Text mr={2} fontSize={1} fontWeight="500">
                     Tags (separated by comma)
                   </Text>
-                  <Flex alignItems="center">
+                  <Flex
+                    sx={{
+                      ":hover svg": { fill: "#454B54" },
+                      "& svg": {
+                        fill: "#c4c4c4",
+                        transition: "fill 0.2s ease-in",
+                      },
+                    }}
+                    alignItems="center"
+                  >
                     <InfoIcon
                       style={{ display: "flex" }}
                       data-for="tooltip-tags"
@@ -362,7 +383,16 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   <Text mr={2} fontSize={1} fontWeight="500">
                     Type
                   </Text>
-                  <Flex alignItems="center">
+                  <Flex
+                    sx={{
+                      ":hover svg": { fill: "#454B54" },
+                      "& svg": {
+                        fill: "#c4c4c4",
+                        transition: "fill 0.2s ease-in",
+                      },
+                    }}
+                    alignItems="center"
+                  >
                     <InfoIcon
                       style={{ display: "flex" }}
                       data-for="tooltip-type"
