@@ -12,6 +12,13 @@ import Modal from "../../../../components/modal"
 import Typography from "../../../../components/typography"
 import useMedusa from "../../../../hooks/use-medusa"
 
+const StyledLabel = styled(Label)`
+  ${Typography.Base};
+  display: flex;
+  align-items: center;
+  font-weight: 300;
+`
+
 const TextButton = styled(Button)`
   ${Typography.Base}
   outline: none;
@@ -171,38 +178,16 @@ const VariantEditor = ({
               Inventory
             </Text>
             <Box mb={2}>
-              <Label
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  fontFamily:
-                    "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Ubuntu, sans-serif",
-                  fontSize: "14px",
-                  fontWeight: 300,
-                  lineHeight: 1.22,
-                  letterSpacing: "-0.25px",
-                }}
-              >
+              <StyledLabel>
                 <Checkbox ref={register} mr={1} name="manage_inventory" />
                 Manage Inventory
-              </Label>
+              </StyledLabel>
             </Box>
             <Box mb={3}>
-              <Label
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  fontFamily:
-                    "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Ubuntu, sans-serif",
-                  fontSize: "14px",
-                  fontWeight: 300,
-                  lineHeight: 1.22,
-                  letterSpacing: "-0.25px",
-                }}
-              >
+              <StyledLabel>
                 <Checkbox ref={register} mr={1} name="allow_backorder" />
                 Allow backorders
-              </Label>
+              </StyledLabel>
             </Box>
             <Box mb={3}>
               <Input

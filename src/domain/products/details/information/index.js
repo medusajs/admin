@@ -19,6 +19,15 @@ import Divider from "../../../../components/divider"
 import useMedusa from "../../../../hooks/use-medusa"
 import Medusa from "../../../../services/api"
 import SingleImageDropzone from "./image-dropzone"
+import { Checkbox, Label } from "@rebass/forms"
+
+const StyledLabel = styled(Label)`
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  width: auto;
+  cursor: pointer;
+`
 
 const TriggerElement = ({ label, icon, isOpen }) => {
   const colorOpened = "#453B54"
@@ -138,6 +147,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
           description: product.description,
           handle: product.handle,
           subtitle: product.subtitle,
+          discountable: product.discountable,
         })
 
         if (product.type) {
@@ -284,6 +294,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
 
             <Box mb={3}>
               <TextArea
+                sx={{ "& div": { fontWeight: "500 !important" } }}
                 resize="vertical"
                 name="description"
                 rows="3"
@@ -308,6 +319,16 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   })) || []
                 }
               />
+            </Box>
+            <Box mb={3}>
+              <StyledLabel
+                data-for="tooltip-discountable"
+                data-tip="Product can discounted"
+              >
+                <Tooltip id="tooltip-discountable" />
+                <Checkbox ref={register} mr={1} name="discountable" />
+                Discountable
+              </StyledLabel>
             </Box>
             <Divider mb={3} />
 
