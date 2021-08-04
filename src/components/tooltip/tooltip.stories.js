@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import React from "react"
-import { ReactComponent as InfoIcon } from "../../assets/svg/info.svg"
+import InfoTooltip from "../info-tooltip"
 import TooltipComponent from "./index"
 
 const Container = styled.div`
@@ -12,8 +12,18 @@ const Container = styled.div`
 export const Default = () => {
   return (
     <Container>
-      <InfoIcon data-for={"tooltip"} data-tip={"This is a helpful tooltip!"} />
+      <p data-for={"tooltip"} data-tip={"This is a tooltip!"}>
+        Hover over me
+      </p>
       <TooltipComponent id="tooltip" />
+    </Container>
+  )
+}
+
+export const Info = () => {
+  return (
+    <Container>
+      <InfoTooltip tooltipText="This is a helpful tooltip" />
     </Container>
   )
 }

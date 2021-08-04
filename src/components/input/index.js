@@ -1,10 +1,9 @@
-import React from "react"
-import { Text, Flex, Box } from "rebass"
-import { Input, Label } from "@rebass/forms"
 import styled from "@emotion/styled"
+import { Input, Label } from "@rebass/forms"
+import React from "react"
+import { Flex, Text } from "rebass"
+import InfoTooltip from "../info-tooltip"
 import Typography from "../typography"
-import { ReactComponent as InfoIcon } from "../../assets/svg/info.svg"
-import Tooltip from "../tooltip"
 
 const StyledInput = styled(Input)`
   ${Typography.Base}
@@ -95,21 +94,12 @@ const InputField = React.forwardRef(
               {label}
             </StyledLabel>
             {withTooltip ? (
-              <Box
-                sx={{
-                  ":hover svg": { fill: "#454B54" },
-                  "& svg": { fill: "#c4c4c4", transition: "fill 0.2s ease-in" },
-                }}
+              <InfoTooltip
                 pb="10px"
                 ml={2}
-              >
-                <InfoIcon
-                  style={{ display: "flex", cursor: "pointer" }}
-                  data-for={tooltipText}
-                  data-tip={tooltipText}
-                />
-                <Tooltip id={tooltipText} {...tooltipProps} />
-              </Box>
+                tooltipText={tooltipText}
+                {...tooltipProps}
+              />
             ) : null}
           </Label>
         )}

@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { Checkbox, Label } from "@rebass/forms"
 import React, { useEffect, useRef, useState } from "react"
 import Collapsible from "react-collapsible"
 import { useForm } from "react-hook-form"
@@ -7,19 +8,18 @@ import Creatable from "react-select/creatable"
 import { Box, Flex, Text } from "rebass"
 import { ReactComponent as ArrowDown } from "../../../../assets/svg/arrow-down.svg"
 import { ReactComponent as ArrowUp } from "../../../../assets/svg/arrow-up.svg"
-import { ReactComponent as InfoIcon } from "../../../../assets/svg/info.svg"
 import Button from "../../../../components/button"
 import Card from "../../../../components/card"
+import Divider from "../../../../components/divider"
+import InfoTooltip from "../../../../components/info-tooltip"
 import Input from "../../../../components/input"
 import Spinner from "../../../../components/spinner"
 import TagInput from "../../../../components/tag-input"
 import TextArea from "../../../../components/textarea"
 import Tooltip from "../../../../components/tooltip"
-import Divider from "../../../../components/divider"
 import useMedusa from "../../../../hooks/use-medusa"
 import Medusa from "../../../../services/api"
 import SingleImageDropzone from "./image-dropzone"
-import { Checkbox, Label } from "@rebass/forms"
 
 const StyledLabel = styled(Label)`
   display: inline-flex;
@@ -362,23 +362,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   <Text mr={2} fontSize={1} fontWeight="500">
                     Tags (separated by comma)
                   </Text>
-                  <Flex
-                    sx={{
-                      ":hover svg": { fill: "#454B54" },
-                      "& svg": {
-                        fill: "#c4c4c4",
-                        transition: "fill 0.2s ease-in",
-                      },
-                    }}
-                    alignItems="center"
-                  >
-                    <InfoIcon
-                      style={{ display: "flex" }}
-                      data-for="tooltip-tags"
-                      data-tip="Tags of the product"
-                    />
-                    <Tooltip id="tooltip-tags" />
-                  </Flex>
+                  <InfoTooltip tooltipText="Tags of the product" />
                 </Flex>
                 <TagInput
                   placeholder="Spring, summer..."
@@ -404,23 +388,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   <Text mr={2} fontSize={1} fontWeight="500">
                     Type
                   </Text>
-                  <Flex
-                    sx={{
-                      ":hover svg": { fill: "#454B54" },
-                      "& svg": {
-                        fill: "#c4c4c4",
-                        transition: "fill 0.2s ease-in",
-                      },
-                    }}
-                    alignItems="center"
-                  >
-                    <InfoIcon
-                      style={{ display: "flex" }}
-                      data-for="tooltip-type"
-                      data-tip="Type of the product"
-                    />
-                    <Tooltip id="tooltip-type" />
-                  </Flex>
+                  <InfoTooltip tooltipText="Type of the product" />
                 </Flex>
                 <StyledCreatableSelect
                   value={type ? { value: type.value, label: type.value } : null}
