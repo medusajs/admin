@@ -25,7 +25,7 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
   useEffect(() => {
     if (product) {
       let imgs = [product.thumbnail, ...product.images.map(img => img.url)]
-      imgs = [...new Set(imgs)]
+      imgs = [...new Set(imgs)].filter(Boolean)
       setImages([...imgs])
     }
   }, [product])

@@ -320,16 +320,6 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                 }
               />
             </Box>
-            <Box mb={3}>
-              <StyledLabel
-                data-for="tooltip-discountable"
-                data-tip="Product can discounted"
-              >
-                <Tooltip id="tooltip-discountable" />
-                <Checkbox ref={register} mr={1} name="discountable" />
-                Discountable
-              </StyledLabel>
-            </Box>
             <Divider mb={3} />
 
             <Collapsible
@@ -403,6 +393,16 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   }
                   label="Type"
                 />
+              </Box>
+              <Box mb={3}>
+                <StyledLabel
+                  data-for="tooltip-discountable"
+                  data-tip="Product can discounted"
+                >
+                  <Tooltip id="tooltip-discountable" />
+                  <Checkbox ref={register} mr={1} name="discountable" />
+                  Discountable
+                </StyledLabel>
               </Box>
             </Collapsible>
           </Flex>
