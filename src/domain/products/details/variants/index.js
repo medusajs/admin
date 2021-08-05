@@ -4,8 +4,11 @@ import Button from "../../../../components/button"
 import Card from "../../../../components/card"
 import Spinner from "../../../../components/spinner"
 import VariantGrid from "../../../../components/variant-grid"
+import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import NewOption from "./option-edit"
 import VariantEditor from "./variant-editor"
+
+const numberFields = ["weight", "length", "width", "height"]
 
 const Variants = ({
   product,
@@ -126,14 +129,16 @@ const Variants = ({
   }
 
   const handleUpdateVariant = data => {
-    variantMethods.update(editVariant.id, data).then(res => {
+    const cleanedData = convertEmptyStringToNull(data, numberFields)
+    variantMethods.update(editVariant.id, cleanedData).then(res => {
       setEditVariant(null)
       setNewVariant(null)
     })
   }
 
   const handleCreateVariant = data => {
-    variantMethods.create(data).then(data => {
+    const cleanedData = convertEmptyStringToNull(data, numberFields)
+    variantMethods.create(cleanedData).then(data => {
       setNewVariant(null)
       setEditVariant(null)
     })

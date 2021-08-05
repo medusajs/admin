@@ -4,6 +4,9 @@ import { Box, Flex, Text } from "rebass"
 import Button from "../../../../components/button"
 import Card from "../../../../components/card"
 import Input from "../../../../components/input"
+import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
+
+const numberFields = ["weight", "length", "width", "height"]
 
 const Inventory = ({ product, onSubmit }) => {
   const { register, handleSubmit, reset, formState } = useForm()
@@ -24,7 +27,8 @@ const Inventory = ({ product, onSubmit }) => {
   }, [product])
 
   const submitHandler = data => {
-    onSubmit(data)
+    const cleanedData = convertEmptyStringToNull(data, numberFields)
+    onSubmit(cleanedData)
   }
 
   return (
