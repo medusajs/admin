@@ -11,6 +11,7 @@ import Spinner from "../../components/spinner"
 import Badge from "../../components/badge"
 import Button from "../../components/button"
 import EditableInput from "../../components/editable-input"
+import CurrencyInput from "../../components/currency-input"
 import Select from "../../components/select"
 
 import useMedusa from "../../hooks/use-medusa"
@@ -49,9 +50,10 @@ const GiftCardDetail = ({ id }) => {
   const [updating, setUpdating] = useState(false)
   const [showRuleEdit, setShowRuleEdit] = useState(false)
   const [code, setCode] = useState(discount && discount.code)
-
+  const [balance, setBalance] = useState(0)
   const [selectedRegions, setSelectedRegions] = useState([])
 
+  const balanceRef = useRef()
   const discountCodeRef = useRef()
 
   const {
@@ -65,9 +67,19 @@ const GiftCardDetail = ({ id }) => {
   })
   const { regions } = useMedusa("regions")
 
+  const formatNumber = n => {
+    if(discount){
+      return (
+        ((1 + discount.region.tax_rate / 100) * n) / 100 
+      ).toFixed(2)
+    }
+    return n
+  }
+
   useEffect(() => {
     if (discount) {
       setCode(discount.code)
+      setBalance(formatNumber(discount.balance))
     }
   }, [discount])
 
@@ -94,6 +106,7 @@ const GiftCardDetail = ({ id }) => {
       })
       .catch(() => {
         setUpdating(false)
+        refresh({ id })
         toaster("Discount update failed", "error")
       })
   }
@@ -101,7 +114,7 @@ const GiftCardDetail = ({ id }) => {
   const handleDisabled = () => {
     setUpdating(true)
     update({
-      disabled: discount.is_disabled ? false : true,
+      is_disabled: discount.is_disabled ? false : true,
     })
       .then(() => {
         refresh({ id })
@@ -129,6 +142,23 @@ const GiftCardDetail = ({ id }) => {
         setUpdating(false)
         setShowRuleEdit(false)
         toaster("Discount rule update failed", "error")
+      })
+  }
+
+
+  const handleBalanceUpdate = () => {
+    if (discount.balance === balance) return
+
+    update({
+      balance: Math.round(balance * 100),
+    })
+      .then(() => {
+        refresh({ id })
+        toaster("Balance updated", "success")
+      })
+      .catch(() => {
+        refresh({ id })
+        toaster("Balance update failed", "error")
       })
   }
 
@@ -188,19 +218,19 @@ const GiftCardDetail = ({ id }) => {
           )}
         </Box>
         <Card.Body>
-          <Box pl={3} pr={2}>
-            <Text pb={1} color="gray">
+          <Box pl={3} pr={2} textAlign="center" >
+            <Text pb={1} mb={2} color="gray" >
               Disabled
             </Text>
-            <Text pt={1} width="100%" textAlign="center" mt={2}>
+            <Text pt={1} width="100%"  mt={2}>
               <Badge width="100%" color="#4f566b" bg="#e3e8ee">
                 {`${discount.is_disabled}`}
               </Badge>
             </Text>
           </Box>
           <Card.VerticalDivider mx={3} />
-          <Box pl={3} pr={2}>
-            <Text pb={1} color="gray">
+          <Box pl={3} pr={2} alignContent="center">
+            <Text pb={1} pb={3} color="gray" textAlign="center" >
               Valid regions
             </Text>
             <Select
@@ -216,6 +246,38 @@ const GiftCardDetail = ({ id }) => {
               }))}
             />
           </Box>
+          <Card.VerticalDivider mx={3} />
+          <Box pl={3} pr={2} alignContent="center">
+            <Text pb={1} mb={3} color="gray">
+              Total value ({discount.region.currency_code.toUpperCase()})
+            </Text>
+            <Text style={{width: "100%", textAlign: "center"}}>
+              {formatNumber(discount.value)}
+            </Text>
+          </Box>
+          <Card.VerticalDivider mx={3} />
+          <Box pl={3} pr={2} alignContent="center">
+            <Text pb={1} color="gray">
+              Balance ({discount.region.currency_code.toUpperCase()})
+            </Text>
+            <EditableInput
+              text={balance}
+              childRef={balanceRef}
+              type="input"
+              style={{ maxWidth: "400px" }}
+              onBlur={handleBalanceUpdate}
+            >
+              <Input
+                m={3}
+                ref={balanceRef}
+                type="text"
+                name="balance"
+                value={balance}
+                onChange={e => setBalance(e.target.value)}
+              />
+            </EditableInput>
+          </Box>
+          
         </Card.Body>
       </Card>
       <Card mr={3} width="100%">

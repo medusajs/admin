@@ -93,8 +93,6 @@ const ProductIndex = () => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
-      fields: "id,title,thumbnail",
-      expand: "variants,variants.prices,collection",
       q: query,
       offset: 0,
       limit: 20,

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react"
-import { Text, Flex, Box } from "rebass"
-
-import NewOption from "./option-edit"
-import VariantEditor from "./variant-editor"
-import VariantGrid from "../../../../components/variant-grid"
+import { Box, Flex } from "rebass"
 import Button from "../../../../components/button"
 import Card from "../../../../components/card"
-import Input from "../../../../components/input"
-import TextArea from "../../../../components/textarea"
 import Spinner from "../../../../components/spinner"
+import VariantGrid from "../../../../components/variant-grid"
+import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
+import NewOption from "./option-edit"
+import VariantEditor from "./variant-editor"
+
+const numberFields = ["weight", "length", "width", "height"]
 
 const Variants = ({
   product,
@@ -19,6 +19,7 @@ const Variants = ({
 }) => {
   const [showAddOption, setShowAddOption] = useState(false)
   const [editVariant, setEditVariant] = useState("")
+  const [newVariant, setNewVariant] = useState("")
   const [editIndex, setEditIndex] = useState("")
   const [variants, setVariants] = useState([])
 
@@ -127,6 +128,22 @@ const Variants = ({
     setEditVariant(null)
   }
 
+  const handleUpdateVariant = data => {
+    const cleanedData = convertEmptyStringToNull(data, numberFields)
+    variantMethods.update(editVariant.id, cleanedData).then(res => {
+      setEditVariant(null)
+      setNewVariant(null)
+    })
+  }
+
+  const handleCreateVariant = data => {
+    const cleanedData = convertEmptyStringToNull(data, numberFields)
+    variantMethods.create(cleanedData).then(data => {
+      setNewVariant(null)
+      setEditVariant(null)
+    })
+  }
+
   const handleCreateOption = data => {
     optionMethods.create(data)
   }
@@ -150,6 +167,9 @@ const Variants = ({
                   setEditVariant(variants[index])
                   setEditIndex(index)
                 }}
+                onCopy={index => {
+                  setNewVariant(variants[index])
+                }}
                 product={product}
                 variants={variants}
                 onChange={vs => setVariants(vs)}
@@ -158,7 +178,7 @@ const Variants = ({
           )}
         </Card.Body>
         <Card.Footer px={3} justifyContent="flex-end" hideBorder={true}>
-          <Button variant={"cta"} type="submit">
+          <Button variant="deep-blue" type="submit">
             Save
           </Button>
         </Card.Footer>
@@ -170,13 +190,20 @@ const Variants = ({
           onClick={() => setShowAddOption(null)}
         />
       )}
-      {editVariant && (
+      {(editVariant || newVariant) && (
         <VariantEditor
-          variant={editVariant}
+          variant={newVariant || editVariant}
+          isCopy={!!newVariant}
           options={product.options}
           onDelete={handleDeleteVariant}
-          onSubmit={data => handleVariantEdited(data)}
-          onClick={() => setEditVariant(null)}
+          onSubmit={data => {
+            if (newVariant) handleCreateVariant(data)
+            else if (editVariant) handleUpdateVariant(data)
+          }}
+          onClick={() => {
+            setEditVariant(null)
+            setNewVariant(null)
+          }}
         />
       )}
     </>

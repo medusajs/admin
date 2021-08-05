@@ -4,6 +4,8 @@ import { Text, Flex, Box } from "rebass"
 import GridEditor from "./editors"
 import DefaultEditor from "./editors/default"
 import OptionEditor from "./editors/option"
+import { ReactComponent as EditIcon } from "../../assets/svg/edit-pencil.svg"
+import { ReactComponent as ClipboardIcon } from "../../assets/svg/clipboard.svg"
 
 import Button from "../button"
 
@@ -16,6 +18,7 @@ import {
   InputField,
 } from "./elements"
 import { TableDataCell, TableHead, TableHeaderCell } from "../table"
+import Dropdown from "../dropdown"
 
 const ENTER_KEY = 13
 const TAB_KEY = 9
@@ -101,7 +104,7 @@ const getColumns = (product, edit) => {
   }
 }
 
-const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
+const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
   const [dragEnd, setDragEnd] = useState()
   const [selectedCell, setSelectedCell] = useState({})
 
@@ -292,24 +295,41 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit }) => {
                     padding: "4px",
                     borderBottom: "1px solid rgba(0,0,0,0.2)",
                     backgroundColor: "white",
-                    position: "sticky !important",
+                    // position: "sticky !important",
                     right: 0,
                   }}
                 >
-                  <Flex justifyContent="center">
-                    <Button
+                  <Dropdown
+                    minHeight="24px"
+                    dropdownWidth="120px"
+                    width="28px"
+                    sx={{
+                      height: 0,
+                      padding: 0,
+                      margin: "auto 0 auto auto",
+                    }}
+                  >
+                    <Flex
+                      sx={{ padding: "8px 12px !important" }}
+                      alignItems="center"
                       onClick={() => onEdit(row)}
-                      variant="primary"
-                      fontSize={1}
-                      height="24px"
-                      sx={{
-                        lineHeight: "20px",
-                        height: "24px !important",
-                      }}
                     >
-                      Edit
-                    </Button>
-                  </Flex>
+                      <EditIcon />
+                      <Text ml={1} fontSize={14}>
+                        Edit
+                      </Text>
+                    </Flex>
+                    <Flex
+                      sx={{ padding: "8px 12px !important" }}
+                      alignItems="center"
+                      onClick={() => onCopy(row)}
+                    >
+                      <ClipboardIcon />
+                      <Text ml={1} fontSize={14}>
+                        Copy
+                      </Text>
+                    </Flex>
+                  </Dropdown>
                 </Box>
               ) : (
                 <Box

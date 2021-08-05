@@ -24,7 +24,7 @@ const StyledButton = styled(Text)`
 
 const Container = styled(Flex)`
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 5px;
   border: 1px dashed ${props => props.theme.colors.placeholder};
   width: ${props => (props.width ? props.width : "150px")};
   height: ${props => (props.height ? props.height : "150px")};
