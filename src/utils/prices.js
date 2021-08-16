@@ -1,3 +1,24 @@
+const noDivisionCurrencies = ["krw"]
+
+export function normalizeAmount(currency, amount) {
+  let divisor = 100
+  if (noDivisionCurrencies.includes(currency.toLowerCase())) {
+    divisor = 1
+  }
+
+  return Math.floor(amount) / divisor
+}
+
+export function displayAmount(currency, amount, decimals = 2) {
+  if (noDivisionCurrencies.includes(currency.toLowerCase())) {
+    return normalizeAmount(currency, amount)
+  }
+
+  const normalizedAmount = normalizeAmount(currency, amount)
+
+  return normalizedAmount.toFixed(decimals)
+}
+
 export const extractUnitPrice = (item, region, withTax = true) => {
   let itemPrice = item.unit_price
 
