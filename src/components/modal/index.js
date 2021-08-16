@@ -1,5 +1,5 @@
-import React from "react"
 import styled from "@emotion/styled"
+import React from "react"
 import { Flex } from "rebass"
 
 const Modal = styled(Flex)`
@@ -14,7 +14,7 @@ const Modal = styled(Flex)`
 
   width: 100%;
   height: 100%;
-  background-color: rgba(10, 10, 10, 0.15);
+  background-color: rgba(238, 240, 245, 0.7);
   overflow: auto;
 `
 
@@ -24,8 +24,8 @@ const ModalBody = styled(Flex)`
   min-width: 450px;
   background-color: white;
   border-radius: 5px;
-  box-shadow: 0 7px 13px 0 rgba(60, 66, 87, 0.03),
-    0 3px 6px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.12),
+    0px 7px 15px 0px rgba(137, 149, 156, 0.12);
 `
 
 const ModalContent = styled(Flex)`

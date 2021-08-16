@@ -1,7 +1,8 @@
-import React from "react"
-import { Text, Flex } from "rebass"
-import { Input, Label } from "@rebass/forms"
 import styled from "@emotion/styled"
+import { Input, Label } from "@rebass/forms"
+import React from "react"
+import { Flex, Text } from "rebass"
+import InfoTooltip from "../info-tooltip"
 import Typography from "../typography"
 
 const StyledInput = styled(Input)`
@@ -64,6 +65,9 @@ const InputField = React.forwardRef(
       onFocus,
       textAlign,
       disabled,
+      withTooltip = false,
+      tooltipText,
+      tooltipProps = {},
       ...props
     },
     ref
@@ -79,6 +83,7 @@ const InputField = React.forwardRef(
           <Label
             flex={"30% 0 0"}
             htmlFor={name}
+            alignItems="center"
             display={props.start ? "flex" : inline && "inline !important"}
           >
             <StyledLabel
@@ -88,6 +93,14 @@ const InputField = React.forwardRef(
             >
               {label}
             </StyledLabel>
+            {withTooltip ? (
+              <InfoTooltip
+                pb="10px"
+                ml={2}
+                tooltipText={tooltipText}
+                {...tooltipProps}
+              />
+            ) : null}
           </Label>
         )}
         <StyledInput

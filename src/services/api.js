@@ -246,8 +246,8 @@ export default {
   },
 
   swaps: {
-    retrieve(orderId) {
-      const path = `/admin/orders/${orderId}`
+    retrieve(swapId) {
+      const path = `/admin/swaps/${swapId}`
       return medusaRequest("GET", path)
     },
 

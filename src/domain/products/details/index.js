@@ -12,6 +12,7 @@ import useMedusa from "../../../hooks/use-medusa"
 import NotFound from "../../../components/not-found"
 import Card from "../../../components/card"
 import Options from "./options"
+import InventoryManager from "./inventory"
 
 const ProductDetail = ({ id }) => {
   const {
@@ -75,6 +76,7 @@ const ProductDetail = ({ id }) => {
         refresh={refresh}
         toaster={toaster}
       />
+      <InventoryManager product={product} onSubmit={handleDetailsSubmit} />
       <Card mr={3} width="100%">
         <Card.Header>Raw product</Card.Header>
         <Card.Body>

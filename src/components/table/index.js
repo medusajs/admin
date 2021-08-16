@@ -187,11 +187,11 @@ export const TableHeaderCell = React.forwardRef((props, ref) => (
     width="100%"
     color={"dark"}
     fontSize={0}
+    {...props}
     sx={{
       textTransform: "uppercase",
       ...props.sx,
     }}
-    {...props}
   />
 ))
 

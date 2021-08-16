@@ -32,6 +32,7 @@ import {
 } from "../../components/table"
 import Badge from "../../components/badge"
 
+import { displayAmount } from "../../utils/prices"
 import { decideBadgeColor } from "../../utils/decide-badge-color"
 import useMedusa from "../../hooks/use-medusa"
 import Spinner from "../../components/spinner"
@@ -709,7 +710,9 @@ const OrderIndex = ({}) => {
               <TableHeaderCell>Customer</TableHeaderCell>
               <TableHeaderCell>Fulfillment</TableHeaderCell>
               <TableHeaderCell>Payment</TableHeaderCell>
-              <TableHeaderCell>Total</TableHeaderCell>
+              <TableHeaderCell sx={{ textAlign: "right" }}>
+                Total
+              </TableHeaderCell>
               <TableHeaderCell sx={{ maxWidth: "75px" }} />
             </TableHeaderRow>
           </TableHead>
@@ -767,8 +770,10 @@ const OrderIndex = ({}) => {
                   </TableDataCell>
                   <TableDataCell>
                     <DefaultCellContent>
-                      {(el.total / 100).toFixed(2)}{" "}
-                      {el.currency_code.toUpperCase()}
+                      <Box sx={{ width: "100%", textAlign: "right" }}>
+                        {displayAmount(el.currency_code, el.total)}{" "}
+                        {el.currency_code.toUpperCase()}
+                      </Box>
                     </DefaultCellContent>
                   </TableDataCell>
                   <TableDataCell maxWidth="75px">
