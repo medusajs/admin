@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import { navigate } from "gatsby"
 import styled from "@emotion/styled"
@@ -73,6 +73,10 @@ export default ({
 
   const canceled = event.raw.canceled_at !== null
   const [expanded, setExpanded] = useState(!canceled)
+
+  useEffect(() => {
+    setExpanded(event.raw.canceled_at === null)
+  }, [event])
 
   const payStatusColors = decideBadgeColor(event.raw.payment_status)
   const fulfillStatusColors = decideBadgeColor(event.raw.fulfillment_status)
@@ -164,7 +168,18 @@ export default ({
               </Dropdown>
             )}
             {canceled && (
-              <Text onClick={() => setExpanded(!expanded)}>toggle</Text>
+              <Text
+                sx={{
+                  fontWeight: "500",
+                  color: "#89959C",
+                  ":hover": {
+                    color: "black",
+                  },
+                }}
+                onClick={() => setExpanded(!expanded)}
+              >
+                {expanded ? "Hide" : "Show"}
+              </Text>
             )}
           </Box>
         </Flex>

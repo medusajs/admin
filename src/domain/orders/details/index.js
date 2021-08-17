@@ -99,6 +99,10 @@ const Fulfillment = ({
 
   const [expanded, setExpanded] = useState(!canceled)
 
+  useEffect(() => {
+    setExpanded(details.fulfillment.canceled_at === null)
+  }, [details])
+
   const hasLinks =
     fulfillment?.shipped_at && !!fulfillment?.tracking_links?.length
 
@@ -190,7 +194,18 @@ const Fulfillment = ({
           </Flex>
         )
       ) : (
-        <Text onClick={() => setExpanded(!expanded)}>toggle</Text>
+        <Text
+          sx={{
+            fontWeight: "500",
+            color: "#89959C",
+            ":hover": {
+              color: "black",
+            },
+          }}
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? "Hide" : "Show"}
+        </Text>
       )}
     </Flex>
   )

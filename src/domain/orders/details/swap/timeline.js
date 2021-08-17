@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import { navigate } from "gatsby"
 import styled from "@emotion/styled"
@@ -85,6 +85,10 @@ export default ({
   const canceled = event.raw.canceled_at !== null
   const [expanded, setExpanded] = useState(!canceled)
 
+  useEffect(() => {
+    setExpanded(event.raw.canceled_at === null)
+  }, [event])
+
   if (!canceled) {
     actions.push({
       label: "Cancel swap",
@@ -98,6 +102,7 @@ export default ({
   if (
     event.raw.payment_status !== "captured" &&
     event.raw.payment_status !== "difference_refunded" &&
+    !canceled &&
     event.raw.difference_due !== 0
   ) {
     actions.push({
@@ -108,8 +113,9 @@ export default ({
   }
 
   if (
-    event.raw.fulfillment_status === "not_fulfilled" ||
-    event.raw.fulfillment_status === "canceled"
+    (event.raw.fulfillment_status === "not_fulfilled" ||
+      event.raw.fulfillment_status === "canceled") &&
+    !canceled
   ) {
     actions.push({
       label: "Fulfill Swap",
@@ -120,8 +126,9 @@ export default ({
   }
 
   if (
-    event.raw.return_order.status === "requested" ||
-    event.raw.return_order.status === "canceled"
+    (event.raw.return_order.status === "requested" ||
+      event.raw.return_order.status === "canceled") &&
+    !canceled
   ) {
     actions.push({
       label: "Receive Return",

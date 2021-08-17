@@ -171,7 +171,6 @@ const useMedusa = (endpoint, query) => {
         }
 
         value.cancelSwap = swap => {
-          console.log(swap)
           return subcomponent
             .cancelReturn(swap.return_order.id)
             .then(({ data }) => subcomponent.cancelSwap(query.id, swap.id))
