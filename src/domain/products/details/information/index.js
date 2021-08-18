@@ -1,19 +1,64 @@
-import React, { useEffect, useState } from "react"
-import { Flex, Box, Text } from "rebass"
-import { useForm } from "react-hook-form"
-
-import Creatable from "react-select/creatable"
-import Select from "react-select"
-import Medusa from "../../../../services/api"
 import styled from "@emotion/styled"
-
+import { Checkbox, Label } from "@rebass/forms"
+import React, { useEffect, useRef, useState } from "react"
+import Collapsible from "react-collapsible"
+import { useForm } from "react-hook-form"
+import Select from "react-select"
+import Creatable from "react-select/creatable"
+import { Box, Flex, Text } from "rebass"
+import { ReactComponent as ArrowDown } from "../../../../assets/svg/arrow-down.svg"
+import { ReactComponent as ArrowUp } from "../../../../assets/svg/arrow-up.svg"
 import Button from "../../../../components/button"
 import Card from "../../../../components/card"
+import Divider from "../../../../components/divider"
+import InfoTooltip from "../../../../components/info-tooltip"
 import Input from "../../../../components/input"
-import ImageUpload from "../../../../components/image-upload"
 import Spinner from "../../../../components/spinner"
-import useMedusa from "../../../../hooks/use-medusa"
 import TagInput from "../../../../components/tag-input"
+import TextArea from "../../../../components/textarea"
+import Tooltip from "../../../../components/tooltip"
+import useMedusa from "../../../../hooks/use-medusa"
+import Medusa from "../../../../services/api"
+import SingleImageDropzone from "./image-dropzone"
+
+const StyledLabel = styled(Label)`
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  width: auto;
+  cursor: pointer;
+`
+
+const TriggerElement = ({ label, icon, isOpen }) => {
+  const colorOpened = "#453B54"
+  const colorClosed = "#89959C"
+  const color = isOpen ? colorOpened : colorClosed
+  return (
+    <Box mb={3}>
+      <Box
+        pb="2px"
+        alignItems="center"
+        display="inline-flex"
+        sx={{
+          color,
+          cursor: "pointer",
+          borderBottom: "1px solid transparent",
+          "& *": { transition: "color 0.1s ease-out, fill 0.1s ease-out" },
+          "&:hover *": !isOpen
+            ? {
+                fill: colorOpened,
+                color: colorOpened,
+              }
+            : null,
+          "& svg": { fill: color },
+        }}
+      >
+        <Text mr="6px">{label}</Text>
+        <Box>{icon}</Box>
+      </Box>
+    </Box>
+  )
+}
 
 const StyledCreatableSelect = styled(Creatable)`
   font-size: 14px;
@@ -62,7 +107,9 @@ const StyledSelect = styled(Select)`
 `
 
 const Information = ({ isLoading, product, onSubmit, onDelete }) => {
-  const { register, reset, handleSubmit } = useForm()
+  const { register, reset, handleSubmit, formState } = useForm()
+  const { isDirty: formDirty } = formState
+  const [isDirty, setIsDirty] = useState(false)
   const [thumbnail, setThumbnail] = useState("")
   const [type, setSelectedType] = useState(null)
   const [types, setTypes] = useState([])
@@ -73,6 +120,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
   const { collections, isLoading: isLoadingCollections } = useMedusa(
     "collections"
   )
+  const resetAllFnRef = useRef(() => {})
 
   const fetchTypes = async () => {
     const productTypes = await Medusa.products
@@ -92,33 +140,40 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
 
   useEffect(() => {
     if (product) {
-      reset({
-        title: product.title,
-        thumbnail: product.thumbnail,
-        description: product.description,
-        handle: product.handle,
-      })
-
-      if (product.type) {
-        setSelectedType({
-          value: product.type.value,
-          label: product.type.value,
+      const resetAll = () => {
+        reset({
+          title: product.title,
+          thumbnail: product.thumbnail,
+          description: product.description,
+          handle: product.handle,
+          subtitle: product.subtitle,
+          discountable: product.discountable,
         })
-      }
 
-      if (product.collection) {
-        setCollection({
-          value: product.collection.id,
-          label: product.collection.title,
-        })
-      }
+        if (product.type) {
+          setSelectedType({
+            value: product.type.value,
+            label: product.type.value,
+          })
+        }
 
-      if (product.tags) {
-        const productTags = product.tags.map(tag => tag.value)
+        if (product.collection) {
+          setCollection({
+            value: product.collection.id,
+            label: product.collection.title,
+          })
+        }
 
-        setTags(productTags)
+        if (product.tags) {
+          const productTags = product.tags.map(tag => tag.value)
+
+          setTags(productTags)
+        }
+        setThumbnail(product.thumbnail)
+        setIsDirty(false)
       }
-      setThumbnail(product.thumbnail)
+      resetAllFnRef.current = resetAll
+      resetAll()
     }
   }, [product])
 
@@ -135,14 +190,12 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
     },
   ]
 
-  const onImageChange = e => {
-    if (e.target.files.length > 0) {
-      Medusa.uploads.create(e.target.files).then(({ data }) => {
-        const uploaded = data.uploads.map(({ url }) => url)
-        console.log(uploaded)
-        setThumbnail(uploaded[0])
-      })
-    }
+  const onImageChange = images => {
+    Medusa.uploads.create(images).then(({ data }) => {
+      const uploaded = data.uploads.map(({ url }) => url)
+      setThumbnail(uploaded[0])
+      setIsDirty(true)
+    })
   }
 
   const handleOnSubmit = data => {
@@ -178,20 +231,22 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
         updateData.collection_id = coll.id
       }
     }
-
     onSubmit(updateData)
   }
 
   const handleTypeChange = selectedOption => {
     setSelectedType(selectedOption)
+    setIsDirty(true)
   }
 
   const handleCollectionChange = selectedOption => {
     setCollection(selectedOption)
+    setIsDirty(true)
   }
 
   const handleTagChange = newTags => {
     setTags(newTags)
+    setIsDirty(true)
   }
 
   if (isLoading) {
@@ -205,105 +260,185 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
   }
 
   return (
-    <Card as="form" onSubmit={handleSubmit(handleOnSubmit)} mb={2}>
+    <Card
+      as="form"
+      onSubmit={handleSubmit(handleOnSubmit)}
+      onKeyDown={e => e.key === "Enter" && e.preventDefault()}
+      mb={2}
+    >
       <Card.Header dropdownOptions={dropdownOptions}>
         Product Information
       </Card.Header>
-      <Card.Body px={3} flexDirection="column">
-        <Flex width={1} flexDirection={"column"}>
-          <Box mb={3} width={1 / 2}>
-            <Input
-              name="title"
-              label="Name"
-              ref={register}
-              boldLabel={"true"}
-            />
-          </Box>
-          <Box width={1 / 2} mb={3}>
-            <Input
-              name="description"
-              label="Description"
-              ref={register}
-              boldLabel={"true"}
-            />
-          </Box>
-          <Box mb={3} width={1 / 2}>
-            <Input
-              name="handle"
-              label="Handle"
-              ref={register}
-              boldLabel={"true"}
-            />
-          </Box>
-          <Box width={1 / 2} mb={3}>
-            <Text fontSize={1} mb={2} fontWeight="500">
-              Tags (separated by comma)
-            </Text>
-            <TagInput
-              placeholder="Spring, summer..."
-              values={tags || []}
-              onChange={values => handleTagChange(values)}
-              boldLabel={"true"}
-            />
-            {frequentTags?.length ? (
-              <Flex mt={1}>
-                <Text mr={2} fontSize="10px">
-                  Frequently used tags:{" "}
-                </Text>
-                <Text fontSize="10px">
-                  {frequentTags.map(t => t.value).join(", ")}
-                </Text>
-              </Flex>
-            ) : null}
-          </Box>
-          <Box width={1 / 2} mb={3}>
-            <Text fontSize={1} mb={2} fontWeight="500">
-              Type
-            </Text>
-            <StyledCreatableSelect
-              value={type ? { value: type.value, label: type.value } : null}
-              placeholder="Select type..."
-              onChange={handleTypeChange}
-              isClearable={true}
-              options={
-                types?.map(typ => ({
-                  value: typ.value,
-                  label: typ.value,
-                })) || []
+      <Card.Body px={3}>
+        <Box flexGrow="1" paddingRight={6}>
+          <Flex width={1} flexDirection={"column"}>
+            <Box mb={3}>
+              <Input
+                name="title"
+                label="Name"
+                ref={register}
+                boldLabel={"true"}
+              />
+            </Box>
+            <Box mb={3}>
+              <Input
+                name="subtitle"
+                placeholder="subtitle"
+                label="Subtitle"
+                ref={register}
+                boldLabel={"true"}
+                withTooltip
+                tooltipText="Subtitle of the product"
+              />
+            </Box>
+
+            <Box mb={3}>
+              <TextArea
+                sx={{ "& div": { fontWeight: "500 !important" } }}
+                resize="vertical"
+                name="description"
+                rows="3"
+                label="Description"
+                ref={register}
+                boldLabel={"true"}
+              />
+            </Box>
+            <Box mb={3}>
+              <Text fontSize={1} mb={1} fontWeight="500">
+                Collection
+              </Text>
+              <StyledSelect
+                isClearable={true}
+                value={collection}
+                placeholder="Select collection..."
+                onChange={handleCollectionChange}
+                options={
+                  collections?.map(col => ({
+                    value: col.id,
+                    label: col.title,
+                  })) || []
+                }
+              />
+            </Box>
+            <Divider mb={3} />
+
+            <Collapsible
+              transitionTime={200}
+              overflowWhenOpen="visible"
+              triggerWhenOpen={
+                <TriggerElement
+                  isOpen
+                  label="Hide additional details"
+                  icon={<ArrowUp />}
+                />
               }
-              label="Type"
-            />
-          </Box>
-          <Box width={1 / 2} mb={3}>
-            <Text fontSize={1} mb={1} fontWeight="500">
-              Collection
-            </Text>
-            <StyledSelect
-              isClearable={true}
-              value={collection}
-              placeholder="Select collection..."
-              onChange={handleCollectionChange}
-              options={
-                collections?.map(col => ({
-                  value: col.id,
-                  label: col.title,
-                })) || []
+              trigger={
+                <TriggerElement
+                  label="Show additional details"
+                  icon={<ArrowDown />}
+                />
               }
-            />
-          </Box>
-        </Flex>
-        <Flex mb={3}>
-          <ImageUpload
-            boldLabel={true}
+            >
+              <Box mb={3}>
+                <Input
+                  name="handle"
+                  label="Handle"
+                  ref={register}
+                  boldLabel={"true"}
+                />
+              </Box>
+              <Box mb={3}>
+                <Flex mb={2} alignItems="center">
+                  <Text mr={2} fontSize={1} fontWeight="500">
+                    Tags (separated by comma)
+                  </Text>
+                  <InfoTooltip tooltipText="Tags of the product" />
+                </Flex>
+                <TagInput
+                  placeholder="Spring, summer..."
+                  values={tags || []}
+                  onChange={values => handleTagChange(values)}
+                  boldLabel={"true"}
+                  withTooltip
+                  tooltipText="Subtitle of the product"
+                />
+                {frequentTags?.length ? (
+                  <Flex mt={1}>
+                    <Text mr={2} fontSize="10px">
+                      Frequently used tags:{" "}
+                    </Text>
+                    <Text fontSize="10px">
+                      {frequentTags.map(t => t.value).join(", ")}
+                    </Text>
+                  </Flex>
+                ) : null}
+              </Box>
+              <Box mb={3}>
+                <Flex mb={2} alignItems="center">
+                  <Text mr={2} fontSize={1} fontWeight="500">
+                    Type
+                  </Text>
+                  <InfoTooltip tooltipText="Type of the product" />
+                </Flex>
+                <StyledCreatableSelect
+                  value={type ? { value: type.value, label: type.value } : null}
+                  placeholder="Select type..."
+                  onChange={handleTypeChange}
+                  isClearable={true}
+                  options={
+                    types?.map(typ => ({
+                      value: typ.value,
+                      label: typ.value,
+                    })) || []
+                  }
+                  label="Type"
+                />
+              </Box>
+              <Box mb={3}>
+                <StyledLabel
+                  data-for="tooltip-discountable"
+                  data-tip="Product can discounted"
+                >
+                  <Tooltip id="tooltip-discountable" />
+                  <Checkbox ref={register} mr={1} name="discountable" />
+                  Discountable
+                </StyledLabel>
+              </Box>
+            </Collapsible>
+          </Flex>
+        </Box>
+        <Flex pl={4} flexGrow="1" mb={3}>
+          <SingleImageDropzone
             onChange={onImageChange}
-            name="files"
             label="Thumbnail"
             value={thumbnail}
+            height={255}
+            width={255}
           />
         </Flex>
       </Card.Body>
-      <Card.Footer px={3} justifyContent="flex-end">
-        <Button variant={"cta"} type="submit">
+      <Card.Footer
+        sx={{
+          opacity: isDirty || formDirty ? 1 : 0,
+          visibility: isDirty || formDirty ? "visible" : "hidden",
+          pointerEvents: isDirty || formDirty ? "inherit" : "none",
+        }}
+        px={3}
+        justifyContent="flex-end"
+      >
+        <Button
+          mr={2}
+          variant="primary"
+          type="button"
+          onClick={() => {
+            if (resetAllFnRef.current) {
+              resetAllFnRef.current()
+            }
+          }}
+        >
+          Cancel
+        </Button>
+        <Button type="submit" variant="deep-blue">
           Save
         </Button>
       </Card.Footer>

@@ -79,6 +79,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const [customOptionPrice, setCustomOptionPrice] = useState()
   const [showCustomPrice, setShowCustomPrice] = useState(false)
   const [creatingOrder, setCreatingOrder] = useState(false)
+  const [noNotification, setNoNotification] = useState(false)
   const [bodyElement, setBodyElement] = useState()
   const [searchingProducts, setSearchingProducts] = useState(false)
 
@@ -128,10 +129,12 @@ const NewOrder = ({ onDismiss, refresh }) => {
   }
 
   const handlePriceChange = (index, price) => {
+    const value = Math.round(price * 100)
+
     const updated = [...items]
     updated[index] = {
       ...items[index],
-      unit_price: parseInt(price),
+      unit_price: value,
     }
 
     setItems(updated)
@@ -244,6 +247,10 @@ const NewOrder = ({ onDismiss, refresh }) => {
       option.price = customOptionPrice * 100
     }
 
+    if (noNotification) {
+      draftOrder.no_notification_order = true
+    }
+
     draftOrder.shipping_methods = [option]
 
     setCreatingOrder(true)
@@ -311,16 +318,16 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
   const calculateTotal = () => {
     const tot = items.reduce((acc, next) => {
-      if (next.unit_price) {
+      if ("unit_price" in next) {
         acc = acc + next.unit_price
       } else {
-        acc = acc + extractUnitPrice(next.prices, region, false)
+        acc = acc + extractUnitPrice(next, region, false)
       }
 
       return acc
     }, 0)
 
-    return tot * 100
+    return tot
   }
 
   useEffect(() => {
@@ -521,14 +528,31 @@ const NewOrder = ({ onDismiss, refresh }) => {
           )}
         </Modal.Content>
         <Modal.Footer>
+          {step === 6 && (
+            <Flex>
+              <Box px={0} py={1}>
+                <input
+                  id="noNotification"
+                  name="noNotification"
+                  checked={!noNotification}
+                  onChange={() => setNoNotification(!noNotification)}
+                  type="checkbox"
+                />
+              </Box>
+              <Box px={2} py={1}>
+                <Text fontSize={1}>Send notifications</Text>
+              </Box>
+            </Flex>
+          )}
+          <Box ml="auto" />
           <Button
+            mr={2}
             variant="primary"
             disabled={step === 0}
             onClick={() => setStep(step - 1)}
           >
             Back
           </Button>
-          <Box ml="auto" />
           <Button
             variant="cta"
             loading={creatingOrder}

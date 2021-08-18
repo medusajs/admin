@@ -1,43 +1,18 @@
-import React, { useEffect, useState } from "react"
-import styled from "@emotion/styled"
 import _ from "lodash"
-import { Flex, Box, Image, Text } from "rebass"
-
+import React, { useEffect, useState } from "react"
+import { Flex } from "rebass"
+import { ReactComponent as CloseIcon } from "../../../../assets/svg/close-rounded-bg.svg"
+import Button from "../../../../components/button"
+import Card from "../../../../components/card"
+import ImagesDropzone from "../../../../components/image-dropzone"
 import Medusa from "../../../../services/api"
 
-import Card from "../../../../components/card"
-import Spinner from "../../../../components/spinner"
-import ImageUpload from "../../../../components/image-upload"
-
-const StyledImageCard = styled(Image)`
-  height: 150px;
-  width: 150px;
-
-  border: ${props => (props.selected ? "1px solid #53725D" : "none")};
-
-  cursor: pointer;
-
-  object-fit: contain;
-
-  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0.12) 0px 1px 1px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.08) 0px 3px 9px 0px,
-    rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
-
-  border-radius: 3px;
-
-  &:hover {
-    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.12) 0px 1px 1px 0px,
-      rgba(60, 66, 87, 0.16) 0px 0px 0px 1px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.2) 0px 5px 9px 0px;
-  }
-`
-
 const Images = ({ isLoading, product, refresh, toaster }) => {
-  const [selectedImages, setSelectedImages] = useState([])
+  const [uploads, setUploads] = useState([])
   const [images, setImages] = useState([])
-  const [isDeletingImages, setIsDeletingImages] = useState(false)
+  const [selectedImages, setSelectedImages] = useState([])
+  const [isSavingImages, setIsSavingImages] = useState(false)
+  const [isDirty, setIsDirty] = useState(false)
 
   const handleImageSelection = image => {
     if (selectedImages.includes(image)) {
@@ -50,45 +25,43 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
   useEffect(() => {
     if (product) {
       let imgs = [product.thumbnail, ...product.images.map(img => img.url)]
-      imgs = [...new Set(imgs)]
-      setImages(imgs)
+      imgs = [...new Set(imgs)].filter(Boolean)
+      setImages([...imgs])
     }
   }, [product])
 
   const handleImageDelete = () => {
-    setIsDeletingImages(true)
     const newImages = _.difference(images, selectedImages)
-
-    Medusa.products
-      .update(product.id, { images: newImages })
-      .then(() => {
-        setIsDeletingImages(false)
-        setSelectedImages([])
-        refresh({ id: product.id })
-        toaster("Successfully deleted images", "success")
-      })
-      .catch(() => toaster("Failed to deleted images", "error"))
-    setIsDeletingImages(false)
+    setSelectedImages([])
+    setImages(newImages)
+    setIsDirty(true)
   }
 
-  const onImageChange = e => {
+  const handleSave = () => {
+    setIsSavingImages(true)
     Medusa.uploads
-      .create(e.target.files)
+      .create(uploads)
       .then(({ data }) => {
         const uploaded = data.uploads.map(({ url }) => url)
-        return uploaded[0]
+        return uploaded
       })
-      .then(uploadedImage => {
-        const all = [...images, uploadedImage]
-
+      .then(uploadedImgs => {
+        let minusLocalImages = _.difference(
+          images,
+          uploads.map(u => u.preview)
+        )
+        let allImages = [...minusLocalImages, ...uploadedImgs]
         Medusa.products
-          .update(product.id, { images: all })
+          .update(product.id, { images: allImages })
           .then(() => {
-            setIsDeletingImages(false)
+            setIsSavingImages(false)
+            setSelectedImages([])
+            setUploads([])
+            setIsDirty(false)
             refresh({ id: product.id })
-            toaster("Successfully uploaded image", "success")
+            toaster("Successfully saved images", "success")
           })
-          .catch(() => toaster("Failed to upload image", "error"))
+          .catch(() => toaster("Failed to upload images", "error"))
       })
   }
 
@@ -100,7 +73,6 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
             type: "delete",
             label: "Delete images",
             onClick: () => handleImageDelete(),
-            isLoading: isDeletingImages,
           }
         }
       >
@@ -108,18 +80,54 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
           ? `${selectedImages.length} image(s) selected`
           : "Images"}
       </Card.Header>
-      <Card.Body px={3}>
-        <Flex>
-          {images.map((img, i) => (
-            <StyledImageCard
-              key={i}
-              m={2}
-              src={img}
-              selected={selectedImages.includes(img)}
-              onClick={() => handleImageSelection(img)}
-            />
+      <Card.Body flexDirection="column" px={3}>
+        <ImagesDropzone
+          images={images}
+          value={uploads}
+          onChange={files => {
+            setUploads([...uploads, ...files])
+            let merged = [...images, ...files.map(f => f.preview)]
+            setImages(merged)
+            setIsDirty(true)
+          }}
+        >
+          {images.map(image => (
+            <ImagesDropzone.Preview
+              selected={selectedImages.includes(image)}
+              onClick={e => {
+                e.stopPropagation()
+                handleImageSelection(image)
+              }}
+              sx={{ position: "relative" }}
+              src={image}
+            >
+              <CloseIcon
+                onClick={e => {
+                  e.stopPropagation()
+                  const newImages = images.filter(img => image != img)
+                  setImages(newImages)
+                  setIsDirty(true)
+                }}
+                style={{
+                  position: "absolute",
+                  right: 5,
+                  top: 5,
+                  cursor: "pointer",
+                }}
+              />
+            </ImagesDropzone.Preview>
           ))}
-          <ImageUpload onChange={e => onImageChange(e)} name="files" />
+        </ImagesDropzone>
+        <Flex mt={3} justifyContent="flex-end">
+          {isDirty && (
+            <Button
+              isLoading={isSavingImages}
+              variant="deep-blue"
+              onClick={handleSave}
+            >
+              Save
+            </Button>
+          )}
         </Flex>
       </Card.Body>
     </Card>

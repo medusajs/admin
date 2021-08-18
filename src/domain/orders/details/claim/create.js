@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Text, Flex, Box } from "rebass"
 import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
 
 import Pill from "../../../../components/pill"
 import Modal from "../../../../components/modal"
-import CurrencyInput from "../../../../components/currency-input"
 import ImageUpload from "../../../../components/image-upload"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
@@ -17,6 +16,8 @@ import Medusa from "../../../../services/api"
 
 import { ReactComponent as Trash } from "../../../../assets/svg/trash.svg"
 import { ReactComponent as Edit } from "../../../../assets/svg/edit.svg"
+import { ReactSelect } from "../../../../components/react-select"
+import { extractOptionPrice } from "../../../../utils/prices"
 
 const removeNullish = obj =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -95,16 +96,32 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [isReplace, toggleReplace] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [returnAll, setReturnAll] = useState(false)
+  const [noNotification, setNoNotification] = useState(order.no_notification)
   const [toPay, setToPay] = useState(0)
   const [toReturn, setToReturn] = useState({})
   const [quantities, setQuantities] = useState({})
 
   const [itemsToAdd, setItemsToAdd] = useState([])
   const [shippingLoading, setShippingLoading] = useState(true)
+  const [returnShippingOptions, setReturnShippingOptions] = useState([])
+  const [returnShippingMethod, setReturnShippingMethod] = useState()
+  const [returnShippingPrice, setReturnShippingPrice] = useState()
   const [shippingOptions, setShippingOptions] = useState([])
   const [shippingMethod, setShippingMethod] = useState()
   const [shippingPrice, setShippingPrice] = useState()
+  const [showCustomPrice, setShowCustomPrice] = useState({
+    standard: false,
+    return: false,
+  })
+  const [customOptionPrice, setCustomOptionPrice] = useState({
+    standard: 0,
+    return: null,
+  })
   const [searchResults, setSearchResults] = useState([])
+  const [ready, setReady] = useState(false)
+
+  // Includes both order items and swap items
+  const [allItems, setAllItems] = useState([])
 
   const addressForm = useForm()
 
@@ -149,6 +166,20 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }
 
   useEffect(() => {
+    if (order) {
+      let temp = [...order.items]
+
+      if (order.swaps && order.swaps.length) {
+        for (const s of order.swaps) {
+          temp = [...temp, ...s.additional_items]
+        }
+      }
+
+      setAllItems(temp)
+    }
+  }, [order])
+
+  useEffect(() => {
     Medusa.regions.retrieve(order.region_id).then(({ data }) => {
       setCountries(data.region.countries.map(c => c.iso_2))
     })
@@ -158,10 +189,62 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
         is_return: true,
       })
       .then(({ data }) => {
+        setReturnShippingOptions(data.shipping_options)
+        setShippingLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    Medusa.regions.retrieve(order.region_id).then(({ data }) => {
+      setCountries(data.region.countries.map(c => c.iso_2))
+    })
+    Medusa.shippingOptions
+      .list({
+        region_id: order.region_id,
+        is_return: false,
+      })
+      .then(({ data }) => {
         setShippingOptions(data.shipping_options)
         setShippingLoading(false)
       })
   }, [])
+
+  useEffect(() => {
+    if (toReturn) {
+      if (
+        Object.keys(toReturn).length !== 0 &&
+        isReplace &&
+        itemsToAdd.length > 0 &&
+        shippingMethod
+      ) {
+        setReady(true)
+      } else if (!isReplace && Object.keys(toReturn).length !== 0) {
+        setReady(true)
+      } else {
+        setReady(false)
+      }
+    } else {
+      setReady(false)
+    }
+  }, [toReturn, isReplace, itemsToAdd, shippingMethod])
+
+  useEffect(() => {
+    if (!isReplace) {
+      setShippingMethod()
+      setShippingPrice()
+      setShowCustomPrice({
+        ...showCustomPrice,
+        standard: false,
+      })
+    }
+  }, [isReplace])
+
+  useEffect(() => {
+    setCustomOptionPrice({
+      ...customOptionPrice,
+      standard: 0,
+    })
+  }, [shippingMethod, showCustomPrice])
 
   //useEffect(() => {
   //  const items = toReturn.map(t => order.items.find(i => i.id === t))
@@ -208,20 +291,34 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
         variant_id: i.id,
         quantity: i.quantity,
       })),
+      no_notification:
+        noNotification !== order.no_notification ? noNotification : undefined,
     }
 
     if (shippingAddress.address_1) {
       data.shipping_address = shippingAddress
     }
 
-    if (shippingMethod) {
+    if (returnShippingMethod) {
       data.return_shipping = {
-        option_id: shippingMethod,
-        price: Math.round(shippingPrice / (1 + order.tax_rate / 100)),
+        option_id: returnShippingMethod.id,
+        price:
+          showCustomPrice.return && customOptionPrice.return
+            ? customOptionPrice.return * 100
+            : Math.round(returnShippingPrice / (1 + order.tax_rate / 100)),
       }
     }
 
-    data.shipping_methods = order.shipping_methods.map(({ id }) => ({ id }))
+    if (shippingMethod) {
+      data.shipping_methods = [
+        {
+          option_id: shippingMethod.id,
+          price: customOptionPrice.standard * 100,
+        },
+      ]
+    }
+
+    // data.shipping_methods = order.shipping_methods.map(({ id }) => ({ id }))
 
     if (onCreate) {
       setSubmitting(true)
@@ -319,25 +416,35 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }))
   }
 
-  const handleShippingSelected = e => {
-    const element = e.target
-    if (element.value !== "Add a shipping method") {
-      setShippingMethod(element.value)
-      const method = shippingOptions.find(o => element.value === o.id)
-      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
+  const handleReturnShippingSelected = so => {
+    const selectSo = returnShippingOptions.find(s => so.value === s.id)
+    if (selectSo) {
+      setReturnShippingMethod(selectSo)
+      setReturnShippingPrice(selectSo.amount * (1 + order.tax_rate / 100))
+    } else {
+      setReturnShippingMethod()
+      setReturnShippingPrice(0)
+    }
+  }
+
+  const handleShippingSelected = so => {
+    const selectSo = shippingOptions.find(s => so.value === s.id)
+    if (selectSo) {
+      setShippingMethod(selectSo)
+      setShippingPrice(selectSo.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
       setShippingPrice(0)
     }
   }
 
-  const handleUpdateShippingPrice = e => {
-    const element = e.target
-    const value = element.value
-    if (value >= 0) {
-      setShippingPrice(parseFloat(value) * 100)
-    }
-  }
+  // const handleUpdateShippingPrice = e => {
+  //   const element = e.target
+  //   const value = element.value
+  //   if (value >= 0) {
+  //     setShippingPrice(parseFloat(value) * 100)
+  //   }
+  // }
 
   const handleProductSearch = val => {
     Medusa.variants
@@ -402,9 +509,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 Refundable
               </Box>
             </Flex>
-            {order.items.map(item => {
+            {allItems.map(item => {
               // Only show items that have not been returned
-              if (item.returned) {
+              if (item.returned_quantity === item.quantity) {
                 return
               }
 
@@ -513,38 +620,87 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
           <Box>
             <Text sx={{ fontSize: 1, fontWeight: 600 }}>
-              Return shipping method
+              Shipping method for returning items:
             </Text>
-            <Flex w={1} pt={2} justifyContent="space-between">
-              <Select
-                mr={3}
-                height={"32px"}
-                fontSize={1}
-                placeholder={"Add a shipping method"}
-                value={shippingMethod}
-                onChange={handleShippingSelected}
-                options={shippingOptions.map(o => ({
-                  label: o.name,
-                  value: o.id,
-                }))}
-              />
-              {shippingMethod && (
-                <Flex>
-                  <Box px={2} fontSize={1}>
-                    Shipping price (incl. taxes)
-                  </Box>
-                  <Box px={2} width={170}>
-                    <CurrencyInput
-                      currency={order.currency_code}
-                      value={shippingPrice / 100}
-                      onChange={handleUpdateShippingPrice}
-                    />
-                  </Box>
-                </Flex>
-              )}
+            <ReactSelect
+              isClearable={false}
+              placeholder="Select shipping..."
+              onChange={so => handleReturnShippingSelected(so)}
+              options={
+                returnShippingOptions?.map(so => ({
+                  value: so.id,
+                  label: `${so.name} - ${extractOptionPrice(
+                    so.amount,
+                    so.region
+                  )}`,
+                })) || []
+              }
+            />
+            <Flex>
+              {returnShippingMethod ? (
+                <>
+                  <Text fontStyle="italic" fontSize={1} mt={1} color="#a2a1a1">
+                    Shipping to {returnShippingMethod.region.name}
+                  </Text>
+                  <Box ml="auto" />
+                  <Flex flexDirection="column">
+                    {!showCustomPrice.return && (
+                      <Button
+                        mt={2}
+                        fontSize="12px"
+                        variant="primary"
+                        width="140px"
+                        mb={2}
+                        disabled={!returnShippingMethod}
+                        onClick={() =>
+                          setShowCustomPrice({
+                            ...showCustomPrice,
+                            return: true,
+                          })
+                        }
+                      >
+                        {showCustomPrice.return ? "Submit" : "Set custom price"}
+                      </Button>
+                    )}
+                    {showCustomPrice.return && (
+                      <Flex flexDirection="column">
+                        <Flex width="140px" mt={3}>
+                          <Input
+                            type="number"
+                            fontSize="12px"
+                            onChange={e =>
+                              setCustomOptionPrice({
+                                ...customOptionPrice,
+                                return: e.currentTarget.value,
+                              })
+                            }
+                            value={customOptionPrice.return || null}
+                            placeholder={order.currency_code.toUpperCase()}
+                            min={0}
+                          />
+                          <Flex
+                            px={2}
+                            alignItems="center"
+                            onClick={() =>
+                              setShowCustomPrice({
+                                ...showCustomPrice,
+                                return: false,
+                              })
+                            }
+                          >
+                            &times;
+                          </Flex>
+                        </Flex>
+                        <Text fontSize="10px" fontStyle="italic">
+                          Custom price
+                        </Text>
+                      </Flex>
+                    )}
+                  </Flex>
+                </>
+              ) : null}
             </Flex>
           </Box>
-
           <Flex mt={3} alignItems="center">
             <Pill
               height="28px"
@@ -569,131 +725,242 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             </Pill>
           </Flex>
           {isReplace && (
-            <Box my={3}>
-              <Text sx={{ fontSize: 1, fontWeight: 600 }}>Items to send</Text>
-              <Box mt={2}>
-                <Dropdown
-                  leftAlign
-                  toggleText={"+ Add product"}
-                  showSearch
-                  onSearchChange={handleProductSearch}
-                  searchPlaceholder={"Search by SKU, Name, etch."}
-                >
-                  {searchResults.map(s => (
-                    <Flex
-                      key={s.variant_id}
-                      alignItems="center"
-                      onClick={() => handleAddItemToClaim(s)}
-                    >
-                      <Dot
-                        mr={3}
-                        bg={s.inventory_quantity > 0 ? "green" : "danger"}
-                      />
-                      <Box>
-                        <Text fontSize={0} mb={0} lineHeight={1}>
-                          {s.product.title} - {s.title}
-                        </Text>
-                        <Flex>
-                          <Text width={"100px"} mt={0} fontSize={"10px"}>
-                            {s.sku}
-                          </Text>
-                          <Text ml={2} mt={0} fontSize={"10px"}>
-                            In stock: {s.inventory_quantity}
-                          </Text>
-                        </Flex>
-                      </Box>
-                    </Flex>
-                  ))}
-                </Dropdown>
-              </Box>
-              <Box mt={3}>
-                {itemsToAdd.length > 0 && (
-                  <Flex
-                    sx={{
-                      borderBottom: "hairline",
-                    }}
-                    justifyContent="space-between"
-                    fontSize={1}
-                    py={2}
+            <>
+              <Box my={3}>
+                <Text sx={{ fontSize: 1, fontWeight: 600 }}>Items to send</Text>
+                <Box mt={2}>
+                  <Dropdown
+                    leftAlign
+                    toggleText={"+ Add product"}
+                    showSearch
+                    onSearchChange={handleProductSearch}
+                    searchPlaceholder={"Search by SKU, Name, etch."}
                   >
-                    <Box width={30} px={2} py={1}></Box>
-                    <Box width={400} px={2} py={1}>
-                      Details
-                    </Box>
-                    <Box width={75} px={2} py={1}>
-                      Quantity
-                    </Box>
-                    <Box width={170} px={2} py={1}>
-                      Price
-                    </Box>
-                  </Flex>
-                )}
-                {itemsToAdd.map((item, index) => {
-                  return (
+                    {searchResults.map(s => (
+                      <Flex
+                        key={s.variant_id}
+                        alignItems="center"
+                        onClick={() => handleAddItemToClaim(s)}
+                      >
+                        <Dot
+                          mr={3}
+                          bg={s.inventory_quantity > 0 ? "green" : "danger"}
+                        />
+                        <Box>
+                          <Text fontSize={0} mb={0} lineHeight={1}>
+                            {s.product.title} - {s.title}
+                          </Text>
+                          <Flex>
+                            <Text width={"100px"} mt={0} fontSize={"10px"}>
+                              {s.sku}
+                            </Text>
+                            <Text ml={2} mt={0} fontSize={"10px"}>
+                              In stock: {s.inventory_quantity}
+                            </Text>
+                          </Flex>
+                        </Box>
+                      </Flex>
+                    ))}
+                  </Dropdown>
+                </Box>
+                <Box mt={3}>
+                  {itemsToAdd.length > 0 && (
                     <Flex
-                      key={item.variant_id}
-                      sx={{ alignItems: "center" }}
+                      sx={{
+                        borderBottom: "hairline",
+                      }}
                       justifyContent="space-between"
-                      fontSize={2}
+                      fontSize={1}
                       py={2}
                     >
                       <Box width={30} px={2} py={1}></Box>
                       <Box width={400} px={2} py={1}>
-                        <Text fontSize={1} lineHeight={"14px"}>
-                          {item.title}
-                        </Text>
-                        <Text fontSize={0}>{item.sku}</Text>
+                        Details
                       </Box>
                       <Box width={75} px={2} py={1}>
-                        <Input
-                          type="number"
-                          onChange={e => handleToAddQuantity(e, index)}
-                          value={item.quantity || ""}
-                          min={1}
-                        />
+                        Quantity
                       </Box>
                       <Box width={170} px={2} py={1}>
-                        <Text fontSize={1}>
-                          {extractPrice(item.prices, order).toFixed(2)}{" "}
-                          {order.currency_code.toUpperCase()}
-                        </Text>
-                      </Box>
-                      <Box
-                        variant={"buttons.link"}
-                        onClick={() => handleRemoveItem(index)}
-                      >
-                        <Trash />
+                        Price
                       </Box>
                     </Flex>
-                  )
-                })}
-              </Box>
-              {shippingAddress.address_1 ? (
-                <Flex sx={{ alignItems: "center" }}>
-                  <Text sx={{ fontSize: 0 }}>
-                    Shipping to: {formatAddress(shippingAddress)}
-                  </Text>
+                  )}
+                  {itemsToAdd.map((item, index) => {
+                    return (
+                      <Flex
+                        key={item.variant_id}
+                        sx={{ alignItems: "center" }}
+                        justifyContent="space-between"
+                        fontSize={2}
+                        py={2}
+                      >
+                        <Box width={30} px={2} py={1}></Box>
+                        <Box width={400} px={2} py={1}>
+                          <Text fontSize={1} lineHeight={"14px"}>
+                            {item.title}
+                          </Text>
+                          <Text fontSize={0}>{item.sku}</Text>
+                        </Box>
+                        <Box width={75} px={2} py={1}>
+                          <Input
+                            type="number"
+                            onChange={e => handleToAddQuantity(e, index)}
+                            value={item.quantity || ""}
+                            min={1}
+                          />
+                        </Box>
+                        <Box width={170} px={2} py={1}>
+                          <Text fontSize={1}>
+                            {extractPrice(item.prices, order).toFixed(2)}{" "}
+                            {order.currency_code.toUpperCase()}
+                          </Text>
+                        </Box>
+                        <Box
+                          variant={"buttons.link"}
+                          onClick={() => handleRemoveItem(index)}
+                        >
+                          <Trash />
+                        </Box>
+                      </Flex>
+                    )
+                  })}
+                </Box>
+                {shippingAddress.address_1 ? (
+                  <Flex sx={{ alignItems: "center" }}>
+                    <Text sx={{ fontSize: 0 }}>
+                      Shipping to: {formatAddress(shippingAddress)}
+                    </Text>
+                    <Text
+                      ml={3}
+                      onClick={() => setShowAddress(true)}
+                      variant={"buttons.link"}
+                    >
+                      <Edit /> Edit
+                    </Text>
+                  </Flex>
+                ) : (
                   <Text
-                    ml={3}
                     onClick={() => setShowAddress(true)}
                     variant={"buttons.link"}
+                    sx={{ display: "inline-block" }}
                   >
-                    <Edit /> Edit
+                    Ship to a different address
                   </Text>
-                </Flex>
-              ) : (
-                <Text
-                  onClick={() => setShowAddress(true)}
-                  variant={"buttons.link"}
-                >
-                  Ship to a different address
+                )}
+              </Box>
+              <Box>
+                <Text sx={{ fontSize: 1, fontWeight: 600 }} mb={2}>
+                  Shipping method for new items:
                 </Text>
-              )}
-            </Box>
+                <ReactSelect
+                  isClearable={false}
+                  placeholder="Select shipping..."
+                  onChange={so => handleShippingSelected(so)}
+                  options={
+                    shippingOptions?.map(so => ({
+                      value: so.id,
+                      label: `${so.name}`,
+                    })) || []
+                  }
+                />
+                <Flex>
+                  {shippingMethod ? (
+                    <>
+                      <Text
+                        fontStyle="italic"
+                        fontSize={1}
+                        mt={1}
+                        color="#a2a1a1"
+                      >
+                        Shipping new items is free pr. default. Use custom
+                        price, if this is not the case
+                      </Text>
+                      <Box ml="auto" />
+                      <Flex flexDirection="column">
+                        {!showCustomPrice.standard && (
+                          <Button
+                            mt={2}
+                            fontSize="12px"
+                            variant="primary"
+                            width="140px"
+                            mb={2}
+                            disabled={!shippingMethod}
+                            onClick={() =>
+                              setShowCustomPrice({
+                                ...showCustomPrice,
+                                standard: true,
+                              })
+                            }
+                          >
+                            {showCustomPrice.standard
+                              ? "Submit"
+                              : "Set custom price"}
+                          </Button>
+                        )}
+                        {showCustomPrice.standard && (
+                          <Flex flexDirection="column">
+                            <Flex width="140px" mt={3}>
+                              <Input
+                                type="number"
+                                fontSize="12px"
+                                onChange={e =>
+                                  setCustomOptionPrice({
+                                    ...customOptionPrice,
+                                    standard: e.currentTarget.value,
+                                  })
+                                }
+                                value={customOptionPrice.standard || null}
+                                placeholder={order.currency_code.toUpperCase()}
+                                min={0}
+                              />
+                              <Flex
+                                px={2}
+                                alignItems="center"
+                                onClick={() =>
+                                  setShowCustomPrice({
+                                    ...showCustomPrice,
+                                    standard: false,
+                                  })
+                                }
+                              >
+                                &times;
+                              </Flex>
+                            </Flex>
+                            <Text fontSize="10px" fontStyle="italic">
+                              Custom price
+                            </Text>
+                          </Flex>
+                        )}
+                      </Flex>
+                    </>
+                  ) : null}
+                </Flex>
+              </Box>
+            </>
           )}
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
-          <Button loading={submitting} type="submit" variant="primary">
+        <Modal.Footer>
+          <Flex>
+            <Box px={0} py={1}>
+              <input
+                id="noNotification"
+                name="noNotification"
+                checked={!noNotification}
+                onChange={() => setNoNotification(!noNotification)}
+                type="checkbox"
+              />
+            </Box>
+            <Box px={2} py={1}>
+              <Text fontSize={1}>Send notifications</Text>
+            </Box>
+          </Flex>
+          <Box ml="auto" />
+          <Button
+            disabled={!ready}
+            loading={submitting}
+            type="submit"
+            variant="primary"
+          >
             Complete
           </Button>
         </Modal.Footer>

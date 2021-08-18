@@ -41,6 +41,7 @@ const DiscountIndex = () => {
     {
       search: {
         is_giftcard: "false",
+        is_disabled: "false",
         is_dynamic: "false",
         ...filtersOnLoad,
       },
@@ -51,6 +52,7 @@ const DiscountIndex = () => {
   const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [showDynamic, setShowDynamic] = useState(false)
+  const [showDisabled, setShowDisabled] = useState(false)
 
   const searchRef = useRef(null)
 
@@ -73,6 +75,7 @@ const DiscountIndex = () => {
       search: {
         is_giftcard: "false",
         is_dynamic: showDynamic,
+        is_disabled: showDisabled,
         ...queryParts,
       },
     })
@@ -80,7 +83,7 @@ const DiscountIndex = () => {
 
   useEffect(() => {
     handleCheckbox()
-  }, [showDynamic])
+  }, [showDynamic, showDisabled])
 
   const handleCheckbox = () => {
     setOffset(0)
@@ -88,6 +91,7 @@ const DiscountIndex = () => {
 
     const queryParts = {
       is_dynamic: showDynamic,
+      is_disabled: showDisabled,
       offset: 0,
       limit: 20,
     }
@@ -129,6 +133,7 @@ const DiscountIndex = () => {
       search: {
         ...queryParts,
         is_dynamic: showDynamic,
+        is_disabled: showDisabled,
         is_giftcard: "false",
       },
     }).then(() => {
@@ -189,18 +194,32 @@ const DiscountIndex = () => {
           Search
         </Button>
         <Box ml="auto" />
-        <Flex maxHeight="18px" alignItems="center">
-          <Label fontSize={0} height="18px" alignItems="center">
-            <Checkbox
-              id="is_dynamic"
-              name="is_dynamic"
-              height="18px"
-              width="18px"
-              onChange={() => setShowDynamic(!showDynamic)}
-            />
-            Show dynamic discounts
-          </Label>
-        </Flex>
+        <Box>
+          <Flex maxHeight="18px" alignItems="center">
+            <Label fontSize={0} height="18px" alignItems="center">
+              <Checkbox
+                id="is_dynamic"
+                name="is_dynamic"
+                height="18px"
+                width="18px"
+                onChange={() => setShowDynamic(!showDynamic)}
+              />
+              Show dynamic discounts
+            </Label>
+          </Flex>
+          <Flex maxHeight="18px" alignItems="center">
+            <Label fontSize={0} height="18px" alignItems="center">
+              <Checkbox
+                id="is_disabled"
+                name="is_disabled"
+                height="18px"
+                width="18px"
+                onChange={() => setShowDisabled(!showDisabled)}
+              />
+              Show disabled discounts
+            </Label>
+          </Flex>
+        </Box>
       </Flex>
       {isLoading || isReloading ? (
         <Flex

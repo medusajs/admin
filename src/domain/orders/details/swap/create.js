@@ -84,6 +84,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [shippingOptions, setShippingOptions] = useState([])
   const [shippingMethod, setShippingMethod] = useState()
   const [shippingPrice, setShippingPrice] = useState()
+  const [noNotification, setNoNotification] = useState(order.no_notification)
   const [searchResults, setSearchResults] = useState([])
 
   // Includes both order items and swap items
@@ -185,6 +186,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
         variant_id: i.id,
         quantity: i.quantity,
       })),
+      no_notification:
+        noNotification !== order.no_notification ? noNotification : undefined,
     }
 
     if (shippingMethod) {
@@ -494,7 +497,21 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
             </Box>
           </Flex>
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
+        <Modal.Footer justifyContent="space-between">
+          <Flex>
+            <Box px={0} py={1}>
+              <input
+                id="noNotification"
+                name="noNotification"
+                checked={!noNotification}
+                onChange={() => setNoNotification(!noNotification)}
+                type="checkbox"
+              />
+            </Box>
+            <Box px={2} py={1}>
+              <Text fontSize={1}>Send notifications</Text>
+            </Box>
+          </Flex>
           <Button
             disabled={toReturn.length === 0 || itemsToAdd.length === 0}
             loading={submitting}
