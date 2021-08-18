@@ -7,6 +7,7 @@ import styled from "@emotion/styled"
 import useMedusa from "../../hooks/use-medusa"
 import { timeSince, backInTime, getToday } from "../../utils/time"
 import Spinner from "../../components/spinner"
+import { normalizeAmount } from "../../utils/prices"
 
 const HorizontalDivider = props => (
   <Box
@@ -57,46 +58,11 @@ const SettingContainer = styled(Flex)`
     props.flexDirection ? props.flexDirection : "column"};
 `
 
-const GoTo = styled.span`
-  cursor: pointer;
-  color: #5469d4;
-  font-weight: 600;
-`
-
 const Overview = () => {
   const [totalSales, setTotalSales] = useState(0)
   const [calcingSales, setCalcingSales] = useState(false)
 
   const { store } = useMedusa("store")
-
-  const {
-    orders: incompleteOrders,
-    isLoading: isLoadingIncomplete,
-  } = useMedusa("orders", {
-    search: {
-      limit: 10,
-      expand: "currency",
-      fields: "id",
-      // For incomplete orders, we only show last 30
-      ["created_at[gt]"]: backInTime(30),
-      ["fulfillment_status[]"]: ["not_fulfilled", "fulfilled"],
-      ["payment_status[]"]: ["awaiting", "requires_action"],
-    },
-  })
-
-  const {
-    orders: missingShipping,
-    isLoading: isLoadingMissingShipping,
-  } = useMedusa("orders", {
-    search: {
-      expand: "currency",
-      fields: "id",
-      // For orders to be shipped, we show ~3 months back in time
-      ["created_at[gt]"]: backInTime(100),
-      ["fulfillment_status[]"]: ["fulfilled"],
-      ["payment_status[]"]: "awaiting",
-    },
-  })
 
   const { orders: ordersToday, isLoading: isLoadingToday } = useMedusa(
     "orders",
@@ -160,30 +126,24 @@ const Overview = () => {
     }
 
     for (const o of ordersToday) {
+      let amount = normalizeAmount(o.currency_code, o.total)
+
       if (!rates) {
         rates = {}
 
         if (rates[o.currency_code]) {
-          total += rounded_(o.total / 100 / rates[o.currency_code])
+          total += rounded_(amount / rates[o.currency_code])
         } else {
-          const { val, rate } = await convert(
-            o.currency_code,
-            o.total / 100,
-            baseCurr
-          )
+          const { val, rate } = await convert(o.currency_code, amount, baseCurr)
 
           rates[o.currency_code] = rate
           total += val
         }
       } else {
         if (rates[o.currency_code]) {
-          total += rounded_(o.total / 100 / rates[o.currency_code])
+          total += rounded_(amount / rates[o.currency_code])
         } else {
-          const { val, rate } = await convert(
-            o.currency_code,
-            o.total / 100,
-            baseCurr
-          )
+          const { val, rate } = await convert(o.currency_code, amount, baseCurr)
 
           rates[o.currency_code] = rate
 
@@ -273,62 +233,6 @@ const Overview = () => {
               </Flex>
             </SettingContainer>
             <Box width="100%" />
-            <HorizontalDivider />
-            <SettingContainer py={4}>
-              <SubTitle mb={2}>
-                <StyledImg src="https://img.icons8.com/ios/50/000000/merchant-account.png" />
-                Actionables
-              </SubTitle>
-              {isLoadingIncomplete ||
-              isLoadingMissingShipping ||
-              isLoadingToday ? (
-                <Flex justifyContent="center" width="100%">
-                  <Box height="50px" mt={3} width="50px">
-                    <Spinner dark />
-                  </Box>
-                </Flex>
-              ) : (
-                <>
-                  <Text fontSize={15}>
-                    In the last 30 days{" "}
-                    {incompleteOrders && incompleteOrders.length === 50 ? (
-                      <b>Over 50 </b>
-                    ) : (
-                      <b>{incompleteOrders && incompleteOrders.length} </b>
-                    )}
-                    <GoTo
-                      onClick={() =>
-                        navigate(
-                          "/a/orders?fulfillment_status[]=not_fulfilled,fulfilled&payment_status[]=awaiting"
-                        )
-                      }
-                    >
-                      Order(s)
-                    </GoTo>{" "}
-                    are incomplete
-                  </Text>
-                  <Text fontSize={15}>
-                    <b>{missingShipping && missingShipping.length} </b>
-                    <GoTo
-                      onClick={() =>
-                        navigate("/a/orders?fulfillment_status[]=fulfilled")
-                      }
-                    >
-                      Order(s)
-                    </GoTo>{" "}
-                    are ready to ship
-                  </Text>
-                  {/* TODO: Needs API support */}
-                  {/* <Text fontSize={15}>
-                    <b>14</b>{" "}
-                    <GoTo onClick={() => navigate("/a/products")}>
-                      Product(s)
-                    </GoTo>{" "}
-                    are out of stock
-                  </Text> */}
-                </>
-              )}
-            </SettingContainer>
           </Flex>
           <VerticalDivider />
           <Flex flexDirection="column" width="50%">
