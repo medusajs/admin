@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
+import Input from "../../../components/input"
 import ReactJson from "react-json-view"
 import styled from "@emotion/styled"
 import { navigate } from "gatsby"
@@ -27,6 +28,11 @@ const LineItemImage = styled(Image)`
   width: 30px;
   object-fit: contain;
   border: 1px solid lightgray;
+`
+
+const Cross = styled.span`
+  margin-left: 5px;
+  cursor: pointer;
 `
 
 const LineItemLabel = styled(Text)`
@@ -59,6 +65,12 @@ const DraftOrderDetails = ({ id }) => {
   const [paymentType, setPaymentType] = useState("")
   const [deletingItem, setDeletingItem] = useState(false)
 
+  const [showAddDiscount, setShowAddDiscount] = useState(false)
+  const [code, setCode] = useState()
+  const [discError, setDiscError] = useState(false)
+  const [discount, setDiscount] = useState({})
+  const [checkingDiscount, setCheckingDiscount] = useState(false)
+
   const [editedItem, setEditedItem] = useState()
   const [newItem, setNewItem] = useState()
 
@@ -72,6 +84,43 @@ const DraftOrderDetails = ({ id }) => {
   } = useMedusa("draftOrders", {
     id,
   })
+
+  useEffect(() => {
+    if (draftOrder?.cart.discounts) setDiscount(draftOrder.cart.discounts[0])
+  }, [draftOrder])
+
+  const handleAddDiscount = async () => {
+    setCheckingDiscount(true)
+
+    try {
+      const { data } = await Medusa.discounts.retrieveByCode(code)
+      // if no discount is found
+      if (!data.discount) {
+        setDiscError(true)
+        return
+      }
+
+      // if discount is not available in region
+      if (
+        !data.discount.regions.find(d => d.id === draftOrder.cart.region.id)
+      ) {
+        setDiscError(true)
+      }
+
+      setShowAddDiscount(false)
+      setCode("")
+      update({ discounts: [{ code: data.discount.code }] })
+    } catch (error) {
+      setDiscError(true)
+      console.log(error)
+    }
+    setCheckingDiscount(false)
+  }
+
+  const onDiscountRemove = () => {
+    update({ discounts: [] })
+    setShowAddDiscount(false)
+  }
 
   const handleDeleteItem = async itemId => {
     setDeletingItem(itemId)
@@ -184,7 +233,7 @@ const DraftOrderDetails = ({ id }) => {
                     width="8"
                     height="8"
                   />
-                </Box>   
+                </Box>
               </Flex>
               <Badge
                 ml={3}
@@ -196,12 +245,12 @@ const DraftOrderDetails = ({ id }) => {
             </Flex>
           </Card.Header>
           {draftOrder.no_notification_order && (
-            <Box pt={2} pr={2}> 
-              <Text color="gray"> 
+            <Box pt={2} pr={2}>
+              <Text color="gray">
                 Notifications for this draft order are disabled.
               </Text>
-              </Box>
-            )} 
+            </Box>
+          )}
           <Box>
             <Text p={3} fontWeight="bold">
               {(draftOrder.cart.total / 100).toFixed(2)}{" "}
@@ -252,62 +301,148 @@ const DraftOrderDetails = ({ id }) => {
           Items
         </Card.Header>
         <Card.Body flexDirection="column">
-          {draftOrder.cart.items.map((lineItem, i) => {
-            const { tax_rate: taxRate } = draftOrder.cart.region
-            return (
-              <Flex
-                pl={3}
-                alignItems="center"
-                key={i}
-                py={2}
-                sx={{
-                  [`.delete-item-button-${i}`]: {
-                    display: "none",
-                    fontSize: "10px",
-                    minHeight: "25px",
-                    width: "65px",
-                  },
-                  ":hover": {
+          <Flex flexDirection="column">
+            {draftOrder.cart.items.map((lineItem, i) => {
+              const { tax_rate: taxRate } = draftOrder.cart.region
+              return (
+                <Flex
+                  pl={3}
+                  alignItems="center"
+                  key={i}
+                  py={2}
+                  sx={{
                     [`.delete-item-button-${i}`]: {
-                      display: "inline-block",
+                      display: "none",
+                      fontSize: "10px",
+                      minHeight: "25px",
+                      width: "65px",
                     },
-                  },
-                }}
-              >
-                <Flex pr={3} sx={{ minWidth: "350px" }}>
-                  <Box alignSelf={"center"} minWidth={"35px"}>
-                    {lineItem.quantity} x
-                  </Box>
-                  <Box mx={2}>
-                    <Flex width="30px" height="30px">
-                      <LineItemImage
-                        src={lineItem.thumbnail || ImagePlaceholder}
-                        p={!lineItem.thumbnail && "8px"}
-                      />
-                    </Flex>
-                  </Box>
-                  <Box>
-                    <LineItemLabel ml={2} mr={5}>
-                      {lineItem.title} <br />
-                      {lineItem.variant?.sku && lineItem.variant.sku}
-                      <br />
-                      {displayUnitPrice(lineItem, draftOrder.cart.region)}
-                    </LineItemLabel>
-                  </Box>
+                    ":hover": {
+                      [`.delete-item-button-${i}`]: {
+                        display: "inline-block",
+                      },
+                    },
+                  }}
+                >
+                  <Flex pr={3} sx={{ minWidth: "350px" }}>
+                    <Box alignSelf={"center"} minWidth={"35px"}>
+                      {lineItem.quantity} x
+                    </Box>
+                    <Box mx={2}>
+                      <Flex width="30px" height="30px">
+                        <LineItemImage
+                          src={lineItem.thumbnail || ImagePlaceholder}
+                          p={!lineItem.thumbnail && "8px"}
+                        />
+                      </Flex>
+                    </Box>
+                    <Box>
+                      <LineItemLabel ml={2} mr={5}>
+                        {lineItem.title} <br />
+                        {lineItem.variant?.sku && lineItem.variant.sku}
+                        <br />
+                        {displayUnitPrice(lineItem, draftOrder.cart.region)}
+                      </LineItemLabel>
+                    </Box>
+                  </Flex>
+                  {draftOrder.status === "open" && (
+                    <Button
+                      variant="danger"
+                      loading={deletingItem === lineItem.id}
+                      className={`delete-item-button-${i}`}
+                      onClick={() => handleDeleteItem(lineItem.id)}
+                    >
+                      Delete
+                    </Button>
+                  )}
                 </Flex>
-                {draftOrder.status === "open" && (
-                  <Button
-                    variant="danger"
-                    loading={deletingItem === lineItem.id}
-                    className={`delete-item-button-${i}`}
-                    onClick={() => handleDeleteItem(lineItem.id)}
+              )
+            })}
+            {!showAddDiscount && !discount?.rule && (
+              <Button
+                mt={2}
+                fontSize="12px"
+                variant="primary"
+                width="140px"
+                mb={2}
+                onClick={() => setShowAddDiscount(true)}
+              >
+                {showAddDiscount ? "Submit" : "Add discount"}
+              </Button>
+            )}
+            {showAddDiscount && !discount?.rule && (
+              <Flex flexDirection="column">
+                <Flex width="140px" mt={2}>
+                  <Input
+                    type="text"
+                    placeholder="SUMMER10"
+                    invalid={discError}
+                    onFocus={() => setDiscError(false)}
+                    fontSize="12px"
+                    onChange={({ currentTarget }) =>
+                      setCode(currentTarget.value)
+                    }
+                    value={code || null}
+                  />
+                  <Flex
+                    px={2}
+                    alignItems="center"
+                    onClick={() => setShowAddDiscount(false)}
                   >
-                    Delete
-                  </Button>
-                )}
+                    &times;
+                  </Flex>
+                </Flex>
+                <Button
+                  fontSize="10px"
+                  mt={2}
+                  variant="primary"
+                  width="115px"
+                  loading={checkingDiscount}
+                  onClick={() => handleAddDiscount()}
+                >
+                  Add
+                </Button>
               </Flex>
-            )
-          })}
+            )}
+          </Flex>
+          {discount?.rule && (
+            <Flex flexDirection="column" mt={2} pb={3}>
+              <Text
+                fontSize={1}
+                mb={2}
+                pt={3}
+                fontWeight="600"
+                sx={{ borderTop: "hairline" }}
+              >
+                Discount
+                <Cross onClick={() => onDiscountRemove()}>&times;</Cross>
+              </Text>
+              <Flex>
+                <Text fontSize="12px" mr={3} fontStyle="italic" width="70px">
+                  Code
+                </Text>
+                <Text fontSize="12px" mr={3}>
+                  {discount.code}
+                </Text>
+              </Flex>
+              <Flex>
+                <Text fontSize="12px" mr={3} fontStyle="italic" width="70px">
+                  Type
+                </Text>
+                <Text fontSize="12px" mr={3}>
+                  {discount.rule.type}
+                </Text>
+              </Flex>
+              <Flex>
+                <Text fontSize="12px" mr={3} fontStyle="italic" width="70px">
+                  Value
+                </Text>
+                <Text fontSize="12px" mr={3}>
+                  {discount.rule.value}
+                </Text>
+              </Flex>
+            </Flex>
+          )}
         </Card.Body>
       </Card>
       {/* CUSTOMER */}
