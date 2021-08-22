@@ -9,6 +9,8 @@ import { timeSince, backInTime, getToday } from "../../utils/time"
 import Spinner from "../../components/spinner"
 import { normalizeAmount } from "../../utils/prices"
 
+const exchangeRateApiKey = process.env.GATSBY_EXCHANGE_RATE_API_KEY || ""
+
 const HorizontalDivider = props => (
   <Box
     {...props}
@@ -90,7 +92,7 @@ const Overview = () => {
 
     const exchangeRate = await axios
       .get(
-        `https://api.exchangeratesapi.io/${date}?symbols=${fromCurrency}&base=${toCurrency}&access_key=28c7a6131264210bd2baf2252735e328`
+        `https://api.exchangeratesapi.io/${date}?symbols=${fromCurrency}&base=${toCurrency}&access_key=${exchangeRateApiKey}`
       )
       .then(({ data }) => {
         return data.rates[fromCurrency]
@@ -195,15 +197,14 @@ const Overview = () => {
               </Flex>
               <Box ml="auto" />
               <Flex pr={4}>
-                <Text fontSize={"34px"} fontWeight="600" pr={2}>
+                <Text fontSize={"30px"} fontWeight="600" pr={2}>
                   {isLoadingToday || calcingSales ? (
                     <Box height="50px" width="50px">
                       <Spinner dark />
                     </Box>
                   ) : (
                     <>
-                      {store?.default_currency.symbol_native?.toUpperCase() ||
-                        "$"}{" "}
+                      {store?.default_currency.code?.toUpperCase() || "$"}{" "}
                       {totalSales.toFixed(2)}
                     </>
                   )}
@@ -221,7 +222,7 @@ const Overview = () => {
               </Flex>
               <Box ml="auto" />
               <Flex pr={4}>
-                <Text fontSize={"34px"} fontWeight="600" pr={2}>
+                <Text fontSize={"30px"} fontWeight="600" pr={2}>
                   {isLoadingToday ? (
                     <Box height="50px" width="50px">
                       <Spinner dark />
