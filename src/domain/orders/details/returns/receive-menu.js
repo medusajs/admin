@@ -37,6 +37,12 @@ const ReceiveMenu = ({
         }
       }
 
+      if (order.claims && order.claims.length) {
+        for (const c of order.claims) {
+          temp = [...temp, ...c.additional_items]
+        }
+      }
+
       setAllItems(temp)
     }
   }, [order])
@@ -117,7 +123,6 @@ const ReceiveMenu = ({
   }
 
   const onSubmit = () => {
-    console.log(toReturn)
     const items = toReturn.map(t => ({
       item_id: t,
       quantity: quantities[t],
@@ -208,65 +213,69 @@ const ReceiveMenu = ({
               Refundable
             </Box>
           </Flex>
-          {allItems.map(item => {
-            // Swap returns should only show lines associated with the swap
-            if (!item.fulfilled_quantity) {
-              return
-            }
-
-            if (item.returned_quantity === item.quantity) {
-              return
-            }
-
-            if (returnRequest.is_swap && !quantities[item.id]) {
-              return
-            }
-
-            return (
-              <Flex
-                key={item.id}
-                justifyContent="space-between"
-                fontSize={2}
-                py={2}
-              >
-                <Box width={30} px={2} py={1}>
-                  {!returnRequest.is_swap && (
-                    <input
-                      checked={toReturn.includes(item.id)}
-                      onChange={() => handleReturnToggle(item)}
-                      type="checkbox"
-                    />
-                  )}
-                </Box>
-                <Box width={400} px={2} py={1}>
-                  <Text fontSize={1} lineHeight={"14px"}>
-                    {item.title}
-                  </Text>
-                  <Text fontSize={0}>{item?.variant?.sku || ""}</Text>
-                </Box>
-                <Box fontSize={1} width={75} px={2} py={1}>
-                  {returnRequest.is_swap ? (
-                    quantities[item.id]
-                  ) : toReturn.includes(item.id) ? (
-                    <Input
-                      textAlign={"center"}
-                      type="number"
-                      onChange={e => handleQuantity(e, item)}
-                      value={quantities[item.id] || ""}
-                      min={1}
-                      max={item.quantity - item.returned_quantity}
-                    />
-                  ) : (
-                    item.quantity - item.returned_quantity
-                  )}
-                </Box>
-                <Box width={170} fontSize={1} px={2} py={1}>
-                  {(item.refundable / 100).toFixed(2)}{" "}
-                  {order.currency_code.toUpperCase()}
-                </Box>
-              </Flex>
+          {allItems
+            .filter(itm =>
+              returnRequest.items.some(itm2 => itm.id === itm2.item_id)
             )
-          })}
+            .map(item => {
+              // Swap returns should only show lines associated with the swap
+              if (!item.fulfilled_quantity) {
+                return
+              }
+
+              if (item.returned_quantity === item.quantity) {
+                return
+              }
+
+              if (returnRequest.is_swap && !quantities[item.id]) {
+                return
+              }
+
+              return (
+                <Flex
+                  key={item.id}
+                  justifyContent="space-between"
+                  fontSize={2}
+                  py={2}
+                >
+                  <Box width={30} px={2} py={1}>
+                    {!returnRequest.is_swap && (
+                      <input
+                        checked={toReturn.includes(item.id)}
+                        onChange={() => handleReturnToggle(item)}
+                        type="checkbox"
+                      />
+                    )}
+                  </Box>
+                  <Box width={400} px={2} py={1}>
+                    <Text fontSize={1} lineHeight={"14px"}>
+                      {item.title}
+                    </Text>
+                    <Text fontSize={0}>{item?.variant?.sku || ""}</Text>
+                  </Box>
+                  <Box fontSize={1} width={75} px={2} py={1}>
+                    {returnRequest.is_swap ? (
+                      quantities[item.id]
+                    ) : toReturn.includes(item.id) ? (
+                      <Input
+                        textAlign={"center"}
+                        type="number"
+                        onChange={e => handleQuantity(e, item)}
+                        value={quantities[item.id] || ""}
+                        min={1}
+                        max={item.quantity - item.returned_quantity}
+                      />
+                    ) : (
+                      item.quantity - item.returned_quantity
+                    )}
+                  </Box>
+                  <Box width={170} fontSize={1} px={2} py={1}>
+                    {(item.refundable / 100).toFixed(2)}{" "}
+                    {order.currency_code.toUpperCase()}
+                  </Box>
+                </Flex>
+              )
+            })}
           {!returnRequest.is_swap && (
             <>
               {returnRequest.shipping_method &&

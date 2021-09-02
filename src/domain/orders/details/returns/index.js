@@ -39,6 +39,12 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
         }
       }
 
+      if (order.claims && order.claims.length) {
+        for (const s of order.claims) {
+          temp = [...temp, ...s.additional_items]
+        }
+      }
+
       setAllItems(temp)
     }
   }, [order])
