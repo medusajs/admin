@@ -151,8 +151,10 @@ const NewDiscount = ({}) => {
 
     Medusa.discounts
       .create(discount)
-      .then(() => toaster("Successfully created discount", "success"))
-      .then(() => navigate("/a/discounts"))
+      .then(() => {
+        toaster("Successfully created discount", "success")
+        navigate("/a/discounts")
+      })
       .catch(() => toaster("Error creating discount", "error"))
   }
 
@@ -253,8 +255,8 @@ const NewDiscount = ({}) => {
             <input
               type="radio"
               ref={register({ required: true })}
-              id="dynamic_true"
-              name="dynamic_true"
+              id="is_dynamic"
+              name="is_dynamic"
               value="false"
               style={{ marginRight: "5px" }}
             />
@@ -269,8 +271,8 @@ const NewDiscount = ({}) => {
               type="radio"
               disabled={isFreeShipping}
               ref={register({ required: true })}
-              id="dynamic_true"
-              name="dynamic_true"
+              id="is_dynamic"
+              name="is_dynamic"
               value="true"
               style={{ marginRight: "5px" }}
             />

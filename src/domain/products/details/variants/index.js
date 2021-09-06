@@ -16,6 +16,7 @@ const Variants = ({
   variantMethods,
   optionMethods,
   onSubmit,
+  toaster,
 }) => {
   const [showAddOption, setShowAddOption] = useState(false)
   const [editVariant, setEditVariant] = useState("")
@@ -130,18 +131,26 @@ const Variants = ({
 
   const handleUpdateVariant = data => {
     const cleanedData = convertEmptyStringToNull(data, numberFields)
-    variantMethods.update(editVariant.id, cleanedData).then(res => {
-      setEditVariant(null)
-      setNewVariant(null)
-    })
+    variantMethods
+      .update(editVariant.id, cleanedData)
+      .then(res => {
+        setEditVariant(null)
+        setNewVariant(null)
+        toaster("Successfully updated variant", "success")
+      })
+      .catch(() => toaster("Failed to update variant", "error"))
   }
 
   const handleCreateVariant = data => {
     const cleanedData = convertEmptyStringToNull(data, numberFields)
-    variantMethods.create(cleanedData).then(data => {
-      setNewVariant(null)
-      setEditVariant(null)
-    })
+    variantMethods
+      .create(cleanedData)
+      .then(data => {
+        setNewVariant(null)
+        setEditVariant(null)
+        toaster("Successfully created variant", "success")
+      })
+      .catch(() => toaster("Failed to update variant", "error"))
   }
 
   const handleCreateOption = data => {

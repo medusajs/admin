@@ -69,6 +69,7 @@ const ProductDetail = ({ id }) => {
         isLoading={isLoading}
         onChange={vs => setVariants(vs)}
         onSubmit={handleVariantsSubmit}
+        toaster={toaster}
       />
       <Images
         product={product}

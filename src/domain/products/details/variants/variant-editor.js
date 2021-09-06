@@ -3,6 +3,7 @@ import { Checkbox, Label } from "@rebass/forms"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Box, Flex, Text } from "rebass"
+import { removeNullish } from "../../../../utils/remove-nullish"
 import { ReactComponent as CloseIcon } from "../../../../assets/svg/cross.svg"
 import { ReactComponent as DeleteIcon } from "../../../../assets/svg/delete.svg"
 import Button from "../../../../components/button"
@@ -124,7 +125,10 @@ const VariantEditor = ({
       region_id,
       amount: Math.round(amount),
     }))
-    onSubmit(data)
+
+    data.prices = data.prices.map(p => removeNullish(p))
+    const clean = removeNullish(data)
+    onSubmit(clean)
   }
 
   return (
