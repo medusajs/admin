@@ -52,7 +52,7 @@ const ShippingDetails = ({ customerAddresses, setCustomerAddresses, form }) => {
 
         return callback(result)
       })
-      .catch(() => callback(error, null))
+      .catch((error) => callback(error, null))
   }, 500)
 
   const onCustomerSelect = async val => {
