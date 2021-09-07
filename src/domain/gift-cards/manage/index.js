@@ -70,6 +70,7 @@ const StyledImageBox = styled(Flex)`
 
 const NewGiftCard = ({}) => {
   const [images, setImages] = useState([])
+  const { store } = useMedusa("store")
   const { control, register, handleSubmit, reset, setValue } = useForm({
     defaultValues: {
       title: "Gift Card",
@@ -92,7 +93,7 @@ const NewGiftCard = ({}) => {
         title: `${index + 1}`,
         prices: [
           {
-            currency_code: "DKK",
+            currency_code: store.default_currency_code,
             amount: v,
           },
         ],
