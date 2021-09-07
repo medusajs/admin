@@ -14,6 +14,7 @@ import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 
 import GiftCardDetail from "./detail"
+import { persistedPrice } from "../../../utils/prices"
 
 const Cross = styled.span`
   position: absolute;
@@ -106,7 +107,8 @@ const NewGiftCard = ({}) => {
 
     product.variants.forEach(variant => {
       variant.prices.forEach(
-        price => (price.amount = Math.round(price.amount * 100))
+        price =>
+          (price.amount = persistedPrice(price.currency_code, price.amount))
       )
     })
 
