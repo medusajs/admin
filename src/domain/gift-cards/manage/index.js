@@ -159,7 +159,7 @@ const NewGiftCard = ({}) => {
       <Text mb={4}>Denominations</Text>
       <Flex mb={5} flexDirection="column">
         {fields.map((d, index) => (
-          <Flex mb={5} key={d.id}>
+          <Flex mb={3} key={d.id}>
             <Input
               type="number"
               name={`denominations.${index}`}
