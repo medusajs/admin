@@ -357,7 +357,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   <Text mr={2} fontSize={1} fontWeight="500">
                     Tags (separated by comma)
                   </Text>
-                  <InfoTooltip tooltipText="Tags of the product" />
+                  <InfoTooltip tooltipText="Tags are one word descriptors for the product used for searches" />
                 </Flex>
                 <TagInput
                   placeholder="Spring, summer..."
