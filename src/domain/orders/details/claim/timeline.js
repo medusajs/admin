@@ -83,13 +83,15 @@ export default ({
 
   const actions = []
 
-  actions.push({
-    label: "Cancel Claim",
-    variant: "danger",
-    onClick: () => {
-      onCancelClaim(event.raw.id)
-    },
-  })
+  if (event.raw.payment_status !== "refunded") {
+    actions.push({
+      label: "Cancel Claim",
+      variant: "danger",
+      onClick: () => {
+        onCancelClaim(event.raw.id)
+      },
+    })
+  }
 
   if (
     event.claim_type === "replace" &&
@@ -175,6 +177,7 @@ export default ({
                   ":hover": {
                     color: "black",
                   },
+                  cursor: "pointer",
                 }}
                 onClick={() => setExpanded(!expanded)}
               >

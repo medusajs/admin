@@ -84,6 +84,7 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
               ":hover": {
                 color: "black",
               },
+              cursor: "pointer",
             }}
             onClick={() => setExpanded(!expanded)}
           >

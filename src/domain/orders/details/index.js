@@ -201,6 +201,7 @@ const Fulfillment = ({
             ":hover": {
               color: "black",
             },
+            cursor: "pointer",
           }}
           onClick={() => setExpanded(!expanded)}
         >
