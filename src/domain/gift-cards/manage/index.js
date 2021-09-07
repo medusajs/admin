@@ -103,8 +103,15 @@ const NewGiftCard = ({}) => {
 
   const submit = data => {
     const product = parseProduct(data)
+
+    product.variants.forEach(variant => {
+      variant.prices.forEach(
+        price => (price.amount = Math.round(price.amount * 100))
+      )
+    })
+
     Medusa.products.create(product).then(({ data }) => {
-      navigate(`/a/products/${data.product._id}`)
+      navigate(`/a/products/${data.product.id}`)
     })
   }
 
@@ -152,10 +159,10 @@ const NewGiftCard = ({}) => {
       <Text mb={4}>Denominations</Text>
       <Flex mb={5} flexDirection="column">
         {fields.map((d, index) => (
-          <Flex mb={3}>
+          <Flex mb={5} key={d.id}>
             <Input
               type="number"
-              name={`denominations[${index}]`}
+              name={`denominations.${index}`}
               label="Value (Default Currency)"
               ref={register}
             />
