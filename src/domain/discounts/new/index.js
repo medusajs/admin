@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Text, Flex, Box } from "rebass"
 import _ from "lodash"
+import { debounce } from "lodash"
 import { useForm } from "react-hook-form"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
@@ -11,6 +12,7 @@ import Pill from "../../../components/pill"
 import MultiSelect from "../../../components/multi-select"
 import Input from "../../../components/input"
 import Typography from "../../../components/typography"
+import ProductSelection from "../product-selection"
 
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
@@ -56,9 +58,12 @@ const RequiredLabel = styled.div`
 `
 
 const NewDiscount = ({}) => {
+  const [searchResults, setSearchResults] = useState([])
+  const [items, setItems] = useState([])
+  const [searchingProducts, setSearchingProducts] = useState(false)
   const [selectedRegions, setSelectedRegions] = useState([])
-  const [selectedProducts, setSelectedProducts] = useState([])
   const [isFreeShipping, setIsFreeShipping] = useState(false)
+  const [isItemDependant, setIsItemDependant] = useState(false)
   const {
     register,
     handleSubmit,
@@ -72,19 +77,12 @@ const NewDiscount = ({}) => {
     },
   })
 
-  const { products, isLoading: isLoadingProducts, toaster } = useMedusa(
-    "products"
-  )
+  const { toaster } = useMedusa("collections")
+
   const { regions, isLoading: isLoadingRegions } = useMedusa("regions")
 
   const validProducts = () => {
-    let formattedProducts = products.map(p => ({
-      label: p.title,
-      value: p._id,
-    }))
-    return _.intersectionBy(formattedProducts, selectedProducts, "value").map(
-      v => v.value
-    )
+    return items.map(v => v.product_id)
   }
 
   const validRegions = () => {
@@ -95,6 +93,33 @@ const NewDiscount = ({}) => {
     return _.intersectionBy(formattedRegions, selectedRegions, "value").map(
       v => v.value
     )
+  }
+
+  const handleAddItem = variant => {
+    setItems([...items, { ...variant, quantity: 1 }])
+  }
+  const handleRemoveItem = index => {
+    const updated = [...items]
+    updated.splice(index, 1)
+    setItems(updated)
+  }
+
+  const fetchProduct = async q => {
+    const { data } = await Medusa.variants.list({ q })
+    setSearchResults(data.variants)
+    setSearchingProducts(false)
+  }
+
+  // Avoid search on every keyboard stroke by debouncing .5 sec
+  const debouncedProductSearch = useCallback(debounce(fetchProduct, 500), [])
+
+  const handleProductSearch = async q => {
+    setSearchingProducts(true)
+    try {
+      debouncedProductSearch(q)
+    } catch (error) {
+      throw Error("Could not fetch products")
+    }
   }
 
   const constructFreeShipping = data => {
@@ -135,7 +160,7 @@ const NewDiscount = ({}) => {
       data.rule.value = data.rule.value * 100
     }
 
-    data.rule.valid_for = validProducts()
+    if (data.rule.allocation === "item") data.rule.valid_for = validProducts()
     data.regions = validRegions()
 
     const discount = {
@@ -158,7 +183,7 @@ const NewDiscount = ({}) => {
       .catch(() => toaster("Error creating discount", "error"))
   }
 
-  if (isLoadingProducts || isLoadingRegions) {
+  if (isLoadingRegions) {
     return (
       <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
         <Box height="75px" width="75px" mt="50%">
@@ -360,6 +385,8 @@ const NewDiscount = ({}) => {
             <input
               type="radio"
               ref={register({ required: !isFreeShipping ? true : false })}
+              onClick={() => setIsItemDependant(false)}
+              active={!isItemDependant}
               id="total"
               name="rule.allocation"
               disabled={isFreeShipping}
@@ -376,6 +403,8 @@ const NewDiscount = ({}) => {
             <input
               type="radio"
               ref={register({ required: !isFreeShipping ? true : false })}
+              onClick={() => setIsItemDependant(true)}
+              active={isItemDependant}
               id="item"
               name="rule.allocation"
               disabled={isFreeShipping}
@@ -387,6 +416,21 @@ const NewDiscount = ({}) => {
             </Text>
           </Flex>
         </StyledLabel>
+        {isItemDependant && (
+          <>
+            <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+              Applicable items
+            </RequiredLabel>
+            <ProductSelection
+              handleAddItem={handleAddItem}
+              handleProductSearch={handleProductSearch}
+              handleRemoveItem={handleRemoveItem}
+              searchResults={searchResults}
+              searchingProducts={searchingProducts}
+              items={items}
+            />
+          </>
+        )}
         {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
         <Text fontSize="10px" color="gray">
           Leaving it empty will make the discount available for all products
