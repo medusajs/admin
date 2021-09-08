@@ -7,6 +7,7 @@ import { navigate } from "gatsby"
 import Information from "../../products/details/information"
 import Images from "../../products/details/images"
 
+import { displayAmount } from "../../../utils/prices"
 import useMedusa from "../../../hooks/use-medusa"
 import NotFound from "../../../components/not-found"
 import Card from "../../../components/card"
@@ -122,7 +123,10 @@ const GiftCardDetail = ({ id }) => {
                   {v.prices
                     .map(
                       ({ currency_code, amount }) =>
-                        `${amount / 100} ${currency_code.toUpperCase()}`
+                        `${displayAmount(
+                          currency_code,
+                          amount
+                        )} ${currency_code.toUpperCase()}`
                     )
                     .join(", ")}
                 </Box>
