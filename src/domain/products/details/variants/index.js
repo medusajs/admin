@@ -41,7 +41,7 @@ const Variants = ({
   const dropdownOptions = [
     {
       label: "Add variant",
-      onClick: () => {
+      onClick: () =>
         setVariants([
           ...variants,
           {
@@ -52,8 +52,7 @@ const Variants = ({
             })),
             prices: [],
           },
-        ])
-      },
+        ]),
     },
     {
       label: "Edit options...",
