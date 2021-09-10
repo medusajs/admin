@@ -110,6 +110,16 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     setItemsToAdd([...itemsToAdd, { ...variant, quantity: 1 }])
   }
 
+  const isLineItemCanceled = item => {
+    const { swap_id, claim_order_id } = item
+    const travFind = (col, id) =>
+      col.filter(f => f.id == id && f.canceled_at).length > 0
+
+    if (swap_id) return travFind(order.swaps, swap_id)
+    if (claim_order_id) return travFind(order.claims, claim_order_id)
+    return false
+  }
+
   const handleReturnToggle = item => {
     const id = item.id
     const idx = toReturn.indexOf(id)
@@ -306,7 +316,10 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
             </Flex>
             {allItems.map(item => {
               // Only show items that have not been returned
-              if (item.returned_quantity === item.quantity) {
+              if (
+                item.returned_quantity === item.quantity ||
+                isLineItemCanceled(item)
+              ) {
                 return
               }
 

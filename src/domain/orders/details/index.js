@@ -24,6 +24,7 @@ import Dialog from "../../../components/dialog"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
+import Dropdown from "../../../components/dropdown"
 
 import { ReactComponent as ExternalLink } from "../../../assets/svg/external-link.svg"
 
@@ -83,11 +84,49 @@ const TrackingLink = ({ trackingLink }) => {
   }
 }
 
-const Fulfillment = ({ details, order, onUpdate }) => {
+const Fulfillment = ({
+  details,
+  order,
+  onUpdate,
+  onCancelOrderFulfillment,
+  onCancelClaimFulfillment,
+  onCancelSwapFulfillment,
+  toaster,
+}) => {
   const { title, fulfillment } = details
+
+  const canceled = fulfillment.canceled_at !== null
+
+  const [expanded, setExpanded] = useState(!canceled)
+
+  useEffect(() => {
+    setExpanded(details.fulfillment.canceled_at === null)
+  }, [details])
 
   const hasLinks =
     fulfillment?.shipped_at && !!fulfillment?.tracking_links?.length
+
+  const cancelFulfillment = () => {
+    let cancel = undefined
+    switch (details.type) {
+      case "claim":
+        cancel = id => onCancelClaimFulfillment(fulfillment.claim_order_id, id)
+        break
+      case "swap":
+        cancel = id => onCancelSwapFulfillment(fulfillment.swap_id, id)
+        break
+      default:
+        cancel = onCancelOrderFulfillment
+        break
+    }
+
+    return cancel(fulfillment.id)
+      .then()
+      .catch(error => {
+        const errorData = error.response.data.message
+        toaster(`${errorData}`, "error")
+      })
+  }
 
   return (
     <Flex
@@ -102,38 +141,72 @@ const Fulfillment = ({ details, order, onUpdate }) => {
     >
       <Box>
         <Text>
-          {title} Fulfilled by provider {fulfillment.provider_id}
+          {canceled
+            ? `${title} has been canceled`
+            : `${title} Fulfilled by provider ${fulfillment.provider_id}`}
         </Text>
-        {(fulfillment.no_notification || false) !==
-          (order.no_notification || false) && (
-          <Box mt={2} pr={2}>
-            <Text color="gray">
-              Notifications related to this fulfillment are
-              {fulfillment.no_notification ? " disabled" : " enabled"}.
-            </Text>
-          </Box>
-        )}
-        {!fulfillment.shipped_at ? (
-          <Text my={1} color="gray">
-            Not shipped
-          </Text>
-        ) : (
-          <Text mt={1} color="grey">
-            Tracking
-          </Text>
-        )}
-        {hasLinks
-          ? fulfillment.tracking_links.map(tl => (
-              <TrackingLink trackingLink={tl} />
-            ))
-          : fulfillment.tracking_numbers.length > 0 && (
-              <Text>{fulfillment.tracking_numbers.join(", ")}</Text>
+
+        {expanded && (
+          <>
+            {(fulfillment.no_notification || false) !==
+              (order.no_notification || false) && (
+              <Box mt={2} pr={2}>
+                <Text color="gray">
+                  Notifications related to this fulfillment are
+                  {fulfillment.no_notification ? " disabled" : " enabled"}.
+                </Text>
+              </Box>
+            )}{" "}
+            {!fulfillment.shipped_at ? (
+              <Text my={1} color="gray">
+                Not shipped
+              </Text>
+            ) : (
+              <Text mt={1} color="grey">
+                Tracking
+              </Text>
             )}
+            {hasLinks
+              ? fulfillment.tracking_links.map(tl => (
+                  <TrackingLink trackingLink={tl} />
+                ))
+              : fulfillment.tracking_numbers.length > 0 && (
+                  <Text>{fulfillment.tracking_numbers.join(", ")}</Text>
+                )}
+          </>
+        )}
       </Box>
-      {!fulfillment.shipped_at && order.status !== "canceled" && (
-        <Button variant={"primary"} onClick={() => onUpdate(details)}>
-          Mark Shipped
-        </Button>
+      {!canceled ? (
+        !fulfillment.shipped_at && (
+          <Flex>
+            <Button
+              mr={3}
+              variant={"primary"}
+              onClick={() => onUpdate(details)}
+            >
+              Mark Shipped
+            </Button>
+            <Dropdown>
+              <Text color="danger" onClick={cancelFulfillment}>
+                Cancel fulfillment
+              </Text>
+            </Dropdown>
+          </Flex>
+        )
+      ) : (
+        <Text
+          sx={{
+            fontWeight: "500",
+            color: "#89959C",
+            ":hover": {
+              color: "black",
+            },
+            cursor: "pointer",
+          }}
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? "Hide" : "Show"}
+        </Text>
       )}
     </Flex>
   )
@@ -301,15 +374,21 @@ const OrderDetails = ({ id }) => {
     capturePayment,
     requestReturn,
     receiveReturn,
+    cancelReturn,
     receiveClaim,
     createFulfillment,
+    cancelFulfillment,
     processSwapPayment,
     createShipment,
     createSwap,
+    cancelSwap,
     createClaim,
+    cancelClaim,
     createSwapShipment,
     fulfillSwap,
+    cancelSwapFulfillment,
     fulfillClaim,
+    cancelClaimFulfillment,
     createClaimShipment,
     refund,
     isLoading,
@@ -459,9 +538,9 @@ const OrderDetails = ({ id }) => {
   }
 
   const orderDropdown = []
-  if (order.payment_status === "awaiting") {
+  if (order.status !== "canceled") {
     orderDropdown.push({
-      type: "danger",
+      variant: "danger",
       label: "Cancel order",
       onClick: () => {
         setCancelDialog(true)
@@ -543,7 +622,10 @@ const OrderDetails = ({ id }) => {
                   place="top"
                   effect="solid"
                 />
-                <Box>#{order.display_id}</Box>
+                <Box>
+                  #{order.display_id}{" "}
+                  {order.status === "canceled" && "(CANCELED)"}
+                </Box>
                 <Box ml={1}>
                   <Clipboard
                     style={{
@@ -557,6 +639,7 @@ const OrderDetails = ({ id }) => {
                   />
                 </Box>
               </Flex>
+
               {/* <Badge
                 ml={3}
                 color={decideBadgeColor(order.status).color}
@@ -631,11 +714,15 @@ const OrderDetails = ({ id }) => {
             order={order}
             onResendNotification={n => setNotificationResend(n)}
             onSaveClaim={updateClaim}
+            onCancelClaim={cancelClaim}
             onFulfillClaim={claim => setClaimToFulfill(claim)}
             onReceiveClaim={receiveClaim}
             onProcessSwapPayment={processSwapPayment}
             onFulfillSwap={swap => setSwapToFulfill(swap)}
             onReceiveReturn={ret => setToReceive(ret)}
+            onCancelReturn={cancelReturn}
+            onCancelSwap={cancelSwap}
+            toaster={toaster}
           />
         </Card.Body>
       </Card>
@@ -793,6 +880,10 @@ const OrderDetails = ({ id }) => {
                     details={f}
                     order={order}
                     onUpdate={setUpdateFulfillment}
+                    onCancelOrderFulfillment={cancelFulfillment}
+                    onCancelSwapFulfillment={cancelSwapFulfillment}
+                    onCancelClaimFulfillment={cancelClaimFulfillment}
+                    toaster={toaster}
                   />
                 ))
               : null}
@@ -805,6 +896,7 @@ const OrderDetails = ({ id }) => {
         updateOrder={updateOrder}
         show={showEditCustomer}
         setShow={setShowEditCustomer}
+        canceled={order.status === "canceled"}
         toaster={toaster}
       />
       {/* METADATA */}

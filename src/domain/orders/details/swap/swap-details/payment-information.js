@@ -140,6 +140,7 @@ const PaymentInformation = ({ event, onProcessPayment, swap, order }) => {
     if (
       event.raw.payment_status !== "captured" &&
       event.raw.payment_status !== "difference_refunded" &&
+      event.raw.canceled_at === null &&
       event.raw.difference_due !== 0
     ) {
       actions.push({

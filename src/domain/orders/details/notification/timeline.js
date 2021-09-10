@@ -12,8 +12,6 @@ import Badge from "../../../../components/badge"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
 
-import useMedusa from "../../../../hooks/use-medusa"
-
 export default ({ event, onResend }) => {
   const name = event_name => {
     switch (event_name) {
