@@ -62,6 +62,15 @@ const Variants = ({
     },
   ]
 
+  useEffect(() => {
+    if (
+      variants &&
+      variants[0] &&
+      variants[variants.length - 1].id === undefined
+    )
+      setNewVariant(variants[variants.length - 1])
+  }, [variants])
+
   const handleSubmit = e => {
     e.preventDefault()
 
@@ -134,8 +143,8 @@ const Variants = ({
     variantMethods
       .update(editVariant.id, cleanedData)
       .then(res => {
-        setEditVariant(null)
         setNewVariant(null)
+        setEditVariant(null)
         toaster("Successfully updated variant", "success")
       })
       .catch(() => toaster("Failed to update variant", "error"))
@@ -210,6 +219,9 @@ const Variants = ({
             else if (editVariant) handleUpdateVariant(data)
           }}
           onClick={() => {
+            if (newVariant) {
+              setVariants([...variants.slice(0, -1)])
+            }
             setEditVariant(null)
             setNewVariant(null)
           }}
