@@ -5,7 +5,8 @@ import { navigate } from "gatsby"
 
 import Button from "../../../components/button"
 import Input from "../../../components/input"
-import Spinner from "../../../components/spinner"
+
+import InfoTooltip from "../../../components/info-tooltip"
 
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
@@ -53,12 +54,16 @@ const NewCollection = ({}) => {
                   required={true}
                   ref={register({ required: "Title is required" })}
                 />
+                <Flex mt={4} mb={2} alignItems="center">
+                  <Text mr={2} fontSize={1} fontWeight="500">
+                    Handle
+                  </Text>
+                  <InfoTooltip tooltipText="URL Slug for the product" />
+                </Flex>
                 <Input
                   boldLabel={true}
-                  mt={4}
                   placeholder={"bathrobes"}
                   name={`handle`}
-                  label="Handle"
                   ref={register}
                 />
               </Flex>

@@ -100,6 +100,11 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
               amount: Math.round(value.amount * 100),
               id: reqType.id,
             })
+          } else {
+            acc.push({
+              type: key,
+              amount: Math.round(value.amount * 100),
+            })
           }
           return acc
         } else {

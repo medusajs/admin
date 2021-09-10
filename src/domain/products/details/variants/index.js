@@ -16,6 +16,7 @@ const Variants = ({
   variantMethods,
   optionMethods,
   onSubmit,
+  toaster,
 }) => {
   const [showAddOption, setShowAddOption] = useState(false)
   const [editVariant, setEditVariant] = useState("")
@@ -60,6 +61,15 @@ const Variants = ({
       },
     },
   ]
+
+  useEffect(() => {
+    if (
+      variants &&
+      variants[0] &&
+      variants[variants.length - 1].id === undefined
+    )
+      setNewVariant(variants[variants.length - 1])
+  }, [variants])
 
   const handleSubmit = e => {
     e.preventDefault()
@@ -130,18 +140,26 @@ const Variants = ({
 
   const handleUpdateVariant = data => {
     const cleanedData = convertEmptyStringToNull(data, numberFields)
-    variantMethods.update(editVariant.id, cleanedData).then(res => {
-      setEditVariant(null)
-      setNewVariant(null)
-    })
+    variantMethods
+      .update(editVariant.id, cleanedData)
+      .then(res => {
+        setNewVariant(null)
+        setEditVariant(null)
+        toaster("Successfully updated variant", "success")
+      })
+      .catch(() => toaster("Failed to update variant", "error"))
   }
 
   const handleCreateVariant = data => {
     const cleanedData = convertEmptyStringToNull(data, numberFields)
-    variantMethods.create(cleanedData).then(data => {
-      setNewVariant(null)
-      setEditVariant(null)
-    })
+    variantMethods
+      .create(cleanedData)
+      .then(data => {
+        setNewVariant(null)
+        setEditVariant(null)
+        toaster("Successfully created variant", "success")
+      })
+      .catch(() => toaster("Failed to update variant", "error"))
   }
 
   const handleCreateOption = data => {
@@ -201,6 +219,9 @@ const Variants = ({
             else if (editVariant) handleUpdateVariant(data)
           }}
           onClick={() => {
+            if (newVariant) {
+              setVariants([...variants.slice(0, -1)])
+            }
             setEditVariant(null)
             setNewVariant(null)
           }}
