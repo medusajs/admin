@@ -124,8 +124,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   // Includes both order items and swap items
   const [allItems, setAllItems] = useState([])
 
-  console.log(order)
-
   const addressForm = useForm()
 
   const handleSaveAddress = data => {
