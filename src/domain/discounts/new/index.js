@@ -5,13 +5,14 @@ import { useForm } from "react-hook-form"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Medusa from "../../../services/api"
+import moment from "moment"
 
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
 import MultiSelect from "../../../components/multi-select"
 import Input from "../../../components/input"
 import Typography from "../../../components/typography"
-
+import DatePicker from "../../../components/date-picker/date-picker"
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
 import { navigate } from "gatsby"
@@ -59,6 +60,10 @@ const NewDiscount = ({}) => {
   const [selectedRegions, setSelectedRegions] = useState([])
   const [selectedProducts, setSelectedProducts] = useState([])
   const [isFreeShipping, setIsFreeShipping] = useState(false)
+  const [startDate, setStartDate] = useState(new Date())
+  const [endDate, setEndDate] = useState(undefined)
+  const [isDynamic, setIsDynamic] = useState(true)
+
   const {
     register,
     handleSubmit,
@@ -117,6 +122,26 @@ const NewDiscount = ({}) => {
 
     return req
   }
+
+  const AvailabilityDurationField = props => (
+    <Flex mb={3}>
+      <StyledLabel>
+        <Flex alignItems="center">
+          <Input
+            width={50}
+            mr={3}
+            boldLabel={true}
+            placeholder="0"
+            type="number"
+            name={`rule.dynamicDuration${props.unit}`}
+            ref={register({ required: true })}
+          />
+
+          <Text mr={3}>{props.unit}</Text>
+        </Flex>
+      </StyledLabel>
+    </Flex>
+  )
 
   const submit = async data => {
     if (isFreeShipping) {
@@ -259,6 +284,7 @@ const NewDiscount = ({}) => {
               name="is_dynamic"
               value="false"
               style={{ marginRight: "5px" }}
+              onChange={() => setIsDynamic(false)}
             />
             <Text fontSize="12px" color="gray">
               No
@@ -275,6 +301,7 @@ const NewDiscount = ({}) => {
               name="is_dynamic"
               value="true"
               style={{ marginRight: "5px" }}
+              onChange={() => setIsDynamic(true)}
             />
             <Text fontSize="12px" color="gray">
               Yes
@@ -310,83 +337,133 @@ const NewDiscount = ({}) => {
           min="0"
           ref={register({ required: !isFreeShipping ? true : false })}
         />
-        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
-          Type
-        </RequiredLabel>
-        <StyledLabel>
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              ref={register({ required: !isFreeShipping ? true : false })}
-              id="percentage"
-              name="rule.type"
-              disabled={isFreeShipping}
-              value="percentage"
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              Percentage
-            </Text>
+        {/* <Flex> */}
+        <Flex flexDirection="column">
+          <Flex width={1 / 2} flexDirection="column">
+            <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+              Type
+            </RequiredLabel>
+            <StyledLabel>
+              <Flex alignItems="center">
+                <input
+                  type="radio"
+                  ref={register({ required: !isFreeShipping ? true : false })}
+                  id="percentage"
+                  name="rule.type"
+                  disabled={isFreeShipping}
+                  value="percentage"
+                  style={{ marginRight: "5px" }}
+                />
+                <Text fontSize="12px" color="gray">
+                  Percentage
+                </Text>
+              </Flex>
+            </StyledLabel>
+
+            <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
+              <Flex alignItems="center">
+                <input
+                  type="radio"
+                  ref={register({ required: !isFreeShipping ? true : false })}
+                  id="fixed"
+                  name="rule.type"
+                  value="fixed"
+                  disabled={selectedRegions.length > 1 || isFreeShipping}
+                  style={{ marginRight: "5px" }}
+                />
+                <Text fontSize="12px" color="gray">
+                  Fixed amount{" "}
+                  {selectedRegions.length > 1 ? (
+                    <span style={{ fontSize: "8px" }}>
+                      (not allowed for multi-regional discounts)
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                </Text>
+              </Flex>
+            </StyledLabel>
           </Flex>
-        </StyledLabel>
-        <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              ref={register({ required: !isFreeShipping ? true : false })}
-              id="fixed"
-              name="rule.type"
-              value="fixed"
-              disabled={selectedRegions.length > 1 || isFreeShipping}
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              Fixed amount{" "}
-              {selectedRegions.length > 1 ? (
-                <span style={{ fontSize: "8px" }}>
-                  (not allowed for multi-regional discounts)
-                </span>
-              ) : (
-                ""
-              )}
-            </Text>
+          <Flex flexDirection="column" width={1 / 2}>
+            <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+              Allocation
+            </RequiredLabel>
+            <StyledLabel fontSize="10px" color="gray">
+              <Flex alignItems="center">
+                <input
+                  type="radio"
+                  ref={register({ required: !isFreeShipping ? true : false })}
+                  id="total"
+                  name="rule.allocation"
+                  disabled={isFreeShipping}
+                  value="total"
+                  style={{ marginRight: "5px" }}
+                />
+                <Text fontSize="12px" color="gray">
+                  Total (discount is applied to the total amount)
+                </Text>
+              </Flex>
+            </StyledLabel>
+            <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
+              <Flex alignItems="center">
+                <input
+                  type="radio"
+                  ref={register({ required: !isFreeShipping ? true : false })}
+                  id="item"
+                  name="rule.allocation"
+                  disabled={isFreeShipping}
+                  value="item"
+                  style={{ marginRight: "5px" }}
+                />
+                <Text fontSize="12px" color="gray">
+                  Item (discount is applied to specific items)
+                </Text>
+              </Flex>
+            </StyledLabel>
           </Flex>
-        </StyledLabel>
-        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
-          Allocation
-        </RequiredLabel>
-        <StyledLabel fontSize="10px" color="gray">
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              ref={register({ required: !isFreeShipping ? true : false })}
-              id="total"
-              name="rule.allocation"
-              disabled={isFreeShipping}
-              value="total"
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              Total (discount is applied to the total amount)
-            </Text>
+          <Flex
+            width={3 / 4}
+            mb={3}
+            flexDirection={["column", "columnn", "columnn", "row"]}
+            justifyContent="space-between"
+          >
+            {/* <Flex> */}
+            <Flex flexDirection="column">
+              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
+                Start date
+              </StyledLabel>
+              <DatePicker date={startDate} onChange={setStartDate} />
+            </Flex>
+            {/* </Flex>
+            <Flex justifyContent="flex-end"> */}
+            <Flex flexDirection="column">
+              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
+                End date
+              </StyledLabel>
+              <DatePicker date={endDate} onChange={setEndDate} />
+            </Flex>
           </Flex>
-        </StyledLabel>
-        <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              ref={register({ required: !isFreeShipping ? true : false })}
-              id="item"
-              name="rule.allocation"
-              disabled={isFreeShipping}
-              value="item"
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              Item (discount is applied to specific items)
-            </Text>
-          </Flex>
-        </StyledLabel>
+          {/* </Flex> */}
+          {isDynamic && (
+            <Flex width={[1, 1, 1, 1]} mb={3} flexDirection="column">
+              <StyledLabel mb={3} style={{ fontWeight: 500 }}>
+                <Text>Availability Duration</Text>
+              </StyledLabel>
+
+              <Flex flexDirection={["column", "columnn", "columnn", "row"]}>
+                <AvailabilityDurationField unit="years" />
+                <AvailabilityDurationField unit="months" />
+                <AvailabilityDurationField unit="days" />
+              </Flex>
+              <Flex flexDirection={["column", "column", "column", "row"]}>
+                <AvailabilityDurationField unit="hours" />
+                <AvailabilityDurationField unit="minutes" />
+              </Flex>
+            </Flex>
+          )}
+        </Flex>
+        {/* </Flex> */}
+
         {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
         <Text fontSize="10px" color="gray">
           Leaving it empty will make the discount available for all products
