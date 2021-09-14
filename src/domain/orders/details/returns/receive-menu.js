@@ -19,6 +19,7 @@ const ReceiveMenu = ({
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
   const [returnAll, setReturnAll] = useState(false)
+  const [writeOffInventory, setWriteOffInventory] = useState(false)
   const [refundable, setRefundable] = useState(0)
   const [refundAmount, setRefundAmount] = useState(0)
   const [toReturn, setToReturn] = useState([])
@@ -126,6 +127,7 @@ const ReceiveMenu = ({
       setSubmitting(true)
       return onReceiveReturn(returnRequest.id, {
         items,
+        write_off_inventory: writeOffInventory,
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
@@ -138,6 +140,7 @@ const ReceiveMenu = ({
       return onReceiveReturn(returnRequest.id, {
         items,
         refund: Math.round(refundAmount),
+        write_off_inventory: writeOffInventory,
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
@@ -291,6 +294,26 @@ const ReceiveMenu = ({
                     </Box>
                   </Flex>
                 )}
+              <Flex
+                sx={{
+                  borderTop: "hairline",
+                }}
+                w={1}
+                mt={2}
+                pt={2}
+                justifyContent="flex-end"
+              >
+                <Box fontSize={1} px={2}>
+                  Write off inventory
+                </Box>
+                <Flex px={2} mt={2} width={170} justifyContent="flex-end">
+                  <input
+                    checked={writeOffInventory}
+                    onChange={() => setWriteOffInventory(!writeOffInventory)}
+                    type="checkbox"
+                  />
+                </Flex>
+              </Flex>
               <Flex
                 sx={{
                   borderTop: "hairline",
