@@ -7,6 +7,7 @@ import Modal from "../../../../components/modal"
 import CurrencyInput from "../../../../components/currency-input"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
+import InfoTooltip from "../../../../components/info-tooltip"
 
 const ReceiveMenu = ({
   order,
@@ -304,7 +305,14 @@ const ReceiveMenu = ({
                 justifyContent="flex-end"
               >
                 <Box fontSize={1} px={2}>
-                  Write off inventory
+                  <Flex>
+                    <Text>Write off inventory </Text>
+                    <InfoTooltip
+                      mt={2}
+                      ml={2}
+                      tooltipText="If checked, receiving the return will update the inventory according to the returned items"
+                    />
+                  </Flex>
                 </Box>
                 <Flex px={2} mt={2} width={170} justifyContent="flex-end">
                   <input
