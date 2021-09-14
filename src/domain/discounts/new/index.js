@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState } from "react"
 import { Text, Flex, Box } from "rebass"
 import _ from "lodash"
-import { debounce } from "lodash"
 import { useForm } from "react-hook-form"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
@@ -58,9 +57,7 @@ const RequiredLabel = styled.div`
 `
 
 const NewDiscount = ({}) => {
-  const [searchResults, setSearchResults] = useState([])
   const [items, setItems] = useState([])
-  const [searchingProducts, setSearchingProducts] = useState(false)
   const [selectedRegions, setSelectedRegions] = useState([])
   const [isFreeShipping, setIsFreeShipping] = useState(false)
   const [isItemDependant, setIsItemDependant] = useState(false)
@@ -93,33 +90,6 @@ const NewDiscount = ({}) => {
     return _.intersectionBy(formattedRegions, selectedRegions, "value").map(
       v => v.value
     )
-  }
-
-  const handleAddItem = variant => {
-    setItems([...items, { ...variant, quantity: 1 }])
-  }
-  const handleRemoveItem = index => {
-    const updated = [...items]
-    updated.splice(index, 1)
-    setItems(updated)
-  }
-
-  const fetchProduct = async q => {
-    const { data } = await Medusa.variants.list({ q })
-    setSearchResults(data.variants)
-    setSearchingProducts(false)
-  }
-
-  // Avoid search on every keyboard stroke by debouncing .5 sec
-  const debouncedProductSearch = useCallback(debounce(fetchProduct, 500), [])
-
-  const handleProductSearch = async q => {
-    setSearchingProducts(true)
-    try {
-      debouncedProductSearch(q)
-    } catch (error) {
-      throw Error("Could not fetch products")
-    }
   }
 
   const constructFreeShipping = data => {
@@ -422,32 +392,11 @@ const NewDiscount = ({}) => {
               Applicable items
             </RequiredLabel>
             <ProductSelection
-              handleAddItem={handleAddItem}
-              handleProductSearch={handleProductSearch}
-              handleRemoveItem={handleRemoveItem}
-              searchResults={searchResults}
-              searchingProducts={searchingProducts}
-              items={items}
+              selectedProducts={items}
+              setSelectedProducts={setItems}
             />
           </>
         )}
-        {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
-        <Text fontSize="10px" color="gray">
-          Leaving it empty will make the discount available for all products
-        </Text>
-
-        <MultiSelect
-          options={products.map(el => ({
-            label: el.title,
-            value: el._id,
-          }))}
-          selectAllLabel={"All"}
-          overrideStrings={{
-            allItemsAreSelected: "All products",
-          }}
-          value={selectedProducts}
-          onChange={setSelectedProducts}
-        /> */}
         <Flex mt={4}>
           <Box ml="auto" />
           <Button variant={"cta"} type="submit">

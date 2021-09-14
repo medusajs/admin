@@ -5,6 +5,7 @@ import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import _ from "lodash"
 
+import ProductSelection from "../../product-selection"
 import Modal from "../../../../components/modal"
 import MultiSelect from "react-multi-select-component"
 import Input from "../../../../components/input"
@@ -83,10 +84,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const [allocation, setAllocation] = useState(discount.rule.allocation)
 
   const [selectedProducts, setSelectedProducts] = useState(
-    discount.rule.valid_for?.map(({ id, title }) => ({
-      value: id,
-      label: title,
-    })) || []
+    discount.rule.valid_for || []
   )
 
   const onChange = e => {
@@ -95,13 +93,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   }
 
   const validProducts = () => {
-    let formattedProducts = products.map(p => ({
-      label: p.title,
-      value: p.id,
-    }))
-    return _.intersectionBy(formattedProducts, selectedProducts, "value").map(
-      v => v.value
-    )
+    return selectedProducts.map(v => v.product_id || v.id)
   }
 
   const onSubmit = data => {
@@ -221,22 +213,17 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
               </Text>
             </Flex>
           </StyledLabel>
-          {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
-          <Text fontSize="10px" color="gray">
-            Leaving it empty will make the discount available for all products
-          </Text>
-          <StyledMultiSelect
-            options={products.map(el => ({
-              label: el.title,
-              value: el.id,
-            }))}
-            selectAllLabel={"All"}
-            overrideStrings={{
-              allItemsAreSelected: "All products",
-            }}
-            value={selectedProducts}
-            onChange={setSelectedProducts}
-          /> */}
+          {allocation === "item" && (
+            <>
+              <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+                Applicable items
+              </RequiredLabel>
+              <ProductSelection
+                selectedProducts={selectedProducts}
+                setSelectedProducts={setSelectedProducts}
+              />
+            </>
+          )}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button type="submit" variant="primary">
