@@ -7,11 +7,11 @@ export const filterItems = (order, isClaim) => {
     new Map()
   )
 
-  let claimItems = []
+  let claimedItems = []
 
   if (order.claims && order.claims.length) {
     for (const s of order.claims) {
-      claimItems = [...claimItems, ...s.claim_items]
+      claimedItems = [...claimedItems, ...s.claim_items]
 
       //
       //    Ticket is created to allow claims and swaps on claims and swaps without errors
@@ -48,7 +48,7 @@ export const filterItems = (order, isClaim) => {
     }
   }
 
-  for (const item of claimItems) {
+  for (const item of claimedItems) {
     let i = orderItems.get(item.item_id)
     if (i) {
       i.quantity = i.quantity - item.quantity
