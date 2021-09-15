@@ -25,6 +25,7 @@ import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import Dropdown from "../../../components/dropdown"
+import CreateNote from "./notes/create"
 
 import { ReactComponent as ExternalLink } from "../../../assets/svg/external-link.svg"
 
@@ -368,6 +369,9 @@ const OrderDetails = ({ id }) => {
   const [notificationsLoaded, setNotificationsLoaded] = useState(false)
   const [notificationResend, setNotificationResend] = useState(false)
 
+  const [notes, setNotes] = useState([])
+  const [notesLoaded, setNotesLoaded] = useState(false)
+
   const {
     order,
     update: updateOrder,
@@ -411,6 +415,15 @@ const OrderDetails = ({ id }) => {
         })
         .finally(() => setNotificationsLoaded(true))
     }
+
+    if (order?.id && !notesLoaded) {
+      Medusa.notes
+        .listByResource(order.id)
+        .then(({ data }) => {
+          setNotes(data.notes)
+        })
+        .finally(() => setNotesLoaded(true))
+    }
   }, [order])
 
   const handleCopyToClip = val => {
@@ -436,7 +449,7 @@ const OrderDetails = ({ id }) => {
     )
   }
 
-  const events = buildTimeline(order, notifications)
+  const events = buildTimeline(order, notifications, notes)
 
   const decidePaymentButton = paymentStatus => {
     const isSystemPayment = order?.payments?.some(
@@ -708,6 +721,7 @@ const OrderDetails = ({ id }) => {
         <Card.Header dropdownOptions={lineDropdown} action={lineAction}>
           Timeline
         </Card.Header>
+        <CreateNote order={order} toaster={toaster} />
         <Card.Body flexDirection="column">
           <Timeline
             events={events}
@@ -723,6 +737,7 @@ const OrderDetails = ({ id }) => {
             onCancelReturn={cancelReturn}
             onCancelSwap={cancelSwap}
             toaster={toaster}
+            onUpdateNotes={notes => setNotes(notes)}
           />
         </Card.Body>
       </Card>

@@ -8,6 +8,7 @@ import NotificationTimeline from "../notification/timeline"
 import ClaimTimeline from "../claim/timeline"
 import SwapTimeline from "../swap/timeline"
 import ReturnTimeline from "../returns/timeline"
+import NoteTimeline from "../notes/timeline"
 import Typography from "../../../../components/typography"
 
 const LineItemLabel = styled(Text)`
@@ -74,6 +75,7 @@ export default ({
   onCancelReturn,
   onCancelClaim,
   onCancelSwap,
+  onUpdateNotes,
   toaster,
 }) => {
   return (
@@ -86,6 +88,15 @@ export default ({
                 key={event.id}
                 event={event}
                 onResend={onResendNotification}
+              />
+            )
+          case "note":
+            return (
+              <NoteTimeline
+                key={event.id}
+                event={event}
+                toaster={toaster}
+                onUpdateNotes={onUpdateNotes}
               />
             )
           case "return":
