@@ -48,7 +48,15 @@ const DatePickerWrapper = styled(Box)`
   }
 `
 
-const DatePicker = ({ date, onChange }) => {
+const DatePicker = ({ date, onChange, enableTimepicker }) => {
+  const timepicker = enableTimepicker
+    ? {
+        showTimeSelect: true,
+        timeFormat: "HH:mm",
+        timeIntervals: 15,
+        dateFormat: "dd/MM/yyyy HH:mm",
+      }
+    : {}
   return (
     <DatePickerWrapper className="some-class-name">
       <ReactDatePicker
@@ -56,6 +64,7 @@ const DatePicker = ({ date, onChange }) => {
         onChange={onChange}
         calendarClassName="date-picker"
         popperClassName="popper"
+        {...timepicker}
         popperPlacement="bottom-start"
         popperModifiers={{
           offset: {
