@@ -340,9 +340,14 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
               }
             >
               <Box mb={3}>
+                <Flex mb={2} alignItems="center">
+                  <Text mr={2} fontSize={1} fontWeight="500">
+                    Handle
+                  </Text>
+                  <InfoTooltip tooltipText="URL Slug for the product" />
+                </Flex>
                 <Input
                   name="handle"
-                  label="Handle"
                   ref={register}
                   boldLabel={"true"}
                 />
@@ -352,7 +357,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   <Text mr={2} fontSize={1} fontWeight="500">
                     Tags (separated by comma)
                   </Text>
-                  <InfoTooltip tooltipText="Tags of the product" />
+                  <InfoTooltip tooltipText="Tags are one word descriptors for the product used for searches" />
                 </Flex>
                 <TagInput
                   placeholder="Spring, summer..."

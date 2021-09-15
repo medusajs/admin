@@ -24,19 +24,22 @@ const CustomerInformation = ({
   updateOrder,
   setShow,
   show,
+  canceled,
   toaster,
 }) => {
+  const actions = []
+
+  if (!canceled) {
+    actions.push({
+      type: "primary",
+      label: "Edit",
+      onClick: () => setShow(true),
+    })
+  }
+
   return (
     <Card mr={3} mb={4} width="100%">
-      <Card.Header
-        action={{
-          type: "primary",
-          label: "Edit",
-          onClick: () => setShow(true),
-        }}
-      >
-        Customer
-      </Card.Header>
+      <Card.Header dropdownOptions={actions}>Customer</Card.Header>
       <Card.Body>
         <Box px={3}>
           <Text color="gray">Contact</Text>

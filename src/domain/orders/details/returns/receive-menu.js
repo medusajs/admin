@@ -117,7 +117,6 @@ const ReceiveMenu = ({
   }
 
   const onSubmit = () => {
-    console.log(toReturn)
     const items = toReturn.map(t => ({
       item_id: t,
       quantity: quantities[t],

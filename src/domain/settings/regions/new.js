@@ -81,9 +81,11 @@ const NewRegion = ({ id }) => {
   }
 
   const onSave = data => {
-    Medusa.regions.create(data).then(({ data }) => {
-      navigate(`/a/settings`)
-    })
+    Medusa.regions
+      .create({ ...data, tax_rate: data.tax_rate * 100 })
+      .then(() => {
+        navigate(`/a/settings`)
+      })
   }
 
   const countryOptions = countryData.map(c => ({
@@ -131,6 +133,9 @@ const NewRegion = ({ id }) => {
           min={0}
           max={1}
           width="75%"
+          placeholder={
+            "A percentage given as a decimal number between 0 and 1."
+          }
           name="tax_rate"
           label="Tax Rate"
           ref={register}
