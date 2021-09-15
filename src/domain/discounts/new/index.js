@@ -63,6 +63,11 @@ const NewDiscount = ({}) => {
   const [startDate, setStartDate] = useState(new Date())
   const [endDate, setEndDate] = useState(undefined)
   const [isDynamic, setIsDynamic] = useState(true)
+  const [durationYears, setDurationYears] = useState(0)
+  const [durationMonths, setDurationMonths] = useState(0)
+  const [durationDays, setDurationDays] = useState(0)
+  const [durationHours, setDurationHours] = useState(0)
+  const [durationMinutes, setDurationMinutes] = useState(0)
 
   const {
     register,
@@ -131,10 +136,9 @@ const NewDiscount = ({}) => {
             width={50}
             mr={3}
             boldLabel={true}
-            placeholder="0"
+            value={props.val}
             type="number"
-            name={`rule.dynamicDuration${props.unit}`}
-            ref={register({ required: true })}
+            onChange={e => props.setValue(e.target.value)}
           />
 
           <Text mr={3}>{props.unit}</Text>
@@ -144,6 +148,8 @@ const NewDiscount = ({}) => {
   )
 
   const submit = async data => {
+    const iso8601Date = `P${durationYears}Y${durationMonths}M${durationDays}DT${durationHours}H${durationMinutes}M`
+
     if (isFreeShipping) {
       const disc = constructFreeShipping(data)
 
@@ -167,7 +173,10 @@ const NewDiscount = ({}) => {
       code: data.code,
       is_dynamic: data.is_dynamic === "true",
       rule: data.rule,
+      starts_at: moment(startDate).format("MM/DD/YYYY HH:mm"),
+      ends_at: endDate ? moment(endDate).format("MM/DD/YYYY HH:mm") : undefined,
       regions: data.regions || [],
+      valid_duration: data.is_dynamic === "true" ? iso8601Date : undefined,
     }
 
     if (data.usage_limit) {
@@ -432,7 +441,11 @@ const NewDiscount = ({}) => {
               <StyledLabel pb={2} style={{ fontWeight: 500 }}>
                 Start date
               </StyledLabel>
-              <DatePicker date={startDate} onChange={setStartDate} />
+              <DatePicker
+                date={startDate}
+                onChange={setStartDate}
+                enableTimepicker={true}
+              />
             </Flex>
             {/* </Flex>
             <Flex justifyContent="flex-end"> */}
@@ -440,24 +453,48 @@ const NewDiscount = ({}) => {
               <StyledLabel pb={2} style={{ fontWeight: 500 }}>
                 End date
               </StyledLabel>
-              <DatePicker date={endDate} onChange={setEndDate} />
+              <DatePicker
+                date={endDate}
+                onChange={setEndDate}
+                enableTimepicker={true}
+              />
             </Flex>
           </Flex>
           {/* </Flex> */}
           {isDynamic && (
-            <Flex width={[1, 1, 1, 1]} mb={3} flexDirection="column">
+            <Flex mb={3} flexDirection="column">
               <StyledLabel mb={3} style={{ fontWeight: 500 }}>
                 <Text>Availability Duration</Text>
               </StyledLabel>
 
               <Flex flexDirection={["column", "columnn", "columnn", "row"]}>
-                <AvailabilityDurationField unit="years" />
-                <AvailabilityDurationField unit="months" />
-                <AvailabilityDurationField unit="days" />
+                <AvailabilityDurationField
+                  val={durationYears}
+                  setValue={setDurationYears}
+                  unit="Years"
+                />
+                <AvailabilityDurationField
+                  val={durationMonths}
+                  setValue={setDurationMonths}
+                  unit="Months"
+                />
+                <AvailabilityDurationField
+                  val={durationDays}
+                  setValue={setDurationDays}
+                  unit="Days"
+                />
               </Flex>
               <Flex flexDirection={["column", "column", "column", "row"]}>
-                <AvailabilityDurationField unit="hours" />
-                <AvailabilityDurationField unit="minutes" />
+                <AvailabilityDurationField
+                  val={durationHours}
+                  setValue={setDurationHours}
+                  unit="Hours"
+                />
+                <AvailabilityDurationField
+                  val={durationMinutes}
+                  setValue={setDurationMinutes}
+                  unit="Minutes"
+                />
               </Flex>
             </Flex>
           )}
