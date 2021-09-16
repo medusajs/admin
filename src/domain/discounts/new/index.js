@@ -125,8 +125,6 @@ const NewDiscount = ({}) => {
   }
 
   const submit = async data => {
-    // const iso8601Date = `P${durationYears}Y${durationMonths}M${durationDays}DT${durationHours}H${durationMinutes}M`
-
     if (isFreeShipping) {
       const disc = constructFreeShipping(data)
 
@@ -166,7 +164,9 @@ const NewDiscount = ({}) => {
         toaster("Successfully created discount", "success")
         navigate("/a/discounts")
       })
-      .catch(() => toaster("Error creating discount", "error"))
+      .catch(error => {
+        toaster("Error creating discount", "error")
+      })
   }
 
   if (isLoadingProducts || isLoadingRegions) {

@@ -122,7 +122,10 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
       is_dynamic: discount.is_dynamic,
       starts_at: moment(startDate).format("MM/DD/YYYY HH:mm"),
       ends_at: endDate ? moment(endDate).format("MM/DD/YYYY HH:mm") : undefined,
-      valid_duration: iso8601Duration,
+    }
+
+    if (discount.is_dynamic) {
+      result.valid_duration = iso8601Duration
     }
 
     onUpdate(result)

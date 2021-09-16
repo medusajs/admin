@@ -152,7 +152,6 @@ const DiscountDetails = ({ id }) => {
 
   const handleDiscountRuleUpdate = data => {
     setUpdating(true)
-
     update(data)
       .then(() => {
         refresh({ id })
@@ -160,7 +159,7 @@ const DiscountDetails = ({ id }) => {
         setShowRuleEdit(false)
         toaster("Discount rule updated", "success")
       })
-      .catch(() => {
+      .catch(error => {
         setUpdating(false)
         setShowRuleEdit(false)
         toaster("Discount rule update failed", "error")
