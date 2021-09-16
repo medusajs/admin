@@ -88,7 +88,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const [endDate, setEndDate] = useState(
     discount.ends_at ? new Date(discount.ends_at) : discount.ends_at
   )
-  const [iso8601Duration, setIso8601Duration] = useState("")
+  const [iso8601Duration, setIso8601Duration] = useState(undefined)
 
   const [selectedProducts, setSelectedProducts] = useState(
     discount.rule.valid_for?.map(({ id, title }) => ({
@@ -122,10 +122,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
       is_dynamic: discount.is_dynamic,
       starts_at: moment(startDate).format("MM/DD/YYYY HH:mm"),
       ends_at: endDate ? moment(endDate).format("MM/DD/YYYY HH:mm") : undefined,
-    }
-
-    if (discount.is_dynamic) {
-      result.valid_duration = iso8601Duration
+      valid_duration: iso8601Duration,
     }
 
     onUpdate(result)
