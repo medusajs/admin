@@ -28,55 +28,66 @@ export default ({ event, onUpdateNotes, toaster }) => {
 
   const onTitleBlur = () => {
     if (event.raw.value === note) return
-
     Medusa.notes.update(event.id, note).then(() => reload("Note was updated"))
   }
 
   return (
     <Flex
       alignItems="center"
+      justifyContent="space-between"
       sx={{
-        ".rsnd-btn": {
+        borderBottom: "hairline",
+        ".delete-btn": {
           display: "none",
         },
         ":hover": {
-          ".rsnd-btn": {
+          ".delete-btn": {
             display: "inline-block",
           },
         },
       }}
     >
-      <Box width={"100%"} sx={{ borderBottom: "hairline" }} mb={3} pb={3}>
-        <Flex px={3} width={"100%"} justifyContent="space-between">
-          <Box>
-            <Flex mb={2}>
-              <Text mr={100} fontSize={1} color="grey" fontWeight="500">
-                <EditableInput
-                  text={note}
-                  childRef={noteRef}
-                  type="input"
-                  style={{ maxWidth: "400px" }}
-                  onBlur={onTitleBlur}
-                >
-                  <Input
-                    m={3}
-                    ref={noteRef}
-                    type="text"
-                    name="note"
-                    value={note}
-                    onChange={e => setNote(e.target.value)}
-                  />
-                </EditableInput>
-              </Text>
-            </Flex>
-            <Text fontSize="11px" color="grey">
-              {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+      <Box pb={3} mt={3} mb={3} px={3}>
+        <Box>
+          <Flex mb={2}>
+            <Text mr={100} fontSize={1} color="grey" fontWeight="500">
+              Note added
             </Text>
-          </Box>
-          <Button className="rsnd-btn" variant="primary" onClick={handleDelete}>
-            Delete
-          </Button>
-        </Flex>
+          </Flex>
+          <Text fontSize="11px" color="grey">
+            {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+          </Text>
+        </Box>
+        <Box>
+          <Text mr={100} fontSize={1} color="grey">
+            <EditableInput
+              text={note}
+              childRef={noteRef}
+              type="input"
+              style={{ maxWidth: "400px" }}
+              onBlur={onTitleBlur}
+            >
+              <Input
+                m={3}
+                ref={noteRef}
+                type="text"
+                name="note"
+                value={note}
+                onChange={e => setNote(e.target.value)}
+              />
+            </EditableInput>
+          </Text>
+        </Box>
+      </Box>
+      <Box>
+        <Button
+          mt={3}
+          className="delete-btn"
+          variant="primary"
+          onClick={handleDelete}
+        >
+          Delete
+        </Button>
       </Box>
     </Flex>
   )

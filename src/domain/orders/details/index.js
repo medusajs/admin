@@ -721,7 +721,11 @@ const OrderDetails = ({ id }) => {
         <Card.Header dropdownOptions={lineDropdown} action={lineAction}>
           Timeline
         </Card.Header>
-        <CreateNote order={order} toaster={toaster} />
+        <CreateNote
+          order={order}
+          onUpdateNotes={notes => setNotes(notes)}
+          toaster={toaster}
+        />
         <Card.Body flexDirection="column">
           <Timeline
             events={events}
