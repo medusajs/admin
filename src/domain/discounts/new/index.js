@@ -7,6 +7,7 @@ import styled from "@emotion/styled"
 import Medusa from "../../../services/api"
 import moment from "moment"
 
+import AvailabilityDuration from "../../../components/availability-duration"
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
 import MultiSelect from "../../../components/multi-select"
@@ -63,12 +64,7 @@ const NewDiscount = ({}) => {
   const [startDate, setStartDate] = useState(new Date())
   const [endDate, setEndDate] = useState(undefined)
   const [isDynamic, setIsDynamic] = useState(true)
-  const [durationYears, setDurationYears] = useState(0)
-  const [durationMonths, setDurationMonths] = useState(0)
-  const [durationDays, setDurationDays] = useState(0)
-  const [durationHours, setDurationHours] = useState(0)
-  const [durationMinutes, setDurationMinutes] = useState(0)
-
+  const [iso8601Date, setIso8601Date] = useState("")
   const {
     register,
     handleSubmit,
@@ -128,27 +124,8 @@ const NewDiscount = ({}) => {
     return req
   }
 
-  const AvailabilityDurationField = props => (
-    <Flex mb={3}>
-      <StyledLabel>
-        <Flex alignItems="center">
-          <Input
-            width={50}
-            mr={3}
-            boldLabel={true}
-            value={props.val}
-            type="number"
-            onChange={e => props.setValue(e.target.value)}
-          />
-
-          <Text mr={3}>{props.unit}</Text>
-        </Flex>
-      </StyledLabel>
-    </Flex>
-  )
-
   const submit = async data => {
-    const iso8601Date = `P${durationYears}Y${durationMonths}M${durationDays}DT${durationHours}H${durationMinutes}M`
+    // const iso8601Date = `P${durationYears}Y${durationMonths}M${durationDays}DT${durationHours}H${durationMinutes}M`
 
     if (isFreeShipping) {
       const disc = constructFreeShipping(data)
@@ -436,7 +413,6 @@ const NewDiscount = ({}) => {
             flexDirection={["column", "columnn", "columnn", "row"]}
             justifyContent="space-between"
           >
-            {/* <Flex> */}
             <Flex flexDirection="column">
               <StyledLabel pb={2} style={{ fontWeight: 500 }}>
                 Start date
@@ -447,8 +423,6 @@ const NewDiscount = ({}) => {
                 enableTimepicker={true}
               />
             </Flex>
-            {/* </Flex>
-            <Flex justifyContent="flex-end"> */}
             <Flex flexDirection="column">
               <StyledLabel pb={2} style={{ fontWeight: 500 }}>
                 End date
@@ -460,46 +434,13 @@ const NewDiscount = ({}) => {
               />
             </Flex>
           </Flex>
-          {/* </Flex> */}
           {isDynamic && (
-            <Flex mb={3} flexDirection="column">
-              <StyledLabel mb={3} style={{ fontWeight: 500 }}>
-                <Text>Availability Duration</Text>
-              </StyledLabel>
-
-              <Flex flexDirection={["column", "columnn", "columnn", "row"]}>
-                <AvailabilityDurationField
-                  val={durationYears}
-                  setValue={setDurationYears}
-                  unit="Years"
-                />
-                <AvailabilityDurationField
-                  val={durationMonths}
-                  setValue={setDurationMonths}
-                  unit="Months"
-                />
-                <AvailabilityDurationField
-                  val={durationDays}
-                  setValue={setDurationDays}
-                  unit="Days"
-                />
-              </Flex>
-              <Flex flexDirection={["column", "column", "column", "row"]}>
-                <AvailabilityDurationField
-                  val={durationHours}
-                  setValue={setDurationHours}
-                  unit="Hours"
-                />
-                <AvailabilityDurationField
-                  val={durationMinutes}
-                  setValue={setDurationMinutes}
-                  unit="Minutes"
-                />
-              </Flex>
-            </Flex>
+            <AvailabilityDuration
+              setIsoString={setIso8601Date}
+              existingIsoString=""
+            />
           )}
         </Flex>
-        {/* </Flex> */}
 
         {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
         <Text fontSize="10px" color="gray">
