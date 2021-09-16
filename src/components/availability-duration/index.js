@@ -24,12 +24,12 @@ const AvailabilityDuration = ({ setIsoString, existingIsoString }) => {
   const [durationDays, setDurationDays] = useState(duration.days || 0)
   const [durationHours, setDurationHours] = useState(duration.hours || 0)
   const [durationMinutes, setDurationMinutes] = useState(duration.minutes || 0)
-  // const [isoString, setIsoString] = usestate("")
 
   useEffect(() => {
-    console.log("use Effect")
-    const isoString = `P${durationYears}Y${durationMonths}M${durationDays}DT${durationHours}H${durationMinutes}M`
-    console.log(isoString)
+    const isoString = `P${durationYears || 0}Y${durationMonths || 0}M${
+      durationDays || 0
+    }DT${durationHours || 0}H${durationMinutes || 0}M`
+
     setIsoString(isoString)
   }, [
     durationYears,
@@ -59,14 +59,14 @@ const AvailabilityDuration = ({ setIsoString, existingIsoString }) => {
   )
 
   return (
-    <Flex mb={3} width={[1, 1, 1, 4 / 5]} flexDirection="column">
+    <Flex mb={3} width={[1, 1, 1]} flexDirection="column">
       <StyledLabel mb={3} style={{ fontWeight: 500 }}>
         <Text>Availability Duration</Text>
       </StyledLabel>
       <Box
         sx={{
           display: "grid",
-          gridGap: 3, // theme.space[3]
+          gridGap: 3,
           gridTemplateColumns: ["1fr", "1fr", "1fr", "1fr 1fr 1fr"],
         }}
       >
