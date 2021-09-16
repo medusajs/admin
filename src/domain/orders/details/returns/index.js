@@ -9,6 +9,7 @@ import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 import Select from "../../../../components/select"
 import Medusa from "../../../../services/api"
+import { filterItems } from "../utils/create-filtering"
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
@@ -31,15 +32,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (order) {
-      let temp = [...order.items]
-
-      if (order.swaps && order.swaps.length) {
-        for (const s of order.swaps) {
-          temp = [...temp, ...s.additional_items]
-        }
-      }
-
-      setAllItems(temp)
+      setAllItems(filterItems(order, false))
     }
   }, [order])
 
