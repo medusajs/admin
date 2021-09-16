@@ -4,12 +4,15 @@ import { useForm } from "react-hook-form"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import _ from "lodash"
+import moment from "moment"
 
 import Modal from "../../../../components/modal"
 import MultiSelect from "react-multi-select-component"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 import Typography from "../../../../components/typography"
+import DatePicker from "../../../../components/date-picker/date-picker"
+import AvailabilityDuration from "../../../../components/availability-duration"
 
 const StyledLabel = styled(Label)`
   ${Typography.Base}
@@ -81,6 +84,11 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const [discountRule, setDiscountRule] = useState(discount.rule)
   const [type, setType] = useState(discount.rule.type)
   const [allocation, setAllocation] = useState(discount.rule.allocation)
+  const [startDate, setStartDate] = useState(new Date(discount.starts_at))
+  const [endDate, setEndDate] = useState(
+    discount.ends_at ? new Date(discount.ends_at) : discount.ends_at
+  )
+  const [iso8601Duration, setIso8601Duration] = useState("")
 
   const [selectedProducts, setSelectedProducts] = useState(
     discount.rule.valid_for?.map(({ id, title }) => ({
@@ -108,7 +116,16 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
     data.value = parseInt(data.value)
     data.valid_for = validProducts()
     data.id = discount.rule.id
-    onUpdate(data)
+
+    const result = {
+      rule: data,
+      is_dynamic: discount.is_dynamic,
+      starts_at: moment(startDate).format("MM/DD/YYYY HH:mm"),
+      ends_at: endDate ? moment(endDate).format("MM/DD/YYYY HH:mm") : undefined,
+      valid_duration: iso8601Duration,
+    }
+
+    onUpdate(result)
   }
 
   return (
@@ -221,6 +238,39 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
               </Text>
             </Flex>
           </StyledLabel>
+          <Flex
+            width={3 / 4}
+            mb={3}
+            flexDirection={["column", "columnn", "columnn", "row"]}
+            justifyContent="space-between"
+          >
+            <Flex flexDirection="column">
+              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
+                Start date
+              </StyledLabel>
+              <DatePicker
+                date={startDate}
+                onChange={setStartDate}
+                enableTimepicker={true}
+              />
+            </Flex>
+            <Flex flexDirection="column">
+              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
+                End date
+              </StyledLabel>
+              <DatePicker
+                date={endDate}
+                onChange={setEndDate}
+                enableTimepicker={true}
+              />
+            </Flex>
+          </Flex>
+          {discount.is_dynamic && (
+            <AvailabilityDuration
+              setIsoString={setIso8601Duration}
+              existingIsoString={discount.valid_duration || ""}
+            />
+          )}
           {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
           <Text fontSize="10px" color="gray">
             Leaving it empty will make the discount available for all products

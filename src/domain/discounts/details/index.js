@@ -152,9 +152,8 @@ const DiscountDetails = ({ id }) => {
 
   const handleDiscountRuleUpdate = data => {
     setUpdating(true)
-    update({
-      rule: data,
-    })
+
+    update(data)
       .then(() => {
         refresh({ id })
         setUpdating(false)
