@@ -10,6 +10,12 @@ import Spinner from "../../../components/spinner"
 const ReturnReasons = () => {
   const { return_reasons, isLoading } = useMedusa("returnReasons")
 
+  const parent_return_reasons = !isLoading
+    ? return_reasons.filter(rr => !rr.parent_return_reason_id)
+    : []
+
+  console.log(parent_return_reasons)
+
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
       <Card px={0}>
@@ -20,7 +26,11 @@ const ReturnReasons = () => {
           <Box ml="auto" />
           <Button
             variant="primary"
-            onClick={() => navigate("/a/settings/return-reasons/new")}
+            onClick={() =>
+              navigate("/a/settings/return-reasons/new", {
+                state: { parent_return_reasons },
+              })
+            }
           >
             + Add Return Reason
           </Button>
@@ -73,7 +83,9 @@ const ReturnReasons = () => {
                   <Button
                     variant="primary"
                     onClick={() =>
-                      navigate(`/a/settings/return-reasons/${r.id}`)
+                      navigate(`/a/settings/return-reasons/${r.id}`, {
+                        state: { parent_return_reasons },
+                      })
                     }
                   >
                     Edit
