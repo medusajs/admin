@@ -3,13 +3,14 @@ import { Text, Flex, Box } from "rebass"
 import moment from "moment"
 
 import Button from "../../../../components/button"
-import EditableInput from "../../../../components/editable-input"
 import { Input } from "@rebass/forms"
+import Dropdown from "../../../../components/dropdown"
 
 import Medusa from "../../../../services/api"
 
 export default ({ event, onUpdateNotes, toaster }) => {
   const [note, setNote] = useState(event?.raw?.value)
+  const [edit, setEdit] = useState(false)
 
   const noteRef = useRef()
 
@@ -26,9 +27,14 @@ export default ({ event, onUpdateNotes, toaster }) => {
     Medusa.notes.delete(event.id).then(() => reload("Note was deleted"))
   }
 
-  const onTitleBlur = () => {
-    if (event.raw.value === note) return
+  const handleSaveEdit = () => {
+    setEdit(false)
     Medusa.notes.update(event.id, note).then(() => reload("Note was updated"))
+  }
+
+  const handleCancelEdit = () => {
+    setNote(event?.raw?.value)
+    setEdit(false)
   }
 
   return (
@@ -50,8 +56,9 @@ export default ({ event, onUpdateNotes, toaster }) => {
       <Box pb={3} mt={3} mb={3} px={3}>
         <Box>
           <Flex mb={2}>
-            <Text mr={100} fontSize={1} color="grey" fontWeight="500">
-              Note added
+            <Text fontSize={1} color="grey" fontWeight="500">
+              Note added{" "}
+              <span style={{ fontWeight: 400 }}>by {event.raw.author}</span>
             </Text>
           </Flex>
           <Text fontSize="11px" color="grey">
@@ -59,14 +66,9 @@ export default ({ event, onUpdateNotes, toaster }) => {
           </Text>
         </Box>
         <Box>
-          <Text mr={100} fontSize={1} color="grey">
-            <EditableInput
-              text={note}
-              childRef={noteRef}
-              type="input"
-              style={{ maxWidth: "400px" }}
-              onBlur={onTitleBlur}
-            >
+          <br />
+          {edit ? (
+            <Flex>
               <Input
                 m={3}
                 ref={noteRef}
@@ -75,19 +77,27 @@ export default ({ event, onUpdateNotes, toaster }) => {
                 value={note}
                 onChange={e => setNote(e.target.value)}
               />
-            </EditableInput>
-          </Text>
+              <Button variant="primary" onClick={handleSaveEdit}>
+                Save
+              </Button>
+              <Button variant="cta" onClick={handleCancelEdit}>
+                Cancel
+              </Button>
+            </Flex>
+          ) : (
+            <Text mr={100} fontSize={1} color="grey">
+              {note}
+            </Text>
+          )}
         </Box>
       </Box>
       <Box>
-        <Button
-          mt={3}
-          className="delete-btn"
-          variant="primary"
-          onClick={handleDelete}
-        >
-          Delete
-        </Button>
+        <Dropdown>
+          <Text onClick={() => setEdit(true)}>Edit</Text>
+          <Text color="danger" onClick={handleDelete}>
+            Delete note
+          </Text>
+        </Dropdown>
       </Box>
     </Flex>
   )
