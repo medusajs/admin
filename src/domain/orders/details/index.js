@@ -627,18 +627,20 @@ const OrderDetails = ({ id }) => {
       },
     })
   } else {
-    lineAction = {
+    lineAction = []
+
+    lineAction.push({
+      type: "primary",
+      label: "cancel",
+      onClick: () => setShowAddNote(false),
+    })
+
+    lineAction.push({
       variant: "primary",
       label: "save",
       onClick: () => {
         createNote()
       },
-    }
-
-    lineDropdown.push({
-      type: "primary",
-      label: "cancel",
-      onClick: () => setShowAddNote(false),
     })
   }
 
