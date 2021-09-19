@@ -37,6 +37,11 @@ export default ({ event, onUpdateNotes, toaster }) => {
     setEdit(false)
   }
 
+  const user = event.raw.author
+  let author = user.first_name ? user.first_name : ""
+  author += user.last_name ? user.last_name : ""
+  if (!author) author = "unknown"
+
   return (
     <Flex
       alignItems="center"
@@ -57,8 +62,7 @@ export default ({ event, onUpdateNotes, toaster }) => {
         <Box>
           <Flex mb={2}>
             <Text fontSize={1} color="grey" fontWeight="500">
-              Note added{" "}
-              <span style={{ fontWeight: 400 }}>by {event.raw.author}</span>
+              Note added <span style={{ fontWeight: 400 }}>by {author}</span>
             </Text>
           </Flex>
           <Text fontSize="11px" color="grey">

@@ -74,16 +74,12 @@ export default {
       const session = await medusaRequest("GET", authPath)
       const { user } = session.data
 
-      let author = user.first_name ? user.first_name : ""
-      author += user.last_name ? ` ${user.last_name}` : ""
-      if (!author) author = "unknown"
-
       const path = `/admin/notes/`
       return medusaRequest("POST", path, {
         resource_id: resourceId,
         resource_type: resourceType,
         value,
-        author,
+        author: user.id,
       })
     },
     update(id, value) {
