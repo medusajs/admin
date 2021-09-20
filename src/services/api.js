@@ -69,17 +69,11 @@ export default {
       return medusaRequest("GET", path)
     },
     async create(resourceId, resourceType, value) {
-      const authPath = `/admin/auth`
-
-      const session = await medusaRequest("GET", authPath)
-      const { user } = session.data
-
       const path = `/admin/notes/`
       return medusaRequest("POST", path, {
         resource_id: resourceId,
         resource_type: resourceType,
         value,
-        author: user.id,
       })
     },
     update(id, value) {

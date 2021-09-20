@@ -73,23 +73,30 @@ export default ({ event, onUpdateNotes, toaster }) => {
           <br />
           {edit ? (
             <Flex>
-              <Input
-                m={3}
-                ref={noteRef}
-                type="text"
-                name="note"
-                value={note}
-                onChange={e => setNote(e.target.value)}
-              />
-              <Button variant="primary" onClick={handleSaveEdit}>
-                Save
-              </Button>
-              <Button variant="cta" onClick={handleCancelEdit}>
+              <Flex>
+                <Input
+                  m={3}
+                  ref={noteRef}
+                  type="text"
+                  name="note"
+                  value={note}
+                  onChange={e => setNote(e.target.value)}
+                />
+              </Flex>
+              <Button
+                variant="primary"
+                onClick={handleCancelEdit}
+                mr={3}
+                mt={3}
+              >
                 Cancel
+              </Button>
+              <Button variant="cta" onClick={handleSaveEdit} mr={3} mt={3}>
+                Save
               </Button>
             </Flex>
           ) : (
-            <Text mr={100} fontSize={1} color="grey">
+            <Text mr={100} fontSize={3} color={"dark"}>
               {note}
             </Text>
           )}

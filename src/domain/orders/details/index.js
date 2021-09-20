@@ -631,13 +631,13 @@ const OrderDetails = ({ id }) => {
 
     lineAction.push({
       type: "primary",
-      label: "cancel",
+      label: "Cancel",
       onClick: () => setShowAddNote(false),
     })
 
     lineAction.push({
       variant: "primary",
-      label: "save",
+      label: "Save",
       onClick: () => {
         createNote()
       },
