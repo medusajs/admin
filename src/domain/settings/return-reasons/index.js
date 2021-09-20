@@ -14,8 +14,6 @@ const ReturnReasons = () => {
     ? return_reasons.filter(rr => !rr.parent_return_reason_id)
     : []
 
-  console.log(parent_return_reasons)
-
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
       <Card px={0}>
@@ -26,11 +24,7 @@ const ReturnReasons = () => {
           <Box ml="auto" />
           <Button
             variant="primary"
-            onClick={() =>
-              navigate("/a/settings/return-reasons/new", {
-                state: { parent_return_reasons },
-              })
-            }
+            onClick={() => navigate("/a/settings/return-reasons/new")}
           >
             + Add Return Reason
           </Button>
@@ -48,7 +42,7 @@ const ReturnReasons = () => {
               </Box>
             </Flex>
           ) : (
-            return_reasons.map(r => (
+            parent_return_reasons.map(r => (
               <Flex
                 key={r.id}
                 py={3}
@@ -77,15 +71,18 @@ const ReturnReasons = () => {
                   <Box width={1} mt={1}>
                     <Text color="gray">Value: {r.value}</Text>
                     <Text color="gray">{r.description}</Text>
+                    {r.parent_return_reason && (
+                      <Text color="gray">
+                        Child of: {r.parent_return_reason.value}
+                      </Text>
+                    )}
                   </Box>
                 </Box>
                 <Box>
                   <Button
                     variant="primary"
                     onClick={() =>
-                      navigate(`/a/settings/return-reasons/${r.id}`, {
-                        state: { parent_return_reasons },
-                      })
+                      navigate(`/a/settings/return-reasons/${r.id}`)
                     }
                   >
                     Edit

@@ -9,18 +9,11 @@ import { ReactSelect } from "../../../components/react-select"
 
 import Medusa from "../../../services/api"
 
-const NewReturnReason = ({ id, ...rest }) => {
-  const parent_return_reasons = rest.location.state.parent_return_reasons
+const NewReturnReason = ({ id }) => {
   const { register, handleSubmit } = useForm()
 
-  const [isParentReason, setIsParentReason] = useState(true)
-
-  const [parentReasonId, setParentReasonId] = useState("")
-
   const onSave = data => {
-    const return_reason = { parent_return_reason_id: parentReasonId, ...data }
-
-    Medusa.returnReasons.create(data).then(({ return_reason }) => {
+    Medusa.returnReasons.create(data).then(() => {
       navigate(`/a/settings/return-reasons`)
     })
   }
@@ -64,28 +57,6 @@ const NewReturnReason = ({ id, ...rest }) => {
           ref={register}
           width="75%"
         />
-        <Box mb={3}>
-          <StyledLabel>
-            <Text>Is this a return reason category</Text>
-          </StyledLabel>
-          <input
-            name="isParentReason"
-            type="checkbox"
-            defaultChecked={isParentReason}
-            onChange={() => setIsParentReason(!isParentReason)}
-          />
-        </Box>
-        {!isParentReason && (
-          <Box width={3 / 4}>
-            <StyledLabel>
-              <Text>Parent return reason</Text>
-            </StyledLabel>
-            <ReactSelect
-              options={parent_return_reasons}
-              onChange={parentReason => setParentReasonId(parentReason.id)}
-            />
-          </Box>
-        )}
         <Flex mt={4} width="75%">
           <Box ml="auto" />
           <Button variant={"cta"} type="submit">
