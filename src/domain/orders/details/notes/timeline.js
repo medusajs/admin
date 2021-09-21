@@ -96,7 +96,7 @@ export default ({ event, onUpdateNotes, toaster }) => {
               </Button>
             </Flex>
           ) : (
-            <Text mr={100} fontSize={3} color={"dark"}>
+            <Text mr={100} fontSize={2} color={"dark"}>
               {note}
             </Text>
           )}
