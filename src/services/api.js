@@ -65,7 +65,7 @@ export default {
   },
   notes: {
     listByResource(resourceId) {
-      let path = `/admin/notes/resource/${resourceId}`
+      let path = `/admin/notes?resource_id=${resourceId}`
       return medusaRequest("GET", path)
     },
     async create(resourceId, resourceType, value) {

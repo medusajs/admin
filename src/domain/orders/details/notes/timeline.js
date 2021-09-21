@@ -39,7 +39,7 @@ export default ({ event, onUpdateNotes, toaster }) => {
 
   const user = event.raw.author
   let author = user.first_name ? user.first_name : ""
-  author += user.last_name ? user.last_name : ""
+  author += user.last_name ? ` ${user.last_name}` : ""
   if (!author) author = "unknown"
 
   return (
