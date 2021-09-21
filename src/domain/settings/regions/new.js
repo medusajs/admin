@@ -109,53 +109,55 @@ const NewRegion = ({ id }) => {
         </Text>
       </Flex>
       <Flex mb={5} width={3 / 5} flexDirection="column">
-        <Input
-          required={true}
-          mb={3}
-          name="name"
-          label="Name"
-          ref={register}
-          width="75%"
-        />
-        <Select
-          mb={3}
-          label="Currency"
-          name="currency_code"
-          options={currencies}
-          required={true}
-          ref={register}
-        />
-        <Input
-          mb={3}
-          type="number"
-          required={true}
-          step="0.01"
-          min={0}
-          max={1}
-          width="75%"
-          placeholder={
-            "A percentage given as a decimal number between 0 and 1."
-          }
-          name="tax_rate"
-          label="Tax Rate"
-          ref={register}
-        />
-        <Input
-          mb={3}
-          name="tax_code"
-          label="Tax Code"
-          ref={register}
-          width="75%"
-        />
-        <MultiSelect
-          mb={3}
-          required={true}
-          label="Countries"
-          selectOptions={{ hasSelectAll: false }}
-          options={countryOptions}
-          value={countries}
-          onChange={handleChange}
-        />
+        <Flex flexDirection="column" width={3 / 4}>
+          <Input
+            required={true}
+            mb={3}
+            name="name"
+            label="Name"
+            ref={register}
+            // width="75%"
+          />
+          <Select
+            mb={3}
+            label="Currency"
+            name="currency_code"
+            options={currencies}
+            required={true}
+            ref={register}
+          />
+          <Input
+            mb={3}
+            type="number"
+            required={true}
+            step="0.01"
+            min={0}
+            max={1}
+            // width="75%"
+            placeholder={
+              "A percentage given as a decimal number between 0 and 1."
+            }
+            name="tax_rate"
+            label="Tax Rate"
+            ref={register}
+          />
+          <Input
+            mb={3}
+            name="tax_code"
+            label="Tax Code"
+            ref={register}
+            // width="75%"
+          />
+          <MultiSelect
+            mb={3}
+            required={true}
+            label="Countries"
+            selectOptions={{ hasSelectAll: false }}
+            options={countryOptions}
+            value={countries}
+            onChange={handleChange}
+          />
+        </Flex>
         {!!paymentOptions.length && (
           <TagDropdown
             width="100%"
