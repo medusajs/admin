@@ -290,7 +290,7 @@ const NewDiscount = ({}) => {
                   pb="10px"
                   ml={2}
                   tooltipText={
-                    "Template discounts allow you to define a set of rules that can be used across a group of discounts. \n This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
+                    "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
                   }
                 />
               </Label>
