@@ -390,8 +390,9 @@ const NewDiscount = ({}) => {
             mb={3}
             flexDirection={["column", "columnn", "columnn", "row"]}
             justifyContent="space-between"
+            alignItems="center"
           >
-            <Flex flexDirection="column">
+            <Flex width={1 / 2} mr={4} flexDirection="column">
               <StyledLabel pb={2} style={{ fontWeight: 500 }}>
                 Start date
               </StyledLabel>
@@ -401,7 +402,7 @@ const NewDiscount = ({}) => {
                 enableTimepicker={true}
               />
             </Flex>
-            <Flex flexDirection="column">
+            <Flex width={1 / 2} flexDirection="column">
               <StyledLabel pb={2} style={{ fontWeight: 500 }}>
                 End date
               </StyledLabel>

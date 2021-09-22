@@ -8,6 +8,10 @@ import moment from "moment"
 import styled from "@emotion/styled"
 
 const DatePickerWrapper = styled(Box)`
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+
   .date-picker {
     cursor: default;
 
