@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import { navigate } from "gatsby"
 import styled from "@emotion/styled"
@@ -66,6 +66,7 @@ export default ({
   onFulfillSwap,
   onReceiveReturn,
   onCancelSwap,
+  onCancelReturn,
 }) => {
   const { store, isLoading, toaster } = useMedusa("store")
 
@@ -80,9 +81,28 @@ export default ({
   const fulfillStatusColors = decideBadgeColor(event.raw.fulfillment_status)
 
   const actions = []
+
+  const canceled = event.raw.canceled_at !== null
+  const [expanded, setExpanded] = useState(!canceled)
+
+  useEffect(() => {
+    setExpanded(event.raw.canceled_at === null)
+  }, [event])
+
+  if (!canceled) {
+    actions.push({
+      label: "Cancel swap",
+      variant: "danger",
+      onClick: () => {
+        onCancelSwap(event.raw)
+      },
+    })
+  }
+
   if (
     event.raw.payment_status !== "captured" &&
     event.raw.payment_status !== "difference_refunded" &&
+    !canceled &&
     event.raw.difference_due !== 0
   ) {
     actions.push({
@@ -92,7 +112,11 @@ export default ({
     })
   }
 
-  if (event.raw.fulfillment_status === "not_fulfilled") {
+  if (
+    (event.raw.fulfillment_status === "not_fulfilled" ||
+      event.raw.fulfillment_status === "canceled") &&
+    !canceled
+  ) {
     actions.push({
       label: "Fulfill Swap",
       onClick: () => {
@@ -101,7 +125,11 @@ export default ({
     })
   }
 
-  if (event.raw.return_order.status === "requested") {
+  if (
+    (event.raw.return_order.status === "requested" ||
+      event.raw.return_order.status === "canceled") &&
+    !canceled
+  ) {
     actions.push({
       label: "Receive Return",
       onClick: () =>
@@ -113,14 +141,6 @@ export default ({
     })
   }
 
-  if (event.raw.status === "pending") {
-    actions.push({
-      label: "Cancel swap",
-      variant: "danger",
-      onClick: onCancelSwap,
-    })
-  }
-
   return (
     <Flex>
       <Box width={"100%"} sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
@@ -128,92 +148,101 @@ export default ({
           <Box>
             <Flex mb={2}>
               <Text mr={100} fontSize={1} color="grey" fontWeight="500">
-                Swap Requested
+                {canceled ? "Swap Canceled" : "Swap Requested"}
               </Text>
-              <Box>
-                {!isLoading && store.swap_link_template && (
-                  <Text
-                    sx={{
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      var tempInput = document.createElement("input")
-                      tempInput.value = store.swap_link_template.replace(
+              {expanded && (
+                <Box>
+                  {!isLoading && store.swap_link_template && (
+                    <Text
+                      sx={{
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        var tempInput = document.createElement("input")
+                        tempInput.value = store.swap_link_template.replace(
+                          /\{cart_id\}/,
+                          event.raw.cart_id
+                        )
+                        document.body.appendChild(tempInput)
+
+                        tempInput.select()
+                        document.execCommand("copy")
+                        document.body.removeChild(tempInput)
+                        toaster("Link copied to clipboard", "success")
+                      }}
+                      color="grey"
+                      data-for={event.raw.cart_id}
+                      data-tip={store.swap_link_template.replace(
                         /\{cart_id\}/,
                         event.raw.cart_id
-                      )
-                      document.body.appendChild(tempInput)
-
-                      tempInput.select()
-                      document.execCommand("copy")
-                      document.body.removeChild(tempInput)
-                      toaster("Link copied to clipboard", "success")
-                    }}
-                    color="grey"
-                    data-for={event.raw.cart_id}
-                    data-tip={store.swap_link_template.replace(
-                      /\{cart_id\}/,
-                      event.raw.cart_id
-                    )}
-                  >
-                    <ReactTooltip
-                      id={event.raw.cart_id}
-                      place="top"
-                      effect="solid"
-                    />
-                    <Flex>
-                      Copy Payment Link
-                      <Box ml={1}>
-                        <Clipboard fill="grey" width="8" height="8" />
-                      </Box>
-                    </Flex>
-                  </Text>
-                )}
-              </Box>
+                      )}
+                    >
+                      <ReactTooltip
+                        id={event.raw.cart_id}
+                        place="top"
+                        effect="solid"
+                      />
+                      {!canceled && (
+                        <Flex>
+                          Copy Payment Link
+                          <Box ml={1}>
+                            <Clipboard fill="grey" width="8" height="8" />
+                          </Box>
+                        </Flex>
+                      )}
+                    </Text>
+                  )}
+                </Box>
+              )}
             </Flex>
-            <Text fontSize="11px" color="grey">
-              {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
-            </Text>
-            {(event.no_notification || false) !==
-              (order.no_notification || false) && (
-              <Box mt={2} pr={2}>
-                <Text color="gray">
-                  Notifications related to this swap are
-                  {event.no_notification ? " disabled" : " enabled"}.
+            {expanded && (
+              <>
+                {" "}
+                <Text fontSize="11px" color="grey">
+                  {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
                 </Text>
-              </Box>
+                {(event.no_notification || false) !==
+                  (order.no_notification || false) && (
+                  <Box mt={2} pr={2}>
+                    <Text color="gray">
+                      Notifications related to this swap are
+                      {event.no_notification ? " disabled" : " enabled"}.
+                    </Text>
+                  </Box>
+                )}
+                <Flex mt={4}>
+                  <Text mr={2} fontSize={1} color="grey">
+                    Payment Status
+                  </Text>
+                  <Badge
+                    mr={4}
+                    color={payStatusColors.color}
+                    bg={payStatusColors.bgColor}
+                  >
+                    {event.raw.payment_status}
+                  </Badge>
+                  <Text mr={2} fontSize={1} color="grey">
+                    Return Status
+                  </Text>
+                  <Badge
+                    mr={4}
+                    color={returnStatusColors.color}
+                    bg={returnStatusColors.bgColor}
+                  >
+                    {event.raw.return_order.status}
+                  </Badge>
+                  <Text mr={2} fontSize={1} color="grey">
+                    Fulfillment Status
+                  </Text>
+                  <Badge
+                    color={fulfillStatusColors.color}
+                    bg={fulfillStatusColors.bgColor}
+                  >
+                    {event.raw.fulfillment_status}
+                  </Badge>
+                </Flex>
+              </>
             )}
-            <Flex mt={4}>
-              <Text mr={2} fontSize={1} color="grey">
-                Payment Status
-              </Text>
-              <Badge
-                mr={4}
-                color={payStatusColors.color}
-                bg={payStatusColors.bgColor}
-              >
-                {event.raw.payment_status}
-              </Badge>
-              <Text mr={2} fontSize={1} color="grey">
-                Return Status
-              </Text>
-              <Badge
-                mr={4}
-                color={returnStatusColors.color}
-                bg={returnStatusColors.bgColor}
-              >
-                {event.raw.return_order.status}
-              </Badge>
-              <Text mr={2} fontSize={1} color="grey">
-                Fulfillment Status
-              </Text>
-              <Badge
-                color={fulfillStatusColors.color}
-                bg={fulfillStatusColors.bgColor}
-              >
-                {event.raw.fulfillment_status}
-              </Badge>
-            </Flex>
           </Box>
           <Flex>
             <SwapDetails
@@ -235,40 +264,44 @@ export default ({
             )}
           </Flex>
         </Flex>
-        <Flex mx={3} justifyContent="space-between" alignItems="center">
-          <Box>
-            <Flex mb={2}>
-              <Text mr={2}>Return items</Text>
+        {expanded && (
+          <>
+            <Flex mx={3} justifyContent="space-between" alignItems="center">
+              <Box>
+                <Flex mb={2}>
+                  <Text mr={2}>Return items</Text>
+                </Flex>
+                {event.return_lines.map((lineItem, i) => (
+                  <LineItem
+                    key={lineItem.id}
+                    currency={order.currency_code}
+                    lineItem={lineItem}
+                    taxRate={order.tax_rate}
+                    onReceiveReturn={onReceiveReturn}
+                    rawEvent={event.raw}
+                  />
+                ))}
+              </Box>
             </Flex>
-            {event.return_lines.map((lineItem, i) => (
-              <LineItem
-                key={lineItem.id}
-                currency={order.currency_code}
-                lineItem={lineItem}
-                taxRate={order.tax_rate}
-                onReceiveReturn={onReceiveReturn}
-                rawEvent={event.raw}
-              />
-            ))}
-          </Box>
-        </Flex>
-        <Flex mx={3} justifyContent="space-between" alignItems="center">
-          <Box>
-            <Flex mt={3} mb={2}>
-              <Text mr={2}>New items</Text>
+            <Flex mx={3} justifyContent="space-between" alignItems="center">
+              <Box>
+                <Flex mt={3} mb={2}>
+                  <Text mr={2}>New items</Text>
+                </Flex>
+                {event.items.map((lineItem, i) => (
+                  <LineItem
+                    key={lineItem.id}
+                    currency={order.currency_code}
+                    lineItem={lineItem}
+                    taxRate={order.tax_rate}
+                    onReceiveReturn={onReceiveReturn}
+                    rawEvent={event.raw}
+                  />
+                ))}
+              </Box>
             </Flex>
-            {event.items.map((lineItem, i) => (
-              <LineItem
-                key={lineItem.id}
-                currency={order.currency_code}
-                lineItem={lineItem}
-                taxRate={order.tax_rate}
-                onReceiveReturn={onReceiveReturn}
-                rawEvent={event.raw}
-              />
-            ))}
-          </Box>
-        </Flex>
+          </>
+        )}
       </Box>
     </Flex>
   )

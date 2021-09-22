@@ -71,6 +71,10 @@ export default ({
   onFulfillSwap,
   onProcessSwapPayment,
   onReceiveReturn,
+  onCancelReturn,
+  onCancelClaim,
+  onCancelSwap,
+  toaster,
 }) => {
   return (
     <Box>
@@ -91,6 +95,8 @@ export default ({
                 event={event}
                 order={order}
                 onReceiveReturn={onReceiveReturn}
+                onCancelReturn={onCancelReturn}
+                toaster={toaster}
               />
             )
           case "claim":
@@ -102,6 +108,7 @@ export default ({
                 onSaveClaim={onSaveClaim}
                 onFulfillClaim={onFulfillClaim}
                 onReceiveReturn={onReceiveReturn}
+                onCancelClaim={onCancelClaim}
               />
             )
           case "swap":
@@ -113,6 +120,8 @@ export default ({
                 onProcessPayment={onProcessSwapPayment}
                 onFulfillSwap={onFulfillSwap}
                 onReceiveReturn={onReceiveReturn}
+                onCancelReturn={onCancelReturn}
+                onCancelSwap={onCancelSwap}
               />
             )
           default:

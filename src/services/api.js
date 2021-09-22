@@ -323,6 +323,11 @@ export default {
       return this.retrieve(orderId)
     },
 
+    cancelReturn(returnId) {
+      const path = `/admin/returns/${returnId}/cancel`
+      return medusaRequest("POST", path)
+    },
+
     retrieve(orderId, search = {}) {
       const params = Object.keys(search)
         .map(k => {
@@ -383,14 +388,29 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
+    cancelSwap(orderId, swapId) {
+      const path = `/admin/orders/${orderId}/swaps/${swapId}/cancel`
+      return medusaRequest("POST", path)
+    },
+
     createClaim(orderId, payload) {
       const path = `/admin/orders/${orderId}/claims`
       return medusaRequest("POST", path, payload)
     },
 
+    cancelClaim(orderId, claimId) {
+      const path = `/admin/orders/${orderId}/claims/${claimId}/cancel`
+      return medusaRequest("POST", path)
+    },
+
     fulfillClaim(orderId, claimId, payload) {
       const path = `/admin/orders/${orderId}/claims/${claimId}/fulfillments`
       return medusaRequest("POST", path, payload)
+    },
+
+    cancelClaimFulfillment(orderId, claimId, fulfillmentId) {
+      const path = `/admin/orders/${orderId}/claims/${claimId}/fulfillments/${fulfillmentId}/cancel`
+      return medusaRequest("POST", path)
     },
 
     createClaimShipment(orderId, cId, payload) {
@@ -408,6 +428,11 @@ export default {
       return medusaRequest("POST", path, payload)
     },
 
+    cancelSwapFulfillment(orderId, swapId, fulfillmentId) {
+      const path = `/admin/orders/${orderId}/swaps/${swapId}/fulfillments/${fulfillmentId}/cancel`
+      return medusaRequest("POST", path)
+    },
+
     processSwapPayment(orderId, swapId) {
       const path = `/admin/orders/${orderId}/swaps/${swapId}/process-payment`
       return medusaRequest("POST", path)
@@ -416,6 +441,11 @@ export default {
     createFulfillment(orderId, payload) {
       const path = `/admin/orders/${orderId}/fulfillment`
       return medusaRequest("POST", path, payload)
+    },
+
+    cancelFulfillment(orderId, fulfillmentId) {
+      const path = `/admin/orders/${orderId}/fulfillments/${fulfillmentId}/cancel`
+      return medusaRequest("POST", path)
     },
 
     refund(orderId, payload) {

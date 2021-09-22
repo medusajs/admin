@@ -53,3 +53,12 @@ export const extractOptionPrice = (price, region) => {
   amount = (amount * (1 + region.tax_rate / 100)) / 100
   return `${amount} ${region.currency_code.toUpperCase()}`
 }
+
+export function persistedPrice(currency, amount) {
+  let multiplier = 100
+  if (noDivisionCurrencies.includes(currency.toLowerCase())) {
+    multiplier = 1
+  }
+
+  return Math.floor(amount) * multiplier
+}

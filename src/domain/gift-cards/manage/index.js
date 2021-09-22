@@ -14,6 +14,7 @@ import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 
 import GiftCardDetail from "./detail"
+import { persistedPrice } from "../../../utils/prices"
 
 const Cross = styled.span`
   position: absolute;
@@ -104,8 +105,16 @@ const NewGiftCard = ({}) => {
 
   const submit = data => {
     const product = parseProduct(data)
+
+    product.variants.forEach(variant => {
+      variant.prices.forEach(
+        price =>
+          (price.amount = persistedPrice(price.currency_code, price.amount))
+      )
+    })
+
     Medusa.products.create(product).then(({ data }) => {
-      navigate(`/a/products/${data.product._id}`)
+      navigate(`/a/products/${data.product.id}`)
     })
   }
 
@@ -153,10 +162,10 @@ const NewGiftCard = ({}) => {
       <Text mb={4}>Denominations</Text>
       <Flex mb={5} flexDirection="column">
         {fields.map((d, index) => (
-          <Flex mb={3}>
+          <Flex mb={3} key={d.id}>
             <Input
               type="number"
-              name={`denominations[${index}]`}
+              name={`denominations.${index}`}
               label="Value (Default Currency)"
               ref={register}
             />

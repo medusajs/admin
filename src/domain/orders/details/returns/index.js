@@ -9,6 +9,7 @@ import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 import Select from "../../../../components/select"
 import Medusa from "../../../../services/api"
+import { filterItems } from "../utils/create-filtering"
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
@@ -31,15 +32,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (order) {
-      let temp = [...order.items]
-
-      if (order.swaps && order.swaps.length) {
-        for (const s of order.swaps) {
-          temp = [...temp, ...s.additional_items]
-        }
-      }
-
-      setAllItems(temp)
+      setAllItems(filterItems(order, false))
     }
   }, [order])
 
@@ -65,6 +58,16 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
       setQuantities(newQuantities)
     }
+  }
+
+  const isLineItemCanceled = item => {
+    const { swap_id, claim_order_id } = item
+    const travFind = (col, id) =>
+      col.filter(f => f.id == id && f.canceled_at).length > 0
+
+    if (swap_id) return travFind(order.swaps, swap_id)
+    if (claim_order_id) return travFind(order.claims, claim_order_id)
+    return false
   }
 
   useEffect(() => {
@@ -219,8 +222,12 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
               </Box>
             </Flex>
             {allItems.map(item => {
-              // Only show items that have not been returned
-              if (item.returned_quantity === item.quantity) {
+              // Only show items that have not been returned,
+              // and aren't canceled
+              if (
+                item.returned_quantity === item.quantity ||
+                isLineItemCanceled(item)
+              ) {
                 return
               }
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import { navigate } from "gatsby"
 import styled from "@emotion/styled"
@@ -66,18 +66,37 @@ export default ({
   onSaveClaim,
   onFulfillClaim,
   onReceiveReturn,
+  onCancelClaim,
 }) => {
   const { toaster } = useMedusa("store")
   const [showEditClaim, setShowEditClaim] = useState(false)
+
+  const canceled = event.raw.canceled_at !== null
+  const [expanded, setExpanded] = useState(!canceled)
+
+  useEffect(() => {
+    setExpanded(event.raw.canceled_at === null)
+  }, [event])
 
   const payStatusColors = decideBadgeColor(event.raw.payment_status)
   const fulfillStatusColors = decideBadgeColor(event.raw.fulfillment_status)
 
   const actions = []
 
+  if (event.raw.payment_status !== "refunded") {
+    actions.push({
+      label: "Cancel Claim",
+      variant: "danger",
+      onClick: () => {
+        onCancelClaim(event.raw.id)
+      },
+    })
+  }
+
   if (
     event.claim_type === "replace" &&
-    event.raw.fulfillment_status === "not_fulfilled"
+    (event.raw.fulfillment_status === "not_fulfilled" ||
+      event.raw.fulfillment_status === "canceled")
   ) {
     actions.push({
       label: "Fulfill Claim",
@@ -92,109 +111,140 @@ export default ({
       <Box width={"100%"} sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
         <Flex mb={4} px={3} width={"100%"} justifyContent="space-between">
           <Box>
-            <Flex mb={2}>
+            <Flex mb={2} justifyContent="space-between">
               <Text mr={100} fontSize={1} color="grey" fontWeight="500">
-                Claim Created
+                {canceled ? "Claim Canceled" : "Claim Created"}
               </Text>
             </Flex>
-            <Text fontSize="11px" color="grey">
-              {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
-            </Text>
-            {(event.no_notification || false) !==
-              (order.no_notification || false) && (
-              <Box mt={2} pr={2}>
-                <Text color="gray">
-                  Notifications related to this claim are
-                  {event.no_notification ? " disabled" : " enabled"}.
+            {expanded && (
+              <>
+                <Text fontSize="11px" color="grey">
+                  {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+                  {(event.no_notification || false) !==
+                    (order.no_notification || false) && (
+                    <Box mt={2} pr={2}>
+                      <Text color="gray">
+                        Notifications related to this claim are
+                        {event.no_notification ? " disabled" : " enabled"}.
+                      </Text>
+                    </Box>
+                  )}
                 </Text>
-              </Box>
+                {event.claim_type === "replace" ? (
+                  <Flex mt={4}>
+                    <Text mr={2} fontSize={1} color="grey">
+                      Fulfillment Status
+                    </Text>
+                    <Badge
+                      color={fulfillStatusColors.color}
+                      bg={fulfillStatusColors.bgColor}
+                    >
+                      {event.raw.fulfillment_status}
+                    </Badge>
+                  </Flex>
+                ) : (
+                  <Flex mt={4}>
+                    <Text mr={2} fontSize={1} color="grey">
+                      Payment Status
+                    </Text>
+                    <Badge
+                      color={payStatusColors.color}
+                      bg={payStatusColors.bgColor}
+                    >
+                      {event.raw.payment_status}
+                    </Badge>
+                  </Flex>
+                )}
+              </>
             )}
+          </Box>
+
+          <Box>
+            {actions.length > 0 && !canceled && (
+              <Dropdown>
+                {actions.map(o => (
+                  <Text color={o.variant} onClick={o.onClick}>
+                    {o.label}
+                  </Text>
+                ))}
+              </Dropdown>
+            )}
+            {canceled && (
+              <Text
+                sx={{
+                  fontWeight: "500",
+                  color: "#89959C",
+                  ":hover": {
+                    color: "black",
+                  },
+                  cursor: "pointer",
+                }}
+                onClick={() => setExpanded(!expanded)}
+              >
+                {expanded ? "Hide" : "Show"}
+              </Text>
+            )}
+          </Box>
+        </Flex>
+        {expanded && (
+          <>
+            <Flex mx={3} justifyContent="space-between" alignItems="center">
+              <Box>
+                <Flex mb={2}>
+                  <Text mr={2}>Claimed items</Text>
+                </Flex>
+                {event.claim_items.map((lineItem, i) => (
+                  <LineItem
+                    key={lineItem.id}
+                    currency={order.currency_code}
+                    lineItem={lineItem}
+                    taxRate={order.tax_rate}
+                    onReceiveReturn={onReceiveReturn}
+                    rawEvent={event.raw}
+                  />
+                ))}
+              </Box>
+              <Box>
+                {!canceled && (
+                  <Button
+                    onClick={() => setShowEditClaim(true)}
+                    variant="primary"
+                  >
+                    Edit
+                  </Button>
+                )}
+              </Box>
+            </Flex>
             {event.claim_type === "replace" ? (
-              <Flex mt={4}>
-                <Text mr={2} fontSize={1} color="grey">
-                  Fulfillment Status
-                </Text>
-                <Badge
-                  color={fulfillStatusColors.color}
-                  bg={fulfillStatusColors.bgColor}
-                >
-                  {event.raw.fulfillment_status}
-                </Badge>
+              <Flex mx={3} justifyContent="space-between" alignItems="center">
+                <Box>
+                  <Flex mt={3} mb={2}>
+                    <Text mr={2}>New items</Text>
+                  </Flex>
+                  {event.items.map((lineItem, i) => (
+                    <LineItem
+                      key={lineItem.id}
+                      currency={order.currency_code}
+                      lineItem={lineItem}
+                      taxRate={order.tax_rate}
+                      onReceiveReturn={onReceiveReturn}
+                      rawEvent={event.raw}
+                    />
+                  ))}
+                </Box>
               </Flex>
             ) : (
-              <Flex mt={4}>
-                <Text mr={2} fontSize={1} color="grey">
-                  Payment Status
-                </Text>
-                <Badge
-                  color={payStatusColors.color}
-                  bg={payStatusColors.bgColor}
-                >
-                  {event.raw.payment_status}
-                </Badge>
+              <Flex mx={3} justifyContent="space-between" alignItems="center">
+                <Box>
+                  <Flex mt={3} mb={2}>
+                    <Text mr={2}>Amount refunded</Text>
+                  </Flex>
+                  {event.raw.refund_amount / 100}{" "}
+                  {order.currency_code.toUpperCase()}
+                </Box>
               </Flex>
             )}
-          </Box>
-          {actions.length > 0 && (
-            <Dropdown>
-              {actions.map(o => (
-                <Text color={o.variant} onClick={o.onClick}>
-                  {o.label}
-                </Text>
-              ))}
-            </Dropdown>
-          )}
-        </Flex>
-        <Flex mx={3} justifyContent="space-between" alignItems="center">
-          <Box>
-            <Flex mb={2}>
-              <Text mr={2}>Claimed items</Text>
-            </Flex>
-            {event.claim_items.map((lineItem, i) => (
-              <LineItem
-                key={lineItem.id}
-                currency={order.currency_code}
-                lineItem={lineItem}
-                taxRate={order.tax_rate}
-                onReceiveReturn={onReceiveReturn}
-                rawEvent={event.raw}
-              />
-            ))}
-          </Box>
-          <Box>
-            <Button onClick={() => setShowEditClaim(true)} variant="primary">
-              Edit
-            </Button>
-          </Box>
-        </Flex>
-        {event.claim_type === "replace" ? (
-          <Flex mx={3} justifyContent="space-between" alignItems="center">
-            <Box>
-              <Flex mt={3} mb={2}>
-                <Text mr={2}>New items</Text>
-              </Flex>
-              {event.items.map((lineItem, i) => (
-                <LineItem
-                  key={lineItem.id}
-                  currency={order.currency_code}
-                  lineItem={lineItem}
-                  taxRate={order.tax_rate}
-                  onReceiveReturn={onReceiveReturn}
-                  rawEvent={event.raw}
-                />
-              ))}
-            </Box>
-          </Flex>
-        ) : (
-          <Flex mx={3} justifyContent="space-between" alignItems="center">
-            <Box>
-              <Flex mt={3} mb={2}>
-                <Text mr={2}>Amount refunded</Text>
-              </Flex>
-              {event.raw.refund_amount / 100}{" "}
-              {order.currency_code.toUpperCase()}
-            </Box>
-          </Flex>
+          </>
         )}
       </Box>
       {showEditClaim && (
