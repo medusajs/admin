@@ -23,6 +23,7 @@ const LineItemLabel = styled(Text)`
 `
 
 const LineItem = ({ lineItem, currency, taxRate }) => {
+  if (!lineItem.variant?.product?.id) console.log(lineItem)
   const productId = lineItem.variant.product.id
 
   return (

@@ -16,21 +16,21 @@ export const filterItems = (order, isClaim) => {
       //
       //    Ticket is created to allow claims and swaps on claims and swaps without errors
       //
-      //   if (
-      //     s.fulfillment_status === "not_fulfilled" &&
-      //     s.payment_status === "na"
-      //   ) {
-      //     continue
-      //   }
+      if (
+        s.fulfillment_status === "not_fulfilled" &&
+        s.payment_status === "na"
+      ) {
+        continue
+      }
 
-      //   if (s.additional_items && s.additional_items.length)
-      //     orderItems = s.additional_items
-      //       .filter(
-      //         it =>
-      //           it.shipped_quantity ||
-      //           it.shipped_quantity === it.fulfilled_quantity
-      //       )
-      //       .reduce((map, obj) => map.set(obj.id, { ...obj }), orderItems)
+      if (s.additional_items && s.additional_items.length)
+        orderItems = s.additional_items
+          .filter(
+            it =>
+              it.shipped_quantity ||
+              it.shipped_quantity === it.fulfilled_quantity
+          )
+          .reduce((map, obj) => map.set(obj.id, { ...obj }), orderItems)
     }
   }
 
