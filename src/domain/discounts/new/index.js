@@ -16,6 +16,10 @@ import Typography from "../../../components/typography"
 import DatePicker from "../../../components/date-picker/date-picker"
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
+import InfoTooltip from "../../../components/info-tooltip"
+import Tooltip from "../../../components/tooltip"
+import { ReactComponent as InfoIcon } from "../../../assets/svg/info.svg"
+
 import { navigate } from "gatsby"
 
 const HorizontalDivider = props => (
@@ -239,7 +243,6 @@ const NewDiscount = ({}) => {
           <Input
             boldLabel={true}
             label="Usage limit"
-            // width="100%"
             type="number"
             name="usage_limit"
             placeholder="5"
@@ -276,14 +279,15 @@ const NewDiscount = ({}) => {
             <Flex alignItems="center">
               <input
                 type="checkbox"
-                // ref={register({ required: true })}
                 id="is_dynamic"
-                // name="is_dynamic"
                 checked={isDynamic}
                 style={{ marginRight: "5px" }}
                 onChange={() => setIsDynamic(!isDynamic)}
               />
-              <Text fontSize="14px">This is a template discount</Text>
+              <Label>
+                <Text fontSize="14px">This is a template discount</Text>{" "}
+                <InfoTooltip pb="10px" ml={2} tooltipText={"test"} />
+              </Label>
             </Flex>
           </StyledLabel>
         </Box>
@@ -337,23 +341,37 @@ const NewDiscount = ({}) => {
               >
                 <Text fontWeight="500">Percentage</Text>
               </Pill>
-              <Pill
-                disabled={isFreeShipping || selectedRegions.length > 1}
-                width="50%"
-                onClick={() => setIsPercentageDiscount(false)}
-                active={!isPercentageDiscount && !isFreeShipping}
+              <Flex
+                width={1 / 2}
+                data-tip="Fixed amounts are not allowed for multi-regional discounts"
+                data-for="amount-tooltip"
               >
-                <Text fontWeight="500">
-                  Fixed Amount{" "}
-                  {selectedRegions.length > 1 ? (
-                    <span style={{ whiteSpace: "pre-wrap", fontSize: "8px" }}>
-                      {"\n (not allowed for multi-regional discounts)"}
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </Text>
-              </Pill>
+                <Pill
+                  disabled={isFreeShipping || selectedRegions.length > 1}
+                  width="100%"
+                  onClick={() => setIsPercentageDiscount(false)}
+                  active={!isPercentageDiscount && !isFreeShipping}
+                >
+                  <Flex justifyContent="center">
+                    <Text
+                      mr={selectedRegions.length > 1 ? 2 : 0}
+                      fontWeight="500"
+                    >
+                      Fixed Amount{" "}
+                    </Text>
+                    {selectedRegions.length > 1 ? (
+                      <InfoIcon
+                        style={{
+                          fill: "#c4c4c4",
+                          display: "block",
+                        }}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </Flex>
+                </Pill>
+              </Flex>
             </Flex>
           </Flex>
           <Flex flexDirection="column">
@@ -430,6 +448,7 @@ const NewDiscount = ({}) => {
           </Button>
         </Flex>
       </Flex>
+      <Tooltip id={"amount-tooltip"} disable={selectedRegions.length <= 1} />
     </Flex>
   )
 }
