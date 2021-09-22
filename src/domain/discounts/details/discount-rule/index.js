@@ -84,7 +84,12 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   const [allocation, setAllocation] = useState(discount.rule.allocation)
 
   const [selectedProducts, setSelectedProducts] = useState(
-    discount.rule.valid_for || []
+    discount.rule.valid_for.map(p => {
+      return {
+        label: p.title,
+        value: p,
+      }
+    }) || []
   )
 
   const onChange = e => {
@@ -92,13 +97,9 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
     setDiscountRule(prevState => ({ ...prevState, [name]: value }))
   }
 
-  const validProducts = () => {
-    return selectedProducts.map(v => v.product_id || v.id)
-  }
-
   const onSubmit = data => {
     data.value = parseInt(data.value)
-    data.valid_for = validProducts()
+    data.valid_for = selectedProducts.map(p => p.value.id)
     data.id = discount.rule.id
     onUpdate(data)
   }
@@ -216,12 +217,18 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
           {allocation === "item" && (
             <>
               <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
-                Applicable items
+                Items
               </RequiredLabel>
-              <ProductSelection
-                selectedProducts={selectedProducts}
-                setSelectedProducts={setSelectedProducts}
-              />
+              <Text fontSize={1}>Valid for items where: </Text>
+              <Flex mt={2}>
+                <Text mt={1} fontSize={1}>
+                  Product in
+                </Text>
+                <ProductSelection
+                  selectedProducts={selectedProducts}
+                  setSelectedProducts={setSelectedProducts}
+                />
+              </Flex>
             </>
           )}
         </Modal.Content>

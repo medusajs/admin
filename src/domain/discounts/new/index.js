@@ -78,10 +78,6 @@ const NewDiscount = ({}) => {
 
   const { regions, isLoading: isLoadingRegions } = useMedusa("regions")
 
-  const validProducts = () => {
-    return items.map(v => v.product_id)
-  }
-
   const validRegions = () => {
     let formattedRegions = regions.map(r => ({
       label: r.name,
@@ -100,7 +96,7 @@ const NewDiscount = ({}) => {
       rule: {
         description: data.description,
         value: 100,
-        valid_for: validProducts(),
+        valid_for: items,
         allocation: "total",
         type: "free_shipping",
       },
@@ -130,7 +126,8 @@ const NewDiscount = ({}) => {
       data.rule.value = data.rule.value * 100
     }
 
-    if (data.rule.allocation === "item") data.rule.valid_for = validProducts()
+    if (data.rule.allocation === "item")
+      data.rule.valid_for = items.map(p => p.value.id)
     data.regions = validRegions()
 
     const discount = {
@@ -389,12 +386,18 @@ const NewDiscount = ({}) => {
         {isItemDependant && (
           <>
             <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
-              Applicable items
+              Items
             </RequiredLabel>
-            <ProductSelection
-              selectedProducts={items}
-              setSelectedProducts={setItems}
-            />
+            <Text fontSize={1}>Valid for items where: </Text>
+            <Flex mt={2}>
+              <Text mt={1} fontSize={1}>
+                Product in
+              </Text>
+              <ProductSelection
+                selectedProducts={items}
+                setSelectedProducts={setItems}
+              />
+            </Flex>
           </>
         )}
         <Flex mt={4}>
