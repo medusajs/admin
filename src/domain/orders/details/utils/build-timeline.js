@@ -8,6 +8,12 @@ const buildTimeline = (order, notifications) => {
     }
   }
 
+  if (order.claims && order.claims.length) {
+    for (const claim of order.claims) {
+      allItems = [...allItems, ...claim.additional_items]
+    }
+  }
+
   for (const n of notifications) {
     events.push({
       id: n.id,

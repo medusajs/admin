@@ -70,6 +70,7 @@ export default ({
 }) => {
   const { store, isLoading, toaster } = useMedusa("store")
 
+  console.log(">>", event)
   const payStatusColors = decideBadgeColor(event.raw.payment_status)
   const returnStatusColors =
     event.raw.return_order && event.raw.return_order.status
