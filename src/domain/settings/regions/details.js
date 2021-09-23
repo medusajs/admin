@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react"
 import { Flex, Text, Box } from "rebass"
 import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
+import Collapsible from "react-collapsible"
+
 import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
+
+import { ReactComponent as ArrowDown } from "../../../assets/svg/arrow-down.svg"
+import { ReactComponent as ArrowUp } from "../../../assets/svg/arrow-up.svg"
 
 import MultiSelect from "../../../components/multi-select"
 import useMedusa from "../../../hooks/use-medusa"
@@ -18,6 +23,38 @@ import { countries as countryData } from "../../../utils/countries"
 import Shipping from "./shipping"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 
+const TriggerElement = ({ label, icon, isOpen }) => {
+  const colorOpened = "#453B54"
+  const colorClosed = "#89959C"
+  const color = isOpen ? colorOpened : colorClosed
+  return (
+    <Flex my={4}>
+      <Box sx={{ flex: "30% 0 0" }} />
+      <Box
+        pb="2px"
+        alignItems="center"
+        display="inline-flex"
+        sx={{
+          color,
+          cursor: "pointer",
+          borderBottom: "1px solid transparent",
+          "& *": { transition: "color 0.1s ease-out, fill 0.1s ease-out" },
+          "&:hover *": !isOpen
+            ? {
+                fill: colorOpened,
+                color: colorOpened,
+              }
+            : null,
+          "& svg": { fill: color },
+        }}
+      >
+        <Text mr="6px">{label}</Text>
+        <Box>{icon}</Box>
+      </Box>
+    </Flex>
+  )
+}
+
 const Regions = ({ id }) => {
   const [currencies, setCurrencies] = useState([])
   const [countries, setCountries] = useState([])
@@ -25,6 +62,7 @@ const Regions = ({ id }) => {
   const [paymentProviders, setPaymentProviders] = useState([])
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [fulfillmentProviders, setFulfillmentProviders] = useState([])
+  const [showAdvanced, setShowAdvanced] = useState(true)
 
   const { store, isLoading: storeIsLoading } = useMedusa("store")
   const {
@@ -195,15 +233,6 @@ const Regions = ({ id }) => {
                 label="Tax Rate"
                 ref={register}
               />
-              <Input
-                start={true}
-                inline
-                mb={3}
-                placeholder="1000"
-                name="tax_code"
-                label="Tax Code"
-                ref={register}
-              />
               <MultiSelect
                 inline
                 start={true}
@@ -242,6 +271,73 @@ const Regions = ({ id }) => {
                   valueRender={o => <span>{o.value}</span>}
                 />
               )}
+              <Collapsible
+                transitionTime={200}
+                overflowWhenOpen="visible"
+                triggerWhenOpen={
+                  <TriggerElement
+                    isOpen
+                    label="Hide additional details"
+                    icon={<ArrowUp />}
+                  />
+                }
+                trigger={
+                  <TriggerElement
+                    label="Show additional details"
+                    icon={<ArrowDown />}
+                  />
+                }
+              >
+                {showAdvanced && (
+                  <Box>
+                    <Input
+                      start={true}
+                      inline
+                      mb={3}
+                      placeholder="1000"
+                      name="tax_code"
+                      label="Tax Code"
+                      ref={register}
+                    />
+                    <Input
+                      start={true}
+                      inline
+                      mb={3}
+                      placeholder="1000"
+                      name="sales_nominal_code"
+                      label="Nominal Sales Code"
+                      ref={register}
+                    />
+                    <Input
+                      start={true}
+                      inline
+                      mb={3}
+                      placeholder="1000"
+                      name="shipping_nominal_code"
+                      label="Nominal Shipping Code"
+                      ref={register}
+                    />
+                    <Input
+                      start={true}
+                      inline
+                      mb={3}
+                      placeholder="1000"
+                      name="gift_card_nominal_code"
+                      label="Nominal Gift Card Code"
+                      ref={register}
+                    />
+                    <Input
+                      start={true}
+                      inline
+                      mb={3}
+                      placeholder="1000"
+                      name="accounts_receivable_nominal_code"
+                      label="Accounts Receivable Nominal Code"
+                      ref={register}
+                    />
+                  </Box>
+                )}
+              </Collapsible>
             </Box>
           )}
         </Card.Body>
