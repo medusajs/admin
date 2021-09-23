@@ -250,7 +250,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
         <tbody>
           {variants.map(
             (v, row) =>
-              v.id !== undefined && (
+              (v.id !== undefined || !product) && (
                 <tr key={row}>
                   {columns.map((c, col) => (
                     <Td
