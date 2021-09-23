@@ -16,6 +16,7 @@ import DatePicker from "../../../../components/date-picker/date-picker"
 import Tooltip from "../../../../components/tooltip"
 import AvailabilityDuration from "../../../../components/availability-duration"
 import { ReactComponent as InfoIcon } from "../../../../assets/svg/info.svg"
+import { displayAmount, persistedPrice } from "../../../../utils/prices"
 
 const StyledLabel = styled(Label)`
   ${Typography.Base}
@@ -92,6 +93,7 @@ const DiscountRuleModal = ({
   const { register, handleSubmit } = useForm()
   const [discountRule, setDiscountRule] = useState(discount.rule)
   const [type, setType] = useState(discount.rule.type)
+
   const [isPercentageDiscount, setIsPercentageDiscount] = useState(
     discount.rule.type === "percentage"
   )
@@ -110,6 +112,12 @@ const DiscountRuleModal = ({
       value: id,
       label: title,
     })) || []
+  )
+
+  const [value, setValue] = useState(
+    isPercentageDiscount
+      ? discountRule.value
+      : displayAmount(selectedRegions[0].currency_code, discountRule.value)
   )
 
   const onChange = e => {
@@ -132,11 +140,9 @@ const DiscountRuleModal = ({
     data.id = discount.rule.id
     data.type = isPercentageDiscount ? "percentage" : "fixed"
     data.allocation = isAllocatedToItem ? "item" : "total"
-    data.value = parseInt(data.value)
-
-    if (!isPercentageDiscount) {
-      data.value = data.value * 100
-    }
+    data.value = isPercentageDiscount
+      ? parseInt(value)
+      : persistedPrice(selectedRegions[0].currency_code, parseInt(value))
 
     const result = {
       rule: data,
@@ -154,7 +160,7 @@ const DiscountRuleModal = ({
       <Modal.Body
         as="form"
         onSubmit={handleSubmit(onSubmit)}
-        sx={{ height: "75vh" }}
+        // sx={{ height: "75vh" }}
       >
         <Modal.Header>Update discount rule</Modal.Header>
         <Modal.Content flexDirection="column">
@@ -174,8 +180,8 @@ const DiscountRuleModal = ({
             type="number"
             required={true}
             name="value"
-            value={discountRule.value}
-            onChange={onChange}
+            value={value}
+            onChange={event => setValue(event.target.value)}
           />
           <Flex mb={3} flexDirection="column">
             <RequiredLabel pb={2}>Type</RequiredLabel>

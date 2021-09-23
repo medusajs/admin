@@ -99,7 +99,11 @@ const DiscountDetails = ({ id }) => {
     if (regions && discount && discount.regions) {
       const temp = regions.reduce((acc, next) => {
         if (discount.regions.map(r => r.id).includes(next.id)) {
-          acc.push({ label: next.name, value: next.id })
+          acc.push({
+            label: next.name,
+            value: next.id,
+            currency_code: next.currency_code,
+          })
         }
         return acc
       }, [])
@@ -260,6 +264,7 @@ const DiscountDetails = ({ id }) => {
                 regions.map(el => ({
                   label: el.name,
                   value: el.id,
+                  currency_code: el.currency_code,
                 }))
               }
               selectAllLabel={"All"}
