@@ -2,8 +2,10 @@ import React, { useEffect, useState, useRef } from "react"
 import { Box, Flex, Text } from "rebass"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
+
 import Typography from "../typography"
 import Select from "../select"
+import { normalizeAmount } from "../../utils/prices"
 
 const TextWrapper = styled(Flex)`
   margin-left: 8px;
@@ -75,6 +77,7 @@ const CurrencyInput = React.forwardRef(
   (
     {
       edit,
+      divide,
       name,
       label,
       boldLabel,
@@ -177,7 +180,9 @@ const CurrencyInput = React.forwardRef(
           <StyledInput
             ref={ref}
             name={name}
-            value={value || null}
+            value={
+              divide ? value && normalizeAmount(currency, value) : value || null
+            }
             onBlur={handleBlur}
             onFocus={handleFocus}
             onChange={onChange}

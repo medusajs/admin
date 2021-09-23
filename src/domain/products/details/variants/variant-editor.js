@@ -3,6 +3,8 @@ import { Checkbox, Label } from "@rebass/forms"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Box, Flex, Text } from "rebass"
+
+import { currencies } from "../../../../utils/currencies"
 import { removeNullish } from "../../../../utils/remove-nullish"
 import { ReactComponent as CloseIcon } from "../../../../assets/svg/cross.svg"
 import { ReactComponent as DeleteIcon } from "../../../../assets/svg/delete.svg"
@@ -46,10 +48,16 @@ const VariantEditor = ({
 }) => {
   const { store, isLoading } = useMedusa("store")
 
+  const [costPrice, setCostPrice] = useState({
+    currency_code: variant.cost_price?.currency_code,
+    amount: variant.cost_price?.amount,
+  })
   const [currencyOptions, setCurrencyOptions] = useState([])
   const [prices, setPrices] = useState(variant.prices)
 
-  const { control, setValue, register, reset, handleSubmit } = useForm(variant)
+  const { setValue, watch, getValues, register, reset, handleSubmit } = useForm(
+    variant
+  )
 
   useEffect(() => {
     reset({
@@ -73,7 +81,30 @@ const VariantEditor = ({
 
   useEffect(() => {
     setCurrencyOptions(getCurrencyOptions())
+
+    if (store && !costPrice.currency_code) {
+      setCostPrice({
+        ...costPrice,
+        currency_code: store.default_currency_code,
+      })
+    }
   }, [store, isLoading, variant.prices])
+
+  const handleCostCurrencySelected = currency => {
+    setCostPrice({
+      ...costPrice,
+      currency_code: currency,
+    })
+  }
+
+  const handleCostPriceChanged = e => {
+    const element = e.target
+    const value = Math.round(element.value * 100)
+    setCostPrice({
+      ...costPrice,
+      amount: value,
+    })
+  }
 
   const handleCurrencySelected = (index, currency) => {
     const newPrices = [...prices]
@@ -120,6 +151,10 @@ const VariantEditor = ({
   }
 
   const handleSave = data => {
+    if (costPrice.currency_code && typeof costPrice.amount === "number") {
+      data.cost_price = costPrice
+    }
+
     data.prices = prices.map(({ currency_code, region_id, amount }) => ({
       currency_code,
       region_id,
@@ -254,6 +289,25 @@ const VariantEditor = ({
             <Text fontSize={2} fontWeight={700} mb={3}>
               Stock
             </Text>
+            <Flex mb={3}>
+              {!isLoading && (
+                <CurrencyInput
+                  mr={3}
+                  edit
+                  divide
+                  currency={costPrice.currency_code.toUpperCase()}
+                  currencyOptions={Object.keys(currencies).map(c => ({
+                    value: c,
+                    label: c,
+                  }))}
+                  label="Cost Price"
+                  placeholder="Cost Price"
+                  value={costPrice.amount}
+                  onCurrencySelected={handleCostCurrencySelected}
+                  onChange={handleCostPriceChanged}
+                />
+              )}
+            </Flex>
             <Flex mb={3}>
               <Input
                 mr={3}
