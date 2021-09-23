@@ -412,7 +412,12 @@ const NewDiscount = ({}) => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Flex width={1 / 2} mr={4} flexDirection="column">
+            <Flex
+              width={[1, 1, 1, 1 / 2]}
+              mr={[0, 0, 0, 4]}
+              mb={[2, 2, 2, 0]}
+              flexDirection="column"
+            >
               <StyledLabel pb={2} style={{ fontWeight: 500 }}>
                 Start date
               </StyledLabel>
@@ -422,7 +427,7 @@ const NewDiscount = ({}) => {
                 enableTimepicker={true}
               />
             </Flex>
-            <Flex width={1 / 2} flexDirection="column">
+            <Flex width={[1, 1, 1, 1 / 2]} flexDirection="column">
               <StyledLabel pb={2} style={{ fontWeight: 500 }}>
                 End date
               </StyledLabel>
