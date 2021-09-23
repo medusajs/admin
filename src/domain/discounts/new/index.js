@@ -166,9 +166,6 @@ const NewDiscount = ({}) => {
       discount.usage_limit = data.usage_limit
     }
 
-    console.log(discount)
-    return
-
     Medusa.discounts
       .create(discount)
       .then(() => {
@@ -276,24 +273,23 @@ const NewDiscount = ({}) => {
         </Flex>
         <Box mb={5}>
           <StyledLabel>
-            <Flex alignItems="center">
+            <Flex sx={{ cursor: "pointer" }} alignItems="center">
               <input
                 type="checkbox"
                 id="is_dynamic"
                 checked={isDynamic}
-                style={{ marginRight: "5px" }}
+                style={{ cursor: "pointer", marginRight: "5px" }}
                 onChange={() => setIsDynamic(!isDynamic)}
               />
-              <Label>
+              <Flex alignItems="center">
                 <Text fontSize="14px">This is a template discount</Text>{" "}
                 <InfoTooltip
-                  pb="10px"
                   ml={2}
                   tooltipText={
                     "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
                   }
                 />
-              </Label>
+              </Flex>
             </Flex>
           </StyledLabel>
         </Box>
@@ -358,7 +354,7 @@ const NewDiscount = ({}) => {
                   onClick={() => setIsPercentageDiscount(false)}
                   active={!isPercentageDiscount && !isFreeShipping}
                 >
-                  <Flex justifyContent="center">
+                  <Flex alignItems="center" justifyContent="center">
                     <Text
                       mr={selectedRegions.length > 1 ? 2 : 0}
                       fontWeight="500"
