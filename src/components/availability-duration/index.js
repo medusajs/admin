@@ -25,12 +25,16 @@ const AvailabilityDuration = ({ setIsoString, existingIsoString }) => {
   const [durationHours, setDurationHours] = useState(duration.hours || 0)
   const [durationMinutes, setDurationMinutes] = useState(duration.minutes || 0)
 
+  const [hasValidDuration, setHasValidDuration] = useState(
+    existingIsoString ? true : false
+  )
+
   useEffect(() => {
     const isoString = `P${durationYears || 0}Y${durationMonths || 0}M${
       durationDays || 0
     }DT${durationHours || 0}H${durationMinutes || 0}M`
 
-    setIsoString(isoString)
+    setIsoString(hasValidDuration ? isoString : null)
   }, [
     durationYears,
     durationMonths,
@@ -40,7 +44,7 @@ const AvailabilityDuration = ({ setIsoString, existingIsoString }) => {
   ])
 
   const AvailabilityDurationField = props => (
-    <Flex mb={[1 / 2, 1 / 2, 1 / 2, 3]}>
+    <Flex sx={{ width: "110px" }} mb={[1 / 2, 1 / 2, 1 / 2, 3]}>
       <StyledLabel>
         <Flex alignItems="center">
           <Input
@@ -59,43 +63,57 @@ const AvailabilityDuration = ({ setIsoString, existingIsoString }) => {
   )
 
   return (
-    <Flex mb={3} width={[1, 1, 1]} flexDirection="column">
+    <Flex mb={3} width={1} flexDirection="column">
       <StyledLabel mb={3} style={{ fontWeight: 500 }}>
-        <Text>Availability Duration</Text>
+        <Flex alignItems="center">
+          <input
+            type="checkbox"
+            id="hasValidDuration"
+            checked={hasValidDuration}
+            style={{ cursor: "pointer", marginRight: "5px" }}
+            onChange={() => {
+              setHasValidDuration(!hasValidDuration)
+              setIsoString(null)
+            }}
+          />
+          <Text>Availability Duration</Text>
+        </Flex>
       </StyledLabel>
-      <Box
-        sx={{
-          display: "grid",
-          gridGap: 3,
-          gridTemplateColumns: ["1fr", "1fr", "1fr", "1fr 1fr 1fr"],
-        }}
-      >
-        <AvailabilityDurationField
-          val={durationYears}
-          setValue={setDurationYears}
-          unit="Years"
-        />
-        <AvailabilityDurationField
-          val={durationMonths}
-          setValue={setDurationMonths}
-          unit="Months"
-        />
-        <AvailabilityDurationField
-          val={durationDays}
-          setValue={setDurationDays}
-          unit="Days"
-        />
-        <AvailabilityDurationField
-          val={durationHours}
-          setValue={setDurationHours}
-          unit="Hours"
-        />
-        <AvailabilityDurationField
-          val={durationMinutes}
-          setValue={setDurationMinutes}
-          unit="Minutes"
-        />
-      </Box>
+      {hasValidDuration && (
+        <Box
+          sx={{
+            display: "grid",
+            gridGap: 3,
+            gridTemplateColumns: ["1fr", "1fr", "1fr", "1fr 1fr 1fr"],
+          }}
+        >
+          <AvailabilityDurationField
+            val={durationYears}
+            setValue={setDurationYears}
+            unit="Years"
+          />
+          <AvailabilityDurationField
+            val={durationMonths}
+            setValue={setDurationMonths}
+            unit="Months"
+          />
+          <AvailabilityDurationField
+            val={durationDays}
+            setValue={setDurationDays}
+            unit="Days"
+          />
+          <AvailabilityDurationField
+            val={durationHours}
+            setValue={setDurationHours}
+            unit="Hours"
+          />
+          <AvailabilityDurationField
+            val={durationMinutes}
+            setValue={setDurationMinutes}
+            unit="Minutes"
+          />
+        </Box>
+      )}
     </Flex>
   )
 }
