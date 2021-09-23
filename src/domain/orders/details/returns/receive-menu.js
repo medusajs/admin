@@ -20,11 +20,11 @@ const ReceiveMenu = ({
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
   const [returnAll, setReturnAll] = useState(false)
-  const [writeOffInventory, setWriteOffInventory] = useState(true)
   const [refundable, setRefundable] = useState(0)
   const [refundAmount, setRefundAmount] = useState(0)
   const [toReturn, setToReturn] = useState([])
   const [quantities, setQuantities] = useState({})
+  const [writeOffQuantities, setWriteOffQuantities] = useState({})
   const { register, setValue, handleSubmit } = useForm()
 
   const [allItems, setAllItems] = useState([])
@@ -87,6 +87,7 @@ const ReceiveMenu = ({
 
     setToReturn(returns)
     setQuantities(qty)
+    setWriteOffQuantities({})
   }, [allItems])
 
   useEffect(() => {
@@ -118,17 +119,33 @@ const ReceiveMenu = ({
     setQuantities(newQuantities)
   }
 
+  const handleWriteOffQuantity = (e, item) => {
+    const element = e.target
+    const newWriteOffQuantity = {
+      ...writeOffQuantities,
+      [item.id]: parseInt(element.value),
+    }
+
+    setWriteOffQuantities(newWriteOffQuantity)
+  }
+
   const onSubmit = () => {
     const items = toReturn.map(t => ({
       item_id: t,
       quantity: quantities[t],
     }))
 
+    const writeOffItems = Object.entries(writeOffQuantities).map(
+      ([item_id, quantity]) => {
+        return { item_id, quantity }
+      }
+    )
+
     if (returnRequest.is_swap && onReceiveSwap) {
       setSubmitting(true)
       return onReceiveReturn(returnRequest.id, {
         items,
-        write_off_inventory: writeOffInventory,
+        write_off_inventory: writeOffItems,
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
@@ -141,7 +158,7 @@ const ReceiveMenu = ({
       return onReceiveReturn(returnRequest.id, {
         items,
         refund: Math.round(refundAmount),
-        write_off_inventory: writeOffInventory,
+        write_off_inventory: writeOffItems,
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
@@ -207,6 +224,16 @@ const ReceiveMenu = ({
             <Box width={75} px={2} py={1}>
               Quantity
             </Box>
+            <Box width={150} px={2} py={1}>
+              <Flex>
+                <Text>Write off quantity </Text>
+                <InfoTooltip
+                  mt={2}
+                  ml={2}
+                  tooltipText="If filled out, receiving the return will not update the inventory according to amount items specified"
+                />
+              </Flex>
+            </Box>
             <Box width={170} px={2} py={1}>
               Refundable
             </Box>
@@ -256,6 +283,22 @@ const ReceiveMenu = ({
                       type="number"
                       onChange={e => handleQuantity(e, item)}
                       value={quantities[item.id] || ""}
+                      min={0}
+                      max={item.quantity - item.returned_quantity}
+                    />
+                  ) : (
+                    item.quantity - item.returned_quantity
+                  )}
+                </Box>
+                <Box fontSize={1} width={75} ml={75} px={2} py={1}>
+                  {returnRequest.is_swap ? (
+                    writeOffQuantities[item.id]
+                  ) : toReturn.includes(item.id) ? (
+                    <Input
+                      textAlign={"center"}
+                      type="number"
+                      onChange={e => handleWriteOffQuantity(e, item)}
+                      value={writeOffQuantities[item.id] || ""}
                       min={1}
                       max={item.quantity - item.returned_quantity}
                     />
@@ -303,25 +346,7 @@ const ReceiveMenu = ({
                 mt={2}
                 pt={2}
                 justifyContent="flex-end"
-              >
-                <Box fontSize={1} px={2}>
-                  <Flex>
-                    <Text>Write off inventory </Text>
-                    <InfoTooltip
-                      mt={2}
-                      ml={2}
-                      tooltipText="If checked, receiving the return will update the inventory according to the returned items"
-                    />
-                  </Flex>
-                </Box>
-                <Flex px={2} mt={2} width={170} justifyContent="flex-end">
-                  <input
-                    checked={writeOffInventory}
-                    onChange={() => setWriteOffInventory(!writeOffInventory)}
-                    type="checkbox"
-                  />
-                </Flex>
-              </Flex>
+              ></Flex>
               <Flex
                 sx={{
                   borderTop: "hairline",
