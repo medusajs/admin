@@ -357,6 +357,7 @@ const DiscountDetails = ({ id }) => {
           onUpdate={handleDiscountRuleUpdate}
           onDismiss={() => setShowRuleEdit(false)}
           products={products}
+          selectedRegions={selectedRegions}
           // selectedProducts={selectedProducts}
           // setSelectedProducts={setSelectedProducts}
         />

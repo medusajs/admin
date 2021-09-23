@@ -9,10 +9,13 @@ import moment from "moment"
 import Modal from "../../../../components/modal"
 import MultiSelect from "react-multi-select-component"
 import Input from "../../../../components/input"
+import Pill from "../../../../components/pill"
 import Button from "../../../../components/button"
 import Typography from "../../../../components/typography"
 import DatePicker from "../../../../components/date-picker/date-picker"
+import Tooltip from "../../../../components/tooltip"
 import AvailabilityDuration from "../../../../components/availability-duration"
+import { ReactComponent as InfoIcon } from "../../../../assets/svg/info.svg"
 
 const StyledLabel = styled(Label)`
   ${Typography.Base}
@@ -79,11 +82,23 @@ const RequiredLabel = styled.div`
   }
 `
 
-const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
+const DiscountRuleModal = ({
+  selectedRegions,
+  discount,
+  onUpdate,
+  onDismiss,
+  products,
+}) => {
   const { register, handleSubmit } = useForm()
   const [discountRule, setDiscountRule] = useState(discount.rule)
   const [type, setType] = useState(discount.rule.type)
+  const [isPercentageDiscount, setIsPercentageDiscount] = useState(
+    discount.rule.type === "percentage"
+  )
   const [allocation, setAllocation] = useState(discount.rule.allocation)
+  const [isAllocatedToItem, setIsAllocatedToItem] = useState(
+    discount.rule.allocation === "item"
+  )
   const [startDate, setStartDate] = useState(new Date(discount.starts_at))
   const [endDate, setEndDate] = useState(
     discount.ends_at ? new Date(discount.ends_at) : discount.ends_at
@@ -113,9 +128,15 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
   }
 
   const onSubmit = data => {
-    data.value = parseInt(data.value)
     data.valid_for = validProducts()
     data.id = discount.rule.id
+    data.type = isPercentageDiscount ? "percentage" : "fixed"
+    data.allocation = isAllocatedToItem ? "item" : "total"
+    data.value = parseInt(data.value)
+
+    if (!isPercentageDiscount) {
+      data.value = data.value * 100
+    }
 
     const result = {
       rule: data,
@@ -153,111 +174,90 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
             type="number"
             required={true}
             name="value"
-            value={
-              discountRule.type === "fixed"
-                ? parseInt(discountRule.value) / 100
-                : discountRule.value
-            }
+            value={discountRule.value}
             onChange={onChange}
           />
-          <RequiredLabel pb={2}>Type</RequiredLabel>
-          <StyledLabel>
-            <Flex alignItems="center">
-              <input
-                type="radio"
-                ref={register({ required: true })}
-                id="percentage"
-                name="type"
-                value="percentage"
-                checked={type === "percentage"}
-                onChange={() => setType("percentage")}
-                style={{ marginRight: "5px" }}
-              />
-              <Text fontSize="12px" color="gray">
-                Percentage
-              </Text>
+          <Flex mb={3} flexDirection="column">
+            <RequiredLabel pb={2}>Type</RequiredLabel>
+            <Flex width={1} justifyContent="space-between">
+              <Pill
+                width="50%"
+                onClick={() => setIsPercentageDiscount(true)}
+                active={isPercentageDiscount}
+                mr={4}
+              >
+                <Text fontWeight="500">Percentage</Text>
+              </Pill>
+              <Flex
+                width={1 / 2}
+                data-tip="Fixed amounts are not allowed for multi-regional discounts"
+                data-for="amount-tooltip"
+              >
+                <Pill
+                  disabled={selectedRegions.length > 1}
+                  width="100%"
+                  onClick={() => setIsPercentageDiscount(false)}
+                  active={!isPercentageDiscount}
+                >
+                  <Flex alignItems="center" justifyContent="center">
+                    <Text
+                      mr={selectedRegions.length > 1 ? 2 : 0}
+                      fontWeight="500"
+                    >
+                      Fixed Amount{" "}
+                    </Text>
+                    {selectedRegions.length > 1 ? (
+                      <InfoIcon
+                        style={{
+                          fill: "#c4c4c4",
+                          display: "block",
+                        }}
+                      />
+                    ) : (
+                      ""
+                    )}
+                    <Tooltip
+                      id={"amount-tooltip"}
+                      disable={selectedRegions.length <= 1}
+                    />
+                  </Flex>
+                </Pill>
+              </Flex>
             </Flex>
-          </StyledLabel>
-          <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
-            <Flex alignItems="center">
-              <input
-                type="radio"
-                ref={register({ required: true })}
-                id="fixed"
-                name="type"
-                value="fixed"
-                checked={type === "fixed"}
-                onChange={() => setType("fixed")}
-                disabled={discount.regions.length > 1}
-                style={{ marginRight: "5px" }}
-              />
-              <Text fontSize="12px" color="gray">
-                Fixed amount{" "}
-                {discount.regions.length > 1 ? (
-                  <span style={{ fontSize: "8px" }}>
-                    (not allowed for multi-regional discounts)
-                  </span>
-                ) : (
-                  ""
-                )}
-              </Text>
-            </Flex>
-          </StyledLabel>
+          </Flex>
           <RequiredLabel pb={2}>Allocation</RequiredLabel>
-          <StyledLabel fontSize="10px" color="gray">
-            <Flex alignItems="center">
-              <input
-                type="radio"
-                ref={register({ required: true })}
-                id="total"
-                name="allocation"
-                checked={allocation === "total"}
-                onChange={() => setAllocation("total")}
-                value="total"
-                style={{ marginRight: "5px" }}
-              />
-              <Text fontSize="12px" color="gray">
-                Total (discount is applied to the total amount)
-              </Text>
-            </Flex>
-          </StyledLabel>
-          <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
-            <Flex alignItems="center">
-              <input
-                type="radio"
-                ref={register({ required: true })}
-                id="item"
-                name="allocation"
-                value="item"
-                checked={allocation === "item"}
-                onChange={() => setAllocation("item")}
-                style={{ marginRight: "5px" }}
-              />
-              <Text fontSize="12px" color="gray">
-                Item (discount is applied to specific items)
-              </Text>
-            </Flex>
-          </StyledLabel>
+          <Flex pb={3} justifyContent="space-between" alignItems="center">
+            <Pill
+              width="50%"
+              onClick={() => setIsAllocatedToItem(false)}
+              active={!isAllocatedToItem}
+              mr={4}
+            >
+              <Text fontWeight="500">Total</Text>
+            </Pill>
+            <Pill
+              width="50%"
+              onClick={() => setIsAllocatedToItem(true)}
+              active={isAllocatedToItem}
+            >
+              <Text fontWeight="500">Item</Text>
+            </Pill>
+          </Flex>
           <Flex
-            width={3 / 4}
             mb={3}
             flexDirection={["column", "columnn", "columnn", "row"]}
             justifyContent="space-between"
           >
-            <Flex flexDirection="column">
-              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
-                Start date
-              </StyledLabel>
+            <Flex width={1 / 2} mr={4} flexDirection="column">
+              <StyledLabel pb={2}>Start date</StyledLabel>
               <DatePicker
                 date={startDate}
                 onChange={setStartDate}
                 enableTimepicker={true}
               />
             </Flex>
-            <Flex flexDirection="column">
-              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
-                End date
-              </StyledLabel>
+            <Flex width={1 / 2} flexDirection="column">
+              <StyledLabel pb={2}>End date</StyledLabel>
               <DatePicker
                 date={endDate}
                 onChange={setEndDate}
