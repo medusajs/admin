@@ -12,6 +12,7 @@ import Dropdown from "../../../../components/dropdown"
 import Select from "../../../../components/select"
 import Typography from "../../../../components/typography"
 import Medusa from "../../../../services/api"
+import { filterItems } from "../utils/create-filtering"
 
 const Dot = styled(Box)`
   width: 6px;
@@ -94,15 +95,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (order) {
-      let temp = [...order.items]
-
-      if (order.swaps && order.swaps.length) {
-        for (const s of order.swaps) {
-          temp = [...temp, ...s.additional_items]
-        }
-      }
-
-      setAllItems(temp)
+      setAllItems(filterItems(order, false))
     }
   }, [order])
 

@@ -13,6 +13,7 @@ import TextArea from "../../../../components/textarea"
 import Select from "../../../../components/select"
 import AddressForm from "../address-form"
 import Medusa from "../../../../services/api"
+import { filterItems } from "../utils/create-filtering"
 
 import { ReactComponent as Trash } from "../../../../assets/svg/trash.svg"
 import { ReactComponent as Edit } from "../../../../assets/svg/edit.svg"
@@ -167,15 +168,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (order) {
-      let temp = [...order.items]
-
-      if (order.swaps && order.swaps.length) {
-        for (const s of order.swaps) {
-          temp = [...temp, ...s.additional_items]
-        }
-      }
-
-      setAllItems(temp)
+      setAllItems(filterItems(order, true))
     }
   }, [order])
 
