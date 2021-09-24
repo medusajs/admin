@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react"
 import { Flex, Text, Box } from "rebass"
+import { navigate } from "gatsby"
 import { useForm } from "react-hook-form"
-import Collapsible from "react-collapsible"
 
 import Input, { StyledLabel } from "../../../components/input"
 import Button from "../../../components/button"
-import Card from "../../../components/card"
 import Spinner from "../../../components/spinner"
-import Divider from "../../../components/divider"
-import { ReactSelect } from "../../../components/react-select"
-import Medusa from "../../../services/api"
+
+import ReturnReasonsList from "./return-reasons-list"
 
 import useMedusa from "../../../hooks/use-medusa"
+import ReturnReasonModal from "./create-edit-return-reason"
 
-const EditChildReturnReason = ({ id, value, removeFromList }) => {
+const EditReturnReason = ({ id }) => {
   const { register, reset, handleSubmit } = useForm()
   const {
     return_reason,
@@ -23,102 +22,9 @@ const EditChildReturnReason = ({ id, value, removeFromList }) => {
     toaster,
   } = useMedusa("returnReasons", { id })
 
-  useEffect(() => {
-    if (isLoading) {
-      return
-    }
-    reset({ ...return_reason })
-  }, [return_reason, isLoading])
-
-  const [isOpen, setIsOpen] = useState(false)
-
-  if (isLoading) {
-    return (
-      <Flex
-        mt={3}
-        width={1}
-        alignContent="center"
-        justifyContent="space-between"
-      >
-        {value}
-      </Flex>
-    )
-  }
-
-  const onUpdateChildCategory = async data => {
-    try {
-      await update({ ...data })
-      toaster("Successfully updated return reason", "success")
-    } catch (error) {
-      toaster("Failed to update return reason", "error")
-    }
-  }
-
-  const onDelete = async () => {
-    try {
-      await returnReasonDelete()
-      removeFromList()
-      toaster("Successfully deleted return reason", "success")
-    } catch (error) {
-      toaster("Failed to delete return reason", "error")
-    }
-  }
-
-  return (
-    <Flex
-      flexDirection="column"
-      as="form"
-      onSubmit={handleSubmit(onUpdateChildCategory)}
-    >
-      <Collapsible
-        containerElementProps={{ style: { width: "100%" } }}
-        transitionTime={200}
-        overflowWhenOpen="visible"
-        open={isOpen}
-        trigger={
-          <Flex
-            mt={3}
-            mb={2}
-            width={1}
-            alignContent="center"
-            justifyContent="space-between"
-          >
-            {return_reason.value}
-          </Flex>
-        }
-      >
-        <Flex flexDirection="column">
-          <Input mb={3} name="label" label="Label" ref={register} />
-          <Input
-            mb={3}
-            name="description"
-            ref={register}
-            disables
-            label="Description"
-          />
-          <Button mb={2} variant={"cta"} type="submit">
-            Save
-          </Button>
-          <Button variant={"danger"} onClick={() => onDelete()}>
-            Delete
-          </Button>
-        </Flex>
-      </Collapsible>
-    </Flex>
-  )
-}
-
-const EditReturnReason = ({ id }) => {
-  const { register, reset, handleSubmit } = useForm()
-  const {
-    return_reason,
-    isLoading,
-    update,
-    toaster,
-  } = useMedusa("returnReasons", { id })
-
-  const [creatingNewChild, setCreatingNewChild] = useState(false)
   const [children, setChildren] = useState([])
+  const [showReasonEdit, setShowReasonEdit] = useState(false)
+  const [editReturnReason, setEditReturnReason] = useState(undefined)
 
   useEffect(() => {
     if (isLoading) {
@@ -132,33 +38,20 @@ const EditReturnReason = ({ id }) => {
     try {
       await update({ ...data })
       toaster("Successfully updated return reason", "success")
+      navigate("/a/settings/return-reasons/")
     } catch (error) {
       console.log(error)
       toaster("Failed to update return reason", "error")
     }
   }
 
-  const onCreateNewCategory = async data => {
-    const newCategory = { parent_return_reason_id: id, ...data.newCategory }
-    console.log(newCategory)
-
-    Medusa.returnReasons
-      .create(newCategory)
-      .then(result => {
-        return_reason.return_reason_children.push(result.data.return_reason)
-        // navigate(`/a/settings/return-reasons`)
-        toaster("Successfully created return reason", "success")
-        setCreatingNewChild(false)
-      })
-      .catch(error => {
-        console.log(error.message)
-        toaster("Failed to create return reason", "error")
-      })
-  }
-
-  const onDelete = id => {
-    const newChildren = children.filter(c => c.id !== id)
-    setChildren(newChildren)
+  const deleteReturnReason = async () => {
+    try {
+      await returnReasonDelete()
+    } catch (err) {
+      console.log(err)
+    }
+    navigate("/a/settings/return-reasons/")
   }
 
   if (isLoading) {
@@ -172,128 +65,125 @@ const EditReturnReason = ({ id }) => {
   }
 
   return (
-    <Flex flexDirection="column">
+    <Flex alignItems="center" flexDirection="column">
       <Flex
         as="form"
         onSubmit={handleSubmit(onSave)}
-        flexDirection="column"
-        pt={5}
+        width="90%"
         alignItems="center"
-        justifyContent="center"
-        width="100%"
+        flexDirection="column"
       >
-        <Flex flexDirection="column" width={3 / 5} justifyContent="flex-start">
-          <Text mb={1} fontWeight="bold" fontSize={20}>
-            Edit Return Reason
-          </Text>
-          <Box>
-            <Text mb={4} color="gray" fontSize={16}>
-              {return_reason.value}
+        <Flex
+          flexDirection="column"
+          pt={5}
+          alignItems="center"
+          justifyContent="center"
+          width={1}
+        >
+          <Flex flexDirection="column" width={1} justifyContent="flex-start">
+            <Text mb={4} fontWeight="bold" fontSize={20}>
+              Edit Return Reason
             </Text>
-          </Box>
+            <Flex mb={4}>
+              <Text color="gray" mr={4} fontSize={16}>
+                Reason code
+              </Text>
+              <Text color="black" fontSize={16}>
+                {return_reason.value}
+              </Text>
+            </Flex>
+          </Flex>
+          <Flex width={1} flexDirection="column">
+            <StyledLabel boldLabel={true} sx={{ color: "black" }}>
+              Label
+            </StyledLabel>
+            <Input mb={3} name="label" ref={register} />
+            <StyledLabel boldLabel={true} sx={{ color: "black" }}>
+              Description
+            </StyledLabel>
+            <Input mb={3} name="description" ref={register} />
+          </Flex>
         </Flex>
-        <Flex mb={5} width={3 / 5} flexDirection="column">
-          <Input mb={3} name="label" label="Label" ref={register} width="75%" />
-          <Input
-            mb={3}
-            name="description"
-            label="Description"
-            ref={register}
-            width="75%"
-          />
-          <Flex mt={4} width="75%">
+        <Flex
+          mt={4}
+          width={1}
+          alignItems="center"
+          justifyContent="center"
+          flexDirection="column"
+        >
+          <Flex width={1}>
+            <Flex
+              width={1}
+              align-content="center"
+              justifyContent="space-between"
+            >
+              <Text mb={1} color="black" fontWeight={500} fontSize={18}>
+                Child return reasons
+              </Text>
+              <Button
+                variant="cta"
+                onClick={() => {
+                  setEditReturnReason(undefined)
+                  setShowReasonEdit(true)
+                }}
+              >
+                + Create nested Reason
+              </Button>
+            </Flex>
+          </Flex>
+        </Flex>
+        <Flex
+          flexDirection="column"
+          alignItems="center"
+          width={1}
+          justifyContent="center"
+        >
+          <Flex width={1}>
+            <ReturnReasonsList
+              return_reasons={children}
+              onEditClick={reason => {
+                setEditReturnReason(reason)
+                setShowReasonEdit(true)
+              }}
+            />
+          </Flex>
+        </Flex>
+        <Flex width={1} justifyContent="space-between">
+          <Flex mt={4} flexDirection="column" alignItems="flex-start">
+            <StyledLabel>
+              <Text fontSize={18} sx={{ color: "black" }} fontWeight={500}>
+                Danger zone
+              </Text>
+            </StyledLabel>
+            <Button
+              onClick={() => deleteReturnReason()}
+              variant="danger"
+              width="150px"
+            >
+              Delete
+            </Button>
+          </Flex>
+          <Flex mt={4}>
             <Box ml="auto" />
             <Button variant={"cta"} type="submit">
               Save
             </Button>
           </Flex>
         </Flex>
-      </Flex>
-      <Flex
-        mt={4}
-        width={1}
-        alignItems="center"
-        justifyContent="center"
-        flexDirection="column"
-      >
-        <Flex width={3 / 5}>
-          <Flex
-            align-content="center"
-            justifyContent="space-between"
-            width={3 / 4}
-          >
-            <Text mb={1} color="black" fontSize={18}>
-              Child return reasons
-            </Text>
-            <Button
-              variant="primary"
-              onClick={() => setCreatingNewChild(!creatingNewChild)}
-            >
-              {creatingNewChild ? "Cancel" : "Add"}
-            </Button>
-          </Flex>
-        </Flex>
-        <Flex width={3 / 5}>
-          <Collapsible
-            transitionTime={200}
-            overflowWhenOpen="visible"
-            open={creatingNewChild}
-            containerElementProps={{ style: { width: "100%" } }}
-            trigger=""
-          >
-            <Flex
-              as="form"
-              onSubmit={handleSubmit(onCreateNewCategory)}
-              width={1}
-              flexDirection="column"
-              pt={2}
-            >
-              <Input
-                required={true}
-                mb={1}
-                name="newCategory.value"
-                label="Reason Code"
-                ref={register}
-                width="75%"
-              />
-              <Input
-                required={true}
-                mb={1}
-                name="newCategory.label"
-                label="Label"
-                ref={register}
-                width="75%"
-              />
-              <Input
-                mb={1}
-                name="newCategory.description"
-                label="Description"
-                ref={register}
-                width="75%"
-              />
-              <Flex mt={4} width="75%">
-                <Box ml="auto" />
-                <Button variant={"cta"} type="submit">
-                  Save
-                </Button>
-              </Flex>
-            </Flex>
-          </Collapsible>
-        </Flex>
-      </Flex>
-      <Flex flexDirection="column" alignItems="center" justifyContent="center">
-        <Flex width={3 / 5}>
-          <Flex width={3 / 4} flexDirection="column">
-            {children.map((rrc, idx) => (
-              <EditChildReturnReason
-                key={rrc.id}
-                value={rrc.value}
-                id={rrc.id}
-                removeFromList={() => onDelete(rrc.id)}
-              />
-            ))}
-          </Flex>
-        </Flex>
+        {showReasonEdit && (
+          <ReturnReasonModal
+            reason={editReturnReason}
+            parentReturnReason={return_reason}
+            onDismiss={() => setShowReasonEdit(false)}
+            onCreate={reason => children.push(reason)}
+            onUpdate={reason => {
+              setChildren(
+                children.map(c => (c.id === reason.id ? { ...reason } : c))
+              )
+            }}
+            onDelete={id => setChildren(children.filter(c => c.id !== id))}
+          />
+        )}
       </Flex>
     </Flex>
   )
