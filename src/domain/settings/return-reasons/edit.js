@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import Input, { StyledLabel } from "../../../components/input"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
+import InfoTooltip from "../../../components/info-tooltip"
 
 import ReturnReasonsList from "./return-reasons-list"
 
@@ -113,20 +114,33 @@ const EditReturnReason = ({ id }) => {
             <Flex
               width={1}
               align-content="center"
+              alignItems="baseline"
               justifyContent="space-between"
+              flexDirection={children.length > 0 ? "row" : "column"}
             >
-              <Text mb={1} color="black" fontWeight={500} fontSize={18}>
-                Child return reasons
-              </Text>
-              <Button
-                variant="cta"
-                onClick={() => {
-                  setEditReturnReason(undefined)
-                  setShowReasonEdit(true)
-                }}
-              >
-                + Create nested Reason
-              </Button>
+              <Flex alignItems="baseline">
+                <Text
+                  mb={2}
+                  mr={2}
+                  color="black"
+                  fontWeight={500}
+                  fontSize={18}
+                >
+                  Child return reasons
+                </Text>
+                <InfoTooltip tooltipText="nested return reasons allow you to categorize return reasons" />
+              </Flex>
+              <Flex>
+                <Button
+                  variant={children.length > 0 ? "cta" : "primary"}
+                  onClick={() => {
+                    setEditReturnReason(undefined)
+                    setShowReasonEdit(true)
+                  }}
+                >
+                  + Create nested Reason
+                </Button>
+              </Flex>
             </Flex>
           </Flex>
         </Flex>
@@ -137,13 +151,15 @@ const EditReturnReason = ({ id }) => {
           justifyContent="center"
         >
           <Flex width={1}>
-            <ReturnReasonsList
-              return_reasons={children}
-              onEditClick={reason => {
-                setEditReturnReason(reason)
-                setShowReasonEdit(true)
-              }}
-            />
+            {children.length > 0 && (
+              <ReturnReasonsList
+                return_reasons={children}
+                onEditClick={reason => {
+                  setEditReturnReason(reason)
+                  setShowReasonEdit(true)
+                }}
+              />
+            )}
           </Flex>
         </Flex>
         <Flex width={1} mt={4} flexDirection="column" alignItems="flex-start">
