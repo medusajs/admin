@@ -45,7 +45,6 @@ const ReturnReasonModal = ({
 
   const onSubmit = async () => {
     let error = ""
-    console.log("submitting")
     try {
       if (reason) {
         const data = { label: label, description: description }
@@ -64,7 +63,6 @@ const ReturnReasonModal = ({
 
         error = "Failed to create return reason"
         const result = await Medusa.returnReasons.create(data)
-        console.log(result)
         onCreate(result.data.return_reason)
         toaster("Successfully updated return reason", "success")
       }

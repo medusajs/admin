@@ -109,13 +109,10 @@ const ReturnReasons = () => {
               >
                 Previous
               </Button>
-              {pagination}
               <Button
                 variant="primary"
                 onClick={() => onNextClick()}
-                disabled={
-                  currentPage === numberOfPages - 1 // + pageLength >= parent_return_reasons.length
-                }
+                disabled={currentPage === numberOfPages - 1}
               >
                 Next
               </Button>

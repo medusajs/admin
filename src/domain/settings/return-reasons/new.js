@@ -14,8 +14,9 @@ const NewReturnReason = ({ id }) => {
   const { register, handleSubmit } = useForm()
 
   const onSave = data => {
-    Medusa.returnReasons.create(data).then(() => {
-      navigate(`/a/settings/return-reasons`)
+    Medusa.returnReasons.create(data).then(result => {
+      console.log(result)
+      navigate(`/a/settings/return-reasons/${result.data.return_reason.id}`)
     })
   }
 

@@ -35,6 +35,7 @@ const EditReturnReason = ({ id }) => {
   }, [return_reason, isLoading])
 
   const onSave = async data => {
+    console.log("onsave")
     try {
       await update({ ...data })
       toaster("Successfully updated return reason", "success")
@@ -66,90 +67,90 @@ const EditReturnReason = ({ id }) => {
 
   return (
     <Flex alignItems="center" flexDirection="column">
-      <Flex
-        as="form"
-        onSubmit={handleSubmit(onSave)}
-        width="90%"
-        alignItems="center"
-        flexDirection="column"
-      >
+      <Flex width="90%" alignItems="center" flexDirection="column">
         <Flex
-          flexDirection="column"
-          pt={5}
-          alignItems="center"
-          justifyContent="center"
+          as="form"
           width={1}
+          onSubmit={handleSubmit(onSave)}
+          alignItems="center"
+          flexDirection="column"
         >
-          <Flex flexDirection="column" width={1} justifyContent="flex-start">
-            <Text mb={4} fontWeight="bold" fontSize={20}>
-              Edit Return Reason
-            </Text>
-            <Flex mb={4}>
-              <Text color="gray" mr={4} fontSize={16}>
-                Reason code
+          <Flex
+            flexDirection="column"
+            pt={5}
+            alignItems="center"
+            justifyContent="center"
+            width={1}
+          >
+            <Flex flexDirection="column" width={1} justifyContent="flex-start">
+              <Text mb={4} fontWeight="bold" fontSize={20}>
+                Edit Return Reason
               </Text>
-              <Text color="black" fontSize={16}>
-                {return_reason.value}
-              </Text>
+              <Flex mb={4}>
+                <Text color="gray" mr={4} fontSize={16}>
+                  Reason code
+                </Text>
+                <Text color="black" fontSize={16}>
+                  {return_reason.value}
+                </Text>
+              </Flex>
+            </Flex>
+            <Flex width={1} flexDirection="column">
+              <StyledLabel boldLabel={true} sx={{ color: "black" }}>
+                Label
+              </StyledLabel>
+              <Input mb={3} name="label" ref={register} />
+              <StyledLabel boldLabel={true} sx={{ color: "black" }}>
+                Description
+              </StyledLabel>
+              <Input mb={3} name="description" ref={register} />
             </Flex>
           </Flex>
-          <Flex width={1} flexDirection="column">
-            <StyledLabel boldLabel={true} sx={{ color: "black" }}>
-              Label
-            </StyledLabel>
-            <Input mb={3} name="label" ref={register} />
-            <StyledLabel boldLabel={true} sx={{ color: "black" }}>
-              Description
-            </StyledLabel>
-            <Input mb={3} name="description" ref={register} />
+          <Flex
+            mt={4}
+            width={1}
+            alignItems="center"
+            justifyContent="center"
+            flexDirection="column"
+          >
+            <Flex width={1}>
+              <Flex
+                width={1}
+                align-content="center"
+                justifyContent="space-between"
+              >
+                <Text mb={1} color="black" fontWeight={500} fontSize={18}>
+                  Child return reasons
+                </Text>
+                <Button
+                  variant="cta"
+                  onClick={() => {
+                    setEditReturnReason(undefined)
+                    setShowReasonEdit(true)
+                  }}
+                >
+                  + Create nested Reason
+                </Button>
+              </Flex>
+            </Flex>
           </Flex>
-        </Flex>
-        <Flex
-          mt={4}
-          width={1}
-          alignItems="center"
-          justifyContent="center"
-          flexDirection="column"
-        >
-          <Flex width={1}>
-            <Flex
-              width={1}
-              align-content="center"
-              justifyContent="space-between"
-            >
-              <Text mb={1} color="black" fontWeight={500} fontSize={18}>
-                Child return reasons
-              </Text>
-              <Button
-                variant="cta"
-                onClick={() => {
-                  setEditReturnReason(undefined)
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            width={1}
+            justifyContent="center"
+          >
+            <Flex width={1}>
+              <ReturnReasonsList
+                return_reasons={children}
+                onEditClick={reason => {
+                  setEditReturnReason(reason)
                   setShowReasonEdit(true)
                 }}
-              >
-                + Create nested Reason
-              </Button>
+              />
             </Flex>
           </Flex>
-        </Flex>
-        <Flex
-          flexDirection="column"
-          alignItems="center"
-          width={1}
-          justifyContent="center"
-        >
-          <Flex width={1}>
-            <ReturnReasonsList
-              return_reasons={children}
-              onEditClick={reason => {
-                setEditReturnReason(reason)
-                setShowReasonEdit(true)
-              }}
-            />
-          </Flex>
-        </Flex>
-        <Flex width={1} justifyContent="space-between">
-          <Flex mt={4} flexDirection="column" alignItems="flex-start">
+          <Flex width={1} mt={4} flexDirection="column" alignItems="flex-start">
             <StyledLabel>
               <Text fontSize={18} sx={{ color: "black" }} fontWeight={500}>
                 Danger zone
@@ -163,28 +164,29 @@ const EditReturnReason = ({ id }) => {
               Delete
             </Button>
           </Flex>
-          <Flex mt={4}>
-            <Box ml="auto" />
-            <Button variant={"cta"} type="submit">
-              Save
-            </Button>
-          </Flex>
         </Flex>
-        {showReasonEdit && (
-          <ReturnReasonModal
-            reason={editReturnReason}
-            parentReturnReason={return_reason}
-            onDismiss={() => setShowReasonEdit(false)}
-            onCreate={reason => children.push(reason)}
-            onUpdate={reason => {
-              setChildren(
-                children.map(c => (c.id === reason.id ? { ...reason } : c))
-              )
-            }}
-            onDelete={id => setChildren(children.filter(c => c.id !== id))}
-          />
-        )}
+        <Flex width={1} alignItems="flex-end" mt={6}>
+          <Box ml="auto" />
+          <Button variant={"cta"} type="submit">
+            Save
+          </Button>
+        </Flex>
       </Flex>
+
+      {showReasonEdit && (
+        <ReturnReasonModal
+          reason={editReturnReason}
+          parentReturnReason={return_reason}
+          onDismiss={() => setShowReasonEdit(false)}
+          onCreate={reason => children.push(reason)}
+          onUpdate={reason => {
+            setChildren(
+              children.map(c => (c.id === reason.id ? { ...reason } : c))
+            )
+          }}
+          onDelete={id => setChildren(children.filter(c => c.id !== id))}
+        />
+      )}
     </Flex>
   )
 }
