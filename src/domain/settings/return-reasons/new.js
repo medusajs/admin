@@ -15,7 +15,6 @@ const NewReturnReason = ({ id }) => {
 
   const onSave = data => {
     Medusa.returnReasons.create(data).then(result => {
-      console.log(result)
       navigate(`/a/settings/return-reasons/${result.data.return_reason.id}`)
     })
   }

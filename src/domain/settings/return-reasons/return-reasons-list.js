@@ -3,7 +3,6 @@ import { Flex, Text, Box } from "rebass"
 import Button from "../../../components/button"
 
 const ReturnReasonsList = ({ return_reasons, onEditClick }) => {
-  console.log(return_reasons)
   return (
     <Flex width={1} flexDirection="column">
       <Flex

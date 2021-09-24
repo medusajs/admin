@@ -35,13 +35,11 @@ const EditReturnReason = ({ id }) => {
   }, [return_reason, isLoading])
 
   const onSave = async data => {
-    console.log("onsave")
     try {
       await update({ ...data })
       toaster("Successfully updated return reason", "success")
       navigate("/a/settings/return-reasons/")
     } catch (error) {
-      console.log(error)
       toaster("Failed to update return reason", "error")
     }
   }
@@ -49,9 +47,7 @@ const EditReturnReason = ({ id }) => {
   const deleteReturnReason = async () => {
     try {
       await returnReasonDelete()
-    } catch (err) {
-      console.log(err)
-    }
+    } catch (err) {}
     navigate("/a/settings/return-reasons/")
   }
 
