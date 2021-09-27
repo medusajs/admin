@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const STORE_URL = process.env.GATSBY_STORE_URL || "http://localhost:4000"
+const STORE_URL = process.env.GATSBY_STORE_URL || "http://localhost:9000"
 
 const client = axios.create({
   baseURL: STORE_URL,

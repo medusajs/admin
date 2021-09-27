@@ -9,9 +9,6 @@ import Typography from "../typography"
 
 const Card = styled(RebassCard)`
   ${Typography.Base}
-  // box-shadow:
-  //   0 7px 13px 0 rgba(60,66,87,.03),
-  //   0 3px 6px 0 rgba(0,0,0,.08);
   border-radius: 2px;
   height: 100%;
 `
@@ -33,7 +30,9 @@ const StyledHeader = styled(Flex)`
 `
 
 Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
-  if (action && !Array.isArray(action)) action = [action]
+  if (action && !Array.isArray(action)) {
+    action = [action]
+  }
 
   return (
     <StyledHeader alignItems="center" {...rest}>

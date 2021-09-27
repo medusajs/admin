@@ -5,6 +5,7 @@ import moment from "moment"
 import Button from "../../../../components/button"
 import { Input } from "@rebass/forms"
 import Dropdown from "../../../../components/dropdown"
+import TextArea from "../../../../components/textarea"
 
 import Medusa from "../../../../services/api"
 
@@ -38,15 +39,22 @@ export default ({ event, onUpdateNotes, toaster }) => {
   }
 
   const user = event.raw.author
-  let author = user.first_name ? user.first_name : ""
-  author += user.last_name ? ` ${user.last_name}` : ""
-  if (!author) author = "unknown"
+
+  let author = "unknown"
+  if (user) {
+    if (user.first_name) {
+      author = [user.first_name, user.last_name].filter(Boolean).join(" ")
+    } else {
+      author = user.email
+    }
+  }
 
   return (
-    <Flex
-      alignItems="center"
-      justifyContent="space-between"
+    <Box
+      pb={3}
+      mb={3}
       sx={{
+        width: "100%",
         borderBottom: "hairline",
         ".delete-btn": {
           display: "none",
@@ -58,58 +66,64 @@ export default ({ event, onUpdateNotes, toaster }) => {
         },
       }}
     >
-      <Box pb={3} mt={3} mb={3} px={3}>
-        <Box>
-          <Flex mb={2}>
-            <Text fontSize={1} color="grey" fontWeight="500">
-              Note added <span style={{ fontWeight: 400 }}>by {author}</span>
-            </Text>
-          </Flex>
-          <Text fontSize="11px" color="grey">
-            {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+      <Box mx={3}>
+        <Flex mb={2}>
+          <Text fontSize={1} color="grey" fontWeight="500">
+            Note added <span style={{ fontWeight: 400 }}>by {author}</span>
           </Text>
-        </Box>
-        <Box>
-          <br />
+        </Flex>
+        <Text fontSize="11px" color="grey">
+          {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+        </Text>
+      </Box>
+      <Flex
+        sx={{
+          mt: 3,
+          mx: 3,
+          w: 1,
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box sx={{ flex: 1, mr: 4 }}>
           {edit ? (
-            <Flex>
+            <Flex sx={{ flexDirection: "column" }}>
+              <TextArea
+                resize="vertical"
+                my={3}
+                ref={noteRef}
+                type="text"
+                name="note"
+                value={note}
+                onChange={e => setNote(e.target.value)}
+              />
               <Flex>
-                <Input
-                  m={3}
-                  ref={noteRef}
-                  type="text"
-                  name="note"
-                  value={note}
-                  onChange={e => setNote(e.target.value)}
-                />
+                <Button
+                  variant="primary"
+                  onClick={handleCancelEdit}
+                  mr={3}
+                  mt={3}
+                >
+                  Cancel
+                </Button>
+                <Button variant="cta" onClick={handleSaveEdit} mr={3} mt={3}>
+                  Save
+                </Button>
               </Flex>
-              <Button
-                variant="primary"
-                onClick={handleCancelEdit}
-                mr={3}
-                mt={3}
-              >
-                Cancel
-              </Button>
-              <Button variant="cta" onClick={handleSaveEdit} mr={3} mt={3}>
-                Save
-              </Button>
             </Flex>
           ) : (
-            <Text mr={100} fontSize={2} color={"dark"}>
+            <Text sx={{ whiteSpace: "pre-wrap" }} fontSize={2} color={"dark"}>
               {note}
             </Text>
           )}
         </Box>
-      </Box>
-      <Box>
-        <Dropdown>
+        <Dropdown sx={{ height: "25px" }}>
           <Text onClick={() => setEdit(true)}>Edit</Text>
           <Text color="danger" onClick={handleDelete}>
             Delete note
           </Text>
         </Dropdown>
-      </Box>
-    </Flex>
+      </Flex>
+    </Box>
   )
 }
