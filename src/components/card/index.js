@@ -9,9 +9,6 @@ import Typography from "../typography"
 
 const Card = styled(RebassCard)`
   ${Typography.Base}
-  // box-shadow:
-  //   0 7px 13px 0 rgba(60,66,87,.03),
-  //   0 3px 6px 0 rgba(0,0,0,.08);
   border-radius: 2px;
   height: 100%;
 `
@@ -33,6 +30,10 @@ const StyledHeader = styled(Flex)`
 `
 
 Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
+  if (action && !Array.isArray(action)) {
+    action = [action]
+  }
+
   return (
     <StyledHeader alignItems="center" {...rest}>
       <Flex p={3} flexGrow="1" fontWeight="bold" alignItems="center">
@@ -47,17 +48,18 @@ Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
           </Badge>
         )}
       </Flex>
-      {!!action && (
-        <Button
-          loading={action.isLoading}
-          onClick={action.onClick}
-          disabled={action.disabled}
-          mr={3}
-          variant={action.type || "cta"}
-        >
-          {action.label}
-        </Button>
-      )}
+      {!!action &&
+        action.map(a => (
+          <Button
+            loading={a.isLoading}
+            onClick={a.onClick}
+            disabled={a.disabled}
+            mr={3}
+            variant={a.type || "cta"}
+          >
+            {a.label}
+          </Button>
+        ))}
       {dropdownOptions && dropdownOptions.length > 0 && (
         <Dropdown mr={3}>
           {dropdownOptions.map(o => (
