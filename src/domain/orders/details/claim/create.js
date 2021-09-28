@@ -168,7 +168,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (order) {
-      setAllItems(filterItems(order, true))
+      setAllItems(filterItems(order))
     }
   }, [order])
 
@@ -545,7 +545,11 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                     </Box>
                     <Box width={170} px={2} py={1}>
                       <Text fontSize={1}>
-                        {(item.refundable / 100).toFixed(2)}{" "}
+                        {(
+                          (item.refundable
+                            ? item.refundable
+                            : item.unit_price) / 100
+                        ).toFixed(2)}{" "}
                         {order.currency_code.toUpperCase()}
                       </Text>
                     </Box>

@@ -1,4 +1,4 @@
-export const filterItems = (order, isClaim) => {
+export const filterItems = order => {
   let orderItems = order.items.reduce(
     (map, obj) =>
       map.set(obj.id, {
@@ -34,17 +34,15 @@ export const filterItems = (order, isClaim) => {
     }
   }
 
-  if (!isClaim) {
-    if (order.swaps && order.swaps.length) {
-      for (const s of order.swaps) {
-        orderItems = s.additional_items.reduce(
-          (map, obj) =>
-            map.set(obj.id, {
-              ...obj,
-            }),
-          orderItems
-        )
-      }
+  if (order.swaps && order.swaps.length) {
+    for (const s of order.swaps) {
+      orderItems = s.additional_items.reduce(
+        (map, obj) =>
+          map.set(obj.id, {
+            ...obj,
+          }),
+        orderItems
+      )
     }
   }
 

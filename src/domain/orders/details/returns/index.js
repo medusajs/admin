@@ -32,7 +32,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (order) {
-      setAllItems(filterItems(order, false))
+      setAllItems(filterItems(order))
     }
   }, [order])
 
