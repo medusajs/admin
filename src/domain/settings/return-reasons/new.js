@@ -3,9 +3,11 @@ import { Flex, Text, Box } from "rebass"
 import { useForm } from "react-hook-form"
 import { navigate } from "gatsby"
 
-import Input from "../../../components/input"
+import Input, { StyledLabel } from "../../../components/input"
 import Button from "../../../components/button"
 import BreadCrumb from "../../../components/breadcrumb"
+import Card from "../../../components/card"
+import { ReactSelect } from "../../../components/react-select"
 
 import Medusa from "../../../services/api"
 
@@ -13,64 +15,66 @@ const NewReturnReason = ({ id }) => {
   const { register, handleSubmit } = useForm()
 
   const onSave = data => {
-    Medusa.returnReasons.create(data).then(({ data }) => {
-      navigate(`/a/settings/return-reasons`)
+    Medusa.returnReasons.create(data).then(result => {
+      navigate(`/a/settings/return-reasons/${result.data.return_reason.id}`)
     })
   }
 
   return (
-    <Flex flexDirection="column">
-      <BreadCrumb
-        previousRoute="/a/settings/return-reasons"
-        previousBreadCrumb="Settings > Return Reasons"
-        currentPage="Edit"
-      />
-      <Flex
-        as="form"
-        onSubmit={handleSubmit(onSave)}
-        flexDirection="column"
-        pt={5}
-        alignItems="center"
-        justifyContent="center"
-        width="100%"
-      >
-        <Flex width={3 / 5} justifyContent="flex-start">
-          <Text mb={4} fontWeight="bold" fontSize={20}>
-            Return Reason
-          </Text>
-        </Flex>
-        <Flex mb={5} width={3 / 5} flexDirection="column">
-          <Input
-            required={true}
-            mb={3}
-            name="value"
-            label="Reason Code"
-            ref={register}
-            width="75%"
-          />
-          <Input
-            required={true}
-            mb={3}
-            name="label"
-            label="Label"
-            ref={register}
-            width="75%"
-          />
-          <Input
-            mb={3}
-            name="description"
-            label="Description"
-            ref={register}
-            width="75%"
-          />
-          <Flex mt={4} width="75%">
-            <Box ml="auto" />
-            <Button variant={"cta"} type="submit">
-              Create
-            </Button>
+    <Flex alignItems="center" pt={5} flexDirection="column">
+      <Card width="90%" px={0}>
+        <BreadCrumb
+          previousRoute="/a/settings/return-reasons"
+          previousBreadCrumb="Settings > Return Reasons"
+          currentPage="New reason"
+        />
+        <Flex
+          as="form"
+          onSubmit={handleSubmit(onSave)}
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          width={1}
+        >
+          <Flex width={1} flexDirection="column">
+            <Flex>
+              <Text mb={3} fontWeight="bold" fontSize={20}>
+                Create reason
+              </Text>
+            </Flex>
+            <Card.Body py={0} flexDirection="column">
+              <Flex mb={5} flexDirection="column">
+                <Input
+                  required={true}
+                  mb={3}
+                  name="value"
+                  label="Reason Code"
+                  ref={register}
+                />
+                <Input
+                  required={true}
+                  mb={3}
+                  name="label"
+                  label="Label"
+                  ref={register}
+                />
+                <Input
+                  mb={3}
+                  name="description"
+                  label="Description"
+                  ref={register}
+                />
+                <Flex mt={4}>
+                  <Box ml="auto" />
+                  <Button variant={"cta"} type="submit">
+                    Create
+                  </Button>
+                </Flex>
+              </Flex>
+            </Card.Body>
           </Flex>
         </Flex>
-      </Flex>
+      </Card>
     </Flex>
   )
 }
