@@ -5,14 +5,16 @@ import { useForm } from "react-hook-form"
 import MultiSelect from "react-multi-select-component"
 
 import Modal from "../../../../components/modal"
-import CurrencyInput from "../../../../components/currency-input"
+
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
 import Select from "../../../../components/select"
 import Typography from "../../../../components/typography"
 import Medusa from "../../../../services/api"
+import { ReactSelect } from "../../../../components/react-select"
 import { filterItems } from "../utils/create-filtering"
+import { extractOptionPrice } from "../../../../utils/prices"
 
 const Dot = styled(Box)`
   width: 6px;
@@ -87,6 +89,14 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [shippingPrice, setShippingPrice] = useState()
   const [noNotification, setNoNotification] = useState(order.no_notification)
   const [searchResults, setSearchResults] = useState([])
+  const [showCustomPrice, setShowCustomPrice] = useState({
+    standard: false,
+    return: false,
+  })
+  const [customOptionPrice, setCustomOptionPrice] = useState({
+    standard: 0,
+    return: null,
+  })
 
   // Includes both order items and swap items
   const [allItems, setAllItems] = useState([])
@@ -101,6 +111,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   const handleAddItemToSwap = variant => {
     setItemsToAdd([...itemsToAdd, { ...variant, quantity: 1 }])
+  }
+
+  const calculateShippingPrice = () => {
+    return showCustomPrice.return && customOptionPrice.return
+      ? customOptionPrice.return * 100
+      : Math.round(shippingPrice / (1 + order.tax_rate / 100))
   }
 
   const isLineItemCanceled = item => {
@@ -158,7 +174,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
           (next.refundable / (next.quantity - next.returned_quantity)) *
             quantities[next.id]
         )
-      }, 0) - (shippingPrice || 0)
+      }, 0) - (calculateShippingPrice() || 0)
 
     const newItemsTotal = itemsToAdd.reduce((acc, next) => {
       const price = extractPrice(next.prices, order)
@@ -167,7 +183,14 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }, 0)
 
     setToPay(newItemsTotal - returnTotal)
-  }, [toReturn, quantities, shippingPrice, itemsToAdd])
+  }, [
+    toReturn,
+    quantities,
+    shippingPrice,
+    itemsToAdd,
+    showCustomPrice,
+    customOptionPrice,
+  ])
 
   const handleQuantity = (e, item) => {
     const element = e.target
@@ -195,8 +218,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
     if (shippingMethod) {
       data.return_shipping = {
-        option_id: shippingMethod,
-        price: Math.round(shippingPrice / (1 + order.tax_rate / 100)),
+        option_id: shippingMethod.id,
+        price: calculateShippingPrice(),
       }
     }
 
@@ -246,22 +269,13 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }
 
   const handleShippingSelected = e => {
-    const element = e.target
-    if (element.value !== "Add a shipping method") {
-      setShippingMethod(element.value)
-      const method = shippingOptions.find(o => element.value === o.id)
-      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
+    const element = shippingOptions.find(s => e.value === s.id)
+    if (element) {
+      setShippingMethod(element)
+      setShippingPrice(element.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
       setShippingPrice(0)
-    }
-  }
-
-  const handleUpdateShippingPrice = e => {
-    const element = e.target
-    const value = element.value
-    if (value >= 0) {
-      setShippingPrice(parseFloat(value) * 100)
     }
   }
 
@@ -361,34 +375,86 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
           </Box>
 
           <Box mb={3}>
-            <Text>Return shipping method</Text>
-            <Flex w={1} pt={2} justifyContent="space-between">
-              <Select
-                mr={3}
-                height={"32px"}
-                fontSize={1}
-                placeholder={"Add a shipping method"}
-                value={shippingMethod}
-                onChange={handleShippingSelected}
-                options={shippingOptions.map(o => ({
-                  label: o.name,
-                  value: o.id,
-                }))}
-              />
-              {shippingMethod && (
-                <Flex>
-                  <Box px={2} fontSize={1}>
-                    Shipping price (incl. taxes)
-                  </Box>
-                  <Box px={2} width={170}>
-                    <CurrencyInput
-                      currency={order.currency_code}
-                      value={shippingPrice / 100}
-                      onChange={handleUpdateShippingPrice}
-                    />
-                  </Box>
-                </Flex>
-              )}
+            <Text sx={{ fontSize: 1, fontWeight: 600 }}>
+              Shipping method for returning items:
+            </Text>
+            <ReactSelect
+              isClearable={false}
+              placeholder="Select shipping..."
+              onChange={handleShippingSelected}
+              options={
+                shippingOptions?.map(so => ({
+                  value: so.id,
+                  label: `${so.name} - ${extractOptionPrice(
+                    so.amount,
+                    so.region
+                  )}`,
+                })) || []
+              }
+            />
+            <Flex>
+              {shippingMethod ? (
+                <>
+                  <Text fontStyle="italic" fontSize={1} mt={1} color="#a2a1a1">
+                    Shipping to {shippingMethod.region.name}
+                  </Text>
+                  <Box ml="auto" />
+                  <Flex flexDirection="column">
+                    {!showCustomPrice.return && (
+                      <Button
+                        mt={2}
+                        fontSize="12px"
+                        variant="primary"
+                        width="140px"
+                        mb={2}
+                        disabled={!shippingMethod}
+                        onClick={() =>
+                          setShowCustomPrice({
+                            ...showCustomPrice,
+                            return: true,
+                          })
+                        }
+                      >
+                        {showCustomPrice.return ? "Submit" : "Set custom price"}
+                      </Button>
+                    )}
+                    {showCustomPrice.return && (
+                      <Flex flexDirection="column">
+                        <Flex width="140px" mt={3}>
+                          <Input
+                            type="number"
+                            fontSize="12px"
+                            onChange={e =>
+                              setCustomOptionPrice({
+                                ...customOptionPrice,
+                                return: e.currentTarget.value,
+                              })
+                            }
+                            value={customOptionPrice.return || null}
+                            placeholder={order.currency_code.toUpperCase()}
+                            min={0}
+                          />
+                          <Flex
+                            px={2}
+                            alignItems="center"
+                            onClick={() =>
+                              setShowCustomPrice({
+                                ...showCustomPrice,
+                                return: false,
+                              })
+                            }
+                          >
+                            &times;
+                          </Flex>
+                        </Flex>
+                        <Text fontSize="10px" fontStyle="italic">
+                          Custom price
+                        </Text>
+                      </Flex>
+                    )}
+                  </Flex>
+                </>
+              ) : null}
             </Flex>
           </Box>
 

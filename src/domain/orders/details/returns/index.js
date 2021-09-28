@@ -10,6 +10,8 @@ import Button from "../../../../components/button"
 import Select from "../../../../components/select"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
+import { extractOptionPrice } from "../../../../utils/prices"
+import { ReactSelect } from "../../../../components/react-select"
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
@@ -30,11 +32,26 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   const [allItems, setAllItems] = useState([])
 
+  const [showCustomPrice, setShowCustomPrice] = useState({
+    standard: false,
+    return: false,
+  })
+  const [customOptionPrice, setCustomOptionPrice] = useState({
+    standard: 0,
+    return: null,
+  })
+
   useEffect(() => {
     if (order) {
       setAllItems(filterItems(order, false))
     }
   }, [order])
+
+  const calculateShippingPrice = () => {
+    return showCustomPrice.return && customOptionPrice.return
+      ? customOptionPrice.return * 100
+      : Math.round(shippingPrice / (1 + order.tax_rate / 100))
+  }
 
   const handleReturnToggle = item => {
     const id = item.id
@@ -91,14 +108,14 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
           (next.refundable / (next.quantity - next.returned_quantity)) *
             quantities[next.id]
         )
-      }, 0) - (shippingPrice || 0)
+      }, 0) - (calculateShippingPrice() || 0)
 
     setRefundable(total)
 
     if (!refundEdited || total < refundAmount) {
       setRefundAmount(total)
     }
-  }, [toReturn, quantities, shippingPrice])
+  }, [toReturn, quantities, shippingPrice, customOptionPrice, showCustomPrice])
 
   const handleQuantity = (e, item) => {
     const element = e.target
@@ -125,8 +142,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
     if (shippingMethod) {
       data.return_shipping = {
-        option_id: shippingMethod,
-        price: shippingPrice / (1 + order.tax_rate / 100),
+        option_id: shippingMethod.id,
+        price: calculateShippingPrice(),
       }
     }
 
@@ -170,11 +187,10 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }
 
   const handleShippingSelected = e => {
-    const element = e.target
-    if (element.value !== "Add a shipping method") {
-      setShippingMethod(element.value)
-      const method = shippingOptions.find(o => element.value === o.id)
-      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
+    const element = shippingOptions.find(s => e.value === s.id)
+    if (element) {
+      setShippingMethod(element)
+      setShippingPrice(element.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
       setShippingPrice(0)
@@ -276,34 +292,86 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
           </Box>
 
           <Box mb={3}>
-            <Text>Shipping method</Text>
-            <Flex w={1} pt={2} justifyContent="space-between">
-              <Select
-                mr={3}
-                height={"32px"}
-                fontSize={1}
-                placeholder={"Add a shipping method"}
-                value={shippingMethod}
-                onChange={handleShippingSelected}
-                options={shippingOptions.map(o => ({
-                  label: o.name,
-                  value: o.id,
-                }))}
-              />
-              {shippingMethod && (
-                <Flex>
-                  <Box px={2} fontSize={1}>
-                    Shipping price (incl. taxes)
-                  </Box>
-                  <Box px={2} width={"170px"}>
-                    <CurrencyInput
-                      currency={order.currency_code}
-                      value={shippingPrice / 100}
-                      onChange={handleUpdateShippingPrice}
-                    />
-                  </Box>
-                </Flex>
-              )}
+            <Text sx={{ fontSize: 1, fontWeight: 600 }}>
+              Shipping method for returning items:
+            </Text>
+            <ReactSelect
+              isClearable={false}
+              placeholder="Select shipping..."
+              onChange={handleShippingSelected}
+              options={
+                shippingOptions?.map(so => ({
+                  value: so.id,
+                  label: `${so.name} - ${extractOptionPrice(
+                    so.amount,
+                    so.region
+                  )}`,
+                })) || []
+              }
+            />
+            <Flex>
+              {shippingMethod ? (
+                <>
+                  <Text fontStyle="italic" fontSize={1} mt={1} color="#a2a1a1">
+                    Shipping to {shippingMethod.region.name}
+                  </Text>
+                  <Box ml="auto" />
+                  <Flex flexDirection="column">
+                    {!showCustomPrice.return && (
+                      <Button
+                        mt={2}
+                        fontSize="12px"
+                        variant="primary"
+                        width="140px"
+                        mb={2}
+                        disabled={!shippingMethod}
+                        onClick={() =>
+                          setShowCustomPrice({
+                            ...showCustomPrice,
+                            return: true,
+                          })
+                        }
+                      >
+                        {showCustomPrice.return ? "Submit" : "Set custom price"}
+                      </Button>
+                    )}
+                    {showCustomPrice.return && (
+                      <Flex flexDirection="column">
+                        <Flex width="140px" mt={3}>
+                          <Input
+                            type="number"
+                            fontSize="12px"
+                            onChange={e =>
+                              setCustomOptionPrice({
+                                ...customOptionPrice,
+                                return: e.currentTarget.value,
+                              })
+                            }
+                            value={customOptionPrice.return || null}
+                            placeholder={order.currency_code.toUpperCase()}
+                            min={0}
+                          />
+                          <Flex
+                            px={2}
+                            alignItems="center"
+                            onClick={() =>
+                              setShowCustomPrice({
+                                ...showCustomPrice,
+                                return: false,
+                              })
+                            }
+                          >
+                            &times;
+                          </Flex>
+                        </Flex>
+                        <Text fontSize="10px" fontStyle="italic">
+                          Custom price
+                        </Text>
+                      </Flex>
+                    )}
+                  </Flex>
+                </>
+              ) : null}
             </Flex>
           </Box>
 
