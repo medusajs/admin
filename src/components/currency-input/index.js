@@ -89,6 +89,7 @@ const CurrencyInput = React.forwardRef(
       required,
       fontSize,
       placeholder,
+      disabled,
       ...props
     },
     ref
@@ -157,6 +158,7 @@ const CurrencyInput = React.forwardRef(
             {edit && currencyOptions.length > 1 ? (
               <Select
                 isCurrencyInput={true}
+                disabled={disabled}
                 inline
                 width={"3.3rem"}
                 height="100%"
@@ -175,6 +177,7 @@ const CurrencyInput = React.forwardRef(
             )}
           </CurrencyBox>
           <StyledInput
+            disabled={disabled}
             ref={ref}
             name={name}
             value={value || null}

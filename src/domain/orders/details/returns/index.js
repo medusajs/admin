@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
-import { Radio } from "@rebass/forms"
+import { Radio, Label } from "@rebass/forms"
 import { useForm } from "react-hook-form"
+import styled from "@emotion/styled"
 
 import Modal from "../../../../components/modal"
+import Typography from "../../../../components/typography"
 import CurrencyInput from "../../../../components/currency-input"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 import Select from "../../../../components/select"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
+
+const StyledLabel = styled(Label)`
+  ${Typography.Base}
+
+  input[type="radio"]:checked ~ svg {
+    color: #79b28a;
+  }
+`
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
@@ -21,6 +31,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [quantities, setQuantities] = useState({})
 
   const [shippingLoading, setShippingLoading] = useState(true)
+  const [noShipping, setNoShipping] = useState(false)
   const [shippingOptions, setShippingOptions] = useState([])
   const [noNotification, setNoNotification] = useState(order.no_notification)
   const [shippingPrice, setShippingPrice] = useState()
@@ -123,7 +134,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
         noNotification !== order.no_notification ? noNotification : undefined,
     }
 
-    if (shippingMethod) {
+    if (!noShipping && shippingMethod) {
       data.return_shipping = {
         option_id: shippingMethod,
         price: shippingPrice / (1 + order.tax_rate / 100),
@@ -282,6 +293,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                 mr={3}
                 height={"32px"}
                 fontSize={1}
+                selectStyle={{ disabled: true }}
+                disabled={noShipping}
                 placeholder={"Add a shipping method"}
                 value={shippingMethod}
                 onChange={handleShippingSelected}
@@ -297,6 +310,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   </Box>
                   <Box px={2} width={"170px"}>
                     <CurrencyInput
+                      disabled={noShipping}
                       currency={order.currency_code}
                       value={shippingPrice / 100}
                       onChange={handleUpdateShippingPrice}
@@ -305,6 +319,20 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                 </Flex>
               )}
             </Flex>
+            <Box mt={1}>
+              <StyledLabel>
+                <Flex sx={{ cursor: "pointer" }} alignItems="center">
+                  <input
+                    type="checkbox"
+                    id="is_dynamic"
+                    checked={noShipping}
+                    style={{ cursor: "pointer", marginRight: "5px" }}
+                    onChange={() => setNoShipping(!noShipping)}
+                  />
+                  <Text fontSize="14px">No return shipping</Text>{" "}
+                </Flex>
+              </StyledLabel>
+            </Box>
           </Box>
 
           {refundable >= 0 && (
