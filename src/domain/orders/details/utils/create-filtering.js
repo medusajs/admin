@@ -10,21 +10,17 @@ export const filterItems = order => {
   let claimedItems = []
 
   if (order.claims && order.claims.length) {
-    for (const s of order.claims) {
-      claimedItems = [...claimedItems, ...s.claim_items]
-
-      //
-      //    Ticket is created to allow claims and swaps on claims and swaps without errors
-      //
+    for (const c of order.claims) {
+      claimedItems = [...claimedItems, ...c.claim_items]
       if (
-        s.fulfillment_status === "not_fulfilled" &&
-        s.payment_status === "na"
+        c.fulfillment_status === "not_fulfilled" &&
+        c.payment_status === "na"
       ) {
         continue
       }
 
-      if (s.additional_items && s.additional_items.length)
-        orderItems = s.additional_items
+      if (c.additional_items && c.additional_items.length)
+        orderItems = c.additional_items
           .filter(
             it =>
               it.shipped_quantity ||
