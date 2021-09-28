@@ -99,7 +99,11 @@ const DiscountDetails = ({ id }) => {
     if (regions && discount && discount.regions) {
       const temp = regions.reduce((acc, next) => {
         if (discount.regions.map(r => r.id).includes(next.id)) {
-          acc.push({ label: next.name, value: next.id })
+          acc.push({
+            label: next.name,
+            value: next.id,
+            currency_code: next.currency_code,
+          })
         }
         return acc
       }, [])
@@ -152,16 +156,14 @@ const DiscountDetails = ({ id }) => {
 
   const handleDiscountRuleUpdate = data => {
     setUpdating(true)
-    update({
-      rule: data,
-    })
+    update(data)
       .then(() => {
         refresh({ id })
         setUpdating(false)
         setShowRuleEdit(false)
         toaster("Discount rule updated", "success")
       })
-      .catch(() => {
+      .catch(error => {
         setUpdating(false)
         setShowRuleEdit(false)
         toaster("Discount rule update failed", "error")
@@ -262,6 +264,7 @@ const DiscountDetails = ({ id }) => {
                 regions.map(el => ({
                   label: el.name,
                   value: el.id,
+                  currency_code: el.currency_code,
                 }))
               }
               selectAllLabel={"All"}
@@ -359,6 +362,7 @@ const DiscountDetails = ({ id }) => {
           onUpdate={handleDiscountRuleUpdate}
           onDismiss={() => setShowRuleEdit(false)}
           products={products}
+          selectedRegions={selectedRegions}
           // selectedProducts={selectedProducts}
           // setSelectedProducts={setSelectedProducts}
         />
