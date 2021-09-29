@@ -204,7 +204,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     <Modal onClick={onDismiss}>
       <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
         <Modal.Header>Request Return</Modal.Header>
-        <Modal.Content flexDirection="column">
+        <Modal.Content width="650px" flexDirection="column">
           <Box mb={3}>
             <Text px={2}>Items to return</Text>
             <Flex
@@ -222,15 +222,20 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   type="checkbox"
                 />
               </Box>
-              <Box width={400} px={2} py={1}>
-                Details
-              </Box>
-              <Box width={75} px={2} py={1}>
-                Quantity
-              </Box>
-              <Box width={110} px={2} py={1}>
-                Refundable
-              </Box>
+              <Flex width={9 / 10}>
+                <Box width={1 / 4} px={2} py={1}>
+                  Details
+                </Box>
+                <Box width={1 / 4} px={2} py={1}>
+                  Reason
+                </Box>
+                <Box width={1 / 4} px={2} py={1}>
+                  Quantity
+                </Box>
+                <Box width={1 / 4} px={2} py={1}>
+                  Refundable
+                </Box>
+              </Flex>
             </Flex>
             {allItems.map(item => {
               // Only show items that have not been returned,
@@ -256,31 +261,35 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                       type="checkbox"
                     />
                   </Box>
-                  <Box width={400} px={2} py={1}>
-                    <Text fontSize={1} lineHeight={"14px"}>
-                      {item.title}
-                    </Text>
-                    <Text fontSize={0}>{item.variant.sku}</Text>
-                  </Box>
-                  <Box width={75} px={2} py={1}>
-                    {toReturn.includes(item.id) ? (
-                      <Input
-                        type="number"
-                        onChange={e => handleQuantity(e, item)}
-                        value={quantities[item.id] || ""}
-                        min={1}
-                        max={item.quantity - item.returned_quantity}
-                      />
-                    ) : (
-                      item.quantity - item.returned_quantity
-                    )}
-                  </Box>
-                  <Box width={110} px={2} py={1}>
-                    <Text fontSize={1}>
-                      {(item.refundable / 100).toFixed(2)}{" "}
-                      {order.currency_code.toUpperCase()}
-                    </Text>
-                  </Box>
+                  <Flex alignContent="center" width={9 / 10}>
+                    <Box width={1 / 4} px={2} py={1}>
+                      <Text fontSize={1} lineHeight={"14px"}>
+                        {item.title}
+                      </Text>
+                      <Text fontSize={0}>{item.variant.sku}</Text>
+                    </Box>
+                    <Box width={1 / 4} bg="blue"></Box>
+                    <Box width={1 / 4} px={2} py={1}>
+                      {toReturn.includes(item.id) ? (
+                        <Input
+                          width="50%"
+                          type="number"
+                          onChange={e => handleQuantity(e, item)}
+                          value={quantities[item.id] || ""}
+                          min={1}
+                          max={item.quantity - item.returned_quantity}
+                        />
+                      ) : (
+                        item.quantity - item.returned_quantity
+                      )}
+                    </Box>
+                    <Box width={1 / 4} px={2} py={1}>
+                      <Text fontSize={1}>
+                        {(item.refundable / 100).toFixed(2)}{" "}
+                        {order.currency_code.toUpperCase()}
+                      </Text>
+                    </Box>
+                  </Flex>
                 </Flex>
               )
             })}
