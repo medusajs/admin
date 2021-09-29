@@ -23,6 +23,10 @@ export default {
       const path = `/admin/return-reasons/${id}`
       return medusaRequest("POST", path, payload)
     },
+    delete(id) {
+      const path = `/admin/return-reasons/${id}`
+      return medusaRequest("DELETE", path)
+    },
   },
   apps: {
     authorize(data) {
