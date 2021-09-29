@@ -398,6 +398,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               <Dropdown
                 leftAlign
                 toggleText={"+ Add product"}
+                justifyContent="flex-start"
                 showSearch
                 onSearchChange={handleProductSearch}
                 searchPlaceholder={"Search by SKU, Name, etch."}

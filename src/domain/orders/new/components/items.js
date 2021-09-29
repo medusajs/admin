@@ -117,7 +117,7 @@ const Items = ({
         <Button
           variant="primary"
           onClick={() => setAddCustom(true)}
-          minHeight="33px"
+          minHeight="24px"
           mr={2}
         >
           + Add custom
