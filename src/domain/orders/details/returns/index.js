@@ -401,7 +401,6 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                     borderTop: "hairline",
                   }}
                   w={1}
-                  // mt={1}
                   pt={3}
                   justifyContent="space-between"
                 >
