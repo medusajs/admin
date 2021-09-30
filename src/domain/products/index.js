@@ -97,7 +97,8 @@ const ProductIndex = () => {
     open: false,
     filter: null,
   })
-  const [tagsFilter, setTagsFilter] = useState({ open: false, filter: [] })
+  const [tagsFilter, setTagsFilter] = useState([])
+  const [filterTags, setFilterTags] = useState(false)
 
   const resetFilters = () => {
     setStatusFilter({
@@ -109,6 +110,7 @@ const ProductIndex = () => {
       filter: null,
     })
     setTagsFilter([])
+    setFilterTags(false)
   }
 
   const submit = () => {
@@ -125,7 +127,10 @@ const ProductIndex = () => {
     const urlObject = {
       "status[]": statusFilter.open ? statusFilter.filter : null,
       "collection_id[]": collectionFilter.open ? collectionIds : null,
-      "tags[]": tagsFilter.filter?.length > 0 ? tagsFilter.join(",") : null,
+      "tags[]":
+        filterTags && tagsFilter.filter?.length > 0
+          ? tagsFilter.join(",")
+          : null,
     }
 
     const url = { ...removeNullish(urlObject) }
@@ -334,6 +339,7 @@ const ProductIndex = () => {
         >
           Search
         </Button>
+        <Box ml="auto" />
         <ProductsFilter
           setStatusFilter={setStatusFilter}
           statusFilter={statusFilter}
@@ -343,10 +349,11 @@ const ProductIndex = () => {
           setTagsFilter={setTagsFilter}
           submitFilters={submit}
           tagsFilter={tagsFilter}
+          filterTags={filterTags}
+          setFilterTags={setFilterTags}
           resetFilters={resetFilters}
           clearFilters={clearFilters}
         />
-        <Box ml="auto" />
         {selectedProduct && (
           <Button
             mr={3}
