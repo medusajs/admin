@@ -5,6 +5,7 @@ import { Flex, Text, Box, Image } from "rebass"
 import { Input } from "@rebass/forms"
 import { Router } from "@reach/router"
 import Medusa from "../../services/api"
+import ProductsFilter from "./filter-dropdown"
 
 import ImagePlaceholder from "../../assets/svg/image-placeholder.svg"
 
@@ -27,6 +28,9 @@ import useMedusa from "../../hooks/use-medusa"
 import Button from "../../components/button"
 import qs from "query-string"
 import styled from "@emotion/styled"
+
+const removeNullish = obj =>
+  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
 const LinkWrapper = styled(Link)`
   width: 100%;
@@ -57,7 +61,13 @@ const ProductIndex = () => {
   }
 
   const { store } = useMedusa("store")
-
+  const { collections, isLoading: isLoadingCollections } = useMedusa(
+    "collections"
+  )
+  const defaultQueryProps = {
+    fields: "id,title,thumbnail",
+    expand: "variants,variants.prices,collection",
+  }
   const {
     products,
     hasCache,
@@ -68,16 +78,96 @@ const ProductIndex = () => {
   } = useMedusa("products", {
     search: {
       ...filtersOnLoad,
-      fields: "id,title,thumbnail",
-      expand: "variants,variants.prices,collection",
+      ...defaultQueryProps,
     },
   })
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [storeCurrencies, setStoreCurrencies] = useState([])
+  const [collectionsList, setCollectionsList] = useState([])
   const [selectedProduct, setSelectedProduct] = useState()
   const [copyingProduct, setCopyingProduct] = useState(false)
+
+  const [statusFilter, setStatusFilter] = useState({
+    open: false,
+    filter: null,
+  })
+  const [collectionFilter, setCollectionFilter] = useState({
+    open: false,
+    filter: null,
+  })
+  const [tagsFilter, setTagsFilter] = useState({
+    open: false,
+    filter: null,
+  })
+
+  const resetFilters = () => {
+    setStatusFilter({
+      open: false,
+      filter: null,
+    })
+    setCollectionFilter({
+      open: false,
+      filter: null,
+    })
+    setTagsFilter({
+      open: false,
+      filter: null,
+    })
+  }
+
+  const submit = () => {
+    console.log(statusFilter.filter)
+    console.log(collectionFilter)
+
+    const collectionIds = collectionFilter.filter
+      ? collectionFilter.filter
+          .split(",")
+          .map(cf => collections.find(c => c.title === cf)?.id)
+          .join(",")
+      : null
+
+    const urlObject = {
+      "status[]": statusFilter.open ? statusFilter.filter : null,
+      "collection_id[]": collectionFilter.open ? collectionIds : null,
+      "tags[]": tagsFilter.open ? tagsFiler.filter : null,
+    }
+
+    const url = { ...removeNullish(urlObject) }
+
+    replaceQueryString(url)
+  }
+
+  const replaceQueryString = queryObject => {
+    let searchObject = {
+      ...queryObject,
+      ...defaultQueryProps,
+    }
+    console.log(queryObject)
+    if (_.entries(queryObject).length === 0) {
+      resetFilters()
+      window.history.replaceState({}, "", "/a/products")
+      refresh({ search: { ...defaultQueryProps } })
+    } else {
+      if (!searchObject.offset) {
+        searchObject.offset = 0
+      }
+
+      if (!searchObject.limit) {
+        searchObject.limit = 20
+      }
+
+      const query = qs.stringify(queryObject)
+      window.history.replaceState(`/a/products`, "", `${`?${query}`}`)
+      refresh({ search: { ...searchObject } })
+    }
+  }
+
+  const clearFilters = () => {
+    resetFilters()
+    replaceQueryString({})
+  }
 
   const onKeyDown = event => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
@@ -103,6 +193,7 @@ const ProductIndex = () => {
       skipEmptyString: true,
     })
 
+    resetFilters()
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({ search })
   }
@@ -137,7 +228,11 @@ const ProductIndex = () => {
       const currencyCodes = store.currencies.map(c => c.code)
       setStoreCurrencies(currencyCodes)
     }
-  }, [store])
+    if (isLoadingCollections) {
+      return
+    }
+    setCollectionsList(collections.map(c => c.title))
+  }, [store, isLoadingCollections])
 
   const handleCheckbox = p => {
     if (!selectedProduct) {
@@ -245,6 +340,18 @@ const ProductIndex = () => {
         >
           Search
         </Button>
+        <ProductsFilter
+          setStatusFilter={setStatusFilter}
+          statusFilter={statusFilter}
+          setCollectionFilter={setCollectionFilter}
+          collectionFilter={collectionFilter}
+          collections={collectionsList}
+          setTagsFilter={setTagsFilter}
+          submitFilters={submit}
+          tagsFilter={tagsFilter}
+          resetFilters={resetFilters}
+          clearFilters={clearFilters}
+        />
         <Box ml="auto" />
         {selectedProduct && (
           <Button
