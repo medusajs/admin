@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
-import { Radio, Label } from "@rebass/forms"
 import { useForm } from "react-hook-form"
-import styled from "@emotion/styled"
-
-import useMedusa from "../../../../hooks/use-medusa"
 import ReturnReasonsDropdown from "../../../../components/return-reasons-dropdown"
 import Modal from "../../../../components/modal"
-import Typography from "../../../../components/typography"
 import CurrencyInput from "../../../../components/currency-input"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
@@ -15,14 +10,6 @@ import Select from "../../../../components/select"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
 import { ReactComponent as TrashIcon } from "../../../../assets/svg/trash.svg"
-
-const StyledLabel = styled(Label)`
-  ${Typography.Base}
-
-  input[type="radio"]:checked ~ svg {
-    color: #79b28a;
-  }
-`
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
