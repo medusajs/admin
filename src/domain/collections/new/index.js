@@ -10,6 +10,7 @@ import InfoTooltip from "../../../components/info-tooltip"
 
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const NewCollection = ({}) => {
   const { toaster } = useMedusa("collections")
@@ -20,8 +21,7 @@ const NewCollection = ({}) => {
       const newCollection = await Medusa.collections.create(data)
       navigate(`/a/collections`)
     } catch (error) {
-      const errorData = error.response.data.message
-      toaster(`${errorData[0].message}`, "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 

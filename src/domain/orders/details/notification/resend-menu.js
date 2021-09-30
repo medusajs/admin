@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
 import { Radio } from "@rebass/forms"
 import { useForm, useFieldArray } from "react-hook-form"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 import Modal from "../../../../components/modal"
 import Input from "../../../../components/input"
@@ -23,7 +24,7 @@ const ResendMenu = ({ notification, onDismiss, toaster }) => {
       })
       .then(() => onDismiss())
       .then(() => toaster("The notification was resent", "success"))
-      .catch(() => toaster("Failed to resend", "error"))
+      .catch(error => toaster(getErrorMessage(error), "error"))
   }
 
   return (

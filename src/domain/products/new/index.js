@@ -23,6 +23,7 @@ import Creatable from "react-select/creatable"
 
 import { getCombinations } from "./utils/get-combinations"
 import { Label } from "@rebass/forms"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const StyledSelect = styled(Select)`
   font-size: 14px;
@@ -404,8 +405,7 @@ const NewProduct = ({}) => {
       const { data } = await Medusa.products.create(product)
       navigate(`/a/products/${data.product.id}`)
     } catch (error) {
-      const errorData = error.response.data.message
-      toaster(`${errorData[0].message}`, "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 

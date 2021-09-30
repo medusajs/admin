@@ -9,6 +9,7 @@ import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 
 import useMedusa from "../../../../hooks/use-medusa"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const FulfillmentEdit = ({
   order,
@@ -51,7 +52,7 @@ const FulfillmentEdit = ({
           })
             .then(() => onDismiss())
             .then(() => toaster("Fulfillment was marked shipped", "success"))
-            .catch(() => toaster("Failed to mark fulfillment shipped", "error"))
+            .catch(error => toaster(getErrorMessage(error), "error"))
         }
         break
 
@@ -63,7 +64,7 @@ const FulfillmentEdit = ({
           })
             .then(() => onDismiss())
             .then(() => toaster("Fulfillment was marked shipped", "success"))
-            .catch(() => toaster("Failed to mark fulfillment shipped", "error"))
+            .catch(error => toaster(getErrorMessage(error), "error"))
         }
         break
 
@@ -75,7 +76,7 @@ const FulfillmentEdit = ({
           })
             .then(() => onDismiss())
             .then(() => toaster("Fulfillment was marked shipped", "success"))
-            .catch(() => toaster("Failed to mark fulfillment shipped", "error"))
+            .catch(error => toaster(getErrorMessage(error), "error"))
         }
         break
     }
