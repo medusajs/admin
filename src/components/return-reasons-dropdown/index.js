@@ -12,33 +12,6 @@ import { ReactComponent as ArrowUp } from "../../assets/svg/arrow-up.svg"
 const ReturnReasonsDropdown = ({ setReturnReason }) => {
   const { return_reasons, isLoading } = useMedusa("returnReasons")
   const [selectValue, setSelectValue] = useState(null)
-
-  const colourOptions = [
-    {
-      value: "blue",
-      label: "Blue",
-      parent_return_reason_id: "#0052CC",
-    },
-    {
-      value: "yellow",
-      label: "Yellow",
-      parent_return_reason_id: "#FFC400",
-    },
-  ]
-
-  const flavourOptions = [
-    {
-      value: "vanilla",
-      label: "Vanilla",
-      parent_return_reason_id: "safe",
-    },
-    {
-      value: "chocolate",
-      label: "Chocolate",
-      parent_return_reason_id: "good",
-    },
-  ]
-
   const [groupedOptions, setGroupedOptions] = useState([])
 
   useEffect(() => {
@@ -47,13 +20,13 @@ const ReturnReasonsDropdown = ({ setReturnReason }) => {
     }
     setGroupedOptions(
       return_reasons.map(rr => {
-        return rr.return_reason_children
+        return rr?.return_reason_children?.length > 0
           ? {
               ...rr,
               collapsed: true,
               options: rr.return_reason_children,
             }
-          : rr
+          : { ...rr, options: null }
       })
     )
   }, [isLoading])
