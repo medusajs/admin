@@ -22,7 +22,7 @@ const DropdownItemWrapper = styled(Text)`
   box-shadow: inset 0 -1px #e3e8ee;
 `
 
-export const DropdownItem = styled.div`
+const DropdownItem = styled.div`
   padding-bottom: 8px;
   display: flex;
   align-items: center;
@@ -136,7 +136,6 @@ const FilterDropdownItem = ({
           options.map((el, i) => (
             <CollapseContainer
               key={i}
-              sx={{ borderBottom: "1px solid black" }}
               onClick={() => onCheck(el)}
               last={i === options.length - 1}
             >
