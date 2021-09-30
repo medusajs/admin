@@ -97,7 +97,7 @@ const ProductIndex = () => {
     open: false,
     filter: null,
   })
-  const [tagsFilter, setTagsFilter] = useState([])
+  const [tagsFilter, setTagsFilter] = useState({ open: false, filter: [] })
 
   const resetFilters = () => {
     setStatusFilter({
