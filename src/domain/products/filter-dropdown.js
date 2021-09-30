@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react"
 import styled from "@emotion/styled"
 import { Flex, Box } from "rebass"
 
+import TagInput from "../../components/tag-input"
 import Button from "../../components/button"
 import FilterDropdownItem from "../../components/filter-dropdown-item"
 
@@ -176,12 +177,17 @@ const ProductsFilter = ({
             setCollectionFilter(obj)
           }}
         />
-        {/*<FilterDropdownItem
-          filterTitle="Fulfillment status"
-          filters={fulfillmentFilters}
-          open={fulfillmentFilter.open}
-          setFilter={setFulfillmentFilter}
-        /> */}
+        <TagInput
+          placeholder="Spring, summer..."
+          values={tagsFilter || []}
+          onChange={values => {
+            console.log(tagsFilter, values)
+            setTagsFilter(values)
+          }}
+          boldLabel={"true"}
+          withTooltip
+          tooltipText="Subtitle of the product"
+        />
       </DropdownContainer>
     </Box>
   )
