@@ -18,7 +18,6 @@ import {
   TableBody,
   TableRow,
   TableDataCell,
-  TableLinkRow,
   DefaultCellContent,
 } from "../../components/table"
 
@@ -114,9 +113,6 @@ const ProductIndex = () => {
   }
 
   const submit = () => {
-    console.log(statusFilter.filter)
-    console.log(collectionFilter)
-
     const collectionIds = collectionFilter.filter
       ? collectionFilter.filter
           .split(",")
@@ -143,7 +139,7 @@ const ProductIndex = () => {
       ...queryObject,
       ...defaultQueryProps,
     }
-    console.log(queryObject)
+
     if (_.entries(queryObject).length === 0) {
       resetFilters()
       window.history.replaceState({}, "", "/a/products")
