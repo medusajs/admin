@@ -6,15 +6,23 @@ import Button from "../../components/button"
 import FilterDropdownItem from "../../components/filter-dropdown-item"
 
 import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
+import {
+  DateFilters,
+  StatusFilters,
+  PaymentFilters,
+  FulfilmentFilters,
+} from "../../utils/filters"
 
-const statusFilters = ["pending", "completed", "cancelled"]
-const paymentFilters = ["awaiting", "captured", "refunded"]
-const fulfillmentFilters = [
-  "not_fulfilled",
-  "partially_fulfilled",
-  "fulfilled",
-  "returned",
+const dateFilters = [
+  DateFilters.After,
+  DateFilters.Before,
+  DateFilters.Between,
+  DateFilters.EqualTo,
+  DateFilters.InTheLast,
+  DateFilters.OlderThan,
 ]
+
+const statusFilters = ["proposed", "draft", "published", "rejected"]
 
 const DropdownContainer = styled.div`
   ${props => `
@@ -80,13 +88,15 @@ const ButtonContainer = styled(Flex)`
 
 const ProductsFilter = ({
   setStatusFilter,
-  setPaymentFilter,
-  setFulfillmentFilter,
+  statusFilter,
+  setCollectionFilter,
+  collectionFilter,
+  collections,
+  setTagsFilter,
   submitFilters,
   clearFilters,
-  statusFilter,
-  fulfillmentFilter,
-  paymentFilter,
+  tagsFilter,
+  resetFilters,
   sx,
   ...rest
 }) => {
@@ -98,6 +108,16 @@ const ProductsFilter = ({
     if (ref.current && !ref.current.contains(event.target) && isOpen) {
       setIsOpen(false)
     }
+  }
+
+  const onSubmit = () => {
+    setIsOpen(false)
+    submitFilters()
+  }
+
+  const onClear = () => {
+    setIsOpen(false)
+    clearFilters()
   }
 
   const handleOpen = () => {
@@ -115,13 +135,6 @@ const ProductsFilter = ({
     }
   })
 
-  const clear = () => {
-    setFulfillmentFilter({ open: false, filter: "" })
-    setPaymentFilter({ open: false, filter: "" })
-    setPaymentFilter({ open: false, filter: "" })
-    clearFilters()
-  }
-
   return (
     <Box style={{ position: "relative" }}>
       <Button
@@ -135,28 +148,40 @@ const ProductsFilter = ({
       </Button>
       <DropdownContainer ref={ref} isOpen={isOpen}>
         <ButtonContainer p={2}>
-          <ClearButton onClick={() => clear()}>Clear</ClearButton>
+          <ClearButton onClick={() => onClear()}>Clear</ClearButton>
           <Box ml="auto" />
-          <DoneButton onClick={() => submitFilters()}>Done</DoneButton>
+          <DoneButton onClick={() => onSubmit()}>Done</DoneButton>
         </ButtonContainer>
+        {/* <FilterDropdownItem
+          filterTitle="Date"
+          options={dateFilters}
+          open={dateFilter.open}
+          filters={dateFilter.filter}
+          setFilter={setDateFilter}
+        /> */}
         <FilterDropdownItem
           filterTitle="Status"
-          filters={statusFilters}
+          options={statusFilters}
+          filters={statusFilter.filter}
           open={statusFilter.open}
           setFilter={setStatusFilter}
         />
+
         <FilterDropdownItem
-          filterTitle="Payment status"
-          filters={paymentFilters}
-          open={paymentFilter.open}
-          setFilter={setPaymentFilter}
+          filterTitle="Collection"
+          options={collections}
+          filters={collectionFilter.filter}
+          open={collectionFilter.open}
+          setFilter={obj => {
+            setCollectionFilter(obj)
+          }}
         />
-        <FilterDropdownItem
+        {/*<FilterDropdownItem
           filterTitle="Fulfillment status"
           filters={fulfillmentFilters}
           open={fulfillmentFilter.open}
           setFilter={setFulfillmentFilter}
-        />
+        /> */}
       </DropdownContainer>
     </Box>
   )
