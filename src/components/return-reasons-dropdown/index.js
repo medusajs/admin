@@ -10,7 +10,7 @@ const groupHeadingStyle = {
   heigth: "30px",
   pr: "3",
   py: "0",
-  borderBottom: "1px solid #E3E8EE",
+  borderBottom: "hairline",
   my: "0",
   "& div": {
     pb: "0",
@@ -130,7 +130,7 @@ const ReturnReasonsDropdown = ({ setReturnReason }) => {
 
   const CustomOption = props => {
     const style = props.data.parent_return_reason_id
-      ? { bg: "light", borderBottom: "1px solid #E3E8EE", ...optionStyle }
+      ? { bg: "light", borderBottom: "hairline", ...optionStyle }
       : optionStyle
 
     return (
@@ -153,8 +153,6 @@ const ReturnReasonsDropdown = ({ setReturnReason }) => {
         setSelectValue(returnReason)
       }}
       closeMenuOnSelect={true}
-      onMouseMove={() => {}}
-      onMouseOver={() => {}}
       components={{
         GroupHeading: CustomGroupHeading,
         Group: CustomGroup,
