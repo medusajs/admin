@@ -4,7 +4,9 @@ import { Flex, Box } from "rebass"
 
 import TagInput from "../../components/tag-input"
 import Button from "../../components/button"
-import FilterDropdownItem from "../../components/filter-dropdown-item"
+import FilterDropdownItem, {
+  DropdownItem,
+} from "../../components/filter-dropdown-item"
 
 import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
 import {
@@ -100,7 +102,7 @@ const DropdownContainer = styled.div`
 
   position: absolute;
   background-color: #fefefe;
-  min-width: 225px;
+  min-width: 300px;
   box-shadow: 4px 8px 16px 8px rgba(0, 0, 0, 0.2);
   z-index: 1;
   top: 0;
@@ -164,6 +166,8 @@ const ProductsFilter = ({
   clearFilters,
   tagsFilter,
   resetFilters,
+  filterTags,
+  setFilterTags,
   sx,
   ...rest
 }) => {
@@ -245,24 +249,47 @@ const ProductsFilter = ({
             setCollectionFilter(obj)
           }}
         />
-        <FilterDropdownItem
-          filterTitle="Tags"
-          options={[]}
-          filters={tagsFilter.filter}
-          open={tagsFilter.open}
-          setFilter={obj => {}}
-        />
-        <TagInput
-          placeholder="Spring, summer..."
-          values={tagsFilter.filter || []}
-          onChange={values => {
-            console.log(tagsFilter, values)
-            setTagsFilter({ open: tagsfilter.open, filter: values })
+        <Flex
+          width={1}
+          sx={{
+            fontSize: "12px",
+            lineHeight: "100%",
+            cursor: "pointer",
+            padding: "7px",
+            paddingBottom: "8px",
+            borderBottom: "hairline",
           }}
-          boldLabel={"true"}
-          withTooltip
-          tooltipText="Subtitle of the product"
-        />
+          onClick={() => setFilterTags(!filterTags)}
+        >
+          <input
+            type="checkbox"
+            id="Tags"
+            name="Tags"
+            value="Tags"
+            checked={filterTags}
+            style={{ marginRight: "5px" }}
+          />
+          Tags
+        </Flex>
+        {filterTags && (
+          <Box
+            sx={{ fontSize: "10px", "& input": { fontSize: "12px" } }}
+            width={1}
+            p={2}
+          >
+            <TagInput
+              placeholder="Spring, summer..."
+              values={tagsFilter || []}
+              onChange={values => {
+                console.log(tagsFilter, values)
+                setTagsFilter(values)
+              }}
+              boldLabel={"true"}
+              withTooltip
+              tooltipText="Subtitle of the product"
+            />
+          </Box>
+        )}
       </DropdownContainer>
     </Box>
   )

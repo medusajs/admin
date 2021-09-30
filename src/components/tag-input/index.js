@@ -127,6 +127,7 @@ const TagInput = ({ onChange, values, ...props }) => {
 
   return (
     <Flex
+      // width={1}
       fontSize={1}
       alignItems="center"
       className={isFocused ? "tag__focus" : ""}

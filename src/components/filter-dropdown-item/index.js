@@ -22,7 +22,7 @@ const DropdownItemWrapper = styled(Text)`
   box-shadow: inset 0 -1px #e3e8ee;
 `
 
-const DropdownItem = styled.div`
+export const DropdownItem = styled.div`
   padding-bottom: 8px;
   display: flex;
   align-items: center;
