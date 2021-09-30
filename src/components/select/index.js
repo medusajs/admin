@@ -58,7 +58,6 @@ const Select = React.forwardRef(
       selectHeight,
       isCurrencyInput,
       selectStyle,
-      disabled,
       ...props
     },
     ref
@@ -84,7 +83,6 @@ const Select = React.forwardRef(
         <StyledSelect
           isCurrencyInput={isCurrencyInput}
           flex={flex}
-          disabled={disabled}
           variant="buttons.primary"
           name={name}
           height={selectHeight || "inherit"}
