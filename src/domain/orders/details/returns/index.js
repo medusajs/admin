@@ -42,7 +42,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const { register, setValue, handleSubmit } = useForm()
 
   const [allItems, setAllItems] = useState([])
-  const [returnReasons, setReturnReasons] = useState([])
+  const [chosenReturnReasons, setChosenReturnReasons] = useState([])
 
   useEffect(() => {
     if (order) {
@@ -126,18 +126,18 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   const handleReturnReason = (returnReason, item) => {
     const newReturnReasons = {
-      ...returnReasons,
+      ...chosenReturnReasons,
       [item.id]: returnReason,
     }
 
-    setReturnReasons(newReturnReasons)
+    setChosenReturnReasons(newReturnReasons)
   }
 
   const onSubmit = () => {
     const items = toReturn.map(t => ({
       item_id: t,
       quantity: quantities[t],
-      reason_id: returnReasons[t]?.id,
+      reason_id: chosenReturnReasons[t]?.id,
     }))
 
     let data = {
@@ -153,9 +153,6 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
         price: shippingPrice / (1 + order.tax_rate / 100),
       }
     }
-
-    console.log(data)
-    return
 
     if (onReturn) {
       setSubmitting(true)
