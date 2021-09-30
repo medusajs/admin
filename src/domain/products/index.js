@@ -97,10 +97,7 @@ const ProductIndex = () => {
     open: false,
     filter: null,
   })
-  const [tagsFilter, setTagsFilter] = useState({
-    open: false,
-    filter: null,
-  })
+  const [tagsFilter, setTagsFilter] = useState([])
 
   const resetFilters = () => {
     setStatusFilter({
@@ -111,10 +108,7 @@ const ProductIndex = () => {
       open: false,
       filter: null,
     })
-    setTagsFilter({
-      open: false,
-      filter: null,
-    })
+    setTagsFilter([])
   }
 
   const submit = () => {
@@ -131,7 +125,7 @@ const ProductIndex = () => {
     const urlObject = {
       "status[]": statusFilter.open ? statusFilter.filter : null,
       "collection_id[]": collectionFilter.open ? collectionIds : null,
-      "tags[]": tagsFilter.open ? tagsFiler.filter : null,
+      "tags[]": tagsFilter.filter?.length > 0 ? tagsFilter.join(",") : null,
     }
 
     const url = { ...removeNullish(urlObject) }
