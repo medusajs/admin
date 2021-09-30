@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState, useRef } from "react"
 import styled from "@emotion/styled"
 import Select from "react-select"
 import AsyncCreatableSelect from "react-select/async-creatable"
@@ -122,6 +122,17 @@ export const ReactSelect = React.forwardRef(
     },
     ref
   ) => {
+    const selectRef = useRef(null)
+
+    const listener = () => {
+      const { select } = selectRef.current
+      if (select.props.menuIsOpen) select.blur()
+    }
+    useEffect(() => {
+      window.addEventListener("resize", listener)
+      return () => window.removeEventListener("resize", listener)
+    })
+
     return (
       <StyledSelect
         styles={{ ...selectStyles, ...customSelectStyles }}
@@ -129,6 +140,9 @@ export const ReactSelect = React.forwardRef(
         placeholder={placeholder}
         onChange={onChange}
         options={options}
+        menuPortalTarget={document.body}
+        menuPosition="fixed"
+        ref={selectRef}
         {...props}
       />
     )

@@ -726,6 +726,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                     leftAlign
                     toggleText={"+ Add product"}
                     showSearch
+                    justifyContent="flex-start"
                     onSearchChange={handleProductSearch}
                     searchPlaceholder={"Search by SKU, Name, etch."}
                   >

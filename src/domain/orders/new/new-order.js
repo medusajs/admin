@@ -80,7 +80,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const [showCustomPrice, setShowCustomPrice] = useState(false)
   const [creatingOrder, setCreatingOrder] = useState(false)
   const [noNotification, setNoNotification] = useState(false)
-  const [bodyElement, setBodyElement] = useState()
   const [searchingProducts, setSearchingProducts] = useState(false)
 
   const form = useForm({
@@ -331,10 +330,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
   }
 
   useEffect(() => {
-    setBodyElement(document.body)
-  }, [])
-
-  useEffect(() => {
     if (regions) {
       form.setValue("region", regions[0])
     }
@@ -444,7 +439,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
                 </Text>
               ) : (
                 <ReactSelect
-                  menuPortalTarget={bodyElement}
                   isClearable={false}
                   placeholder="Select shipping..."
                   onChange={so => handleOptionSelect(so)}

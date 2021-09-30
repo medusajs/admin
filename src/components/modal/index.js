@@ -15,7 +15,6 @@ const Modal = styled(Flex)`
   width: 100%;
   height: 100%;
   background-color: rgba(238, 240, 245, 0.7);
-  overflow: auto;
 `
 
 const ModalBody = styled(Flex)`
