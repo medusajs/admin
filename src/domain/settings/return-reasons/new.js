@@ -5,6 +5,7 @@ import { navigate } from "gatsby"
 
 import Input, { StyledLabel } from "../../../components/input"
 import Button from "../../../components/button"
+import BreadCrumb from "../../../components/breadcrumb"
 import Card from "../../../components/card"
 import { ReactSelect } from "../../../components/react-select"
 
@@ -20,13 +21,17 @@ const NewReturnReason = ({ id }) => {
   }
 
   return (
-    <Flex alignItems="center" flexDirection="column">
+    <Flex alignItems="center" pt={5} flexDirection="column">
       <Card width="90%" px={0}>
+        <BreadCrumb
+          previousRoute="/a/settings/return-reasons"
+          previousBreadCrumb="Settings > Return Reasons"
+          currentPage="New reason"
+        />
         <Flex
           as="form"
           onSubmit={handleSubmit(onSave)}
           flexDirection="column"
-          pt={5}
           alignItems="center"
           justifyContent="center"
           width={1}
