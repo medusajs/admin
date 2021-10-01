@@ -121,7 +121,7 @@ const EditReturnReason = ({ id }) => {
               align-content="center"
               alignItems="baseline"
               justifyContent="space-between"
-              flexDirection={children.length > 0 ? "row" : "column"}
+              flexDirection={children?.length > 0 ? "row" : "column"}
             >
               <Flex alignItems="baseline">
                 <Text
@@ -137,7 +137,7 @@ const EditReturnReason = ({ id }) => {
               </Flex>
               <Flex>
                 <Button
-                  variant={children.length > 0 ? "cta" : "primary"}
+                  variant={children?.length > 0 ? "cta" : "primary"}
                   onClick={() => {
                     setEditReturnReason(undefined)
                     setShowReasonEdit(true)
@@ -156,7 +156,7 @@ const EditReturnReason = ({ id }) => {
           justifyContent="center"
         >
           <Flex width={1}>
-            {children.length > 0 && (
+            {children?.length > 0 && (
               <ReturnReasonsList
                 return_reasons={children}
                 onEditClick={reason => {
