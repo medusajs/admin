@@ -65,10 +65,11 @@ const ProductIndex = () => {
   )
   const defaultQueryProps = {
     fields: "id,title,thumbnail",
-    expand: "variants,variants.prices,collection",
+    expand: "variants,variants.prices,collection,tags",
   }
   const {
     products,
+    listTagsByUsage,
     hasCache,
     isLoading,
     refresh,
@@ -80,6 +81,9 @@ const ProductIndex = () => {
       ...defaultQueryProps,
     },
   })
+
+  const tagsPromise = Medusa.products.listTagsByUsage()
+
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
@@ -112,7 +116,7 @@ const ProductIndex = () => {
     setFilterTags(false)
   }
 
-  const submit = () => {
+  const submit = async () => {
     const collectionIds = collectionFilter.filter
       ? collectionFilter.filter
           .split(",")
@@ -120,15 +124,17 @@ const ProductIndex = () => {
           .join(",")
       : null
 
+    const tagsResponse = await tagsPromise
+    const tagIds = tagsFilter
+      .map(tag => tag.trim())
+      .map(tag => tagsResponse.data.tags.find(t => t.value === tag)?.id)
+      .join(",")
+
     const urlObject = {
       "status[]": statusFilter.open ? statusFilter.filter : null,
       "collection_id[]": collectionFilter.open ? collectionIds : null,
-      "tags[]":
-        filterTags && tagsFilter.filter?.length > 0
-          ? tagsFilter.join(",")
-          : null,
+      "tags[]": filterTags && tagIds?.length > 0 ? tagIds : null,
     }
-
     const url = { ...removeNullish(urlObject) }
 
     replaceQueryString(url)
