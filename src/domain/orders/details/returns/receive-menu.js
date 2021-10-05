@@ -37,6 +37,12 @@ const ReceiveMenu = ({
         }
       }
 
+      if (order.claims && order.claims.length) {
+        for (const c of order.claims) {
+          temp = [...temp, ...c.additional_items]
+        }
+      }
+
       setAllItems(temp)
     }
   }, [order])
@@ -220,6 +226,8 @@ const ReceiveMenu = ({
             if (returnRequest.is_swap && !quantities[item.id]) {
               return
             }
+
+            console.log(item)
 
             return (
               <Flex
