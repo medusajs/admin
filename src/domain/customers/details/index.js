@@ -1,6 +1,17 @@
-import React from "react"
-import { navigate } from "gatsby"
+import React, { useEffect, useState } from "react"
 import { Text, Flex, Box } from "rebass"
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeaderCell,
+  TableDataCell,
+  TableHeaderRow,
+  TableRow,
+  DefaultCellContent,
+  BadgdeCellContent,
+  TableLinkRow,
+} from "../../../components/table"
 import styled from "@emotion/styled"
 import ReactJson from "react-json-view"
 import moment from "moment"
@@ -9,24 +20,32 @@ import _ from "lodash"
 import Card from "../../../components/card"
 import Badge from "../../../components/badge"
 import Spinner from "../../../components/spinner"
+import EditCustomer from "./edit"
+
+import { decideBadgeColor } from "../../../utils/decide-badge-color"
+import { displayAmount } from "../../../utils/prices"
 
 import useMedusa from "../../../hooks/use-medusa"
-
-const OrderNumLink = styled(Text)`
-  z-index: 1000;
-  cursor: pointer;
-  font-weight: 500;
-  display: flex;
-
-  align-items: center;
-
-  &:hover {
-    color: #454b54;
-  }
-`
+import Medusa from "../../../services/api"
+import { OrderNumCell } from "../../orders"
 
 const CustomerDetail = ({ id }) => {
-  const { customer, isLoading } = useMedusa("customers", { id })
+  const { customer, isLoading, toaster, update } = useMedusa("customers", {
+    id,
+  })
+
+  const [orders, setOrders] = useState([])
+  const [hasFetchedOrders, setHasFetchedOrders] = useState(false)
+  const [editCustomer, setEditCustomer] = useState(false)
+
+  useEffect(() => {
+    if (!hasFetchedOrders) {
+      Medusa.orders.list({ customer_id: id }).then(resp => {
+        setOrders(resp.data.orders)
+        setHasFetchedOrders(true)
+      })
+    }
+  }, [])
 
   if (isLoading) {
     return (
@@ -38,29 +57,56 @@ const CustomerDetail = ({ id }) => {
     )
   }
 
+  let name =
+    (customer.first_name ? customer.first_name : "") +
+    (customer.last_name ? ` ${customer.last_name}` : "")
+  if (!name) name = "N / A"
+
   const phone = customer.phone
     ? customer.phone
     : customer.shipping_addresses && customer?.shipping_addresses[0]
     ? customer?.shipping_addresses[0].phone
     : "N / A"
 
+  const customerDropdown = [
+    {
+      label: "Edit customer",
+      onClick: () => {
+        setEditCustomer(true)
+      },
+    },
+  ]
+
+  const registered = customer.has_account ? "registered" : "not_registered"
+
   return (
     <Flex flexDirection="column" mb={5} pt={5}>
       <Card mb={2}>
-        <Card.Header>{customer.id}</Card.Header>
-        <Box>
-          <Text p={3} fontWeight="bold">
-            {customer.email}
+        <Card.Header dropdownOptions={customerDropdown}>
+          {customer.email}
+        </Card.Header>
+        <Box pl={3}>
+          <Text fontWeight="bold">
+            {customer.orders.length} order
+            {customer.orders.length > 1 ? "s" : ""}
           </Text>
         </Box>
         <Card.Body>
           <Box pl={3} pr={2}>
             <Text pb={1} color="gray">
-              Registered user
+              First seen at
             </Text>
-            <Badge ml={3} color="#4f566b" bg="#e3e8ee">
-              {`${customer.has_account}`}
-            </Badge>
+            <Text pb={1}>
+              {" "}
+              {moment(customer.created_at).format("MMMM Do YYYY HH:mm a")}
+            </Text>
+          </Box>
+          <Card.VerticalDivider mx={3} />
+          <Box pl={3} pr={2}>
+            <Text pb={1} color="gray">
+              Name
+            </Text>
+            <Text pb={1}>{name}</Text>
           </Box>
           <Card.VerticalDivider mx={3} />
           <Box pl={3} pr={2}>
@@ -69,27 +115,102 @@ const CustomerDetail = ({ id }) => {
             </Text>
             <Text pb={1}>{phone}</Text>
           </Box>
+          <Card.VerticalDivider mx={3} />
+          <Box pl={3} pr={2}>
+            <Text pb={1} color="gray">
+              Registered user
+            </Text>
+            <Badge
+              color={decideBadgeColor(registered).color}
+              bg={decideBadgeColor(registered).bgColor}
+            >
+              {`${customer.has_account}`}
+            </Badge>
+          </Box>
         </Card.Body>
       </Card>
+      {editCustomer && (
+        <EditCustomer
+          customer={customer}
+          toaster={toaster}
+          onUpdate={update}
+          onDismiss={() => setEditCustomer(false)}
+        />
+      )}
       <Card mr={3} mb={2} width="100%">
         <Card.Header>Orders</Card.Header>
         <Card.Body flexDirection="column">
-          {customer.orders.map(order => (
-            <Flex pl={3} pr={2} py={2}>
-              <OrderNumLink
-                onClick={() => navigate(`/a/orders/${order.id}`)}
-                color={"link"}
-              >
-                Order #{order.display_id}
-              </OrderNumLink>
-              <Card.VerticalDivider mx={3} />
-              <Flex justifyContent="space-evenly">
-                <Text>
-                  {moment(order.created_at).format("MMMM Do YYYY HH:mm a")}
-                </Text>
-              </Flex>
-            </Flex>
-          ))}
+          <Table>
+            <TableHead>
+              <TableHeaderRow>
+                <TableHeaderCell>Order</TableHeaderCell>
+                <TableHeaderCell>Date</TableHeaderCell>
+                <TableHeaderCell>Fulfillment</TableHeaderCell>
+                <TableHeaderCell>Payment</TableHeaderCell>
+                <TableHeaderCell>Total</TableHeaderCell>
+              </TableHeaderRow>
+            </TableHead>
+            <TableBody>
+              {orders?.length ? (
+                orders.map((order, i) => (
+                  <TableLinkRow
+                    key={i}
+                    to={`/a/orders/${order.id}`}
+                    id={`order-${order.id}`}
+                  >
+                    <TableDataCell color="link">
+                      <OrderNumCell fontWeight="500" color="link">
+                        #{order.display_id}
+                      </OrderNumCell>
+                    </TableDataCell>
+                    <TableDataCell>
+                      <DefaultCellContent>
+                        {moment(order.created_at).format(
+                          "MMMM Do YYYY HH:mm a"
+                        )}
+                      </DefaultCellContent>
+                    </TableDataCell>
+                    <TableDataCell>
+                      <BadgdeCellContent>
+                        <Badge
+                          color={
+                            decideBadgeColor(order.fulfillment_status).color
+                          }
+                          bg={
+                            decideBadgeColor(order.fulfillment_status).bgColor
+                          }
+                        >
+                          {order.fulfillment_status}
+                        </Badge>
+                      </BadgdeCellContent>
+                    </TableDataCell>
+                    <TableDataCell>
+                      <BadgdeCellContent>
+                        <Badge
+                          color={decideBadgeColor(order.payment_status).color}
+                          bg={decideBadgeColor(order.payment_status).bgColor}
+                        >
+                          {order.payment_status}
+                        </Badge>
+                      </BadgdeCellContent>
+                    </TableDataCell>
+                    <TableDataCell>
+                      <DefaultCellContent>
+                        {displayAmount(order.currency_code, order.total)}{" "}
+                        {order.currency_code.toUpperCase()}
+                      </DefaultCellContent>
+                    </TableDataCell>
+                  </TableLinkRow>
+                ))
+              ) : (
+                <Flex alignItems="center" justifyContent="center" mt={3}>
+                  <Text height="75px" fontSize="16px">
+                    Customer has not placed an order yet
+                  </Text>
+                </Flex>
+              )}
+            </TableBody>
+          </Table>
         </Card.Body>
       </Card>
       <Card mr={3} mb={2} width="100%">
