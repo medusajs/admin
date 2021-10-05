@@ -57,7 +57,7 @@ const Dropdown = ({
   showSearch,
   onSearchChange,
   toggleText,
-  leftAlign,
+  float = false,
   justifyContent,
   dropdownWidth,
   dropdownHeight,
@@ -102,6 +102,7 @@ const Dropdown = ({
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside)
+
     return () => {
       document.removeEventListener("click", handleClickOutside)
     }
@@ -128,29 +129,38 @@ const Dropdown = ({
           {toggleText || <Ellipsis height="10px" />}
         </Button>
       )}
-      <Box mt={1} sx={{ zIndex: 1001, position: "absolute", width: "inherit" }}>
-        <DropdownContainer
-          dropUp={dropUp}
-          leftAlign={leftAlign}
-          minWidth={dropdownWidth || "160px"}
-          ref={ref}
-          isOpen={isOpen}
-          topPlacement={topPlacement}
-          {..._.pick(rest, spacingProps)}
+      <Box
+        mt={1}
+        sx={{ position: float ? "absolute" : "relative", width: "inherit" }}
+      >
+        <Flex
+          sx={{
+            position: "absolute",
+            right: float ? undefined : 0,
+          }}
         >
-          {showSearch && (
-            <StyledInput
-              placeholder={searchPlaceholder}
-              value={search}
-              onChange={handleSearch}
-            />
-          )}
-          <Scrollable maxHeight={dropdownHeight || "200px"}>
-            {React.Children.map(children, child => (
-              <DropdownItem>{child}</DropdownItem>
-            ))}
-          </Scrollable>
-        </DropdownContainer>
+          <DropdownContainer
+            dropUp={dropUp}
+            minWidth={dropdownWidth || "160px"}
+            ref={ref}
+            isOpen={isOpen}
+            topPlacement={topPlacement}
+            {..._.pick(rest, spacingProps)}
+          >
+            {showSearch && (
+              <StyledInput
+                placeholder={searchPlaceholder}
+                value={search}
+                onChange={handleSearch}
+              />
+            )}
+            <Scrollable maxHeight={dropdownHeight || "200px"}>
+              {React.Children.map(children, child => (
+                <DropdownItem>{child}</DropdownItem>
+              ))}
+            </Scrollable>
+          </DropdownContainer>
+        </Flex>
       </Box>
     </Flex>
   )

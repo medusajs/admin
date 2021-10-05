@@ -165,7 +165,7 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
               <Dropdown
                 disabled={!region}
                 showSearch
-                leftAlign={true}
+                leftOffset={"20px"}
                 onSearchChange={handleProductSearch}
                 dropdownWidth="100% !important"
                 dropdownHeight="180px !important"

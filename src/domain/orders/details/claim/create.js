@@ -723,8 +723,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 <Text sx={{ fontSize: 1, fontWeight: 600 }}>Items to send</Text>
                 <Box mt={2}>
                   <Dropdown
-                    leftAlign
                     toggleText={"+ Add product"}
+                    float
                     showSearch
                     justifyContent="flex-start"
                     onSearchChange={handleProductSearch}

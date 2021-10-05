@@ -399,6 +399,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 leftAlign
                 toggleText={"+ Add product"}
                 justifyContent="flex-start"
+                float
                 showSearch
                 onSearchChange={handleProductSearch}
                 searchPlaceholder={"Search by SKU, Name, etch."}
