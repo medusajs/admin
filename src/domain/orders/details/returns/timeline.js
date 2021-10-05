@@ -73,7 +73,7 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
   return (
     <Box sx={{ borderBottom: "hairline" }} pb={3} mb={3} px={3}>
       <Flex justifyContent="space-between">
-        <Text fontSize={1} color="grey" fontWeight="500">
+        <Text fontSize={1} fontWeight="500">
           Return {event.status}
         </Text>
         {canceled && (
@@ -94,7 +94,7 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
       </Flex>
       {expanded && (
         <>
-          <Text fontSize="11px" color="grey" mb={3}>
+          <Text fontSize="11px" color="grey" mb={2}>
             {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
           </Text>
           {(event.no_notification || false) !==

@@ -203,7 +203,7 @@ const Manage = () => {
     )
   }
 
-  if (products.length > 0) {
+  if (products?.length > 0) {
     return <GiftCardDetail id={products[0].id} />
   }
 

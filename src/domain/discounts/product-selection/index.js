@@ -44,14 +44,13 @@ const ProductSelection = ({ selectedProducts, setSelectedProducts }) => {
     }))
 
   return (
-    <Flex ml={3}>
+    <Flex ml={3} sx={{ width: 200 }}>
       <MultiSelect
-        inline
         start={true}
         mb={3}
         options={mapItems(searchResults)}
-        sx={{ minWidth: 400 }}
         debounceDuration={500}
+        width={"100%"}
         selectOptions={{
           hasSelectAll: false,
           valueRenderer: customRenderer,

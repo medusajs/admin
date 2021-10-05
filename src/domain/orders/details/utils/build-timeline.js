@@ -1,4 +1,4 @@
-const buildTimeline = (order, notifications) => {
+const buildTimeline = (order, notifications, notes) => {
   const events = []
 
   let allItems = [...order.items]
@@ -15,6 +15,17 @@ const buildTimeline = (order, notifications) => {
       event_name: n.event_name,
       provider_id: n.provider_id,
       created_at: n.created_at,
+      time: n.created_at,
+      raw: n,
+    })
+  }
+
+  for (const n of notes) {
+    events.push({
+      id: n.id,
+      type: "note",
+      created_at: n.created_at,
+      updated_at: n.updated_at,
       time: n.created_at,
       raw: n,
     })

@@ -23,6 +23,10 @@ export default {
       const path = `/admin/return-reasons/${id}`
       return medusaRequest("POST", path, payload)
     },
+    delete(id) {
+      const path = `/admin/return-reasons/${id}`
+      return medusaRequest("DELETE", path)
+    },
   },
   apps: {
     authorize(data) {
@@ -63,6 +67,29 @@ export default {
       return medusaRequest("POST", path, config)
     },
   },
+  notes: {
+    listByResource(resourceId) {
+      let path = `/admin/notes?resource_id=${resourceId}`
+      return medusaRequest("GET", path)
+    },
+    async create(resourceId, resourceType, value) {
+      const path = `/admin/notes/`
+      return medusaRequest("POST", path, {
+        resource_id: resourceId,
+        resource_type: resourceType,
+        value,
+      })
+    },
+    update(id, value) {
+      let path = `admin/notes/${id}`
+      return medusaRequest("POST", path, { value })
+    },
+    delete(id) {
+      let path = `admin/notes/${id}`
+      return medusaRequest("DELETE", path)
+    },
+  },
+
   customers: {
     retrieve(customerId) {
       const path = `/admin/customers/${customerId}`
