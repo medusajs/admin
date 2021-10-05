@@ -127,7 +127,7 @@ const NewDiscount = ({}) => {
     }
 
     if (data.rule.allocation === "item")
-      data.rule.valid_for = items.map(p => p.value.id)
+      data.rule.valid_for = items.map(p => p.value)
     data.regions = validRegions()
 
     const discount = {

@@ -87,7 +87,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
     discount.rule.valid_for.map(p => {
       return {
         label: p.title,
-        value: p,
+        value: p.id,
       }
     }) || []
   )
@@ -99,7 +99,7 @@ const DiscountRuleModal = ({ discount, onUpdate, onDismiss, products }) => {
 
   const onSubmit = data => {
     data.value = parseInt(data.value)
-    data.valid_for = selectedProducts.map(p => p.value.id)
+    data.valid_for = selectedProducts.map(p => p.value)
     data.id = discount.rule.id
     onUpdate(data)
   }

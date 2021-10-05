@@ -338,10 +338,10 @@ const DiscountDetails = ({ id }) => {
           <Divider m={3} />
 
           <Box px={3}>
-            {discount.rule.valid_for?.length == 0 && (
-              <Text>Currently not applicable to any item.</Text>
-            )}
-
+            {discount.rule.allocation !== "total" &&
+              discount.rule.valid_for?.length === 0 && (
+                <Text>Currently not applicable to any item.</Text>
+              )}
             {discount.rule.allocation === "total" ? (
               <Text>Applies to all items</Text>
             ) : (

@@ -34,17 +34,23 @@ const ProductSelection = ({ selectedProducts, setSelectedProducts }) => {
     ).substring(1)
   }
 
+  const shortLabel = title =>
+    title.length > 20 ? `${title.substring(0, 19)}...` : title
+
+  const mapItems = items =>
+    items.map(product => ({
+      label: shortLabel(product.title),
+      value: product.id,
+    }))
+
   return (
     <Flex ml={3}>
       <MultiSelect
         inline
         start={true}
         mb={3}
-        options={searchResults.map(product => ({
-          label: product.title,
-          value: product,
-        }))}
-        customValueRend
+        options={mapItems(searchResults)}
+        sx={{ minWidth: 400 }}
         debounceDuration={500}
         selectOptions={{
           hasSelectAll: false,
