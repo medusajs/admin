@@ -10,6 +10,7 @@ import {
   TableRow,
   DefaultCellContent,
   BadgdeCellContent,
+  TableLinkRow,
 } from "../../../components/table"
 import styled from "@emotion/styled"
 import ReactJson from "react-json-view"
@@ -26,6 +27,7 @@ import { displayAmount } from "../../../utils/prices"
 
 import useMedusa from "../../../hooks/use-medusa"
 import Medusa from "../../../services/api"
+import { OrderNumCell } from "../../orders"
 
 const CustomerDetail = ({ id }) => {
   const { customer, isLoading, toaster, update } = useMedusa("customers", {
@@ -149,48 +151,64 @@ const CustomerDetail = ({ id }) => {
               </TableHeaderRow>
             </TableHead>
             <TableBody>
-              {orders?.map((order, i) => (
-                <TableRow
-                  key={i}
-                  to={`/a/orders/${order.id}`}
-                  id={`order-${order.id}`}
-                >
-                  <TableDataCell color="link">
-                    <DefaultCellContent>#{order.display_id}</DefaultCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    <DefaultCellContent>
-                      {moment(order.created_at).format("MMMM Do YYYY HH:mm a")}
-                    </DefaultCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    <BadgdeCellContent>
-                      <Badge
-                        color={decideBadgeColor(order.fulfillment_status).color}
-                        bg={decideBadgeColor(order.fulfillment_status).bgColor}
-                      >
-                        {order.fulfillment_status}
-                      </Badge>
-                    </BadgdeCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    <BadgdeCellContent>
-                      <Badge
-                        color={decideBadgeColor(order.payment_status).color}
-                        bg={decideBadgeColor(order.payment_status).bgColor}
-                      >
-                        {order.payment_status}
-                      </Badge>
-                    </BadgdeCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    <DefaultCellContent>
-                      {displayAmount(order.currency_code, order.total)}{" "}
-                      {order.currency_code.toUpperCase()}
-                    </DefaultCellContent>
-                  </TableDataCell>
-                </TableRow>
-              ))}
+              {orders?.length ? (
+                orders.map((order, i) => (
+                  <TableLinkRow
+                    key={i}
+                    to={`/a/orders/${order.id}`}
+                    id={`order-${order.id}`}
+                  >
+                    <TableDataCell color="link">
+                      <OrderNumCell fontWeight="500" color="link">
+                        #{order.display_id}
+                      </OrderNumCell>
+                    </TableDataCell>
+                    <TableDataCell>
+                      <DefaultCellContent>
+                        {moment(order.created_at).format(
+                          "MMMM Do YYYY HH:mm a"
+                        )}
+                      </DefaultCellContent>
+                    </TableDataCell>
+                    <TableDataCell>
+                      <BadgdeCellContent>
+                        <Badge
+                          color={
+                            decideBadgeColor(order.fulfillment_status).color
+                          }
+                          bg={
+                            decideBadgeColor(order.fulfillment_status).bgColor
+                          }
+                        >
+                          {order.fulfillment_status}
+                        </Badge>
+                      </BadgdeCellContent>
+                    </TableDataCell>
+                    <TableDataCell>
+                      <BadgdeCellContent>
+                        <Badge
+                          color={decideBadgeColor(order.payment_status).color}
+                          bg={decideBadgeColor(order.payment_status).bgColor}
+                        >
+                          {order.payment_status}
+                        </Badge>
+                      </BadgdeCellContent>
+                    </TableDataCell>
+                    <TableDataCell>
+                      <DefaultCellContent>
+                        {displayAmount(order.currency_code, order.total)}{" "}
+                        {order.currency_code.toUpperCase()}
+                      </DefaultCellContent>
+                    </TableDataCell>
+                  </TableLinkRow>
+                ))
+              ) : (
+                <Flex alignItems="center" justifyContent="center" mt={3}>
+                  <Text height="75px" fontSize="16px">
+                    Customer has not placed an order yet
+                  </Text>
+                </Flex>
+              )}
             </TableBody>
           </Table>
         </Card.Body>
