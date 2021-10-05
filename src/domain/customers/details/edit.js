@@ -24,8 +24,9 @@ const CustomerInformationEdit = ({
     setSubmitting(true)
 
     // this check ensures we can actually update the remaining when the user is registered
-    for (const key in data)
+    for (const key in data) {
       if (!data[key] || data[key] === customer[key]) delete data[key]
+    }
 
     return onUpdate(data)
       .then(() => onDismiss())

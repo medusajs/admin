@@ -22,7 +22,7 @@ import Spinner from "../../../components/spinner"
 import EditCustomer from "./edit"
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
-import { extractOptionPrice } from "../../../utils/prices"
+import { displayAmount } from "../../../utils/prices"
 
 import useMedusa from "../../../hooks/use-medusa"
 import Medusa from "../../../services/api"
@@ -185,7 +185,8 @@ const CustomerDetail = ({ id }) => {
                   </TableDataCell>
                   <TableDataCell>
                     <DefaultCellContent>
-                      {extractOptionPrice(order.total, order.region)}
+                      {displayAmount(order.currency_code, order.total)}{" "}
+                      {order.currency_code.toUpperCase()}
                     </DefaultCellContent>
                   </TableDataCell>
                 </TableRow>
