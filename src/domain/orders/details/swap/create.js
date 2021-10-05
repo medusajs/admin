@@ -89,14 +89,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [shippingPrice, setShippingPrice] = useState()
   const [noNotification, setNoNotification] = useState(order.no_notification)
   const [searchResults, setSearchResults] = useState([])
-  const [showCustomPrice, setShowCustomPrice] = useState({
-    standard: false,
-    return: false,
-  })
-  const [customOptionPrice, setCustomOptionPrice] = useState({
-    standard: 0,
-    return: null,
-  })
+  const [showCustomPrice, setShowCustomPrice] = useState(false)
+  const [customOptionPrice, setCustomOptionPrice] = useState(null)
 
   // Includes both order items and swap items
   const [allItems, setAllItems] = useState([])
@@ -114,8 +108,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }
 
   const calculateShippingPrice = () => {
-    return showCustomPrice.return && customOptionPrice.return
-      ? customOptionPrice.return * 100
+    return showCustomPrice && customOptionPrice
+      ? customOptionPrice * 100
       : Math.round(shippingPrice / (1 + order.tax_rate / 100))
   }
 
@@ -400,7 +394,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   </Text>
                   <Box ml="auto" />
                   <Flex flexDirection="column">
-                    {!showCustomPrice.return && (
+                    {!showCustomPrice && (
                       <Button
                         mt={2}
                         fontSize="12px"
@@ -408,41 +402,28 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                         width="140px"
                         mb={2}
                         disabled={!shippingMethod}
-                        onClick={() =>
-                          setShowCustomPrice({
-                            ...showCustomPrice,
-                            return: true,
-                          })
-                        }
+                        onClick={() => setShowCustomPrice(true)}
                       >
-                        {showCustomPrice.return ? "Submit" : "Set custom price"}
+                        {showCustomPrice ? "Submit" : "Set custom price"}
                       </Button>
                     )}
-                    {showCustomPrice.return && (
+                    {showCustomPrice && (
                       <Flex flexDirection="column">
                         <Flex width="140px" mt={3}>
                           <Input
                             type="number"
                             fontSize="12px"
                             onChange={e =>
-                              setCustomOptionPrice({
-                                ...customOptionPrice,
-                                return: e.currentTarget.value,
-                              })
+                              setCustomOptionPrice(e.currentTarget.value)
                             }
-                            value={customOptionPrice.return || null}
+                            value={customOptionPrice || null}
                             placeholder={order.currency_code.toUpperCase()}
                             min={0}
                           />
                           <Flex
                             px={2}
                             alignItems="center"
-                            onClick={() =>
-                              setShowCustomPrice({
-                                ...showCustomPrice,
-                                return: false,
-                              })
-                            }
+                            onClick={() => setShowCustomPrice(false)}
                           >
                             &times;
                           </Flex>
