@@ -182,7 +182,6 @@ const SettingsIndex = () => {
           >
             Users
           </StyledLinkText>
-          {/* <Text fontSize={14}>Manage users of your Medusa store</Text> */}
         </SettingContainer>
       </Flex>
     </Flex>
