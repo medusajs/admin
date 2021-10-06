@@ -41,6 +41,7 @@ const decideBadgeColor = email_status => {
 const EditUser = ({ handleClose, user, triggerRefetch }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState(user.role)
+  const { toaster } = useMedusa("collections")
 
   const onChange = e => {
     setRole(e.target.value)
@@ -57,7 +58,8 @@ const EditUser = ({ handleClose, user, triggerRefetch }) => {
         triggerRefetch()
         setIsLoading(false)
       })
-      .catch(err => console.log(err.response.data.message))
+      .catch(err => toaster("Failed to edit user", "error"))
+
     handleClose()
   }
 

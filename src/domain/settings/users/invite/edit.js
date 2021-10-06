@@ -4,12 +4,9 @@ import React, { useState } from "react"
 import { Box, Flex, Text } from "rebass"
 import Button from "../../../../components/button"
 import { ReactComponent as CloseIcon } from "../../../../assets/svg/cross.svg"
-import Badge from "../../../../components/badge"
 import Modal from "../../../../components/modal"
 import { DefaultCellContent } from "../../../../components/table"
 import Medusa from "../../../../services/api"
-import qs from "qs"
-import { StyledLabel } from "../../../../components/input"
 import useMedusa from "../../../../hooks/use-medusa"
 
 const Row = styled.tr`
@@ -27,7 +24,6 @@ const Cell = styled.td`
 `
 
 const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
-  console.log(invite)
   const [isLoading, setIsLoading] = useState(false)
   const { toaster } = useMedusa("collections")
   const [role, setRole] = useState(invite.role)
@@ -58,7 +54,7 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
         triggerRefetch()
         setIsLoading(false)
       })
-      .catch(err => console.log(err.response.data.message))
+      .catch(err => toaster("Failed to edit invite", "error"))
     handleClose()
   }
 
@@ -70,7 +66,6 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
         toaster("Deleted invitation", "success")
       })
       .catch(e => {
-        console.log(e)
         toaster("Failed to delete invitation", "error")
       })
     handleClose()

@@ -6,7 +6,6 @@ import { ReactComponent as CloseIcon } from "../../../../assets/svg/cross.svg"
 import Modal from "../../../../components/modal"
 import { DefaultCellContent } from "../../../../components/table"
 import TagInput from "../../../../components/tag-input"
-import Typography from "../../../../components/typography"
 import useModal from "../../../../hooks/use-modal"
 import Button from "../../../../components/button"
 import Medusa from "../../../../services/api"
@@ -60,7 +59,6 @@ const Invite = ({ triggerRefetch }) => {
         toaster("user(s) invited", "success")
       })
       .catch(error => {
-        console.log(error.response.data.message)
         setIsLoading(false)
         triggerRefetch()
         toaster("Could not add user(s)", "error")

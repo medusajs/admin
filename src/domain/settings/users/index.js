@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Box, Button, Flex, Text } from "rebass"
 import Card from "../../../components/card"
 import BreadCrumb from "../../../components/breadcrumb"
@@ -12,7 +12,6 @@ import {
   TableHeaderRow,
   TableRow,
 } from "../../../components/table"
-import { AccountContext } from "../../../context/account"
 import Medusa from "../../../services/api"
 import EditUser from "./edit"
 import EditInvite from "./invite/edit"
