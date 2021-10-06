@@ -168,24 +168,25 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
       // Filter out options by requirements
       const options = data.shipping_options.reduce((acc, next) => {
-        if (next.requirements) {
+        if (next.requirements?.length) {
           const minSubtotal = next.requirements.find(
             req => req.type === "min_subtotal"
           )
 
           if (minSubtotal) {
-            if (total <= minSubtotal.amount) return acc
+            if (total >= minSubtotal.amount) acc.push(next)
           }
 
           const maxSubtotal = next.requirements.find(
             req => req.type === "max_subtotal"
           )
           if (maxSubtotal) {
-            if (total >= maxSubtotal.amount) return acc
+            if (total <= maxSubtotal.amount) acc.push(next)
           }
+        } else {
+          acc.push(next)
         }
 
-        acc.push(next)
         return acc
       }, [])
 
@@ -319,9 +320,9 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const calculateTotal = () => {
     const tot = items.reduce((acc, next) => {
       if ("unit_price" in next) {
-        acc = acc + next.unit_price
+        acc = acc + next.unit_price * quantity
       } else {
-        acc = acc + extractUnitPrice(next, region, false)
+        acc = acc + extractUnitPrice(next, region, false) * quantity
       }
 
       return acc
