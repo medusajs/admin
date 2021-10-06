@@ -66,8 +66,8 @@ export const theme = {
   shadows,
   variants: {
     loginCard: {
-      boxShadow: "buttonBoxShadow",
-      borderRadius: "3px",
+      boxShadow: "loginBoxShadow",
+      borderRadius: "5px",
     },
     badge: {
       fontSize: "0",
