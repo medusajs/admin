@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react"
-import { navigate, Link } from "gatsby"
-import { Router } from "@reach/router"
+import { navigate } from "gatsby"
 import { Flex, Box, Text, Image } from "rebass"
 import { useForm } from "react-hook-form"
 
@@ -16,7 +15,7 @@ import Medusa from "../services/api"
 const IndexPage = () => {
   const [loading, setLoading] = useState(false)
   const account = useContext(AccountContext)
-  const { register, handleSubmit, reset } = useForm()
+  const { handleSubmit } = useForm()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [resetPassword, setResetPassword] = useState(false)
