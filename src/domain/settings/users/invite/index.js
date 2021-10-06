@@ -13,8 +13,17 @@ import Medusa from "../../../../services/api"
 import useMedusa from "../../../../hooks/use-medusa"
 
 const Row = styled.tr`
-  ${Typography.Base}
-  font-weight: 400;
+  font-size: ${props => props.theme.fontSizes[1]}px;
+  border-top: ${props => props.theme.borders.hairline};
+
+  td:last-child {
+    padding-left: 20px;
+    padding-right: 30px;
+  }
+`
+
+const Cell = styled.td`
+  padding: 15px 5px;
 `
 
 const Invite = ({ triggerRefetch }) => {
@@ -87,39 +96,59 @@ const Invite = ({ triggerRefetch }) => {
                 <table>
                   <tbody>
                     <Row>
-                      <td>
+                      <Cell>
                         <Label>
                           <Radio
-                            onChange={onChange}
-                            name="role"
-                            value="member"
-                            defaultChecked
-                          />
-                        </Label>
-                      </td>
-                      <td>
-                        <DefaultCellContent>Member</DefaultCellContent>
-                      </td>
-                      <td>
-                        For employees and customer service who manage your store
-                      </td>
-                    </Row>
-                    <Row>
-                      <td>
-                        <Label>
-                          <Radio
+                            checked={"admin" === role}
                             onChange={onChange}
                             name="role"
                             value="admin"
                           />
                         </Label>
-                      </td>
-                      <td>
+                      </Cell>
+                      <Cell>
                         <DefaultCellContent>Admin</DefaultCellContent>
-                      </td>
-                      <td>
+                      </Cell>
+                      <Cell>
                         For business owners and managers with full control
-                      </td>
+                      </Cell>
+                    </Row>
+                    <Row variant="tiny.default">
+                      <Cell mr={1}>
+                        {/* <Label> */}
+                        <Radio
+                          checked={"member" === role}
+                          onChange={onChange}
+                          name="role"
+                          value="member"
+                        />
+                        {/* </Label> */}
+                      </Cell>
+                      <Cell mr={1}>
+                        <DefaultCellContent>Member</DefaultCellContent>
+                      </Cell>
+                      <Cell>
+                        For employees and customer service who manage your store
+                      </Cell>
+                    </Row>
+                    <Row>
+                      <Cell>
+                        <Label>
+                          <Radio
+                            checked={"developer" === role}
+                            onChange={onChange}
+                            name="role"
+                            value="developer"
+                          />
+                        </Label>
+                      </Cell>
+                      <Cell>
+                        <DefaultCellContent>Delevoper</DefaultCellContent>
+                      </Cell>
+                      <Cell>
+                        For developers who build store functionality and
+                        interact with the API
+                      </Cell>
                     </Row>
                   </tbody>
                 </table>
