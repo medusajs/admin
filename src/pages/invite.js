@@ -12,10 +12,10 @@ import Graphic from "../assets/login-graphic.png"
 import Medusa from "../services/api"
 import useMedusa from "../hooks/use-medusa"
 
-const IndexPage = () => {
-  const parsed = qs.parse(window.location.href.split("?")[1])
+const InvitePage = ({ location }) => {
+  const parsed = qs.parse(location.search.substring(1))
 
-  const { toaster } = useMedusa("collections")
+  // const { toaster } = useMedusa("collections")
 
   let token = null
   if (parsed?.token) {
@@ -45,13 +45,13 @@ const IndexPage = () => {
         })
         .then(() => {
           navigate("/login")
-          toaster(`Succesfully added you to the team`, "success")
+          // toaster(`Succesfully added you to the team`, "success")
         })
         .catch(error => {
-          toaster("Failed to add you to the team", "error")
+          // toaster("Failed to add you to the team", "error")
         })
     } else {
-      toaster("Passwords should match", "error")
+      // toaster("Passwords should match", "error")
     }
   }
 
@@ -174,4 +174,4 @@ const IndexPage = () => {
   )
 }
 
-export default IndexPage
+export default InvitePage

@@ -12,7 +12,7 @@ import Spinner from "../components/spinner"
 import Graphic from "../assets/login-graphic.png"
 import Medusa from "../services/api"
 
-const IndexPage = () => {
+const LoginPage = () => {
   const [loading, setLoading] = useState(false)
   const account = useContext(AccountContext)
   const { handleSubmit } = useForm()
@@ -153,4 +153,4 @@ const IndexPage = () => {
   )
 }
 
-export default IndexPage
+export default LoginPage

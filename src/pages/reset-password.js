@@ -10,10 +10,9 @@ import InputField from "../components/input"
 import Button from "../components/button"
 import Graphic from "../assets/login-graphic.png"
 import Medusa from "../services/api"
-import useMedusa from "../hooks/use-medusa"
 
-const IndexPage = () => {
-  const parsed = qs.parse(window.location.href.split("?")[1])
+const ResetPasswordPage = ({ location }) => {
+  const parsed = qs.parse(location.search.substring(1))
   let token = null
   if (parsed?.token) {
     try {
@@ -23,7 +22,7 @@ const IndexPage = () => {
     }
   }
 
-  const { toaster } = useMedusa("collections")
+  // const { toaster } = useMedusa("collections")
   const [email, _] = useState(token?.email || parsed?.email)
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
@@ -36,14 +35,14 @@ const IndexPage = () => {
         .resetPassword({ token: parsed?.token, password, email })
         .then(() => {
           navigate("/login")
-          toaster(`Succesfully reset your password`, "success")
+          // toaster(`Succesfully reset your password`, "success")
         })
         .catch(error => {
           console.log(error)
-          toaster("Failed to reset your password", "error")
+          // toaster("Failed to reset your password", "error")
         })
     } else {
-      toaster("Passwords should match", "error")
+      // toaster("Passwords should match", "error")
     }
   }
 
@@ -140,4 +139,4 @@ const IndexPage = () => {
   )
 }
 
-export default IndexPage
+export default ResetPasswordPage
