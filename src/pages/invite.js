@@ -37,23 +37,22 @@ const IndexPage = () => {
   const acceptInvite = async event => {
     event.preventDefault()
 
-    if (password !== repeatPassword) {
+    if (password === repeatPassword) {
+      await Medusa.users
+        .acceptInvite({
+          token: parsed?.token,
+          user: { firstName, lastName, password },
+        })
+        .then(() => {
+          navigate("/login")
+          toaster(`Succesfully added you to the team`, "success")
+        })
+        .catch(error => {
+          toaster("Failed to add you to the team", "error")
+        })
+    } else {
       toaster("Passwords should match", "error")
-      return
     }
-
-    const user = { firstName, lastName, password }
-
-    await Medusa.users
-      .acceptInvite({ token: parsed?.token, user })
-      .then(() => {
-        navigate("/login")
-        toaster(`Succesfully added you to the team`, "success")
-      })
-      .catch(error => {
-        console.log(error)
-        toaster("Failed to add you to the team", "error")
-      })
   }
 
   return (

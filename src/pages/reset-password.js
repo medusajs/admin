@@ -31,21 +31,20 @@ const IndexPage = () => {
   const resetPassword = async event => {
     event.preventDefault()
 
-    if (password !== repeatPassword) {
+    if (password === repeatPassword) {
+      await Medusa.users
+        .resetPassword({ token: parsed?.token, password, email })
+        .then(() => {
+          navigate("/login")
+          toaster(`Succesfully reset your password`, "success")
+        })
+        .catch(error => {
+          console.log(error)
+          toaster("Failed to reset your password", "error")
+        })
+    } else {
       toaster("Passwords should match", "error")
-      return
     }
-
-    await Medusa.users
-      .resetPassword({ token: parsed?.token, password, email })
-      .then(() => {
-        navigate("/login")
-        toaster(`Succesfully reset your password`, "success")
-      })
-      .catch(error => {
-        console.log(error)
-        toaster("Failed to reset your password", "error")
-      })
   }
 
   return (
