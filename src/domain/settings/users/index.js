@@ -38,10 +38,9 @@ const Users = () => {
 
   useEffect(() => {
     Medusa.users
-      .list()
+      .list(true)
       .then(res => res.data)
       .then(data => {
-        console.log(data)
         setUsers([...data.users])
       })
   }, [shouldRefetch])
@@ -74,10 +73,22 @@ const Users = () => {
               <Table>
                 <TableHead>
                   <TableHeaderRow>
-                    <TableHeaderCell>Name</TableHeaderCell>
-                    <TableHeaderCell>Email</TableHeaderCell>
-                    <TableHeaderCell>Role</TableHeaderCell>
-                    <TableHeaderCell sx={{ width: "75px" }} />
+                    <Flex width={1} justifyContent="space-between">
+                      <Flex width={1 / 4}>
+                        <TableHeaderCell fontWeight={450}>Name</TableHeaderCell>
+                      </Flex>
+                      <Flex width="35%">
+                        <TableHeaderCell fontWeight={450}>
+                          Email
+                        </TableHeaderCell>
+                      </Flex>
+                      <Flex width={1 / 5}>
+                        <TableHeaderCell fontWeight={450}>Role</TableHeaderCell>
+                      </Flex>
+                      <Flex width={1 / 5}>
+                        <TableHeaderCell />
+                      </Flex>
+                    </Flex>
                   </TableHeaderRow>
                 </TableHead>
                 <TableBody>
@@ -85,54 +96,64 @@ const Users = () => {
                     return (
                       <TableRow
                         key={i}
-                        color={user.isInvite ? "ui-100" : "inherit"}
+                        color={user.isInvite ? "gray" : "inherit"}
+                        fontWeight={550}
                       >
-                        <TableDataCell>
-                          <DefaultCellContent variant="tiny.default">
-                            {`${user.first_name || "-"} ${
-                              user.last_name || ""
-                            }`}
-                          </DefaultCellContent>
-                        </TableDataCell>
-                        <TableDataCell>
-                          <DefaultCellContent variant="tiny.default">
-                            {user.email}
-                          </DefaultCellContent>
-                        </TableDataCell>
-                        <TableDataCell>
-                          <DefaultCellContent
-                            variant="tiny.default"
-                            sx={{ textTransform: "capitalize" }}
-                          >
-                            {user.role}
-                          </DefaultCellContent>
-                        </TableDataCell>
-                        <TableDataCell
-                          sx={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            alignItems: "center",
-                          }}
-                        >
-                          {/* TODO role stuff */}
-                          {user.role === "owner" ? null : user.isInvite ? (
-                            <Button
-                              onClick={() => {
-                                setSelectedInvite(user)
+                        <Flex width={1}>
+                          <Flex width={1 / 4}>
+                            <TableDataCell>
+                              <DefaultCellContent variant="tiny.default">
+                                {`${user.first_name || "-"} ${
+                                  user.last_name || ""
+                                }`}
+                              </DefaultCellContent>
+                            </TableDataCell>
+                          </Flex>
+                          <Flex width="35%">
+                            <TableDataCell>
+                              <DefaultCellContent>
+                                {user.email}
+                              </DefaultCellContent>
+                            </TableDataCell>
+                          </Flex>
+                          <Flex width={1 / 5}>
+                            <TableDataCell>
+                              <DefaultCellContent
+                                sx={{ textTransform: "capitalize" }}
+                              >
+                                {user.role}
+                              </DefaultCellContent>
+                            </TableDataCell>
+                          </Flex>
+                          <Flex width={1 / 5}>
+                            <TableDataCell
+                              sx={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                alignItems: "center",
                               }}
-                              mr={2}
                             >
-                              Edit invite
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={() => setSelectedUser(user)}
-                              mr={2}
-                            >
-                              Edit user
-                            </Button>
-                          )}
-                        </TableDataCell>
+                              {/* TODO role stuff */}
+                              {user.role === "owner" ? null : user.isInvite ? (
+                                <Button
+                                  onClick={() => {
+                                    setSelectedInvite(user)
+                                  }}
+                                  mr={2}
+                                >
+                                  Edit invite
+                                </Button>
+                              ) : (
+                                <Button
+                                  onClick={() => setSelectedUser(user)}
+                                  mr={2}
+                                >
+                                  Edit user
+                                </Button>
+                              )}
+                            </TableDataCell>
+                          </Flex>
+                        </Flex>
                       </TableRow>
                     )
                   })}
@@ -140,7 +161,9 @@ const Users = () => {
               </Table>
               <Flex alignItems="center" justifyContent="space-between" mt={2}>
                 <Box>
-                  <Text variant="small.default">{users.length} members</Text>
+                  <Text variant="small.default">
+                    {users.filter(usr => !usr.isInvite).length} members
+                  </Text>
                 </Box>
                 <Box>
                   <Button
