@@ -14,6 +14,7 @@ import RegionDetails from "./regions/details"
 import NewRegion from "./regions/new"
 import Details from "./details"
 import Currencies from "./currencies"
+import Users from "./users"
 import Apps from "./apps"
 import styled from "@emotion/styled"
 
@@ -168,12 +169,20 @@ const SettingsIndex = () => {
           </StyledLinkText>
         </SettingContainer>
         <VerticalDivider />
-        <SettingContainer p={4} sx={{ opacity: "0.3", pointerEvents: "none" }}>
+        <SettingContainer p={4}>
           <SubTitle>
             <StyledImg src="https://img.icons8.com/ios/50/000000/user-group-man-man.png" />
-            Users
+            Your team
           </SubTitle>
-          <Text fontSize={14}>Manage users of your Medusa store</Text>
+          <Text fontSize={14}>Manage who has access to your account</Text>
+          <StyledLinkText
+            fontSize={14}
+            color="link"
+            onClick={() => navigate(`/a/settings/users`)}
+          >
+            Users
+          </StyledLinkText>
+          {/* <Text fontSize={14}>Manage users of your Medusa store</Text> */}
         </SettingContainer>
       </Flex>
     </Flex>
@@ -199,6 +208,8 @@ const Settings = () => (
     <Regions path="regions" />
     <RegionDetails path="regions/:id" />
     <NewRegion path="regions/new" />
+
+    <Users path="users" />
   </Router>
 )
 
