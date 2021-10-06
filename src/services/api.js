@@ -682,8 +682,8 @@ export default {
       const path = `/admin/users/invite/${inviteId}`
       return medusaRequest("DELETE", path)
     },
-    list() {
-      const path = `/admin/users`
+    list(includeInvites = false) {
+      const path = `/admin/users?includeInvites=${includeInvites}`
       return medusaRequest("GET", path)
     },
 
