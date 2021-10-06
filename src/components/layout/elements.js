@@ -43,5 +43,9 @@ export const SearchBar = styled(Input)`
     border-radius: 0;
     margin: auto;
     max-width: 1200px;
+    ::placeholder {
+      color: black;
+      font-weight: 400;
+    }
   }
 `

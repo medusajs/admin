@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { Link, navigate } from "gatsby"
 import _ from "lodash"
 import { Flex, Text, Box, Image } from "rebass"
-import { Input } from "@rebass/forms"
+import { InterfaceContext } from "../../context/interface"
 import { Router } from "@reach/router"
 import Medusa from "../../services/api"
 
@@ -17,7 +17,6 @@ import {
   TableBody,
   TableRow,
   TableDataCell,
-  TableLinkRow,
   DefaultCellContent,
 } from "../../components/table"
 
@@ -79,21 +78,12 @@ const ProductIndex = () => {
   const [selectedProduct, setSelectedProduct] = useState()
   const [copyingProduct, setCopyingProduct] = useState(false)
 
-  const onKeyDown = event => {
-    // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
-    if (event.key === "Enter") {
-      event.preventDefault()
-      event.stopPropagation()
-      searchQuery()
-    }
-  }
-
-  const searchQuery = () => {
+  const searchQuery = q => {
     setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
-      q: query,
+      q,
       offset: 0,
       limit: 20,
     }
@@ -106,6 +96,11 @@ const ProductIndex = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({ search })
   }
+
+  const { setOnSearch } = useContext(InterfaceContext)
+  useEffect(() => {
+    setOnSearch(searchQuery)
+  }, [])
 
   const handlePagination = direction => {
     const updatedOffset = direction === "next" ? offset + limit : offset - limit
@@ -225,26 +220,6 @@ const ProductIndex = () => {
         </Text>
       </Flex>
       <Flex>
-        <Box mb={3} sx={{ maxWidth: "300px" }}>
-          <Input
-            height="28px"
-            fontSize="12px"
-            name="q"
-            type="text"
-            placeholder="Search products"
-            onKeyDown={onKeyDown}
-            onChange={e => setQuery(e.target.value)}
-            value={query}
-          />
-        </Box>
-        <Button
-          onClick={() => searchQuery()}
-          variant={"primary"}
-          fontSize="12px"
-          ml={2}
-        >
-          Search
-        </Button>
         <Box ml="auto" />
         {selectedProduct && (
           <Button

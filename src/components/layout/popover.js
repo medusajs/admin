@@ -25,7 +25,6 @@ const Tooltip = styled(ReactTooltip)`
 
 const computePosition = (position, event, triggerElement, tooltipElement) => {
   const id = triggerElement.getAttribute("aria-describedby")
-  console.log({ id })
   const arrowLeft =
     triggerElement.getBoundingClientRect().left + triggerElement.offsetWidth / 2
   const arrowTop =
@@ -79,6 +78,7 @@ const Popover = ({ children, id }) => {
       effect="solid"
       clickable={true}
       globalEventOff={"click"}
+      isCapture={true}
       id={id}
       place="bottom"
       overridePosition={computePosition}

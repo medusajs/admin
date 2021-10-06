@@ -4,6 +4,7 @@ import buttons from "./buttons"
 import spacing from "./spacing"
 import shadows from "./shadows"
 import forms from "./forms"
+import colors from "./colors"
 import { ThemeProvider as Provider } from "emotion-theming"
 
 import "../fonts/index.css"
@@ -27,6 +28,7 @@ export const theme = {
   },
   borders: {
     hairline: "1px solid #E3E8EE",
+    subtle: `1px solid ${colors.light}`,
   },
   fontSizes: [12, 14, 16, 18, 22],
   fonts: {
