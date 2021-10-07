@@ -15,8 +15,6 @@ import useMedusa from "../hooks/use-medusa"
 const InvitePage = ({ location }) => {
   const parsed = qs.parse(location.search.substring(1))
 
-  // const { toaster } = useMedusa("collections")
-
   let token = null
   if (parsed?.token) {
     try {
@@ -41,17 +39,12 @@ const InvitePage = ({ location }) => {
       await Medusa.users
         .acceptInvite({
           token: parsed?.token,
-          user: { firstName, lastName, password },
+          user: { first_name: firstName, last_name: lastName, password },
         })
         .then(() => {
           navigate("/login")
-          // toaster(`Succesfully added you to the team`, "success")
         })
-        .catch(error => {
-          // toaster("Failed to add you to the team", "error")
-        })
-    } else {
-      // toaster("Passwords should match", "error")
+        .catch(error => {})
     }
   }
 

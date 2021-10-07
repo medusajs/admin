@@ -22,7 +22,6 @@ const ResetPasswordPage = ({ location }) => {
     }
   }
 
-  // const { toaster } = useMedusa("collections")
   const [email, _] = useState(token?.email || parsed?.email)
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
@@ -35,14 +34,8 @@ const ResetPasswordPage = ({ location }) => {
         .resetPassword({ token: parsed?.token, password, email })
         .then(() => {
           navigate("/login")
-          // toaster(`Succesfully reset your password`, "success")
         })
-        .catch(error => {
-          console.log(error)
-          // toaster("Failed to reset your password", "error")
-        })
-    } else {
-      // toaster("Passwords should match", "error")
+        .catch(error => {})
     }
   }
 
