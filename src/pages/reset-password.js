@@ -8,7 +8,8 @@ import LoginLayout from "../components/login-layout"
 import SEO from "../components/seo"
 import InputField from "../components/input"
 import Button from "../components/button"
-import Graphic from "../assets/login-graphic.png"
+import { ReactComponent as Graphic } from "../assets/login-graphic.svg"
+
 import Medusa from "../services/api"
 
 const ResetPasswordPage = ({ location }) => {
@@ -47,19 +48,14 @@ const ResetPasswordPage = ({ location }) => {
         height="100%"
         flexDirection="column"
         justifyContent="center"
+        sx={{ position: "relative" }}
       >
         <Flex
           alignItems="center"
           justifyContent="center"
-          width="400px"
-          sx={{
-            position: "absolute",
-            left: "50%",
-            top: "40px",
-            transform: "translate(-50%, 0)",
-          }}
+          sx={{ position: "absolute", top: "80px", width: "100%" }}
         >
-          <Image src={Graphic} />
+          <Graphic />
         </Flex>
         <Flex
           backgroundColor="#fefefe"
