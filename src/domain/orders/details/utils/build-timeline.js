@@ -55,6 +55,7 @@ const buildTimeline = (order, notifications, notes) => {
 
   events.push({
     id: `${order.id}-placed`,
+    type: "placed",
     event: "Placed",
     items: order.items,
     time: order.created_at,
@@ -88,18 +89,22 @@ const buildTimeline = (order, notifications, notes) => {
       events.push({
         id: `${fulfillment.id}-fulfill`,
         event: "Items fulfilled",
+        type: "fulfilled",
         items,
         time: fulfillment.created_at,
+        shipped_at: fulfillment.shipped_at,
+        fulfilledAllItems: fulfillment.items.length === order.items.length,
       })
 
-      if (fulfillment.shipped_at) {
-        events.push({
-          id: `${fulfillment.id}-ship`,
-          event: "Items shipped",
-          items,
-          time: fulfillment.shipped_at,
-        })
-      }
+      // if (fulfillment.shipped_at) {
+      //   events.push({
+      //     id: `${fulfillment.id}-ship`,
+      //     event: "Items shipped",
+      //     type: "shipped",
+      //     items,
+      //     time: fulfillment.shipped_at,
+      //   })
+      // }
     }
   }
 
@@ -149,16 +154,18 @@ const buildTimeline = (order, notifications, notes) => {
   }
 
   events.sort((a, b) => {
-    if (a.time < b.time) {
+    if (a.time > b.time) {
       return -1
     }
 
-    if (a.time > b.time) {
+    if (a.time < b.time) {
       return 1
     }
 
     return 0
   })
+
+  events[0].isLatest = true
 
   return events
 }

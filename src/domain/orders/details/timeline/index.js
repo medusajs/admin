@@ -3,65 +3,17 @@ import { Text, Flex, Box, Image } from "rebass"
 import styled from "@emotion/styled"
 import moment from "moment"
 import ImagePlaceholder from "../../../../assets/svg/image-placeholder.svg"
+import Typography from "../../../../components/typography"
 
 import NotificationTimeline from "../notification/timeline"
 import ClaimTimeline from "../claim/timeline"
 import SwapTimeline from "../swap/timeline"
 import ReturnTimeline from "../returns/timeline"
 import NoteTimeline from "../notes/timeline"
-import Typography from "../../../../components/typography"
 
-const LineItemLabel = styled(Text)`
-  ${Typography.Base};
-
-  cursor: pointer;
-
-  font-size: 10px;
-`
-
-const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = lineItem?.variant?.product_id || undefined
-
-  return (
-    <Flex pl={3} alignItems="center" py={2}>
-      <Flex pr={3}>
-        <Box alignSelf={"center"} minWidth={"35px"}>
-          {lineItem.quantity} x
-        </Box>
-        <Box mx={2}>
-          <Flex width="30px" height="30px">
-            <Image
-              src={lineItem.thumbnail || ImagePlaceholder}
-              height={30}
-              width={30}
-              p={!lineItem.thumbnail && "8px"}
-              sx={{
-                objectFit: "contain",
-                border: "1px solid lightgray",
-              }}
-            />
-          </Flex>
-        </Box>
-        <Box>
-          <LineItemLabel
-            ml={2}
-            mr={5}
-            onClick={() => {
-              if (productId) {
-                navigate(`/a/products/${productId}`)
-              }
-            }}
-          >
-            {lineItem.title}
-            <br /> {lineItem?.variant?.sku || "-"}
-            <br />
-            {(1 + taxRate / 100) * (lineItem.unit_price / 100)} {currency}
-          </LineItemLabel>
-        </Box>
-      </Flex>
-    </Flex>
-  )
-}
+import LineItem from "../line-item"
+import SimpleEvent from "./simpleEvent"
+import FulfillmentTimelineItem from "../fulfillment/timeline"
 
 export default ({
   events,
@@ -81,6 +33,7 @@ export default ({
   return (
     <Box>
       {events.map(event => {
+        console.log(event.type)
         switch (event.type) {
           case "notification":
             return (
@@ -135,6 +88,10 @@ export default ({
                 onCancelSwap={onCancelSwap}
               />
             )
+          case "placed":
+            return <SimpleEvent event={event} />
+          case "fulfilled":
+            return <FulfillmentTimelineItem fulfillment={event} />
           default:
             return (
               <Box
@@ -144,7 +101,7 @@ export default ({
                 mb={3}
               >
                 <Text ml={3} fontSize={1} color="grey" fontWeight="500" mb={2}>
-                  {event.event}
+                  {event.event} {event.type}
                 </Text>
                 <Text fontSize="11px" color="grey" ml={3} mb={3}>
                   {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
