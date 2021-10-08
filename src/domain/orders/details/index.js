@@ -598,7 +598,6 @@ const OrderDetails = ({ id }) => {
     getFulfillmentStatus() !== "returned" &&
     !showAddNote
   ) {
-    // lineAction =
     lineDropdown.push({
       type: "primary",
       label: "Request return",

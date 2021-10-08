@@ -98,16 +98,6 @@ const buildTimeline = (order, notifications, notes) => {
         currency_code: order.currency_code,
         fulfilledAllItems: fulfillment.items.length === order.items.length,
       })
-
-      // if (fulfillment.shipped_at) {
-      //   events.push({
-      //     id: `${fulfillment.id}-ship`,
-      //     event: "Items shipped",
-      //     type: "shipped",
-      //     items,
-      //     time: fulfillment.shipped_at,
-      //   })
-      // }
     }
   }
 
