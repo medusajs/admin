@@ -14,7 +14,6 @@ export default function medusaRequest(method, path = "", payload = {}) {
     data: payload,
     json: true,
   }
-  console.log(options)
   return client(options)
 }
 
