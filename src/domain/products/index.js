@@ -82,6 +82,8 @@ const ProductIndex = () => {
     },
   })
 
+  console.log(products)
+
   const tagsPromise = Medusa.products.listTagsByUsage()
 
   const [query, setQuery] = useState("")
@@ -394,95 +396,98 @@ const ProductIndex = () => {
             </TableHeaderRow>
           </TableHead>
           <TableBody>
-            {products.map(p => {
-              const missingVariantPrices = p.variants.map(v => {
-                const variantPriceCurrencies = v.prices.map(
-                  vp => vp.currency_code
-                )
+            {products &&
+              products.map(p => {
+                const missingVariantPrices = p.variants.map(v => {
+                  const variantPriceCurrencies = v.prices.map(
+                    vp => vp.currency_code
+                  )
 
-                return _.difference(storeCurrencies, variantPriceCurrencies)
-                  .length
-              })
+                  return _.difference(storeCurrencies, variantPriceCurrencies)
+                    .length
+                })
 
-              const missingPrices = _.sum(missingVariantPrices)
+                const missingPrices = _.sum(missingVariantPrices)
 
-              return (
-                <TableRow key={p.id}>
-                  <TableDataCell
-                    sx={{
-                      maxWidth: "35px !important",
-                      paddingRight: "0px",
-                      paddingLeft: "0px !important",
-                    }}
-                  >
-                    <DefaultCellContent
-                      width="35px !important"
-                      justifyContent="center"
-                    >
-                      <input
-                        id={p.id}
-                        checked={selectedProduct && selectedProduct.id === p.id}
-                        onChange={() => handleCheckbox(p)}
-                        disabled={
-                          selectedProduct && selectedProduct.id !== p.id
-                        }
-                        type="checkbox"
-                      />
-                    </DefaultCellContent>
-                  </TableDataCell>
-                  <LinkWrapper
-                    to={`/a/products${p.is_giftcard ? "/gift-card" : ""}/${
-                      p.id
-                    }`}
-                  >
+                return (
+                  <TableRow key={p.id}>
                     <TableDataCell
-                      maxWidth="75px"
-                      p={2}
-                      height="100%"
-                      textAlign="center"
+                      sx={{
+                        maxWidth: "35px !important",
+                        paddingRight: "0px",
+                        paddingLeft: "0px !important",
+                      }}
                     >
-                      <DefaultCellContent>
-                        <Image
-                          src={p.thumbnail || ImagePlaceholder}
-                          height={38}
-                          width={38}
-                          p={!p.thumbnail && "8px"}
-                          sx={{
-                            objectFit: "contain",
-                            border: "1px solid #f1f3f5",
-                          }}
+                      <DefaultCellContent
+                        width="35px !important"
+                        justifyContent="center"
+                      >
+                        <input
+                          id={p.id}
+                          checked={
+                            selectedProduct && selectedProduct.id === p.id
+                          }
+                          onChange={() => handleCheckbox(p)}
+                          disabled={
+                            selectedProduct && selectedProduct.id !== p.id
+                          }
+                          type="checkbox"
                         />
                       </DefaultCellContent>
                     </TableDataCell>
-                    <TableDataCell>
-                      <DefaultCellContent>{p.title}</DefaultCellContent>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <DefaultCellContent>
-                        {p.collection?.title || "-"}
-                      </DefaultCellContent>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <DefaultCellContent>
-                        {p.variants.reduce(
-                          (acc, next) => acc + next.inventory_quantity,
-                          0
-                        )}
-                        {" in stock for "}
-                        {p.variants.length} variant(s)
-                      </DefaultCellContent>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <DefaultCellContent>
-                        {missingPrices > 0
-                          ? `${missingPrices} variant price(s) missing`
-                          : "-"}
-                      </DefaultCellContent>
-                    </TableDataCell>
-                  </LinkWrapper>
-                </TableRow>
-              )
-            })}
+                    <LinkWrapper
+                      to={`/a/products${p.is_giftcard ? "/gift-card" : ""}/${
+                        p.id
+                      }`}
+                    >
+                      <TableDataCell
+                        maxWidth="75px"
+                        p={2}
+                        height="100%"
+                        textAlign="center"
+                      >
+                        <DefaultCellContent>
+                          <Image
+                            src={p.thumbnail || ImagePlaceholder}
+                            height={38}
+                            width={38}
+                            p={!p.thumbnail && "8px"}
+                            sx={{
+                              objectFit: "contain",
+                              border: "1px solid #f1f3f5",
+                            }}
+                          />
+                        </DefaultCellContent>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <DefaultCellContent>{p.title}</DefaultCellContent>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <DefaultCellContent>
+                          {p.collection?.title || "-"}
+                        </DefaultCellContent>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <DefaultCellContent>
+                          {p.variants.reduce(
+                            (acc, next) => acc + next.inventory_quantity,
+                            0
+                          )}
+                          {" in stock for "}
+                          {p.variants.length} variant(s)
+                        </DefaultCellContent>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <DefaultCellContent>
+                          {missingPrices > 0
+                            ? `${missingPrices} variant price(s) missing`
+                            : "-"}
+                        </DefaultCellContent>
+                      </TableDataCell>
+                    </LinkWrapper>
+                  </TableRow>
+                )
+              })}
           </TableBody>
         </Table>
       )}
