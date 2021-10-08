@@ -32,69 +32,38 @@ const IndexPage = () => {
   }
 
   return (
-    <LoginLayout pt={3}>
+    <LoginLayout pt={3} title={"Login"}>
       <SEO title="Login" />
-      <Flex
-        width="100%"
-        height="100%"
-        flexDirection="column"
-        justifyContent="center"
-      >
-        <Flex
-          alignItems="center"
-          justifyContent="center"
-          width="400px"
-          sx={{
-            position: "absolute",
-            left: "50%",
-            top: "40px",
-            transform: "translate(-50%, 0)",
-          }}
-        >
-          <Image src={Graphic} />
-        </Flex>
-        <Flex
-          backgroundColor="#fefefe"
-          width={5 / 12}
-          sx={{ zIndex: 9999 }}
-          flexDirection="column"
-          mx="auto"
-          as="form"
-          height="400px"
-          onSubmit={handleSubmit(handleLogin)}
-        >
-          <Box variant={"loginCard"} p={5} height="100%">
-            <Text mb={4} fontWeight="bold" fontSize={4}>
-              Sign in to your account
-            </Text>
-            {loading ? (
-              <Flex justifyContent="center">
-                <Spinner dark width="20px" height="20px" />
-              </Flex>
-            ) : (
-              <>
-                <InputField
-                  mb={3}
-                  label="Email"
-                  name="email"
-                  ref={register}
-                  boldLabel={true}
-                />
-                <InputField
-                  type="password"
-                  label="Password"
-                  boldLabel={true}
-                  name="password"
-                  ref={register}
-                />
-                <Button type="submit" variant={"cta"} mt={4} width={1}>
-                  Continue
-                </Button>
-              </>
-            )}
-          </Box>
-        </Flex>
-      </Flex>
+      <Text mb={4} fontWeight="bold" fontSize={4}>
+        Sign in
+      </Text>
+      <Box as="form" onSubmit={handleSubmit(handleLogin)}>
+        {loading ? (
+          <Flex justifyContent="center">
+            <Spinner dark width="20px" height="20px" />
+          </Flex>
+        ) : (
+          <>
+            <InputField
+              mb={3}
+              label="Email"
+              name="email"
+              ref={register}
+              boldLabel={true}
+            />
+            <InputField
+              type="password"
+              label="Password"
+              boldLabel={true}
+              name="password"
+              ref={register}
+            />
+            <Button type="submit" variant={"cta"} mt={4} width={1}>
+              Login
+            </Button>
+          </>
+        )}
+      </Box>
     </LoginLayout>
   )
 }
