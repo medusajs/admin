@@ -50,7 +50,7 @@ const LoginPage = () => {
         <Flex
           alignItems="center"
           justifyContent="center"
-          sx={{ position: "absolute", top: "80px", width: "100%" }}
+          sx={{ position: "absolute", top: "120px", width: "100%" }}
         >
           <Graphic />
         </Flex>
@@ -112,6 +112,7 @@ const LoginPage = () => {
                       width="100%"
                       label="Email"
                       name="email"
+                      placeholder="lebron@james.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       boldLabel={true}
@@ -120,12 +121,19 @@ const LoginPage = () => {
                       mb={3}
                       type="password"
                       width="100%"
+                      placeholder="********"
                       label="Password"
                       boldLabel={true}
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                     />
-                    <Button type="submit" variant={"cta"} mt={4} width={1 / 4}>
+                    <Button
+                      type="submit"
+                      variant={"cta"}
+                      mt={4}
+                      sx={{ fontWeight: 700 }}
+                      width={1 / 4}
+                    >
                       Login
                     </Button>
                   </Flex>
@@ -136,7 +144,7 @@ const LoginPage = () => {
           {!resetPassword && (
             <Text
               onClick={() => setResetPassword(true)}
-              pt={1}
+              pt={2}
               sx={{ fontSize: 1, color: "gray" }}
             >
               Forgot your password? Click here
