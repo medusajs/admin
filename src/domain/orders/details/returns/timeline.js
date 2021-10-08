@@ -6,59 +6,16 @@ import moment from "moment"
 import Typography from "../../../../components/typography"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
-
-const LineItemLabel = styled(Text)`
-  ${Typography.Base};
-
-  cursor: pointer;
-
-  font-size: 10px;
-`
-
-const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = lineItem.variant.product_id
-
-  return (
-    <Flex alignItems="center">
-      <Flex flex={1} alignItems="center">
-        <Box alignSelf={"center"} minWidth={"35px"}>
-          {lineItem.quantity} x
-        </Box>
-        <Box mx={2}>
-          <Image
-            src={lineItem.thumbnail || ""}
-            sx={{
-              objectFit: "contain",
-              objectPosition: "center",
-              width: 35,
-              height: 35,
-            }}
-          />
-        </Box>
-        <Box>
-          <LineItemLabel
-            ml={2}
-            mr={5}
-            onClick={() => navigate(`/a/products/${productId}`)}
-          >
-            {lineItem.title}
-            <br /> {lineItem.variant.sku}
-            <br />
-            {((1 + taxRate / 100) * lineItem.unit_price) / 100}{" "}
-            {currency.toUpperCase()}
-          </LineItemLabel>
-        </Box>
-      </Flex>
-    </Flex>
-  )
-}
+import LineItem from "../../../../components/line-item"
+import SimpleEvent from "../timeline/simpleEvent"
 
 export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
-  const canceled = event.raw.status === "canceled"
+  const fontColor = event.isLatest ? "#454B54" : "#89959C"
+  const canceled = event.status === "canceled"
   const [expanded, setExpanded] = useState(!canceled)
 
   useEffect(() => {
-    setExpanded(event.raw.status !== "canceled")
+    setExpanded(event.status !== "canceled")
   }, [event])
 
   const cancelReturn = () => {
@@ -71,49 +28,53 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
   }
 
   return (
-    <Box sx={{ borderBottom: "hairline" }} pb={3} mb={3} px={3}>
-      <Flex justifyContent="space-between">
-        <Text fontSize={1} fontWeight="500">
-          Return {event.status}
-        </Text>
-        {canceled && (
+    <Box px={3}>
+      {canceled && (
+        <Flex justifyContent="space-between">
+          <Flex flexDirection="column">
+            <Text color={fontColor} fontSize={1} mb={2} fontWeight="500">
+              Return {event.status}
+            </Text>
+            <Text fontSize="11px" color={fontColor} mb={2}>
+              {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+            </Text>
+          </Flex>
           <Text
+            color={fontColor}
             sx={{
               fontWeight: "500",
-              color: "#89959C",
-              ":hover": {
-                color: "black",
-              },
+              // color: "#89959C",
+              // ":hover": {
+              //   color: "black",
+              // },
               cursor: "pointer",
             }}
             onClick={() => setExpanded(!expanded)}
           >
             {expanded ? "Hide" : "Show"}
           </Text>
-        )}
-      </Flex>
+        </Flex>
+      )}
       {expanded && (
         <>
-          <Text fontSize="11px" color="grey" mb={2}>
-            {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
-          </Text>
           {(event.no_notification || false) !==
             (order.no_notification || false) && (
             <Box mt={2} pr={2}>
-              <Text color="gray">
+              <Text color={fontColor}>
                 Notifications related to this return are
                 {event.no_notification ? " disabled" : " enabled"}.
               </Text>
             </Box>
           )}
-          <br />
           <Flex justifyContent="space-between">
-            <Text fontSize={1} color="grey" fontWeight="500">
-              Return{" "}
-              {canceled
-                ? event.items.map(e => ` '${e.title}' `) + "canceled."
-                : event.status}
-            </Text>
+            <Flex flexDirection="column">
+              <Text color={fontColor} fontSize={1} mb={2} fontWeight="500">
+                Return {event.status}
+              </Text>
+              <Text fontSize="11px" color={fontColor} mb={2}>
+                {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+              </Text>
+            </Flex>
             {!canceled && event.raw.status !== "received" && (
               <Flex>
                 <Button
@@ -131,18 +92,12 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
               </Flex>
             )}
           </Flex>
-          <Box>
-            <Flex justifyContent="space-between">
-              <Box>
-                <Text fontSize="11px" color="grey" mb={3}>
-                  {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
-                </Text>
-              </Box>
-            </Flex>
+          <Box mt={2}>
             <Flex justifyContent="space-between">
               <Box>
                 {event.items.map(lineItem => (
                   <LineItem
+                    fontColor={fontColor}
                     key={lineItem._id}
                     currency={order.currency_code}
                     lineItem={lineItem}

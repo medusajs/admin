@@ -22,13 +22,13 @@ const LineItemLabel = styled(Text)`
   font-size: 10px;
 `
 
-const LineItem = ({ lineItem, currency, taxRate }) => {
+const LineItem = ({ fontColor, lineItem, currency, taxRate }) => {
   const productId = lineItem.variant.product.id
 
   return (
     <Flex alignItems="center">
       <Flex flex={1} alignItems="center">
-        <Box alignSelf={"center"} minWidth={"35px"}>
+        <Box color={fontColor} alignSelf={"center"} minWidth={"35px"}>
           {lineItem.quantity} x
         </Box>
         <Box mx={2}>
@@ -46,6 +46,7 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
           <LineItemLabel
             ml={2}
             mr={5}
+            color={fontColor}
             onClick={() => navigate(`/a/products/${productId}`)}
           >
             {lineItem.title}
@@ -68,6 +69,7 @@ export default ({
   onReceiveReturn,
   onCancelClaim,
 }) => {
+  const fontColor = event.isLatest ? "#454B54" : "#89959C"
   const { toaster } = useMedusa("store")
   const [showEditClaim, setShowEditClaim] = useState(false)
 
@@ -108,17 +110,17 @@ export default ({
 
   return (
     <Flex>
-      <Box width={"100%"} sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
+      <Box width={"100%"}>
         <Flex mb={4} px={3} width={"100%"} justifyContent="space-between">
           <Box>
             <Flex mb={2} justifyContent="space-between">
-              <Text mr={100} fontSize={1} color="grey" fontWeight="500">
+              <Text mr={100} fontSize={1} color={fontColor} fontWeight="500">
                 {canceled ? "Claim Canceled" : "Claim Created"}
               </Text>
             </Flex>
             {expanded && (
               <>
-                <Text fontSize="11px" color="grey">
+                <Text fontSize="11px" color={fontColor}>
                   {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
                   {(event.no_notification || false) !==
                     (order.no_notification || false) && (
@@ -132,7 +134,7 @@ export default ({
                 </Text>
                 {event.claim_type === "replace" ? (
                   <Flex mt={4}>
-                    <Text mr={2} fontSize={1} color="grey">
+                    <Text mr={2} fontSize={1} color={fontColor}>
                       Fulfillment Status
                     </Text>
                     <Badge
@@ -144,7 +146,7 @@ export default ({
                   </Flex>
                 ) : (
                   <Flex mt={4}>
-                    <Text mr={2} fontSize={1} color="grey">
+                    <Text mr={2} fontSize={1} color={fontColor}>
                       Payment Status
                     </Text>
                     <Badge
@@ -191,10 +193,13 @@ export default ({
             <Flex mx={3} justifyContent="space-between" alignItems="center">
               <Box>
                 <Flex mb={2}>
-                  <Text mr={2}>Claimed items</Text>
+                  <Text color={fontColor} mr={2}>
+                    Claimed items
+                  </Text>
                 </Flex>
                 {event.claim_items.map((lineItem, i) => (
                   <LineItem
+                    fontColor={fontColor}
                     key={lineItem.id}
                     currency={order.currency_code}
                     lineItem={lineItem}
@@ -219,10 +224,13 @@ export default ({
               <Flex mx={3} justifyContent="space-between" alignItems="center">
                 <Box>
                   <Flex mt={3} mb={2}>
-                    <Text mr={2}>New items</Text>
+                    <Text color={fontColor} mr={2}>
+                      New items
+                    </Text>
                   </Flex>
                   {event.items.map((lineItem, i) => (
                     <LineItem
+                      fontColor={fontColor}
                       key={lineItem.id}
                       currency={order.currency_code}
                       lineItem={lineItem}
@@ -235,9 +243,11 @@ export default ({
               </Flex>
             ) : (
               <Flex mx={3} justifyContent="space-between" alignItems="center">
-                <Box>
+                <Box color={fontColor}>
                   <Flex mt={3} mb={2}>
-                    <Text mr={2}>Amount refunded</Text>
+                    <Text color={fontColor} mr={2}>
+                      Amount refunded
+                    </Text>
                   </Flex>
                   {event.raw.refund_amount / 100}{" "}
                   {order.currency_code.toUpperCase()}

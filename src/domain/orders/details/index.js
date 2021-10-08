@@ -812,7 +812,7 @@ const OrderDetails = ({ id }) => {
           </Flex>
         )}
 
-        <Card.Body flexDirection="column">
+        <Card.Body pl={1} flexDirection="column">
           <Timeline
             events={events}
             order={order}

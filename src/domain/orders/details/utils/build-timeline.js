@@ -86,6 +86,7 @@ const buildTimeline = (order, notifications, notes) => {
           quantity: i.quantity,
         }
       })
+
       events.push({
         id: `${fulfillment.id}-fulfill`,
         event: "Items fulfilled",
@@ -93,6 +94,8 @@ const buildTimeline = (order, notifications, notes) => {
         items,
         time: fulfillment.created_at,
         shipped_at: fulfillment.shipped_at,
+        tax_rate: order.tax_rate,
+        currency_code: order.currency_code,
         fulfilledAllItems: fulfillment.items.length === order.items.length,
       })
 
@@ -128,6 +131,7 @@ const buildTimeline = (order, notifications, notes) => {
         raw: swap,
       })
     }
+    console.log("swaps", order.swaps)
   }
 
   if (order.claims && order.claims.length) {
