@@ -82,8 +82,6 @@ const ProductIndex = () => {
     },
   })
 
-  console.log(products)
-
   const tagsPromise = Medusa.products.listTagsByUsage()
 
   const [query, setQuery] = useState("")
@@ -137,6 +135,7 @@ const ProductIndex = () => {
       "collection_id[]": collectionFilter.open ? collectionIds : null,
       "tags[]": filterTags && tagIds?.length > 0 ? tagIds : null,
     }
+
     const url = { ...removeNullish(urlObject) }
 
     replaceQueryString(url)
@@ -205,18 +204,18 @@ const ProductIndex = () => {
     const updatedOffset = direction === "next" ? offset + limit : offset - limit
     const baseUrl = qs.parseUrl(window.location.href).url
 
-    const search = {
+    const search = removeNullish({
       fields: "id,title,thumbnail",
       expand: "variants,variants.prices,collection",
       q: query,
       offset: updatedOffset,
       limit,
-    }
+    })
+
     const prepared = qs.stringify(search, {
       skipNull: true,
       skipEmptyString: true,
     })
-
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
     refresh({ search }).then(() => {
