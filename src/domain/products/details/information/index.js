@@ -248,9 +248,8 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
     setTags(newTags)
     setIsDirty(true)
   }
-
-  const handleProductStatusAction = prodStatus => {
-    switch (prodStatus) {
+  const handleProductStatusAction = () => {
+    switch (product.status) {
       case "draft":
         return {
           type: "cta",
@@ -266,7 +265,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
           isLoading: isLoading,
         }
       default:
-        return {}
+        return null
     }
   }
 
@@ -289,7 +288,8 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
     >
       <Card.Header
         dropdownOptions={dropdownOptions}
-        action={handleProductStatusAction}
+        // Check for product status prop. for backwards compatibility
+        action={product?.status && handleProductStatusAction()}
       >
         Product Information
       </Card.Header>
