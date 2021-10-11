@@ -46,7 +46,13 @@ const Button = ({
         >
           <Spinner
             height={"65%"}
-            dark={variant === "cta" || variant === "danger" ? false : true}
+            dark={
+              variant === "cta" ||
+              variant === "danger" ||
+              variant === "deep-blue"
+                ? false
+                : true
+            }
           />
         </Flex>
       )}

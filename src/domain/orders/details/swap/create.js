@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import { Text, Flex, Box } from "rebass"
+import { Input as RebassInput } from "@rebass/forms"
 import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
 import MultiSelect from "react-multi-select-component"
 
 import Modal from "../../../../components/modal"
-import CurrencyInput from "../../../../components/currency-input"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
@@ -13,6 +13,13 @@ import Select from "../../../../components/select"
 import Typography from "../../../../components/typography"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
+import InfoTooltip from "../../../../components/info-tooltip"
+import { ReactComponent as CloseIcon } from "../../../../assets/svg/cross.svg"
+
+const FREE_SHIPPING_OPTION = {
+  label: "Give free shipping",
+  value: "free_shipping",
+}
 
 const Dot = styled(Box)`
   width: 6px;
@@ -73,6 +80,36 @@ const extractPrice = (prices, order) => {
   return 0
 }
 
+const computeNewItemsTotal = (items, order) => {
+  const total = items.reduce(
+    (total, item) => total + extractPrice(item.prices, order) * item.quantity,
+    0
+  )
+  return `${total.toFixed(2)} ${order.currency_code.toUpperCase()}`
+}
+
+const prepareCustomShippingOptions = (
+  customShippingOptions,
+  shippingOptions
+) => {
+  if (!customShippingOptions.length) return []
+
+  const hasFreeShipping =
+    customShippingOptions.findIndex(
+      cso => cso.id === FREE_SHIPPING_OPTION.value
+    ) > -1
+
+  return hasFreeShipping
+    ? shippingOptions.map(so => ({
+        option_id: so.id,
+        price: 0,
+      }))
+    : customShippingOptions.map(cso => ({
+        option_id: cso.id,
+        price: cso.price * 100,
+      }))
+}
+
 const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
   const [returnAll, setReturnAll] = useState(false)
@@ -83,6 +120,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [itemsToAdd, setItemsToAdd] = useState([])
   const [shippingLoading, setShippingLoading] = useState(true)
   const [shippingOptions, setShippingOptions] = useState([])
+  const [customShippingOptions, setCustomShippingOptions] = useState([])
   const [shippingMethod, setShippingMethod] = useState()
   const [shippingPrice, setShippingPrice] = useState()
   const [noNotification, setNoNotification] = useState(order.no_notification)
@@ -166,8 +204,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       return acc + lineTotal
     }, 0)
 
-    setToPay(newItemsTotal - returnTotal)
-  }, [toReturn, quantities, shippingPrice, itemsToAdd])
+    // only count the custom shipping total towards the total if there is only one custom shipping option
+    const customShippingTotal =
+      customShippingOptions.length === 1 ? customShippingOptions[0].price : 0
+
+    setToPay(newItemsTotal + customShippingTotal * 100 - returnTotal)
+  }, [toReturn, quantities, shippingPrice, itemsToAdd, customShippingOptions])
 
   const handleQuantity = (e, item) => {
     const element = e.target
@@ -199,6 +241,11 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
         price: Math.round(shippingPrice / (1 + order.tax_rate / 100)),
       }
     }
+
+    data.custom_shipping_options = prepareCustomShippingOptions(
+      customShippingOptions,
+      shippingOptions
+    )
 
     if (onCreate) {
       setSubmitting(true)
@@ -257,6 +304,51 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }
   }
 
+  const handleCustomShippingOptionSelected = e => {
+    const shippingOption = e.target
+    const exists =
+      customShippingOptions.findIndex(cso => cso.id === shippingOption.value) >
+      -1
+    if (exists) return
+
+    if (shippingOption.value === FREE_SHIPPING_OPTION.value) {
+      setCustomShippingOptions([
+        {
+          id: FREE_SHIPPING_OPTION.value,
+          name: FREE_SHIPPING_OPTION.label,
+          editablePrice: false,
+          price: 0,
+        },
+      ])
+    } else if (shippingOption.value !== "Add a shipping method") {
+      const method = shippingOptions.find(o => shippingOption.value === o.id)
+      const price = (method.amount * (1 + order.tax_rate / 100)) / 100
+
+      // ensure that free shipping is mutually exclusive with all other options
+      // in other words: you can't select free shipping AND any other shipping option
+      const existingWithoutFreeShipping = customShippingOptions.filter(
+        cso => cso.id !== FREE_SHIPPING_OPTION.value
+      )
+      setCustomShippingOptions([
+        ...existingWithoutFreeShipping,
+        { price, id: method.id, name: method.name, editablePrice: true },
+      ])
+    }
+  }
+
+  const handleCustomShippingOptionPriceChange = (e, index) => {
+    const value = e.target.value
+    const newCustomShippingOptions = customShippingOptions.slice()
+    newCustomShippingOptions[index].price = value
+    setCustomShippingOptions(newCustomShippingOptions)
+  }
+
+  const handleRemoveCustomShippingOption = index => {
+    const newCustomShippingOptions = customShippingOptions.slice()
+    newCustomShippingOptions.splice(index, 1)
+    setCustomShippingOptions(newCustomShippingOptions)
+  }
+
   const handleUpdateShippingPrice = e => {
     const element = e.target
     const value = element.value
@@ -275,20 +367,41 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       })
   }
 
+  const selectCustomOptions = useMemo(() => {
+    return [
+      FREE_SHIPPING_OPTION,
+      ...shippingOptions.map(so => ({ label: so.name, value: so.id })),
+    ]
+  }, [shippingOptions])
+
   return (
     <Modal onClick={onDismiss}>
       <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
-        <Modal.Header>Create Swap</Modal.Header>
+        <Modal.Header
+          onDismiss={onDismiss}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Text variant="h3">Create Swap</Text>
+          <CloseIcon
+            style={{ cursor: "pointer" }}
+            onClick={onDismiss}
+            width={12}
+            height={12}
+          />
+        </Modal.Header>
         <Modal.Content flexDirection="column">
           <Box mb={3}>
-            <Text px={2}>Items to return</Text>
+            <Text variant="small.bold" py={3}>
+              Items to return
+            </Text>
             <Flex
               sx={{
                 borderBottom: "hairline",
               }}
               justifyContent="space-between"
               fontSize={1}
-              py={2}
+              py={3}
             >
               <Box width={30} px={2} py={1}>
                 <input
@@ -393,41 +506,50 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
           </Box>
 
           <Box my={3}>
-            <Text>Items to send</Text>
-            <Box mt={2}>
-              <Dropdown
-                leftAlign
-                toggleText={"+ Add product"}
-                showSearch
-                onSearchChange={handleProductSearch}
-                searchPlaceholder={"Search by SKU, Name, etch."}
-              >
-                {searchResults.map(s => (
-                  <Flex
-                    key={s.variant_id}
-                    alignItems="center"
-                    onClick={() => handleAddItemToSwap(s)}
-                  >
-                    <Dot
-                      mr={3}
-                      bg={s.inventory_quantity > 0 ? "green" : "danger"}
-                    />
-                    <Box>
-                      <Text fontSize={0} mb={0} lineHeight={1}>
-                        {s.product.title} - {s.title}
-                      </Text>
-                      <Flex>
-                        <Text width={"100px"} mt={0} fontSize={"10px"}>
-                          {s.sku}
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Text variant="small.bold" py={3}>
+                Items to send
+              </Text>
+              <Box>
+                <Dropdown
+                  leftAlign
+                  toggleText={"+ Add product"}
+                  justifyContent="flex-start"
+                  showSearch
+                  onSearchChange={handleProductSearch}
+                  searchPlaceholder={"Search by SKU, Name, etch."}
+                >
+                  {searchResults.map(s => (
+                    <Flex
+                      key={s.variant_id}
+                      alignItems="center"
+                      onClick={() => handleAddItemToSwap(s)}
+                    >
+                      <Dot
+                        mr={3}
+                        bg={s.inventory_quantity > 0 ? "green" : "danger"}
+                      />
+                      <Box>
+                        <Text fontSize={0} mb={0} lineHeight={1}>
+                          {s.product.title} - {s.title}
                         </Text>
-                        <Text ml={2} mt={0} fontSize={"10px"}>
-                          In stock: {s.inventory_quantity}
-                        </Text>
-                      </Flex>
-                    </Box>
-                  </Flex>
-                ))}
-              </Dropdown>
+                        <Flex>
+                          <Text width={"100px"} mt={0} fontSize={"10px"}>
+                            {s.sku}
+                          </Text>
+                          <Text ml={2} mt={0} fontSize={"10px"}>
+                            In stock: {s.inventory_quantity}
+                          </Text>
+                        </Flex>
+                      </Box>
+                    </Flex>
+                  ))}
+                </Dropdown>
+              </Box>
             </Box>
             <Box mt={3}>
               {itemsToAdd.length > 0 && (
@@ -435,20 +557,36 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   sx={{
                     borderBottom: "hairline",
                   }}
-                  justifyContent="space-between"
                   fontSize={1}
                   py={2}
                 >
-                  <Box width={30} px={2} py={1}></Box>
-                  <Box width={400} px={2} py={1}>
+                  <Box
+                    sx={{
+                      textTransform: "uppercase",
+                      flex: 9,
+                    }}
+                  >
                     Details
                   </Box>
-                  <Box width={75} px={2} py={1}>
+                  <Box
+                    sx={{
+                      textTransform: "uppercase",
+                      flex: 9,
+                      textAlign: "center",
+                    }}
+                  >
                     Quantity
                   </Box>
-                  <Box width={170} px={2} py={1}>
+                  <Box
+                    sx={{
+                      textTransform: "uppercase",
+                      flex: 9,
+                      textAlign: "right",
+                    }}
+                  >
                     Price
                   </Box>
+                  <Box sx={{ flex: 1 }}></Box>
                 </Flex>
               )}
               {itemsToAdd.map((item, index) => {
@@ -456,73 +594,157 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   <Flex
                     key={item.variant_id}
                     justifyContent="space-between"
+                    alignItems="center"
                     fontSize={2}
                     py={2}
                   >
-                    <Box width={30} px={2} py={1}></Box>
-                    <Box width={400} px={2} py={1}>
+                    <Box flex="9">
                       <Text fontSize={1} lineHeight={"14px"}>
                         {item.title}
                       </Text>
                       <Text fontSize={0}>{item.sku}</Text>
                     </Box>
-                    <Box width={75} px={2} py={1}>
+                    <Box flex="9" display="flex" justifyContent="center">
                       <Input
+                        inputStyle={{ color: "black", minHeight: "100%" }}
                         type="number"
+                        maxWidth="60px"
                         onChange={e => handleToAddQuantity(e, index)}
                         value={item.quantity || ""}
                         min={1}
                       />
                     </Box>
-                    <Box width={170} px={2} py={1}>
-                      <Text fontSize={1}>
-                        {extractPrice(item.prices, order).toFixed(2)}{" "}
-                        {order.currency_code.toUpperCase()}
-                      </Text>
+                    <Box flex="9" display="flex" justifyContent="flex-end">
+                      <CurrencyInput
+                        step="any"
+                        currency={order.currency_code}
+                        value={extractPrice(item.prices, order)}
+                      />
                     </Box>
-                    <Box onClick={() => handleRemoveItem(index)}>&times;</Box>
+                    <Box
+                      display="flex"
+                      justifyContent="center"
+                      flex="1"
+                      onClick={() => handleRemoveItem(index)}
+                    >
+                      &times;
+                    </Box>
                   </Flex>
                 )
               })}
+              {itemsToAdd.length > 0 && (
+                <Box
+                  maxWidth="410px"
+                  marginLeft="auto"
+                  sx={{
+                    "& > div:not(:last-child)": { borderBottom: "hairline" },
+                  }}
+                >
+                  <Flex
+                    py={3}
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Box display="flex" alignItems="center">
+                      <Text mr={2} variant="tiny.default">
+                        Configure shipping options
+                      </Text>
+                      <InfoTooltip tooltipText="You can set custom shipping options by choosing one or multiple shipping options" />
+                    </Box>
+                    <Select
+                      height={"32px"}
+                      fontSize={1}
+                      placeholder={"Add a shipping method"}
+                      value={shippingMethod}
+                      onChange={handleCustomShippingOptionSelected}
+                      options={selectCustomOptions}
+                    />
+                  </Flex>
+                  {customShippingOptions.map((cso, index) => (
+                    <Flex
+                      py={3}
+                      alignItems="center"
+                      justifyContent="space-between"
+                    >
+                      <Text mr={2} variant="tiny.default">
+                        {cso.name}
+                      </Text>
+                      <Box display="flex" alignItems="center">
+                        {cso.editablePrice && (
+                          <CurrencyInput
+                            step="any"
+                            currency={order.currency_code}
+                            onChange={e =>
+                              handleCustomShippingOptionPriceChange(e, index)
+                            }
+                            value={cso.price}
+                          />
+                        )}
+                        <Box
+                          ml={2}
+                          onClick={() =>
+                            handleRemoveCustomShippingOption(index)
+                          }
+                        >
+                          &times;
+                        </Box>
+                      </Box>
+                    </Flex>
+                  ))}
+                  <Flex
+                    py={3}
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Text mr={2} variant="tiny.default">
+                      New item total
+                    </Text>
+                    <Text variant="tiny.default">
+                      {computeNewItemsTotal(itemsToAdd, order)}
+                    </Text>
+                  </Flex>
+                  <Flex
+                    py={3}
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Box display="flex" alignItems="center">
+                      <Text mr={2} variant="tiny.default">
+                        Difference
+                      </Text>
+                      <InfoTooltip tooltipText="help" />
+                    </Box>
+                    <Text variant="tiny.default">
+                      {(toPay / 100).toFixed(2)}{" "}
+                      {order.currency_code.toUpperCase()}
+                    </Text>
+                  </Flex>
+                </Box>
+              )}
             </Box>
           </Box>
-          <Flex
-            sx={{
-              borderTop: "hairline",
-            }}
-            w={1}
-            mt={3}
-            pt={3}
-            justifyContent="flex-end"
-          >
-            <Box px={2} fontSize={1}>
-              Difference
-            </Box>
-            <Box px={2} width={170} fontSize={1}>
-              {(toPay / 100).toFixed(2)} {order.currency_code.toUpperCase()}
-            </Box>
-          </Flex>
         </Modal.Content>
-        <Modal.Footer justifyContent="space-between">
-          <Flex>
-            <Box px={0} py={1}>
-              <input
-                id="noNotification"
-                name="noNotification"
-                checked={!noNotification}
-                onChange={() => setNoNotification(!noNotification)}
-                type="checkbox"
-              />
-            </Box>
-            <Box px={2} py={1}>
-              <Text fontSize={1}>Send notifications</Text>
-            </Box>
-          </Flex>
+        <Modal.Footer sx={{ gap: "8px" }}>
+          <Box py={1}>
+            <input
+              id="noNotification"
+              name="noNotification"
+              checked={!noNotification}
+              onChange={() => setNoNotification(!noNotification)}
+              type="checkbox"
+            />
+          </Box>
+          <Box py={1}>
+            <Text fontSize={1}>Send notifications</Text>
+          </Box>
+          <Button ml="auto" onClick={onDismiss} type="button" variant="primary">
+            Cancel
+          </Button>
           <Button
             disabled={toReturn.length === 0 || itemsToAdd.length === 0}
             loading={submitting}
             type="submit"
-            variant="primary"
+            variant="deep-blue"
           >
             Complete
           </Button>
@@ -531,5 +753,55 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     </Modal>
   )
 }
+
+const CurrencyInput = ({ value, currency, ...props }) => {
+  return (
+    <Wrapper>
+      <CurrencyBox>
+        <CurrencyLabel>{currency}</CurrencyLabel>
+      </CurrencyBox>
+      <PriceInput value={value} type="number" min="0" {...props} />
+    </Wrapper>
+  )
+}
+
+const Wrapper = styled(Box)`
+  display: flex;
+  border-radius: 5px;
+  box-shadow: ${props => props.theme.shadows.inputBoxShadow};
+  overflow: hidden;
+  max-width: ${props => props.maxWidth || "120px"};
+  &:focus-within {
+    box-shadow: ${props => props.theme.shadows.inputBoxShadowHover};
+  }
+`
+
+const CurrencyBox = styled(Box)`
+  ${props => props.theme.text.small.default};
+  color: ${props => props.theme.colors["medusa-80"]};
+  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid ${props => props.theme.colors["medusa-60"]};
+`
+
+const CurrencyLabel = styled(Box)`
+  flex: 1;
+  text-transform: uppercase;
+`
+
+const PriceInput = styled(RebassInput)`
+  border: none;
+  box-shadow: none;
+  flex: 1;
+  padding: 4px 8px;
+  ${props => props.theme.text.small.default};
+
+  &:hover,
+  &:focus {
+    box-shadow: none;
+  }
+`
 
 export default SwapMenu

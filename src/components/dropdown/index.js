@@ -22,6 +22,8 @@ export const DropdownContainer = styled(Box)`
   top: ${props => (props.topPlacement ? props.topPlacement : "10px")};
   border-radius: 5px;
   ${props => (props.leftAlign ? "left" : "right")}: 0;
+  /* make children fit inside container's border-radius */
+  overflow: hidden;
 `
 
 const Scrollable = styled(Box)`

@@ -4,27 +4,14 @@ import buttons from "./buttons"
 import spacing from "./spacing"
 import shadows from "./shadows"
 import forms from "./forms"
+import text from "./text"
+import colors from "./colors"
 import { ThemeProvider as Provider } from "emotion-theming"
 
 import "../fonts/index.css"
 
 export const theme = {
-  colors: {
-    link: "#5469D3",
-    primary: "#3b77ff",
-    secondary: "#79B28A",
-    medusaGreen: "#454B54",
-    medusa: "#454B54",
-    danger: "#FF7675",
-    muted: "#E3E8EE",
-    gray: "#a3acb9",
-    lightest: "#fefefe",
-    light: "#f0f0f0",
-    dark: "#454545",
-    darkest: "#212121",
-    placeholder: "#a3acb9",
-    blue: "#5469d4",
-  },
+  colors,
   borders: {
     hairline: "1px solid #E3E8EE",
   },
@@ -81,6 +68,7 @@ export const theme = {
   },
   forms,
   buttons,
+  text,
 }
 
 export const ThemeProvider = ({ children }) => (
