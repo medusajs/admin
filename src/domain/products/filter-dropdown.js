@@ -191,7 +191,6 @@ const ProductsFilter = ({
               placeholder="Spring, summer..."
               values={tagsFilter || []}
               onChange={values => {
-                console.log(tagsFilter, values)
                 setTagsFilter(values)
               }}
               boldLabel={"true"}

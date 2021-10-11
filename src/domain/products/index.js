@@ -81,7 +81,7 @@ const ProductIndex = () => {
     },
   })
 
-  const [tags, setTags] = useState([])
+  const [tags, setTags] = useState(null)
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
@@ -100,6 +100,14 @@ const ProductIndex = () => {
   })
   const [tagsFilter, setTagsFilter] = useState([])
   const [filterTags, setFilterTags] = useState(false)
+
+  const toggleFilterTags = async () => {
+    if (!tags) {
+      const tagsResponse = await Medusa.products.listTagsByUsage()
+      setTags(tagsResponse.data.tags)
+    }
+    setFilterTags(!filterTags)
+  }
 
   const resetFilters = () => {
     setStatusFilter({
@@ -122,11 +130,9 @@ const ProductIndex = () => {
           .join(",")
       : null
 
-    const tagsResponse = await Medusa.products.listTagsByUsage()
-
     const tagIds = tagsFilter
       .map(tag => tag.trim())
-      .map(tag => tagsResponse.data.tags.find(t => t.value === tag)?.id)
+      .map(tag => tags.find(t => t.value === tag)?.id)
       .join(",")
 
     const urlObject = {
@@ -353,7 +359,7 @@ const ProductIndex = () => {
           submitFilters={submit}
           tagsFilter={tagsFilter}
           filterTags={filterTags}
-          setFilterTags={setFilterTags}
+          setFilterTags={toggleFilterTags}
           resetFilters={resetFilters}
           clearFilters={clearFilters}
         />
