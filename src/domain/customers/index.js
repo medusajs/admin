@@ -63,7 +63,8 @@ const CustomerIndex = () => {
     refresh({ search: `?${prepared}` })
   }
 
-  const { setOnSearch } = useContext(InterfaceContext)
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
   useEffect(() => {
     setOnSearch(searchQuery)
   }, [])

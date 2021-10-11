@@ -97,7 +97,8 @@ const ProductIndex = () => {
     refresh({ search })
   }
 
-  const { setOnSearch } = useContext(InterfaceContext)
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
   useEffect(() => {
     setOnSearch(searchQuery)
   }, [])

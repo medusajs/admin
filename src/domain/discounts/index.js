@@ -82,7 +82,8 @@ const DiscountIndex = () => {
     })
   }
 
-  const { setOnSearch } = useContext(InterfaceContext)
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
   useEffect(() => {
     setOnSearch(searchQuery)
   }, [])

@@ -123,7 +123,8 @@ const OrderIndex = ({}) => {
     filtersOnLoad.limit = 20
   }
 
-  const { setOnSearch } = useContext(InterfaceContext)
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
 
   const {
     orders: allOrders,
@@ -349,12 +350,6 @@ const OrderIndex = ({}) => {
     setFilterTabs(savedTabs)
   }, [])
 
-  const searchQuery = () => {
-    setOffset(0)
-    resetFilters()
-    handleTabClick("all", { q: query })
-  }
-
   function formatDateFilter(filter) {
     let dateFormatted = Object.entries(filter).reduce((acc, [key, value]) => {
       if (value.includes("|")) {
@@ -385,12 +380,13 @@ const OrderIndex = ({}) => {
     // if the datefilter includes "|" it is a relative date and we have to format it to timestamp
     const queryParts = {}
 
+    if (query) {
+      queryParts["q"] = query
+    }
+
     if (!_.isEmpty(dateFilter.filter)) {
       let dateFormatted = formatDateFilter(dateFilter.filter)
       queryParts.created_at = dateFormatted
-    }
-    if (query) {
-      queryParts.q = query
     }
 
     if (paymentFilter.filter) {
@@ -415,6 +411,7 @@ const OrderIndex = ({}) => {
         "fulfillment_status[]": fulfillmentFilter.filter,
         "status[]": statusFilter.filter,
         created_at: dateFilter.filter,
+        q: query,
       },
       { skipNulls: true }
     )
@@ -457,6 +454,7 @@ const OrderIndex = ({}) => {
     resetFilters()
 
     let searchObject = {
+      q: query,
       ...queryParts,
       ...defaultQueryProps,
     }
@@ -515,7 +513,7 @@ const OrderIndex = ({}) => {
 
   const clear = () => {
     const baseUrl = qs.parse(window.location.href).url
-    setQuery("")
+    //setQuery("")
     window.history.replaceState(baseUrl, "", `?limit=${limit}&offset=${offset}`)
     refresh()
   }

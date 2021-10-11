@@ -1,33 +1,29 @@
-import React, { useState, useReducer } from "react"
+import React, { useState, useEffect } from "react"
 
 export const defaultInterfaceContext = {
   onSearch: () => {},
   setOnSearch: () => {},
+  onUnmount: () => {},
+  display: false,
 }
 
 export const InterfaceContext = React.createContext(defaultInterfaceContext)
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "registerHandler":
-      return {
-        ...state,
-        onSearch: action.payload,
-      }
-    default:
-      return state
-  }
-}
-
 export const InterfaceProvider = ({ children }) => {
   const [searchHandler, setSearchHandler] = useState(() => () => {})
+  const [display, setDisplay] = useState(false)
 
   const setOnSearch = handler => {
     if (handler) {
+      setDisplay(true)
       setSearchHandler(() => {
         return handler
       })
     }
+  }
+
+  const unmountAction = () => {
+    return () => setDisplay(false)
   }
 
   return (
@@ -35,6 +31,8 @@ export const InterfaceProvider = ({ children }) => {
       value={{
         onSearch: searchHandler,
         setOnSearch,
+        onUnmount: unmountAction,
+        display,
       }}
     >
       {children}

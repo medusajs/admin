@@ -51,6 +51,13 @@ const ProfilePopover = () => {
     })
   }
 
+  let username
+
+  if (user) {
+    username = user.first_name + " " + user.last_name
+    if (username === " ") username = user.email
+  }
+
   return (
     <Box
       sx={{
@@ -61,13 +68,7 @@ const ProfilePopover = () => {
       }}
     >
       <Box width="100%" p={3}>
-        {loading ? (
-          <Spinner />
-        ) : (
-          <Text variant="body.heavy">
-            {user.first_name} {user.last_name}
-          </Text>
-        )}
+        {loading ? <Spinner /> : <Text variant="body.heavy">{username}</Text>}
         <Box
           mt={2}
           mb={-3}
@@ -100,7 +101,7 @@ const ProfilePopover = () => {
 }
 
 const TopBar = () => {
-  const { onSearch } = useContext(InterfaceContext)
+  const { onSearch, display } = useContext(InterfaceContext)
   const [focusing, setFocusing] = useState(false)
   const [query, setQuery] = useState("")
 
@@ -149,6 +150,8 @@ const TopBar = () => {
     },
     [onSearch, query]
   )
+
+  if (!display) return null
 
   return (
     <Flex
