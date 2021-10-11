@@ -69,7 +69,6 @@ const ProductIndex = () => {
   }
   const {
     products,
-    listTagsByUsage,
     hasCache,
     isLoading,
     refresh,
@@ -82,8 +81,7 @@ const ProductIndex = () => {
     },
   })
 
-  const tagsPromise = Medusa.products.listTagsByUsage()
-
+  const [tags, setTags] = useState([])
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
@@ -124,7 +122,8 @@ const ProductIndex = () => {
           .join(",")
       : null
 
-    const tagsResponse = await tagsPromise
+    const tagsResponse = await Medusa.products.listTagsByUsage()
+
     const tagIds = tagsFilter
       .map(tag => tag.trim())
       .map(tag => tagsResponse.data.tags.find(t => t.value === tag)?.id)
@@ -168,6 +167,7 @@ const ProductIndex = () => {
 
   const clearFilters = () => {
     resetFilters()
+    setOffset(0)
     replaceQueryString({})
   }
 
@@ -359,7 +359,7 @@ const ProductIndex = () => {
         />
         {selectedProduct && (
           <Button
-            mr={3}
+            mr={2}
             onClick={() => handleCopyProduct()}
             variant={"primary"}
             loading={copyingProduct}

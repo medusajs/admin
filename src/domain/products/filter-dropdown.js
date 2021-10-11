@@ -124,7 +124,7 @@ const ProductsFilter = ({
   })
 
   return (
-    <Box style={{ position: "relative" }}>
+    <Box mr={2} style={{ position: "relative" }}>
       <Button
         sx={sx}
         alignItems="center"
