@@ -8,6 +8,7 @@ import Badge from "../../../../components/badge"
 import Modal from "../../../../components/modal"
 import { DefaultCellContent } from "../../../../components/table"
 import Medusa from "../../../../services/api"
+import useMedusa from "../../../../hooks/use-medusa"
 
 const Row = styled.tr`
   font-size: ${props => props.theme.fontSizes[1]}px;
@@ -137,14 +138,14 @@ const EditUser = ({ handleClose, user, triggerRefetch }) => {
                 </Row>
                 <Row variant="tiny.default">
                   <Cell mr={1}>
-                    {/* <Label> */}
-                    <Radio
-                      checked={"member" === role}
-                      onChange={onChange}
-                      name="role"
-                      value="member"
-                    />
-                    {/* </Label> */}
+                    <Label>
+                      <Radio
+                        checked={"member" === role}
+                        onChange={onChange}
+                        name="role"
+                        value="member"
+                      />
+                    </Label>
                   </Cell>
                   <Cell mr={1}>
                     <DefaultCellContent>Member</DefaultCellContent>

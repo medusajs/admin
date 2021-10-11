@@ -120,14 +120,14 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
                 </Row>
                 <Row variant="tiny.default">
                   <Cell mr={1}>
-                    {/* <Label> */}
-                    <Radio
-                      checked={"member" === role}
-                      onChange={onChange}
-                      name="role"
-                      value="member"
-                    />
-                    {/* </Label> */}
+                    <Label>
+                      <Radio
+                        checked={"member" === role}
+                        onChange={onChange}
+                        name="role"
+                        value="member"
+                      />
+                    </Label>
                   </Cell>
                   <Cell mr={1}>
                     <DefaultCellContent>Member</DefaultCellContent>
