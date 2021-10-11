@@ -132,9 +132,11 @@ const ProductIndex = () => {
       : null
 
     const tagIds = tagsFilter.filter
-      .map(tag => tag.trim())
-      .map(tag => tags.find(t => t.value === tag)?.id)
-      .join(",")
+      ? tagsFilter.filter
+          .map(tag => tag.trim())
+          .map(tag => tags?.find(t => t.value === tag)?.id)
+          .join(",")
+      : null
 
     const urlObject = {
       "status[]": statusFilter.open ? statusFilter.filter : null,
