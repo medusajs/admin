@@ -8,6 +8,7 @@ import Modal from "../../../../components/modal"
 import { DefaultCellContent } from "../../../../components/table"
 import Medusa from "../../../../services/api"
 import useMedusa from "../../../../hooks/use-medusa"
+import CopyToClipboard from "../../../../components/copy-to-clipboard"
 
 const Row = styled.tr`
   font-size: ${props => props.theme.fontSizes[1]}px;
@@ -25,14 +26,16 @@ const Cell = styled.td`
 
 const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const { toaster } = useMedusa("collections")
+  const { store, toaster } = useMedusa("store")
   const [role, setRole] = useState(invite.role)
 
   const onChange = e => {
     setRole(e.target.value)
   }
 
-  const invitationUrl = `${window.location.protocol}${window.location.host}/invite?token=${invite.token}`
+  const invitationUrl =
+    store?.invite_link_template?.replace(/\{invite_token\}/, invite.token) ||
+    "Please configure invite link template in settings"
 
   const copyInvitation = () => {
     navigator.clipboard.writeText(invitationUrl)
@@ -98,7 +101,7 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
             <Text fontSize={1} fontWeight={600} mb={2}>
               Role
             </Text>
-            <table>
+            {/* <table>
               <tbody>
                 <Row>
                   <Cell>
@@ -156,7 +159,7 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
                   </Cell>
                 </Row>
               </tbody>
-            </table>
+            </table> */}
             <Flex
               width={1}
               flexDirection="column"
@@ -165,27 +168,11 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
               }}
               onClick={() => copyInvitation()}
             >
-              <Flex>
-                <Text fontSize={2} mr={1}>
-                  Invitation link
-                </Text>
-                <Text fontSize={1} sx={{ color: "gray" }}>
-                  (click to copy)
-                </Text>
-              </Flex>
-              <Text
-                sx={{
-                  maxWidth: "250px",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-                variant="small.heavy"
-                fontSize={1}
-                mb={2}
-              >
-                {invitationUrl}
-              </Text>
+              <CopyToClipboard
+                copyText={invitationUrl}
+                label={"Invitation link"}
+                tooltipText={invitationUrl}
+              />
             </Flex>
             <Box mb={1}>
               <Text fontSize={1} mt={3} mb={2} fontWeight={600} mb={2}>

@@ -682,11 +682,14 @@ export default {
       const path = `/admin/users/invite/${inviteId}`
       return medusaRequest("DELETE", path)
     },
-    list(includeInvites = false) {
-      const path = `/admin/users?includeInvites=${includeInvites}`
+    list() {
+      const path = `/admin/users`
       return medusaRequest("GET", path)
     },
-
+    listInvites() {
+      const path = `/admin/users/invites`
+      return medusaRequest("GET", path)
+    },
     retrieve(userId) {
       const path = `/admin/users/${userId}`
       return medusaRequest("GET", path)

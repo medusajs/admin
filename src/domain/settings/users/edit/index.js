@@ -103,20 +103,10 @@ const EditUser = ({ handleClose, user, triggerRefetch }) => {
             </Text>
             <Flex alignItems="center">
               <Text fontSize={1}>{user.email}</Text>
-              <Badge
-                ml={3}
-                sx={{ fontSize: "8px" }}
-                {...decideBadgeColor(user?.email_status)}
-              >
-                {user?.email_status}
-              </Badge>
             </Flex>
           </Box>
-          <Flex flexDirection="column">
-            <Text fontSize={1} fontWeight={600} mb={2}>
-              Role
-            </Text>
-            <table>
+
+          {/* <table>
               <tbody>
                 <Row>
                   <Cell>
@@ -174,16 +164,15 @@ const EditUser = ({ handleClose, user, triggerRefetch }) => {
                   </Cell>
                 </Row>
               </tbody>
-            </table>
-            <Box mb={1}>
-              <Text fontSize={1} mb={2} fontWeight={600} mb={2}>
-                Remove
-              </Text>
-              <Button variant="delete" onClick={handleDelete}>
-                Remove User
-              </Button>
-            </Box>
-          </Flex>
+            </table> */}
+          <Box mb={1}>
+            <Text fontSize={1} mb={2} fontWeight={600} mb={2}>
+              Remove
+            </Text>
+            <Button variant="delete" onClick={handleDelete}>
+              Remove User
+            </Button>
+          </Box>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button mr={2} variant="primary" onClick={handleClose}>

@@ -19,15 +19,15 @@ const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [resetPassword, setResetPassword] = useState(false)
+  const [passwordtokenGenerated, setPasswordtokenGenerated] = useState(false)
 
   const handleLogin = data => {
     setLoading(true)
     if (resetPassword) {
       Medusa.users.resetPasswordToken({ email }).then(data => {
-        console.log(data)
         setEmail("")
         setPassword("")
-        setResetPassword(false)
+        setPasswordtokenGenerated(true)
       })
     } else {
       account.handleLogin({ email, password }).then(() => {
@@ -82,12 +82,18 @@ const LoginPage = () => {
                       Back
                     </Text>
                   </Flex>
+                  <Text>
+                    {passwordtokenGenerated
+                      ? "A reset link has been sent to your email"
+                      : ""}
+                  </Text>
                   <InputField
                     my={3}
                     width="100%"
                     label="Email"
                     name="email"
                     value={email}
+                    placeholder="lebron@james.com"
                     onChange={e => setEmail(e.target.value)}
                     boldLabel={true}
                   />
@@ -145,7 +151,16 @@ const LoginPage = () => {
             <Text
               onClick={() => setResetPassword(true)}
               pt={2}
-              sx={{ fontSize: 1, color: "gray" }}
+              sx={{
+                fontSize: 1,
+                color: "gray",
+                cursor: "pointer",
+                transition: "0.4s",
+                "&:hover": {
+                  // color: "black",
+                  filter: "brightness(0.60)",
+                },
+              }}
             >
               Forgot your password? Click here
             </Text>

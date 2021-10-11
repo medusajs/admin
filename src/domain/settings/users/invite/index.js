@@ -90,8 +90,8 @@ const Invite = ({ triggerRefetch }) => {
                   onChange={handleChange}
                 />
               </Box>
-              <Flex flexDirection="column">
-                <table>
+              {/* <Flex flexDirection="column"> */}
+              {/* <table>
                   <tbody>
                     <Row>
                       <Cell>
@@ -149,8 +149,8 @@ const Invite = ({ triggerRefetch }) => {
                       </Cell>
                     </Row>
                   </tbody>
-                </table>
-              </Flex>
+                </table> */}
+              {/* </Flex> */}
             </Modal.Content>
             <Modal.Footer justifyContent="flex-end">
               <Button mr={2} variant="primary" onClick={handleClose}>

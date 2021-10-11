@@ -36,11 +36,20 @@ const Users = () => {
   }
 
   useEffect(() => {
+    let userList = []
     Medusa.users
-      .list(true)
+      .list()
       .then(res => res.data)
       .then(data => {
-        setUsers([...data.users])
+        userList = [...data.users]
+      })
+
+    Medusa.users
+      .listInvites()
+      .then(res => res.data)
+      .then(data => {
+        userList.push(...data.invites)
+        setUsers(userList)
       })
   }, [shouldRefetch])
 
@@ -73,17 +82,17 @@ const Users = () => {
                 <TableHead>
                   <TableHeaderRow>
                     <Flex width={1} justifyContent="space-between">
-                      <Flex width={1 / 4}>
+                      <Flex px={0} width={1 / 4}>
                         <TableHeaderCell fontWeight={450}>Name</TableHeaderCell>
                       </Flex>
-                      <Flex width="35%">
+                      <Flex width="55%">
                         <TableHeaderCell fontWeight={450}>
                           Email
                         </TableHeaderCell>
                       </Flex>
-                      <Flex width={1 / 5}>
+                      {/* <Flex width={1 / 5}>
                         <TableHeaderCell fontWeight={450}>Role</TableHeaderCell>
-                      </Flex>
+                      </Flex> */}
                       <Flex width={1 / 5}>
                         <TableHeaderCell />
                       </Flex>
@@ -95,7 +104,7 @@ const Users = () => {
                     return (
                       <TableRow
                         key={i}
-                        color={user.isInvite ? "gray" : "inherit"}
+                        color={user?.token ? "gray" : "inherit"}
                         fontWeight={550}
                       >
                         <Flex width={1}>
@@ -108,14 +117,14 @@ const Users = () => {
                               </DefaultCellContent>
                             </TableDataCell>
                           </Flex>
-                          <Flex width="35%">
+                          <Flex width="55%">
                             <TableDataCell>
                               <DefaultCellContent>
-                                {user.email}
+                                {user?.token ? user.user_email : user.email}
                               </DefaultCellContent>
                             </TableDataCell>
                           </Flex>
-                          <Flex width={1 / 5}>
+                          {/* <Flex width={1 / 5}>
                             <TableDataCell>
                               <DefaultCellContent
                                 sx={{ textTransform: "capitalize" }}
@@ -123,7 +132,7 @@ const Users = () => {
                                 {user.role}
                               </DefaultCellContent>
                             </TableDataCell>
-                          </Flex>
+                          </Flex> */}
                           <Flex width={1 / 5}>
                             <TableDataCell
                               sx={{
@@ -133,19 +142,19 @@ const Users = () => {
                               }}
                             >
                               {/* TODO role stuff */}
-                              {user.role === "owner" ? null : user.isInvite ? (
+                              {user.role === "owner" ? null : user?.token ? (
                                 <Button
                                   onClick={() => {
                                     setSelectedInvite(user)
                                   }}
-                                  mr={2}
+                                  mr={"1px"}
                                 >
                                   Edit invite
                                 </Button>
                               ) : (
                                 <Button
                                   onClick={() => setSelectedUser(user)}
-                                  mr={2}
+                                  mr={"1px"}
                                 >
                                   Edit user
                                 </Button>
@@ -161,7 +170,8 @@ const Users = () => {
               <Flex alignItems="center" justifyContent="space-between" mt={2}>
                 <Box>
                   <Text variant="small.default">
-                    {users.filter(usr => !usr.isInvite).length} members
+                    {users.filter(usr => !usr.token).length} member
+                    {users.length === 1 ? "" : "s"}
                   </Text>
                 </Box>
                 <Box>

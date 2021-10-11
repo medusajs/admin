@@ -32,13 +32,13 @@ const AccountDetails = () => {
       name: store.name,
       swap_link_template: store.swap_link_template,
       payment_link_template: store.payment_link_template,
+      invite_link_template: store.invite_link_template,
     })
   }, [store, isLoading])
 
   const onSubmit = data => {
     try {
       localStorage.removeItem("medusa::cache::store")
-
       update(data)
       toaster("Successfully updated store", "success")
     } catch (error) {
@@ -101,6 +101,17 @@ const AccountDetails = () => {
                 label="Draft order link template"
                 name="payment_link_template"
                 placeholder="https://acme.inc/swap"
+                ref={register}
+              />
+            </Box>
+          </Flex>
+          <Flex width={1} mt={3}>
+            <Box width={1 / 2}>
+              <Input
+                boldLabel={true}
+                label="Invite link template"
+                name="invite_link_template"
+                placeholder="https://acme.inc/invite={invite_token}"
                 ref={register}
               />
             </Box>
