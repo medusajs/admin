@@ -34,18 +34,16 @@ const Button = ({
       {...props}
     >
       {loading && (
-        <Flex
-          alignItems={"center"}
+        <Box
           sx={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
+            // sets top, right, bottom, left to 0
+            inset: 0,
           }}
         >
           <Spinner
             height={"65%"}
+            sx={{ position: "absolute", inset: 0, margin: "auto" }}
             dark={
               variant === "cta" ||
               variant === "danger" ||
@@ -54,7 +52,7 @@ const Button = ({
                 : true
             }
           />
-        </Flex>
+        </Box>
       )}
       <Box
         sx={{

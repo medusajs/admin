@@ -49,14 +49,14 @@ const StyledMultiSelect = styled(MultiSelect)`
     rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
     rgba(0, 0, 0, 0) 0px 0px 0px 0px;
 
-  &:focus: {
+  &:focus {
     box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px;
   }
-  &::placeholder: {
+  &::placeholder {
     color: #a3acb9;
   }
 
@@ -119,7 +119,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   const [itemsToAdd, setItemsToAdd] = useState([])
   const [shippingLoading, setShippingLoading] = useState(true)
-  const [shippingOptions, setShippingOptions] = useState([])
+  const [returnShippingOptions, setReturnShippingOptions] = useState([])
+  const [normalShippingOptions, setNormalShippingOptions] = useState([])
   const [customShippingOptions, setCustomShippingOptions] = useState([])
   const [shippingMethod, setShippingMethod] = useState()
   const [shippingPrice, setShippingPrice] = useState()
@@ -179,10 +180,17 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     Medusa.shippingOptions
       .list({
         region_id: order.region_id,
-        is_return: true,
       })
       .then(({ data }) => {
-        setShippingOptions(data.shipping_options)
+        const returnShippingOptions = data.shipping_options.filter(
+          so => so.is_return
+        )
+        const normalShippingOptions = data.shipping_options.filter(
+          so => !so.is_return
+        )
+        console.log({ data, returnShippingOptions, normalShippingOptions })
+        setReturnShippingOptions(returnShippingOptions)
+        setNormalShippingOptions(normalShippingOptions)
         setShippingLoading(false)
       })
   }, [])
@@ -244,7 +252,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
     data.custom_shipping_options = prepareCustomShippingOptions(
       customShippingOptions,
-      shippingOptions
+      normalShippingOptions
     )
 
     if (onCreate) {
@@ -296,7 +304,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     const element = e.target
     if (element.value !== "Add a shipping method") {
       setShippingMethod(element.value)
-      const method = shippingOptions.find(o => element.value === o.id)
+      const method = returnShippingOptions.find(o => element.value === o.id)
       setShippingPrice(method.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
@@ -321,7 +329,9 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
         },
       ])
     } else if (shippingOption.value !== "Add a shipping method") {
-      const method = shippingOptions.find(o => shippingOption.value === o.id)
+      const method = normalShippingOptions.find(
+        o => shippingOption.value === o.id
+      )
       const price = (method.amount * (1 + order.tax_rate / 100)) / 100
 
       // ensure that free shipping is mutually exclusive with all other options
@@ -370,9 +380,9 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const selectCustomOptions = useMemo(() => {
     return [
       FREE_SHIPPING_OPTION,
-      ...shippingOptions.map(so => ({ label: so.name, value: so.id })),
+      ...normalShippingOptions.map(so => ({ label: so.name, value: so.id })),
     ]
-  }, [shippingOptions])
+  }, [normalShippingOptions])
 
   return (
     <Modal onClick={onDismiss}>
@@ -483,7 +493,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 placeholder={"Add a shipping method"}
                 value={shippingMethod}
                 onChange={handleShippingSelected}
-                options={shippingOptions.map(o => ({
+                options={returnShippingOptions.map(o => ({
                   label: o.name,
                   value: o.id,
                 }))}
