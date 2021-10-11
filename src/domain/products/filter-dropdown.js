@@ -83,8 +83,8 @@ const ProductsFilter = ({
   clearFilters,
   tagsFilter,
   resetFilters,
-  filterTags,
-  setFilterTags,
+  // filterTags,
+  // setFilterTags,
   sx,
   ...rest
 }) => {
@@ -169,19 +169,21 @@ const ProductsFilter = ({
             paddingBottom: "8px",
             borderBottom: "hairline",
           }}
-          onClick={() => setFilterTags(!filterTags)}
+          onClick={() =>
+            setTagsFilter({ open: !tagsFilter.open, filter: tagsFilter.filter })
+          }
         >
           <input
             type="checkbox"
             id="Tags"
             name="Tags"
             value="Tags"
-            checked={filterTags}
+            checked={tagsFilter.open}
             style={{ marginRight: "5px" }}
           />
           Tags
         </Flex>
-        {filterTags && (
+        {tagsFilter.open && (
           <Box
             sx={{ fontSize: "10px", "& input": { fontSize: "12px" } }}
             width={1}
@@ -189,9 +191,12 @@ const ProductsFilter = ({
           >
             <TagInput
               placeholder="Spring, summer..."
-              values={tagsFilter || []}
+              values={tagsFilter.filter || []}
               onChange={values => {
-                setTagsFilter(values)
+                setTagsFilter({
+                  open: tagsFilter.open,
+                  filter: values,
+                })
               }}
               boldLabel={"true"}
               withTooltip

@@ -98,15 +98,14 @@ const ProductIndex = () => {
     open: false,
     filter: null,
   })
-  const [tagsFilter, setTagsFilter] = useState([])
-  const [filterTags, setFilterTags] = useState(false)
+  const [tagsFilter, setTagsFilter] = useState({ open: false, filter: null })
 
-  const toggleFilterTags = async () => {
+  const toggleFilterTags = async tagsFilter => {
     if (!tags) {
       const tagsResponse = await Medusa.products.listTagsByUsage()
       setTags(tagsResponse.data.tags)
     }
-    setFilterTags(!filterTags)
+    setTagsFilter(tagsFilter)
   }
 
   const resetFilters = () => {
@@ -118,8 +117,10 @@ const ProductIndex = () => {
       open: false,
       filter: null,
     })
-    setTagsFilter([])
-    setFilterTags(false)
+    setTagsFilter({
+      open: false,
+      filter: null,
+    })
   }
 
   const submit = async () => {
@@ -130,7 +131,7 @@ const ProductIndex = () => {
           .join(",")
       : null
 
-    const tagIds = tagsFilter
+    const tagIds = tagsFilter.filter
       .map(tag => tag.trim())
       .map(tag => tags.find(t => t.value === tag)?.id)
       .join(",")
@@ -138,7 +139,7 @@ const ProductIndex = () => {
     const urlObject = {
       "status[]": statusFilter.open ? statusFilter.filter : null,
       "collection_id[]": collectionFilter.open ? collectionIds : null,
-      "tags[]": filterTags && tagIds?.length > 0 ? tagIds : null,
+      "tags[]": tagsFilter.open && tagIds?.length > 0 ? tagIds : null,
     }
 
     const url = { ...removeNullish(urlObject) }
@@ -355,11 +356,11 @@ const ProductIndex = () => {
           setCollectionFilter={setCollectionFilter}
           collectionFilter={collectionFilter}
           collections={collectionsList}
-          setTagsFilter={setTagsFilter}
+          setTagsFilter={toggleFilterTags}
           submitFilters={submit}
           tagsFilter={tagsFilter}
-          filterTags={filterTags}
-          setFilterTags={toggleFilterTags}
+          // filterTags={filterTags}
+          // setFilterTags={setTagsFilter}
           resetFilters={resetFilters}
           clearFilters={clearFilters}
         />
