@@ -133,19 +133,13 @@ const ReceiveMenu = ({
     const items = toReturn.map(t => ({
       item_id: t,
       quantity: quantities[t],
+      write_off_quantity: writeOffQuantities[t],
     }))
-
-    const writeOffItems = Object.entries(writeOffQuantities).map(
-      ([item_id, quantity]) => {
-        return { item_id, quantity }
-      }
-    )
 
     if (returnRequest.is_swap && onReceiveSwap) {
       setSubmitting(true)
       return onReceiveReturn(returnRequest.id, {
         items,
-        write_off_inventory: writeOffItems,
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
@@ -158,7 +152,6 @@ const ReceiveMenu = ({
       return onReceiveReturn(returnRequest.id, {
         items,
         refund: Math.round(refundAmount),
-        write_off_inventory: writeOffItems,
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
