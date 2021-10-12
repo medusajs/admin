@@ -721,7 +721,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                       <Text mr={2} variant="tiny.default">
                         Difference
                       </Text>
-                      <InfoTooltip tooltipText="help" />
+                      <InfoTooltip tooltipText="Difference due" />
                     </Box>
                     <Text variant="tiny.default">
                       {(toPay / 100).toFixed(2)}{" "}
