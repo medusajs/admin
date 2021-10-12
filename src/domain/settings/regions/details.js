@@ -12,6 +12,7 @@ import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import TagDropdown from "../../../components/tag-dropdown"
+import Dialog from "../../../components/dialog"
 
 import { countries as countryData } from "../../../utils/countries"
 
@@ -25,16 +26,22 @@ const Regions = ({ id }) => {
   const [paymentProviders, setPaymentProviders] = useState([])
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [fulfillmentProviders, setFulfillmentProviders] = useState([])
+  const [DeleteRegion, setDeleteRegion] = useState(false)
+  const [isDeleting,setDeleting ] = useState(false)
 
   const { store, isLoading: storeIsLoading } = useMedusa("store")
+  
   const {
     region,
     isLoading,
     fulfillmentOptions: fulfillmentEndpoint,
     update,
     toaster,
+    delete:deleteRegion,
   } = useMedusa("regions", { id })
   const { register, reset, setValue, handleSubmit } = useForm()
+
+ 
 
   useEffect(() => {
     if (storeIsLoading) return
@@ -137,6 +144,17 @@ const Regions = ({ id }) => {
     value: c.alpha2.toLowerCase(),
   }))
 
+  const deleteRegionDropdown = [
+    {
+      variant: "danger",
+      label: "Delete Region",
+      onClick: () => {
+        setDeleteRegion(true)
+      },
+    },
+  ]
+
+  
   if (isLoading || !currencies.length) {
     return (
       <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
@@ -150,7 +168,9 @@ const Regions = ({ id }) => {
   return (
     <Flex flexDirection="column" py={5} mb={5}>
       <Card as="form" mb={3} onSubmit={handleSubmit(onSave)}>
-        <Card.Header>Region Details</Card.Header>
+        <Card.Header dropdownOptions={deleteRegionDropdown}>
+          Region Details
+        </Card.Header>
         <Card.Body flexDirection="column">
           {isLoading || storeIsLoading ? (
             <Flex
@@ -253,6 +273,35 @@ const Regions = ({ id }) => {
       </Card>
       {!isLoading && (
         <Shipping region={region} fulfillmentMethods={fulfillmentEndpoint} />
+      )}
+      {DeleteRegion && (
+        <Dialog
+          title="Delete Region"
+          submitText={"Delete Region"}
+          cancelText={"Not now"}
+          submitLoading={isDeleting}
+          onSubmit={() => {
+            setDeleting(true)
+            deleteRegion()
+              .then(() => {
+                toaster("Region was Deleted", "success")
+              })
+              .catch(() => {
+                toaster("Could not Delete Region", "error")
+              })
+              .finally(() => {
+                setDeleteRegion(false)
+                setDeleting(false)
+              })
+          }}
+          onCancel={() => {
+            setDeleteRegion(false)
+          }}
+        >
+          <Flex fontSize={2} flexDirection="column">
+            <div>Are you sure you want to delete Region?</div>
+          </Flex>
+        </Dialog>
       )}
     </Flex>
   )

@@ -79,7 +79,7 @@ const useMedusa = (endpoint, query) => {
   }
 
   const toaster = (text, type) => {
-    return addToast(<ToastLabel>{text}</ToastLabel>, { appearance: type })
+    return addToast(<ToastLabel> {text} </ToastLabel>, { appearance: type })
   }
 
   useEffect(() => {
