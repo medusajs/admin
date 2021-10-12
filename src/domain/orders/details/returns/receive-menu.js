@@ -300,6 +300,7 @@ const ReceiveMenu = ({
                       onChange={e => handleWriteOffQuantity(e, item)}
                       value={writeOffQuantities[item.id] || ""}
                       min={1}
+                      placeholder="0"
                       max={item.quantity - item.returned_quantity}
                     />
                   ) : (
