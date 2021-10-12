@@ -121,7 +121,6 @@ const buildTimeline = (order, notifications, notes) => {
         raw: swap,
       })
     }
-    console.log("swaps", order.swaps)
   }
 
   if (order.claims && order.claims.length) {

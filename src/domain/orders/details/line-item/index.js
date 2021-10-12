@@ -17,7 +17,7 @@ const LineItem = ({ fontColor, lineItem, order }) => {
   const productId = lineItem?.variant?.product_id || undefined
 
   return (
-    <Flex pl={3} alignItems="center" py={2}>
+    <Flex alignItems="center" py={2}>
       <Flex pr={3}>
         <Box alignSelf={"center"} color={fontColor} minWidth={"35px"}>
           {lineItem.quantity} x

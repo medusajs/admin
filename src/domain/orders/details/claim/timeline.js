@@ -65,17 +65,19 @@ export default ({
   return (
     <Flex>
       <Box width={"100%"}>
-        <Flex mb={4} px={3} width={"100%"} justifyContent="space-between">
+        <Flex mb={2} px={3} width={"100%"} justifyContent="space-between">
           <Box>
-            <Flex mb={2} justifyContent="space-between">
+            <Flex flexDirection="column">
               <Text mr={100} fontSize={1} color={fontColor} fontWeight="500">
                 {canceled ? "Claim Canceled" : "Claim Created"}
+              </Text>
+              <Text fontSize="11px" color={fontColor}>
+                {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
               </Text>
             </Flex>
             {expanded && (
               <>
                 <Text fontSize="11px" color={fontColor}>
-                  {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
                   {(event.no_notification || false) !==
                     (order.no_notification || false) && (
                     <Box mt={2} pr={2}>
@@ -117,13 +119,26 @@ export default ({
 
           <Box>
             {actions.length > 0 && !canceled && (
-              <Dropdown>
-                {actions.map(o => (
-                  <Text color={o.variant} onClick={o.onClick}>
-                    {o.label}
-                  </Text>
-                ))}
-              </Dropdown>
+              <Flex>
+                <Box mr={2}>
+                  {!canceled && (
+                    <Button
+                      onClick={() => setShowEditClaim(true)}
+                      variant="primary"
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </Box>
+
+                <Dropdown>
+                  {actions.map(o => (
+                    <Text color={o.variant} onClick={o.onClick}>
+                      {o.label}
+                    </Text>
+                  ))}
+                </Dropdown>
+              </Flex>
             )}
             {canceled && (
               <Text
@@ -159,16 +174,6 @@ export default ({
                     lineItem={lineItem}
                   />
                 ))}
-              </Box>
-              <Box>
-                {!canceled && (
-                  <Button
-                    onClick={() => setShowEditClaim(true)}
-                    variant="primary"
-                  >
-                    Edit
-                  </Button>
-                )}
               </Box>
             </Flex>
             {event.claim_type === "replace" ? (

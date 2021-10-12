@@ -123,50 +123,6 @@ export default ({
                   {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
                 </Text>
               </Flex>
-              {expanded && (
-                <Box>
-                  {!isLoading && store.swap_link_template && (
-                    <Text
-                      sx={{
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        var tempInput = document.createElement("input")
-                        tempInput.value = store.swap_link_template.replace(
-                          /\{cart_id\}/,
-                          event.raw.cart_id
-                        )
-                        document.body.appendChild(tempInput)
-
-                        tempInput.select()
-                        document.execCommand("copy")
-                        document.body.removeChild(tempInput)
-                        toaster("Link copied to clipboard", "success")
-                      }}
-                      color={fontColor}
-                      data-for={event.raw.cart_id}
-                      data-tip={store.swap_link_template.replace(
-                        /\{cart_id\}/,
-                        event.raw.cart_id
-                      )}
-                    >
-                      <ReactTooltip
-                        id={event.raw.cart_id}
-                        place="top"
-                        effect="solid"
-                      />
-                      {!canceled && (
-                        <Flex>
-                          Copy Payment Link
-                          <Box ml={1}>
-                            <Clipboard fill="grey" width="8" height="8" />
-                          </Box>
-                        </Flex>
-                      )}
-                    </Text>
-                  )}
-                </Box>
-              )}
             </Flex>
             {expanded && (
               <>
@@ -192,12 +148,16 @@ export default ({
                         {event.raw.payment_status}
                       </Badge>
                     </Flex>
-                    <CopyToClipboard
-                      label="Copy payment link"
-                      tooltipText={paymentLink}
-                      copyText={paymentLink}
-                      fillColor={fontColor}
-                    />
+                    {store?.payment_link_template &&
+                      !canceled &&
+                      event.raw.payment_status !== "captured" && (
+                        <CopyToClipboard
+                          label="Copy payment link"
+                          tooltipText={paymentLink}
+                          copyText={paymentLink}
+                          fillColor={fontColor}
+                        />
+                      )}
                   </Flex>
                   <Text mr={2} fontSize={1} color={fontColor}>
                     Return Status

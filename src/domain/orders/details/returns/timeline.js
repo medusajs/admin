@@ -30,16 +30,26 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
 
   return (
     <Box px={3}>
-      {canceled && (
-        <Flex justifyContent="space-between">
-          <Flex flexDirection="column">
-            <Text color={fontColor} fontSize={1} mb={2} fontWeight="500">
-              Return {event.status}
-            </Text>
-            <Text fontSize="11px" color={fontColor} mb={2}>
-              {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
-            </Text>
-          </Flex>
+      {(event.no_notification || false) !==
+        (order.no_notification || false) && (
+        <Box mt={2} pr={2}>
+          <Text color={fontColor}>
+            Notifications related to this return are
+            {event.no_notification ? " disabled" : " enabled"}.
+          </Text>
+        </Box>
+      )}
+
+      <Flex justifyContent="space-between">
+        <Flex flexDirection="column">
+          <Text color={fontColor} fontSize={1} mb={2} fontWeight="500">
+            Return {event.status}
+          </Text>
+          <Text fontSize="11px" color={fontColor} mb={2}>
+            {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+          </Text>
+        </Flex>
+        {canceled && (
           <Text
             color={fontColor}
             sx={{
@@ -50,60 +60,39 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
           >
             {expanded ? "Hide" : "Show"}
           </Text>
-        </Flex>
-      )}
-      {expanded && (
-        <>
-          {(event.no_notification || false) !==
-            (order.no_notification || false) && (
-            <Box mt={2} pr={2}>
-              <Text color={fontColor}>
-                Notifications related to this return are
-                {event.no_notification ? " disabled" : " enabled"}.
+        )}
+        {!canceled && event.raw.status !== "received" && (
+          <Flex>
+            <Button
+              onClick={() => onReceiveReturn(event.raw)}
+              variant={"primary"}
+              mr={2}
+            >
+              Receive return
+            </Button>
+            <Dropdown>
+              <Text color="danger" onClick={cancelReturn}>
+                Cancel return
               </Text>
-            </Box>
-          )}
-          <Flex justifyContent="space-between">
-            <Flex flexDirection="column">
-              <Text color={fontColor} fontSize={1} mb={2} fontWeight="500">
-                Return {event.status}
-              </Text>
-              <Text fontSize="11px" color={fontColor} mb={2}>
-                {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
-              </Text>
-            </Flex>
-            {!canceled && event.raw.status !== "received" && (
-              <Flex>
-                <Button
-                  onClick={() => onReceiveReturn(event.raw)}
-                  variant={"primary"}
-                  mr={2}
-                >
-                  Receive return
-                </Button>
-                <Dropdown>
-                  <Text color="danger" onClick={cancelReturn}>
-                    Cancel return
-                  </Text>
-                </Dropdown>
-              </Flex>
-            )}
+            </Dropdown>
           </Flex>
-          <Box mt={2}>
-            <Flex justifyContent="space-between">
-              <Box>
-                {event.items.map(lineItem => (
-                  <LineItem
-                    fontColor={fontColor}
-                    key={lineItem._id}
-                    order={order}
-                    lineItem={lineItem}
-                  />
-                ))}
-              </Box>
-            </Flex>
-          </Box>
-        </>
+        )}
+      </Flex>
+      {expanded && (
+        <Box mt={2}>
+          <Flex justifyContent="space-between">
+            <Box>
+              {event.items.map(lineItem => (
+                <LineItem
+                  fontColor={fontColor}
+                  key={lineItem._id}
+                  order={order}
+                  lineItem={lineItem}
+                />
+              ))}
+            </Box>
+          </Flex>
+        </Box>
       )}
     </Box>
   )

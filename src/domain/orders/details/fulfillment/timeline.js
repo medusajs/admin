@@ -1,5 +1,5 @@
 import React from "react"
-import { Text } from "rebass"
+import { Text, Box } from "rebass"
 import { Label } from "@rebass/forms"
 import moment from "moment"
 import SimpleEvent from "../timeline/simpleEvent"
@@ -13,7 +13,7 @@ const FulfillmentTimelineItem = ({ fulfillment, order }) => {
   }
 
   const partialFulfillmentChild = !fulfillment.fulfilledAllItems ? (
-    <>
+    <Box pl={3}>
       {fulfillment.items.map((lineItem, i) => (
         <LineItem
           fontColor={fontColor}
@@ -22,7 +22,7 @@ const FulfillmentTimelineItem = ({ fulfillment, order }) => {
           lineItem={lineItem}
         />
       ))}
-    </>
+    </Box>
   ) : (
     <></>
   )
