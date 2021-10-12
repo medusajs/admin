@@ -25,7 +25,7 @@ const LineItem = ({ fontColor, lineItem, order }) => {
         <Box mx={2}>
           <Flex width="30px" height="30px">
             <Image
-              src={ImagePlaceholder}
+              src={lineItem.thumbnail || ImagePlaceholder}
               height={30}
               width={30}
               p={!lineItem.thumbnail && "8px"}
