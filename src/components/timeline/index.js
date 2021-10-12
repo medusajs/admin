@@ -17,7 +17,6 @@ const Timeline = ({ children }) => {
     >
       <Box
         sx={{
-          // marginLeft: "1px",
           height: "10px",
           borderLeft: `1px solid #89959C`,
         }}
@@ -27,7 +26,7 @@ const Timeline = ({ children }) => {
   )
 }
 
-const TimelineItem = ({ isLast, children }) => {
+const TimelineItem = ({ children }) => {
   const timelineColor = "#89959C"
   return (
     <Flex pt={0} width={1}>
