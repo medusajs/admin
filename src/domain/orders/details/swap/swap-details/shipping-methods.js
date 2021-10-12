@@ -2,9 +2,10 @@ import React from "react"
 import { Box, Text, Flex } from "rebass"
 import { ReactComponent as WarningIcon } from "../../../../../assets/svg/warning.svg"
 import { isEmpty } from "lodash"
+import { displayAmount } from "../../../../../utils/prices"
 
 const formatDecimalAndCurrency = (amount, currency) => {
-  const fixed = amount.toFixed(2)
+  const fixed = displayAmount(currency, amount, 2)
 
   return `${fixed} ${currency.toUpperCase()}`
 }
@@ -21,7 +22,7 @@ const SwapShippingMethods = ({ shipping_methods = [], taxRate, currency }) => {
                   <>
                     {method.shipping_option.name} -{" "}
                     {formatDecimalAndCurrency(
-                      ((100 + taxRate) * method.price) / 10000,
+                      method.price * (1 + taxRate / 100),
                       currency
                     )}
                   </>

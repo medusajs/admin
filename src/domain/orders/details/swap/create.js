@@ -21,51 +21,6 @@ const FREE_SHIPPING_OPTION = {
   value: "free_shipping",
 }
 
-const Dot = styled(Box)`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-`
-
-const StyledMultiSelect = styled(MultiSelect)`
-  ${Typography.Base}
-
-  color: black;
-  background-color: white;
-
-  width: 200px;
-  text-overflow: ellipsis;
-
-  line-height: 1.22;
-
-  border: none;
-  outline: 0;
-
-  transition: all 0.2s ease;
-
-  border-radius: 3px;
-  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px;
-
-  &:focus {
-    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-      rgba(0, 0, 0, 0) 0px 0px 0px 0px;
-  }
-  &::placeholder {
-    color: #a3acb9;
-  }
-
-  .go3433208811 {
-    border: none;
-    border-radius: 3px;
-  }
-`
-
 const extractPrice = (prices, order) => {
   let price = prices.find(ma => ma.region_id === order.region_id)
 
@@ -92,7 +47,9 @@ const prepareCustomShippingOptions = (
   customShippingOptions,
   shippingOptions
 ) => {
-  if (!customShippingOptions.length) return []
+  if (!customShippingOptions.length) {
+    return []
+  }
 
   const hasFreeShipping =
     customShippingOptions.findIndex(
@@ -625,6 +582,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                     </Box>
                     <Box flex="9" display="flex" justifyContent="flex-end">
                       <CurrencyInput
+                        disabled
                         step="any"
                         currency={order.currency_code}
                         value={extractPrice(item.prices, order)}
@@ -773,6 +731,51 @@ const CurrencyInput = ({ value, currency, ...props }) => {
     </Wrapper>
   )
 }
+
+const Dot = styled(Box)`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+`
+
+const StyledMultiSelect = styled(MultiSelect)`
+  ${Typography.Base}
+
+  color: black;
+  background-color: white;
+
+  width: 200px;
+  text-overflow: ellipsis;
+
+  line-height: 1.22;
+
+  border: none;
+  outline: 0;
+
+  transition: all 0.2s ease;
+
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+
+  &:focus {
+    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+  }
+  &::placeholder {
+    color: #a3acb9;
+  }
+
+  .go3433208811 {
+    border: none;
+    border-radius: 3px;
+  }
+`
 
 const Wrapper = styled(Box)`
   display: flex;
