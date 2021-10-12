@@ -4,7 +4,7 @@ import { Text, Flex, Box, Image } from "rebass"
 import styled from "@emotion/styled"
 import Typography from "../../../../components/typography"
 import { displayUnitPrice } from "../../../../utils/prices"
-
+import { ReactComponent as ImagePlaceholder } from "../../../../assets/svg/image-placeholder.svg"
 const LineItemLabel = styled(Text)`
   ${Typography.Base};
 
@@ -25,7 +25,7 @@ const LineItem = ({ fontColor, lineItem, order }) => {
         <Box mx={2}>
           <Flex width="30px" height="30px">
             <Image
-              src={lineItem.thumbnail || ""}
+              src={ImagePlaceholder}
               height={30}
               width={30}
               p={!lineItem.thumbnail && "8px"}
