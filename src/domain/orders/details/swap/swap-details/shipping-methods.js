@@ -21,7 +21,7 @@ const SwapShippingMethods = ({ shipping_methods = [], taxRate, currency }) => {
                   <>
                     {method.shipping_option.name} -{" "}
                     {formatDecimalAndCurrency(
-                      ((100 + taxRate) * method.shipping_option.amount) / 10000,
+                      ((100 + taxRate) * method.price) / 10000,
                       currency
                     )}
                   </>
