@@ -188,7 +188,6 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
         const normalShippingOptions = data.shipping_options.filter(
           so => !so.is_return
         )
-        console.log({ data, returnShippingOptions, normalShippingOptions })
         setReturnShippingOptions(returnShippingOptions)
         setNormalShippingOptions(normalShippingOptions)
         setShippingLoading(false)
