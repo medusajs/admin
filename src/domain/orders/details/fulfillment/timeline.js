@@ -5,8 +5,8 @@ import moment from "moment"
 import SimpleEvent from "../timeline/simpleEvent"
 import LineItem from "../line-item"
 
-const FulfillmentTimelineItem = ({ fulfillment }) => {
-  const fontColor = fulfillment.isLatest ? "#454B54" : "#89959C"
+const FulfillmentTimelineItem = ({ fulfillment, order }) => {
+  const fontColor = fulfillment.isLatest ? "medusa" : "inactive"
 
   if (fulfillment.shipped_at) {
     fulfillment.event = "Items Shipped"
@@ -16,10 +16,10 @@ const FulfillmentTimelineItem = ({ fulfillment }) => {
     <>
       {fulfillment.items.map((lineItem, i) => (
         <LineItem
+          fontColor={fontColor}
+          order={order}
           key={i}
-          currency={fulfillment.currency_code}
           lineItem={lineItem}
-          taxRate={fulfillment.tax_rate}
         />
       ))}
     </>

@@ -3,7 +3,8 @@ import { Text, Flex, Box, Image } from "rebass"
 import moment from "moment"
 
 const SimpleEvent = ({ event, children }) => {
-  const fontColor = event.isLatest ? "#454B54" : "#89959C"
+  const fontColor = event.isLatest ? "medusa" : "inactive"
+
   return (
     <Box key={event.id}>
       <Text ml={3} fontSize={1} color={fontColor} fontWeight="500" mb={2}>

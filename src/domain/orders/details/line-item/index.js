@@ -3,6 +3,7 @@ import { navigate } from "gatsby"
 import { Text, Flex, Box, Image } from "rebass"
 import styled from "@emotion/styled"
 import Typography from "../../../../components/typography"
+import { displayUnitPrice } from "../../../../utils/prices"
 
 const LineItemLabel = styled(Text)`
   ${Typography.Base};
@@ -12,13 +13,13 @@ const LineItemLabel = styled(Text)`
   font-size: 10px;
 `
 
-const LineItem = ({ lineItem, currency, taxRate }) => {
+const LineItem = ({ fontColor, lineItem, order }) => {
   const productId = lineItem?.variant?.product_id || undefined
 
   return (
     <Flex pl={3} alignItems="center" py={2}>
       <Flex pr={3}>
-        <Box alignSelf={"center"} minWidth={"35px"}>
+        <Box alignSelf={"center"} color={fontColor} minWidth={"35px"}>
           {lineItem.quantity} x
         </Box>
         <Box mx={2}>
@@ -39,6 +40,7 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
           <LineItemLabel
             ml={2}
             mr={5}
+            color={fontColor}
             onClick={() => {
               if (productId) {
                 navigate(`/a/products/${productId}`)
@@ -48,7 +50,7 @@ const LineItem = ({ lineItem, currency, taxRate }) => {
             {lineItem.title}
             <br /> {lineItem?.variant?.sku || "-"}
             <br />
-            {(1 + taxRate / 100) * (lineItem.unit_price / 100)} {currency}
+            {displayUnitPrice(lineItem, order.region)}
           </LineItemLabel>
         </Box>
       </Flex>

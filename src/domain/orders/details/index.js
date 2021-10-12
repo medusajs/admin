@@ -788,6 +788,7 @@ const OrderDetails = ({ id }) => {
               key={i}
               currency={order.currency_code}
               lineItem={lineItem}
+              order={order}
               taxRate={order.tax_rate}
             />
           ))}

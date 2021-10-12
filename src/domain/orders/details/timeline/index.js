@@ -84,26 +84,37 @@ const getTimelineEvent = (event, rest) => {
         />
       )
     case "placed":
-      return <SimpleEvent event={event} />
+      return <SimpleEvent event={event}></SimpleEvent>
 
     case "fulfilled":
-      return <FulfillmentTimelineItem fulfillment={event} />
+      return <FulfillmentTimelineItem fulfillment={event} order={order} />
 
     default:
       return (
         <Box key={event.id} sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
-          <Text ml={3} fontSize={1} color="grey" fontWeight="500" mb={2}>
+          <Text
+            ml={3}
+            fontSize={1}
+            color={event.isLatest ? "medusa" : "inactive"}
+            fontWeight="500"
+            mb={2}
+          >
             {event.event} {event.type}
           </Text>
-          <Text fontSize="11px" color="grey" ml={3} mb={3}>
+          <Text
+            fontSize="11px"
+            color={event.isLatest ? "medusa" : "inactive"}
+            ml={3}
+            mb={3}
+          >
             {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
           </Text>
           {event.items.map((lineItem, i) => (
             <LineItem
+              fontColor={event.isLatest ? "medusa" : "inactive"}
               key={i}
-              currency={order.currency_code}
               lineItem={lineItem}
-              taxRate={order.tax_rate}
+              order={order}
             />
           ))}
         </Box>

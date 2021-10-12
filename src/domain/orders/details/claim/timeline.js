@@ -9,57 +9,10 @@ import Typography from "../../../../components/typography"
 import Badge from "../../../../components/badge"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
-
+import LineItem from "../line-item"
 import useMedusa from "../../../../hooks/use-medusa"
 
 import ClaimEdit from "./edit"
-
-const LineItemLabel = styled(Text)`
-  ${Typography.Base};
-
-  cursor: pointer;
-
-  font-size: 10px;
-`
-
-const LineItem = ({ fontColor, lineItem, currency, taxRate }) => {
-  const productId = lineItem.variant.product.id
-
-  return (
-    <Flex alignItems="center">
-      <Flex flex={1} alignItems="center">
-        <Box color={fontColor} alignSelf={"center"} minWidth={"35px"}>
-          {lineItem.quantity} x
-        </Box>
-        <Box mx={2}>
-          <Image
-            src={lineItem.thumbnail || ""}
-            sx={{
-              objectFit: "contain",
-              objectPosition: "center",
-              width: 35,
-              height: 35,
-            }}
-          />
-        </Box>
-        <Box>
-          <LineItemLabel
-            ml={2}
-            mr={5}
-            color={fontColor}
-            onClick={() => navigate(`/a/products/${productId}`)}
-          >
-            {lineItem.title}
-            <br /> {lineItem.variant.sku}
-            <br />
-            {((100 + taxRate) * lineItem.unit_price) / 10000}{" "}
-            {currency.toUpperCase()}
-          </LineItemLabel>
-        </Box>
-      </Flex>
-    </Flex>
-  )
-}
 
 export default ({
   event,
@@ -69,7 +22,8 @@ export default ({
   onReceiveReturn,
   onCancelClaim,
 }) => {
-  const fontColor = event.isLatest ? "#454B54" : "#89959C"
+  const fontColor = event.isLatest ? "medusa" : "inactive"
+
   const { toaster } = useMedusa("store")
   const [showEditClaim, setShowEditClaim] = useState(false)
 
@@ -201,11 +155,8 @@ export default ({
                   <LineItem
                     fontColor={fontColor}
                     key={lineItem.id}
-                    currency={order.currency_code}
+                    order={order}
                     lineItem={lineItem}
-                    taxRate={order.tax_rate}
-                    onReceiveReturn={onReceiveReturn}
-                    rawEvent={event.raw}
                   />
                 ))}
               </Box>
@@ -232,11 +183,8 @@ export default ({
                     <LineItem
                       fontColor={fontColor}
                       key={lineItem.id}
-                      currency={order.currency_code}
+                      order={order}
                       lineItem={lineItem}
-                      taxRate={order.tax_rate}
-                      onReceiveReturn={onReceiveReturn}
-                      rawEvent={event.raw}
                     />
                   ))}
                 </Box>

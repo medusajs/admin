@@ -9,7 +9,7 @@ import { ReactComponent as Clipboard } from "../../../../assets/svg/clipboard.sv
 import { decideBadgeColor } from "../../../../utils/decide-badge-color"
 import Typography from "../../../../components/typography"
 import Badge from "../../../../components/badge"
-import LineItem from "../../../../components/line-item"
+import LineItem from "../line-item"
 import Dropdown from "../../../../components/dropdown"
 import useMedusa from "../../../../hooks/use-medusa"
 import CopyToClipboard from "../../../../components/copy-to-clipboard"
@@ -23,7 +23,7 @@ export default ({
   onCancelSwap,
   onCancelReturn,
 }) => {
-  const fontColor = event.isLatest ? "#454B54" : "#89959C"
+  const fontColor = event.isLatest ? "medusa" : "inactive"
   const { store, isLoading, toaster } = useMedusa("store")
 
   const payStatusColors = decideBadgeColor(event.raw.payment_status)
@@ -257,12 +257,9 @@ export default ({
                 {event.return_lines.map((lineItem, i) => (
                   <LineItem
                     fontColor={fontColor}
+                    order={order}
                     key={lineItem.id}
-                    currency={order.currency_code}
                     lineItem={lineItem}
-                    taxRate={order.tax_rate}
-                    onReceiveReturn={onReceiveReturn}
-                    rawEvent={event.raw}
                   />
                 ))}
               </Box>
@@ -277,12 +274,9 @@ export default ({
                 {event.items.map((lineItem, i) => (
                   <LineItem
                     fontColor={fontColor}
+                    order={order}
                     key={lineItem.id}
-                    currency={order.currency_code}
                     lineItem={lineItem}
-                    taxRate={order.tax_rate}
-                    onReceiveReturn={onReceiveReturn}
-                    rawEvent={event.raw}
                   />
                 ))}
               </Box>

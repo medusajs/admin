@@ -10,7 +10,7 @@ import TextArea from "../../../../components/textarea"
 import Medusa from "../../../../services/api"
 
 export default ({ event, onUpdateNotes, toaster }) => {
-  const fontColor = event.isLatest ? "#454B54" : "#89959C"
+  const fontColor = event.isLatest ? "medusa" : "inactive"
   const [note, setNote] = useState(event?.raw?.value)
   const [edit, setEdit] = useState(false)
 

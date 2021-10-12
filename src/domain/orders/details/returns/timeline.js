@@ -6,11 +6,12 @@ import moment from "moment"
 import Typography from "../../../../components/typography"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
-import LineItem from "../../../../components/line-item"
+import LineItem from "../line-item"
 import SimpleEvent from "../timeline/simpleEvent"
 
 export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
-  const fontColor = event.isLatest ? "#454B54" : "#89959C"
+  const fontColor = event.isLatest ? "medusa" : "inactive"
+
   const canceled = event.status === "canceled"
   const [expanded, setExpanded] = useState(!canceled)
 
@@ -43,10 +44,6 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
             color={fontColor}
             sx={{
               fontWeight: "500",
-              // color: "#89959C",
-              // ":hover": {
-              //   color: "black",
-              // },
               cursor: "pointer",
             }}
             onClick={() => setExpanded(!expanded)}
@@ -99,11 +96,8 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
                   <LineItem
                     fontColor={fontColor}
                     key={lineItem._id}
-                    currency={order.currency_code}
+                    order={order}
                     lineItem={lineItem}
-                    taxRate={order.region.tax_rate}
-                    onReceiveReturn={onReceiveReturn}
-                    rawEvent={event.raw}
                   />
                 ))}
               </Box>
