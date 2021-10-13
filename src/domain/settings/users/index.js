@@ -40,16 +40,16 @@ const Users = () => {
     Medusa.users
       .list()
       .then(res => res.data)
-      .then(data => {
-        userList = [...data.users]
-      })
+      .then(userData => {
+        const users = [...userData.users]
 
-    Medusa.users
-      .listInvites()
-      .then(res => res.data)
-      .then(data => {
-        userList.push(...data.invites)
-        setUsers(userList)
+        Medusa.invites
+          .list()
+          .then(res => res.data)
+          .then(inviteData => {
+            const invites = [...inviteData.invites]
+            setUsers([...users, ...invites])
+          })
       })
   }, [shouldRefetch])
 

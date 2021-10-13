@@ -661,6 +661,28 @@ export default {
       return medusaRequest("GET", path)
     },
   },
+  invites: {
+    create(data) {
+      const path = `/admin/invites`
+      return medusaRequest("POST", path, data)
+    },
+    resend(inviteId) {
+      const path = `/admin/invites/${inviteId}/resend`
+      return medusaRequest("POST", path)
+    },
+    delete(inviteId) {
+      const path = `/admin/invites/${inviteId}`
+      return medusaRequest("DELETE", path)
+    },
+    list() {
+      const path = `/admin/invites`
+      return medusaRequest("GET", path)
+    },
+    accept(data) {
+      const path = `/admin/invites/accept`
+      return medusaRequest("POST", path, data)
+    },
+  },
   users: {
     resetPasswordToken(data) {
       const path = `/admin/users/password-token`
@@ -670,26 +692,12 @@ export default {
       const path = `/admin/users/reset-password`
       return medusaRequest("POST", path, data)
     },
-    invite(data) {
-      const path = `/admin/users/invite/`
-      return medusaRequest("POST", path, data)
-    },
-    resendInvite(inviteId) {
-      const path = `/admin/users/invite/${inviteId}/resend`
-      return medusaRequest("POST", path)
-    },
-    deleteInvite(inviteId) {
-      const path = `/admin/users/invite/${inviteId}`
-      return medusaRequest("DELETE", path)
-    },
+
     list() {
       const path = `/admin/users`
       return medusaRequest("GET", path)
     },
-    listInvites() {
-      const path = `/admin/users/invites`
-      return medusaRequest("GET", path)
-    },
+
     retrieve(userId) {
       const path = `/admin/users/${userId}`
       return medusaRequest("GET", path)
@@ -703,10 +711,6 @@ export default {
     delete(userId) {
       const path = `/admin/users/${userId}`
       return medusaRequest("DELETE", path)
-    },
-    acceptInvite(data) {
-      const path = `/admin/users/invite/accept`
-      return medusaRequest("POST", path, data)
     },
   },
 }

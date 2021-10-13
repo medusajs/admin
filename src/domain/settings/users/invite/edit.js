@@ -43,15 +43,15 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
   }
 
   const resendInvite = () => {
-    Medusa.users.resendInvite(invite.id)
+    Medusa.invites.resend(invite.id)
   }
 
   const onSubmit = () => {
     const update = { users: [invite.user_email], role: role }
 
     setIsLoading(true)
-    Medusa.users
-      .invite(update)
+    Medusa.invite
+      .create(update)
       .then(res => res.data)
       .then(data => {
         triggerRefetch()
@@ -62,8 +62,8 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
   }
 
   const handleDelete = () => {
-    Medusa.users
-      .deleteInvite(invite.id)
+    Medusa.invites
+      .delete(invite.id)
       .then(() => {
         triggerRefetch()
         toaster("Deleted invitation", "success")

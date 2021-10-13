@@ -36,8 +36,8 @@ const InvitePage = ({ location }) => {
     event.preventDefault()
 
     if (password === repeatPassword) {
-      await Medusa.users
-        .acceptInvite({
+      await Medusa.invites
+        .accept({
           token: parsed?.token,
           user: { first_name: firstName, last_name: lastName, password },
         })
