@@ -18,7 +18,7 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
     if (selectedImages.includes(image)) {
       setSelectedImages(selectedImages.filter(im => im !== image))
     } else {
-      setSelectedImages(selectedImages => [...selectedImages, image])
+      setSelectedImages([...selectedImages, image])
     }
   }
 
@@ -106,6 +106,8 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
                   e.stopPropagation()
                   const newImages = images.filter(img => image != img)
                   setImages(newImages)
+                  const newUploads = uploads.filter(img => image != img.preview)
+                  setUploads(newUploads)
                   setIsDirty(true)
                 }}
                 style={{
