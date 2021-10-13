@@ -140,8 +140,9 @@ const NewDiscount = ({}) => {
     data.rule.type = isPercentageDiscount ? "percentage" : "fixed"
     data.rule.allocation = isAllocatedToItem ? "item" : "total"
 
-    if (data.rule.allocation === "item")
+    if (items.length > 0) {
       data.rule.valid_for = items.map(p => p.value)
+    }
     data.regions = validRegions()
 
     const discount = {
@@ -398,23 +399,19 @@ const NewDiscount = ({}) => {
             </Flex>
           </Flex>
         </Flex>
-        {isAllocatedToItem && (
-          <>
-            <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
-              Items
-            </RequiredLabel>
-            <Text fontSize={1}>Valid for items where: </Text>
-            <Flex mt={2}>
-              <Text mt={1} fontSize={1}>
-                Product in
-              </Text>
-              <ProductSelection
-                selectedProducts={items}
-                setSelectedProducts={setItems}
-              />
-            </Flex>
-          </>
-        )}
+        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+          Items
+        </RequiredLabel>
+        <Text fontSize={1}>Valid for items where: </Text>
+        <Flex mt={2}>
+          <Text mt={1} fontSize={1}>
+            Product in
+          </Text>
+          <ProductSelection
+            selectedProducts={items}
+            setSelectedProducts={setItems}
+          />
+        </Flex>
         <Flex
           width={3 / 4}
           mb={3}

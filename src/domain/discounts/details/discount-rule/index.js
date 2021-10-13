@@ -243,26 +243,23 @@ const DiscountRuleModal = ({
               <Text fontWeight="500">Item</Text>
             </Pill>
           </Flex>
-          {isAllocatedToItem && (
-            <>
-              <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
-                Items
-              </RequiredLabel>
-              <Text fontSize={1}>Valid for items where: </Text>
+          <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+            Items
+          </RequiredLabel>
+          <Text fontSize={1}>Valid for items where: </Text>
 
-              <Flex mt={3}>
-                <Text mt={1} fontSize={1}>
-                  Product in
-                </Text>
-                <ProductSelection
-                  sx={{ width: "100%" }}
-                  mt={1}
-                  selectedProducts={selectedProducts}
-                  setSelectedProducts={setSelectedProducts}
-                />
-              </Flex>
-            </>
-          )}
+          <Flex mt={3}>
+            <Text mt={1} fontSize={1}>
+              Product in
+            </Text>
+            <ProductSelection
+              sx={{ width: "100%" }}
+              mt={1}
+              selectedProducts={selectedProducts}
+              setSelectedProducts={setSelectedProducts}
+            />
+          </Flex>
+
           <Flex
             mb={3}
             flexDirection={["column", "columnn", "columnn", "row"]}
@@ -291,22 +288,6 @@ const DiscountRuleModal = ({
               existingIsoString={discount.valid_duration || ""}
             />
           )}
-          {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
-          <Text fontSize="10px" color="gray">
-            Leaving it empty will make the discount available for all products
-          </Text>
-          <StyledMultiSelect
-            options={products.map(el => ({
-              label: el.title,
-              value: el.id,
-            }))}
-            selectAllLabel={"All"}
-            overrideStrings={{
-              allItemsAreSelected: "All products",
-            }}
-            value={selectedProducts}
-            onChange={setSelectedProducts}
-          /> */}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button type="submit" variant="primary">

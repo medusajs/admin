@@ -330,7 +330,7 @@ const DiscountDetails = ({ id }) => {
                   <Text pt={2}>
                     {discount.rule.allocation === "total"
                       ? "Applies to total order amount"
-                      : "Applies to specified items"}
+                      : "Only applies to specified items"}
                   </Text>
                 </>
               ) : (
@@ -345,40 +345,36 @@ const DiscountDetails = ({ id }) => {
               discount.rule.valid_for?.length === 0 && (
                 <Text>Currently not applicable to any item.</Text>
               )}
-            {discount.rule.allocation === "total" ? (
-              <Text>Applies to all items</Text>
-            ) : (
-              discount.rule.valid_for?.map((item, index) => {
-                return (
-                  <Flex key={item.variant_id} py={2} pr={2} alignItems="left">
-                    <Flex maxWidth="10%" height="100%">
-                      <Image
-                        src={item?.thumbnail || ImagePlaceholder}
-                        height={30}
-                        width={30}
-                        p={!item?.thumbnail && "8px"}
-                        sx={{
-                          objectFit: "contain",
-                          border: "1px solid lightgray",
-                        }}
-                      />
-                    </Flex>
-                    <Flex
-                      width={"100%"}
-                      px={2}
-                      py={1}
-                      height="100%"
-                      flexDirection="row"
-                    >
-                      <Text fontSize="12px" lineHeight={"14px"}>
-                        {item.title}
-                      </Text>
-                    </Flex>
+
+            {discount.rule.valid_for?.map((item, index) => {
+              return (
+                <Flex key={item.variant_id} py={2} pr={2} alignItems="left">
+                  <Flex maxWidth="10%" height="100%">
+                    <Image
+                      src={item?.thumbnail || ImagePlaceholder}
+                      height={30}
+                      width={30}
+                      p={!item?.thumbnail && "8px"}
+                      sx={{
+                        objectFit: "contain",
+                        border: "1px solid lightgray",
+                      }}
+                    />
                   </Flex>
-                )
-              })
-            )}
-            {}
+                  <Flex
+                    width={"100%"}
+                    px={2}
+                    py={1}
+                    height="100%"
+                    flexDirection="row"
+                  >
+                    <Text fontSize="12px" lineHeight={"14px"}>
+                      {item.title}
+                    </Text>
+                  </Flex>
+                </Flex>
+              )
+            })}
           </Box>
         </Card.Body>
       </Card>
