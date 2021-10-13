@@ -83,8 +83,6 @@ const ProductsFilter = ({
   clearFilters,
   tagsFilter,
   resetFilters,
-  // filterTags,
-  // setFilterTags,
   sx,
   ...rest
 }) => {
