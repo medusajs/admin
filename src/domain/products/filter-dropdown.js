@@ -6,6 +6,7 @@ import TagInput from "../../components/tag-input"
 import Button from "../../components/button"
 import FilterDropdownItem from "../../components/filter-dropdown-item"
 import Tooltip from "../../components/tooltip"
+import ReactTooltip from "react-tooltip"
 import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
 import { DateFilters } from "../../utils/filters"
 
@@ -87,8 +88,10 @@ const ProductsFilter = ({
   ...rest
 }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [tagfiltermsg, setTagfilterMsg] = useState("")
 
   const ref = useRef(null)
+  const tagsRef = useRef(null)
 
   const handleClickOutside = event => {
     if (ref.current && !ref.current.contains(event.target) && isOpen) {
@@ -120,6 +123,21 @@ const ProductsFilter = ({
       document.removeEventListener("click", handleClickOutside)
     }
   })
+
+  if (tagsFilter.invalidTags && tagsFilter.invalidTags?.length > 0) {
+    if (tagsFilter.invalidTags?.length === 1) {
+      const msg = `${tagsFilter.invalidTags[0]} is not a valid tag`
+      if (msg !== tagfiltermsg) {
+        setTagfilterMsg(msg)
+      }
+    } else {
+      const msg = `${tagsFilter.invalidTags} are not valid tags`
+      if (msg !== tagfiltermsg) {
+        setTagfilterMsg(msg)
+      }
+    }
+    ReactTooltip.show(tagsRef.current)
+  }
 
   return (
     <Box mr={2} style={{ position: "relative" }}>
@@ -186,23 +204,27 @@ const ProductsFilter = ({
             sx={{ fontSize: "10px", "& input": { fontSize: "12px" } }}
             width={1}
             p={2}
+            ref={tagsRef}
+            data-tip={tagfiltermsg}
           >
             <TagInput
               placeholder="Spring, summer..."
               values={tagsFilter.filter || []}
+              onBlur={() => {
+                console.log("test", tagsRef.current)
+                ReactTooltip.hide(tagsRef.current)
+              }}
               onChange={values => {
                 setTagsFilter({
                   open: tagsFilter.open,
                   filter: values,
                 })
               }}
-              data-for="tagsTooltip"
-              data-tip="test"
             />
-            <Tooltip multiline={true} id="tagsTooltip" />
           </Box>
         )}
       </DropdownContainer>
+      <Tooltip multiline={true} />
     </Box>
   )
 }

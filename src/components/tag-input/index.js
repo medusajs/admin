@@ -45,7 +45,7 @@ const StyledInput = styled.input`
   }
 `
 
-const TagInput = ({ onChange, values, ...props }) => {
+const TagInput = ({ onChange, values, onBlur = () => {}, ...props }) => {
   const [isFocused, setFocused] = useState(false)
   const [highlighted, setHighlighted] = useState(-1)
   const containerRef = useRef()
@@ -111,6 +111,7 @@ const TagInput = ({ onChange, values, ...props }) => {
   const handleBlur = () => {
     setHighlighted(-1)
     setFocused(false)
+    onBlur()
   }
 
   const handleFocus = () => {

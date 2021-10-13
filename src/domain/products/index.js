@@ -101,7 +101,7 @@ const ProductIndex = () => {
   const [tagsFilter, setTagsFilter] = useState({
     open: false,
     filter: null,
-    invalidTag: null,
+    invalidTags: null,
   })
 
   const toggleFilterTags = async tagsFilter => {
@@ -110,13 +110,15 @@ const ProductIndex = () => {
       setTags(tagsResponse.data.tags)
     }
 
-    const invalidTags = tagsFilter.filter.find(tag =>
-      tags.some(t => t.value === tag)
+    const invalidTags = tagsFilter.filter?.filter(tag =>
+      tags.every(t => t.value !== tag)
     )
 
-    console.log(invalidTags)
+    tagsFilter.invalidTags = invalidTags
 
     setTagsFilter(tagsFilter)
+
+    console.log(tagsFilter)
   }
 
   const resetFilters = () => {
