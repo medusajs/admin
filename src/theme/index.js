@@ -15,6 +15,7 @@ export const theme = {
     secondary: "#79B28A",
     medusaGreen: "#454B54",
     medusa: "#454B54",
+    inactive: "#89959C",
     danger: "#FF7675",
     muted: "#E3E8EE",
     gray: "#a3acb9",
