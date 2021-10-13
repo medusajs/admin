@@ -43,7 +43,9 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
   }
 
   const resendInvite = () => {
-    Medusa.invites.resend(invite.id)
+    Medusa.invites.resend(invite.id).then(() => {
+      toaster("Invitiation link has been resent", "success")
+    })
   }
 
   const onSubmit = () => {
