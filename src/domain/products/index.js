@@ -122,8 +122,6 @@ const ProductIndex = () => {
         : null
 
     setTagsFilter(tagsFilter)
-
-    console.log(tagsFilter)
   }
 
   const resetFilters = () => {

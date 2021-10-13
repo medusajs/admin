@@ -194,8 +194,8 @@ const ProductsFilter = ({
             width={1}
             p={2}
             ref={tagsRef}
-            data-tip={tagsFilter.invalidTagsMessage}
-            onBlur={() => ReactTooltip.hide(tagsRef.current)}
+            data-tip={tagsFilter.invalidTagsMessage || ""}
+            onBlur={() => setTagsFocussed(false)}
             onFocus={() => setTagsFocussed(true)}
           >
             <TagInput
@@ -203,7 +203,6 @@ const ProductsFilter = ({
               values={tagsFilter.filter || []}
               onBlur={() => {
                 setTagsFocussed(false)
-                ReactTooltip.hide(tagsRef.current)
               }}
               onChange={values => {
                 setTagsFilter({
