@@ -6,6 +6,7 @@ import useMedusa from "../../../hooks/use-medusa"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
+import BreadCrumb from "../../../components/breadcrumb"
 import ReturnReasonsList from "./return-reasons-list"
 
 const ReturnReasons = () => {
@@ -63,6 +64,13 @@ const ReturnReasons = () => {
   return (
     <Flex flexDirection="column" alignItems="center" pb={5} pt={5}>
       <Card width="90%" px={0}>
+        <Flex>
+          <BreadCrumb
+            previousRoute="/a/settings"
+            previousBreadCrumb="Settings"
+            currentPage="Return Reasons"
+          />
+        </Flex>
         <Flex>
           <Text mb={3} fontSize={20} fontWeight="bold">
             Return Reasons

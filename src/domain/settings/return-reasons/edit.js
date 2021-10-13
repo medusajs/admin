@@ -7,6 +7,7 @@ import Input, { StyledLabel } from "../../../components/input"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import InfoTooltip from "../../../components/info-tooltip"
+import BreadCrumb from "../../../components/breadcrumb"
 
 import ReturnReasonsList from "./return-reasons-list"
 
@@ -63,7 +64,7 @@ const EditReturnReason = ({ id }) => {
   }
 
   return (
-    <Flex alignItems="center" flexDirection="column">
+    <Flex alignItems="center" pt={5} flexDirection="column">
       <Flex
         as="form"
         width={1}
@@ -72,9 +73,13 @@ const EditReturnReason = ({ id }) => {
         alignItems="center"
         flexDirection="column"
       >
+        <BreadCrumb
+          previousRoute="/a/settings/return-reasons"
+          previousBreadCrumb="Settings > Return Reasons"
+          currentPage="Edit reason"
+        />
         <Flex
           flexDirection="column"
-          pt={5}
           alignItems="center"
           justifyContent="center"
           width={1}
@@ -116,7 +121,7 @@ const EditReturnReason = ({ id }) => {
               align-content="center"
               alignItems="baseline"
               justifyContent="space-between"
-              flexDirection={children.length > 0 ? "row" : "column"}
+              flexDirection={children?.length > 0 ? "row" : "column"}
             >
               <Flex alignItems="baseline">
                 <Text
@@ -132,7 +137,7 @@ const EditReturnReason = ({ id }) => {
               </Flex>
               <Flex>
                 <Button
-                  variant={children.length > 0 ? "cta" : "primary"}
+                  variant={children?.length > 0 ? "cta" : "primary"}
                   onClick={() => {
                     setEditReturnReason(undefined)
                     setShowReasonEdit(true)
@@ -151,7 +156,7 @@ const EditReturnReason = ({ id }) => {
           justifyContent="center"
         >
           <Flex width={1}>
-            {children.length > 0 && (
+            {children?.length > 0 && (
               <ReturnReasonsList
                 return_reasons={children}
                 onEditClick={reason => {

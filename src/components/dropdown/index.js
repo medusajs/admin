@@ -14,6 +14,7 @@ export const DropdownContainer = styled(Box)`
 
   transform: ${props =>
     props.dropUp ? "translateY(-180px)" : "translateY(32px)"};
+  position: absolute;
   background-color: #fefefe;
   min-width: ${props => props.dropdownWidth};
   box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1);
@@ -24,7 +25,7 @@ export const DropdownContainer = styled(Box)`
 `
 
 const Scrollable = styled(Box)`
-  max-height: 200px;
+  max-height: 80vh;
   overflow: auto;
 `
 
@@ -36,6 +37,7 @@ const DropdownItem = styled.a`
   display: block;
   text-align: left;
   cursor: pointer;
+
   &:hover {
     background: #f1f3f5;
   }
@@ -48,6 +50,7 @@ const StyledInput = styled.input`
   font-size: 0.8em;
   padding: 5px 12px;
   color: #454545;
+
   outline: none;
 `
 
@@ -58,7 +61,6 @@ const Dropdown = ({
   onSearchChange,
   toggleText,
   leftAlign,
-  justifyContent,
   dropdownWidth,
   dropdownHeight,
   dropUp = false,
@@ -110,16 +112,11 @@ const Dropdown = ({
   const spacingProps = ["m", "mr", "ml", "mx"]
 
   return (
-    <Flex
-      sx={{
-        width: showTrigger ? "auto" : "100%",
-        justifyContent: justifyContent ? justifyContent : "flex-end",
-      }}
-    >
+    <Flex sx={{ position: "relative", width: showTrigger ? "auto" : "100%" }}>
       {showTrigger && (
         <Button
           sx={sx}
-          minHeight="24px"
+          minHeight="25px"
           alignItems="center"
           variant="primary"
           onClick={() => handleOpen()}
@@ -128,30 +125,28 @@ const Dropdown = ({
           {toggleText || <Ellipsis height="10px" />}
         </Button>
       )}
-      <Box mt={1} sx={{ zIndex: 1001, position: "absolute", width: "inherit" }}>
-        <DropdownContainer
-          dropUp={dropUp}
-          leftAlign={leftAlign}
-          minWidth={dropdownWidth || "160px"}
-          ref={ref}
-          isOpen={isOpen}
-          topPlacement={topPlacement}
-          {..._.pick(rest, spacingProps)}
-        >
-          {showSearch && (
-            <StyledInput
-              placeholder={searchPlaceholder}
-              value={search}
-              onChange={handleSearch}
-            />
-          )}
-          <Scrollable maxHeight={dropdownHeight || "200px"}>
-            {React.Children.map(children, child => (
-              <DropdownItem>{child}</DropdownItem>
-            ))}
-          </Scrollable>
-        </DropdownContainer>
-      </Box>
+      <DropdownContainer
+        dropUp={dropUp}
+        leftAlign={leftAlign}
+        minWidth={dropdownWidth || "160px"}
+        ref={ref}
+        isOpen={isOpen}
+        topPlacement={topPlacement}
+        {..._.pick(rest, spacingProps)}
+      >
+        {showSearch && (
+          <StyledInput
+            placeholder={searchPlaceholder}
+            value={search}
+            onChange={handleSearch}
+          />
+        )}
+        <Scrollable maxHeight={dropdownHeight || "80vh"}>
+          {React.Children.map(children, child => (
+            <DropdownItem>{child}</DropdownItem>
+          ))}
+        </Scrollable>
+      </DropdownContainer>
     </Flex>
   )
 }
