@@ -19,6 +19,10 @@ const TextButton = styled(Button)`
   transition: color 0.3s ease;
   &:hover {
     color: #454b54;
+
+    & svg {
+      fill: #454b54;
+    }
   }
 `
 
@@ -27,6 +31,7 @@ const CopyToClipboard = ({
   tooltipText,
   label,
   buttonProps,
+  fillColor,
   onCopy = () => {},
   successDuration = 3000,
 }) => {
@@ -62,7 +67,7 @@ const CopyToClipboard = ({
             <Box mr={1}>{label}</Box>
             <ClipboardIcon
               style={{ marginTop: 1, display: "block" }}
-              fill={"#454B54"}
+              fill={fillColor ? fillColor : "#454B54"}
             />
           </Flex>
         </TextButton>
