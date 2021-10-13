@@ -128,6 +128,7 @@ const ProductIndex = () => {
       ? collectionFilter.filter
           .split(",")
           .map(cf => collections.find(c => c.title === cf)?.id)
+          .filter(Boolean)
           .join(",")
       : null
 
@@ -135,8 +136,11 @@ const ProductIndex = () => {
       ? tagsFilter.filter
           .map(tag => tag.trim())
           .map(tag => tags?.find(t => t.value === tag)?.id)
+          .filter(Boolean)
           .join(",")
       : null
+
+    console.log(tagIds)
 
     const urlObject = {
       "status[]": statusFilter.open ? statusFilter.filter : null,
