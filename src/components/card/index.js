@@ -25,17 +25,30 @@ const StyledHeader = styled(Flex)`
   ${props =>
     !props.hideBorder &&
     `
-  border-top: 1px solid #e3e8ee;
+  
 `}
 `
 
-Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
+Card.Header = ({
+  children,
+  badge,
+  dropdownOptions,
+  action,
+  removeBorderTop,
+  ...rest
+}) => {
   if (action && !Array.isArray(action)) {
     action = [action]
   }
 
+  let style = {}
+
+  if (!removeBorderTop) {
+    style = { borderTop: "1px solid #e3e8ee" }
+  }
+
   return (
-    <StyledHeader alignItems="center" {...rest}>
+    <StyledHeader sx={style} alignItems="center" {...rest}>
       <Flex p={3} flexGrow="1" fontWeight="bold" alignItems="center">
         <Text fontSize={20}>{children}</Text>
         {!!badge && (
