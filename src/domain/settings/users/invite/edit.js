@@ -50,7 +50,7 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
     const update = { users: [invite.user_email], role: role }
 
     setIsLoading(true)
-    Medusa.invite
+    Medusa.invites
       .create(update)
       .then(res => res.data)
       .then(data => {
@@ -98,10 +98,9 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
             </Flex>
           </Box>
           <Flex width={1} flexDirection="column">
-            <Text fontSize={1} fontWeight={600} mb={2}>
+            {/* <Text fontSize={1} fontWeight={600} mb={2}>
               Role
-            </Text>
-            {/* <table>
+            </Text> <table>
               <tbody>
                 <Row>
                   <Cell>
@@ -192,12 +191,12 @@ const EditInvite = ({ handleClose, invite, triggerRefetch }) => {
           </Flex>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
-          <Button mr={2} variant="primary" onClick={handleClose}>
+          {/* <Button mr={2} variant="primary" onClick={handleClose}>
             Cancel
           </Button>
           <Button loading={isLoading} variant="cta" onClick={onSubmit}>
             Save
-          </Button>
+          </Button> */}
         </Modal.Footer>
       </Modal.Body>
     </Modal>

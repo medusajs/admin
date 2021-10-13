@@ -175,12 +175,12 @@ const EditUser = ({ handleClose, user, triggerRefetch }) => {
           </Box>
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
-          <Button mr={2} variant="primary" onClick={handleClose}>
+          {/* <Button mr={2} variant="primary" onClick={handleClose}>
             Cancel
           </Button>
           <Button loading={isLoading} variant="cta" onClick={onSubmit}>
             Save
-          </Button>
+          </Button> */}
         </Modal.Footer>
       </Modal.Body>
     </Modal>
