@@ -28,6 +28,9 @@ import Button from "../../components/button"
 import qs from "query-string"
 import styled from "@emotion/styled"
 
+import Badge from "../../components/badge"
+import { decideBadgeColor } from "../../utils/decide-badge-color"
+
 const LinkWrapper = styled(Link)`
   width: 100%;
   height: 100%;
@@ -279,6 +282,7 @@ const ProductIndex = () => {
               <TableHeaderCell sx={{ maxWidth: "75px" }} />
               <TableHeaderCell>Name</TableHeaderCell>
               <TableHeaderCell>Collection</TableHeaderCell>
+              <TableHeaderCell>Status</TableHeaderCell>
               <TableHeaderCell>Inventory</TableHeaderCell>
               <TableHeaderCell />
             </TableHeaderRow>
@@ -350,6 +354,16 @@ const ProductIndex = () => {
                     <TableDataCell>
                       <DefaultCellContent>
                         {p.collection?.title || "-"}
+                      </DefaultCellContent>
+                    </TableDataCell>
+                    <TableDataCell>
+                      <DefaultCellContent>
+                        <Badge
+                          color={decideBadgeColor(p.status).color}
+                          bg={decideBadgeColor(p.status).bgColor}
+                        >
+                          {p.status}
+                        </Badge>
                       </DefaultCellContent>
                     </TableDataCell>
                     <TableDataCell>
