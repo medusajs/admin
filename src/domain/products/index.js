@@ -157,8 +157,6 @@ const ProductIndex = () => {
           .join(",")
       : null
 
-    console.log(tagIds)
-
     const urlObject = {
       "status[]": statusFilter.open ? statusFilter.filter : null,
       "collection_id[]": collectionFilter.open ? collectionIds : null,
