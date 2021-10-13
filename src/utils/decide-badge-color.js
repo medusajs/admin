@@ -17,7 +17,7 @@ export function decideBadgeColor(batchLabel) {
     case "partially_fulfilled":
     case "partially_shipped":
     case "partially_returned":
-    case "proposed":
+    case "draft":
     case "returned":
       return {
         bgColor: "#ffd733",
