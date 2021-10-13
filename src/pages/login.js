@@ -157,7 +157,6 @@ const LoginPage = () => {
                 cursor: "pointer",
                 transition: "0.4s",
                 "&:hover": {
-                  // color: "black",
                   filter: "brightness(0.60)",
                 },
               }}

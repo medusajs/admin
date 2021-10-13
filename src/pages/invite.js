@@ -143,13 +143,7 @@ const InvitePage = ({ location }) => {
                     value={repeatPassword}
                     onChange={e => setRepeatPassword(e.target.value)}
                   />
-                  <Button
-                    type="submit"
-                    // onClick={() => acceptInvite()}
-                    variant={"cta"}
-                    mt={4}
-                    width={1 / 4}
-                  >
+                  <Button type="submit" variant={"cta"} mt={4} width={1 / 4}>
                     Login
                   </Button>
                 </Flex>

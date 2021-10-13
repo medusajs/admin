@@ -38,9 +38,9 @@ const Invite = ({ triggerRefetch }) => {
     setInvites(newTags)
   }
 
-  // const onChange = e => {
-  //   setRole(e.target.value)
-  // }
+  const onChange = e => {
+    setRole(e.target.value)
+  }
 
   const handleSubmit = e => {
     e.preventDefault()
