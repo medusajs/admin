@@ -88,8 +88,7 @@ const ProductsFilter = ({
   ...rest
 }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [tagfiltermsg, setTagfilterMsg] = useState("")
-
+  const [tagsFocussed, setTagsFocussed] = useState(false)
   const ref = useRef(null)
   const tagsRef = useRef(null)
 
@@ -119,25 +118,15 @@ const ProductsFilter = ({
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside)
+    if (tagsFilter.invalidTagsMessage && tagsFocussed) {
+      ReactTooltip.show(tagsRef.current)
+    } else {
+      ReactTooltip.hide(tagsRef.current)
+    }
     return () => {
       document.removeEventListener("click", handleClickOutside)
     }
   })
-
-  if (tagsFilter.invalidTags && tagsFilter.invalidTags?.length > 0) {
-    if (tagsFilter.invalidTags?.length === 1) {
-      const msg = `${tagsFilter.invalidTags[0]} is not a valid tag`
-      if (msg !== tagfiltermsg) {
-        setTagfilterMsg(msg)
-      }
-    } else {
-      const msg = `${tagsFilter.invalidTags} are not valid tags`
-      if (msg !== tagfiltermsg) {
-        setTagfilterMsg(msg)
-      }
-    }
-    ReactTooltip.show(tagsRef.current)
-  }
 
   return (
     <Box mr={2} style={{ position: "relative" }}>
@@ -205,13 +194,15 @@ const ProductsFilter = ({
             width={1}
             p={2}
             ref={tagsRef}
-            data-tip={tagfiltermsg}
+            data-tip={tagsFilter.invalidTagsMessage}
+            onBlur={() => ReactTooltip.hide(tagsRef.current)}
+            onFocus={() => setTagsFocussed(true)}
           >
             <TagInput
               placeholder="Spring, summer..."
               values={tagsFilter.filter || []}
               onBlur={() => {
-                console.log("test", tagsRef.current)
+                setTagsFocussed(false)
                 ReactTooltip.hide(tagsRef.current)
               }}
               onChange={values => {
