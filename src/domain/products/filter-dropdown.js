@@ -5,7 +5,7 @@ import { Flex, Box } from "rebass"
 import TagInput from "../../components/tag-input"
 import Button from "../../components/button"
 import FilterDropdownItem from "../../components/filter-dropdown-item"
-
+import Tooltip from "../../components/tooltip"
 import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
 import { DateFilters } from "../../utils/filters"
 
@@ -196,10 +196,10 @@ const ProductsFilter = ({
                   filter: values,
                 })
               }}
-              boldLabel={"true"}
-              withTooltip
-              tooltipText="Subtitle of the product"
+              data-for="tagsTooltip"
+              data-tip="test"
             />
+            <Tooltip multiline={true} id="tagsTooltip" />
           </Box>
         )}
       </DropdownContainer>

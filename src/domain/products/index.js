@@ -98,13 +98,24 @@ const ProductIndex = () => {
     open: false,
     filter: null,
   })
-  const [tagsFilter, setTagsFilter] = useState({ open: false, filter: null })
+  const [tagsFilter, setTagsFilter] = useState({
+    open: false,
+    filter: null,
+    invalidTag: null,
+  })
 
   const toggleFilterTags = async tagsFilter => {
     if (!tags) {
       const tagsResponse = await Medusa.products.listTagsByUsage()
       setTags(tagsResponse.data.tags)
     }
+
+    const invalidTags = tagsFilter.filter.find(tag =>
+      tags.some(t => t.value === tag)
+    )
+
+    console.log(invalidTags)
+
     setTagsFilter(tagsFilter)
   }
 
@@ -120,6 +131,7 @@ const ProductIndex = () => {
     setTagsFilter({
       open: false,
       filter: null,
+      invalidTag: null,
     })
   }
 
@@ -365,8 +377,6 @@ const ProductIndex = () => {
           setTagsFilter={toggleFilterTags}
           submitFilters={submit}
           tagsFilter={tagsFilter}
-          // filterTags={filterTags}
-          // setFilterTags={setTagsFilter}
           resetFilters={resetFilters}
           clearFilters={clearFilters}
         />
