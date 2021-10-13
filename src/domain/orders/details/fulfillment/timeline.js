@@ -2,7 +2,7 @@ import React from "react"
 import { Text, Box } from "rebass"
 import { Label } from "@rebass/forms"
 import moment from "moment"
-import SimpleEvent from "../timeline/simpleEvent"
+import SimpleEvent from "../timeline/simple-event"
 import LineItem from "../line-item"
 
 const FulfillmentTimelineItem = ({ fulfillment, order }) => {

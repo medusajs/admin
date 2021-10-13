@@ -9,7 +9,7 @@ import ReturnTimeline from "../returns/timeline"
 import NoteTimeline from "../notes/timeline"
 
 import LineItem from "../line-item"
-import SimpleEvent from "./simpleEvent"
+import SimpleEvent from "./simple-event"
 import FulfillmentTimelineItem from "../fulfillment/timeline"
 import Timeline from "../../../../components/timeline"
 

@@ -7,7 +7,7 @@ import Typography from "../../../../components/typography"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
 import LineItem from "../line-item"
-import SimpleEvent from "../timeline/simpleEvent"
+import SimpleEvent from "../timeline/simple-event"
 
 export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
   const fontColor = event.isLatest ? "medusa" : "inactive"
