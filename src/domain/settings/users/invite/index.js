@@ -10,6 +10,7 @@ import useModal from "../../../../hooks/use-modal"
 import Button from "../../../../components/button"
 import Medusa from "../../../../services/api"
 import useMedusa from "../../../../hooks/use-medusa"
+import InputField from "../../../../components/input"
 
 const Row = styled.tr`
   font-size: ${props => props.theme.fontSizes[1]}px;
@@ -28,6 +29,7 @@ const Cell = styled.td`
 const Invite = ({ triggerRefetch }) => {
   const { isOpen, handleClose, handleOpen } = useModal()
   const [invites, setInvites] = useState([])
+  const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState("member")
   const { toaster } = useMedusa("collections")
@@ -44,7 +46,7 @@ const Invite = ({ triggerRefetch }) => {
     e.preventDefault()
     setIsLoading(true)
     const values = {
-      users: invites,
+      user: email,
       role,
     }
 
@@ -84,10 +86,10 @@ const Invite = ({ triggerRefetch }) => {
             </Modal.Header>
             <Modal.Content flexDirection="column">
               <Box mb={4}>
-                <TagInput
-                  placeholder="john@doe.com, jane@doe.com, etc"
-                  values={invites}
-                  onChange={handleChange}
+                <InputField
+                  placeholder="lebron@james.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                 />
               </Box>
               {/* <Flex flexDirection="column"> */}
