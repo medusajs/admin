@@ -2,37 +2,32 @@ import React, { useState, useRef, useEffect } from "react"
 import styled from "@emotion/styled"
 import { Flex, Box } from "rebass"
 
+import TagInput from "../../components/tag-input"
 import Button from "../../components/button"
 import FilterDropdownItem from "../../components/filter-dropdown-item"
-
+import Tooltip from "../../components/tooltip"
+import ReactTooltip from "react-tooltip"
 import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
+import { DateFilters } from "../../utils/filters"
 
-const statusFilters = ["pending", "completed", "cancelled"]
-const paymentFilters = ["awaiting", "captured", "refunded"]
-const fulfillmentFilters = [
-  "not_fulfilled",
-  "partially_fulfilled",
-  "fulfilled",
-  "returned",
-]
+const statusFilters = ["proposed", "draft", "published", "rejected"]
 
 const DropdownContainer = styled.div`
   ${props => `
     display: ${props.isOpen ? "block" : "none"};
-    transform: translate3d(-15px, 32px, 0px);  
+    transform: translate3d(-20px, 44px, 0px);  
   `};
 
   position: absolute;
   background-color: #fefefe;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  min-width: 300px;
+  box-shadow: 4px 8px 16px 8px rgba(0, 0, 0, 0.2);
   z-index: 1;
   top: 0;
   border-radius: 5px;
   right: 0;
 
   max-height: 80vh;
-  overflow: auto;
 
   &::before {
     content: "";
@@ -80,24 +75,37 @@ const ButtonContainer = styled(Flex)`
 
 const ProductsFilter = ({
   setStatusFilter,
-  setPaymentFilter,
-  setFulfillmentFilter,
+  statusFilter,
+  setCollectionFilter,
+  collectionFilter,
+  collections,
+  setTagsFilter,
   submitFilters,
   clearFilters,
-  statusFilter,
-  fulfillmentFilter,
-  paymentFilter,
+  tagsFilter,
+  resetFilters,
   sx,
   ...rest
 }) => {
   const [isOpen, setIsOpen] = useState(false)
-
+  const [tagsFocussed, setTagsFocussed] = useState(false)
   const ref = useRef(null)
+  const tagsRef = useRef(null)
 
   const handleClickOutside = event => {
     if (ref.current && !ref.current.contains(event.target) && isOpen) {
       setIsOpen(false)
     }
+  }
+
+  const onSubmit = () => {
+    setIsOpen(false)
+    submitFilters()
+  }
+
+  const onClear = () => {
+    setIsOpen(false)
+    clearFilters()
   }
 
   const handleOpen = () => {
@@ -110,20 +118,18 @@ const ProductsFilter = ({
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside)
+    if (tagsFilter.invalidTagsMessage && tagsFocussed) {
+      ReactTooltip.show(tagsRef.current)
+    } else {
+      ReactTooltip.hide(tagsRef.current)
+    }
     return () => {
       document.removeEventListener("click", handleClickOutside)
     }
   })
 
-  const clear = () => {
-    setFulfillmentFilter({ open: false, filter: "" })
-    setPaymentFilter({ open: false, filter: "" })
-    setPaymentFilter({ open: false, filter: "" })
-    clearFilters()
-  }
-
   return (
-    <Box style={{ position: "relative" }}>
+    <Box mr={2} style={{ position: "relative" }}>
       <Button
         sx={sx}
         alignItems="center"
@@ -135,29 +141,80 @@ const ProductsFilter = ({
       </Button>
       <DropdownContainer ref={ref} isOpen={isOpen}>
         <ButtonContainer p={2}>
-          <ClearButton onClick={() => clear()}>Clear</ClearButton>
+          <ClearButton onClick={() => onClear()}>Clear</ClearButton>
           <Box ml="auto" />
-          <DoneButton onClick={() => submitFilters()}>Done</DoneButton>
+          <DoneButton variant="cta" onClick={() => onSubmit()}>
+            Done
+          </DoneButton>
         </ButtonContainer>
         <FilterDropdownItem
           filterTitle="Status"
-          filters={statusFilters}
+          options={statusFilters}
+          filters={statusFilter.filter}
           open={statusFilter.open}
           setFilter={setStatusFilter}
         />
+
         <FilterDropdownItem
-          filterTitle="Payment status"
-          filters={paymentFilters}
-          open={paymentFilter.open}
-          setFilter={setPaymentFilter}
+          filterTitle="Collection"
+          options={collections}
+          filters={collectionFilter.filter}
+          open={collectionFilter.open}
+          setFilter={obj => {
+            setCollectionFilter(obj)
+          }}
         />
-        <FilterDropdownItem
-          filterTitle="Fulfillment status"
-          filters={fulfillmentFilters}
-          open={fulfillmentFilter.open}
-          setFilter={setFulfillmentFilter}
-        />
+        <Flex
+          width={1}
+          sx={{
+            fontSize: "12px",
+            lineHeight: "100%",
+            cursor: "pointer",
+            padding: "7px",
+            paddingBottom: "8px",
+            borderBottom: "hairline",
+          }}
+          onClick={() =>
+            setTagsFilter({ open: !tagsFilter.open, filter: tagsFilter.filter })
+          }
+        >
+          <input
+            type="checkbox"
+            id="Tags"
+            name="Tags"
+            value="Tags"
+            checked={tagsFilter.open}
+            style={{ marginRight: "5px" }}
+          />
+          Tags
+        </Flex>
+        {tagsFilter.open && (
+          <Box
+            sx={{ fontSize: "10px", "& input": { fontSize: "12px" } }}
+            width={1}
+            p={2}
+            ref={tagsRef}
+            data-tip={tagsFilter.invalidTagsMessage || ""}
+            onBlur={() => setTagsFocussed(false)}
+            onFocus={() => setTagsFocussed(true)}
+          >
+            <TagInput
+              placeholder="Spring, summer..."
+              values={tagsFilter.filter || []}
+              onBlur={() => {
+                setTagsFocussed(false)
+              }}
+              onChange={values => {
+                setTagsFilter({
+                  open: tagsFilter.open,
+                  filter: values,
+                })
+              }}
+            />
+          </Box>
+        )}
       </DropdownContainer>
+      <Tooltip multiline={true} />
     </Box>
   )
 }
