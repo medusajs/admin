@@ -26,7 +26,7 @@ const Regions = ({ id }) => {
   const [paymentProviders, setPaymentProviders] = useState([])
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [fulfillmentProviders, setFulfillmentProviders] = useState([])
-  const [DeleteRegion, setDeleteRegion] = useState(false)
+  const [deleteRegion, setDeleteRegion] = useState(false)
   const [isDeleting,setDeleting ] = useState(false)
 
   const { store, isLoading: storeIsLoading } = useMedusa("store")
@@ -37,7 +37,7 @@ const Regions = ({ id }) => {
     fulfillmentOptions: fulfillmentEndpoint,
     update,
     toaster,
-    delete:deleteRegion,
+    delete:deleteRegn,
   } = useMedusa("regions", { id })
   const { register, reset, setValue, handleSubmit } = useForm()
 
@@ -274,7 +274,7 @@ const Regions = ({ id }) => {
       {!isLoading && (
         <Shipping region={region} fulfillmentMethods={fulfillmentEndpoint} />
       )}
-      {DeleteRegion && (
+      {deleteRegion && (
         <Dialog
           title="Delete Region"
           submitText={"Delete Region"}
@@ -282,7 +282,7 @@ const Regions = ({ id }) => {
           submitLoading={isDeleting}
           onSubmit={() => {
             setDeleting(true)
-            deleteRegion()
+            deleteRegn()
               .then(() => {
                 toaster("Region was Deleted", "success")
               })
