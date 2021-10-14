@@ -125,14 +125,13 @@ const PaymentBreakdown = ({ swap, order, cart }) => {
   )
 }
 
-const PaymentInformation = ({ event, onProcessPayment, swap, order }) => {
-  const { store } = useMedusa("store")
-
-  const payment_link = useMemo(() => {
-    if (!store || !store.payment_link_template) return ""
-
-    return store.payment_link_template.replace(/\{cart_id\}/, event.raw.cart_id)
-  }, [store])
+const PaymentInformation = ({
+  event,
+  onProcessPayment,
+  swap,
+  order,
+  paymentLink,
+}) => {
   const paymentStatusColors = decideBadgeColor(event.raw.payment_status)
 
   const actions = useMemo(() => {
@@ -187,8 +186,8 @@ const PaymentInformation = ({ event, onProcessPayment, swap, order }) => {
       <Box mb={2}>
         <CopyToClipboard
           label="Copy payment link"
-          tooltipText={payment_link}
-          copyText={payment_link}
+          tooltipText={paymentLink}
+          copyText={paymentLink}
         />
       </Box>
       <Box>
