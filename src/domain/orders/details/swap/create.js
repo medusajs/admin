@@ -334,11 +334,18 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }
 
   const selectCustomOptions = useMemo(() => {
+    const relevantShippingOptions = normalShippingOptions.filter(
+      so =>
+        itemsToAdd.findIndex(
+          item => item.product.profile_id === so.profile_id
+        ) > -1
+    )
+
     return [
       FREE_SHIPPING_OPTION,
-      ...normalShippingOptions.map(so => ({ label: so.name, value: so.id })),
+      ...relevantShippingOptions.map(so => ({ label: so.name, value: so.id })),
     ]
-  }, [normalShippingOptions])
+  }, [normalShippingOptions, itemsToAdd])
 
   return (
     <Modal onClick={onDismiss}>
