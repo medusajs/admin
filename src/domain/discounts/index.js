@@ -238,7 +238,7 @@ const DiscountIndex = () => {
             <TableHeaderRow>
               <TableHeaderCell>Code</TableHeaderCell>
               <TableHeaderCell>Description</TableHeaderCell>
-              <TableHeaderCell>Disabled</TableHeaderCell>
+              {/* <TableHeaderCell>Disabled</TableHeaderCell> */}
               <TableHeaderCell>Type</TableHeaderCell>
             </TableHeaderRow>
           </TableHead>
@@ -256,20 +256,6 @@ const DiscountIndex = () => {
                     <DefaultCellContent>
                       {el.rule.description || "N / A"}
                     </DefaultCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    {el.is_disabled ? (
-                      <BadgdeCellContent>
-                        <Badge
-                          color={decideBadgeColor(el.is_disabled).color}
-                          bg={decideBadgeColor(el.is_disabled).bgColor}
-                        >
-                          Disabled
-                        </Badge>
-                      </BadgdeCellContent>
-                    ) : (
-                      "-"
-                    )}
                   </TableDataCell>
                   <TableDataCell>
                     <BadgdeCellContent>
