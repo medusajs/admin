@@ -157,7 +157,7 @@ const DiscountIndex = () => {
     }
   }
 
-  const moreResults = discounts && discounts.length >= limit
+  const moreResults = discounts && discounts.length > limit
 
   return (
     <Flex flexDirection="column" pt={5} pb={5}>
