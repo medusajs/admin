@@ -5,6 +5,7 @@ import { Flex, Text, Box, Image } from "rebass"
 import { Input } from "@rebass/forms"
 import { Router } from "@reach/router"
 import Medusa from "../../services/api"
+import ProductsFilter from "./filter-dropdown"
 
 import ImagePlaceholder from "../../assets/svg/image-placeholder.svg"
 
@@ -17,7 +18,6 @@ import {
   TableBody,
   TableRow,
   TableDataCell,
-  TableLinkRow,
   DefaultCellContent,
 } from "../../components/table"
 
@@ -27,9 +27,11 @@ import useMedusa from "../../hooks/use-medusa"
 import Button from "../../components/button"
 import qs from "query-string"
 import styled from "@emotion/styled"
-
 import Badge from "../../components/badge"
 import { decideBadgeColor } from "../../utils/decide-badge-color"
+
+const removeNullish = obj =>
+  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
 const LinkWrapper = styled(Link)`
   width: 100%;
@@ -60,7 +62,13 @@ const ProductIndex = () => {
   }
 
   const { store } = useMedusa("store")
-
+  const { collections, isLoading: isLoadingCollections } = useMedusa(
+    "collections"
+  )
+  const defaultQueryProps = {
+    fields: "id,title,thumbnail",
+    expand: "variants,variants.prices,collection,tags",
+  }
   const {
     products,
     hasCache,
@@ -71,16 +79,127 @@ const ProductIndex = () => {
   } = useMedusa("products", {
     search: {
       ...filtersOnLoad,
-      fields: "id,title,thumbnail",
-      expand: "variants,variants.prices,collection",
+      ...defaultQueryProps,
     },
   })
+
+  const [tags, setTags] = useState(null)
   const [query, setQuery] = useState("")
   const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [storeCurrencies, setStoreCurrencies] = useState([])
+  const [collectionsList, setCollectionsList] = useState([])
   const [selectedProduct, setSelectedProduct] = useState()
   const [copyingProduct, setCopyingProduct] = useState(false)
+
+  const [statusFilter, setStatusFilter] = useState({
+    open: false,
+    filter: null,
+  })
+  const [collectionFilter, setCollectionFilter] = useState({
+    open: false,
+    filter: null,
+  })
+  const [tagsFilter, setTagsFilter] = useState({
+    open: false,
+    filter: null,
+    invalidTagsMessage: null,
+  })
+
+  const toggleFilterTags = async tagsFilter => {
+    if (!tags) {
+      const tagsResponse = await Medusa.products.listTagsByUsage()
+      setTags(tagsResponse.data.tags)
+    }
+
+    const invalidTags = tagsFilter.filter?.filter(tag =>
+      tags.every(t => t.value !== tag)
+    )
+
+    tagsFilter.invalidTagsMessage =
+      invalidTags?.length > 0
+        ? invalidTags?.length === 1
+          ? `${invalidTags[0]} is not a valid tag`
+          : `${invalidTags} are not valid tags`
+        : null
+
+    setTagsFilter(tagsFilter)
+  }
+
+  const resetFilters = () => {
+    setStatusFilter({
+      open: false,
+      filter: null,
+    })
+    setCollectionFilter({
+      open: false,
+      filter: null,
+    })
+    setTagsFilter({
+      open: false,
+      filter: null,
+      invalidTagsMessage: null,
+    })
+  }
+
+  const submit = async () => {
+    const collectionIds = collectionFilter.filter
+      ? collectionFilter.filter
+          .split(",")
+          .map(cf => collections.find(c => c.title === cf)?.id)
+          .filter(Boolean)
+          .join(",")
+      : null
+
+    const tagIds = tagsFilter.filter
+      ? tagsFilter.filter
+          .map(tag => tag.trim())
+          .map(tag => tags?.find(t => t.value === tag)?.id)
+          .filter(Boolean)
+          .join(",")
+      : null
+
+    const urlObject = {
+      "status[]": statusFilter.open ? statusFilter.filter : null,
+      "collection_id[]": collectionFilter.open ? collectionIds : null,
+      "tags[]": tagsFilter.open && tagIds?.length > 0 ? tagIds : null,
+    }
+
+    const url = { ...removeNullish(urlObject) }
+
+    replaceQueryString(url)
+  }
+
+  const replaceQueryString = queryObject => {
+    let searchObject = {
+      ...queryObject,
+      ...defaultQueryProps,
+    }
+
+    if (_.entries(queryObject).length === 0) {
+      resetFilters()
+      window.history.replaceState({}, "", "/a/products")
+      refresh({ search: { ...defaultQueryProps } })
+    } else {
+      if (!searchObject.offset) {
+        searchObject.offset = 0
+      }
+
+      if (!searchObject.limit) {
+        searchObject.limit = 20
+      }
+
+      const query = qs.stringify(queryObject)
+      window.history.replaceState(`/a/products`, "", `${`?${query}`}`)
+      refresh({ search: { ...searchObject } })
+    }
+  }
+
+  const clearFilters = () => {
+    resetFilters()
+    setOffset(0)
+    replaceQueryString({})
+  }
 
   const onKeyDown = event => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
@@ -106,6 +225,7 @@ const ProductIndex = () => {
       skipEmptyString: true,
     })
 
+    resetFilters()
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({ search })
   }
@@ -114,18 +234,18 @@ const ProductIndex = () => {
     const updatedOffset = direction === "next" ? offset + limit : offset - limit
     const baseUrl = qs.parseUrl(window.location.href).url
 
-    const search = {
+    const search = removeNullish({
       fields: "id,title,thumbnail",
       expand: "variants,variants.prices,collection",
       q: query,
       offset: updatedOffset,
       limit,
-    }
+    })
+
     const prepared = qs.stringify(search, {
       skipNull: true,
       skipEmptyString: true,
     })
-
     window.history.replaceState(baseUrl, "", `?${prepared}`)
 
     refresh({ search }).then(() => {
@@ -140,7 +260,11 @@ const ProductIndex = () => {
       const currencyCodes = store.currencies.map(c => c.code)
       setStoreCurrencies(currencyCodes)
     }
-  }, [store])
+    if (isLoadingCollections) {
+      return
+    }
+    setCollectionsList(collections.map(c => c.title))
+  }, [store, isLoadingCollections])
 
   const handleCheckbox = p => {
     if (!selectedProduct) {
@@ -249,9 +373,21 @@ const ProductIndex = () => {
           Search
         </Button>
         <Box ml="auto" />
+        <ProductsFilter
+          setStatusFilter={setStatusFilter}
+          statusFilter={statusFilter}
+          setCollectionFilter={setCollectionFilter}
+          collectionFilter={collectionFilter}
+          collections={collectionsList}
+          setTagsFilter={toggleFilterTags}
+          submitFilters={submit}
+          tagsFilter={tagsFilter}
+          resetFilters={resetFilters}
+          clearFilters={clearFilters}
+        />
         {selectedProduct && (
           <Button
-            mr={3}
+            mr={2}
             onClick={() => handleCopyProduct()}
             variant={"primary"}
             loading={copyingProduct}
@@ -288,105 +424,108 @@ const ProductIndex = () => {
             </TableHeaderRow>
           </TableHead>
           <TableBody>
-            {products.map(p => {
-              const missingVariantPrices = p.variants.map(v => {
-                const variantPriceCurrencies = v.prices.map(
-                  vp => vp.currency_code
-                )
+            {products &&
+              products.map(p => {
+                const missingVariantPrices = p.variants.map(v => {
+                  const variantPriceCurrencies = v.prices.map(
+                    vp => vp.currency_code
+                  )
 
-                return _.difference(storeCurrencies, variantPriceCurrencies)
-                  .length
-              })
+                  return _.difference(storeCurrencies, variantPriceCurrencies)
+                    .length
+                })
 
-              const missingPrices = _.sum(missingVariantPrices)
+                const missingPrices = _.sum(missingVariantPrices)
 
-              return (
-                <TableRow key={p.id}>
-                  <TableDataCell
-                    sx={{
-                      maxWidth: "35px !important",
-                      paddingRight: "0px",
-                      paddingLeft: "0px !important",
-                    }}
-                  >
-                    <DefaultCellContent
-                      width="35px !important"
-                      justifyContent="center"
-                    >
-                      <input
-                        id={p.id}
-                        checked={selectedProduct && selectedProduct.id === p.id}
-                        onChange={() => handleCheckbox(p)}
-                        disabled={
-                          selectedProduct && selectedProduct.id !== p.id
-                        }
-                        type="checkbox"
-                      />
-                    </DefaultCellContent>
-                  </TableDataCell>
-                  <LinkWrapper
-                    to={`/a/products${p.is_giftcard ? "/gift-card" : ""}/${
-                      p.id
-                    }`}
-                  >
+                return (
+                  <TableRow key={p.id}>
                     <TableDataCell
-                      maxWidth="75px"
-                      p={2}
-                      height="100%"
-                      textAlign="center"
+                      sx={{
+                        maxWidth: "35px !important",
+                        paddingRight: "0px",
+                        paddingLeft: "0px !important",
+                      }}
                     >
-                      <DefaultCellContent>
-                        <Image
-                          src={p.thumbnail || ImagePlaceholder}
-                          height={38}
-                          width={38}
-                          p={!p.thumbnail && "8px"}
-                          sx={{
-                            objectFit: "contain",
-                            border: "1px solid #f1f3f5",
-                          }}
+                      <DefaultCellContent
+                        width="35px !important"
+                        justifyContent="center"
+                      >
+                        <input
+                          id={p.id}
+                          checked={
+                            selectedProduct && selectedProduct.id === p.id
+                          }
+                          onChange={() => handleCheckbox(p)}
+                          disabled={
+                            selectedProduct && selectedProduct.id !== p.id
+                          }
+                          type="checkbox"
                         />
                       </DefaultCellContent>
                     </TableDataCell>
-                    <TableDataCell>
-                      <DefaultCellContent>{p.title}</DefaultCellContent>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <DefaultCellContent>
-                        {p.collection?.title || "-"}
-                      </DefaultCellContent>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <DefaultCellContent>
-                        <Badge
-                          color={decideBadgeColor(p.status).color}
-                          bg={decideBadgeColor(p.status).bgColor}
-                        >
-                          {p.status}
-                        </Badge>
-                      </DefaultCellContent>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <DefaultCellContent>
-                        {p.variants.reduce(
-                          (acc, next) => acc + next.inventory_quantity,
-                          0
-                        )}
-                        {" in stock for "}
-                        {p.variants.length} variant(s)
-                      </DefaultCellContent>
-                    </TableDataCell>
-                    <TableDataCell>
-                      <DefaultCellContent>
-                        {missingPrices > 0
-                          ? `${missingPrices} variant price(s) missing`
-                          : "-"}
-                      </DefaultCellContent>
-                    </TableDataCell>
-                  </LinkWrapper>
-                </TableRow>
-              )
-            })}
+                    <LinkWrapper
+                      to={`/a/products${p.is_giftcard ? "/gift-card" : ""}/${
+                        p.id
+                      }`}
+                    >
+                      <TableDataCell
+                        maxWidth="75px"
+                        p={2}
+                        height="100%"
+                        textAlign="center"
+                      >
+                        <DefaultCellContent>
+                          <Image
+                            src={p.thumbnail || ImagePlaceholder}
+                            height={38}
+                            width={38}
+                            p={!p.thumbnail && "8px"}
+                            sx={{
+                              objectFit: "contain",
+                              border: "1px solid #f1f3f5",
+                            }}
+                          />
+                        </DefaultCellContent>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <DefaultCellContent>{p.title}</DefaultCellContent>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <DefaultCellContent>
+                          {p.collection?.title || "-"}
+                        </DefaultCellContent>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <DefaultCellContent>
+                          <Badge
+                            color={decideBadgeColor(p.status).color}
+                            bg={decideBadgeColor(p.status).bgColor}
+                          >
+                            {p.status}
+                          </Badge>
+                        </DefaultCellContent>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <DefaultCellContent>
+                          {p.variants.reduce(
+                            (acc, next) => acc + next.inventory_quantity,
+                            0
+                          )}
+                          {" in stock for "}
+                          {p.variants.length} variant(s)
+                        </DefaultCellContent>
+                      </TableDataCell>
+                      <TableDataCell>
+                        <DefaultCellContent>
+                          {missingPrices > 0
+                            ? `${missingPrices} variant price(s) missing`
+                            : "-"}
+                        </DefaultCellContent>
+                      </TableDataCell>
+                    </LinkWrapper>
+                  </TableRow>
+                )
+              })}
           </TableBody>
         </Table>
       )}
