@@ -63,6 +63,7 @@ const Sidebar = ({}) => {
   const [storeName, setStoreName] = useState("")
   const [path, setPath] = useState("")
   const [orderOpen, setOrderOpen] = useState(false)
+  const [currentlyOpen, setCurrentlyOpen] = useState("")
 
   const fetchStore = async () => {
     const cache = localStorage.getItem("medusa::cache::store")
@@ -81,6 +82,17 @@ const Sidebar = ({}) => {
     fetchStore()
   }, [])
 
+  const triggerHandler = () => {
+    const id = triggerHandler.id++
+    return {
+      open: currentlyOpen === id,
+      handleTriggerClick: () => setCurrentlyOpen(id),
+    }
+  }
+  // We store the `id` counter on the function object, as a state creates
+  // infinite updates, and we do not want the variable to be free floating.
+  triggerHandler.id = 0
+
   return (
     <Container fontSize={1} fontFamily={"body"} pb={3} pt={4} px={4}>
       <Flex mx={-2} alignItems="center">
@@ -95,6 +107,7 @@ const Sidebar = ({}) => {
         <Collapsible
           transitionTime={150}
           transitionCloseTime={150}
+          {...triggerHandler()}
           trigger={
             <StyledItemContainer
               to="/a/orders"
@@ -145,6 +158,7 @@ const Sidebar = ({}) => {
         <Collapsible
           transitionTime={150}
           transitionCloseTime={150}
+          {...triggerHandler()}
           trigger={
             <StyledItemContainer
               to="/a/products"
@@ -170,46 +184,66 @@ const Sidebar = ({}) => {
             </Flex>
           </StyledItemContainer>
         </Collapsible>
-        <StyledItemContainer
-          to="/a/customers"
-          activeClassName="active"
-          partiallyActive
-        >
-          <img src="https://img.icons8.com/ios/50/000000/gender-neutral-user.png" />
-          <Text ml={2} variant="nav">
-            Customers
-          </Text>
-        </StyledItemContainer>
-        <StyledItemContainer
-          to="/a/discounts"
-          activeClassName="active"
-          partiallyActive
-        >
-          <img src="https://img.icons8.com/ios/50/000000/discount.png" />
-          <Text ml={2} variant="nav">
-            Discounts
-          </Text>
-        </StyledItemContainer>
-        <StyledItemContainer
-          to="/a/gift-cards"
-          activeClassName="active"
-          partiallyActive
-        >
-          <img src="https://img.icons8.com/ios/50/000000/gift-card.png" />
-          <Text ml={2} variant="nav">
-            Gift Cards
-          </Text>
-        </StyledItemContainer>
-        <StyledItemContainer
-          to="/a/settings"
-          activeClassName="active"
-          partiallyActive
-        >
-          <img src="https://img.icons8.com/ios/50/000000/settings--v1.png" />
-          <Text ml={2} variant="nav">
-            Settings
-          </Text>
-        </StyledItemContainer>
+        <Collapsible
+          {...triggerHandler()}
+          trigger={
+            <StyledItemContainer
+              to="/a/customers"
+              activeClassName="active"
+              partiallyActive
+            >
+              <img src="https://img.icons8.com/ios/50/000000/gender-neutral-user.png" />
+              <Text ml={2} variant="nav">
+                Customers
+              </Text>
+            </StyledItemContainer>
+          }
+        />
+        <Collapsible
+          {...triggerHandler()}
+          trigger={
+            <StyledItemContainer
+              to="/a/discounts"
+              activeClassName="active"
+              partiallyActive
+            >
+              <img src="https://img.icons8.com/ios/50/000000/discount.png" />
+              <Text ml={2} variant="nav">
+                Discounts
+              </Text>
+            </StyledItemContainer>
+          }
+        />
+        <Collapsible
+          {...triggerHandler()}
+          trigger={
+            <StyledItemContainer
+              to="/a/gift-cards"
+              activeClassName="active"
+              partiallyActive
+            >
+              <img src="https://img.icons8.com/ios/50/000000/gift-card.png" />
+              <Text ml={2} variant="nav">
+                Gift Cards
+              </Text>
+            </StyledItemContainer>
+          }
+        />
+        <Collapsible
+          {...triggerHandler()}
+          trigger={
+            <StyledItemContainer
+              to="/a/settings"
+              activeClassName="active"
+              partiallyActive
+            >
+              <img src="https://img.icons8.com/ios/50/000000/settings--v1.png" />
+              <Text ml={2} variant="nav">
+                Settings
+              </Text>
+            </StyledItemContainer>
+          }
+        />
       </Flex>
     </Container>
   )

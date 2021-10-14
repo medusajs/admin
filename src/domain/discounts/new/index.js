@@ -5,15 +5,21 @@ import { useForm } from "react-hook-form"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Medusa from "../../../services/api"
+import moment from "moment"
 
+import AvailabilityDuration from "../../../components/availability-duration"
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
 import MultiSelect from "../../../components/multi-select"
 import Input from "../../../components/input"
 import Typography from "../../../components/typography"
-
+import DatePicker from "../../../components/date-picker/date-picker"
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
+import InfoTooltip from "../../../components/info-tooltip"
+import Tooltip from "../../../components/tooltip"
+import { ReactComponent as InfoIcon } from "../../../assets/svg/info.svg"
+
 import { navigate } from "gatsby"
 
 const HorizontalDivider = props => (
@@ -59,6 +65,12 @@ const NewDiscount = ({}) => {
   const [selectedRegions, setSelectedRegions] = useState([])
   const [selectedProducts, setSelectedProducts] = useState([])
   const [isFreeShipping, setIsFreeShipping] = useState(false)
+  const [isPercentageDiscount, setIsPercentageDiscount] = useState(false)
+  const [isAllocatedToItem, setIsAllocatedToItem] = useState(false)
+  const [startDate, setStartDate] = useState(new Date())
+  const [endDate, setEndDate] = useState(undefined)
+  const [isDynamic, setIsDynamic] = useState(false)
+  const [iso8601Date, setIso8601Date] = useState("")
   const {
     register,
     handleSubmit,
@@ -131,18 +143,23 @@ const NewDiscount = ({}) => {
 
     data.rule.value = parseInt(data.rule.value)
 
-    if (data.rule.type === "fixed") {
+    if (!isPercentageDiscount) {
       data.rule.value = data.rule.value * 100
     }
+    data.rule.type = isPercentageDiscount ? "percentage" : "fixed"
+    data.rule.allocation = isAllocatedToItem ? "item" : "total"
 
     data.rule.valid_for = validProducts()
     data.regions = validRegions()
 
     const discount = {
       code: data.code,
-      is_dynamic: data.is_dynamic === "true",
+      is_dynamic: isDynamic, //data.is_dynamic === "true",
       rule: data.rule,
+      starts_at: moment(startDate).format("MM/DD/YYYY HH:mm"),
+      ends_at: endDate ? moment(endDate).format("MM/DD/YYYY HH:mm") : undefined,
       regions: data.regions || [],
+      valid_duration: isDynamic ? iso8601Date : undefined,
     }
 
     if (data.usage_limit) {
@@ -155,7 +172,9 @@ const NewDiscount = ({}) => {
         toaster("Successfully created discount", "success")
         navigate("/a/discounts")
       })
-      .catch(() => toaster("Error creating discount", "error"))
+      .catch(error => {
+        toaster("Error creating discount", "error")
+      })
   }
 
   if (isLoadingProducts || isLoadingRegions) {
@@ -170,7 +189,7 @@ const NewDiscount = ({}) => {
 
   const onRegionSelect = data => {
     if (data.length > 1) {
-      setValue("rule.type", "percentage")
+      setIsPercentageDiscount(true)
     }
     setSelectedRegions(data)
   }
@@ -205,6 +224,7 @@ const NewDiscount = ({}) => {
             Choose valid regions
           </RequiredLabel>
           <MultiSelect
+            limitedWidth={true}
             options={regions.map(el => ({
               label: el.name,
               value: el.id,
@@ -220,7 +240,6 @@ const NewDiscount = ({}) => {
           <Input
             boldLabel={true}
             label="Usage limit"
-            width="75%"
             type="number"
             name="usage_limit"
             placeholder="5"
@@ -228,9 +247,14 @@ const NewDiscount = ({}) => {
             ref={register}
           />
         </Box>
-        <Flex alignItems="center" mb={4}>
+        <Flex
+          width={3 / 4}
+          justifyContent="space-between"
+          alignItems="center"
+          mb={4}
+        >
           <Pill
-            width="30%"
+            width="50%"
             onClick={() => setIsFreeShipping(false)}
             active={!isFreeShipping}
             mr={4}
@@ -238,50 +262,38 @@ const NewDiscount = ({}) => {
             <Text fontWeight="500">Discount</Text>
           </Pill>
           <Pill
-            width="30%"
-            onClick={() => setIsFreeShipping(true)}
+            width="50%"
+            onClick={() => {
+              setIsFreeShipping(true)
+            }}
             active={isFreeShipping}
           >
             <Text fontWeight="500">Free shipping</Text>
           </Pill>
         </Flex>
-        <Box>
-          <RequiredLabel style={{ fontWeight: 500 }}>
-            Is this a dynamic discount?
-          </RequiredLabel>
+        <Box mb={5}>
+          <StyledLabel>
+            <Flex sx={{ cursor: "pointer" }} alignItems="center">
+              <input
+                type="checkbox"
+                id="is_dynamic"
+                checked={isDynamic}
+                style={{ cursor: "pointer", marginRight: "5px" }}
+                onChange={() => setIsDynamic(!isDynamic)}
+              />
+              <Flex alignItems="center">
+                <Text fontSize="14px">This is a template discount</Text>{" "}
+                <InfoTooltip
+                  ml={2}
+                  tooltipText={
+                    "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
+                  }
+                />
+              </Flex>
+            </Flex>
+          </StyledLabel>
         </Box>
-        <StyledLabel>
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              ref={register({ required: true })}
-              id="is_dynamic"
-              name="is_dynamic"
-              value="false"
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              No
-            </Text>
-          </Flex>
-        </StyledLabel>
-        <StyledLabel mt={2} mb={3}>
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              disabled={isFreeShipping}
-              ref={register({ required: true })}
-              id="is_dynamic"
-              name="is_dynamic"
-              value="true"
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              Yes
-            </Text>
-          </Flex>
-        </StyledLabel>
-        <HorizontalDivider my={2} />
+
         <Box>
           <Text fontSize={2} mb={3} mt={2}>
             Discount rule
@@ -310,100 +322,132 @@ const NewDiscount = ({}) => {
           min="0"
           ref={register({ required: !isFreeShipping ? true : false })}
         />
-        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
-          Type
-        </RequiredLabel>
-        <StyledLabel>
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              ref={register({ required: !isFreeShipping ? true : false })}
-              id="percentage"
-              name="rule.type"
-              disabled={isFreeShipping}
-              value="percentage"
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              Percentage
-            </Text>
+        {/* <Flex> */}
+        <Flex flexDirection="column">
+          <Flex flexDirection="column">
+            <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+              Type
+            </RequiredLabel>
+            <Flex
+              width={3 / 4}
+              justifyContent="space-between"
+              alignItems="center"
+              mb={4}
+            >
+              <Pill
+                disabled={isFreeShipping}
+                width="50%"
+                onClick={() => setIsPercentageDiscount(true)}
+                active={isPercentageDiscount && !isFreeShipping}
+                mr={4}
+              >
+                <Text fontWeight="500">Percentage</Text>
+              </Pill>
+              <Flex
+                width={1 / 2}
+                data-tip="Fixed amounts are not allowed for multi-regional discounts"
+                data-for="amount-tooltip"
+              >
+                <Pill
+                  disabled={isFreeShipping || selectedRegions.length > 1}
+                  width="100%"
+                  onClick={() => setIsPercentageDiscount(false)}
+                  active={!isPercentageDiscount && !isFreeShipping}
+                >
+                  <Flex alignItems="center" justifyContent="center">
+                    <Text
+                      mr={selectedRegions.length > 1 ? 2 : 0}
+                      fontWeight="500"
+                    >
+                      Fixed Amount{" "}
+                    </Text>
+                    {selectedRegions.length > 1 ? (
+                      <InfoIcon
+                        style={{
+                          fill: "#c4c4c4",
+                          display: "block",
+                        }}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </Flex>
+                </Pill>
+              </Flex>
+            </Flex>
           </Flex>
-        </StyledLabel>
-        <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              ref={register({ required: !isFreeShipping ? true : false })}
-              id="fixed"
-              name="rule.type"
-              value="fixed"
-              disabled={selectedRegions.length > 1 || isFreeShipping}
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              Fixed amount{" "}
-              {selectedRegions.length > 1 ? (
-                <span style={{ fontSize: "8px" }}>
-                  (not allowed for multi-regional discounts)
-                </span>
-              ) : (
-                ""
-              )}
-            </Text>
+          <Flex flexDirection="column">
+            <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+              Allocation
+            </RequiredLabel>
+            <Flex
+              width={3 / 4}
+              justifyContent="space-between"
+              alignItems="center"
+              mb={4}
+            >
+              <Pill
+                disabled={isFreeShipping}
+                width="50%"
+                onClick={() => setIsAllocatedToItem(false)}
+                active={!isAllocatedToItem && !isFreeShipping}
+                mr={4}
+              >
+                <Text fontWeight="500">Total</Text>
+              </Pill>
+              <Pill
+                disabled={isFreeShipping}
+                width="50%"
+                onClick={() => setIsAllocatedToItem(true)}
+                active={isAllocatedToItem && !isFreeShipping}
+              >
+                <Text fontWeight="500">Item</Text>
+              </Pill>
+            </Flex>
           </Flex>
-        </StyledLabel>
-        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
-          Allocation
-        </RequiredLabel>
-        <StyledLabel fontSize="10px" color="gray">
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              ref={register({ required: !isFreeShipping ? true : false })}
-              id="total"
-              name="rule.allocation"
-              disabled={isFreeShipping}
-              value="total"
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              Total (discount is applied to the total amount)
-            </Text>
+          <Flex
+            width={3 / 4}
+            mb={3}
+            flexDirection={["column", "columnn", "columnn", "row"]}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Flex
+              width={[1, 1, 1, 1 / 2]}
+              mr={[0, 0, 0, 4]}
+              mb={[2, 2, 2, 0]}
+              flexDirection="column"
+            >
+              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
+                Start date
+              </StyledLabel>
+              <DatePicker
+                date={startDate}
+                onChange={setStartDate}
+                enableTimepicker={true}
+              />
+            </Flex>
+            <Flex width={[1, 1, 1, 1 / 2]} flexDirection="column">
+              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
+                End date
+              </StyledLabel>
+              <DatePicker
+                date={endDate}
+                onChange={setEndDate}
+                enableTimepicker={true}
+              />
+            </Flex>
           </Flex>
-        </StyledLabel>
-        <StyledLabel mt={2} mb={3} fontSize="10px" color="gray">
-          <Flex alignItems="center">
-            <input
-              type="radio"
-              ref={register({ required: !isFreeShipping ? true : false })}
-              id="item"
-              name="rule.allocation"
-              disabled={isFreeShipping}
-              value="item"
-              style={{ marginRight: "5px" }}
-            />
-            <Text fontSize="12px" color="gray">
-              Item (discount is applied to specific items)
-            </Text>
-          </Flex>
-        </StyledLabel>
-        {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
-        <Text fontSize="10px" color="gray">
-          Leaving it empty will make the discount available for all products
-        </Text>
+          {isDynamic && (
+            <Flex width={3 / 5}>
+              <AvailabilityDuration
+                setIsoString={setIso8601Date}
+                existingIsoString=""
+              />
+            </Flex>
+          )}
+        </Flex>
 
-        <MultiSelect
-          options={products.map(el => ({
-            label: el.title,
-            value: el._id,
-          }))}
-          selectAllLabel={"All"}
-          overrideStrings={{
-            allItemsAreSelected: "All products",
-          }}
-          value={selectedProducts}
-          onChange={setSelectedProducts}
-        /> */}
         <Flex mt={4}>
           <Box ml="auto" />
           <Button variant={"cta"} type="submit">
@@ -411,6 +455,7 @@ const NewDiscount = ({}) => {
           </Button>
         </Flex>
       </Flex>
+      <Tooltip id={"amount-tooltip"} disable={selectedRegions.length <= 1} />
     </Flex>
   )
 }

@@ -18,6 +18,8 @@ import SwapMenu from "./swap/create"
 import ClaimMenu from "./claim/create"
 import NotificationResend from "./notification/resend-menu"
 import CustomerInformation from "./customer"
+import LineItem from "./line-item"
+import { Input } from "@rebass/forms"
 
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
 import Dialog from "../../../components/dialog"
@@ -368,6 +370,12 @@ const OrderDetails = ({ id }) => {
   const [notificationsLoaded, setNotificationsLoaded] = useState(false)
   const [notificationResend, setNotificationResend] = useState(false)
 
+  const [notes, setNotes] = useState([])
+  const [notesLoaded, setNotesLoaded] = useState(false)
+  const [note, setNote] = useState("")
+
+  const [showAddNote, setShowAddNote] = useState(false)
+
   const {
     order,
     update: updateOrder,
@@ -411,6 +419,15 @@ const OrderDetails = ({ id }) => {
         })
         .finally(() => setNotificationsLoaded(true))
     }
+
+    if (order?.id && !notesLoaded) {
+      Medusa.notes
+        .listByResource(order.id)
+        .then(({ data }) => {
+          setNotes(data.notes)
+        })
+        .finally(() => setNotesLoaded(true))
+    }
   }, [order])
 
   const handleCopyToClip = val => {
@@ -436,7 +453,7 @@ const OrderDetails = ({ id }) => {
     )
   }
 
-  const events = buildTimeline(order, notifications)
+  const events = buildTimeline(order, notifications, notes)
 
   const decidePaymentButton = paymentStatus => {
     const isSystemPayment = order?.payments?.some(
@@ -486,6 +503,32 @@ const OrderDetails = ({ id }) => {
       default:
         break
     }
+  }
+
+  const createNote = () => {
+    Medusa.notes
+      .create(order.id, "order", note)
+      .then(() => {
+        Medusa.notes.listByResource(order.id).then(response => {
+          setNotes(response.data.notes)
+        })
+      })
+      .then(() => {
+        toaster("created note", "success")
+        setNote("")
+        setShowAddNote(false)
+      })
+  }
+
+  const handleCreateNote = event => {
+    if (event.key === "Enter") {
+      createNote()
+    }
+  }
+
+  const handleCancelNote = () => {
+    setNote("")
+    setShowAddNote(false)
   }
 
   const getFulfillmentStatus = () => {
@@ -550,12 +593,16 @@ const OrderDetails = ({ id }) => {
 
   let lineAction
   let lineDropdown = []
-  if (order.status !== "canceled" && getFulfillmentStatus() !== "returned") {
-    lineAction = {
+  if (
+    order.status !== "canceled" &&
+    getFulfillmentStatus() !== "returned" &&
+    !showAddNote
+  ) {
+    lineDropdown.push({
       type: "primary",
       label: "Request return",
       onClick: () => setShowReturnMenu(!showReturnMenu),
-    }
+    })
 
     lineDropdown.push({
       type: "primary",
@@ -570,6 +617,30 @@ const OrderDetails = ({ id }) => {
       label: "Register claim",
       onClick: () => {
         setShowClaim(true)
+      },
+    })
+
+    lineDropdown.push({
+      type: "primary",
+      label: "Add note",
+      onClick: () => {
+        setShowAddNote(true)
+      },
+    })
+  } else {
+    lineAction = []
+
+    lineAction.push({
+      type: "primary",
+      label: "Cancel",
+      onClick: () => setShowAddNote(false),
+    })
+
+    lineAction.push({
+      variant: "primary",
+      label: "Save",
+      onClick: () => {
+        createNote()
       },
     })
   }
@@ -703,12 +774,45 @@ const OrderDetails = ({ id }) => {
           </Card.Body>
         </Card>
       </Flex>
+
+      <Card mb={1} sx={{ borderTop: "1px solid #e3e8ee" }}>
+        <Text ml={3} mt={3} mb={1} fontSize={20} fontWeight="bold">
+          Placed
+        </Text>
+        <Box pb={3}>
+          <Text fontSize="11px" color="grey" ml={3} mb={3}>
+            {moment(order.created_at).format("MMMM Do YYYY, H:mm:ss")}
+          </Text>
+          {order.items.map((lineItem, i) => (
+            <LineItem
+              key={i}
+              currency={order.currency_code}
+              lineItem={lineItem}
+              order={order}
+              taxRate={order.tax_rate}
+            />
+          ))}
+        </Box>
+      </Card>
+
       {/* Line items */}
-      <Card mb={4}>
-        <Card.Header dropdownOptions={lineDropdown} action={lineAction}>
+      <Card mb={5}>
+        <Card.Header removeBorderTop={true} dropdownOptions={lineDropdown}>
           Timeline
         </Card.Header>
-        <Card.Body flexDirection="column">
+        {showAddNote && (
+          <Flex>
+            <Input
+              placeholder="Add note"
+              m={3}
+              value={note}
+              onChange={e => setNote(e.target.value)}
+              onKeyPress={handleCreateNote}
+            />
+          </Flex>
+        )}
+
+        <Card.Body pl={1} flexDirection="column">
           <Timeline
             events={events}
             order={order}
@@ -723,6 +827,7 @@ const OrderDetails = ({ id }) => {
             onCancelReturn={cancelReturn}
             onCancelSwap={cancelSwap}
             toaster={toaster}
+            onUpdateNotes={notes => setNotes(notes)}
           />
         </Card.Body>
       </Card>

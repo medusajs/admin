@@ -16,6 +16,9 @@ export default function (provider) {
         value: "webshipper",
       }
     default:
-      return ""
+      return {
+        label: provider,
+        value: provider
+      }
   }
 }
