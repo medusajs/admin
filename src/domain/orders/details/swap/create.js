@@ -76,8 +76,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   const [itemsToAdd, setItemsToAdd] = useState([])
   const [shippingLoading, setShippingLoading] = useState(true)
-  const [returnShippingOptions, setReturnShippingOptions] = useState([])
-  const [normalShippingOptions, setNormalShippingOptions] = useState([])
+  const [shippingOptions, setShippingOptions] = useState([])
   const [customShippingOptions, setCustomShippingOptions] = useState([])
   const [shippingMethod, setShippingMethod] = useState()
   const [shippingPrice, setShippingPrice] = useState()
@@ -139,17 +138,26 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
         region_id: order.region_id,
       })
       .then(({ data }) => {
-        const returnShippingOptions = data.shipping_options.filter(
-          so => so.is_return
-        )
-        const normalShippingOptions = data.shipping_options.filter(
-          so => !so.is_return
-        )
-        setReturnShippingOptions(returnShippingOptions)
-        setNormalShippingOptions(normalShippingOptions)
+        setShippingOptions(data.shipping_options)
         setShippingLoading(false)
       })
   }, [])
+
+  const returnShippingOptions = useMemo(
+    () => shippingOptions.filter(so => so.is_return),
+    [shippingOptions]
+  )
+  const availableShippingOptions = useMemo(
+    () =>
+      shippingOptions.filter(
+        so =>
+          !so.is_return &&
+          itemsToAdd.findIndex(
+            item => item.product.profile_id === so.profile_id
+          ) > -1
+      ),
+    [shippingOptions, itemsToAdd]
+  )
 
   useEffect(() => {
     const items = toReturn.map(t => allItems.find(i => i.id === t))
@@ -208,7 +216,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
     data.custom_shipping_options = prepareCustomShippingOptions(
       customShippingOptions,
-      normalShippingOptions
+      availableShippingOptions
     )
 
     if (onCreate) {
@@ -285,7 +293,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
         },
       ])
     } else if (shippingOption.value !== "Add a shipping method") {
-      const method = normalShippingOptions.find(
+      const method = availableShippingOptions.find(
         o => shippingOption.value === o.id
       )
       const price = (method.amount * (1 + order.tax_rate / 100)) / 100
@@ -334,18 +342,14 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }
 
   const selectCustomOptions = useMemo(() => {
-    const relevantShippingOptions = normalShippingOptions.filter(
-      so =>
-        itemsToAdd.findIndex(
-          item => item.product.profile_id === so.profile_id
-        ) > -1
-    )
-
-    return [
-      FREE_SHIPPING_OPTION,
-      ...relevantShippingOptions.map(so => ({ label: so.name, value: so.id })),
-    ]
-  }, [normalShippingOptions, itemsToAdd])
+    const customOptions = availableShippingOptions.map(so => ({
+      label: so.name,
+      value: so.id,
+    }))
+    return availableShippingOptions?.length
+      ? [FREE_SHIPPING_OPTION, ...customOptions]
+      : customOptions
+  }, [availableShippingOptions, itemsToAdd])
 
   return (
     <Modal onClick={onDismiss}>
@@ -596,6 +600,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                       />
                     </Box>
                     <Box
+                      sx={{ cursor: "pointer" }}
                       display="flex"
                       justifyContent="center"
                       flex="1"
@@ -629,7 +634,6 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                       height={"32px"}
                       fontSize={1}
                       placeholder={"Add a shipping method"}
-                      value={shippingMethod}
                       onChange={handleCustomShippingOptionSelected}
                       options={selectCustomOptions}
                     />
@@ -655,6 +659,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                           />
                         )}
                         <Box
+                          sx={{ cursor: "pointer" }}
                           ml={2}
                           onClick={() =>
                             handleRemoveCustomShippingOption(index)
