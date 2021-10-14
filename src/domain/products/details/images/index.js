@@ -18,13 +18,13 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
     if (selectedImages.includes(image)) {
       setSelectedImages(selectedImages.filter(im => im !== image))
     } else {
-      setSelectedImages(selectedImages => [...selectedImages, image])
+      setSelectedImages([...selectedImages, image])
     }
   }
 
   useEffect(() => {
     if (product) {
-      let imgs = [product.thumbnail, ...product.images.map(img => img.url)]
+      let imgs = product.images.map(img => img.url)
       imgs = [...new Set(imgs)].filter(Boolean)
       setImages([...imgs])
     }
@@ -106,6 +106,8 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
                   e.stopPropagation()
                   const newImages = images.filter(img => image != img)
                   setImages(newImages)
+                  const newUploads = uploads.filter(img => image != img.preview)
+                  setUploads(newUploads)
                   setIsDirty(true)
                 }}
                 style={{
