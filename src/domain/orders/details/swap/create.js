@@ -631,11 +631,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                       <InfoTooltip tooltipText="You can set custom shipping options by choosing one or multiple shipping options" />
                     </Box>
                     <Select
-                      height={"32px"}
                       fontSize={1}
+                      flexBasis="180px"
                       placeholder={"Add a shipping method"}
                       onChange={handleCustomShippingOptionSelected}
                       options={selectCustomOptions}
+                      selectStyle={{ maxWidth: "100%" }}
                     />
                   </Flex>
                   {customShippingOptions.map((cso, index) => (
