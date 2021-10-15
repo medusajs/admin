@@ -73,7 +73,7 @@ const NewRegion = ({ id }) => {
 
   const handleChange = values => {
     setCountries(values)
-    register({ name: "countries" })
+    register({ name: "countries", required: true })
     setValue(
       "countries",
       values.map(c => c.value)
@@ -81,6 +81,7 @@ const NewRegion = ({ id }) => {
   }
 
   const onSave = data => {
+    console.log(data)
     Medusa.regions
       .create({ ...data, tax_rate: data.tax_rate * 100 })
       .then(() => {
@@ -122,7 +123,7 @@ const NewRegion = ({ id }) => {
             mb={3}
             name="name"
             label="Name"
-            ref={register}
+            ref={register({ required: true })}
             // width="75%"
           />
           <Select
@@ -131,7 +132,7 @@ const NewRegion = ({ id }) => {
             name="currency_code"
             options={currencies}
             required={true}
-            ref={register}
+            ref={register({ required: true })}
           />
           <Input
             mb={3}
@@ -146,7 +147,7 @@ const NewRegion = ({ id }) => {
             }
             name="tax_rate"
             label="Tax Rate"
-            ref={register}
+            ref={register({ required: true })}
           />
           <Input
             mb={3}
