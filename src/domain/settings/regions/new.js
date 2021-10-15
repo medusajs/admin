@@ -26,7 +26,7 @@ const NewRegion = ({ id }) => {
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [fulfillmentProviders, setFulfillmentProviders] = useState([])
 
-  const { store, isLoading: storeIsLoading } = useMedusa("store")
+  const { toaster, store, isLoading: storeIsLoading } = useMedusa("store")
   const { register, setValue, handleSubmit } = useForm()
 
   useEffect(() => {
@@ -85,6 +85,7 @@ const NewRegion = ({ id }) => {
     Medusa.regions
       .create({ ...data, tax_rate: data.tax_rate * 100 })
       .then(() => {
+        toaster("Created a new Region", 'success')
         navigate(`/a/settings`)
       })
   }

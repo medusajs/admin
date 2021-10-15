@@ -10,14 +10,19 @@ import Card from "../../../components/card"
 import { ReactSelect } from "../../../components/react-select"
 
 import Medusa from "../../../services/api"
+import useMedusa from "../../../hooks/use-medusa"
 
 const NewReturnReason = ({ id }) => {
   const { register, handleSubmit } = useForm()
+  const { toaster } = useMedusa('store')
 
   const onSave = data => {
     Medusa.returnReasons.create(data).then(result => {
+      toaster('Created a new Return reason', 'success')
       navigate(`/a/settings/return-reasons/${result.data.return_reason.id}`)
-    })
+    }).catch((err) => 
+      toaster('Cant create a Return reason with an existing code', 'error')
+    )
   }
 
   return (
