@@ -98,6 +98,10 @@ export default {
       const path = `/admin/customers${search}`
       return medusaRequest("GET", path)
     },
+    update(customerId, update) {
+      const path = `admin/customers/${customerId}`
+      return medusaRequest("POST", path, update)
+    },
   },
   store: {
     retrieve() {

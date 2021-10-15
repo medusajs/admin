@@ -581,7 +581,7 @@ const OrderIndex = ({}) => {
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
       <Flex>
-        <Text mb={3} fontSize={20} fontWeight="bold">
+        <Text fontSize={20} fontWeight="bold">
           Orders
         </Text>
       </Flex>

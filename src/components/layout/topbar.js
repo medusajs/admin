@@ -53,9 +53,10 @@ const ProfilePopover = () => {
 
   let username
 
-  if (user) {
+  if (user?.first_name && user?.last_name) {
     username = user.first_name + " " + user.last_name
-    if (username === " ") username = user.email
+  } else {
+    username = "Medusa user"
   }
 
   return (
