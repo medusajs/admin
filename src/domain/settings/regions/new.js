@@ -81,7 +81,9 @@ const NewRegion = ({ id }) => {
   }
 
   const onSave = data => {
-    console.log(data)
+    if(!data.countries || data.countries.length === 0){
+      return
+    }
     Medusa.regions
       .create({ ...data, tax_rate: data.tax_rate * 100 })
       .then(() => {
