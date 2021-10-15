@@ -151,8 +151,6 @@ const TopBar = () => {
     [onSearch, query]
   )
 
-  if (!display) return null
-
   return (
     <Flex
       px={4}
@@ -165,40 +163,43 @@ const TopBar = () => {
         marginRight: "-32px",
         marginLeft: "-32px",
         borderBottom: "subtle",
+        minHeight: "43px",
       }}
     >
       <Flex
         px={3}
         sx={{
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: display ? "space-between" : "flex-end",
           maxWidth: "1200px",
           margin: "auto",
           width: "100%",
         }}
       >
-        <Flex alignItems="center">
-          <Box sx={{ width: "35px", marginTop: "3px" }}>
-            <LoopIcon />
-          </Box>
+        {display && (
+          <Flex alignItems="center">
+            <Box sx={{ width: "35px", marginTop: "3px" }}>
+              <LoopIcon />
+            </Box>
 
-          <Box sx={{ width: "25px" }}>
-            <StyledBox
-              data-for="tooltip-globalsearch"
-              data-tip="Use '/' as a shortcut begin search."
-            >
-              <Box>/</Box>
-            </StyledBox>
-            <Tooltip id="tooltip-globalsearch" />
-          </Box>
-          <SearchBar
-            value={query}
-            placeholder={"Search..."}
-            onKeyDown={onKeyDown}
-            onChange={handleChange}
-            ref={searchRef}
-          />
-        </Flex>
+            <Box sx={{ width: "25px" }}>
+              <StyledBox
+                data-for="tooltip-globalsearch"
+                data-tip="Use '/' as a shortcut begin search."
+              >
+                <Box>/</Box>
+              </StyledBox>
+              <Tooltip id="tooltip-globalsearch" />
+            </Box>
+            <SearchBar
+              value={query}
+              placeholder={"Search..."}
+              onKeyDown={onKeyDown}
+              onChange={handleChange}
+              ref={searchRef}
+            />
+          </Flex>
+        )}
         <Flex alignItems="center">
           <Box
             sx={{
