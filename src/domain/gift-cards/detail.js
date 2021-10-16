@@ -13,6 +13,7 @@ import Button from "../../components/button"
 import EditableInput from "../../components/editable-input"
 import CurrencyInput from "../../components/currency-input"
 import Select from "../../components/select"
+import { formatNumber } from "../../../utils/format-number"
 
 import useMedusa from "../../hooks/use-medusa"
 import { Input } from "@rebass/forms"
@@ -66,15 +67,6 @@ const GiftCardDetail = ({ id }) => {
     id,
   })
   const { regions } = useMedusa("regions")
-
-  const formatNumber = n => {
-    if(discount){
-      return (
-        ((1 + discount.region.tax_rate / 100) * n) / 100 
-      ).toFixed(2)
-    }
-    return n
-  }
 
   useEffect(() => {
     if (discount) {
