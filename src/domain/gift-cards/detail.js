@@ -13,7 +13,7 @@ import Button from "../../components/button"
 import EditableInput from "../../components/editable-input"
 import CurrencyInput from "../../components/currency-input"
 import Select from "../../components/select"
-import { formatNumber } from "../../../utils/format-number"
+import { formatNumber } from "../../utils/format-number"
 
 import useMedusa from "../../hooks/use-medusa"
 import { Input } from "@rebass/forms"
