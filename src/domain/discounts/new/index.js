@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Medusa from "../../../services/api"
-import moment from "moment"
 
 import AvailabilityDuration from "../../../components/availability-duration"
 import Button from "../../../components/button"

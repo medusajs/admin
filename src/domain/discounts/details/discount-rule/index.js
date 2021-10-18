@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import _ from "lodash"
-import moment from "moment"
 
 import Modal from "../../../../components/modal"
 import MultiSelect from "react-multi-select-component"
