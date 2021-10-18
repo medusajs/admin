@@ -24,3 +24,8 @@ global.__PATH_PREFIX__ = ""
 window.___navigate = pathname => {
   action("NavigateTo:")(pathname)
 }
+
+// add portal node to document
+let portal = document.createElement("div")
+portal.setAttribute("id", "portal")
+document.querySelector("body").appendChild(portal)
