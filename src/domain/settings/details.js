@@ -41,7 +41,7 @@ const AccountDetails = () => {
     {
       return true
     }
-    console.log('check in')
+
     try {
       const url = new URL(address);
       return url.protocol === "http:" || url.protocol === "https:";

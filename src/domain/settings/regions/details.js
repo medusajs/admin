@@ -131,6 +131,7 @@ const Regions = ({ id }) => {
     
     try {
       await update({ ...data, tax_rate: data.tax_rate * 100 })
+
       toaster("Successfully updated region", "success")
     } catch (error) {
       toaster("Failed to update region", "error")
