@@ -93,6 +93,7 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
         <Modal.Header>{item?.id ? "Edit item" : "Add item"}</Modal.Header>
         <Modal.Content
           flexDirection="column"
+          alignItems="center"
           minWidth="600px"
           minHeight="300px"
         >
@@ -161,17 +162,19 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
               </Flex>
             </>
           ) : selected === null ? (
-            <Flex justifyContent="flex-start" width="100%">
+            <Flex
+              justifyContent="flex-start"
+              sx={{ minWidth: 30, minHeight: 30 }}
+            >
               <Dropdown
                 disabled={!region}
                 showSearch
-                leftAlign={true}
+                placement="bottom"
                 onSearchChange={handleProductSearch}
-                dropdownWidth="100% !important"
-                dropdownHeight="180px !important"
+                dropdownHeight={180}
                 searchPlaceholder={"Search by SKU, Name, etc."}
                 showTrigger={false}
-                topPlacement="-50px"
+                topPlacement={-20}
               >
                 {searchResults.map(s => (
                   <Flex

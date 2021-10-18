@@ -38,9 +38,9 @@ const NewItemsInformation = ({ event, onFulfillSwap, order }) => {
         {actions.map(action => (
           <Dropdown
             key={action.label}
-            topPlacement="0"
-            minHeight="24px"
-            width="28px"
+            topPlacement={5}
+            minHeight={24}
+            width={28}
             sx={{
               height: 0,
               padding: 0,
