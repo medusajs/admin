@@ -154,10 +154,10 @@ const NewDiscount = ({}) => {
 
     const discount = {
       code: data.code,
-      is_dynamic: isDynamic, //data.is_dynamic === "true",
+      is_dynamic: isDynamic,
       rule: data.rule,
-      starts_at: moment(startDate).format("MM/DD/YYYY HH:mm"),
-      ends_at: endDate ? moment(endDate).format("MM/DD/YYYY HH:mm") : undefined,
+      starts_at: startDate.toUTCString(),
+      ends_at: endDate ? endDate.toUTCString() : undefined,
       regions: data.regions || [],
       valid_duration: isDynamic ? iso8601Date : undefined,
     }

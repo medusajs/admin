@@ -147,8 +147,8 @@ const DiscountRuleModal = ({
     const result = {
       rule: data,
       is_dynamic: discount.is_dynamic,
-      starts_at: moment(startDate).format("MM/DD/YYYY HH:mm"),
-      ends_at: endDate ? moment(endDate).format("MM/DD/YYYY HH:mm") : undefined,
+      starts_at: startDate.toUTCString(),
+      ends_at: endDate ? endDate.toUTCString() : undefined,
       valid_duration: iso8601Duration,
     }
 
