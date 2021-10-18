@@ -47,8 +47,8 @@ const ReturnOrderInformation = ({ event, onReceiveReturn, order }) => {
           <Dropdown
             key={action.label}
             topPlacement={5}
-            minHeight={24}
-            width={28}
+            minHeight="24px"
+            width="28px"
             sx={{
               height: 0,
               padding: 0,
