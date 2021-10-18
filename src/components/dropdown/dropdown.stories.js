@@ -18,8 +18,6 @@ const Container = args => {
     setValues(values)
   }
 
-  console.log({ args })
-
   return (
     <StyledContainer>
       <Dropdown {...args}>
