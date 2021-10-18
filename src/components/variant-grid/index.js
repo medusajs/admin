@@ -302,9 +302,9 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
                       }}
                     >
                       <Dropdown
-                        minHeight={24}
-                        dropdownWidth={120}
-                        width={40}
+                        minHeight="24px"
+                        dropdownWidth="120px"
+                        width="28px"
                         showTrigger={true}
                         sx={{ padding: 0 }}
                       >

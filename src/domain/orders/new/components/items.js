@@ -128,8 +128,8 @@ const Items = ({
           toggleText={"+ Add existing"}
           showSearch
           onSearchChange={handleProductSearch}
-          dropdownWidth={275}
-          dropdownHeight={325}
+          dropdownWidth="275px"
+          dropdownHeight="325px"
           searchPlaceholder={"Search by SKU, Name, etc."}
         >
           {searchingProducts ? (

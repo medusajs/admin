@@ -16,8 +16,8 @@ const Dropdown = ({
   onSearchChange,
   toggleText,
   sx,
-  dropdownWidth = 160,
-  dropdownHeight = 300,
+  dropdownWidth = "160px",
+  dropdownHeight = "300px",
   placement = "bottom-start",
   showTrigger = true,
   topPlacement = 10,
@@ -115,7 +115,7 @@ const Dropdown = ({
           alignItems="center"
           variant="primary"
           onClick={() => handleOpen()}
-          ref={setReferenceElement}
+          innerRef={setReferenceElement}
           {..._.omit(rest, spacingProps)}
         >
           {toggleText || <Ellipsis height="10px" />}
@@ -171,7 +171,7 @@ export const DropdownContainer = styled(
   position: fixed;
   background-color: #fefefe;
   max-width: 300px;
-  min-width: ${props => props.dropdownWidth}px;
+  min-width: ${props => props.dropdownWidth};
   box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1);
   z-index: 1;
   border-radius: 5px;
@@ -179,7 +179,7 @@ export const DropdownContainer = styled(
 `
 
 const Scrollable = styled(Box)`
-  max-height: ${props => props.maxHeight}px;
+  max-height: ${props => props.maxHeight};
   overflow: auto;
 `
 
