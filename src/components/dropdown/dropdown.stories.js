@@ -45,8 +45,8 @@ Default.args = {
   showTrigger: true,
   topPlacement: 10,
   placement: "bottom-start",
-  dropdownWidth: 160,
-  dropdownHeight: 300,
+  dropdownWidth: "160px",
+  dropdownHeight: "160px",
   toggleText: "",
 }
 
