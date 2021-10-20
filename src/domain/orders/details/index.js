@@ -35,6 +35,7 @@ import useMedusa from "../../../hooks/use-medusa"
 import { getErrorMessage } from "../../../utils/error-messages"
 import PaymentMenu from "./payment-menu"
 import Medusa from "../../../services/api"
+import _ from "lodash"
 
 const AlignedDecimal = ({ value, currency }) => {
   const fixed = (value / 100).toFixed(2)
