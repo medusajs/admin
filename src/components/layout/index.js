@@ -3,6 +3,7 @@ import { useStaticQuery, graphql } from "gatsby"
 import PropTypes from "prop-types"
 
 import Sidebar from "../sidebar"
+import TopBar from "./topbar"
 
 import { Container, Main, Content, Body } from "./elements"
 
@@ -24,6 +25,7 @@ const Layout = ({ children }) => {
       <Main>
         <Sidebar />
         <Content fontFamily={"body"} pb={4} pl={4} pr={4}>
+          <TopBar />
           <Body pl={3} pr={3} pb={3} mx="auto">
             {children}
           </Body>
