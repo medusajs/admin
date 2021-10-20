@@ -103,7 +103,11 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
               </Text>
               <StyledSwitch
                 checked={!addCustom}
-                onClick={() => setAddCustom(!addCustom)}
+                onClick={() => {
+                  setAddCustom(!addCustom)
+                  // prevent UI flickering
+                  setSelected(null)
+                }}
               />
               <Text ml={2} fontSize={0}>
                 Existing
@@ -161,17 +165,19 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
               </Flex>
             </>
           ) : selected === null ? (
-            <Flex justifyContent="flex-start" width="100%">
+            <Flex
+              justifyContent="flex-start"
+              sx={{ minWidth: 30, minHeight: 30 }}
+            >
               <Dropdown
                 disabled={!region}
                 showSearch
-                leftAlign={true}
+                placement="bottom"
                 onSearchChange={handleProductSearch}
-                dropdownWidth="100% !important"
-                dropdownHeight="180px !important"
+                dropdownHeight={180}
                 searchPlaceholder={"Search by SKU, Name, etc."}
                 showTrigger={false}
-                topPlacement="-50px"
+                topPlacement={-20}
               >
                 {searchResults.map(s => (
                   <Flex
