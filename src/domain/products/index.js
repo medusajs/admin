@@ -5,6 +5,7 @@ import { Flex, Text, Box, Image } from "rebass"
 import { Input } from "@rebass/forms"
 import { Router } from "@reach/router"
 import Medusa from "../../services/api"
+import { getErrorMessage } from "../../utils/error-messages"
 import ProductsFilter from "./filter-dropdown"
 
 import ImagePlaceholder from "../../assets/svg/image-placeholder.svg"
@@ -338,8 +339,7 @@ const ProductIndex = () => {
       navigate(`/a/products/${data.product.id}`)
       setCopyingProduct(false)
     } catch (error) {
-      const errorData = error.response.data.message
-      toaster(`${errorData[0].message}`, "error")
+      toaster(getErrorMessage(error), "error")
       setCopyingProduct(false)
     }
   }

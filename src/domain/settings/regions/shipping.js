@@ -11,6 +11,8 @@ import EditShipping from "./edit-shipping"
 import NewShipping from "./new-shipping"
 import Badge from "../../../components/badge"
 
+import { getErrorMessage } from "../../../utils/error-messages"
+
 const Shipping = ({ region, fulfillmentMethods }) => {
   const [editOption, setEditOption] = useState(null)
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
@@ -38,7 +40,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
       },
     })
       .then(() => toaster("Successfully updated shipping options", "success"))
-      .catch(() => toaster("Failed to update shipping options", "error"))
+      .catch(error => toaster(getErrorMessage(error), "error"))
   }
 
   const dropdownOptions = [

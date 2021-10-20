@@ -6,6 +6,7 @@ import useMedusa from "../../hooks/use-medusa"
 import Input from "../../components/input"
 import Card from "../../components/card"
 import Button from "../../components/button"
+import { getErrorMessage } from "../../utils/error-messages"
 import BreadCrumb from "../../components/breadcrumb"
 
 const HorizontalDivider = props => (
@@ -42,7 +43,7 @@ const AccountDetails = () => {
       update(data)
       toaster("Successfully updated store", "success")
     } catch (error) {
-      toaster("Failed to update store", "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 

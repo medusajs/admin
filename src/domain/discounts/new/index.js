@@ -19,6 +19,7 @@ import Spinner from "../../../components/spinner"
 import InfoTooltip from "../../../components/info-tooltip"
 import Tooltip from "../../../components/tooltip"
 import { ReactComponent as InfoIcon } from "../../../assets/svg/info.svg"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 import { navigate } from "gatsby"
 
@@ -138,7 +139,7 @@ const NewDiscount = ({}) => {
         .create(disc)
         .then(() => toaster("Successfully created discount", "success"))
         .then(() => navigate("/a/discounts"))
-        .catch(() => toaster("Error creating discount", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
     }
 
     data.rule.value = parseInt(data.rule.value)
@@ -173,7 +174,7 @@ const NewDiscount = ({}) => {
         navigate("/a/discounts")
       })
       .catch(error => {
-        toaster("Error creating discount", "error")
+        toaster(getErrorMessage(error), "error")
       })
   }
 
