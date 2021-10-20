@@ -580,30 +580,32 @@ const OrderIndex = ({}) => {
 
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
-      <Flex>
-        <Text fontSize={20} fontWeight="bold">
-          Orders
-        </Text>
-      </Flex>
-      <Flex>
-        <Box ml="auto" />
-        <Filter
-          submitFilters={submit}
-          clearFilters={clear}
-          statusFilter={statusFilter}
-          fulfillmentFilter={fulfillmentFilter}
-          paymentFilter={paymentFilter}
-          dateFilter={dateFilter}
-          setDateFilter={setDateFilter}
-          setStatusFilter={setStatusFilter}
-          setPaymentFilter={setPaymentFilter}
-          setFulfillmentFilter={setFulfillmentFilter}
-          resetFilters={resetFilters}
-          handleSaveTab={value => handleSaveTab(value)}
-        />
-        <Button ml={2} onClick={() => setShowNewOrder(true)} variant={"cta"}>
-          New draft order
-        </Button>
+      <Flex sx={{ justifyContent: "space-between", width: "100%", mb: 2 }}>
+        <Flex>
+          <Text fontSize={20} fontWeight="bold">
+            Orders
+          </Text>
+        </Flex>
+        <Flex>
+          <Box ml="auto" />
+          <Filter
+            submitFilters={submit}
+            clearFilters={clear}
+            statusFilter={statusFilter}
+            fulfillmentFilter={fulfillmentFilter}
+            paymentFilter={paymentFilter}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            setStatusFilter={setStatusFilter}
+            setPaymentFilter={setPaymentFilter}
+            setFulfillmentFilter={setFulfillmentFilter}
+            resetFilters={resetFilters}
+            handleSaveTab={value => handleSaveTab(value)}
+          />
+          <Button ml={2} onClick={() => setShowNewOrder(true)} variant={"cta"}>
+            New draft order
+          </Button>
+        </Flex>
       </Flex>
       <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
         <TabButton

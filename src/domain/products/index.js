@@ -352,38 +352,40 @@ const ProductIndex = () => {
 
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
-      <Flex>
-        <Text fontSize={20} fontWeight="bold">
-          Products
-        </Text>
-      </Flex>
-      <Flex mb={3}>
-        <Box ml="auto" />
-        <ProductsFilter
-          setStatusFilter={setStatusFilter}
-          statusFilter={statusFilter}
-          setCollectionFilter={setCollectionFilter}
-          collectionFilter={collectionFilter}
-          collections={collectionsList}
-          setTagsFilter={toggleFilterTags}
-          submitFilters={submit}
-          tagsFilter={tagsFilter}
-          resetFilters={resetFilters}
-          clearFilters={clearFilters}
-        />
-        {selectedProduct && (
-          <Button
-            mr={2}
-            onClick={() => handleCopyProduct()}
-            variant={"primary"}
-            loading={copyingProduct}
-          >
-            Copy product
+      <Flex sx={{ justifyContent: "space-between", width: "100%", mb: 2 }}>
+        <Flex>
+          <Text fontSize={20} fontWeight="bold">
+            Products
+          </Text>
+        </Flex>
+        <Flex mb={3}>
+          <Box ml="auto" />
+          <ProductsFilter
+            setStatusFilter={setStatusFilter}
+            statusFilter={statusFilter}
+            setCollectionFilter={setCollectionFilter}
+            collectionFilter={collectionFilter}
+            collections={collectionsList}
+            setTagsFilter={toggleFilterTags}
+            submitFilters={submit}
+            tagsFilter={tagsFilter}
+            resetFilters={resetFilters}
+            clearFilters={clearFilters}
+          />
+          {selectedProduct && (
+            <Button
+              mr={2}
+              onClick={() => handleCopyProduct()}
+              variant={"primary"}
+              loading={copyingProduct}
+            >
+              Copy product
+            </Button>
+          )}
+          <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
+            New product
           </Button>
-        )}
-        <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
-          New product
-        </Button>
+        </Flex>
       </Flex>
       {(isLoading && !hasCache) || isReloading || copyingProduct ? (
         <Flex
