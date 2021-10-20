@@ -1,8 +1,9 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useCallback, useEffect, useContext } from "react"
 import { navigate } from "gatsby"
 import { Router } from "@reach/router"
 import { Input } from "@rebass/forms"
 import { Text, Flex, Box } from "rebass"
+import { InterfaceContext } from "../../context/interface"
 import qs from "query-string"
 import Details from "./details"
 
@@ -45,22 +46,13 @@ const CustomerIndex = () => {
   const [limit, setLimit] = useState(20)
   const [query, setQuery] = useState("")
 
-  const onKeyDown = event => {
-    // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
-    if (event.key === "Enter") {
-      event.preventDefault()
-      event.stopPropagation()
-      searchQuery()
-    }
-  }
-
-  const searchQuery = () => {
+  const searchQuery = q => {
     setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const prepared = qs.stringify(
       {
-        q: query,
+        q,
         offset: 0,
         limit,
       },
@@ -70,6 +62,12 @@ const CustomerIndex = () => {
     window.history.pushState(baseUrl, "", `?${prepared}`)
     refresh({ search: `?${prepared}` })
   }
+
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
+  useEffect(() => {
+    setOnSearch(searchQuery)
+  }, [])
 
   const handlePagination = direction => {
     const updatedOffset = direction === "next" ? offset + limit : offset - limit
@@ -99,27 +97,6 @@ const CustomerIndex = () => {
         <Text fontSize={20} fontWeight="bold" mb={3}>
           Customers
         </Text>
-      </Flex>
-      <Flex>
-        <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
-          <Input
-            height="30px"
-            fontSize="12px"
-            name="q"
-            type="text"
-            placeholder="Search customers"
-            onKeyDown={onKeyDown}
-            onChange={e => setQuery(e.target.value)}
-            value={query}
-          />
-        </Box>
-        <Button
-          onClick={() => searchQuery()}
-          variant={"primary"}
-          fontSize="12px"
-        >
-          Search
-        </Button>
       </Flex>
       {isLoading ? (
         <Flex

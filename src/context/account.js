@@ -31,7 +31,6 @@ const reducer = (state, action) => {
         id: action.payload._id,
         email: action.payload.email,
       }
-      break
     default:
       return state
   }
@@ -54,7 +53,7 @@ export const AccountProvider = ({ children }) => {
         handleLogout: details => {
           return Medusa.auth.deauthenticate(details).then(() => {
             dispatch({ type: "userLoggedOut" })
-            return data
+            return null
           })
         },
 

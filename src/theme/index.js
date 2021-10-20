@@ -14,6 +14,7 @@ export const theme = {
   colors,
   borders: {
     hairline: "1px solid #E3E8EE",
+    subtle: `1px solid ${colors.light}`,
   },
   fontSizes: [12, 14, 16, 18, 22],
   fonts: {

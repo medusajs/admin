@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { Link, navigate } from "gatsby"
 import _ from "lodash"
 import { Flex, Text, Box, Image } from "rebass"
-import { Input } from "@rebass/forms"
+import { InterfaceContext } from "../../context/interface"
 import { Router } from "@reach/router"
 import Medusa from "../../services/api"
 import { getErrorMessage } from "../../utils/error-messages"
@@ -211,12 +211,12 @@ const ProductIndex = () => {
     }
   }
 
-  const searchQuery = () => {
+  const searchQuery = q => {
     setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
-      q: query,
+      q,
       offset: 0,
       limit: 20,
     }
@@ -230,6 +230,12 @@ const ProductIndex = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({ search })
   }
+
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
+  useEffect(() => {
+    setOnSearch(searchQuery)
+  }, [])
 
   const handlePagination = direction => {
     const updatedOffset = direction === "next" ? offset + limit : offset - limit
@@ -346,58 +352,40 @@ const ProductIndex = () => {
 
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
-      <Flex>
-        <Text mb={3} fontSize={20} fontWeight="bold">
-          Products
-        </Text>
-      </Flex>
-      <Flex>
-        <Box mb={3} sx={{ maxWidth: "300px" }}>
-          <Input
-            height="28px"
-            fontSize="12px"
-            name="q"
-            type="text"
-            placeholder="Search products"
-            onKeyDown={onKeyDown}
-            onChange={e => setQuery(e.target.value)}
-            value={query}
+      <Flex sx={{ justifyContent: "space-between", width: "100%", mb: 2 }}>
+        <Flex>
+          <Text fontSize={20} fontWeight="bold">
+            Products
+          </Text>
+        </Flex>
+        <Flex mb={3}>
+          <Box ml="auto" />
+          <ProductsFilter
+            setStatusFilter={setStatusFilter}
+            statusFilter={statusFilter}
+            setCollectionFilter={setCollectionFilter}
+            collectionFilter={collectionFilter}
+            collections={collectionsList}
+            setTagsFilter={toggleFilterTags}
+            submitFilters={submit}
+            tagsFilter={tagsFilter}
+            resetFilters={resetFilters}
+            clearFilters={clearFilters}
           />
-        </Box>
-        <Button
-          onClick={() => searchQuery()}
-          variant={"primary"}
-          fontSize="12px"
-          ml={2}
-        >
-          Search
-        </Button>
-        <Box ml="auto" />
-        <ProductsFilter
-          setStatusFilter={setStatusFilter}
-          statusFilter={statusFilter}
-          setCollectionFilter={setCollectionFilter}
-          collectionFilter={collectionFilter}
-          collections={collectionsList}
-          setTagsFilter={toggleFilterTags}
-          submitFilters={submit}
-          tagsFilter={tagsFilter}
-          resetFilters={resetFilters}
-          clearFilters={clearFilters}
-        />
-        {selectedProduct && (
-          <Button
-            mr={2}
-            onClick={() => handleCopyProduct()}
-            variant={"primary"}
-            loading={copyingProduct}
-          >
-            Copy product
+          {selectedProduct && (
+            <Button
+              mr={2}
+              onClick={() => handleCopyProduct()}
+              variant={"primary"}
+              loading={copyingProduct}
+            >
+              Copy product
+            </Button>
+          )}
+          <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
+            New product
           </Button>
-        )}
-        <Button onClick={() => navigate(`/a/products/new`)} variant={"cta"}>
-          New product
-        </Button>
+        </Flex>
       </Flex>
       {(isLoading && !hasCache) || isReloading || copyingProduct ? (
         <Flex

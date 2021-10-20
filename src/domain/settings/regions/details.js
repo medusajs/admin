@@ -126,8 +126,13 @@ const Regions = ({ id }) => {
   }
 
   const onSave = async data => {
+    if(!data.countries || data.countries.length === 0){
+      return
+    }
+    
     try {
       await update({ ...data, tax_rate: data.tax_rate * 100 })
+
       toaster("Successfully updated region", "success")
     } catch (error) {
       toaster(getErrorMessage(error), "error")
