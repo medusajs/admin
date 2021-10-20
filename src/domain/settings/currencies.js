@@ -10,6 +10,7 @@ import Button from "../../components/button"
 import Spinner from "../../components/spinner"
 import MultiSelect from "../../components/multi-select"
 import Typography from "../../components/typography"
+import BreadCrumb from "../../components/breadcrumb"
 
 import { currencies } from "../../utils/currencies"
 import { Label } from "@rebass/forms"
@@ -103,6 +104,11 @@ const AccountDetails = () => {
       pt={5}
     >
       <Card px={0}>
+        <BreadCrumb
+          previousRoute="/a/settings"
+          previousBreadCrumb="Settings"
+          currentPage="Currencies"
+        />
         <Flex>
           <Text mb={3} fontSize={20} fontWeight="bold">
             Currencies

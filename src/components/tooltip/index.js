@@ -30,5 +30,4 @@ const StyledTooltip = styled(Tooltip)`
     opacity: 1;
   }
 `
-
 export default StyledTooltip

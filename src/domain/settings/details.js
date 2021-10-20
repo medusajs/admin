@@ -7,6 +7,7 @@ import Input from "../../components/input"
 import Card from "../../components/card"
 import Button from "../../components/button"
 import { getErrorMessage } from "../../utils/error-messages"
+import BreadCrumb from "../../components/breadcrumb"
 
 const HorizontalDivider = props => (
   <Box
@@ -54,6 +55,11 @@ const AccountDetails = () => {
       py={5}
     >
       <Card>
+        <BreadCrumb
+          previousRoute="/a/settings/"
+          previousBreadCrumb="Settings"
+          currentPage="Account details"
+        />
         <Flex>
           <Text mb={3} fontSize={20} fontWeight="bold">
             Account details

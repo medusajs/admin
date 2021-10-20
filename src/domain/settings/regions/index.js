@@ -7,6 +7,7 @@ import useMedusa from "../../../hooks/use-medusa"
 import Input from "../../../components/input"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
+import BreadCrumb from "../../../components/breadcrumb"
 import Spinner from "../../../components/spinner"
 import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
@@ -17,6 +18,11 @@ const Regions = () => {
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
       <Card px={0}>
+        <BreadCrumb
+          previousRoute="/a/settings"
+          previousBreadCrumb="Settings"
+          currentPage="Regions"
+        />
         <Flex>
           <Text mb={3} fontSize={20} fontWeight="bold">
             Regions

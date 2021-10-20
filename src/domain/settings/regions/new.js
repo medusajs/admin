@@ -8,7 +8,7 @@ import Input from "../../../components/input"
 import Select from "../../../components/select"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
-import Spinner from "../../../components/spinner"
+import BreadCrumb from "../../../components/breadcrumb"
 import TagDropdown from "../../../components/tag-dropdown"
 
 import Medusa from "../../../services/api"
@@ -103,6 +103,13 @@ const NewRegion = ({ id }) => {
       justifyContent="center"
       width="100%"
     >
+      <Flex width={3 / 5}>
+        <BreadCrumb
+          previousRoute="/a/settings/regions"
+          previousBreadCrumb="Settings > Regions"
+          currentPage="New region"
+        />
+      </Flex>
       <Flex width={3 / 5} justifyContent="flex-start">
         <Text mb={4} fontWeight="bold" fontSize={20}>
           Region details
