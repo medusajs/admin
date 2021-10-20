@@ -17,6 +17,7 @@ import Select from "../../components/select"
 import useMedusa from "../../hooks/use-medusa"
 import { Input } from "@rebass/forms"
 import Typography from "../../components/typography"
+import { getErrorMessage } from "../../utils/error-messages"
 
 const ProductLink = styled(Text)`
   color: #006fbb;
@@ -68,10 +69,8 @@ const GiftCardDetail = ({ id }) => {
   const { regions } = useMedusa("regions")
 
   const formatNumber = n => {
-    if(discount){
-      return (
-        ((1 + discount.region.tax_rate / 100) * n) / 100 
-      ).toFixed(2)
+    if (discount) {
+      return (((1 + discount.region.tax_rate / 100) * n) / 100).toFixed(2)
     }
     return n
   }
@@ -104,10 +103,10 @@ const GiftCardDetail = ({ id }) => {
         setUpdating(false)
         toaster("Discount updated", "success")
       })
-      .catch(() => {
+      .catch(error => {
         setUpdating(false)
-        refresh({ id })
-        toaster("Discount update failed", "error")
+        refresh({ id })
+        toaster(getErrorMessage(error), "error")
       })
   }
 
@@ -121,9 +120,9 @@ const GiftCardDetail = ({ id }) => {
         setUpdating(false)
         toaster("Discount updated", "success")
       })
-      .catch(() => {
+      .catch(error => {
         setUpdating(false)
-        toaster("Discount update failed", "error")
+        toaster(getErrorMessage(error), "error")
       })
   }
 
@@ -138,13 +137,12 @@ const GiftCardDetail = ({ id }) => {
         setShowRuleEdit(false)
         toaster("Discount rule updated", "success")
       })
-      .catch(() => {
+      .catch(error => {
         setUpdating(false)
         setShowRuleEdit(false)
-        toaster("Discount rule update failed", "error")
+        toaster(getErrorMessage(error), "error")
       })
   }
-
 
   const handleBalanceUpdate = () => {
     if (discount.balance === balance) return
@@ -156,9 +154,9 @@ const GiftCardDetail = ({ id }) => {
         refresh({ id })
         toaster("Balance updated", "success")
       })
-      .catch(() => {
-        refresh({ id })
-        toaster("Balance update failed", "error")
+      .catch(error => {
+        refresh({ id })
+        toaster(getErrorMessage(error), "error")
       })
   }
 
@@ -218,11 +216,11 @@ const GiftCardDetail = ({ id }) => {
           )}
         </Box>
         <Card.Body>
-          <Box pl={3} pr={2} textAlign="center" >
-            <Text pb={1} mb={2} color="gray" >
+          <Box pl={3} pr={2} textAlign="center">
+            <Text pb={1} mb={2} color="gray">
               Disabled
             </Text>
-            <Text pt={1} width="100%"  mt={2}>
+            <Text pt={1} width="100%" mt={2}>
               <Badge width="100%" color="#4f566b" bg="#e3e8ee">
                 {`${discount.is_disabled}`}
               </Badge>
@@ -230,7 +228,7 @@ const GiftCardDetail = ({ id }) => {
           </Box>
           <Card.VerticalDivider mx={3} />
           <Box pl={3} pr={2} alignContent="center">
-            <Text pb={1} pb={3} color="gray" textAlign="center" >
+            <Text pb={1} pb={3} color="gray" textAlign="center">
               Valid regions
             </Text>
             <Select
@@ -251,7 +249,7 @@ const GiftCardDetail = ({ id }) => {
             <Text pb={1} mb={3} color="gray">
               Total value ({discount.region.currency_code.toUpperCase()})
             </Text>
-            <Text style={{width: "100%", textAlign: "center"}}>
+            <Text style={{ width: "100%", textAlign: "center" }}>
               {formatNumber(discount.value)}
             </Text>
           </Box>
@@ -277,7 +275,6 @@ const GiftCardDetail = ({ id }) => {
               />
             </EditableInput>
           </Box>
-          
         </Card.Body>
       </Card>
       <Card mr={3} width="100%">

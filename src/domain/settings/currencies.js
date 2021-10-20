@@ -14,6 +14,7 @@ import BreadCrumb from "../../components/breadcrumb"
 
 import { currencies } from "../../utils/currencies"
 import { Label } from "@rebass/forms"
+import { getErrorMessage } from "../../utils/error-messages"
 
 const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
@@ -90,7 +91,7 @@ const AccountDetails = () => {
       })
       toaster("Successfully updated currencies", "success")
     } catch (error) {
-      toaster("Failed to update currencies", "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 
