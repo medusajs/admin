@@ -50,12 +50,7 @@ const Dropdown = ({
   )
 
   const handleClickOutside = event => {
-    if (
-      popperElement &&
-      !popperElement.contains(event.target) &&
-      isOpen &&
-      showTrigger
-    ) {
+    if (popperElement && !popperElement.contains(event.target) && isOpen) {
       setIsOpen(false)
     }
   }
@@ -203,6 +198,8 @@ const DropdownItem = styled.a`
 `
 
 const StyledInput = styled.input`
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Helvetica Neue, Ubuntu, sans-serif;
   width: 100%;
   min-height: ${searchInputHeight}px;
   border: none;

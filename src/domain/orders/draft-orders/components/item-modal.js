@@ -93,7 +93,6 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
         <Modal.Header>{item?.id ? "Edit item" : "Add item"}</Modal.Header>
         <Modal.Content
           flexDirection="column"
-          alignItems="center"
           minWidth="600px"
           minHeight="300px"
         >
@@ -104,7 +103,11 @@ const ItemModal = ({ region, draftOrderId, item = {}, refresh, dismiss }) => {
               </Text>
               <StyledSwitch
                 checked={!addCustom}
-                onClick={() => setAddCustom(!addCustom)}
+                onClick={() => {
+                  setAddCustom(!addCustom)
+                  // prevent UI flickering
+                  setSelected(null)
+                }}
               />
               <Text ml={2} fontSize={0}>
                 Existing
