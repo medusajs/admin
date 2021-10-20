@@ -32,6 +32,7 @@ import { ReactComponent as ExternalLink } from "../../../assets/svg/external-lin
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
+import { getErrorMessage } from "../../../utils/error-messages"
 import PaymentMenu from "./payment-menu"
 import Medusa from "../../../services/api"
 
@@ -125,8 +126,7 @@ const Fulfillment = ({
     return cancel(fulfillment.id)
       .then()
       .catch(error => {
-        const errorData = error.response.data.message
-        toaster(`${errorData}`, "error")
+        toaster(getErrorMessage(error), "error")
       })
   }
 
@@ -492,8 +492,8 @@ const OrderDetails = ({ id }) => {
                 toaster("Succesfully captured payment", "success")
                 setCaptureLoading(true)
               })
-              .catch(() => {
-                toaster("Failed to capture payment", "error")
+              .catch(error => {
+                toaster(getErrorMessage(error), "error")
                 setCaptureLoading(true)
               })
           },
@@ -643,6 +643,13 @@ const OrderDetails = ({ id }) => {
         createNote()
       },
     })
+  }
+  const wrapCancel = func => {
+    return param => {
+      func(param)
+        .then()
+        .catch(error => toaster(getErrorMessage(error), "error"))
+    }
   }
 
   const fulfillments = gatherFulfillments(order)
@@ -818,14 +825,14 @@ const OrderDetails = ({ id }) => {
             order={order}
             onResendNotification={n => setNotificationResend(n)}
             onSaveClaim={updateClaim}
-            onCancelClaim={cancelClaim}
+            onCancelClaim={wrapCancel(cancelClaim)}
             onFulfillClaim={claim => setClaimToFulfill(claim)}
             onReceiveClaim={receiveClaim}
             onProcessSwapPayment={processSwapPayment}
             onFulfillSwap={swap => setSwapToFulfill(swap)}
             onReceiveReturn={ret => setToReceive(ret)}
             onCancelReturn={cancelReturn}
-            onCancelSwap={cancelSwap}
+            onCancelSwap={wrapCancel(cancelSwap)}
             toaster={toaster}
             onUpdateNotes={notes => setNotes(notes)}
           />
@@ -1124,8 +1131,8 @@ const OrderDetails = ({ id }) => {
               .then(() => {
                 toaster("Order was canceled", "success")
               })
-              .catch(() => {
-                toaster("Could not cancel order", "error")
+              .catch(error => {
+                toaster(getErrorMessage(error), "error")
               })
               .finally(() => {
                 setCancelDialog(false)

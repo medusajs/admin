@@ -13,6 +13,7 @@ import NotFound from "../../../components/not-found"
 import Card from "../../../components/card"
 import Options from "./options"
 import InventoryManager from "./inventory"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const ProductDetail = ({ id }) => {
   const {
@@ -36,10 +37,12 @@ const ProductDetail = ({ id }) => {
   }
 
   const handleDetailsSubmit = data => {
-    update(data).then(() => {
-      refresh({ id })
-      toaster("Successfully updated product", "success")
-    })
+    update(data)
+      .then(() => {
+        refresh({ id })
+        toaster("Successfully updated product", "success")
+      })
+      .catch(error => toaster(getErrorMessage(error), "error"))
   }
 
   const handleVariantsSubmit = data => {
