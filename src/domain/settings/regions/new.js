@@ -17,6 +17,7 @@ import { countries as countryData } from "../../../utils/countries"
 
 import Shipping from "./shipping"
 import MultiSelect from "../../../components/multi-select"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const NewRegion = ({ id }) => {
   const [currencies, setCurrencies] = useState([])
@@ -81,15 +82,17 @@ const NewRegion = ({ id }) => {
   }
 
   const onSave = data => {
-    if(!data.countries || data.countries.length === 0){
+    if (!data.countries?.length) {
+      toaster("Choose at least one country", "error")
       return
     }
     Medusa.regions
       .create({ ...data, tax_rate: data.tax_rate * 100 })
       .then(() => {
-        toaster("Created a new Region", 'success')
+        toaster("Created a new Region", "success")
         navigate(`/a/settings`)
       })
+      .catch(error => toaster(getErrorMessage(error), "error"))
   }
 
   const countryOptions = countryData.map(c => ({

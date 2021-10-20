@@ -963,7 +963,7 @@ const OrderDetails = ({ id }) => {
                         method.shipping_option.name
                       ) : (
                         <span style={{ fontStyle: "italic" }}>
-                          Order fulfillment was handle by a now-deleted option
+                          Order fulfillment was handled by a now-deleted option
                         </span>
                       )}
                     </Text>
