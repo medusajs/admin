@@ -248,98 +248,98 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
           </tr>
         </TableHead>
         <tbody>
-          {variants.map(
-            (v, row) =>
-              (v.id !== undefined || !product) && (
-                <tr key={row}>
-                  {columns.map((c, col) => (
-                    <Td
-                      key={`${row}-${col}`}
-                      data-col={col}
-                      data-row={row}
-                      dragover={isDraggedOver({ col, row })}
-                      onDragEnter={handleDragEnter}
-                      onClick={() =>
-                        !c.readOnly &&
-                        setSelectedCell({
-                          field: c.field,
-                          value: v[c.field],
-                          row,
-                          col,
-                        })
-                      }
-                      selected={
-                        selectedCell.row === row && selectedCell.col === col
-                      }
-                      head={c.headCol}
-                    >
-                      {!(
-                        selectedCell.row === row && selectedCell.col === col
-                      ) && getDisplayValue(v, c, isDraggedOver({ col, row }))}
-                      {selectedCell.row === row && selectedCell.col === col && (
-                        <>
-                          <GridEditor
-                            ref={setRef}
-                            column={c}
-                            index={row}
-                            value={v[c.field]}
-                            onKeyDown={handleKey}
-                            onChange={handleChange}
-                          />
-                          <DragHandle draggable onDragEnd={handleDragEnd} />
-                        </>
-                      )}
-                    </Td>
-                  ))}
-                  {onEdit ? (
-                    <Box
-                      as="td"
-                      sx={{
-                        padding: "4px",
-                        borderBottom: "1px solid rgba(0,0,0,0.2)",
-                        backgroundColor: "white",
-                        textAlign: "right",
-                      }}
-                    >
-                      <Dropdown
-                        minHeight="24px"
-                        dropdownWidth="120px"
-                        width="28px"
-                        showTrigger={true}
-                        sx={{ padding: 0 }}
-                      >
-                        <Flex
-                          sx={{ padding: "8px 12px !important" }}
-                          alignItems="center"
-                          onClick={() => onEdit(row)}
-                        >
-                          <EditIcon />
-                          <Text ml={1} fontSize={14}>
-                            Edit
-                          </Text>
-                        </Flex>
-                        <Flex
-                          sx={{ padding: "8px 12px !important" }}
-                          alignItems="center"
-                          onClick={() => onCopy(row)}
-                        >
-                          <ClipboardIcon />
-                          <Text ml={1} fontSize={14}>
-                            Copy
-                          </Text>
-                        </Flex>
-                      </Dropdown>
-                    </Box>
-                  ) : (
-                    <Box
-                      as="td"
-                      height="24px"
-                      sx={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}
-                    />
+          {variants.map((v, row) => (
+            <tr key={row}>
+              {columns.map((c, col) => (
+                <Td
+                  key={`${row}-${col}`}
+                  data-col={col}
+                  data-row={row}
+                  dragover={isDraggedOver({ col, row })}
+                  onDragEnter={handleDragEnter}
+                  onClick={() =>
+                    !c.readOnly &&
+                    setSelectedCell({
+                      field: c.field,
+                      value: v[c.field],
+                      row,
+                      col,
+                    })
+                  }
+                  selected={
+                    selectedCell.row === row && selectedCell.col === col
+                  }
+                  head={c.headCol}
+                >
+                  {!(selectedCell.row === row && selectedCell.col === col) &&
+                    getDisplayValue(v, c, isDraggedOver({ col, row }))}
+                  {selectedCell.row === row && selectedCell.col === col && (
+                    <>
+                      <GridEditor
+                        ref={setRef}
+                        column={c}
+                        index={row}
+                        value={v[c.field]}
+                        onKeyDown={handleKey}
+                        onChange={handleChange}
+                      />
+                      <DragHandle draggable onDragEnd={handleDragEnd} />
+                    </>
                   )}
-                </tr>
-              )
-          )}
+                </Td>
+              ))}
+              {onEdit ? (
+                <Box
+                  as="td"
+                  sx={{
+                    padding: "4px",
+                    borderBottom: "1px solid rgba(0,0,0,0.2)",
+                    backgroundColor: "white",
+                    // position: "sticky !important",
+                    right: 0,
+                  }}
+                >
+                  <Dropdown
+                    minHeight="24px"
+                    dropdownWidth="120px"
+                    width="28px"
+                    sx={{
+                      height: 0,
+                      padding: 0,
+                      margin: "auto 0 auto auto",
+                    }}
+                  >
+                    <Flex
+                      sx={{ padding: "8px 12px !important" }}
+                      alignItems="center"
+                      onClick={() => onEdit(row)}
+                    >
+                      <EditIcon />
+                      <Text ml={1} fontSize={14}>
+                        Edit
+                      </Text>
+                    </Flex>
+                    <Flex
+                      sx={{ padding: "8px 12px !important" }}
+                      alignItems="center"
+                      onClick={() => onCopy(row)}
+                    >
+                      <ClipboardIcon />
+                      <Text ml={1} fontSize={14}>
+                        Copy
+                      </Text>
+                    </Flex>
+                  </Dropdown>
+                </Box>
+              ) : (
+                <Box
+                  as="td"
+                  height="24px"
+                  sx={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}
+                />
+              )}
+            </tr>
+          ))}
         </tbody>
       </StyledTable>
     </Wrapper>
