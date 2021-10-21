@@ -376,7 +376,7 @@ const VariantEditor = ({
             Cancel
           </Button>
           <Button type="submit" variant="deep-blue">
-            {isCopy ? "Create" : "Save"}
+            {isCopy ? "Create" : "Edit"}
           </Button>
         </Modal.Footer>
       </Modal.Body>
