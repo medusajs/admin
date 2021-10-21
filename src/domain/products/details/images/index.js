@@ -7,20 +7,11 @@ import Card from "../../../../components/card"
 import ImagesDropzone from "../../../../components/image-dropzone"
 import Medusa from "../../../../services/api"
 
-const Images = ({ isLoading, product, refresh, toaster }) => {
+const Images = ({ product, refresh, toaster }) => {
   const [uploads, setUploads] = useState([])
   const [images, setImages] = useState([])
-  const [selectedImages, setSelectedImages] = useState([])
   const [isSavingImages, setIsSavingImages] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
-
-  const handleImageSelection = image => {
-    if (selectedImages.includes(image)) {
-      setSelectedImages(selectedImages.filter(im => im !== image))
-    } else {
-      setSelectedImages([...selectedImages, image])
-    }
-  }
 
   useEffect(() => {
     if (product) {
@@ -29,13 +20,6 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
       setImages([...imgs])
     }
   }, [product])
-
-  const handleImageDelete = () => {
-    const newImages = _.difference(images, selectedImages)
-    setSelectedImages([])
-    setImages(newImages)
-    setIsDirty(true)
-  }
 
   const handleSave = () => {
     setIsSavingImages(true)
@@ -55,7 +39,6 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
           .update(product.id, { images: allImages })
           .then(() => {
             setIsSavingImages(false)
-            setSelectedImages([])
             setUploads([])
             setIsDirty(false)
             refresh({ id: product.id })
@@ -67,19 +50,7 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
 
   return (
     <Card mb={2}>
-      <Card.Header
-        action={
-          selectedImages.length > 0 && {
-            type: "delete",
-            label: "Delete images",
-            onClick: () => handleImageDelete(),
-          }
-        }
-      >
-        {selectedImages.length > 0
-          ? `${selectedImages.length} image(s) selected`
-          : "Images"}
-      </Card.Header>
+      <Card.Header>Images</Card.Header>
       <Card.Body flexDirection="column" px={3}>
         <ImagesDropzone
           images={images}
@@ -93,10 +64,9 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
         >
           {images.map(image => (
             <ImagesDropzone.Preview
-              selected={selectedImages.includes(image)}
+              key={image}
               onClick={e => {
                 e.stopPropagation()
-                handleImageSelection(image)
               }}
               sx={{ position: "relative" }}
               src={image}
