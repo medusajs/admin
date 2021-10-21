@@ -49,9 +49,8 @@ export default {
       return medusaRequest("POST", path, details)
     },
     deauthenticate(details) {
-      return Promise.resolve()
-      // const path = `/admin/auth`
-      // return medusaRequest("DELETE", path)
+      const path = `/admin/auth`
+      return medusaRequest("DELETE", path)
     },
   },
   notifications: {

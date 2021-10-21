@@ -15,6 +15,7 @@ import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
 import InfoTooltip from "../../../../components/info-tooltip"
 import { ReactComponent as CloseIcon } from "../../../../assets/svg/cross.svg"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const FREE_SHIPPING_OPTION = {
   label: "Give free shipping",
@@ -224,7 +225,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       return onCreate(data)
         .then(() => onDismiss())
         .then(() => toaster("Successfully created swap", "success"))
-        .catch(() => toaster("Failed to create swap order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }

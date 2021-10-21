@@ -10,6 +10,7 @@ const Button = ({
   type,
   onClick,
   disabled,
+  innerRef,
   sx,
   ...props
 }) => {
@@ -21,6 +22,7 @@ const Button = ({
 
   return (
     <RebassButton
+      ref={innerRef}
       sx={{
         position: "relative",
         cursor: loading ? "default" : "pointer",

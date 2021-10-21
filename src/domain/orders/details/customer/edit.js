@@ -5,6 +5,7 @@ import Modal from "../../../../components/modal"
 import Button from "../../../../components/button"
 import Select from "../../../../components/select"
 import { Input } from "@rebass/forms"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import { Flex, Text } from "rebass"
 
 const CustomerInformationEdit = ({
@@ -29,7 +30,7 @@ const CustomerInformationEdit = ({
       .then(() =>
         toaster("Successfully updated customer information", "success")
       )
-      .catch(() => toaster("Failed to update customer information", "error"))
+      .catch(error => toaster(getErrorMessage(error), "error"))
       .finally(() => setSubmitting(false))
   }
 
