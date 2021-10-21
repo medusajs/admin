@@ -117,18 +117,19 @@ const Items = ({
         <Button
           variant="primary"
           onClick={() => setAddCustom(true)}
-          minHeight="24px"
+          minHeight="33px"
           mr={2}
         >
           + Add custom
         </Button>
         <Dropdown
+          height="100%"
           disabled={!selectedRegion}
           toggleText={"+ Add existing"}
           showSearch
           onSearchChange={handleProductSearch}
-          dropdownWidth="275px !important"
-          dropdownHeight="325px !important"
+          dropdownWidth="275px"
+          dropdownHeight="325px"
           searchPlaceholder={"Search by SKU, Name, etc."}
         >
           {searchingProducts ? (

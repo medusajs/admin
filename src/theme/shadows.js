@@ -1,4 +1,8 @@
 export default {
+  popover: `
+  0 0 0 1px hsla(0, 0%, 0%, 0.1),
+  0 4px 11px hsla(0, 0%, 0%, 0.1)
+`,
   pill: `
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,

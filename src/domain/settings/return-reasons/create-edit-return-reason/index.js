@@ -12,6 +12,8 @@ import Button from "../../../../components/button"
 import Medusa from "../../../../services/api"
 import useMedusa from "../../../../hooks/use-medusa"
 
+import { getErrorMessage } from "../../../../utils/error-messages"
+
 const ReturnReasonModal = ({
   reason,
   parentReturnReason,
@@ -38,7 +40,7 @@ const ReturnReasonModal = ({
       onDelete(id)
       toaster("Sucessfully deleted return reason")
     } catch (error) {
-      toaster("Failed to delete return reason", "error")
+      toaster(getErrorMessage(error), "error")
     }
     onDismiss()
   }
@@ -67,7 +69,7 @@ const ReturnReasonModal = ({
         toaster("Successfully updated return reason", "success")
       }
     } catch (error) {
-      toaster(error, "error")
+      toaster(getErrorMessage(error), "error")
     }
     onDismiss()
   }

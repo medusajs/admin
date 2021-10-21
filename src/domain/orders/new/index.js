@@ -275,7 +275,6 @@ const NewOrder = ({}) => {
               })}
             </Box>
             <Dropdown
-              leftAlign
               disabled={!selectedRegion}
               toggleText={"+ Add product"}
               showSearch

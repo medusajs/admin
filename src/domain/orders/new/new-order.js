@@ -80,6 +80,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const [showCustomPrice, setShowCustomPrice] = useState(false)
   const [creatingOrder, setCreatingOrder] = useState(false)
   const [noNotification, setNoNotification] = useState(false)
+  const [bodyElement, setBodyElement] = useState()
   const [searchingProducts, setSearchingProducts] = useState(false)
 
   const form = useForm({
@@ -318,9 +319,9 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const calculateTotal = () => {
     const tot = items.reduce((acc, next) => {
       if ("unit_price" in next) {
-        acc = acc + next.unit_price
+        acc = acc + next.unit_price * next.quantity
       } else {
-        acc = acc + extractUnitPrice(next, region, false)
+        acc = acc + extractUnitPrice(next, region, false) * next.quantity
       }
 
       return acc
@@ -328,6 +329,10 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
     return tot
   }
+
+  useEffect(() => {
+    setBodyElement(document.body)
+  }, [])
 
   useEffect(() => {
     if (regions) {
@@ -439,6 +444,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
                 </Text>
               ) : (
                 <ReactSelect
+                  menuPortalTarget={bodyElement}
                   isClearable={false}
                   placeholder="Select shipping..."
                   onChange={so => handleOptionSelect(so)}

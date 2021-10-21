@@ -16,6 +16,7 @@ import useMedusa from "../../../hooks/use-medusa"
 import DiscountRuleModal from "./discount-rule"
 import { Input } from "@rebass/forms"
 import Typography from "../../../components/typography"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const StyledMultiSelect = styled(MultiSelect)`
   ${Typography.Base}
@@ -132,9 +133,10 @@ const DiscountDetails = ({ id }) => {
         setUpdating(false)
         toaster("Discount updated", "success")
       })
-      .catch(() => {
+      .catch(error => {
         setUpdating(false)
-        toaster("Discount update failed", "error")
+
+        toaster(getErrorMessage(error), "error")
       })
   }
 
@@ -148,14 +150,15 @@ const DiscountDetails = ({ id }) => {
         setUpdating(false)
         toaster("Discount updated", "success")
       })
-      .catch(() => {
+      .catch(error => {
         setUpdating(false)
-        toaster("Discount update failed", "error")
+        toaster(getErrorMessage(error), "error")
       })
   }
 
   const handleDiscountRuleUpdate = data => {
     setUpdating(true)
+
     update(data)
       .then(() => {
         refresh({ id })
@@ -166,7 +169,7 @@ const DiscountDetails = ({ id }) => {
       .catch(error => {
         setUpdating(false)
         setShowRuleEdit(false)
-        toaster("Discount rule update failed", "error")
+        toaster(getErrorMessage(error), "error")
       })
   }
 
@@ -187,9 +190,9 @@ const DiscountDetails = ({ id }) => {
         setUpdating(false)
         toaster("Discount updated", "success")
       })
-      .catch(() => {
+      .catch(error => {
         setUpdating(false)
-        toaster("Discount update failed", "error")
+        toaster(getErrorMessage(error), "error")
       })
   }
 

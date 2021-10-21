@@ -13,6 +13,7 @@ import Select from "../../../../components/select"
 import Typography from "../../../../components/typography"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const Dot = styled(Box)`
   width: 6px;
@@ -205,7 +206,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       return onCreate(data)
         .then(() => onDismiss())
         .then(() => toaster("Successfully created swap", "success"))
-        .catch(() => toaster("Failed to create swap order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }
@@ -398,7 +399,6 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               <Dropdown
                 leftAlign
                 toggleText={"+ Add product"}
-                justifyContent="flex-start"
                 showSearch
                 onSearchChange={handleProductSearch}
                 searchPlaceholder={"Search by SKU, Name, etch."}

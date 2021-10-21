@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react"
 import { Flex, Box, Text } from "rebass"
+import { navigate } from "gatsby"
 import { useForm } from "react-hook-form"
 
 import useMedusa from "../../hooks/use-medusa"
 import Input from "../../components/input"
 import Card from "../../components/card"
 import Button from "../../components/button"
+import { getErrorMessage } from "../../utils/error-messages"
 import BreadCrumb from "../../components/breadcrumb"
 
 const HorizontalDivider = props => (
@@ -36,13 +38,33 @@ const AccountDetails = () => {
     })
   }, [store, isLoading])
 
+  const validateUrl = (address) => {
+    if(!address || address === '')
+    {
+      return true
+    }
+
+    try {
+      const url = new URL(address);
+      return url.protocol === "http:" || url.protocol === "https:";
+    } catch (_) {
+      return false;  
+    }
+  }
+
   const onSubmit = data => {
+    if(!validateUrl(data.swap_link_template) || !validateUrl(data.payment_link_template)){
+      toaster("Malformed url", 'error')
+      return
+    }
+    
     try {
       localStorage.removeItem("medusa::cache::store")
       update(data)
       toaster("Successfully updated store", "success")
+      window.location.reload()
     } catch (error) {
-      toaster("Failed to update store", "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 
@@ -79,7 +101,7 @@ const AccountDetails = () => {
           </Flex>
           <HorizontalDivider />
           <Flex>
-            <Text my={3} fontSize={14}>
+            <Text my={3} fontSize={14} fontWeight="bold">
               Advanced settings
             </Text>
           </Flex>

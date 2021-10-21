@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { Router } from "@reach/router"
 import { navigate } from "gatsby"
 import qs from "query-string"
 import { Text, Flex, Box } from "rebass"
-import { Input } from "@rebass/forms"
 import ReactTooltip from "react-tooltip"
 import moment from "moment"
 import { OrderNumCell } from "../orders"
+import { InterfaceContext } from "../../context/interface"
 
 import ManageGiftCard from "./manage"
 import GiftCardDetail from "./detail"
@@ -22,21 +22,19 @@ import {
   DefaultCellContent,
 } from "../../components/table"
 import Spinner from "../../components/spinner"
-import Badge from "../../components/badge"
 import Button from "../../components/button"
 import useMedusa from "../../hooks/use-medusa"
 
 const Index = () => {
   const { gift_cards, isLoading, refresh } = useMedusa("giftCards")
-  const [query, setQuery] = useState("")
 
-  const searchQuery = () => {
+  const searchQuery = q => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
       fields: "id,title,thumbnail",
       expand: "variants,variants.prices,collection",
-      q: query,
+      q,
       offset: 0,
       limit: 20,
     }
@@ -50,14 +48,11 @@ const Index = () => {
     refresh({ search })
   }
 
-  const onKeyDown = event => {
-    // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event
-    if (event.key === "Enter") {
-      event.preventDefault()
-      event.stopPropagation()
-      searchQuery()
-    }
-  }
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
+  useEffect(() => {
+    setOnSearch(searchQuery)
+  }, [])
 
   return (
     <div>
@@ -71,28 +66,6 @@ const Index = () => {
           variant={"cta"}
         >
           Manage gift cards
-        </Button>
-      </Flex>
-      <Flex>
-        <Box mb={3} sx={{ maxWidth: "300px" }}>
-          <Input
-            height="28px"
-            fontSize="12px"
-            name="q"
-            type="text"
-            placeholder="Search gift cards"
-            onKeyDown={onKeyDown}
-            onChange={e => setQuery(e.target.value)}
-            value={query}
-          />
-        </Box>
-        <Button
-          onClick={() => searchQuery()}
-          variant={"primary"}
-          fontSize="12px"
-          ml={2}
-        >
-          Search
         </Button>
       </Flex>
       {isLoading ? (

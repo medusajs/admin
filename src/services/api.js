@@ -49,9 +49,8 @@ export default {
       return medusaRequest("POST", path, details)
     },
     deauthenticate(details) {
-      return Promise.resolve()
-      // const path = `/admin/auth`
-      // return medusaRequest("DELETE", path)
+      const path = `/admin/auth`
+      return medusaRequest("DELETE", path)
     },
   },
   notifications: {
@@ -98,6 +97,10 @@ export default {
     list(search = "") {
       const path = `/admin/customers${search}`
       return medusaRequest("GET", path)
+    },
+    update(customerId, update) {
+      const path = `admin/customers/${customerId}`
+      return medusaRequest("POST", path, update)
     },
   },
   store: {
