@@ -130,9 +130,9 @@ const VariantEditor = ({
     }))
 
     data.prices = data.prices.map(p => removeNullish(p))
-    const clean = convertEmptyStringToNull(data, numberFields)
+    const cleaned = convertEmptyStringToNull(data, numberFields)
 
-    onSubmit(clean)
+    onSubmit(cleaned)
   }
 
   return (
