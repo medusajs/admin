@@ -188,7 +188,6 @@ textarea {
 html {
   font: 112.5%/1.45em georgia, serif;
   box-sizing: border-box;
-  overflow-y: scroll;
 }
 * {
   box-sizing: inherit;
@@ -210,6 +209,11 @@ body {
   -webkit-font-feature-settings: "kern", "liga", "clig", "calt";
   font-feature-settings: "kern", "liga", "clig", "calt";
 }
+
+#___gatsby {
+  isolation: isolate;
+}
+
 img {
   max-width: 100%;
   margin-left: 0;

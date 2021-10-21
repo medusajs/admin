@@ -6,6 +6,7 @@ import Button from "../../../../components/button"
 import Card from "../../../../components/card"
 import ImagesDropzone from "../../../../components/image-dropzone"
 import Medusa from "../../../../services/api"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const Images = ({ product, refresh, toaster }) => {
   const [uploads, setUploads] = useState([])
@@ -44,7 +45,7 @@ const Images = ({ product, refresh, toaster }) => {
             refresh({ id: product.id })
             toaster("Successfully saved images", "success")
           })
-          .catch(() => toaster("Failed to upload images", "error"))
+          .catch(error => toaster(getErrorMessage(error), "error"))
       })
   }
 

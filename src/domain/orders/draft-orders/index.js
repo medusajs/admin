@@ -40,16 +40,18 @@ const DraftOrderIndex = ({}) => {
 
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
-      <Flex>
-        <Text mb={3} fontSize={20} fontWeight="bold">
-          Draft orders
-        </Text>
-      </Flex>
-      <Flex>
-        <Box ml="auto" />
-        <Button ml={2} onClick={() => setShowNewOrder(true)} variant={"cta"}>
-          New draft order
-        </Button>
+      <Flex sx={{ justifyContent: "space-between", width: "100%", mb: 2 }}>
+        <Flex>
+          <Text mb={3} fontSize={20} fontWeight="bold">
+            Draft orders
+          </Text>
+        </Flex>
+        <Flex>
+          <Box ml="auto" />
+          <Button ml={2} onClick={() => setShowNewOrder(true)} variant={"cta"}>
+            New draft order
+          </Button>
+        </Flex>
       </Flex>
       {isLoading || isReloading ? (
         <Flex

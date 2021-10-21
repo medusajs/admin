@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import Medusa from "../../../services/api"
-import moment from "moment"
 
 import AvailabilityDuration from "../../../components/availability-duration"
 import Button from "../../../components/button"
@@ -19,6 +18,7 @@ import Spinner from "../../../components/spinner"
 import InfoTooltip from "../../../components/info-tooltip"
 import Tooltip from "../../../components/tooltip"
 import { ReactComponent as InfoIcon } from "../../../assets/svg/info.svg"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 import { navigate } from "gatsby"
 
@@ -138,7 +138,7 @@ const NewDiscount = ({}) => {
         .create(disc)
         .then(() => toaster("Successfully created discount", "success"))
         .then(() => navigate("/a/discounts"))
-        .catch(() => toaster("Error creating discount", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
     }
 
     data.rule.value = parseInt(data.rule.value)
@@ -154,10 +154,10 @@ const NewDiscount = ({}) => {
 
     const discount = {
       code: data.code,
-      is_dynamic: isDynamic, //data.is_dynamic === "true",
+      is_dynamic: isDynamic,
       rule: data.rule,
-      starts_at: moment(startDate).format("MM/DD/YYYY HH:mm"),
-      ends_at: endDate ? moment(endDate).format("MM/DD/YYYY HH:mm") : undefined,
+      starts_at: startDate.toUTCString(),
+      ends_at: endDate ? endDate.toUTCString() : undefined,
       regions: data.regions || [],
       valid_duration: isDynamic ? iso8601Date : undefined,
     }
@@ -173,7 +173,7 @@ const NewDiscount = ({}) => {
         navigate("/a/discounts")
       })
       .catch(error => {
-        toaster("Error creating discount", "error")
+        toaster(getErrorMessage(error), "error")
       })
   }
 
