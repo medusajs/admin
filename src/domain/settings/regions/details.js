@@ -18,6 +18,7 @@ import { countries as countryData } from "../../../utils/countries"
 
 import Shipping from "./shipping"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const Regions = ({ id }) => {
   const [currencies, setCurrencies] = useState([])
@@ -125,11 +126,16 @@ const Regions = ({ id }) => {
   }
 
   const onSave = async data => {
+    if(!data.countries || data.countries.length === 0){
+      return
+    }
+    
     try {
       await update({ ...data, tax_rate: data.tax_rate * 100 })
+
       toaster("Successfully updated region", "success")
     } catch (error) {
-      toaster("Failed to update region", "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 
