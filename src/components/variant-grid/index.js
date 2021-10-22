@@ -295,8 +295,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
                     padding: "4px",
                     borderBottom: "1px solid rgba(0,0,0,0.2)",
                     backgroundColor: "white",
-                    // position: "sticky !important",
-                    right: 0,
+                    textAlign: "right",
                   }}
                 >
                   <Dropdown
@@ -307,6 +306,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
                       height: 0,
                       padding: 0,
                       margin: "auto 0 auto auto",
+                      display: "inline-block",
                     }}
                   >
                     <Flex
