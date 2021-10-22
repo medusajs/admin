@@ -305,8 +305,6 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
                     sx={{
                       height: 0,
                       padding: 0,
-                      margin: "auto 0 auto auto",
-                      display: "inline-block",
                     }}
                   >
                     <Flex
