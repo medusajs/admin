@@ -1,10 +1,18 @@
 import axios from "axios"
 
-const STORE_URL = process.env.GATSBY_STORE_URL || "http://localhost:9000"
+let baseURL = "http://localhost:9000"
 
-const client = axios.create({
-  baseURL: STORE_URL,
-})
+// deprecated
+if (process.env.GATSBY_STORE_URL) {
+  baseURL = process.env.GATSBY_STORE_URL
+}
+
+// takes precedence over GATSBY_STORE_URL
+if (process.env.GATSBY_MEDUSA_BACKEND_URL) {
+  baseURL = process.env.GATSBY_MEDUSA_BACKEND_URL
+}
+
+const client = axios.create({ baseURL })
 
 export default function medusaRequest(method, path = "", payload = {}) {
   const options = {
