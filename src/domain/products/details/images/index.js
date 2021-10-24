@@ -6,6 +6,7 @@ import Button from "../../../../components/button"
 import Card from "../../../../components/card"
 import ImagesDropzone from "../../../../components/image-dropzone"
 import Medusa from "../../../../services/api"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const Images = ({ isLoading, product, refresh, toaster }) => {
   const [uploads, setUploads] = useState([])
@@ -18,13 +19,13 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
     if (selectedImages.includes(image)) {
       setSelectedImages(selectedImages.filter(im => im !== image))
     } else {
-      setSelectedImages(selectedImages => [...selectedImages, image])
+      setSelectedImages([...selectedImages, image])
     }
   }
 
   useEffect(() => {
     if (product) {
-      let imgs = [product.thumbnail, ...product.images.map(img => img.url)]
+      let imgs = product.images.map(img => img.url)
       imgs = [...new Set(imgs)].filter(Boolean)
       setImages([...imgs])
     }
@@ -61,7 +62,7 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
             refresh({ id: product.id })
             toaster("Successfully saved images", "success")
           })
-          .catch(() => toaster("Failed to upload images", "error"))
+          .catch(error => toaster(getErrorMessage(error), "error"))
       })
   }
 
@@ -106,6 +107,8 @@ const Images = ({ isLoading, product, refresh, toaster }) => {
                   e.stopPropagation()
                   const newImages = images.filter(img => image != img)
                   setImages(newImages)
+                  const newUploads = uploads.filter(img => image != img.preview)
+                  setUploads(newUploads)
                   setIsDirty(true)
                 }}
                 style={{

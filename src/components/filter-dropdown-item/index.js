@@ -37,13 +37,16 @@ const CollapseContainer = styled.div`
   display: flex;
   align-items: center;
 
-  // background-color: ${props => props.theme.colors.gray};
+  background-color: ${props => props.theme.colors.light};
+  border-bottom: 1px solid ${props => props.theme.colors.lightest};
   padding: 7px;
   padding-left: 10px;
 
   ${props =>
     props.last &&
     `
+      border-bottom:none;
+
       margin-bottom: 0;
       padding-bottom: 7px;
   `}

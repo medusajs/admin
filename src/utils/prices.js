@@ -45,7 +45,7 @@ export const displayUnitPrice = (item, region) => {
   const currCode = region.currency_code.toUpperCase()
 
   let price = extractUnitPrice(item, region)
-  return `${(price / 100).toFixed(2)} ${currCode}`
+  return `${displayAmount(currCode, price)} ${currCode}`
 }
 
 export const extractOptionPrice = (price, region) => {

@@ -18,6 +18,7 @@ import SwapMenu from "./swap/create"
 import ClaimMenu from "./claim/create"
 import NotificationResend from "./notification/resend-menu"
 import CustomerInformation from "./customer"
+import LineItem from "./line-item"
 import { Input } from "@rebass/forms"
 
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
@@ -31,8 +32,10 @@ import { ReactComponent as ExternalLink } from "../../../assets/svg/external-lin
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
+import { getErrorMessage } from "../../../utils/error-messages"
 import PaymentMenu from "./payment-menu"
 import Medusa from "../../../services/api"
+import _ from "lodash"
 
 const AlignedDecimal = ({ value, currency }) => {
   const fixed = (value / 100).toFixed(2)
@@ -124,8 +127,7 @@ const Fulfillment = ({
     return cancel(fulfillment.id)
       .then()
       .catch(error => {
-        const errorData = error.response.data.message
-        toaster(`${errorData}`, "error")
+        toaster(getErrorMessage(error), "error")
       })
   }
 
@@ -491,8 +493,8 @@ const OrderDetails = ({ id }) => {
                 toaster("Succesfully captured payment", "success")
                 setCaptureLoading(true)
               })
-              .catch(() => {
-                toaster("Failed to capture payment", "error")
+              .catch(error => {
+                toaster(getErrorMessage(error), "error")
                 setCaptureLoading(true)
               })
           },
@@ -597,11 +599,11 @@ const OrderDetails = ({ id }) => {
     getFulfillmentStatus() !== "returned" &&
     !showAddNote
   ) {
-    lineAction = {
+    lineDropdown.push({
       type: "primary",
       label: "Request return",
       onClick: () => setShowReturnMenu(!showReturnMenu),
-    }
+    })
 
     lineDropdown.push({
       type: "primary",
@@ -642,6 +644,13 @@ const OrderDetails = ({ id }) => {
         createNote()
       },
     })
+  }
+  const wrapCancel = func => {
+    return param => {
+      func(param)
+        .then()
+        .catch(error => toaster(getErrorMessage(error), "error"))
+    }
   }
 
   const fulfillments = gatherFulfillments(order)
@@ -773,9 +782,30 @@ const OrderDetails = ({ id }) => {
           </Card.Body>
         </Card>
       </Flex>
+
+      <Card mb={1} sx={{ borderTop: "1px solid #e3e8ee" }}>
+        <Text ml={3} mt={3} mb={1} fontSize={20} fontWeight="bold">
+          Placed
+        </Text>
+        <Box pb={3}>
+          <Text fontSize="11px" color="grey" ml={3} mb={3}>
+            {moment(order.created_at).format("MMMM Do YYYY, H:mm:ss")}
+          </Text>
+          {order.items.map((lineItem, i) => (
+            <LineItem
+              key={i}
+              currency={order.currency_code}
+              lineItem={lineItem}
+              order={order}
+              taxRate={order.tax_rate}
+            />
+          ))}
+        </Box>
+      </Card>
+
       {/* Line items */}
-      <Card mb={4}>
-        <Card.Header dropdownOptions={lineDropdown} action={lineAction}>
+      <Card mb={5}>
+        <Card.Header removeBorderTop={true} dropdownOptions={lineDropdown}>
           Timeline
         </Card.Header>
         {showAddNote && (
@@ -790,20 +820,20 @@ const OrderDetails = ({ id }) => {
           </Flex>
         )}
 
-        <Card.Body flexDirection="column">
+        <Card.Body pl={1} flexDirection="column">
           <Timeline
             events={events}
             order={order}
             onResendNotification={n => setNotificationResend(n)}
             onSaveClaim={updateClaim}
-            onCancelClaim={cancelClaim}
+            onCancelClaim={wrapCancel(cancelClaim)}
             onFulfillClaim={claim => setClaimToFulfill(claim)}
             onReceiveClaim={receiveClaim}
             onProcessSwapPayment={processSwapPayment}
             onFulfillSwap={swap => setSwapToFulfill(swap)}
             onReceiveReturn={ret => setToReceive(ret)}
             onCancelReturn={cancelReturn}
-            onCancelSwap={cancelSwap}
+            onCancelSwap={wrapCancel(cancelSwap)}
             toaster={toaster}
             onUpdateNotes={notes => setNotes(notes)}
           />
@@ -933,7 +963,7 @@ const OrderDetails = ({ id }) => {
                         method.shipping_option.name
                       ) : (
                         <span style={{ fontStyle: "italic" }}>
-                          Order was shipped with a now deleted option
+                          Order fulfillment was handled by a now-deleted option
                         </span>
                       )}
                     </Text>
@@ -1102,8 +1132,8 @@ const OrderDetails = ({ id }) => {
               .then(() => {
                 toaster("Order was canceled", "success")
               })
-              .catch(() => {
-                toaster("Could not cancel order", "error")
+              .catch(error => {
+                toaster(getErrorMessage(error), "error")
               })
               .finally(() => {
                 setCancelDialog(false)
