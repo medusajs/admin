@@ -16,6 +16,7 @@ import useMedusa from "../../../hooks/use-medusa"
 import DiscountRuleModal from "./discount-rule"
 import { Input } from "@rebass/forms"
 import Typography from "../../../components/typography"
+import Tooltip from "../../../components/tooltip"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const StyledMultiSelect = styled(MultiSelect)`
@@ -279,18 +280,37 @@ const DiscountDetails = ({ id }) => {
             />
           </Box>
           <Box ml="auto" />
-          <Flex mr={3} mt="auto">
+          <Flex
+            mr={3}
+            mt="auto"
+            data-for="disallow-multiple-regions"
+            data-tip="Multiple regions are not allowed for fixed type discounts"
+          >
             <Button
-              disabled={_.isEqual(
-                selectedRegions.map(r => r.value),
-                discount.regions.map(r => r.id)
-              )}
+              disabled={
+                _.isEqual(
+                  selectedRegions.map(r => r.value),
+                  discount.regions.map(r => r.id)
+                ) ||
+                (selectedRegions.length > 1 && discount.rule.type === "fixed")
+              }
               variant="primary"
               onClick={() => handleRegionUpdate(selectedRegions)}
             >
               Save valid regions
             </Button>
           </Flex>
+          <Tooltip
+            multiline={true}
+            disable={
+              _.isEqual(
+                selectedRegions.map(r => r.value),
+                discount.regions.map(r => r.id)
+              ) ||
+              !(selectedRegions.length > 1 && discount.rule.type === "fixed")
+            }
+            id="disallow-multiple-regions"
+          />
         </Card.Body>
       </Card>
       <Card mb={2}>
