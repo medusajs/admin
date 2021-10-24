@@ -4,22 +4,16 @@ import { useDropzone } from "react-dropzone"
 import { Box, Flex, Image } from "rebass"
 
 const StyledImageCard = styled(Image)`
+  cursor: default;
   height: 240px;
   width: 240px;
-
   border: ${props => (props.selected ? "1px solid #53725D" : "none")};
-
-  cursor: pointer;
-
   object-fit: cover;
-
   box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
     rgba(0, 0, 0, 0.12) 0px 1px 1px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
     rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.08) 0px 3px 9px 0px,
     rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
-
   border-radius: 3px;
-
   &:hover {
     box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.12) 0px 1px 1px 0px,
