@@ -19,7 +19,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: true,
-        id: action.payload._id,
+        id: action.payload.id,
         email: action.payload.email,
       }
     case "userLoggedOut":
@@ -28,7 +28,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: true,
-        id: action.payload._id,
+        id: action.payload.id,
         email: action.payload.email,
       }
     default:

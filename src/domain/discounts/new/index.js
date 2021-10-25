@@ -92,7 +92,7 @@ const NewDiscount = ({}) => {
   const validProducts = () => {
     let formattedProducts = products.map(p => ({
       label: p.title,
-      value: p._id,
+      value: p.id,
     }))
     return _.intersectionBy(formattedProducts, selectedProducts, "value").map(
       v => v.value

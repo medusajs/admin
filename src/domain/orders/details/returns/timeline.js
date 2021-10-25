@@ -80,7 +80,7 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
               {event.items.map(lineItem => (
                 <LineItem
                   fontColor={fontColor}
-                  key={lineItem._id}
+                  key={lineItem.id}
                   order={order}
                   lineItem={lineItem}
                 />

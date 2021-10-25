@@ -25,8 +25,8 @@ const NewOption = ({ options, optionMethods, onDelete, onClick }) => {
 
   useEffect(() => {
     options.forEach((o, index) => {
-      register({ name: `options[${index}]._id` })
-      setValue(`options[${index}]._id`, o._id)
+      register({ name: `options[${index}].id` })
+      setValue(`options[${index}].id`, o.id)
     })
   }, [options])
 
@@ -51,7 +51,7 @@ const NewOption = ({ options, optionMethods, onDelete, onClick }) => {
       .then(() => {
         Promise.all(
           options.map(o =>
-            optionMethods.update(o._id, {
+            optionMethods.update(o.id, {
               title: o.title,
             })
           )
@@ -68,13 +68,13 @@ const NewOption = ({ options, optionMethods, onDelete, onClick }) => {
         </Modal.Header>
         <Modal.Content flexDirection="column">
           {options.map((o, index) => (
-            <Flex mb={3} alignItems="flex-end" key={o._id}>
+            <Flex mb={3} alignItems="flex-end" key={o.id}>
               <Input
                 label="Title"
                 name={`options[${index}].title`}
                 ref={register}
               />
-              <Button onClick={() => onRemove(o._id)} variant="primary" ml={3}>
+              <Button onClick={() => onRemove(o.id)} variant="primary" ml={3}>
                 Remove
               </Button>
             </Flex>

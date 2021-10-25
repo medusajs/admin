@@ -37,7 +37,7 @@ const ShippingProfiles = () => {
           ) : (
             shipping_profiles.map(sp => (
               <Flex
-                key={sp._id}
+                key={sp.id}
                 py={3}
                 px={3}
                 width={1}
@@ -69,7 +69,7 @@ const ShippingProfiles = () => {
                   <Button
                     variant="primary"
                     onClick={() =>
-                      navigate(`/a/settings/shipping-profiles/${sp._id}`)
+                      navigate(`/a/settings/shipping-profiles/${sp.id}`)
                     }
                   >
                     Edit

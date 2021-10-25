@@ -161,7 +161,7 @@ const VariantEditor = ({
             {options.map((o, index) => (
               <Input
                 mb={3}
-                key={o._id}
+                key={o.id}
                 label={o.title}
                 name={`options.${index}.value`}
                 ref={register}

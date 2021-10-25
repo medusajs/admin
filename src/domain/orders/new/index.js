@@ -157,7 +157,7 @@ const NewOrder = ({}) => {
       const newVariants = []
       Promise.all(
         selectedProducts.map(async product => {
-          const p = await Medusa.products.retrieve(product._id)
+          const p = await Medusa.products.retrieve(product.id)
           newVariants.push(p.variant)
         })
       )

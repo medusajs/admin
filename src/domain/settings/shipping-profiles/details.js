@@ -75,7 +75,7 @@ const ShippingProfileDetail = ({ id }) => {
       setSelectedProducts(
         shipping_profile.products.map(product => ({
           label: product.title,
-          value: product._id,
+          value: product.id,
         }))
       )
     }
@@ -113,7 +113,7 @@ const ShippingProfileDetail = ({ id }) => {
         <StyledMultiSelect
           options={products.map(el => ({
             label: el.title,
-            value: el._id,
+            value: el.id,
           }))}
           selectAllLabel={"All"}
           overrideStrings={{

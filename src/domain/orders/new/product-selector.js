@@ -40,7 +40,7 @@ const ProductSelector = ({
               products &&
               products.map(el => ({
                 label: el.title,
-                value: el._id,
+                value: el.id,
               }))
             }
             value={selectedProducts}

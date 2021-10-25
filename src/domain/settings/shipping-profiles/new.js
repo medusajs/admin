@@ -85,7 +85,7 @@ const NewShippingProfiles = ({ id }) => {
         <StyledMultiSelect
           options={products.map(el => ({
             label: el.title,
-            value: el._id,
+            value: el.id,
           }))}
           selectAllLabel={"All"}
           overrideStrings={{

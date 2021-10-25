@@ -19,7 +19,7 @@ const SwapShippingMethods = ({
     <>
       {!isEmpty(shipping_methods) ? (
         shipping_methods.map(method => (
-          <Box key={method._id}>
+          <Box key={method.id}>
             <Box>
               <Text fontSize={12} color="#454B54">
                 {method.shipping_option ? (

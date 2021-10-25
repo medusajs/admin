@@ -445,7 +445,7 @@ const DraftOrderDetails = ({ id }) => {
           <Flex flexDirection="column" pb={3}>
             {draftOrder.cart?.shipping_methods?.length
               ? draftOrder.cart.shipping_methods.map(method => (
-                  <Box key={method._id}>
+                  <Box key={method.id}>
                     <Box pl={3} pr={2}>
                       <Text pb={1} color="gray">
                         Shipping Method
