@@ -248,6 +248,26 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
     setTags(newTags)
     setIsDirty(true)
   }
+  const handleProductStatusAction = () => {
+    switch (product.status) {
+      case "draft":
+        return {
+          type: "cta",
+          label: "Publish",
+          onClick: () => onSubmit({ status: "published" }),
+          isLoading: isLoading,
+        }
+      case "published":
+        return {
+          type: "cta",
+          label: "Unpublish",
+          onClick: () => onSubmit({ status: "draft" }),
+          isLoading: isLoading,
+        }
+      default:
+        return null
+    }
+  }
 
   if (isLoading) {
     return (
@@ -266,7 +286,11 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
       onKeyDown={e => e.key === "Enter" && e.preventDefault()}
       mb={2}
     >
-      <Card.Header dropdownOptions={dropdownOptions}>
+      <Card.Header
+        dropdownOptions={dropdownOptions}
+        // Check for product status prop. for backwards compatibility
+        action={product?.status && handleProductStatusAction()}
+      >
         Product Information
       </Card.Header>
       <Card.Body px={3} sx={{ gap: "128px" }}>
