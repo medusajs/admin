@@ -1,4 +1,4 @@
-export const filterItems = (order, isClaim) => {
+export const filterItems = order => {
   let orderItems = order.items.reduce(
     (map, obj) =>
       map.set(obj.id, {
@@ -10,41 +10,35 @@ export const filterItems = (order, isClaim) => {
   let claimedItems = []
 
   if (order.claims && order.claims.length) {
-    for (const s of order.claims) {
-      claimedItems = [...claimedItems, ...s.claim_items]
+    for (const c of order.claims) {
+      claimedItems = [...claimedItems, ...c.claim_items]
+      if (
+        c.fulfillment_status === "not_fulfilled" &&
+        c.payment_status === "na"
+      ) {
+        continue
+      }
 
-      //
-      //    Ticket is created to allow claims and swaps on claims and swaps without errors
-      //
-      //   if (
-      //     s.fulfillment_status === "not_fulfilled" &&
-      //     s.payment_status === "na"
-      //   ) {
-      //     continue
-      //   }
-
-      //   if (s.additional_items && s.additional_items.length)
-      //     orderItems = s.additional_items
-      //       .filter(
-      //         it =>
-      //           it.shipped_quantity ||
-      //           it.shipped_quantity === it.fulfilled_quantity
-      //       )
-      //       .reduce((map, obj) => map.set(obj.id, { ...obj }), orderItems)
+      if (c.additional_items && c.additional_items.length)
+        orderItems = c.additional_items
+          .filter(
+            it =>
+              it.shipped_quantity ||
+              it.shipped_quantity === it.fulfilled_quantity
+          )
+          .reduce((map, obj) => map.set(obj.id, { ...obj }), orderItems)
     }
   }
 
-  if (!isClaim) {
-    if (order.swaps && order.swaps.length) {
-      for (const s of order.swaps) {
-        orderItems = s.additional_items.reduce(
-          (map, obj) =>
-            map.set(obj.id, {
-              ...obj,
-            }),
-          orderItems
-        )
-      }
+  if (order.swaps && order.swaps.length) {
+    for (const s of order.swaps) {
+      orderItems = s.additional_items.reduce(
+        (map, obj) =>
+          map.set(obj.id, {
+            ...obj,
+          }),
+        orderItems
+      )
     }
   }
 

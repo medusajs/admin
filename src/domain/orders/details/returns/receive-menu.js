@@ -7,6 +7,7 @@ import Modal from "../../../../components/modal"
 import CurrencyInput from "../../../../components/currency-input"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const ReceiveMenu = ({
   order,
@@ -34,6 +35,12 @@ const ReceiveMenu = ({
       if (order.swaps && order.swaps.length) {
         for (const s of order.swaps) {
           temp = [...temp, ...s.additional_items]
+        }
+      }
+
+      if (order.claims && order.claims.length) {
+        for (const c of order.claims) {
+          temp = [...temp, ...c.additional_items]
         }
       }
 
@@ -129,7 +136,7 @@ const ReceiveMenu = ({
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
-        .catch(() => toaster("Failed to return order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
 
@@ -141,7 +148,7 @@ const ReceiveMenu = ({
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
-        .catch(() => toaster("Failed to return order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }
@@ -220,6 +227,8 @@ const ReceiveMenu = ({
             if (returnRequest.is_swap && !quantities[item.id]) {
               return
             }
+
+            console.log(item)
 
             return (
               <Flex

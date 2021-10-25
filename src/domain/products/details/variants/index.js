@@ -7,6 +7,7 @@ import VariantGrid from "../../../../components/variant-grid"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import NewOption from "./option-edit"
 import VariantEditor from "./variant-editor"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const numberFields = ["weight", "length", "width", "height"]
 
@@ -147,7 +148,7 @@ const Variants = ({
         setEditVariant(null)
         toaster("Successfully updated variant", "success")
       })
-      .catch(() => toaster("Failed to update variant", "error"))
+      .catch(error => toaster(getErrorMessage(error), "error"))
   }
 
   const handleCreateVariant = data => {
@@ -159,7 +160,7 @@ const Variants = ({
         setEditVariant(null)
         toaster("Successfully created variant", "success")
       })
-      .catch(() => toaster("Failed to update variant", "error"))
+      .catch(error => toaster(getErrorMessage(error), "error"))
   }
 
   const handleCreateOption = data => {

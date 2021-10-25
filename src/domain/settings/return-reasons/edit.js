@@ -14,6 +14,8 @@ import ReturnReasonsList from "./return-reasons-list"
 import useMedusa from "../../../hooks/use-medusa"
 import ReturnReasonModal from "./create-edit-return-reason"
 
+import { getErrorMessage } from "../../../utils/error-messages"
+
 const EditReturnReason = ({ id }) => {
   const { register, reset, handleSubmit } = useForm()
   const {
@@ -42,7 +44,7 @@ const EditReturnReason = ({ id }) => {
       toaster("Successfully updated return reason", "success")
       navigate("/a/settings/return-reasons/")
     } catch (error) {
-      toaster("Failed to update return reason", "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 

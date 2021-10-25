@@ -10,6 +10,7 @@ import Button from "../../../../components/button"
 import Select from "../../../../components/select"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
@@ -32,7 +33,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (order) {
-      setAllItems(filterItems(order, false))
+      setAllItems(filterItems(order))
     }
   }, [order])
 
@@ -135,7 +136,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       return onReturn(data)
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
-        .catch(() => toaster("Failed to return order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }

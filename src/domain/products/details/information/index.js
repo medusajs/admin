@@ -269,8 +269,8 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
       <Card.Header dropdownOptions={dropdownOptions}>
         Product Information
       </Card.Header>
-      <Card.Body px={3}>
-        <Box flexGrow="1" paddingRight={6}>
+      <Card.Body px={3} sx={{ gap: "128px" }}>
+        <Box flexGrow="1" maxWidth="425px">
           <Flex width={1} flexDirection={"column"}>
             <Box mb={3}>
               <Input
@@ -346,11 +346,7 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                   </Text>
                   <InfoTooltip tooltipText="URL Slug for the product" />
                 </Flex>
-                <Input
-                  name="handle"
-                  ref={register}
-                  boldLabel={"true"}
-                />
+                <Input name="handle" ref={register} boldLabel={"true"} />
               </Box>
               <Box mb={3}>
                 <Flex mb={2} alignItems="center">
