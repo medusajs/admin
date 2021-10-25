@@ -21,6 +21,7 @@ import Typography from "../../../components/typography"
 import Button from "../../../components/button"
 import ItemModal from "./components/item-modal"
 import { displayUnitPrice } from "../../../utils/prices"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const LineItemImage = styled(Image)`
   height: 30px;
@@ -125,7 +126,7 @@ const DraftOrderDetails = ({ id }) => {
       setHandlingPayment(false)
     } catch (error) {
       setHandlingPayment(false)
-      toaster("Failed to handle payment", "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 
@@ -184,7 +185,7 @@ const DraftOrderDetails = ({ id }) => {
                     width="8"
                     height="8"
                   />
-                </Box>   
+                </Box>
               </Flex>
               <Badge
                 ml={3}
@@ -196,12 +197,12 @@ const DraftOrderDetails = ({ id }) => {
             </Flex>
           </Card.Header>
           {draftOrder.no_notification_order && (
-            <Box pt={2} pr={2}> 
-              <Text color="gray"> 
+            <Box pt={2} pr={2}>
+              <Text color="gray">
                 Notifications for this draft order are disabled.
               </Text>
-              </Box>
-            )} 
+            </Box>
+          )}
           <Box>
             <Text p={3} fontWeight="bold">
               {(draftOrder.cart.total / 100).toFixed(2)}{" "}

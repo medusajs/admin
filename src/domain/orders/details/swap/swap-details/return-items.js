@@ -46,7 +46,7 @@ const ReturnOrderInformation = ({ event, onReceiveReturn, order }) => {
         {actions.map(action => (
           <Dropdown
             key={action.label}
-            topPlacement="0"
+            topPlacement={5}
             minHeight="24px"
             width="28px"
             sx={{

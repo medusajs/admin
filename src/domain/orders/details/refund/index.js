@@ -6,6 +6,7 @@ import CurrencyInput from "../../../../components/currency-input"
 import Button from "../../../../components/button"
 import TextArea from "../../../../components/textarea"
 import Select from "../../../../components/select"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 import useMedusa from "../../../../hooks/use-medusa"
 
@@ -32,7 +33,7 @@ const RefundMenu = ({ order, onRefund, onDismiss, toaster }) => {
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully refunded order", "success"))
-        .catch(() => toaster("Failed to refund order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
     }
   }
 

@@ -7,6 +7,7 @@ import Modal from "../../../../components/modal"
 import CurrencyInput from "../../../../components/currency-input"
 import Input from "../../../../components/input"
 import Button from "../../../../components/button"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const ReceiveMenu = ({
   order,
@@ -135,7 +136,7 @@ const ReceiveMenu = ({
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
-        .catch(() => toaster("Failed to return order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
 
@@ -147,7 +148,7 @@ const ReceiveMenu = ({
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
-        .catch(() => toaster("Failed to return order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }
