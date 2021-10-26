@@ -423,7 +423,7 @@ const NewDiscount = ({}) => {
               sx={{
                 marginBottom: 10,
                 cursor: "pointer",
-                fontWeight: "500",
+                fontWeight: "700",
                 fontSize: 14,
                 color: "#ACB4FF",
                 transition: "color 0.2s ease-in",
