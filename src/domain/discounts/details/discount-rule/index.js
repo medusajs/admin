@@ -117,6 +117,8 @@ const DiscountRuleModal = ({
     }) || []
   )
 
+  const [showRule, setShowRule] = useState(discount.rule.valid_for?.length > 0)
+
   const [value, setValue] = useState(
     isPercentageDiscount
       ? discountRule.value
@@ -147,6 +149,11 @@ const DiscountRuleModal = ({
     }
 
     onUpdate(result)
+  }
+
+  const handleSetShowRule = value => {
+    setSelectedProducts([])
+    setShowRule(value)
   }
 
   return (
@@ -248,16 +255,33 @@ const DiscountRuleModal = ({
           </RequiredLabel>
           <Text fontSize={1}>Valid for items where: </Text>
 
-          <Flex mt={3}>
-            <Text mt={1} fontSize={1}>
-              Product in
-            </Text>
-            <ProductSelection
-              sx={{ width: "100%" }}
-              mt={1}
-              selectedProducts={selectedProducts}
-              setSelectedProducts={setSelectedProducts}
-            />
+          <Flex mt={2}>
+            {showRule && (
+              <ProductSelection
+                sx={{ width: "100%" }}
+                mt={1}
+                selectedProducts={selectedProducts}
+                setSelectedProducts={setSelectedProducts}
+                onRemove={() => handleSetShowRule(false)}
+              />
+            )}
+
+            {!showRule && (
+              <Text
+                onClick={() => handleSetShowRule(true)}
+                sx={{
+                  marginBottom: 10,
+                  cursor: "pointer",
+                  fontWeight: "500",
+                  fontSize: 14,
+                  color: "#ACB4FF",
+                  transition: "color 0.2s ease-in",
+                  "&:hover": { color: "#5469D3" },
+                }}
+              >
+                + Add a rule
+              </Text>
+            )}
           </Flex>
 
           <Flex

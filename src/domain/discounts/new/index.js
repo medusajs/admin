@@ -72,6 +72,7 @@ const NewDiscount = ({}) => {
   const [startDate, setStartDate] = useState(new Date())
   const [endDate, setEndDate] = useState(undefined)
   const [isDynamic, setIsDynamic] = useState(false)
+  const [showRule, setShowRule] = useState(false)
   const [iso8601Date, setIso8601Date] = useState("")
   const {
     register,
@@ -185,6 +186,11 @@ const NewDiscount = ({}) => {
       setIsPercentageDiscount(true)
     }
     setSelectedRegions(data)
+  }
+
+  const handleSetShowRule = value => {
+    setItems([])
+    setShowRule(value)
   }
 
   return (
@@ -403,14 +409,30 @@ const NewDiscount = ({}) => {
           Items
         </RequiredLabel>
         <Text fontSize={1}>Valid for items where: </Text>
-        <Flex mt={2}>
-          <Text mt={1} fontSize={1}>
-            Product in
-          </Text>
-          <ProductSelection
-            selectedProducts={items}
-            setSelectedProducts={setItems}
-          />
+        <Flex mt={2} flexDirection="column">
+          {showRule && (
+            <ProductSelection
+              selectedProducts={items}
+              setSelectedProducts={setItems}
+              onRemove={() => handleSetShowRule(false)}
+            />
+          )}
+          {!showRule && (
+            <Text
+              onClick={() => handleSetShowRule(true)}
+              sx={{
+                marginBottom: 10,
+                cursor: "pointer",
+                fontWeight: "500",
+                fontSize: 14,
+                color: "#ACB4FF",
+                transition: "color 0.2s ease-in",
+                "&:hover": { color: "#5469D3" },
+              }}
+            >
+              + Add a rule
+            </Text>
+          )}
         </Flex>
         <Flex
           width={3 / 4}
@@ -455,11 +477,12 @@ const NewDiscount = ({}) => {
         )}
       </Flex>
 
-      <Flex mt={4}>
-        <Box ml="auto" />
-        <Button variant={"cta"} type="submit">
-          Save
-        </Button>
+      <Flex mb={4} width={3 / 5}>
+        <Flex width="75%" justifyContent="flex-end">
+          <Button variant={"cta"} type="submit">
+            Save
+          </Button>
+        </Flex>
       </Flex>
       <Tooltip id={"amount-tooltip"} disable={selectedRegions.length <= 1} />
     </Flex>

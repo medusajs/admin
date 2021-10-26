@@ -3,8 +3,13 @@ import MultiSelect from "../../../components/multi-select"
 import _ from "lodash"
 import Medusa from "../../../services/api"
 import { Text, Flex } from "rebass"
+import { ReactComponent as TrashIcon } from "../../../assets/svg/trash.svg"
 
-const ProductSelection = ({ selectedProducts, setSelectedProducts }) => {
+const ProductSelection = ({
+  selectedProducts,
+  setSelectedProducts,
+  onRemove,
+}) => {
   const [searchingProducts, setSearchingProducts] = useState(false)
   const [searchResults, setSearchResults] = useState([])
 
@@ -44,23 +49,44 @@ const ProductSelection = ({ selectedProducts, setSelectedProducts }) => {
     }))
 
   return (
-    <Flex ml={3} sx={{ width: 200 }}>
-      <MultiSelect
-        start={true}
-        mb={3}
-        options={mapItems(searchResults)}
-        debounceDuration={500}
-        width={"100%"}
-        selectOptions={{
-          hasSelectAll: false,
-          valueRenderer: customRenderer,
+    <Flex mt={2}>
+      <Text mt={1} fontSize={1}>
+        Product in
+      </Text>
+      <Flex ml={3} sx={{ width: 200 }}>
+        <MultiSelect
+          start={true}
+          mb={3}
+          options={mapItems(searchResults)}
+          debounceDuration={500}
+          width={"100%"}
+          selectOptions={{
+            hasSelectAll: false,
+            valueRenderer: customRenderer,
+          }}
+          value={selectedProducts}
+          onChange={setSelectedProducts}
+          onKeyUp={e => handleProductSearch(e.target.value)}
+          onKeyPress={e => handleProductSearch(e.target.value)}
+          isLoading={searchingProducts}
+        />
+      </Flex>
+      <Flex
+        onClick={onRemove}
+        alignItems="center"
+        ml={3}
+        mt={-18}
+        sx={{
+          cursor: "pointer",
+          "& svg": {
+            fill: "#ACB4FF",
+            transition: "fill 0.2s ease-in",
+          },
+          ":hover svg": { fill: "#5469D3" },
         }}
-        value={selectedProducts}
-        onChange={setSelectedProducts}
-        onKeyUp={e => handleProductSearch(e.target.value)}
-        onKeyPress={e => handleProductSearch(e.target.value)}
-        isLoading={searchingProducts}
-      />
+      >
+        <TrashIcon />
+      </Flex>
     </Flex>
   )
 }
