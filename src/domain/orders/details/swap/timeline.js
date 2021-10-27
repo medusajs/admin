@@ -41,10 +41,10 @@ export default ({
   const canceled = event.raw.canceled_at !== null
   const [expanded, setExpanded] = useState(!canceled)
 
-  const paymentLink = useMemo(() => {
-    if (!store || !store.payment_link_template) return ""
+  const swapLink = useMemo(() => {
+    if (!store || !store.swap_link_template) return ""
 
-    return store.payment_link_template.replace(/\{cart_id\}/, event.raw.cart_id)
+    return store.swap_link_template.replace(/\{cart_id\}/, event.raw.cart_id)
   }, [store])
 
   useEffect(() => {
@@ -148,13 +148,13 @@ export default ({
                         {event.raw.payment_status}
                       </Badge>
                     </Flex>
-                    {store?.payment_link_template &&
+                    {store?.swap_link_template &&
                       !canceled &&
                       event.raw.payment_status !== "captured" && (
                         <CopyToClipboard
                           label="Copy payment link"
-                          tooltipText={paymentLink}
-                          copyText={paymentLink}
+                          tooltipText={swapLink}
+                          copyText={swapLink}
                           fillColor={fontColor}
                         />
                       )}
@@ -186,7 +186,7 @@ export default ({
             <SwapDetails
               event={event}
               order={order}
-              paymentLink={paymentLink}
+              paymentLink={swapLink}
               onReceiveReturn={onReceiveReturn}
               onFulfillSwap={onFulfillSwap}
               swapId={event.raw.id}
