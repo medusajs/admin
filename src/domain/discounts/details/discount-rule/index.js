@@ -5,6 +5,7 @@ import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 import _ from "lodash"
 
+import ProductSelection from "../../product-selection"
 import Modal from "../../../../components/modal"
 import MultiSelect from "react-multi-select-component"
 import Input from "../../../../components/input"
@@ -107,11 +108,15 @@ const DiscountRuleModal = ({
   const [iso8601Duration, setIso8601Duration] = useState(undefined)
 
   const [selectedProducts, setSelectedProducts] = useState(
-    discount.rule.valid_for?.map(({ id, title }) => ({
-      value: id,
-      label: title,
-    })) || []
+    discount.rule.valid_for?.map(p => {
+      return {
+        label: p.title,
+        value: p.id,
+      }
+    }) || []
   )
+
+  const [showRule, setShowRule] = useState(discount.rule.valid_for?.length > 0)
 
   const [value, setValue] = useState(
     isPercentageDiscount
@@ -124,18 +129,9 @@ const DiscountRuleModal = ({
     setDiscountRule(prevState => ({ ...prevState, [name]: value }))
   }
 
-  const validProducts = () => {
-    let formattedProducts = products.map(p => ({
-      label: p.title,
-      value: p.id,
-    }))
-    return _.intersectionBy(formattedProducts, selectedProducts, "value").map(
-      v => v.value
-    )
-  }
-
   const onSubmit = data => {
-    data.valid_for = validProducts()
+    data.value = parseInt(data.value)
+    data.valid_for = selectedProducts.map(p => p.value)
     data.id = discount.rule.id
     data.type = isPercentageDiscount ? "percentage" : "fixed"
     data.allocation = isAllocatedToItem ? "item" : "total"
@@ -152,6 +148,11 @@ const DiscountRuleModal = ({
     }
 
     onUpdate(result)
+  }
+
+  const handleSetShowRule = value => {
+    setSelectedProducts([])
+    setShowRule(value)
   }
 
   return (
@@ -248,6 +249,40 @@ const DiscountRuleModal = ({
               <Text fontWeight="500">Item</Text>
             </Pill>
           </Flex>
+          <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+            Items
+          </RequiredLabel>
+          <Text fontSize={1}>Valid for items where: </Text>
+
+          <Flex mt={2}>
+            {showRule && (
+              <ProductSelection
+                sx={{ width: "100%" }}
+                mt={1}
+                selectedProducts={selectedProducts}
+                setSelectedProducts={setSelectedProducts}
+                onRemove={() => handleSetShowRule(false)}
+              />
+            )}
+
+            {!showRule && (
+              <Text
+                onClick={() => handleSetShowRule(true)}
+                sx={{
+                  marginBottom: 10,
+                  cursor: "pointer",
+                  fontWeight: "700",
+                  fontSize: 14,
+                  color: "#ACB4FF",
+                  transition: "color 0.2s ease-in",
+                  "&:hover": { color: "#5469D3" },
+                }}
+              >
+                + Add a rule
+              </Text>
+            )}
+          </Flex>
+
           <Flex
             mb={3}
             flexDirection={["column", "columnn", "columnn", "row"]}
@@ -276,22 +311,6 @@ const DiscountRuleModal = ({
               existingIsoString={discount.valid_duration || ""}
             />
           )}
-          {/* <StyledLabel pb={0}>Choose valid products</StyledLabel>
-          <Text fontSize="10px" color="gray">
-            Leaving it empty will make the discount available for all products
-          </Text>
-          <StyledMultiSelect
-            options={products.map(el => ({
-              label: el.title,
-              value: el.id,
-            }))}
-            selectAllLabel={"All"}
-            overrideStrings={{
-              allItemsAreSelected: "All products",
-            }}
-            value={selectedProducts}
-            onChange={setSelectedProducts}
-          /> */}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
           <Button type="submit" variant="primary">
