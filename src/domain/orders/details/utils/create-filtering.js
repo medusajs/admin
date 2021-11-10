@@ -11,6 +11,10 @@ export const filterItems = order => {
 
   if (order.claims && order.claims.length) {
     for (const c of order.claims) {
+      if (c.canceled_at) {
+        continue
+      }
+
       claimedItems = [...claimedItems, ...c.claim_items]
       if (
         c.fulfillment_status === "not_fulfilled" &&
