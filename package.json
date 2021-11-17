@@ -79,9 +79,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/medusajs/admin"
+    "url": "https://github.com/lambda-curry/gatsby-theme-medusa-admin"
   },
   "bugs": {
-    "url": "https://github.com/medusajs/admin/issues"
+    "url": "https://github.com/lambda-curry/gatsby-theme-medusa-admin/issues"
   }
 }
