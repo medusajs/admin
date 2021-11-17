@@ -26,7 +26,7 @@ module.exports = {
       options: {
         name: `medusa-admin`,
         short_name: `medusa`,
-        icon: `src/images/logo.svg`,
+        icon: require.resolve(`./src/images/logo.svg`),
       },
     },
     `gatsby-plugin-sharp`,
