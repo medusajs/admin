@@ -5,9 +5,6 @@
   "version": "1.0.0",
   "description": "This Gatsby theme was created based on the proprietary Medusa admin system to manage Medusa Stores developed by @medusajs",
   "author": "@lambdacurry",
-  "resolutions": {
-    "devcert": "1.1.0"
-  },
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
@@ -16,7 +13,7 @@
     "@rebass/preset": "^4.0.5",
     "@storybook/theming": "^5.3.19",
     "@svgr/webpack": "^5.4.0",
-    "axios": "^0.19.2",
+    "axios": "^0.24.0",
     "copy-to-clipboard": "^3.3.1",
     "emotion-theming": "^10.0.27",
     "gatsby-image": "^3.11.0",
