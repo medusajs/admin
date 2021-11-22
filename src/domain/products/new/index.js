@@ -5,6 +5,7 @@ import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
 import Typography from "../../../components/typography"
 import Select from "react-select"
+import _ from 'lodash';
 
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
@@ -41,7 +42,7 @@ const StyledCreatableSelect = styled(Creatable)`
   font-size: 14px;
   color: #454545;
 
-.css-yk16xz-control 
+.css-yk16xz-control
   box-shadow: none;
 }
 `
@@ -109,7 +110,7 @@ const RequiredLabel = styled.div`
   }
 `
 
-const NewProduct = ({}) => {
+const NewProduct = ({ }) => {
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])
