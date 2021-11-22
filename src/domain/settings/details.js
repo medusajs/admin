@@ -53,7 +53,7 @@ const AccountDetails = () => {
   }
 
   const onSubmit = data => {
-    if(!validateUrl(data.swap_link_template) || !validateUrl(data.payment_link_template)){
+    if(!validateUrl(data.swap_link_template) || !validateUrl(data.payment_link_template) || !validateUrl(data.invite_link_template)){
       toaster("Malformed url", 'error')
       return
     }
