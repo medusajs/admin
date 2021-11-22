@@ -11,11 +11,13 @@ import Spinner from "../../../components/spinner"
 import Badge from "../../../components/badge"
 import Button from "../../../components/button"
 import EditableInput from "../../../components/editable-input"
+import ImagePlaceholder from "../../../assets/svg/image-placeholder.svg"
 
 import useMedusa from "../../../hooks/use-medusa"
 import DiscountRuleModal from "./discount-rule"
 import { Input } from "@rebass/forms"
 import Typography from "../../../components/typography"
+import Tooltip from "../../../components/tooltip"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const StyledMultiSelect = styled(MultiSelect)`
@@ -279,18 +281,37 @@ const DiscountDetails = ({ id }) => {
             />
           </Box>
           <Box ml="auto" />
-          <Flex mr={3} mt="auto">
+          <Flex
+            mr={3}
+            mt="auto"
+            data-for="disallow-multiple-regions"
+            data-tip="Multiple regions are not allowed for fixed type discounts"
+          >
             <Button
-              disabled={_.isEqual(
-                selectedRegions.map(r => r.value),
-                discount.regions.map(r => r.id)
-              )}
+              disabled={
+                _.isEqual(
+                  selectedRegions.map(r => r.value),
+                  discount.regions.map(r => r.id)
+                ) ||
+                (selectedRegions.length > 1 && discount.rule.type === "fixed")
+              }
               variant="primary"
               onClick={() => handleRegionUpdate(selectedRegions)}
             >
               Save valid regions
             </Button>
           </Flex>
+          <Tooltip
+            multiline={true}
+            disable={
+              _.isEqual(
+                selectedRegions.map(r => r.value),
+                discount.regions.map(r => r.id)
+              ) ||
+              !(selectedRegions.length > 1 && discount.rule.type === "fixed")
+            }
+            id="disallow-multiple-regions"
+          />
         </Card.Body>
       </Card>
       <Card mb={2}>
@@ -332,7 +353,7 @@ const DiscountDetails = ({ id }) => {
                   <Text pt={2}>
                     {discount.rule.allocation === "total"
                       ? "Applies to total order amount"
-                      : "Applies to specified items"}
+                      : "Only applies to specified items"}
                   </Text>
                 </>
               ) : (
@@ -341,10 +362,41 @@ const DiscountDetails = ({ id }) => {
             </Box>
           </Box>
           <Divider m={3} />
-          <Box>
-            <Text ml={3} mb={2}>
-              Applicable for all products
-            </Text>
+
+          <Box px={3}>
+            {discount.rule.valid_for?.length === 0 && (
+              <Text>Currently not applicable to any specific item.</Text>
+            )}
+
+            {discount.rule.valid_for?.map((item, index) => {
+              return (
+                <Flex key={item.variant_id} py={2} pr={2} alignItems="left">
+                  <Flex maxWidth="10%" height="100%">
+                    <Image
+                      src={item?.thumbnail || ImagePlaceholder}
+                      height={30}
+                      width={30}
+                      p={!item?.thumbnail && "8px"}
+                      sx={{
+                        objectFit: "contain",
+                        border: "1px solid lightgray",
+                      }}
+                    />
+                  </Flex>
+                  <Flex
+                    width={"100%"}
+                    px={2}
+                    py={1}
+                    height="100%"
+                    flexDirection="row"
+                  >
+                    <Text fontSize="12px" lineHeight={"14px"}>
+                      {item.title}
+                    </Text>
+                  </Flex>
+                </Flex>
+              )
+            })}
           </Box>
         </Card.Body>
       </Card>
@@ -366,8 +418,6 @@ const DiscountDetails = ({ id }) => {
           onDismiss={() => setShowRuleEdit(false)}
           products={products}
           selectedRegions={selectedRegions}
-          // selectedProducts={selectedProducts}
-          // setSelectedProducts={setSelectedProducts}
         />
       )}
     </Flex>

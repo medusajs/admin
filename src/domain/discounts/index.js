@@ -41,7 +41,6 @@ const DiscountIndex = () => {
     "discounts",
     {
       search: {
-        is_giftcard: "false",
         is_disabled: "false",
         is_dynamic: "false",
         ...filtersOnLoad,
@@ -74,7 +73,6 @@ const DiscountIndex = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({
       search: {
-        is_giftcard: "false",
         is_dynamic: showDynamic,
         is_disabled: showDisabled,
         ...queryParts,
@@ -110,7 +108,6 @@ const DiscountIndex = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({
       search: {
-        is_giftcard: "false",
         ...queryParts,
       },
     })
@@ -141,14 +138,13 @@ const DiscountIndex = () => {
         ...queryParts,
         is_dynamic: showDynamic,
         is_disabled: showDisabled,
-        is_giftcard: "false",
       },
     }).then(() => {
       setOffset(updatedOffset)
     })
   }
 
-  const moreResults = discounts && discounts.length >= limit
+  const moreResults = discounts && discounts.length > limit
 
   return (
     <Flex flexDirection="column" pt={5} pb={5}>
@@ -207,7 +203,6 @@ const DiscountIndex = () => {
             <TableHeaderRow>
               <TableHeaderCell>Code</TableHeaderCell>
               <TableHeaderCell>Description</TableHeaderCell>
-              <TableHeaderCell>Disabled</TableHeaderCell>
               <TableHeaderCell>Type</TableHeaderCell>
             </TableHeaderRow>
           </TableHead>
@@ -225,20 +220,6 @@ const DiscountIndex = () => {
                     <DefaultCellContent>
                       {el.rule.description || "N / A"}
                     </DefaultCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    {el.is_disabled ? (
-                      <BadgdeCellContent>
-                        <Badge
-                          color={decideBadgeColor(el.is_disabled).color}
-                          bg={decideBadgeColor(el.is_disabled).bgColor}
-                        >
-                          Disabled
-                        </Badge>
-                      </BadgdeCellContent>
-                    ) : (
-                      "-"
-                    )}
                   </TableDataCell>
                   <TableDataCell>
                     <BadgdeCellContent>

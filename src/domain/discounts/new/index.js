@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { Text, Flex, Box } from "rebass"
 import _ from "lodash"
 import { useForm } from "react-hook-form"
@@ -12,6 +12,8 @@ import Pill from "../../../components/pill"
 import MultiSelect from "../../../components/multi-select"
 import Input from "../../../components/input"
 import Typography from "../../../components/typography"
+import ProductSelection from "../product-selection"
+
 import DatePicker from "../../../components/date-picker/date-picker"
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
@@ -62,14 +64,15 @@ const RequiredLabel = styled.div`
 `
 
 const NewDiscount = ({}) => {
+  const [items, setItems] = useState([])
   const [selectedRegions, setSelectedRegions] = useState([])
-  const [selectedProducts, setSelectedProducts] = useState([])
   const [isFreeShipping, setIsFreeShipping] = useState(false)
   const [isPercentageDiscount, setIsPercentageDiscount] = useState(false)
   const [isAllocatedToItem, setIsAllocatedToItem] = useState(false)
   const [startDate, setStartDate] = useState(new Date())
   const [endDate, setEndDate] = useState(undefined)
   const [isDynamic, setIsDynamic] = useState(false)
+  const [showRule, setShowRule] = useState(false)
   const [iso8601Date, setIso8601Date] = useState("")
   const {
     register,
@@ -84,20 +87,9 @@ const NewDiscount = ({}) => {
     },
   })
 
-  const { products, isLoading: isLoadingProducts, toaster } = useMedusa(
-    "products"
-  )
-  const { regions, isLoading: isLoadingRegions } = useMedusa("regions")
+  const { toaster } = useMedusa("collections")
 
-  const validProducts = () => {
-    let formattedProducts = products.map(p => ({
-      label: p.title,
-      value: p._id,
-    }))
-    return _.intersectionBy(formattedProducts, selectedProducts, "value").map(
-      v => v.value
-    )
-  }
+  const { regions, isLoading: isLoadingRegions } = useMedusa("regions")
 
   const validRegions = () => {
     let formattedRegions = regions.map(r => ({
@@ -117,7 +109,7 @@ const NewDiscount = ({}) => {
       rule: {
         description: data.description,
         value: 100,
-        valid_for: validProducts(),
+        valid_for: items,
         allocation: "total",
         type: "free_shipping",
       },
@@ -149,7 +141,9 @@ const NewDiscount = ({}) => {
     data.rule.type = isPercentageDiscount ? "percentage" : "fixed"
     data.rule.allocation = isAllocatedToItem ? "item" : "total"
 
-    data.rule.valid_for = validProducts()
+    if (items.length > 0) {
+      data.rule.valid_for = items.map(p => p.value)
+    }
     data.regions = validRegions()
 
     const discount = {
@@ -177,7 +171,7 @@ const NewDiscount = ({}) => {
       })
   }
 
-  if (isLoadingProducts || isLoadingRegions) {
+  if (isLoadingRegions) {
     return (
       <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
         <Box height="75px" width="75px" mt="50%">
@@ -192,6 +186,11 @@ const NewDiscount = ({}) => {
       setIsPercentageDiscount(true)
     }
     setSelectedRegions(data)
+  }
+
+  const handleSetShowRule = value => {
+    setItems([])
+    setShowRule(value)
   }
 
   return (
@@ -405,51 +404,81 @@ const NewDiscount = ({}) => {
               </Pill>
             </Flex>
           </Flex>
-          <Flex
-            width={3 / 4}
-            mb={3}
-            flexDirection={["column", "columnn", "columnn", "row"]}
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Flex
-              width={[1, 1, 1, 1 / 2]}
-              mr={[0, 0, 0, 4]}
-              mb={[2, 2, 2, 0]}
-              flexDirection="column"
+        </Flex>
+        <RequiredLabel pb={2} style={{ fontWeight: 500 }}>
+          Items
+        </RequiredLabel>
+        <Text fontSize={1}>Valid for items where: </Text>
+        <Flex mt={2} flexDirection="column">
+          {showRule && (
+            <ProductSelection
+              selectedProducts={items}
+              setSelectedProducts={setItems}
+              onRemove={() => handleSetShowRule(false)}
+            />
+          )}
+          {!showRule && (
+            <Text
+              onClick={() => handleSetShowRule(true)}
+              sx={{
+                marginBottom: 10,
+                cursor: "pointer",
+                fontWeight: "700",
+                fontSize: 14,
+                color: "#ACB4FF",
+                transition: "color 0.2s ease-in",
+                "&:hover": { color: "#5469D3" },
+              }}
             >
-              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
-                Start date
-              </StyledLabel>
-              <DatePicker
-                date={startDate}
-                onChange={setStartDate}
-                enableTimepicker={true}
-              />
-            </Flex>
-            <Flex width={[1, 1, 1, 1 / 2]} flexDirection="column">
-              <StyledLabel pb={2} style={{ fontWeight: 500 }}>
-                End date
-              </StyledLabel>
-              <DatePicker
-                date={endDate}
-                onChange={setEndDate}
-                enableTimepicker={true}
-              />
-            </Flex>
-          </Flex>
-          {isDynamic && (
-            <Flex width={3 / 5}>
-              <AvailabilityDuration
-                setIsoString={setIso8601Date}
-                existingIsoString=""
-              />
-            </Flex>
+              + Add a rule
+            </Text>
           )}
         </Flex>
+        <Flex
+          width={3 / 4}
+          mb={3}
+          flexDirection={["column", "columnn", "columnn", "row"]}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Flex
+            width={[1, 1, 1, 1 / 2]}
+            mr={[0, 0, 0, 4]}
+            mb={[2, 2, 2, 0]}
+            flexDirection="column"
+          >
+            <StyledLabel pb={2} style={{ fontWeight: 500 }}>
+              Start date
+            </StyledLabel>
+            <DatePicker
+              date={startDate}
+              onChange={setStartDate}
+              enableTimepicker={true}
+            />
+          </Flex>
+          <Flex width={[1, 1, 1, 1 / 2]} flexDirection="column">
+            <StyledLabel pb={2} style={{ fontWeight: 500 }}>
+              End date
+            </StyledLabel>
+            <DatePicker
+              date={endDate}
+              onChange={setEndDate}
+              enableTimepicker={true}
+            />
+          </Flex>
+        </Flex>
+        {isDynamic && (
+          <Flex width={3 / 5}>
+            <AvailabilityDuration
+              setIsoString={setIso8601Date}
+              existingIsoString=""
+            />
+          </Flex>
+        )}
+      </Flex>
 
-        <Flex mt={4}>
-          <Box ml="auto" />
+      <Flex mb={4} width={3 / 5}>
+        <Flex width="75%" justifyContent="flex-end">
           <Button variant={"cta"} type="submit">
             Save
           </Button>

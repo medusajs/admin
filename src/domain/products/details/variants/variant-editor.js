@@ -12,6 +12,9 @@ import Input from "../../../../components/input"
 import Modal from "../../../../components/modal"
 import Typography from "../../../../components/typography"
 import useMedusa from "../../../../hooks/use-medusa"
+import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
+
+const numberFields = ["weight", "length", "width", "height"]
 
 const StyledLabel = styled(Label)`
   ${Typography.Base};
@@ -41,7 +44,7 @@ const VariantEditor = ({
   options,
   onSubmit,
   onDelete,
-  onClick,
+  onCancel,
   isCopy,
 }) => {
   const { store, isLoading } = useMedusa("store")
@@ -127,12 +130,13 @@ const VariantEditor = ({
     }))
 
     data.prices = data.prices.map(p => removeNullish(p))
-    const clean = removeNullish(data)
-    onSubmit(clean)
+    const cleaned = convertEmptyStringToNull(data, numberFields)
+
+    onSubmit(cleaned)
   }
 
   return (
-    <Modal onClick={onClick}>
+    <Modal onClick={onCancel}>
       <Modal.Body as="form" onSubmit={handleSubmit(handleSave)}>
         <Modal.Header justifyContent="space-between" alignItems="center" px={4}>
           <Text fontSize="18px" fontWeight={700}>
@@ -140,7 +144,7 @@ const VariantEditor = ({
           </Text>
           <CloseIcon
             style={{ cursor: "pointer" }}
-            onClick={onClick}
+            onClick={onCancel}
             width={12}
             height={12}
           />
@@ -368,11 +372,11 @@ const VariantEditor = ({
           )}
         </Modal.Content>
         <Modal.Footer justifyContent="flex-end">
-          <Button mr={2} onClick={onClick} type="button" variant="primary">
+          <Button mr={2} onClick={onCancel} type="button" variant="primary">
             Cancel
           </Button>
           <Button type="submit" variant="deep-blue">
-            {isCopy ? "Create" : "Save"}
+            {isCopy ? "Create" : "Edit"}
           </Button>
         </Modal.Footer>
       </Modal.Body>
