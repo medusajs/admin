@@ -116,7 +116,7 @@ const NewDiscount = ({}) => {
     }
 
     if (data.usage_limit) {
-      req.usage_limit = data.usage_limit
+      req.usage_limit = parseInt(data.usage_limit)
     }
 
     return req
@@ -157,7 +157,7 @@ const NewDiscount = ({}) => {
     }
 
     if (data.usage_limit) {
-      discount.usage_limit = data.usage_limit
+      discount.usage_limit = parseInt(data.usage_limit)
     }
 
     Medusa.discounts
