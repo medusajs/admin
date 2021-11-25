@@ -41,7 +41,6 @@ const DiscountIndex = () => {
     "discounts",
     {
       search: {
-        is_giftcard: "false",
         is_disabled: "false",
         is_dynamic: "false",
         ...filtersOnLoad,
@@ -74,7 +73,6 @@ const DiscountIndex = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({
       search: {
-        is_giftcard: "false",
         is_dynamic: showDynamic,
         is_disabled: showDisabled,
         ...queryParts,
@@ -110,7 +108,6 @@ const DiscountIndex = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({
       search: {
-        is_giftcard: "false",
         ...queryParts,
       },
     })
@@ -141,7 +138,6 @@ const DiscountIndex = () => {
         ...queryParts,
         is_dynamic: showDynamic,
         is_disabled: showDisabled,
-        is_giftcard: "false",
       },
     }).then(() => {
       setOffset(updatedOffset)
