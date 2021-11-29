@@ -32,14 +32,14 @@ const StyledMultiSelect = styled(MultiSelect)`
     rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
     rgba(0, 0, 0, 0) 0px 0px 0px 0px;
 
-  &:focus: {
+  &:focus {
     box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(206, 208, 190, 0.36) 0px 0px 0px 4px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px;
   }
-  &::placeholder: {
+  &::placeholder {
     color: #a3acb9;
   }
 
