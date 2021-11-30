@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
+import _ from "lodash"
 import { useForm } from "react-hook-form"
 import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
