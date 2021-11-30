@@ -35,7 +35,7 @@ const GiftCardDetail = ({ id }) => {
   }, [product, isLoading])
 
   const handleProductDelete = () => {
-    productDelete().then(() => navigate("/a/products"))
+    productDelete().then(() => navigate("/a/gift-cards"))
   }
 
   const handleDetailsSubmit = data => {
