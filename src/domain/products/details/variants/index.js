@@ -97,7 +97,7 @@ const Variants = ({
         ean: v.ean || undefined,
         upc: v.upc || undefined,
         prices: cleanPrices,
-        inventory_quantity: v.inventory_quantity,
+        inventory_quantity: parseFloat(v.inventory_quantity),
         options: v.options.map(o => ({
           value: o.value,
           option_id: o.option_id,
