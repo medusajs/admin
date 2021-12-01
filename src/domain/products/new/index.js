@@ -6,7 +6,6 @@ import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
 import Typography from "../../../components/typography"
 import Select from "react-select"
-import _ from 'lodash';
 
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
