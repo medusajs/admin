@@ -112,7 +112,7 @@ const Dropdown = ({
   const spacingProps = ["m", "mr", "ml", "mx"]
 
   return (
-    <Flex sx={{ position: "relative", width: showTrigger ? "auto" : "100%" }}>
+    <Flex ref={ref} sx={{ position: "relative", width: showTrigger ? "auto" : "100%" }}>
       {showTrigger && (
         <Button
           sx={sx}
@@ -129,7 +129,6 @@ const Dropdown = ({
         dropUp={dropUp}
         leftAlign={leftAlign}
         minWidth={dropdownWidth || "160px"}
-        ref={ref}
         isOpen={isOpen}
         topPlacement={topPlacement}
         {..._.pick(rest, spacingProps)}
