@@ -21,7 +21,7 @@ const AddressContainer = styled(Flex)`
   `}
 `
 
-const ShippingDetails = ({ customerAddresses, setCustomerAddresses, form }) => {
+const ShippingDetails = ({ customerAddresses, setCustomerAddresses, form, type="shipping" }) => {
   const [addNew, setAddNew] = useState(false)
   const [fetchingAddresses, setFetchingAddresses] = useState(false)
 
@@ -45,9 +45,12 @@ const ShippingDetails = ({ customerAddresses, setCustomerAddresses, form }) => {
     Medusa.customers
       .list(`?${prepared}`)
       .then(({ data }) => {
-        const result = data.customers.map(({ id, email }) => ({
+        const result = data.customers.map(({ id, email, first_name, last_name, phone}) => ({
           label: email,
           value: id,
+          firstName: first_name,
+          lastName: last_name,
+          phone: phone,
         }))
 
         return callback(result)
@@ -66,6 +69,9 @@ const ShippingDetails = ({ customerAddresses, setCustomerAddresses, form }) => {
     form.setValue("customer", val)
     form.setValue("email", val.label)
     form.setValue("customerId", val.value)
+    form.setValue(`${[type]}.first_name`, val.firstName)
+    form.setValue(`${[type]}.last_name`, val.lastName)
+    form.setValue(`${[type]}.phone`, val.phone)
 
     if (requireShipping) {
       setFetchingAddresses(true)
