@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { useFieldArray, useForm, useWatch } from "react-hook-form"
 import { Box, Flex, Text } from "rebass"
 import Button from "../button"
@@ -7,35 +7,69 @@ import Input from "../input"
 import { get } from "lodash"
 
 const initializeFormFromParent = parent => {
-  const metadata = Object.entries(
-    parent.metadata || { "": "" }
-  ).map(([key, value]) => ({ key, value }))
+  const metadataEntries = Object.entries(parent.metadata || { "": "" })
+  const metadata =
+    metadataEntries.length <= 1
+      ? metadataEntries
+      : [
+          ...metadataEntries.map(([key, value]) => ({
+            key,
+            value,
+          })),
+          { key: "", value: "" },
+        ]
   return { metadata }
 }
 
-const formatData = ({ metadata }) => ({
-  metadata: metadata.reduce((acc, { key, value }) => {
-    acc[key] = value
-    return acc
-  }, {}),
-})
+const nullifyInitialState = initialValues => {
+  const nullifiedValues = Object.entries(
+    initialValues
+  ).reduce((acc, [key, value]) => ({ ...acc, [key]: null }))
 
-const WatchInput = ({ name, control, register, clearErrors, ...props }) => {
+  console.log({ nullifiedValues })
+
+  return nullifiedValues
+}
+
+const formatData = (initialValues, { metadata }) => {
+  return {
+    metadata: metadata.reduce((acc, { key, value }) => {
+      if (!key) return acc
+
+      acc[key] = value ? value : null
+      return acc
+    }, nullifyInitialState(initialValues)),
+  }
+}
+
+const WatchInput = ({
+  name,
+  index,
+  control,
+  fields,
+  register,
+  clearErrors,
+  ...props
+}) => {
+  const controlName = `metadata.${index}.${name}`
   const value = useWatch({
     control,
-    name,
+    name: controlName,
   })
+
   return (
     <>
       <Input
         {...props}
-        {...register(name, { required: name.includes("0") ? false : true })}
-        placeholder="key"
+        {...register(controlName, {
+          required: index === fields.length - 1 ? false : true,
+        })}
+        placeholder={name}
         boldLabel={"true"}
         defaultValue={value}
         onChange={e => {
-          clearErrors(name)
-          control.setValue(name, e.target.value)
+          clearErrors(controlName)
+          control.setValue(controlName, e.target.value)
         }}
       />
     </>
@@ -51,10 +85,14 @@ const MetadataForm = ({ parent, onSubmit }) => {
     reset,
     formState: { errors },
     clearErrors,
+    getValues,
   } = useForm({
     defaultValues: initializeFormFromParent(parent),
     shouldUnregister: true,
   })
+  const [initialValues, setInitialValues] = useState(parent.metadata)
+  console.log({ initialValues })
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "metadata",
@@ -67,13 +105,19 @@ const MetadataForm = ({ parent, onSubmit }) => {
     }
   })
 
-  const submitHandler = data => {
-    const formattedData = formatData(data)
+  const submitHandler = () => {
+    const formattedData = formatData(initialValues, {
+      metadata: controlledFields,
+    })
+
+    console.log({ formattedData })
+
+    setInitialValues(formattedData)
     onSubmit(formattedData)
   }
 
   return (
-    <Card mb={2} as="form" onSubmit={handleSubmit(submitHandler)}>
+    <Card mb={2} as="form">
       <Card.Header>Metadata</Card.Header>
       <Card.Body px={3} flexDirection="column">
         <Box maxWidth={800} mb={4}>
@@ -83,7 +127,9 @@ const MetadataForm = ({ parent, onSubmit }) => {
                 <Flex key={field.id} mb={3}>
                   <Box mr={4}>
                     <WatchInput
-                      name={`metadata.${index}.key`}
+                      index={index}
+                      name="key"
+                      fields={controlledFields}
                       control={control}
                       register={register}
                       clearErrors={clearErrors}
@@ -91,7 +137,9 @@ const MetadataForm = ({ parent, onSubmit }) => {
                   </Box>
                   <Box mr={4}>
                     <WatchInput
-                      name={`metadata.${index}.value`}
+                      index={index}
+                      fields={controlledFields}
+                      name="value"
                       control={control}
                       register={register}
                       clearErrors={clearErrors}
@@ -99,7 +147,12 @@ const MetadataForm = ({ parent, onSubmit }) => {
                   </Box>
                   {index === controlledFields.length - 1 && (
                     <>
-                      <Button onClick={() => append({ key: "", value: "" })}>
+                      <Button
+                        onClick={() => {
+                          handleSubmit(submitHandler)()
+                          append({ key: "", value: "" })
+                        }}
+                      >
                         Add
                       </Button>
                       {controlledFields.length === 1 &&
@@ -107,9 +160,10 @@ const MetadataForm = ({ parent, onSubmit }) => {
                           <Button
                             ml={2}
                             variant="danger"
-                            onClick={() =>
+                            onClick={() => {
                               reset({ metadata: [{ key: "", value: "" }] })
-                            }
+                              handleSubmit(submitHandler)()
+                            }}
                           >
                             clear
                           </Button>
@@ -123,6 +177,7 @@ const MetadataForm = ({ parent, onSubmit }) => {
                         controlledFields.splice(index, 1)
                         reset({ metadata: controlledFields })
                         remove(index)
+                        handleSubmit(submitHandler)()
                       }}
                     >
                       Remove
@@ -140,11 +195,11 @@ const MetadataForm = ({ parent, onSubmit }) => {
           })}
         </Box>
 
-        <Flex justifyContent="flex-end">
+        {/* <Flex justifyContent="flex-end">
           <Button type="submit" variant="deep-blue">
             Save
           </Button>
-        </Flex>
+        </Flex> */}
       </Card.Body>
     </Card>
   )
