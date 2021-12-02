@@ -27,8 +27,6 @@ const nullifyInitialState = initialValues => {
     {}
   )
 
-  console.log({ nullifiedValues })
-
   return nullifiedValues
 }
 
@@ -92,8 +90,6 @@ const MetadataForm = ({ parent, onSubmit }) => {
     shouldUnregister: true,
   })
   const [initialValues, setInitialValues] = useState(parent.metadata)
-  console.log({ initialValues })
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: "metadata",
