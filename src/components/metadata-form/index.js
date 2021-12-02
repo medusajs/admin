@@ -22,9 +22,10 @@ const initializeFormFromParent = parent => {
 }
 
 const nullifyInitialState = initialValues => {
-  const nullifiedValues = Object.entries(
-    initialValues
-  ).reduce((acc, [key, value]) => ({ ...acc, [key]: null }))
+  const nullifiedValues = Object.entries(initialValues || {}).reduce(
+    (acc, [key, value]) => ({ ...acc, [key]: null }),
+    {}
+  )
 
   console.log({ nullifiedValues })
 
@@ -62,7 +63,7 @@ const WatchInput = ({
       <Input
         {...props}
         {...register(controlName, {
-          required: index === fields.length - 1 ? false : true,
+          required: index === 0 || index !== fields.length - 1 ? true : false,
         })}
         placeholder={name}
         boldLabel={"true"}
@@ -109,11 +110,18 @@ const MetadataForm = ({ parent, onSubmit }) => {
     const formattedData = formatData(initialValues, {
       metadata: controlledFields,
     })
-
-    console.log({ formattedData })
-
     setInitialValues(formattedData)
     onSubmit(formattedData)
+  }
+
+  const appendSubmitHandler = () => {
+    submitHandler()
+    append({ key: "", value: "" })
+  }
+
+  const clearSubmitHandler = () => {
+    reset({ metadata: [{ key: "", value: "" }] })
+    submitHandler()
   }
 
   return (
@@ -147,12 +155,7 @@ const MetadataForm = ({ parent, onSubmit }) => {
                   </Box>
                   {index === controlledFields.length - 1 && (
                     <>
-                      <Button
-                        onClick={() => {
-                          handleSubmit(submitHandler)()
-                          append({ key: "", value: "" })
-                        }}
-                      >
+                      <Button onClick={handleSubmit(appendSubmitHandler)}>
                         Add
                       </Button>
                       {controlledFields.length === 1 &&
@@ -160,17 +163,14 @@ const MetadataForm = ({ parent, onSubmit }) => {
                           <Button
                             ml={2}
                             variant="danger"
-                            onClick={() => {
-                              reset({ metadata: [{ key: "", value: "" }] })
-                              handleSubmit(submitHandler)()
-                            }}
+                            onClick={handleSubmit(clearSubmitHandler)}
                           >
                             clear
                           </Button>
                         )}
                     </>
                   )}
-                  {index === controlledFields.length - 2 && (
+                  {index < controlledFields.length - 1 && (
                     <Button
                       variant="danger"
                       onClick={() => {
