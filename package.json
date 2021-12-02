@@ -59,9 +59,19 @@
     "@storybook/addons": "^5.3.19",
     "@storybook/react": "^5.3.19",
     "babel-loader": "^8.1.0",
-    "prettier": "2.0.5"
+    "gatsby": "^3.14.4",
+    "prettier": "2.0.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "webpack": "^5.64.4"
+  },
+  "peerDependencies": {
+    "gatsby": "^3.14.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "scripts": {
+    "dev": "npm run develop",
     "build": "gatsby build",
     "develop": "gatsby develop -p 7000",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
