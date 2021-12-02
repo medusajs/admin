@@ -106,7 +106,7 @@ const MetadataForm = ({ parent, onSubmit }) => {
     const formattedData = formatData(initialValues, {
       metadata: controlledFields,
     })
-    setInitialValues(formattedData)
+    setInitialValues(formattedData.metadata)
     onSubmit(formattedData)
   }
 
