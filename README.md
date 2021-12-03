@@ -66,6 +66,10 @@ After these four steps and only a couple of minutes, you now have a complete com
    ```
 4. **Go to [http://localhost:7000](http://localhost:7000)**
 
+_(Optional) Now if you've setup up your medusa server already then below are the credentials (can be found in `seed.json` present in medusa server's data folder)_
+
+5. **Email: `admin@medusa-test.com` and Password: `supersecret`**
+
 ## 🛒 Setting up a storefront for your Medusa project
 Medusa is a headless commerce engine which means that it can be used for any type of digital commerce experience - you may use it as the backend for an app, a voice application, social commerce experiences or a traditional e-commerce website, you may even want to integrate Medusa into your own software to enable commerce functionality. All of these are use cases that Medusa supports - to learn more read the documentation or reach out.
 
