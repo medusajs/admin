@@ -203,7 +203,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
         title: i.title,
       }
 
-      if (i.unit_price) {
+      if (typeof i.unit_price !== undefined) {
         obj.unit_price = i.unit_price
       }
 
