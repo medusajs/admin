@@ -110,7 +110,7 @@ const RequiredLabel = styled.div`
   }
 `
 
-const NewProduct = ({ }) => {
+const NewProduct = ({}) => {
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])

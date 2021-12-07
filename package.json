@@ -59,7 +59,8 @@
     "@storybook/addons": "^5.3.19",
     "@storybook/react": "^5.3.19",
     "babel-loader": "^8.1.0",
-    "prettier": "2.0.5"
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.0.5"
   },
   "scripts": {
     "build": "gatsby build",
