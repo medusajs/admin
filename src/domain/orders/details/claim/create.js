@@ -13,11 +13,13 @@ import TextArea from "../../../../components/textarea"
 import Select from "../../../../components/select"
 import AddressForm from "../address-form"
 import Medusa from "../../../../services/api"
+import { filterItems } from "../utils/create-filtering"
 
 import { ReactComponent as Trash } from "../../../../assets/svg/trash.svg"
 import { ReactComponent as Edit } from "../../../../assets/svg/edit.svg"
 import { ReactSelect } from "../../../../components/react-select"
 import { extractOptionPrice } from "../../../../utils/prices"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const removeNullish = obj =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -167,15 +169,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (order) {
-      let temp = [...order.items]
-
-      if (order.swaps && order.swaps.length) {
-        for (const s of order.swaps) {
-          temp = [...temp, ...s.additional_items]
-        }
-      }
-
-      setAllItems(temp)
+      setAllItems(filterItems(order, true))
     }
   }, [order])
 
@@ -325,7 +319,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       return onCreate(data)
         .then(() => onDismiss())
         .then(() => toaster("Successfully created claim", "success"))
-        .catch(() => toaster("Failed to create claim order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }
@@ -730,7 +724,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 <Text sx={{ fontSize: 1, fontWeight: 600 }}>Items to send</Text>
                 <Box mt={2}>
                   <Dropdown
-                    leftAlign
                     toggleText={"+ Add product"}
                     showSearch
                     onSearchChange={handleProductSearch}

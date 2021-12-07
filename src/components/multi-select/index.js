@@ -11,8 +11,6 @@ const StyledMultiSelect = styled(ReactMultiSelect)`
   color: black;
   background-color: white;
 
-  max-width: 350px;
-  flex: 50% 0 0;
   height: 33px;
 
   .dropdown-container {

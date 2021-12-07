@@ -24,7 +24,7 @@ const InfoTooltip = ({ tooltipText, tooltipProps, ...props }) => {
         data-for={id}
         data-tip={tooltipText}
       />
-      <Tooltip id={id} {...tooltipProps} />
+      <Tooltip multiline={true} id={id} {...tooltipProps} />
     </StyledBox>
   )
 }

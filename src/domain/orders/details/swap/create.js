@@ -12,6 +12,8 @@ import Dropdown from "../../../../components/dropdown"
 import Select from "../../../../components/select"
 import Typography from "../../../../components/typography"
 import Medusa from "../../../../services/api"
+import { filterItems } from "../utils/create-filtering"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const Dot = styled(Box)`
   width: 6px;
@@ -94,15 +96,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (order) {
-      let temp = [...order.items]
-
-      if (order.swaps && order.swaps.length) {
-        for (const s of order.swaps) {
-          temp = [...temp, ...s.additional_items]
-        }
-      }
-
-      setAllItems(temp)
+      setAllItems(filterItems(order, false))
     }
   }, [order])
 
@@ -212,7 +206,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       return onCreate(data)
         .then(() => onDismiss())
         .then(() => toaster("Successfully created swap", "success"))
-        .catch(() => toaster("Failed to create swap order", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }

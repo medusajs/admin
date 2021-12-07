@@ -8,6 +8,10 @@ import moment from "moment"
 import styled from "@emotion/styled"
 
 const DatePickerWrapper = styled(Box)`
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+
   .date-picker {
     cursor: default;
 
@@ -48,7 +52,15 @@ const DatePickerWrapper = styled(Box)`
   }
 `
 
-const DatePicker = ({ date, onChange }) => {
+const DatePicker = ({ date, onChange, enableTimepicker }) => {
+  const timepicker = enableTimepicker
+    ? {
+        showTimeSelect: true,
+        timeFormat: "HH:mm",
+        timeIntervals: 15,
+        dateFormat: "dd/MM/yyyy HH:mm",
+      }
+    : {}
   return (
     <DatePickerWrapper className="some-class-name">
       <ReactDatePicker
@@ -56,6 +68,7 @@ const DatePicker = ({ date, onChange }) => {
         onChange={onChange}
         calendarClassName="date-picker"
         popperClassName="popper"
+        {...timepicker}
         popperPlacement="bottom-start"
         popperModifiers={{
           offset: {

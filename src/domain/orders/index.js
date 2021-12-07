@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, useContext } from "react"
 import { navigate } from "gatsby"
 import _ from "lodash"
 import { Router } from "@reach/router"
@@ -39,6 +39,7 @@ import Spinner from "../../components/spinner"
 import Button from "../../components/button"
 import Filter from "./filter-dropdown"
 import { relativeDateFormatToTimestamp } from "../../utils/time"
+import { InterfaceContext } from "../../context/interface"
 
 const defaultQueryProps = {
   expand: "shipping_address",
@@ -121,6 +122,9 @@ const OrderIndex = ({}) => {
   if (!filtersOnLoad.limit) {
     filtersOnLoad.limit = 20
   }
+
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
 
   const {
     orders: allOrders,
@@ -277,6 +281,17 @@ const OrderIndex = ({}) => {
     )
   }
 
+  const searchHandler = q => {
+    setOffset(0)
+    resetFilters()
+    setQuery(q)
+    handleTabClick("all", { q })
+  }
+
+  useEffect(() => {
+    setOnSearch(searchHandler)
+  }, [])
+
   const [activeIndex, setActiveIndex] = useState(-1)
   useHotkeys(
     "/",
@@ -335,28 +350,6 @@ const OrderIndex = ({}) => {
     setFilterTabs(savedTabs)
   }, [])
 
-  const onKeyDown = event => {
-    switch (event.key) {
-      case "Enter":
-        event.preventDefault()
-        event.stopPropagation()
-        searchQuery()
-        break
-      case "Esc":
-      case "Escape":
-        searchRef.current.blur()
-        break
-      default:
-        break
-    }
-  }
-
-  const searchQuery = () => {
-    setOffset(0)
-    resetFilters()
-    handleTabClick("all", { q: query })
-  }
-
   function formatDateFilter(filter) {
     let dateFormatted = Object.entries(filter).reduce((acc, [key, value]) => {
       if (value.includes("|")) {
@@ -387,13 +380,13 @@ const OrderIndex = ({}) => {
     // if the datefilter includes "|" it is a relative date and we have to format it to timestamp
     const queryParts = {}
 
+    if (query) {
+      queryParts["q"] = query
+    }
+
     if (!_.isEmpty(dateFilter.filter)) {
       let dateFormatted = formatDateFilter(dateFilter.filter)
       queryParts.created_at = dateFormatted
-    }
-
-    if (query) {
-      queryParts.q = query
     }
 
     if (paymentFilter.filter) {
@@ -418,6 +411,7 @@ const OrderIndex = ({}) => {
         "fulfillment_status[]": fulfillmentFilter.filter,
         "status[]": statusFilter.filter,
         created_at: dateFilter.filter,
+        q: query,
       },
       { skipNulls: true }
     )
@@ -460,6 +454,7 @@ const OrderIndex = ({}) => {
     resetFilters()
 
     let searchObject = {
+      q: query,
       ...queryParts,
       ...defaultQueryProps,
     }
@@ -468,19 +463,19 @@ const OrderIndex = ({}) => {
 
     switch (tab) {
       case "completed":
-        setQuery("")
+        //setQuery("")
         searchObject["fulfillment_status[]"] = "shipped"
         searchObject["payment_status[]"] = "captured"
         break
       case "incomplete":
-        setQuery("")
+        //setQuery("")
         searchObject["fulfillment_status[]"] = ["not_fulfilled", "fulfilled"]
         searchObject["payment_status[]"] = "awaiting"
         break
       case "all":
         break
       default:
-        setQuery("")
+        //setQuery("")
         const toSend = prepareSearchParams(tab.value, queryParts)
 
         if (!tab.value) {
@@ -518,7 +513,7 @@ const OrderIndex = ({}) => {
 
   const clear = () => {
     const baseUrl = qs.parse(window.location.href).url
-    setQuery("")
+    //setQuery("")
     window.history.replaceState(baseUrl, "", `?limit=${limit}&offset=${offset}`)
     refresh()
   }
@@ -585,52 +580,32 @@ const OrderIndex = ({}) => {
 
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
-      <Flex>
-        <Text mb={3} fontSize={20} fontWeight="bold">
-          Orders
-        </Text>
-      </Flex>
-      <Flex>
-        <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
-          <Input
-            ref={searchRef}
-            height="30px"
-            fontSize="12px"
-            id="email"
-            name="q"
-            type="text"
-            placeholder="Search orders"
-            onKeyDown={onKeyDown}
-            onChange={e => setQuery(e.target.value)}
-            value={query}
+      <Flex sx={{ justifyContent: "space-between", width: "100%", mb: 2 }}>
+        <Flex>
+          <Text fontSize={20} fontWeight="bold">
+            Orders
+          </Text>
+        </Flex>
+        <Flex>
+          <Box ml="auto" />
+          <Filter
+            submitFilters={submit}
+            clearFilters={clear}
+            statusFilter={statusFilter}
+            fulfillmentFilter={fulfillmentFilter}
+            paymentFilter={paymentFilter}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            setStatusFilter={setStatusFilter}
+            setPaymentFilter={setPaymentFilter}
+            setFulfillmentFilter={setFulfillmentFilter}
+            resetFilters={resetFilters}
+            handleSaveTab={value => handleSaveTab(value)}
           />
-        </Box>
-        <Button
-          onClick={() => searchQuery()}
-          variant={"primary"}
-          fontSize="12px"
-          mr={2}
-        >
-          Search
-        </Button>
-        <Box ml="auto" />
-        <Filter
-          submitFilters={submit}
-          clearFilters={clear}
-          statusFilter={statusFilter}
-          fulfillmentFilter={fulfillmentFilter}
-          paymentFilter={paymentFilter}
-          dateFilter={dateFilter}
-          setDateFilter={setDateFilter}
-          setStatusFilter={setStatusFilter}
-          setPaymentFilter={setPaymentFilter}
-          setFulfillmentFilter={setFulfillmentFilter}
-          resetFilters={resetFilters}
-          handleSaveTab={value => handleSaveTab(value)}
-        />
-        <Button ml={2} onClick={() => setShowNewOrder(true)} variant={"cta"}>
-          New draft order
-        </Button>
+          <Button ml={2} onClick={() => setShowNewOrder(true)} variant={"cta"}>
+            New draft order
+          </Button>
+        </Flex>
       </Flex>
       <Flex mb={3} sx={{ borderBottom: "1px solid hsla(0, 0%, 0%, 0.12)" }}>
         <TabButton

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState, useContext } from "react"
 import qs from "query-string"
 import { Router } from "@reach/router"
 import { Text, Box, Flex } from "rebass"
@@ -24,6 +24,7 @@ import { navigate } from "gatsby"
 import Button from "../../components/button"
 import { Checkbox, Input, Label } from "@rebass/forms"
 import { decideBadgeColor } from "../../utils/decide-badge-color"
+import { InterfaceContext } from "../../context/interface"
 
 const DiscountIndex = () => {
   const filtersOnLoad = qs.parse(window.location.search)
@@ -40,7 +41,6 @@ const DiscountIndex = () => {
     "discounts",
     {
       search: {
-        is_giftcard: "false",
         is_disabled: "false",
         is_dynamic: "false",
         ...filtersOnLoad,
@@ -56,12 +56,12 @@ const DiscountIndex = () => {
 
   const searchRef = useRef(null)
 
-  const searchQuery = () => {
+  const searchQuery = q => {
     setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const queryParts = {
-      q: query,
+      q,
       offset: 0,
       limit: 20,
     }
@@ -73,13 +73,18 @@ const DiscountIndex = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({
       search: {
-        is_giftcard: "false",
         is_dynamic: showDynamic,
         is_disabled: showDisabled,
         ...queryParts,
       },
     })
   }
+
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
+  useEffect(() => {
+    setOnSearch(searchQuery)
+  }, [])
 
   useEffect(() => {
     handleCheckbox()
@@ -103,7 +108,6 @@ const DiscountIndex = () => {
     window.history.replaceState(baseUrl, "", `?${prepared}`)
     refresh({
       search: {
-        is_giftcard: "false",
         ...queryParts,
       },
     })
@@ -134,30 +138,13 @@ const DiscountIndex = () => {
         ...queryParts,
         is_dynamic: showDynamic,
         is_disabled: showDisabled,
-        is_giftcard: "false",
       },
     }).then(() => {
       setOffset(updatedOffset)
     })
   }
 
-  const onKeyDown = event => {
-    switch (event.key) {
-      case "Enter":
-        event.preventDefault()
-        event.stopPropagation()
-        searchQuery()
-        break
-      case "Esc":
-      case "Escape":
-        searchRef.current.blur()
-        break
-      default:
-        break
-    }
-  }
-
-  const moreResults = discounts && discounts.length >= limit
+  const moreResults = discounts && discounts.length > limit
 
   return (
     <Flex flexDirection="column" pt={5} pb={5}>
@@ -171,28 +158,6 @@ const DiscountIndex = () => {
         </Button>
       </Flex>
       <Flex>
-        <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
-          <Input
-            ref={searchRef}
-            height="30px"
-            fontSize="12px"
-            id="email"
-            name="q"
-            type="text"
-            placeholder="Search discounts"
-            onKeyDown={onKeyDown}
-            onChange={e => setQuery(e.target.value)}
-            value={query}
-          />
-        </Box>
-        <Button
-          onClick={() => searchQuery()}
-          variant={"primary"}
-          fontSize="12px"
-          mr={2}
-        >
-          Search
-        </Button>
         <Box ml="auto" />
         <Box>
           <Flex maxHeight="18px" alignItems="center">
@@ -238,7 +203,6 @@ const DiscountIndex = () => {
             <TableHeaderRow>
               <TableHeaderCell>Code</TableHeaderCell>
               <TableHeaderCell>Description</TableHeaderCell>
-              <TableHeaderCell>Disabled</TableHeaderCell>
               <TableHeaderCell>Type</TableHeaderCell>
             </TableHeaderRow>
           </TableHead>
@@ -256,20 +220,6 @@ const DiscountIndex = () => {
                     <DefaultCellContent>
                       {el.rule.description || "N / A"}
                     </DefaultCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    {el.is_disabled ? (
-                      <BadgdeCellContent>
-                        <Badge
-                          color={decideBadgeColor(el.is_disabled).color}
-                          bg={decideBadgeColor(el.is_disabled).bgColor}
-                        >
-                          Disabled
-                        </Badge>
-                      </BadgdeCellContent>
-                    ) : (
-                      "-"
-                    )}
                   </TableDataCell>
                   <TableDataCell>
                     <BadgdeCellContent>

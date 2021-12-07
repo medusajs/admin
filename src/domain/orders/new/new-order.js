@@ -320,9 +320,9 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const calculateTotal = () => {
     const tot = items.reduce((acc, next) => {
       if ("unit_price" in next) {
-        acc = acc + next.unit_price
+        acc = acc + next.unit_price * next.quantity
       } else {
-        acc = acc + extractUnitPrice(next, region, false)
+        acc = acc + extractUnitPrice(next, region, false) * next.quantity
       }
 
       return acc

@@ -12,11 +12,13 @@ import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import TagDropdown from "../../../components/tag-dropdown"
+import BreadCrumb from "../../../components/breadcrumb"
 
 import { countries as countryData } from "../../../utils/countries"
 
 import Shipping from "./shipping"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const Regions = ({ id }) => {
   const [currencies, setCurrencies] = useState([])
@@ -124,11 +126,16 @@ const Regions = ({ id }) => {
   }
 
   const onSave = async data => {
+    if(!data.countries || data.countries.length === 0){
+      return
+    }
+    
     try {
       await update({ ...data, tax_rate: data.tax_rate * 100 })
+
       toaster("Successfully updated region", "success")
     } catch (error) {
-      toaster("Failed to update region", "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 
@@ -149,6 +156,11 @@ const Regions = ({ id }) => {
 
   return (
     <Flex flexDirection="column" py={5} mb={5}>
+      <BreadCrumb
+        previousRoute="/a/settings/regions"
+        previousBreadCrumb="Settings > Regions"
+        currentPage="Region details"
+      />
       <Card as="form" mb={3} onSubmit={handleSubmit(onSave)}>
         <Card.Header>Region Details</Card.Header>
         <Card.Body flexDirection="column">
