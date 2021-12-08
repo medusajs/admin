@@ -132,8 +132,6 @@ const VariantEditor = ({
     data.prices = data.prices.map(p => removeNullish(p))
     const clean = removeNullish(data)
 
-    console.log({ clean })
-
     onSubmit(clean)
   }
 
