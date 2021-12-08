@@ -1,4 +1,4 @@
-const noDivisionCurrencies = ["krw"]
+const noDivisionCurrencies = ["krw", "jpy"]
 
 export function normalizeAmount(currency, amount) {
   let divisor = 100
