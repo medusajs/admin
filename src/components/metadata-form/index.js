@@ -6,18 +6,29 @@ import Card from "../card"
 import Input from "../input"
 import { get } from "lodash"
 
+// TODO: Filtering out null keys until Medusa Core update, remove this after
+const filterParentMetadata = parent => {
+  const filteredMetadata = Object.entries(parent.metadata).reduce(
+    (prev, [key, value]) => (value ? { ...prev, [key]: value } : prev),
+    {}
+  )
+
+  return filteredMetadata
+}
+
 const initializeFormFromParent = parent => {
-  const metadataEntries = Object.entries(parent.metadata || { "": "" })
-  const metadata =
-    metadataEntries.length <= 1
-      ? metadataEntries
-      : [
-          ...metadataEntries.map(([key, value]) => ({
-            key,
-            value,
-          })),
-          { key: "", value: "" },
-        ]
+  const metadataEntries = Object.entries(
+    filterParentMetadata(parent) || { "": "" }
+  )
+
+  const metadata = [
+    ...metadataEntries.map(([key, value]) => ({
+      key,
+      value,
+    })),
+    { key: "", value: "" },
+  ]
+
   return { metadata }
 }
 
@@ -89,7 +100,9 @@ const MetadataForm = ({ parent, onSubmit }) => {
     defaultValues: initializeFormFromParent(parent),
     shouldUnregister: true,
   })
-  const [initialValues, setInitialValues] = useState(parent.metadata)
+  const [initialValues, setInitialValues] = useState(
+    filterParentMetadata(parent)
+  )
   const { fields, append, remove } = useFieldArray({
     control,
     name: "metadata",
@@ -190,12 +203,6 @@ const MetadataForm = ({ parent, onSubmit }) => {
             )
           })}
         </Box>
-
-        {/* <Flex justifyContent="flex-end">
-          <Button type="submit" variant="deep-blue">
-            Save
-          </Button>
-        </Flex> */}
       </Card.Body>
     </Card>
   )

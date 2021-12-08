@@ -144,7 +144,12 @@ const Variants = ({
       inventory_quantity: parseInt(data.inventory_quantity),
     }
 
+    console.log({ parsedData })
+
     const cleanedData = convertEmptyStringToNull(parsedData, numberFields)
+
+    console.log({ cleanedData })
+
     variantMethods
       .update(editVariant.id, cleanedData)
       .then(res => {
