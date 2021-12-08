@@ -12,6 +12,7 @@ import Input from "../../../../components/input"
 import Modal from "../../../../components/modal"
 import Typography from "../../../../components/typography"
 import useMedusa from "../../../../hooks/use-medusa"
+import MetadataForm from "../../../../components/metadata-form"
 
 const StyledLabel = styled(Label)`
   ${Typography.Base};
@@ -356,6 +357,14 @@ const VariantEditor = ({
               />
             </Flex>
           </Box>
+
+          {/* <Box mb={4}>
+            <MetadataForm
+              parent={variant}
+              onSubmit={() => console.log("You just submitted the form!")}
+            />
+          </Box> */}
+
           {!isCopy && (
             <Box>
               <Text mb={3} fontWeight={700}>

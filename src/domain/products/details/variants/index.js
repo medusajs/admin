@@ -139,7 +139,12 @@ const Variants = ({
   }
 
   const handleUpdateVariant = data => {
-    const cleanedData = convertEmptyStringToNull(data, numberFields)
+    const parsedData = {
+      ...data,
+      inventory_quantity: parseInt(data.inventory_quantity),
+    }
+
+    const cleanedData = convertEmptyStringToNull(parsedData, numberFields)
     variantMethods
       .update(editVariant.id, cleanedData)
       .then(res => {
