@@ -344,6 +344,15 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                 }
               />
             </Box>
+            <Box mb={3}>
+              <Flex mb={2} alignItems="center">
+                <Text mr={2} fontSize={1} fontWeight="500">
+                  Handle
+                </Text>
+                <InfoTooltip tooltipText="URL Slug for the product" />
+              </Flex>
+              <Input name="handle" ref={register} boldLabel={"true"} />
+            </Box>
             <Divider mb={3} />
 
             <Collapsible
@@ -363,15 +372,6 @@ const Information = ({ isLoading, product, onSubmit, onDelete }) => {
                 />
               }
             >
-              <Box mb={3}>
-                <Flex mb={2} alignItems="center">
-                  <Text mr={2} fontSize={1} fontWeight="500">
-                    Handle
-                  </Text>
-                  <InfoTooltip tooltipText="URL Slug for the product" />
-                </Flex>
-                <Input name="handle" ref={register} boldLabel={"true"} />
-              </Box>
               <Box mb={3}>
                 <Flex mb={2} alignItems="center">
                   <Text mr={2} fontSize={1} fontWeight="500">
