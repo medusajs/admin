@@ -9,7 +9,7 @@ import { get } from "lodash"
 // TODO: Filtering out null keys until Medusa Core update, remove this after
 const filterParentMetadata = parent => {
   const filteredMetadata = Object.entries(parent.metadata).reduce(
-    (prev, [key, value]) => (value ? { ...prev, [key]: value } : prev),
+    (prev, [key, value]) => (value === null ? prev : { ...prev, [key]: value }),
     {}
   )
 
@@ -17,10 +17,9 @@ const filterParentMetadata = parent => {
 }
 
 const initializeFormFromParent = parent => {
-  const metadataEntries = Object.entries(
-    filterParentMetadata(parent) || { "": "" }
-  )
+  if (!parent.metadata) return { metadata: [{ key: "", value: "" }] }
 
+  const metadataEntries = Object.entries(filterParentMetadata(parent))
   const metadata = [
     ...metadataEntries.map(([key, value]) => ({
       key,
@@ -95,18 +94,20 @@ const MetadataForm = ({ parent, onSubmit }) => {
     reset,
     formState: { errors },
     clearErrors,
-    getValues,
   } = useForm({
     defaultValues: initializeFormFromParent(parent),
     shouldUnregister: true,
   })
+
   const [initialValues, setInitialValues] = useState(
-    filterParentMetadata(parent)
+    parent.metadata ? filterParentMetadata(parent) : {}
   )
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "metadata",
   })
+
   const watchFieldArray = watch("metadata")
   const controlledFields = fields.map((field, index) => {
     return {
