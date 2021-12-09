@@ -1,5 +1,4 @@
 import React from "react"
-import { useForm } from "react-hook-form"
 import { Flex } from "rebass"
 import ReactJson from "react-json-view"
 import { navigate } from "gatsby"
@@ -11,8 +10,9 @@ import Images from "./images"
 import useMedusa from "../../../hooks/use-medusa"
 import NotFound from "../../../components/not-found"
 import Card from "../../../components/card"
-import Options from "./options"
 import InventoryManager from "./inventory"
+import Spinner from "../../../components/spinner"
+import MetadataForm from "../../../components/metadata-form"
 
 const ProductDetail = ({ id }) => {
   const {
@@ -49,9 +49,8 @@ const ProductDetail = ({ id }) => {
     })
   }
 
-  if (didFail) {
-    return <NotFound />
-  }
+  if (didFail) return <NotFound />
+  if (!product) return <Spinner />
 
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
@@ -78,6 +77,7 @@ const ProductDetail = ({ id }) => {
         toaster={toaster}
       />
       <InventoryManager product={product} onSubmit={handleDetailsSubmit} />
+      <MetadataForm parent={product} onSubmit={handleDetailsSubmit} />
       <Card mr={3} width="100%">
         <Card.Header>Raw product</Card.Header>
         <Card.Body>

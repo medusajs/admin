@@ -12,6 +12,7 @@ import Input from "../../../../components/input"
 import Modal from "../../../../components/modal"
 import Typography from "../../../../components/typography"
 import useMedusa from "../../../../hooks/use-medusa"
+import MetadataForm from "../../../../components/metadata-form"
 
 const StyledLabel = styled(Label)`
   ${Typography.Base};
@@ -46,6 +47,7 @@ const VariantEditor = ({
 }) => {
   const { store, isLoading } = useMedusa("store")
 
+  const [metadata, setMetadata] = useState(variant.metadata)
   const [currencyOptions, setCurrencyOptions] = useState([])
   const [prices, setPrices] = useState(variant.prices)
 
@@ -120,6 +122,7 @@ const VariantEditor = ({
   }
 
   const handleSave = data => {
+    data.metadata = metadata
     data.prices = prices.map(({ currency_code, region_id, amount }) => ({
       currency_code,
       region_id,
@@ -128,6 +131,7 @@ const VariantEditor = ({
 
     data.prices = data.prices.map(p => removeNullish(p))
     const clean = removeNullish(data)
+
     onSubmit(clean)
   }
 
@@ -356,6 +360,14 @@ const VariantEditor = ({
               />
             </Flex>
           </Box>
+
+          <Box mb={4}>
+            <MetadataForm
+              parent={variant}
+              onSubmit={data => setMetadata(data.metadata)}
+            />
+          </Box>
+
           {!isCopy && (
             <Box>
               <Text mb={3} fontWeight={700}>

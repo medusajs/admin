@@ -57,7 +57,8 @@
     "gatsby": "^3.14.4",
     "prettier": "2.0.5",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "webpack": "^5.64.4"
   },
   "peerDependencies": {
     "gatsby": "^3.14.4",
@@ -65,7 +66,7 @@
     "react-dom": "^17.0.2"
   },
   "scripts": {
-    "dev": "yarn develop",
+    "dev": "npm run develop",
     "build": "gatsby build",
     "develop": "gatsby develop -p 7000",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
