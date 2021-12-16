@@ -1,4 +1,5 @@
 import React from "react"
+import { navigate } from "gatsby"
 import { Text, Flex, Box, Image } from "rebass"
 import styled from "@emotion/styled"
 import moment from "moment"
