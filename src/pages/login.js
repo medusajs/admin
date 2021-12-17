@@ -16,9 +16,10 @@ import MedusaClient from "../services/api"
 
 const IndexPage = () => {
   const [loading, setLoading] = useState(false)
-  const [errorLogin, setErrorLogin] = useState(false)
   const account = useContext(AccountContext)
   const { register, handleSubmit } = useForm()
+
+  const [isErrorLogin, setIsErrorLogin] = useState(false)
 
   const handleLogin = data => {
     setLoading(true)
@@ -31,7 +32,7 @@ const IndexPage = () => {
         setLoading(false)
       })
       .catch(e => {
-        setErrorLogin(true)
+        setIsErrorLogin(true)
       })
   }
 
@@ -71,7 +72,7 @@ const IndexPage = () => {
             <Text mb={4} fontWeight="bold" fontSize={4}>
               Sign in to your account
             </Text>
-            <Text color="red" display={errorLogin ? "inherit" : "none"}>
+            <Text color="red" display={isErrorLogin ? "inherit" : "none"}>
               Invalid email or password!
             </Text>
             {loading ? (
