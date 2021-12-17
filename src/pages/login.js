@@ -19,7 +19,7 @@ const IndexPage = () => {
   const account = useContext(AccountContext)
   const { register, handleSubmit } = useForm()
 
-  const [isErrorLogin, setIsErrorLogin] = useState(false)
+  const [isInvalidLogin, setIsInvalidLogin] = useState(false)
 
   const handleLogin = data => {
     setLoading(true)
@@ -32,7 +32,7 @@ const IndexPage = () => {
         setLoading(false)
       })
       .catch(e => {
-        setIsErrorLogin(true)
+        setIsInvalidLogin(true)
       })
   }
 
@@ -72,9 +72,9 @@ const IndexPage = () => {
             <Text mb={4} fontWeight="bold" fontSize={4}>
               Sign in to your account
             </Text>
-            <Text color="red" display={isErrorLogin ? "inherit" : "none"}>
-              Invalid email or password!
-            </Text>
+            {isInvalidLogin && (
+              <Text color="red">Invalid email or password!</Text>
+            )}
             {loading ? (
               <Flex justifyContent="center">
                 <Spinner dark width="20px" height="20px" />
