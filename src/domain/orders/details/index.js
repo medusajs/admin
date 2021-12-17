@@ -817,7 +817,16 @@ const OrderDetails = ({ id }) => {
               onChange={e => setNote(e.target.value)}
               onKeyPress={handleCreateNote}
             />
-            <Button mr={3} mt={3} variant="primary" height="28px" width="100px">
+            <Button
+              mr={3}
+              mt={3}
+              variant="primary"
+              height="28px"
+              width="100px"
+              onClick={() => {
+                handleCancelNote()
+              }}
+            >
               Cancel
             </Button>
             <Button mt={3} variant="deep-blue" height="28px" width="100px">
