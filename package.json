@@ -62,8 +62,12 @@
     "@storybook/addon-links": "^5.3.19",
     "@storybook/addons": "^5.3.19",
     "@storybook/react": "^5.3.19",
+    "autoprefixer": "^10.4.0",
     "babel-loader": "^8.1.0",
-    "prettier": "2.0.5"
+    "gatsby-plugin-postcss": "^5.4.0",
+    "postcss": "^8.4.5",
+    "prettier": "2.0.5",
+    "tailwindcss": "^3.0.6"
   },
   "scripts": {
     "build": "gatsby build",
