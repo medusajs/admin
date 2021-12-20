@@ -34,6 +34,7 @@ const AccountDetails = () => {
       name: store.name,
       swap_link_template: store.swap_link_template,
       payment_link_template: store.payment_link_template,
+      invite_link_template: store.invite_link_template,
     })
   }, [store, isLoading])
 
@@ -52,14 +53,13 @@ const AccountDetails = () => {
   }
 
   const onSubmit = data => {
-    if(!validateUrl(data.swap_link_template) || !validateUrl(data.payment_link_template)){
+    if(!validateUrl(data.swap_link_template) || !validateUrl(data.payment_link_template) || !validateUrl(data.invite_link_template)){
       toaster("Malformed url", 'error')
       return
     }
     
     try {
       localStorage.removeItem("medusa::cache::store")
-
       update(data)
       toaster("Successfully updated store", "success")
       window.location.reload()
@@ -123,6 +123,17 @@ const AccountDetails = () => {
                 label="Draft order link template"
                 name="payment_link_template"
                 placeholder="https://acme.inc/swap"
+                ref={register}
+              />
+            </Box>
+          </Flex>
+          <Flex width={1} mt={3}>
+            <Box width={1 / 2}>
+              <Input
+                boldLabel={true}
+                label="Invite link template"
+                name="invite_link_template"
+                placeholder="https://acme.inc/invite={invite_token}"
                 ref={register}
               />
             </Box>
