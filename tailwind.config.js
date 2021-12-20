@@ -174,6 +174,18 @@ module.exports = {
         "5xlarge": "4rem",
         "6xlarge": "6rem",
       },
+      minWidth: {
+        sidebar: "240px",
+      },
+      maxWidth: {
+        sidebar: "240px",
+      },
+      minHeight: {
+        topbar: "56px",
+      },
+      maxHeight: {
+        topbar: "56px",
+      },
       lineHeight: {
         xsmall: "1rem",
         small: "1.25rem",
