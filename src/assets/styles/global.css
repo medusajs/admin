@@ -1,3 +1,170 @@
 @tailwind base;
 @tailwind components;
+
+@font-face {
+  font-family: "Inter";
+  src: url("../../fonts/Inter-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../../fonts/Inter-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("../../fonts/RobotoMono-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("../../fonts/RobotoMono-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer components {
+  .inter-5xlarge-regular {
+    @apply font-sans text-5xlarge leading-4xlarge font-normal;
+  }
+  .inter-5xlarge-semibold {
+    @apply font-sans text-5xlarge leading-4xlarge font-semibold;
+  }
+
+  .inter-4xlarge-regular {
+    @apply font-sans text-4xlarge leading-3xlarge font-normal;
+  }
+  .inter-4xlarge-semibold {
+    @apply font-sans text-4xlarge leading-3xlarge font-semibold;
+  }
+
+  .inter-3xlarge-regular {
+    @apply font-sans text-3xlarge leading-2xlarge font-normal;
+  }
+  .inter-3xlarge-semibold {
+    @apply font-sans text-3xlarge leading-2xlarge font-semibold;
+  }
+
+  .inter-2xlarge-regular {
+    @apply font-sans text-2xlarge leading-xlarge font-normal;
+  }
+  .inter-2xlarge-semibold {
+    @apply font-sans text-2xlarge leading-xlarge font-semibold;
+  }
+
+  .inter-xlarge-regular {
+    @apply font-sans text-xlarge leading-large font-normal;
+  }
+  .inter-xlarge-semibold {
+    @apply font-sans text-xlarge leading-large font-semibold;
+  }
+
+  .inter-large-regular {
+    @apply font-sans text-large leading-base font-normal;
+  }
+  .inter-large-semibold {
+    @apply font-sans text-large leading-base font-semibold;
+  }
+
+  .inter-base-regular {
+    @apply font-sans text-base leading-base font-normal;
+  }
+  .inter-base-semibold {
+    @apply font-sans text-base leading-base font-semibold;
+  }
+
+  .inter-small-regular {
+    @apply font-sans text-small leading-small font-normal;
+  }
+  .inter-small-semibold {
+    @apply font-sans text-small leading-small font-semibold;
+  }
+
+  .inter-xsmall-regular {
+    @apply font-sans text-xsmall leading-xsmall font-normal;
+  }
+  .inter-xsmall-semibold {
+    @apply font-sans text-xsmall leading-xsmall font-semibold;
+  }
+
+  .mono-5xlarge-regular {
+    @apply font-mono text-5xlarge leading-4xlarge font-normal;
+  }
+  .mono-5xlarge-semibold {
+    @apply font-mono text-5xlarge leading-4xlarge font-bold;
+  }
+
+  .mono-4xlarge-regular {
+    @apply font-mono text-4xlarge leading-3xlarge font-normal;
+  }
+  .mono-4xlarge-semibold {
+    @apply font-mono text-4xlarge leading-3xlarge font-bold;
+  }
+
+  .mono-3xlarge-regular {
+    @apply font-mono text-3xlarge leading-2xlarge font-normal;
+  }
+  .mono-3xlarge-semibold {
+    @apply font-mono text-3xlarge leading-2xlarge font-bold;
+  }
+
+  .mono-2xlarge-regular {
+    @apply font-mono text-2xlarge leading-xlarge font-normal;
+  }
+  .mono-2xlarge-semibold {
+    @apply font-mono text-2xlarge leading-xlarge font-bold;
+  }
+
+  .mono-xlarge-regular {
+    @apply font-mono text-xlarge leading-large font-normal;
+  }
+  .mono-xlarge-semibold {
+    @apply font-mono text-xlarge leading-large font-bold;
+  }
+
+  .mono-large-regular {
+    @apply font-mono text-large leading-base font-normal;
+  }
+  .mono-large-semibold {
+    @apply font-mono text-large leading-base font-bold;
+  }
+
+  .mono-base-regular {
+    @apply font-mono text-base leading-base font-normal;
+  }
+  .mono-base-semibold {
+    @apply font-mono text-base leading-base font-bold;
+  }
+
+  .mono-small-regular {
+    @apply font-mono text-small leading-small font-normal;
+  }
+  .mono-small-semibold {
+    @apply font-mono text-small leading-small font-bold;
+  }
+
+  .mono-xsmall-regular {
+    @apply font-mono text-xsmall leading-xsmall font-normal;
+  }
+  .mono-xsmall-semibold {
+    @apply font-mono text-xsmall leading-xsmall font-bold;
+  }
+}
+
 @tailwind utilities;
+
+@layer utilities {
+  .vice-city {
+    @apply bg-gradient-to-tr from-vice-start to-vice-stop;
+  }
+}
