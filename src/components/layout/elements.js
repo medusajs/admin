@@ -11,7 +11,7 @@ export const Container = styled(Flex)`
 
 export const Main = styled(Box)`
   display: grid;
-  grid-template-columns: 325px 1fr;
+  grid-template-columns: 240px 1fr;
   grid-template-rows: 1fr;
   min-height: 100vh;
   flex: 1;
@@ -30,8 +30,7 @@ export const Content = styled(Flex)`
   // overflow-x: hidden;
   height: 100vh;
   background-color: ${props => props.theme.colors.lightest};
-  box-shadow: rgba(0, 0, 0, 0.03) -1px 0px 99px 0px,
-    rgba(0, 0, 0, 0.02) -1px 0px 2px 0px;
+  border-left: 1px solid #F0F0F0;
 `
 
 export const SearchBar = styled(Input)`
