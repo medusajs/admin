@@ -1,76 +1,29 @@
 import React, { useEffect, useState } from "react"
-import { Flex, Box, Text } from "rebass"
-import { Link, navigate } from "gatsby"
-import styled from "@emotion/styled"
-import Collapsible from "react-collapsible"
-import { Container, InlineLogoContainer, LogoContainer } from "./elements"
-import { ReactComponent as Settings } from "../../assets/svg/settings.svg"
-import { ReactComponent as Orders } from "../../assets/svg/orders.svg"
-import { ReactComponent as Returns } from "../../assets/svg/return.svg"
-import { ReactComponent as Swaps } from "../../assets/svg/swap.svg"
-import { ReactComponent as Products } from "../../assets/svg/products.svg"
-import { ReactComponent as Collections } from "../../assets/svg/collection.svg"
-import { ReactComponent as Customers } from "../../assets/svg/customers.svg"
-import { ReactComponent as Discounts } from "../../assets/svg/discounts.svg"
-import { ReactComponent as Logo } from "../../assets/svg/logo.svg"
-import { ReactComponent as GiftCard } from "../../assets/svg/gift-card.svg"
-import { ReactComponent as LogoInline } from "../../assets/svg/logo-horizontal.svg"
+import { ReactComponent as GiftCard } from "../../assets/svg/2.0/24px/gift-card.svg"
+import { ReactComponent as Settings } from "../../assets/svg/2.0/24px/settings.svg"
+import { ReactComponent as Discount } from "../../assets/svg/2.0/24px/percent.svg"
+import { ReactComponent as Customer } from "../../assets/svg/2.0/24px/user.svg"
+import { ReactComponent as Orders } from "../../assets/svg/2.0/24px/dollar-sign.svg"
+import { ReactComponent as Products } from "../../assets/svg/2.0/24px/price-tag.svg"
 import Medusa from "../../services/api"
-
-const StyledItemContainer = styled(Link)`
-  display: flex;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-bottom: 8px;
-  align-items: center;
-  border-radius: 5pt;
-  cursor: pointer;
-
-  text-decoration: none;
-  color: black;
-  height: 30px;
-
-  svg {
-    max-height: 20px;
-    max-width: 20px;
-  }
-
-  img {
-    max-height: 18px;
-    max-width: 18px;
-    margin: 0px;
-  }
-
-  [fill*="red"] {
-    fill: #454545;
-  }
-
-  &:hover {
-    ${props =>
-      !props.active &&
-      `
-      background-color: #e0e0e059;
-    `}
-  }
-
-  &.active {
-    background-color: #e0e0e0;
-    font-weight: 600;
-  }
-`
+import SidebarMenuItem from "../molecules/sidebar-menu-item"
+import SidebarCompanyLogo from "../molecules/sidebar-company-logo"
+import SidebarTeam from "../organisms/sidebar-team"
 
 const Sidebar = ({}) => {
   const [storeName, setStoreName] = useState("")
-  const [path, setPath] = useState("")
-  const [orderOpen, setOrderOpen] = useState(false)
   const [currentlyOpen, setCurrentlyOpen] = useState("")
+  const [users, setUsers] = useState([])
+  
+  const productsChildren = [{pageLink: '/a/collections', text: 'Collections'}]
+  const ordersChildren = [{pageLink: '/a/draft-orders', text: 'Drafts'}, {pageLink: '/a/swaps', text: 'Swaps'}, {pageLink: '/a/returns', text: 'Returns'}]
 
   const fetchStore = async () => {
     const cache = localStorage.getItem("medusa::cache::store")
     if (cache) {
       setStoreName(cache)
     } else {
-      const { data } = await Medusa.store.retrieve(({ data }) => data.store)
+      const { data } = await Medusa.store.retrieve() //({ data }) => data.store
       if (data.store) {
         localStorage.setItem("medusa::cache::store", data.store.name)
         setStoreName(data.store.name)
@@ -78,8 +31,15 @@ const Sidebar = ({}) => {
     }
   }
 
+  const fetchUsers = async () => {
+    Medusa.users.list().then(({data}) => {console.log(data)
+      setUsers(data.users)
+    })
+  }
+
   useEffect(() => {
     fetchStore()
+    fetchUsers()
   }, [])
 
   const triggerHandler = () => {
@@ -94,158 +54,22 @@ const Sidebar = ({}) => {
   triggerHandler.id = 0
 
   return (
-    <Container fontSize={1} fontFamily={"body"} pb={3} pt={4} px={4}>
-      <Flex mx={-2} alignItems="center">
-        <LogoContainer width={2 / 12} mx={2}>
-          <img src="https://img.icons8.com/ios/50/000000/online-shopping.png" />
-        </LogoContainer>
-        <Box mx={1}>
-          <Text fontWeight="500">{storeName || "Medusa store"}</Text>
-        </Box>
-      </Flex>
-      <Flex py={4} mx={-1} flexDirection="column" flex={1}>
-        <Collapsible
-          transitionTime={150}
-          transitionCloseTime={150}
-          {...triggerHandler()}
-          trigger={
-            <StyledItemContainer
-              to="/a/orders"
-              activeClassName="active"
-              partiallyActive
-            >
-              <img src="https://img.icons8.com/ios/50/000000/purchase-order.png" />
-              <Text ml={2} variant="nav">
-                Orders
-              </Text>
-            </StyledItemContainer>
-          }
-        >
-          <StyledItemContainer
-            to="/a/draft-orders"
-            activeClassName="active"
-            partiallyActive
-          >
-            <Flex alignItems="center" pl={3} width="100%">
-              <Text ml="14px" variant="nav" fontSize="12px">
-                Drafts
-              </Text>
-            </Flex>
-          </StyledItemContainer>
-          <StyledItemContainer
-            to="/a/swaps"
-            activeClassName="active"
-            partiallyActive
-          >
-            <Flex alignItems="center" pl={3} width="100%">
-              <Text ml="14px" variant="nav" fontSize="12px">
-                Swaps
-              </Text>
-            </Flex>
-          </StyledItemContainer>
-          <StyledItemContainer
-            to="/a/returns"
-            activeClassName="active"
-            partiallyActive
-          >
-            <Flex alignItems="center" pl={3} width="100%">
-              <Text ml="14px" variant="nav" fontSize="12px">
-                Returns
-              </Text>
-            </Flex>
-          </StyledItemContainer>
-        </Collapsible>
-        <Collapsible
-          transitionTime={150}
-          transitionCloseTime={150}
-          {...triggerHandler()}
-          trigger={
-            <StyledItemContainer
-              to="/a/products"
-              activeClassName="active"
-              partiallyActive
-            >
-              <img src="https://img.icons8.com/ios/50/000000/product--v1.png" />
-              <Text ml={2} variant="nav">
-                Products
-              </Text>
-            </StyledItemContainer>
-          }
-        >
-          <StyledItemContainer
-            to="/a/collections"
-            activeClassName="active"
-            partiallyActive
-          >
-            <Flex alignItems="center" pl={3} width="100%">
-              <Text ml="14px" variant="nav" fontSize="12px">
-                Collections
-              </Text>
-            </Flex>
-          </StyledItemContainer>
-        </Collapsible>
-        <Collapsible
-          {...triggerHandler()}
-          trigger={
-            <StyledItemContainer
-              to="/a/customers"
-              activeClassName="active"
-              partiallyActive
-            >
-              <img src="https://img.icons8.com/ios/50/000000/gender-neutral-user.png" />
-              <Text ml={2} variant="nav">
-                Customers
-              </Text>
-            </StyledItemContainer>
-          }
-        />
-        <Collapsible
-          {...triggerHandler()}
-          trigger={
-            <StyledItemContainer
-              to="/a/discounts"
-              activeClassName="active"
-              partiallyActive
-            >
-              <img src="https://img.icons8.com/ios/50/000000/discount.png" />
-              <Text ml={2} variant="nav">
-                Discounts
-              </Text>
-            </StyledItemContainer>
-          }
-        />
-        <Collapsible
-          {...triggerHandler()}
-          trigger={
-            <StyledItemContainer
-              to="/a/gift-cards"
-              activeClassName="active"
-              partiallyActive
-            >
-              <img src="https://img.icons8.com/ios/50/000000/gift-card.png" />
-              <Text ml={2} variant="nav">
-                Gift Cards
-              </Text>
-            </StyledItemContainer>
-          }
-        />
-        <Collapsible
-          {...triggerHandler()}
-          trigger={
-            <StyledItemContainer
-              to="/a/settings"
-              activeClassName="active"
-              partiallyActive
-            >
-              <img src="https://img.icons8.com/ios/50/000000/settings--v1.png" />
-              <Text ml={2} variant="nav">
-                Settings
-              </Text>
-            </StyledItemContainer>
-          }
-        />
-      </Flex>
-    </Container>
+    <div className="bg-grey-0 px-3.5 max-w-[240px] inter-base-regular">
+      <SidebarCompanyLogo imageUrl={"https://img.icons8.com/ios/50/000000/online-shopping.png"} StoreName={storeName || "Medusa Store"} />
+
+      <div className="background-pink-5 border-b pb-3.5 border-grey-20">
+        <SidebarMenuItem pageLink={'/a/orders'} icon={<Orders />} triggerHandler={triggerHandler} text={'Orders'} subItems={ordersChildren} />
+        <SidebarMenuItem pageLink={'/a/products'} icon={<Products />} text={'Products'} triggerHandler={triggerHandler} subItems={productsChildren}/>
+        <SidebarMenuItem pageLink={'/a/customers'} icon={<Customer />} triggerHandler={triggerHandler} text={'Customers'} />
+        <SidebarMenuItem pageLink={'/a/discounts'} icon={<Discount />} triggerHandler={triggerHandler} text={'Discounts'} />
+        <SidebarMenuItem pageLink={'/a/gift-cards'} icon={<GiftCard />} triggerHandler={triggerHandler} text={'Gift Cards'} />
+        <SidebarMenuItem pageLink={'/a/settings'} icon={<Settings />} triggerHandler={triggerHandler} text={'Settings'} />
+      </div>
+
+      <div className="font-semibold mt-5 flex flex-col text-small">
+        <SidebarTeam users={users}/>
+      </div>
+    </div>
   )
 }
 
