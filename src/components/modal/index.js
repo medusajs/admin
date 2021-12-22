@@ -1,77 +1,37 @@
-import styled from "@emotion/styled"
 import React from "react"
-import { Flex } from "rebass"
 
-const Modal = styled(Flex)`
-  position: fixed;
-  z-index: 1001;
-  top: 0;
-  left: 0;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  width: 100%;
-  height: 100%;
-  background-color: rgba(238, 240, 245, 0.7);
-  overflow: auto;
-`
-
-const ModalBody = styled(Flex)`
-  flex-direction: column;
-  max-height: 90vh;
-  min-width: 450px;
-  background-color: white;
-  border-radius: 5px;
-  box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.12),
-    0px 7px 15px 0px rgba(137, 149, 156, 0.12);
-`
-
-const ModalContent = styled(Flex)`
-  flex: 1;
-  overflow: auto;
-`
-
-const StyledHeader = styled(Flex)`
-  border-bottom: 1px solid #e3e8ee;
-`
-
-const StyledFooter = styled(Flex)`
-  align-items: center;
-  border-top: 1px solid #e3e8ee;
-`
+const Modal = ({onClick, children, ...rest}) => {
+  return (
+    <div onClick={onClick} className="fixed top-0 left-0 z-[999] flex justify-center items-center w-full h-full overflow-auto bg-grey-90/40">
+      {children}
+    </div>
+  )
+}
 
 Modal.Body = ({ children, ...rest }) => {
   return (
-    <ModalBody onClick={e => e.stopPropagation()} {...rest}>
+    <div onClick={e => e.stopPropagation()} className="flex flex-col bg-grey-0 min-w-modal rounded">
       {children}
-    </ModalBody>
+    </div>
   )
 }
 
 Modal.Content = ({ children, ...rest }) => {
-  return (
-    <ModalContent p={3} {...rest}>
-      {children}
-    </ModalContent>
-  )
+  return (<div className="flex overflow-auto px-7 py-4">
+    {children}
+  </div>)
 }
 
-Modal.Header = ({ children, ...rest }) => {
-  return (
-    <StyledHeader p={3} onClick={e => e.stopPropagation()} {...rest}>
-      {children}
-    </StyledHeader>
-  )
+Modal.Header = ({ children, handleClose, ...rest }) => {
+  return (<div className="px-7 pt-3">
+    {children}
+  </div>)
 }
 
 Modal.Footer = ({ children, ...rest }) => {
-  return (
-    <StyledFooter p={3} onClick={e => e.stopPropagation()} {...rest}>
-      {children}
-    </StyledFooter>
-  )
+  return (<div onClick={e => e.stopPropagation()} className="items-center border-t border-grey-20 flex w-full px-7 pt-3.5 pb-5">
+    {children}
+  </div>)
 }
 
 export default Modal
