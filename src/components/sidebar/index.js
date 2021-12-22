@@ -23,7 +23,7 @@ const Sidebar = ({}) => {
     if (cache) {
       setStoreName(cache)
     } else {
-      const { data } = await Medusa.store.retrieve() //({ data }) => data.store
+      const { data } = await Medusa.store.retrieve()
       if (data.store) {
         localStorage.setItem("medusa::cache::store", data.store.name)
         setStoreName(data.store.name)

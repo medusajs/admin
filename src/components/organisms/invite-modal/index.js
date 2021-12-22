@@ -2,11 +2,11 @@ import styled from "@emotion/styled"
 import React, { useState } from "react"
 import { Box, Flex, Text } from "rebass"
 import { ReactComponent as CloseIcon } from "../../../assets/svg/2.0/20px/x.svg"
-import Modal from "../../../components/modal"
-import Button from "../../../components/button"
+import Modal from "../../modal"
+import Button from "../../button"
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
-import InputField from "../../../components/input"
+import InputField from "../../input"
 
 const InviteModal = ({ handleClose }) => {
   const [email, setEmail] = useState("")
