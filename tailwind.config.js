@@ -1,6 +1,9 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
+    minWidth:{
+      'modal': '520px'
+    },
     screens: {},
     extend: {
       colors: {
