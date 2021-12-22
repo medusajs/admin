@@ -40,17 +40,17 @@ const InviteModal = ({ handleClose }) => {
 
   return (
     <Modal onClick={handleClose}>
-      <Modal.Body as="form" onSubmit={handleSubmit}>
-        <Modal.Header justifyContent="space-between" alignItems="center">
-          <div className="flex flex-col w-full">
+      <Modal.Body >
+        <Modal.Header handleClose={handleClose} justifyContent="space-between" alignItems="center">
+          <div className="flex flex-col w-full py-2">
             <span onClick={handleClose} className="stroke-grey-50 cursor-pointer self-end">
               <CloseIcon />
             </span>
-            <span className="text-xlarge ml-3.5">Invite Users</span>
+            <span className="text-xlarge">Invite Users</span>
           </div>
         </Modal.Header>
         <Modal.Content flexDirection="column">
-          <div className="w-[750px] mx-3.5">
+          <div className="w-[750px]">
             <InputField
               placeholder="lebron@james.com"
               value={email}
@@ -58,13 +58,15 @@ const InviteModal = ({ handleClose }) => {
             />
           </div>
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
-          <Button mr={2} variant="primary" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button loading={isLoading} variant="cta" type="submit">
-            Invite
-          </Button>
+        <Modal.Footer>
+          <div className="flex w-full justify-end">
+            <Button mr={2} variant="primary" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button loading={isLoading} onClick={handleSubmit} variant="cta">
+              Invite
+            </Button>
+          </div>
         </Modal.Footer>
       </Modal.Body>
     </Modal>
