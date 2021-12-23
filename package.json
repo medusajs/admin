@@ -14,7 +14,6 @@
     "@popperjs/core": "^2.10.2",
     "@rebass/forms": "^4.0.6",
     "@rebass/preset": "^4.0.5",
-    "@storybook/theming": "^5.3.19",
     "@svgr/webpack": "^5.4.0",
     "axios": "^0.19.2",
     "copy-to-clipboard": "^3.3.1",
@@ -58,17 +57,18 @@
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",
-    "@storybook/addon-actions": "^5.3.19",
-    "@storybook/addon-backgrounds": "^5.3.19",
-    "@storybook/addon-links": "^5.3.19",
-    "@storybook/addons": "^5.3.19",
-    "@storybook/react": "^5.3.19",
+    "@storybook/addon-actions": "^6.4.9",
+    "@storybook/addon-essentials": "^6.4.9",
+    "@storybook/addon-links": "^6.4.9",
+    "@storybook/addon-postcss": "^2.0.0",
+    "@storybook/react": "^6.4.9",
     "autoprefixer": "^10.4.0",
     "babel-loader": "^8.1.0",
     "gatsby-plugin-postcss": "^5.4.0",
     "postcss": "^8.4.5",
     "prettier": "2.0.5",
-    "tailwindcss": "^3.0.6"
+    "storybook-addon-gatsby": "^0.0.3",
+    "tailwindcss": "^3.0.7"
   },
   "scripts": {
     "build": "gatsby build",
@@ -78,7 +78,7 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -p 6006 --no-manager-cache",
     "build-storybook": "build-storybook"
   },
   "repository": {
