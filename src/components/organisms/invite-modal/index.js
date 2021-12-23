@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import React, { useState } from "react"
 import { Box, Flex, Text } from "rebass"
 import { ReactComponent as CloseIcon } from "../../../assets/svg/2.0/20px/x.svg"
-import Modal from "../../modal"
+import Modal from "../../molecules/modal"
 import Button from "../../button"
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
@@ -39,24 +39,17 @@ const InviteModal = ({ handleClose }) => {
   }
 
   return (
-    <Modal onClick={handleClose}>
+    <Modal isLargeModal={true}onClick={handleClose}>
       <Modal.Body >
         <Modal.Header handleClose={handleClose} justifyContent="space-between" alignItems="center">
-          <div className="flex flex-col w-full py-2">
-            <span onClick={handleClose} className="stroke-grey-50 cursor-pointer self-end">
-              <CloseIcon />
-            </span>
-            <span className="text-xlarge">Invite Users</span>
-          </div>
+          <span className="text-large font-semibold">Invite Users</span>
         </Modal.Header>
         <Modal.Content flexDirection="column">
-          <div className="w-[750px]">
             <InputField
               placeholder="lebron@james.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
-          </div>
         </Modal.Content>
         <Modal.Footer>
           <div className="flex w-full justify-end">
