@@ -9,9 +9,6 @@ const NewIndexPage = () => {
         title={"Settings"}
         subtitle={"Manage the settings for your Medusa Store"}
       />
-      <div>
-        <p>Select Region</p>
-      </div>
     </Layout>
   )
 }

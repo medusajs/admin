@@ -1,6 +1,6 @@
 import React from "react"
 
-const PageDescription = ({ title = null, subtitle = null }) => {
+const PageDescription = ({ title, subtitle }) => {
   return (
     <div className="mb-xlarge">
       <h1 className="inter-2xlarge-semibold mb-xsmall">{title}</h1>

@@ -31,7 +31,7 @@ const BellIcon = props => {
 }
 
 BellIcon.defaultProps = {
-  color: "#111827",
+  color: "currentColor",
   size: "24px",
 }
 

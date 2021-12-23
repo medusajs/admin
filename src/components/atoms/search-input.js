@@ -1,15 +1,13 @@
 import React from "react"
 
-const SearchInput = () => {
-  return (
-    <div>
-      <input
-        type="text"
-        placeholder="Search anything..."
-        className="placeholder:inter-base-regular placeholder-grey-40"
-      />
-    </div>
-  )
-}
+const SearchInput = React.forwardRef((props, ref) => (
+  <div>
+    <input
+      ref={ref}
+      className="placeholder:inter-base-regular placeholder-grey-40 focus:outline-none"
+      {...props}
+    />
+  </div>
+))
 
 export default SearchInput

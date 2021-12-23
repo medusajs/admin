@@ -31,7 +31,7 @@ const BellNotiIcon = props => {
 }
 
 BellNotiIcon.defaultProps = {
-  color: "#111827",
+  color: "currentColor",
   size: "24px",
   accentColor: "#F43F5E",
 }

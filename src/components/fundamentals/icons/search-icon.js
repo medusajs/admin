@@ -22,7 +22,7 @@ const SearchIcon = props => {
 }
 
 SearchIcon.defaultProps = {
-  color: "#111827",
+  color: "currentColor",
   size: "24px",
 }
 
