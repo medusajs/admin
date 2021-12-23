@@ -1,6 +1,6 @@
+import { navigate } from "gatsby"
 import PropTypes from "prop-types"
 import React from "react"
-import "./button.css"
 
 /**
  * Primary UI component for user interaction
@@ -9,8 +9,11 @@ export const Button = ({ primary, backgroundColor, size, label, ...props }) => {
   return (
     <button
       type="button"
-      className="bg-indigo-60 text-grey-0 rounded-circle px-large py-base"
+      className="bg-violet-60 text-grey-0 rounded-base py-small px-large inter-base-semibold"
       {...props}
+      onClick={() => {
+        navigate("/")
+      }}
     >
       {label}
     </button>
