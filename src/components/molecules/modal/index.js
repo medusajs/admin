@@ -15,8 +15,8 @@ const Content = ({children, ...rest}) => {
 }
 
 const addProp = (children, prop) => {
-  return !Array.isArray(children) ? React.cloneElement(children, {...prop}) : 
-    children.map(child => React.cloneElement(child, {...prop}))
+  return !Array.isArray(children) ? React.cloneElement(children, prop) : 
+    children.map(child => React.cloneElement(child, prop))
 }
 
 const Modal = ({children, onClick, isLargeModal, ...rest}) => {
@@ -26,7 +26,7 @@ const Modal = ({children, onClick, isLargeModal, ...rest}) => {
       <Dialog.Portal>
         <Overlay>
           <Content>
-            {addProp(children, {largeModal})}
+            {addProp(children, largeModal)}
           </Content> 
         </Overlay>
       </Dialog.Portal>
@@ -36,13 +36,13 @@ const Modal = ({children, onClick, isLargeModal, ...rest}) => {
 Modal.Body =  ({ children, largeModal = true, ...rest }) => {
   return (
     <div className='inter-base-regular' onClick={e => e.stopPropagation()}>
-      {addProp(children, {largeModal})}
+      {addProp(children, largeModal)}
     </div>
   )
 }
 
 Modal.Content = ({ children, largeModal = true, ...rest }) => {
- return (<div className={`px-7 pt-5 ${largeModal ? "w-[750px] pb-7" : "pb-5"}`}> {addProp(children, {largeModal})}</div>)
+ return (<div className={`px-7 pt-5 ${largeModal ? "w-[750px] pb-7" : "pb-5"}`}> {addProp(children, largeModal)}</div>)
 }
 
 Modal.Header = ({ children, largeModal = true, handleClose, showCloseIcon = true,...rest }) => {
@@ -53,7 +53,7 @@ Modal.Header = ({ children, largeModal = true, handleClose, showCloseIcon = true
           <CloseIcon />
         </span>)}
       </div>
-      {addProp(children, {largeModal})}
+      {addProp(children, largeModal)}
     </div>
   )
 }
@@ -61,7 +61,7 @@ Modal.Header = ({ children, largeModal = true, handleClose, showCloseIcon = true
 Modal.Footer = ({ children, largeModal = true, ...rest }) => {
   return (
     <div onClick={e => e.stopPropagation()} className={`px-7  pb-5 flex w-full ${largeModal ? "border-t border-grey-20 pt-3.5": ""}`}>
-      {addProp(children, {largeModal})}
+      {addProp(children, largeModal)}
     </div>
   )
 }
