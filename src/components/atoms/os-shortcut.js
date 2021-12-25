@@ -2,7 +2,11 @@ import PropTypes from "prop-types"
 import React from "react"
 
 const OSShortcut = ({ winModifiers, macModifiers, keys }) => {
-  const isMac = navigator?.platform?.toUpperCase().indexOf("MAC") >= 0 ?? true
+  const isMac =
+    typeof window !== "undefined" &&
+    navigator?.platform?.toUpperCase().indexOf("MAC") >= 0
+      ? true
+      : false
 
   let modifiers
 
