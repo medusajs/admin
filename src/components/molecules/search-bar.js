@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { InterfaceContext } from "../../context/interface"
 import OSShortcut from "../atoms/os-shortcut"
-import SearchInput from "../atoms/search-input"
+import TextInput from "../atoms/text-input"
 import SearchIcon from "../fundamentals/icons/search-icon"
 
 const SearchBar = () => {
@@ -57,9 +57,9 @@ const SearchBar = () => {
     <div className="flex items-cente">
       <SearchIcon className="text-grey-40" />
       <div className="mr-xsmall ml-base">
-        <OSShortcut />
+        <OSShortcut macModifiers="⌘" winModifiers="Ctrl" keys="K" />
       </div>
-      <SearchInput
+      <TextInput
         value={query}
         onKeyDown={onKeyDown}
         onChange={handleChange}

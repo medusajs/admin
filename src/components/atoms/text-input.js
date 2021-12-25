@@ -1,6 +1,6 @@
 import React from "react"
 
-const SearchInput = React.forwardRef((props, ref) => (
+const TextInput = React.forwardRef((props, ref) => (
   <div>
     <input
       ref={ref}
@@ -10,4 +10,4 @@ const SearchInput = React.forwardRef((props, ref) => (
   </div>
 ))
 
-export default SearchInput
+export default TextInput

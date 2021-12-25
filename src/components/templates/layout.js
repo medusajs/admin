@@ -1,6 +1,6 @@
 import React from "react"
-import Sidebar from "../molecules/sidebar"
-import Topbar from "../molecules/topbar"
+import Sidebar from "../organisms/sidebar"
+import Topbar from "../organisms/topbar"
 
 const Layout = ({ children }) => {
   return (
@@ -8,7 +8,7 @@ const Layout = ({ children }) => {
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-y-scroll">
         <Topbar />
-        <main className="py-xlarge pl-xlarge pr-xlarge lg:pl-[200px]">
+        <main className="my-xlarge xsmall:mx-base small:mx-xlarge medium:mx-4xlarge large:mx-auto large:max-w-7xl">
           {children}
         </main>
       </div>

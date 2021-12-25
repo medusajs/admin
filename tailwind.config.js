@@ -219,6 +219,12 @@ module.exports = {
         ],
         mono: ["Roboto Mono", "Menlo", "monospace"],
       },
+      screens: {
+        xsmall: "0px",
+        small: "769px",
+        medium: "1025px",
+        large: "1464px",
+      },
     },
   },
   plugins: [],
