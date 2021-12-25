@@ -225,6 +225,9 @@ module.exports = {
         medium: "1025px",
         large: "1464px",
       },
+      gridAutoColumns: {
+        "2fr": "minmax(0, 2fr)",
+      },
     },
   },
   plugins: [],
