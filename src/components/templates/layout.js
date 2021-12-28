@@ -4,7 +4,7 @@ import Topbar from "../organisms/topbar"
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex w-full h-screen inter-base-regular">
+    <div className="flex w-full h-screen inter-base-regular text-grey-90">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-y-scroll">
         <Topbar />
