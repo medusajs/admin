@@ -71,9 +71,7 @@ const SettingsIndex = () => {
       />
       <SettingsCard
         heading={"hello@medusajs.com"}
-        description={
-          "Can’t find the answers you’re looking for? Drop us a quick email"
-        }
+        description={"Can’t find the answers you’re looking for?"}
         icon={<MailIcon />}
         externalLink={"mailto: hello@medusajs.com"}
       />
