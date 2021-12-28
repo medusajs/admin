@@ -15,16 +15,16 @@ const SettingsCard = ({
   }
 
   return (
-    <button
-      className="group bg-grey-0 rounded-rounded p-large border border-grey-20"
-      disabled={disabled}
-      onClick={() => {
-        if (externalLink) {
-          window.location.href = externalLink
-        }
-      }}
-    >
-      <Link className="flex items-center" to={to}>
+    <Link to={to}>
+      <button
+        className="flex items-center group bg-grey-0 rounded-rounded p-large border border-grey-20"
+        disabled={disabled}
+        onClick={() => {
+          if (externalLink) {
+            window.location.href = externalLink
+          }
+        }}
+      >
         <div className="h-2xlarge w-2xlarge bg-violet-20 rounded-circle flex justify-center items-center text-violet-60 group-disabled:bg-grey-10 group-disabled:text-grey-40">
           {icon}
         </div>
@@ -39,8 +39,8 @@ const SettingsCard = ({
         <div className="text-grey-40 group-disabled:text-grey-30">
           <ChevronRightIcon />
         </div>
-      </Link>
-    </button>
+      </button>
+    </Link>
   )
 }
 
