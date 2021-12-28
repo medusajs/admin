@@ -1,7 +1,6 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    screens: {},
     extend: {
       colors: {
         grey: {
@@ -174,6 +173,18 @@ module.exports = {
         "5xlarge": "4rem",
         "6xlarge": "6rem",
       },
+      minWidth: {
+        sidebar: "240px",
+      },
+      maxWidth: {
+        sidebar: "240px",
+      },
+      minHeight: {
+        topbar: "56px",
+      },
+      maxHeight: {
+        topbar: "56px",
+      },
       lineHeight: {
         xsmall: "1rem",
         small: "1.25rem",
@@ -207,6 +218,12 @@ module.exports = {
           "sans-serif",
         ],
         mono: ["Roboto Mono", "Menlo", "monospace"],
+      },
+      screens: {
+        xsmall: "0px",
+        small: "769px",
+        medium: "1025px",
+        large: "1464px",
       },
     },
   },
