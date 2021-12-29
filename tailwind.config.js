@@ -225,6 +225,9 @@ module.exports = {
         medium: "1025px",
         large: "1464px",
       },
+      boxShadow: {
+        cta: "0px 0px 0px 4px rgba(124, 58, 237, 0.1)",
+      },
     },
   },
   plugins: [],

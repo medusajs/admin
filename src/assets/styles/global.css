@@ -161,6 +161,36 @@
   }
 }
 
+@layer components {
+  .btn-primary-large {
+    @apply bg-violet-60 text-grey-0 inter-base-semibold rounded-base px-large py-small hover:bg-violet-50 active:bg-violet-70 focus:outline-none focus:shadow-cta disabled:bg-grey-20 disabled:text-grey-40;
+  }
+  .btn-primary-medium {
+    @apply bg-violet-60 text-grey-0 inter-base-semibold rounded-base px-base py-xsmall hover:bg-violet-50 active:bg-violet-70 focus:outline-none focus:shadow-cta disabled:bg-grey-20 disabled:text-grey-40;
+  }
+  .btn-primary-small {
+    @apply bg-violet-60 text-grey-0 inter-small-semibold rounded-base px-small py-[6px] hover:bg-violet-50 active:bg-violet-70 focus:outline-none focus:shadow-cta disabled:bg-grey-20 disabled:text-grey-40;
+  }
+  .btn-secondary-large {
+    @apply bg-grey-0 text-grey-90 inter-base-semibold rounded-base px-large py-small border border-grey-20 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-grey-0 disabled:text-grey-30;
+  }
+  .btn-secondary-medium {
+    @apply bg-grey-0 text-grey-90 inter-base-semibold rounded-base px-base py-xsmall border border-grey-20 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-grey-0 disabled:text-grey-30;
+  }
+  .btn-secondary-small {
+    @apply bg-grey-0 text-grey-90 inter-small-semibold rounded-base px-small py-[6px] border border-grey-20 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-grey-0 disabled:text-grey-30;
+  }
+  .btn-ghost-large {
+    @apply bg-transparent text-grey-90 inter-base-semibold rounded-base px-large py-small hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-transparent disabled:text-grey-30;
+  }
+  .btn-ghost-medium {
+    @apply bg-transparent text-grey-90 inter-base-semibold rounded-base px-base py-xsmall hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-transparent disabled:text-grey-30;
+  }
+  .btn-ghost-small {
+    @apply bg-transparent text-grey-90 inter-small-semibold rounded-base px-small py-[6px] hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-transparent disabled:text-grey-30;
+  }
+}
+
 @tailwind utilities;
 
 @layer utilities {
