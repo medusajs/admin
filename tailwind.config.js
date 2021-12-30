@@ -227,6 +227,7 @@ module.exports = {
       },
       boxShadow: {
         cta: "0px 0px 0px 4px rgba(124, 58, 237, 0.1)",
+        dropdown: "0px 2px 16px rgba(0, 0, 0, 0.08);",
       },
     },
   },
