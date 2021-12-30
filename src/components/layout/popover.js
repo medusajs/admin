@@ -70,7 +70,7 @@ const Popover = ({ children, id }) => {
 
   return (
     <Tooltip
-      border="true"
+      border={true}
       ref={ref}
       textColor="black"
       backgroundColor="white"
