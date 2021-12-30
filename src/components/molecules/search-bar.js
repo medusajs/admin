@@ -54,7 +54,7 @@ const SearchBar = () => {
   useHotkeys("ctrl+k", hotKeyFocus, {}, [searchRef])
 
   return (
-    <div className="flex items-cente">
+    <div className="flex items-center">
       <SearchIcon className="text-grey-40" />
       <div className="mr-xsmall ml-base">
         <OSShortcut macModifiers="⌘" winModifiers="Ctrl" keys="K" />

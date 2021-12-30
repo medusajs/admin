@@ -6,11 +6,13 @@ const Layout = ({ children }) => {
   return (
     <div className="flex w-full h-screen inter-base-regular text-grey-90">
       <Sidebar />
-      <div className="flex flex-col flex-1 overflow-y-scroll">
+      <div className="flex flex-col flex-1">
         <Topbar />
-        <main className="my-xlarge xsmall:mx-base small:mx-xlarge medium:mx-4xlarge large:mx-auto large:max-w-7xl large:w-full">
-          {children}
-        </main>
+        <div className="large:px-xlarge bg-grey-5 min-h-content overflow-y-scroll">
+          <main className="my-xlarge xsmall:mx-base small:mx-xlarge medium:mx-4xlarge large:mx-auto large:max-w-7xl large:w-full">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   )

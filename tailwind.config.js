@@ -181,6 +181,7 @@ module.exports = {
       },
       minHeight: {
         topbar: "56px",
+        content: "calc(100vh - 56px)",
       },
       maxHeight: {
         topbar: "56px",
