@@ -293,7 +293,9 @@ const PaymentDetails = ({ order }) => {
   }
 
   if (order?.swaps?.length) {
-    swapAmount = _.sum(order.swaps.map(el => el.difference_due))
+    swapAmount = _.sum(order.swaps
+                    .filter(el => el.canceled_at === null)
+                    .map(el => el.difference_due))
   }
 
   return (
