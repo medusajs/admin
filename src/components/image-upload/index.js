@@ -90,7 +90,7 @@ const ImageUpload = ({
     const transfer = e.dataTransfer
     const files = transfer.files
 
-    handleUnhighlight()
+    handleUnhighlight(e)
   }
 
   return (
