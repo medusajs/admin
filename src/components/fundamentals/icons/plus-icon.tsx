@@ -1,12 +1,10 @@
 import React from "react"
+import IIconProps from "./icon-interface"
 
-interface IPlusIconProps {
-  size: string | number
-  color?: string
-}
-
-const PlusIcon = props => {
-  const { size = "24", color = "currentColor" }: IPlusIconProps = props
+const PlusIcon: React.FC<IIconProps> = ({
+  size = "24",
+  color = "currentColor",
+}) => {
   return (
     <svg
       width={size}

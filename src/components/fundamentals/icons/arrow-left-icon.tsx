@@ -1,12 +1,10 @@
 import React from "react"
+import IIconProps from "./icon-interface"
 
-interface IArrowLeftIconProps {
-  size: string | number
-  color?: string
-}
-
-const ArrowLeftIcon = props => {
-  const { size = "24px", color = "currentColor" }: IArrowLeftIconProps = props
+const ArrowLeftIcon: React.FC<IIconProps> = ({
+  size = "24px",
+  color = "currentColor",
+}) => {
   return (
     <svg
       width={size}

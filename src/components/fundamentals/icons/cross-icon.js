@@ -1,6 +1,11 @@
 import PropTypes from "prop-types"
 import React from "react"
 
+interface IArrowLeftIconProps {
+  size: string | number
+  color?: string
+}
+
 const CrossIcon = props => {
   const { size, color, ...rest } = props
   return (
