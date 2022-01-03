@@ -5,7 +5,7 @@ import OSShortcut from "../atoms/os-shortcut"
 import TextInput from "../atoms/text-input"
 import SearchIcon from "../fundamentals/icons/search-icon"
 
-const SearchBar = () => {
+const SearchBar: React.FC = () => {
   const { onSearch, display } = useContext(InterfaceContext)
   const [query, setQuery] = useState("")
   const [focusing, setFocusing] = useState(false)
