@@ -1,16 +1,17 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./icon-interface"
 
-const BellIcon = props => {
-  const { size, color, ...rest } = props
+const BellIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+}) => {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox={`0 0 ${size} ${size}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
     >
       <path
         d="M14 20C13.7968 20.3042 13.505 20.5566 13.154 20.7321C12.803 20.9076 12.4051 21 12 21C11.5949 21 11.197 20.9076 10.846 20.7321C10.495 20.5566 10.2032 20.3042 10 20"
@@ -28,16 +29,6 @@ const BellIcon = props => {
       />
     </svg>
   )
-}
-
-BellIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-}
-
-BellIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default BellIcon

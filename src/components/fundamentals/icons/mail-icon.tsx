@@ -1,16 +1,17 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./icon-interface"
 
-const MailIcon = props => {
-  const { size, color, ...rest } = props
+const MailIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+}) => {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox={`0 0 ${size} ${size}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
     >
       <path
         d="M4.8 5H19.2C20.19 5 21 5.7875 21 6.75V17.25C21 18.2125 20.19 19 19.2 19H4.8C3.81 19 3 18.2125 3 17.25V6.75C3 5.7875 3.81 5 4.8 5Z"
@@ -28,16 +29,6 @@ const MailIcon = props => {
       />
     </svg>
   )
-}
-
-MailIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-}
-
-MailIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default MailIcon

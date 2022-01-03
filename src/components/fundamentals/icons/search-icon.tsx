@@ -1,16 +1,17 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./icon-interface"
 
-const SearchIcon = props => {
-  const { size, color, ...rest } = props
+const SearchIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+}) => {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox={`0 0 ${size} ${size}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
     >
       <title>Search</title>
       <path
@@ -19,16 +20,6 @@ const SearchIcon = props => {
       />
     </svg>
   )
-}
-
-SearchIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-}
-
-SearchIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default SearchIcon

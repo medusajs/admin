@@ -1,16 +1,17 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./icon-interface"
 
-const ChevronRightIcon = props => {
-  const { size, color, ...rest } = props
+const ChevronRightIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+}) => {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox={`0 0 ${size} ${size}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
     >
       <path
         d="M17 18L23 12L17 6"
@@ -21,16 +22,6 @@ const ChevronRightIcon = props => {
       />
     </svg>
   )
-}
-
-ChevronRightIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-}
-
-ChevronRightIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default ChevronRightIcon
