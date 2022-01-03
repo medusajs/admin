@@ -1,7 +1,7 @@
 import React from "react"
-import IconProps from "./icon-interface"
+import IIconProps from "./icon-interface"
 
-const CoinsIcon: React.FC<IconProps> = ({
+const CoinsIcon: React.FC<IIconProps> = ({
   size = "24px",
   color = "currentColor",
 }) => {

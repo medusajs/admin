@@ -1,7 +1,7 @@
 import React from "react"
-import IconProps from "./icon-interface"
+import IIconProps from "./icon-interface"
 
-const CrosshairIcon: React.FC<IconProps> = ({
+const CrosshairIcon: React.FC<IIconProps> = ({
   size = "24px",
   color = "currentColor",
 }) => {

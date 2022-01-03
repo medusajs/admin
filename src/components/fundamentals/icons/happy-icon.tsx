@@ -1,7 +1,7 @@
 import React from "react"
-import IconProps from "./icon-interface"
+import IIconProps from "./icon-interface"
 
-const HappyIcon: React.FC<IconProps> = ({
+const HappyIcon: React.FC<IIconProps> = ({
   size = "24px",
   color = "currentColor",
 }) => {

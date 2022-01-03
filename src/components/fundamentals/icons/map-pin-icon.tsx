@@ -1,7 +1,7 @@
 import React from "react"
-import IconProps from "./icon-interface"
+import IIconProps from "./icon-interface"
 
-const MapPinIcon: React.FC<IconProps> = ({
+const MapPinIcon: React.FC<IIconProps> = ({
   size = "24px",
   color = "currentColor",
 }) => {
