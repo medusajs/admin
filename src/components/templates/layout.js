@@ -8,8 +8,8 @@ const Layout = ({ children }) => {
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Topbar />
-        <div className="large:px-xlarge bg-grey-5 min-h-content overflow-y-scroll">
-          <main className="my-xlarge xsmall:mx-base small:mx-xlarge medium:mx-4xlarge large:mx-auto large:max-w-7xl large:w-full">
+        <div className="large:px-xlarge py-xlarge bg-grey-5 min-h-content overflow-y-scroll">
+          <main className="xsmall:mx-base small:mx-xlarge medium:mx-4xlarge large:mx-auto large:max-w-7xl large:w-full h-full">
             {children}
           </main>
         </div>

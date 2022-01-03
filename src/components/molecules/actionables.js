@@ -1,13 +1,18 @@
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "../atoms/dropdown"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import PropTypes from "prop-types"
 import React from "react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../atoms/dropdown"
 import MoreHorizontalIcon from "../fundamentals/icons/more-horizontal-icon"
 
+/**
+ * A component that accepts multiple actionables and renders them as a dropdown menu.
+ * If only a single actionable is provided, it will render a button instead.
+ */
 const Actionables = ({ actions }) => {
   if (typeof actions === "undefined" || actions.length === 0) {
     return null
@@ -15,20 +20,20 @@ const Actionables = ({ actions }) => {
 
   return actions.length > 1 ? (
     <div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
           <button className="btn-ghost-medium">
             <MoreHorizontalIcon />
           </button>
-        </DropdownMenuTrigger>
+        </DropdownMenu.Trigger>
 
-        <DropdownMenuContent
+        <DropdownMenu.Content
           sideOffset={5}
           className="border bg-grey-0 border-grey-20 rounded-rounded shadow-dropdown p-xsmall min-w-[200px] z-30"
         >
           {actions.map((action, i) => {
             return (
-              <DropdownMenuItem key={i}>
+              <DropdownMenu.Item key={i}>
                 {
                   <button
                     className={`btn-ghost-small w-full ${
@@ -42,14 +47,14 @@ const Actionables = ({ actions }) => {
                     {action.text}
                   </button>
                 }
-              </DropdownMenuItem>
+              </DropdownMenu.Item>
             )
           })}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
     </div>
   ) : (
-    <button className="btn-ghost-small" onClick={action.onClick}>
+    <button className="btn-ghost-small" onClick={actions[0].onClick}>
       {actions[0].icon && <span className="mr-xsmall">{actions[0].icon}</span>}
       {actions[0].text}
     </button>
