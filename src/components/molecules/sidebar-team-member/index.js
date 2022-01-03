@@ -19,8 +19,12 @@ const SidebarTeamMember = ({ color = 'bg-violet-40', user, profilePicture = unde
 
   return (
     <div className="flex items-center bg-grey-0 px-2.5 py-1.5">
-      {avatar}
-      <span className="ml-2.5">{fullName}</span>
+      <div className='w-5 h-5'>
+        {avatar}
+      </div>
+      <span className="pl-2.5 truncate">
+        {fullName}
+      </span>
     </div>
   )
 }
