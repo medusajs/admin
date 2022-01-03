@@ -1,6 +1,5 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { ReactComponent as CloseIcon } from "../../../assets/svg/2.0/20px/x.svg"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import * as Dialog from "@radix-ui/react-dialog"
 
