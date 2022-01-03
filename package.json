@@ -57,6 +57,7 @@
     "@babel/core": "^7.10.2",
     "@storybook/addon-actions": "^5.3.19",
     "@storybook/react": "^5.3.19",
+    "autoprefixer": "^10.4.1",
     "babel-loader": "^8.1.0",
     "gatsby-plugin-postcss": "^5.4.0",
     "postcss": "^8.4.5",
