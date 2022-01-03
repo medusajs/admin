@@ -1,7 +1,4 @@
-import styled from "@emotion/styled"
 import React, { useState } from "react"
-import { Box, Flex, Text } from "rebass"
-import { ReactComponent as CloseIcon } from "../../../assets/svg/2.0/20px/x.svg"
 import Modal from "../../molecules/modal"
 import Button from "../../button"
 import Medusa from "../../../services/api"
@@ -39,12 +36,12 @@ const InviteModal = ({ handleClose }) => {
   }
 
   return (
-    <Modal isLargeModal={true}onClick={handleClose}>
+    <Modal handleClose={handleClose}>
       <Modal.Body >
-        <Modal.Header handleClose={handleClose} justifyContent="space-between" alignItems="center">
+        <Modal.Header handleClose={handleClose}>
           <span className="text-large font-semibold">Invite Users</span>
         </Modal.Header>
-        <Modal.Content flexDirection="column">
+        <Modal.Content>
             <InputField
               placeholder="lebron@james.com"
               value={email}
