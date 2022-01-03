@@ -2,7 +2,7 @@ import React from "react"
 import IconProps from "./icon-interface"
 
 const PlusIcon: React.FC<IconProps> = ({
-  size = "24",
+  size = "24px",
   color = "currentColor",
   attributes,
 }) => {
@@ -10,7 +10,7 @@ const PlusIcon: React.FC<IconProps> = ({
     <svg
       width={size}
       height={size}
-      viewBox="0 0 20 20"
+      viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...attributes}
