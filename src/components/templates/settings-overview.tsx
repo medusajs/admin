@@ -1,7 +1,7 @@
 import React from "react"
 import PageDescription from "../atoms/page-description"
 
-const SettingsOverview = ({ children }) => {
+const SettingsOverview: React.FC = ({ children }) => {
   return (
     <div>
       <PageDescription

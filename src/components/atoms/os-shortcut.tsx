@@ -1,14 +1,19 @@
-import PropTypes from "prop-types"
 import React from "react"
 
-const OSShortcut = ({ winModifiers, macModifiers, keys }) => {
+type OSShortcutProps = {
+  winModifiers: string | string[]
+  macModifiers: string | string[]
+  keys: string[] | string
+}
+
+const OSShortcut = ({ winModifiers, macModifiers, keys }: OSShortcutProps) => {
   const isMac =
     typeof window !== "undefined" &&
     navigator?.platform?.toUpperCase().indexOf("MAC") >= 0
       ? true
       : false
 
-  let modifiers
+  let modifiers: string
 
   if (isMac) {
     if (Array.isArray(macModifiers)) {
@@ -24,7 +29,7 @@ const OSShortcut = ({ winModifiers, macModifiers, keys }) => {
     }
   }
 
-  let input
+  let input: string
 
   if (Array.isArray(keys)) {
     input = keys.join(" + ")
@@ -40,21 +45,6 @@ const OSShortcut = ({ winModifiers, macModifiers, keys }) => {
       </p>
     </div>
   )
-}
-
-OSShortcut.propTypes = {
-  winModifiers: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]).isRequired,
-  macModifiers: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]).isRequired,
-  keys: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]).isRequired,
 }
 
 export default OSShortcut
