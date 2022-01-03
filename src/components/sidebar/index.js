@@ -54,10 +54,10 @@ const Sidebar = ({}) => {
   triggerHandler.id = 0
 
   return (
-    <div className="bg-grey-0 px-3.5 max-w-[240px] inter-base-regular">
+    <div className="bg-grey-0 max-w-[240px] h-full">
       <SidebarCompanyLogo imageUrl={"https://img.icons8.com/ios/50/000000/online-shopping.png"} StoreName={storeName || "Medusa Store"} />
 
-      <div className="background-pink-5 border-b pb-3.5 border-grey-20">
+      <div className="border-b pb-3.5 border-grey-20">
         <SidebarMenuItem pageLink={'/a/orders'} icon={<Orders />} triggerHandler={triggerHandler} text={'Orders'} subItems={ordersChildren} />
         <SidebarMenuItem pageLink={'/a/products'} icon={<Products />} text={'Products'} triggerHandler={triggerHandler} subItems={productsChildren}/>
         <SidebarMenuItem pageLink={'/a/customers'} icon={<Customer />} triggerHandler={triggerHandler} text={'Customers'} />
