@@ -1,7 +1,7 @@
 import React from "react"
-import IconProps from "./icon-interface"
+import IIconProps from "./icon-interface"
 
-const GearIcon: React.FC<IconProps> = ({
+const GearIcon: React.FC<IIconProps> = ({
   size = "24px",
   color = "currentColor",
 }) => {

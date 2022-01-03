@@ -1,7 +1,7 @@
 import React from "react"
-import IconProps from "./icon-interface"
+import IIconProps from "./icon-interface"
 
-const CrossIcon: React.FC<IconProps> = ({
+const CrossIcon: React.FC<IIconProps> = ({
   size = "24px",
   color = "currentColor",
 }) => {

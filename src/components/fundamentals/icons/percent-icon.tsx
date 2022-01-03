@@ -1,7 +1,7 @@
 import React from "react"
-import IconProps from "./icon-interface"
+import IIconProps from "./icon-interface"
 
-const PercentIcon: React.FC<IconProps> = ({
+const PercentIcon: React.FC<IIconProps> = ({
   size = "24px",
   color = "currentColor",
 }) => {
