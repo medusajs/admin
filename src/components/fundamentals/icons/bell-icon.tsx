@@ -4,6 +4,7 @@ import IconProps from "./icon-interface"
 const BellIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
+  attributes,
 }) => {
   return (
     <svg
@@ -12,6 +13,7 @@ const BellIcon: React.FC<IconProps> = ({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      {...attributes}
     >
       <path
         d="M14 20C13.7968 20.3042 13.505 20.5566 13.154 20.7321C12.803 20.9076 12.4051 21 12 21C11.5949 21 11.197 20.9076 10.846 20.7321C10.495 20.5566 10.2032 20.3042 10 20"

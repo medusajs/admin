@@ -4,6 +4,7 @@ import IconProps from "./icon-interface"
 const TruckIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
+  attributes,
 }) => {
   return (
     <svg
@@ -12,6 +13,7 @@ const TruckIcon: React.FC<IconProps> = ({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      {...attributes}
     >
       <path
         d="M10.2 16H13.8M13.8 16V5H3V16H5M13.8 16V8.66667H18.3L19.947 10.3442C20.2812 10.6849 20.5462 11.0894 20.7269 11.5346C20.9076 11.9797 21.0004 12.4567 21 12.9383V16H19.2"

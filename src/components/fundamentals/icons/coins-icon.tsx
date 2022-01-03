@@ -4,6 +4,7 @@ import IconProps from "./icon-interface"
 const CoinsIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
+  attributes,
 }) => {
   return (
     <svg
@@ -12,6 +13,7 @@ const CoinsIcon: React.FC<IconProps> = ({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      {...attributes}
     >
       <path
         d="M8.39844 13.2534C11.1599 13.2534 13.3984 11.0148 13.3984 8.25336C13.3984 5.49193 11.1599 3.25336 8.39844 3.25336C5.63701 3.25336 3.39844 5.49193 3.39844 8.25336C3.39844 11.0148 5.63701 13.2534 8.39844 13.2534Z"

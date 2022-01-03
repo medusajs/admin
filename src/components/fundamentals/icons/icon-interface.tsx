@@ -1,4 +1,5 @@
 export default interface IconProps {
-  size?: string | number
   color?: string
+  size?: string | number
+  attributes?: React.SVGAttributes<SVGElement>
 }
