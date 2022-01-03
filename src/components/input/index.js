@@ -1,19 +1,9 @@
 import styled from "@emotion/styled"
 import { Input, Label } from "@rebass/forms"
-import React from "react"
+import React, { useImperativeHandle, useRef } from "react"
 import { Flex, Text } from "rebass"
 import InfoTooltip from "../info-tooltip"
 import Typography from "../typography"
-
-const StyledInput = styled(Input)`
-  ${Typography.Base}
-  ${props =>
-    props.inline &&
-    `
-  max-width: 350px;
-  flex: 50% 0 0;
-  `}
-`
 
 export const StyledLabel = styled.div`
   ${Typography.Base}
@@ -68,15 +58,23 @@ const InputField = React.forwardRef(
       withTooltip = false,
       tooltipText,
       tooltipProps = {},
+      start,
       ...props
     },
     ref
   ) => {
+    const inputRef = useRef()
+
+    useImperativeHandle(ref, () => ({
+      focus: () => {
+        inputRef?.current?.focus()
+      },
+    }))
+
     return (
-      <Flex
-        alignItems={inline && "center"}
-        flexDirection={inline ? "row" : "column"}
-        width={props.width}
+      <div
+        className="bg-grey-20 border focus-within:border-voilet-60 rounded-base cursor-text"
+        onClick={() => inputRef.current?.focus()}
         {...props}
       >
         {label && (
@@ -84,7 +82,7 @@ const InputField = React.forwardRef(
             flex={"30% 0 0"}
             htmlFor={name}
             alignItems="center"
-            display={props.start ? "flex" : inline && "inline !important"}
+            display={start ? "flex" : inline && "inline !important"}
           >
             <StyledLabel
               required={required}
@@ -103,18 +101,15 @@ const InputField = React.forwardRef(
             ) : null}
           </Label>
         )}
-        <StyledInput
-          ref={ref}
+        <input
+          className="bg-inherit outline-0 w-full caret-violet-60"
+          ref={inputRef}
           defaultValue={defaultValue}
           autoComplete="off"
-          inline={inline}
-          textAlign={textAlign || "left"}
-          variant={invalid ? "invalidInput" : "input"}
           name={name}
           type={type}
           min={min}
           max={max}
-          sx={inputStyle}
           value={value}
           step={step || "1"}
           placeholder={placeholder ? placeholder : "Placeholder"}
@@ -123,11 +118,11 @@ const InputField = React.forwardRef(
           disabled={disabled}
         />
         {deletable && (
-          <Text ml={2} onClick={onDelete} sx={{ cursor: "pointer" }}>
+          <span onClick={onDelete} className="cursor-pointer ml-2">
             &times;
-          </Text>
+          </span>
         )}
-      </Flex>
+      </div>
     )
   }
 )
