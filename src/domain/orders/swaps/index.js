@@ -135,7 +135,7 @@ const SwapIndex = ({}) => {
             <Spinner dark />
           </Box>
         </Flex>
-      ) : !swaps.length ? (
+      ) : !swaps?.length ? (
         <Flex alignItems="center" justifyContent="center" mt="10%">
           <Text height="75px" fontSize="16px">
             No swaps found
