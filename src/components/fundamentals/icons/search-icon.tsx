@@ -1,7 +1,7 @@
 import React from "react"
-import IIconProps from "./icon-interface"
+import IconProps from "./icon-interface"
 
-const SearchIcon: React.FC<IIconProps> = ({
+const SearchIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
 }) => {

@@ -1,7 +1,7 @@
 import React from "react"
-import IIconProps from "./icon-interface"
+import IconProps from "./icon-interface"
 
-interface IBellNotiIconProps extends IIconProps {
+interface IBellNotiIconProps extends IconProps {
   accentColor?: string
 }
 const BellNotiIcon: React.FC<IBellNotiIconProps> = ({
