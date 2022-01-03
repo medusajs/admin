@@ -1,4 +1,4 @@
-export default interface IIconProps {
-  size: string | number
+export default interface IconProps {
+  size?: string | number
   color?: string
 }

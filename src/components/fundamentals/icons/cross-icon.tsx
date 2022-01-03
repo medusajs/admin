@@ -1,8 +1,10 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./icon-interface"
 
-const CrossIcon = props => {
-  const { size, color, ...rest } = props
+const CrossIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+}) => {
   return (
     <svg
       width={size}
@@ -27,16 +29,6 @@ const CrossIcon = props => {
       />
     </svg>
   )
-}
-
-CrossIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-}
-
-CrossIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default CrossIcon
