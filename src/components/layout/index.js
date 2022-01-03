@@ -2,7 +2,7 @@ import React from "react"
 import { useStaticQuery, graphql } from "gatsby"
 import PropTypes from "prop-types"
 
-import Sidebar from "../sidebar"
+import Sidebar from "../organisms/sidebar"
 import TopBar from "./topbar"
 
 import { Container, Main, Content, Body } from "./elements"
