@@ -4,6 +4,7 @@ import IconProps from "./icon-interface"
 const GiftIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
+  attributes,
 }) => {
   return (
     <svg
@@ -12,6 +13,7 @@ const GiftIcon: React.FC<IconProps> = ({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      {...attributes}
     >
       <path
         d="M19 11.5V19.5H5V11.5"

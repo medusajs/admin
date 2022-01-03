@@ -4,6 +4,7 @@ import IconProps from "./icon-interface"
 const ArrowLeftIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
+  attributes,
 }) => {
   return (
     <svg
@@ -12,6 +13,7 @@ const ArrowLeftIcon: React.FC<IconProps> = ({
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      {...attributes}
     >
       <path
         d="M12.667 8H3.33366"

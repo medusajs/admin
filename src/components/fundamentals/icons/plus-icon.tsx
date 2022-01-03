@@ -4,6 +4,7 @@ import IconProps from "./icon-interface"
 const PlusIcon: React.FC<IconProps> = ({
   size = "24",
   color = "currentColor",
+  attributes,
 }) => {
   return (
     <svg
@@ -12,6 +13,7 @@ const PlusIcon: React.FC<IconProps> = ({
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      {...attributes}
     >
       <path
         d="M8 3.33331V12.6666"
