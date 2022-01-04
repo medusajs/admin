@@ -1,8 +1,16 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./types/icon-type"
 
-const BellNotiIcon = props => {
-  const { size, color, accentColor, ...rest } = props
+type IBellNotiIconProps = IconProps & {
+  accentColor?: string
+}
+
+const BellNotiIcon: React.FC<IBellNotiIconProps> = ({
+  size = "24px",
+  color = "currentColor",
+  accentColor = "#F43F5E",
+  attributes,
+}) => {
   return (
     <svg
       width={size}
@@ -10,7 +18,7 @@ const BellNotiIcon = props => {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
+      {...attributes}
     >
       <path
         d="M14 20C13.7968 20.3042 13.505 20.5566 13.154 20.7321C12.803 20.9076 12.4051 21 12 21C11.5949 21 11.197 20.9076 10.846 20.7321C10.495 20.5566 10.2032 20.3042 10 20"
@@ -28,17 +36,6 @@ const BellNotiIcon = props => {
       <circle cx="17" cy="7" r="3" fill={accentColor} />
     </svg>
   )
-}
-
-BellNotiIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-  accentColor: "#F43F5E",
-}
-
-BellNotiIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default BellNotiIcon

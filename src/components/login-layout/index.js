@@ -1,11 +1,8 @@
-import React from "react"
-import { Text, Flex } from "rebass"
-import { useStaticQuery, graphql } from "gatsby"
+import { graphql, useStaticQuery } from "gatsby"
 import PropTypes from "prop-types"
-
-import { Container, Main, Content, Body } from "./elements"
-
-import "./layout.css"
+import React from "react"
+import { Flex, Text } from "rebass"
+import { Body, Container, Content, Main } from "./elements"
 
 const Layout = ({ children }) => {
   const data = useStaticQuery(graphql`
