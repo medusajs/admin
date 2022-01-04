@@ -2,26 +2,26 @@ import React from "react"
 import { Link } from "gatsby"
 import Collapsible from "react-collapsible"
 
-interface ISidebarMenuSubitemProps {
+type SidebarMenuSubitemProps = {
   pageLink: string
   text: string
 }
 
-interface ISidebarMenuItemProps {
+type SidebarMenuItemProps = {
   pageLink: string
   text: string
   icon: JSX.Element
   triggerHandler: () => any
-  subItems?: ISidebarMenuSubitemProps[]
+  subItems?: SidebarMenuSubitemProps[]
 }
 
-const SidebarMenuItem = ({
+const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
   pageLink,
   icon,
   text,
   triggerHandler,
   subItems = [],
-}: ISidebarMenuItemProps) => {
+}: SidebarMenuItemProps) => {
   const activeStyles = "bg-grey-10 font-semibold"
   return (
     <Collapsible
@@ -48,7 +48,7 @@ const SidebarMenuItem = ({
   )
 }
 
-const SubItem = ({ pageLink, text }: ISidebarMenuSubitemProps) => {
+const SubItem = ({ pageLink, text }: SidebarMenuSubitemProps) => {
   const activeStyles = "bg-grey-10 font-semibold"
   return (
     <Link

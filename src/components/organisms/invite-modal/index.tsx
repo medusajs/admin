@@ -5,7 +5,11 @@ import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 import InputField from "../../input"
 
-const InviteModal = ({ handleClose }) => {
+type InviteModalProps = {
+  handleClose: () => void
+}
+
+const InviteModal: React.FC<InviteModalProps> = ({ handleClose }) => {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState("member")
@@ -37,16 +41,16 @@ const InviteModal = ({ handleClose }) => {
 
   return (
     <Modal handleClose={handleClose}>
-      <Modal.Body >
+      <Modal.Body>
         <Modal.Header handleClose={handleClose}>
           <span className="text-large font-semibold">Invite Users</span>
         </Modal.Header>
         <Modal.Content>
-            <InputField
-              placeholder="lebron@james.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
+          <InputField
+            placeholder="lebron@james.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
         </Modal.Content>
         <Modal.Footer>
           <div className="flex w-full justify-end">

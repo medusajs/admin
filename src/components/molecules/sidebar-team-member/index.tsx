@@ -1,6 +1,6 @@
 import React from "react"
 
-interface ISidebarTeamMemberProps {
+type SidebarTeamMemberProps = {
   color?: string
   user: any
   profilePicture?: string
@@ -19,11 +19,11 @@ const getInitial = (
   )
 }
 
-const SidebarTeamMember = ({
+const SidebarTeamMember: React.FC<SidebarTeamMemberProps> = ({
   color = "bg-violet-40",
   user,
   profilePicture = undefined,
-}: ISidebarTeamMemberProps) => {
+}: SidebarTeamMemberProps) => {
   const fullName =
     user.first_name || user.last_name
       ? `${user.first_name} ${user.last_name}`

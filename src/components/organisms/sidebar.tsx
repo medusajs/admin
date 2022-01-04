@@ -11,7 +11,7 @@ import CustomerIcon from "../fundamentals/icons/customer-icon"
 import DollarSignIcon from "../fundamentals/icons/dollar-sign-icon"
 import TagIcon from "../fundamentals/icons/tag-icon"
 
-const Sidebar = () => {
+const Sidebar: React.FC = () => {
   const [storeName, setStoreName] = useState("")
   const [currentlyOpen, setCurrentlyOpen] = useState(-1)
   const [users, setUsers] = useState([])
@@ -38,7 +38,6 @@ const Sidebar = () => {
 
   const fetchUsers = async () => {
     Medusa.users.list().then(({ data }) => {
-      console.log(data)
       setUsers(data.users)
     })
   }

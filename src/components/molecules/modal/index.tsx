@@ -1,9 +1,28 @@
 import React from "react"
-import PropTypes from "prop-types"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import * as Dialog from "@radix-ui/react-dialog"
 
-const Overlay = ({ children }) => {
+type ModalProps = {
+  isLargeModal?: boolean
+  handleClose: () => void
+}
+
+type ModalChildProps = {
+  largeModal?: boolean
+}
+
+type ModalHeaderProps = {
+  handleClose: () => void
+}
+
+type ModalType = React.FC<ModalProps> & {
+  Body: React.FC<ModalChildProps>
+  Header: React.FC<ModalHeaderProps>
+  Footer: React.FC<ModalChildProps>
+  Content: React.FC<ModalChildProps>
+}
+
+const Overlay: React.FC = ({ children }) => {
   return (
     <Dialog.Overlay className="fixed bg-grey-90/40 grid top-0 left-0 right-0 bottom-0 place-items-center overflow-y-auto">
       {children}
@@ -11,7 +30,7 @@ const Overlay = ({ children }) => {
   )
 }
 
-const Content = ({ children }) => {
+const Content: React.FC = ({ children }) => {
   return (
     <Dialog.Content className="bg-grey-0 min-w-modal rounded">
       {children}
@@ -23,7 +42,7 @@ const addProp = (children, prop) => {
   return React.Children.map(children, c => React.cloneElement(c, prop))
 }
 
-const Modal = ({ children, handleClose, isLargeModal = true }) => {
+const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
   const largeModal = isLargeModal
   return (
     <Dialog.Root open={true} onOpenChange={handleClose}>
@@ -47,13 +66,12 @@ Modal.Body = ({ children, largeModal = true }) => {
 Modal.Content = ({ children, largeModal = true }) => {
   return (
     <div className={`px-7 pt-5 ${largeModal ? "w-[750px] pb-7" : "pb-5"}`}>
-      {" "}
       {children}
     </div>
   )
 }
 
-Modal.Header = ({ children, handleClose = undefined }) => {
+Modal.Header = ({ handleClose = undefined, children }) => {
   return (
     <div
       className="pl-7 pt-3.5 pr-3.5 flex flex-col w-full"
@@ -82,15 +100,6 @@ Modal.Footer = ({ children, largeModal = true }) => {
       {children}
     </div>
   )
-}
-
-Modal.Header.propTypes = {
-  handleClose: PropTypes.func,
-}
-
-Modal.propTypes = {
-  isLargeModal: PropTypes.bool,
-  handleClose: PropTypes.func,
 }
 
 export default Modal

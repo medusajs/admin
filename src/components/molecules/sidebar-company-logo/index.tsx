@@ -1,13 +1,14 @@
 import React from "react"
 
-interface ISidebarCompanyLogoProps {
+type SidebarCompanyLogoProps = {
   imageUrl: string
   storeName: string
 }
-const SidebarCompanyLogo = ({
+
+const SidebarCompanyLogo: React.FC<SidebarCompanyLogoProps> = ({
   imageUrl,
   storeName,
-}: ISidebarCompanyLogoProps) => {
+}: SidebarCompanyLogoProps) => {
   return (
     <div className="flex px-2 mb-3.5 items-center">
       <img className="object-contain h-7 w-7 mb-0" src={imageUrl} />

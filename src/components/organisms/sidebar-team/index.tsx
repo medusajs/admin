@@ -5,7 +5,25 @@ import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import InviteModal from "../invite-modal"
 
-const getColor = index => {
+type PaginationArrowsProps = {
+  currentPage: number
+  paginationLength: number
+  handleNextPage: () => void
+  handlePreviousPage: () => void
+}
+
+type SidebarTeamUser = {
+  id: string
+  email: string
+  first_name?: string
+  last_name?: string
+}
+
+type SidebarTeamProps = {
+  users: SidebarTeamUser[]
+}
+
+const getColor = (index: number): string => {
   const colors = [
     "bg-fuschia-40",
     "bg-pink-40",
@@ -18,7 +36,7 @@ const getColor = index => {
   return colors[index % colors.length]
 }
 
-const PaginationArrows = ({
+const PaginationArrows: React.FC<PaginationArrowsProps> = ({
   handlePreviousPage,
   handleNextPage,
   currentPage,
@@ -50,7 +68,7 @@ const PaginationArrows = ({
   )
 }
 
-const SidebarTeam = ({ users }) => {
+const SidebarTeam: React.FC<SidebarTeamProps> = ({ users }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const paginatedUsers = []
@@ -67,17 +85,9 @@ const SidebarTeam = ({ users }) => {
     }
   }
 
-  const testUsers = [
-    ...users,
-    ...users.reverse(),
-    ...users.reverse(),
-    ...users,
-    ...users,
-  ]
-
   const pageSize = 6
-  for (let i = 0; i < testUsers.length; i += pageSize) {
-    paginatedUsers.push(testUsers.slice(i, i + pageSize))
+  for (let i = 0; i < users.length; i += pageSize) {
+    paginatedUsers.push(users.slice(i, i + pageSize))
   }
 
   return (
