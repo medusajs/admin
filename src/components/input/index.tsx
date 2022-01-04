@@ -108,7 +108,7 @@ const InputField = React.forwardRef(
         )}
         <div className="w-full flex mt-1">
           <input
-            className="bg-inherit outline-0 w-full leading-small text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
+            className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-small text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
             ref={inputRef}
             defaultValue={defaultValue}
             autoComplete="off"
@@ -121,6 +121,7 @@ const InputField = React.forwardRef(
             step={step || "1"}
             placeholder={placeholder ? placeholder : "Placeholder"}
             onChange={onChange}
+            onMouseDown={e => e.stopPropagation()}
             onFocus={onFocus}
             disabled={disabled}
           />
@@ -135,11 +136,13 @@ const InputField = React.forwardRef(
             <div className="flex self-end">
               <span
                 onClick={onClickChevronDown}
+                onMouseDown={e => e.preventDefault()}
                 className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
               >
                 <MinusIcon size={16} />
               </span>
               <span
+                onMouseDown={e => e.preventDefault()}
                 onClick={onClickChevronUp}
                 className="text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
               >

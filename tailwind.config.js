@@ -156,6 +156,9 @@ module.exports = {
           stop: "#F796FF",
         },
       },
+      heigth: {
+        "18": "4.5rem",
+      },
       borderRadius: {
         none: "0px",
         soft: "2px",
