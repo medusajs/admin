@@ -1,7 +1,7 @@
 import React from "react"
-import IconProps from "./icon-interface"
+import IconProps from "./icon-type"
 
-interface IBellNotiIconProps extends IconProps {
+type IBellNotiIconProps = IconProps & {
   accentColor?: string
 }
 
