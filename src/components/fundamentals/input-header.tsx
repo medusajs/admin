@@ -17,9 +17,9 @@ const InputHeader: React.FC<InputHeaderProps> = ({
   tooltipProps,
 }) => {
   return (
-    <div className="w-full flex pb-1.5 font-semibold text-small leading-xsmall text-grey-50 items-baseline">
+    <div className="w-full flex inter-small-semibold text-grey-50 items-baseline">
       {label}
-      {required && <div className="text-red-600 "> *</div>}
+      {required && <div className="text-rose-50 "> *</div>}
       {withTooltip ? (
         <div className="ml-2">
           <InfoTooltip tooltipText={tooltipText} {...tooltipProps} />
