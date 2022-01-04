@@ -130,6 +130,8 @@ const ReturnIndex = ({}) => {
     })
   }
 
+  const nextReturn = returns && returns.length >= limit
+
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
       <Flex>
@@ -250,6 +252,7 @@ const ReturnIndex = ({}) => {
         </Button>
         <Button
           onClick={() => handlePagination("next")}
+          disabled={!nextReturn}
           variant={"primary"}
           fontSize="12px"
           height="24px"
