@@ -1,8 +1,11 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./types/icon-type"
 
-const UsersIcon = props => {
-  const { size, color, ...rest } = props
+const UsersIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+  attributes,
+}) => {
   return (
     <svg
       width={size}
@@ -10,7 +13,7 @@ const UsersIcon = props => {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
+      {...attributes}
     >
       <path
         d="M16.3333 19V17.3333C16.3333 16.4493 15.9821 15.6014 15.357 14.9763C14.7319 14.3512 13.8841 14 13 14H6.33333C5.44928 14 4.60143 14.3512 3.97631 14.9763C3.35119 15.6014 3 16.4493 3 17.3333V19"
@@ -42,16 +45,6 @@ const UsersIcon = props => {
       />
     </svg>
   )
-}
-
-UsersIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-}
-
-UsersIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default UsersIcon

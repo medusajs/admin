@@ -2,7 +2,7 @@ import React from "react"
 import Sidebar from "../organisms/sidebar"
 import Topbar from "../organisms/topbar"
 
-const Layout = ({ children }) => {
+const Layout: React.FC = ({ children }) => {
   return (
     <div className="flex w-full h-screen inter-base-regular">
       <Sidebar />

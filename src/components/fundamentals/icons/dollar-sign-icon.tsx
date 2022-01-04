@@ -1,8 +1,11 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./types/icon-type"
 
-const DollarSignIcon = props => {
-  const { size, color, ...rest } = props
+const DollarSignIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+  attributes,
+}) => {
   return (
     <svg
       width={size}
@@ -10,7 +13,7 @@ const DollarSignIcon = props => {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
+      {...attributes}
     >
       <path
         d="M12 3V21"
@@ -28,16 +31,6 @@ const DollarSignIcon = props => {
       />
     </svg>
   )
-}
-
-DollarSignIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-}
-
-DollarSignIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default DollarSignIcon

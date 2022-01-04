@@ -1,7 +1,15 @@
 import React from "react"
 
-const Avatar = ({ user }) => {
-  let username
+type AvatarProps = {
+  user?: {
+    first_name?: string
+    last_name?: string
+    email: string
+  }
+}
+
+const Avatar: React.FC<AvatarProps> = ({ user }) => {
+  let username: string
 
   if (user?.first_name && user?.last_name) {
     username = user.first_name + " " + user.last_name
