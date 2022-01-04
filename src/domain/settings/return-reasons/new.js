@@ -3,7 +3,7 @@ import { Flex, Text, Box } from "rebass"
 import { useForm } from "react-hook-form"
 import { navigate } from "gatsby"
 
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Button from "../../../components/button"
 import BreadCrumb from "../../../components/breadcrumb"
 import Card from "../../../components/card"

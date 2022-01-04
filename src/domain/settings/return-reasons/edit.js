@@ -3,7 +3,7 @@ import { Flex, Text, Box } from "rebass"
 import { navigate } from "gatsby"
 import { useForm } from "react-hook-form"
 
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import InfoTooltip from "../../../components/info-tooltip"

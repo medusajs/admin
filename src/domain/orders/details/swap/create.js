@@ -6,7 +6,7 @@ import MultiSelect from "react-multi-select-component"
 
 import Modal from "../../../../components/modal"
 import CurrencyInput from "../../../../components/currency-input"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
 import Select from "../../../../components/select"

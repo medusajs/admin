@@ -10,7 +10,7 @@ import AvailabilityDuration from "../../../components/availability-duration"
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
 import MultiSelect from "../../../components/multi-select"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Typography from "../../../components/typography"
 import ProductSelection from "../product-selection"
 

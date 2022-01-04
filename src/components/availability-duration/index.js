@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 
 import { Flex, Text, Box } from "rebass"
-import Input from "../input"
+import Input from "../molecules/input"
 import Typography from "../typography"
 import styled from "@emotion/styled"
 import { parse } from "iso8601-duration"

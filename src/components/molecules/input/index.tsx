@@ -5,10 +5,10 @@ import React, {
   useImperativeHandle,
   useRef,
 } from "react"
-import MinusIcon from "../fundamentals/icons/minus-icon"
-import PlusIcon from "../fundamentals/icons/plus-icon"
-import InputContainer from "../fundamentals/input-container"
-import InputHeader from "../fundamentals/input-header"
+import MinusIcon from "../../fundamentals/icons/minus-icon"
+import PlusIcon from "../../fundamentals/icons/plus-icon"
+import InputContainer from "../../fundamentals/input-container"
+import InputHeader from "../../fundamentals/input-header"
 
 type inputProps = {
   invalid?: boolean
@@ -19,7 +19,7 @@ type inputProps = {
   max?: number
   inline?: boolean
   label: string
-  name: string
+  name?: string
   type?: string
   inputStyle?: any
   required?: boolean
@@ -33,8 +33,8 @@ type inputProps = {
   withTooltip?: boolean
   tooltipText?: string
   tooltipProps?: any
-  start: any
-  props: React.HTMLAttributes<HTMLDivElement>
+  start?: any
+  props?: React.HTMLAttributes<HTMLDivElement>
 }
 
 const InputField = React.forwardRef(
@@ -69,7 +69,7 @@ const InputField = React.forwardRef(
     const inputRef = useRef(null)
     useImperativeHandle(ref, () => inputRef.current)
 
-    const onClickChevronUp = e => {
+    const onClickChevronUp = () => {
       inputRef.current?.stepUp()
       if (onChange) {
         inputRef.current?.dispatchEvent(
@@ -82,7 +82,7 @@ const InputField = React.forwardRef(
       }
     }
 
-    const onClickChevronDown = e => {
+    const onClickChevronDown = () => {
       inputRef.current?.stepDown()
       if (onChange) {
         inputRef.current?.dispatchEvent(

@@ -7,7 +7,7 @@ import styled from "@emotion/styled"
 
 import { ReactComponent as CrossIcon } from "../../../../assets/svg/cross.svg"
 import Modal from "../../../../components/modal"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import Button from "../../../../components/button"
 
 import Medusa from "../../../../services/api"

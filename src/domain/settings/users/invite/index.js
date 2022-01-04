@@ -10,7 +10,7 @@ import useModal from "../../../../hooks/use-modal"
 import Button from "../../../../components/button"
 import Medusa from "../../../../services/api"
 import useMedusa from "../../../../hooks/use-medusa"
-import InputField from "../../../../components/input"
+import InputField from "../../../../components/molecules/input"
 
 const Row = styled.tr`
   font-size: ${props => props.theme.fontSizes[1]}px;

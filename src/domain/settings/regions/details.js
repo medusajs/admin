@@ -6,7 +6,7 @@ import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 
 import MultiSelect from "../../../components/multi-select"
 import useMedusa from "../../../hooks/use-medusa"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Select from "../../../components/select"
 import Card from "../../../components/card"
 import Button from "../../../components/button"

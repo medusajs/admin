@@ -4,7 +4,7 @@ import { Flex, Text } from "rebass"
 import { isEmpty } from "lodash"
 
 import Select from "../../../components/select"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 
 import { countries } from "../../../utils/countries"
 
