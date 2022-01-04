@@ -168,3 +168,14 @@
     @apply bg-gradient-to-tr from-vice-start to-vice-stop;
   }
 }
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.remove-number-spinner > input[type="number"] {
+  -moz-appearance: textfield;
+}

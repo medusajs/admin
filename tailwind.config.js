@@ -3,6 +3,9 @@ module.exports = {
   theme: {
     screens: {},
     extend: {
+      boxShadow: {
+        input: "0px 0px 0px 4px #8B5CF61A",
+      },
       colors: {
         grey: {
           0: "#FFFFFF",

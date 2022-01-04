@@ -1,7 +1,6 @@
 import styled from "@emotion/styled"
 import { Input, Label } from "@rebass/forms"
 import React, { useImperativeHandle, useRef } from "react"
-import { Flex, Text } from "rebass"
 import InfoTooltip from "../info-tooltip"
 import Typography from "../typography"
 
@@ -43,7 +42,6 @@ const InputField = React.forwardRef(
       max,
       inline,
       label,
-      boldLabel,
       name,
       type,
       inputStyle,
@@ -71,26 +69,42 @@ const InputField = React.forwardRef(
       },
     }))
 
+    const onClickChevronUp = () => {
+      inputRef.current?.stepUp()
+      if (onChange) {
+        inputRef.current?.dispatchEvent(
+          new InputEvent("change", {
+            view: window,
+            bubbles: true,
+            cancelable: false,
+          })
+        )
+      }
+    }
+
+    const onClickChevronDown = () => {
+      inputRef.current?.stepDown()
+      if (onChange) {
+        inputRef.current?.dispatchEvent(
+          new InputEvent("change", {
+            view: window,
+            bubbles: true,
+            cancelable: false,
+          })
+        )
+      }
+    }
+
     return (
       <div
-        className="bg-grey-20 border focus-within:border-voilet-60 rounded-base cursor-text"
-        onClick={() => inputRef.current?.focus()}
+        className="bg-grey-5 inter-base-regular w-full p-2.5 flex flex-col border border-grey-20 focus-within:shadow-input focus-within:border-violet-60 rounded-base my-4"
+        onClick={() => inputRef?.current?.focus()}
+        key={name}
         {...props}
       >
         {label && (
-          <Label
-            flex={"30% 0 0"}
-            htmlFor={name}
-            alignItems="center"
-            display={start ? "flex" : inline && "inline !important"}
-          >
-            <StyledLabel
-              required={required}
-              inline={inline}
-              boldLabel={boldLabel}
-            >
-              {label}
-            </StyledLabel>
+          <span className="w-full pb-1 font-semibold text-small leading-xsmall text-grey-50 after:content-[*] after:text-violet-50">
+            {label}
             {withTooltip ? (
               <InfoTooltip
                 pb="10px"
@@ -99,29 +113,47 @@ const InputField = React.forwardRef(
                 {...tooltipProps}
               />
             ) : null}
-          </Label>
-        )}
-        <input
-          className="bg-inherit outline-0 w-full caret-violet-60"
-          ref={inputRef}
-          defaultValue={defaultValue}
-          autoComplete="off"
-          name={name}
-          type={type}
-          min={min}
-          max={max}
-          value={value}
-          step={step || "1"}
-          placeholder={placeholder ? placeholder : "Placeholder"}
-          onChange={onChange}
-          onFocus={onFocus}
-          disabled={disabled}
-        />
-        {deletable && (
-          <span onClick={onDelete} className="cursor-pointer ml-2">
-            &times;
           </span>
         )}
+        <div className="w-full flex">
+          <input
+            className="bg-inherit outline-0 w-full leading-small text-grey-90 font-normal caret-violet-60"
+            ref={inputRef}
+            defaultValue={defaultValue}
+            autoComplete="off"
+            name={name}
+            type={type}
+            min={min}
+            max={max}
+            value={value}
+            step={step || "1"}
+            placeholder={placeholder ? placeholder : "Placeholder"}
+            onChange={onChange}
+            onFocus={onFocus}
+            disabled={disabled}
+          />
+          {deletable && (
+            <span onClick={onDelete} className="cursor-pointer ml-2">
+              &times;
+            </span>
+          )}
+          {type === "number" && (
+            <div>
+              <span
+                onClick={onClickChevronUp}
+                className="mr-2 hover:bg-grey-30"
+              >
+                +
+              </span>
+              <span
+                onClick={onClickChevronDown}
+                className="mr-2 hover:bg-grey-30"
+              >
+                -
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     )
   }
