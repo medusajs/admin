@@ -67,6 +67,7 @@ const InputField = React.forwardRef(
     ref
   ) => {
     const inputRef = useRef(null)
+
     useImperativeHandle(ref, () => inputRef.current)
 
     const onClickChevronUp = () => {
