@@ -1,8 +1,10 @@
 import styled from "@emotion/styled"
 import { Input, Label } from "@rebass/forms"
-import React, { useImperativeHandle, useRef } from "react"
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react"
 import InfoTooltip from "../info-tooltip"
 import Typography from "../typography"
+import MinusIcon from "../fundamentals/icons/minus-icon"
+import PlusIcon from "../fundamentals/icons/plus-icon"
 
 export const StyledLabel = styled.div`
   ${Typography.Base}
@@ -61,15 +63,10 @@ const InputField = React.forwardRef(
     },
     ref
   ) => {
-    const inputRef = useRef()
+    const inputRef = useRef(null)
+    useImperativeHandle(ref, () => inputRef.current)
 
-    useImperativeHandle(ref, () => ({
-      focus: () => {
-        inputRef?.current?.focus()
-      },
-    }))
-
-    const onClickChevronUp = () => {
+    const onClickChevronUp = e => {
       inputRef.current?.stepUp()
       if (onChange) {
         inputRef.current?.dispatchEvent(
@@ -82,7 +79,7 @@ const InputField = React.forwardRef(
       }
     }
 
-    const onClickChevronDown = () => {
+    const onClickChevronDown = e => {
       inputRef.current?.stepDown()
       if (onChange) {
         inputRef.current?.dispatchEvent(
@@ -97,13 +94,14 @@ const InputField = React.forwardRef(
 
     return (
       <div
-        className="bg-grey-5 inter-base-regular w-full p-2.5 flex flex-col border border-grey-20 focus-within:shadow-input focus-within:border-violet-60 rounded-base my-4"
+        className="bg-grey-5 inter-base-regular w-full p-3 flex flex-col cursor-text border border-grey-20 focus-within:shadow-input focus-within:border-violet-60 rounded-base my-4"
         onClick={() => inputRef?.current?.focus()}
+        onMouseDown={e => e.preventDefault()}
         key={name}
         {...props}
       >
         {label && (
-          <span className="w-full pb-1 font-semibold text-small leading-xsmall text-grey-50 after:content-[*] after:text-violet-50">
+          <span className="w-full pb-1.5 font-semibold text-small leading-xsmall text-grey-50 after:content-[*] after:text-violet-50">
             {label}
             {withTooltip ? (
               <InfoTooltip
@@ -115,13 +113,14 @@ const InputField = React.forwardRef(
             ) : null}
           </span>
         )}
-        <div className="w-full flex">
+        <div className="w-full flex mt-1">
           <input
-            className="bg-inherit outline-0 w-full leading-small text-grey-90 font-normal caret-violet-60"
+            className="bg-inherit outline-0 w-full leading-small text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
             ref={inputRef}
             defaultValue={defaultValue}
             autoComplete="off"
             name={name}
+            key={name}
             type={type}
             min={min}
             max={max}
@@ -132,24 +131,28 @@ const InputField = React.forwardRef(
             onFocus={onFocus}
             disabled={disabled}
           />
+
           {deletable && (
             <span onClick={onDelete} className="cursor-pointer ml-2">
               &times;
             </span>
           )}
+
           {type === "number" && (
-            <div>
-              <span
-                onClick={onClickChevronUp}
-                className="mr-2 hover:bg-grey-30"
-              >
-                +
-              </span>
+            <div className="flex self-end">
               <span
                 onClick={onClickChevronDown}
-                className="mr-2 hover:bg-grey-30"
+                // onMouseDown={e => e.preventDefault()}
+                className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
               >
-                -
+                <MinusIcon size={16} />
+              </span>
+              <span
+                onClick={onClickChevronUp}
+                // onMouseDown={e => e.preventDefault()}
+                className="text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
+              >
+                <PlusIcon size={16} />
               </span>
             </div>
           )}
