@@ -1,6 +1,14 @@
 import React from "react"
 
-const PageDescription = ({ title, subtitle }) => {
+type PageDescriptionProps = {
+  title?: string
+  subtitle?: string
+}
+
+const PageDescription: React.FC<PageDescriptionProps> = ({
+  title,
+  subtitle,
+}) => {
   return (
     <div className="mb-xlarge">
       <h1 className="inter-2xlarge-semibold mb-xsmall">{title}</h1>

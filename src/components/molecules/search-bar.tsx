@@ -5,8 +5,8 @@ import OSShortcut from "../atoms/os-shortcut"
 import TextInput from "../atoms/text-input"
 import SearchIcon from "../fundamentals/icons/search-icon"
 
-const SearchBar = () => {
-  const { onSearch } = useContext(InterfaceContext)
+const SearchBar: React.FC = () => {
+  const { onSearch, display } = useContext(InterfaceContext)
   const [query, setQuery] = useState("")
   const [focusing, setFocusing] = useState(false)
   const searchRef = useRef(null)
@@ -55,17 +55,21 @@ const SearchBar = () => {
 
   return (
     <div className="flex items-center">
-      <SearchIcon className="text-grey-40" />
-      <div className="mr-xsmall ml-base">
-        <OSShortcut macModifiers="⌘" winModifiers="Ctrl" keys="K" />
-      </div>
-      <TextInput
-        value={query}
-        onKeyDown={onKeyDown}
-        onChange={handleChange}
-        ref={searchRef}
-        placeholder="Search anything..."
-      />
+      {display ? (
+        <>
+          <SearchIcon className="text-grey-40" />
+          <div className="mr-xsmall ml-base">
+            <OSShortcut macModifiers="⌘" winModifiers="Ctrl" keys="K" />
+          </div>
+          <TextInput
+            value={query}
+            onKeyDown={onKeyDown}
+            onChange={handleChange}
+            ref={searchRef}
+            placeholder="Search anything..."
+          />
+        </>
+      ) : null}
     </div>
   )
 }

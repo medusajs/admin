@@ -2,7 +2,16 @@ import { Link } from "gatsby"
 import React from "react"
 import ChevronRightIcon from "../fundamentals/icons/chevron-right"
 
-const SettingsCard = ({
+type SettingsCardProps = {
+  icon: React.FC
+  heading: string
+  description: string
+  to?: string
+  externalLink?: string
+  disabled: boolean
+}
+
+const SettingsCard: React.FC<SettingsCardProps> = ({
   icon,
   heading,
   description,

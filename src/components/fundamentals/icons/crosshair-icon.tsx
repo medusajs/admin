@@ -1,8 +1,11 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./types/icon-type"
 
-const CrosshairIcon = props => {
-  const { size, color, ...rest } = props
+const CrosshairIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+  attributes,
+}) => {
   return (
     <svg
       width={size}
@@ -10,7 +13,7 @@ const CrosshairIcon = props => {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
+      {...attributes}
     >
       <path
         d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"
@@ -49,16 +52,6 @@ const CrosshairIcon = props => {
       />
     </svg>
   )
-}
-
-CrosshairIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-}
-
-CrosshairIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default CrosshairIcon
