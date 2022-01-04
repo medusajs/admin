@@ -1,5 +1,5 @@
 import React from "react"
-import IconProps from "./icon-type"
+import IconProps from "./types/icon-type"
 
 const TruckIcon: React.FC<IconProps> = ({
   size = "24px",

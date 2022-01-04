@@ -1,5 +1,5 @@
 import React from "react"
-import IconProps from "./icon-type"
+import IconProps from "./types/icon-type"
 
 const ChevronRightIcon: React.FC<IconProps> = ({
   size = "24px",
