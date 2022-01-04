@@ -117,6 +117,8 @@ const SwapIndex = ({}) => {
     })
   }
 
+  const nextSwap = swaps && swaps.length >= limit
+
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
       <Flex>
@@ -241,6 +243,7 @@ const SwapIndex = ({}) => {
         </Button>
         <Button
           onClick={() => handlePagination("next")}
+          disabled={!nextSwap}
           variant={"primary"}
           fontSize="12px"
           height="24px"
