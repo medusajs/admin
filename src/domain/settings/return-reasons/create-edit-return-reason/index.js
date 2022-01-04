@@ -1,18 +1,46 @@
 import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
 import { useForm } from "react-hook-form"
+import Typography from "../../../../components/typography"
 import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
 
 import { ReactComponent as CrossIcon } from "../../../../assets/svg/cross.svg"
 import Modal from "../../../../components/modal"
-import Input, { StyledLabel } from "../../../../components/input"
+import Input from "../../../../components/input"
 import Button from "../../../../components/button"
 
 import Medusa from "../../../../services/api"
 import useMedusa from "../../../../hooks/use-medusa"
 
 import { getErrorMessage } from "../../../../utils/error-messages"
+
+const StyledLabel = styled.div`
+  ${Typography.Base}
+  ${props =>
+    props.boldLabel &&
+    `
+    font-weight: 500;
+  `}
+  ${props =>
+    props.inline
+      ? `
+  text-align: right;
+  padding-right: 15px;
+  `
+      : `
+  padding-bottom: 10px;
+  `}
+
+  ${props =>
+    props.required &&
+    `
+  &:after {
+    color: rgba(255, 0, 0, 0.5);
+    content: " *";
+  }
+  `}
+`
 
 const ReturnReasonModal = ({
   reason,
@@ -108,38 +136,32 @@ const ReturnReasonModal = ({
               </Flex>
             ) : (
               <Box mb={3}>
-                <StyledLabel boldLabel={true} sx={{ color: "black" }}>
-                  Reason code
-                  <Input
-                    name="value"
-                    onChange={e => setValue(e.target.value)}
-                    value={value}
-                    mt={2}
-                  />
-                </StyledLabel>
+                <Input
+                  label="Reason code"
+                  name="value"
+                  onChange={e => setValue(e.target.value)}
+                  value={value}
+                  mt={2}
+                />
               </Box>
             )}
             <Box mb={3}>
-              <StyledLabel boldLabel={true} sx={{ color: "black" }}>
-                Label
-                <Input
-                  mt={2}
-                  name="label"
-                  onChange={e => setLabel(e.target.value)}
-                  value={label}
-                />
-              </StyledLabel>
+              <Input
+                label="label"
+                mt={2}
+                name="label"
+                onChange={e => setLabel(e.target.value)}
+                value={label}
+              />
             </Box>
             <Box mb={3}>
-              <StyledLabel boldLabel={true} sx={{ color: "black" }}>
-                Description
-                <Input
-                  mt={2}
-                  name="description"
-                  onChange={e => setDescription(e.target.value)}
-                  value={description}
-                />
-              </StyledLabel>
+              <Input
+                mt={2}
+                label="description"
+                name="description"
+                onChange={e => setDescription(e.target.value)}
+                value={description}
+              />
             </Box>
 
             {reason && (

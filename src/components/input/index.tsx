@@ -1,37 +1,41 @@
-import styled from "@emotion/styled"
-import { Input, Label } from "@rebass/forms"
-import React, { useEffect, useImperativeHandle, useRef, useState } from "react"
-import InfoTooltip from "../info-tooltip"
-import Typography from "../typography"
+import React, {
+  ChangeEventHandler,
+  FocusEventHandler,
+  MouseEventHandler,
+  useImperativeHandle,
+  useRef,
+} from "react"
 import MinusIcon from "../fundamentals/icons/minus-icon"
 import PlusIcon from "../fundamentals/icons/plus-icon"
+import InputContainer from "../fundamentals/input-container"
+import InputHeader from "../fundamentals/input-header"
 
-export const StyledLabel = styled.div`
-  ${Typography.Base}
-  ${props =>
-    props.boldLabel &&
-    `
-    font-weight: 500;
-  `}
-  ${props =>
-    props.inline
-      ? `
-  text-align: right;
-  padding-right: 15px;
-  `
-      : `
-  padding-bottom: 10px;
-  `}
-  
-  ${props =>
-    props.required &&
-    `
-  &:after {
-    color: rgba(255, 0, 0, 0.5);
-    content: " *";
-  }
-  `}
-`
+type inputProps = {
+  invalid?: boolean
+  placeholder?: string
+  defaultValue?: string
+  step?: string
+  min?: number
+  max?: number
+  inline?: boolean
+  label: string
+  name: string
+  type?: string
+  inputStyle?: any
+  required?: boolean
+  value?: any
+  deletable?: boolean
+  onDelete?: MouseEventHandler<HTMLSpanElement>
+  onChange?: ChangeEventHandler<HTMLInputElement>
+  onFocus?: FocusEventHandler<HTMLInputElement>
+  textAlign?: string
+  disabled?: boolean
+  withTooltip?: boolean
+  tooltipText?: string
+  tooltipProps?: any
+  start: any
+  props: React.HTMLAttributes<HTMLDivElement>
+}
 
 const InputField = React.forwardRef(
   (
@@ -58,9 +62,8 @@ const InputField = React.forwardRef(
       withTooltip = false,
       tooltipText,
       tooltipProps = {},
-      start,
-      ...props
-    },
+      props,
+    }: inputProps,
     ref
   ) => {
     const inputRef = useRef(null)
@@ -93,25 +96,15 @@ const InputField = React.forwardRef(
     }
 
     return (
-      <div
-        className="bg-grey-5 inter-base-regular w-full p-3 flex flex-col cursor-text border border-grey-20 focus-within:shadow-input focus-within:border-violet-60 rounded-base my-4"
-        onClick={() => inputRef?.current?.focus()}
-        onMouseDown={e => e.preventDefault()}
+      <InputContainer
+        props={props}
         key={name}
-        {...props}
+        onClick={() => inputRef?.current?.focus()}
       >
         {label && (
-          <span className="w-full pb-1.5 font-semibold text-small leading-xsmall text-grey-50 after:content-[*] after:text-violet-50">
-            {label}
-            {withTooltip ? (
-              <InfoTooltip
-                pb="10px"
-                ml={2}
-                tooltipText={tooltipText}
-                {...tooltipProps}
-              />
-            ) : null}
-          </span>
+          <InputHeader
+            {...{ label, required, withTooltip, tooltipText, tooltipProps }}
+          />
         )}
         <div className="w-full flex mt-1">
           <input
@@ -142,14 +135,12 @@ const InputField = React.forwardRef(
             <div className="flex self-end">
               <span
                 onClick={onClickChevronDown}
-                // onMouseDown={e => e.preventDefault()}
                 className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
               >
                 <MinusIcon size={16} />
               </span>
               <span
                 onClick={onClickChevronUp}
-                // onMouseDown={e => e.preventDefault()}
                 className="text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
               >
                 <PlusIcon size={16} />
@@ -157,7 +148,7 @@ const InputField = React.forwardRef(
             </div>
           )}
         </div>
-      </div>
+      </InputContainer>
     )
   }
 )
