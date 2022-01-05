@@ -11,8 +11,10 @@ import Button from "../components/button"
 import Spinner from "../components/spinner"
 import { ReactComponent as Graphic } from "../assets/login-graphic.svg"
 import Medusa from "../services/api"
+import { useAdminLogin } from "medusa-react"
 
 const LoginPage = () => {
+  const login = useAdminLogin()
   const [loading, setLoading] = useState(false)
   const account = useContext(AccountContext)
   const { handleSubmit } = useForm()
@@ -30,9 +32,17 @@ const LoginPage = () => {
         setPasswordtokenGenerated(true)
       })
     } else {
-      account.handleLogin({ email, password }).then(() => {
-        navigate("/a")
-      })
+      login.mutate(
+        {
+          email,
+          password,
+        },
+        {
+          onSuccess: () => {
+            navigate("/a")
+          },
+        }
+      )
     }
     setLoading(false)
   }

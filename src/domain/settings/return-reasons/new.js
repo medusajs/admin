@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from "react"
-import { Flex, Text, Box } from "rebass"
-import { useForm } from "react-hook-form"
 import { navigate } from "gatsby"
-
-import Input from "../../../components/molecules/input"
-import Button from "../../../components/button"
+import { useAdminCreateReturnReason } from "medusa-react"
+import React from "react"
+import { useForm } from "react-hook-form"
+import { Box, Flex, Text } from "rebass"
 import BreadCrumb from "../../../components/breadcrumb"
+import Button from "../../../components/button"
 import Card from "../../../components/card"
-import { ReactSelect } from "../../../components/react-select"
-
-import Medusa from "../../../services/api"
+import Input from "../../../components/molecules/input"
 import useMedusa from "../../../hooks/use-medusa"
 
 const NewReturnReason = ({ id }) => {
   const { register, handleSubmit } = useForm()
+  const createReturnReason = useAdminCreateReturnReason()
   const { toaster } = useMedusa("store")
 
   const onSave = data => {
-    Medusa.returnReasons
-      .create(data)
-      .then(result => {
-        toaster("Created a new Return reason", "success")
-        navigate(`/a/settings/return-reasons/${result.data.return_reason.id}`)
-      })
-      .catch(err =>
+    console.log("on save handler")
+    createReturnReason.mutate(data, {
+      onSuccess: newData => {
+        toaster("Created a new return reason", "success")
+        navigate(`/a/settings/return-reasons/${newData.return_reason.id}`)
+      },
+      onError: () => {
         toaster("Cant create a Return reason with an existing code", "error")
-      )
+      },
+    })
   }
 
   return (
