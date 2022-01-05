@@ -5,7 +5,7 @@ import Spinner from "../../atoms/spinner"
 type ButtonProps = {
   variant: "primary" | "secondary" | "ghost"
   size: "small" | "medium" | "large"
-  loading: boolean
+  loading?: boolean
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
