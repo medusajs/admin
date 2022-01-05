@@ -4,7 +4,7 @@ import { navigate } from "gatsby"
 import { useForm } from "react-hook-form"
 
 import useMedusa from "../../hooks/use-medusa"
-import Input from "../../components/input"
+import Input from "../../components/molecules/input"
 import Card from "../../components/card"
 import Button from "../../components/button"
 import { getErrorMessage } from "../../utils/error-messages"

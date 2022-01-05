@@ -6,6 +6,9 @@ module.exports = {
     },
     screens: {},
     extend: {
+      boxShadow: {
+        input: "0px 0px 0px 4px #8B5CF61A",
+      },
       colors: {
         grey: {
           0: "#FFFFFF",
@@ -156,6 +159,9 @@ module.exports = {
           start: "#7C53FF",
           stop: "#F796FF",
         },
+      },
+      heigth: {
+        "18": "4.5rem",
       },
       borderRadius: {
         none: "0px",

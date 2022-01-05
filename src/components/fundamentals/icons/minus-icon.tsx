@@ -1,7 +1,7 @@
 import React from "react"
 import IconProps from "./icon-type"
 
-const PlusIcon: React.FC<IconProps> = ({
+const MinusIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
   attributes,
@@ -16,16 +16,9 @@ const PlusIcon: React.FC<IconProps> = ({
       {...attributes}
     >
       <path
-        d="M8 3.33331V12.6666"
-        stroke={color}
-        stroke-width="1.33333"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <path
         d="M3.33301 8H12.6663"
         stroke={color}
-        stroke-width="1.33333"
+        stroke-width="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
@@ -33,4 +26,4 @@ const PlusIcon: React.FC<IconProps> = ({
   )
 }
 
-export default PlusIcon
+export default MinusIcon
