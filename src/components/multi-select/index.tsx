@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useRef, useState } from "react"
+import React, { ChangeEventHandler, MouseEventHandler, useState } from "react"
 import { MultiSelect as ReactMultiSelect } from "react-multi-select-component"
 import InputContainer from "../fundamentals/input-container"
 import InputHeader from "../fundamentals/input-header"
@@ -6,7 +6,35 @@ import CheckIcon from "../fundamentals/icons/check-icon"
 import ArrowDownIcon from "../fundamentals/icons/arrow-down-icon"
 import XCircleIcon from "../fundamentals/icons/x-circle-icon"
 
-const ItemRenderer = ({ checked, option, onClick, disabled }) => (
+type Option = React.OptionHTMLAttributes<HTMLOptionElement> & {
+  key?: string
+}
+
+type ItemRendererProps = {
+  checked?: boolean
+  onClick?: ChangeEventHandler<HTMLElement>
+  disabled?: boolean
+  option?: Option
+}
+
+type MultiSelectProps = {
+  options: Option[]
+  onChange?: MouseEventHandler<HTMLElement>
+  label: string
+  name?: string
+  type
+  required
+  value
+  selectOptions
+  overrideStrings
+}
+
+const ItemRenderer: React.FC<ItemRendererProps> = ({
+  checked,
+  option,
+  onClick,
+  disabled,
+}) => (
   <div className={`item-renderer ${disabled && "disabled"}`}>
     <div className="align-center flex">
       <div
@@ -36,22 +64,16 @@ const MultiSelect = React.forwardRef(
     {
       options,
       onChange,
-      inline,
       label,
       name,
-      type,
       required,
       value,
       selectOptions,
       overrideStrings,
-      ...props
-    },
+    }: MultiSelectProps,
     ref
   ) => {
     const [isOpen, setIsOpen] = useState(false)
-    const dropdownRef = useRef(null)
-
-    useImperativeHandle(ref, () => dropdownRef.current)
 
     return (
       <InputContainer
@@ -64,10 +86,10 @@ const MultiSelect = React.forwardRef(
           <ArrowDownIcon size={16} />
         </div>
         <ReactMultiSelect
+          ref={ref}
           name={name}
           isOpen={isOpen}
           ItemRenderer={ItemRenderer}
-          type={type}
           value={value}
           className="multiselect-styling"
           options={options}
