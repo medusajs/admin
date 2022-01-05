@@ -4,7 +4,7 @@ import IconProps from "./types/icon-type"
 const MapPinIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
-  attributes,
+  ...attributes
 }) => {
   return (
     <svg
