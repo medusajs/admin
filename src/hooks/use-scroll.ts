@@ -5,12 +5,12 @@ export const useScroll = () => {
 
   const scrollListener = e => {
     const currentScrollY = e.target.scrollTop
-    if (currentScrollY > 0) {
+    if (currentScrollY > 16) {
       setIsScrolled(true)
     } else {
       setIsScrolled(false)
     }
   }
 
-  return [isScrolled, scrollListener]
+  return { isScrolled, scrollListener }
 }

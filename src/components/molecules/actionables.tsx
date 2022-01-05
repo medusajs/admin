@@ -1,10 +1,15 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import PropTypes from "prop-types"
 import React from "react"
+import { classNames } from "../../utils/class-names"
 import Button from "../fundamentals/button"
 import MoreHorizontalIcon from "../fundamentals/icons/more-horizontal-icon"
 
-type ActionType = {}
+export type ActionType = {
+  label: string
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+  variant?: "normal" | "danger"
+  icon: React.ReactNode
+}
 
 type ActionablesProps = {
   actions: ActionType[]
@@ -36,17 +41,18 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
             return (
               <DropdownMenu.Item key={i}>
                 {
-                  <button
-                    className={`btn-ghost-small w-full ${
-                      action.style === "danger" ? "text-rose-50" : ""
-                    }`}
+                  <Button
+                    variant="ghost"
+                    size="small"
+                    className={classNames(
+                      "w-full",
+                      action.variant === "danger" ? "text-rose-50" : ""
+                    )}
                     onClick={action.onClick}
                   >
-                    {action.icon && (
-                      <span className="mr-xsmall">{action.icon}</span>
-                    )}
-                    {action.text}
-                  </button>
+                    {action.icon}
+                    {action.label}
+                  </Button>
                 }
               </DropdownMenu.Item>
             )
@@ -55,22 +61,11 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
       </DropdownMenu.Root>
     </div>
   ) : (
-    <button className="btn-ghost-small" onClick={actions[0].onClick}>
+    <Button variant="ghost" size="small" onClick={actions[0].onClick}>
       {actions[0].icon && <span className="mr-xsmall">{actions[0].icon}</span>}
-      {actions[0].text}
-    </button>
+      {actions[0].label}
+    </Button>
   )
-}
-
-Actionables.propTypes = {
-  actions: PropTypes.arrayOf(
-    PropTypes.shape({
-      icon: PropTypes.node,
-      text: PropTypes.string,
-      onClick: PropTypes.func,
-      style: PropTypes.string,
-    })
-  ),
 }
 
 export default Actionables
