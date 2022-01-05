@@ -122,7 +122,6 @@ const InputField = React.forwardRef(
             step={step || "1"}
             placeholder={placeholder ? placeholder : "Placeholder"}
             onChange={onChange}
-            onMouseDown={e => e.stopPropagation()}
             onFocus={onFocus}
             disabled={disabled}
           />

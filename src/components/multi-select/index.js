@@ -3,6 +3,8 @@ import { MultiSelect as ReactMultiSelect } from "react-multi-select-component"
 import InputContainer from "../fundamentals/input-container"
 import InputHeader from "../fundamentals/input-header"
 import CheckIcon from "../fundamentals/icons/check-icon"
+import "./styles.css"
+
 // const StyledMultiSelect = styled()`
 //   color: black;
 
@@ -85,6 +87,7 @@ const ItemRenderer = ({ checked, option, onClick, disabled }) => (
         className="hidden"
         type="checkbox"
         onChange={onClick}
+        checked={checked}
         tabIndex={-1}
         disabled={disabled}
       />
@@ -124,10 +127,11 @@ const MultiSelect = React.forwardRef(
         <InputHeader {...{ label, required }} />
         <ReactMultiSelect
           name={name}
-          isOpen={true}
+          isOpen={isOpen}
           ItemRenderer={ItemRenderer}
           type={type}
           value={value}
+          className="multiselect-styling"
           options={options}
           onChange={onChange}
           overrideStrings={overrideStrings}

@@ -159,6 +159,10 @@
   .mono-xsmall-semibold {
     @apply font-mono text-xsmall leading-xsmall font-bold;
   }
+
+  .multi-select-styling {
+    @apply p-0;
+  }
 }
 
 @tailwind utilities;
