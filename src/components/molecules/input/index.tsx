@@ -10,7 +10,7 @@ import PlusIcon from "../../fundamentals/icons/plus-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 
-type inputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label: string
   deletable?: boolean
   key?: string
@@ -40,7 +40,7 @@ const InputField = React.forwardRef(
       tooltipProps = {},
       props,
       ...fieldProps
-    }: inputProps,
+    }: InputProps,
     ref
   ) => {
     const inputRef = useRef(null)
