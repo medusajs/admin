@@ -93,7 +93,6 @@ const InputField = React.forwardRef(
             key={key || name}
             placeholder={placeholder ? placeholder : "Placeholder"}
             onChange={onChange}
-            onMouseDown={e => e.stopPropagation()}
             onFocus={onFocus}
             {...fieldProps}
           />
