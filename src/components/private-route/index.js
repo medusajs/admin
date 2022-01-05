@@ -1,6 +1,5 @@
-import React, { useState, useContext } from "react"
 import { navigate } from "gatsby"
-
+import React, { useContext, useState } from "react"
 import { AccountContext } from "../../context/account"
 
 const PrivateRoute = ({ component: Component, location, ...rest }) => {
