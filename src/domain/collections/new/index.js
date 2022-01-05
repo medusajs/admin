@@ -4,7 +4,7 @@ import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
 
 import Button from "../../../components/button"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 
 import InfoTooltip from "../../../components/info-tooltip"
 

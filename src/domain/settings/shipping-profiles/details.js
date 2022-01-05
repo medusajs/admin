@@ -6,7 +6,7 @@ import MultiSelect from "react-multi-select-component"
 import { navigate } from "gatsby"
 
 import useMedusa from "../../../hooks/use-medusa"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Typography from "../../../components/typography"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"

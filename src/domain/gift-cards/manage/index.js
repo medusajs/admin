@@ -5,7 +5,7 @@ import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
 
 import Button from "../../../components/button"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import ImageUpload from "../../../components/image-upload"
 import TextArea from "../../../components/textarea"
 import Spinner from "../../../components/spinner"
