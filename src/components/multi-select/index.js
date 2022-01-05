@@ -1,41 +1,97 @@
 import React, { useImperativeHandle, useRef, useState } from "react"
-import { Flex } from "rebass"
-import { Label } from "@rebass/forms"
-import { default as ReactMultiSelect } from "react-multi-select-component"
-import styled from "@emotion/styled"
+import { MultiSelect as ReactMultiSelect } from "react-multi-select-component"
 import InputContainer from "../fundamentals/input-container"
 import InputHeader from "../fundamentals/input-header"
+import CheckIcon from "../fundamentals/icons/check-icon"
+// const StyledMultiSelect = styled()`
+//   color: black;
 
-const StyledMultiSelect = styled(ReactMultiSelect)`
-  color: black;
-  background-color: inherit;
+//   padding: 0;
 
-  padding: 0;
+//   outline: none;
 
-  height: 33px;
+//   .dropdown-container {
+//     background-color: inherit;
+//   }
 
-  .dropdown-container {
-    height: 33px;
-  }
+//   .dropdown-heading {
+//     padding-left: 0px;
+//     padding-right: 0px;
+//     height: 26px;
+//     outline: none;
+//   }
 
-  .dropdown-heading {
-    height: 33px;
-  }
+// .select-item {
+// }
 
-  line-height: 1.22;
+//   dropdown-container:focus-within {
+//     box-shadow: none;
+//   }
 
-  border: none;
-  outline: 0;
+//   .dropdown-content {
+//     top: 100%;
+//   }
 
-  transition: all 0.2s ease;
+//   .dropdown-heading-value {
+//   }
 
-  border-radius: 3px;
+//   .dropdown-heading-dropdown-arrow {
+//     display: none;
+//   }
 
-  .go3433208811 {
-    border: none;
-    border-radius: 3px;
-  }
-`
+//   line-height: 1.22;
+
+//   border: none;
+//   outline: 0;
+
+//   transition: all 0.2s ease;
+
+//   border-radius: 3px;
+
+//   .go3433208811:focus-within {
+//     box-shadow: none;
+//   }
+
+//   .go3433208811 {
+//     border: none;
+//     border-radius: 3px;
+//   }
+// `
+// type DefaultItemRendererProps = {
+//   checked: boolean
+//   option: {
+//     value: string
+//     label: string
+//     key?: string
+//     disabled?: boolean
+//   }
+//   disabled?: boolean
+//   onClick
+// }
+
+const ItemRenderer = ({ checked, option, onClick, disabled }) => (
+  <div className={`item-renderer ${disabled && "disabled"}`}>
+    <div className="align-center flex">
+      <div
+        className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
+          checked && "bg-violet-60"
+        }`}
+      >
+        <span className="self-center">
+          {checked && <CheckIcon size={16} />}
+        </span>
+      </div>
+      <input
+        className="hidden"
+        type="checkbox"
+        onChange={onClick}
+        tabIndex={-1}
+        disabled={disabled}
+      />
+      <span className="ml-3">{option.label}</span>
+    </div>
+  </div>
+)
 
 const MultiSelect = React.forwardRef(
   (
@@ -60,13 +116,16 @@ const MultiSelect = React.forwardRef(
     useImperativeHandle(ref, () => dropdownRef.current)
 
     return (
-      <InputContainer key={name} onClick={() => setIsOpen(!isOpen)}>
+      <InputContainer
+        key={name}
+        onFocusLost={() => setIsOpen(false)}
+        onClick={() => setIsOpen(true)}
+      >
         <InputHeader {...{ label, required }} />
-        <StyledMultiSelect
-          ref={dropdownRef}
-          isOpen={isOpen}
-          inline={inline}
+        <ReactMultiSelect
           name={name}
+          isOpen={true}
+          ItemRenderer={ItemRenderer}
           type={type}
           value={value}
           options={options}

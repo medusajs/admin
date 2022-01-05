@@ -5,18 +5,25 @@ type InputContainerProps = {
   key?: string
   props?: React.HTMLAttributes<HTMLDivElement>
   onClick?: MouseEventHandler<HTMLDivElement>
+  onFocusLost?: () => void
 }
 
 const InputContainer: React.FC<InputContainerProps> = ({
   key,
   props,
   onClick,
+  onFocusLost,
   children,
 }) => {
   return (
     <div
       className="bg-grey-5 inter-base-regular w-full p-3 flex h-18 flex-col cursor-text border border-grey-20 focus-within:shadow-input focus-within:border-violet-60 rounded-base my-4"
       onClick={onClick}
+      onBlur={e => {
+        if (onFocusLost && !e.currentTarget.contains(e.relatedTarget)) {
+          onFocusLost()
+        }
+      }}
       onMouseDown={e => e.preventDefault()}
       key={key}
       {...props}
