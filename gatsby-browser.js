@@ -1,10 +1,10 @@
-import "./src/assets/styles/global.css"
 import React from "react"
-import { CacheProvider } from "./src/context/cache"
-import { AccountProvider } from "./src/context/account"
-import { InterfaceProvider } from "./src/context/interface"
-import { ThemeProvider as Provider } from "./src/theme"
 import { ToastProvider } from "react-toast-notifications"
+import { AccountProvider } from "./src/context/account"
+import { CacheProvider } from "./src/context/cache"
+import { InterfaceProvider } from "./src/context/interface"
+import "./src/styles/global.css"
+import { ThemeProvider as Provider } from "./src/theme"
 
 //export const shouldUpdateScroll = ({ routerProps: { location } }) => {
 //  window.scrollTo(0, 0)
