@@ -1,8 +1,11 @@
-import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./types/icon-type"
 
-const DuplicateIcon = props => {
-  const { size, color, ...rest } = props
+const DuplicateIcon: React.FC<IconProps> = ({
+  size = "20px",
+  color = "currentColor",
+  ...attributes
+}) => {
   return (
     <svg
       width={size}
@@ -10,7 +13,7 @@ const DuplicateIcon = props => {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
+      {...attributes}
     >
       <path
         d="M16.0894 8.33333H9.74326C8.9644 8.33333 8.33301 8.96472 8.33301 9.74358V16.0897C8.33301 16.8686 8.9644 17.5 9.74326 17.5H16.0894C16.8683 17.5 17.4997 16.8686 17.4997 16.0897V9.74358C17.4997 8.96472 16.8683 8.33333 16.0894 8.33333Z"
@@ -28,16 +31,6 @@ const DuplicateIcon = props => {
       />
     </svg>
   )
-}
-
-DuplicateIcon.defaultProps = {
-  color: "currentColor",
-  size: "20px",
-}
-
-DuplicateIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default DuplicateIcon

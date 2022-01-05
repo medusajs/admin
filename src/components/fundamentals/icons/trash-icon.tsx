@@ -1,9 +1,12 @@
 import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./types/icon-type"
 
-const TrashIcon = props => {
-  const { size, color, ...rest } = props
-
+const TrashIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+  ...attributes
+}) => {
   return (
     <svg
       width={size}
@@ -11,7 +14,7 @@ const TrashIcon = props => {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
+      {...attributes}
     >
       <path
         d="M3.33301 5.49054H4.81449H16.6663"

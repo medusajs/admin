@@ -1,9 +1,12 @@
 import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./types/icon-type"
 
-const PlusIcon = props => {
-  const { size, color, ...rest } = props
-
+const PlusIcon: React.FC<IconProps> = ({
+  size = "24px",
+  color = "currentColor",
+  ...attributes
+}) => {
   return (
     <svg
       width={size}
@@ -11,7 +14,7 @@ const PlusIcon = props => {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
+      {...attributes}
     >
       <path
         d="M10 4.16667V15.8333"

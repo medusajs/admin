@@ -1,8 +1,12 @@
 import PropTypes from "prop-types"
 import React from "react"
+import IconProps from "./types/icon-type"
 
-const MoreHorizontalIcon = props => {
-  const { size, color, ...rest } = props
+const MoreHorizontalIcon: React.FC<IconProps> = ({
+  size = "20px",
+  color = "currentColor",
+  ...attributes
+}) => {
   return (
     <svg
       width={size}
@@ -10,7 +14,7 @@ const MoreHorizontalIcon = props => {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
+      {...attributes}
     >
       <path
         d="M10 10.75C10.4142 10.75 10.75 10.4142 10.75 10C10.75 9.58579 10.4142 9.25 10 9.25C9.58579 9.25 9.25 9.58579 9.25 10C9.25 10.4142 9.58579 10.75 10 10.75Z"
