@@ -4,7 +4,7 @@ import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
 import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 
-import MultiSelect from "../../../components/multi-select"
+import MultiSelect from "../../../components/molecules/multi-select"
 import useMedusa from "../../../hooks/use-medusa"
 import Input from "../../../components/molecules/input"
 import Select from "../../../components/select"

@@ -209,6 +209,10 @@
     @apply mr-4;
   }
 
+  .options {
+    @apply mt-1;
+  }
+
   .dropdown-heading-dropdown-arrow,
   .dropdown-search-clear-icon {
     @apply hidden;

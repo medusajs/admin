@@ -1,10 +1,10 @@
 import React, { ChangeEventHandler, MouseEventHandler, useState } from "react"
 import { MultiSelect as ReactMultiSelect } from "react-multi-select-component"
-import InputContainer from "../fundamentals/input-container"
-import InputHeader from "../fundamentals/input-header"
-import CheckIcon from "../fundamentals/icons/check-icon"
-import ArrowDownIcon from "../fundamentals/icons/arrow-down-icon"
-import XCircleIcon from "../fundamentals/icons/x-circle-icon"
+import InputContainer from "../../fundamentals/input-container"
+import InputHeader from "../../fundamentals/input-header"
+import CheckIcon from "../../fundamentals/icons/check-icon"
+import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
+import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 
 type Option = React.OptionHTMLAttributes<HTMLOptionElement> & {
   key?: string
@@ -18,15 +18,23 @@ type ItemRendererProps = {
 }
 
 type MultiSelectProps = {
-  options: Option[]
-  onChange?: MouseEventHandler<HTMLElement>
+  // component props
   label: string
+  required?: boolean
   name?: string
-  type
-  required
-  value
-  selectOptions
-  overrideStrings
+  // Multiselect props
+  labelledBy?: string
+  options: { label: string; value: string; disabled?: boolean }[]
+  value: { label: string; value: string }[]
+  hasSelectAll?: boolean
+  isLoading?: boolean
+  shouldToggleOnHover?: boolean
+  overrideStrings?: object
+  onChange?: MouseEventHandler<HTMLElement>
+  disabled?: boolean
+  disableSearch?: boolean
+  isCreatable?: boolean
+  onCreateOption: any
 }
 
 const ItemRenderer: React.FC<ItemRendererProps> = ({
@@ -62,14 +70,13 @@ const ItemRenderer: React.FC<ItemRendererProps> = ({
 const MultiSelect = React.forwardRef(
   (
     {
-      options,
-      onChange,
       label,
       name,
       required,
-      value,
-      selectOptions,
       overrideStrings,
+      labelledBy = "label",
+      hasSelectAll = false,
+      ...selectOptions
     }: MultiSelectProps,
     ref
   ) => {
@@ -86,14 +93,11 @@ const MultiSelect = React.forwardRef(
           <ArrowDownIcon size={16} />
         </div>
         <ReactMultiSelect
-          ref={ref}
-          name={name}
+          labelledBy={labelledBy}
           isOpen={isOpen}
+          hasSelectAll={hasSelectAll}
           ItemRenderer={ItemRenderer}
-          value={value}
           className="multiselect-styling"
-          options={options}
-          onChange={onChange}
           overrideStrings={{ search: "Search...", ...overrideStrings }}
           ClearIcon={
             <span className="text-grey-40">

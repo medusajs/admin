@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import MultiSelect from "../../../components/multi-select"
+import MultiSelect from "../../../components/molecules/multi-select"
 import _ from "lodash"
 import Medusa from "../../../services/api"
 import { Text, Flex } from "rebass"
