@@ -1,9 +1,9 @@
 import React from "react"
 import { ToastProvider } from "react-toast-notifications"
+import "./src/assets/styles/global.css"
 import { AccountProvider } from "./src/context/account"
 import { CacheProvider } from "./src/context/cache"
 import { InterfaceProvider } from "./src/context/interface"
-import "./src/styles/global.css"
 import { ThemeProvider as Provider } from "./src/theme"
 
 //export const shouldUpdateScroll = ({ routerProps: { location } }) => {

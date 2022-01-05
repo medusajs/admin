@@ -3,7 +3,7 @@
 
 @font-face {
   font-family: "Inter";
-  src: url("../fonts/Inter-Regular.ttf") format("truetype");
+  src: url("../../fonts/Inter-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -11,7 +11,7 @@
 
 @font-face {
   font-family: "Inter";
-  src: url("../fonts/Inter-SemiBold.ttf") format("truetype");
+  src: url("../../fonts/Inter-SemiBold.ttf") format("truetype");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -19,7 +19,7 @@
 
 @font-face {
   font-family: "Roboto Mono";
-  src: url("../fonts/RobotoMono-Bold.ttf") format("truetype");
+  src: url("../../fonts/RobotoMono-Bold.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
@@ -27,7 +27,7 @@
 
 @font-face {
   font-family: "Roboto Mono";
-  src: url("../fonts/RobotoMono-Regular.ttf") format("truetype");
+  src: url("../../fonts/RobotoMono-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
