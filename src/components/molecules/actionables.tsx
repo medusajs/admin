@@ -1,20 +1,21 @@
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "../atoms/dropdown"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import PropTypes from "prop-types"
 import React from "react"
+import Button from "../fundamentals/button"
 import MoreHorizontalIcon from "../fundamentals/icons/more-horizontal-icon"
+
+type ActionType = {}
+
+type ActionablesProps = {
+  actions: ActionType[]
+}
 
 /**
  * A component that accepts multiple actionables and renders them as a dropdown menu.
  * If only a single actionable is provided, it will render a button instead.
  */
-const Actionables = ({ actions }) => {
-  if (typeof actions === "undefined" || actions.length === 0) {
+const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
+  if (actions.length === 0) {
     return null
   }
 
@@ -22,9 +23,9 @@ const Actionables = ({ actions }) => {
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <button className="btn-ghost-medium">
+          <Button variant="ghost" size="medium">
             <MoreHorizontalIcon />
-          </button>
+          </Button>
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content
