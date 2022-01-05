@@ -1,5 +1,6 @@
 import React, { Children } from "react"
 import { classNames } from "../../../utils/class-names"
+import Spinner from "../../atoms/spinner"
 
 type ButtonProps = {
   variant: "primary" | "secondary" | "ghost"
@@ -61,19 +62,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
+        {...attributes}
         className={classNames(style, attributes.className)}
         disabled={attributes.disabled || loading}
         ref={ref}
-        {...attributes}
         onClick={handleClick}
       >
-        {Children.map(children, (child, i) => {
-          return (
-            <span key={i} className="mr-xsmall last:mr-0">
-              {child}
-            </span>
-          )
-        })}
+        {loading ? (
+          <Spinner size={size} variant={"secondary"} />
+        ) : (
+          Children.map(children, (child, i) => {
+            return (
+              <span key={i} className="mr-xsmall last:mr-0">
+                {child}
+              </span>
+            )
+          })
+        )}
       </button>
     )
   }
