@@ -3,73 +3,8 @@ import { MultiSelect as ReactMultiSelect } from "react-multi-select-component"
 import InputContainer from "../fundamentals/input-container"
 import InputHeader from "../fundamentals/input-header"
 import CheckIcon from "../fundamentals/icons/check-icon"
-import "./styles.css"
-
-// const StyledMultiSelect = styled()`
-//   color: black;
-
-//   padding: 0;
-
-//   outline: none;
-
-//   .dropdown-container {
-//     background-color: inherit;
-//   }
-
-//   .dropdown-heading {
-//     padding-left: 0px;
-//     padding-right: 0px;
-//     height: 26px;
-//     outline: none;
-//   }
-
-// .select-item {
-// }
-
-//   dropdown-container:focus-within {
-//     box-shadow: none;
-//   }
-
-//   .dropdown-content {
-//     top: 100%;
-//   }
-
-//   .dropdown-heading-value {
-//   }
-
-//   .dropdown-heading-dropdown-arrow {
-//     display: none;
-//   }
-
-//   line-height: 1.22;
-
-//   border: none;
-//   outline: 0;
-
-//   transition: all 0.2s ease;
-
-//   border-radius: 3px;
-
-//   .go3433208811:focus-within {
-//     box-shadow: none;
-//   }
-
-//   .go3433208811 {
-//     border: none;
-//     border-radius: 3px;
-//   }
-// `
-// type DefaultItemRendererProps = {
-//   checked: boolean
-//   option: {
-//     value: string
-//     label: string
-//     key?: string
-//     disabled?: boolean
-//   }
-//   disabled?: boolean
-//   onClick
-// }
+import ArrowDownIcon from "../fundamentals/icons/arrow-down-icon"
+import XCircleIcon from "../fundamentals/icons/x-circle-icon"
 
 const ItemRenderer = ({ checked, option, onClick, disabled }) => (
   <div className={`item-renderer ${disabled && "disabled"}`}>
@@ -91,7 +26,7 @@ const ItemRenderer = ({ checked, option, onClick, disabled }) => (
         tabIndex={-1}
         disabled={disabled}
       />
-      <span className="ml-3">{option.label}</span>
+      <span className="ml-3 text-grey-90">{option.label}</span>
     </div>
   </div>
 )
@@ -124,7 +59,10 @@ const MultiSelect = React.forwardRef(
         onFocusLost={() => setIsOpen(false)}
         onClick={() => setIsOpen(true)}
       >
-        <InputHeader {...{ label, required }} />
+        <div className="w-full flex text-grey-50 justify-between">
+          <InputHeader {...{ label, required }} />
+          <ArrowDownIcon size={16} />
+        </div>
         <ReactMultiSelect
           name={name}
           isOpen={isOpen}
@@ -134,7 +72,12 @@ const MultiSelect = React.forwardRef(
           className="multiselect-styling"
           options={options}
           onChange={onChange}
-          overrideStrings={overrideStrings}
+          overrideStrings={{ search: "Search...", ...overrideStrings }}
+          ClearIcon={
+            <span className="text-grey-40">
+              <XCircleIcon size={20} />{" "}
+            </span>
+          }
           {...selectOptions}
         />
       </InputContainer>

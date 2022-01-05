@@ -173,6 +173,56 @@
   }
 }
 
+.multiselect-styling {
+  @apply p-0 -mx-3 mt-1 outline-0 cursor-text;
+
+  .dropdown-container {
+    @apply border-none focus-within:shadow-none cursor-text;
+  }
+
+  .dropdown-content {
+    @apply rounded-rounded w-full -mt-3 pt-0 -top-full shadow-input;
+  }
+
+  .select-item {
+    @apply p-2 my-1 mx-2 rounded bg-grey-0 hover:bg-grey-10 !important;
+  }
+
+  .select-panel > div::before {
+    content: url("../../assets/svg-2.0/search.svg");
+    width: 2rem;
+    height: 1.5rem;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .search {
+    @apply py-4 flex items-center px-3;
+  }
+  .search input {
+    @apply h-6 text-grey-90;
+  }
+  .search .search-clear-button {
+    @apply mr-4;
+  }
+
+  .dropdown-heading-dropdown-arrow,
+  .dropdown-search-clear-icon {
+    @apply hidden;
+  }
+
+  .dropdown-heading {
+    @apply py-0 px-3 outline-0 h-6 cursor-text;
+  }
+
+  .dropdown-container {
+    background-color: inherit;
+  }
+}
+
 /* Classes to remove number spinners from inputs of type number */
 /* Chrome, Safari, Edge, Opera */
 .remove-number-spinner::-webkit-outer-spin-button,
