@@ -15,6 +15,7 @@
     "@storybook/theming": "^5.3.19",
     "@svgr/webpack": "^5.4.0",
     "axios": "^0.24.0",
+    "clsx": "^1.1.1",
     "copy-to-clipboard": "^3.3.1",
     "crypto-browserify": "^3.12.0",
     "emotion-theming": "^10.0.27",
