@@ -1,4 +1,5 @@
 import React from "react"
+import clsx from "clsx"
 
 type SidebarTeamMemberProps = {
   color?: string
@@ -29,7 +30,10 @@ const SidebarTeamMember: React.FC<SidebarTeamMemberProps> = ({
       ? `${user.first_name} ${user.last_name}`
       : user.email
 
-  const avatarClasses = `w-5 h-5 ${color} text-grey-0 rounded-full text-center flex justify-center items-center`
+  const avatarClasses = clsx(
+    "w-5 h-5 text-grey-0 rounded-full text-center flex justify-center items-center",
+    color
+  )
 
   const avatar = profilePicture ? (
     <img

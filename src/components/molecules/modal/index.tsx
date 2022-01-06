@@ -1,5 +1,6 @@
 import React from "react"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
+import clsx from "clsx"
 import * as Dialog from "@radix-ui/react-dialog"
 
 type ModalProps = {
@@ -65,7 +66,12 @@ Modal.Body = ({ children, largeModal = true }) => {
 
 Modal.Content = ({ children, largeModal = true }) => {
   return (
-    <div className={`px-7 pt-5 ${largeModal ? "w-[750px] pb-7" : "pb-5"}`}>
+    <div
+      className={clsx("px-7 pt-5", {
+        "w-[750px] pb-7": largeModal,
+        "pb-5": !largeModal,
+      })}
+    >
       {children}
     </div>
   )
@@ -93,9 +99,9 @@ Modal.Footer = ({ children, largeModal = true }) => {
   return (
     <div
       onClick={e => e.stopPropagation()}
-      className={`px-7  pb-5 flex w-full ${
-        largeModal ? "border-t border-grey-20 pt-3.5" : ""
-      }`}
+      className={clsx("px-7  pb-5 flex w-full", {
+        largeModal: "border-t border-grey-20 pt-3.5",
+      })}
     >
       {children}
     </div>

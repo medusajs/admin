@@ -48,19 +48,19 @@ const PaginationArrows: React.FC<PaginationArrowsProps> = ({
     <div className="flex text-grey-50">
       <span
         onClick={handlePreviousPage}
-        className={`mr-1.5 w-5 h-5 ${
-          currentPage === 0 ? disabledClasses : enabledClasses
-        } transition rounded-base flex justify-center items-center`}
+        className={`mr-1.5 w-5 h-5 transition rounded-base flex justify-center items-center
+         ${currentPage === 0 ? disabledClasses : enabledClasses} `}
       >
         <ArrowLeftIcon size={16} />
       </span>
       <span
         onClick={handleNextPage}
-        className={`w-5 h-5 ${
+        className={`w-5 h-5 transition rounded-base flex justify-center items-center 
+        ${
           currentPage + 1 === paginationLength
             ? disabledClasses
             : enabledClasses
-        } transition rounded-base flex justify-center items-center`}
+        } `}
       >
         <ArrowRightIcon size={16} />
       </span>
