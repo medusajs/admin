@@ -8,7 +8,7 @@ import Select from "../../components/select"
 import Card from "../../components/card"
 import Button from "../../components/button"
 import Spinner from "../../components/spinner"
-import MultiSelect from "../../components/molecules/multi-select"
+import MultiSelect from "../../components/molecules/select"
 import Typography from "../../components/typography"
 import BreadCrumb from "../../components/breadcrumb"
 

@@ -1,5 +1,5 @@
 import React, { ChangeEventHandler, useState } from "react"
-import { MultiSelect as ReactMultiSelect } from "react-multi-select-component"
+import { MultiSelect } from "react-multi-select-component"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import CheckIcon from "../../fundamentals/icons/check-icon"
@@ -22,8 +22,8 @@ type MultiSelectProps = {
   label: string
   required?: boolean
   name?: string
-  isMultiSelect?: boolean
   // Multiselect props
+  isMultiSelect?: boolean
   labelledBy?: string
   options: { label: string; value: string; disabled?: boolean }[]
   value: { label: string; value: string }[]
@@ -68,7 +68,7 @@ const ItemRenderer: React.FC<ItemRendererProps> = ({
   </div>
 )
 
-const MultiSelect = React.forwardRef(
+const Select = React.forwardRef(
   (
     {
       label,
@@ -105,7 +105,7 @@ const MultiSelect = React.forwardRef(
           <InputHeader {...{ label, required }} />
           <ArrowDownIcon size={16} />
         </div>
-        <ReactMultiSelect
+        <MultiSelect
           labelledBy={labelledBy}
           value={value}
           isOpen={isOpen}
@@ -127,4 +127,4 @@ const MultiSelect = React.forwardRef(
   }
 )
 
-export default MultiSelect
+export default Select
