@@ -28,11 +28,11 @@ const IndexPage = () => {
       .then(() => {
         navigate("/a")
       })
-      .finally(() => {
-        setLoading(false)
-      })
       .catch(e => {
         setIsInvalidLogin(true)
+      })
+      .finally(() => {
+        setLoading(false)
       })
   }
 
