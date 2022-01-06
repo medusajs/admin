@@ -232,6 +232,18 @@ module.exports = {
         medium: "1025px",
         large: "1464px",
       },
+      boxShadow: {
+        cta: "0px 0px 0px 4px rgba(124, 58, 237, 0.1)",
+      },
+      keyframes: {
+        ring: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+      },
+      animation: {
+        ring: "ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
+      },
     },
   },
   plugins: [],
