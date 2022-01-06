@@ -27,10 +27,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const buttonClass = "btn-" + variant + "-" + size
 
+    const classes = clsx(buttonClass, attributes.className)
+    console.log(classes)
     return (
       <button
         {...attributes}
-        className={clsx(buttonClass, attributes.className)}
+        className={classes}
         disabled={attributes.disabled || loading}
         ref={ref}
         onClick={handleClick}

@@ -25,7 +25,7 @@ type ModalType = React.FC<ModalProps> & {
 
 const Overlay: React.FC = ({ children }) => {
   return (
-    <Dialog.Overlay className="fixed bg-grey-90/40 grid top-0 left-0 right-0 bottom-0 place-items-center overflow-y-auto">
+    <Dialog.Overlay className="fixed bg-grey-90/40 z-50 grid top-0 left-0 right-0 bottom-0 place-items-center overflow-y-auto">
       {children}
     </Dialog.Overlay>
   )
@@ -57,6 +57,7 @@ const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
 }
 
 Modal.Body = ({ children, largeModal }) => {
+  console.log(largeModal)
   return (
     <div className="inter-base-regular" onClick={e => e.stopPropagation()}>
       {addProp(children, largeModal)}
@@ -64,7 +65,7 @@ Modal.Body = ({ children, largeModal }) => {
   )
 }
 
-Modal.Content = ({ children, largeModal }) => {
+Modal.Content = ({ children, largeModal = true }) => {
   console.log(largeModal)
   return (
     <div
@@ -96,12 +97,12 @@ Modal.Header = ({ handleClose = undefined, children }) => {
   )
 }
 
-Modal.Footer = ({ children, largeModal }) => {
+Modal.Footer = ({ children, largeModal = true }) => {
   return (
     <div
       onClick={e => e.stopPropagation()}
       className={clsx("px-7  pb-5 flex w-full", {
-        "border-t border-grey-20 pt-3.5": largeModal,
+        "border-t border-grey-20 pt-4": largeModal,
       })}
     >
       {children}

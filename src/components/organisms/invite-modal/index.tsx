@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import Modal from "../../molecules/modal"
-import Button from "../../button"
+import Button from "../../fundamentals/button"
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
 import InputField from "../../molecules/input"
@@ -54,11 +54,22 @@ const InviteModal: React.FC<InviteModalProps> = ({ handleClose }) => {
           />
         </Modal.Content>
         <Modal.Footer>
-          <div className="flex w-full justify-end">
-            <Button mr={2} variant="primary" onClick={handleClose}>
+          <div className="flex w-full h-8 justify-end">
+            <Button
+              variant="ghost"
+              className="mr-2 w-32 text-small justify-center"
+              size="large"
+              onClick={handleClose}
+            >
               Cancel
             </Button>
-            <Button loading={isLoading} onClick={handleSubmit} variant="cta">
+            <Button
+              loading={isLoading}
+              size="large"
+              className="w-32 text-small justify-center"
+              variant="primary"
+              onClick={handleSubmit}
+            >
               Invite
             </Button>
           </div>
