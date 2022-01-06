@@ -13,7 +13,7 @@ import Typography from "../../../components/typography"
 
 import useMedusa from "../../../hooks/use-medusa"
 import Modal from "../../../components/modal"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Items from "./components/items"
 import ShippingDetails from "./components/shipping-details"
 import Billing from "./components/billing-details"

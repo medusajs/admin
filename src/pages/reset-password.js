@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 
 import LoginLayout from "../components/login-layout"
 import SEO from "../components/seo"
-import InputField from "../components/input"
+import InputField from "../components/molecules/input"
 import Button from "../components/button"
 import { ReactComponent as Graphic } from "../assets/login-graphic.svg"
 

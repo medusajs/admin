@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import { Box, Flex, Image, Text } from "rebass"
 import styled from "@emotion/styled"
 import Dropdown from "../../../../components/dropdown"

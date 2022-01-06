@@ -5,7 +5,7 @@ import { Text, Flex, Box } from "rebass"
 import CurrencyInput from "../../currency-input"
 import Modal from "../../modal"
 import Button from "../../button"
-import Input from "../../input"
+import Input from "../../molecules/input"
 
 import useMedusa from "../../../hooks/use-medusa"
 

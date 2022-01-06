@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { Flex, Text } from "rebass"
 import { isEmpty } from "lodash"
 import Select from "../select"
-import Input from "../input"
+import Input from "../molecules/input"
 import { countries } from "../../utils/countries"
 
 const inputStyle = {

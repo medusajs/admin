@@ -3,7 +3,7 @@ import ReactDatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { Box, Flex } from "rebass"
 import Button from "../button"
-import InputField from "../input"
+import InputField from "../molecules/input"
 import moment from "moment"
 import styled from "@emotion/styled"
 

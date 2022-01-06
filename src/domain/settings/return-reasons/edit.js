@@ -3,7 +3,7 @@ import { Flex, Text, Box } from "rebass"
 import { navigate } from "gatsby"
 import { useForm } from "react-hook-form"
 
-import Input, { StyledLabel } from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import InfoTooltip from "../../../components/info-tooltip"
@@ -100,14 +100,13 @@ const EditReturnReason = ({ id }) => {
             </Flex>
           </Flex>
           <Flex width={1} flexDirection="column">
-            <StyledLabel boldLabel={true} sx={{ color: "black" }}>
-              Label
-            </StyledLabel>
-            <Input mb={3} name="label" ref={register} />
-            <StyledLabel boldLabel={true} sx={{ color: "black" }}>
-              Description
-            </StyledLabel>
-            <Input mb={3} name="description" ref={register} />
+            <Input mb={3} label="label" name="label" ref={register} />
+            <Input
+              mb={3}
+              label="description"
+              name="description"
+              ref={register}
+            />
           </Flex>
         </Flex>
         <Flex
@@ -170,11 +169,9 @@ const EditReturnReason = ({ id }) => {
           </Flex>
         </Flex>
         <Flex width={1} mt={4} flexDirection="column" alignItems="flex-start">
-          <StyledLabel>
-            <Text fontSize={18} sx={{ color: "black" }} fontWeight={500}>
-              Danger zone
-            </Text>
-          </StyledLabel>
+          <Text fontSize={18} sx={{ color: "black" }} fontWeight={500}>
+            Danger zone
+          </Text>
           <Button
             onClick={() => deleteReturnReason()}
             variant="danger"

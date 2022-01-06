@@ -9,7 +9,7 @@ import Medusa from "../../../services/api"
 import ProductSelector from "./product-selector"
 import Button from "../../../components/button"
 import MultiSelect from "react-multi-select-component"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Select from "../../../components/select"
 import Typography from "../../../components/typography"
 
