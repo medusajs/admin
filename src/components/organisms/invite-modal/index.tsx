@@ -3,7 +3,7 @@ import Modal from "../../molecules/modal"
 import Button from "../../button"
 import Medusa from "../../../services/api"
 import useMedusa from "../../../hooks/use-medusa"
-import InputField from "../../input"
+import InputField from "../../molecules/input"
 
 type InviteModalProps = {
   handleClose: () => void
@@ -43,10 +43,11 @@ const InviteModal: React.FC<InviteModalProps> = ({ handleClose }) => {
     <Modal handleClose={handleClose}>
       <Modal.Body>
         <Modal.Header handleClose={handleClose}>
-          <span className="text-large font-semibold">Invite Users</span>
+          <span className="inter-xlarge-semibold">Invite Users</span>
         </Modal.Header>
         <Modal.Content>
           <InputField
+            label="Email"
             placeholder="lebron@james.com"
             value={email}
             onChange={e => setEmail(e.target.value)}
