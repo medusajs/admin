@@ -44,7 +44,7 @@ const ItemRenderer: React.FC<ItemRendererProps> = ({
   disabled,
 }) => (
   <div className={`item-renderer ${disabled && "disabled"}`}>
-    <div className="align-center flex">
+    <div className="items-center h-full flex">
       <div
         className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
           checked && "bg-violet-60"
@@ -94,7 +94,7 @@ const MultiSelect = React.forwardRef(
         </div>
         <ReactMultiSelect
           labelledBy={labelledBy}
-          isOpen={isOpen}
+          isOpen={true}
           hasSelectAll={hasSelectAll}
           ItemRenderer={ItemRenderer}
           className="multiselect-styling"
