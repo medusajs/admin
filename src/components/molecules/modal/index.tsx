@@ -56,7 +56,7 @@ const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
   )
 }
 
-Modal.Body = ({ children, largeModal = true }) => {
+Modal.Body = ({ children, largeModal }) => {
   return (
     <div className="inter-base-regular" onClick={e => e.stopPropagation()}>
       {addProp(children, largeModal)}
@@ -64,12 +64,13 @@ Modal.Body = ({ children, largeModal = true }) => {
   )
 }
 
-Modal.Content = ({ children, largeModal = true }) => {
+Modal.Content = ({ children, largeModal }) => {
+  console.log(largeModal)
   return (
     <div
       className={clsx("px-7 pt-5", {
-        ["w-[750px] pb-7"]: !largeModal,
-        ["pb-5"]: largeModal,
+        ["w-largeModal pb-7"]: largeModal,
+        ["pb-5"]: !largeModal,
       })}
     >
       {children}
@@ -95,7 +96,7 @@ Modal.Header = ({ handleClose = undefined, children }) => {
   )
 }
 
-Modal.Footer = ({ children, largeModal = true }) => {
+Modal.Footer = ({ children, largeModal }) => {
   return (
     <div
       onClick={e => e.stopPropagation()}

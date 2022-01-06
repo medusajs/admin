@@ -1,9 +1,6 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    minWidth:{
-      'modal': '520px'
-    },
     screens: {},
     extend: {
       boxShadow: {
@@ -183,7 +180,11 @@ module.exports = {
         "5xlarge": "4rem",
         "6xlarge": "6rem",
       },
+      width: {
+        largeModal: "750px",
+      },
       minWidth: {
+        modal: "520px",
         sidebar: "240px",
       },
       maxWidth: {
