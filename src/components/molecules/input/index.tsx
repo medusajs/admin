@@ -10,60 +10,37 @@ import PlusIcon from "../../fundamentals/icons/plus-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 
-type inputProps = {
-  invalid?: boolean
-  placeholder?: string
-  defaultValue?: string
-  step?: string
-  min?: number
-  max?: number
-  inline?: boolean
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label: string
-  name?: string
-  type?: string
-  inputStyle?: any
-  required?: boolean
-  value?: any
   deletable?: boolean
+  key?: string
   onDelete?: MouseEventHandler<HTMLSpanElement>
   onChange?: ChangeEventHandler<HTMLInputElement>
   onFocus?: FocusEventHandler<HTMLInputElement>
-  textAlign?: string
-  disabled?: boolean
   withTooltip?: boolean
   tooltipText?: string
   tooltipProps?: any
-  start?: any
   props?: React.HTMLAttributes<HTMLDivElement>
 }
 
 const InputField = React.forwardRef(
   (
     {
-      invalid,
       placeholder,
-      defaultValue,
-      step,
-      min,
-      max,
-      inline,
       label,
       name,
-      type,
-      inputStyle,
+      key,
       required,
-      value,
       deletable,
       onDelete,
       onChange,
       onFocus,
-      textAlign,
-      disabled,
       withTooltip = false,
       tooltipText,
       tooltipProps = {},
       props,
-    }: inputProps,
+      ...fieldProps
+    }: InputProps,
     ref
   ) => {
     const inputRef = useRef(null)
@@ -111,19 +88,13 @@ const InputField = React.forwardRef(
           <input
             className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
             ref={inputRef}
-            defaultValue={defaultValue}
             autoComplete="off"
             name={name}
-            key={name}
-            type={type}
-            min={min}
-            max={max}
-            value={value}
-            step={step || "1"}
+            key={key || name}
             placeholder={placeholder ? placeholder : "Placeholder"}
             onChange={onChange}
             onFocus={onFocus}
-            disabled={disabled}
+            {...fieldProps}
           />
 
           {deletable && (
@@ -132,7 +103,7 @@ const InputField = React.forwardRef(
             </span>
           )}
 
-          {type === "number" && (
+          {fieldProps.type === "number" && (
             <div className="flex self-end">
               <span
                 onClick={onClickChevronDown}
