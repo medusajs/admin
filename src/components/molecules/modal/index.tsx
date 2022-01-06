@@ -68,8 +68,8 @@ Modal.Content = ({ children, largeModal = true }) => {
   return (
     <div
       className={clsx("px-7 pt-5", {
-        "w-[750px] pb-7": largeModal,
-        "pb-5": !largeModal,
+        ["w-[750px] pb-7"]: !largeModal,
+        ["pb-5"]: largeModal,
       })}
     >
       {children}
@@ -100,7 +100,7 @@ Modal.Footer = ({ children, largeModal = true }) => {
     <div
       onClick={e => e.stopPropagation()}
       className={clsx("px-7  pb-5 flex w-full", {
-        largeModal: "border-t border-grey-20 pt-3.5",
+        "border-t border-grey-20 pt-3.5": largeModal,
       })}
     >
       {children}
