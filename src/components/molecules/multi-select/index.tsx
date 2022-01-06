@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, MouseEventHandler, useState } from "react"
+import React, { ChangeEventHandler, useState } from "react"
 import { MultiSelect as ReactMultiSelect } from "react-multi-select-component"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
@@ -22,6 +22,7 @@ type MultiSelectProps = {
   label: string
   required?: boolean
   name?: string
+  isMultiSelect?: boolean
   // Multiselect props
   labelledBy?: string
   options: { label: string; value: string; disabled?: boolean }[]
@@ -30,9 +31,9 @@ type MultiSelectProps = {
   isLoading?: boolean
   shouldToggleOnHover?: boolean
   overrideStrings?: object
-  onChange?: MouseEventHandler<HTMLElement>
+  onChange: (values: any[]) => void
   disabled?: boolean
-  disableSearch?: boolean
+  enableSearch?: boolean
   isCreatable?: boolean
   onCreateOption: any
 }
@@ -43,7 +44,7 @@ const ItemRenderer: React.FC<ItemRendererProps> = ({
   onClick,
   disabled,
 }) => (
-  <div className={`item-renderer ${disabled && "disabled"}`}>
+  <div className={`item-renderer ${disabled && "disabled"} w-full h-full`}>
     <div className="items-center h-full flex">
       <div
         className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
@@ -73,14 +74,26 @@ const MultiSelect = React.forwardRef(
       label,
       name,
       required,
+      value,
+      onChange,
+      isMultiSelect,
+      hasSelectAll,
+      enableSearch,
       overrideStrings,
       labelledBy = "label",
-      hasSelectAll = false,
       ...selectOptions
     }: MultiSelectProps,
     ref
   ) => {
     const [isOpen, setIsOpen] = useState(false)
+
+    const handleSelect = values => {
+      if (values.length) {
+        onChange(isMultiSelect ? values : [values[values.length - 1]])
+      } else {
+        onChange([])
+      }
+    }
 
     return (
       <InputContainer
@@ -94,17 +107,20 @@ const MultiSelect = React.forwardRef(
         </div>
         <ReactMultiSelect
           labelledBy={labelledBy}
-          isOpen={true}
+          value={value}
+          isOpen={isOpen}
           hasSelectAll={hasSelectAll}
           ItemRenderer={ItemRenderer}
           className="multiselect-styling"
           overrideStrings={{ search: "Search...", ...overrideStrings }}
           ClearIcon={
             <span className="text-grey-40">
-              <XCircleIcon size={20} />{" "}
+              <XCircleIcon size={20} />
             </span>
           }
+          onChange={handleSelect}
           {...selectOptions}
+          disableSearch={!enableSearch}
         />
       </InputContainer>
     )

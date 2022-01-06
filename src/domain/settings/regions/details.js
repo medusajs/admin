@@ -220,6 +220,8 @@ const Regions = ({ id }) => {
                 inline
                 start={true}
                 mb={3}
+                isMultiSelect
+                enableSearch
                 label="Countries"
                 selectOptions={{ hasSelectAll: false }}
                 options={countryOptions}
