@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import clsx from "clsx"
 import SidebarTeamMember from "../../molecules/sidebar-team-member"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
@@ -48,19 +49,25 @@ const PaginationArrows: React.FC<PaginationArrowsProps> = ({
     <div className="flex text-grey-50">
       <span
         onClick={handlePreviousPage}
-        className={`mr-1.5 w-5 h-5 transition rounded-base flex justify-center items-center
-         ${currentPage === 0 ? disabledClasses : enabledClasses} `}
+        className={clsx(
+          `mr-1.5 w-5 h-5 transition rounded-base flex justify-center items-center`,
+          {
+            [`${disabledClasses}`]: currentPage === 0,
+            [`${enabledClasses}`]: currentPage !== 0,
+          }
+        )}
       >
         <ArrowLeftIcon size={16} />
       </span>
       <span
         onClick={handleNextPage}
-        className={`w-5 h-5 transition rounded-base flex justify-center items-center 
-        ${
-          currentPage + 1 === paginationLength
-            ? disabledClasses
-            : enabledClasses
-        } `}
+        className={clsx(
+          `w-5 h-5 transition rounded-base flex justify-center items-center`,
+          {
+            [`${disabledClasses}`]: currentPage + 1 === paginationLength,
+            [`${enabledClasses}`]: currentPage + 1 !== paginationLength,
+          }
+        )}
       >
         <ArrowRightIcon size={16} />
       </span>
