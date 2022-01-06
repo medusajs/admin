@@ -9,7 +9,7 @@ const BellNotiIcon: React.FC<IBellNotiIconProps> = ({
   size = "24px",
   color = "currentColor",
   accentColor = "#F43F5E",
-  attributes,
+  ...attributes
 }) => {
   return (
     <svg
