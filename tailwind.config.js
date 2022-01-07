@@ -1,10 +1,8 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
+    screens: {},
     extend: {
-      boxShadow: {
-        input: "0px 0px 0px 4px #8B5CF61A",
-      },
       colors: {
         grey: {
           0: "#FFFFFF",
@@ -179,7 +177,11 @@ module.exports = {
         "5xlarge": "4rem",
         "6xlarge": "6rem",
       },
+      width: {
+        largeModal: "750px",
+      },
       minWidth: {
+        modal: "520px",
         sidebar: "240px",
       },
       maxWidth: {
@@ -234,6 +236,7 @@ module.exports = {
       },
       boxShadow: {
         cta: "0px 0px 0px 4px rgba(124, 58, 237, 0.1)",
+        input: "0px 0px 0px 4px #8B5CF61A",
       },
       keyframes: {
         ring: {

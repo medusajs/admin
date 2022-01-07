@@ -39,6 +39,7 @@ const InputField = React.forwardRef(
       tooltipText,
       tooltipProps = {},
       props,
+      className,
       ...fieldProps
     }: InputProps,
     ref
@@ -75,9 +76,10 @@ const InputField = React.forwardRef(
 
     return (
       <InputContainer
-        props={props}
+        className={className}
         key={name}
         onClick={() => inputRef?.current?.focus()}
+        {...props}
       >
         {label && (
           <InputHeader
@@ -91,7 +93,7 @@ const InputField = React.forwardRef(
             autoComplete="off"
             name={name}
             key={key || name}
-            placeholder={placeholder ? placeholder : "Placeholder"}
+            placeholder={placeholder || "Placeholder"}
             onChange={onChange}
             onFocus={onFocus}
             {...fieldProps}
