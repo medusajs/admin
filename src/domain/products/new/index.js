@@ -8,7 +8,7 @@ import Select from "react-select"
 
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Spinner from "../../../components/spinner"
 import CurrencyInput from "../../../components/currency-input"
 import TagInput from "../../../components/tag-input"

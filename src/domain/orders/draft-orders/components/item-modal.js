@@ -3,7 +3,7 @@ import { Text, Flex, Box, Image } from "rebass"
 
 import Modal from "../../../../components/modal"
 import Button from "../../../../components/button"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import Dot from "../../../../components/dot"
 import Pill from "../../../../components/pill"
 import { useForm } from "react-hook-form"

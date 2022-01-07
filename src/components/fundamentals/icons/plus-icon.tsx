@@ -1,11 +1,10 @@
-import PropTypes from "prop-types"
 import React from "react"
-import IconProps from "./types/icon-type"
+import IconProps from "./icon-type"
 
 const PlusIcon: React.FC<IconProps> = ({
-  size = "24px",
+  size = "20px",
   color = "currentColor",
-  ...attributes
+  attributes,
 }) => {
   return (
     <svg
@@ -32,16 +31,6 @@ const PlusIcon: React.FC<IconProps> = ({
       />
     </svg>
   )
-}
-
-PlusIcon.defaultProps = {
-  color: "currentColor",
-  size: "20px",
-}
-
-PlusIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default PlusIcon

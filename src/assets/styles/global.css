@@ -198,3 +198,15 @@
     @apply bg-gradient-to-tr from-vice-start to-vice-stop;
   }
 }
+
+/* Classes to remove number spinners from inputs of type number */
+/* Chrome, Safari, Edge, Opera */
+.remove-number-spinner::-webkit-outer-spin-button,
+.remove-number-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.remove-number-spinner {
+  -moz-appearance: textfield;
+}

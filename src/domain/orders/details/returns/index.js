@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 
 import Modal from "../../../../components/modal"
 import CurrencyInput from "../../../../components/currency-input"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import Button from "../../../../components/button"
 import Select from "../../../../components/select"
 import Medusa from "../../../../services/api"

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { Box, Flex, Text } from "rebass"
 import Button from "../../../../components/button"
 import Card from "../../../../components/card"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 
 const numberFields = ["weight", "length", "width", "height"]

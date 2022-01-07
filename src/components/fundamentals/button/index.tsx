@@ -1,5 +1,5 @@
+import clsx from "clsx"
 import React, { Children } from "react"
-import { classNames } from "../../../utils/class-names"
 import Spinner from "../../atoms/spinner"
 
 type ButtonProps = {
@@ -25,45 +25,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     }
 
-    let style: string
-
-    switch (variant + "-" + size) {
-      case "primary-large":
-        style = "btn-primary-large"
-        break
-      case "primary-medium":
-        style = "btn-primary-medium"
-        break
-      case "primary-small":
-        style = "btn-primary-small"
-        break
-      case "secondary-large":
-        style = "btn-secondary-large"
-        break
-      case "secondary-medium":
-        style = "btn-secondary-medium"
-        break
-      case "secondary-small":
-        style = "btn-secondary-small"
-        break
-      case "ghost-large":
-        style = "btn-ghost-large"
-        break
-      case "ghost-medium":
-        style = "btn-ghost-medium"
-        break
-      case "ghost-small":
-        style = "btn-ghost-small"
-        break
-      default:
-        style = "btn-primary-large"
-        break
-    }
+    const buttonClass = "btn-" + variant + "-" + size
 
     return (
       <button
         {...attributes}
-        className={classNames(style, attributes.className)}
+        className={clsx(buttonClass, attributes.className)}
         disabled={attributes.disabled || loading}
         ref={ref}
         onClick={handleClick}
