@@ -57,7 +57,6 @@ const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
 }
 
 Modal.Body = ({ children, largeModal }) => {
-  console.log(largeModal)
   return (
     <div className="inter-base-regular" onClick={e => e.stopPropagation()}>
       {addProp(children, largeModal)}
@@ -66,7 +65,6 @@ Modal.Body = ({ children, largeModal }) => {
 }
 
 Modal.Content = ({ children, largeModal = true }) => {
-  console.log(largeModal)
   return (
     <div
       className={clsx("px-7 pt-5", {
