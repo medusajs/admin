@@ -5,7 +5,8 @@
   "version": "0.1.0",
   "author": "@medusajs",
   "resolutions": {
-    "devcert": "1.2.0"
+    "devcert": "1.2.0",
+    "postcss": "^8.4.5"
   },
   "dependencies": {
     "@emotion/core": "^10.0.28",
@@ -61,13 +62,13 @@
     "@storybook/addon-links": "^6.4.9",
     "@storybook/addon-postcss": "^2.0.0",
     "@storybook/react": "^6.4.9",
-    "autoprefixer": "^9",
+    "autoprefixer": "^10.4.1",
     "babel-loader": "^8.1.0",
     "gatsby-plugin-postcss": "^5.4.0",
-    "postcss": "^7",
+    "postcss": "^8.4.5",
     "prettier": "2.0.5",
     "storybook-addon-gatsby": "^0.0.3",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat",
+    "tailwindcss": "^3.0.6",
     "webpack": "^5.65.0"
   },
   "scripts": {
