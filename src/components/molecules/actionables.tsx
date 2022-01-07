@@ -1,6 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import clsx from "clsx"
 import React from "react"
-import { classNames } from "../../utils/class-names"
 import Button from "../fundamentals/button"
 import MoreHorizontalIcon from "../fundamentals/icons/more-horizontal-icon"
 
@@ -44,7 +44,7 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
                   <Button
                     variant="ghost"
                     size="small"
-                    className={classNames(
+                    className={clsx(
                       "w-full",
                       action.variant === "danger" ? "text-rose-50" : ""
                     )}
