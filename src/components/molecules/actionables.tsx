@@ -62,7 +62,7 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
     </div>
   ) : (
     <Button variant="ghost" size="small" onClick={actions[0].onClick}>
-      {actions[0].icon && <span className="mr-xsmall">{actions[0].icon}</span>}
+      {actions[0].icon}
       {actions[0].label}
     </Button>
   )
