@@ -172,7 +172,7 @@
     }
 
     .select-item {
-      @apply p-2 my-1 mx-2 rounded bg-grey-0 hover:bg-grey-10 flex !important;
+      @apply p-2 my-1 mx-2 rounded bg-grey-0 focus:bg-grey-10 hover:bg-grey-10 flex !important;
     }
 
     .select-panel > div::before {
