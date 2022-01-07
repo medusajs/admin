@@ -25,12 +25,27 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     }
 
-    const buttonClass = "btn-" + variant + "-" + size
+    const variantClassname = clsx({
+      ["btn-primary"]: variant === "primary",
+      ["btn-secondary"]: variant === "secondary",
+      ["btn-ghost"]: variant === "ghost",
+    })
+
+    const sizeClassname = clsx({
+      ["btn-large"]: size === "large",
+      ["btn-medium"]: size === "medium",
+      ["btn-small"]: size === "small",
+    })
 
     return (
       <button
         {...attributes}
-        className={clsx(buttonClass, attributes.className)}
+        className={clsx(
+          "btn",
+          variantClassname,
+          sizeClassname,
+          attributes.className
+        )}
         disabled={attributes.disabled || loading}
         ref={ref}
         onClick={handleClick}
