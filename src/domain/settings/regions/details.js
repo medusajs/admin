@@ -198,6 +198,7 @@ const Regions = ({ id }) => {
                 start={true}
                 inline
                 mb={3}
+                className="my-4"
                 type="number"
                 placeholder="0.25"
                 step="0.01"
