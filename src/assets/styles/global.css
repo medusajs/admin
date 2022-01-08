@@ -162,32 +162,60 @@
 }
 
 @layer components {
+  .btn {
+    @apply flex items-center rounded-base focus:outline-none focus:shadow-cta;
+  }
+
+  .btn-large {
+    @apply inter-base-semibold px-large py-small;
+  }
+
+  .btn-medium {
+    @apply inter-base-semibold px-base py-xsmall;
+  }
+
+  .btn-small {
+    @apply inter-small-semibold px-small py-[6px];
+  }
+
+  .btn-primary {
+    @apply bg-violet-60 text-grey-0 hover:bg-violet-50 active:bg-violet-70  disabled:bg-grey-20 disabled:text-grey-40;
+  }
+
+  .btn-secondary {
+    @apply bg-grey-0 text-grey-90 border border-grey-20 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60  focus:border-violet-60 disabled:bg-grey-0 disabled:text-grey-30;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-grey-90 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60  focus:border-violet-60 disabled:bg-transparent disabled:text-grey-30;
+  }
+
   .btn-primary-large {
-    @apply flex items-center bg-violet-60 text-grey-0 inter-base-semibold rounded-base px-large py-small hover:bg-violet-50 active:bg-violet-70 focus:outline-none focus:shadow-cta disabled:bg-grey-20 disabled:text-grey-40;
+    @apply btn btn-large btn-primary;
   }
   .btn-primary-medium {
-    @apply flex items-center bg-violet-60 text-grey-0 inter-base-semibold rounded-base px-base py-xsmall hover:bg-violet-50 active:bg-violet-70 focus:outline-none focus:shadow-cta disabled:bg-grey-20 disabled:text-grey-40;
+    @apply btn btn-medium;
   }
   .btn-primary-small {
-    @apply flex items-center bg-violet-60 text-grey-0 inter-small-semibold rounded-base px-small py-[6px] hover:bg-violet-50 active:bg-violet-70 focus:outline-none focus:shadow-cta disabled:bg-grey-20 disabled:text-grey-40;
+    @apply btn btn-small;
   }
   .btn-secondary-large {
-    @apply flex items-center bg-grey-0 text-grey-90 inter-base-semibold rounded-base px-large py-small border border-grey-20 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-grey-0 disabled:text-grey-30;
+    @apply btn btn-large btn-seconday;
   }
   .btn-secondary-medium {
-    @apply flex items-center bg-grey-0 text-grey-90 inter-base-semibold rounded-base px-base py-xsmall border border-grey-20 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-grey-0 disabled:text-grey-30;
+    @apply btn btn-medium btn-seconday;
   }
   .btn-secondary-small {
-    @apply flex items-center bg-grey-0 text-grey-90 inter-small-semibold rounded-base px-small py-[6px] border border-grey-20 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-grey-0 disabled:text-grey-30;
+    @apply btn btn-small btn-seconday;
   }
   .btn-ghost-large {
-    @apply flex items-center bg-transparent text-grey-90 inter-base-semibold rounded-base px-large py-small hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-transparent disabled:text-grey-30;
+    @apply btn btn-large btn-ghost;
   }
   .btn-ghost-medium {
-    @apply flex items-center bg-transparent text-grey-90 inter-base-semibold rounded-base px-base py-xsmall hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-transparent disabled:text-grey-30;
+    @apply btn btn-medium btn-ghost;
   }
   .btn-ghost-small {
-    @apply flex items-center bg-transparent text-grey-90 inter-small-semibold rounded-base px-small py-[6px] hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:outline-none focus:shadow-cta focus:border-violet-60 disabled:bg-transparent disabled:text-grey-30;
+    @apply btn btn-small btn-ghost;
   }
 }
 
