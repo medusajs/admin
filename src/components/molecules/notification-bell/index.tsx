@@ -1,6 +1,6 @@
 import React from "react"
-import BellIcon from "../fundamentals/icons/bell-icon"
-import BellNotiIcon from "../fundamentals/icons/bell-noti-icon"
+import BellIcon from "../../fundamentals/icons/bell-icon"
+import BellNotiIcon from "../../fundamentals/icons/bell-noti-icon"
 
 type NotificationBellProps = {
   hasNotifications: boolean

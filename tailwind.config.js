@@ -1,6 +1,7 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
+    screens: {},
     extend: {
       colors: {
         grey: {
@@ -153,6 +154,9 @@ module.exports = {
           stop: "#F796FF",
         },
       },
+      heigth: {
+        "18": "4.5rem",
+      },
       borderRadius: {
         none: "0px",
         soft: "2px",
@@ -173,7 +177,11 @@ module.exports = {
         "5xlarge": "4rem",
         "6xlarge": "6rem",
       },
+      width: {
+        largeModal: "750px",
+      },
       minWidth: {
+        modal: "520px",
         sidebar: "240px",
       },
       maxWidth: {
@@ -225,6 +233,19 @@ module.exports = {
         small: "769px",
         medium: "1025px",
         large: "1464px",
+      },
+      boxShadow: {
+        cta: "0px 0px 0px 4px rgba(124, 58, 237, 0.1)",
+        input: "0px 0px 0px 4px #8B5CF61A",
+      },
+      keyframes: {
+        ring: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+      },
+      animation: {
+        ring: "ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
       },
     },
   },

@@ -5,7 +5,7 @@ import { useForm, useFieldArray } from "react-hook-form"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 import Modal from "../../../../components/modal"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import Button from "../../../../components/button"
 
 import Medusa from "../../../../services/api"

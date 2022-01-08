@@ -6,7 +6,7 @@ import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 
 import MultiSelect from "../../../components/multi-select"
 import useMedusa from "../../../hooks/use-medusa"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Select from "../../../components/select"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
@@ -126,10 +126,10 @@ const Regions = ({ id }) => {
   }
 
   const onSave = async data => {
-    if(!data.countries || data.countries.length === 0){
+    if (!data.countries || data.countries.length === 0) {
       return
     }
-    
+
     try {
       await update({ ...data, tax_rate: data.tax_rate * 100 })
 
@@ -198,6 +198,7 @@ const Regions = ({ id }) => {
                 start={true}
                 inline
                 mb={3}
+                className="my-4"
                 type="number"
                 placeholder="0.25"
                 step="0.01"

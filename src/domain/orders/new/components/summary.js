@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Box, Flex, Image, Text } from "rebass"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import ImagePlaceholder from "../../../../assets/svg/image-placeholder.svg"
 import Button from "../../../../components/button"
 import Medusa from "../../../../services/api"
