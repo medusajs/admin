@@ -1,10 +1,10 @@
 import React from "react"
-import IconProps from "./icon-interface"
+import IconProps from "../types/icon-type"
 
 const ArrowLeftIcon: React.FC<IconProps> = ({
-  size = "24px",
+  size = "16",
   color = "currentColor",
-  attributes,
+  ...attributes
 }) => {
   return (
     <svg
@@ -18,16 +18,16 @@ const ArrowLeftIcon: React.FC<IconProps> = ({
       <path
         d="M12.667 8H3.33366"
         stroke={color}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M8 3.33331L3.33333 7.99998L8 12.6666"
         stroke={color}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )

@@ -1,10 +1,10 @@
 import { ComponentMeta } from "@storybook/react"
 import React from "react"
-import BellIcon from "."
+import PercentIcon from "."
 
 export default {
-  title: "Fundamentals/Icons/BellIcon",
-  component: BellIcon,
+  title: "Fundamentals/Icons/PercentIcon",
+  component: PercentIcon,
   argTypes: {
     size: {
       control: {
@@ -13,9 +13,9 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof BellIcon>
+} as ComponentMeta<typeof PercentIcon>
 
-const Template = args => <BellIcon {...args} />
+const Template = args => <PercentIcon {...args} />
 
 export const Icon = Template.bind({})
 Icon.args = {

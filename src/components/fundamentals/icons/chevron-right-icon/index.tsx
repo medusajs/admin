@@ -2,7 +2,7 @@ import React from "react"
 import IconProps from "../types/icon-type"
 
 const ChevronRightIcon: React.FC<IconProps> = ({
-  size = "24px",
+  size = "24",
   color = "currentColor",
   ...attributes
 }) => {
