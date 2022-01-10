@@ -11,6 +11,7 @@ import { getErrorMessage } from "../../utils/error-messages"
 import Input from "../../components/molecules/input"
 import FileUploadModal from "../../components/organisms/file-upload-modal"
 import clsx from "clsx"
+import Avatar from "../../components/atoms/avatar"
 
 const PersonalInformation = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -48,9 +49,9 @@ const PersonalInformation = () => {
   ]
 
   const handleFileUpload = async files => {
-    console.log(files)
     setModalIsOpen(false)
     setIsLoadingProfilePicture(true)
+    //TODO upload files
     await new Promise(r => setTimeout(r, 2000))
     setIsLoadingProfilePicture(false)
   }
@@ -72,20 +73,19 @@ const PersonalInformation = () => {
             <span className="inter-base-semibold">Picture</span>
             <div
               onClick={() => setModalIsOpen(true)}
-              className="w-28 h-28 p-2 mt-2 rounded-rounded hover:bg-grey-5 cursor-pointer"
+              className="w-28 h-28 p-2 mt-2 flex items-center justify-center rounded-rounded hover:bg-grey-5 cursor-pointer"
             >
+              {isLoadingProfilePicture && (
+                <div className="z-10 absolute justify-center items-center">
+                  <Spinner variant="secondary" />
+                </div>
+              )}
               <div
-                className={clsx(
-                  "bg-teal-40 rounded-circle w-full h-full uppercase transition-opacity flex items-center justify-center inter-3xlarge-semibold text-grey-0",
-                  { "opacity-50": isLoadingProfilePicture }
-                )}
+                className={clsx("w-full h-full transition-opacity", {
+                  "opacity-50": isLoadingProfilePicture,
+                })}
               >
-                {isLoadingProfilePicture && (
-                  <div className="z-10 absolute justify-center items-center">
-                    <Spinner variant="secondary" />
-                  </div>
-                )}
-                PK
+                <Avatar user={user} font="inter-3xlarge-semibold" />
               </div>
             </div>
           </div>
