@@ -35,7 +35,7 @@ type MultiSelectProps = {
   disabled?: boolean
   enableSearch?: boolean
   isCreatable?: boolean
-  ClearSelected?: boolean
+  clearSelected?: boolean
   onCreateOption?: (value: string) => { value: string; label: string }
 }
 
@@ -81,7 +81,7 @@ const Select = React.forwardRef(
       hasSelectAll,
       enableSearch,
       overrideStrings,
-      ClearSelected,
+      clearSelected,
       labelledBy = "label",
       ...selectOptions
     }: MultiSelectProps,
@@ -125,7 +125,7 @@ const Select = React.forwardRef(
           disableSearch={!enableSearch}
           ClearSelectedIcon={
             <span className="text-grey-40">
-              {ClearSelected && <XCircleIcon size={20} />}
+              {clearSelected && <XCircleIcon size={20} />}
             </span>
           }
         />
