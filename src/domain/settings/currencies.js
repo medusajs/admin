@@ -95,10 +95,10 @@ const AccountDetails = () => {
             <Select
               label="Default store currency"
               options={storeCurrencies} // You are only allow to choose default currency from store currencies
-              value={[selectedCurrency]}
+              value={selectedCurrency}
               isMultiSelect={false}
               enableSearch={true}
-              onChange={e => setSelectedCurrency(e[0])}
+              onChange={e => setSelectedCurrency(e)}
             />
             <Select
               label="Store currencies"
