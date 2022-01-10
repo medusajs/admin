@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
-import { Box, Flex, Text } from "rebass"
+import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-
-import useMedusa from "../../hooks/use-medusa"
-import Select from "../../components/select"
-import Card from "../../components/card"
-import Button from "../../components/button"
-import Spinner from "../../components/spinner"
-import MultiSelect from "../../components/multi-select"
-import Typography from "../../components/typography"
+import { Box, Flex } from "rebass"
 import BreadCrumb from "../../components/breadcrumb"
-
+import MultiSelect from "../../components/multi-select"
+import BodyCard from "../../components/organisms/body-card"
+import Select from "../../components/select"
+import TwoSplitPane from "../../components/templates/two-split-pane"
+import Typography from "../../components/typography"
+import useMedusa from "../../hooks/use-medusa"
 import { currencies } from "../../utils/currencies"
-import { Label } from "@rebass/forms"
 import { getErrorMessage } from "../../utils/error-messages"
 
 const StyledMultiSelect = styled(MultiSelect)`
@@ -103,13 +99,46 @@ const AccountDetails = () => {
       pb={5}
       pt={5}
     >
-      <Card px={0}>
-        <BreadCrumb
-          previousRoute="/a/settings"
-          previousBreadCrumb="Settings"
-          currentPage="Currencies"
-        />
-        <Flex>
+      <BreadCrumb
+        previousRoute="/a/settings"
+        previousBreadCrumb="Settings"
+        currentPage="Currencies"
+      />
+      <TwoSplitPane>
+        <BodyCard
+          title="Currencies"
+          subtitle="Manage the currencies that you will operate in"
+          actionables={[]}
+        >
+          <Flex width={1} flexDirection="column">
+            <Box mb={3} width={1 / 4}>
+              <Select
+                width="300px"
+                label="Default store currency"
+                name="default_currency_code"
+                options={options}
+                ref={register}
+              />
+            </Box>
+            <Box width={1 / 4}>
+              <MultiSelect
+                start={true}
+                mb={3}
+                label="Store currencies"
+                selectOptions={{ hasSelectAll: false }}
+                options={Object.keys(currencies).map(currency => ({
+                  label: currency,
+                  value: currency,
+                }))}
+                value={selectedCurrencies}
+                onChange={handleChange}
+              />
+            </Box>
+          </Flex>
+        </BodyCard>
+      </TwoSplitPane>
+      {/* <Card px={0}> */}
+      {/* <Flex>
           <Text mb={3} fontSize={20} fontWeight="bold">
             Currencies
           </Text>
@@ -160,7 +189,7 @@ const AccountDetails = () => {
             Save
           </Button>
         </Card.Footer>
-      </Card>
+      </Card> */}
     </Flex>
   )
 }
