@@ -1,10 +1,10 @@
 import React, { ChangeEventHandler, useState } from "react"
 import { MultiSelect } from "react-multi-select-component"
+import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
+import CheckIcon from "../../fundamentals/icons/check-icon"
+import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
-import CheckIcon from "../../fundamentals/icons/check-icon"
-import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
-import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 
 type Option = React.OptionHTMLAttributes<HTMLOptionElement> & {
   key?: string

@@ -1,5 +1,6 @@
 import React from "react"
 import { useScroll } from "../../hooks/use-scroll"
+import Button from "../fundamentals/button"
 import Actionables, { ActionType } from "../molecules/actionables"
 
 type BodyCardProps = {
@@ -21,7 +22,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
 }) => {
   const { isScrolled, scrollListener } = useScroll()
   return (
-    <div className="rounded-rounded border bg-grey-0 border-grey-20 h-full overflow-hidden flex flex-col min-h-[500px] w-full medium:w-1/2 relative">
+    <div className="rounded-rounded border bg-grey-0 border-grey-20 h-full overflow-hidden flex flex-col min-h-[350px] w-full medium:w-1/2 relative">
       {isScrolled && (
         <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-transparent h-xlarge z-10" />
       )}
@@ -47,15 +48,17 @@ const BodyCard: React.FC<BodyCardProps> = ({
           <div className="flex items-center flex-row-reverse">
             {events.map((event, i: React.Key) => {
               return (
-                <button
+                <Button
                   key={i}
+                  variant={i === 0 ? "primary" : "ghost"}
+                  size="small"
                   className={`${
                     i === 0 ? "btn-primary-small" : "btn-ghost-small"
                   } first:ml-xsmall min-w-[130px] justify-center`}
                   onClick={event.onClick}
                 >
                   {event.label}
-                </button>
+                </Button>
               )
             })}
           </div>
