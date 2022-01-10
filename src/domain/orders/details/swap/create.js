@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
 import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
-import MultiSelect from "react-multi-select-component"
+import { MultiSelect } from "react-multi-select-component"
 
 import Modal from "../../../../components/modal"
 import CurrencyInput from "../../../../components/currency-input"
