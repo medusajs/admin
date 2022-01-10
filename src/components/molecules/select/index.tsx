@@ -22,11 +22,12 @@ type MultiSelectProps = {
   label: string
   required?: boolean
   name?: string
+  className?: string
   // Multiselect props
   isMultiSelect?: boolean
   labelledBy?: string
   options: { label: string; value: string; disabled?: boolean }[]
-  value: { label: string; value: string }[]
+  value: { label: string; value: string }[] | { label: string; value: string }
   hasSelectAll?: boolean
   isLoading?: boolean
   shouldToggleOnHover?: boolean
@@ -37,6 +38,12 @@ type MultiSelectProps = {
   isCreatable?: boolean
   clearSelected?: boolean
   onCreateOption?: (value: string) => { value: string; label: string }
+}
+
+const valueRenderer = (selected, _options) => {
+  return selected.length && selected[0]
+    ? selected.map(({ label }) => label).join(", ")
+    : undefined
 }
 
 const ItemRenderer: React.FC<ItemRendererProps> = ({
@@ -77,6 +84,7 @@ const Select = React.forwardRef(
       required,
       value,
       onChange,
+      className,
       isMultiSelect,
       hasSelectAll,
       enableSearch,
@@ -91,9 +99,9 @@ const Select = React.forwardRef(
 
     const handleSelect = values => {
       if (values.length) {
-        onChange(isMultiSelect ? values : [values[values.length - 1]])
+        onChange(isMultiSelect ? values : values[values.length - 1])
       } else {
-        onChange([])
+        onChange(isMultiSelect ? [] : undefined)
       }
     }
 
@@ -102,6 +110,7 @@ const Select = React.forwardRef(
         key={name}
         onFocusLost={() => setIsOpen(false)}
         onClick={() => setIsOpen(true)}
+        className={className}
       >
         <div className="w-full flex text-grey-50 pr-0.5 justify-between">
           <InputHeader {...{ label, required }} />
@@ -109,7 +118,7 @@ const Select = React.forwardRef(
         </div>
         <MultiSelect
           labelledBy={labelledBy}
-          value={value}
+          value={isMultiSelect ? value : value ? [value] : []}
           isOpen={isOpen}
           hasSelectAll={hasSelectAll}
           ItemRenderer={ItemRenderer}
@@ -121,6 +130,7 @@ const Select = React.forwardRef(
             </span>
           }
           onChange={handleSelect}
+          valueRenderer={valueRenderer}
           {...selectOptions}
           disableSearch={!enableSearch}
           ClearSelectedIcon={
