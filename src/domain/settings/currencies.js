@@ -1,6 +1,7 @@
+import { navigate } from "gatsby"
 import React, { useEffect, useState } from "react"
 import { Flex } from "rebass"
-import BreadCrumb from "../../components/breadcrumb"
+import BreadCrumb from "../../components/molecules/breadcrumb"
 import Select from "../../components/molecules/select"
 import BodyCard from "../../components/organisms/body-card"
 import TwoSplitPane from "../../components/templates/two-split-pane"
@@ -72,7 +73,7 @@ const AccountDetails = () => {
     },
     {
       label: "Cancel changes",
-      onClick: () => refresh(),
+      onClick: () => navigate("/a/settings"),
     },
   ]
 
