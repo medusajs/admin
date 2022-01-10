@@ -19,7 +19,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
   return (
     <div
       className={clsx(
-        "w-full flex items-center inter-small-semibold",
+        "w-full flex items-center inter-small-semibold text-grey-50 mb-4",
         className
       )}
       {...props}
@@ -30,7 +30,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
       >
         {previousBreadcrumb}
       </span>
-      <span className="text-grey-50 mx-0.5">
+      <span className="mx-0.5">
         <ChevronRightIcon size={16} />
       </span>
       <span>{currentPage}</span>
