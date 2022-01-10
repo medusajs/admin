@@ -35,7 +35,7 @@ type MultiSelectProps = {
   disabled?: boolean
   enableSearch?: boolean
   isCreatable?: boolean
-  onCreateOption: any
+  onCreateOption?: (value: string) => { value: string; label: string }
 }
 
 const ItemRenderer: React.FC<ItemRendererProps> = ({
