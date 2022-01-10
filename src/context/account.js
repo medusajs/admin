@@ -6,8 +6,8 @@ export const defaultAccountContext = {
   isLoggedIn: false,
   id: "",
   name: "",
-  firstName: "",
-  lastName: "",
+  first_name: "",
+  last_name: "",
   email: "",
 }
 
@@ -22,8 +22,8 @@ const reducer = (state, action) => {
         isLoggedIn: true,
         id: action.payload.id,
         email: action.payload.email,
-        firstName: action.payload?.first_name,
-        lastName: action.payload?.last_name,
+        first_name: action.payload?.first_name,
+        last_name: action.payload?.last_name,
       }
     case "updateUser":
       return {
@@ -38,8 +38,8 @@ const reducer = (state, action) => {
         isLoggedIn: true,
         id: action.payload.id,
         email: action.payload.email,
-        firstName: action.payload?.first_name,
-        lastName: action.payload?.last_name,
+        first_name: action.payload?.first_name,
+        last_name: action.payload?.last_name,
       }
     default:
       return state
@@ -60,9 +60,10 @@ export const AccountProvider = ({ children }) => {
           })
         },
 
-        handleUpdateUser: user => {
-          console.log(user)
-          dispatch({ type: "updateUser", payload: user })
+        handleUpdateUser: (id, user) => {
+          return Medusa.users.update(id, user).then(({ data }) => {
+            dispatch({ type: "updateUser", payload: data.user })
+          })
         },
 
         handleLogout: details => {

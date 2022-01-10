@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useEffect, useContext } from "react"
 import { useForm } from "react-hook-form"
 import TwoSplitPane from "../../components/templates/two-split-pane"
 import BodyCard from "../../components/organisms/body-card"
@@ -10,43 +10,31 @@ import { getErrorMessage } from "../../utils/error-messages"
 import Input from "../../components/molecules/input"
 
 const PersonalInformation = () => {
-  const [selectedCurrencies, setCurrencies] = useState([])
   const { register, setValue, handleSubmit } = useForm()
   const { handleUpdateUser, ...user } = useContext(AccountContext)
   const { update, toaster, isLoading, ...test } = useMedusa("users", {
     id: user.id,
   })
 
-  const [firstName, setFirstName] = useState(user.firstName)
-  const [lastName, setLastName] = useState(user.lastName)
-  const [email, setEmail] = useState(user.email)
-  console.log(user)
-  console.log(test)
-  console.log(update)
+  register("first_name")
+  register("last_name")
 
   useEffect(() => {}, [isLoading])
 
-  const onSubmit = () => {
-    try {
-      update({
-        first_name: firstName,
-        last_name: lastName,
-      }).then(() =>
-        handleUpdateUser({
-          firstName,
-          lastName,
-        })
-      )
-      toaster("Successfully updated user", "success")
-    } catch (error) {
-      toaster(getErrorMessage(error), "error")
-    }
+  const submit = data => {
+    handleUpdateUser(user.id, data)
+      .then(() => {
+        toaster("Successfully updated user", "success")
+      })
+      .catch(err => {
+        toaster(getErrorMessage(err), "error")
+      })
   }
 
   const events = [
     {
       label: "Save",
-      onClick: onSubmit,
+      onClick: handleSubmit(submit),
     },
     {
       label: "Cancel changes",
@@ -81,23 +69,19 @@ const PersonalInformation = () => {
             <div className="flex mt-4">
               <Input
                 label="First name"
-                value={firstName}
-                onChange={e => setFirstName(e.target.value)}
+                name="first_name"
+                defaultValue={user.first_name}
+                onChange={e => setValue("first_name", e.target.value)}
                 className="mr-4"
               />
               <Input
                 label="Last name"
-                value={lastName}
-                onChange={e => setLastName(e.target.value)}
+                name="last_name"
+                defaultValue={user.last_name}
+                onChange={e => setValue("last_name", e.target.value)}
               />
             </div>
-            <Input
-              label="Email"
-              value={email}
-              disabled
-              onChange={e => setEmail(e.target.value)}
-              className="mt-6"
-            />
+            <Input label="Email" value={user.email} disabled className="mt-6" />
           </div>
         </BodyCard>
       </TwoSplitPane>
