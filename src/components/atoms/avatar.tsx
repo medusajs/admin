@@ -1,14 +1,23 @@
 import React from "react"
+import * as RadixAvatar from "@radix-ui/react-avatar"
+import clsx from "clsx"
 
 type AvatarProps = {
   user?: {
+    img?: string
     first_name?: string
     last_name?: string
     email: string
   }
+  size?: "small" | "large"
+  color?: string
 }
 
-const Avatar: React.FC<AvatarProps> = ({ user }) => {
+const Avatar: React.FC<AvatarProps> = ({
+  user,
+  size = "small",
+  color = "bg-violet-60",
+}) => {
   let username: string
 
   if (user?.first_name && user?.last_name) {
@@ -20,11 +29,29 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
   }
 
   return (
-    <div className="w-large h-large rounded-circle bg-violet-60 overflow-hidden">
-      <div className="w-full h-full text-center text-grey-0">
+    <RadixAvatar.Root
+      className={clsx(
+        "w-full h-full items-center justify-center overflow-hidden select-none rounded-circle",
+        color
+      )}
+    >
+      <RadixAvatar.Image
+        src={user?.img}
+        alt={username}
+        className="w-full h-full object-cover  rounded-circle"
+      />
+      <RadixAvatar.Fallback
+        className={clsx(
+          "w-full h-full flex items-center justify-center bg-inherit text-grey-0 rounded-circle",
+          {
+            "inter-small-semibold": size === "small",
+            "inter-3xlarge-semibold": size === "large",
+          }
+        )}
+      >
         {username.slice(0, 1).toUpperCase()}
-      </div>
-    </div>
+      </RadixAvatar.Fallback>
+    </RadixAvatar.Root>
   )
 }
 
