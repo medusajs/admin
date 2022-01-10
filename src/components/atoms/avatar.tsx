@@ -9,13 +9,13 @@ type AvatarProps = {
     last_name?: string
     email: string
   }
-  size?: "small" | "large"
+  font?: string
   color?: string
 }
 
 const Avatar: React.FC<AvatarProps> = ({
   user,
-  size = "small",
+  font = "inter-small-semibold",
   color = "bg-violet-60",
 }) => {
   let username: string
@@ -38,15 +38,12 @@ const Avatar: React.FC<AvatarProps> = ({
       <RadixAvatar.Image
         src={user?.img}
         alt={username}
-        className="w-full h-full object-cover  rounded-circle"
+        className="w-full h-full object-cover rounded-circle"
       />
       <RadixAvatar.Fallback
         className={clsx(
           "w-full h-full flex items-center justify-center bg-inherit text-grey-0 rounded-circle",
-          {
-            "inter-small-semibold": size === "small",
-            "inter-3xlarge-semibold": size === "large",
-          }
+          font
         )}
       >
         {username.slice(0, 1).toUpperCase()}
