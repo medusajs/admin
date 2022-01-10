@@ -1,15 +1,20 @@
-import React, { useEffect, useContext } from "react"
+import React, { useEffect, useContext, useState } from "react"
 import { useForm } from "react-hook-form"
 import TwoSplitPane from "../../components/templates/two-split-pane"
 import BodyCard from "../../components/organisms/body-card"
 import BreadCrumb from "../../components/molecules/breadcrumb"
+import Spinner from "../../components/atoms/spinner"
 import { AccountContext } from "../../context/account"
 import useMedusa from "../../hooks/use-medusa"
 import { navigate } from "gatsby"
 import { getErrorMessage } from "../../utils/error-messages"
 import Input from "../../components/molecules/input"
+import FileUploadModal from "../../components/organisms/file-upload-modal"
+import clsx from "clsx"
 
 const PersonalInformation = () => {
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [isLoadingProfilePicture, setIsLoadingProfilePicture] = useState(false)
   const { register, setValue, handleSubmit } = useForm()
   const { handleUpdateUser, ...user } = useContext(AccountContext)
   const { update, toaster, isLoading, ...test } = useMedusa("users", {
@@ -42,6 +47,14 @@ const PersonalInformation = () => {
     },
   ]
 
+  const handleFileUpload = async files => {
+    console.log(files)
+    setModalIsOpen(false)
+    setIsLoadingProfilePicture(true)
+    await new Promise(r => setTimeout(r, 2000))
+    setIsLoadingProfilePicture(false)
+  }
+
   return (
     <div>
       <BreadCrumb
@@ -57,8 +70,21 @@ const PersonalInformation = () => {
         >
           <div>
             <span className="inter-base-semibold">Picture</span>
-            <div className="w-28 h-28 p-2 mt-2 rounded-rounded hover:bg-grey-5 cursor-pointer">
-              <div className="bg-teal-40 rounded-circle w-full h-full uppercase flex items-center justify-center inter-3xlarge-semibold text-grey-0">
+            <div
+              onClick={() => setModalIsOpen(true)}
+              className="w-28 h-28 p-2 mt-2 rounded-rounded hover:bg-grey-5 cursor-pointer"
+            >
+              <div
+                className={clsx(
+                  "bg-teal-40 rounded-circle w-full h-full uppercase transition-opacity flex items-center justify-center inter-3xlarge-semibold text-grey-0",
+                  { "opacity-50": isLoadingProfilePicture }
+                )}
+              >
+                {isLoadingProfilePicture && (
+                  <div className="z-10 absolute justify-center items-center">
+                    <Spinner variant="secondary" />
+                  </div>
+                )}
                 PK
               </div>
             </div>
@@ -83,6 +109,12 @@ const PersonalInformation = () => {
             </div>
             <Input label="Email" value={user.email} disabled className="mt-6" />
           </div>
+          {modalIsOpen && (
+            <FileUploadModal
+              setFiles={handleFileUpload}
+              handleClose={() => setModalIsOpen(false)}
+            />
+          )}
         </BodyCard>
       </TwoSplitPane>
     </div>
