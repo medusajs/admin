@@ -8,7 +8,7 @@ import Input from "../../../components/molecules/input"
 import Select from "../../../components/select"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
-import BreadCrumb from "../../../components/breadcrumb"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 import TagDropdown from "../../../components/tag-dropdown"
 
 import Medusa from "../../../services/api"
