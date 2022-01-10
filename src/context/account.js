@@ -14,13 +14,21 @@ export const defaultAccountContext = {
 export const AccountContext = React.createContext(defaultAccountContext)
 
 const reducer = (state, action) => {
+  console.log(action.payload)
   switch (action.type) {
     case "userAuthenticated":
       return {
         ...state,
         isLoggedIn: true,
-        id: action.payload._id,
+        id: action.payload.id,
         email: action.payload.email,
+        firstName: action.payload?.first_name,
+        lastName: action.payload?.last_name,
+      }
+    case "updateUser":
+      return {
+        ...state,
+        ...action.payload,
       }
     case "userLoggedOut":
       return defaultAccountContext
@@ -28,8 +36,10 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: true,
-        id: action.payload._id,
+        id: action.payload.id,
         email: action.payload.email,
+        firstName: action.payload?.first_name,
+        lastName: action.payload?.last_name,
       }
     default:
       return state
@@ -48,6 +58,11 @@ export const AccountProvider = ({ children }) => {
             dispatch({ type: "userAuthenticated", payload: data.user })
             return data
           })
+        },
+
+        handleUpdateUser: user => {
+          console.log(user)
+          dispatch({ type: "updateUser", payload: user })
         },
 
         handleLogout: details => {
