@@ -16,7 +16,7 @@ const AccountDetails = () => {
     label: "",
   })
 
-  const { store, isLoading, update, toaster } = useMedusa("store")
+  const { store, isLoading, update, toaster, refresh } = useMedusa("store")
 
   const setCurrenciesOnLoad = () => {
     const defaultCurr = {
@@ -51,15 +51,16 @@ const AccountDetails = () => {
     setStoreCurrencies(currencies)
   }
 
-  const onSubmit = e => {
+  const onSubmit = async e => {
     e.preventDefault()
     try {
-      update({
+      await update({
         default_currency_code: selectedCurrency.value,
         currencies: storeCurrencies.map(c => c.value),
       })
       toaster("Successfully updated currencies", "success")
     } catch (error) {
+      refresh()
       toaster(getErrorMessage(error), "error")
     }
   }
@@ -67,16 +68,16 @@ const AccountDetails = () => {
   const currencyEvents = [
     {
       label: "Save",
-      onClick: () => console.log("hello"),
+      onClick: e => onSubmit(e),
     },
     {
       label: "Cancel changes",
-      onClick: () => console.log("hello"),
+      onClick: () => refresh(),
     },
   ]
 
   return (
-    <Flex as="form" flexDirection={"column"} onSubmit={e => onSubmit(e)}>
+    <Flex flexDirection={"column"}>
       <BreadCrumb
         previousRoute="/a/settings"
         previousBreadCrumb="Settings"
