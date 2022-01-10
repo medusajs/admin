@@ -85,7 +85,11 @@ const PersonalInformation = () => {
                   "opacity-50": isLoadingProfilePicture,
                 })}
               >
-                <Avatar user={user} font="inter-3xlarge-semibold" />
+                <Avatar
+                  color="bg-teal-40"
+                  user={user}
+                  font="inter-3xlarge-semibold"
+                />
               </div>
             </div>
           </div>
