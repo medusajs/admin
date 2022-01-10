@@ -35,6 +35,7 @@ type MultiSelectProps = {
   disabled?: boolean
   enableSearch?: boolean
   isCreatable?: boolean
+  ClearSelected?: boolean
   onCreateOption?: (value: string) => { value: string; label: string }
 }
 
@@ -80,6 +81,7 @@ const Select = React.forwardRef(
       hasSelectAll,
       enableSearch,
       overrideStrings,
+      ClearSelected,
       labelledBy = "label",
       ...selectOptions
     }: MultiSelectProps,
@@ -101,7 +103,7 @@ const Select = React.forwardRef(
         onFocusLost={() => setIsOpen(false)}
         onClick={() => setIsOpen(true)}
       >
-        <div className="w-full flex text-grey-50 justify-between">
+        <div className="w-full flex text-grey-50 pr-0.5 justify-between">
           <InputHeader {...{ label, required }} />
           <ArrowDownIcon size={16} />
         </div>
@@ -121,6 +123,11 @@ const Select = React.forwardRef(
           onChange={handleSelect}
           {...selectOptions}
           disableSearch={!enableSearch}
+          ClearSelectedIcon={
+            <span className="text-grey-40">
+              {ClearSelected && <XCircleIcon size={20} />}
+            </span>
+          }
         />
       </InputContainer>
     )
