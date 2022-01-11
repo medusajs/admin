@@ -10,7 +10,11 @@ const TwoSplitPane: React.FC = ({ children }) => {
   return (
     <div className="flex flex-col gap-large items-center h-full medium:flex-row">
       {Children.map(children, (child, i) => {
-        return <Fragment key={i}>{child}</Fragment>
+        return (
+          <div className="medium:w-1/2" key={i}>
+            {child}
+          </div>
+        )
       })}
     </div>
   )

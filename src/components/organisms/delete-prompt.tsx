@@ -3,7 +3,6 @@ import Modal from "../molecules/modal"
 import Button from "../fundamentals/button"
 import useMedusa from "../../hooks/use-medusa"
 import { getErrorMessage } from "../../utils/error-messages"
-import { AxiosPromise } from "axios"
 
 type DeletePromptProps = {
   heading: string
@@ -37,7 +36,7 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
   }
 
   return (
-    <Modal handleClose={handleClose}>
+    <Modal isLargeModal={false} handleClose={handleClose}>
       <Modal.Body>
         <Modal.Content>
           <div className="flex flex-col">
