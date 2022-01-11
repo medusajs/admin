@@ -27,7 +27,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
   return (
     <div
       className={clsx(
-        "rounded-rounded border bg-grey-0 border-grey-20 h-full flex flex-col min-h-[350px] w-full medium:w-1/2 relative",
+        "rounded-rounded border bg-grey-0 border-grey-20 h-full flex flex-col min-h-[350px] w-full relative",
         className
       )}
     >

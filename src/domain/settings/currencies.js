@@ -88,7 +88,6 @@ const AccountDetails = () => {
         <BodyCard
           title="Currencies"
           subtitle="Manage the currencies that you will operate in"
-          actionables={[{}]}
           events={currencyEvents}
         >
           <Flex width={1} flexDirection="column">
