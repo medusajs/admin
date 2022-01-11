@@ -1,5 +1,6 @@
 import React from "react"
 import clsx from "clsx"
+import Actionables, { ActionType } from "../molecules/actionables"
 
 export const Table = React.forwardRef(
   (
@@ -49,15 +50,11 @@ export const TableBody = React.forwardRef(
   )
 )
 
+type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
+  actions: ActionType[]
+}
 export const TableRow = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableRowElement>,
-    ref
-  ) => (
+  ({ className, actions, children, ...props }: TableRowProps, ref) => (
     <tr
       ref={ref}
       className={clsx(
@@ -67,6 +64,11 @@ export const TableRow = React.forwardRef(
       {...props}
     >
       {children}
+      {actions && (
+        <TableDataCell className="w-8">
+          <Actionables actions={actions} />
+        </TableDataCell>
+      )}
     </tr>
   )
 )
@@ -117,20 +119,5 @@ export const TableDataCell = React.forwardRef(
     >
       {children}
     </td>
-    // <Box
-    //   ref={ref}
-    //   as="td"
-    //   variant="td"
-    //   {...props}
-    //   height="100%"
-    //   width="100%"
-    //   maxWidth={props.maxWidth ? props.maxWidth : "100%"}
-    //   sx={{
-    //     ...props.sx,
-    //     whiteSpace: "nowrap",
-    //     overflow: "hidden",
-    //     textOverflow: "ellipsis",
-    //   }}
-    // />
   )
 )

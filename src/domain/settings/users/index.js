@@ -81,65 +81,68 @@ const Users = () => {
 
   const getUserTableRow = (user, index) => {
     return (
-      <TableRow key={index} color={"inherit"} fontWeight={550}>
+      <TableRow
+        key={index}
+        color={"inherit"}
+        actions={[
+          {
+            label: "Edit User",
+            onClick: () => setSelectedUser(user),
+            icon: <EditIcon size={20} />,
+          },
+          {
+            label: "Remove User",
+            variant: "danger",
+            onClick: () => {
+              setDeleteUser(true)
+              setSelectedUser(user)
+            },
+            icon: <TrashIcon size={20} />,
+          },
+        ]}
+      >
         <TableDataCell>
           <SidebarTeamMember user={user} />
         </TableDataCell>
         <TableDataCell>{user.email}</TableDataCell>
-        <TableDataCell>
-          <Actionables
-            actions={[
-              {
-                label: "Edit User",
-                onClick: () => setSelectedUser(user),
-                icon: <EditIcon size={20} />,
-              },
-              {
-                label: "Remove User",
-                variant: "danger",
-                onClick: () => {
-                  setDeleteUser(true)
-                  setSelectedUser(user)
-                },
-                icon: <TrashIcon size={20} />,
-              },
-            ]}
-          />
+        <TableDataCell className="inter-small-semibold text-violet-60">
+          {user.role.charAt(0).toUpperCase()}
+          {user.role.slice(1)}
         </TableDataCell>
+        <TableDataCell></TableDataCell>
       </TableRow>
     )
   }
 
   const getInviteTableRow = (invite, index) => {
     return (
-      <TableRow key={index}>
+      <TableRow
+        key={index}
+        actions={[
+          {
+            label: "Resend Invitation",
+            onClick: () => {
+              Medusa.invites.resend(invite.id).then(() => {
+                toaster("Invitiation link has been resent", "success")
+              })
+            },
+            icon: <RefreshIcon size={20} />,
+          },
+          {
+            label: "Remove Invitation",
+            variant: "danger",
+            onClick: () => console.log("removing", invite.id),
+            icon: <TrashIcon size={20} />,
+          },
+        ]}
+      >
         <TableDataCell>-</TableDataCell>
+        <TableDataCell>{invite.user_email}</TableDataCell>
+        <TableDataCell></TableDataCell>
         <TableDataCell>
-          {invite.user_email}
           {new Date(invite?.expires_at) < new Date() && (
-            <Badge bg="yellow">Expired</Badge>
+            <Badge variant="warning">Expired</Badge>
           )}
-        </TableDataCell>
-        <TableDataCell className="w-8">
-          <Actionables
-            actions={[
-              {
-                label: "Resend Invitation",
-                onClick: () => {
-                  Medusa.invites.resend(invite.id).then(() => {
-                    toaster("Invitiation link has been resent", "success")
-                  })
-                },
-                icon: <RefreshIcon size={20} />,
-              },
-              {
-                label: "Remove Invitation",
-                variant: "danger",
-                onClick: () => console.log("removing", invite.id),
-                icon: <TrashIcon size={20} />,
-              },
-            ]}
-          />
         </TableDataCell>
       </TableRow>
     )
@@ -161,8 +164,12 @@ const Users = () => {
           <Table>
             <TableHead>
               <TableHeaderRow>
-                <TableHeaderCell fontWeight={450}>Name</TableHeaderCell>
-                <TableHeaderCell fontWeight={450}>Email</TableHeaderCell>
+                <TableHeaderCell className="w-72">Name</TableHeaderCell>
+                <TableHeaderCell className="w-80">Email</TableHeaderCell>
+                <TableHeaderCell className="w-72">
+                  Team permissions
+                </TableHeaderCell>
+                <TableHeaderCell>Status</TableHeaderCell>
               </TableHeaderRow>
             </TableHead>
             <TableBody>
