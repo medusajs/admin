@@ -99,6 +99,7 @@ const AccountDetails = () => {
               isMultiSelect={false}
               enableSearch={true}
               onChange={e => setSelectedCurrency(e)}
+              className="mb-6"
             />
             <Select
               label="Store currencies"
@@ -107,6 +108,7 @@ const AccountDetails = () => {
               isMultiSelect={true}
               enableSearch={true}
               onChange={handleChange}
+              className="mb-2"
             />
           </Flex>
         </BodyCard>
