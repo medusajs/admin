@@ -3,7 +3,6 @@ import Modal from "../molecules/modal"
 import Button from "../fundamentals/button"
 import useMedusa from "../../hooks/use-medusa"
 import { getErrorMessage } from "../../utils/error-messages"
-import { AxiosPromise } from "axios"
 
 type DeletePromptProps = {
   heading: string
