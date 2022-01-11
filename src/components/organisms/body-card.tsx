@@ -1,7 +1,7 @@
+import clsx from "clsx"
 import React from "react"
 import { useScroll } from "../../hooks/use-scroll"
 import Button from "../fundamentals/button"
-import clsx from "clsx"
 import Actionables, { ActionType } from "../molecules/actionables"
 
 type BodyCardProps = {
