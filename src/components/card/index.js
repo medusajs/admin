@@ -2,7 +2,7 @@ import React from "react"
 import { Flex, Box, Text, Card as RebassCard } from "rebass"
 import styled from "@emotion/styled"
 
-import Badge from "../badge"
+import Badge from "../fundamentals/badge"
 import Dropdown from "../dropdown"
 import Button from "../button"
 import Typography from "../typography"

@@ -19,7 +19,7 @@ import {
   TableHeaderRow,
 } from "../../components/table"
 import Spinner from "../../components/spinner"
-import Badge from "../../components/badge"
+import Badge from "../../components/fundamentals/badge"
 import { navigate } from "gatsby"
 import Button from "../../components/button"
 import { Checkbox, Input, Label } from "@rebass/forms"
