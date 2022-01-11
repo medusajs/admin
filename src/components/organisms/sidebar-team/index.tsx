@@ -18,6 +18,7 @@ type SidebarTeamUser = {
   email: string
   first_name?: string
   last_name?: string
+  img?: string
 }
 
 type SidebarTeamProps = {

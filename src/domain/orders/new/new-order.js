@@ -4,7 +4,7 @@ import _ from "lodash"
 import { useForm } from "react-hook-form"
 import { Checkbox, Label } from "@rebass/forms"
 import styled from "@emotion/styled"
-import MultiSelect from "react-multi-select-component"
+import { MultiSelect } from "react-multi-select-component"
 import { debounce } from "lodash"
 
 import Medusa from "../../../services/api"

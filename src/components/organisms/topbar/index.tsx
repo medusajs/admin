@@ -9,7 +9,7 @@ const Topbar: React.FC = () => {
       <SearchBar />
       <div className="flex items-center">
         <NotificationBell hasNotifications={false} />
-        <div className="ml-large">
+        <div className="ml-large w-large h-large">
           <Avatar />
         </div>
       </div>

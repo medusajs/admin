@@ -7,7 +7,7 @@ import _ from "lodash"
 
 import ProductSelection from "../../product-selection"
 import Modal from "../../../../components/modal"
-import MultiSelect from "react-multi-select-component"
+import { MultiSelect } from "react-multi-select-component"
 import Input from "../../../../components/molecules/input"
 import Pill from "../../../../components/pill"
 import Button from "../../../../components/button"

@@ -7,7 +7,11 @@ export default {
   component: Avatar,
 } as ComponentMeta<typeof Avatar>
 
-const Template = args => <Avatar {...args} />
+const Template = args => (
+  <div className="h-large w-large">
+    <Avatar {...args} />
+  </div>
+)
 
 export const User = Template.bind({})
 User.args = {
