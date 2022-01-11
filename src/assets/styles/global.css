@@ -236,6 +236,10 @@
     @apply bg-grey-0 text-grey-90 border border-grey-20 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60  focus:border-violet-60 disabled:bg-grey-0 disabled:text-grey-30;
   }
 
+  .btn-danger {
+    @apply bg-rose-50 text-grey-0 hover:bg-rose-40 active:bg-rose-60 disabled:bg-grey-20 disabled:text-grey-40;
+  }
+
   .btn-ghost {
     @apply bg-transparent text-grey-90 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60  focus:border-violet-60 disabled:bg-transparent disabled:text-grey-30;
   }
