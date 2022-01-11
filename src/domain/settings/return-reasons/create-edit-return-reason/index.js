@@ -14,6 +14,14 @@ import Medusa from "../../../../services/api"
 import useMedusa from "../../../../hooks/use-medusa"
 
 import { getErrorMessage } from "../../../../utils/error-messages"
+import {
+  adminReturnReasonKeys,
+  useAdminCreateReturnReason,
+  useAdminDeleteReturnReason,
+  useAdminUpdateReturnReason,
+} from "medusa-react"
+import useToaster from "../../../../hooks/use-toaster"
+import { useQueryClient } from "react-query"
 
 const StyledLabel = styled.div`
   ${Typography.Base}
@@ -42,14 +50,7 @@ const StyledLabel = styled.div`
   `}
 `
 
-const ReturnReasonModal = ({
-  reason,
-  parentReturnReason,
-  onDismiss,
-  onDelete,
-  onCreate,
-  onUpdate,
-}) => {
+const ReturnReasonModal = ({ reason, parentReturnReason, onDismiss }) => {
   const { register, reset, handleSubmit } = useForm()
   const [value, setValue] = useState(reason ? reason.value : "")
   const [label, setLabel] = useState(reason ? reason.label : "")
@@ -57,49 +58,55 @@ const ReturnReasonModal = ({
     reason ? reason.description : ""
   )
   const id = reason?.id
-  const {
-    delete: childReturnReasonDelete,
-    toaster,
-  } = useMedusa("returnReasons", { id })
+  const parentReturnReasonId = parentReturnReason?.id
+  console.log({ id })
+
+  const createRR = useCreateNestedReturnReason(parentReturnReasonId)
+  const updateRR = useUpdateNestedReturnReason(id, parentReturnReasonId)
+  const deleteRR = useDeleteNestedReturnReason(id, parentReturnReasonId)
+  const toaster = useToaster()
 
   const onClickDelete = async () => {
-    try {
-      await childReturnReasonDelete()
-      onDelete(id)
-      toaster("Sucessfully deleted return reason")
-    } catch (error) {
-      toaster(getErrorMessage(error), "error")
-    }
-    onDismiss()
+    deleteRR.mutate(null, {
+      onSuccess: () => {
+        onDismiss()
+        toaster("Sucessfully deleted return reason")
+      },
+      onError: error => {
+        toaster(getErrorMessage(error), "error")
+      },
+    })
   }
 
   const onSubmit = async () => {
-    let error = ""
-    try {
-      if (reason) {
-        const data = { label: label, description: description }
-
-        const result = await Medusa.returnReasons.update(id, data)
-        onUpdate(result.data.return_reason)
-        toaster("Successfully updated return reason", "success")
-        error = "Failed to update return reason"
-      } else {
-        const data = {
-          parent_return_reason_id: parentReturnReason.id,
-          value: value,
-          label: label,
-          description: description,
-        }
-
-        error = "Failed to create return reason"
-        const result = await Medusa.returnReasons.create(data)
-        onCreate(result.data.return_reason)
-        toaster("Successfully updated return reason", "success")
+    if (reason) {
+      const data = { label: label, description: description }
+      updateRR.mutate(data, {
+        onSuccess: () => {
+          onDismiss()
+          toaster("Successfully updated return reason", "success")
+        },
+        onError: error => {
+          toaster(getErrorMessage(error), "error")
+        },
+      })
+    } else {
+      const data = {
+        parent_return_reason_id: parentReturnReason.id,
+        value: value,
+        label: label,
+        description: description,
       }
-    } catch (error) {
-      toaster(getErrorMessage(error), "error")
+      createRR.mutate(data, {
+        onSuccess: () => {
+          onDismiss()
+          toaster("Successfully updated return reason", "success")
+        },
+        onError: error => {
+          toaster(getErrorMessage(error), error)
+        },
+      })
     }
-    onDismiss()
   }
 
   const title = reason ? "Edit nested reason" : "Create nested reason"
@@ -191,6 +198,36 @@ const ReturnReasonModal = ({
       </Modal.Body>
     </Modal>
   )
+}
+
+const useCreateNestedReturnReason = parentId => {
+  const queryClient = useQueryClient()
+
+  return useAdminCreateReturnReason({
+    onSuccess: () => {
+      queryClient.invalidateQueries(adminReturnReasonKeys.detail(parentId))
+    },
+  })
+}
+
+const useUpdateNestedReturnReason = (id, parentId) => {
+  const queryClient = useQueryClient()
+
+  return useAdminUpdateReturnReason(id, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(adminReturnReasonKeys.detail(parentId))
+    },
+  })
+}
+
+const useDeleteNestedReturnReason = (id, parentId) => {
+  const queryClient = useQueryClient()
+
+  return useAdminDeleteReturnReason(id, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(adminReturnReasonKeys.detail(parentId))
+    },
+  })
 }
 
 export default ReturnReasonModal

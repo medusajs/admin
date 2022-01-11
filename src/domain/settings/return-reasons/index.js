@@ -10,7 +10,7 @@ import ReturnReasonsList from "./return-reasons-list"
 
 const ReturnReasons = () => {
   const { isLoading, return_reasons } = useAdminReturnReasons()
-  console.log({ return_reasons })
+
   const parent_return_reasons = !isLoading
     ? return_reasons.filter(rr => !rr.parent_return_reason_id)
     : []

@@ -8,14 +8,14 @@ import Button from "../../../components/button"
 import Card from "../../../components/card"
 import Input from "../../../components/molecules/input"
 import useMedusa from "../../../hooks/use-medusa"
+import useToaster from "../../../hooks/use-toaster"
 
 const NewReturnReason = ({ id }) => {
   const { register, handleSubmit } = useForm()
   const createReturnReason = useAdminCreateReturnReason()
-  const { toaster } = useMedusa("store")
+  const toaster = useToaster()
 
   const onSave = data => {
-    console.log("on save handler")
     createReturnReason.mutate(data, {
       onSuccess: newData => {
         toaster("Created a new return reason", "success")
