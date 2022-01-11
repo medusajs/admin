@@ -6,7 +6,7 @@ import moment from "moment"
 
 import { decideBadgeColor } from "../../../../utils/decide-badge-color"
 import Typography from "../../../../components/typography"
-import Badge from "../../../../components/badge"
+import Badge from "../../../../components/fundamentals/badge"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
 import LineItem from "../line-item"

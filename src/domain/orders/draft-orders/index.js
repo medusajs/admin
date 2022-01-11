@@ -14,7 +14,7 @@ import {
 } from "../../../components/table"
 import ReactTooltip from "react-tooltip"
 import { Box, Flex, Text } from "rebass"
-import Badge from "../../../components/badge"
+import Badge from "../../../components/fundamentals/badge"
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import Spinner from "../../../components/spinner"
 import useMedusa from "../../../hooks/use-medusa"
