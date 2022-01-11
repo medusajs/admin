@@ -8,7 +8,7 @@ import useMedusa from "../../hooks/use-medusa"
 import { currencies } from "../../utils/currencies"
 import { getErrorMessage } from "../../utils/error-messages"
 
-const AccountDetails = () => {
+const CurrencySettings = () => {
   const [storeCurrencies, setStoreCurrencies] = useState([])
   const [allCurrencies, setAllCurrencies] = useState([])
   const [selectedCurrency, setSelectedCurrency] = useState({
@@ -113,4 +113,4 @@ const AccountDetails = () => {
   )
 }
 
-export default AccountDetails
+export default CurrencySettings
