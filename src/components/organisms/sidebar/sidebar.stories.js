@@ -2,7 +2,7 @@ import React from "react"
 import { storiesOf } from "@storybook/react"
 import styled from "@emotion/styled"
 
-import Sidebar from "./index"
+import Sidebar from "."
 
 const Container = styled.div`
   width: 300px;

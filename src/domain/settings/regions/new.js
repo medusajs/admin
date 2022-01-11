@@ -16,7 +16,7 @@ import { currencies as currencyData } from "../../../utils/currencies"
 import { countries as countryData } from "../../../utils/countries"
 
 import Shipping from "./shipping"
-import MultiSelect from "../../../components/multi-select"
+import MultiSelect from "../../../components/molecules/select"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const NewRegion = ({ id }) => {

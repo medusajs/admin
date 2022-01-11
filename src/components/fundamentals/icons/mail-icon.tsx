@@ -4,7 +4,7 @@ import IconProps from "./types/icon-type"
 const MailIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
-  attributes,
+  ...attributes
 }) => {
   return (
     <svg

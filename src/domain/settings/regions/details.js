@@ -4,7 +4,7 @@ import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
 import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 
-import MultiSelect from "../../../components/multi-select"
+import MultiSelect from "../../../components/molecules/select"
 import useMedusa from "../../../hooks/use-medusa"
 import Input from "../../../components/molecules/input"
 import Select from "../../../components/select"
@@ -198,6 +198,7 @@ const Regions = ({ id }) => {
                 start={true}
                 inline
                 mb={3}
+                className="my-4"
                 type="number"
                 placeholder="0.25"
                 step="0.01"
@@ -220,6 +221,8 @@ const Regions = ({ id }) => {
                 inline
                 start={true}
                 mb={3}
+                isMultiSelect
+                enableSearch
                 label="Countries"
                 selectOptions={{ hasSelectAll: false }}
                 options={countryOptions}
