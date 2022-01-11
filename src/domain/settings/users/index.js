@@ -2,23 +2,14 @@ import React, { useEffect, useState } from "react"
 import BreadCrumb from "../../../components/breadcrumb"
 import RefreshIcon from "../../../components/fundamentals/icons/refresh-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import {
-  Table,
-  TableBody,
-  TableDataCell,
-  TableHead,
-  TableHeaderCell,
-  TableHeaderRow,
-  TableRow,
-} from "../../../components/table"
-import Badge from "../../../components/badge"
+import Table from "../../../components/molecules/table"
+import Badge from "../../../components/fundamentals/badge"
 import Medusa from "../../../services/api"
 import EditUser from "./edit"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import BodyCard from "../../../components/organisms/body-card"
 import InviteModal from "../../../components/organisms/invite-modal"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import Actionables from "../../../components/molecules/actionables"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import SidebarTeamMember from "../../../components/molecules/sidebar-team-member"
 import useMedusa from "../../../hooks/use-medusa"
@@ -81,7 +72,7 @@ const Users = () => {
 
   const getUserTableRow = (user, index) => {
     return (
-      <TableRow
+      <Table.Row
         key={index}
         color={"inherit"}
         actions={[
@@ -101,22 +92,22 @@ const Users = () => {
           },
         ]}
       >
-        <TableDataCell>
+        <Table.Cell>
           <SidebarTeamMember user={user} />
-        </TableDataCell>
-        <TableDataCell>{user.email}</TableDataCell>
-        <TableDataCell className="inter-small-semibold text-violet-60">
+        </Table.Cell>
+        <Table.Cell>{user.email}</Table.Cell>
+        <Table.Cell className="inter-small-semibold text-violet-60">
           {user.role.charAt(0).toUpperCase()}
           {user.role.slice(1)}
-        </TableDataCell>
-        <TableDataCell></TableDataCell>
-      </TableRow>
+        </Table.Cell>
+        <Table.Cell></Table.Cell>
+      </Table.Row>
     )
   }
 
   const getInviteTableRow = (invite, index) => {
     return (
-      <TableRow
+      <Table.Row
         key={index}
         actions={[
           {
@@ -136,15 +127,19 @@ const Users = () => {
           },
         ]}
       >
-        <TableDataCell>-</TableDataCell>
-        <TableDataCell>{invite.user_email}</TableDataCell>
-        <TableDataCell></TableDataCell>
-        <TableDataCell>
-          {new Date(invite?.expires_at) < new Date() && (
-            <Badge variant="warning">Expired</Badge>
+        <Table.Cell className="text-grey-40">
+          <SidebarTeamMember user={{ email: invite.user_email }} />
+        </Table.Cell>
+        <Table.Cell className="text-grey-40">{invite.user_email}</Table.Cell>
+        <Table.Cell></Table.Cell>
+        <Table.Cell>
+          {new Date(invite?.expires_at) < new Date() ? (
+            <Badge variant="danger">Expired</Badge>
+          ) : (
+            <Badge variant="success">Pending</Badge>
           )}
-        </TableDataCell>
-      </TableRow>
+        </Table.Cell>
+      </Table.Row>
     )
   }
 
@@ -162,20 +157,20 @@ const Users = () => {
       >
         <div className="w-full flex flex-col">
           <Table>
-            <TableHead>
-              <TableHeaderRow>
-                <TableHeaderCell className="w-72">Name</TableHeaderCell>
-                <TableHeaderCell className="w-80">Email</TableHeaderCell>
-                <TableHeaderCell className="w-72">
+            <Table.Head>
+              <Table.HeadRow>
+                <Table.HeadCell className="w-72">Name</Table.HeadCell>
+                <Table.HeadCell className="w-80">Email</Table.HeadCell>
+                <Table.HeadCell className="w-72">
                   Team permissions
-                </TableHeaderCell>
-                <TableHeaderCell>Status</TableHeaderCell>
-              </TableHeaderRow>
-            </TableHead>
-            <TableBody>
+                </Table.HeadCell>
+                <Table.HeadCell>Status</Table.HeadCell>
+              </Table.HeadRow>
+            </Table.Head>
+            <Table.Body>
               {users}
               {invites}
-            </TableBody>
+            </Table.Body>
           </Table>
           <div>
             <span className="inter-small-regular text-grey-50">
