@@ -28,8 +28,12 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <Button variant="ghost" size="medium">
-            <MoreHorizontalIcon />
+          <Button
+            className="w-8 h-8 p-1.5 focus:border-none focus:shadow-none"
+            variant="ghost"
+            size="small"
+          >
+            <MoreHorizontalIcon size={20} />
           </Button>
         </DropdownMenu.Trigger>
 

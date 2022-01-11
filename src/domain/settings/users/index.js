@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { Box, Button, Flex, Text } from "rebass"
 import BreadCrumb from "../../../components/breadcrumb"
 import RefreshIcon from "../../../components/fundamentals/icons/refresh-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import {
-  DefaultCellContent,
   Table,
   TableBody,
   TableDataCell,
@@ -84,105 +82,65 @@ const Users = () => {
   const getUserTableRow = (user, index) => {
     return (
       <TableRow key={index} color={"inherit"} fontWeight={550}>
-        <Flex width={1 / 4}>
-          <TableDataCell>
-            <SidebarTeamMember user={user} />
-          </TableDataCell>
-        </Flex>
-        <Flex width="55%">
-          <TableDataCell>
-            <DefaultCellContent>
-              <Flex width={1} justifyContent="space-between">
-                {user.email}
-              </Flex>
-            </DefaultCellContent>
-          </TableDataCell>
-        </Flex>
-        <Flex width={1 / 5}>
-          <TableDataCell
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-            }}
-          >
-            <Actionables
-              actions={[
-                {
-                  label: "Edit User",
-                  onClick: () => setSelectedUser(user),
-                  icon: <EditIcon size={20} />,
+        <TableDataCell>
+          <SidebarTeamMember user={user} />
+        </TableDataCell>
+        <TableDataCell>{user.email}</TableDataCell>
+        <TableDataCell>
+          <Actionables
+            actions={[
+              {
+                label: "Edit User",
+                onClick: () => setSelectedUser(user),
+                icon: <EditIcon size={20} />,
+              },
+              {
+                label: "Remove User",
+                variant: "danger",
+                onClick: () => {
+                  setDeleteUser(true)
+                  setSelectedUser(user)
                 },
-                {
-                  label: "Remove User",
-                  variant: "danger",
-                  onClick: () => {
-                    setDeleteUser(true)
-                    setSelectedUser(user)
-                  },
-                  icon: <TrashIcon size={20} />,
-                },
-              ]}
-            />
-          </TableDataCell>
-        </Flex>
+                icon: <TrashIcon size={20} />,
+              },
+            ]}
+          />
+        </TableDataCell>
       </TableRow>
     )
   }
 
   const getInviteTableRow = (invite, index) => {
     return (
-      <TableRow key={index} color="gray" fontWeight={550}>
-        <Flex width={1 / 4}>
-          <TableDataCell>
-            <DefaultCellContent variant="tiny.default">-</DefaultCellContent>
-          </TableDataCell>
-        </Flex>
-        <Flex width="55%">
-          <TableDataCell>
-            <DefaultCellContent>
-              <Flex
-                width={1}
-                alignItems="baseline"
-                justifyContent="space-between"
-              >
-                {invite.user_email}
-                {new Date(invite?.expires_at) < new Date() && (
-                  <Badge bg="yellow">Expired</Badge>
-                )}
-              </Flex>
-            </DefaultCellContent>
-          </TableDataCell>
-        </Flex>
-        <Flex width={1 / 5}>
-          <TableDataCell
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-            }}
-          >
-            <Actionables
-              actions={[
-                {
-                  label: "Resend Invitation",
-                  onClick: () => {
-                    Medusa.invites.resend(invite.id).then(() => {
-                      toaster("Invitiation link has been resent", "success")
-                    })
-                  },
-                  icon: <RefreshIcon size={20} />,
+      <TableRow key={index}>
+        <TableDataCell>-</TableDataCell>
+        <TableDataCell>
+          {invite.user_email}
+          {new Date(invite?.expires_at) < new Date() && (
+            <Badge bg="yellow">Expired</Badge>
+          )}
+        </TableDataCell>
+        <TableDataCell className="w-8">
+          <Actionables
+            actions={[
+              {
+                label: "Resend Invitation",
+                onClick: () => {
+                  Medusa.invites.resend(invite.id).then(() => {
+                    toaster("Invitiation link has been resent", "success")
+                  })
                 },
-                {
-                  label: "Remove Invitation",
-                  variant: "danger",
-                  onClick: () => console.log("removing", invite.id),
-                  icon: <TrashIcon size={20} />,
-                },
-              ]}
-            />
-          </TableDataCell>
-        </Flex>
+                icon: <RefreshIcon size={20} />,
+              },
+              {
+                label: "Remove Invitation",
+                variant: "danger",
+                onClick: () => console.log("removing", invite.id),
+                icon: <TrashIcon size={20} />,
+              },
+            ]}
+          />
+        </TableDataCell>
       </TableRow>
     )
   }
@@ -203,18 +161,8 @@ const Users = () => {
           <Table>
             <TableHead>
               <TableHeaderRow>
-                <Flex width={1} justifyContent="space-between">
-                  <Flex px={0} width={1 / 4}>
-                    <TableHeaderCell fontWeight={450}>Name</TableHeaderCell>
-                  </Flex>
-                  <Flex width="55%">
-                    <TableHeaderCell fontWeight={450}>Email</TableHeaderCell>
-                  </Flex>
-
-                  <Flex width={1 / 5}>
-                    <TableHeaderCell />
-                  </Flex>
-                </Flex>
+                <TableHeaderCell fontWeight={450}>Name</TableHeaderCell>
+                <TableHeaderCell fontWeight={450}>Email</TableHeaderCell>
               </TableHeaderRow>
             </TableHead>
             <TableBody>
