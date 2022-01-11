@@ -3,7 +3,7 @@ import React, { Children } from "react"
 import Spinner from "../../atoms/spinner"
 
 type ButtonProps = {
-  variant: "primary" | "secondary" | "ghost"
+  variant: "primary" | "secondary" | "ghost" | "danger"
   size: "small" | "medium" | "large"
   loading?: boolean
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
@@ -29,6 +29,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ["btn-primary"]: variant === "primary",
       ["btn-secondary"]: variant === "secondary",
       ["btn-ghost"]: variant === "ghost",
+      ["btn-danger"]: variant === "danger",
     })
 
     const sizeClassname = clsx({
