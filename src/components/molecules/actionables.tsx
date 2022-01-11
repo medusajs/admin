@@ -20,7 +20,7 @@ type ActionablesProps = {
  * If only a single actionable is provided, it will render a button instead.
  */
 const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
-  if (!actions.length) {
+  if (!actions) {
     return null
   }
 

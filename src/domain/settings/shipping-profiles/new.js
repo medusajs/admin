@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Flex, Box } from "rebass"
 import { useForm } from "react-hook-form"
 import styled from "@emotion/styled"
-import MultiSelect from "react-multi-select-component"
+import { MultiSelect } from "react-multi-select-component"
 import { navigate } from "gatsby"
 
 import useMedusa from "../../../hooks/use-medusa"
