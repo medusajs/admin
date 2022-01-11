@@ -19,7 +19,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
   actionables,
   children,
 }) => {
-  const { isScrolled, scrollListener } = useScroll()
+  const { isScrolled, scrollListener } = useScroll({ threshold: 16 })
   return (
     <div className="rounded-rounded border bg-grey-0 border-grey-20 h-full overflow-hidden flex flex-col min-h-[350px] w-full relative">
       {isScrolled && (
