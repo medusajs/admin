@@ -1,6 +1,5 @@
 import { navigate } from "gatsby"
 import React, { useEffect, useState } from "react"
-import { Flex } from "rebass"
 import BreadCrumb from "../../components/molecules/breadcrumb"
 import Select from "../../components/molecules/select"
 import BodyCard from "../../components/organisms/body-card"
@@ -78,7 +77,7 @@ const AccountDetails = () => {
   ]
 
   return (
-    <Flex flexDirection={"column"}>
+    <div>
       <BreadCrumb
         previousRoute="/a/settings"
         previousBreadCrumb="Settings"
@@ -90,29 +89,27 @@ const AccountDetails = () => {
           subtitle="Manage the currencies that you will operate in"
           events={currencyEvents}
         >
-          <Flex width={1} flexDirection="column">
-            <Select
-              label="Default store currency"
-              options={storeCurrencies} // You are only allow to choose default currency from store currencies
-              value={selectedCurrency}
-              isMultiSelect={false}
-              enableSearch={true}
-              onChange={e => setSelectedCurrency(e)}
-              className="mb-6"
-            />
-            <Select
-              label="Store currencies"
-              options={allCurrencies}
-              value={storeCurrencies}
-              isMultiSelect={true}
-              enableSearch={true}
-              onChange={handleChange}
-              className="mb-2"
-            />
-          </Flex>
+          <Select
+            label="Default store currency"
+            options={storeCurrencies} // You are only allow to choose default currency from store currencies
+            value={selectedCurrency}
+            isMultiSelect={false}
+            enableSearch={true}
+            onChange={e => setSelectedCurrency(e)}
+            className="mb-6"
+          />
+          <Select
+            label="Store currencies"
+            options={allCurrencies}
+            value={storeCurrencies}
+            isMultiSelect={true}
+            enableSearch={true}
+            onChange={handleChange}
+            className="mb-2"
+          />
         </BodyCard>
       </TwoSplitPane>
-    </Flex>
+    </div>
   )
 }
 
