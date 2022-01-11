@@ -1,28 +1,10 @@
-import styled from "@emotion/styled"
-import { Label, Radio } from "@rebass/forms"
 import React, { useState } from "react"
-import { Box, Flex, Text } from "rebass"
-import Button from "../../../../components/button"
-import { ReactComponent as CloseIcon } from "../../../../assets/svg/cross.svg"
-import Badge from "../../../../components/badge"
-import Modal from "../../../../components/modal"
-import { DefaultCellContent } from "../../../../components/table"
+import Button from "../../../../components/fundamentals/button"
+import Modal from "../../../../components/molecules/modal"
+import InputField from "../../../../components/molecules/input"
 import Medusa from "../../../../services/api"
 import useMedusa from "../../../../hooks/use-medusa"
-
-const Row = styled.tr`
-  font-size: ${props => props.theme.fontSizes[1]}px;
-  border-top: ${props => props.theme.borders.hairline};
-
-  td:last-child {
-    padding-left: 20px;
-    padding-right: 30px;
-  }
-`
-
-const Cell = styled.td`
-  padding: 15px 5px;
-`
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const decideBadgeColor = email_status => {
   switch (!email_status) {
@@ -39,148 +21,70 @@ const decideBadgeColor = email_status => {
   }
 }
 
-const EditUser = ({ handleClose, user, triggerRefetch }) => {
+const EditUser = ({ handleClose, user, onSubmit }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [role, setRole] = useState(user.role)
-  const { toaster } = useMedusa("collections")
+  const [email, setEmail] = useState(user.email)
+  const [first_name, setFirstName] = useState(user.first_name)
+  const [last_name, setLastName] = useState(user.last_name)
+  const { toaster } = useMedusa("store")
 
-  const onChange = e => {
-    setRole(e.target.value)
-  }
-
-  const onSubmit = () => {
+  const submit = () => {
     setIsLoading(true)
     Medusa.users
       .update(user.id, {
-        role,
+        first_name,
+        last_name,
       })
       .then(res => res.data)
       .then(data => {
-        triggerRefetch()
-        setIsLoading(false)
+        onSubmit(data)
       })
-      .catch(err => toaster("Failed to edit user", "error"))
-
-    handleClose()
-  }
-
-  const handleDelete = () => {
-    Medusa.users.delete(user.id).then(res => {
-      triggerRefetch()
-    })
+      .catch(err => console.log(err)) //toaster(getErrorMessage(err), "error"))
 
     handleClose()
   }
 
   return (
-    <Modal onClick={handleClose}>
-      <Modal.Body px={2}>
-        <Modal.Header alignItems="center" justifyContent="space-between">
-          <Text fontWeight={700} fontSize={3}>
-            Edit User
-          </Text>
-          <CloseIcon
-            onClick={handleClose}
-            width={14}
-            height={14}
-            style={{ cursor: "pointer" }}
-          />
+    <Modal handleClose={handleClose}>
+      <Modal.Body>
+        <Modal.Header handleClose={handleClose}>
+          <span className="inter-xlarge-semibold">Edit User</span>
         </Modal.Header>
-        <Modal.Content flexDirection="column">
-          <Box mb={3}>
-            <Text fontSize={1} fontWeight={600} mb={2}>
-              Name
-            </Text>
-            <Text fontSize={1}>
-              {!user.first_name && !user.last_name
-                ? " - "
-                : `${user.first_name || ""} ${user.last_name || ""}`}
-            </Text>
-          </Box>
-          <Box mb={3}>
-            <Text fontSize={1} fontWeight={600} mb={2}>
-              Email
-            </Text>
-            <Flex alignItems="center">
-              <Text fontSize={1}>{user.email}</Text>
-            </Flex>
-          </Box>
-
-          {/* <table>
-              <tbody>
-                <Row>
-                  <Cell>
-                    <Label>
-                      <Radio
-                        checked={"admin" === role}
-                        onChange={onChange}
-                        name="role"
-                        value="admin"
-                      />
-                    </Label>
-                  </Cell>
-                  <Cell>
-                    <DefaultCellContent>Admin</DefaultCellContent>
-                  </Cell>
-                  <Cell>
-                    For business owners and managers with full control
-                  </Cell>
-                </Row>
-                <Row variant="tiny.default">
-                  <Cell mr={1}>
-                    <Label>
-                      <Radio
-                        checked={"member" === role}
-                        onChange={onChange}
-                        name="role"
-                        value="member"
-                      />
-                    </Label>
-                  </Cell>
-                  <Cell mr={1}>
-                    <DefaultCellContent>Member</DefaultCellContent>
-                  </Cell>
-                  <Cell>
-                    For employees and customer service who manage your store
-                  </Cell>
-                </Row>
-                <Row>
-                  <Cell>
-                    <Label>
-                      <Radio
-                        checked={"developer" === role}
-                        onChange={onChange}
-                        name="role"
-                        value="developer"
-                      />
-                    </Label>
-                  </Cell>
-                  <Cell>
-                    <DefaultCellContent>Delevoper</DefaultCellContent>
-                  </Cell>
-                  <Cell>
-                    For developers who build store functionality and interact
-                    with the API
-                  </Cell>
-                </Row>
-              </tbody>
-            </table> */}
-          <Box mb={1}>
-            <Text fontSize={1} mb={2} fontWeight={600} mb={2}>
-              Remove
-            </Text>
-            <Button variant="delete" onClick={handleDelete}>
-              Remove User
-            </Button>
-          </Box>
+        <Modal.Content>
+          <div className="w-full flex mb-4">
+            <InputField
+              label="First Name"
+              onChange={e => setFirstName(e.target.value)}
+              value={first_name}
+              className="mr-4"
+            />
+            <InputField
+              label="Last Name"
+              onChange={e => setLastName(e.target.value)}
+              value={last_name}
+            />
+          </div>
+          <InputField label="Email" value={email} />
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
-          {/* <Button mr={2} variant="primary" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button loading={isLoading} variant="cta" onClick={onSubmit}>
-            Save
-          </Button> */}
+        <Modal.Footer>
+          <div className="w-full flex justify-end">
+            <Button
+              variant="ghost"
+              size="small"
+              onClick={handleClose}
+              className="mr-2"
+            >
+              Cancel
+            </Button>
+            <Button
+              loading={isLoading}
+              variant="primary"
+              size="small"
+              onClick={submit}
+            >
+              Save
+            </Button>
+          </div>
         </Modal.Footer>
       </Modal.Body>
     </Modal>

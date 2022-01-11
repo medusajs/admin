@@ -99,7 +99,7 @@ const Settings = () => (
     <RegionDetails path="regions/:id" />
     <NewRegion path="regions/new" />
 
-    <Users path="users" />
+    <Users path="team" />
   </Router>
 )
 
