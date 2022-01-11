@@ -5,17 +5,21 @@ import useMedusa from "../../hooks/use-medusa"
 import { getErrorMessage } from "../../utils/error-messages"
 
 type DeletePromptProps = {
-  heading: string
-  text: string
+  heading?: string
+  text?: string
   successText?: string
+  cancelText?: string
+  confirmText?: string
   handleClose: () => void
   onDelete: () => Promise<void>
 }
 
 const DeletePrompt: React.FC<DeletePromptProps> = ({
-  heading,
-  text,
-  successText,
+  heading = "Are you sure?",
+  text = "Are you sure you want to delete?",
+  successText = "Delete successful",
+  cancelText = "No, cancel",
+  confirmText = "Yes, remove",
   handleClose,
   onDelete,
 }) => {
@@ -27,7 +31,7 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
 
     setIsLoading(true)
     onDelete()
-      .then(() => toaster(successText || "Delete successful", "success"))
+      .then(() => toaster(successText, "success"))
       .catch(err => toaster(getErrorMessage(err), "error"))
       .finally(() => {
         setIsLoading(false)
@@ -40,12 +44,8 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
       <Modal.Body>
         <Modal.Content>
           <div className="flex flex-col">
-            <span className="inter-large-semibold">
-              {heading || "Are you sure?"}
-            </span>
-            <span className="inter-base-regular mt-1 text-grey-50">
-              {text || "Are you sure you want to delete?"}
-            </span>
+            <span className="inter-large-semibold">{heading}</span>
+            <span className="inter-base-regular mt-1 text-grey-50">{text}</span>
           </div>
         </Modal.Content>
         <Modal.Footer>
@@ -56,7 +56,7 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
               size="small"
               onClick={handleClose}
             >
-              No, cancel
+              {cancelText}
             </Button>
             <Button
               loading={isLoading}
@@ -65,7 +65,7 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
               variant="danger"
               onClick={handleSubmit}
             >
-              Yes, remove
+              {confirmText}
             </Button>
           </div>
         </Modal.Footer>
