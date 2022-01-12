@@ -3,7 +3,7 @@ import { Text, Flex, Box, Image } from "rebass"
 import { navigate } from "gatsby"
 import ReactJson from "react-json-view"
 import styled from "@emotion/styled"
-import MultiSelect from "react-multi-select-component"
+import { MultiSelect } from "react-multi-select-component"
 import _ from "lodash"
 
 import Card from "../../components/card"

@@ -9,7 +9,7 @@ type ModalProps = {
 }
 
 type ModalChildProps = {
-  largeModal?: boolean
+  isLargeModal?: boolean
 }
 
 type ModalHeaderProps = {
@@ -40,36 +40,35 @@ const Content: React.FC = ({ children }) => {
 }
 
 const addProp = (children, prop) => {
-  return React.Children.map(children, c => React.cloneElement(c, prop))
+  return React.Children.map(children, child => React.cloneElement(child, prop))
 }
 
 const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
-  const largeModal = isLargeModal
   return (
     <Dialog.Root open={true} onOpenChange={handleClose}>
       <Dialog.Portal>
         <Overlay>
-          <Content>{addProp(children, largeModal)}</Content>
+          <Content>{addProp(children, { isLargeModal })}</Content>
         </Overlay>
       </Dialog.Portal>
     </Dialog.Root>
   )
 }
 
-Modal.Body = ({ children, largeModal }) => {
+Modal.Body = ({ children, isLargeModal }) => {
   return (
     <div className="inter-base-regular" onClick={e => e.stopPropagation()}>
-      {addProp(children, largeModal)}
+      {addProp(children, { isLargeModal })}
     </div>
   )
 }
 
-Modal.Content = ({ children, largeModal = true }) => {
+Modal.Content = ({ children, isLargeModal }) => {
   return (
     <div
       className={clsx("px-7 pt-5", {
-        ["w-largeModal pb-7"]: largeModal,
-        ["pb-5"]: !largeModal,
+        ["w-largeModal pb-7"]: isLargeModal,
+        ["pb-5"]: !isLargeModal,
       })}
     >
       {children}
@@ -95,12 +94,12 @@ Modal.Header = ({ handleClose = undefined, children }) => {
   )
 }
 
-Modal.Footer = ({ children, largeModal = true }) => {
+Modal.Footer = ({ children, isLargeModal }) => {
   return (
     <div
       onClick={e => e.stopPropagation()}
       className={clsx("px-7  pb-5 flex w-full", {
-        "border-t border-grey-20 pt-4": largeModal,
+        "border-t border-grey-20 pt-4": isLargeModal,
       })}
     >
       {children}
