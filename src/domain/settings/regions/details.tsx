@@ -1,3 +1,9 @@
+import {
+  useAdminRegion,
+  useAdminRegionFulfillmentOptions,
+  useAdminStore,
+  useAdminStorePaymentProviders,
+} from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Box, Flex } from "rebass"
@@ -10,8 +16,6 @@ import TagDropdown from "../../../components/tag-dropdown"
 import useMedusa from "../../../hooks/use-medusa"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
-import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
-import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 import Shipping from "./shipping"
 
 const RegionDetails = ({ id }) => {
@@ -22,35 +26,29 @@ const RegionDetails = ({ id }) => {
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [fulfillmentProviders, setFulfillmentProviders] = useState([])
 
-  const { store, isLoading: storeIsLoading } = useMedusa("store")
-  const {
-    region,
-    isLoading,
-    fulfillmentOptions: fulfillmentEndpoint,
-    update,
-    toaster,
-  } = useMedusa("regions", { id })
+  // const { store, isLoading: storeIsLoading } = useMedusa("store")
+  const { update, toaster } = useMedusa("regions")
   const { register, reset, setValue, handleSubmit } = useForm()
 
-  useEffect(() => {
-    if (storeIsLoading) return
-    if (store.currencies && region) {
-      setCurrencies(getCurrencies(store.currencies))
-    }
-  }, [store, region, storeIsLoading])
+  const { store, isLoading: storeIsLoading } = useAdminStore()
+  const { region, isLoading: regionIsLoading } = useAdminRegion(id)
+  const {
+    payment_providers,
+    isLoading: paymentIsLoading,
+  } = useAdminStorePaymentProviders()
+  const {
+    fulfillment_options,
+    isLoading: fulfillmentIsLoading,
+  } = useAdminRegionFulfillmentOptions(id)
 
   useEffect(() => {
-    if (storeIsLoading) return
-    setPaymentOptions(
-      store.payment_providers.map(c => paymentProvidersMapper(c.id))
-    )
-    setFulfillmentOptions(
-      store.fulfillment_providers.map(c => fulfillmentProvidersMapper(c.id))
-    )
-  }, [store, storeIsLoading])
+    if (storeIsLoading || regionIsLoading) return
+
+    setCurrencies(getCurrencies(store.currencies))
+  }, [store, storeIsLoading, regionIsLoading])
 
   useEffect(() => {
-    if (isLoading) return
+    if (regionIsLoading) return
     reset({ ...region, tax_rate: region.tax_rate / 100 })
     register({ name: "countries" })
     register({ name: "payment_providers" })
@@ -77,7 +75,7 @@ const RegionDetails = ({ id }) => {
     setFulfillmentProviders(
       region.fulfillment_providers.map(v => ({ value: v.id }))
     )
-  }, [region, isLoading])
+  }, [region, regionIsLoading])
 
   const getCurrencies = storeCurrencies => {
     let currs = storeCurrencies
@@ -138,7 +136,7 @@ const RegionDetails = ({ id }) => {
     value: c.alpha2.toLowerCase(),
   }))
 
-  if (isLoading || !currencies.length) {
+  if (storeIsLoading || !currencies.length) {
     return (
       <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
         <Box height="75px" width="75px" mt="50%">
@@ -155,7 +153,7 @@ const RegionDetails = ({ id }) => {
     >
       <form onSubmit={handleSubmit(onSave)}>
         <div className="flex flex-col w-full">
-          {isLoading || storeIsLoading ? (
+          {regionIsLoading || storeIsLoading ? (
             <Flex
               flexDirection="column"
               alignItems="center"
@@ -167,7 +165,7 @@ const RegionDetails = ({ id }) => {
               </Box>
             </Flex>
           ) : (
-            <>
+            <div className="w-full">
               <Input
                 start={true}
                 inline
@@ -248,12 +246,12 @@ const RegionDetails = ({ id }) => {
                   valueRender={o => <span>{o.value}</span>}
                 />
               )}
-            </>
+            </div>
           )}
         </div>
       </form>
-      {!isLoading && (
-        <Shipping region={region} fulfillmentMethods={fulfillmentEndpoint} />
+      {!regionIsLoading && fulfillment_options && (
+        <Shipping region={region} fulfillmentMethods={fulfillment_options} />
       )}
     </BodyCard>
   )

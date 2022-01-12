@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import BreadCrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
@@ -12,6 +12,10 @@ import RegionDetails from "./details"
 const Regions = () => {
   const { regions, isLoading } = useMedusa("regions")
   const [selectedRegion, setSelectedRegion] = React.useState(null)
+
+  useEffect(() => {
+    console.log(selectedRegion)
+  }, [selectedRegion])
 
   return (
     // <Flex flexDirection="column" pb={5} pt={5}>

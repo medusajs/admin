@@ -1,13 +1,10 @@
-import type { ShippingOption as ShippingOptionType } from "@medusajs/medusa"
 import {
   useAdminRegionFulfillmentOptions,
   useAdminShippingOptions,
 } from "medusa-react"
 import React, { useState } from "react"
-import { Box, Flex, Text } from "rebass"
+import { Box, Flex } from "rebass"
 import ShippingOption from "../../../components/atoms/shipping-option"
-import Badge from "../../../components/badge"
-import Button from "../../../components/button"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import Actionables from "../../../components/molecules/actionables"
 import Spinner from "../../../components/spinner"
@@ -36,12 +33,6 @@ const Shipping = ({ region, fulfillmentMethods }) => {
     shipping_options,
     isLoading: loadingOptions,
   } = useAdminShippingOptions({ region_id: region.id })
-
-  // useEffect(() => {
-  //   Medusa.regions.fulfillmentOptions.list(region.id).then(({ data }) => {
-  //     setFulfillmentOptions(data.fulfillment_options)
-  //   })
-  // }, [])
 
   const handleShippingUpdated = () => {
     refresh({
@@ -78,8 +69,8 @@ const Shipping = ({ region, fulfillmentMethods }) => {
     return capParts.join(" ")
   }
 
-  const outbound: ShippingOptionType[] = []
-  const inbound: ShippingOptionType[] = []
+  const outbound = []
+  const inbound = []
   if (!isLoading) {
     for (const o of shipping_options) {
       if (o.is_return) {
@@ -92,8 +83,8 @@ const Shipping = ({ region, fulfillmentMethods }) => {
 
   return (
     <>
-      <div>
-        <div className="flex items-center justify-between">
+      <div className="mb-2xlarge">
+        <div className="flex items-center justify-between mb-base">
           <h2 className="inter-base-semibold">Shipping Options</h2>
           <Actionables actions={outboundOptions} />
         </div>
@@ -112,51 +103,22 @@ const Shipping = ({ region, fulfillmentMethods }) => {
           ) : (
             shipping_options
               .filter(o => o.is_return === false && o.region_id === region.id)
-              .map(option => (
-                <Flex
-                  py={3}
-                  px={3}
-                  width={1}
-                  sx={{
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    borderBottom: "1px solid",
-                    borderColor: "muted",
-                  }}
-                >
-                  <Box>
-                    <Text>
-                      {option.name}{" "}
-                      {option.data.name && `(${option.data.name})`}
-                      {option.admin_only && (
-                        <Badge bg="#e3e8ee" color="#4f566b" ml={2}>
-                          Not on website
-                        </Badge>
-                      )}
-                    </Text>
-                    <Text>
-                      {prettify(option.price_type)}
-                      {option.amount !== undefined &&
-                        ` — ${
-                          option.amount / 100
-                        } ${region.currency_code.toUpperCase()}`}
-                    </Text>
-                  </Box>
-
-                  <Button
-                    variant="primary"
-                    onClick={() => setEditOption(option)}
-                  >
-                    Edit
-                  </Button>
-                </Flex>
-              ))
+              .map(option => {
+                return (
+                  <div key={option.id} className="mb-xsmall last:mb-0">
+                    <ShippingOption
+                      option={option}
+                      currency_code={region.currency_code}
+                      editFn={() => setEditOption(option)}
+                    />
+                  </div>
+                )
+              })
           )}
         </div>
       </div>
       <div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-base">
           <h2 className="inter-base-semibold">Return Shipping Options</h2>
           <Actionables actions={inboundDropdownOptions} />
         </div>
@@ -172,16 +134,20 @@ const Shipping = ({ region, fulfillmentMethods }) => {
                 <Spinner dark />
               </Box>
             </Flex>
-          ) : inbound.length ? (
-            inbound.map(option => {
-              return (
-                <ShippingOption
-                  option={option}
-                  currency_code={region.currency_code}
-                  editFn={editOption(option)}
-                />
-              )
-            })
+          ) : shipping_options ? (
+            shipping_options
+              .filter(o => o.is_return && o.region_id === region.id)
+              .map(option => {
+                return (
+                  <div key={option.id} className="mb-xsmall last:mb-0">
+                    <ShippingOption
+                      option={option}
+                      currency_code={region.currency_code}
+                      editFn={() => setEditOption(option)}
+                    />
+                  </div>
+                )
+              })
           ) : null}
         </div>
       </div>

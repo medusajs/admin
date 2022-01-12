@@ -1,10 +1,26 @@
-import type { ShippingOption as ShippingOptionType } from "@medusajs/medusa"
-import { ShippingOptionPriceType } from "@medusajs/medusa/dist/models/shipping-option"
-import { RequirementType } from "@medusajs/medusa/dist/models/shipping-option-requirement"
 import React from "react"
 
+enum RequirementType {
+  MAX_SUBTOTAL = "max_total",
+  MIN_SUBTOTAL = "min_total",
+}
+
+type OptionType = {
+  name: string
+  price_type: "flat_rate" | "calculated"
+  data: {
+    name?: string
+  }
+  amount: number
+  admin_only: boolean
+  requirements: {
+    type: RequirementType
+    amount: number
+  }[]
+}
+
 type ShippingOptionProps = {
-  option: ShippingOptionType
+  option: OptionType
   currency_code: string
   editFn: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
 }
@@ -15,32 +31,38 @@ const ShippingOption: React.FC<ShippingOptionProps> = ({
   editFn,
 }) => {
   return (
-    <div>
+    <div className="flex items-baseline justify-between p-base rounded-base border border-grey-20">
       <div>
-        <p>
-          {option.name} {option.data.name && `(${option.data.name})`}
+        <p className="inter-small-semibold truncate">
+          {option.name} {option.data.name && `(${option.data.name})`}{" "}
+          {option.admin_only && (
+            <span className="text-grey-50 inter-small-regular">
+              (Not on website)
+            </span>
+          )}
         </p>
-        <p>
-          {option.price_type === ShippingOptionPriceType.FLAT_RATE
-            ? "Flat Rate"
-            : "Calculated"}
-          :{" "}
+        <p className="inter-small-regular text-grey-50 truncate">
+          {option.price_type === "flat_rate" ? "Flat Rate" : "Calculated"}:{" "}
           {option.amount !== undefined &&
             `${option.amount / 100} ${currency_code.toUpperCase()}`}
-          {option.requirements.length &&
-            option.requirements.map(r => {
-              const type =
-                r.type === RequirementType.MAX_SUBTOTAL
-                  ? "Max. subtotal"
-                  : "Min. subtotal"
-              return `- ${type}: ${
-                r.amount / 100
-              } ${currency_code.toUpperCase()}`
-            })}
+          {option.requirements.length
+            ? option.requirements.map(r => {
+                const type =
+                  r.type === "max_total" ? "Max. subtotal" : "Min. subtotal"
+                return ` - ${type}: ${
+                  r.amount / 100
+                } ${currency_code.toUpperCase()}`
+              })
+            : null}
         </p>
       </div>
       <div>
-        <button onClick={editFn}>Edit</button>
+        <button
+          onClick={editFn}
+          className="inter-small-semibold text-violet-60"
+        >
+          Edit
+        </button>
       </div>
     </div>
   )

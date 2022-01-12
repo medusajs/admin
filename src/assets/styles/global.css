@@ -206,7 +206,7 @@
     }
 
     .dropdown-heading {
-      @apply py-0 px-3 outline-0 h-6 cursor-text !important;
+      @apply py-0 px-3 outline-0 h-6 cursor-text truncate !important;
     }
   }
 }
