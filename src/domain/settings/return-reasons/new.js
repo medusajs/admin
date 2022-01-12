@@ -5,7 +5,7 @@ import { navigate } from "gatsby"
 
 import Input from "../../../components/molecules/input"
 import Button from "../../../components/button"
-import BreadCrumb from "../../../components/breadcrumb"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 import Card from "../../../components/card"
 import { ReactSelect } from "../../../components/react-select"
 
