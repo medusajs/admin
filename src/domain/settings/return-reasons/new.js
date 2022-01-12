@@ -7,7 +7,6 @@ import Input from "../../../components/molecules/input"
 import Button from "../../../components/button"
 import BreadCrumb from "../../../components/molecules/breadcrumb"
 import Card from "../../../components/card"
-import Input from "../../../components/molecules/input"
 import useToaster from "../../../hooks/use-toaster"
 
 const NewReturnReason = ({ id }) => {
