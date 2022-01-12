@@ -1,10 +1,11 @@
-import React, { ChangeEventHandler, useState } from "react"
+import React, { ChangeEventHandler, useRef, useState } from "react"
 import { MultiSelect } from "react-multi-select-component"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
+import * as Portal from "@radix-ui/react-portal"
 
 type Option = React.OptionHTMLAttributes<HTMLOptionElement> & {
   key?: string
@@ -96,7 +97,7 @@ const Select = React.forwardRef(
     ref
   ) => {
     const [isOpen, setIsOpen] = useState(false)
-
+    const divRef = useRef(null)
     const handleSelect = values => {
       if (values.length) {
         onChange(isMultiSelect ? values : values[values.length - 1])
@@ -106,40 +107,45 @@ const Select = React.forwardRef(
     }
 
     return (
-      <InputContainer
-        key={name}
-        onFocusLost={() => setIsOpen(false)}
-        onClick={() => setIsOpen(true)}
-        className={className}
-      >
-        <div className="w-full flex text-grey-50 pr-0.5 justify-between">
-          <InputHeader {...{ label, required }} />
-          <ArrowDownIcon size={16} />
-        </div>
-        <MultiSelect
-          labelledBy={labelledBy}
-          value={isMultiSelect ? value : value ? [value] : []}
-          isOpen={isOpen}
-          hasSelectAll={hasSelectAll}
-          ItemRenderer={ItemRenderer}
-          className="multiselect-styling"
-          overrideStrings={{ search: "Search...", ...overrideStrings }}
-          ClearIcon={
-            <span className="text-grey-40">
-              <XCircleIcon size={20} />
-            </span>
-          }
-          onChange={handleSelect}
-          valueRenderer={valueRenderer}
-          {...selectOptions}
-          disableSearch={!enableSearch}
-          ClearSelectedIcon={
-            <span className="text-grey-40">
-              {clearSelected && <XCircleIcon size={20} />}
-            </span>
-          }
-        />
-      </InputContainer>
+      <div ref={divRef}>
+        <Portal.Root containerRef={divRef}>
+          <InputContainer
+            key={name}
+            onFocusLost={() => setIsOpen(false)}
+            onClick={() => setIsOpen(true)}
+            className={className}
+          >
+            <div className="w-full flex text-grey-50 pr-0.5 justify-between">
+              <InputHeader {...{ label, required }} />
+              <ArrowDownIcon size={16} />
+            </div>
+            <MultiSelect
+              labelledBy={labelledBy}
+              value={isMultiSelect ? value : value ? [value] : []}
+              isOpen={isOpen}
+              hasSelectAll={hasSelectAll}
+              ItemRenderer={ItemRenderer}
+              className="multiselect-styling"
+              overrideStrings={{ search: "Search...", ...overrideStrings }}
+              ClearIcon={
+                <span className="text-grey-40">
+                  <XCircleIcon size={20} />
+                </span>
+              }
+              onChange={handleSelect}
+              valueRenderer={valueRenderer}
+              {...selectOptions}
+              disableSearch={!enableSearch}
+              ClearSelectedIcon={
+                <span className="text-grey-40">
+                  {clearSelected && <XCircleIcon size={20} />}
+                </span>
+              }
+            />
+          </InputContainer>
+        </Portal.Root>
+        ;
+      </div>
     )
   }
 )
