@@ -43,7 +43,7 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
         >
           {actions.map((action, i) => {
             return (
-              <DropdownMenu.Item key={i}>
+              <DropdownMenu.Item className="mb-1 last:mb-0" key={i}>
                 {
                   <Button
                     variant="ghost"
