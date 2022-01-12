@@ -8,7 +8,7 @@ import SidebarTeamMember from "../molecules/sidebar-team-member"
 import Table from "../molecules/table"
 import Medusa from "../../services/api"
 import DeletePrompt from "../organisms/delete-prompt"
-import EditUser from "../../domain/settings/users/edit"
+import EditUser from "../organisms/edit-user-modal"
 
 type UserListElement = {
   entity: any
@@ -273,7 +273,10 @@ const UserTable: React.FC<UserTableProps> = ({
             text={"Are you sure you want to remove this user?"}
             heading={"Remove user"}
             onDelete={() =>
-              Medusa.users.delete(selectedUser.id).then(() => triggerRefetch())
+              Medusa.users.delete(selectedUser.id).then(() => {
+                toaster("User has been revoved", "success")
+                triggerRefetch()
+              })
             }
             handleClose={handleClose}
           />
@@ -281,7 +284,10 @@ const UserTable: React.FC<UserTableProps> = ({
           <EditUser
             handleClose={handleClose}
             user={selectedUser}
-            onSubmit={triggerRefetch}
+            onSubmit={() => {
+              toaster("User has been updated", "success")
+              triggerRefetch()
+            }}
           />
         ))}
       {selectedInvite && (
@@ -289,9 +295,10 @@ const UserTable: React.FC<UserTableProps> = ({
           text={"Are you sure you want to remove this invite?"}
           heading={"Remove invite"}
           onDelete={() =>
-            Medusa.invites
-              .delete(selectedInvite.id)
-              .then(() => triggerRefetch())
+            Medusa.invites.delete(selectedInvite.id).then(() => {
+              toaster("Invitiation has been revoved", "success")
+              triggerRefetch()
+            })
           }
           handleClose={handleClose}
         />

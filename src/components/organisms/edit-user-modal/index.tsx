@@ -1,12 +1,27 @@
 import React, { useState } from "react"
-import Button from "../../../../components/fundamentals/button"
-import Modal from "../../../../components/molecules/modal"
-import InputField from "../../../../components/molecules/input"
-import Medusa from "../../../../services/api"
-import useMedusa from "../../../../hooks/use-medusa"
-import { getErrorMessage } from "../../../../utils/error-messages"
+import Button from "../../fundamentals/button"
+import Modal from "../../molecules/modal"
+import InputField from "../../molecules/input"
+import Medusa from "../../../services/api"
+import useMedusa from "../../../hooks/use-medusa"
+import { getErrorMessage } from "../../../utils/error-messages"
 
-const EditUser = ({ handleClose, user, onSubmit }) => {
+type EditUserModalProps = {
+  handleClose: () => void
+  user: {
+    id: string
+    first_name: string
+    last_name: string
+    email: string
+  }
+  onSubmit: () => void
+}
+
+const EditUserModal: React.FC<EditUserModalProps> = ({
+  handleClose,
+  user,
+  onSubmit,
+}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState(user.email)
   const [first_name, setFirstName] = useState(user.first_name)
@@ -20,11 +35,8 @@ const EditUser = ({ handleClose, user, onSubmit }) => {
         first_name,
         last_name,
       })
-      .then(res => res.data)
-      .then(data => {
-        onSubmit(data)
-      })
-      .catch(err => toaster(getErrorMessage(err), "error")) //toaster(getErrorMessage(err), "error"))
+      .then(res => onSubmit())
+      .catch(err => toaster(getErrorMessage(err), "error"))
 
     handleClose()
   }
@@ -76,4 +88,4 @@ const EditUser = ({ handleClose, user, onSubmit }) => {
   )
 }
 
-export default EditUser
+export default EditUserModal
