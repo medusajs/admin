@@ -2,11 +2,18 @@ import React from "react"
 import { navigate } from "gatsby"
 import clsx from "clsx"
 import Actionables, { ActionType } from "../../molecules/actionables"
+import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
 
 type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   actions?: ActionType[]
   linkTo?: string
 }
+
+type TableProps = {
+  filteringOptions?: FilteringOptionProps[]
+  enableSearch?: boolean
+  handleSearch?: (searchTerm: string) => void
+} & React.HTMLAttributes<HTMLTableElement>
 
 type TableElement<T> = React.ForwardRefExoticComponent<T> &
   React.RefAttributes<unknown>
@@ -18,21 +25,46 @@ type TableType = {
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
   Cell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
-} & TableElement<React.HTMLAttributes<HTMLTableElement>>
+} & TableElement<TableProps>
 
 const Table: TableType = React.forwardRef(
   (
-    { className, children, ...props }: React.HTMLAttributes<HTMLTableElement>,
+    {
+      className,
+      children,
+      enableSearch,
+      handleSearch,
+      filteringOptions,
+      ...props
+    }: TableProps,
     ref
-  ) => (
-    <table
-      ref={ref}
-      className={clsx("w-full table-auto", className)}
-      {...props}
-    >
-      {children}
-    </table>
-  )
+  ) => {
+    if (enableSearch && !handleSearch) {
+      throw new Error("Table cannot enable search without a search handler")
+    }
+
+    return (
+      <div className="flex flex-col">
+        <div className="w-full flex">
+          {filteringOptions && (
+            <div className="flex self-start">
+              {filteringOptions.map(fo => (
+                <FilteringOptions {...fo} />
+              ))}
+            </div>
+          )}
+          <div className="flex"></div>
+        </div>
+        <table
+          ref={ref}
+          className={clsx("w-full table-auto", className)}
+          {...props}
+        >
+          {children}
+        </table>
+      </div>
+    )
+  }
 )
 
 Table.Head = React.forwardRef(
