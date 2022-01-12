@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react"
-import { Flex, Text, Box } from "rebass"
-
-import useMedusa from "../../../hooks/use-medusa"
-import Card from "../../../components/card"
+import React, { useEffect, useState } from "react"
+import { Box, Flex, Text } from "rebass"
+import Badge from "../../../components/badge"
 import Button from "../../../components/button"
+import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import Actionables from "../../../components/molecules/actionables"
 import Spinner from "../../../components/spinner"
+import useMedusa from "../../../hooks/use-medusa"
 import Medusa from "../../../services/api"
-
+import { getErrorMessage } from "../../../utils/error-messages"
 import EditShipping from "./edit-shipping"
 import NewShipping from "./new-shipping"
-import Badge from "../../../components/badge"
-
-import { getErrorMessage } from "../../../utils/error-messages"
 
 const Shipping = ({ region, fulfillmentMethods }) => {
   const [editOption, setEditOption] = useState(null)
@@ -43,8 +41,9 @@ const Shipping = ({ region, fulfillmentMethods }) => {
       .catch(error => toaster(getErrorMessage(error), "error"))
   }
 
-  const dropdownOptions = [
+  const outboundOptions = [
     {
+      icon: <PlusIcon />,
       label: "Add option",
       onClick: () => setAddOption(true),
     },
@@ -52,7 +51,8 @@ const Shipping = ({ region, fulfillmentMethods }) => {
 
   const inboundDropdownOptions = [
     {
-      label: "Add return option",
+      icon: <PlusIcon />,
+      label: "Add return",
       onClick: () => setAddReturnOption(true),
     },
   ]
@@ -80,11 +80,12 @@ const Shipping = ({ region, fulfillmentMethods }) => {
 
   return (
     <>
-      <Card mb={5}>
-        <Card.Header dropdownOptions={dropdownOptions}>
-          Shipping Options
-        </Card.Header>
-        <Card.Body py={0} flexDirection="column">
+      <div>
+        <div className="flex items-center justify-between">
+          <h2 className="inter-base-semibold">Shipping Options</h2>
+          <Actionables actions={outboundOptions} />
+        </div>
+        <div className="flex flex-col">
           {isLoading ? (
             <Flex
               flexDirection="column"
@@ -134,13 +135,14 @@ const Shipping = ({ region, fulfillmentMethods }) => {
               </Flex>
             ))
           )}
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Header dropdownOptions={inboundDropdownOptions}>
-          Return Shipping Options
-        </Card.Header>
-        <Card.Body py={0} flexDirection="column">
+        </div>
+      </div>
+      <div>
+        <div className="flex items-center justify-between">
+          <h2 className="inter-base-semibold">Return Shipping Options</h2>
+          <Actionables actions={inboundDropdownOptions} />
+        </div>
+        <div className="flex flex-col">
           {isLoading ? (
             <Flex
               flexDirection="column"
@@ -153,52 +155,59 @@ const Shipping = ({ region, fulfillmentMethods }) => {
               </Box>
             </Flex>
           ) : inbound && inbound.length ? (
-            inbound.map(option => (
-              <Flex
-                py={3}
-                px={3}
-                width={1}
-                sx={{
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  borderBottom: "1px solid",
-                  borderColor: "muted",
-                }}
-              >
-                <Box>
-                  <Text>
-                    {option.name} {option.data.name && `(${option.data.name})`}
-                  </Text>
-                  <Text>
-                    {prettify(option.price_type)}
-                    {option.amount !== undefined &&
-                      ` — ${
-                        option.amount / 100
-                      } ${region.currency_code.toUpperCase()}`}
-                  </Text>
-                  <Text>
-                    {!!option.requirements
-                      ? option.requirements.map(r => {
-                          return `Order must have a ${prettify(
-                            r.type,
-                            false
-                          )} of ${region.currency_code.toUpperCase()} ${
-                            r.value
-                          }`
-                        })
-                      : "No requirements"}
-                  </Text>
-                </Box>
+            inbound.map(option => {
+              console.log(option)
+              return (
+                <Flex
+                  py={3}
+                  px={3}
+                  width={1}
+                  sx={{
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    borderBottom: "1px solid",
+                    borderColor: "muted",
+                  }}
+                >
+                  <Box>
+                    <Text>
+                      {option.name}{" "}
+                      {option.data.name && `(${option.data.name})`}
+                    </Text>
+                    <Text>
+                      {prettify(option.price_type)}
+                      {option.amount !== undefined &&
+                        ` — ${
+                          option.amount / 100
+                        } ${region.currency_code.toUpperCase()}`}
+                    </Text>
+                    <Text>
+                      {!!option.requirements
+                        ? option.requirements.map(r => {
+                            return `Order must have a ${prettify(
+                              r.type,
+                              false
+                            )} of ${region.currency_code.toUpperCase()} ${
+                              r.amount / 100
+                            }`
+                          })
+                        : "No requirements"}
+                    </Text>
+                  </Box>
 
-                <Button variant="primary" onClick={() => setEditOption(option)}>
-                  Edit
-                </Button>
-              </Flex>
-            ))
+                  <Button
+                    variant="primary"
+                    onClick={() => setEditOption(option)}
+                  >
+                    Edit
+                  </Button>
+                </Flex>
+              )
+            })
           ) : null}
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
       {editOption && (
         <EditShipping
           shippingOption={editOption}

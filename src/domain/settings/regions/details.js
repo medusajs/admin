@@ -1,26 +1,20 @@
-import React, { useState, useEffect } from "react"
-import { Flex, Text, Box } from "rebass"
-import styled from "@emotion/styled"
+import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
-
-import MultiSelect from "../../../components/molecules/select"
-import useMedusa from "../../../hooks/use-medusa"
+import { Box, Flex } from "rebass"
 import Input from "../../../components/molecules/input"
+import MultiSelect from "../../../components/molecules/select"
+import BodyCard from "../../../components/organisms/body-card"
 import Select from "../../../components/select"
-import Card from "../../../components/card"
-import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import TagDropdown from "../../../components/tag-dropdown"
-import BreadCrumb from "../../../components/molecules/breadcrumb"
-
+import useMedusa from "../../../hooks/use-medusa"
 import { countries as countryData } from "../../../utils/countries"
-
-import Shipping from "./shipping"
-import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 import { getErrorMessage } from "../../../utils/error-messages"
+import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
+import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
+import Shipping from "./shipping"
 
-const Regions = ({ id }) => {
+const RegionDetails = ({ id }) => {
   const [currencies, setCurrencies] = useState([])
   const [countries, setCountries] = useState([])
   const [paymentOptions, setPaymentOptions] = useState([])
@@ -155,15 +149,12 @@ const Regions = ({ id }) => {
   }
 
   return (
-    <Flex flexDirection="column" py={5} mb={5}>
-      <BreadCrumb
-        previousRoute="/a/settings/regions"
-        previousBreadCrumb="Settings > Regions"
-        currentPage="Region details"
-      />
-      <Card as="form" mb={3} onSubmit={handleSubmit(onSave)}>
-        <Card.Header>Region Details</Card.Header>
-        <Card.Body flexDirection="column">
+    <BodyCard
+      title="Details"
+      events={[{ label: "Save", onClick: handleSubmit(onSave) }]}
+    >
+      <form onSubmit={handleSubmit(onSave)}>
+        <div className="flex flex-col w-full">
           {isLoading || storeIsLoading ? (
             <Flex
               flexDirection="column"
@@ -176,7 +167,7 @@ const Regions = ({ id }) => {
               </Box>
             </Flex>
           ) : (
-            <Box width={1 / 2} ml={3}>
+            <>
               <Input
                 start={true}
                 inline
@@ -257,20 +248,15 @@ const Regions = ({ id }) => {
                   valueRender={o => <span>{o.value}</span>}
                 />
               )}
-            </Box>
+            </>
           )}
-        </Card.Body>
-        <Card.Footer px={3} justifyContent="flex-end">
-          <Button type="submit" variant="primary" variant="cta">
-            Save
-          </Button>
-        </Card.Footer>
-      </Card>
+        </div>
+      </form>
       {!isLoading && (
         <Shipping region={region} fulfillmentMethods={fulfillmentEndpoint} />
       )}
-    </Flex>
+    </BodyCard>
   )
 }
 
-export default Regions
+export default RegionDetails
