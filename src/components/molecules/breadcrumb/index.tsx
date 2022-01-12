@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import React from "react"
-import ChevronRightIcon from "../../fundamentals/icons/chevron-right"
+import ChevronRightIcon from "../../fundamentals/icons/chevron-right-icon"
 
 type BreadcrumbProps = React.HtmlHTMLAttributes<HTMLDivElement> & {
   previousRoute?: string

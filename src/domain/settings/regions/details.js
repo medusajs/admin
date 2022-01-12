@@ -12,7 +12,7 @@ import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import TagDropdown from "../../../components/tag-dropdown"
-import BreadCrumb from "../../../components/breadcrumb"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 
 import { countries as countryData } from "../../../utils/countries"
 
