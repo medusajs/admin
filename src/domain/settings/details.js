@@ -8,7 +8,7 @@ import Input from "../../components/molecules/input"
 import Card from "../../components/card"
 import Button from "../../components/button"
 import { getErrorMessage } from "../../utils/error-messages"
-import BreadCrumb from "../../components/breadcrumb"
+import BreadCrumb from "../../components/molecules/breadcrumb"
 
 const HorizontalDivider = props => (
   <Box
@@ -38,26 +38,29 @@ const AccountDetails = () => {
     })
   }, [store, isLoading])
 
-  const validateUrl = (address) => {
-    if(!address || address === '')
-    {
+  const validateUrl = address => {
+    if (!address || address === "") {
       return true
     }
 
     try {
-      const url = new URL(address);
-      return url.protocol === "http:" || url.protocol === "https:";
+      const url = new URL(address)
+      return url.protocol === "http:" || url.protocol === "https:"
     } catch (_) {
-      return false;  
+      return false
     }
   }
 
   const onSubmit = data => {
-    if(!validateUrl(data.swap_link_template) || !validateUrl(data.payment_link_template) || !validateUrl(data.invite_link_template)){
-      toaster("Malformed url", 'error')
+    if (
+      !validateUrl(data.swap_link_template) ||
+      !validateUrl(data.payment_link_template) ||
+      !validateUrl(data.invite_link_template)
+    ) {
+      toaster("Malformed url", "error")
       return
     }
-    
+
     try {
       localStorage.removeItem("medusa::cache::store")
       update(data)

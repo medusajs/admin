@@ -6,6 +6,7 @@ import BreadCrumb from "../../../components/breadcrumb"
 import Button from "../../../components/button"
 import Card from "../../../components/card"
 import Spinner from "../../../components/spinner"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 import ReturnReasonsList from "./return-reasons-list"
 
 const ReturnReasons = () => {

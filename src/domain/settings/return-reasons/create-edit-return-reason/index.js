@@ -2,17 +2,11 @@ import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
 import { useForm } from "react-hook-form"
 import Typography from "../../../../components/typography"
-import { Label } from "@rebass/forms"
 import styled from "@emotion/styled"
-
 import { ReactComponent as CrossIcon } from "../../../../assets/svg/cross.svg"
 import Modal from "../../../../components/modal"
 import Input from "../../../../components/molecules/input"
 import Button from "../../../../components/button"
-
-import Medusa from "../../../../services/api"
-import useMedusa from "../../../../hooks/use-medusa"
-
 import { getErrorMessage } from "../../../../utils/error-messages"
 import {
   adminReturnReasonKeys,
