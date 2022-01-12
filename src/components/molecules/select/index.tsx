@@ -107,18 +107,18 @@ const Select = React.forwardRef(
     }
 
     return (
-      <div ref={divRef}>
-        <Portal.Root containerRef={divRef}>
-          <InputContainer
-            key={name}
-            onFocusLost={() => setIsOpen(false)}
-            onClick={() => setIsOpen(true)}
-            className={className}
-          >
-            <div className="w-full flex text-grey-50 pr-0.5 justify-between">
-              <InputHeader {...{ label, required }} />
-              <ArrowDownIcon size={16} />
-            </div>
+      <InputContainer
+        key={name}
+        onFocusLost={() => setIsOpen(false)}
+        onClick={() => setIsOpen(true)}
+        className={className}
+      >
+        <div className="w-full flex text-grey-50 pr-0.5 justify-between">
+          <InputHeader {...{ label, required }} />
+          <ArrowDownIcon size={16} />
+        </div>
+        <div ref={divRef}>
+          <Portal.Root containerRef={divRef}>
             <MultiSelect
               labelledBy={labelledBy}
               value={isMultiSelect ? value : value ? [value] : []}
@@ -142,10 +142,9 @@ const Select = React.forwardRef(
                 </span>
               }
             />
-          </InputContainer>
-        </Portal.Root>
-        ;
-      </div>
+          </Portal.Root>
+        </div>
+      </InputContainer>
     )
   }
 )
