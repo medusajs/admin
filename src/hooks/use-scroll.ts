@@ -1,11 +1,15 @@
 import { useState } from "react"
 
-export const useScroll = () => {
+type useScrollProps = {
+  threshold?: number
+}
+
+export const useScroll = ({ threshold = 0 }: useScrollProps) => {
   const [isScrolled, setIsScrolled] = useState(false)
 
   const scrollListener = e => {
     const currentScrollY = e.target.scrollTop
-    if (currentScrollY > 16) {
+    if (currentScrollY > threshold) {
       setIsScrolled(true)
     } else {
       setIsScrolled(false)

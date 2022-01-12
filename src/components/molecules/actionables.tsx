@@ -12,7 +12,7 @@ export type ActionType = {
 }
 
 type ActionablesProps = {
-  actions: ActionType[]
+  actions?: ActionType[]
 }
 
 /**

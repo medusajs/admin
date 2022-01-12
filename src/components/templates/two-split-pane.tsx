@@ -1,4 +1,4 @@
-import React, { Children, Fragment } from "react"
+import React, { Children } from "react"
 
 const TwoSplitPane: React.FC = ({ children }) => {
   const childrenCount = Children.count(children)
@@ -8,10 +8,10 @@ const TwoSplitPane: React.FC = ({ children }) => {
   }
 
   return (
-    <div className="flex flex-col gap-large items-center h-full medium:flex-row">
+    <div className="flex flex-col gap-large items-baseline h-full medium:flex-row">
       {Children.map(children, (child, i) => {
         return (
-          <div className="medium:w-1/2" key={i}>
+          <div className="w-full medium:w-1/2 h-full" key={i}>
             {child}
           </div>
         )
