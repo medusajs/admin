@@ -23,7 +23,10 @@ const FilteringOptions: React.FC<FilteringOptionProps> = ({
   const [open, setOpen] = useState(false)
   return (
     <div
-      className={clsx("inter-small-regular flex text-grey-50", className)}
+      className={clsx(
+        "inter-small-regular flex text-grey-50 mr-6 last:mr-0",
+        className
+      )}
       {...props}
     >
       <span className="">{title}:</span>

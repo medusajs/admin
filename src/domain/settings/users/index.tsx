@@ -35,8 +35,6 @@ const Users: React.FC = () => {
   const [selectedInvite, setSelectedInvite] = useState(null)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const { toaster } = useMedusa("store")
-  const [offset, setOffset] = useState(0)
-  const [limit, setLimit] = useState(10)
 
   const handleClose = () => {
     setDeleteUser(false)
@@ -57,8 +55,8 @@ const Users: React.FC = () => {
           .list()
           .then(res => res.data)
           .then(inviteData => {
-            setInvites(inviteData.invites)
             setUsers(userData.users)
+            setInvites(inviteData.invites)
 
             setElements([
               ...userData.users.map((user, i) => ({
@@ -79,11 +77,6 @@ const Users: React.FC = () => {
   useEffect(() => {
     setShownElements(elements)
   }, [elements])
-
-  const handlePagination = direction => {
-    const updatedOffset = direction === "next" ? offset + limit : offset - limit
-    setOffset(updatedOffset)
-  }
 
   const actionables = [
     {
@@ -219,7 +212,6 @@ const Users: React.FC = () => {
       ],
     },
     {
-      className: "ml-6",
       title: "Status",
       options: [
         {
