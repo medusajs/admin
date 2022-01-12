@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Box, Button, Flex, Text } from "rebass"
 import Card from "../../../components/card"
-import BreadCrumb from "../../../components/breadcrumb"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 import {
   DefaultCellContent,
   Table,
@@ -12,7 +12,7 @@ import {
   TableHeaderRow,
   TableRow,
 } from "../../../components/table"
-import Badge from '../../../components/badge'
+import Badge from "../../../components/badge"
 import Medusa from "../../../services/api"
 import EditUser from "./edit"
 import EditInvite from "./invite/edit"
@@ -121,13 +121,16 @@ const Users = () => {
                           <Flex width="55%">
                             <TableDataCell>
                               <DefaultCellContent>
-                                <Flex width={1} alignItems='baseline' justifyContent='space-between'>
-
-                                {user?.token ? user.user_email : user.email} {" "}
-                               
-                                {user?.token && new Date(user?.expires_at) < new Date() && 
-                                 (<Badge bg='yellow'>Expired</Badge>)
-                                }
+                                <Flex
+                                  width={1}
+                                  alignItems="baseline"
+                                  justifyContent="space-between"
+                                >
+                                  {user?.token ? user.user_email : user.email}{" "}
+                                  {user?.token &&
+                                    new Date(user?.expires_at) < new Date() && (
+                                      <Badge bg="yellow">Expired</Badge>
+                                    )}
                                 </Flex>
                               </DefaultCellContent>
                             </TableDataCell>

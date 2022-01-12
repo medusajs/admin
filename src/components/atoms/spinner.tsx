@@ -2,8 +2,8 @@ import clsx from "clsx"
 import React from "react"
 
 type SpinnerProps = {
-  size: "large" | "medium" | "small"
-  variant: "primary" | "secondary"
+  size?: "large" | "medium" | "small"
+  variant?: "primary" | "secondary"
 }
 
 const Spinner: React.FC<SpinnerProps> = ({

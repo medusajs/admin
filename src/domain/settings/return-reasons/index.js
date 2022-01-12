@@ -6,7 +6,7 @@ import useMedusa from "../../../hooks/use-medusa"
 import Card from "../../../components/card"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
-import BreadCrumb from "../../../components/breadcrumb"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 import ReturnReasonsList from "./return-reasons-list"
 
 const ReturnReasons = () => {
