@@ -3,6 +3,7 @@ import { navigate } from "gatsby"
 import clsx from "clsx"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
+import TableSearch from "./table-search"
 
 type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   actions?: ActionType[]
@@ -45,15 +46,17 @@ const Table: TableType = React.forwardRef(
 
     return (
       <div className="flex flex-col">
-        <div className="w-full flex">
+        <div className="w-full flex justify-between">
           {filteringOptions && (
-            <div className="flex self-start">
+            <div className="flex mb-2 self-end">
               {filteringOptions.map(fo => (
                 <FilteringOptions {...fo} />
               ))}
             </div>
           )}
-          <div className="flex"></div>
+          <div className="flex">
+            <TableSearch onSearch={handleSearch} />
+          </div>
         </div>
         <table
           ref={ref}

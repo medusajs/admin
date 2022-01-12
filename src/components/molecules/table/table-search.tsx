@@ -2,30 +2,34 @@ import React, { useState } from "react"
 import clsx from "clsx"
 import SearchIcon from "../../fundamentals/icons/search-icon"
 
-type FilteringOptionProps = {
-  title: string
-  options: {
-    title: string
-    count?: number
-    onChange: (term: string) => void
-  }[]
+type TableSearchProps = {
+  onSearch: (term: string) => void
 } & React.HTMLAttributes<HTMLDivElement>
 
-const FilteringOptions: React.FC<FilteringOptionProps> = ({
+const TableSearch: React.FC<TableSearchProps> = ({
   onSearch,
   className,
   ...props
 }) => {
-  const [selected, setSelected] = useState(options[0].title || "All")
-  const [open, setOpen] = useState(false)
   return (
     <div
-      className={clsx("inter-small-regular flex text-grey-50", className)}
+      className={clsx(
+        "inter-small-regular flex text-grey-50 flex items-center mb-1 pl-1 py-1.5 rounded border border-grey-0 w-29 focus-within:w-60 focus-within:shadow-input focus-within:border-violet-60 focus-within:bg-grey-5",
+        className
+      )}
       {...props}
     >
-      <input type="text" />
+      <span className="px-2.5 py-0.5">
+        <SearchIcon size={16} />
+      </span>
+      <input
+        type="text"
+        className="focus:outline-none focus:border-none inter-small-regular w-full focus:w-50 focus:bg-grey-5 focus:text-grey-90 caret-violet-60"
+        placeholder="Search users"
+        onChange={e => onSearch(e.target.value)}
+      />
     </div>
   )
 }
 
-export default FilteringOptions
+export default TableSearch
