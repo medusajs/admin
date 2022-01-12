@@ -3,7 +3,7 @@ import BreadCrumb from "../../../components/breadcrumb"
 import RefreshIcon from "../../../components/fundamentals/icons/refresh-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Table from "../../../components/molecules/table"
-import Badge from "../../../components/fundamentals/badge"
+import StatusDot from "../../../components/fundamentals/status-dot"
 import Medusa from "../../../services/api"
 import EditUser from "./edit"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
@@ -13,9 +13,20 @@ import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import SidebarTeamMember from "../../../components/molecules/sidebar-team-member"
 import useMedusa from "../../../hooks/use-medusa"
-import FilteringOptions from "../../../components/molecules/table/filtering-option"
 
-const Users = () => {
+type UserListElement = {
+  entity: any
+  entityType: string
+  tableElement: JSX.Element
+}
+
+const getInviteStatus = invite => {
+  return new Date(invite.expires_at) < new Date() ? "expired" : "pending"
+}
+
+const Users: React.FC = () => {
+  const [elements, setElements] = useState<UserListElement[]>([])
+  const [shownElements, setShownElements] = useState<UserListElement[]>([])
   const [users, setUsers] = useState([])
   const [invites, setInvites] = useState([])
   const [shouldRefetch, setShouldRefetch] = useState(0)
@@ -42,18 +53,32 @@ const Users = () => {
       .list()
       .then(res => res.data)
       .then(userData => {
-        const users = [...userData.users]
-        setUsers(users.map((user, i) => getUserTableRow(user, i)))
-      })
+        Medusa.invites
+          .list()
+          .then(res => res.data)
+          .then(inviteData => {
+            setInvites(inviteData.invites)
+            setUsers(userData.users)
 
-    Medusa.invites
-      .list()
-      .then(res => res.data)
-      .then(inviteData => {
-        const invites = [...inviteData.invites]
-        setInvites(invites.map((inv, i) => getInviteTableRow(inv, i)))
+            setElements([
+              ...userData.users.map((user, i) => ({
+                entity: user,
+                entityType: "user",
+                tableElement: getUserTableRow(user, i),
+              })),
+              ...inviteData.invites.map((invite, i) => ({
+                entity: invite,
+                entityType: "invite",
+                tableElement: getInviteTableRow(invite, i),
+              })),
+            ])
+          })
       })
   }, [shouldRefetch])
+
+  useEffect(() => {
+    setShownElements(elements)
+  }, [elements])
 
   const handlePagination = direction => {
     const updatedOffset = direction === "next" ? offset + limit : offset - limit
@@ -75,7 +100,7 @@ const Users = () => {
   const getUserTableRow = (user, index) => {
     return (
       <Table.Row
-        key={index}
+        key={`user-${index}`}
         color={"inherit"}
         actions={[
           {
@@ -110,7 +135,7 @@ const Users = () => {
   const getInviteTableRow = (invite, index) => {
     return (
       <Table.Row
-        key={index}
+        key={`invite-${index}`}
         actions={[
           {
             label: "Resend Invitation",
@@ -141,9 +166,9 @@ const Users = () => {
         <Table.Cell></Table.Cell>
         <Table.Cell>
           {new Date(invite?.expires_at) < new Date() ? (
-            <Badge variant="danger">Expired</Badge>
+            <StatusDot title={"Expired"} variant={"danger"} />
           ) : (
-            <Badge variant="success">Pending</Badge>
+            <StatusDot title={"Pending"} variant={"success"} />
           )}
         </Table.Cell>
       </Table.Row>
@@ -156,18 +181,40 @@ const Users = () => {
       options: [
         {
           title: "All",
-          count: 2,
-          onClick: () => console.log("filtering test"),
+          count: elements.length,
+          onClick: () => setShownElements(elements),
         },
         {
           title: "Member",
-          count: 3,
-          onClick: () => console.log("filtering test 2"),
+          count: shownElements.filter(
+            e => e.entityType === "user" && e.entity.role === "member"
+          ).length,
+          onClick: () =>
+            setShownElements(
+              shownElements.filter(
+                e => e.entityType === "user" && e.entity.role === "member"
+              )
+            ),
         },
         {
           title: "Admin",
-          count: 3,
-          onClick: () => console.log("filtering test 2"),
+          count: shownElements.filter(
+            e => e.entityType === "user" && e.entity.role === "admin"
+          ).length,
+          onClick: () =>
+            setShownElements(
+              shownElements.filter(
+                e => e.entityType === "user" && e.entity.role === "admin"
+              )
+            ),
+        },
+        {
+          title: "No team permissions",
+          count: shownElements.filter(e => e.entityType === "invite").length,
+          onClick: () =>
+            setShownElements(
+              shownElements.filter(e => e.entityType === "invite")
+            ),
         },
       ],
     },
@@ -177,23 +224,48 @@ const Users = () => {
       options: [
         {
           title: "All",
-          count: 9,
-          onClick: () => console.log("filtering test"),
+          count: elements.length,
+          onClick: () => setShownElements(elements),
         },
         {
           title: "Active",
-          count: 2,
-          onClick: () => console.log("filtering test 2"),
+          count: shownElements.filter(e => e.entityType === "user").length,
+          onClick: () =>
+            setShownElements(
+              shownElements.filter(e => e.entityType === "user")
+            ),
         },
         {
           title: "Pending",
-          count: 0,
-          onClick: () => console.log("filtering test 2"),
+          count: shownElements.filter(
+            e =>
+              e.entityType === "invite" &&
+              getInviteStatus(e.entity) === "pending"
+          ).length,
+          onClick: () =>
+            setShownElements(
+              shownElements.filter(
+                e =>
+                  e.entityType === "invite" &&
+                  getInviteStatus(e.entity) === "pending"
+              )
+            ),
         },
         {
           title: "Expired",
-          count: 3,
-          onClick: () => console.log("filtering test 2"),
+          count: shownElements.filter(
+            e =>
+              e.entityType === "invite" &&
+              getInviteStatus(e.entity) === "expired"
+          ).length,
+          onClick: () =>
+            setShownElements(
+              shownElements.filter(
+                e =>
+                  e.entityType === "invite" &&
+                  getInviteStatus(e.entity) === "expired"
+              )
+            ),
         },
       ],
     },
@@ -213,7 +285,6 @@ const Users = () => {
       >
         <div className="w-full flex flex-col pt-2">
           <Table
-            className="mt-2"
             filteringOptions={filteringOptions}
             enableSearch
             handleSearch={console.log}
@@ -228,14 +299,11 @@ const Users = () => {
                 <Table.HeadCell>Status</Table.HeadCell>
               </Table.HeadRow>
             </Table.Head>
-            <Table.Body>
-              {users}
-              {invites}
-            </Table.Body>
+            <Table.Body>{shownElements.map(e => e.tableElement)}</Table.Body>
           </Table>
           <div>
             <span className="inter-small-regular text-grey-50">
-              {users.filter(usr => !usr.token).length} member
+              {users.length} member
               {users.length === 1 ? "" : "s"}
             </span>
           </div>
