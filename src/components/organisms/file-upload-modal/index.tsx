@@ -4,10 +4,12 @@ import Modal from "../../molecules/modal"
 type FileUploadModalProps = {
   setFiles: (files: any[]) => void
   handleClose: () => void
+  filetypes: string[]
 }
 
 const FileUploadModal: React.FC<FileUploadModalProps> = ({
   handleClose,
+  filetypes,
   setFiles,
 }) => {
   const [fileUploadError, setFileUploadError] = useState(false)
@@ -18,7 +20,6 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
   }
   const handleFileDrop = e => {
     setFileUploadError(false)
-    console.log(e)
 
     e.preventDefault()
 
@@ -30,7 +31,7 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
         // If dropped items aren't files, reject them
         if (e.dataTransfer.items[i].kind === "file") {
           const file = e.dataTransfer.items[i].getAsFile()
-          if (file.type === "image/png" || file.type === "image/jpeg") {
+          if (filetypes.indexOf(file.type) > -1) {
             files.push(file)
           }
         }
@@ -38,10 +39,7 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
     } else {
       // Use DataTransfer interface to access the file(s)
       for (var i = 0; i < e.dataTransfer.files.length; i++) {
-        if (
-          e.dataTransfer.files[i].type === "image/png" ||
-          e.dataTransfer.files[i].type === "image/jpeg"
-        ) {
+        if (filetypes.indexOf(e.dataTransfer.files[i].type) > -1) {
           files.push(e.dataTransfer.files[i])
         }
       }
@@ -72,7 +70,7 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
             )}
             <input
               ref={inputRef}
-              accept="image/png, image/jpeg"
+              accept={filetypes.join(", ")}
               type="file"
               onChange={handleFileUpload}
               className="hidden"

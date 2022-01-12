@@ -25,8 +25,6 @@ const PersonalInformation = () => {
   register("first_name")
   register("last_name")
 
-  useEffect(() => {}, [isLoading])
-
   const submit = data => {
     handleUpdateUser(user.id, data)
       .then(() => {
@@ -116,6 +114,7 @@ const PersonalInformation = () => {
           {modalIsOpen && (
             <FileUploadModal
               setFiles={handleFileUpload}
+              filetypes={["image/png", "image/jpeg"]}
               handleClose={() => setModalIsOpen(false)}
             />
           )}
