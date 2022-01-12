@@ -55,7 +55,7 @@ const Table: TableType = React.forwardRef(
             </div>
           )}
           <div className="flex">
-            <TableSearch onSearch={handleSearch} />
+            {enableSearch && <TableSearch onSearch={handleSearch} />}
           </div>
         </div>
         <table
@@ -127,7 +127,7 @@ Table.Body = React.forwardRef(
     }: React.HTMLAttributes<HTMLTableSectionElement>,
     ref
   ) => (
-    <tbody ref={ref} className={className} {...props}>
+    <tbody ref={ref} className={clsx(className)} {...props}>
       {children}
     </tbody>
   )
