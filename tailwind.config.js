@@ -181,6 +181,7 @@ module.exports = {
         largeModal: "750px",
         "18": "4.5rem",
         "29": "7.25rem",
+        inherit: "inherit",
       },
       minWidth: {
         modal: "520px",

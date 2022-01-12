@@ -142,12 +142,8 @@ Table.Cell = React.forwardRef(
     }: React.HTMLAttributes<HTMLTableCellElement>,
     ref
   ) => (
-    <td
-      ref={ref}
-      className={clsx("overflow-hidden py-1.5 whitespace-nowrap", className)}
-      {...props}
-    >
-      {children}
+    <td ref={ref} className={clsx(" py-1.5", className)} {...props}>
+      <div className="w-inherit truncate">{children}</div>
     </td>
   )
 )
