@@ -59,7 +59,6 @@ const ReturnReasonModal = ({ reason, parentReturnReason, onDismiss }) => {
   )
   const id = reason?.id
   const parentReturnReasonId = parentReturnReason?.id
-  console.log({ id })
 
   const createRR = useCreateNestedReturnReason(parentReturnReasonId)
   const updateRR = useUpdateNestedReturnReason(id, parentReturnReasonId)

@@ -6,31 +6,14 @@ import { InterfaceProvider } from "./src/context/interface"
 import { ThemeProvider as Provider } from "./src/theme"
 import { ToastProvider } from "react-toast-notifications"
 import { MedusaProvider } from "medusa-react"
-import { QueryClient } from "react-query"
-
-//export const shouldUpdateScroll = ({ routerProps: { location } }) => {
-//  window.scrollTo(0, 0)
-//  return false
-//}
-
-const STORE_URL = process.env.GATSBY_STORE_URL || "http://localhost:9000"
-
-const client = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      staleTime: 90000,
-      retry: 1,
-    },
-  },
-})
+import { medusaUrl, queryClient } from "./src/services/config"
 
 export const wrapPageElement = ({ element }) => {
   return (
     <MedusaProvider
-      baseUrl={STORE_URL}
+      baseUrl={medusaUrl}
       queryClientProviderProps={{
-        client,
+        client: queryClient,
       }}
     >
       <CacheProvider>
