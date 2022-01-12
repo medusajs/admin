@@ -296,7 +296,7 @@ const Users: React.FC = () => {
           subtitle="Manage users of your Medusa Store"
           actionables={actionables}
         >
-          <div className="w-full flex h-full grow justify-between flex-col pt-2">
+          <div className="flex grow justify-between flex-col pt-2">
             <Table
               filteringOptions={filteringOptions}
               enableSearch
