@@ -97,7 +97,7 @@ Table.HeadRow = React.forwardRef(
     }: React.HTMLAttributes<HTMLTableRowElement>,
     ref
   ) => (
-    <tr ref={ref} className={clsx("", className)} {...props}>
+    <tr ref={ref} className={clsx(className)} {...props}>
       {children}
     </tr>
   )
