@@ -13,6 +13,7 @@ import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import SidebarTeamMember from "../../../components/molecules/sidebar-team-member"
 import useMedusa from "../../../hooks/use-medusa"
+import FilteringOptions from "../../../components/molecules/table/filtering-option"
 
 const Users = () => {
   const [users, setUsers] = useState([])
@@ -29,6 +30,7 @@ const Users = () => {
   const handleClose = () => {
     setDeleteUser(false)
     setSelectedUser(null)
+    setSelectedInvite(null)
   }
 
   const triggerRefetch = () => {
@@ -113,16 +115,21 @@ const Users = () => {
           {
             label: "Resend Invitation",
             onClick: () => {
-              Medusa.invites.resend(invite.id).then(() => {
-                toaster("Invitiation link has been resent", "success")
-              })
+              Medusa.invites
+                .resend(invite.id)
+                .then(() => {
+                  toaster("Invitiation link has been resent", "success")
+                })
+                .then(() => triggerRefetch())
             },
             icon: <RefreshIcon size={20} />,
           },
           {
             label: "Remove Invitation",
             variant: "danger",
-            onClick: () => console.log("removing", invite.id),
+            onClick: () => {
+              setSelectedInvite(invite)
+            },
             icon: <TrashIcon size={20} />,
           },
         ]}
@@ -143,6 +150,55 @@ const Users = () => {
     )
   }
 
+  const filteringOptions = [
+    {
+      title: "Team permissions",
+      options: [
+        {
+          title: "All",
+          count: 2,
+          onClick: () => console.log("filtering test"),
+        },
+        {
+          title: "Member",
+          count: 3,
+          onClick: () => console.log("filtering test 2"),
+        },
+        {
+          title: "Admin",
+          count: 3,
+          onClick: () => console.log("filtering test 2"),
+        },
+      ],
+    },
+    {
+      className: "ml-6",
+      title: "Status",
+      options: [
+        {
+          title: "All",
+          count: 9,
+          onClick: () => console.log("filtering test"),
+        },
+        {
+          title: "Active",
+          count: 2,
+          onClick: () => console.log("filtering test 2"),
+        },
+        {
+          title: "Pending",
+          count: 0,
+          onClick: () => console.log("filtering test 2"),
+        },
+        {
+          title: "Expired",
+          count: 3,
+          onClick: () => console.log("filtering test 2"),
+        },
+      ],
+    },
+  ]
+
   return (
     <div className="w-full h-full">
       <BreadCrumb
@@ -155,8 +211,13 @@ const Users = () => {
         subtitle="Manage users of your Medusa Store"
         actionables={actionables}
       >
-        <div className="w-full flex flex-col">
-          <Table>
+        <div className="w-full flex flex-col pt-2">
+          <Table
+            className="mt-2"
+            filteringOptions={filteringOptions}
+            enableSearch
+            handleSearch={console.log}
+          >
             <Table.Head>
               <Table.HeadRow>
                 <Table.HeadCell className="w-72">Name</Table.HeadCell>
@@ -179,7 +240,6 @@ const Users = () => {
             </span>
           </div>
         </div>
-        {selectedInvite && <></>}
         {selectedUser &&
           (deleteUser ? (
             <DeletePrompt
@@ -199,6 +259,18 @@ const Users = () => {
               onSubmit={triggerRefetch}
             />
           ))}
+        {selectedInvite && (
+          <DeletePrompt
+            text={"Are you sure you want to remove this invite?"}
+            heading={"Remove invite"}
+            onDelete={() =>
+              Medusa.invites
+                .delete(selectedInvite.id)
+                .then(() => triggerRefetch())
+            }
+            handleClose={handleClose}
+          />
+        )}
         {showInviteModal && (
           <InviteModal
             handleClose={() => {
