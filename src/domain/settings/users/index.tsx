@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import BreadCrumb from "../../../components/breadcrumb"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 import RefreshIcon from "../../../components/fundamentals/icons/refresh-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Table from "../../../components/molecules/table"
@@ -284,82 +284,82 @@ const Users: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full pb-4">
       <BreadCrumb
         previousRoute="/a/settings"
-        previousBreadCrumb="Settings"
+        previousBreadcrumb="Settings"
         currentPage="The Team"
       />
-      <BodyCard
-        title="The Team"
-        subtitle="Manage users of your Medusa Store"
-        actionables={actionables}
-      >
-        <div className="w-full flex flex-col pt-2">
-          <Table
-            filteringOptions={filteringOptions}
-            enableSearch
-            handleSearch={handleUserSearch}
-          >
-            <Table.Head>
-              <Table.HeadRow>
-                <Table.HeadCell className="w-72">Name</Table.HeadCell>
-                <Table.HeadCell className="w-80">Email</Table.HeadCell>
-                <Table.HeadCell className="w-72">
-                  Team permissions
-                </Table.HeadCell>
-                <Table.HeadCell>Status</Table.HeadCell>
-              </Table.HeadRow>
-            </Table.Head>
-            <Table.Body>{shownElements.map(e => e.tableElement)}</Table.Body>
-          </Table>
-          <div>
-            <span className="inter-small-regular text-grey-50">
+      <div className="h-full">
+        <BodyCard
+          title="The Team"
+          subtitle="Manage users of your Medusa Store"
+          actionables={actionables}
+        >
+          <div className="w-full flex h-full grow justify-between flex-col pt-2">
+            <Table
+              filteringOptions={filteringOptions}
+              enableSearch
+              handleSearch={handleUserSearch}
+            >
+              <Table.Head>
+                <Table.HeadRow>
+                  <Table.HeadCell className="w-72">Name</Table.HeadCell>
+                  <Table.HeadCell className="w-80">Email</Table.HeadCell>
+                  <Table.HeadCell className="w-72">
+                    Team permissions
+                  </Table.HeadCell>
+                  <Table.HeadCell>Status</Table.HeadCell>
+                </Table.HeadRow>
+              </Table.Head>
+              <Table.Body>{shownElements.map(e => e.tableElement)}</Table.Body>
+            </Table>
+            <div className="inter-small-regular text-grey-50">
               {users.length} member
               {users.length === 1 ? "" : "s"}
-            </span>
+            </div>
           </div>
-        </div>
-        {selectedUser &&
-          (deleteUser ? (
+          {selectedUser &&
+            (deleteUser ? (
+              <DeletePrompt
+                text={"Are you sure you want to remove this user?"}
+                heading={"Remove user"}
+                onDelete={() =>
+                  Medusa.users
+                    .delete(selectedUser.id)
+                    .then(() => triggerRefetch())
+                }
+                handleClose={handleClose}
+              />
+            ) : (
+              <EditUser
+                handleClose={handleClose}
+                user={selectedUser}
+                onSubmit={triggerRefetch}
+              />
+            ))}
+          {selectedInvite && (
             <DeletePrompt
-              text={"Are you sure you want to remove this user?"}
-              heading={"Remove user"}
+              text={"Are you sure you want to remove this invite?"}
+              heading={"Remove invite"}
               onDelete={() =>
-                Medusa.users
-                  .delete(selectedUser.id)
+                Medusa.invites
+                  .delete(selectedInvite.id)
                   .then(() => triggerRefetch())
               }
               handleClose={handleClose}
             />
-          ) : (
-            <EditUser
-              handleClose={handleClose}
-              user={selectedUser}
-              onSubmit={triggerRefetch}
+          )}
+          {showInviteModal && (
+            <InviteModal
+              handleClose={() => {
+                triggerRefetch()
+                setShowInviteModal(false)
+              }}
             />
-          ))}
-        {selectedInvite && (
-          <DeletePrompt
-            text={"Are you sure you want to remove this invite?"}
-            heading={"Remove invite"}
-            onDelete={() =>
-              Medusa.invites
-                .delete(selectedInvite.id)
-                .then(() => triggerRefetch())
-            }
-            handleClose={handleClose}
-          />
-        )}
-        {showInviteModal && (
-          <InviteModal
-            handleClose={() => {
-              triggerRefetch()
-              setShowInviteModal(false)
-            }}
-          />
-        )}
-      </BodyCard>
+          )}
+        </BodyCard>
+      </div>
     </div>
   )
 }
