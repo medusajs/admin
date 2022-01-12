@@ -80,7 +80,7 @@ const SettingsIndex = () => {
 }
 
 const Settings = () => (
-  <Router>
+  <Router className="h-full">
     <SettingsIndex path="/" />
     <Apps path="apps" />
 

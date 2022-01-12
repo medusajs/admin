@@ -271,6 +271,18 @@ const Users: React.FC = () => {
     },
   ]
 
+  const handleUserSearch = (term: string) => {
+    setShownElements(
+      elements.filter(
+        e =>
+          e.entity?.first_name?.includes(term) ||
+          e.entity?.last_name?.includes(term) ||
+          e.entity?.email?.includes(term) ||
+          e.entity?.user_email?.includes(term)
+      )
+    )
+  }
+
   return (
     <div className="w-full h-full">
       <BreadCrumb
@@ -287,7 +299,7 @@ const Users: React.FC = () => {
           <Table
             filteringOptions={filteringOptions}
             enableSearch
-            handleSearch={console.log}
+            handleSearch={handleUserSearch}
           >
             <Table.Head>
               <Table.HeadRow>
