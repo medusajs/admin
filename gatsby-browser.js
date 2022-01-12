@@ -1,6 +1,4 @@
 import React from "react"
-import { ToastProvider } from "react-toast-notifications"
-import "./src/assets/styles/global.css"
 import { AccountProvider } from "./src/context/account"
 import { CacheProvider } from "./src/context/cache"
 import { InterfaceProvider } from "./src/context/interface"
