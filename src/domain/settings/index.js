@@ -13,6 +13,7 @@ import SettingsOverview from "../../components/templates/settings-overview"
 import Apps from "./apps"
 import Currencies from "./currencies"
 import Details from "./details"
+import PersonalInformation from "./personal-information"
 import Regions from "./regions"
 import RegionDetails from "./regions/details"
 import NewRegion from "./regions/new"
@@ -100,6 +101,8 @@ const Settings = () => (
     <NewRegion path="regions/new" />
 
     <Users path="team" />
+
+    <PersonalInformation path="personal-information" />
   </Router>
 )
 
