@@ -1,32 +1,15 @@
-import React, { useState, useEffect } from "react"
-import { Flex, Box, Text } from "rebass"
-import { navigate } from "gatsby"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
-
-import useMedusa from "../../hooks/use-medusa"
-import Input from "../../components/molecules/input"
-import Card from "../../components/card"
-import Button from "../../components/button"
-import { getErrorMessage } from "../../utils/error-messages"
 import BreadCrumb from "../../components/breadcrumb"
-
-const HorizontalDivider = props => (
-  <Box
-    {...props}
-    as="hr"
-    m={props.m}
-    sx={{
-      bg: "#e3e8ee",
-      border: 0,
-      height: 1,
-    }}
-  />
-)
+import Button from "../../components/fundamentals/button"
+import Input from "../../components/molecules/input"
+import Card from "../../components/templates/card"
+import useMedusa from "../../hooks/use-medusa"
+import { getErrorMessage } from "../../utils/error-messages"
 
 const AccountDetails = () => {
   const { register, reset, handleSubmit } = useForm()
   const { store, isLoading, update, toaster } = useMedusa("store")
-  const [showAdvanced, setShowAdvanced] = useState(false)
 
   useEffect(() => {
     if (isLoading) return
@@ -38,26 +21,29 @@ const AccountDetails = () => {
     })
   }, [store, isLoading])
 
-  const validateUrl = (address) => {
-    if(!address || address === '')
-    {
+  const validateUrl = address => {
+    if (!address || address === "") {
       return true
     }
 
     try {
-      const url = new URL(address);
-      return url.protocol === "http:" || url.protocol === "https:";
+      const url = new URL(address)
+      return url.protocol === "http:" || url.protocol === "https:"
     } catch (_) {
-      return false;  
+      return false
     }
   }
 
   const onSubmit = data => {
-    if(!validateUrl(data.swap_link_template) || !validateUrl(data.payment_link_template) || !validateUrl(data.invite_link_template)){
-      toaster("Malformed url", 'error')
+    if (
+      !validateUrl(data.swap_link_template) ||
+      !validateUrl(data.payment_link_template) ||
+      !validateUrl(data.invite_link_template)
+    ) {
+      toaster("Malformed url", "error")
       return
     }
-    
+
     try {
       localStorage.removeItem("medusa::cache::store")
       update(data)
@@ -69,83 +55,68 @@ const AccountDetails = () => {
   }
 
   return (
-    <Flex
-      flexDirection="column"
-      as="form"
-      onSubmit={handleSubmit(onSubmit)}
-      py={5}
-    >
-      <Card>
+    <form className="flex-col py-5" onSubmit={handleSubmit(onSubmit)}>
+      <div>
         <BreadCrumb
           previousRoute="/a/settings/"
           previousBreadCrumb="Settings"
           currentPage="Account details"
         />
-        <Flex>
-          <Text mb={3} fontSize={20} fontWeight="bold">
-            Account details
-          </Text>
-          <Box ml="auto" />
-        </Flex>
-        <Card.Body flexDirection="column">
-          <Flex width={1} mb={4}>
-            <Box width={1 / 2}>
-              <Input
-                boldLabel={true}
-                label="Store name"
-                name="name"
-                placeholder="Medusa Store"
-                ref={register}
-              />
-            </Box>
-          </Flex>
-          <HorizontalDivider />
-          <Flex>
-            <Text my={3} fontSize={14} fontWeight="bold">
-              Advanced settings
-            </Text>
-          </Flex>
-          <Flex width={1}>
-            <Box width={1 / 2}>
-              <Input
-                boldLabel={true}
-                label="Swap link template"
-                name="swap_link_template"
-                placeholder="https://acme.inc/swap"
-                ref={register}
-              />
-            </Box>
-          </Flex>
-          <Flex width={1} mt={3}>
-            <Box width={1 / 2}>
-              <Input
-                boldLabel={true}
-                label="Draft order link template"
-                name="payment_link_template"
-                placeholder="https://acme.inc/swap"
-                ref={register}
-              />
-            </Box>
-          </Flex>
-          <Flex width={1} mt={3}>
-            <Box width={1 / 2}>
-              <Input
-                boldLabel={true}
-                label="Invite link template"
-                name="invite_link_template"
-                placeholder="https://acme.inc/invite={invite_token}"
-                ref={register}
-              />
-            </Box>
-          </Flex>
-        </Card.Body>
-        <Card.Footer justifyContent="flex-start" mt={2}>
-          <Button type="submit" fontWeight="bold" variant="cta">
-            Save
-          </Button>
-        </Card.Footer>
-      </Card>
-    </Flex>
+        <Card>
+          <h3 className="mb-0375 inter-xlarge-semibold">Store details</h3>
+          <span className="inter-small-regular text-grey-50">
+            Manage your business details
+          </span>
+          <h6 className="mt-large inter-base-semibold">General</h6>
+          <Input
+            className="mt-base"
+            label="Store name"
+            name="name"
+            placeholder="Medusa Store"
+            ref={register}
+          />
+
+          <h6 className="mt-2xlarge inter-base-semibold">Advanced settings</h6>
+          <span className="inter-small-regular text-grey-50">
+            Manual-fulfillment via manual
+          </span>
+          <Input
+            className="mt-base"
+            label="Swap link template"
+            name="swap_link_template"
+            placeholder="https://acme.inc/swap"
+            ref={register}
+          />
+          <Input
+            className="mt-base"
+            label="Draft order link template"
+            name="payment_link_template"
+            placeholder="https://acme.inc/swap"
+            ref={register}
+          />
+          <Input
+            className="mt-base"
+            label="Invite link template"
+            name="invite_link_template"
+            placeholder="https://acme.inc/invite={invite_token}"
+            ref={register}
+          />
+          <Card.Footer>
+            <Button type="button" variant="ghost" size="medium">
+              Cancel Changes
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              size="medium"
+              className="ml-base"
+            >
+              Save
+            </Button>
+          </Card.Footer>
+        </Card>
+      </div>
+    </form>
   )
 }
 
