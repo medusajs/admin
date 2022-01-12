@@ -34,7 +34,7 @@ const Item = ({
         "w-full rounded-base border border-grey-20 p-base flex items-baseline mb-xsmall last:mb-0"
       )}
     >
-      <div className="mr-base w-[20px] h-[20px]">
+      <div className="w-[20px] h-[20px]">
         <RadioGroupPrimitive.Item
           {...rest}
           id={rest.value}
@@ -46,7 +46,7 @@ const Item = ({
           <RadioGroupPrimitive.Indicator className="h-full w-full bg-violet-60 rounded-circle flex items-center justify-center relative after:content-[''] after:block after:w-[10px] after:h-[10px] after:bg-grey-0 after:rounded-circle" />
         </RadioGroupPrimitive.Item>
       </div>
-      <div>
+      <div className="truncate ml-base">
         <label className="inter-base-semibold truncate" htmlFor={rest.value}>
           {label}{" "}
           {sublabel && <span className="inter-base-regular">{sublabel}</span>}

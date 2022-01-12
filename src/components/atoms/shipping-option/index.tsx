@@ -1,38 +1,46 @@
+import type { ShippingOption as ShippingOptionType } from "@medusajs/medusa"
+import { ShippingOptionPriceType } from "@medusajs/medusa/dist/models/shipping-option"
+import { RequirementType } from "@medusajs/medusa/dist/models/shipping-option-requirement"
 import React from "react"
 
-type RequirementType = {
-  type: string
-  amount: number
-}
-
 type ShippingOptionProps = {
-  name: string
-  price_type: string
-  amount: number
+  option: ShippingOptionType
   currency_code: string
-  data: {
-    name?: string
-  }
-  requirements?: RequirementType[]
-  editFn:
+  editFn: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
 }
 
 const ShippingOption: React.FC<ShippingOptionProps> = ({
-  name,
-  price_type,
-  amount,
+  option,
   currency_code,
-  data,
-  requirements,
-  editFn
+  editFn,
 }) => {
   return (
     <div>
       <div>
         <p>
-          {name} {data.name && `(${data.name})`}
+          {option.name} {option.data.name && `(${option.data.name})`}
         </p>
-        <button>Edit</button>
+        <p>
+          {option.price_type === ShippingOptionPriceType.FLAT_RATE
+            ? "Flat Rate"
+            : "Calculated"}
+          :{" "}
+          {option.amount !== undefined &&
+            `${option.amount / 100} ${currency_code.toUpperCase()}`}
+          {option.requirements.length &&
+            option.requirements.map(r => {
+              const type =
+                r.type === RequirementType.MAX_SUBTOTAL
+                  ? "Max. subtotal"
+                  : "Min. subtotal"
+              return `- ${type}: ${
+                r.amount / 100
+              } ${currency_code.toUpperCase()}`
+            })}
+        </p>
+      </div>
+      <div>
+        <button onClick={editFn}>Edit</button>
       </div>
     </div>
   )
