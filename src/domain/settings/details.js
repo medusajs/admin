@@ -1,9 +1,8 @@
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import BreadCrumb from "../../components/breadcrumb"
-import Button from "../../components/fundamentals/button"
+import BreadCrumb from "../../components/molecules/breadcrumb"
 import Input from "../../components/molecules/input"
-import Card from "../../components/templates/card"
+import BodyCard from "../../components/organisms/body-card"
 import useMedusa from "../../hooks/use-medusa"
 import { getErrorMessage } from "../../utils/error-messages"
 
@@ -62,11 +61,17 @@ const AccountDetails = () => {
           previousBreadCrumb="Settings"
           currentPage="Account details"
         />
-        <Card>
-          <h3 className="mb-0375 inter-xlarge-semibold">Store details</h3>
-          <span className="inter-small-regular text-grey-50">
-            Manage your business details
-          </span>
+        <BodyCard
+          events={[
+            {
+              label: "Save",
+              // onClick: handleSubmit(onSubmit),
+            },
+            { label: "Cancel Changes" },
+          ]}
+          title="Store details"
+          subtitle="Manage your business details"
+        >
           <h6 className="mt-large inter-base-semibold">General</h6>
           <Input
             className="mt-base"
@@ -101,20 +106,7 @@ const AccountDetails = () => {
             placeholder="https://acme.inc/invite={invite_token}"
             ref={register}
           />
-          <Card.Footer>
-            <Button type="button" variant="ghost" size="medium">
-              Cancel Changes
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              size="medium"
-              className="ml-base"
-            >
-              Save
-            </Button>
-          </Card.Footer>
-        </Card>
+        </BodyCard>
       </div>
     </form>
   )
