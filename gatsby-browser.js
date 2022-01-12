@@ -1,3 +1,4 @@
+import "./src/assets/styles/global.css"
 import React from "react"
 import { AccountProvider } from "./src/context/account"
 import { CacheProvider } from "./src/context/cache"
