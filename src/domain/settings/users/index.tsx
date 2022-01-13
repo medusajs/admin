@@ -44,28 +44,28 @@ const Users: React.FC = () => {
   ]
 
   return (
-    <div className="w-full h-full pb-4">
-      <BreadCrumb
-        previousRoute="/a/settings"
-        previousBreadcrumb="Settings"
-        currentPage="The Team"
-      />
-      <div className="h-full">
+    <div className="flex flex-col grow h-full">
+      <div className="w-full flex flex-col grow">
+        <BreadCrumb
+          previousRoute="/a/settings"
+          previousBreadcrumb="Settings"
+          currentPage="The Team"
+        />
         <BodyCard
           title="The Team"
           subtitle="Manage users of your Medusa Store"
           actionables={actionables}
         >
-          <div className="flex h-full justify-between flex-col pt-2">
+          <div className="flex grow  flex-col pt-2">
             <UserTable
               users={users}
               invites={invites}
               triggerRefetch={triggerRefetch}
             />
-            <div className="inter-small-regular text-grey-50">
-              {users.length} member
-              {users.length === 1 ? "" : "s"}
-            </div>
+          </div>
+          <div className="inter-small-regular text-grey-50">
+            {users.length} member
+            {users.length === 1 ? "" : "s"}
           </div>
 
           {showInviteModal && (
