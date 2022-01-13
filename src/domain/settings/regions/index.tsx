@@ -1,21 +1,27 @@
-import React, { useEffect } from "react"
+import { useAdminRegions } from "medusa-react"
+import React, { useEffect, useState } from "react"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import BreadCrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import RadioGroup from "../../../components/organisms/radio-group"
 import TwoSplitPane from "../../../components/templates/two-split-pane"
-import useMedusa from "../../../hooks/use-medusa"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 import RegionDetails from "./details"
 
 const Regions = () => {
-  const { regions, isLoading } = useMedusa("regions")
-  const [selectedRegion, setSelectedRegion] = React.useState(null)
+  const { regions, isLoading } = useAdminRegions()
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log(selectedRegion)
-  }, [selectedRegion])
+    const setRegion = () => {
+      if (!isLoading && selectedRegion === null) {
+        setSelectedRegion(regions[0].id)
+      }
+    }
+
+    setRegion()
+  }, [regions, isLoading, selectedRegion])
 
   return (
     // <Flex flexDirection="column" pb={5} pt={5}>
@@ -137,16 +143,6 @@ const Regions = () => {
                     .join(", ") || "not configured"
                 }`
                 return (
-                  // <OptionCard
-                  //   title={r.name}
-                  //   subtitle={`(${r.countries
-                  //     .map(c => c.display_name)
-                  //     .join(", ")})`}
-                  //   description={providers}
-                  //   selected={true}
-                  //   className="mb-xsmall last:mb-0"
-                  // ></OptionCard>
-
                   <RadioGroup.Item
                     label={r.name}
                     sublabel={`(${r.countries
@@ -154,6 +150,7 @@ const Regions = () => {
                       .join(", ")})`}
                     description={providers}
                     value={r.id}
+                    key={r.id}
                   ></RadioGroup.Item>
                 )
               })}

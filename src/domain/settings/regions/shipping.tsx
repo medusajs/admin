@@ -8,21 +8,16 @@ import ShippingOption from "../../../components/atoms/shipping-option"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import Actionables from "../../../components/molecules/actionables"
 import Spinner from "../../../components/spinner"
-import useMedusa from "../../../hooks/use-medusa"
-import { getErrorMessage } from "../../../utils/error-messages"
+import useToaster from "../../../hooks/use-toaster"
 import EditShipping from "./edit-shipping"
 import NewShipping from "./new-shipping"
 
-const Shipping = ({ region, fulfillmentMethods }) => {
+const Shipping = ({ region }) => {
   const [editOption, setEditOption] = useState(null)
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [showAddOption, setAddOption] = useState(false)
   const [showAddReturnOption, setAddReturnOption] = useState(false)
-  const { refresh, isLoading, toaster } = useMedusa("shippingOptions", {
-    search: {
-      region_id: region.id,
-    },
-  })
+  const toaster = useToaster()
 
   const {
     fulfillment_options,
@@ -32,16 +27,11 @@ const Shipping = ({ region, fulfillmentMethods }) => {
   const {
     shipping_options,
     isLoading: loadingOptions,
+    refetch,
   } = useAdminShippingOptions({ region_id: region.id })
 
   const handleShippingUpdated = () => {
-    refresh({
-      search: {
-        region_id: region.id,
-      },
-    })
-      .then(() => toaster("Successfully updated shipping options", "success"))
-      .catch(error => toaster(getErrorMessage(error), "error"))
+    refetch()
   }
 
   const outboundOptions = [
@@ -71,7 +61,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
 
   const outbound = []
   const inbound = []
-  if (!isLoading) {
+  if (!loadingOptions) {
     for (const o of shipping_options) {
       if (o.is_return) {
         inbound.push(o)
@@ -89,7 +79,7 @@ const Shipping = ({ region, fulfillmentMethods }) => {
           <Actionables actions={outboundOptions} />
         </div>
         <div className="flex flex-col">
-          {isLoading ? (
+          {loadingOptions ? (
             <Flex
               flexDirection="column"
               alignItems="center"
@@ -157,7 +147,6 @@ const Shipping = ({ region, fulfillmentMethods }) => {
           onClick={() => setEditOption(null)}
           onDone={handleShippingUpdated}
           region={region}
-          fulfillmentOptions={fulfillment_options}
         />
       )}
       {(showAddOption || showAddReturnOption) && (

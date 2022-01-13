@@ -31,22 +31,20 @@ const Item = ({
   return (
     <div
       className={clsx(
-        "w-full rounded-base border border-grey-20 p-base flex items-baseline mb-xsmall last:mb-0"
+        "w-full rounded-base border border-grey-20 p-base flex items-baseline mb-xsmall last:mb-0 gap-base"
       )}
     >
-      <div className="w-[20px] h-[20px]">
-        <RadioGroupPrimitive.Item
-          {...rest}
-          id={rest.value}
-          className={clsx(
-            "w-full h-full bg-grey-0 rounded-circle border border-grey-20",
-            rest.className
-          )}
-        >
-          <RadioGroupPrimitive.Indicator className="h-full w-full bg-violet-60 rounded-circle flex items-center justify-center relative after:content-[''] after:block after:w-[10px] after:h-[10px] after:bg-grey-0 after:rounded-circle" />
-        </RadioGroupPrimitive.Item>
-      </div>
-      <div className="truncate ml-base">
+      <RadioGroupPrimitive.Item
+        {...rest}
+        id={rest.value}
+        className={clsx(
+          "w-[20px] h-[20px] bg-grey-0 rounded-circle shadow-cta ",
+          rest.className
+        )}
+      >
+        <RadioGroupPrimitive.Indicator className="bg-violet-60 h-full w-full rounded-circle flex items-center justify-center relative after:content-[''] after:block after:w-[10px] after:h-[10px] after:bg-grey-0 after:rounded-circle" />
+      </RadioGroupPrimitive.Item>
+      <div className="truncate w-full flex-shrink">
         <label className="inter-base-semibold truncate" htmlFor={rest.value}>
           {label}{" "}
           {sublabel && <span className="inter-base-regular">{sublabel}</span>}

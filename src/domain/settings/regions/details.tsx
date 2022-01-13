@@ -7,28 +7,32 @@ import {
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Box, Flex } from "rebass"
+import DuplicateIcon from "../../../components/fundamentals/icons/duplicate-icon"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Input from "../../../components/molecules/input"
-import MultiSelect from "../../../components/molecules/select"
+import Select from "../../../components/molecules/select"
 import BodyCard from "../../../components/organisms/body-card"
-import Select from "../../../components/select"
 import Spinner from "../../../components/spinner"
-import TagDropdown from "../../../components/tag-dropdown"
 import useMedusa from "../../../hooks/use-medusa"
+import useToaster from "../../../hooks/use-toaster"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
+import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
+import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 import Shipping from "./shipping"
 
 const RegionDetails = ({ id }) => {
   const [currencies, setCurrencies] = useState([])
   const [countries, setCountries] = useState([])
+  const [selectedCurrency, setSelectedCurrency] = useState(null)
   const [paymentOptions, setPaymentOptions] = useState([])
   const [paymentProviders, setPaymentProviders] = useState([])
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [fulfillmentProviders, setFulfillmentProviders] = useState([])
 
-  // const { store, isLoading: storeIsLoading } = useMedusa("store")
-  const { update, toaster } = useMedusa("regions")
+  const { update } = useMedusa("regions")
   const { register, reset, setValue, handleSubmit } = useForm()
+  const toaster = useToaster()
 
   const { store, isLoading: storeIsLoading } = useAdminStore()
   const { region, isLoading: regionIsLoading } = useAdminRegion(id)
@@ -42,10 +46,28 @@ const RegionDetails = ({ id }) => {
   } = useAdminRegionFulfillmentOptions(id)
 
   useEffect(() => {
-    if (storeIsLoading || regionIsLoading) return
-
+    if (!store || !region) return
+    console.log(region)
+    register({ name: "currency_code" })
+    setValue("currency_code", region.currency_code)
+    setSelectedCurrency({
+      value: region.currency_code,
+      label: region.currency_code.toUpperCase(),
+    })
     setCurrencies(getCurrencies(store.currencies))
-  }, [store, storeIsLoading, regionIsLoading])
+  }, [store, region])
+
+  useEffect(() => {
+    if (paymentIsLoading) return
+    setPaymentOptions(payment_providers.map(c => paymentProvidersMapper(c.id)))
+  }, [payment_providers, paymentIsLoading])
+
+  useEffect(() => {
+    if (fulfillmentIsLoading) return
+    setFulfillmentOptions(
+      fulfillment_options.map(c => fulfillmentProvidersMapper(c.provider_id))
+    )
+  }, [fulfillment_options, fulfillmentIsLoading])
 
   useEffect(() => {
     if (regionIsLoading) return
@@ -66,14 +88,16 @@ const RegionDetails = ({ id }) => {
       "payment_providers",
       region.payment_providers.map(v => v.id)
     )
-    setPaymentProviders(region.payment_providers.map(v => ({ value: v.id })))
+    setPaymentProviders(
+      region.payment_providers.map(v => paymentProvidersMapper(v.id))
+    )
 
     setValue(
       "fulfillment_providers",
       region.fulfillment_providers.map(v => v.id)
     )
     setFulfillmentProviders(
-      region.fulfillment_providers.map(v => ({ value: v.id }))
+      region.fulfillment_providers.map(v => fulfillmentProvidersMapper(v.id))
     )
   }, [region, regionIsLoading])
 
@@ -117,6 +141,11 @@ const RegionDetails = ({ id }) => {
     )
   }
 
+  const handleChangeCurrency = value => {
+    setValue("currency_code", value)
+    setSelectedCurrency(value)
+  }
+
   const onSave = async data => {
     if (!data.countries || data.countries.length === 0) {
       return
@@ -150,6 +179,19 @@ const RegionDetails = ({ id }) => {
     <BodyCard
       title="Details"
       events={[{ label: "Save", onClick: handleSubmit(onSave) }]}
+      actionables={[
+        {
+          label: "Duplicate Region",
+          onClick: () => {},
+          icon: <DuplicateIcon />,
+        },
+        {
+          label: "Delete Region",
+          onClick: () => {},
+          icon: <TrashIcon />,
+          variant: "danger",
+        },
+      ]}
     >
       <form onSubmit={handleSubmit(onSave)}>
         <div className="flex flex-col w-full">
@@ -167,27 +209,22 @@ const RegionDetails = ({ id }) => {
           ) : (
             <div className="w-full">
               <Input
-                start={true}
-                inline
-                mb={3}
                 name="name"
                 label="Name"
                 ref={register}
+                className="mb-base"
               />
               <Select
-                start={true}
-                inline
-                mb={3}
+                enableSearch
                 label="Currency"
                 name="currency_code"
                 options={currencies}
-                ref={register}
+                value={selectedCurrency}
+                onChange={handleChangeCurrency}
+                className="mb-base"
               />
               <Input
-                start={true}
-                inline
-                mb={3}
-                className="my-4"
+                className="mb-base"
                 type="number"
                 placeholder="0.25"
                 step="0.01"
@@ -198,60 +235,51 @@ const RegionDetails = ({ id }) => {
                 ref={register}
               />
               <Input
-                start={true}
-                inline
-                mb={3}
                 placeholder="1000"
                 name="tax_code"
                 label="Tax Code"
                 ref={register}
+                className="mb-base"
               />
-              <MultiSelect
-                inline
-                start={true}
-                mb={3}
+              <Select
                 isMultiSelect
                 enableSearch
                 label="Countries"
-                selectOptions={{ hasSelectAll: false }}
+                hasSelectAll
                 options={countryOptions}
                 value={countries}
                 onChange={handleChange}
+                className="mb-base"
               />
               {!!paymentOptions.length && (
-                <TagDropdown
-                  inline
-                  start={true}
-                  mb={3}
-                  label={"Payment Providers"}
-                  toggleText="Select"
-                  values={paymentProviders}
+                <Select
+                  isMultiSelect
                   onChange={handlePaymentChange}
                   options={paymentOptions}
-                  optionRender={o => <span>{o.label}</span>}
-                  valueRender={o => <span>{o.value}</span>}
+                  value={paymentProviders}
+                  label="Payment Providers"
+                  enableSearch
+                  className="mb-base"
                 />
               )}
               {!!fulfillmentOptions.length && (
-                <TagDropdown
-                  inline
-                  start={true}
-                  mb={3}
-                  label={"Fulfillment Providers"}
-                  toggleText="Select"
-                  values={fulfillmentProviders}
+                <Select
                   onChange={handleFulfillmentChange}
                   options={fulfillmentOptions}
-                  optionRender={o => <span>{o.label}</span>}
-                  valueRender={o => <span>{o.value}</span>}
+                  value={fulfillmentProviders}
+                  label="Fulfillment Providers"
+                  enableSearch
+                  isMultiSelect
                 />
               )}
             </div>
           )}
         </div>
       </form>
-      {!regionIsLoading && fulfillment_options && (
-        <Shipping region={region} fulfillmentMethods={fulfillment_options} />
+      {region && fulfillment_options && (
+        <div className="mt-2xlarge">
+          <Shipping region={region} />
+        </div>
       )}
     </BodyCard>
   )

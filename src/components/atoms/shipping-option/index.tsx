@@ -1,8 +1,8 @@
 import React from "react"
 
 enum RequirementType {
-  MAX_SUBTOTAL = "max_total",
-  MIN_SUBTOTAL = "min_total",
+  MAX_SUBTOTAL = "max_subtotal",
+  MIN_SUBTOTAL = "min_subtotal",
 }
 
 type OptionType = {
@@ -48,7 +48,7 @@ const ShippingOption: React.FC<ShippingOptionProps> = ({
           {option.requirements.length
             ? option.requirements.map(r => {
                 const type =
-                  r.type === "max_total" ? "Max. subtotal" : "Min. subtotal"
+                  r.type === "max_subtotal" ? "Max. subtotal" : "Min. subtotal"
                 return ` - ${type}: ${
                   r.amount / 100
                 } ${currency_code.toUpperCase()}`

@@ -123,7 +123,10 @@ const Select = React.forwardRef(
           hasSelectAll={hasSelectAll}
           ItemRenderer={ItemRenderer}
           className="multiselect-styling"
-          overrideStrings={{ search: "Search...", ...overrideStrings }}
+          overrideStrings={{
+            search: "Search...",
+            ...overrideStrings,
+          }}
           ClearIcon={
             <span className="text-grey-40">
               <XCircleIcon size={20} />

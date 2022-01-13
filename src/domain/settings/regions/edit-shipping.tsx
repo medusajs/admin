@@ -1,0 +1,280 @@
+import {
+  useAdminDeleteShippingOption,
+  useAdminUpdateShippingOption,
+} from "medusa-react"
+import React, { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import Button from "../../../components/fundamentals/button"
+import Input from "../../../components/molecules/input"
+import Modal from "../../../components/molecules/modal"
+import useToaster from "../../../hooks/use-toaster"
+import { getErrorMessage } from "../../../utils/error-messages"
+
+const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
+  const { register, setValue, reset, handleSubmit } = useForm()
+  const [adminOnly, setAdminOnly] = useState(shippingOption?.admin_only)
+
+  const deleteOption = useAdminDeleteShippingOption(shippingOption.id)
+  const updateOption = useAdminUpdateShippingOption(shippingOption.id)
+  const toaster = useToaster()
+
+  // const {
+  //   fields: metaFields,
+  //   append: metaAppend,
+  //   remove: metaRemove,
+  // } = useFieldArray({
+  //   control,
+  //   name: "metadata",
+  // })
+
+  useEffect(() => {
+    const option = {
+      ...shippingOption,
+    }
+    // Metadata is not part of the current design, but i will leave it here for now
+    // if (!_.isEmpty(shippingOption.metadata)) {
+    //   option.metadata = Object.entries(shippingOption.metadata).map(
+    //     ([key, value], index) => {
+    //       return {
+    //         id: index,
+    //         key,
+    //         value,
+    //       }
+    //     }
+    //   )
+    // }
+
+    if (shippingOption.requirements) {
+      const minSubtotal = shippingOption.requirements.find(
+        req => req.type === "min_subtotal"
+      )
+      if (minSubtotal) {
+        option.requirements.min_subtotal = {
+          amount: minSubtotal.amount / 100,
+          id: minSubtotal.id,
+        }
+      }
+      const maxSubtotal = shippingOption.requirements.find(
+        req => req.type === "max_subtotal"
+      )
+      if (maxSubtotal) {
+        option.requirements.max_subtotal = {
+          amount: maxSubtotal.amount / 100,
+          id: maxSubtotal.id,
+        }
+      }
+    }
+
+    reset({ ...option, amount: option.amount / 100 })
+
+    // if (!_.isEmpty(shippingOption.metadata)) {
+    //   let index = 0
+    //   Object.entries(shippingOption.metadata).map(([key, value]) => {
+    //     if (typeof value === "string") {
+    //       register({ name: `metadata.${index}.key` })
+    //       register({ name: `metadata.${index}.value` })
+
+    //       setValue(`metadata.${index}.key`, key)
+    //       setValue(`metadata.${index}.value`, value)
+    //       index += 1
+    //     }
+    //   })
+    // }
+  }, [shippingOption])
+
+  const handleDelete = async () => {
+    deleteOption.mutate(null, {
+      onSuccess: () => {
+        toaster("Successfully deleted shipping option", "success")
+        if (onDone) {
+          onDone()
+        }
+        onClick()
+      },
+      onError: error => {
+        toaster(getErrorMessage(error), "error")
+      },
+    })
+  }
+
+  const handleSave = data => {
+    const reqs = Object.entries(data.requirements).reduce(
+      (acc, [key, value]) => {
+        if (parseInt(value.amount) && parseInt(value.amount) > 0) {
+          const reqType = shippingOption.requirements.find(
+            req => req.type === key
+          )
+          if (reqType) {
+            acc.push({
+              type: key,
+              amount: Math.round(value.amount * 100),
+              id: reqType.id,
+            })
+          } else {
+            acc.push({
+              type: key,
+              amount: Math.round(value.amount * 100),
+            })
+          }
+          return acc
+        } else {
+          return acc
+        }
+      },
+      []
+    )
+
+    const payload = {
+      name: data.name,
+      amount: Math.round(data.amount * 100),
+      requirements: reqs,
+      admin_only: adminOnly,
+    }
+
+    // if (data.metadata) {
+    //   payload.metadata = data.metadata.reduce((acc, next) => {
+    //     return {
+    //       ...acc,
+    //       [next.key]: next.value,
+    //     }
+    //   }, {})
+    // }
+
+    updateOption.mutate(payload, {
+      onSuccess: () => {
+        toaster("Successfully updated shipping option", "success")
+        if (onDone) {
+          onDone()
+        }
+        onClick()
+      },
+      onError: error => {
+        toaster(getErrorMessage(error), "error")
+      },
+    })
+  }
+
+  return (
+    <Modal handleClose={onClick}>
+      <form onSubmit={handleSubmit(handleSave)}>
+        <Modal.Body>
+          <Modal.Header handleClose={onClick}>
+            <div>
+              <h1 className="inter-xlarge-semibold">Edit Shipping Option</h1>
+            </div>
+          </Modal.Header>
+          <Modal.Content>
+            <div className="mb-large">
+              <p className="inter-base-semibold">Fulfillment Method</p>
+              <p className="inter-base-regular text-grey-50">
+                {shippingOption.data.id} via {shippingOption.provider_id}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
+              <Input
+                label="Name"
+                name="name"
+                ref={register}
+                className="flex-grow"
+              />
+              <div className="flex items-center gap-2xsmall">
+                <Input
+                  label="Currency"
+                  value={region.currency_code.toUpperCase()}
+                  readOnly
+                  className="w-[120px] pointer-events-none"
+                />
+                <Input label="Price" value={shippingOption.amount / 100} />
+              </div>
+            </div>
+            <div className="mt-large mb-xlarge">
+              <label className="inline-flex items-center inter-base-semibold">
+                <input
+                  type="checkbox"
+                  id="true"
+                  name="requires_shipping"
+                  value="true"
+                  checked={!adminOnly}
+                  onChange={() => setAdminOnly(!adminOnly)}
+                  className="mr-small w-5 h-5 accent-violet-60 rounded-base"
+                />
+                Show on website
+              </label>
+            </div>
+            <p className="inter-base-semibold mb-base">Requirements</p>
+            <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
+              <div className="flex items-center gap-2xsmall">
+                <Input
+                  label="Currency"
+                  value={region.currency_code.toUpperCase()}
+                  readOnly
+                  className="w-[120px] pointer-events-none"
+                />
+                <Input
+                  label="Min. subtotal"
+                  value={shippingOption?.requirements?.min_subtotal?.value}
+                  type="number"
+                  name={`requirements.min_subtotal.amount`}
+                  min={0}
+                  ref={register}
+                  placeholder="0"
+                />
+              </div>
+              <div className="flex items-center gap-2xsmall">
+                <Input
+                  label="Currency"
+                  value={region.currency_code.toUpperCase()}
+                  readOnly
+                  className="w-[120px] pointer-events-none"
+                />
+                <Input
+                  label="Max. subtotal"
+                  value={shippingOption?.requirements?.max_subtotal?.value}
+                  type="number"
+                  min={0}
+                  name={`requirements.max_subtotal.amount`}
+                  ref={register}
+                  placeholder="100"
+                />
+              </div>
+            </div>
+            <div className="mt-xlarge">
+              <p className="inter-base-semibold">Danger Zone</p>
+              <p className="inter-base-regular text-grey-50 mb-base">
+                This will permanently delete this option from your Medusa Store
+              </p>
+              <button
+                onClick={handleDelete}
+                className="text-rose-50 inter-base-semibold"
+              >
+                Delete Option
+              </button>
+            </div>
+          </Modal.Content>
+          <Modal.Footer>
+            <div className="flex items-center justify-end w-full">
+              <Button
+                type="submit"
+                variant="ghost"
+                size="small"
+                className="w-[127px] justify-center"
+              >
+                Cancel Changes
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="small"
+                className="w-[127px] justify-center"
+              >
+                Save
+              </Button>
+            </div>
+          </Modal.Footer>
+        </Modal.Body>
+      </form>
+    </Modal>
+  )
+}
+
+export default EditShipping

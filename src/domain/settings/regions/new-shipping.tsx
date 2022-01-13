@@ -17,8 +17,6 @@ const NewShipping = ({
   fulfillmentOptions,
   region,
   onCreated,
-  onSubmit,
-  onDelete,
   onClick,
 }) => {
   const { register, handleSubmit } = useForm()
