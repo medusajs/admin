@@ -59,7 +59,7 @@ const AccountDetails = () => {
         <BreadCrumb
           previousRoute="/a/settings/"
           previousBreadCrumb="Settings"
-          currentPage="Account details"
+          currentPage="Store details"
         />
         <BodyCard
           events={[
