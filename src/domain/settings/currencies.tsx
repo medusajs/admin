@@ -8,15 +8,15 @@ import useMedusa from "../../hooks/use-medusa"
 import { currencies } from "../../utils/currencies"
 import { getErrorMessage } from "../../utils/error-messages"
 
-type InputCurrency = {
+type SelectCurrency = {
   value: string
   label: string
 }
 
 const CurrencySettings = () => {
   const [storeCurrencies, setStoreCurrencies] = useState([])
-  const [allCurrencies, setAllCurrencies] = useState<InputCurrency[]>([])
-  const [selectedCurrency, setSelectedCurrency] = useState({
+  const [allCurrencies, setAllCurrencies] = useState<SelectCurrency[]>([])
+  const [selectedCurrency, setSelectedCurrency] = useState<SelectCurrency>({
     value: "",
     label: "",
   })
@@ -60,7 +60,7 @@ const CurrencySettings = () => {
     e.preventDefault()
     update({
       default_currency_code: selectedCurrency.value,
-      currencies: storeCurrencies.map((c: InputCurrency) => c.value),
+      currencies: storeCurrencies.map((c: SelectCurrency) => c.value),
     })
       .then(() => {
         toaster("Successfully updated currencies", "success")
@@ -101,7 +101,7 @@ const CurrencySettings = () => {
             value={selectedCurrency}
             isMultiSelect={false}
             enableSearch={true}
-            onChange={(e: any) => setSelectedCurrency(e)}
+            onChange={(e: SelectCurrency) => setSelectedCurrency(e)}
             className="mb-6"
           />
           <Select
