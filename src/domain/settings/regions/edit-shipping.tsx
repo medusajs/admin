@@ -11,38 +11,17 @@ import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
-  const { register, setValue, reset, handleSubmit } = useForm()
+  const { register, reset, handleSubmit } = useForm()
   const [adminOnly, setAdminOnly] = useState(shippingOption?.admin_only)
 
   const deleteOption = useAdminDeleteShippingOption(shippingOption.id)
   const updateOption = useAdminUpdateShippingOption(shippingOption.id)
   const toaster = useToaster()
 
-  // const {
-  //   fields: metaFields,
-  //   append: metaAppend,
-  //   remove: metaRemove,
-  // } = useFieldArray({
-  //   control,
-  //   name: "metadata",
-  // })
-
   useEffect(() => {
     const option = {
       ...shippingOption,
     }
-    // Metadata is not part of the current design, but i will leave it here for now
-    // if (!_.isEmpty(shippingOption.metadata)) {
-    //   option.metadata = Object.entries(shippingOption.metadata).map(
-    //     ([key, value], index) => {
-    //       return {
-    //         id: index,
-    //         key,
-    //         value,
-    //       }
-    //     }
-    //   )
-    // }
 
     if (shippingOption.requirements) {
       const minSubtotal = shippingOption.requirements.find(
@@ -66,20 +45,6 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
     }
 
     reset({ ...option, amount: option.amount / 100 })
-
-    // if (!_.isEmpty(shippingOption.metadata)) {
-    //   let index = 0
-    //   Object.entries(shippingOption.metadata).map(([key, value]) => {
-    //     if (typeof value === "string") {
-    //       register({ name: `metadata.${index}.key` })
-    //       register({ name: `metadata.${index}.value` })
-
-    //       setValue(`metadata.${index}.key`, key)
-    //       setValue(`metadata.${index}.value`, value)
-    //       index += 1
-    //     }
-    //   })
-    // }
   }, [shippingOption])
 
   const handleDelete = async () => {
@@ -97,10 +62,14 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
     })
   }
 
-  const handleSave = data => {
+  const handleSave = (data: {
+    requirements: { amount: number; type: string }[]
+    name: any
+    amount: number
+  }) => {
     const reqs = Object.entries(data.requirements).reduce(
       (acc, [key, value]) => {
-        if (parseInt(value.amount) && parseInt(value.amount) > 0) {
+        if (value.amount && value.amount > 0) {
           const reqType = shippingOption.requirements.find(
             req => req.type === key
           )
@@ -130,15 +99,6 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       requirements: reqs,
       admin_only: adminOnly,
     }
-
-    // if (data.metadata) {
-    //   payload.metadata = data.metadata.reduce((acc, next) => {
-    //     return {
-    //       ...acc,
-    //       [next.key]: next.value,
-    //     }
-    //   }, {})
-    // }
 
     updateOption.mutate(payload, {
       onSuccess: () => {
@@ -184,7 +144,15 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                   readOnly
                   className="w-[120px] pointer-events-none"
                 />
-                <Input label="Price" value={shippingOption.amount / 100} />
+                <Input
+                  label="Price"
+                  type="number"
+                  value={shippingOption.amount}
+                  ref={register}
+                  name={"amount"}
+                  min={0}
+                  step={0.1}
+                />
               </div>
             </div>
             <div className="mt-large mb-xlarge">
@@ -254,7 +222,8 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
           <Modal.Footer>
             <div className="flex items-center justify-end w-full">
               <Button
-                type="submit"
+                type="button"
+                onClick={onClick}
                 variant="ghost"
                 size="small"
                 className="w-[127px] justify-center"
