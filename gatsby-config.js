@@ -36,5 +36,6 @@ module.exports = {
     },
     "gatsby-plugin-portal",
     "gatsby-plugin-postcss",
+    "gatsby-plugin-typescript",
   ],
 }

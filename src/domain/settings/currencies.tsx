@@ -8,9 +8,14 @@ import useMedusa from "../../hooks/use-medusa"
 import { currencies } from "../../utils/currencies"
 import { getErrorMessage } from "../../utils/error-messages"
 
+type InputCurrency = {
+  value: string
+  label: string
+}
+
 const CurrencySettings = () => {
   const [storeCurrencies, setStoreCurrencies] = useState([])
-  const [allCurrencies, setAllCurrencies] = useState([])
+  const [allCurrencies, setAllCurrencies] = useState<InputCurrency[]>([])
   const [selectedCurrency, setSelectedCurrency] = useState({
     value: "",
     label: "",
@@ -24,12 +29,12 @@ const CurrencySettings = () => {
       value: store.default_currency_code.toUpperCase(),
     }
 
-    const storeCurrs = store.currencies.map(c => ({
+    const storeCurrs = store.currencies.map((c) => ({
       value: c.code.toUpperCase(),
       label: c.code.toUpperCase(),
     }))
 
-    const allCurrs = Object.keys(currencies).map(currency => ({
+    const allCurrs = Object.keys(currencies).map((currency) => ({
       label: currency,
       value: currency,
     }))
@@ -47,28 +52,29 @@ const CurrencySettings = () => {
     setCurrenciesOnLoad()
   }, [store, isLoading])
 
-  const handleChange = currencies => {
+  const handleChange = (currencies) => {
     setStoreCurrencies(currencies)
   }
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault()
-    try {
-      await update({
-        default_currency_code: selectedCurrency.value,
-        currencies: storeCurrencies.map(c => c.value),
+    update({
+      default_currency_code: selectedCurrency.value,
+      currencies: storeCurrencies.map((c: InputCurrency) => c.value),
+    })
+      .then(() => {
+        toaster("Successfully updated currencies", "success")
       })
-      toaster("Successfully updated currencies", "success")
-    } catch (error) {
-      refresh()
-      toaster(getErrorMessage(error), "error")
-    }
+      .catch((error) => {
+        refresh()
+        toaster(getErrorMessage(error), "error")
+      })
   }
 
   const currencyEvents = [
     {
       label: "Save",
-      onClick: e => onSubmit(e),
+      onClick: (e) => onSubmit(e),
     },
     {
       label: "Cancel changes",
@@ -80,7 +86,7 @@ const CurrencySettings = () => {
     <div>
       <BreadCrumb
         previousRoute="/a/settings"
-        previousBreadCrumb="Settings"
+        previousBreadcrumb="Settings"
         currentPage="Currencies"
       />
       <TwoSplitPane>
@@ -95,7 +101,7 @@ const CurrencySettings = () => {
             value={selectedCurrency}
             isMultiSelect={false}
             enableSearch={true}
-            onChange={e => setSelectedCurrency(e)}
+            onChange={(e: any) => setSelectedCurrency(e)}
             className="mb-6"
           />
           <Select
