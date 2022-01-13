@@ -100,15 +100,6 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       admin_only: adminOnly,
     }
 
-    // if (data.metadata) {
-    //   payload.metadata = data.metadata.reduce((acc, next) => {
-    //     return {
-    //       ...acc,
-    //       [next.key]: next.value,
-    //     }
-    //   }, {})
-    // }
-
     updateOption.mutate(payload, {
       onSuccess: () => {
         toaster("Successfully updated shipping option", "success")
