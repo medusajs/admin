@@ -31,20 +31,25 @@ const Item = ({
   return (
     <div
       className={clsx(
-        "w-full rounded-base border border-grey-20 p-base flex items-baseline mb-xsmall last:mb-0 gap-base"
+        "rounded-base border border-grey-20 p-base flex items-baseline mb-xsmall last:mb-0 gap-base"
       )}
     >
       <RadioGroupPrimitive.Item
         {...rest}
         id={rest.value}
         className={clsx(
-          "w-[20px] h-[20px] bg-grey-0 rounded-circle shadow-cta ",
-          rest.className
+          "radio-outer-ring outline-0",
+          "shrink-0 w-[20px] h-[20px] shadow-[0_0_0_1px] shadow-[#D1D5DB] rounded-circle",
         )}
       >
-        <RadioGroupPrimitive.Indicator className="bg-violet-60 h-full w-full rounded-circle flex items-center justify-center relative after:content-[''] after:block after:w-[10px] after:h-[10px] after:bg-grey-0 after:rounded-circle" />
+        <RadioGroupPrimitive.Indicator
+          className={clsx(
+            "flex items-center justify-center w-full h-full relative",
+            "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
+          )}
+        />
       </RadioGroupPrimitive.Item>
-      <div className="truncate w-full flex-shrink">
+      <div className="truncate">
         <label className="inter-base-semibold truncate" htmlFor={rest.value}>
           {label}{" "}
           {sublabel && <span className="inter-base-regular">{sublabel}</span>}
