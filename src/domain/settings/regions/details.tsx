@@ -3,6 +3,7 @@ import {
   useAdminRegionFulfillmentOptions,
   useAdminStore,
   useAdminStorePaymentProviders,
+  useAdminUpdateRegion,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -13,7 +14,6 @@ import Input from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
 import BodyCard from "../../../components/organisms/body-card"
 import Spinner from "../../../components/spinner"
-import useMedusa from "../../../hooks/use-medusa"
 import useToaster from "../../../hooks/use-toaster"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -30,7 +30,6 @@ const RegionDetails = ({ id }) => {
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [fulfillmentProviders, setFulfillmentProviders] = useState([])
 
-  const { update } = useMedusa("regions")
   const { register, reset, setValue, handleSubmit } = useForm()
   const toaster = useToaster()
 
@@ -44,6 +43,7 @@ const RegionDetails = ({ id }) => {
     fulfillment_options,
     isLoading: fulfillmentIsLoading,
   } = useAdminRegionFulfillmentOptions(id)
+  const updateRegion = useAdminUpdateRegion(id)
 
   useEffect(() => {
     if (!store || !region) return
@@ -151,13 +151,17 @@ const RegionDetails = ({ id }) => {
       return
     }
 
-    try {
-      await update({ ...data, tax_rate: data.tax_rate * 100 })
-
-      toaster("Successfully updated region", "success")
-    } catch (error) {
-      toaster(getErrorMessage(error), "error")
-    }
+    updateRegion.mutate(
+      { ...data, tax_rate: data.tax_rate * 100 },
+      {
+        onSuccess: () => {
+          toaster("Successfully updated region", "success")
+        },
+        onError: error => {
+          toaster(getErrorMessage(error), "error")
+        },
+      }
+    )
   }
 
   const countryOptions = countryData.map(c => ({
