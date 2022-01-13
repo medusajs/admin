@@ -10,7 +10,7 @@ import Button from "../../components/button"
 import Spinner from "../../components/spinner"
 import MultiSelect from "../../components/molecules/select"
 import Typography from "../../components/typography"
-import BreadCrumb from "../../components/breadcrumb"
+import BreadCrumb from "../../components/molecules/breadcrumb"
 
 import { currencies } from "../../utils/currencies"
 import { Label } from "@rebass/forms"

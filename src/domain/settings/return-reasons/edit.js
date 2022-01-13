@@ -7,28 +7,30 @@ import Input from "../../../components/molecules/input"
 import Button from "../../../components/button"
 import Spinner from "../../../components/spinner"
 import InfoTooltip from "../../../components/info-tooltip"
-import BreadCrumb from "../../../components/breadcrumb"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 
 import ReturnReasonsList from "./return-reasons-list"
 
-import useMedusa from "../../../hooks/use-medusa"
 import ReturnReasonModal from "./create-edit-return-reason"
 
 import { getErrorMessage } from "../../../utils/error-messages"
+import {
+  useAdminDeleteReturnReason,
+  useAdminReturnReason,
+  useAdminUpdateReturnReason,
+} from "medusa-react"
+import useToaster from "../../../hooks/use-toaster"
 
 const EditReturnReason = ({ id }) => {
   const { register, reset, handleSubmit } = useForm()
-  const {
-    return_reason,
-    isLoading,
-    update,
-    delete: returnReasonDelete,
-    toaster,
-  } = useMedusa("returnReasons", { id })
+  const { isLoading, return_reason } = useAdminReturnReason(id)
+  const deleteRR = useAdminDeleteReturnReason(id)
+  const updateRR = useAdminUpdateReturnReason(id)
 
   const [children, setChildren] = useState([])
   const [showReasonEdit, setShowReasonEdit] = useState(false)
   const [editReturnReason, setEditReturnReason] = useState(undefined)
+  const toaster = useToaster()
 
   useEffect(() => {
     if (isLoading) {
@@ -39,20 +41,26 @@ const EditReturnReason = ({ id }) => {
   }, [return_reason, isLoading])
 
   const onSave = async data => {
-    try {
-      await update({ ...data })
-      toaster("Successfully updated return reason", "success")
-      navigate("/a/settings/return-reasons/")
-    } catch (error) {
-      toaster(getErrorMessage(error), "error")
-    }
+    updateRR.mutate(
+      { ...data },
+      {
+        onSuccess: () => {
+          toaster("Successfully updated return reason", "success")
+          navigate("/a/settings/return-reasons/")
+        },
+        onError: error => {
+          toaster(getErrorMessage(error), "error")
+        },
+      }
+    )
   }
 
   const deleteReturnReason = async () => {
-    try {
-      await returnReasonDelete()
-    } catch (err) {}
-    navigate("/a/settings/return-reasons/")
+    deleteRR.mutate(null, {
+      onSuccess: () => {
+        navigate("/a/settings/return-reasons/")
+      },
+    })
   }
 
   if (isLoading) {

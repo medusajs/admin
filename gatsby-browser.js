@@ -1,26 +1,30 @@
 import "./src/assets/styles/global.css"
 import React from "react"
-import { CacheProvider } from "./src/context/cache"
 import { AccountProvider } from "./src/context/account"
+import { CacheProvider } from "./src/context/cache"
 import { InterfaceProvider } from "./src/context/interface"
 import { ThemeProvider as Provider } from "./src/theme"
 import { ToastProvider } from "react-toast-notifications"
-
-//export const shouldUpdateScroll = ({ routerProps: { location } }) => {
-//  window.scrollTo(0, 0)
-//  return false
-//}
+import { MedusaProvider } from "medusa-react"
+import { medusaUrl, queryClient } from "./src/services/config"
 
 export const wrapPageElement = ({ element }) => {
   return (
-    <CacheProvider>
-      <AccountProvider>
-        <InterfaceProvider>
-          <ToastProvider autoDismiss={true} placement="bottom-left">
-            <Provider>{element}</Provider>
-          </ToastProvider>
-        </InterfaceProvider>
-      </AccountProvider>
-    </CacheProvider>
+    <MedusaProvider
+      baseUrl={medusaUrl}
+      queryClientProviderProps={{
+        client: queryClient,
+      }}
+    >
+      <CacheProvider>
+        <AccountProvider>
+          <InterfaceProvider>
+            <ToastProvider autoDismiss={true} placement="bottom-left">
+              <Provider>{element}</Provider>
+            </ToastProvider>
+          </InterfaceProvider>
+        </AccountProvider>
+      </CacheProvider>
+    </MedusaProvider>
   )
 }

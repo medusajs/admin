@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Box, Button, Flex, Text } from "rebass"
 import Card from "../../../components/card"
-import BreadCrumb from "../../../components/breadcrumb"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 import {
   DefaultCellContent,
   Table,

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react"
-import { Flex, Text, Box } from "rebass"
 import { navigate } from "gatsby"
-
-import useMedusa from "../../../hooks/use-medusa"
-import Card from "../../../components/card"
+import { useAdminReturnReasons } from "medusa-react"
+import React, { useEffect, useState } from "react"
+import { Box, Flex, Text } from "rebass"
 import Button from "../../../components/button"
+import Card from "../../../components/card"
 import Spinner from "../../../components/spinner"
-import BreadCrumb from "../../../components/breadcrumb"
+import BreadCrumb from "../../../components/molecules/breadcrumb"
 import ReturnReasonsList from "./return-reasons-list"
 
 const ReturnReasons = () => {
-  const { return_reasons, isLoading } = useMedusa("returnReasons")
+  const { isLoading, return_reasons } = useAdminReturnReasons()
+
   const parent_return_reasons = !isLoading
     ? return_reasons.filter(rr => !rr.parent_return_reason_id)
     : []
@@ -26,14 +26,14 @@ const ReturnReasons = () => {
   )
 
   useEffect(() => {
-    if (!isLoading) {
+    if (return_reasons?.length) {
       const startIndex = currentPage * pageLength
       setNumberOfPages(Math.ceil(parent_return_reasons.length / pageLength))
       setShownReasons(
         parent_return_reasons.slice(startIndex, startIndex + pageLength)
       )
     }
-  }, [currentPage, isLoading])
+  }, [currentPage, return_reasons])
 
   const onPreviousClick = () => {
     setCurrentPage(currentPage - 1)
