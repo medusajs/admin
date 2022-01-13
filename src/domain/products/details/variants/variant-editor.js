@@ -120,6 +120,9 @@ const VariantEditor = ({
   }
 
   const handleSave = data => {
+    data.inventory_quantity = 
+        data.inventory_quantity ?
+        parseInt(data.inventory_quantity) : 0;
     data.prices = prices.map(({ currency_code, region_id, amount }) => ({
       currency_code,
       region_id,

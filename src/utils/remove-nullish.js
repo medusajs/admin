@@ -1,2 +1,3 @@
-export const removeNullish = obj =>
-  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
+export const removeNullish = obj => 
+  Object.entries(obj).reduce((a, [k, v]) => ((v || v === 0) ? ((a[k] = v), a) : a), {})
+  
