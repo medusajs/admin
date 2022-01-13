@@ -65,7 +65,6 @@ const AccountDetails = () => {
           events={[
             {
               label: "Save",
-              // onClick: handleSubmit(onSubmit),
             },
             { label: "Cancel Changes" },
           ]}
