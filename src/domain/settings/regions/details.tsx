@@ -1,4 +1,6 @@
 import {
+  useAdminCreateRegion,
+  useAdminDeleteRegion,
   useAdminRegion,
   useAdminRegionFulfillmentOptions,
   useAdminStore,
@@ -21,7 +23,7 @@ import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.map
 import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 import Shipping from "./shipping"
 
-const RegionDetails = ({ id }) => {
+const RegionDetails = ({ id, onDelete }) => {
   const [currencies, setCurrencies] = useState([])
   const [countries, setCountries] = useState([])
   const [selectedCurrency, setSelectedCurrency] = useState(null)
@@ -34,6 +36,8 @@ const RegionDetails = ({ id }) => {
   const toaster = useToaster()
 
   const { store, isLoading: storeIsLoading } = useAdminStore()
+  const createRegion = useAdminCreateRegion()
+  const deleteRegion = useAdminDeleteRegion(id)
   const { region, isLoading: regionIsLoading } = useAdminRegion(id)
   const {
     payment_providers,
@@ -47,7 +51,6 @@ const RegionDetails = ({ id }) => {
 
   useEffect(() => {
     if (!store || !region) return
-    console.log(region)
     register({ name: "currency_code" })
     setValue("currency_code", region.currency_code)
     setSelectedCurrency({
@@ -169,6 +172,39 @@ const RegionDetails = ({ id }) => {
     value: c.alpha2.toLowerCase(),
   }))
 
+  const handleDuplicate = () => {
+    const payload = {
+      currency_code: region.currency_code,
+      tax_rate: region.tax_rate,
+      tax_code: region.tax_code,
+      payment_providers: region.payment_providers.map(p => p.id),
+      fulfillment_providers: region.fulfillment_providers.map(f => f.id),
+      countries: [], // As countries can't belong to more than one region at the same time we can just pass an empty array
+      name: `${region.name} Copy`,
+    }
+
+    createRegion.mutate(payload, {
+      onSuccess: () => {
+        toaster("Successfully duplicated region", "success")
+      },
+      onError: error => {
+        toaster(getErrorMessage(error), "error")
+      },
+    })
+  }
+
+  const handleDelete = () => {
+    deleteRegion.mutate(null, {
+      onSuccess: () => {
+        toaster("Successfully deleted region", "success")
+        if (onDelete) onDelete(null)
+      },
+      onError: error => {
+        toaster(getErrorMessage(error), "error")
+      },
+    })
+  }
+
   if (storeIsLoading || !currencies.length) {
     return (
       <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
@@ -186,12 +222,12 @@ const RegionDetails = ({ id }) => {
       actionables={[
         {
           label: "Duplicate Region",
-          onClick: () => {},
+          onClick: handleDuplicate,
           icon: <DuplicateIcon />,
         },
         {
           label: "Delete Region",
-          onClick: () => {},
+          onClick: handleDelete,
           icon: <TrashIcon />,
           variant: "danger",
         },

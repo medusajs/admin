@@ -8,16 +8,13 @@ import ShippingOption from "../../../components/atoms/shipping-option"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import Actionables from "../../../components/molecules/actionables"
 import Spinner from "../../../components/spinner"
-import useToaster from "../../../hooks/use-toaster"
 import EditShipping from "./edit-shipping"
 import NewShipping from "./new-shipping"
 
 const Shipping = ({ region }) => {
   const [editOption, setEditOption] = useState(null)
-  const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [showAddOption, setAddOption] = useState(false)
   const [showAddReturnOption, setAddReturnOption] = useState(false)
-  const toaster = useToaster()
 
   const {
     fulfillment_options,
@@ -29,10 +26,6 @@ const Shipping = ({ region }) => {
     isLoading: loadingOptions,
     refetch,
   } = useAdminShippingOptions({ region_id: region.id })
-
-  const handleShippingUpdated = () => {
-    refetch()
-  }
 
   const outboundOptions = [
     {
@@ -49,15 +42,6 @@ const Shipping = ({ region }) => {
       onClick: () => setAddReturnOption(true),
     },
   ]
-
-  const prettify = (snakeCase, cap = true) => {
-    const parts = snakeCase.split("_")
-    if (!cap) {
-      return parts.join(" ")
-    }
-    const capParts = parts.map(w => w[0].toUpperCase() + w.slice(1))
-    return capParts.join(" ")
-  }
 
   const outbound = []
   const inbound = []
@@ -145,11 +129,11 @@ const Shipping = ({ region }) => {
         <EditShipping
           shippingOption={editOption}
           onClick={() => setEditOption(null)}
-          onDone={handleShippingUpdated}
+          onDone={refetch}
           region={region}
         />
       )}
-      {(showAddOption || showAddReturnOption) && (
+      {(showAddOption || showAddReturnOption || loadingFulfillment) && (
         <NewShipping
           isReturn={showAddReturnOption}
           onClick={() =>
@@ -157,7 +141,7 @@ const Shipping = ({ region }) => {
               ? setAddReturnOption(false)
               : setAddOption(false)
           }
-          onCreated={handleShippingUpdated}
+          onCreated={refetch}
           region={region}
           fulfillmentOptions={fulfillment_options}
         />
