@@ -32,7 +32,7 @@ type MultiSelectProps = {
   isLoading?: boolean
   shouldToggleOnHover?: boolean
   overrideStrings?: object
-  onChange: (values: any[]) => void
+  onChange: (values: any[] | any) => void
   disabled?: boolean
   enableSearch?: boolean
   isCreatable?: boolean
