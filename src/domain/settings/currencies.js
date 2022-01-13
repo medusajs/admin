@@ -53,16 +53,17 @@ const CurrencySettings = () => {
 
   const onSubmit = async e => {
     e.preventDefault()
-    try {
-      await update({
-        default_currency_code: selectedCurrency.value,
-        currencies: storeCurrencies.map(c => c.value),
+    update({
+      default_currency_code: selectedCurrency.value,
+      currencies: storeCurrencies.map(c => c.value),
+    })
+      .then(() => {
+        toaster("Successfully updated currencies", "success")
       })
-      toaster("Successfully updated currencies", "success")
-    } catch (error) {
-      refresh()
-      toaster(getErrorMessage(error), "error")
-    }
+      .catch(error => {
+        refresh()
+        toaster(getErrorMessage(error), "error")
+      })
   }
 
   const currencyEvents = [
@@ -80,7 +81,7 @@ const CurrencySettings = () => {
     <div>
       <BreadCrumb
         previousRoute="/a/settings"
-        previousBreadCrumb="Settings"
+        previousBreadcrumb="Settings"
         currentPage="Currencies"
       />
       <TwoSplitPane>

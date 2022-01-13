@@ -22,12 +22,12 @@ const BodyCard: React.FC<BodyCardProps> = ({
 }) => {
   const { isScrolled, scrollListener } = useScroll({ threshold: 16 })
   return (
-    <div className="rounded-rounded border bg-grey-0 border-grey-20 h-full overflow-hidden flex flex-col min-h-[350px] w-full relative">
+    <div className="rounded-rounded border bg-grey-0 border-grey-20 h-full flex flex-col min-h-[350px] w-full relative">
       {isScrolled && (
         <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-transparent h-xlarge z-10" />
       )}
       <div
-        className="pt-large px-xlarge flex-grow overflow-y-scroll"
+        className="pt-large px-xlarge flex-grow"
         onScroll={scrollListener}
       >
         <div className="flex items-center justify-between">
