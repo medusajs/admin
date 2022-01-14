@@ -12,7 +12,7 @@ import CustomerInformation from "../details/customer"
 import { ReactComponent as Clipboard } from "../../../assets/svg/clipboard.svg"
 import ImagePlaceholder from "../../../assets/svg/image-placeholder.svg"
 import Card from "../../../components/card"
-import Badge from "../../../components/badge"
+import Badge from "../../../components/fundamentals/badge"
 import Spinner from "../../../components/spinner"
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"

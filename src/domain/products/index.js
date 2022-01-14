@@ -28,7 +28,7 @@ import useMedusa from "../../hooks/use-medusa"
 import Button from "../../components/button"
 import qs from "query-string"
 import styled from "@emotion/styled"
-import Badge from "../../components/badge"
+import Badge from "../../components/fundamentals/badge"
 import { decideBadgeColor } from "../../utils/decide-badge-color"
 
 const removeNullish = obj =>

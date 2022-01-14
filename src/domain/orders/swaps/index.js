@@ -20,7 +20,7 @@ import {
   DefaultCellContent,
   BadgdeCellContent,
 } from "../../../components/table"
-import Badge from "../../../components/badge"
+import Badge from "../../../components/fundamentals/badge"
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"

@@ -5,10 +5,11 @@ import Input from "../../components/molecules/input"
 import BodyCard from "../../components/organisms/body-card"
 import useMedusa from "../../hooks/use-medusa"
 import { getErrorMessage } from "../../utils/error-messages"
+import { useAdminStore } from "medusa-react"
 
 const AccountDetails = () => {
   const { register, reset, handleSubmit } = useForm()
-  const { store, isLoading, update, toaster } = useMedusa("store")
+  const { store, isLoading, update, toaster } = useAdminStore()
 
   useEffect(() => {
     if (isLoading) return

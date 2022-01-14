@@ -8,7 +8,7 @@ import _ from "lodash"
 
 import Card from "../../components/card"
 import Spinner from "../../components/spinner"
-import Badge from "../../components/badge"
+import Badge from "../../components/fundamentals/badge"
 import Button from "../../components/button"
 import EditableInput from "../../components/editable-input"
 import CurrencyInput from "../../components/currency-input"
