@@ -90,10 +90,10 @@ const NewRegion = ({ onDone, onClick }) => {
         tax_rate: data.tax_rate * 100,
       },
       {
-        onSuccess: () => {
+        onSuccess: ({ region }) => {
           toaster("Successfully created region", "success")
           if (onDone) {
-            onDone()
+            onDone(region.id)
           }
           onClick()
         },

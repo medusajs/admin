@@ -15,6 +15,7 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Input from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
 import BodyCard from "../../../components/organisms/body-card"
+import DeletePrompt from "../../../components/organisms/delete-prompt"
 import Spinner from "../../../components/spinner"
 import useToaster from "../../../hooks/use-toaster"
 import { countries as countryData } from "../../../utils/countries"
@@ -23,7 +24,7 @@ import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.map
 import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 import Shipping from "./shipping"
 
-const RegionDetails = ({ id, onDelete }) => {
+const RegionDetails = ({ id, onDelete, handleSelect }) => {
   const [currencies, setCurrencies] = useState([])
   const [countries, setCountries] = useState([])
   const [selectedCurrency, setSelectedCurrency] = useState(null)
@@ -48,6 +49,8 @@ const RegionDetails = ({ id, onDelete }) => {
     isLoading: fulfillmentIsLoading,
   } = useAdminRegionFulfillmentOptions(id)
   const updateRegion = useAdminUpdateRegion(id)
+
+  const [showDanger, setShowDanger] = useState(false)
 
   useEffect(() => {
     if (!store || !region) return
@@ -184,8 +187,9 @@ const RegionDetails = ({ id, onDelete }) => {
     }
 
     createRegion.mutate(payload, {
-      onSuccess: () => {
+      onSuccess: ({ region }) => {
         toaster("Successfully duplicated region", "success")
+        handleSelect(region.id)
       },
       onError: error => {
         toaster(getErrorMessage(error), "error")
@@ -193,10 +197,9 @@ const RegionDetails = ({ id, onDelete }) => {
     })
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     deleteRegion.mutate(null, {
       onSuccess: () => {
-        toaster("Successfully deleted region", "success")
         if (onDelete) onDelete(null)
       },
       onError: error => {
@@ -216,112 +219,124 @@ const RegionDetails = ({ id, onDelete }) => {
   }
 
   return (
-    <BodyCard
-      title="Details"
-      events={[{ label: "Save", onClick: handleSubmit(onSave) }]}
-      actionables={[
-        {
-          label: "Duplicate Region",
-          onClick: handleDuplicate,
-          icon: <DuplicateIcon />,
-        },
-        {
-          label: "Delete Region",
-          onClick: handleDelete,
-          icon: <TrashIcon />,
-          variant: "danger",
-        },
-      ]}
-    >
-      <form onSubmit={handleSubmit(onSave)}>
-        <div className="flex flex-col w-full">
-          {regionIsLoading || storeIsLoading ? (
-            <Flex
-              flexDirection="column"
-              alignItems="center"
-              height="100vh"
-              mt="auto"
-            >
-              <Box height="75px" width="75px" mt="50%">
-                <Spinner dark />
-              </Box>
-            </Flex>
-          ) : (
-            <div className="w-full">
-              <Input
-                name="name"
-                label="Name"
-                ref={register}
-                className="mb-base"
-              />
-              <Select
-                enableSearch
-                label="Currency"
-                name="currency_code"
-                options={currencies}
-                value={selectedCurrency}
-                onChange={handleChangeCurrency}
-                className="mb-base"
-              />
-              <Input
-                className="mb-base"
-                type="number"
-                placeholder="0.25"
-                step="0.01"
-                min={0}
-                max={1}
-                name="tax_rate"
-                label="Tax Rate"
-                ref={register}
-              />
-              <Input
-                placeholder="1000"
-                name="tax_code"
-                label="Tax Code"
-                ref={register}
-                className="mb-base"
-              />
-              <Select
-                isMultiSelect
-                enableSearch
-                label="Countries"
-                hasSelectAll
-                options={countryOptions}
-                value={countries}
-                onChange={handleChange}
-                className="mb-base"
-              />
-              {!!paymentOptions.length && (
-                <Select
-                  isMultiSelect
-                  onChange={handlePaymentChange}
-                  options={paymentOptions}
-                  value={paymentProviders}
-                  label="Payment Providers"
-                  enableSearch
+    <>
+      <BodyCard
+        title="Details"
+        events={[{ label: "Save", onClick: handleSubmit(onSave) }]}
+        actionables={[
+          {
+            label: "Duplicate Region",
+            onClick: handleDuplicate,
+            icon: <DuplicateIcon />,
+          },
+          {
+            label: "Delete Region",
+            onClick: () => setShowDanger(true),
+            icon: <TrashIcon />,
+            variant: "danger",
+          },
+        ]}
+      >
+        <form onSubmit={handleSubmit(onSave)}>
+          <div className="flex flex-col w-full">
+            {regionIsLoading || storeIsLoading ? (
+              <Flex
+                flexDirection="column"
+                alignItems="center"
+                height="100vh"
+                mt="auto"
+              >
+                <Box height="75px" width="75px" mt="50%">
+                  <Spinner dark />
+                </Box>
+              </Flex>
+            ) : (
+              <div className="w-full">
+                <Input
+                  name="name"
+                  label="Name"
+                  ref={register}
                   className="mb-base"
                 />
-              )}
-              {!!fulfillmentOptions.length && (
                 <Select
-                  onChange={handleFulfillmentChange}
-                  options={fulfillmentOptions}
-                  value={fulfillmentProviders}
-                  label="Fulfillment Providers"
                   enableSearch
-                  isMultiSelect
+                  label="Currency"
+                  name="currency_code"
+                  options={currencies}
+                  value={selectedCurrency}
+                  onChange={handleChangeCurrency}
+                  className="mb-base"
                 />
-              )}
-            </div>
-          )}
-        </div>
-      </form>
-      {region && fulfillment_options && (
-        <div className="mt-2xlarge">
-          <Shipping region={region} />
-        </div>
+                <Input
+                  className="mb-base"
+                  type="number"
+                  placeholder="0.25"
+                  step="0.01"
+                  min={0}
+                  max={1}
+                  name="tax_rate"
+                  label="Tax Rate"
+                  ref={register}
+                />
+                <Input
+                  placeholder="1000"
+                  name="tax_code"
+                  label="Tax Code"
+                  ref={register}
+                  className="mb-base"
+                />
+                <Select
+                  isMultiSelect
+                  enableSearch
+                  label="Countries"
+                  hasSelectAll
+                  options={countryOptions}
+                  value={countries}
+                  onChange={handleChange}
+                  className="mb-base"
+                />
+                {!!paymentOptions.length && (
+                  <Select
+                    isMultiSelect
+                    onChange={handlePaymentChange}
+                    options={paymentOptions}
+                    value={paymentProviders}
+                    label="Payment Providers"
+                    enableSearch
+                    className="mb-base"
+                  />
+                )}
+                {!!fulfillmentOptions.length && (
+                  <Select
+                    onChange={handleFulfillmentChange}
+                    options={fulfillmentOptions}
+                    value={fulfillmentProviders}
+                    label="Fulfillment Providers"
+                    enableSearch
+                    isMultiSelect
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        </form>
+        {region && fulfillment_options && (
+          <div className="mt-2xlarge">
+            <Shipping region={region} />
+          </div>
+        )}
+      </BodyCard>
+      {showDanger && (
+        <DeletePrompt
+          handleClose={() => setShowDanger(!showDanger)}
+          text="Are you sure you want to delete this region from your Medusa Store?"
+          heading="Delete region"
+          onDelete={handleDelete}
+          successText="Successfully deleted region"
+          confirmText="Yes, delete"
+        />
       )}
-    </BodyCard>
+    </>
   )
 }
 

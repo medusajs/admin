@@ -39,7 +39,7 @@ const Item = ({
         id={rest.value}
         className={clsx(
           "radio-outer-ring outline-0",
-          "shrink-0 w-[20px] h-[20px] shadow-[0_0_0_1px] shadow-[#D1D5DB] rounded-circle",
+          "shrink-0 w-[20px] h-[20px] shadow-[0_0_0_1px] shadow-[#D1D5DB] rounded-circle"
         )}
       >
         <RadioGroupPrimitive.Indicator

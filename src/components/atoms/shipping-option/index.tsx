@@ -32,7 +32,7 @@ const ShippingOption: React.FC<ShippingOptionProps> = ({
 }) => {
   return (
     <div className="flex items-baseline justify-between p-base rounded-base border border-grey-20">
-      <div>
+      <div className="truncate">
         <p className="inter-small-semibold truncate">
           {option.name} {option.data.name && `(${option.data.name})`}{" "}
           {option.admin_only && (

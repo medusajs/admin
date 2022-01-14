@@ -1,5 +1,6 @@
 import { useAdminRegions } from "medusa-react"
 import React, { useEffect, useState } from "react"
+import Spinner from "../../../components/atoms/spinner"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import BreadCrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
@@ -25,6 +26,27 @@ const Regions = () => {
     setRegion()
   }, [regions, isLoading, selectedRegion])
 
+  const handleDelete = () => {
+    refetch().then(({ data }) => {
+      const id = data.regions[0].id
+      setSelectedRegion(id)
+      document.getElementById(id).scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      })
+    })
+  }
+
+  const handleSelect = (id: string) => {
+    refetch().then(() => {
+      setSelectedRegion(id)
+      document.getElementById(id).scrollIntoView({
+        behavior: "smooth",
+      })
+    })
+  }
+
   return (
     <>
       <div>
@@ -45,11 +67,13 @@ const Regions = () => {
               },
             ]}
           >
-            {isLoading ? (
-              <p>loading</p>
+            {isLoading || !selectedRegion ? (
+              <div className="flex-grow h-full flex items-center justify-center">
+                <Spinner size="large" variant="secondary" />
+              </div>
             ) : (
               <RadioGroup
-                defaultValue={regions[0].id}
+                value={selectedRegion}
                 onValueChange={setSelectedRegion}
               >
                 {regions.map(r => {
@@ -71,6 +95,7 @@ const Regions = () => {
                       description={providers}
                       value={r.id}
                       key={r.id}
+                      id={r.id}
                     ></RadioGroup.Item>
                   )
                 })}
@@ -78,12 +103,19 @@ const Regions = () => {
             )}
           </BodyCard>
           {selectedRegion && (
-            <RegionDetails id={selectedRegion} onDelete={setSelectedRegion} />
+            <RegionDetails
+              id={selectedRegion}
+              onDelete={handleDelete}
+              handleSelect={handleSelect}
+            />
           )}
         </TwoSplitPane>
       </div>
       {addRegion && (
-        <NewRegion onClick={() => setAddRegion(!addRegion)} onDone={refetch} />
+        <NewRegion
+          onClick={() => setAddRegion(!addRegion)}
+          onDone={handleSelect}
+        />
       )}
     </>
   )

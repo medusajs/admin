@@ -4,11 +4,11 @@ import {
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import Spinner from "../../../components/atoms/spinner"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import Select from "../../../components/molecules/select"
-import Spinner from "../../../components/spinner"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
@@ -20,16 +20,20 @@ const NewShipping = ({
   onCreated,
   onClick,
 }) => {
-  const { register, setValue, handleSubmit } = useForm()
+  const { register, setValue, handleSubmit, errors } = useForm()
   const {
     shipping_profiles,
     isLoading: isProfilesLoading,
   } = useAdminShippingProfiles()
   const [adminOnly, setAdminOnly] = useState(false)
   const [options, setOptions] = useState([])
+  const [selectedOption, setSelectedOption] = useState(null)
   const [profileOptions, setProfileOptions] = useState([])
+  const [selectedProfile, setSelectedProfile] = useState(null)
   const createShippingOption = useAdminCreateShippingOption()
   const toaster = useToaster()
+
+  console.log(errors)
 
   const handleSave = (data: {
     name: string
@@ -70,7 +74,7 @@ const NewShipping = ({
       name: data.name,
       data: options[optionIndex],
       region_id: region.id,
-      profile_id: data.profile_id.value,
+      profile_id: data.profile_id?.value,
       requirements: reqs,
       price_type: "flat_rate",
       amount: Math.round(data.amount * 100),
@@ -113,7 +117,6 @@ const NewShipping = ({
     setOptions(opts)
 
     register({ name: "fulfillment_option" }, { required: true })
-    setValue("fulfillment_option", opts[0])
   }, [fulfillmentOptions])
 
   useEffect(() => {
@@ -126,9 +129,20 @@ const NewShipping = ({
 
     setProfileOptions(opts)
 
-    register({ name: "profile_id" }, { required: true })
-    setValue("profile_id", opts[0])
+    if (!isReturn) {
+      register({ name: "profile_id" }, { required: true })
+    }
   }, [isProfilesLoading, shipping_profiles])
+
+  const handleProfileChange = value => {
+    setValue("profile_id", value)
+    setSelectedProfile(value)
+  }
+
+  const handleFulfillmentChange = value => {
+    setValue("fulfillment_option", value)
+    setSelectedOption(value)
+  }
 
   return (
     <Modal handleClose={onClick}>
@@ -155,11 +169,11 @@ const NewShipping = ({
                   value={region.currency_code.toUpperCase()}
                   readOnly
                   className="w-[120px] pointer-events-none"
+                  tabIndex={-1}
                 />
                 <Input
                   label="Price"
                   type="number"
-                  value={null}
                   ref={register({ required: true })}
                   name={"amount"}
                   placeholder="10"
@@ -188,14 +202,14 @@ const NewShipping = ({
                 {isProfilesLoading ? (
                   <div className="flex flex-col items-center justify-center h-screen mt-auto">
                     <div className="h-[75px] w-[75px] mt-[50%]">
-                      <Spinner dark />
+                      <Spinner />
                     </div>
                   </div>
                 ) : (
                   <Select
                     label="Shipping Profile"
-                    value={profileOptions[0]}
-                    onChange={e => {}}
+                    value={selectedProfile}
+                    onChange={handleProfileChange}
                     required
                     name="profile_id"
                     options={profileOptions}
@@ -206,8 +220,8 @@ const NewShipping = ({
             <div className="mb-base">
               <Select
                 label="Fulfillment Method"
-                value={options[0]}
-                onChange={e => {}}
+                value={selectedOption}
+                onChange={handleFulfillmentChange}
                 required
                 name="fulfillment_option"
                 options={options}
@@ -223,10 +237,10 @@ const NewShipping = ({
                       value={region.currency_code.toUpperCase()}
                       readOnly
                       className="w-[120px] pointer-events-none"
+                      tabIndex={-1}
                     />
                     <Input
                       label="Min. subtotal"
-                      value={null}
                       type="number"
                       name={`requirements.min_subtotal.amount`}
                       min={0}
@@ -240,10 +254,10 @@ const NewShipping = ({
                       value={region.currency_code.toUpperCase()}
                       readOnly
                       className="w-[120px] pointer-events-none"
+                      tabIndex={-1}
                     />
                     <Input
                       label="Max. subtotal"
-                      value={null}
                       type="number"
                       min={0}
                       name={`requirements.max_subtotal.amount`}

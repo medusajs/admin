@@ -143,11 +143,11 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                   value={region.currency_code.toUpperCase()}
                   readOnly
                   className="w-[120px] pointer-events-none"
+                  tabIndex={-1}
                 />
                 <Input
                   label="Price"
                   type="number"
-                  value={shippingOption.amount}
                   ref={register}
                   name={"amount"}
                   min={0}
@@ -177,10 +177,10 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                   value={region.currency_code.toUpperCase()}
                   readOnly
                   className="w-[120px] pointer-events-none"
+                  tabIndex={-1}
                 />
                 <Input
                   label="Min. subtotal"
-                  value={shippingOption?.requirements?.min_subtotal?.value}
                   type="number"
                   name={`requirements.min_subtotal.amount`}
                   min={0}
@@ -197,7 +197,6 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                 />
                 <Input
                   label="Max. subtotal"
-                  value={shippingOption?.requirements?.max_subtotal?.value}
                   type="number"
                   min={0}
                   name={`requirements.max_subtotal.amount`}
