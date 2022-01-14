@@ -1,8 +1,11 @@
 import {
+  useAdminCreateRegion,
+  useAdminDeleteRegion,
   useAdminRegion,
   useAdminRegionFulfillmentOptions,
   useAdminStore,
   useAdminStorePaymentProviders,
+  useAdminUpdateRegion,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -13,7 +16,6 @@ import Input from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
 import BodyCard from "../../../components/organisms/body-card"
 import Spinner from "../../../components/spinner"
-import useMedusa from "../../../hooks/use-medusa"
 import useToaster from "../../../hooks/use-toaster"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -21,7 +23,7 @@ import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.map
 import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 import Shipping from "./shipping"
 
-const RegionDetails = ({ id }) => {
+const RegionDetails = ({ id, onDelete }) => {
   const [currencies, setCurrencies] = useState([])
   const [countries, setCountries] = useState([])
   const [selectedCurrency, setSelectedCurrency] = useState(null)
@@ -30,11 +32,12 @@ const RegionDetails = ({ id }) => {
   const [fulfillmentOptions, setFulfillmentOptions] = useState([])
   const [fulfillmentProviders, setFulfillmentProviders] = useState([])
 
-  const { update } = useMedusa("regions")
   const { register, reset, setValue, handleSubmit } = useForm()
   const toaster = useToaster()
 
   const { store, isLoading: storeIsLoading } = useAdminStore()
+  const createRegion = useAdminCreateRegion()
+  const deleteRegion = useAdminDeleteRegion(id)
   const { region, isLoading: regionIsLoading } = useAdminRegion(id)
   const {
     payment_providers,
@@ -44,10 +47,10 @@ const RegionDetails = ({ id }) => {
     fulfillment_options,
     isLoading: fulfillmentIsLoading,
   } = useAdminRegionFulfillmentOptions(id)
+  const updateRegion = useAdminUpdateRegion(id)
 
   useEffect(() => {
     if (!store || !region) return
-    console.log(region)
     register({ name: "currency_code" })
     setValue("currency_code", region.currency_code)
     setSelectedCurrency({
@@ -151,19 +154,56 @@ const RegionDetails = ({ id }) => {
       return
     }
 
-    try {
-      await update({ ...data, tax_rate: data.tax_rate * 100 })
-
-      toaster("Successfully updated region", "success")
-    } catch (error) {
-      toaster(getErrorMessage(error), "error")
-    }
+    updateRegion.mutate(
+      { ...data, tax_rate: data.tax_rate * 100 },
+      {
+        onSuccess: () => {
+          toaster("Successfully updated region", "success")
+        },
+        onError: error => {
+          toaster(getErrorMessage(error), "error")
+        },
+      }
+    )
   }
 
   const countryOptions = countryData.map(c => ({
     label: c.name,
     value: c.alpha2.toLowerCase(),
   }))
+
+  const handleDuplicate = () => {
+    const payload = {
+      currency_code: region.currency_code,
+      tax_rate: region.tax_rate,
+      tax_code: region.tax_code,
+      payment_providers: region.payment_providers.map(p => p.id),
+      fulfillment_providers: region.fulfillment_providers.map(f => f.id),
+      countries: [], // As countries can't belong to more than one region at the same time we can just pass an empty array
+      name: `${region.name} Copy`,
+    }
+
+    createRegion.mutate(payload, {
+      onSuccess: () => {
+        toaster("Successfully duplicated region", "success")
+      },
+      onError: error => {
+        toaster(getErrorMessage(error), "error")
+      },
+    })
+  }
+
+  const handleDelete = () => {
+    deleteRegion.mutate(null, {
+      onSuccess: () => {
+        toaster("Successfully deleted region", "success")
+        if (onDelete) onDelete(null)
+      },
+      onError: error => {
+        toaster(getErrorMessage(error), "error")
+      },
+    })
+  }
 
   if (storeIsLoading || !currencies.length) {
     return (
@@ -182,12 +222,12 @@ const RegionDetails = ({ id }) => {
       actionables={[
         {
           label: "Duplicate Region",
-          onClick: () => {},
+          onClick: handleDuplicate,
           icon: <DuplicateIcon />,
         },
         {
           label: "Delete Region",
-          onClick: () => {},
+          onClick: handleDelete,
           icon: <TrashIcon />,
           variant: "danger",
         },

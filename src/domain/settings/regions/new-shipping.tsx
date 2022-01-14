@@ -4,7 +4,6 @@ import {
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Box, Flex } from "rebass"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
@@ -185,42 +184,35 @@ const NewShipping = ({
               </label>
             </div>
             {!isReturn && (
-              <Box mb={4}>
+              <div className="mb-base">
                 {isProfilesLoading ? (
-                  <Flex
-                    fmlexDirection="column"
-                    alignItems="center"
-                    height="100vh"
-                    mt="auto"
-                  >
-                    <Box height="75px" width="75px" mt="50%">
+                  <div className="flex flex-col items-center justify-center h-screen mt-auto">
+                    <div className="h-[75px] w-[75px] mt-[50%]">
                       <Spinner dark />
-                    </Box>
-                  </Flex>
+                    </div>
+                  </div>
                 ) : (
                   <Select
                     label="Shipping Profile"
                     value={profileOptions[0]}
                     onChange={e => {}}
-                    required={true}
+                    required
                     name="profile_id"
                     options={profileOptions}
-                    ref={register({ required: true })}
                   />
                 )}
-              </Box>
+              </div>
             )}
-            <Box mb={4}>
+            <div className="mb-base">
               <Select
                 label="Fulfillment Method"
                 value={options[0]}
                 onChange={e => {}}
-                required={true}
+                required
                 name="fulfillment_option"
                 options={options}
-                ref={register({ required: true })}
               />
-            </Box>
+            </div>
             {!isReturn && (
               <div>
                 <p className="inter-base-semibold mb-base">Requirements</p>
