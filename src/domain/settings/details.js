@@ -3,35 +3,33 @@ import { useForm } from "react-hook-form"
 import BreadCrumb from "../../components/molecules/breadcrumb"
 import Input from "../../components/molecules/input"
 import BodyCard from "../../components/organisms/body-card"
-import useMedusa from "../../hooks/use-medusa"
+import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
-import { useAdminStore } from "medusa-react"
+import { useAdminStore, useAdminUpdateStore } from "medusa-react"
 
 const AccountDetails = () => {
   const { register, reset, handleSubmit } = useForm()
-  const { store, isLoading, update, toaster } = useAdminStore()
+  const { store, isSuccess } = useAdminStore()
+  const updateStore = useAdminUpdateStore()
+  const toaster = useToaster()
 
   useEffect(() => {
-    if (isLoading) return
+    if (!isSuccess) return
     reset({
       name: store.name,
       swap_link_template: store.swap_link_template,
       payment_link_template: store.payment_link_template,
       invite_link_template: store.invite_link_template,
     })
-  }, [store, isLoading])
+  }, [store, isSuccess, reset])
 
-  const validateUrl = address => {
-    if (!address || address === "") {
-      return true
-    }
-
-    try {
-      const url = new URL(address)
-      return url.protocol === "http:" || url.protocol === "https:"
-    } catch (_) {
-      return false
-    }
+  const handleCancel = () => {
+    reset({
+      name: store.name,
+      swap_link_template: store.swap_link_template,
+      payment_link_template: store.payment_link_template,
+      invite_link_template: store.invite_link_template,
+    })
   }
 
   const onSubmit = data => {
@@ -44,14 +42,14 @@ const AccountDetails = () => {
       return
     }
 
-    try {
-      localStorage.removeItem("medusa::cache::store")
-      update(data)
-      toaster("Successfully updated store", "success")
-      window.location.reload()
-    } catch (error) {
-      toaster(getErrorMessage(error), "error")
-    }
+    updateStore.mutate(data, {
+      onSuccess: () => {
+        toaster("Successfully updated store", "success")
+      },
+      onError: () => {
+        toaster(getErrorMessage(error), "error")
+      },
+    })
   }
 
   return (
@@ -66,8 +64,9 @@ const AccountDetails = () => {
           events={[
             {
               label: "Save",
+              type: "submit",
             },
-            { label: "Cancel Changes" },
+            { label: "Cancel Changes", type: "button", onClick: handleCancel },
           ]}
           title="Store details"
           subtitle="Manage your business details"
@@ -110,6 +109,19 @@ const AccountDetails = () => {
       </div>
     </form>
   )
+}
+
+const validateUrl = address => {
+  if (!address || address === "") {
+    return true
+  }
+
+  try {
+    const url = new URL(address)
+    return url.protocol === "http:" || url.protocol === "https:"
+  } catch (_) {
+    return false
+  }
 }
 
 export default AccountDetails
