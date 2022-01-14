@@ -1,10 +1,14 @@
 import { navigate } from "gatsby"
+import {
+  useAdminStore,
+  useAdminUpdateStore
+} from "medusa-react"
 import React, { useEffect, useState } from "react"
 import BreadCrumb from "../../components/molecules/breadcrumb"
 import Select from "../../components/molecules/select"
 import BodyCard from "../../components/organisms/body-card"
 import TwoSplitPane from "../../components/templates/two-split-pane"
-import useMedusa from "../../hooks/use-medusa"
+import useToaster from "../../hooks/use-toaster"
 import { currencies } from "../../utils/currencies"
 import { getErrorMessage } from "../../utils/error-messages"
 
@@ -16,7 +20,9 @@ const CurrencySettings = () => {
     label: "",
   })
 
-  const { store, isLoading, update, toaster, refresh } = useMedusa("store")
+  const toaster = useToaster()
+  const { isLoading, store } = useAdminStore()
+  const updateStore = useAdminUpdateStore()
 
   const setCurrenciesOnLoad = () => {
     const defaultCurr = {
@@ -53,17 +59,21 @@ const CurrencySettings = () => {
 
   const onSubmit = async e => {
     e.preventDefault()
-    update({
-      default_currency_code: selectedCurrency.value,
-      currencies: storeCurrencies.map(c => c.value),
-    })
-      .then(() => {
-        toaster("Successfully updated currencies", "success")
-      })
-      .catch(error => {
-        refresh()
-        toaster(getErrorMessage(error), "error")
-      })
+
+    updateStore.mutate(
+      {
+        default_currency_code: selectedCurrency.value,
+        currencies: storeCurrencies.map(c => c.value),
+      },
+      {
+        onSuccess: () => {
+          toaster("Successfully updated currencies", "success")
+        },
+        onError: error => {
+          toaster(getErrorMessage(error), "error")
+        },
+      }
+    )
   }
 
   const currencyEvents = [
