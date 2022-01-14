@@ -12,7 +12,7 @@ import {
   TableHeaderRow,
   TableRow,
 } from "../../../components/table"
-import Badge from "../../../components/badge"
+import Badge from "../../../components/fundamentals/badge"
 import Medusa from "../../../services/api"
 import EditUser from "./edit"
 import EditInvite from "./invite/edit"

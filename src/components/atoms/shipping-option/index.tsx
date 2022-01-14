@@ -1,4 +1,5 @@
 import React from "react"
+import Badge from "../../fundamentals/badge"
 
 enum RequirementType {
   MAX_SUBTOTAL = "max_subtotal",
@@ -33,14 +34,12 @@ const ShippingOption: React.FC<ShippingOptionProps> = ({
   return (
     <div className="flex items-baseline justify-between p-base rounded-base border border-grey-20">
       <div className="truncate">
-        <p className="inter-small-semibold truncate">
-          {option.name} {option.data.name && `(${option.data.name})`}{" "}
-          {option.admin_only && (
-            <span className="text-grey-50 inter-small-regular">
-              (Not on website)
-            </span>
-          )}
-        </p>
+        <div className="flex items-center">
+          <p className="inter-small-semibold truncate mr-xsmall">
+            {option.name} {option.data.name && `(${option.data.name})`}{" "}
+          </p>
+          {option.admin_only && <Badge variant="primary">Not on website</Badge>}
+        </div>
         <p className="inter-small-regular text-grey-50 truncate">
           {option.price_type === "flat_rate" ? "Flat Rate" : "Calculated"}:{" "}
           {option.amount !== undefined &&

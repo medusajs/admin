@@ -1,6 +1,6 @@
 import React, { useMemo } from "react"
 import { Box, Flex, Text } from "rebass"
-import Badge from "../../../../../components/badge"
+import Badge from "../../../../../components/fundamentals/badge"
 import Dropdown from "../../../../../components/dropdown"
 import { decideBadgeColor } from "../../../../../utils/decide-badge-color"
 import LineItem from "../../line-item"

@@ -218,6 +218,26 @@
 }
 
 @layer components {
+  .badge {
+    @apply w-min py-0.5 px-2 rounded inter-small-semibold;
+  }
+
+  .badge-primary {
+    @apply bg-violet-60 bg-opacity-10 text-violet-60;
+  }
+
+  .badge-danger {
+    @apply bg-rose-50 bg-opacity-10 text-rose-50;
+  }
+
+  .badge-success {
+    @apply bg-teal-50 bg-opacity-10 text-teal-50;
+  }
+
+  .badge-warning {
+    @apply bg-yellow-40 bg-opacity-20 text-yellow-60;
+  }
+
   .btn {
     @apply flex items-center rounded-base focus:outline-none focus:shadow-cta;
   }

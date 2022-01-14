@@ -1,6 +1,6 @@
 import React, { useMemo } from "react"
 import { Box, Flex, Text } from "rebass"
-import Badge from "../../../../../components/badge"
+import Badge from "../../../../../components/fundamentals/badge"
 import CopyToClipboard from "../../../../../components/copy-to-clipboard"
 import Divider from "../../../../../components/divider"
 import Dropdown from "../../../../../components/dropdown"
