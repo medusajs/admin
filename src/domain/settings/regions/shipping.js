@@ -9,7 +9,7 @@ import Medusa from "../../../services/api"
 
 import EditShipping from "./edit-shipping"
 import NewShipping from "./new-shipping"
-import Badge from "../../../components/badge"
+import Badge from "../../../components/fundamentals/badge"
 
 import { getErrorMessage } from "../../../utils/error-messages"
 
