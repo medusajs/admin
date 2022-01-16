@@ -12,6 +12,4 @@ export const useComputedHeight = (bottomPad: number) => {
       heightRef.current = height - bottomPad - top
     }
   }, [bottomPad])
-
-  return { ref, height: heightRef.current }
 }
