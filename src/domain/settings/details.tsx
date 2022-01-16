@@ -46,25 +46,26 @@ const AccountDetails = () => {
       onSuccess: () => {
         toaster("Successfully updated store", "success")
       },
-      onError: () => {
+      onError: (error) => {
         toaster(getErrorMessage(error), "error")
       },
     })
   }
 
   return (
-    <form className="flex-col py-5" onSubmit={handleSubmit(onSubmit)}>
-      <div>
+    <form className="flex-col py-5">
+      <div className="max-w-[632px]">
         <BreadCrumb
           previousRoute="/a/settings/"
-          previousBreadCrumb="Settings"
+          previousBreadcrumb="Settings"
           currentPage="Store details"
         />
         <BodyCard
           events={[
             {
               label: "Save",
-              type: "submit",
+              type: "button",
+              onClick: handleSubmit(onSubmit),
             },
             { label: "Cancel Changes", type: "button", onClick: handleCancel },
           ]}
