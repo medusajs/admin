@@ -1,7 +1,7 @@
 import { navigate } from "gatsby"
 import {
   useAdminDeleteReturnReason,
-  useAdminUpdateReturnReason
+  useAdminUpdateReturnReason,
 } from "medusa-react"
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -13,9 +13,19 @@ import DeletePrompt from "../../../components/organisms/delete-prompt"
 import useModal from "../../../hooks/use-modal"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
+import CreateReturnReasonModal from "./create-reason-modal"
 
 const ReturnReasonDetail = ({ reason }) => {
-  const { isOpen: showDanger, handleClose, handleOpen } = useModal()
+  const {
+    isOpen: showDuplicateModal,
+    handleOpen: handleOpenDuplicateModal,
+    handleClose: handleCloseDuplicateModal,
+  } = useModal()
+  const {
+    isOpen: showDanger,
+    handleClose: handleClosePrompt,
+    handleOpen: handleOpenPrompt,
+  } = useModal()
   const { register, reset, handleSubmit } = useForm()
   const toaster = useToaster()
   const deleteRR = useAdminDeleteReturnReason(reason?.id)
@@ -61,13 +71,13 @@ const ReturnReasonDetail = ({ reason }) => {
           {
             label: "Duplicate reason",
             icon: <DuplicateIcon size={20} />,
-            onClick: () => {},
+            onClick: () => handleOpenDuplicateModal(),
           },
           {
             label: "Delete reason",
             variant: "danger",
             icon: <TrashIcon size={20} />,
-            onClick: () => handleOpen(),
+            onClick: () => handleOpenPrompt(),
           },
         ]}
         events={[
@@ -93,11 +103,17 @@ const ReturnReasonDetail = ({ reason }) => {
           />
         </form>
       </BodyCard>
+      {showDuplicateModal && (
+        <CreateReturnReasonModal
+          reason={reason}
+          handleClose={handleCloseDuplicateModal}
+        />
+      )}
       {showDanger && (
         <DeletePrompt
           heading="Delete Return Reason"
           text="Are you sure you want to delete this return reason?"
-          handleClose={handleClose}
+          handleClose={handleClosePrompt}
           onDelete={handleDeletion}
         />
       )}

@@ -42,6 +42,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         {...attributes}
         className={clsx(
+          "btn",
           variantClassname,
           sizeClassname,
           attributes.className

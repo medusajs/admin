@@ -1,15 +1,23 @@
 import { useAdminCreateReturnReason } from "medusa-react"
-import React from "react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import useToaster from "../../../hooks/use-toaster"
 
-const CreateReturnReasonModal = ({ handleClose }) => {
-  const { register, handleSubmit } = useForm()
+const CreateReturnReasonModal = ({ handleClose, reason }) => {
+  const { register, handleSubmit, reset } = useForm()
   const toaster = useToaster()
   const createRR = useAdminCreateReturnReason()
+
+  useEffect(() => {
+    reset({
+      value: reason.value,
+      label: reason.label,
+      description: reason.description
+    })
+  }, [reason])
 
   const onCreate = async data => {
     await createRR.mutateAsync(data, {
