@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import React from "react"
 import { useScroll } from "../../hooks/use-scroll"
 import Button from "../fundamentals/button"
@@ -11,6 +12,7 @@ type BodyCardProps = {
     onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
   }[]
   actionables?: ActionType[]
+  className?: string
 }
 
 const BodyCard: React.FC<BodyCardProps> = ({
@@ -18,11 +20,17 @@ const BodyCard: React.FC<BodyCardProps> = ({
   subtitle,
   events,
   actionables,
+  className,
   children,
 }) => {
   const { isScrolled, scrollListener } = useScroll({ threshold: 16 })
   return (
-    <div className="rounded-rounded border bg-grey-0 border-grey-20 h-full overflow-hidden flex flex-col min-h-[350px] w-full relative">
+    <div
+      className={clsx(
+        "rounded-rounded border bg-grey-0 border-grey-20 h-full overflow-hidden flex flex-col min-h-[350px] w-full relative",
+        className
+      )}
+    >
       {isScrolled && (
         <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-transparent h-xlarge z-10" />
       )}
