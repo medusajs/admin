@@ -170,11 +170,11 @@
     @apply p-0 -mx-3 mt-1 outline-0 cursor-text;
 
     .dropdown-container {
-      @apply border-none bg-inherit focus-within:shadow-none cursor-text !important;
+      @apply border-none bg-inherit relative focus-within:shadow-none cursor-text !important;
     }
 
     .dropdown-content {
-      @apply rounded-rounded w-full -mt-3 pt-0 -top-full shadow-input !important;
+      @apply rounded-rounded w-full -mt-3 pt-0 -top-full shadow-input absolute !important;
     }
 
     .select-item {

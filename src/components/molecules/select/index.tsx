@@ -32,7 +32,7 @@ type MultiSelectProps = {
   isLoading?: boolean
   shouldToggleOnHover?: boolean
   overrideStrings?: object
-  onChange: (values: any[]) => void
+  onChange: (values: any[] | any) => void
   disabled?: boolean
   enableSearch?: boolean
   isCreatable?: boolean
@@ -97,7 +97,7 @@ const Select = React.forwardRef(
   ) => {
     const [isOpen, setIsOpen] = useState(false)
 
-    const handleSelect = values => {
+    const handleSelect = (values) => {
       if (values.length) {
         onChange(isMultiSelect ? values : values[values.length - 1])
       } else {
