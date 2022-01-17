@@ -1,12 +1,12 @@
-import "./src/assets/styles/global.css"
+import { MedusaProvider } from "medusa-react"
 import React from "react"
+import { ToastProvider } from "react-toast-notifications"
+import "./src/assets/styles/global.css"
 import { AccountProvider } from "./src/context/account"
 import { CacheProvider } from "./src/context/cache"
 import { InterfaceProvider } from "./src/context/interface"
-import { ThemeProvider as Provider } from "./src/theme"
-import { ToastProvider } from "react-toast-notifications"
-import { MedusaProvider } from "medusa-react"
 import { medusaUrl, queryClient } from "./src/services/config"
+import { ThemeProvider as Provider } from "./src/theme"
 
 export const wrapPageElement = ({ element }) => {
   return (

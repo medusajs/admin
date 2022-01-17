@@ -16,9 +16,7 @@ const RadioGroup: React.FC<RadioGroupProps> & {
   Item: React.FC<RadioGroupItemProps>
 } = ({ children, ...rest }) => {
   return (
-    <RadioGroupPrimitive.RadioGroup {...rest}>
-      {children}
-    </RadioGroupPrimitive.RadioGroup>
+    <RadioGroupPrimitive.Root {...rest}>{children}</RadioGroupPrimitive.Root>
   )
 }
 
@@ -26,13 +24,15 @@ const Item = ({
   label,
   sublabel,
   description,
+  checked,
   ...rest
 }: RadioGroupItemProps) => {
   return (
-    <div
+    <label
       className={clsx(
-        "rounded-base border border-grey-20 p-base flex items-start mb-xsmall last:mb-0 gap-base"
+        "rounded-base border border-grey-20 p-base flex items-start mb-xsmall last:mb-0 gap-base cursor-pointer"
       )}
+      htmlFor={rest.value}
     >
       <RadioGroupPrimitive.Item
         {...rest}
@@ -49,18 +49,22 @@ const Item = ({
           )}
         />
       </RadioGroupPrimitive.Item>
-      <div className="-mt-1 truncate">
-        <label className="inter-base-semibold truncate" htmlFor={rest.value}>
-          {label}{" "}
-          {sublabel && <span className="inter-base-regular">{sublabel}</span>}
-        </label>
+      <div className="truncate">
+        <div className="flex items-center">
+          <p className="inter-base-semibold truncate">
+            {label}{" "}
+            {sublabel ? (
+              <span className="inter-base-regular">{sublabel}</span>
+            ) : null}
+          </p>
+        </div>
         {description && (
           <p className="inter-small-regular text-grey-50 mt-2xsmall truncate">
             {description}
           </p>
         )}
       </div>
-    </div>
+    </label>
   )
 }
 

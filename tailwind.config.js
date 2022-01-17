@@ -179,6 +179,7 @@ module.exports = {
       },
       width: {
         largeModal: "750px",
+        eventButton: "127px",
       },
       minWidth: {
         modal: "520px",

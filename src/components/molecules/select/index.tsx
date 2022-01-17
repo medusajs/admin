@@ -1,10 +1,10 @@
 import React, { ChangeEventHandler, useState } from "react"
 import { MultiSelect } from "react-multi-select-component"
+import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
+import CheckIcon from "../../fundamentals/icons/check-icon"
+import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
-import CheckIcon from "../../fundamentals/icons/check-icon"
-import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
-import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 
 type Option = React.OptionHTMLAttributes<HTMLOptionElement> & {
   key?: string
@@ -32,7 +32,7 @@ type MultiSelectProps = {
   isLoading?: boolean
   shouldToggleOnHover?: boolean
   overrideStrings?: object
-  onChange: (values: any[]) => void
+  onChange: (values: any[] | any) => void
   disabled?: boolean
   enableSearch?: boolean
   isCreatable?: boolean
@@ -97,7 +97,7 @@ const Select = React.forwardRef(
   ) => {
     const [isOpen, setIsOpen] = useState(false)
 
-    const handleSelect = values => {
+    const handleSelect = (values) => {
       if (values.length) {
         onChange(isMultiSelect ? values : values[values.length - 1])
       } else {
@@ -123,7 +123,10 @@ const Select = React.forwardRef(
           hasSelectAll={hasSelectAll}
           ItemRenderer={ItemRenderer}
           className="multiselect-styling"
-          overrideStrings={{ search: "Search...", ...overrideStrings }}
+          overrideStrings={{
+            search: "Search...",
+            ...overrideStrings,
+          }}
           ClearIcon={
             <span className="text-grey-40">
               <XCircleIcon size={20} />
