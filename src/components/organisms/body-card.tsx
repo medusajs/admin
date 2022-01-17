@@ -10,6 +10,7 @@ type BodyCardProps = {
   events?: {
     label: string
     onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"]
   }[]
   actionables?: ActionType[]
 } & React.HTMLAttributes<HTMLDivElement>
@@ -66,6 +67,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
                   className="first:ml-xsmall min-w-[130px] justify-center"
                   variant={i === 0 ? "primary" : "ghost"}
                   size={"small"}
+                  type={event.type}
                 >
                   {event.label}
                 </Button>
