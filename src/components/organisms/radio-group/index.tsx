@@ -31,7 +31,7 @@ const Item = ({
   return (
     <div
       className={clsx(
-        "rounded-base border border-grey-20 p-base flex items-baseline mb-xsmall last:mb-0 gap-base"
+        "rounded-base border border-grey-20 p-base flex items-start mb-xsmall last:mb-0 gap-base"
       )}
     >
       <RadioGroupPrimitive.Item

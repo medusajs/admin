@@ -6,17 +6,22 @@ import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import useToaster from "../../../hooks/use-toaster"
 
+type CreateReturnReasonModalProps = {
+  handleClose: () => void
+  reason?: any
+}
+
 // the reason props is used for prefilling the form when duplicating
-const CreateReturnReasonModal = ({ handleClose, reason }) => {
+const CreateReturnReasonModal = ({ handleClose, reason }: CreateReturnReasonModalProps) => {
   const { register, handleSubmit, reset } = useForm()
   const toaster = useToaster()
   const createRR = useAdminCreateReturnReason()
 
   useEffect(() => {
     reset({
-      value: reason.value,
-      label: reason.label,
-      description: reason.description
+      value: reason?.value,
+      label: reason?.label,
+      description: reason?.description
     })
   }, [reason])
 

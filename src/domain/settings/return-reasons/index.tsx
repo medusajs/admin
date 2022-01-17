@@ -68,7 +68,7 @@ const ReturnReasons = () => {
                 {sorted_return_reasons.map(reason => (
                   <RadioGroup.Item
                     label={reason.label}
-                    sublabel={reason.value}
+                    sublabel={`(Value: ${reason.value})`}
                     description={reason.description}
                     className="mt-xsmall"
                     value={reason.value}

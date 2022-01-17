@@ -40,7 +40,6 @@ const ReturnReasonDetail = ({ reason }) => {
     updateRR.mutate(data, {
       onSuccess: () => {
         toaster("Successfully updated return reason", "success")
-        navigate("/a/settings/return-reasons/")
       },
       onError: error => {
         toaster(getErrorMessage(error), "error")
