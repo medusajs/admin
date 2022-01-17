@@ -6,7 +6,7 @@ import TrashIcon from "../../fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 
 export default {
-  title: "Organisms/BannerCard",
+  title: "Molecules/BannerCard",
   component: BannerCard,
 } as ComponentMeta<typeof BannerCard>
 

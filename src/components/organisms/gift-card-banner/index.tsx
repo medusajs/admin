@@ -4,10 +4,10 @@ import EditIcon from "../../fundamentals/icons/edit-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import { ActionType } from "../../molecules/actionables"
+import BannerCard from "../../molecules/banner-card"
 import DenominationGrid, {
   GiftCardVariant,
 } from "../../molecules/denomination-grid"
-import BannerCard from "../banner-card"
 
 type GiftCardBannerProps = {
   title: string
