@@ -37,7 +37,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
         <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-transparent h-xlarge z-10" />
       )}
       <div
-        className="pt-large px-xlarge flex-grow"
+        className="pt-large px-xlarge flex-grow overflow-y-scroll"
         onScroll={scrollListener}
       >
         <div className="flex items-center justify-between">
@@ -59,7 +59,6 @@ const BodyCard: React.FC<BodyCardProps> = ({
         <div className="pb-large pt-base px-xlarge border-t border-grey-20">
           <div className="flex items-center flex-row-reverse">
             {events.map((event, i: React.Key) => {
-              
               return (
                 <Button
                   key={i}
