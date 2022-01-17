@@ -28,9 +28,9 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <button className="flex items-center focus:outline-none focus:ring focus:ring-violet-40 rounded-base">
+          <Button variant="ghost" size="small" className="py-0">
             <MoreHorizontalIcon />
-          </button>
+          </Button>
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content

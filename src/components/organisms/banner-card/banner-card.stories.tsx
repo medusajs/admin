@@ -58,3 +58,32 @@ GiftCard.args = {
   text:
     "For the one partial to blank canvases, spontaneity, chance encounters and plot twists. The Tekla Gift Card is available in either digital or hard-copy format.",
 }
+
+export const GiftCardWithLongText = Template.bind({})
+GiftCardWithLongText.args = {
+  cardArgs: {
+    title: "Tekla Gift Card",
+    thumbnail:
+      "https://images.ctfassets.net/4g6al16haqoj/kZT0jwrTOTGbDpK3XlRZQ/acb10c53c1acdd53cf1336b5f26fbb10/giftcard.jpg",
+    actions: [
+      {
+        label: "Edit",
+        onClick: () => {},
+        icon: <EditIcon size={16} />,
+      },
+      {
+        label: "Unpublish",
+        onClick: () => {},
+        icon: <UnpublishIcon size={16} />,
+      },
+      {
+        label: "Delete",
+        onClick: () => {},
+        icon: <TrashIcon size={16} />,
+        variant: "danger",
+      },
+    ],
+  },
+  text:
+    "For the one partial to blank canvases, spontaneity, chance encounters and plot twists. The Tekla Gift Card is available in either digital or hard-copy format. For the one partial to blank canvases, spontaneity, chance encounters and plot twists. The Tekla Gift Card is available in either digital or hard-copy format. For the one partial to blank canvases, spontaneity, chance encounters and plot twists. The Tekla Gift Card is available in either digital or hard-copy format.",
+}
