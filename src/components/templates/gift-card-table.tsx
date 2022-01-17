@@ -1,52 +1,84 @@
 import React, { useEffect, useState } from "react"
-import useMedusa from "../../hooks/use-medusa"
-import EditIcon from "../fundamentals/icons/edit-icon"
-import RefreshIcon from "../fundamentals/icons/refresh-icon"
-import TrashIcon from "../fundamentals/icons/trash-icon"
 import StatusDot from "../fundamentals/status-dot"
-import SidebarTeamMember from "../molecules/sidebar-team-member"
 import Table from "../molecules/table"
-import Medusa from "../../services/api"
-import DeletePrompt from "../organisms/delete-prompt"
-import EditUser from "../organisms/edit-user-modal"
 import moment from "moment"
+import { FilteringOptionProps } from "../molecules/table/filtering-option"
 
 type GiftCardTableProps = {
   giftCards: any[]
-  // triggerRefetch: () => void
-}
-
-const getInviteStatus = invite => {
-  return new Date(invite.expires_at) < new Date() ? "expired" : "pending"
 }
 
 const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
-  // const [elements, setElements] = useState<UserListElement[]>([])
-  // const [shownElements, setShownElements] = useState<UserListElement[]>([])
-  // const [selectedUser, setSelectedUser] = useState(null)
-  // const [deleteUser, setDeleteUser] = useState(false)
-  // const [selectedInvite, setSelectedInvite] = useState(null)
-  // const { toaster } = useMedusa("store")
+  const [shownGiftCards, setShowngiftCards] = useState<any[]>(giftCards)
+  const [
+    originalAmountSortDirection,
+    setOriginalAmountSortDirection,
+  ] = useState(undefined)
+  const [
+    remainingAmountSortDirection,
+    setRemainingAmountSortDirection,
+  ] = useState(undefined)
+  const [createdAtSortDirection, setCreatedAtSortDirection] = useState(
+    undefined
+  )
+  const [filteringOptions, setFilterinOptions] = useState<
+    FilteringOptionProps[]
+  >([])
 
-  // useEffect(() => {
-  //   setElements([
-  //     ...users.map((user, i) => ({
-  //       entity: user,
-  //       entityType: "user",
-  //       tableElement: getUserTableRow(user, i),
-  //     })),
-  //   ])
-  // }, [users, invites])
+  useEffect(() => {
+    if (!giftCards) {
+      return
+    }
+    const creationTimeOptions = giftCards.reduce((prev, curr) => {
+      const year = moment(curr.created_at).format("YYYY")
+      prev[year] = [...(prev[year] || []), curr]
+      return prev
+    }, {})
 
-  // useEffect(() => {
-  //   setShownElements(elements)
-  // }, [elements])
+    setFilterinOptions([
+      {
+        title: "Creation time",
+        options: [
+          {
+            title: "All",
+            count: giftCards.length,
+            onClick: () => setShowngiftCards(giftCards),
+          },
+          ...Object.keys(creationTimeOptions).map(co => {
+            return {
+              title: co,
+              count: creationTimeOptions[co].length,
+              onClick: () => setShowngiftCards(creationTimeOptions[co]),
+            }
+          }),
+        ],
+      },
+      {
+        title: "Status",
+        options: [
+          {
+            title: "All",
+            count: giftCards.length,
+            onClick: () => setShowngiftCards(giftCards),
+          },
+          {
+            title: "None",
+            count: giftCards.filter(gc => !gc.balance).length,
+            onClick: () =>
+              setShowngiftCards(giftCards.filter(gc => !gc.balance)),
+          },
+          {
+            title: "Value left",
+            count: giftCards.filter(gc => gc.balance).length,
+            onClick: () =>
+              setShowngiftCards(giftCards.filter(gc => gc.balance)),
+          },
+        ],
+      },
+    ])
 
-  // const handleClose = () => {
-  //   setDeleteUser(false)
-  //   setSelectedUser(null)
-  //   setSelectedInvite(null)
-  // }
+    setShowngiftCards(giftCards)
+  }, [giftCards])
 
   const getGiftCardRow = (giftCard, index) => {
     return (
@@ -91,69 +123,51 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
     )
   }
 
-  const filteringOptions = [
-    {
-      title: "Creation time",
-      options: [
-        {
-          title: "All",
-          count: 1,
-          onClick: () => console.log("click"),
-        },
-      ],
-    },
-    {
-      title: "Status",
-      options: [
-        {
-          title: "All",
-          count: 1,
-          onClick: () => console.log("click"),
-        },
-        {
-          title: "None",
-          count: 1,
-          onClick: () => console.log("click"),
-        },
-        {
-          title: "Value left",
-          count: 1,
-          onClick: () => console.log("click"),
-        },
-      ],
-    },
-  ]
-
-  const handleGiftCardSearch = (term: string) => {
-    // setShownElements(
-    //   elements.filter(
-    //     e =>
-    //       e.entity?.first_name?.includes(term) ||
-    //       e.entity?.last_name?.includes(term) ||
-    //       e.entity?.email?.includes(term) ||
-    //       e.entity?.user_email?.includes(term)
-    //   )
-    // )
-  }
+  const handleGiftCardSearch = (term: string) => {}
 
   return (
     <div className="w-full h-full overflow-y-scroll">
       <Table
         filteringOptions={filteringOptions}
         enableSearch
+        searchPlaceholder={"Search Gift Cards"}
         handleSearch={handleGiftCardSearch}
       >
         <Table.Head>
           <Table.HeadRow>
             <Table.HeadCell>Code</Table.HeadCell>
             <Table.HeadCell>Order</Table.HeadCell>
-            <Table.HeadCell>Original amount</Table.HeadCell>
-            <Table.HeadCell>Amount left</Table.HeadCell>
-            <Table.HeadCell>Created</Table.HeadCell>
+            <Table.SortingHeadCell
+              sortDirection={originalAmountSortDirection}
+              setSortDirection={setOriginalAmountSortDirection}
+              onClickDescending={console.log}
+              onClickAscending={console.log}
+              onClickReset={console.log}
+            >
+              Original amount
+            </Table.SortingHeadCell>
+            <Table.SortingHeadCell
+              sortDirection={remainingAmountSortDirection}
+              setSortDirection={setRemainingAmountSortDirection}
+              onClickDescending={console.log}
+              onClickAscending={console.log}
+              onClickReset={console.log}
+            >
+              Amount left
+            </Table.SortingHeadCell>
+            <Table.SortingHeadCell
+              sortDirection={createdAtSortDirection}
+              setSortDirection={setCreatedAtSortDirection}
+              onClickDescending={console.log}
+              onClickAscending={console.log}
+              onClickReset={console.log}
+            >
+              Created
+            </Table.SortingHeadCell>
           </Table.HeadRow>
         </Table.Head>
-        <Table.Body>
-          {giftCards?.map((gc, idx) => getGiftCardRow(gc, idx))}
+        <Table.Body className="text-grey-90">
+          {shownGiftCards?.map((gc, idx) => getGiftCardRow(gc, idx))}
         </Table.Body>
       </Table>
     </div>

@@ -4,6 +4,7 @@ import clsx from "clsx"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
 import TableSearch from "./table-search"
+import SortingIcon from "../../fundamentals/icons/sorting-icon"
 
 type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   actions?: ActionType[]
@@ -14,9 +15,16 @@ type TableCellProps = React.HTMLAttributes<HTMLTableCellElement> & {
   linkTo?: string
 }
 
+type SortingHeadCellProps = {
+  onSortClicked: () => void
+  sortDirection?: "ASC" | "DESC"
+  setSortDirection: (string) => void
+} & React.HTMLAttributes<HTMLTableCellElement>
+
 type TableProps = {
   filteringOptions?: FilteringOptionProps[]
   enableSearch?: boolean
+  searchPlaceholder?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
 
@@ -27,6 +35,7 @@ type TableType = {
   Head: TableElement<React.HTMLAttributes<HTMLTableElement>>
   HeadRow: TableElement<React.HTMLAttributes<HTMLTableRowElement>>
   HeadCell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
+  SortingHeadCell: TableElement<SortingHeadCellProps>
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
   Cell: TableElement<TableCellProps>
@@ -38,6 +47,7 @@ const Table: TableType = React.forwardRef(
       className,
       children,
       enableSearch,
+      searchPlaceholder,
       handleSearch,
       filteringOptions,
       ...props
@@ -59,7 +69,12 @@ const Table: TableType = React.forwardRef(
             </div>
           )}
           <div className="flex">
-            {enableSearch && <TableSearch onSearch={handleSearch} />}
+            {enableSearch && (
+              <TableSearch
+                placeholder={searchPlaceholder}
+                onSearch={handleSearch}
+              />
+            )}
           </div>
         </div>
         <table
@@ -120,6 +135,50 @@ Table.HeadCell = React.forwardRef(
       {children}
     </th>
   )
+)
+
+Table.SortingHeadCell = React.forwardRef(
+  (
+    {
+      onSortClicked,
+      sortDirection,
+      setSortDirection,
+      className,
+      children,
+      ...props
+    }: SortingHeadCellProps,
+    ref
+  ) => {
+    return (
+      <th ref={ref} className={clsx("text-left py-2.5", className)} {...props}>
+        <div
+          className="flex items-center cursor-pointer select-none"
+          onClick={e => {
+            e.preventDefault()
+            if (!sortDirection) {
+              setSortDirection("ASC")
+              onClickAscending()
+            } else {
+              if (sortDirection === "ASC") {
+                setSortDirection("DESC")
+                onClickDescending()
+              } else {
+                setSortDirection(undefined)
+                onClickReset()
+              }
+            }
+          }}
+        >
+          {children}
+          <SortingIcon
+            size={16}
+            ascendingColor={sortDirection === "ASC" ? "#111827" : undefined}
+            descendingColor={sortDirection === "DESC" ? "#111827" : undefined}
+          />
+        </div>
+      </th>
+    )
+  }
 )
 
 Table.Body = React.forwardRef(

@@ -1,27 +1,10 @@
 import React, { useEffect, useContext } from "react"
 import { Router } from "@reach/router"
 import qs from "query-string"
-import { Text, Flex, Box } from "rebass"
-import ReactTooltip from "react-tooltip"
-import moment from "moment"
-import { OrderNumCell } from "../orders"
 import { InterfaceContext } from "../../context/interface"
 
 import ManageGiftCard from "./manage"
 import GiftCardDetail from "./detail"
-
-import {
-  Table,
-  TableHead,
-  TableHeaderCell,
-  TableBody,
-  TableRow,
-  TableDataCell,
-  TableHeaderRow,
-  DefaultCellContent,
-} from "../../components/table"
-import Spinner from "../../components/spinner"
-import Button from "../../components/button"
 import useMedusa from "../../hooks/use-medusa"
 import Breadcrumb from "../../components/molecules/breadcrumb"
 import BodyCard from "../../components/organisms/body-card"
