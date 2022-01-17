@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react"
-import DenominationBadge from "../../../components/atoms/denomination-badge"
+import React from "react"
 import StatusIndicator from "../../atoms/status-indicator"
 import EditIcon from "../../fundamentals/icons/edit-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import { ActionType } from "../../molecules/actionables"
+import DenominationGrid, {
+  GiftCardVariant,
+} from "../../molecules/denomination-grid"
 import BannerCard from "../banner-card"
 
 type GiftCardBannerProps = {
@@ -12,12 +14,7 @@ type GiftCardBannerProps = {
   status: string
   thumbnail?: string
   description: string
-  variants: {
-    prices: {
-      currency_code: string
-      amount: number
-    }[]
-  }[]
+  variants: GiftCardVariant[]
   defaultCurrency: string
   onEdit: () => void
   onUnpublish: () => void
@@ -54,57 +51,15 @@ const GiftCardBanner: React.FC<GiftCardBannerProps> = ({
     },
   ]
 
-  const [denominations, setDenominations] = useState<
-    { amount: number; currencyCode: string }[] | null
-  >([])
-  const [remainder, setRemainder] = useState(0)
-
-  useEffect(() => {
-    const denominations =
-      variants.map(variant => {
-        const price = variant.prices.find(
-          price => price.currency_code === defaultCurrency
-        )
-        console.log(price, "price")
-        console.log(defaultCurrency, variant.prices)
-        return { amount: price?.amount, currencyCode: defaultCurrency }
-      }) ?? []
-
-    if (denominations.length > 6) {
-      setDenominations(denominations.slice(0, 6))
-      setRemainder(denominations.length - 6)
-      return
-    }
-
-    setDenominations(denominations)
-  }, [variants, defaultCurrency])
-
-  console.log(denominations, variants)
-
   return (
     <BannerCard title={title} thumbnail={thumbnail} actions={actions}>
       <BannerCard.Description>{description}</BannerCard.Description>
       <BannerCard.Footer>
         <div className="flex items-center justify-between">
-          <div className="grid grid-cols-7 grid-rows-1">
-            {denominations.map((denomination, index) => {
-              return (
-                <DenominationBadge
-                  className="mr-2xsmall"
-                  key={index}
-                  amount={denomination.amount}
-                  currencyCode={denomination.currencyCode}
-                />
-              )
-            })}
-            {remainder > 0 && (
-              <div className="inline-block">
-                <div className="py-[2px] px-xsmall bg-grey-10 rounded-rounded flex items-center justify-center">
-                  <span className="inter-small-regular">+{remainder}</span>
-                </div>
-              </div>
-            )}
-          </div>
+          <DenominationGrid
+            variants={variants}
+            defaultCurrency={defaultCurrency}
+          />
           <StatusIndicator
             ok={status === "published"}
             okText="Published"
