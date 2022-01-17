@@ -3,7 +3,7 @@ import React from "react"
 import ShippingOption from "."
 
 export default {
-  title: "Atoms/ShippingOption",
+  title: "Molecules/ShippingOption",
   component: ShippingOption,
 } as ComponentMeta<typeof ShippingOption>
 

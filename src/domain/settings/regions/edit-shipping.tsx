@@ -225,7 +225,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                 onClick={onClick}
                 variant="ghost"
                 size="small"
-                className="w-[127px] justify-center"
+                className="w-eventButton justify-center"
               >
                 Cancel Changes
               </Button>
@@ -233,7 +233,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                 type="submit"
                 variant="primary"
                 size="small"
-                className="w-[127px] justify-center"
+                className="w-eventButton justify-center"
               >
                 Save
               </Button>

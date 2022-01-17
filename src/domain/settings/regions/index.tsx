@@ -89,9 +89,13 @@ const Regions = () => {
                   return (
                     <RadioGroup.Item
                       label={r.name}
-                      sublabel={`(${r.countries
-                        .map(c => c.display_name)
-                        .join(", ")})`}
+                      sublabel={
+                        r.countries.length
+                          ? `(${r.countries
+                              .map(c => c.display_name)
+                              .join(", ")})`
+                          : null
+                      }
                       description={providers}
                       value={r.id}
                       key={r.id}

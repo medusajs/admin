@@ -33,8 +33,6 @@ const NewShipping = ({
   const createShippingOption = useAdminCreateShippingOption()
   const toaster = useToaster()
 
-  console.log(errors)
-
   const handleSave = (data: {
     name: string
     requirements: { amount: number; type: string }[]
@@ -93,7 +91,6 @@ const NewShipping = ({
       },
       onError: error => {
         toaster(getErrorMessage(error), "error")
-        console.error(error)
       },
     })
   }
