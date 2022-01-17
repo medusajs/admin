@@ -99,6 +99,7 @@ const CurrencySettings = () => {
           title="Currencies"
           subtitle="Manage the currencies that you will operate in"
           events={currencyEvents}
+          className={"h-auto max-h-full"}
         >
           <Select
             label="Default store currency"
