@@ -64,13 +64,15 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
 
   useEffect(() => {
     if (paymentIsLoading) return
-    setPaymentOptions(payment_providers.map(c => paymentProvidersMapper(c.id)))
+    setPaymentOptions(
+      payment_providers.map((c) => paymentProvidersMapper(c.id))
+    )
   }, [payment_providers, paymentIsLoading])
 
   useEffect(() => {
     if (fulfillmentIsLoading) return
     setFulfillmentOptions(
-      fulfillment_options?.map(c =>
+      fulfillment_options?.map((c) =>
         fulfillmentProvidersMapper(c.provider_id)
       ) ?? []
     )
@@ -85,78 +87,79 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
 
     setValue(
       "countries",
-      region.countries.map(c => c.iso_2)
+      region.countries.map((c) => c.iso_2)
     )
     setCountries(
-      region.countries.map(c => ({ value: c.iso_2, label: c.display_name }))
+      region.countries.map((c) => ({ value: c.iso_2, label: c.display_name }))
     )
 
     setValue(
       "payment_providers",
-      region.payment_providers.map(v => v.id)
+      region.payment_providers.map((v) => v.id)
     )
     setPaymentProviders(
-      region.payment_providers.map(v => paymentProvidersMapper(v.id))
+      region.payment_providers.map((v) => paymentProvidersMapper(v.id))
     )
 
     setValue(
       "fulfillment_providers",
-      region.fulfillment_providers.map(v => v.id)
+      region.fulfillment_providers.map((v) => v.id)
     )
     setFulfillmentProviders(
-      region.fulfillment_providers.map(v => fulfillmentProvidersMapper(v.id))
+      region.fulfillment_providers.map((v) => fulfillmentProvidersMapper(v.id))
     )
   }, [region, regionIsLoading])
 
-  const getCurrencies = storeCurrencies => {
+  const getCurrencies = (storeCurrencies) => {
     let currs = storeCurrencies
-      .filter(item => item.code !== region.currency_code)
-      .map(el => el.code)
+      .filter((item) => item.code !== region.currency_code)
+      .map((el) => el.code)
     currs.unshift(region.currency_code)
 
     return (
-      currs.map(c => ({
+      currs.map((c) => ({
         value: c,
         label: c.toUpperCase(),
       })) || []
     )
   }
 
-  const handlePaymentChange = values => {
-    const providers = values.map(v => ({ value: v.value }))
-    setPaymentProviders(providers)
+  const handlePaymentChange = (values) => {
+    setPaymentProviders(values)
     setValue(
       "payment_providers",
-      values.map(v => v.value)
+      values.map((v) => v.value)
     )
   }
 
-  const handleFulfillmentChange = values => {
-    const providers = values.map(v => ({ value: v.value }))
+  const handleFulfillmentChange = (values) => {
+    const providers = values.map((v) => ({ value: v.value }))
     setFulfillmentProviders(providers)
     setValue(
       "fulfillment_providers",
-      values.map(v => v.value)
+      values.map((v) => v.value)
     )
   }
 
-  const handleChange = values => {
+  const handleChange = (values) => {
     setCountries(values)
     setValue(
       "countries",
-      values.map(c => c.value)
+      values.map((c) => c.value)
     )
   }
 
-  const handleChangeCurrency = value => {
+  const handleChangeCurrency = (value) => {
     setValue("currency_code", value)
     setSelectedCurrency(value)
   }
 
-  const onSave = async data => {
+  const onSave = async (data) => {
     if (!data.countries || data.countries.length === 0) {
       return
     }
+
+    console.log(data)
 
     updateRegion.mutate(
       { ...data, tax_rate: data.tax_rate * 100 },
@@ -164,14 +167,14 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
         onSuccess: () => {
           toaster("Successfully updated region", "success")
         },
-        onError: error => {
+        onError: (error) => {
           toaster(getErrorMessage(error), "error")
         },
       }
     )
   }
 
-  const countryOptions = countryData.map(c => ({
+  const countryOptions = countryData.map((c) => ({
     label: c.name,
     value: c.alpha2.toLowerCase(),
   }))
@@ -181,8 +184,8 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       currency_code: region.currency_code,
       tax_rate: region.tax_rate,
       tax_code: region.tax_code,
-      payment_providers: region.payment_providers.map(p => p.id),
-      fulfillment_providers: region.fulfillment_providers.map(f => f.id),
+      payment_providers: region.payment_providers.map((p) => p.id),
+      fulfillment_providers: region.fulfillment_providers.map((f) => f.id),
       countries: [], // As countries can't belong to more than one region at the same time we can just pass an empty array
       name: `${region.name} Copy`,
     }
@@ -192,7 +195,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
         toaster("Successfully duplicated region", "success")
         handleSelect(region.id)
       },
-      onError: error => {
+      onError: (error) => {
         toaster(getErrorMessage(error), "error")
       },
     })
@@ -203,7 +206,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       onSuccess: () => {
         if (onDelete) onDelete(null)
       },
-      onError: error => {
+      onError: (error) => {
         toaster(getErrorMessage(error), "error")
       },
     })
