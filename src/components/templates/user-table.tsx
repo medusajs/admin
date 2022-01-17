@@ -270,7 +270,7 @@ const UserTable: React.FC<UserTableProps> = ({
             heading={"Remove user"}
             onDelete={() =>
               Medusa.users.delete(selectedUser.id).then(() => {
-                toaster("User has been revoved", "success")
+                toaster("User has been removed", "success")
                 triggerRefetch()
               })
             }
