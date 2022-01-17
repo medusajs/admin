@@ -39,7 +39,7 @@ const Item = ({
         id={rest.value}
         className={clsx(
           "radio-outer-ring outline-0",
-          "shrink-0 w-[20px] h-[20px] shadow-[0_0_0_1px] shadow-[#D1D5DB] rounded-circle",
+          "shrink-0 w-[20px] h-[20px] shadow-[0_0_0_1px] shadow-[#D1D5DB] rounded-circle"
         )}
       >
         <RadioGroupPrimitive.Indicator
@@ -49,14 +49,16 @@ const Item = ({
           )}
         />
       </RadioGroupPrimitive.Item>
-      <div className="truncate">
+      <div className="-mt-1 truncate">
         <label className="inter-base-semibold truncate" htmlFor={rest.value}>
           {label}{" "}
           {sublabel && <span className="inter-base-regular">{sublabel}</span>}
         </label>
-        <p className="inter-small-regular text-grey-50 mt-2xsmall truncate">
-          {description}
-        </p>
+        {description && (
+          <p className="inter-small-regular text-grey-50 mt-2xsmall truncate">
+            {description}
+          </p>
+        )}
       </div>
     </div>
   )

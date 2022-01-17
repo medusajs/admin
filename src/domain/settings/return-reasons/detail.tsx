@@ -104,7 +104,7 @@ const ReturnReasonDetail = ({ reason }) => {
       </BodyCard>
       {showDuplicateModal && (
         <CreateReturnReasonModal
-          reason={reason}
+          initialReason={reason}
           handleClose={handleCloseDuplicateModal}
         />
       )}

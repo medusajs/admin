@@ -8,22 +8,20 @@ import useToaster from "../../../hooks/use-toaster"
 
 type CreateReturnReasonModalProps = {
   handleClose: () => void
-  reason?: any
+  initialReason?: any
 }
 
 // the reason props is used for prefilling the form when duplicating
-const CreateReturnReasonModal = ({ handleClose, reason }: CreateReturnReasonModalProps) => {
-  const { register, handleSubmit, reset } = useForm()
+const CreateReturnReasonModal = ({ handleClose, initialReason }: CreateReturnReasonModalProps) => {
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      value: initialReason?.value,
+      label: initialReason?.label,
+      description: initialReason?.description,
+    }
+  })
   const toaster = useToaster()
   const createRR = useAdminCreateReturnReason()
-
-  useEffect(() => {
-    reset({
-      value: reason?.value,
-      label: reason?.label,
-      description: reason?.description
-    })
-  }, [reason])
 
   const onCreate = async data => {
     await createRR.mutateAsync(data, {
