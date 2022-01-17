@@ -1,17 +1,17 @@
-import React, { useEffect, useContext, useState } from "react"
+import clsx from "clsx"
+import { navigate } from "gatsby"
+import React, { useContext, useState } from "react"
 import { useForm } from "react-hook-form"
-import TwoSplitPane from "../../components/templates/two-split-pane"
-import BodyCard from "../../components/organisms/body-card"
-import BreadCrumb from "../../components/molecules/breadcrumb"
+import Avatar from "../../components/atoms/avatar"
 import Spinner from "../../components/atoms/spinner"
+import BreadCrumb from "../../components/molecules/breadcrumb"
+import Input from "../../components/molecules/input"
+import BodyCard from "../../components/organisms/body-card"
+import FileUploadModal from "../../components/organisms/file-upload-modal"
+import TwoSplitPane from "../../components/templates/two-split-pane"
 import { AccountContext } from "../../context/account"
 import useMedusa from "../../hooks/use-medusa"
-import { navigate } from "gatsby"
 import { getErrorMessage } from "../../utils/error-messages"
-import Input from "../../components/molecules/input"
-import FileUploadModal from "../../components/organisms/file-upload-modal"
-import clsx from "clsx"
-import Avatar from "../../components/atoms/avatar"
 
 const PersonalInformation = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -66,6 +66,7 @@ const PersonalInformation = () => {
           title="Personal information"
           subtitle="Manage your Medusa profile"
           events={events}
+          className={"h-auto max-h-full"}
         >
           <div>
             <span className="inter-base-semibold">Picture</span>
@@ -91,7 +92,6 @@ const PersonalInformation = () => {
               </div>
             </div>
           </div>
-
           <div className="mt-6">
             <span className="inter-base-semibold">General</span>
             <div className="flex mt-4">
