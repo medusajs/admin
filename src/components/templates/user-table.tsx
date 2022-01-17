@@ -296,7 +296,7 @@ const UserTable: React.FC<UserTableProps> = ({
           heading={"Remove invite"}
           onDelete={() =>
             Medusa.invites.delete(selectedInvite.id).then(() => {
-              toaster("Invitiation has been revoved", "success")
+              toaster("Invitiation has been removed", "success")
               triggerRefetch()
             })
           }
