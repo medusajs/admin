@@ -12,13 +12,16 @@ type CreateReturnReasonModalProps = {
 }
 
 // the reason props is used for prefilling the form when duplicating
-const CreateReturnReasonModal = ({ handleClose, initialReason }: CreateReturnReasonModalProps) => {
+const CreateReturnReasonModal = ({
+  handleClose,
+  initialReason,
+}: CreateReturnReasonModalProps) => {
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       value: initialReason?.value,
       label: initialReason?.label,
       description: initialReason?.description,
-    }
+    },
   })
   const toaster = useToaster()
   const createRR = useAdminCreateReturnReason()
@@ -43,12 +46,18 @@ const CreateReturnReasonModal = ({ handleClose, initialReason }: CreateReturnRea
         </Modal.Header>
         <Modal.Content>
           <div className="flex">
-            <Input ref={register} name="value" label="Value" />
+            <Input
+              ref={register}
+              name="value"
+              label="Value"
+              placeholder="wrong_size"
+            />
             <Input
               className="ml-base"
               ref={register}
               name="label"
               label="Label"
+              placeholder="Wrong size"
             />
           </div>
           <Input
@@ -56,6 +65,7 @@ const CreateReturnReasonModal = ({ handleClose, initialReason }: CreateReturnRea
             ref={register}
             name="description"
             label="Description"
+            placeholder="Customer received a wrong size"
           />
         </Modal.Content>
         <Modal.Footer>

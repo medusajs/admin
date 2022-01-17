@@ -78,7 +78,7 @@ const ReturnReasons = () => {
             )}
           </div>
         </BodyCard>
-        <ReturnReasonDetail reason={selectedReason} />
+        {selectedReason && <ReturnReasonDetail reason={selectedReason} /> }
       </TwoSplitPane>
       {isOpen && <CreateReturnReasonModal handleClose={handleClose} />}
     </div>
