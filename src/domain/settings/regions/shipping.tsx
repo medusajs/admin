@@ -83,7 +83,7 @@ const Shipping = ({ region }) => {
                     <ShippingOption
                       option={option}
                       currency_code={region.currency_code}
-                      editFn={() => setEditOption(option)}
+                      onEdit={() => setEditOption(option)}
                     />
                   </div>
                 )
@@ -117,7 +117,7 @@ const Shipping = ({ region }) => {
                     <ShippingOption
                       option={option}
                       currency_code={region.currency_code}
-                      editFn={() => setEditOption(option)}
+                      onEdit={() => setEditOption(option)}
                     />
                   </div>
                 )

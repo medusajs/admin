@@ -23,13 +23,13 @@ type OptionType = {
 type ShippingOptionProps = {
   option: OptionType
   currency_code: string
-  editFn: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
+  onEdit: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
 }
 
 const ShippingOption: React.FC<ShippingOptionProps> = ({
   option,
   currency_code,
-  editFn,
+  onEdit,
 }) => {
   return (
     <div className="flex items-baseline justify-between p-base rounded-base border border-grey-20">
@@ -57,7 +57,7 @@ const ShippingOption: React.FC<ShippingOptionProps> = ({
       </div>
       <div>
         <button
-          onClick={editFn}
+          onClick={onEdit}
           className="inter-small-semibold text-violet-60"
         >
           Edit

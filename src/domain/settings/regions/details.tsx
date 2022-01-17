@@ -9,14 +9,13 @@ import {
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Box, Flex } from "rebass"
+import Spinner from "../../../components/atoms/spinner"
 import DuplicateIcon from "../../../components/fundamentals/icons/duplicate-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Input from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import Spinner from "../../../components/spinner"
 import useToaster from "../../../hooks/use-toaster"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -71,7 +70,9 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   useEffect(() => {
     if (fulfillmentIsLoading) return
     setFulfillmentOptions(
-      fulfillment_options.map(c => fulfillmentProvidersMapper(c.provider_id))
+      fulfillment_options?.map(c =>
+        fulfillmentProvidersMapper(c.provider_id)
+      ) ?? []
     )
   }, [fulfillment_options, fulfillmentIsLoading])
 
@@ -210,11 +211,11 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
 
   if (storeIsLoading || !currencies.length) {
     return (
-      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
-        <Box height="75px" width="75px" mt="50%">
-          <Spinner dark />
-        </Box>
-      </Flex>
+      <div className="flex flex-col items-center justify-center h-screen mt-auto">
+        <div className="h-[75px] w-[75px] mt-[50%]">
+          <Spinner />
+        </div>
+      </div>
     )
   }
 
@@ -240,16 +241,11 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
         <form onSubmit={handleSubmit(onSave)}>
           <div className="flex flex-col w-full">
             {regionIsLoading || storeIsLoading ? (
-              <Flex
-                flexDirection="column"
-                alignItems="center"
-                height="100vh"
-                mt="auto"
-              >
-                <Box height="75px" width="75px" mt="50%">
-                  <Spinner dark />
-                </Box>
-              </Flex>
+              <div className="flex flex-col items-center justify-center h-screen mt-auto">
+                <div className="h-[75px] w-[75px] mt-[50%]">
+                  <Spinner />
+                </div>
+              </div>
             ) : (
               <div className="w-full">
                 <Input

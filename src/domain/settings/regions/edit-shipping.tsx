@@ -62,36 +62,41 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
     })
   }
 
+  const buildShippingRequirements = (
+    requirements: { amount: number; type: string }[]
+  ) => {
+    if (!requirements) return null
+
+    return Object.entries(requirements).reduce((acc, [key, value]) => {
+      if (value.amount && value.amount > 0) {
+        const reqType = shippingOption.requirements.find(
+          req => req.type === key
+        )
+        if (reqType) {
+          acc.push({
+            type: key,
+            amount: Math.round(value.amount * 100),
+            id: reqType.id,
+          })
+        } else {
+          acc.push({
+            type: key,
+            amount: Math.round(value.amount * 100),
+          })
+        }
+        return acc
+      } else {
+        return acc
+      }
+    }, [])
+  }
+
   const handleSave = (data: {
     requirements: { amount: number; type: string }[]
     name: any
     amount: number
   }) => {
-    const reqs = Object.entries(data.requirements).reduce(
-      (acc, [key, value]) => {
-        if (value.amount && value.amount > 0) {
-          const reqType = shippingOption.requirements.find(
-            req => req.type === key
-          )
-          if (reqType) {
-            acc.push({
-              type: key,
-              amount: Math.round(value.amount * 100),
-              id: reqType.id,
-            })
-          } else {
-            acc.push({
-              type: key,
-              amount: Math.round(value.amount * 100),
-            })
-          }
-          return acc
-        } else {
-          return acc
-        }
-      },
-      []
-    )
+    const reqs = buildShippingRequirements(data.requirements)
 
     const payload = {
       name: data.name,
@@ -194,6 +199,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                   value={region.currency_code.toUpperCase()}
                   readOnly
                   className="w-[120px] pointer-events-none"
+                  tabIndex={-1}
                 />
                 <Input
                   label="Max. subtotal"

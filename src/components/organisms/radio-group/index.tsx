@@ -58,9 +58,11 @@ const Item = ({
             ) : null}
           </p>
         </div>
-        <p className="inter-small-regular text-grey-50 mt-2xsmall truncate">
-          {description}
-        </p>
+        {description && (
+          <p className="inter-small-regular text-grey-50 mt-2xsmall truncate">
+            {description}
+          </p>
+        )}
       </div>
     </label>
   )
