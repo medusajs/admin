@@ -1,8 +1,5 @@
 import { navigate } from "gatsby"
-import {
-  useAdminStore,
-  useAdminUpdateStore
-} from "medusa-react"
+import { useAdminStore, useAdminUpdateStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import BreadCrumb from "../../components/molecules/breadcrumb"
 import Select from "../../components/molecules/select"
@@ -12,10 +9,15 @@ import useToaster from "../../hooks/use-toaster"
 import { currencies } from "../../utils/currencies"
 import { getErrorMessage } from "../../utils/error-messages"
 
+type SelectCurrency = {
+  value: string
+  label: string
+}
+
 const CurrencySettings = () => {
-  const [storeCurrencies, setStoreCurrencies] = useState([])
-  const [allCurrencies, setAllCurrencies] = useState([])
-  const [selectedCurrency, setSelectedCurrency] = useState({
+  const [storeCurrencies, setStoreCurrencies] = useState<SelectCurrency[]>([])
+  const [allCurrencies, setAllCurrencies] = useState<SelectCurrency[]>([])
+  const [selectedCurrency, setSelectedCurrency] = useState<SelectCurrency>({
     value: "",
     label: "",
   })
@@ -26,16 +28,17 @@ const CurrencySettings = () => {
 
   const setCurrenciesOnLoad = () => {
     const defaultCurr = {
-      label: store.default_currency_code.toUpperCase(),
-      value: store.default_currency_code.toUpperCase(),
+      label: store!.default_currency_code.toUpperCase(),
+      value: store!.default_currency_code.toUpperCase(),
     }
 
-    const storeCurrs = store.currencies.map(c => ({
-      value: c.code.toUpperCase(),
-      label: c.code.toUpperCase(),
-    }))
+    const storeCurrs =
+      store?.currencies.map((c) => ({
+        value: c.code.toUpperCase(),
+        label: c.code.toUpperCase(),
+      })) || []
 
-    const allCurrs = Object.keys(currencies).map(currency => ({
+    const allCurrs = Object.keys(currencies).map((currency) => ({
       label: currency,
       value: currency,
     }))
@@ -53,23 +56,23 @@ const CurrencySettings = () => {
     setCurrenciesOnLoad()
   }, [store, isLoading])
 
-  const handleChange = currencies => {
+  const handleChange = (currencies) => {
     setStoreCurrencies(currencies)
   }
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault()
 
     updateStore.mutate(
       {
         default_currency_code: selectedCurrency.value,
-        currencies: storeCurrencies.map(c => c.value),
+        currencies: storeCurrencies.map((c) => c.value),
       },
       {
         onSuccess: () => {
           toaster("Successfully updated currencies", "success")
         },
-        onError: error => {
+        onError: (error) => {
           toaster(getErrorMessage(error), "error")
         },
       }
@@ -79,7 +82,7 @@ const CurrencySettings = () => {
   const currencyEvents = [
     {
       label: "Save",
-      onClick: e => onSubmit(e),
+      onClick: (e) => onSubmit(e),
     },
     {
       label: "Cancel changes",
@@ -107,7 +110,7 @@ const CurrencySettings = () => {
             value={selectedCurrency}
             isMultiSelect={false}
             enableSearch={true}
-            onChange={e => setSelectedCurrency(e)}
+            onChange={(e: SelectCurrency) => setSelectedCurrency(e)}
             className="mb-6"
           />
           <Select
