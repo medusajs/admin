@@ -80,11 +80,7 @@ const AccountDetails = () => {
             placeholder="Medusa Store"
             ref={register}
           />
-
           <h6 className="mt-2xlarge inter-base-semibold">Advanced settings</h6>
-          <span className="inter-small-regular text-grey-50">
-            Manual-fulfillment via manual
-          </span>
           <Input
             className="mt-base"
             label="Swap link template"
