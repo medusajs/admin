@@ -19,7 +19,7 @@ const FilteringOptions: React.FC<FilteringOptionProps> = ({
   className,
   ...props
 }) => {
-  const [selected, setSelected] = useState(options[0].title || "All")
+  const [selected, setSelected] = useState(options?.[0]?.title || "All")
   const [open, setOpen] = useState(false)
   return (
     <div
