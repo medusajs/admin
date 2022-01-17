@@ -22,7 +22,7 @@ import {
 } from "../../components/table"
 import Button from "../../components/button"
 import Spinner from "../../components/spinner"
-import Badge from "../../components/badge"
+import Badge from "../../components/fundamentals/badge"
 import { decideBadgeColor } from "../../utils/decide-badge-color"
 
 const CustomerIndex = () => {

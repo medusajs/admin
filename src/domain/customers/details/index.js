@@ -18,7 +18,7 @@ import moment from "moment"
 import _ from "lodash"
 
 import Card from "../../../components/card"
-import Badge from "../../../components/badge"
+import Badge from "../../../components/fundamentals/badge"
 import Spinner from "../../../components/spinner"
 import EditCustomer from "./edit"
 
