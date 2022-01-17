@@ -26,13 +26,13 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
   const { toaster } = useMedusa("store")
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault()
 
     setIsLoading(true)
     onDelete()
       .then(() => toaster(successText, "success"))
-      .catch(err => toaster(getErrorMessage(err), "error"))
+      .catch((err) => toaster(getErrorMessage(err), "error"))
       .finally(() => {
         setIsLoading(false)
         handleClose()
