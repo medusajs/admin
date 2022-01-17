@@ -40,7 +40,7 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
   }
 
   return (
-    <Modal handleClose={handleClose}>
+    <Modal isLargeModal={false} handleClose={handleClose}>
       <Modal.Body>
         <Modal.Content>
           <div className="flex flex-col">

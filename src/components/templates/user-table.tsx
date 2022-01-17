@@ -154,35 +154,33 @@ const UserTable: React.FC<UserTableProps> = ({
         },
         {
           title: "Member",
-          count: shownElements.filter(
+          count: elements.filter(
             e => e.entityType === "user" && e.entity.role === "member"
           ).length,
           onClick: () =>
             setShownElements(
-              shownElements.filter(
+              elements.filter(
                 e => e.entityType === "user" && e.entity.role === "member"
               )
             ),
         },
         {
           title: "Admin",
-          count: shownElements.filter(
+          count: elements.filter(
             e => e.entityType === "user" && e.entity.role === "admin"
           ).length,
           onClick: () =>
             setShownElements(
-              shownElements.filter(
+              elements.filter(
                 e => e.entityType === "user" && e.entity.role === "admin"
               )
             ),
         },
         {
           title: "No team permissions",
-          count: shownElements.filter(e => e.entityType === "invite").length,
+          count: elements.filter(e => e.entityType === "invite").length,
           onClick: () =>
-            setShownElements(
-              shownElements.filter(e => e.entityType === "invite")
-            ),
+            setShownElements(elements.filter(e => e.entityType === "invite")),
         },
       ],
     },
@@ -196,22 +194,20 @@ const UserTable: React.FC<UserTableProps> = ({
         },
         {
           title: "Active",
-          count: shownElements.filter(e => e.entityType === "user").length,
+          count: elements.filter(e => e.entityType === "user").length,
           onClick: () =>
-            setShownElements(
-              shownElements.filter(e => e.entityType === "user")
-            ),
+            setShownElements(elements.filter(e => e.entityType === "user")),
         },
         {
           title: "Pending",
-          count: shownElements.filter(
+          count: elements.filter(
             e =>
               e.entityType === "invite" &&
               getInviteStatus(e.entity) === "pending"
           ).length,
           onClick: () =>
             setShownElements(
-              shownElements.filter(
+              elements.filter(
                 e =>
                   e.entityType === "invite" &&
                   getInviteStatus(e.entity) === "pending"
@@ -220,14 +216,14 @@ const UserTable: React.FC<UserTableProps> = ({
         },
         {
           title: "Expired",
-          count: shownElements.filter(
+          count: elements.filter(
             e =>
               e.entityType === "invite" &&
               getInviteStatus(e.entity) === "expired"
           ).length,
           onClick: () =>
             setShownElements(
-              shownElements.filter(
+              elements.filter(
                 e =>
                   e.entityType === "invite" &&
                   getInviteStatus(e.entity) === "expired"
