@@ -10,6 +10,10 @@ type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   linkTo?: string
 }
 
+type TableCellProps = React.HTMLAttributes<HTMLTableCellElement> & {
+  linkTo?: string
+}
+
 type TableProps = {
   filteringOptions?: FilteringOptionProps[]
   enableSearch?: boolean
@@ -25,7 +29,7 @@ type TableType = {
   HeadCell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
-  Cell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
+  Cell: TableElement<TableCellProps>
 } & TableElement<TableProps>
 
 const Table: TableType = React.forwardRef(
@@ -134,15 +138,18 @@ Table.Body = React.forwardRef(
 )
 
 Table.Cell = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableCellElement>,
-    ref
-  ) => (
-    <td ref={ref} className={clsx(" py-1.5", className)} {...props}>
+  ({ className, linkTo, children, ...props }: TableCellProps, ref) => (
+    <td
+      ref={ref}
+      className={clsx("inter-small-regular", className)}
+      {...props}
+      {...(linkTo && {
+        onClick: e => {
+          navigate(linkTo)
+          e.stopPropagation()
+        },
+      })}
+    >
       <div className="w-inherit truncate">{children}</div>
     </td>
   )
@@ -153,7 +160,7 @@ Table.Row = React.forwardRef(
     <tr
       ref={ref}
       className={clsx(
-        "inter-small-regular border-t border-b border-grey-20 text-grey-90",
+        "inter-small-regular border-t border-b border-grey-20 text-grey-90 ",
         className,
         { "cursor-pointer": linkTo !== undefined }
       )}
