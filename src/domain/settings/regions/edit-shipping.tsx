@@ -25,7 +25,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
 
     if (shippingOption.requirements) {
       const minSubtotal = shippingOption.requirements.find(
-        req => req.type === "min_subtotal"
+        (req) => req.type === "min_subtotal"
       )
       if (minSubtotal) {
         option.requirements.min_subtotal = {
@@ -34,7 +34,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
         }
       }
       const maxSubtotal = shippingOption.requirements.find(
-        req => req.type === "max_subtotal"
+        (req) => req.type === "max_subtotal"
       )
       if (maxSubtotal) {
         option.requirements.max_subtotal = {
@@ -48,7 +48,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   }, [shippingOption])
 
   const handleDelete = async () => {
-    deleteOption.mutate(null, {
+    deleteOption.mutate(void {}, {
       onSuccess: () => {
         toaster("Successfully deleted shipping option", "success")
         if (onDone) {
@@ -56,7 +56,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
         }
         onClick()
       },
-      onError: error => {
+      onError: (error) => {
         toaster(getErrorMessage(error), "error")
       },
     })
@@ -70,7 +70,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
     return Object.entries(requirements).reduce((acc, [key, value]) => {
       if (value.amount && value.amount > 0) {
         const reqType = shippingOption.requirements.find(
-          req => req.type === key
+          (req) => req.type === key
         )
         if (reqType) {
           acc.push({
@@ -113,7 +113,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
         }
         onClick()
       },
-      onError: error => {
+      onError: (error) => {
         toaster(getErrorMessage(error), "error")
       },
     })

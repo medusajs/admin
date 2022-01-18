@@ -20,7 +20,7 @@ const NewShipping = ({
   onCreated,
   onClick,
 }) => {
-  const { register, setValue, handleSubmit, errors } = useForm()
+  const { register, setValue, handleSubmit } = useForm()
   const {
     shipping_profiles,
     isLoading: isProfilesLoading,
@@ -40,9 +40,9 @@ const NewShipping = ({
     profile_id: { value: string; label: string }
     amount: number
   }) => {
-    const fOptions = fulfillmentOptions.map(provider => {
+    const fOptions = fulfillmentOptions.map((provider) => {
       const filtered = provider.options.filter(
-        o => !!o.is_return === !!isReturn
+        (o) => !!o.is_return === !!isReturn
       )
 
       return {
@@ -89,7 +89,7 @@ const NewShipping = ({
         }
         onClick()
       },
-      onError: error => {
+      onError: (error) => {
         toaster(getErrorMessage(error), "error")
       },
     })
@@ -98,7 +98,7 @@ const NewShipping = ({
   useEffect(() => {
     const opts = fulfillmentOptions.reduce((acc, provider, p) => {
       const filtered = provider.options.filter(
-        o => !!o.is_return === !!isReturn
+        (o) => !!o.is_return === !!isReturn
       )
 
       return acc.concat(
@@ -117,9 +117,9 @@ const NewShipping = ({
   }, [fulfillmentOptions])
 
   useEffect(() => {
-    const opts = isProfilesLoading
+    const opts = !shipping_profiles
       ? []
-      : shipping_profiles.map(p => ({
+      : shipping_profiles.map((p) => ({
           label: p.name,
           value: p.id,
         }))
@@ -131,12 +131,12 @@ const NewShipping = ({
     }
   }, [isProfilesLoading, shipping_profiles])
 
-  const handleProfileChange = value => {
+  const handleProfileChange = (value) => {
     setValue("profile_id", value)
     setSelectedProfile(value)
   }
 
-  const handleFulfillmentChange = value => {
+  const handleFulfillmentChange = (value) => {
     setValue("fulfillment_option", value)
     setSelectedOption(value)
   }

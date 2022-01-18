@@ -1,4 +1,19 @@
-export const currencies = {
+type CurrencyType = {
+  symbol: string
+  name: string
+  symbol_native: string
+  decimal_digits: number
+  rounding: number
+  code: string
+  name_plural: string
+  emoji?: string
+}
+
+type CurrenciesType = {
+  [key: string]: CurrencyType
+}
+
+export const currencies: CurrenciesType = {
   USD: {
     symbol: "$",
     name: "US Dollar",
@@ -7,6 +22,7 @@ export const currencies = {
     rounding: 0,
     code: "USD",
     name_plural: "US dollars",
+    emoji: "🇺🇸",
   },
   CAD: {
     symbol: "CA$",
@@ -16,6 +32,7 @@ export const currencies = {
     rounding: 0,
     code: "CAD",
     name_plural: "Canadian dollars",
+    emoji: "🇨🇦",
   },
   EUR: {
     symbol: "€",
@@ -25,6 +42,7 @@ export const currencies = {
     rounding: 0,
     code: "EUR",
     name_plural: "euros",
+    emoji: "🇪🇺",
   },
   AED: {
     symbol: "AED",
@@ -34,6 +52,7 @@ export const currencies = {
     rounding: 0,
     code: "AED",
     name_plural: "UAE dirhams",
+    emoji: "🇦🇪",
   },
   AFN: {
     symbol: "Af",
@@ -43,6 +62,7 @@ export const currencies = {
     rounding: 0,
     code: "AFN",
     name_plural: "Afghan Afghanis",
+    emoji: "🇦🇫",
   },
   ALL: {
     symbol: "ALL",
@@ -52,6 +72,7 @@ export const currencies = {
     rounding: 0,
     code: "ALL",
     name_plural: "Albanian lekë",
+    emoji: "🇦🇱",
   },
   AMD: {
     symbol: "AMD",
@@ -61,6 +82,7 @@ export const currencies = {
     rounding: 0,
     code: "AMD",
     name_plural: "Armenian drams",
+    emoji: "🇦🇲",
   },
   ARS: {
     symbol: "AR$",
@@ -70,6 +92,7 @@ export const currencies = {
     rounding: 0,
     code: "ARS",
     name_plural: "Argentine pesos",
+    emoji: "🇦🇷",
   },
   AUD: {
     symbol: "AU$",
@@ -79,6 +102,7 @@ export const currencies = {
     rounding: 0,
     code: "AUD",
     name_plural: "Australian dollars",
+    emoji: "🇦🇺",
   },
   AZN: {
     symbol: "man.",
@@ -88,6 +112,7 @@ export const currencies = {
     rounding: 0,
     code: "AZN",
     name_plural: "Azerbaijani manats",
+    emoji: "🇦🇿",
   },
   BAM: {
     symbol: "KM",
@@ -97,6 +122,7 @@ export const currencies = {
     rounding: 0,
     code: "BAM",
     name_plural: "Bosnia-Herzegovina convertible marks",
+    emoji: "🇧🇦",
   },
   BDT: {
     symbol: "Tk",
@@ -106,6 +132,7 @@ export const currencies = {
     rounding: 0,
     code: "BDT",
     name_plural: "Bangladeshi takas",
+    emoji: "🇧🇩",
   },
   BGN: {
     symbol: "BGN",
@@ -115,6 +142,7 @@ export const currencies = {
     rounding: 0,
     code: "BGN",
     name_plural: "Bulgarian leva",
+    emoji: "🇧🇬",
   },
   BHD: {
     symbol: "BD",
@@ -124,6 +152,7 @@ export const currencies = {
     rounding: 0,
     code: "BHD",
     name_plural: "Bahraini dinars",
+    emoji: "🇧🇭",
   },
   BIF: {
     symbol: "FBu",
@@ -133,6 +162,7 @@ export const currencies = {
     rounding: 0,
     code: "BIF",
     name_plural: "Burundian francs",
+    emoji: "🇧🇮",
   },
   BND: {
     symbol: "BN$",
@@ -142,6 +172,7 @@ export const currencies = {
     rounding: 0,
     code: "BND",
     name_plural: "Brunei dollars",
+    emoji: "🇧🇳",
   },
   BOB: {
     symbol: "Bs",
@@ -151,6 +182,7 @@ export const currencies = {
     rounding: 0,
     code: "BOB",
     name_plural: "Bolivian bolivianos",
+    emoji: "🇧🇴",
   },
   BRL: {
     symbol: "R$",
@@ -160,6 +192,7 @@ export const currencies = {
     rounding: 0,
     code: "BRL",
     name_plural: "Brazilian reals",
+    emoji: "🇧🇷",
   },
   BWP: {
     symbol: "BWP",
@@ -169,6 +202,7 @@ export const currencies = {
     rounding: 0,
     code: "BWP",
     name_plural: "Botswanan pulas",
+    emoji: "🇧🇼",
   },
   BYN: {
     symbol: "Br",
@@ -178,6 +212,7 @@ export const currencies = {
     rounding: 0,
     code: "BYN",
     name_plural: "Belarusian rubles",
+    emoji: "🇧🇾",
   },
   BZD: {
     symbol: "BZ$",
@@ -187,6 +222,7 @@ export const currencies = {
     rounding: 0,
     code: "BZD",
     name_plural: "Belize dollars",
+    emoji: "🇧🇿",
   },
   CDF: {
     symbol: "CDF",
@@ -196,6 +232,7 @@ export const currencies = {
     rounding: 0,
     code: "CDF",
     name_plural: "Congolese francs",
+    emoji: "🇨🇩",
   },
   CHF: {
     symbol: "CHF",
@@ -205,6 +242,7 @@ export const currencies = {
     rounding: 0.05,
     code: "CHF",
     name_plural: "Swiss francs",
+    emoji: "🇨🇭",
   },
   CLP: {
     symbol: "CL$",
@@ -214,6 +252,7 @@ export const currencies = {
     rounding: 0,
     code: "CLP",
     name_plural: "Chilean pesos",
+    emoji: "🇨🇱",
   },
   CNY: {
     symbol: "CN¥",
@@ -223,6 +262,7 @@ export const currencies = {
     rounding: 0,
     code: "CNY",
     name_plural: "Chinese yuan",
+    emoji: "🇨🇳",
   },
   COP: {
     symbol: "CO$",
@@ -232,6 +272,7 @@ export const currencies = {
     rounding: 0,
     code: "COP",
     name_plural: "Colombian pesos",
+    emoji: "🇨🇴",
   },
   CRC: {
     symbol: "₡",
@@ -241,6 +282,7 @@ export const currencies = {
     rounding: 0,
     code: "CRC",
     name_plural: "Costa Rican colóns",
+    emoji: "🇨🇷",
   },
   CVE: {
     symbol: "CV$",
@@ -250,6 +292,7 @@ export const currencies = {
     rounding: 0,
     code: "CVE",
     name_plural: "Cape Verdean escudos",
+    emoji: "🇨🇻",
   },
   CZK: {
     symbol: "Kč",
@@ -259,6 +302,7 @@ export const currencies = {
     rounding: 0,
     code: "CZK",
     name_plural: "Czech Republic korunas",
+    emoji: "🇨🇿",
   },
   DJF: {
     symbol: "Fdj",
@@ -268,6 +312,7 @@ export const currencies = {
     rounding: 0,
     code: "DJF",
     name_plural: "Djiboutian francs",
+    emoji: "🇩🇯",
   },
   DKK: {
     symbol: "Dkr",
@@ -277,6 +322,7 @@ export const currencies = {
     rounding: 0,
     code: "DKK",
     name_plural: "Danish kroner",
+    emoji: "🇩🇰",
   },
   DOP: {
     symbol: "RD$",
@@ -286,6 +332,7 @@ export const currencies = {
     rounding: 0,
     code: "DOP",
     name_plural: "Dominican pesos",
+    emoji: "🇩🇴",
   },
   DZD: {
     symbol: "DA",
@@ -295,6 +342,7 @@ export const currencies = {
     rounding: 0,
     code: "DZD",
     name_plural: "Algerian dinars",
+    emoji: "🇩🇿",
   },
   EEK: {
     symbol: "Ekr",
@@ -304,6 +352,7 @@ export const currencies = {
     rounding: 0,
     code: "EEK",
     name_plural: "Estonian kroons",
+    emoji: "🇪🇪",
   },
   EGP: {
     symbol: "EGP",
@@ -313,6 +362,7 @@ export const currencies = {
     rounding: 0,
     code: "EGP",
     name_plural: "Egyptian pounds",
+    emoji: "🇪🇬",
   },
   ERN: {
     symbol: "Nfk",
@@ -322,6 +372,7 @@ export const currencies = {
     rounding: 0,
     code: "ERN",
     name_plural: "Eritrean nakfas",
+    emoji: "🇪🇷",
   },
   ETB: {
     symbol: "Br",
@@ -331,6 +382,7 @@ export const currencies = {
     rounding: 0,
     code: "ETB",
     name_plural: "Ethiopian birrs",
+    emoji: "🇪🇹",
   },
   GBP: {
     symbol: "£",
@@ -340,6 +392,7 @@ export const currencies = {
     rounding: 0,
     code: "GBP",
     name_plural: "British pounds sterling",
+    emoji: "🇬🇧",
   },
   GEL: {
     symbol: "GEL",
@@ -349,6 +402,7 @@ export const currencies = {
     rounding: 0,
     code: "GEL",
     name_plural: "Georgian laris",
+    emoji: "🇬🇪",
   },
   GHS: {
     symbol: "GH₵",
@@ -358,6 +412,7 @@ export const currencies = {
     rounding: 0,
     code: "GHS",
     name_plural: "Ghanaian cedis",
+    emoji: "🇬🇭",
   },
   GNF: {
     symbol: "FG",
@@ -367,6 +422,7 @@ export const currencies = {
     rounding: 0,
     code: "GNF",
     name_plural: "Guinean francs",
+    emoji: "🇬🇳",
   },
   GTQ: {
     symbol: "GTQ",
@@ -376,6 +432,7 @@ export const currencies = {
     rounding: 0,
     code: "GTQ",
     name_plural: "Guatemalan quetzals",
+    emoji: "🇬🇹",
   },
   HKD: {
     symbol: "HK$",
@@ -385,6 +442,7 @@ export const currencies = {
     rounding: 0,
     code: "HKD",
     name_plural: "Hong Kong dollars",
+    emoji: "🇭🇰",
   },
   HNL: {
     symbol: "HNL",
@@ -394,6 +452,7 @@ export const currencies = {
     rounding: 0,
     code: "HNL",
     name_plural: "Honduran lempiras",
+    emoji: "🇭🇳",
   },
   HRK: {
     symbol: "kn",
@@ -403,6 +462,7 @@ export const currencies = {
     rounding: 0,
     code: "HRK",
     name_plural: "Croatian kunas",
+    emoji: "🇭🇷",
   },
   HUF: {
     symbol: "Ft",
@@ -412,6 +472,7 @@ export const currencies = {
     rounding: 0,
     code: "HUF",
     name_plural: "Hungarian forints",
+    emoji: "🇭🇺",
   },
   IDR: {
     symbol: "Rp",
@@ -421,6 +482,7 @@ export const currencies = {
     rounding: 0,
     code: "IDR",
     name_plural: "Indonesian rupiahs",
+    emoji: "🇮🇩",
   },
   ILS: {
     symbol: "₪",
@@ -430,6 +492,7 @@ export const currencies = {
     rounding: 0,
     code: "ILS",
     name_plural: "Israeli new sheqels",
+    emoji: "🇮🇱",
   },
   INR: {
     symbol: "Rs",
@@ -439,6 +502,7 @@ export const currencies = {
     rounding: 0,
     code: "INR",
     name_plural: "Indian rupees",
+    emoji: "🇮🇳",
   },
   IQD: {
     symbol: "IQD",
@@ -448,6 +512,7 @@ export const currencies = {
     rounding: 0,
     code: "IQD",
     name_plural: "Iraqi dinars",
+    emoji: "🇮🇶",
   },
   IRR: {
     symbol: "IRR",
@@ -457,6 +522,7 @@ export const currencies = {
     rounding: 0,
     code: "IRR",
     name_plural: "Iranian rials",
+    emoji: "🇮🇷",
   },
   ISK: {
     symbol: "Ikr",
@@ -466,6 +532,7 @@ export const currencies = {
     rounding: 0,
     code: "ISK",
     name_plural: "Icelandic krónur",
+    emoji: "🇮🇸",
   },
   JMD: {
     symbol: "J$",
@@ -475,6 +542,7 @@ export const currencies = {
     rounding: 0,
     code: "JMD",
     name_plural: "Jamaican dollars",
+    emoji: "🇯🇲",
   },
   JOD: {
     symbol: "JD",
@@ -484,6 +552,7 @@ export const currencies = {
     rounding: 0,
     code: "JOD",
     name_plural: "Jordanian dinars",
+    emoji: "🇯🇴",
   },
   JPY: {
     symbol: "¥",
@@ -493,6 +562,7 @@ export const currencies = {
     rounding: 0,
     code: "JPY",
     name_plural: "Japanese yen",
+    emoji: "🇯🇵",
   },
   KES: {
     symbol: "Ksh",
@@ -502,6 +572,7 @@ export const currencies = {
     rounding: 0,
     code: "KES",
     name_plural: "Kenyan shillings",
+    emoji: "🇰🇪",
   },
   KHR: {
     symbol: "KHR",
@@ -511,6 +582,7 @@ export const currencies = {
     rounding: 0,
     code: "KHR",
     name_plural: "Cambodian riels",
+    emoji: "🇰🇭",
   },
   KMF: {
     symbol: "CF",
@@ -520,6 +592,7 @@ export const currencies = {
     rounding: 0,
     code: "KMF",
     name_plural: "Comorian francs",
+    emoji: "🇰🇲",
   },
   KRW: {
     symbol: "₩",
@@ -529,6 +602,7 @@ export const currencies = {
     rounding: 0,
     code: "KRW",
     name_plural: "South Korean won",
+    emoji: "🇰🇷",
   },
   KWD: {
     symbol: "KD",
@@ -538,6 +612,7 @@ export const currencies = {
     rounding: 0,
     code: "KWD",
     name_plural: "Kuwaiti dinars",
+    emoji: "🇰🇼",
   },
   KZT: {
     symbol: "KZT",
@@ -547,6 +622,7 @@ export const currencies = {
     rounding: 0,
     code: "KZT",
     name_plural: "Kazakhstani tenges",
+    emoji: "🇰🇿",
   },
   LBP: {
     symbol: "LB£",
@@ -556,6 +632,7 @@ export const currencies = {
     rounding: 0,
     code: "LBP",
     name_plural: "Lebanese pounds",
+    emoji: "🇱🇧",
   },
   LKR: {
     symbol: "SLRs",
@@ -565,6 +642,7 @@ export const currencies = {
     rounding: 0,
     code: "LKR",
     name_plural: "Sri Lankan rupees",
+    emoji: "🇱🇰",
   },
   LTL: {
     symbol: "Lt",
@@ -574,6 +652,7 @@ export const currencies = {
     rounding: 0,
     code: "LTL",
     name_plural: "Lithuanian litai",
+    emoji: "🇱🇹",
   },
   LVL: {
     symbol: "Ls",
@@ -583,6 +662,7 @@ export const currencies = {
     rounding: 0,
     code: "LVL",
     name_plural: "Latvian lati",
+    emoji: "🇱🇻",
   },
   LYD: {
     symbol: "LD",
@@ -592,6 +672,7 @@ export const currencies = {
     rounding: 0,
     code: "LYD",
     name_plural: "Libyan dinars",
+    emoji: "🇱🇾",
   },
   MAD: {
     symbol: "MAD",
@@ -601,6 +682,7 @@ export const currencies = {
     rounding: 0,
     code: "MAD",
     name_plural: "Moroccan dirhams",
+    emoji: "🇲🇦",
   },
   MDL: {
     symbol: "MDL",
@@ -610,6 +692,7 @@ export const currencies = {
     rounding: 0,
     code: "MDL",
     name_plural: "Moldovan lei",
+    emoji: "🇲🇩",
   },
   MGA: {
     symbol: "MGA",
@@ -619,6 +702,7 @@ export const currencies = {
     rounding: 0,
     code: "MGA",
     name_plural: "Malagasy Ariaries",
+    emoji: "🇲🇬",
   },
   MKD: {
     symbol: "MKD",
@@ -628,6 +712,7 @@ export const currencies = {
     rounding: 0,
     code: "MKD",
     name_plural: "Macedonian denari",
+    emoji: "🇲🇰",
   },
   MMK: {
     symbol: "MMK",
@@ -637,6 +722,7 @@ export const currencies = {
     rounding: 0,
     code: "MMK",
     name_plural: "Myanma kyats",
+    emoji: "🇲🇲",
   },
   MOP: {
     symbol: "MOP$",
@@ -646,6 +732,7 @@ export const currencies = {
     rounding: 0,
     code: "MOP",
     name_plural: "Macanese patacas",
+    emoji: "🇲🇴",
   },
   MUR: {
     symbol: "MURs",
@@ -655,6 +742,7 @@ export const currencies = {
     rounding: 0,
     code: "MUR",
     name_plural: "Mauritian rupees",
+    emoji: "🇲🇺",
   },
   MXN: {
     symbol: "MX$",
@@ -664,6 +752,7 @@ export const currencies = {
     rounding: 0,
     code: "MXN",
     name_plural: "Mexican pesos",
+    emoji: "🇲🇽",
   },
   MYR: {
     symbol: "RM",
@@ -673,6 +762,7 @@ export const currencies = {
     rounding: 0,
     code: "MYR",
     name_plural: "Malaysian ringgits",
+    emoji: "🇲🇾",
   },
   MZN: {
     symbol: "MTn",
@@ -682,6 +772,7 @@ export const currencies = {
     rounding: 0,
     code: "MZN",
     name_plural: "Mozambican meticals",
+    emoji: "🇲🇿",
   },
   NAD: {
     symbol: "N$",
@@ -691,6 +782,7 @@ export const currencies = {
     rounding: 0,
     code: "NAD",
     name_plural: "Namibian dollars",
+    emoji: "🇳🇦",
   },
   NGN: {
     symbol: "₦",
@@ -700,6 +792,7 @@ export const currencies = {
     rounding: 0,
     code: "NGN",
     name_plural: "Nigerian nairas",
+    emoji: "🇳🇬",
   },
   NIO: {
     symbol: "C$",
@@ -709,6 +802,7 @@ export const currencies = {
     rounding: 0,
     code: "NIO",
     name_plural: "Nicaraguan córdobas",
+    emoji: "🇳🇮",
   },
   NOK: {
     symbol: "Nkr",
@@ -718,6 +812,7 @@ export const currencies = {
     rounding: 0,
     code: "NOK",
     name_plural: "Norwegian kroner",
+    emoji: "🇳🇴",
   },
   NPR: {
     symbol: "NPRs",
@@ -727,6 +822,7 @@ export const currencies = {
     rounding: 0,
     code: "NPR",
     name_plural: "Nepalese rupees",
+    emoji: "🇳🇵",
   },
   NZD: {
     symbol: "NZ$",
@@ -736,6 +832,7 @@ export const currencies = {
     rounding: 0,
     code: "NZD",
     name_plural: "New Zealand dollars",
+    emoji: "🇳🇿",
   },
   OMR: {
     symbol: "OMR",
@@ -745,6 +842,7 @@ export const currencies = {
     rounding: 0,
     code: "OMR",
     name_plural: "Omani rials",
+    emoji: "🇴🇲",
   },
   PAB: {
     symbol: "B/.",
@@ -754,6 +852,7 @@ export const currencies = {
     rounding: 0,
     code: "PAB",
     name_plural: "Panamanian balboas",
+    emoji: "🇵🇦",
   },
   PEN: {
     symbol: "S/.",
@@ -763,6 +862,7 @@ export const currencies = {
     rounding: 0,
     code: "PEN",
     name_plural: "Peruvian nuevos soles",
+    emoji: "🇵🇪",
   },
   PHP: {
     symbol: "₱",
@@ -772,6 +872,7 @@ export const currencies = {
     rounding: 0,
     code: "PHP",
     name_plural: "Philippine pesos",
+    emoji: "🇵🇭",
   },
   PKR: {
     symbol: "PKRs",
@@ -781,6 +882,7 @@ export const currencies = {
     rounding: 0,
     code: "PKR",
     name_plural: "Pakistani rupees",
+    emoji: "🇵🇰",
   },
   PLN: {
     symbol: "zł",
@@ -790,6 +892,7 @@ export const currencies = {
     rounding: 0,
     code: "PLN",
     name_plural: "Polish zlotys",
+    emoji: "🇵🇱",
   },
   PYG: {
     symbol: "₲",
@@ -799,6 +902,7 @@ export const currencies = {
     rounding: 0,
     code: "PYG",
     name_plural: "Paraguayan guaranis",
+    emoji: "🇵🇾",
   },
   QAR: {
     symbol: "QR",
@@ -808,6 +912,7 @@ export const currencies = {
     rounding: 0,
     code: "QAR",
     name_plural: "Qatari rials",
+    emoji: "🇶🇦",
   },
   RON: {
     symbol: "RON",
@@ -817,6 +922,7 @@ export const currencies = {
     rounding: 0,
     code: "RON",
     name_plural: "Romanian lei",
+    emoji: "🇷🇴",
   },
   RSD: {
     symbol: "din.",
@@ -826,6 +932,7 @@ export const currencies = {
     rounding: 0,
     code: "RSD",
     name_plural: "Serbian dinars",
+    emoji: "🇷🇸",
   },
   RUB: {
     symbol: "RUB",
@@ -835,6 +942,7 @@ export const currencies = {
     rounding: 0,
     code: "RUB",
     name_plural: "Russian rubles",
+    emoji: "🇷🇺",
   },
   RWF: {
     symbol: "RWF",
@@ -844,6 +952,7 @@ export const currencies = {
     rounding: 0,
     code: "RWF",
     name_plural: "Rwandan francs",
+    emoji: "🇷🇼",
   },
   SAR: {
     symbol: "SR",
@@ -853,6 +962,7 @@ export const currencies = {
     rounding: 0,
     code: "SAR",
     name_plural: "Saudi riyals",
+    emoji: "🇸🇦",
   },
   SDG: {
     symbol: "SDG",
@@ -862,6 +972,7 @@ export const currencies = {
     rounding: 0,
     code: "SDG",
     name_plural: "Sudanese pounds",
+    emoji: "🇸🇩",
   },
   SEK: {
     symbol: "Skr",
@@ -871,6 +982,7 @@ export const currencies = {
     rounding: 0,
     code: "SEK",
     name_plural: "Swedish kronor",
+    emoji: "🇸🇪",
   },
   SGD: {
     symbol: "S$",
@@ -880,6 +992,7 @@ export const currencies = {
     rounding: 0,
     code: "SGD",
     name_plural: "Singapore dollars",
+    emoji: "🇸🇬",
   },
   SOS: {
     symbol: "Ssh",
@@ -889,6 +1002,7 @@ export const currencies = {
     rounding: 0,
     code: "SOS",
     name_plural: "Somali shillings",
+    emoji: "🇸🇴",
   },
   SYP: {
     symbol: "SY£",
@@ -898,6 +1012,7 @@ export const currencies = {
     rounding: 0,
     code: "SYP",
     name_plural: "Syrian pounds",
+    emoji: "🇸🇾",
   },
   THB: {
     symbol: "฿",
@@ -907,6 +1022,7 @@ export const currencies = {
     rounding: 0,
     code: "THB",
     name_plural: "Thai baht",
+    emoji: "🇹🇭",
   },
   TND: {
     symbol: "DT",
@@ -916,6 +1032,7 @@ export const currencies = {
     rounding: 0,
     code: "TND",
     name_plural: "Tunisian dinars",
+    emoji: "🇹🇳",
   },
   TOP: {
     symbol: "T$",
@@ -925,6 +1042,7 @@ export const currencies = {
     rounding: 0,
     code: "TOP",
     name_plural: "Tongan paʻanga",
+    emoji: "🇹🇴",
   },
   TRY: {
     symbol: "TL",
@@ -934,6 +1052,7 @@ export const currencies = {
     rounding: 0,
     code: "TRY",
     name_plural: "Turkish Lira",
+    emoji: "🇹🇷",
   },
   TTD: {
     symbol: "TT$",
@@ -943,6 +1062,7 @@ export const currencies = {
     rounding: 0,
     code: "TTD",
     name_plural: "Trinidad and Tobago dollars",
+    emoji: "🇹🇹",
   },
   TWD: {
     symbol: "NT$",
@@ -952,6 +1072,7 @@ export const currencies = {
     rounding: 0,
     code: "TWD",
     name_plural: "New Taiwan dollars",
+    emoji: "🇹🇼",
   },
   TZS: {
     symbol: "TSh",
@@ -961,6 +1082,7 @@ export const currencies = {
     rounding: 0,
     code: "TZS",
     name_plural: "Tanzanian shillings",
+    emoji: "🇹🇿",
   },
   UAH: {
     symbol: "₴",
@@ -970,6 +1092,7 @@ export const currencies = {
     rounding: 0,
     code: "UAH",
     name_plural: "Ukrainian hryvnias",
+    emoji: "🇺🇦",
   },
   UGX: {
     symbol: "USh",
@@ -979,6 +1102,7 @@ export const currencies = {
     rounding: 0,
     code: "UGX",
     name_plural: "Ugandan shillings",
+    emoji: "🇺🇬",
   },
   UYU: {
     symbol: "$U",
@@ -988,6 +1112,7 @@ export const currencies = {
     rounding: 0,
     code: "UYU",
     name_plural: "Uruguayan pesos",
+    emoji: "🇺🇾",
   },
   UZS: {
     symbol: "UZS",
@@ -997,6 +1122,7 @@ export const currencies = {
     rounding: 0,
     code: "UZS",
     name_plural: "Uzbekistan som",
+    emoji: "🇺🇿",
   },
   VEF: {
     symbol: "Bs.F.",
@@ -1006,6 +1132,7 @@ export const currencies = {
     rounding: 0,
     code: "VEF",
     name_plural: "Venezuelan bolívars",
+    emoji: "🇻🇪",
   },
   VND: {
     symbol: "₫",
@@ -1015,6 +1142,7 @@ export const currencies = {
     rounding: 0,
     code: "VND",
     name_plural: "Vietnamese dong",
+    emoji: "🇻🇳",
   },
   XAF: {
     symbol: "FCFA",
@@ -1024,6 +1152,7 @@ export const currencies = {
     rounding: 0,
     code: "XAF",
     name_plural: "CFA francs BEAC",
+    emoji: undefined,
   },
   XOF: {
     symbol: "CFA",
@@ -1033,6 +1162,7 @@ export const currencies = {
     rounding: 0,
     code: "XOF",
     name_plural: "CFA francs BCEAO",
+    emoji: undefined,
   },
   YER: {
     symbol: "YR",
@@ -1042,6 +1172,7 @@ export const currencies = {
     rounding: 0,
     code: "YER",
     name_plural: "Yemeni rials",
+    emoji: "🇾🇪",
   },
   ZAR: {
     symbol: "R",
@@ -1051,6 +1182,7 @@ export const currencies = {
     rounding: 0,
     code: "ZAR",
     name_plural: "South African rand",
+    emoji: "🇿🇦",
   },
   ZMK: {
     symbol: "ZK",
@@ -1060,6 +1192,7 @@ export const currencies = {
     rounding: 0,
     code: "ZMK",
     name_plural: "Zambian kwachas",
+    emoji: "🇿🇲",
   },
   ZWL: {
     symbol: "ZWL$",
@@ -1069,5 +1202,6 @@ export const currencies = {
     rounding: 0,
     code: "ZWL",
     name_plural: "Zimbabwean Dollar",
+    emoji: "🇿🇼",
   },
 }
