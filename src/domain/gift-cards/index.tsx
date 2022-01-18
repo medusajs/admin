@@ -12,7 +12,7 @@ import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import GiftCardTable from "../../components/templates/gift-card-table"
 
 const Index = () => {
-  const { gift_cards, isLoading, refresh } = useMedusa("giftCards")
+  const { gift_cards, refresh } = useMedusa("giftCards")
 
   const searchQuery = (q) => {
     const baseUrl = qs.parseUrl(window.location.href).url
@@ -34,7 +34,6 @@ const Index = () => {
     refresh({ search })
   }
 
-  console.log(gift_cards)
   const actionables = [
     {
       label: "Custom Gift Card",

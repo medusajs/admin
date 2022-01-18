@@ -17,11 +17,10 @@ const TableSearch: React.FC<TableSearchProps> = ({
   const inputRef = useRef(null)
 
   useEffect(() => {
-    console.log(inputRef.current.value)
-    inputRef.current.size = inputRef.current.placeholder.replace(
-      /\s+/g,
-      ""
-    ).length
+    if (inputRef.current) {
+      inputRef.current.size =
+        inputRef?.current?.placeholder?.replace(/\s+/g, "").length || 20
+    }
   }, [])
   return (
     <div
