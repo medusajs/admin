@@ -159,8 +159,6 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       return
     }
 
-    console.log(data)
-
     updateRegion.mutate(
       { ...data, tax_rate: data.tax_rate * 100 },
       {
