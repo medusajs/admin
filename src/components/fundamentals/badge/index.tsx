@@ -1,16 +1,5 @@
 import React from "react"
-import { Box, Flex } from "rebass"
-import styled from "@emotion/styled"
-import Typography from "../../typography"
 import clsx from "clsx"
-
-const StyledBox = styled(Flex)`
-  ${Typography.Base};
-  display: inline-block;
-  border-radius: 20px;
-  font-size: 10px;
-  font-weight: 600;
-`
 
 type BadgeProps = {
   variant: "primary" | "danger" | "success" | "warning"
