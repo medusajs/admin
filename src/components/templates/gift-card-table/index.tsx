@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
-import StatusDot from "../fundamentals/status-dot"
-import Table from "../molecules/table"
+import StatusDot from "../../fundamentals/status-dot"
+import Table from "../../molecules/table"
 import moment from "moment"
-import { FilteringOptionProps } from "../molecules/table/filtering-option"
+import { FilteringOptionProps } from "../../molecules/table/filtering-option"
 
 type GiftCardTableProps = {
   giftCards: any[]
@@ -44,7 +44,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
             count: giftCards.length,
             onClick: () => setShowngiftCards(giftCards),
           },
-          ...Object.keys(creationTimeOptions).map(co => {
+          ...Object.keys(creationTimeOptions).map((co) => {
             return {
               title: co,
               count: creationTimeOptions[co].length,
@@ -63,15 +63,15 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
           },
           {
             title: "None",
-            count: giftCards.filter(gc => !gc.balance).length,
+            count: giftCards.filter((gc) => !gc.balance).length,
             onClick: () =>
-              setShowngiftCards(giftCards.filter(gc => !gc.balance)),
+              setShowngiftCards(giftCards.filter((gc) => !gc.balance)),
           },
           {
             title: "Value left",
-            count: giftCards.filter(gc => gc.balance).length,
+            count: giftCards.filter((gc) => gc.balance).length,
             onClick: () =>
-              setShowngiftCards(giftCards.filter(gc => gc.balance)),
+              setShowngiftCards(giftCards.filter((gc) => gc.balance)),
           },
         ],
       },
@@ -87,7 +87,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
         key={`giftCard-${index}`}
         color={"inherit"}
       >
-        <Table.Cell className="py-2.5 w-60">{giftCard.code}</Table.Cell>
+        <Table.Cell className=" w-60">{giftCard.code}</Table.Cell>
         <Table.Cell
           className="w-60"
           {...(giftCard.order && {
@@ -96,7 +96,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
         >
           {giftCard.order && `# ${giftCard.order.display_id}`}
         </Table.Cell>
-        <Table.Cell className="py-2.5 w-72">
+        <Table.Cell className=" w-72">
           {(giftCard.value &&
             `${(
               ((1 + giftCard.region.tax_rate / 100) * giftCard.value) /
@@ -105,7 +105,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
             <>&nbsp;</>
           )}
         </Table.Cell>
-        <Table.Cell className="py-2.5 w-64">
+        <Table.Cell className=" w-64">
           {giftCard.balance ? (
             `${(
               ((1 + giftCard.region.tax_rate / 100) * giftCard.balance) /
@@ -115,10 +115,10 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
             <StatusDot title="None" variant="danger" />
           )}
         </Table.Cell>
-        <Table.Cell className="py-2.5">
+        <Table.Cell className="">
           {moment(giftCard.created_at).format("MMM Do YYYY")}
         </Table.Cell>
-        <Table.Cell className="py-2.5"></Table.Cell>
+        <Table.Cell className=""></Table.Cell>
       </Table.Row>
     )
   }

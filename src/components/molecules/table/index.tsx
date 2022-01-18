@@ -200,7 +200,7 @@ Table.Cell = React.forwardRef(
   ({ className, linkTo, children, ...props }: TableCellProps, ref) => (
     <td
       ref={ref}
-      className={clsx("inter-small-regular py-1.5", className)}
+      className={clsx("inter-small-regular h-[40px]", className)}
       {...props}
       {...(linkTo && {
         onClick: (e) => {

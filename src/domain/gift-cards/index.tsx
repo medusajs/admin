@@ -14,7 +14,7 @@ import GiftCardTable from "../../components/templates/gift-card-table"
 const Index = () => {
   const { gift_cards, isLoading, refresh } = useMedusa("giftCards")
 
-  const searchQuery = q => {
+  const searchQuery = (q) => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
