@@ -81,7 +81,7 @@ const SettingsIndex = () => {
 }
 
 const Settings = () => (
-  <Router>
+  <Router className="h-full">
     <SettingsIndex path="/" />
     <Apps path="apps" />
 
@@ -100,7 +100,7 @@ const Settings = () => (
     <RegionDetails path="regions/:id" />
     <NewRegion path="regions/new" />
 
-    <Users path="users" />
+    <Users path="team" />
 
     <PersonalInformation path="personal-information" />
   </Router>

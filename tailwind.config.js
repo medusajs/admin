@@ -179,6 +179,9 @@ module.exports = {
       },
       width: {
         largeModal: "750px",
+        "18": "4.5rem",
+        "29": "7.25rem",
+        inherit: "inherit",
         eventButton: "127px",
       },
       minWidth: {
@@ -245,6 +248,9 @@ module.exports = {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
         },
+      },
+      transitionProperty: {
+        width: "width",
       },
       animation: {
         ring: "ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
