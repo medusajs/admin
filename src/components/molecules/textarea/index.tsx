@@ -1,20 +1,11 @@
-import React, {
-  ChangeEventHandler,
-  FocusEventHandler,
-  useImperativeHandle,
-  useRef,
-} from "react"
-import MinusIcon from "../../fundamentals/icons/minus-icon"
-import PlusIcon from "../../fundamentals/icons/plus-icon"
+import clsx from "clsx"
+import React, { useImperativeHandle, useRef } from "react"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
-import clsx from "clsx"
 
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label: string
   key?: string
-  onChange?: ChangeEventHandler<HTMLTextAreaElement>
-  onFocus?: FocusEventHandler<HTMLTextAreaElement>
   withTooltip?: boolean
   tooltipText?: string
   tooltipProps?: any
@@ -29,46 +20,19 @@ const Textarea = React.forwardRef(
       name,
       key,
       required,
-      onChange,
-      onFocus,
       withTooltip = false,
       tooltipText,
       tooltipProps = {},
       containerProps,
       className,
+      rows = 5,
       ...props
     }: TextareaProps,
     ref
   ) => {
-    const inputRef = useRef(null)
+    const inputRef = useRef<HTMLTextAreaElement>(null)
 
     useImperativeHandle(ref, () => inputRef.current)
-
-    const onClickChevronUp = () => {
-      inputRef.current?.stepUp()
-      if (onChange) {
-        inputRef.current?.dispatchEvent(
-          new InputEvent("change", {
-            view: window,
-            bubbles: true,
-            cancelable: false,
-          })
-        )
-      }
-    }
-
-    const onClickChevronDown = () => {
-      inputRef.current?.stepDown()
-      if (onChange) {
-        inputRef.current?.dispatchEvent(
-          new InputEvent("change", {
-            view: window,
-            bubbles: true,
-            cancelable: false,
-          })
-        )
-      }
-    }
 
     const scrollToTop = () => {
       if (inputRef.current) {
@@ -95,15 +59,18 @@ const Textarea = React.forwardRef(
               "w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40",
               "line-clamp-until-focus"
             )}
+            style={
+              {
+                "--lines": rows,
+              } as React.CSSProperties
+            }
             ref={inputRef}
             autoComplete="off"
             name={name}
             key={key || name}
             placeholder={placeholder || "Placeholder"}
-            onChange={onChange}
-            onFocus={onFocus}
             onBlur={scrollToTop}
-            rows={4}
+            rows={rows}
             {...props}
           />
         </div>

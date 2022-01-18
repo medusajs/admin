@@ -1,4 +1,4 @@
-import { ComponentMeta } from "@storybook/react"
+import { ComponentMeta, ComponentStory } from "@storybook/react"
 import React from "react"
 import Textarea from "."
 
@@ -7,17 +7,25 @@ export default {
   component: Textarea,
 } as ComponentMeta<typeof Textarea>
 
-const Template = (args) => <Textarea {...args} />
+const Template: ComponentStory<typeof Textarea> = (args) => (
+  <Textarea {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
   label: "Description",
-  placeholder: "LeBron James",
+  placeholder: "Long description",
+  value:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote",
+  rows: 4,
 }
 
 export const Required = Template.bind({})
 Required.args = {
   label: "Description",
+  placeholder: "Long description",
+  value:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote",
+  rows: 2,
   required: true,
-  placeholder: "lebron@james.com",
 }
