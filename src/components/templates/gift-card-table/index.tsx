@@ -21,9 +21,23 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
   const [createdAtSortDirection, setCreatedAtSortDirection] = useState(
     undefined
   )
+
+  const [sortingClicked, setSortingClicked] = useState(false)
+
   const [filteringOptions, setFilterinOptions] = useState<
     FilteringOptionProps[]
   >([])
+
+  const handleSort = () => {
+    // TODO Correct sorting with api update
+  }
+
+  useEffect(() => {
+    if (sortingClicked) {
+      handleSort()
+    }
+    setSortingClicked(false)
+  }, [sortingClicked])
 
   useEffect(() => {
     if (!giftCards) {
@@ -35,6 +49,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
       return prev
     }, {})
 
+    // TODO correct filtering with api update
     setFilterinOptions([
       {
         title: "Creation time",
@@ -140,27 +155,21 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
             <Table.SortingHeadCell
               sortDirection={originalAmountSortDirection}
               setSortDirection={setOriginalAmountSortDirection}
-              onClickDescending={console.log}
-              onClickAscending={console.log}
-              onClickReset={console.log}
+              onSortClicked={() => setSortingClicked(true)}
             >
               Original amount
             </Table.SortingHeadCell>
             <Table.SortingHeadCell
               sortDirection={remainingAmountSortDirection}
               setSortDirection={setRemainingAmountSortDirection}
-              onClickDescending={console.log}
-              onClickAscending={console.log}
-              onClickReset={console.log}
+              onSortClicked={() => setSortingClicked(true)}
             >
               Amount left
             </Table.SortingHeadCell>
             <Table.SortingHeadCell
               sortDirection={createdAtSortDirection}
               setSortDirection={setCreatedAtSortDirection}
-              onClickDescending={console.log}
-              onClickAscending={console.log}
-              onClickReset={console.log}
+              onSortClicked={() => setSortingClicked(true)}
             >
               Created
             </Table.SortingHeadCell>

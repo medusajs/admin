@@ -157,16 +157,14 @@ Table.SortingHeadCell = React.forwardRef(
             e.preventDefault()
             if (!sortDirection) {
               setSortDirection("ASC")
-              onClickAscending()
             } else {
               if (sortDirection === "ASC") {
                 setSortDirection("DESC")
-                onClickDescending()
               } else {
                 setSortDirection(undefined)
-                onClickReset()
               }
             }
+            onSortClicked()
           }}
         >
           {children}
