@@ -63,7 +63,7 @@ const Table: TableType = React.forwardRef(
         <div className="w-full flex justify-between">
           {filteringOptions && (
             <div className="flex mb-2 self-end">
-              {filteringOptions.map(fo => (
+              {filteringOptions.map((fo) => (
                 <FilteringOptions {...fo} />
               ))}
             </div>
@@ -153,7 +153,7 @@ Table.SortingHeadCell = React.forwardRef(
       <th ref={ref} className={clsx("text-left py-2.5", className)} {...props}>
         <div
           className="flex items-center cursor-pointer select-none"
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault()
             if (!sortDirection) {
               setSortDirection("ASC")
@@ -200,16 +200,16 @@ Table.Cell = React.forwardRef(
   ({ className, linkTo, children, ...props }: TableCellProps, ref) => (
     <td
       ref={ref}
-      className={clsx("inter-small-regular", className)}
+      className={clsx("inter-small-regular py-1.5", className)}
       {...props}
       {...(linkTo && {
-        onClick: e => {
+        onClick: (e) => {
           navigate(linkTo)
           e.stopPropagation()
         },
       })}
     >
-      <div className="w-inherit truncate">{children}</div>
+      {children}
     </td>
   )
 )
@@ -219,7 +219,7 @@ Table.Row = React.forwardRef(
     <tr
       ref={ref}
       className={clsx(
-        "inter-small-regular border-t border-b border-grey-20 text-grey-90 ",
+        "inter-small-regular border-t border-b border-grey-20 text-grey-90",
         className,
         { "cursor-pointer": linkTo !== undefined }
       )}

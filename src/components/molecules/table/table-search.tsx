@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef } from "react"
 import clsx from "clsx"
 import SearchIcon from "../../fundamentals/icons/search-icon"
 
@@ -44,7 +44,7 @@ const TableSearch: React.FC<TableSearchProps> = ({
           "focus:outline-none focus:border-none inter-small-regular w-full focus:w-50 focus:bg-grey-5 focus:text-grey-90 caret-violet-60"
         )}
         placeholder={placeholder}
-        onChange={e => {
+        onChange={(e) => {
           onSearch(e.target.value)
         }}
       />
