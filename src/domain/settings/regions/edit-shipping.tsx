@@ -51,13 +51,13 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   const handleDelete = async () => {
     deleteOption.mutate(null, {
       onSuccess: () => {
-        toaster("Successfully deleted shipping option", "success")
+        onClick()
         if (onDone) {
           onDone()
         }
-        onClick()
       },
       onError: (error) => {
+        setShowDelete(false)
         toaster(getErrorMessage(error), "error")
       },
     })
@@ -122,16 +122,14 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
     })
   }
 
-  console.log("here1", showDelete)
-
   return (
     <>
       {showDelete ? (
         <DeletePrompt
           text={"Are you sure you want to delete this shipping option?"}
+          successText="Successfully deleted shipping option"
           handleClose={() => setShowDelete(false)}
           onDelete={async () => {
-            onClick()
             handleDelete()
           }}
         />
