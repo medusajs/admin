@@ -11,21 +11,31 @@ const Template: ComponentStory<typeof Textarea> = (args) => (
   <Textarea {...args} />
 )
 
-export const Default = Template.bind({})
-Default.args = {
+export const Short = Template.bind({})
+Short.args = {
+  rows: 2,
   label: "Description",
-  placeholder: "Long description",
-  value:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote",
-  rows: 4,
+  placeholder: "Normal",
+  value: "Lorem ipsum something pretty basic ",
+  required: false,
 }
 
-export const Required = Template.bind({})
-Required.args = {
+export const Overflow = Template.bind({})
+Overflow.args = {
+  rows: 2,
   label: "Description",
   placeholder: "Long description",
   value:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote",
-  rows: 2,
-  required: true,
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  required: false,
+}
+
+export const DynamicClamping = Template.bind({})
+DynamicClamping.args = {
+  rows: 4,
+  label: "Description",
+  placeholder: "Long description",
+  value:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis lacus vitae velit tristique varius at sed sapien. Sed bibendum interdum imperdiet. Etiam et maximus libero. Ut fringilla velit non ultricies pulvinar. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed placerat metus a dui viverra, ut elementum tortor rutrum. Suspendisse pote ",
+  required: false,
 }

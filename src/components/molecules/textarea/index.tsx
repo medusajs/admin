@@ -25,7 +25,7 @@ const Textarea = React.forwardRef(
       tooltipProps = {},
       containerProps,
       className,
-      rows = 5,
+      rows = 2,
       ...props
     }: TextareaProps,
     ref
