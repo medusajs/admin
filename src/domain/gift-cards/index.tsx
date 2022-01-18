@@ -37,7 +37,7 @@ const Index = () => {
   const actionables = [
     {
       label: "Custom Gift Card",
-      onClick: () => console.log("create custom gift card"),
+      onClick: () => console.log("create custom gift card"), // TODO
       icon: <PlusIcon size={20} />,
     },
   ]
