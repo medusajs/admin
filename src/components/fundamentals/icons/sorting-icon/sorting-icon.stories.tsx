@@ -1,10 +1,10 @@
 import { ComponentMeta } from "@storybook/react"
 import React from "react"
-import SearchIcon from "."
+import SortingIcon from "."
 
 export default {
-  title: "Fundamentals/Icons/SearchIcon",
-  component: SearchIcon,
+  title: "Fundamentals/Icons/SortingIcon",
+  component: SortingIcon,
   argTypes: {
     size: {
       control: {
@@ -13,12 +13,26 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof SearchIcon>
+} as ComponentMeta<typeof SortingIcon>
 
-const Template = args => <SearchIcon {...args} />
+const Template = (args) => <SortingIcon {...args} />
 
 export const Icon = Template.bind({})
 Icon.args = {
   size: "24",
-  color: "currentColor",
+  color: "#a0a0a0",
+}
+
+export const DescendingIcon = Template.bind({})
+DescendingIcon.args = {
+  size: "24",
+  color: "#a0a0a0",
+  descendingColor: "#111827",
+}
+
+export const AscendingIcon = Template.bind({})
+AscendingIcon.args = {
+  size: "24",
+  color: "#a0a0a0",
+  ascendingColor: "#111827",
 }
