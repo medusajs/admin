@@ -249,7 +249,10 @@ module.exports = {
       animation: {
         ring: "ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
       },
+      lineClamp: {
+        "[var(--lines)]": "var(--lines)",
+      },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/line-clamp")],
 }

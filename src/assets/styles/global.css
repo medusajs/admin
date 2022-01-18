@@ -305,15 +305,6 @@
   .vice-city {
     @apply bg-gradient-to-tr from-vice-start to-vice-stop;
   }
-  .line-clamp-until-focus {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: var(--lines);
-    
-  }
-  .line-clamp-until-focus:focus {
-    -webkit-line-clamp: unset; 
-  }
 }
 
 /* Classes to remove number spinners from inputs of type number */
