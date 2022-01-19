@@ -46,7 +46,7 @@ const Template: ComponentStory<any> = ({ triggerPosition, ...props }) => {
       )}
     >
       <Tooltip {...props}>
-        <button>hover!</button>
+        <button className="btn btn-secondary btn-medium">hover!</button>
       </Tooltip>
     </div>
   )

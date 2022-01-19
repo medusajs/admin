@@ -32,10 +32,10 @@ WithInfoTooltip.args = {
 
 export const WithCustomTooltip = Template.bind({})
 WithCustomTooltip.args = {
-  label: "Something",
+  label: "Tricky",
   tooltip: (
     <Tooltip
-      content={"This action will mess up your entire ordering system!!!"}
+      content={"Changing this might cause bad luck"}
       className="text-rose-50"
       side="right"
       align="end"
