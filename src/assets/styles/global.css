@@ -237,7 +237,7 @@
   }
 
   .badge-code {
-    @apply bg-grey-10 text-yellow-90;
+    @apply bg-grey-10 text-grey-90;
   }
 
   .btn {
