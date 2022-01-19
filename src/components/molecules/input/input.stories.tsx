@@ -1,13 +1,15 @@
-import { ComponentMeta } from "@storybook/react"
+import { ComponentMeta, ComponentStory } from "@storybook/react"
 import React from "react"
 import Input from "."
+import Tooltip from "../../atoms/tooltip"
+import AlertIcon from "../../fundamentals/icons/alert-icon"
 
 export default {
   title: "Molecules/Input",
   component: Input,
 } as ComponentMeta<typeof Input>
 
-const Template = args => <Input {...args} />
+const Template: ComponentStory<typeof Input> = (args) => <Input {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
@@ -24,9 +26,23 @@ Required.args = {
 
 // Not currently part of the new design
 
-// export const WithToolTip = Template.bind({})
-// WithToolTip.args = {
-//   label: "Default",
-//   withTooltip: true,
-//   tooltipText: "This is a tooltip",
-// }
+export const WithInfoTooltip = Template.bind({})
+WithInfoTooltip.args = {
+  label: "Default",
+  tooltipContent: "This is a tooltip",
+}
+
+export const WithCustomTooltip = Template.bind({})
+WithCustomTooltip.args = {
+  label: "Something",
+  tooltip: (
+    <Tooltip
+      content={"This action will mess up your entire ordering system!!!"}
+      className="text-rose-50"
+      side="right"
+      align="end"
+    >
+      <AlertIcon size={16} className="flex text-rose-50" />
+    </Tooltip>
+  ),
+}
