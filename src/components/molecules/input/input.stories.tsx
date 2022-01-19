@@ -24,8 +24,6 @@ Required.args = {
   placeholder: "lebron@james.com",
 }
 
-// Not currently part of the new design
-
 export const WithInfoTooltip = Template.bind({})
 WithInfoTooltip.args = {
   label: "Default",
