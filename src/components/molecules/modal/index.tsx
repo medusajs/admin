@@ -40,7 +40,9 @@ const Content: React.FC = ({ children }) => {
 }
 
 const addProp = (children, prop) => {
-  return React.Children.map(children, child => React.cloneElement(child, prop))
+  return React.Children.map(children, (child) =>
+    React.cloneElement(child, prop)
+  )
 }
 
 const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
@@ -57,7 +59,7 @@ const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
 
 Modal.Body = ({ children, isLargeModal }) => {
   return (
-    <div className="inter-base-regular" onClick={e => e.stopPropagation()}>
+    <div className="inter-base-regular" onClick={(e) => e.stopPropagation()}>
       {addProp(children, { isLargeModal })}
     </div>
   )
@@ -80,7 +82,7 @@ Modal.Header = ({ handleClose = undefined, children }) => {
   return (
     <div
       className="pl-7 pt-3.5 pr-3.5 flex flex-col w-full"
-      onClick={e => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     >
       <div className="pb-1 flex w-full justify-end">
         {handleClose && (
@@ -97,7 +99,7 @@ Modal.Header = ({ handleClose = undefined, children }) => {
 Modal.Footer = ({ children, isLargeModal }) => {
   return (
     <div
-      onClick={e => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
       className={clsx("px-7  pb-5 flex w-full", {
         "border-t border-grey-20 pt-4": isLargeModal,
       })}
