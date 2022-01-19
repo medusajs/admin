@@ -5,7 +5,7 @@ export type InputHeaderProps = {
   label: string
   required?: boolean
   tooltipContent?: string
-  tooltip?: any
+  tooltip?: React.ReactNode
 }
 
 const InputHeader: React.FC<InputHeaderProps> = ({
