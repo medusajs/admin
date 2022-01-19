@@ -18,6 +18,7 @@
     "@radix-ui/react-radio-group": "^0.1.4",
     "@rebass/forms": "^4.0.6",
     "@svgr/webpack": "^5.4.0",
+    "@tailwindcss/line-clamp": "^0.3.1",
     "axios": "^0.24.0",
     "clsx": "^1.1.1",
     "copy-to-clipboard": "^3.3.1",
