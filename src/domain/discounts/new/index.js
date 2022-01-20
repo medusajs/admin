@@ -195,7 +195,6 @@ const NewDiscount = ({}) => {
   }
 
   const startDateUpdate = (date) => {
-    console.log(date)
     setStartDate(date)
   }
   return (
@@ -452,16 +451,18 @@ const NewDiscount = ({}) => {
             mb={[2, 2, 2, 0]}
             flexDirection="column"
           >
-            <StyledLabel pb={2} style={{ fontWeight: 500 }}>
-              Start date
-            </StyledLabel>
-            <DatePicker date={startDate} onChange={startDateUpdate} />
+            <DatePicker
+              date={startDate}
+              label={"Start date"}
+              onChange={startDateUpdate}
+            />
           </Flex>
           <Flex width={[1, 1, 1, 1 / 2]} flexDirection="column">
-            <StyledLabel pb={2} style={{ fontWeight: 500 }}>
-              End date
-            </StyledLabel>
-            <TimePicker date={startDate} onChange={startDateUpdate} />
+            <TimePicker
+              date={startDate}
+              label={"Start time"}
+              onChange={startDateUpdate}
+            />
           </Flex>
         </Flex>
         {isDynamic && (
