@@ -1,15 +1,14 @@
-import React, { useEffect, useContext } from "react"
 import { Router } from "@reach/router"
 import qs from "query-string"
-import { InterfaceContext } from "../../context/interface"
-
-import ManageGiftCard from "./manage"
-import GiftCardDetail from "./detail"
-import useMedusa from "../../hooks/use-medusa"
+import React, { useContext, useEffect } from "react"
+import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import Breadcrumb from "../../components/molecules/breadcrumb"
 import BodyCard from "../../components/organisms/body-card"
-import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import GiftCardTable from "../../components/templates/gift-card-table"
+import { InterfaceContext } from "../../context/interface"
+import useMedusa from "../../hooks/use-medusa"
+import GiftCardDetail from "./detail"
+import ManageGiftCard from "./manage"
 
 const Index = () => {
   const { gift_cards, refresh } = useMedusa("giftCards")

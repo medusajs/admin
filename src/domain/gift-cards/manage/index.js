@@ -1,20 +1,17 @@
-import React, { useState } from "react"
 import styled from "@emotion/styled"
-import { useForm, useFieldArray } from "react-hook-form"
-import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
-
+import React, { useState } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { Box, Flex, Text } from "rebass"
 import Button from "../../../components/button"
-import Input from "../../../components/molecules/input"
 import ImageUpload from "../../../components/image-upload"
-import TextArea from "../../../components/textarea"
+import Input from "../../../components/molecules/input"
 import Spinner from "../../../components/spinner"
-
-import Medusa from "../../../services/api"
+import TextArea from "../../../components/textarea"
 import useMedusa from "../../../hooks/use-medusa"
-
-import GiftCardDetail from "./detail"
+import Medusa from "../../../services/api"
 import { persistedPrice } from "../../../utils/prices"
+import GiftCardDetail from "./details"
 
 const Cross = styled.span`
   position: absolute;
@@ -35,7 +32,7 @@ const StyledImageCard = styled(Box)`
   height: 200px;
   width: 200px;
 
-  border: ${props => (props.selected ? "1px solid #53725D" : "none")};
+  border: ${(props) => (props.selected ? "1px solid #53725D" : "none")};
 
   object-fit: contain;
 
@@ -51,7 +48,7 @@ const StyledImageBox = styled(Flex)`
   flex-wrap: wrap;
   .img-container {
     border: 1px solid black;
-    background-color: ${props => props.theme.colors.light};
+    background-color: ${(props) => props.theme.colors.light};
     height: 50px;
     width: 50px;
 
@@ -83,7 +80,7 @@ const NewGiftCard = ({}) => {
     control,
   })
 
-  const parseProduct = data => {
+  const parseProduct = (data) => {
     return {
       images,
       title: data.title,
@@ -103,12 +100,12 @@ const NewGiftCard = ({}) => {
     }
   }
 
-  const submit = data => {
+  const submit = (data) => {
     const product = parseProduct(data)
 
-    product.variants.forEach(variant => {
+    product.variants.forEach((variant) => {
       variant.prices.forEach(
-        price =>
+        (price) =>
           (price.amount = persistedPrice(price.currency_code, price.amount))
       )
     })
@@ -118,16 +115,16 @@ const NewGiftCard = ({}) => {
     })
   }
 
-  const onImageChange = e => {
+  const onImageChange = (e) => {
     Medusa.uploads.create(e.target.files).then(({ data }) => {
       const uploaded = data.uploads.map(({ url }) => url)
       setImages(images.concat(uploaded))
     })
   }
 
-  const handleImageDelete = url => {
+  const handleImageDelete = (url) => {
     Medusa.uploads.delete(url[0]).then(() => {
-      setImages(images.filter(im => im !== url))
+      setImages(images.filter((im) => im !== url))
     })
   }
 
