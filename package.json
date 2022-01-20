@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "author": "@medusajs",
   "resolutions": {
-    "devcert": "1.1.0"
+    "devcert": "1.1.1"
   },
   "dependencies": {
     "@emotion/core": "^10.0.28",
