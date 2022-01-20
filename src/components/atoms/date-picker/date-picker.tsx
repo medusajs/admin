@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react"
 import ReactDatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import Button from "../fundamentals/button"
+import Button from "../../fundamentals/button"
 import moment from "moment"
-import ChevronRightIcon from "../fundamentals/icons/chevron-right-icon"
-import ArrowDownIcon from "../fundamentals/icons/arrow-down-icon"
-import ChevronLeftIcon from "../fundamentals/icons/chevron-left-icon"
+import ChevronRightIcon from "../../fundamentals/icons/chevron-right-icon"
+import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
+import ChevronLeftIcon from "../../fundamentals/icons/chevron-left-icon"
 import * as PopoverPrimitive from "@radix-ui/react-popover"
-import InputContainer from "../fundamentals/input-container"
-import InputHeader from "../fundamentals/input-header"
+import InputContainer from "../../fundamentals/input-container"
+import InputHeader from "../../fundamentals/input-header"
 import clsx from "clsx"
+import { DateTimePickerProps } from "./types"
 
-const DatePicker = ({
+const DatePicker: React.FC<DateTimePickerProps> = ({
   date,
   onChange,
-  enableTimepicker,
   label = "start date",
   required = false,
   withTooltip = false,
@@ -29,9 +29,9 @@ const DatePicker = ({
   const submitDate = () => {
     // update only date, month and year
     const newDate = new Date(date.getTime())
-    newDate.setDate(tempDate.getUTCDate())
-    newDate.setMonth(tempDate.getUTCMonth())
-    newDate.setYear(tempDate.getUTCFullYear())
+    newDate.setUTCDate(tempDate.getUTCDate())
+    newDate.setUTCMonth(tempDate.getUTCMonth())
+    newDate.setUTCFullYear(tempDate.getUTCFullYear())
 
     onChange(newDate)
     setIsOpen(false)
@@ -107,6 +107,7 @@ const DatePicker = ({
             </Button>
             <Button
               size="medium"
+              variant="primary"
               onClick={() => submitDate()}
               className="w-2/3 flex justify-center"
             >{`Set ${label}`}</Button>

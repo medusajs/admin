@@ -1,7 +1,7 @@
 import React from "react"
 import InfoTooltip from "../info-tooltip"
 
-type InputHeaderProps = {
+export type InputHeaderProps = {
   label: string
   required?: boolean
   withTooltip?: boolean

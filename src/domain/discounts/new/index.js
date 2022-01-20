@@ -14,7 +14,8 @@ import Input from "../../../components/molecules/input"
 import Typography from "../../../components/typography"
 import ProductSelection from "../product-selection"
 
-import DatePicker from "../../../components/date-picker/date-picker"
+import DatePicker from "../../../components/atoms/date-picker/date-picker"
+import TimePicker from "../../../components/atoms/date-picker/time-picker"
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
 import InfoTooltip from "../../../components/info-tooltip"
@@ -460,11 +461,7 @@ const NewDiscount = ({}) => {
             <StyledLabel pb={2} style={{ fontWeight: 500 }}>
               End date
             </StyledLabel>
-            <DatePicker
-              date={endDate}
-              onChange={setEndDate}
-              enableTimepicker={true}
-            />
+            <TimePicker date={startDate} onChange={startDateUpdate} />
           </Flex>
         </Flex>
         {isDynamic && (

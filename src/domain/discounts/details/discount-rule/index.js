@@ -12,7 +12,7 @@ import Input from "../../../../components/molecules/input"
 import Pill from "../../../../components/pill"
 import Button from "../../../../components/button"
 import Typography from "../../../../components/typography"
-import DatePicker from "../../../../components/date-picker/date-picker"
+import DatePicker from "../../../../components/atoms/date-picker/date-picker"
 import Tooltip from "../../../../components/tooltip"
 import AvailabilityDuration from "../../../../components/availability-duration"
 import { ReactComponent as InfoIcon } from "../../../../assets/svg/info.svg"
@@ -67,7 +67,7 @@ const StyledMultiSelect = styled(MultiSelect)`
 
 const RequiredLabel = styled.div`
   ${Typography.Base}
-  ${props =>
+  ${(props) =>
     props.inline
       ? `
   text-align: right;
@@ -108,7 +108,7 @@ const DiscountRuleModal = ({
   const [iso8601Duration, setIso8601Duration] = useState(undefined)
 
   const [selectedProducts, setSelectedProducts] = useState(
-    discount.rule.valid_for?.map(p => {
+    discount.rule.valid_for?.map((p) => {
       return {
         label: p.title,
         value: p.id,
@@ -124,14 +124,14 @@ const DiscountRuleModal = ({
       : displayAmount(selectedRegions[0].currency_code, discountRule.value)
   )
 
-  const onChange = e => {
+  const onChange = (e) => {
     const { name, value } = e.currentTarget
-    setDiscountRule(prevState => ({ ...prevState, [name]: value }))
+    setDiscountRule((prevState) => ({ ...prevState, [name]: value }))
   }
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     data.value = parseInt(data.value)
-    data.valid_for = selectedProducts.map(p => p.value)
+    data.valid_for = selectedProducts.map((p) => p.value)
     data.id = discount.rule.id
     data.type = isPercentageDiscount ? "percentage" : "fixed"
     data.allocation = isAllocatedToItem ? "item" : "total"
@@ -150,7 +150,7 @@ const DiscountRuleModal = ({
     onUpdate(result)
   }
 
-  const handleSetShowRule = value => {
+  const handleSetShowRule = (value) => {
     setSelectedProducts([])
     setShowRule(value)
   }
@@ -181,7 +181,7 @@ const DiscountRuleModal = ({
             required={true}
             name="value"
             value={value}
-            onChange={event => setValue(event.target.value)}
+            onChange={(event) => setValue(event.target.value)}
           />
           <Flex mb={3} flexDirection="column">
             <RequiredLabel pb={2}>Type</RequiredLabel>
