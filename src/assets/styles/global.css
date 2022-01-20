@@ -342,37 +342,14 @@
     }
   }
 
-  .time-picker {
-    @apply border-0 outline-none pt-6 px-6 h-[330px] !important;
+  .time-list::-webkit-scrollbar {
+    /* chrome */
+    display: none;
+  }
 
-    .react-datepicker__time-container,
-    .react-datepicker__time,
-    .react-datepicker__time-box {
-      @apply w-[40px]  !important;
-    }
-
-    .react-datepicker__time-list::-webkit-scrollbar {
-      /* chrome */
-      display: none;
-    }
-
-    .react-datepicker__time-list {
-      @apply pr-4 h-[300px] !important;
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
-    }
-
-    .react-datepicker__header--time {
-      @apply hidden;
-    }
-
-    .time-picker-item {
-      @apply w-[40px] rounded h-[40px] leading-none pt-3 text-grey-90 inter-base-regular !important;
-    }
-
-    .react-datepicker__time-list-item--selected {
-      @apply bg-violet-60 text-grey-0 inter-base-semibold leading-none !important;
-    }
+  .time-list {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
 
