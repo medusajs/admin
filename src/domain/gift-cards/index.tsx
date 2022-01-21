@@ -10,6 +10,7 @@ import Breadcrumb from "../../components/molecules/breadcrumb"
 import BodyCard from "../../components/organisms/body-card"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import GiftCardTable from "../../components/templates/gift-card-table"
+import PageDescription from "../../components/atoms/page-description"
 
 const Index = () => {
   const { gift_cards, refresh } = useMedusa("giftCards")
@@ -51,10 +52,9 @@ const Index = () => {
   return (
     <div className="flex flex-col grow h-full">
       <div className="w-full flex flex-col grow">
-        <Breadcrumb
-          previousRoute="/a/settings"
-          previousBreadcrumb="Settings"
-          currentPage="The Team"
+        <PageDescription
+          title="Gift Cards"
+          subtitle="Manage the Gift cards for your Medusa Store"
         />
         <BodyCard
           title="History"
