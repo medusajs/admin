@@ -19,7 +19,7 @@ const BannerCard: React.FC<BannerCardProps> & {
   Footer: React.FC
 } = ({ title, thumbnail, actions, children }) => {
   return (
-    <div className="rounded-rounded border bg-grey-0 border-grey-20 w-full p-xlarge">
+    <div className="rounded-rounded border bg-grey-0 border-grey-20 w-full p-base medium:p-xlarge">
       <div className="flex gap-large items-start">
         {thumbnail && (
           <div className="min-w-[72px] min-h-[72px] w-[72px] h-[72px] rounded-base overflow-hidden">
@@ -31,11 +31,9 @@ const BannerCard: React.FC<BannerCardProps> & {
           </div>
         )}
         <div className="w-full">
-          <div className="flex items-start justify-between mb-xsmall">
+          <div className="flex items-center justify-between">
             <p className="inter-large-semibold">{title}</p>
-            <div className="flex-shrink">
-              <Actionables actions={actions} />
-            </div>
+            <Actionables actions={actions} />
           </div>
           {children}
         </div>
