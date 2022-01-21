@@ -114,12 +114,16 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       .map((el) => el.code)
     currs.unshift(region.currency_code)
 
-    return currs.map((c) => c) || []
+    return (
+      currs.map((c) => ({
+        value: c,
+        label: c.toUpperCase(),
+      })) || []
+    )
   }
 
   const handlePaymentChange = (values) => {
-    const providers = values.map((v) => ({ value: v.value }))
-    setPaymentProviders(providers)
+    setPaymentProviders(values)
     setValue(
       "payment_providers",
       values.map((v) => v.value)
@@ -143,10 +147,9 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
     )
   }
 
-  const handleChangeCurrency = (currency) => {
-    console.log(currency)
-    setValue("currency_code", currency.value)
-    setSelectedCurrency(currency.value)
+  const handleChangeCurrency = (value) => {
+    setValue("currency_code", value)
+    setSelectedCurrency(value)
   }
 
   const onSave = async (data) => {

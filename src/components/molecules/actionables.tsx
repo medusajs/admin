@@ -20,7 +20,7 @@ type ActionablesProps = {
  * If only a single actionable is provided, it will render a button instead.
  */
 const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
-  if (!actions) {
+  if (!actions?.length) {
     return null
   }
 
@@ -28,8 +28,12 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <Button variant="ghost" size="medium">
-            <MoreHorizontalIcon />
+          <Button
+            className="w-8 h-8 p-1.5 focus:border-none focus:shadow-none"
+            variant="ghost"
+            size="small"
+          >
+            <MoreHorizontalIcon size={20} />
           </Button>
         </DropdownMenu.Trigger>
 
@@ -39,7 +43,7 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
         >
           {actions.map((action, i) => {
             return (
-              <DropdownMenu.Item key={i}>
+              <DropdownMenu.Item className="mb-1 last:mb-0" key={i}>
                 {
                   <Button
                     variant="ghost"

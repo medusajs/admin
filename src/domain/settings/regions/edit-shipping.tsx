@@ -7,13 +7,14 @@ import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
+import DeletePrompt from "../../../components/organisms/delete-prompt"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   const { register, reset, handleSubmit } = useForm()
   const [adminOnly, setAdminOnly] = useState(shippingOption?.admin_only)
-
+  const [showDelete, setShowDelete] = useState(false)
   const deleteOption = useAdminDeleteShippingOption(shippingOption.id)
   const updateOption = useAdminUpdateShippingOption(shippingOption.id)
   const toaster = useToaster()
@@ -50,13 +51,13 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   const handleDelete = async () => {
     deleteOption.mutate(void {}, {
       onSuccess: () => {
-        toaster("Successfully deleted shipping option", "success")
+        onClick()
         if (onDone) {
           onDone()
         }
-        onClick()
       },
       onError: (error) => {
+        setShowDelete(false)
         toaster(getErrorMessage(error), "error")
       },
     })
@@ -65,7 +66,9 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   const buildShippingRequirements = (
     requirements: { amount: number; type: string }[]
   ) => {
-    if (!requirements) return null
+    if (!requirements) {
+      return null
+    }
 
     return Object.entries(requirements).reduce((acc, [key, value]) => {
       if (value.amount && value.amount > 0) {
@@ -120,134 +123,150 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   }
 
   return (
-    <Modal handleClose={onClick}>
-      <form onSubmit={handleSubmit(handleSave)}>
-        <Modal.Body>
-          <Modal.Header handleClose={onClick}>
-            <div>
-              <h1 className="inter-xlarge-semibold">Edit Shipping Option</h1>
-            </div>
-          </Modal.Header>
-          <Modal.Content>
-            <div className="mb-large">
-              <p className="inter-base-semibold">Fulfillment Method</p>
-              <p className="inter-base-regular text-grey-50">
-                {shippingOption.data.id} via {shippingOption.provider_id}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
-              <Input
-                label="Name"
-                name="name"
-                ref={register}
-                className="flex-grow"
-              />
-              <div className="flex items-center gap-2xsmall">
-                <Input
-                  label="Currency"
-                  value={region.currency_code.toUpperCase()}
-                  readOnly
-                  className="w-[120px] pointer-events-none"
-                  tabIndex={-1}
-                />
-                <Input
-                  label="Price"
-                  type="number"
-                  ref={register}
-                  name={"amount"}
-                  min={0}
-                  step={0.1}
-                />
-              </div>
-            </div>
-            <div className="mt-large mb-xlarge">
-              <label className="inline-flex items-center inter-base-semibold">
-                <input
-                  type="checkbox"
-                  id="true"
-                  name="requires_shipping"
-                  value="true"
-                  checked={!adminOnly}
-                  onChange={() => setAdminOnly(!adminOnly)}
-                  className="mr-small w-5 h-5 accent-violet-60 rounded-base"
-                />
-                Show on website
-              </label>
-            </div>
-            <p className="inter-base-semibold mb-base">Requirements</p>
-            <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
-              <div className="flex items-center gap-2xsmall">
-                <Input
-                  label="Currency"
-                  value={region.currency_code.toUpperCase()}
-                  readOnly
-                  className="w-[120px] pointer-events-none"
-                  tabIndex={-1}
-                />
-                <Input
-                  label="Min. subtotal"
-                  type="number"
-                  name={`requirements.min_subtotal.amount`}
-                  min={0}
-                  ref={register}
-                  placeholder="0"
-                />
-              </div>
-              <div className="flex items-center gap-2xsmall">
-                <Input
-                  label="Currency"
-                  value={region.currency_code.toUpperCase()}
-                  readOnly
-                  className="w-[120px] pointer-events-none"
-                  tabIndex={-1}
-                />
-                <Input
-                  label="Max. subtotal"
-                  type="number"
-                  min={0}
-                  name={`requirements.max_subtotal.amount`}
-                  ref={register}
-                  placeholder="100"
-                />
-              </div>
-            </div>
-            <div className="mt-xlarge">
-              <p className="inter-base-semibold">Danger Zone</p>
-              <p className="inter-base-regular text-grey-50 mb-base">
-                This will permanently delete this option from your Medusa Store
-              </p>
-              <button
-                onClick={handleDelete}
-                className="text-rose-50 inter-base-semibold"
-              >
-                Delete Option
-              </button>
-            </div>
-          </Modal.Content>
-          <Modal.Footer>
-            <div className="flex items-center justify-end w-full">
-              <Button
-                type="button"
-                onClick={onClick}
-                variant="ghost"
-                size="small"
-                className="w-eventButton justify-center"
-              >
-                Cancel Changes
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                size="small"
-                className="w-eventButton justify-center"
-              >
-                Save
-              </Button>
-            </div>
-          </Modal.Footer>
-        </Modal.Body>
-      </form>
-    </Modal>
+    <>
+      {showDelete ? (
+        <DeletePrompt
+          text={"Are you sure you want to delete this shipping option?"}
+          successText="Successfully deleted shipping option"
+          handleClose={() => setShowDelete(false)}
+          onDelete={async () => {
+            handleDelete()
+          }}
+        />
+      ) : (
+        <Modal handleClose={onClick}>
+          <form onSubmit={handleSubmit(handleSave)}>
+            <Modal.Body>
+              <Modal.Header handleClose={onClick}>
+                <div>
+                  <h1 className="inter-xlarge-semibold">
+                    Edit Shipping Option
+                  </h1>
+                </div>
+              </Modal.Header>
+              <Modal.Content>
+                <div className="mb-large">
+                  <p className="inter-base-semibold">Fulfillment Method</p>
+                  <p className="inter-base-regular text-grey-50">
+                    {shippingOption.data.id} via {shippingOption.provider_id}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
+                  <Input
+                    label="Name"
+                    name="name"
+                    ref={register}
+                    className="flex-grow"
+                  />
+                  <div className="flex items-center gap-2xsmall">
+                    <Input
+                      label="Currency"
+                      value={region.currency_code.toUpperCase()}
+                      readOnly
+                      className="w-[120px] pointer-events-none"
+                      tabIndex={-1}
+                    />
+                    <Input
+                      label="Price"
+                      type="number"
+                      ref={register}
+                      name={"amount"}
+                      min={0}
+                      step={0.1}
+                    />
+                  </div>
+                </div>
+                <div className="mt-large mb-xlarge">
+                  <label className="inline-flex items-center inter-base-semibold">
+                    <input
+                      type="checkbox"
+                      id="true"
+                      name="requires_shipping"
+                      value="true"
+                      checked={!adminOnly}
+                      onChange={() => setAdminOnly(!adminOnly)}
+                      className="mr-small w-5 h-5 accent-violet-60 rounded-base"
+                    />
+                    Show on website
+                  </label>
+                </div>
+                <p className="inter-base-semibold mb-base">Requirements</p>
+                <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
+                  <div className="flex items-center gap-2xsmall">
+                    <Input
+                      label="Currency"
+                      value={region.currency_code.toUpperCase()}
+                      readOnly
+                      className="w-[120px] pointer-events-none"
+                      tabIndex={-1}
+                    />
+                    <Input
+                      label="Min. subtotal"
+                      type="number"
+                      name={`requirements.min_subtotal.amount`}
+                      min={0}
+                      ref={register}
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2xsmall">
+                    <Input
+                      label="Currency"
+                      value={region.currency_code.toUpperCase()}
+                      readOnly
+                      className="w-[120px] pointer-events-none"
+                      tabIndex={-1}
+                    />
+                    <Input
+                      label="Max. subtotal"
+                      type="number"
+                      min={0}
+                      name={`requirements.max_subtotal.amount`}
+                      ref={register}
+                      placeholder="100"
+                    />
+                  </div>
+                </div>
+                <div className="mt-xlarge">
+                  <p className="inter-base-semibold">Danger Zone</p>
+                  <p className="inter-base-regular text-grey-50 mb-base">
+                    This will permanently delete this option from your Medusa
+                    Store
+                  </p>
+                  <button
+                    onClick={() => setShowDelete(true)}
+                    className="text-rose-50 inter-base-semibold"
+                  >
+                    Delete Option
+                  </button>
+                </div>
+              </Modal.Content>
+              <Modal.Footer>
+                <div className="flex items-center justify-end w-full">
+                  <Button
+                    type="button"
+                    onClick={onClick}
+                    variant="ghost"
+                    size="small"
+                    className="w-eventButton justify-center"
+                  >
+                    Cancel Changes
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="small"
+                    className="w-eventButton justify-center"
+                  >
+                    Save
+                  </Button>
+                </div>
+              </Modal.Footer>
+            </Modal.Body>
+          </form>
+        </Modal>
+      )}
+    </>
   )
 }
 

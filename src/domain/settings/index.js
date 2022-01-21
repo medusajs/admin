@@ -18,8 +18,6 @@ import Regions from "./regions"
 import RegionDetails from "./regions/details"
 import NewRegion from "./regions/new"
 import ReturnReasons from "./return-reasons"
-import EditReturnReason from "./return-reasons/edit"
-import NewReturnReason from "./return-reasons/new"
 import ShippingProfileDetail from "./shipping-profiles/details"
 import NewShippingProfile from "./shipping-profiles/new"
 import Users from "./users"
@@ -81,7 +79,7 @@ const SettingsIndex = () => {
 }
 
 const Settings = () => (
-  <Router>
+  <Router className="h-full">
     <SettingsIndex path="/" />
     <Apps path="apps" />
 
@@ -90,8 +88,6 @@ const Settings = () => (
     <Currencies path="currencies" />
 
     <ReturnReasons path="return-reasons" />
-    <EditReturnReason path="return-reasons/:id" />
-    <NewReturnReason path="return-reasons/new" />
 
     <NewShippingProfile path="shipping-profiles/new" />
     <ShippingProfileDetail path="shipping-profiles/:id" />
@@ -100,7 +96,7 @@ const Settings = () => (
     <RegionDetails path="regions/:id" />
     <NewRegion path="regions/new" />
 
-    <Users path="users" />
+    <Users path="team" />
 
     <PersonalInformation path="personal-information" />
   </Router>

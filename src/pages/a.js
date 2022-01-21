@@ -23,7 +23,7 @@ const IndexPage = () => {
   return (
     <Layout>
       <SEO title="Home" />
-      <Router basepath="a">
+      <Router basepath="a" className="h-full">
         <PrivateRoute path="oauth/:app_name" component={Oauth} />
         <PrivateRoute path="products/*" component={Products} />
         <PrivateRoute path="collections/*" component={Collections} />
