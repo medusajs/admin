@@ -1,8 +1,10 @@
 import React, { useMemo } from "react"
-import StatusIndicator from "../../atoms/status-indicator"
+import { currencies } from "../../../utils/currencies"
+import { normalizeAmount } from "../../../utils/prices"
 import EditIcon from "../../fundamentals/icons/edit-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
+import StatusIndicator from "../../fundamentals/status-indicator"
 import { ActionType } from "../../molecules/actionables"
 import BannerCard from "../../molecules/banner-card"
 import TagGrid from "../../molecules/tag-grid.tsx"
@@ -65,10 +67,13 @@ const GiftCardBanner: React.FC<GiftCardBannerProps> = ({
 
         if (!price) return ""
 
-        return `${price.amount / 100} ${defaultCurrency.toUpperCase()}`
+        return `${normalizeAmount(
+          defaultCurrency,
+          price.amount
+        )} ${defaultCurrency.toUpperCase()}`
       })
       .filter(Boolean)
-  }, [variants, defaultCurrency])
+  }, [variants, defaultCurrency, currencies])
 
   return (
     <BannerCard title={title} thumbnail={thumbnail} actions={actions}>
@@ -77,9 +82,8 @@ const GiftCardBanner: React.FC<GiftCardBannerProps> = ({
         <div className="flex items-center justify-between">
           <TagGrid tags={denominations} badgeVariant="denomination" />
           <StatusIndicator
-            ok={status === "published"}
-            okText="Published"
-            notOkText="Unpublished"
+            variant={status === "published" ? "success" : "danger"}
+            title={status === "published" ? "Published" : "Unpublished"}
           />
         </div>
       </BannerCard.Footer>
