@@ -1,26 +1,29 @@
-import React, { useEffect, useContext } from "react"
+import React, { useEffect, useState, useMemo, useContext } from "react"
 import { Router } from "@reach/router"
 import qs from "query-string"
 import { InterfaceContext } from "../../context/interface"
 
 import ManageGiftCard from "./manage"
 import GiftCardDetail from "./detail"
-import useMedusa from "../../hooks/use-medusa"
-import Breadcrumb from "../../components/molecules/breadcrumb"
 import BodyCard from "../../components/organisms/body-card"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import GiftCardTable from "../../components/templates/gift-card-table"
 import PageDescription from "../../components/atoms/page-description"
+import { useAdminGiftCards } from "medusa-react"
+import Spinner from "../../components/atoms/spinner"
 
 const Index = () => {
-  const { gift_cards, refresh } = useMedusa("giftCards")
+  const [query, setQuery] = useState({
+    offset: 0,
+    limit: 20,
+  })
+
+  const { gift_cards, isLoading } = useAdminGiftCards(query)
 
   const searchQuery = (q) => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
-      fields: "id,title,thumbnail",
-      expand: "variants,variants.prices,collection",
       q,
       offset: 0,
       limit: 20,
@@ -32,7 +35,6 @@ const Index = () => {
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({ search })
   }
 
   const actionables = [
@@ -61,7 +63,11 @@ const Index = () => {
           subtitle="See the history of purchased gift cards"
           actionables={actionables}
         >
-          <GiftCardTable giftCards={gift_cards} />
+          {isLoading || !gift_cards ? (
+            <Spinner size="large" />
+          ) : (
+            <GiftCardTable giftCards={gift_cards} />
+          )}
         </BodyCard>
       </div>
     </div>
