@@ -20,7 +20,7 @@ type ActionablesProps = {
  * If only a single actionable is provided, it will render a button instead.
  */
 const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
-  if (!actions) {
+  if (!actions?.length) {
     return null
   }
 
@@ -43,7 +43,7 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
         >
           {actions.map((action, i) => {
             return (
-              <DropdownMenu.Item key={i}>
+              <DropdownMenu.Item className="mb-1 last:mb-0" key={i}>
                 {
                   <Button
                     variant="ghost"

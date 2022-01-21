@@ -120,7 +120,7 @@ const SidebarTeam: React.FC<SidebarTeamProps> = ({ users }) => {
         onClick={() => setIsOpen(true)}
         className="flex items-center bg-grey-0 px-2.5 py-1.5 cursor-pointer text-violet-60"
       >
-        <div className="w-5 h-5 bg-violet-20 rounded-full text-center flex justify-center items-center text-violet-60">
+        <div className="w-[24px] h-[24px]  bg-violet-20 text-violet-60 rounded-full text-center flex justify-center items-center text-violet-60">
           <PlusIcon size={16} />
         </div>
         <span className="ml-2.5">Invite your team</span>

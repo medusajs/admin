@@ -21,7 +21,7 @@ const getInitial = (
 }
 
 const SidebarTeamMember: React.FC<SidebarTeamMemberProps> = ({
-  color = "bg-violet-40",
+  color = "bg-violet-60",
   user,
 }: SidebarTeamMemberProps) => {
   const fullName =
