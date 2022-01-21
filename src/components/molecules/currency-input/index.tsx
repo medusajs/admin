@@ -37,7 +37,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
             ? `${emoji} ${code.toUpperCase()}`
             : `${code.toUpperCase()}`,
           symbol: symbol_native,
-        })) ?? []
+        }))
+        .filter(Boolean) || []
     )
   }, [options, currencies, currentCurrency])
 
@@ -56,7 +57,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       enableSearch
       label="Currency"
       options={opts}
-      value={{ ...selected }}
+      value={selected}
       onChange={setSelected}
       className={className}
       required={required}
