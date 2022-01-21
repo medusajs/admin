@@ -22,8 +22,6 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
 }) => {
   const isSelectable = options ? true : false
 
-  console.log(currentCurrency, options)
-
   const opts = useMemo(() => {
     const codes = options
       ? options.map((o) => o.toLowerCase())
@@ -31,19 +29,18 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     return (
       Object.entries(currencies)
         .filter(([_key, obj]) => codes.includes(obj.code.toLowerCase()))
-        .map(({ "1": { code, symbol_native, emoji } }) => ({
+        .map(({ "1": { code, symbol_native, decimal_digits } }) => ({
           value: code.toLowerCase(),
-          label: emoji
-            ? `${emoji} ${code.toUpperCase()}`
-            : `${code.toUpperCase()}`,
+          label: `${code.toUpperCase()}`,
           symbol: symbol_native,
+          digits: decimal_digits,
         }))
         .filter(Boolean) || []
     )
   }, [options, currencies, currentCurrency])
 
   const [selected, setSelected] = useState(
-    opts.find(({ value }) => value === currentCurrency)
+    opts.find(({ value }) => value === currentCurrency?.toLowerCase())
   )
 
   useEffect(() => {

@@ -11,7 +11,7 @@ const Template = (args) => <PriceInput {...args} />
 
 export const CurrencyEditable = Template.bind({})
 CurrencyEditable.args = {
-  currencyCodes: ["USD", "EUR", "GBP", "DKK", "NOK", "SEK"],
+  currencyCodes: ["USD", "EUR", "GBP", "DKK", "NOK", "SEK", "KRW"],
   currentCurrency: "USD",
   currentAmount: 25.95,
   onAmountChange: (amount) => {
@@ -24,8 +24,11 @@ CurrencyEditable.args = {
 
 export const CurrencyNotEditable = Template.bind({})
 CurrencyNotEditable.args = {
-  currencyCodes: ["USD", "EUR", "GBP", "DKK", "NOK", "SEK"],
+  currencyCodes: null,
+  currentCurrency: "USD",
   onAmountChange: (amount) => {
     console.log(amount)
   },
+  onCurrencyChange: (currency) => {},
+  currencyDisabled: true,
 }

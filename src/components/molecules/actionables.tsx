@@ -29,9 +29,9 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
           <Button
-            className="w-8 h-8 p-1.5 focus:border-none focus:shadow-none"
             variant="ghost"
             size="small"
+            className="w-xlarge h-xlarge focus:border-none focus:shadow-none"
           >
             <MoreHorizontalIcon size={20} />
           </Button>
@@ -48,10 +48,9 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
                   <Button
                     variant="ghost"
                     size="small"
-                    className={clsx(
-                      "w-full",
-                      action.variant === "danger" ? "text-rose-50" : ""
-                    )}
+                    className={clsx("w-full", {
+                      "text-rose-50": action.variant === "danger",
+                    })}
                     onClick={action.onClick}
                   >
                     {action.icon}

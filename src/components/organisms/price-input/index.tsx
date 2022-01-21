@@ -29,7 +29,8 @@ const PriceInput: React.FC<PriceInputProps> = ({
 }) => {
   const [amount, setAmount] = useState<number | undefined>(currentAmount)
   const [symbol, setSymbol] = useState<string | undefined>(currentCurrency)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [decimal, setDecimal] = useState<number | undefined>(2)
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   const onClickChevronUp = () => {
     setAmount(amount ? amount + step : step)
@@ -61,7 +62,11 @@ const PriceInput: React.FC<PriceInputProps> = ({
 
   const handleCurrencyChange = (currency) => {
     setSymbol(currency?.symbol)
+    setDecimal(currency?.digits)
     onCurrencyChange(currency?.value)
+
+    inputRef.current?.blur()
+    console.log()
   }
 
   useEffect(() => {
@@ -90,6 +95,8 @@ const PriceInput: React.FC<PriceInputProps> = ({
             className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
             ref={inputRef}
             step={1}
+            decimalScale={decimal}
+            allowDecimals={decimal !== 0}
             allowNegativeValue={false}
             value={amount}
             onValueChange={handleAmountChange}
@@ -112,6 +119,9 @@ const PriceInput: React.FC<PriceInputProps> = ({
           </div>
         </div>
       </InputContainer>
+      <button onClick={() => console.log(amount, symbol, decimal)}>
+        check
+      </button>
     </div>
   )
 }
