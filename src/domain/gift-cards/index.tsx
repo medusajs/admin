@@ -1,4 +1,5 @@
 import { Router } from "@reach/router"
+import { useAdminProducts } from "medusa-react"
 import qs from "query-string"
 import React, { useContext, useEffect } from "react"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
@@ -7,7 +8,6 @@ import BodyCard from "../../components/organisms/body-card"
 import GiftCardTable from "../../components/templates/gift-card-table"
 import { InterfaceContext } from "../../context/interface"
 import useMedusa from "../../hooks/use-medusa"
-import GiftCardDetail from "./detail"
 import ManageGiftCard from "./manage"
 
 const Index = () => {
@@ -36,7 +36,7 @@ const Index = () => {
   const actionables = [
     {
       label: "Custom Gift Card",
-      onClick: () => console.log("create custom gift card"), // TODO
+      onClick: () => console.log("create custom gift card"), // TODO: open modal
       icon: <PlusIcon size={20} />,
     },
   ]
@@ -68,11 +68,12 @@ const Index = () => {
 }
 
 const GiftCard = () => {
+  const { products } = useAdminProducts({ is_giftcard: "true" })
+
   return (
     <Router>
       <Index path="/" />
-      <ManageGiftCard path="manage" />
-      <GiftCardDetail path=":id" />
+      {products?.length && <ManageGiftCard path="manage" id={products[0].id} />}
     </Router>
   )
 }
