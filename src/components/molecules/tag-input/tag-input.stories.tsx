@@ -16,13 +16,5 @@ Normal.args = {
   label: "Tags (comma separated values)",
   values: ["SS21", "Core"],
   placeholder: "Sprint, autumn, etc.",
-}
-
-export const WithToolTip = Template.bind({})
-Normal.args = {
-  label: "Tags (comma separated values)",
-  values: ["SS21", "Core"],
-  placeholder: "Sprint, autumn, etc.",
-  tooltipText: "Used to add keywords",
-  withTooltip: true,
+  tooltipContent: "Used to add keywords",
 }
