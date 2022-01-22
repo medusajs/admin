@@ -16,8 +16,8 @@ type TagInputProps = {
   values: string[]
   containerProps?: React.HTMLAttributes<HTMLDivElement>
   withTooltip?: boolean
-  tooltipText?: string
-  tooltipProps?: any
+  tooltipContent?: string
+  tooltip?: React.ReactNode
 } & React.InputHTMLAttributes<HTMLInputElement>
 
 const TagInput: React.FC<TagInputProps> = ({
@@ -29,8 +29,8 @@ const TagInput: React.FC<TagInputProps> = ({
   required,
   placeholder,
   withTooltip = false,
-  tooltipText,
-  tooltipProps = {},
+  tooltipContent,
+  tooltip,
   ...props
 }) => {
   const [highlighted, setHighlighted] = useState(-1)
@@ -133,7 +133,7 @@ const TagInput: React.FC<TagInputProps> = ({
     >
       <InputHeader
         label={label || "Tags (comma separated)"}
-        {...{ required, withTooltip, tooltipText, tooltipProps }}
+        {...{ required, tooltipContent, tooltip }}
       />
       <div className="w-full flex mt-1 ml-0 flex-wrap">
         {values.map((v, index) => (
