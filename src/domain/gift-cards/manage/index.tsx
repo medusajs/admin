@@ -100,7 +100,8 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
               </div>
               <TagInput
                 label="Tags (separated by comma)"
-                defaultValue={giftCard?.description}
+                placeholder={"sprint, summer"}
+                defaultValue={giftCard?.tags.join(", ")}
                 className="w-1/2"
                 values={[]}
                 onChange={(e) => setValue("description", e.target.value)}
