@@ -7,12 +7,9 @@ import Breadcrumb from "../../components/molecules/breadcrumb"
 import BodyCard from "../../components/organisms/body-card"
 import GiftCardTable from "../../components/templates/gift-card-table"
 import { InterfaceContext } from "../../context/interface"
-import useMedusa from "../../hooks/use-medusa"
 import ManageGiftCard from "./manage"
 
-const Index = () => {
-  const { gift_cards, refresh } = useMedusa("giftCards")
-
+const Index = ({ giftCards }) => {
   const searchQuery = (q) => {
     const baseUrl = qs.parseUrl(window.location.href).url
 
@@ -30,7 +27,7 @@ const Index = () => {
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({ search })
+    // TODO: Refresh
   }
 
   const actionables = [
@@ -60,7 +57,7 @@ const Index = () => {
           subtitle="See the history of purchased gift cards"
           actionables={actionables}
         >
-          <GiftCardTable giftCards={gift_cards} />
+          <GiftCardTable giftCards={giftCards} />
         </BodyCard>
       </div>
     </div>
@@ -68,12 +65,14 @@ const Index = () => {
 }
 
 const GiftCard = () => {
-  const { products } = useAdminProducts({ is_giftcard: "true" })
+  const { products: giftCards } = useAdminProducts({ is_giftcard: "true" })
 
   return (
     <Router>
-      <Index path="/" />
-      {products?.length && <ManageGiftCard path="manage" id={products[0].id} />}
+      <Index path="/" giftCards={giftCards} />
+      {giftCards?.length && (
+        <ManageGiftCard path="manage" id={giftCards[0].id} />
+      )}
     </Router>
   )
 }

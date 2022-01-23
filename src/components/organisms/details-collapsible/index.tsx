@@ -12,7 +12,10 @@ const DetailsCollapsible = ({ children }) => {
 
   return (
     <RadixCollapsible.Root onOpenChange={(state) => setOpen(state)}>
-      <RadixCollapsible.Trigger className={clsx("ml-4", { ["mb-6"]: open })}>
+      <RadixCollapsible.Trigger
+        className={clsx("ml-4", { ["mb-6"]: open })}
+        type="button"
+      >
         <div className="flex items-center">
           <Icon size={"20"} />
           <div className="ml-1">{label}</div>

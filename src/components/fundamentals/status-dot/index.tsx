@@ -1,9 +1,9 @@
-import React from "react"
 import clsx from "clsx"
+import React from "react"
 
 type StatusDotProps = {
   title: string
-  variant: "primary" | "danger" | "warning" | "success"
+  variant: "primary" | "danger" | "warning" | "success" | "default"
 } & React.HTMLAttributes<HTMLDivElement>
 
 const StatusDot: React.FC<StatusDotProps> = ({
@@ -17,6 +17,7 @@ const StatusDot: React.FC<StatusDotProps> = ({
     "bg-rose-50": variant === "danger",
     "bg-yellow-50": variant === "warning",
     "bg-violet-60": variant === "primary",
+    "bg-grey-40": variant === "default",
   })
   return (
     <div className={clsx("flex items-center", className)} {...props}>
