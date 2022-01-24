@@ -37,7 +37,7 @@ export const extractUnitPrice = (item, region, withTax = true) => {
 export const displayUnitPrice = (item, region) => {
   const currCode = region.currency_code.toUpperCase()
 
-  let price = extractUnitPrice(item, region)
+  const price = extractUnitPrice(item, region)
   return `${displayAmount(currCode, price)} ${currCode}`
 }
 
@@ -59,4 +59,13 @@ export function persistedPrice(currency: string, amount: number): number {
 function getDecimalDigits(currency: string) {
   const divisionDigits = currencies[currency.toUpperCase()].decimal_digits
   return Math.pow(10, divisionDigits)
+}
+
+export const stringDisplayPrice = ({ amount, currencyCode }) => {
+  if (!amount || !currencyCode) {
+    return `N/A`
+  }
+
+  const display = displayAmount(currencyCode, amount)
+  return `${display} ${currencyCode.toUpperCase()}`
 }
