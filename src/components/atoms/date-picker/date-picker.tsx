@@ -71,7 +71,8 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
           sideOffset={8}
           className="rounded-rounded px-8  border border-grey-20 bg-grey-0 w-full shadow-dropdown"
         >
-          <ReactDatePicker
+          <CalendarComponent date={tempDate} onChange={setTempDate} />
+          {/* <ReactDatePicker
             selected={tempDate}
             inline
             onChange={setTempDate}
@@ -94,7 +95,7 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
                 increaseMonth={increaseMonth}
               />
             )}
-          />
+          /> */}
 
           <div className="flex w-full mb-8 mt-5">
             <Button
@@ -142,7 +143,7 @@ const CustomHeader = ({ date, decreaseMonth, increaseMonth, ...props }) => {
           size="medium"
           tabIndex={-1}
           className="w-full h-full flex justify-center p-2 focus:border-0 focus:shadow-none"
-          onClick={increaseMonth}
+          onClick={(val) => increaseMonth(val)}
         >
           <ChevronRightIcon size={16} />
         </Button>
@@ -150,5 +151,30 @@ const CustomHeader = ({ date, decreaseMonth, increaseMonth, ...props }) => {
     </div>
   )
 }
+
+export const CalendarComponent = ({ date, onChange }) => (
+  <ReactDatePicker
+    selected={date}
+    inline
+    onChange={onChange}
+    calendarClassName="date-picker"
+    dayClassName={(d) => {
+      return moment(d).format("YY,MM,DD") === moment(date).format("YY,MM,DD")
+        ? "date chosen"
+        : `date ${
+            moment(d).format("YY,MM,DD") < moment(new Date()).format("YY,MM,DD")
+              ? "past"
+              : ""
+          }`
+    }}
+    renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+      <CustomHeader
+        date={date}
+        decreaseMonth={decreaseMonth}
+        increaseMonth={increaseMonth}
+      />
+    )}
+  />
+)
 
 export default DatePicker
