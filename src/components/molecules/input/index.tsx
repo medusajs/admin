@@ -8,20 +8,18 @@ import React, {
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import InputContainer from "../../fundamentals/input-container"
-import InputHeader from "../../fundamentals/input-header"
+import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
 
-type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  label: string
-  deletable?: boolean
-  key?: string
-  onDelete?: MouseEventHandler<HTMLSpanElement>
-  onChange?: ChangeEventHandler<HTMLInputElement>
-  onFocus?: FocusEventHandler<HTMLInputElement>
-  withTooltip?: boolean
-  tooltipText?: string
-  tooltipProps?: any
-  props?: React.HTMLAttributes<HTMLDivElement>
-}
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
+  InputHeaderProps & {
+    label?: string
+    deletable?: boolean
+    key?: string
+    onDelete?: MouseEventHandler<HTMLSpanElement>
+    onChange?: ChangeEventHandler<HTMLInputElement>
+    onFocus?: FocusEventHandler<HTMLInputElement>
+    props?: React.HTMLAttributes<HTMLDivElement>
+  }
 
 const InputField = React.forwardRef(
   (
@@ -35,9 +33,8 @@ const InputField = React.forwardRef(
       onDelete,
       onChange,
       onFocus,
-      withTooltip = false,
-      tooltipText,
-      tooltipProps = {},
+      tooltipContent,
+      tooltip,
       props,
       className,
       ...fieldProps
@@ -82,9 +79,7 @@ const InputField = React.forwardRef(
         {...props}
       >
         {label && (
-          <InputHeader
-            {...{ label, required, withTooltip, tooltipText, tooltipProps }}
-          />
+          <InputHeader {...{ label, required, tooltipContent, tooltip }} />
         )}
         <div className="w-full flex mt-1">
           <input
@@ -109,13 +104,13 @@ const InputField = React.forwardRef(
             <div className="flex self-end">
               <span
                 onClick={onClickChevronDown}
-                onMouseDown={e => e.preventDefault()}
+                onMouseDown={(e) => e.preventDefault()}
                 className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
               >
                 <MinusIcon size={16} />
               </span>
               <span
-                onMouseDown={e => e.preventDefault()}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={onClickChevronUp}
                 className="text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
               >
