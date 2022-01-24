@@ -67,7 +67,6 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
       update.tags = tags.map((t) => ({ value: t }))
     }
 
-    console.log(update)
     updateGiftCard.mutate(update, {
       onSuccess: () => toaster("Successfully updated Gift Card", "success"),
       onError: (err) => toaster(getErrorMessage(err), "error"),
