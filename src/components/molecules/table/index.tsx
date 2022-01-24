@@ -1,6 +1,6 @@
-import React from "react"
-import { navigate } from "gatsby"
 import clsx from "clsx"
+import { navigate } from "gatsby"
+import React from "react"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
 import TableSearch from "./table-search"
@@ -49,7 +49,7 @@ const Table: TableType = React.forwardRef(
         <div className="w-full flex justify-between">
           {filteringOptions && (
             <div className="flex mb-2 self-end">
-              {filteringOptions.map(fo => (
+              {filteringOptions.map((fo) => (
                 <FilteringOptions {...fo} />
               ))}
             </div>
@@ -153,7 +153,7 @@ Table.Row = React.forwardRef(
     <tr
       ref={ref}
       className={clsx(
-        "inter-small-regular border-t border-b border-grey-20 text-grey-90",
+        "inter-small-regular border-t border-b border-grey-20 text-grey-90 hover:bg-grey-5",
         className,
         { "cursor-pointer": linkTo !== undefined }
       )}

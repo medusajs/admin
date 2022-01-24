@@ -1,29 +1,13 @@
-import React, { useState, useCallback, useEffect, useContext } from "react"
-import { navigate } from "gatsby"
 import { Router } from "@reach/router"
-import { Input } from "@rebass/forms"
-import { Text, Flex, Box } from "rebass"
-import { InterfaceContext } from "../../context/interface"
+import { useAdminCustomers } from "medusa-react"
 import qs from "query-string"
-import Details from "./details"
-
+import React, { useContext, useEffect, useState } from "react"
+import PageDescription from "../../components/atoms/page-description"
+import BodyCard from "../../components/organisms/body-card"
+import CustomerTable from "../../components/templates/customer-table"
+import { InterfaceContext } from "../../context/interface"
 import useMedusa from "../../hooks/use-medusa"
-
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-  TableDataCell,
-  TableHeaderRow,
-  DefaultCellContent,
-  BadgdeCellContent,
-} from "../../components/table"
-import Button from "../../components/button"
-import Spinner from "../../components/spinner"
-import Badge from "../../components/fundamentals/badge"
-import { decideBadgeColor } from "../../utils/decide-badge-color"
+import Details from "./details"
 
 const CustomerIndex = () => {
   const filtersOnLoad = qs.parse(window.location.search)
@@ -36,17 +20,20 @@ const CustomerIndex = () => {
     filtersOnLoad.limit = 20
   }
 
-  const { customers, isLoading, refresh, total_count } = useMedusa(
-    "customers",
-    {
-      search: `?${qs.stringify(filtersOnLoad)}`,
-    }
-  )
+  const { customers, isLoading } = useAdminCustomers({
+    expand: ["orders"],
+    limit: filtersOnLoad.limit,
+    offset: filtersOnLoad.offset,
+  })
+
+  const { refresh, total_count } = useMedusa("customers", {
+    search: `?${qs.stringify(filtersOnLoad)}`,
+  })
   const [offset, setOffset] = useState(0)
   const [limit, setLimit] = useState(20)
   const [query, setQuery] = useState("")
 
-  const searchQuery = q => {
+  const searchQuery = (q) => {
     setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
@@ -69,115 +56,42 @@ const CustomerIndex = () => {
     setOnSearch(searchQuery)
   }, [])
 
-  const handlePagination = direction => {
-    const updatedOffset = direction === "next" ? offset + limit : offset - limit
-    const baseUrl = qs.parseUrl(window.location.href).url
+  // const handlePagination = (direction) => {
+  //   const updatedOffset = direction === "next" ? offset + limit : offset - limit
+  //   const baseUrl = qs.parseUrl(window.location.href).url
 
-    const prepared = qs.stringify(
-      {
-        q: query,
-        offset: updatedOffset,
-        limit,
-      },
-      { skipNull: true, skipEmptyString: true }
-    )
+  //   const prepared = qs.stringify(
+  //     {
+  //       q: query,
+  //       offset: updatedOffset,
+  //       limit,
+  //     },
+  //     { skipNull: true, skipEmptyString: true }
+  //   )
 
-    window.history.pushState(baseUrl, "", `?${prepared}`)
+  //   window.history.pushState(baseUrl, "", `?${prepared}`)
 
-    refresh({ search: `?${prepared}` }).then(() => {
-      setOffset(updatedOffset)
-    })
-  }
+  //   refresh({ search: `?${prepared}` }).then(() => {
+  //     setOffset(updatedOffset)
+  //   })
+  // }
 
-  const moreResults = customers && customers.length >= limit
+  // const moreResults = customers && customers.length >= limit
 
   return (
-    <Flex flexDirection="column" pb={5} pt={5}>
-      <Flex>
-        <Text fontSize={20} fontWeight="bold" mb={3}>
-          Customers
-        </Text>
-      </Flex>
-      {isLoading ? (
-        <Flex
-          flexDirection="column"
-          alignItems="center"
-          height="100vh"
-          mt="auto"
-        >
-          <Box height="75px" width="75px" mt="50%">
-            <Spinner dark />
-          </Box>
-        </Flex>
-      ) : (
-        <Table>
-          <TableHead>
-            <TableHeaderRow>
-              <TableHeaderCell>Email</TableHeaderCell>
-              <TableHeaderCell>Name</TableHeaderCell>
-              <TableHeaderCell sx={{ width: "75px" }} />
-            </TableHeaderRow>
-          </TableHead>
-          <TableBody>
-            {customers.map((el, i) => {
-              const fullName = `${el.first_name || ""} ${el.last_name || ""}`
-
-              return (
-                <TableRow
-                  key={i}
-                  onClick={() => navigate(`/a/customers/${el.id}`)}
-                >
-                  <TableDataCell>
-                    <DefaultCellContent>
-                      {el.email ? el.email : "-"}
-                    </DefaultCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    <DefaultCellContent>
-                      {fullName !== " " ? fullName : "-"}
-                    </DefaultCellContent>
-                  </TableDataCell>
-                  <TableDataCell>
-                    {el.has_account ? (
-                      <BadgdeCellContent>
-                        <Badge color="#ffffff" bg="#4BB543">
-                          Signed up
-                        </Badge>
-                      </BadgdeCellContent>
-                    ) : (
-                      ""
-                    )}
-                  </TableDataCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      )}
-      <Flex mt={2}>
-        <Box ml="auto" />
-        <Button
-          onClick={() => handlePagination("previous")}
-          disabled={offset === 0}
-          variant={"primary"}
-          fontSize="12px"
-          height="24px"
-          mr={1}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => handlePagination("next")}
-          disabled={!moreResults}
-          variant={"primary"}
-          fontSize="12px"
-          height="24px"
-          ml={1}
-        >
-          Next
-        </Button>
-      </Flex>
-    </Flex>
+    <div className="flex flex-col grow h-full">
+      <PageDescription
+        title={"Customers"}
+        subtitle="See the overview of customers"
+      />
+      <div className="w-full flex flex-col grow">
+        <BodyCard title="Overview" className="mb-0">
+          <div className="flex grow  flex-col pt-2">
+            <CustomerTable />
+          </div>
+        </BodyCard>
+      </div>
+    </div>
   )
 }
 
