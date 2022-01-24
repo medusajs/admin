@@ -11,12 +11,11 @@ import { DateTimePickerProps } from "./types"
 
 const TimePicker: React.FC<DateTimePickerProps> = ({
   date,
-  onChange,
+  onSubmitDate,
   label = "start date",
   required = false,
-  withTooltip = false,
-  tooltipText,
-  tooltipProps = {},
+  tooltipContent,
+  tooltip,
 }) => {
   const [selectedMinute, setSelectedMinute] = useState(date?.getUTCMinutes())
   const [selectedHour, setSelectedHour] = useState(date?.getUTCHours())
@@ -31,7 +30,7 @@ const TimePicker: React.FC<DateTimePickerProps> = ({
       const newDate = new Date(date.getTime())
       newDate.setUTCHours(selectedHour)
       newDate.setUTCMinutes(selectedMinute)
-      onChange(newDate)
+      onSubmitDate(newDate)
     }
   }, [selectedMinute, selectedHour])
 
@@ -56,9 +55,8 @@ const TimePicker: React.FC<DateTimePickerProps> = ({
                   {...{
                     label,
                     required,
-                    withTooltip,
-                    tooltipText,
-                    tooltipProps,
+                    tooltipContent,
+                    tooltip,
                   }}
                 />
                 <ArrowDownIcon size={16} />
