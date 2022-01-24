@@ -1,10 +1,7 @@
-import { navigate } from "gatsby"
 import {
-  useAdminDeleteProduct,
   useAdminProduct,
   useAdminProductTypes,
   useAdminStore,
-  useAdminUpdateProduct,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -18,21 +15,23 @@ import Select from "../../../components/molecules/select"
 import TagInput from "../../../components/molecules/tag-input"
 import BodyCard from "../../../components/organisms/body-card"
 import DetailsCollapsible from "../../../components/organisms/details-collapsible"
-import useToaster from "../../../hooks/use-toaster"
-import { getErrorMessage } from "../../../utils/error-messages"
 import DenominationTable from "./denomination-table"
 
 type ManageGiftCardProps = {
   path: string
   id: string
+  updateGiftCard: (data) => void
+  deleteGiftCard: () => void
 }
 
-const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
+const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
+  id,
+  updateGiftCard,
+  deleteGiftCard,
+}: ManageGiftCardProps) => {
   const { store } = useAdminStore()
   const { product: giftCard, isSuccess } = useAdminProduct(id)
   const { types } = useAdminProductTypes()
-  const updateGiftCard = useAdminUpdateProduct(giftCard?.id)
-  const deleteProduct = useAdminDeleteProduct(giftCard?.id)
 
   const { register, handleSubmit, reset } = useForm()
 
@@ -44,8 +43,6 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
   const [tags, setTags] = useState<string[]>(
     giftCard?.tags?.map((t) => t.value) || []
   )
-
-  const toaster = useToaster()
 
   register("title")
   register("subtitle")
@@ -67,10 +64,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
       update.tags = tags.map((t) => ({ value: t }))
     }
 
-    updateGiftCard.mutate(update, {
-      onSuccess: () => toaster("Successfully updated Gift Card", "success"),
-      onError: (err) => toaster(getErrorMessage(err), "error"),
-    })
+    updateGiftCard(update)
   }
 
   useEffect(() => {
@@ -109,7 +103,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
       <BreadCrumb
         currentPage={"Manage Gift Card"}
         previousBreadcrumb={"Gift Cards"}
-        previousRoute="/a/giftcards"
+        previousRoute="/a/gift-cards"
       />
       <form className="flex flex-col space-y-4">
         <BodyCard
@@ -134,17 +128,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
             },
             {
               label: "Delete Gift Card",
-              onClick: () => {
-                deleteProduct.mutate(null, {
-                  onSuccess: () => {
-                    toaster("Successfully deleted Gift Card")
-                    navigate("/a/gift-cards")
-                  },
-                  onError: (err) => {
-                    toaster(getErrorMessage(err))
-                  },
-                })
-              },
+              onClick: () => deleteGiftCard(),
               variant: "danger",
               icon: <TrashIcon size="16" />,
             },

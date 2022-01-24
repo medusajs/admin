@@ -31,7 +31,7 @@ const BannerCard: React.FC<BannerCardProps> & {
           </div>
         )}
         <div className="w-full">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pb-2">
             <p className="inter-large-semibold">{title}</p>
             <Actionables actions={actions} />
           </div>

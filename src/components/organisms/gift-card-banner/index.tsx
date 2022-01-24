@@ -46,7 +46,7 @@ const GiftCardBanner: React.FC<GiftCardBannerProps> = ({
       icon: <EditIcon size={16} />,
     },
     {
-      label: "Unpublish",
+      label: status === "published" ? "Unpublish" : "Publish",
       onClick: onUnpublish,
       icon: <UnpublishIcon size={16} />,
     },
@@ -65,7 +65,9 @@ const GiftCardBanner: React.FC<GiftCardBannerProps> = ({
           (price) => price.currency_code === defaultCurrency
         )
 
-        if (!price) return ""
+        if (!price) {
+          return ""
+        }
 
         return `${normalizeAmount(
           defaultCurrency,
