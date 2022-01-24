@@ -9,7 +9,9 @@ import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import Select from "../../../components/molecules/select"
+import CurrencyInput from "../../../components/organisms/currency-input"
 import useToaster from "../../../hooks/use-toaster"
+import { Option } from "../../../types/shared"
 import { getErrorMessage } from "../../../utils/error-messages"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 
@@ -28,10 +30,20 @@ const NewShipping = ({
   const [adminOnly, setAdminOnly] = useState(false)
   const [options, setOptions] = useState([])
   const [selectedOption, setSelectedOption] = useState(null)
-  const [profileOptions, setProfileOptions] = useState([])
+  const [profileOptions, setProfileOptions] = useState<Option[]>([])
   const [selectedProfile, setSelectedProfile] = useState(null)
   const createShippingOption = useAdminCreateShippingOption()
   const toaster = useToaster()
+
+  useEffect(() => {
+    register("amount", { required: true })
+    register("requirements.max_subtotal.amount")
+    register("requirements.min_subtotal.amount")
+  }, [])
+
+  const handleAmountChange = (fieldName: string, amount?: number) => {
+    setValue(fieldName, amount)
+  }
 
   const handleSave = (data: {
     name: string
@@ -60,7 +72,7 @@ const NewShipping = ({
     if (data.requirements) {
       reqs = Object.entries(data.requirements).reduce((acc, [key, value]) => {
         if (value.amount && value.amount > 0) {
-          acc.push({ type: key, amount: Math.round(value.amount * 100) })
+          acc.push({ type: key, amount: value.amount })
           return acc
         } else {
           return acc
@@ -75,7 +87,7 @@ const NewShipping = ({
       profile_id: data.profile_id?.value,
       requirements: reqs,
       price_type: "flat_rate",
-      amount: Math.round(data.amount * 100),
+      amount: data.amount,
       is_return: isReturn,
       provider_id,
       admin_only: adminOnly,
@@ -160,25 +172,13 @@ const NewShipping = ({
                 placeholder="New Shipping Option"
                 className="flex-grow"
               />
-              <div className="flex items-center gap-2xsmall">
-                <Input
-                  label="Currency"
-                  value={region.currency_code.toUpperCase()}
-                  readOnly
-                  className="w-[120px] pointer-events-none"
-                  tabIndex={-1}
-                />
-                <Input
+              <CurrencyInput currentCurrency={region.currency_code} readOnly>
+                <CurrencyInput.AmountInput
                   label="Price"
-                  type="number"
-                  ref={register({ required: true })}
-                  name={"amount"}
-                  placeholder="10"
-                  required
-                  min={0}
-                  step={0.1}
+                  onChange={(v) => handleAmountChange("amount", v)}
+                  amount={undefined}
                 />
-              </div>
+              </CurrencyInput>
             </div>
             <div className="mt-large mb-xlarge">
               <label className="inline-flex items-center inter-base-semibold">
@@ -228,40 +228,36 @@ const NewShipping = ({
               <div>
                 <p className="inter-base-semibold mb-base">Requirements</p>
                 <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
-                  <div className="flex items-center gap-2xsmall">
-                    <Input
-                      label="Currency"
-                      value={region.currency_code.toUpperCase()}
-                      readOnly
-                      className="w-[120px] pointer-events-none"
-                      tabIndex={-1}
+                  <CurrencyInput
+                    currentCurrency={region.currency_code}
+                    readOnly
+                  >
+                    <CurrencyInput.AmountInput
+                      label="Price"
+                      onChange={(v) =>
+                        handleAmountChange(
+                          "requirements.min_subtotal.amount",
+                          v
+                        )
+                      }
+                      amount={undefined}
                     />
-                    <Input
-                      label="Min. subtotal"
-                      type="number"
-                      name={`requirements.min_subtotal.amount`}
-                      min={0}
-                      ref={register}
-                      placeholder="0"
+                  </CurrencyInput>
+                  <CurrencyInput
+                    currentCurrency={region.currency_code}
+                    readOnly
+                  >
+                    <CurrencyInput.AmountInput
+                      label="Price"
+                      onChange={(v) =>
+                        handleAmountChange(
+                          "requirements.max_subtotal.amount",
+                          v
+                        )
+                      }
+                      amount={undefined}
                     />
-                  </div>
-                  <div className="flex items-center gap-2xsmall">
-                    <Input
-                      label="Currency"
-                      value={region.currency_code.toUpperCase()}
-                      readOnly
-                      className="w-[120px] pointer-events-none"
-                      tabIndex={-1}
-                    />
-                    <Input
-                      label="Max. subtotal"
-                      type="number"
-                      min={0}
-                      name={`requirements.max_subtotal.amount`}
-                      ref={register}
-                      placeholder="100"
-                    />
-                  </div>
+                  </CurrencyInput>
                 </div>
               </div>
             )}
