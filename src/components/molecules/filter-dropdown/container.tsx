@@ -56,7 +56,9 @@ const FilterDropdownContainer: React.FC<FilterDropdownContainerProps> = ({
         </div>
         {React.Children.map(children, (child) => {
           return (
-            <div className="border-b border-grey-20 py-2 px-4">{child}</div>
+            <div className="border-b border-grey-20 py-2 px-4 last:pb-0 last:border-0">
+              {child}
+            </div>
           )
         })}
       </RadixPopover.Content>
