@@ -2,12 +2,12 @@ import { useAdminCustomers } from "medusa-react"
 import moment from "moment"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import { useDebounce } from "../../hooks/use-debounce"
-import Spinner from "../atoms/spinner"
-import DetailsIcon from "../fundamentals/details-icon"
-import EditIcon from "../fundamentals/icons/edit-icon"
-import CustomerAvatarItem from "../molecules/customer-avatar-item"
-import Table, { TablePagination } from "../molecules/table"
+import { useDebounce } from "../../../hooks/use-debounce"
+import Spinner from "../../atoms/spinner"
+import DetailsIcon from "../../fundamentals/details-icon"
+import EditIcon from "../../fundamentals/icons/edit-icon"
+import CustomerAvatarItem from "../../molecules/customer-avatar-item"
+import Table, { TablePagination } from "../../molecules/table"
 
 type CustomerTableProps = {
   customers: any[]
@@ -144,6 +144,7 @@ const CustomerTable: React.FC<CustomerTableProps> = () => {
     }
   }
 
+  // Upon searching, we always start on first oage
   const handleSearch = (q) => {
     setOffset(0)
     setCurrentPage(0)
