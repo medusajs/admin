@@ -14,12 +14,11 @@ import { DateTimePickerProps } from "./types"
 
 const DatePicker: React.FC<DateTimePickerProps> = ({
   date,
-  onChange,
+  onSubmitDate,
   label = "start date",
   required = false,
-  withTooltip = false,
-  tooltipText,
-  tooltipProps = {},
+  tooltipContent,
+  tooltip,
 }) => {
   const [tempDate, setTempDate] = useState(date)
   const [isOpen, setIsOpen] = useState(false)
@@ -33,7 +32,7 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
     newDate.setUTCMonth(tempDate.getUTCMonth())
     newDate.setUTCFullYear(tempDate.getUTCFullYear())
 
-    onChange(newDate)
+    onSubmitDate(newDate)
     setIsOpen(false)
   }
 
@@ -53,9 +52,8 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
                   {...{
                     label,
                     required,
-                    withTooltip,
-                    tooltipText,
-                    tooltipProps,
+                    tooltipContent,
+                    tooltip,
                   }}
                 />
                 <ArrowDownIcon size={16} />
