@@ -86,9 +86,9 @@ Modal.Header = ({ handleClose = undefined, children }) => {
     >
       <div className="pb-1 flex w-full justify-end">
         {handleClose && (
-          <span onClick={handleClose} className="text-grey-50 cursor-pointer">
+          <button onClick={handleClose} className="text-grey-50 cursor-pointer">
             <CrossIcon size={20} />
-          </span>
+          </button>
         )}
       </div>
       {children}

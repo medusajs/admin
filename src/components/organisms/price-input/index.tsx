@@ -69,9 +69,9 @@ const PriceInput: React.FC<PriceInputProps> = ({
     console.log()
   }
 
-  useEffect(() => {
-    onAmountChange(amount)
-  }, [amount])
+  // useEffect(() => {
+  //   onAmountChange(amount)
+  // }, [amount])
 
   return (
     <div className="flex items-center gap-x-2xsmall">
@@ -82,7 +82,10 @@ const PriceInput: React.FC<PriceInputProps> = ({
         onCurrencyChange={handleCurrencyChange}
         className="w-[142px]"
       />
-      <InputContainer onClick={() => inputRef.current?.focus()}>
+      <InputContainer
+        className="flex-1"
+        onClick={() => inputRef.current?.focus()}
+      >
         <InputHeader label="Amount" required={amountRequired} />
         <div className="flex items-center mt-2xsmall">
           {symbol && (
@@ -99,7 +102,7 @@ const PriceInput: React.FC<PriceInputProps> = ({
             allowDecimals={decimal !== 0}
             allowNegativeValue={false}
             value={amount}
-            onValueChange={handleAmountChange}
+            onValueChange={onAmountChange}
           />
           <div className="flex self-end">
             <span
@@ -119,9 +122,6 @@ const PriceInput: React.FC<PriceInputProps> = ({
           </div>
         </div>
       </InputContainer>
-      <button onClick={() => console.log(amount, symbol, decimal)}>
-        check
-      </button>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { currencies } from "../../../utils/currencies"
 import Input from "../input"
 import Select from "../select"
@@ -20,6 +20,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   name,
   ...props
 }) => {
+  const initialRender = useRef(true)
   const isSelectable = options ? true : false
 
   const opts = useMemo(() => {
@@ -44,9 +45,10 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   )
 
   useEffect(() => {
-    if (onCurrencyChange) {
+    if (onCurrencyChange && !initialRender.current) {
       onCurrencyChange(selected)
     }
+    initialRender.current = false
   }, [selected])
 
   return isSelectable ? (
