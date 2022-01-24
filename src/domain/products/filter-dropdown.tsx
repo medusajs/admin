@@ -72,9 +72,9 @@ const ProductsFilter = ({
           setCollectionFilter(obj)
         }}
       />
-      <div>
+      <div className="flex flex-col w-full pb-2">
         <div
-          className="flex w-full py-1.5 px-3 mb-1 items-center hover:bg-grey-5 rounded cursor-pointer"
+          className="flex w-full items-center px-3 mb-1 py-1.5 hover:bg-grey-5 rounded cursor-pointer"
           onClick={() =>
             setTagsFilter({
               open: !tagsFilter.open,
