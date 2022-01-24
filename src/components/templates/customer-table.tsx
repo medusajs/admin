@@ -1,11 +1,13 @@
 import { useAdminCustomers } from "medusa-react"
 import moment from "moment"
-import qs from "query-string"
-import React, { useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
+import { usePagination, useTable } from "react-table"
+import { useDebounce } from "../../hooks/use-debounce"
+import Spinner from "../atoms/spinner"
 import DetailsIcon from "../fundamentals/details-icon"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import CustomerAvatarItem from "../molecules/customer-avatar-item"
-import Table from "../molecules/table"
+import Table, { TablePagination } from "../molecules/table"
 
 type CustomerTableProps = {
   customers: any[]
@@ -25,83 +27,193 @@ const getColor = (index: number): string => {
 }
 
 const CustomerTable: React.FC<CustomerTableProps> = () => {
-  const filtersOnLoad = qs.parse(window.location.search)
-
-  if (!filtersOnLoad?.offset) {
-    filtersOnLoad.offset = 0
-  }
-
-  if (!filtersOnLoad?.limit) {
-    filtersOnLoad.limit = 14
-  }
-
-  const { customers, isLoading, count, refetch } = useAdminCustomers({
-    expand: "orders",
-    limit: filtersOnLoad.limit,
-    offset: filtersOnLoad.offset,
-  })
-
   const [offset, setOffset] = useState(0)
   const [limit, setLimit] = useState(14)
   const [query, setQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(0)
+  const [numPages, setNumPages] = useState(0)
 
-  const searchQuery = (q) => {
-    setOffset(0)
-    refetch({ q, offset: 0, limit })
-    // const baseUrl = qs.parseUrl(window.location.href).url
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Date added",
+        accessor: "created_at", // accessor is the "key" in the data
+        Cell: ({ cell: { value } }) => moment(value).format("DD MMM YYYY"),
+      },
+      {
+        Header: "Name",
+        accessor: "customer",
+        Cell: ({ row }) => (
+          <CustomerAvatarItem
+            customer={row.original}
+            color={getColor(row.index)}
+          />
+        ),
+      },
+      {
+        Header: "Email",
+        accessor: "email",
+      },
+      {
+        Header: "",
+        accessor: "col",
+      },
+      {
+        accessor: "orders",
+        Header: () => <div className="text-right">Orders</div>,
+        Cell: ({ cell: { value } }) => (
+          <div className="text-right">{value?.length || 0}</div>
+        ),
+      },
+      {
+        Header: "",
+        accessor: "col-2",
+      },
+    ],
+    []
+  )
+
+  const debouncedSearchTerm = useDebounce(query, 500)
+
+  const { customers, isLoading, isRefetching, count } = useAdminCustomers({
+    q: debouncedSearchTerm,
+    expand: "orders",
+    limit,
+    offset,
+  })
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    canPreviousPage,
+    canNextPage,
+    pageCount,
+    nextPage,
+    previousPage,
+    // Get the state from the instance
+    state: { pageIndex, pageSize },
+  } = useTable(
+    {
+      columns,
+      data: customers || [],
+      manualPagination: true,
+      initialState: {
+        pageIndex: currentPage,
+        pageSize: limit,
+      },
+      pageCount: numPages,
+      autoResetPage: false,
+    },
+    usePagination
+  )
+
+  useEffect(() => {
+    const controlledPageCount = Math.ceil(count! / limit)
+    setNumPages(controlledPageCount)
+  }, [customers])
+
+  const rowActions = [
+    {
+      label: "Details",
+      onClick: () => console.log("hello"),
+      icon: <DetailsIcon size={20} />,
+    },
+    {
+      label: "Edit",
+      onClick: () => console.log("hello"),
+      icon: <EditIcon size={20} />,
+    },
+  ]
+
+  const handleNext = () => {
+    if (canNextPage) {
+      setOffset((old) => old + pageSize)
+      setCurrentPage((old) => old + 1)
+      nextPage()
+    }
   }
 
-  const getUserTableRow = (customer, index) => {
-    return (
-      <Table.Row
-        key={`customer-${index}`}
-        color={"inherit"}
-        actions={[
-          {
-            label: "Details",
-            onClick: () => console.log("heelo"),
-            icon: <DetailsIcon size={20} />,
-          },
-          {
-            label: "Edit",
-            onClick: () => console.log("heelo"),
-            icon: <EditIcon size={20} />,
-          },
-        ]}
-      >
-        <Table.Cell>
-          {moment(customer.created_at).format("DD MMM YYYY")}
-        </Table.Cell>
-        <Table.Cell className="">
-          <CustomerAvatarItem customer={customer} color={getColor(index)} />
-        </Table.Cell>
-        <Table.Cell className="">{customer.email}</Table.Cell>
-        <Table.Cell>{customer?.orders?.length || 0}</Table.Cell>
-      </Table.Row>
-    )
+  const handlePrev = () => {
+    if (canPreviousPage) {
+      setOffset((old) => old - pageSize)
+      setCurrentPage((old) => old - 1)
+      previousPage()
+    }
+  }
+
+  const handleSearch = (q) => {
+    setOffset(0)
+    setCurrentPage(0)
+    setQuery(q)
   }
 
   return (
     <div className="w-full h-full overflow-y-scroll">
-      <Table
-        filteringOptions={filteringOptions}
-        enableSearch
-        handleSearch={searchQuery}
-      >
-        <Table.Head>
-          <Table.HeadRow>
-            <Table.HeadCell className="w-72">Date added</Table.HeadCell>
-            <Table.HeadCell className="w-80">Name</Table.HeadCell>
-            <Table.HeadCell className="w-72">Email</Table.HeadCell>
-            <Table.HeadCell className="w-72">Orders</Table.HeadCell>
-          </Table.HeadRow>
-        </Table.Head>
-        <Table.Body>
-          {customers?.map((customer, index) =>
-            getUserTableRow(customer, index)
-          ) || []}
-        </Table.Body>
-      </Table>
+      {isLoading || isRefetching || !customers ? (
+        <div className="w-full pt-2xlarge flex items-center justify-center">
+          <Spinner size={"large"} variant={"secondary"} />
+        </div>
+      ) : (
+        <>
+          <Table
+            filteringOptions={[]}
+            enableSearch
+            handleSearch={handleSearch}
+            {...getTableProps()}
+          >
+            <Table.Head>
+              {headerGroups?.map((headerGroup) => (
+                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((col) => (
+                    <Table.HeadCell
+                      className="w-[100px]"
+                      {...col.getHeaderProps()}
+                    >
+                      {col.render("Header")}
+                    </Table.HeadCell>
+                  ))}
+                </Table.HeadRow>
+              ))}
+            </Table.Head>
+            <Table.Body {...getTableBodyProps()}>
+              {rows.map((row) => {
+                prepareRow(row)
+                return (
+                  <Table.Row
+                    color={"inherit"}
+                    actions={rowActions}
+                    {...row.getRowProps()}
+                  >
+                    {row.cells.map((cell, index) => {
+                      return (
+                        <Table.Cell {...cell.getCellProps()}>
+                          {cell.render("Cell", { index })}
+                        </Table.Cell>
+                      )
+                    })}
+                  </Table.Row>
+                )
+              })}
+            </Table.Body>
+          </Table>
+          <TablePagination
+            count={count!}
+            limit={limit}
+            offset={offset}
+            pageSize={offset + rows.length}
+            title="Customers"
+            currentPage={pageIndex}
+            pageCount={pageCount}
+            nextPage={handleNext}
+            prevPage={handlePrev}
+            hasNext={canNextPage}
+            hasPrev={canPreviousPage}
+          />
+        </>
+      )}
     </div>
   )
 }
