@@ -236,8 +236,12 @@
     @apply bg-yellow-40 bg-opacity-20 text-yellow-60;
   }
 
+  .badge-denomination {
+    @apply bg-grey-10 inter-small-regular whitespace-nowrap;
+  }
+
   .btn {
-    @apply flex items-center rounded-base focus:outline-none focus:shadow-cta;
+    @apply flex items-center justify-center rounded-base focus:outline-none focus:shadow-cta;
   }
 
   .btn-large {

@@ -1,28 +1,26 @@
 import React from "react"
-import InfoTooltip from "../info-tooltip"
+import InfoTooltip from "../molecules/info-tooltip"
 
 export type InputHeaderProps = {
   label: string
   required?: boolean
-  withTooltip?: boolean
-  tooltipText?: string
-  tooltipProps?: any
+  tooltipContent?: string
+  tooltip?: React.ReactNode
 }
 
 const InputHeader: React.FC<InputHeaderProps> = ({
   label,
   required = false,
-  withTooltip = false,
-  tooltipText,
-  tooltipProps,
+  tooltipContent,
+  tooltip,
 }) => {
   return (
     <div className="w-full flex inter-small-semibold text-grey-50 items-center">
-      {label}
+      <label>{label}</label>
       {required && <div className="text-rose-50 "> *</div>}
-      {withTooltip ? (
-        <div className="ml-2">
-          <InfoTooltip tooltipText={tooltipText} {...tooltipProps} />
+      {tooltip || tooltipContent ? (
+        <div className="flex ml-1.5">
+          {tooltip || <InfoTooltip content={tooltipContent} />}
         </div>
       ) : null}
     </div>

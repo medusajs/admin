@@ -1,4 +1,4 @@
-import { ComponentMeta } from "@storybook/react"
+import { ComponentMeta, ComponentStory } from "@storybook/react"
 import React from "react"
 import Sidebar from "."
 
@@ -7,7 +7,7 @@ export default {
   component: Sidebar,
 } as ComponentMeta<typeof Sidebar>
 
-const Template = args => <Sidebar {...args} />
+const Template: ComponentStory<typeof Sidebar> = (args) => <Sidebar {...args} />
 
 export const Default = Template.bind({})
 Default.args = {}

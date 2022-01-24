@@ -1,8 +1,8 @@
 import React from "react"
-import IconProps from "./types/icon-type"
+import IconProps from "../types/icon-type"
 
-const ArrowDownIcon: React.FC<IconProps> = ({
-  size = "24px",
+const InfoIcon: React.FC<IconProps> = ({
+  size = "16",
   color = "currentColor",
   ...attributes
 }) => {
@@ -16,14 +16,21 @@ const ArrowDownIcon: React.FC<IconProps> = ({
       {...attributes}
     >
       <path
-        d="M8 3.33331V12.6666"
+        d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z"
         stroke={color}
         stroke-width="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
-        d="M12.667 8L8.00033 12.6667L3.33366 8"
+        d="M8 10.6667V8"
+        stroke={color}
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M8 5.33331H8.0075"
         stroke={color}
         stroke-width="1.5"
         stroke-linecap="round"
@@ -33,4 +40,4 @@ const ArrowDownIcon: React.FC<IconProps> = ({
   )
 }
 
-export default ArrowDownIcon
+export default InfoIcon

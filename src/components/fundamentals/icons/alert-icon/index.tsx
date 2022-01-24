@@ -1,8 +1,8 @@
 import React from "react"
-import IconProps from "./types/icon-type"
+import IconProps from "../types/icon-type"
 
-const ArrowDownIcon: React.FC<IconProps> = ({
-  size = "24px",
+const AlertIcon: React.FC<IconProps> = ({
+  size = "20",
   color = "currentColor",
   ...attributes
 }) => {
@@ -10,20 +10,27 @@ const ArrowDownIcon: React.FC<IconProps> = ({
     <svg
       width={size}
       height={size}
-      viewBox="0 0 16 16"
+      viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...attributes}
     >
       <path
-        d="M8 3.33331V12.6666"
+        d="M10 17.5C14.1421 17.5 17.5 14.1421 17.5 10C17.5 5.85786 14.1421 2.5 10 2.5C5.85786 2.5 2.5 5.85786 2.5 10C2.5 14.1421 5.85786 17.5 10 17.5Z"
         stroke={color}
         stroke-width="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
-        d="M12.667 8L8.00033 12.6667L3.33366 8"
+        d="M10 6.66669V10"
+        stroke={color}
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M10 13.3333H10.0088"
         stroke={color}
         stroke-width="1.5"
         stroke-linecap="round"
@@ -33,4 +40,4 @@ const ArrowDownIcon: React.FC<IconProps> = ({
   )
 }
 
-export default ArrowDownIcon
+export default AlertIcon
