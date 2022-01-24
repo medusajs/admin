@@ -63,7 +63,7 @@ const TagInput: React.FC<TagInputProps> = ({
             setHighlighted(highlighted + 1)
             e.preventDefault()
           } else {
-            // else highlight first element
+            // else remove highlighting entirely
             setHighlighted(-1)
           }
         }
