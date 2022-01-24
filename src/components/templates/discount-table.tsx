@@ -39,6 +39,9 @@ const getDiscountStatus = (discount) => {
 const getDiscountAmount = (discount) => {
   switch (discount.rule.type) {
     case "fixed":
+      if (!discount.regions?.length) {
+        return ""
+      }
       return `${displayAmount(
         discount.regions[0].currency_code,
         discount.rule.value
