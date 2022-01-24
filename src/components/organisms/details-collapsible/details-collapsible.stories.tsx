@@ -20,4 +20,11 @@ Component.args = {
       <Input label="Subtitle" name="subtitle" placeholder="Add a subtitle" />
     </div>
   ),
+  triggerProps: {
+    className: "ml-2",
+  },
+  contentProps: {
+    className: "px-6",
+  },
+  rootProps: {},
 }

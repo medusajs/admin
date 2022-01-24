@@ -4,21 +4,41 @@ import React, { useState } from "react"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import ArrowUpIcon from "../../fundamentals/icons/arrow-up-icon"
 
-const DetailsCollapsible = ({ children }) => {
+type DetailsCollapsibleProps = {
+  rootProps?: RadixCollapsible.CollapsibleProps
+  triggerProps?: RadixCollapsible.CollapsibleTriggerProps
+  contentProps?: RadixCollapsible.CollapsibleContentProps
+  children: React.ReactNode
+}
+
+const DetailsCollapsible = ({
+  rootProps,
+  triggerProps,
+  contentProps,
+  children,
+}: DetailsCollapsibleProps) => {
   const [open, setOpen] = useState(false)
 
   const Icon = open ? ArrowUpIcon : ArrowDownIcon
   const label = open ? "Hide additional details" : "Show additional details"
 
   return (
-    <RadixCollapsible.Root onOpenChange={(state) => setOpen(state)}>
-      <RadixCollapsible.Trigger className={clsx("ml-4", { ["mb-6"]: open })}>
+    <RadixCollapsible.Root
+      {...rootProps}
+      onOpenChange={(state) => setOpen(state)}
+    >
+      <RadixCollapsible.Trigger
+        {...triggerProps}
+        className={clsx({ ["mb-6"]: open }, triggerProps?.className)}
+      >
         <div className="flex items-center">
           <Icon size={"20"} />
           <div className="ml-1">{label}</div>
         </div>
       </RadixCollapsible.Trigger>
-      <RadixCollapsible.Content>{children}</RadixCollapsible.Content>
+      <RadixCollapsible.Content {...contentProps}>
+        {children}
+      </RadixCollapsible.Content>
     </RadixCollapsible.Root>
   )
 }
