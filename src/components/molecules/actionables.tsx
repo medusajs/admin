@@ -48,7 +48,7 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
                   <Button
                     variant="ghost"
                     size="small"
-                    className={clsx("w-full", {
+                    className={clsx("w-full justify-start", {
                       "text-rose-50": action.variant === "danger",
                     })}
                     onClick={action.onClick}
