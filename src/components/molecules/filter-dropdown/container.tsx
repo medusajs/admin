@@ -28,11 +28,11 @@ const FilterDropdownContainer: React.FC<FilterDropdownContainerProps> = ({
   }
 
   return (
-    <RadixPopover.Root open={true} onOpenChange={setIsOpen}>
+    <RadixPopover.Root open={isOpen} onOpenChange={setIsOpen}>
       <RadixPopover.Trigger asChild>{triggerElement}</RadixPopover.Trigger>
       <RadixPopover.Content
         sideOffset={8}
-        className="bg-grey-0 rounded-rounded shadow-dropdown w-full py-4"
+        className="bg-grey-0 rounded-rounded shadow-dropdown max-w-[272px] py-4"
       >
         <div className="flex px-4 pb-4 border-b border-grey-20">
           <Button
