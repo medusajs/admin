@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react"
-import StatusDot from "../../fundamentals/status-dot"
-import Table from "../../molecules/table"
 import moment from "moment"
+import React, { useEffect, useState } from "react"
+import StatusDot from "../../fundamentals/status-indicator"
+import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
 
 type GiftCardTableProps = {

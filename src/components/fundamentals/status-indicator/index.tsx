@@ -1,12 +1,12 @@
 import clsx from "clsx"
 import React from "react"
 
-type StatusDotProps = {
+type StatusIndicatorProps = {
   title: string
   variant: "primary" | "danger" | "warning" | "success" | "default"
 } & React.HTMLAttributes<HTMLDivElement>
 
-const StatusDot: React.FC<StatusDotProps> = ({
+const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   title,
   variant = "success",
   className,
@@ -20,13 +20,16 @@ const StatusDot: React.FC<StatusDotProps> = ({
     "bg-grey-40": variant === "default",
   })
   return (
-    <div className={clsx("flex items-center", className)} {...props}>
+    <div
+      className={clsx("flex items-center inter-small-regular", className)}
+      {...props}
+    >
       <div
         className={clsx("w-1.5 h-1.5 mr-2 self-center rounded-full", dotClass)}
-      ></div>
+      />
       {title}
     </div>
   )
 }
 
-export default StatusDot
+export default StatusIndicator
