@@ -4,7 +4,7 @@ import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Table from "../../../components/molecules/table"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import { displayAmount } from "../../../utils/prices"
+import { stringDisplayPrice } from "../../../utils/prices"
 
 type DenominationTableProps = {
   giftCardId: string
@@ -20,10 +20,6 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
   const [selectedDenom, setSelectedDenom] = useState<string | null>(null)
 
   const deleteDenomination = useAdminDeleteVariant(giftCardId)
-
-  const getFormattedPrice = (currCode, amount) => {
-    return `${displayAmount(currCode, amount, 2)} ${currCode.toUpperCase()}`
-  }
 
   const getDenominationPrices = (denomination) => {
     const sortHelper = (p1, p2) => {
@@ -42,7 +38,9 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
     return denomination.prices
       .filter((p) => p.currency_code !== defaultCurrency) // without default
       .sort(sortHelper) // sort by currency code
-      .map((p) => getFormattedPrice(p.currency_code, p.amount)) // get formatted price
+      .map((p) =>
+        stringDisplayPrice({ currencyCode: p.currency_code, amount: p.amount })
+      ) // get formatted price
       .join(", ") // concatenate to single comma separated string
   }
 
@@ -74,7 +72,10 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
         ]}
       >
         <Table.Cell>
-          {getFormattedPrice(defaultPrice.currency_code, defaultPrice.amount)}
+          {stringDisplayPrice({
+            currencyCode: defaultPrice.currency_code,
+            amount: defaultPrice.amount,
+          })}
         </Table.Cell>
         <Table.Cell>{getDenominationPrices(denomination)}</Table.Cell>
         <Table.Cell></Table.Cell>
@@ -102,8 +103,8 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
       {selectedDenom && (
         <DeletePrompt
           handleClose={() => setSelectedDenom(null)}
-          text="Are you sure you want to delete this region from your Medusa Store?"
-          heading="Delete region"
+          text="Are you sure you want to delete this denomination from your Medusa Store?"
+          heading="Delete denomination"
           onDelete={() => handleDeleteDenomination()}
           successText="Successfully deleted denomination"
           confirmText="Yes, delete"

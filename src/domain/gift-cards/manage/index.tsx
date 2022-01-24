@@ -184,7 +184,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
                 ref={register}
               />
             </div>
-            <DetailsCollapsible>
+            <DetailsCollapsible triggerProps={{ className: "ml-2" }}>
               <div className="flex space-x-8">
                 <div className="flex flex-col w-1/2 space-y-4">
                   <Input

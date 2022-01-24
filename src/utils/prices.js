@@ -24,7 +24,7 @@ export const extractUnitPrice = (item, region, withTax = true) => {
 
   if (itemPrice === undefined) {
     const regionPrice = item.prices.find(
-      p => p.currency_code === region.currency_code
+      (p) => p.currency_code === region.currency_code
     )
 
     itemPrice = regionPrice.amount
@@ -44,7 +44,7 @@ export const extractUnitPrice = (item, region, withTax = true) => {
 export const displayUnitPrice = (item, region) => {
   const currCode = region.currency_code.toUpperCase()
 
-  let price = extractUnitPrice(item, region)
+  const price = extractUnitPrice(item, region)
   return `${displayAmount(currCode, price)} ${currCode}`
 }
 
@@ -61,4 +61,13 @@ export function persistedPrice(currency, amount) {
   }
 
   return Math.floor(amount) * multiplier
+}
+
+export const stringDisplayPrice = ({ amount, currencyCode }) => {
+  if (!amount || !currencyCode) {
+    return `N/A`
+  }
+
+  const display = displayAmount(currencyCode, amount, 2)
+  return `${display} ${currencyCode.toUpperCase()}`
 }
