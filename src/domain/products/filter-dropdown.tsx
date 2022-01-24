@@ -4,7 +4,7 @@ import * as RadixPopover from "@radix-ui/react-popover"
 import styled from "@emotion/styled"
 import { Flex, Box } from "rebass"
 
-import TagInput from "../../components/tag-input"
+import TagInput from "../../components/molecules/tag-input"
 import Button from "../../components/fundamentals/button"
 import FilterDropdownItem from "../../components/molecules/filter-dropdown/item"
 import Tooltip from "../../components/tooltip"
@@ -14,6 +14,7 @@ import { DateFilters } from "../../utils/filters"
 import FilterDropdownContainer from "../../components/molecules/filter-dropdown/container"
 import CheckIcon from "../../components/fundamentals/icons/check-icon"
 import clsx from "clsx"
+import SaveFilterItem from "../../components/molecules/filter-dropdown/save-field"
 
 const statusFilters = ["proposed", "draft", "published", "rejected"]
 
@@ -31,6 +32,7 @@ const ProductsFilter = ({
   sx,
   ...rest
 }) => {
+  const [name, setName] = useState("")
   const [tagsFocussed, setTagsFocussed] = useState(false)
   const ref = useRef(null)
   const tagsRef = useRef(null)
@@ -70,67 +72,70 @@ const ProductsFilter = ({
           setCollectionFilter(obj)
         }}
       />
-      <div
-        className="flex w-full py-1.5 px-3 items-center hover:bg-grey-5 rounded cursor-pointer"
-        onClick={() =>
-          setTagsFilter({
-            open: !tagsFilter.open,
-            filter: tagsFilter.filter,
-          })
-        }
-      >
+      <div>
         <div
-          className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-            tagsFilter.open && "bg-violet-60"
-          }`}
+          className="flex w-full py-1.5 px-3 mb-1 items-center hover:bg-grey-5 rounded cursor-pointer"
+          onClick={() =>
+            setTagsFilter({
+              open: !tagsFilter.open,
+              filter: tagsFilter.filter,
+            })
+          }
         >
-          <span className="self-center">
-            {tagsFilter.open && <CheckIcon size={16} />}
+          <div
+            className={`w-5 h-5 flex justify-center border-grey-30 border text-grey-0 rounded-base ${
+              tagsFilter.open && "bg-violet-60"
+            }`}
+          >
+            <span className="self-center">
+              {tagsFilter.open && <CheckIcon size={16} />}
+            </span>
+            <input
+              type="checkbox"
+              className="hidden"
+              id="Tags"
+              name="Tags"
+              value="Tags"
+              checked={tagsFilter.open}
+            />
+          </div>
+          <span
+            className={clsx("text-grey-90 ml-2", {
+              "inter-small-semibold": tagsFilter.open,
+              "inter-small-regular": !tagsFilter.open,
+            })}
+          >
+            Tags
           </span>
-          <input
-            type="checkbox"
-            className="hidden"
-            id="Tags"
-            name="Tags"
-            value="Tags"
-            checked={tagsFilter.open}
-          />
         </div>
-        <span
-          className={clsx("text-grey-90 ml-2", {
-            "inter-small-semibold": tagsFilter.open,
-            "inter-small-regular": !tagsFilter.open,
-          })}
-        >
-          Tags
-        </span>
-      </div>
 
-      {tagsFilter.open && (
-        <div
-          // sx={{ fontSize: "10px", "& input": { fontSize: "12px" } }}
-          // width={1}
-          // p={2}
-          ref={tagsRef}
-          data-tip={tagsFilter.invalidTagsMessage || ""}
-          onBlur={() => setTagsFocussed(false)}
-          onFocus={() => setTagsFocussed(true)}
-        >
-          <TagInput
-            placeholder="Spring, summer..."
-            values={tagsFilter.filter || []}
-            onBlur={() => {
-              setTagsFocussed(false)
-            }}
-            onChange={(values) => {
-              setTagsFilter({
-                open: tagsFilter.open,
-                filter: values,
-              })
-            }}
-          />
-        </div>
-      )}
+        {tagsFilter.open && (
+          <div
+            ref={tagsRef}
+            data-tip={tagsFilter.invalidTagsMessage || ""}
+            className="pl-6"
+            onBlur={() => setTagsFocussed(false)}
+            onFocus={() => setTagsFocussed(true)}
+          >
+            <TagInput
+              className="pt-0 pb-1"
+              showLabel={false}
+              placeholder="Spring, summer..."
+              values={tagsFilter.filter || []}
+              onBlur={() => {
+                setTagsFocussed(false)
+              }}
+              onChange={(values) => {
+                setTagsFilter({
+                  open: tagsFilter.open,
+                  filter: values,
+                })
+              }}
+            />
+          </div>
+        )}
+      </div>
+      <SaveFilterItem saveFilter={console.log} name={name} setName={setName} />
     </FilterDropdownContainer>
   )
 }
