@@ -15,6 +15,7 @@ import FilterDropdownContainer from "../../components/molecules/filter-dropdown/
 import CheckIcon from "../../components/fundamentals/icons/check-icon"
 import clsx from "clsx"
 import SaveFilterItem from "../../components/molecules/filter-dropdown/save-field"
+import ChevronDownIcon from "../../components/fundamentals/icons/chevron-down"
 
 const statusFilters = ["proposed", "draft", "published", "rejected"]
 
@@ -50,9 +51,18 @@ const ProductsFilter = ({
       submitFilters={onSubmit}
       clearFilters={onClear}
       triggerElement={
-        <Button size="small" variant="primary">
-          Filter
-        </Button>
+        <div
+          className={clsx(
+            "inter-small-regular text-grey-50 flex items-center pl-1.5 pr-0.5 rounded hover:bg-grey-5"
+          )}
+        >
+          <div className="flex items-center">
+            Custom filter
+            <div className="text-grey-40">
+              <ChevronDownIcon size={16} />
+            </div>
+          </div>
+        </div>
       }
     >
       <FilterDropdownItem
