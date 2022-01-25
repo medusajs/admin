@@ -142,7 +142,6 @@ const AmountInput: React.FC<AmountInputProps> = ({
   const [value, setValue] = useState<string | undefined>(
     amount ? `${amount}` : undefined
   )
-  console.log("value initially", { value })
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -169,10 +168,12 @@ const AmountInput: React.FC<AmountInputProps> = ({
 
     if (currencyInfo && value) {
       const amount = parseFloat(value)
+      console.log("value when parsing:", { value })
       persistedAmount = persistedPrice(currencyInfo.code, amount)
     }
 
     if (onChange) {
+      console.log("value passed to onChange:", { persistedAmount })
       onChange(persistedAmount)
     }
   }, [value, currencyInfo])
@@ -186,8 +187,6 @@ const AmountInput: React.FC<AmountInputProps> = ({
 
     setValue(`${newValue}`)
   }
-
-  console.log({ value })
 
   return (
     <InputContainer onClick={() => inputRef.current?.focus()}>
