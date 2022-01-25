@@ -1,5 +1,7 @@
-import React from "react"
+import React, { ReactNode } from "react"
 import { navigate } from "gatsby"
+import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
+import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import clsx from "clsx"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
@@ -10,8 +12,22 @@ type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   linkTo?: string
 }
 
+type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
+  title: string
+  currentPage: number
+  pageSize: number
+  count: number
+  offset: number
+  limit: number
+  pageCount: number
+  nextPage: () => void
+  prevPage: () => void
+  hasNext: boolean
+  hasPrev: boolean
+}
+
 type TableProps = {
-  filteringOptions?: FilteringOptionProps[]
+  filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
@@ -49,7 +65,7 @@ const Table: TableType = React.forwardRef(
         <div className="w-full flex justify-between">
           {filteringOptions && (
             <div className="flex mb-2 self-end">
-              {filteringOptions.map(fo => (
+              {filteringOptions.map((fo) => (
                 <FilteringOptions {...fo} />
               ))}
             </div>
@@ -162,12 +178,60 @@ Table.Row = React.forwardRef(
     >
       {children}
       {actions && (
-        <Table.Cell className="w-8">
+        <Table.Cell className="w-[32px]">
           <Actionables actions={actions} />
         </Table.Cell>
       )}
     </tr>
   )
 )
+
+export const TablePagination = ({
+  className,
+  title = "Elements",
+  currentPage,
+  pageCount,
+  pageSize,
+  count,
+  offset,
+  nextPage,
+  prevPage,
+  hasNext,
+  hasPrev,
+}: TablePaginationProps) => {
+  return (
+    <div
+      className={clsx(
+        "flex w-full justify-between inter-small-regular text-grey-50 mt-14",
+        className
+      )}
+    >
+      <div>{`${offset + 1} - ${pageSize} of ${count} ${title}`}</div>
+      <div className="flex space-x-4">
+        <div>{`${currentPage + 1} of ${pageCount}`}</div>
+        <div className="flex space-x-4 items-center">
+          <div
+            className={clsx(
+              { ["text-grey-30"]: !hasPrev },
+              { ["cursor-pointer"]: hasPrev }
+            )}
+            onClick={() => prevPage()}
+          >
+            <ArrowLeftIcon />
+          </div>
+          <div
+            className={clsx(
+              { ["text-grey-30"]: !hasNext },
+              { ["cursor-pointer"]: hasNext }
+            )}
+            onClick={() => nextPage()}
+          >
+            <ArrowRightIcon />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default Table
