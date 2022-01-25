@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import StatusDot from "../../fundamentals/status-dot"
+import StatusDot from "../../fundamentals/status-indicator"
 import Table from "../../molecules/table"
 import moment from "moment"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
