@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react"
-import StatusDot from "../../fundamentals/status-dot"
-import Table from "../../molecules/table"
 import moment from "moment"
+import React, { useEffect, useState } from "react"
+import StatusIndicator from "../../fundamentals/status-indicator"
+import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
 
 type GiftCardTableProps = {
@@ -127,7 +127,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
               100
             ).toFixed(2)} ${giftCard.region.currency_code.toUpperCase()}`
           ) : (
-            <StatusDot title="None" variant="danger" />
+            <StatusIndicator title="None" variant="danger" />
           )}
         </Table.Cell>
         <Table.Cell>

@@ -35,6 +35,7 @@ const InputField = React.forwardRef(
       onFocus,
       tooltipContent,
       tooltip,
+      prefix,
       props,
       className,
       ...fieldProps
@@ -82,6 +83,7 @@ const InputField = React.forwardRef(
           <InputHeader {...{ label, required, tooltipContent, tooltip }} />
         )}
         <div className="w-full flex mt-1">
+          {prefix && <span className="text-grey-40 mr-2xsmall">{prefix}</span>}
           <input
             className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
             ref={inputRef}
