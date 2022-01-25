@@ -149,7 +149,7 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
   }
 
   return (
-    <div className="w-full h-full overflow-y-scroll">
+    <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
       {isLoading || isRefetching || !customers ? (
         <div className="w-full pt-2xlarge flex items-center justify-center">
           <Spinner size={"large"} variant={"secondary"} />
@@ -179,7 +179,6 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
             <Table.Body {...getTableBodyProps()}>
               {rows.map((row) => {
                 prepareRow(row)
-                console.log(row)
                 return (
                   <Table.Row
                     color={"inherit"}
