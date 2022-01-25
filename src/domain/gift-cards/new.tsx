@@ -56,7 +56,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
         />
       </CurrencyInput>
     )
-    register(name)
+    register(name, { required: true })
     setDenominations([...denominations, { name, component }])
   }
 
@@ -77,6 +77,11 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
     description?: string
     denominations: number[]
   }) => {
+    if (!data.denominations) {
+      toaster("Please add at least one denomination", "error")
+      return
+    }
+
     giftCard.mutate(
       {
         is_giftcard: true,
@@ -125,7 +130,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
                 required
                 placeholder="The best gift card"
                 name="name"
-                ref={register}
+                ref={register({ required: true })}
               />
               <Textarea
                 label="Description"
