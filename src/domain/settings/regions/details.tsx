@@ -191,7 +191,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   }
 
   const handleDelete = async () => {
-    deleteRegion.mutate(null, {
+    deleteRegion.mutate(undefined, {
       onSuccess: () => {
         if (onDelete) onDelete(null)
       },
