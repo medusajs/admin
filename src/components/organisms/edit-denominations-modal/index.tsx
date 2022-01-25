@@ -1,12 +1,12 @@
 import React from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
+import CurrencyInput from "../../organisms/currency-input"
 import Button from "../../fundamentals/button"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import InfoTooltip from "../../molecules/info-tooltip"
 import Modal from "../../molecules/modal"
-import PriceInput from "../price-input"
 
 type Denomination = {
   currencyCode: string
@@ -32,7 +32,7 @@ const EditDenominationsModal = ({
   onSubmit,
   handleClose,
   currencyCodes,
-  defaultNewAmount = 10.0,
+  defaultNewAmount = 1000,
   defaultNewCurrencyCode = "USD",
 }: EditDenominationsModalProps) => {
   const { control } = useForm<FormValues>({
@@ -79,13 +79,17 @@ const EditDenominationsModal = ({
                   className="first:mt-0 mt-xsmall flex items-center"
                 >
                   <div className="flex-1">
-                    <PriceInput
-                      onAmountChange={onAmountChange(index)}
-                      onCurrencyChange={onCurrencyChange(index)}
+                    <CurrencyInput
                       currencyCodes={currencyCodes}
-                      currentAmount={field?.amount}
-                      currentCurrency={field?.currencyCode}
-                    />
+                      onChange={onCurrencyChange(index)}
+                      currentCurrency={field.currencyCode}
+                    >
+                      <CurrencyInput.AmountInput
+                        label="Amount"
+                        onChange={onAmountChange(index)}
+                        amount={field.amount}
+                      />
+                    </CurrencyInput>
                   </div>
                   <button className="ml-2xlarge">
                     <TrashIcon

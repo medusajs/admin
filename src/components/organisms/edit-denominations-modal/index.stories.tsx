@@ -26,7 +26,7 @@ const Template: ComponentStory<typeof EditDenominationsModal> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  denominations: [{ currencyCode: "USD", amount: 19.99, id: uuidv4() }],
+  denominations: [],
   onSubmit: console.log,
   currencyCodes: ["USD", "EUR", "GBP", "DKK", "NOK", "SEK"],
 }

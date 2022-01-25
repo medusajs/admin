@@ -38,7 +38,9 @@ const CurrencyContext = React.createContext<CurrencyInputState>({
 })
 
 const getCurrencyInfo = (currencyCode?: string) => {
-  if (!currencyCode) return undefined
+  if (!currencyCode) {
+    return undefined
+  }
   const currencyInfo = currencies[currencyCode.toUpperCase()]
   return currencyInfo
 }
@@ -77,7 +79,9 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
     // Should not be nescessary, but the component we use for select input
     // has a bug where it passes a null object if you click on the label
     // of the already selected value
-    if (!currency) return
+    if (!currency) {
+      return
+    }
 
     setValue(currency)
     setSelectedCurrency(getCurrencyInfo(currency.value))
@@ -138,6 +142,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
   const [value, setValue] = useState<string | undefined>(
     amount ? `${amount}` : undefined
   )
+  console.log("value initially", { value })
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -149,6 +154,9 @@ const AmountInput: React.FC<AmountInputProps> = ({
    */
   useEffect(() => {
     if (currencyInfo && amount) {
+      console.log("value on displayAmount", {
+        value: displayAmount(currencyInfo.code, amount),
+      })
       setValue(`${displayAmount(currencyInfo.code, amount)}`)
     }
   }, [amount, currencyInfo])
@@ -172,10 +180,14 @@ const AmountInput: React.FC<AmountInputProps> = ({
   const handleManualValueChange = (val: number) => {
     const newValue = parseFloat(value ?? "0") + val
 
-    if (!allowNegative && newValue < 0) return
+    if (!allowNegative && newValue < 0) {
+      return
+    }
 
     setValue(`${newValue}`)
   }
+
+  console.log({ value })
 
   return (
     <InputContainer onClick={() => inputRef.current?.focus()}>
@@ -189,7 +201,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
         <AmountField
           className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
           decimalScale={currencyInfo?.decimal_digits}
-          value={value}
+          value={10.0}
           onValueChange={(value) => {
             setValue(value)
           }}
