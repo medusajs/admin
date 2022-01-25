@@ -183,6 +183,7 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
                   <Table.Row
                     color={"inherit"}
                     actions={rowActions}
+                    linkTo={row.original.id}
                     {...row.getRowProps()}
                   >
                     {row.cells.map((cell, index) => {
