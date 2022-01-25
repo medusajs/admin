@@ -65,9 +65,9 @@ const Table: TableType = React.forwardRef(
         <div className="w-full flex justify-between">
           {filteringOptions && (
             <div className="flex mb-2 self-end">
-              {filteringOptions.map((fo) => (
-                <FilteringOptions {...fo} />
-              ))}
+              {Array.isArray(filteringOptions)
+                ? filteringOptions.map((fo) => <FilteringOptions {...fo} />)
+                : filteringOptions}
             </div>
           )}
           <div className="flex">
@@ -178,7 +178,7 @@ Table.Row = React.forwardRef(
     >
       {children}
       {actions && (
-        <Table.Cell className="w-[32px]">
+        <Table.Cell onClick={(e) => e.stopPropagation()} className="w-[32px]">
           <Actionables actions={actions} />
         </Table.Cell>
       )}
