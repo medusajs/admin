@@ -55,8 +55,12 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
       // if undefined, assume you are removing
       update.type = null
     } else {
-      update.type = {
-        value: type.value,
+      if (type?.value) {
+        update.type = {
+          value: type.value,
+        }
+      } else {
+        update.type = null
       }
     }
 
