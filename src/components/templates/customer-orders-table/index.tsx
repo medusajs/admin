@@ -14,6 +14,11 @@ type CustomerOrdersTableProps = {
 const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
   customerId,
 }) => {
+  // TODO: Use react-table
+  // I've hard coded the limit to 14 for now, since it's quite rare
+  // to have customers putting in that many orders. This is only until
+  // we've successfully implemented react-table, that will allow us
+  // to add pagination
   const { orders, isLoading } = useAdminOrders({
     customer_id: customerId,
     offset: 0,
@@ -76,8 +81,11 @@ const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
                     className="flex space-x-1 w-[60px] mr-2"
                   >
                     {visibleImages.map((tag) => (
-                      <div className="h-[40px] w-[30px]">
-                        <img className="rounded" src={tag.thumbnail} />
+                      <div className="h-[40px] w-[30px] flex items-center">
+                        <img
+                          className="rounded object-cover"
+                          src={tag.thumbnail}
+                        />
                       </div>
                     ))}
                   </div>
