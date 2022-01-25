@@ -30,7 +30,6 @@ const ProductsFilter = ({
   clearFilters,
   tagsFilter,
   resetFilters,
-  sx,
   ...rest
 }) => {
   const [name, setName] = useState("")
@@ -46,6 +45,11 @@ const ProductsFilter = ({
     clearFilters()
   }
 
+  const numberOfFilters = [statusFilter, collectionFilter, tagsFilter].reduce(
+    (prev, curr) => prev + (curr.open ? 1 : 0),
+    0
+  )
+
   return (
     <FilterDropdownContainer
       submitFilters={onSubmit}
@@ -53,12 +57,15 @@ const ProductsFilter = ({
       triggerElement={
         <div
           className={clsx(
-            "inter-small-regular text-grey-50 flex items-center pl-1.5 pr-0.5 rounded hover:bg-grey-5"
+            "inter-small-regular text-grey-50 flex items-center pl-1.5 pr-0.5 rounded"
           )}
         >
           <div className="flex items-center">
-            Custom filter
-            <div className="text-grey-40">
+            Custom filter:
+            <div className="text-grey-40 ml-0.5 flex px-1.5 active:bg-grey-5 hover:bg-grey-5 cursor-pointer items-center rounded">
+              <span className="text-violet-60 inter-small-semibold">
+                {numberOfFilters ? numberOfFilters : ""}
+              </span>
               <ChevronDownIcon size={16} />
             </div>
           </div>
