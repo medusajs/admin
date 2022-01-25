@@ -58,6 +58,7 @@
     "react-multi-select-component": "^4.1.15",
     "react-popper": "^2.2.5",
     "react-select": "^4.1.0",
+    "react-table": "^7.7.0",
     "react-toast-notifications": "^2.4.0",
     "react-tooltip": "^4.2.10",
     "rebass": "^4.0.7",
