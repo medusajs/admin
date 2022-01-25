@@ -13,7 +13,7 @@ import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 
 const ProductIndex = () => {
   const filtersOnLoad = qs.parse(window.location.search)
-  console.log("index filters", filtersOnLoad)
+
   if (!filtersOnLoad.offset) {
     filtersOnLoad.offset = 0
   }
