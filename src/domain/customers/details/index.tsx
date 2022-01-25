@@ -2,14 +2,16 @@ import { RouteComponentProps } from "@reach/router"
 import { useAdminCustomer } from "medusa-react"
 import moment from "moment"
 import React, { useState } from "react"
-import { Box, Flex } from "rebass"
 import Avatar from "../../../components/atoms/avatar"
 import Spinner from "../../../components/atoms/spinner"
-import StatusDot from "../../../components/fundamentals/status-dot"
+import EditIcon from "../../../components/fundamentals/icons/edit-icon"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
+import StatusDot from "../../../components/fundamentals/status-indicator"
+import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import CustomerOrdersTable from "../../../components/templates/customer-orders-table"
-import useMedusa from "../../../hooks/use-medusa"
+import EditCustomerModal from "./edit"
 
 type CustomerDetailProps = {
   id: string
@@ -17,47 +19,7 @@ type CustomerDetailProps = {
 
 const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
   const { customer, isLoading } = useAdminCustomer(id, {})
-
-  const { toaster, update } = useMedusa("customers", {
-    id,
-  })
-
-  const [hasFetchedOrders, setHasFetchedOrders] = useState(false)
-  const [editCustomer, setEditCustomer] = useState(false)
-
-  if (isLoading) {
-    return (
-      <Flex flexDirection="column" alignItems="center" height="100vh" mt="auto">
-        <Box height="75px" width="75px" mt="50%">
-          <Spinner dark />
-        </Box>
-      </Flex>
-    )
-  }
-
-  let name =
-    (customer.first_name ? customer.first_name : "") +
-    (customer.last_name ? ` ${customer.last_name}` : "")
-  if (!name) {
-    name = "N / A"
-  }
-
-  const phone = customer.phone
-    ? customer.phone
-    : customer.shipping_addresses && customer?.shipping_addresses[0]
-    ? customer?.shipping_addresses[0].phone
-    : "N / A"
-
-  const customerDropdown = [
-    {
-      label: "Edit customer",
-      onClick: () => {
-        setEditCustomer(true)
-      },
-    },
-  ]
-
-  const registered = customer.has_account ? "registered" : "not_registered"
+  const [showEdit, setShowEdit] = useState(false)
 
   const customerName = () => {
     if (customer?.first_name && customer?.last_name) {
@@ -66,6 +28,20 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
       return customer?.email
     }
   }
+
+  const actions = [
+    {
+      label: "Edit",
+      onClick: () => setShowEdit(true),
+      icon: <EditIcon size={20} />,
+    },
+    {
+      label: "Delete (not implemented yet)",
+      onClick: () => console.log("TODO: delete customer"),
+      variant: "danger",
+      icon: <TrashIcon size={20} />,
+    },
+  ]
 
   return (
     <div>
@@ -88,7 +64,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
             <h1 className="inter-xlarge-semibold text-grey-90">
               {customerName()}
             </h1>
-            {/* <Actionables actions={actionables} /> */}
+            <Actionables actions={actions} />
           </div>
           <h3 className="inter-small-regular pt-1.5 text-grey-50">
             {customer?.email}
@@ -114,7 +90,10 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
           <div className="flex flex-col pl-6 h-100">
             <div className="inter-smaller-regular text-grey-50 mb-1">User</div>
             <div className="flex justify-center items-center h-50">
-              <StatusDot variant="success" />
+              <StatusDot
+                variant={customer?.has_account ? "success" : "danger"}
+                title={customer?.has_account ? "True" : "False"}
+              />
             </div>
           </div>
         </div>
@@ -133,6 +112,12 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
           </div>
         )}
       </BodyCard>
+      {showEdit && (
+        <EditCustomerModal
+          customer={customer}
+          handleClose={() => setShowEdit(false)}
+        />
+      )}
     </div>
   )
 }

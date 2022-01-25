@@ -1,9 +1,10 @@
 import { RouteComponentProps } from "@reach/router"
 import { useAdminOrders } from "medusa-react"
 import moment from "moment"
-import React from "react"
+import React, { useRef } from "react"
+import { useObserveWidth } from "../../../hooks/use-observe-width"
 import { stringDisplayPrice } from "../../../utils/prices"
-import StatusDot from "../../fundamentals/status-dot"
+import StatusDot from "../../fundamentals/status-indicator"
 import Table from "../../molecules/table"
 
 type CustomerOrdersTableProps = {
@@ -18,6 +19,17 @@ const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
     offset: 0,
     limit: 14,
   })
+
+  const containerRef = useRef(null)
+  const width = useObserveWidth(containerRef)
+
+  const calcImages = (order) => {
+    const columns = Math.max(Math.floor(width / 20) - 1, 1)
+    const visibleImages = order.items.slice(0, columns)
+    const remainder = order.items.length - columns
+
+    return { visibleImages, remainder }
+  }
 
   const decideStatus = (order) => {
     switch (order.payment_status) {
@@ -46,36 +58,52 @@ const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
           </Table.HeadRow>
         </Table.Head>
         <Table.Body>
-          {orders?.map((order, index) => (
-            <Table.Row key={`invite-${index}`} linkTo={`/a/orders/${order.id}`}>
-              <Table.Cell className="text-grey-40 w-20">
-                #{order.display_id}
-              </Table.Cell>
-              <Table.Cell className="w-40">
-                <div className="flex space-x-1">
-                  {order?.items.slice(0, 2).map((item) => (
-                    <div className="h-[40px] w-[30px]">
-                      <img className="rounded" src={item.thumbnail} />
+          {orders?.map((order, index) => {
+            const { remainder, visibleImages } = calcImages(order)
+
+            return (
+              <Table.Row
+                key={`invite-${index}`}
+                linkTo={`/a/orders/${order.id}`}
+                className="py-2"
+              >
+                <Table.Cell className="text-grey-40 w-20">
+                  #{order.display_id}
+                </Table.Cell>
+                <Table.Cell className="w-40 flex">
+                  <div
+                    ref={containerRef}
+                    className="flex space-x-1 w-[60px] mr-2"
+                  >
+                    {visibleImages.map((tag) => (
+                      <div className="h-[40px] w-[30px]">
+                        <img className="rounded" src={tag.thumbnail} />
+                      </div>
+                    ))}
+                  </div>
+                  {remainder > 0 && (
+                    <div className="flex items-center text-grey-40 inter-small-regular">
+                      + {remainder} more
                     </div>
-                  ))}
-                </div>
-              </Table.Cell>
-              <Table.Cell className="">
-                {moment(order.created_at).format("DD MMM YYYY hh:mm")}
-              </Table.Cell>
-              <Table.Cell className="">{order.fulfillment_status}</Table.Cell>
-              <Table.Cell className="truncate">
-                {decideStatus(order)}
-              </Table.Cell>
-              <Table.Cell className="">
-                {stringDisplayPrice({
-                  amount: order.total,
-                  currencyCode: order.currency_code,
-                })}
-              </Table.Cell>
-              <Table.Cell />
-            </Table.Row>
-          ))}
+                  )}
+                </Table.Cell>
+                <Table.Cell className="">
+                  {moment(order.created_at).format("DD MMM YYYY hh:mm")}
+                </Table.Cell>
+                <Table.Cell className="">{order.fulfillment_status}</Table.Cell>
+                <Table.Cell className="truncate">
+                  {decideStatus(order)}
+                </Table.Cell>
+                <Table.Cell className="">
+                  {stringDisplayPrice({
+                    amount: order.total,
+                    currencyCode: order.currency_code,
+                  })}
+                </Table.Cell>
+                <Table.Cell />
+              </Table.Row>
+            )
+          })}
         </Table.Body>
       </Table>
     </div>

@@ -1,8 +1,8 @@
-import React from "react"
 import clsx from "clsx"
+import React from "react"
 
 type BadgeProps = {
-  variant: "primary" | "danger" | "success" | "warning"
+  variant: "primary" | "danger" | "success" | "warning" | "denomination"
 } & React.HTMLAttributes<HTMLDivElement>
 
 const Badge: React.FC<BadgeProps> = ({
@@ -17,6 +17,7 @@ const Badge: React.FC<BadgeProps> = ({
     ["badge-danger"]: variant === "danger",
     ["badge-success"]: variant === "success",
     ["badge-warning"]: variant === "warning",
+    ["badge-denomination"]: variant === "denomination",
   })
 
   return (

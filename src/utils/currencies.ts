@@ -1,4 +1,18 @@
-export const currencies = {
+type CurrencyType = {
+  symbol: string
+  name: string
+  symbol_native: string
+  decimal_digits: number
+  rounding: number
+  code: string
+  name_plural: string
+}
+
+type CurrenciesType = {
+  [key: string]: CurrencyType
+}
+
+export const currencies: CurrenciesType = {
   USD: {
     symbol: "$",
     name: "US Dollar",
@@ -48,7 +62,7 @@ export const currencies = {
     symbol: "ALL",
     name: "Albanian Lek",
     symbol_native: "Lek",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "ALL",
     name_plural: "Albanian lekë",
@@ -57,7 +71,7 @@ export const currencies = {
     symbol: "AMD",
     name: "Armenian Dram",
     symbol_native: "դր.",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "AMD",
     name_plural: "Armenian drams",
@@ -228,7 +242,7 @@ export const currencies = {
     symbol: "CO$",
     name: "Colombian Peso",
     symbol_native: "$",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "COP",
     name_plural: "Colombian pesos",
@@ -237,7 +251,7 @@ export const currencies = {
     symbol: "₡",
     name: "Costa Rican Colón",
     symbol_native: "₡",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "CRC",
     name_plural: "Costa Rican colóns",
@@ -408,7 +422,7 @@ export const currencies = {
     symbol: "Ft",
     name: "Hungarian Forint",
     symbol_native: "Ft",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "HUF",
     name_plural: "Hungarian forints",
@@ -417,7 +431,7 @@ export const currencies = {
     symbol: "Rp",
     name: "Indonesian Rupiah",
     symbol_native: "Rp",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "IDR",
     name_plural: "Indonesian rupiahs",
@@ -462,7 +476,7 @@ export const currencies = {
     symbol: "Ikr",
     name: "Icelandic Króna",
     symbol_native: "kr",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "ISK",
     name_plural: "Icelandic krónur",
@@ -552,7 +566,7 @@ export const currencies = {
     symbol: "LB£",
     name: "Lebanese Pound",
     symbol_native: "ل.ل.‏",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "LBP",
     name_plural: "Lebanese pounds",
@@ -633,7 +647,7 @@ export const currencies = {
     symbol: "MMK",
     name: "Myanma Kyat",
     symbol_native: "K",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "MMK",
     name_plural: "Myanma kyats",
@@ -651,7 +665,7 @@ export const currencies = {
     symbol: "MURs",
     name: "Mauritian Rupee",
     symbol_native: "MURs",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "MUR",
     name_plural: "Mauritian rupees",
@@ -957,7 +971,7 @@ export const currencies = {
     symbol: "TSh",
     name: "Tanzanian Shilling",
     symbol_native: "TSh",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "TZS",
     name_plural: "Tanzanian shillings",
@@ -975,7 +989,7 @@ export const currencies = {
     symbol: "USh",
     name: "Ugandan Shilling",
     symbol_native: "USh",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "UGX",
     name_plural: "Ugandan shillings",
@@ -993,7 +1007,7 @@ export const currencies = {
     symbol: "UZS",
     name: "Uzbekistan Som",
     symbol_native: "UZS",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "UZS",
     name_plural: "Uzbekistan som",
@@ -1038,7 +1052,7 @@ export const currencies = {
     symbol: "YR",
     name: "Yemeni Rial",
     symbol_native: "ر.ي.‏",
-    decimal_digits: 0,
+    decimal_digits: 2,
     rounding: 0,
     code: "YER",
     name_plural: "Yemeni rials",
@@ -1052,13 +1066,13 @@ export const currencies = {
     code: "ZAR",
     name_plural: "South African rand",
   },
-  ZMK: {
+  ZMW: {
     symbol: "ZK",
     name: "Zambian Kwacha",
     symbol_native: "ZK",
     decimal_digits: 0,
     rounding: 0,
-    code: "ZMK",
+    code: "ZMW",
     name_plural: "Zambian kwachas",
   },
   ZWL: {

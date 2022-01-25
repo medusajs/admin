@@ -1,9 +1,16 @@
 import React from "react"
-import IconProps from "./types/icon-type"
+import IconProps from "../types/icon-type"
 
-const ArrowDownIcon: React.FC<IconProps> = ({
-  size = "24px",
+type SortingIconProps = {
+  ascendingColor?: string
+  descendingColor?: string
+} & IconProps
+
+const SortingIcon: React.FC<SortingIconProps> = ({
+  size = "24",
   color = "currentColor",
+  ascendingColor,
+  descendingColor,
   ...attributes
 }) => {
   return (
@@ -16,15 +23,15 @@ const ArrowDownIcon: React.FC<IconProps> = ({
       {...attributes}
     >
       <path
-        d="M8 3.33331V12.6666"
-        stroke={color}
+        d="M4.66602 10L7.99935 13.3333L11.3327 10"
+        stroke={descendingColor || color}
         stroke-width="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
-        d="M12.667 8L8.00033 12.6667L3.33366 8"
-        stroke={color}
+        d="M4.66602 6.00008L7.99935 2.66675L11.3327 6.00008"
+        stroke={ascendingColor || color}
         stroke-width="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -33,4 +40,4 @@ const ArrowDownIcon: React.FC<IconProps> = ({
   )
 }
 
-export default ArrowDownIcon
+export default SortingIcon

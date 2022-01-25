@@ -1,22 +1,15 @@
-const noDivisionCurrencies = ["krw"]
+import { currencies } from "./currencies"
 
-export function normalizeAmount(currency, amount) {
-  let divisor = 100
-  if (noDivisionCurrencies.includes(currency.toLowerCase())) {
-    divisor = 1
-  }
-
+export function normalizeAmount(currency: string, amount: number): number {
+  const divisor = getDecimalDigits(currency)
   return Math.floor(amount) / divisor
 }
 
-export function displayAmount(currency, amount, decimals = 2) {
-  if (noDivisionCurrencies.includes(currency.toLowerCase())) {
-    return normalizeAmount(currency, amount)
-  }
-
+export function displayAmount(currency: string, amount: number) {
   const normalizedAmount = normalizeAmount(currency, amount)
-
-  return normalizedAmount.toFixed(decimals)
+  return normalizedAmount.toFixed(
+    currencies[currency.toUpperCase()].decimal_digits
+  )
 }
 
 export const extractUnitPrice = (item, region, withTax = true) => {
@@ -54,12 +47,8 @@ export const extractOptionPrice = (price, region) => {
   return `${amount} ${region.currency_code.toUpperCase()}`
 }
 
-export function persistedPrice(currency, amount) {
-  let multiplier = 100
-  if (noDivisionCurrencies.includes(currency.toLowerCase())) {
-    multiplier = 1
-  }
-
+export function persistedPrice(currency: string, amount: number): number {
+  const multiplier = getDecimalDigits(currency)
   return Math.floor(amount) * multiplier
 }
 
@@ -70,4 +59,13 @@ export const stringDisplayPrice = ({ amount, currencyCode }) => {
 
   const display = displayAmount(currencyCode, amount)
   return `${display} ${currencyCode.toUpperCase()}`
+}
+
+/**
+ * Checks the list of currencies and returns the divider/multiplier
+ * that should be used to calculate the persited and display amount.
+ */
+function getDecimalDigits(currency: string) {
+  const divisionDigits = currencies[currency.toUpperCase()].decimal_digits
+  return Math.pow(10, divisionDigits)
 }
