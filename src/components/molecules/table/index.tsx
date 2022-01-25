@@ -3,6 +3,7 @@ import { navigate } from "gatsby"
 import React from "react"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
+import SortingIcon from "../../fundamentals/icons/sorting-icon"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
 import TableSearch from "./table-search"
@@ -26,9 +27,20 @@ type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
   hasPrev: boolean
 }
 
+type TableCellProps = React.HTMLAttributes<HTMLTableCellElement> & {
+  linkTo?: string
+}
+
+type SortingHeadCellProps = {
+  onSortClicked: () => void
+  sortDirection?: "ASC" | "DESC"
+  setSortDirection: (string) => void
+} & React.HTMLAttributes<HTMLTableCellElement>
+
 type TableProps = {
   filteringOptions?: FilteringOptionProps[]
   enableSearch?: boolean
+  searchPlaceholder?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
 
@@ -39,9 +51,10 @@ type TableType = {
   Head: TableElement<React.HTMLAttributes<HTMLTableElement>>
   HeadRow: TableElement<React.HTMLAttributes<HTMLTableRowElement>>
   HeadCell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
+  SortingHeadCell: TableElement<SortingHeadCellProps>
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
-  Cell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
+  Cell: TableElement<TableCellProps>
   Pagination: React.ForwardRefExoticComponent<TablePaginationProps> &
     React.RefAttributes<unknown>
 } & TableElement<TableProps>
@@ -52,6 +65,7 @@ const Table: TableType = React.forwardRef(
       className,
       children,
       enableSearch,
+      searchPlaceholder,
       handleSearch,
       filteringOptions,
       ...props
@@ -73,7 +87,12 @@ const Table: TableType = React.forwardRef(
             </div>
           )}
           <div className="flex">
-            {enableSearch && <TableSearch onSearch={handleSearch} />}
+            {enableSearch && (
+              <TableSearch
+                placeholder={searchPlaceholder}
+                onSearch={handleSearch}
+              />
+            )}
           </div>
         </div>
         <table
@@ -136,6 +155,48 @@ Table.HeadCell = React.forwardRef(
   )
 )
 
+Table.SortingHeadCell = React.forwardRef(
+  (
+    {
+      onSortClicked,
+      sortDirection,
+      setSortDirection,
+      className,
+      children,
+      ...props
+    }: SortingHeadCellProps,
+    ref
+  ) => {
+    return (
+      <th ref={ref} className={clsx("text-left py-2.5", className)} {...props}>
+        <div
+          className="flex items-center cursor-pointer select-none"
+          onClick={(e) => {
+            e.preventDefault()
+            if (!sortDirection) {
+              setSortDirection("ASC")
+            } else {
+              if (sortDirection === "ASC") {
+                setSortDirection("DESC")
+              } else {
+                setSortDirection(undefined)
+              }
+            }
+            onSortClicked()
+          }}
+        >
+          {children}
+          <SortingIcon
+            size={16}
+            ascendingColor={sortDirection === "ASC" ? "#111827" : undefined}
+            descendingColor={sortDirection === "DESC" ? "#111827" : undefined}
+          />
+        </div>
+      </th>
+    )
+  }
+)
+
 Table.Body = React.forwardRef(
   (
     {
@@ -152,16 +213,19 @@ Table.Body = React.forwardRef(
 )
 
 Table.Cell = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableCellElement>,
-    ref
-  ) => (
-    <td ref={ref} className={clsx(" py-1.5", className)} {...props}>
-      <div className="w-inherit truncate">{children}</div>
+  ({ className, linkTo, children, ...props }: TableCellProps, ref) => (
+    <td
+      ref={ref}
+      className={clsx("inter-small-regular h-[40px]", className)}
+      {...props}
+      {...(linkTo && {
+        onClick: (e) => {
+          navigate(linkTo)
+          e.stopPropagation()
+        },
+      })}
+    >
+      {children}
     </td>
   )
 )

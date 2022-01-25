@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react"
 import useMedusa from "../../hooks/use-medusa"
+import Medusa from "../../services/api"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import RefreshIcon from "../fundamentals/icons/refresh-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
-import StatusDot from "../fundamentals/status-dot"
+import StatusIndicator from "../fundamentals/status-indicator"
 import SidebarTeamMember from "../molecules/sidebar-team-member"
 import Table from "../molecules/table"
-import Medusa from "../../services/api"
 import DeletePrompt from "../organisms/delete-prompt"
 import EditUser from "../organisms/edit-user-modal"
 
@@ -22,7 +22,7 @@ type UserTableProps = {
   triggerRefetch: () => void
 }
 
-const getInviteStatus = invite => {
+const getInviteStatus = (invite) => {
   return new Date(invite.expires_at) < new Date() ? "expired" : "pending"
 }
 
@@ -134,9 +134,9 @@ const UserTable: React.FC<UserTableProps> = ({
         <Table.Cell></Table.Cell>
         <Table.Cell>
           {new Date(invite?.expires_at) < new Date() ? (
-            <StatusDot title={"Expired"} variant={"danger"} />
+            <StatusIndicator title={"Expired"} variant={"danger"} />
           ) : (
-            <StatusDot title={"Pending"} variant={"success"} />
+            <StatusIndicator title={"Pending"} variant={"success"} />
           )}
         </Table.Cell>
       </Table.Row>
@@ -155,32 +155,32 @@ const UserTable: React.FC<UserTableProps> = ({
         {
           title: "Member",
           count: elements.filter(
-            e => e.entityType === "user" && e.entity.role === "member"
+            (e) => e.entityType === "user" && e.entity.role === "member"
           ).length,
           onClick: () =>
             setShownElements(
               elements.filter(
-                e => e.entityType === "user" && e.entity.role === "member"
+                (e) => e.entityType === "user" && e.entity.role === "member"
               )
             ),
         },
         {
           title: "Admin",
           count: elements.filter(
-            e => e.entityType === "user" && e.entity.role === "admin"
+            (e) => e.entityType === "user" && e.entity.role === "admin"
           ).length,
           onClick: () =>
             setShownElements(
               elements.filter(
-                e => e.entityType === "user" && e.entity.role === "admin"
+                (e) => e.entityType === "user" && e.entity.role === "admin"
               )
             ),
         },
         {
           title: "No team permissions",
-          count: elements.filter(e => e.entityType === "invite").length,
+          count: elements.filter((e) => e.entityType === "invite").length,
           onClick: () =>
-            setShownElements(elements.filter(e => e.entityType === "invite")),
+            setShownElements(elements.filter((e) => e.entityType === "invite")),
         },
       ],
     },
@@ -194,21 +194,21 @@ const UserTable: React.FC<UserTableProps> = ({
         },
         {
           title: "Active",
-          count: elements.filter(e => e.entityType === "user").length,
+          count: elements.filter((e) => e.entityType === "user").length,
           onClick: () =>
-            setShownElements(elements.filter(e => e.entityType === "user")),
+            setShownElements(elements.filter((e) => e.entityType === "user")),
         },
         {
           title: "Pending",
           count: elements.filter(
-            e =>
+            (e) =>
               e.entityType === "invite" &&
               getInviteStatus(e.entity) === "pending"
           ).length,
           onClick: () =>
             setShownElements(
               elements.filter(
-                e =>
+                (e) =>
                   e.entityType === "invite" &&
                   getInviteStatus(e.entity) === "pending"
               )
@@ -217,14 +217,14 @@ const UserTable: React.FC<UserTableProps> = ({
         {
           title: "Expired",
           count: elements.filter(
-            e =>
+            (e) =>
               e.entityType === "invite" &&
               getInviteStatus(e.entity) === "expired"
           ).length,
           onClick: () =>
             setShownElements(
               elements.filter(
-                e =>
+                (e) =>
                   e.entityType === "invite" &&
                   getInviteStatus(e.entity) === "expired"
               )
@@ -237,7 +237,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const handleUserSearch = (term: string) => {
     setShownElements(
       elements.filter(
-        e =>
+        (e) =>
           e.entity?.first_name?.includes(term) ||
           e.entity?.last_name?.includes(term) ||
           e.entity?.email?.includes(term) ||
@@ -261,7 +261,7 @@ const UserTable: React.FC<UserTableProps> = ({
             <Table.HeadCell>Status</Table.HeadCell>
           </Table.HeadRow>
         </Table.Head>
-        <Table.Body>{shownElements.map(e => e.tableElement)}</Table.Body>
+        <Table.Body>{shownElements.map((e) => e.tableElement)}</Table.Body>
       </Table>
       {selectedUser &&
         (deleteUser ? (
