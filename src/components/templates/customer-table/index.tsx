@@ -1,3 +1,4 @@
+import { RouteComponentProps } from "@reach/router"
 import { useAdminCustomers } from "medusa-react"
 import moment from "moment"
 import React, { useEffect, useMemo, useState } from "react"
@@ -8,10 +9,6 @@ import DetailsIcon from "../../fundamentals/details-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import Table, { TablePagination } from "../../molecules/table"
-
-type CustomerTableProps = {
-  customers: any[]
-}
 
 const getColor = (index: number): string => {
   const colors = [
@@ -26,7 +23,7 @@ const getColor = (index: number): string => {
   return colors[index % colors.length]
 }
 
-const CustomerTable: React.FC<CustomerTableProps> = () => {
+const CustomerTable: React.FC<RouteComponentProps> = () => {
   const [offset, setOffset] = useState(0)
   const [limit, setLimit] = useState(14)
   const [query, setQuery] = useState("")

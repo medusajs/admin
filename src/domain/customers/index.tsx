@@ -1,44 +1,11 @@
-import { Router } from "@reach/router"
-import qs from "query-string"
+import { RouteComponentProps, Router } from "@reach/router"
 import React from "react"
 import PageDescription from "../../components/atoms/page-description"
 import BodyCard from "../../components/organisms/body-card"
 import CustomerTable from "../../components/templates/customer-table"
 import Details from "./details"
 
-const CustomerIndex = () => {
-  const filtersOnLoad = qs.parse(window.location.search)
-
-  if (!filtersOnLoad.offset) {
-    filtersOnLoad.offset = 0
-  }
-
-  if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 20
-  }
-
-  // const handlePagination = (direction) => {
-  //   const updatedOffset = direction === "next" ? offset + limit : offset - limit
-  //   const baseUrl = qs.parseUrl(window.location.href).url
-
-  //   const prepared = qs.stringify(
-  //     {
-  //       q: query,
-  //       offset: updatedOffset,
-  //       limit,
-  //     },
-  //     { skipNull: true, skipEmptyString: true }
-  //   )
-
-  //   window.history.pushState(baseUrl, "", `?${prepared}`)
-
-  //   refresh({ search: `?${prepared}` }).then(() => {
-  //     setOffset(updatedOffset)
-  //   })
-  // }
-
-  // const moreResults = customers && customers.length >= limit
-
+const CustomerIndex: React.FC<RouteComponentProps> = () => {
   return (
     <div className="flex flex-col grow h-full">
       <PageDescription
