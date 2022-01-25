@@ -23,6 +23,7 @@ import clsx from "clsx"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
 import qs from "query-string"
 import useMedusa from "../../../hooks/use-medusa"
+import { useDebounce } from "../../../hooks/use-debounce"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -341,10 +342,12 @@ const ProductTable: React.FC<ProductTableProps> = () => {
 
   // Upon searching, we always start on first page
   const handleSearch = (q) => {
+    const debouncedSearchTerm = useDebounce(q, 500)
+
     const baseUrl = qs.parseUrl(window.location.href).url
 
     const search = {
-      q,
+      q: debouncedSearchTerm,
       offset: 0,
       limit: limit,
     }
