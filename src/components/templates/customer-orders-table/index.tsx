@@ -78,10 +78,10 @@ const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
                 <Table.Cell className="w-40 flex">
                   <div
                     ref={containerRef}
-                    className="flex space-x-1 w-[60px] mr-2"
+                    className="flex space-x-1 w-[60px] mr-2 items-center"
                   >
                     {visibleImages.map((tag) => (
-                      <div className="h-[40px] w-[30px] flex items-center">
+                      <div className="h-[35px] w-[25px] flex items-center ">
                         <img
                           className="rounded object-cover"
                           src={tag.thumbnail}
