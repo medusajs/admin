@@ -7,41 +7,19 @@ import {
   useAdminStore,
   useAdminUpdateProduct,
 } from "medusa-react"
-import qs from "query-string"
-import React, { useContext, useEffect } from "react"
+import React from "react"
 import PageDescription from "../../components/atoms/page-description"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BannerCard from "../../components/molecules/banner-card"
 import BodyCard from "../../components/organisms/body-card"
 import GiftCardBanner from "../../components/organisms/gift-card-banner"
 import GiftCardTable from "../../components/templates/gift-card-table"
-import { InterfaceContext } from "../../context/interface"
 import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
 import ManageGiftCard from "./manage"
 
 const Index = ({ giftCards, giftCard, updateStatus, deleteGiftCard }) => {
   const { store } = useAdminStore()
-
-  const searchQuery = (q) => {
-    const baseUrl = qs.parseUrl(window.location.href).url
-
-    const search = {
-      fields: "id,title,thumbnail",
-      expand: "variants,variants.prices,collection",
-      q,
-      offset: 0,
-      limit: 20,
-    }
-
-    const prepared = qs.stringify(search, {
-      skipNull: true,
-      skipEmptyString: true,
-    })
-
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
-    // TODO: Refresh
-  }
 
   const actionables = [
     {
@@ -50,12 +28,6 @@ const Index = ({ giftCards, giftCard, updateStatus, deleteGiftCard }) => {
       icon: <PlusIcon size={20} />,
     },
   ]
-
-  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
-  useEffect(onUnmount, [])
-  useEffect(() => {
-    setOnSearch(searchQuery)
-  }, [])
 
   const TopBanner = () => {
     if (giftCard) {
@@ -155,8 +127,6 @@ const GiftCard = () => {
       },
     })
   }
-
-  console.log(giftCard)
 
   return (
     <Router>
