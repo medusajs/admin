@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../../components/fundamentals/icons/unpublish-icon"
-import StatusDot from "../../../components/fundamentals/status-dot"
+import StatusIndicator from "../../../components/fundamentals/status-indicator"
 import BreadCrumb from "../../../components/molecules/breadcrumb"
 import Input from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
@@ -93,13 +93,13 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
   const StatusComponent = () => {
     switch (giftCard?.status) {
       case "published":
-        return <StatusDot title="Published" variant="success" />
+        return <StatusIndicator title="Published" variant="success" />
       case "draft":
-        return <StatusDot title="Draft" variant="default" />
+        return <StatusIndicator title="Draft" variant="default" />
       case "proposed":
-        return <StatusDot title="Proposed" variant="warning" />
+        return <StatusIndicator title="Proposed" variant="warning" />
       case "rejected":
-        return <StatusDot title="Rejected" variant="danger" />
+        return <StatusIndicator title="Rejected" variant="danger" />
       default:
         return null
     }
