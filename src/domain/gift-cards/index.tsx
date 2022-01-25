@@ -15,7 +15,9 @@ import Overview from "./overview"
 
 const GiftCard = () => {
   const { gift_cards: purchasedGiftCards } = useAdminGiftCards()
-  const { products: giftCards } = useAdminProducts({ is_giftcard: "true" })
+  const { products: giftCards } = useAdminProducts({
+    is_giftcard: "true",
+  })
   const giftCard = giftCards?.[0]
 
   const updateGiftCard = useAdminUpdateProduct(giftCard?.id)
@@ -50,13 +52,7 @@ const GiftCard = () => {
 
   const deleteGC = () => {
     deleteGiftCard.mutate(undefined, {
-      onSuccess: () => {
-        toaster("Successfully deleted Gift Card")
-        navigate("/a/gift-cards")
-      },
-      onError: (err) => {
-        toaster(getErrorMessage(err))
-      },
+      onSuccess: () => navigate("/a/gift-cards"),
     })
   }
 
@@ -64,6 +60,7 @@ const GiftCard = () => {
     <Router>
       <Overview
         path="/"
+        giftCard={giftCard}
         onDelete={() => deleteGC()}
         onUpdate={() => updateGCStatus()}
       />

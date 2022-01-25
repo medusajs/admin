@@ -1,33 +1,33 @@
 import { RouteComponentProps } from "@reach/router"
-import {
-  useAdminDeleteProduct,
-  useAdminGiftCards,
-  useAdminProducts,
-  useAdminStore,
-} from "medusa-react"
+import { navigate } from "gatsby"
+import { useAdminGiftCards, useAdminStore } from "medusa-react"
 import qs from "query-string"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import PageDescription from "../../components/atoms/page-description"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BannerCard from "../../components/molecules/banner-card"
 import BodyCard from "../../components/organisms/body-card"
+import DeletePrompt from "../../components/organisms/delete-prompt"
 import GiftCardBanner from "../../components/organisms/gift-card-banner"
 import GiftCardTable from "../../components/templates/gift-card-table"
 import { InterfaceContext } from "../../context/interface"
-import useToaster from "../../hooks/use-toaster"
-import { getErrorMessage } from "../../utils/error-messages"
 import NewGiftCard from "./new"
 
-type InvalidGiftCard = {
-  id: "null"
-}
+type OverviewProps = {
+  giftCard: any
+  onDelete: () => void
+  onUpdate: () => void
+} & RouteComponentProps
 
-const Overview: React.FC<RouteComponentProps> = () => {
-  const { products, refetch } = useAdminProducts({ is_giftcard: "true" })
+const Overview: React.FC<OverviewProps> = ({
+  giftCard,
+  onDelete,
+  onUpdate,
+}) => {
   const { store } = useAdminStore()
   const { gift_cards: giftCards } = useAdminGiftCards()
-  const toaster = useToaster()
-  const [create, setCreate] = useState(false)
+  const [showCreate, setShowCreate] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
 
   const searchQuery = (q: string) => {
     const baseUrl = qs.parseUrl(window.location.href).url
@@ -57,33 +57,17 @@ const Overview: React.FC<RouteComponentProps> = () => {
     },
   ]
 
-  const giftCard = useMemo(() => {
-    if (!products || !store) return
+  const giftCardWithCurrency = useMemo(() => {
+    if (!giftCard || !store) return null
 
-    return { ...products[0], defaultCurrency: store.default_currency_code }
-  }, [products, store])
-
-  const deleteCard = useAdminDeleteProduct(giftCard.id)
+    return { ...giftCard, defaultCurrency: store.default_currency_code }
+  }, [giftCard, store])
 
   const { setOnSearch, onUnmount } = useContext(InterfaceContext)
   useEffect(onUnmount, [])
   useEffect(() => {
     setOnSearch(searchQuery)
   }, [])
-
-  const handleDelete = () => {
-    if (!giftCard) return
-
-    deleteCard.mutate(undefined, {
-      onSuccess: () => {
-        toaster("Successfully deleted Gift Card", "success")
-        refetch()
-      },
-      onError: (err) => {
-        toaster(getErrorMessage(err), "error")
-      },
-    })
-  }
 
   return (
     <>
@@ -93,19 +77,19 @@ const Overview: React.FC<RouteComponentProps> = () => {
           subtitle="Manage the settings for your Medusa Store"
         />
         <div className="mb-base">
-          {giftCard ? (
+          {giftCardWithCurrency ? (
             <GiftCardBanner
-              {...giftCard}
-              onDelete={handleDelete}
-              onEdit={() => console.log("edit")}
-              onUnpublish={() => console.log("unpublish")}
+              {...giftCardWithCurrency}
+              onDelete={() => setShowDelete(true)}
+              onEdit={() => navigate("/a/gift-cards/manage")}
+              onUnpublish={onUpdate}
             />
           ) : (
             <BannerCard title="You're ready to sell your first gift card?">
               <BannerCard.Description
                 cta={{
                   label: "Create Gift Card",
-                  onClick: () => setCreate(true),
+                  onClick: () => setShowCreate(true),
                 }}
               >
                 No gift card have been added yet. Click the "Create Gift Card"
@@ -124,7 +108,15 @@ const Overview: React.FC<RouteComponentProps> = () => {
           </BodyCard>
         </div>
       </div>
-      {create && <NewGiftCard onClose={() => setCreate(!create)} />}
+      {showCreate && <NewGiftCard onClose={() => setShowCreate(!showCreate)} />}
+      {showDelete && (
+        <DeletePrompt
+          handleClose={() => setShowDelete(!showDelete)}
+          onDelete={async () => onDelete()}
+          successText="Successfully deleted Gift Card"
+          confirmText="Yes, delete"
+        />
+      )}
     </>
   )
 }

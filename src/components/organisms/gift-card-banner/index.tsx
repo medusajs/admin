@@ -65,6 +65,8 @@ const GiftCardBanner: React.FC<GiftCardBannerProps> = ({
           (price) => price.currency_code === defaultCurrency
         )
 
+        console.log(price)
+
         if (!price) {
           return ""
         }

@@ -1,4 +1,9 @@
-import { useAdminCreateProduct, useAdminStore } from "medusa-react"
+import { navigate } from "gatsby"
+import {
+  useAdminCreateProduct,
+  useAdminProducts,
+  useAdminStore,
+} from "medusa-react"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import FileUploadField from "../../components/atoms/file-upload-field"
@@ -26,6 +31,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
   const [uploading, setUploading] = useState(false)
   const { register, setValue, unregister, handleSubmit } = useForm()
   const { store } = useAdminStore()
+  const { refetch } = useAdminProducts()
   const giftCard = useAdminCreateProduct()
   const [denominations, setDenominations] = useState<Denomination[]>([])
   const toaster = useToaster()
@@ -71,7 +77,6 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
     description?: string
     denominations: number[]
   }) => {
-    console.log(data.denominations)
     giftCard.mutate(
       {
         is_giftcard: true,
@@ -91,7 +96,8 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
       {
         onSuccess: () => {
           toaster("Successfully created gift card", "success")
-          onClose()
+          refetch()
+          navigate("/a/gift-cards/manage")
         },
         onError: (err) => {
           toaster(getErrorMessage(err), "error")
@@ -145,7 +151,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
                   return (
                     <div
                       key={denomination.name}
-                      className="flex items-center gap-x-base"
+                      className="flex items-center gap-x-base last:mb-large"
                     >
                       {denomination.component}
                       <Button
@@ -166,7 +172,6 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
                 size="small"
                 onClick={addDenomination}
                 type="button"
-                className="mt-large"
               >
                 <PlusIcon size={20} />
                 Add Denomination
