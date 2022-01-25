@@ -342,27 +342,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     }
   }
 
-  // Upon searching, we always start on first page
-  // const handleSearch = (q) => {
-  //   const debouncedSearchTerm = useDebounce(q, 500)
-
-  //   const baseUrl = qs.parseUrl(window.location.href).url
-
-  //   const search = {
-  //     q: debouncedSearchTerm,
-  //     offset: 0,
-  //     limit: limit,
-  //   }
-
-  //   const prepared = qs.stringify(search, {
-  //     skipNull: true,
-  //     skipEmptyString: true,
-  //   })
-
-  //   window.history.replaceState(baseUrl, "", `?${prepared}`)
-  //   refetch({ search })
-  // }
-
   const handleSearch = (q) => {
     setOffset(0)
     setCurrentPage(0)
