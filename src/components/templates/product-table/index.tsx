@@ -1,4 +1,4 @@
-import { useAdminCollections } from "medusa-react"
+import { useAdminCollections, useAdminProducts } from "medusa-react"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useTable, useSortBy } from "react-table"
 import _ from "lodash"
@@ -21,7 +21,6 @@ import TileIcon from "../../fundamentals/icons/tile-icon"
 import clsx from "clsx"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
 import qs from "query-string"
-import useMedusa from "../../../hooks/use-medusa"
 import { useDebounce } from "../../../hooks/use-debounce"
 
 const removeNullish = (obj) =>
@@ -160,15 +159,19 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     expand: "variants,options,variants.prices,variants.options,collection,tags",
   }
 
-  const { products, isLoading, refresh, isRefetching, count } = useMedusa(
-    "products",
-    {
-      search: {
-        ...filtersOnLoad,
-        ...defaultQueryProps,
-      },
-    }
-  )
+  const debouncedSearchTerm = useDebounce(query, 500)
+
+  const {
+    products,
+    isLoading,
+    refetch,
+    isRefetching,
+    count,
+  } = useAdminProducts({
+    ...filtersOnLoad,
+    ...defaultQueryProps,
+    q: debouncedSearchTerm,
+  })
 
   const replaceQueryString = (queryObject) => {
     const searchObject = {
@@ -179,7 +182,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     if (_.entries(queryObject).length === 0) {
       resetFilters()
       window.history.replaceState({}, "", "/a/products")
-      refresh({ search: { ...defaultQueryProps } })
+      refetch({ ...defaultQueryProps })
     } else {
       if (!searchObject.offset) {
         searchObject.offset = 0
@@ -191,7 +194,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
 
       const query = qs.stringify(queryObject)
       window.history.replaceState(`/a/products`, "", `${`?${query}`}`)
-      refresh({ search: { ...searchObject } })
+      refetch({ ...searchObject })
     }
   }
 
@@ -340,24 +343,30 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   }
 
   // Upon searching, we always start on first page
+  // const handleSearch = (q) => {
+  //   const debouncedSearchTerm = useDebounce(q, 500)
+
+  //   const baseUrl = qs.parseUrl(window.location.href).url
+
+  //   const search = {
+  //     q: debouncedSearchTerm,
+  //     offset: 0,
+  //     limit: limit,
+  //   }
+
+  //   const prepared = qs.stringify(search, {
+  //     skipNull: true,
+  //     skipEmptyString: true,
+  //   })
+
+  //   window.history.replaceState(baseUrl, "", `?${prepared}`)
+  //   refetch({ search })
+  // }
+
   const handleSearch = (q) => {
-    const debouncedSearchTerm = useDebounce(q, 500)
-
-    const baseUrl = qs.parseUrl(window.location.href).url
-
-    const search = {
-      q: debouncedSearchTerm,
-      offset: 0,
-      limit: limit,
-    }
-
-    const prepared = qs.stringify(search, {
-      skipNull: true,
-      skipEmptyString: true,
-    })
-
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({ search })
+    setOffset(0)
+    setCurrentPage(0)
+    setQuery(q)
   }
 
   const handleCopyProduct = async (product) => {
@@ -439,7 +448,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
                 "success"
               )
             )
-            .then(() => refresh())
+            .then(() => refetch())
             .catch((err) => toaster(getErrorMessage(err), "error")),
         icon:
           product.status === "published" ? (
@@ -544,7 +553,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
         <DeletePrompt
           handleClose={() => setDeleteProduct(undefined)}
           onDelete={async () => {
-            Medusa.products.delete(deleteProduct.id).then(() => refresh())
+            Medusa.products.delete(deleteProduct.id).then(() => refetch())
           }}
         />
       )}
