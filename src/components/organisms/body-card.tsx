@@ -13,6 +13,7 @@ type BodyCardProps = {
     type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"]
   }[]
   actionables?: ActionType[]
+  status?: React.ReactNode
 } & React.HTMLAttributes<HTMLDivElement>
 
 const BodyCard: React.FC<BodyCardProps> = ({
@@ -20,6 +21,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
   subtitle,
   events,
   actionables,
+  status,
   className,
   children,
   ...rest
@@ -46,14 +48,17 @@ const BodyCard: React.FC<BodyCardProps> = ({
           ) : (
             <div />
           )}
-          <Actionables actions={actionables} />
+          <div className="flex items-center space-x-2">
+            {status && status}
+            <Actionables actions={actionables} />
+          </div>
         </div>
         {subtitle && (
           <h3 className="inter-small-regular pt-1.5 text-grey-50">
             {subtitle}
           </h3>
         )}
-        <div className="my-large flex flex-col grow">{children}</div>
+        <div className="flex flex-col grow">{children}</div>
       </div>
       {events && events.length > 0 ? (
         <div className="pb-large pt-base px-xlarge border-t border-grey-20">

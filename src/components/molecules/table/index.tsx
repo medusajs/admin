@@ -1,6 +1,9 @@
-import React from "react"
-import { navigate } from "gatsby"
 import clsx from "clsx"
+import { navigate } from "gatsby"
+import React from "react"
+import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
+import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
+import SortingIcon from "../../fundamentals/icons/sorting-icon"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
 import TableSearch from "./table-search"
@@ -10,9 +13,34 @@ type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   linkTo?: string
 }
 
+type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
+  title: string
+  currentPage: number
+  pageSize: number
+  count: number
+  offset: number
+  limit: number
+  pageCount: number
+  nextPage: () => void
+  prevPage: () => void
+  hasNext: boolean
+  hasPrev: boolean
+}
+
+type TableCellProps = React.HTMLAttributes<HTMLTableCellElement> & {
+  linkTo?: string
+}
+
+type SortingHeadCellProps = {
+  onSortClicked: () => void
+  sortDirection?: "ASC" | "DESC"
+  setSortDirection: (string) => void
+} & React.HTMLAttributes<HTMLTableCellElement>
+
 type TableProps = {
   filteringOptions?: FilteringOptionProps[]
   enableSearch?: boolean
+  searchPlaceholder?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
 
@@ -23,9 +51,12 @@ type TableType = {
   Head: TableElement<React.HTMLAttributes<HTMLTableElement>>
   HeadRow: TableElement<React.HTMLAttributes<HTMLTableRowElement>>
   HeadCell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
+  SortingHeadCell: TableElement<SortingHeadCellProps>
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
-  Cell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
+  Cell: TableElement<TableCellProps>
+  Pagination: React.ForwardRefExoticComponent<TablePaginationProps> &
+    React.RefAttributes<unknown>
 } & TableElement<TableProps>
 
 const Table: TableType = React.forwardRef(
@@ -34,6 +65,7 @@ const Table: TableType = React.forwardRef(
       className,
       children,
       enableSearch,
+      searchPlaceholder,
       handleSearch,
       filteringOptions,
       ...props
@@ -49,13 +81,18 @@ const Table: TableType = React.forwardRef(
         <div className="w-full flex justify-between">
           {filteringOptions && (
             <div className="flex mb-2 self-end">
-              {filteringOptions.map(fo => (
+              {filteringOptions.map((fo) => (
                 <FilteringOptions {...fo} />
               ))}
             </div>
           )}
           <div className="flex">
-            {enableSearch && <TableSearch onSearch={handleSearch} />}
+            {enableSearch && (
+              <TableSearch
+                placeholder={searchPlaceholder}
+                onSearch={handleSearch}
+              />
+            )}
           </div>
         </div>
         <table
@@ -118,6 +155,48 @@ Table.HeadCell = React.forwardRef(
   )
 )
 
+Table.SortingHeadCell = React.forwardRef(
+  (
+    {
+      onSortClicked,
+      sortDirection,
+      setSortDirection,
+      className,
+      children,
+      ...props
+    }: SortingHeadCellProps,
+    ref
+  ) => {
+    return (
+      <th ref={ref} className={clsx("text-left py-2.5", className)} {...props}>
+        <div
+          className="flex items-center cursor-pointer select-none"
+          onClick={(e) => {
+            e.preventDefault()
+            if (!sortDirection) {
+              setSortDirection("ASC")
+            } else {
+              if (sortDirection === "ASC") {
+                setSortDirection("DESC")
+              } else {
+                setSortDirection(undefined)
+              }
+            }
+            onSortClicked()
+          }}
+        >
+          {children}
+          <SortingIcon
+            size={16}
+            ascendingColor={sortDirection === "ASC" ? "#111827" : undefined}
+            descendingColor={sortDirection === "DESC" ? "#111827" : undefined}
+          />
+        </div>
+      </th>
+    )
+  }
+)
+
 Table.Body = React.forwardRef(
   (
     {
@@ -134,16 +213,19 @@ Table.Body = React.forwardRef(
 )
 
 Table.Cell = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableCellElement>,
-    ref
-  ) => (
-    <td ref={ref} className={clsx(" py-1.5", className)} {...props}>
-      <div className="w-inherit truncate">{children}</div>
+  ({ className, linkTo, children, ...props }: TableCellProps, ref) => (
+    <td
+      ref={ref}
+      className={clsx("inter-small-regular h-[40px]", className)}
+      {...props}
+      {...(linkTo && {
+        onClick: (e) => {
+          navigate(linkTo)
+          e.stopPropagation()
+        },
+      })}
+    >
+      {children}
     </td>
   )
 )
@@ -153,7 +235,7 @@ Table.Row = React.forwardRef(
     <tr
       ref={ref}
       className={clsx(
-        "inter-small-regular border-t border-b border-grey-20 text-grey-90",
+        "inter-small-regular border-t border-b border-grey-20 text-grey-90 hover:bg-grey-5",
         className,
         { "cursor-pointer": linkTo !== undefined }
       )}
@@ -169,5 +251,53 @@ Table.Row = React.forwardRef(
     </tr>
   )
 )
+
+export const TablePagination = ({
+  className,
+  title = "Elements",
+  currentPage,
+  pageCount,
+  pageSize,
+  count,
+  offset,
+  nextPage,
+  prevPage,
+  hasNext,
+  hasPrev,
+}: TablePaginationProps) => {
+  return (
+    <div
+      className={clsx(
+        "flex w-full justify-between inter-small-regular text-grey-50 mt-14",
+        className
+      )}
+    >
+      <div>{`${offset + 1} - ${pageSize} of ${count} ${title}`}</div>
+      <div className="flex space-x-4">
+        <div>{`${currentPage + 1} of ${pageCount}`}</div>
+        <div className="flex space-x-4 items-center">
+          <div
+            className={clsx(
+              { ["text-grey-30"]: !hasPrev },
+              { ["cursor-pointer"]: hasPrev }
+            )}
+            onClick={() => prevPage()}
+          >
+            <ArrowLeftIcon />
+          </div>
+          <div
+            className={clsx(
+              { ["text-grey-30"]: !hasNext },
+              { ["cursor-pointer"]: hasNext }
+            )}
+            onClick={() => nextPage()}
+          >
+            <ArrowRightIcon />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default Table
