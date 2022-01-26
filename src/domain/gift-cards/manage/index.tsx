@@ -172,7 +172,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
               />
             </div>
             <DetailsCollapsible triggerProps={{ className: "ml-2" }}>
-              <div className="flex space-x-8">
+              <div className="flex space-x-8 pb-4">
                 <div className="flex flex-col w-1/2 space-y-4">
                   <Input
                     label="Handle"
