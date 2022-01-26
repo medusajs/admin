@@ -9,7 +9,7 @@ import { ReactComponent as DeleteIcon } from "../../../../assets/svg/delete.svg"
 import Button from "../../../../components/button"
 import CurrencyInput from "../../../../components/currency-input"
 import Input from "../../../../components/molecules/input"
-import Modal from "../../../../components/modal"
+import Modal from "../../../../components/molecules/modal"
 import Typography from "../../../../components/typography"
 import useMedusa from "../../../../hooks/use-medusa"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
@@ -67,11 +67,13 @@ const VariantEditor = ({
 
   const getCurrencyOptions = () => {
     return ((store && store.currencies) || [])
-      .map(v => ({
+      .map((v) => ({
         value: v.code.toUpperCase(),
         label: v.code.toUpperCase(),
       }))
-      .filter(o => !prices.find(p => !p.edit && p.currency_code === o.value))
+      .filter(
+        (o) => !prices.find((p) => !p.edit && p.currency_code === o.value)
+      )
   }
 
   useEffect(() => {
@@ -101,7 +103,7 @@ const VariantEditor = ({
     setPrices(newPrices)
   }
 
-  const removePrice = index => {
+  const removePrice = (index) => {
     const newPrices = [...prices]
     newPrices.splice(index, 1)
     setPrices(newPrices)
@@ -122,34 +124,27 @@ const VariantEditor = ({
     setPrices(newPrices)
   }
 
-  const handleSave = data => {
+  const handleSave = (data) => {
     data.prices = prices.map(({ currency_code, region_id, amount }) => ({
       currency_code,
       region_id,
       amount: Math.round(amount),
     }))
 
-    data.prices = data.prices.map(p => removeNullish(p))
+    data.prices = data.prices.map((p) => removeNullish(p))
     const cleaned = convertEmptyStringToNull(data, numberFields)
 
     onSubmit(cleaned)
   }
 
+  // as="form" onSubmit={handleSubmit(handleSave)}
   return (
-    <Modal onClick={onCancel}>
-      <Modal.Body as="form" onSubmit={handleSubmit(handleSave)}>
-        <Modal.Header justifyContent="space-between" alignItems="center" px={4}>
-          <Text fontSize="18px" fontWeight={700}>
-            Product Variant Details
-          </Text>
-          <CloseIcon
-            style={{ cursor: "pointer" }}
-            onClick={onCancel}
-            width={12}
-            height={12}
-          />
+    <Modal handleClose={onCancel}>
+      <Modal.Body>
+        <Modal.Header handleClose={onCancel}>
+          <h2 className="inter-xlarge-semibold">Edit Variant</h2>
         </Modal.Header>
-        <Modal.Content px={4} flexDirection="column">
+        <Modal.Content>
           <Box mb={4}>
             <Text fontWeight={700} fontSize={2} mb={3}>
               Variant Information
@@ -224,10 +219,10 @@ const VariantEditor = ({
                   currency={p.currency_code.toUpperCase()}
                   currencyOptions={currencyOptions}
                   value={p.amount / 100}
-                  onCurrencySelected={currency =>
+                  onCurrencySelected={(currency) =>
                     handleCurrencySelected(index, currency)
                   }
-                  onChange={e => handlePriceChange(index, e)}
+                  onChange={(e) => handlePriceChange(index, e)}
                 />
 
                 <Box
