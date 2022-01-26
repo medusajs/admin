@@ -1,4 +1,4 @@
-import { RouteComponentProps } from "@reach/router"
+import { RouteComponentProps, useLocation } from "@reach/router"
 import { isEmpty } from "lodash"
 import { useAdminOrders } from "medusa-react"
 import moment from "moment"
@@ -28,26 +28,45 @@ const getColor = (index: number): string => {
   return colors[index % colors.length]
 }
 
-const OrderTable: React.FC<RouteComponentProps> = () => {
-  const filtersOnLoad = qs.parse(
-    window.location.search.charAt(0) === "?"
-      ? window.location.search.substring(1)
-      : window.location.search
-  )
+type OrderFilter = {
+  open: boolean
+  filter: string | null
+}
 
-  const [statusFilter, setStatusFilter] = useState({
+const defaultQueryProps = {
+  expand: "shipping_address",
+  fields:
+    "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+}
+
+const OrderTable: React.FC<RouteComponentProps> = () => {
+  const location = useLocation()
+  const filtersOnLoad = qs.parse(location.search) as {
+    offset: number
+    limit: number
+  }
+
+  if (!filtersOnLoad.offset) {
+    filtersOnLoad.offset = 0
+  }
+
+  if (!filtersOnLoad.limit) {
+    filtersOnLoad.limit = 14
+  }
+
+  const [statusFilter, setStatusFilter] = useState<OrderFilter>({
     open: false,
     filter: null,
   })
-  const [fulfillmentFilter, setFulfillmentFilter] = useState({
+  const [fulfillmentFilter, setFulfillmentFilter] = useState<OrderFilter>({
     open: false,
     filter: null,
   })
-  const [paymentFilter, setPaymentFilter] = useState({
+  const [paymentFilter, setPaymentFilter] = useState<OrderFilter>({
     open: false,
     filter: null,
   })
-  const [dateFilter, setDateFilter] = useState({
+  const [dateFilter, setDateFilter] = useState<OrderFilter>({
     open: false,
     filter: null,
   })
@@ -157,10 +176,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const debouncedSearchTerm = useDebounce(query, 500)
 
   const { orders, isLoading, refetch, isRefetching, count } = useAdminOrders({
-    q: debouncedSearchTerm,
-    limit,
-    offset,
+    ...defaultQueryProps,
     ...filtersOnLoad,
+    q: debouncedSearchTerm,
   })
 
   const {
@@ -219,20 +237,74 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     setQuery(q)
   }
 
+  const atMidnight = (date) => {
+    const result = moment(date)
+    if (!moment.isMoment(result)) {
+      console.log("date is not instance of Moment: ", date)
+      return null
+    }
+    result.hour(0)
+    result.minute(0)
+    result.second(0)
+    result.millisecond(0)
+
+    return result
+  }
+
+  const relativeDateFormatToTimestamp = (value) => {
+    // let [modifier, value] = dateFormat.split("=")
+    const [count, option] = value.split("|")
+
+    // relative days are always subtract
+    let date = moment()
+
+    date.subtract(count, option)
+    date = atMidnight(date)!
+
+    const result = `${date.format("X")}`
+
+    return result
+  }
+
+  const formatDateFilter = (filter) => {
+    return Object.entries(filter).reduce((acc, [key, value]) => {
+      if (value.includes("|")) {
+        acc[key] = relativeDateFormatToTimestamp(value)
+      } else {
+        acc[key] = value
+      }
+      return acc
+    }, {})
+  }
+
   const replaceQueryString = (queryObject) => {
+    const searchObject = {
+      ...queryObject,
+      ...defaultQueryProps,
+    }
+
+    console.log(searchObject)
+
     if (isEmpty(queryObject)) {
+      resetFilters()
       window.history.replaceState(
         `/a/orders`,
         "",
         `?offset=${offset}&limit=${limit}`
       )
-      resetFilters()
+      refetch({ ...defaultQueryProps })
     } else {
-      const query = { offset: offset || 0, ...queryObject }
+      if (!searchObject.offset) {
+        searchObject.offset = 0
+      }
 
-      const stringified = qs.stringify(query)
+      if (!searchObject.limit) {
+        searchObject.limit = 14
+      }
 
+      const stringified = qs.stringify(queryObject)
       window.history.replaceState(`/a/orders`, "", `${`?${stringified}`}`)
+      refetch({ ...searchObject })
     }
   }
 
@@ -241,12 +313,14 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       "payment_status[]": paymentFilter.filter,
       "fulfillment_status[]": fulfillmentFilter.filter,
       "status[]": statusFilter.filter,
-      created_at: dateFilter.filter,
     }
 
-    const url = { ...removeNullish(urlObject) }
+    if (!isEmpty(dateFilter.filter)) {
+      const dateFormatted = formatDateFilter(dateFilter.filter)
+      urlObject.created_at = dateFormatted
+    }
 
-    replaceQueryString(url)
+    replaceQueryString(removeNullish(urlObject))
   }
 
   const resetFilters = () => {
@@ -267,6 +341,36 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       filter: null,
     })
   }
+
+  const clearFilters = () => {
+    resetFilters()
+    replaceQueryString({})
+  }
+
+  useEffect(() => {
+    const filtersOnLoad = qs.parse(location.search, {
+      arrayFormat: "bracket",
+    })
+
+    if (filtersOnLoad.status?.length) {
+      setStatusFilter({
+        open: true,
+        filter: filtersOnLoad.status[0],
+      })
+    }
+    if (filtersOnLoad.fulfillment_status?.length) {
+      setFulfillmentFilter({
+        open: true,
+        filter: filtersOnLoad.fulfillment_status[0],
+      })
+    }
+    if (filtersOnLoad.payment_status?.length) {
+      setPaymentFilter({
+        open: true,
+        filter: filtersOnLoad.payment_status[0],
+      })
+    }
+  }, [])
 
   return (
     <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
@@ -289,7 +393,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
                 dateFilter={dateFilter}
                 submitFilters={submitFilters}
                 resetFilters={resetFilters}
-                clearFilters={resetFilters}
+                clearFilters={clearFilters}
               />
             }
             enableSearch
