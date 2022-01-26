@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef } from "react"
 import * as RadixCollapsible from "@radix-ui/react-collapsible"
 import * as RadixPopover from "@radix-ui/react-popover"
+import clsx from "clsx"
+import moment from "moment"
+import React, { useEffect, useRef, useState } from "react"
+import { DateFilters } from "../../../utils/filters"
 import { addHours, atMidnight, dateToUnixTimestamp } from "../../../utils/time"
 import { CalendarComponent } from "../../atoms/date-picker/date-picker"
-import ChevronUpIcon from "../../fundamentals/icons/chevron-up"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
-import { DateFilters } from "../../../utils/filters"
-import InputField from "../input"
-import moment from "moment"
-import clsx from "clsx"
 import CheckIcon from "../../fundamentals/icons/check-icon"
+import ChevronUpIcon from "../../fundamentals/icons/chevron-up"
+import InputField from "../input"
 
 const FilterDropdownItem = ({
   filterTitle,
@@ -342,7 +342,7 @@ const DateFilter = ({
         )
 
       default:
-        return <span>{currentFilter} - comming soon!</span>
+        return <span>{currentFilter} - coming soon!</span>
     }
   }
   return (

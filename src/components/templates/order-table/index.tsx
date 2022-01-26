@@ -1,12 +1,14 @@
 import { RouteComponentProps } from "@reach/router"
+import { isEmpty } from "lodash"
 import { useAdminOrders } from "medusa-react"
 import moment from "moment"
+import qs from "query-string"
 import React, { useEffect, useMemo, useState } from "react"
 import ReactCountryFlag from "react-country-flag"
 import { usePagination, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
-import { currencies } from "../../../utils/currencies"
 import { formatAmountWithSymbol } from "../../../utils/prices"
+import { removeNullish } from "../../../utils/remove-nullish"
 import Spinner from "../../atoms/spinner"
 import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
@@ -26,15 +28,13 @@ const getColor = (index: number): string => {
   return colors[index % colors.length]
 }
 
-const getCurrencyInfo = (currencyCode?: string) => {
-  if (!currencyCode) {
-    return undefined
-  }
-  const currencyInfo = currencies[currencyCode.toUpperCase()]
-  return currencyInfo.symbol_native
-}
-
 const OrderTable: React.FC<RouteComponentProps> = () => {
+  const filtersOnLoad = qs.parse(
+    window.location.search.charAt(0) === "?"
+      ? window.location.search.substring(1)
+      : window.location.search
+  )
+
   const [statusFilter, setStatusFilter] = useState({
     open: false,
     filter: null,
@@ -44,6 +44,10 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     filter: null,
   })
   const [paymentFilter, setPaymentFilter] = useState({
+    open: false,
+    filter: null,
+  })
+  const [dateFilter, setDateFilter] = useState({
     open: false,
     filter: null,
   })
@@ -102,7 +106,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
         Cell: ({ cell: { value } }) => <Table.Cell>{value}</Table.Cell>,
       },
       {
-        Header: "Status",
+        Header: "Payment status",
         accessor: "payment_status",
         Cell: ({ cell: { value } }) => (
           <Table.Cell>{decideStatus(value)}</Table.Cell>
@@ -152,10 +156,11 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const debouncedSearchTerm = useDebounce(query, 500)
 
-  const { orders, isLoading, isRefetching, count } = useAdminOrders({
+  const { orders, isLoading, refetch, isRefetching, count } = useAdminOrders({
     q: debouncedSearchTerm,
     limit,
     offset,
+    ...filtersOnLoad,
   })
 
   const {
@@ -214,9 +219,54 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     setQuery(q)
   }
 
-  const submitFilters = () => console.log("Hello world")
-  const resetFilters = () => console.log("Hello world")
-  const clearFilters = () => console.log("Hello world")
+  const replaceQueryString = (queryObject) => {
+    if (isEmpty(queryObject)) {
+      window.history.replaceState(
+        `/a/orders`,
+        "",
+        `?offset=${offset}&limit=${limit}`
+      )
+      resetFilters()
+    } else {
+      const query = { offset: offset || 0, ...queryObject }
+
+      const stringified = qs.stringify(query)
+
+      window.history.replaceState(`/a/orders`, "", `${`?${stringified}`}`)
+    }
+  }
+
+  const submitFilters = () => {
+    const urlObject = {
+      "payment_status[]": paymentFilter.filter,
+      "fulfillment_status[]": fulfillmentFilter.filter,
+      "status[]": statusFilter.filter,
+      created_at: dateFilter.filter,
+    }
+
+    const url = { ...removeNullish(urlObject) }
+
+    replaceQueryString(url)
+  }
+
+  const resetFilters = () => {
+    setStatusFilter({
+      open: false,
+      filter: null,
+    })
+    setFulfillmentFilter({
+      open: false,
+      filter: null,
+    })
+    setPaymentFilter({
+      open: false,
+      filter: null,
+    })
+    setDateFilter({
+      open: false,
+      filter: null,
+    })
+  }
 
   return (
     <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
@@ -235,9 +285,11 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
                 fulfillmentFilter={fulfillmentFilter}
                 setPaymentFilter={setPaymentFilter}
                 paymentFilter={paymentFilter}
+                setDateFilter={setDateFilter}
+                dateFilter={dateFilter}
                 submitFilters={submitFilters}
                 resetFilters={resetFilters}
-                clearFilters={clearFilters}
+                clearFilters={resetFilters}
               />
             }
             enableSearch

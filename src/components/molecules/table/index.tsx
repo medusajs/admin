@@ -41,6 +41,7 @@ type TableProps = {
   filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
   searchPlaceholder?: string
+  containerClassName?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
 
@@ -68,6 +69,7 @@ const Table: TableType = React.forwardRef(
       searchPlaceholder,
       handleSearch,
       filteringOptions,
+      containerClassName,
       ...props
     }: TableProps,
     ref
@@ -78,7 +80,7 @@ const Table: TableType = React.forwardRef(
 
     return (
       <div className="flex flex-col">
-        <div className="w-full flex justify-between">
+        <div className="w-full flex justify-between mb-2">
           {filteringOptions && (
             <div className="flex mb-2 self-end">
               {Array.isArray(filteringOptions)
