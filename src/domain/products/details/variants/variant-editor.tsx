@@ -145,7 +145,7 @@ const VariantEditor = ({
         </Modal.Header>
         <Modal.Content>
           <div className="mb-8">
-            <label className="inter-base-semibold flex items-center gap-xsmall">
+            <label className="inter-base-semibold mb-4 flex items-center gap-xsmall">
               {"Prices"}
               <InfoTooltip content={"Variant prices"} />
             </label>
