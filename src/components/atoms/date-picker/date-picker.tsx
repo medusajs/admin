@@ -17,9 +17,8 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
   onChange,
   label = "start date",
   required = false,
-  withTooltip = false,
-  tooltipText,
-  tooltipProps = {},
+  tooltipContent,
+  tooltip,
 }) => {
   const [tempDate, setTempDate] = useState(date)
   const [isOpen, setIsOpen] = useState(false)
@@ -53,9 +52,8 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
                   {...{
                     label,
                     required,
-                    withTooltip,
-                    tooltipText,
-                    tooltipProps,
+                    tooltipContent,
+                    tooltip,
                   }}
                 />
                 <ArrowDownIcon size={16} />
@@ -72,31 +70,6 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
           className="rounded-rounded px-8  border border-grey-20 bg-grey-0 w-full shadow-dropdown"
         >
           <CalendarComponent date={tempDate} onChange={setTempDate} />
-          {/* <ReactDatePicker
-            selected={tempDate}
-            inline
-            onChange={setTempDate}
-            calendarClassName="date-picker"
-            dayClassName={(d) => {
-              return moment(d).format("YY,MM,DD") ===
-                moment(tempDate).format("YY,MM,DD")
-                ? "date chosen"
-                : `date ${
-                    moment(d).format("YY,MM,DD") <
-                    moment(new Date()).format("YY,MM,DD")
-                      ? "past"
-                      : ""
-                  }`
-            }}
-            renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
-              <CustomHeader
-                date={date}
-                decreaseMonth={decreaseMonth}
-                increaseMonth={increaseMonth}
-              />
-            )}
-          /> */}
-
           <div className="flex w-full mb-8 mt-5">
             <Button
               variant="ghost"
