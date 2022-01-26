@@ -18,9 +18,9 @@ const ChevronLeftIcon: React.FC<IconProps> = ({
       <path
         d="M9 12L5 8L9 4"
         stroke={color}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )
