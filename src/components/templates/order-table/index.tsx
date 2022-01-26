@@ -214,6 +214,10 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     setQuery(q)
   }
 
+  const submitFilters = () => console.log("Hello world")
+  const resetFilters = () => console.log("Hello world")
+  const clearFilters = () => console.log("Hello world")
+
   return (
     <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
       {isLoading || isRefetching || !orders ? (
