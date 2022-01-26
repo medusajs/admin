@@ -14,7 +14,7 @@ const Checkbox = React.forwardRef(
     return (
       <label
         className={clsx(
-          "flex items-center inter-large-semibold cursor-pointer", // we set the font to large as the form-checkbox reset overrides the default font-size. So in this componenent large = base
+          "flex items-center inter-base-semibold cursor-pointer",
           className
         )}
         htmlFor={`checkbox_${value}`}
@@ -22,7 +22,7 @@ const Checkbox = React.forwardRef(
         <input
           type="checkbox"
           ref={checkboxRef}
-          className="form-checkbox w-[20px] h-[20px] rounded-base text-violet-60 focus:ring-0 mr-xsmall border-grey-30"
+          className="form-checkbox w-[20px] h-[20px] rounded-base text-violet-60 focus:ring-0 mr-small border-grey-30"
           value={value}
           id={`checkbox_${value}`}
           {...rest}
