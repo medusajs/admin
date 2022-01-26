@@ -2,6 +2,7 @@ import React from "react"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import clsx from "clsx"
 import * as Dialog from "@radix-ui/react-dialog"
+import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
 
 type ModalProps = {
   isLargeModal?: boolean
@@ -32,8 +33,12 @@ const Overlay: React.FC = ({ children }) => {
 }
 
 const Content: React.FC = ({ children }) => {
+  const { height } = useWindowDimensions()
+  const style = {
+    maxHeight: height - 64,
+  }
   return (
-    <Dialog.Content className="bg-grey-0 min-w-modal rounded">
+    <Dialog.Content style={style} className="bg-grey-0 min-w-modal rounded">
       {children}
     </Dialog.Content>
   )
@@ -59,16 +64,24 @@ const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
 
 Modal.Body = ({ children, isLargeModal }) => {
   return (
-    <div className="inter-base-regular" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="inter-base-regular h-full"
+      onClick={(e) => e.stopPropagation()}
+    >
       {addProp(children, { isLargeModal })}
     </div>
   )
 }
 
 Modal.Content = ({ children, isLargeModal }) => {
+  const { height } = useWindowDimensions()
+  const style = {
+    maxHeight: height - 64 - 141,
+  }
   return (
     <div
-      className={clsx("px-7 pt-5", {
+      style={style}
+      className={clsx("px-7 pt-5 overflow-y-scroll", {
         ["w-largeModal pb-7"]: isLargeModal,
         ["pb-5"]: !isLargeModal,
       })}
