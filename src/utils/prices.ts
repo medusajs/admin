@@ -1,7 +1,7 @@
 import { currencies } from "./currencies"
 
 export function normalizeAmount(currency: string, amount: number): number {
-  let divisor = getDecimalDigits(currency)
+  const divisor = getDecimalDigits(currency)
   return Math.floor(amount) / divisor
 }
 
@@ -37,7 +37,7 @@ export const extractUnitPrice = (item, region, withTax = true) => {
 export const displayUnitPrice = (item, region) => {
   const currCode = region.currency_code.toUpperCase()
 
-  let price = extractUnitPrice(item, region)
+  const price = extractUnitPrice(item, region)
   return `${displayAmount(currCode, price)} ${currCode}`
 }
 
@@ -50,6 +50,15 @@ export const extractOptionPrice = (price, region) => {
 export function persistedPrice(currency: string, amount: number): number {
   const multiplier = getDecimalDigits(currency)
   return Math.floor(amount) * multiplier
+}
+
+export const stringDisplayPrice = ({ amount, currencyCode }) => {
+  if (!amount || !currencyCode) {
+    return `N/A`
+  }
+
+  const display = displayAmount(currencyCode, amount)
+  return `${display} ${currencyCode.toUpperCase()}`
 }
 
 /**

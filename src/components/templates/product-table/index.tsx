@@ -64,7 +64,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   const deleteProductHook = useAdminDeleteProduct(deleteProduct?.id)
   const createProductHook = useAdminCreateProduct()
   const updateProductHook = useAdminUpdateProduct(updateProduct?.id)
-  // const updateProductHook = useAdminUpdateProduct(updateProduct?.id)
 
   const [statusFilter, setStatusFilter] = useState({
     open: false,
@@ -477,20 +476,38 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       {
         label: product.status === "published" ? "Unpublish" : "Publish",
         onClick: () => {
-          Medusa.products
-            .update(product.id, {
+          setUpdateProduct(product)
+          updateProductHook.mutate(
+            {
               status: product.status === "published" ? "draft" : "published",
-            })
-            .then(() =>
-              toaster(
-                `Successfully ${
-                  product.status === "published" ? "unpublished" : "published"
-                } product`,
-                "success"
-              )
-            )
-            .then(() => refetch())
-            .catch((err) => toaster(getErrorMessage(err), "error"))
+            },
+            {
+              onSuccess: () => {
+                toaster(
+                  `Successfully ${
+                    product.status === "published" ? "unpublished" : "published"
+                  } product`,
+                  "success"
+                )
+                refetch()
+              },
+              onError: (err) => toaster(getErrorMessage(err), "error"),
+            }
+          )
+          // Medusa.products
+          //   .update(product.id, {
+          //     status: product.status === "published" ? "draft" : "published",
+          //   })
+          //   .then(() =>
+          //     toaster(
+          //       `Successfully ${
+          //         product.status === "published" ? "unpublished" : "published"
+          //       } product`,
+          //       "success"
+          //     )
+          //   )
+          //   .then(() => refetch())
+          //   .catch((err) => toaster(getErrorMessage(err), "error"))
         },
         icon:
           product.status === "published" ? (

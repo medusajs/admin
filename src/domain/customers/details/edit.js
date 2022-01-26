@@ -1,128 +1,98 @@
-import React, { useState } from "react"
+import { useAdminUpdateCustomer } from "medusa-react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import _ from "lodash"
-import Modal from "../../../components/modal"
-import Button from "../../../components/button"
-import { Input } from "@rebass/forms"
-import { Flex, Box, Text } from "rebass"
-import InfoTooltip from "../../../components/info-tooltip"
+import Button from "../../../components/fundamentals/button"
+import InputField from "../../../components/molecules/input"
+import Modal from "../../../components/molecules/modal"
+import useToaster from "../../../hooks/use-toaster"
+import { getErrorMessage } from "../../../utils/error-messages"
 
-const CustomerInformationEdit = ({
-  customer,
-  onUpdate,
-  onDismiss,
-  toaster,
-}) => {
-  const { register, handleSubmit } = useForm()
-  const [submitting, setSubmitting] = useState(false)
-  const [email, setEmail] = useState(customer.email)
-  const [phone, setPhone] = useState(customer.phone)
-  const [firstName, setFirstName] = useState(customer.first_name)
-  const [lastName, setLastName] = useState(customer.last_name)
+const EditCustomerModal = ({ handleClose, customer }) => {
+  const { register, reset, handleSubmit } = useForm()
 
-  const onSubmit = async data => {
-    setSubmitting(true)
+  const toaster = useToaster()
 
-    // this check ensures we can actually update the remaining when the user is registered
-    for (const key in data) {
-      if (!data[key] || data[key] === customer[key]) delete data[key]
-    }
+  const updateCustomer = useAdminUpdateCustomer(customer.id)
 
-    return onUpdate(data)
-      .then(() => onDismiss())
-      .then(() =>
-        toaster("Successfully updated customer information", "success")
-      )
-      .catch(() => toaster("Failed to update customer information", "error"))
-      .finally(() => setSubmitting(false))
+  const submit = (data) => {
+    updateCustomer.mutate(data, {
+      onSuccess: () => {
+        handleClose()
+        toaster("Successfully updated customer", "success")
+      },
+      onError: (err) => {
+        handleClose()
+        toaster(getErrorMessage(err), "error")
+      },
+    })
   }
 
-  const disabled = customer.has_account
+  useEffect(() => {
+    reset({
+      first_name: customer.first_name || "",
+      last_name: customer.last_name || "",
+      email: customer.email,
+      phone: customer.phone || "",
+    })
+  }, [])
 
   return (
-    <Modal onClick={onDismiss}>
-      <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
-        <Modal.Header fontWeight="700">Customer Details</Modal.Header>
-        <Modal.Content flexDirection="column">
-          <Box pb={3}>
-            <Flex>
-              <Text
-                fontWeight="400"
-                fontSize={2}
-                mb={1}
-                mt={1}
-                color={disabled ? "light" : "dark"}
-              >
-                Email
-              </Text>
-              {disabled && (
-                <InfoTooltip
-                  mt={2}
-                  ml={2}
-                  tooltipText="Editing emails is disabled for registered users"
-                />
-              )}
-            </Flex>
-
-            <Input
-              disabled={disabled}
-              color={disabled ? "light" : ""}
-              borderColor="lightest"
+    <Modal handleClose={handleClose}>
+      <Modal.Body>
+        <Modal.Header handleClose={handleClose}>
+          <span className="inter-xlarge-semibold">Customer Details</span>
+        </Modal.Header>
+        <Modal.Content>
+          <div className="inter-base-semibold text-grey-90 mb-4">General</div>
+          <div className="w-full flex mb-4 space-x-2">
+            <InputField
+              label="First Name"
+              name="first_name"
+              placeholder="Lebron"
               ref={register}
-              label="Email"
-              required={true}
-              name="email"
-              defaultValue={email}
-              fontSize={2}
             />
-          </Box>
-          <Flex justifyContent="space-between">
-            <Box pb={3}>
-              <Text mb={1} color="dark" fontWeight="400" fontSize={2}>
-                First name
-              </Text>
-              <Input
-                ref={register}
-                label="First name"
-                name="first_name"
-                defaultValue={firstName}
-                fontSize={2}
-              />
-            </Box>
-            <Box pb={3}>
-              <Text mb={1} color="dark" fontWeight="400" fontSize={2}>
-                Last name
-              </Text>
-              <Input
-                ref={register}
-                label="Last name"
-                name="last_name"
-                defaultValue={lastName}
-                fontSize={2}
-              />
-            </Box>
-          </Flex>
-          <Box pb={3}>
-            <Text mb={1} color="dark" fontWeight="400" fontSize={2}>
-              Phone number
-            </Text>
-            <Input
+            <InputField
+              label="Last Name"
+              name="last_name"
+              placeholder="James"
               ref={register}
+            />
+          </div>
+          <div className="inter-base-semibold text-grey-90 mb-4">Contact</div>
+          <div className="flex space-x-2">
+            <InputField label="Email" name="email" disabled ref={register} />
+            <InputField
               label="Phone number"
               name="phone"
-              defaultValue={phone}
-              fontSize={2}
+              placeholder="+45 42 42 42 42"
+              ref={register}
             />
-          </Box>
+          </div>
         </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
-          <Button loading={submitting} type="submit" variant="primary">
-            Save
-          </Button>
+        <Modal.Footer>
+          <div className="w-full flex justify-end">
+            <Button
+              variant="ghost"
+              size="small"
+              onClick={handleClose}
+              className="mr-2"
+            >
+              Cancel
+            </Button>
+            <Button
+              loading={updateCustomer.isLoading}
+              variant="primary"
+              className="min-w-[100px]"
+              size="small"
+              onClick={handleSubmit(submit)}
+            >
+              Save
+            </Button>
+          </div>
         </Modal.Footer>
       </Modal.Body>
     </Modal>
   )
 }
 
-export default CustomerInformationEdit
+export default EditCustomerModal

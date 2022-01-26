@@ -1,12 +1,12 @@
-import React, { ReactNode } from "react"
+import clsx from "clsx"
 import { navigate } from "gatsby"
+import React from "react"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
-import clsx from "clsx"
+import SortingIcon from "../../fundamentals/icons/sorting-icon"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
 import TableSearch from "./table-search"
-import SortingIcon from "../../fundamentals/icons/sorting-icon"
 
 type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   actions?: ActionType[]
@@ -55,6 +55,8 @@ type TableType = {
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
   Cell: TableElement<TableCellProps>
+  Pagination: React.ForwardRefExoticComponent<TablePaginationProps> &
+    React.RefAttributes<unknown>
 } & TableElement<TableProps>
 
 const Table: TableType = React.forwardRef(
@@ -233,7 +235,7 @@ Table.Row = React.forwardRef(
     <tr
       ref={ref}
       className={clsx(
-        "inter-small-regular border-t border-b border-grey-20 text-grey-90",
+        "inter-small-regular border-t border-b border-grey-20 text-grey-90 hover:bg-grey-5",
         className,
         { "cursor-pointer": linkTo !== undefined }
       )}
