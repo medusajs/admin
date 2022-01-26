@@ -200,7 +200,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
         <AmountField
           className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
           decimalScale={currencyInfo?.decimal_digits}
-          value={10.0}
+          value={value}
           onValueChange={(value) => {
             setValue(value)
           }}
