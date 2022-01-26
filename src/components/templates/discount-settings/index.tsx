@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import Checkbox from "../../atoms/checkbox"
 import InfoTooltip from "../../molecules/info-tooltip"
 import InputField from "../../molecules/input"
@@ -36,6 +36,8 @@ const Section: React.FC<SectionProps> = ({
 }
 
 const DiscountSettings: React.FC<DiscountSettingsProps> = ({}) => {
+  const [hasDuration, setHasDuration] = useState(false)
+
   return (
     <BodyCard
       title="Settings"
@@ -84,13 +86,25 @@ const DiscountSettings: React.FC<DiscountSettingsProps> = ({}) => {
           description="Schedule the discount to deactivate in the future."
           tooltip="If you want to schedule the discount to deactivate in the future, you can set an expiry date here."
         ></Section>
-        <div className="flex items-center">
-          <Checkbox
-            label="Availability Duration"
-            value="duration"
-            className="mr-1.5"
-          />
-          <InfoTooltip content={"Duration"} />
+        <div>
+          <div className="flex items-center">
+            <Checkbox
+              label="Availability Duration"
+              value="duration"
+              className="mr-1.5"
+              onChange={(e) => setHasDuration(e.target.checked)}
+            />
+            <InfoTooltip content={"Duration"} />
+          </div>
+          {hasDuration && (
+            <div className="grid grid-cols-3 grid-rows-2 gap-x-xsmall gap-y-base mt-xlarge">
+              <InputField label="Years" type="number" placeholder="0" />
+              <InputField label="Months" type="number" placeholder="0" />
+              <InputField label="Days" type="number" placeholder="0" />
+              <InputField label="Hours" type="number" placeholder="0" />
+              <InputField label="Minutes" type="number" placeholder="0" />
+            </div>
+          )}
         </div>
       </div>
     </BodyCard>
