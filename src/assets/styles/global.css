@@ -236,7 +236,7 @@
     @apply bg-yellow-40 bg-opacity-20 text-yellow-60;
   }
 
-  .badge-code {
+  .badge-default {
     @apply bg-grey-10 text-grey-90;
   }
 

@@ -10,11 +10,13 @@ import { navigate } from "gatsby"
 import DuplicateIcon from "../fundamentals/icons/duplicate-icon"
 import Badge from "../fundamentals/badge"
 import Spinner from "../atoms/spinner"
-import qs from "qs"
+import qs from "query-string"
 import { InterfaceContext } from "../../context/interface"
 import { parse, end } from "iso8601-duration"
 import { displayAmount } from "../../utils/prices"
 import { getErrorMessage } from "../../utils/error-messages"
+import { useAdminCreateDiscount, useAdminDiscounts } from "medusa-react"
+import useToaster from "../../hooks/use-toaster"
 
 const getDiscountStatus = (discount) => {
   if (!discount.disabled) {
@@ -56,39 +58,28 @@ const getDiscountAmount = (discount) => {
 }
 
 const DiscountTable: React.FC = () => {
+  const toaster = useToaster()
   const [deleteDiscount, setDeleteDiscount] = useState(undefined)
-
-  const filtersOnLoad = qs.parse(
-    window.location.search.charAt(0) === "?"
-      ? window.location.search.slice(1, window.location.search.length)
-      : window.location.search
-  )
+  const createDiscount = useAdminCreateDiscount()
+  const filtersOnLoad = qs.parse(window.location.search)
 
   if (!filtersOnLoad.offset) {
     filtersOnLoad.offset = 0
   }
 
   if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 20
+    filtersOnLoad.limit = 14
   }
 
-  const {
-    discounts,
-    refresh,
-    isReloading,
-    isLoading,
-    count,
-    toaster,
-    ...rest
-  } = useMedusa("discounts", {
-    search: {
-      is_dynamic: "false",
-      ...filtersOnLoad,
-    },
+  const { discounts, refetch, isLoading, count } = useAdminDiscounts({
+    is_dynamic: false,
+    limit: 14,
+    offset: 0,
+    ...filtersOnLoad,
   })
 
   const [loading, setLoading] = useState(false)
-  const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
+  const [limit, setLimit] = useState(filtersOnLoad.limit || 14)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
 
   const searchQuery = (customQuery = {}) => {
@@ -97,7 +88,7 @@ const DiscountTable: React.FC = () => {
 
     const queryParts = {
       offset: 0,
-      limit: 20,
+      limit: 14,
       ...customQuery,
     }
 
@@ -107,51 +98,16 @@ const DiscountTable: React.FC = () => {
     })
 
     window.history.replaceState(baseUrl, "", `?${prepared}`)
-    refresh({
-      search: {
-        ...queryParts,
-      },
+    refetch({
+      ...queryParts,
     })
   }
 
   const { setOnSearch, onUnmount } = useContext(InterfaceContext)
   useEffect(onUnmount, [])
   useEffect(() => {
-    setOnSearch(searchQuery)
+    setOnSearch({ q: searchQuery })
   }, [])
-
-  // TODO handle pagination when designed for
-  // const handlePagination = (direction) => {
-  //   const updatedOffset =
-  //     direction === "next"
-  //       ? parseInt(offset) + parseInt(limit)
-  //       : parseInt(offset) - parseInt(limit)
-  //   const baseUrl = qs.parseUrl(window.location.href).url
-
-  //   const queryParts = {
-  //     q: query,
-  //     offset: updatedOffset,
-  //     limit,
-  //     ...filtersOnLoad,
-  //   }
-
-  //   const prepared = qs.stringify(queryParts, {
-  //     skipNull: true,
-  //     skipEmptyString: true,
-  //   })
-
-  //   console.log("baseurl", baseUrl)
-  //   window.history.replaceState(baseUrl, "", `?${prepared}`)
-
-  //   refresh({
-  //     search: {
-  //       ...queryParts,
-  //       is_dynamic: showDynamic,
-  //     },
-  //   }).then(() => {
-  //     setOffset(updatedOffset)
-  //   })
-  // }
 
   const duplicateDiscount = (discount) => {
     setLoading(true)
@@ -175,75 +131,16 @@ const DiscountTable: React.FC = () => {
       metadata: discount.metadata,
     }
 
-    Medusa.discounts
-      .create(newDiscount)
+    createDiscount
+      .mutateAsync(newDiscount)
       .then(() => {
         toaster("Successfully created discount", "success")
-        handleCheckbox()
       })
       .catch((error) => {
         toaster(getErrorMessage(error), "error")
       })
       .finally(() => setLoading(false))
   }
-
-  const filteringOptions = [
-    {
-      title: "Type",
-      options: [
-        {
-          title: "All",
-          count: count,
-          onClick: () => searchQuery(),
-        },
-        {
-          title: "Percentage",
-          onClick: () => searchQuery({ rule: { type: "percentage" } }),
-        },
-        {
-          title: "Fixed Amount",
-          onClick: () =>
-            searchQuery({ rule: { type: "fixed" }, is_dynamic: false }),
-        },
-        {
-          title: "Dynamic",
-          onClick: () => {
-            searchQuery({ is_dynamic: true })
-          },
-        },
-      ],
-    },
-    {
-      title: "Status",
-      options: [
-        {
-          title: "All",
-          count: count,
-          onClick: () => searchQuery(),
-        },
-        {
-          title: "Active",
-          count: 0,
-          onClick: () => {},
-        },
-        {
-          title: "Draft",
-          count: 0,
-          onClick: () => {},
-        },
-        {
-          title: "Expired",
-          count: 0,
-          onClick: () => {},
-        },
-        {
-          title: "Scheduled",
-          count: 0,
-          onClick: () => {},
-        },
-      ],
-    },
-  ]
 
   const handleDiscountSearch = (q: string) => {
     searchQuery({ q })
@@ -277,7 +174,7 @@ const DiscountTable: React.FC = () => {
         ]}
       >
         <Table.Cell>
-          <Badge variant="code">
+          <Badge variant="default">
             <span className="inter-small-regular">{discount.code}</span>
           </Badge>
         </Table.Cell>
@@ -308,7 +205,6 @@ const DiscountTable: React.FC = () => {
     <div className="w-full h-full flex flex-col justify-between">
       <div>
         <Table
-          filteringOptions={filteringOptions}
           enableSearch
           placeholder="Search Discounts"
           handleSearch={handleDiscountSearch}
@@ -326,13 +222,13 @@ const DiscountTable: React.FC = () => {
               <Table.HeadCell></Table.HeadCell>
             </Table.HeadRow>
           </Table.Head>
-          {!(isLoading || isReloading || !discounts || loading) && (
+          {!(isLoading || !discounts || loading) && (
             <Table.Body>
               {discounts.map((d, i) => getTableRow(d, i))}
             </Table.Body>
           )}
         </Table>
-        {(isLoading || isReloading || !discounts || loading) && (
+        {(isLoading || !discounts || loading) && (
           <div className="w-full pt-2xlarge flex items-center justify-center">
             <Spinner size={"large"} variant={"secondary"} />
           </div>
@@ -353,7 +249,7 @@ const DiscountTable: React.FC = () => {
         />
       )}
 
-      <div className="flex w-full justify-between inter-small-regular text-grey-50">
+      <div className="flex w-full mt-8 justify-between inter-small-regular text-grey-50">
         <span>{`${parseInt(offset) + 1} - ${
           count > parseInt(offset) + parseInt(limit)
             ? parseInt(offset) + parseInt(limit)
