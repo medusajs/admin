@@ -49,7 +49,7 @@ export const extractOptionPrice = (price, region) => {
 
 export function persistedPrice(currency: string, amount: number): number {
   const multiplier = getDecimalDigits(currency)
-  return Math.floor(amount) * multiplier
+  return amount * multiplier
 }
 
 export const stringDisplayPrice = ({ amount, currencyCode }) => {

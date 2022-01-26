@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form"
 import { Box, Flex, Text } from "rebass"
 import { removeNullish } from "../../../../utils/remove-nullish"
 import Button from "../../../../components/fundamentals/button"
-import CurrencyInput from "../../../../components/currency-input"
+import CInput from "../../../../components/currency-input"
+import CurrencyInput from "../../../../components/organisms/currency-input"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import Typography from "../../../../components/typography"
@@ -68,10 +69,20 @@ const VariantEditor = ({
     setPrices(newPrices)
   }
 
-  const handlePriceChange = (index, e) => {
-    const element = e.target
-    const value = Math.round(element.value * 100)
+  // const handlePriceChange = (index, e) => {
+  //   const element = e.target
+  //   const value = Math.round(element.value * 100)
 
+  //   const newPrices = [...prices]
+  //   newPrices[index] = {
+  //     ...newPrices[index],
+  //     amount: value,
+  //   }
+
+  //   setPrices(newPrices)
+  // }
+
+  const handlePriceChange = (index, value) => {
     const newPrices = [...prices]
     newPrices[index] = {
       ...newPrices[index],
@@ -104,7 +115,6 @@ const VariantEditor = ({
 
   const handleSave = (data) => {
     console.log("submitted", data)
-    return
 
     data.prices = prices.map(({ currency_code, region_id, amount }) => ({
       currency_code,
@@ -115,10 +125,15 @@ const VariantEditor = ({
     data.prices = data.prices.map((p) => removeNullish(p))
     const cleaned = convertEmptyStringToNull(data, numberFields)
 
+    console.log("saved", cleaned)
+    return
+
     onSubmit(cleaned)
   }
 
   watch()
+
+  console.log(prices, currencyOptions)
 
   // as="form"
   return (
@@ -133,11 +148,12 @@ const VariantEditor = ({
               <label className="inter-base-semibold">Prices</label>
               {prices.map((p, index) => (
                 <Flex
+                  flexDirection="column"
                   alignItems="center"
                   mb={3}
                   key={`${p.currency_code}${index}`}
                 >
-                  <CurrencyInput
+                  {/* <CInput
                     edit={p.edit}
                     currency={p.currency_code.toUpperCase()}
                     currencyOptions={currencyOptions}
@@ -145,8 +161,25 @@ const VariantEditor = ({
                     onCurrencySelected={(currency) =>
                       handleCurrencySelected(index, currency)
                     }
-                    onChange={(e) => handlePriceChange(index, e)}
-                  />
+                    // onChange={(e) => handlePriceChange(index, e)}
+                  /> */}
+
+                  <CurrencyInput
+                    currencyCodes={currencyOptions.map((co) => co.value)}
+                    currentCurrency={p.currency_code.toUpperCase()}
+                    onChange={(currency) =>
+                      handleCurrencySelected(index, currency)
+                    }
+                    size="full"
+                  >
+                    <CurrencyInput.AmountInput
+                      label="amount"
+                      step={0.01}
+                      amount={p.amount}
+                      onChange={console.log}
+                      // onChange={(value) => handlePriceChange(index, value)}
+                    />
+                  </CurrencyInput>
 
                   <Box
                     ml={2}

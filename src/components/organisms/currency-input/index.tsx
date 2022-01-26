@@ -54,6 +54,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
   children,
   className,
 }) => {
+  console.log(currencyCodes)
   const options: Option[] =
     currencyCodes?.map((code) => ({
       label: code.toUpperCase(),
@@ -162,6 +163,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
     if (currencyInfo && value) {
       const amount = parseFloat(value)
       persistedAmount = persistedPrice(currencyInfo.code, amount)
+      console.log(amount, persistedAmount)
     }
 
     if (onChange) {
