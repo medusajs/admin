@@ -1,7 +1,13 @@
-import { useAdminCollections, useAdminProducts } from "medusa-react"
+import {
+  useAdminCollections,
+  useAdminCreateProduct,
+  useAdminDeleteProduct,
+  useAdminProducts,
+  useAdminUpdateProduct,
+} from "medusa-react"
 import React, { useEffect, useMemo, useState } from "react"
-import { usePagination, useTable, useSortBy } from "react-table"
-import _ from "lodash"
+import { usePagination, useTable } from "react-table"
+import _, { filter } from "lodash"
 import Spinner from "../../atoms/spinner"
 import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
@@ -45,14 +51,20 @@ type ProductTableProps = {}
 const ProductTable: React.FC<ProductTableProps> = () => {
   const [offset, setOffset] = useState(0)
   const [deleteProduct, setDeleteProduct] = useState(undefined)
+  const [updateProduct, setUpdateProduct] = useState(undefined)
   const [collectionsList, setCollectionsList] = useState<string[]>([])
-  const [limit, setLimit] = useState(20)
+  const [limit, setLimit] = useState(14)
   const [query, setQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [showList, setShowList] = useState(true)
   const toaster = useToaster()
   const [tags, setTags] = useState(null)
+
+  const deleteProductHook = useAdminDeleteProduct(deleteProduct?.id)
+  const createProductHook = useAdminCreateProduct()
+  const updateProductHook = useAdminUpdateProduct(updateProduct?.id)
+  // const updateProductHook = useAdminUpdateProduct(updateProduct?.id)
 
   const [statusFilter, setStatusFilter] = useState({
     open: false,
@@ -118,6 +130,8 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     replaceQueryString(url)
   }
 
+  const { collections, isLoading: isLoadingCollections } = useAdminCollections()
+
   const toggleFilterTags = async (tagsFilter) => {
     if (!tags) {
       const tagsResponse = await Medusa.products.listTagsByUsage()
@@ -138,21 +152,66 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     setTagsFilter(tagsFilter)
   }
 
-  const filtersOnLoad = qs.parse(
-    window.location.search.charAt(0) === "?"
-      ? window.location.search.substring(1)
-      : window.location.search
-  )
+  const setFilterTagsById = async (tagIds) => {
+    let ts = []
+    if (!tags) {
+      const tagsResponse = await Medusa.products.listTagsByUsage()
+      setTags(tagsResponse.data.tags)
+      ts = tagsResponse.data.tags
+    } else {
+      ts = tags
+    }
+
+    const tagValues = ts
+      .filter((tag) => tagIds.indexOf(tag.id) > -1)
+      .map((t) => t.value)
+
+    setTagsFilter({ open: true, filter: tagValues })
+  }
+
+  const setCollectionsFilterById = async (collectionIds) => {
+    const collectionsResponse = await Medusa.collections.list()
+    const ts = collectionsResponse.data.collections
+
+    const tagValues = ts
+      .filter((collection) => collectionIds.indexOf(collection.id) > -1)
+      .map((t) => t.title)
+      .join(",")
+
+    setCollectionFilter({ open: true, filter: tagValues })
+  }
+
+  const filtersOnLoad = qs.parse(window.location.search)
 
   if (!filtersOnLoad.offset) {
     filtersOnLoad.offset = 0
   }
 
   if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 20
+    filtersOnLoad.limit = 14
   }
 
-  const { collections, isLoading: isLoadingCollections } = useAdminCollections()
+  useEffect(() => {
+    const filtersOnLoad = qs.parse(window.location.search, {
+      arrayFormat: "bracket",
+    })
+
+    if (filtersOnLoad.status?.length) {
+      setStatusFilter({
+        open: true,
+        filter: filtersOnLoad.status[0],
+      })
+    }
+
+    if (filtersOnLoad.collection_id?.length) {
+      setCollectionsFilterById(filtersOnLoad.collection_id[0].split(","))
+    }
+
+    if (filtersOnLoad.tags?.length) {
+      setFilterTagsById(filtersOnLoad.tags[0].split(","))
+    }
+    console.log(filtersOnLoad)
+  }, [])
 
   const defaultQueryProps = {
     fields: "id,title,type,thumbnail",
@@ -189,7 +248,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       }
 
       if (!searchObject.limit) {
-        searchObject.limit = 20
+        searchObject.limit = 14
       }
 
       const query = qs.stringify(queryObject)
@@ -212,11 +271,11 @@ const ProductTable: React.FC<ProductTableProps> = () => {
         Cell: ({ row: { original } }) => {
           return (
             <div className="flex items-center">
-              <div className="w-[38px] h-[38px] mr-4">
+              <div className="h-[40px] w-[30px] my-1.5 flex items-center mr-4">
                 {original.thumbnail ? (
                   <img
                     src={original.thumbnail}
-                    className="h-full object-contain rounded-soft"
+                    className="h-full object-cover rounded-soft"
                   />
                 ) : (
                   <ImagePlaceholder />
@@ -397,12 +456,15 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       copy.thumbnail = product.thumbnail
     }
 
-    try {
-      const { data } = await Medusa.products.create(copy)
-      navigate(`/a/products/${data.product.id}`)
-    } catch (error) {
-      toaster(getErrorMessage(error), "error")
-    }
+    await createProductHook.mutateAsync(copy, {
+      onSuccess: ({ product }) => {
+        navigate(`/a/products/${product.id}`)
+        toaster("Created a new return reason", "success")
+      },
+      onError: (error) => {
+        toaster(getErrorMessage(error), "error")
+      },
+    })
   }
 
   const getActionablesForProduct = (product) => {
@@ -414,21 +476,26 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       },
       {
         label: product.status === "published" ? "Unpublish" : "Publish",
-        onClick: () =>
-          Medusa.products
-            .update(product.id, {
+        onClick: () => {
+          setUpdateProduct(product)
+          updateProductHook.mutate(
+            {
               status: product.status === "published" ? "draft" : "published",
-            })
-            .then(() =>
-              toaster(
-                `Successfully ${
-                  product.status === "published" ? "unpublished" : "published"
-                } product`,
-                "success"
-              )
-            )
-            .then(() => refetch())
-            .catch((err) => toaster(getErrorMessage(err), "error")),
+            },
+            {
+              onSuccess: () => {
+                toaster(
+                  `Successfully ${
+                    product.status === "published" ? "unpublished" : "published"
+                  } product`,
+                  "success"
+                )
+                refetch()
+              },
+              onError: (err) => toaster(getErrorMessage(err), "error"),
+            }
+          )
+        },
         icon:
           product.status === "published" ? (
             <UnpublishIcon size={20} />
@@ -532,7 +599,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
         <DeletePrompt
           handleClose={() => setDeleteProduct(undefined)}
           onDelete={async () => {
-            Medusa.products.delete(deleteProduct.id).then(() => refetch())
+            deleteProductHook.mutateAsync().then(() => refetch())
           }}
         />
       )}
