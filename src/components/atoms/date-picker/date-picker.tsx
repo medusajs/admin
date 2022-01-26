@@ -12,19 +12,9 @@ import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import { DateTimePickerProps } from "./types"
 
-const getDateClassname = (d, tempDate) => {
-  return moment(d).format("YY,MM,DD") === moment(tempDate).format("YY,MM,DD")
-    ? "date chosen"
-    : `date ${
-        moment(d).format("YY,MM,DD") < moment(new Date()).format("YY,MM,DD")
-          ? "past"
-          : ""
-      }`
-}
-
 const DatePicker: React.FC<DateTimePickerProps> = ({
   date,
-  onSubmitDate,
+  onChange,
   label = "start date",
   required = false,
   tooltipContent,
@@ -42,7 +32,7 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
     newDate.setUTCMonth(tempDate.getUTCMonth())
     newDate.setUTCFullYear(tempDate.getUTCFullYear())
 
-    onSubmitDate(newDate)
+    onChange(newDate)
     setIsOpen(false)
   }
 
@@ -79,21 +69,7 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
           sideOffset={8}
           className="rounded-rounded px-8  border border-grey-20 bg-grey-0 w-full shadow-dropdown"
         >
-          <ReactDatePicker
-            selected={tempDate}
-            inline
-            onChange={setTempDate}
-            calendarClassName="date-picker"
-            dayClassName={(d) => getDateClassname(d, tempDate)}
-            renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
-              <CustomHeader
-                date={date}
-                decreaseMonth={decreaseMonth}
-                increaseMonth={increaseMonth}
-              />
-            )}
-          />
-
+          <CalendarComponent date={tempDate} onChange={setTempDate} />
           <div className="flex w-full mb-8 mt-5">
             <Button
               variant="ghost"
@@ -148,5 +124,30 @@ const CustomHeader = ({ date, decreaseMonth, increaseMonth, ...props }) => {
     </div>
   )
 }
+
+export const CalendarComponent = ({ date, onChange }) => (
+  <ReactDatePicker
+    selected={date}
+    inline
+    onChange={onChange}
+    calendarClassName="date-picker"
+    dayClassName={(d) => {
+      return moment(d).format("YY,MM,DD") === moment(date).format("YY,MM,DD")
+        ? "date chosen"
+        : `date ${
+            moment(d).format("YY,MM,DD") < moment(new Date()).format("YY,MM,DD")
+              ? "past"
+              : ""
+          }`
+    }}
+    renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+      <CustomHeader
+        date={date}
+        decreaseMonth={decreaseMonth}
+        increaseMonth={increaseMonth}
+      />
+    )}
+  />
+)
 
 export default DatePicker
