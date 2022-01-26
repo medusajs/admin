@@ -27,7 +27,10 @@ type MultiSelectProps = {
   isMultiSelect?: boolean
   labelledBy?: string
   options: { label: string; value: string; disabled?: boolean }[]
-  value: { label: string; value: string }[] | { label: string; value: string }
+  value:
+    | { label: string; value: string }[]
+    | { label: string; value: string }
+    | undefined
   hasSelectAll?: boolean
   isLoading?: boolean
   shouldToggleOnHover?: boolean

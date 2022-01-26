@@ -10,11 +10,13 @@ import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import Typography from "../../../../components/typography"
 import useMedusa from "../../../../hooks/use-medusa"
+import { countries as countryData } from "../../../../utils/countries"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
+import Select from "../../../../components/molecules/select"
 const numberFields = ["weight", "length", "width", "height"]
 
 const VariantEditor = ({
@@ -25,11 +27,22 @@ const VariantEditor = ({
   onCancel,
   isCopy,
 }) => {
-  const { store, isLoading } = useMedusa("store")
+  const countryOptions = countryData.map((c) => ({
+    label: c.name,
+    value: c.alpha2.toLowerCase(),
+  }))
 
+  const { store, isLoading } = useMedusa("store")
+  console.log(variant)
   const [currencyOptions, setCurrencyOptions] = useState([])
   const [prices, setPrices] = useState(variant.prices)
+  const [selectedCountry, setSelectedCountry] = useState(
+    variant.origin_country
+      ? countryOptions.find((cd) => cd.label === variant.origin_country)
+      : undefined
+  )
 
+  console.log("selected country", selectedCountry)
   const { setValue, getValues, register, reset, watch, handleSubmit } = useForm(
     variant
   )
@@ -111,6 +124,8 @@ const VariantEditor = ({
       amount: Math.round(amount),
     }))
 
+    data.origin_country = selectedCountry?.label
+
     data.prices = data.prices.map((p) => removeNullish(p))
     const cleaned = convertEmptyStringToNull(data, numberFields)
 
@@ -130,7 +145,10 @@ const VariantEditor = ({
         </Modal.Header>
         <Modal.Content>
           <div className="mb-8">
-            <label className="inter-base-semibold">Prices</label>
+            <label className="inter-base-semibold flex items-center gap-xsmall">
+              {"Prices"}
+              <InfoTooltip content={"Variant prices"} />
+            </label>
 
             <div className="grid grid-cols-1 gap-y-xsmall">
               {prices.map((p, index) => (
@@ -296,35 +314,28 @@ const VariantEditor = ({
             </label>
             <div className="w-full grid mt-4 medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input
-                mr={3}
                 label="MID Code"
                 placeholder="MID Code"
                 name="mid_code"
-                boldLabel={true}
                 ref={register}
               />
               <Input
-                mr={3}
                 label="HS Code"
                 placeholder="HS Code"
                 name="hs_code"
-                boldLabel={true}
                 ref={register}
               />
-              <Input
-                mr={3}
-                label="Country of origin"
-                name="origin_country"
-                placeholder="Country of origin"
-                boldLabel={true}
-                ref={register}
+              <Select
+                enableSearch
+                label={"Country of origin"}
+                options={countryOptions}
+                value={selectedCountry}
+                onChange={setSelectedCountry}
               />
               <Input
-                mr={3}
                 label="Material"
                 name="material"
                 placeholder="Material"
-                boldLabel={true}
                 ref={register}
               />
             </div>
