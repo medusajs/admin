@@ -12,6 +12,16 @@ import InputHeader from "../../fundamentals/input-header"
 import clsx from "clsx"
 import { DateTimePickerProps } from "./types"
 
+const getDateClassname = (d, tempDate) => {
+  return moment(d).format("YY,MM,DD") === moment(tempDate).format("YY,MM,DD")
+    ? "date chosen"
+    : `date ${
+        moment(d).format("YY,MM,DD") < moment(new Date()).format("YY,MM,DD")
+          ? "past"
+          : ""
+      }`
+}
+
 const DatePicker: React.FC<DateTimePickerProps> = ({
   date,
   onSubmitDate,
@@ -74,17 +84,7 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
             inline
             onChange={setTempDate}
             calendarClassName="date-picker"
-            dayClassName={(d) => {
-              return moment(d).format("YY,MM,DD") ===
-                moment(tempDate).format("YY,MM,DD")
-                ? "date chosen"
-                : `date ${
-                    moment(d).format("YY,MM,DD") <
-                    moment(new Date()).format("YY,MM,DD")
-                      ? "past"
-                      : ""
-                  }`
-            }}
+            dayClassName={(d) => getDateClassname(d, tempDate)}
             renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
               <CustomHeader
                 date={date}
