@@ -3,7 +3,7 @@ import React from "react"
 import IconProps from "./types/icon-type"
 
 const MoreHorizontalIcon: React.FC<IconProps> = ({
-  size = "20px",
+  size = "20",
   color = "currentColor",
   ...attributes
 }) => {

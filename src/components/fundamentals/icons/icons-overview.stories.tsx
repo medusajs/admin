@@ -9,6 +9,7 @@ import CoinsIcon from "./coins-icon"
 import CrosshairIcon from "./crosshair-icon"
 import CustomerIcon from "./customer-icon"
 import DollarSignIcon from "./dollar-sign-icon"
+import EditIcon from "./edit-icon"
 import GearIcon from "./gear-icon"
 import GiftIcon from "./gift-icon"
 import HappyIcon from "./happy-icon"
@@ -17,9 +18,11 @@ import MapPinIcon from "./map-pin-icon"
 import MinusIcon from "./minus-icon"
 import PercentIcon from "./percent-icon"
 import PlusIcon from "./plus-icon"
+import PublishIcon from "./publish-icon"
 import SearchIcon from "./search-icon"
 import TagIcon from "./tag-icon"
 import TruckIcon from "./truck-icon"
+import UnpublishIcon from "./unpublish-icon"
 import UsersIcon from "./users-icon"
 
 export default {
@@ -57,6 +60,9 @@ const icons = [
   <SearchIcon />,
   <TruckIcon />,
   <UsersIcon />,
+  <EditIcon />,
+  <UnpublishIcon />,
+  <PublishIcon />,
 ]
 
 const Template = args => (
