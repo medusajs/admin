@@ -11,6 +11,7 @@ import Spinner from "../../atoms/spinner"
 import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import Table, { TablePagination } from "../../molecules/table"
+import OrderFilters from "../order-filter-dropdown"
 
 const getColor = (index: number): string => {
   const colors = [
@@ -34,6 +35,19 @@ const getCurrencyInfo = (currencyCode?: string) => {
 }
 
 const OrderTable: React.FC<RouteComponentProps> = () => {
+  const [statusFilter, setStatusFilter] = useState({
+    open: false,
+    filter: null,
+  })
+  const [fulfillmentFilter, setFulfillmentFilter] = useState({
+    open: false,
+    filter: null,
+  })
+  const [paymentFilter, setPaymentFilter] = useState({
+    open: false,
+    filter: null,
+  })
+
   const [offset, setOffset] = useState(0)
   const [limit, setLimit] = useState(14)
   const [query, setQuery] = useState("")
@@ -209,7 +223,15 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       ) : (
         <>
           <Table
-            filteringOptions={[]}
+            filteringOptions={
+              <OrderFilters
+                setStatusFilter={setStatusFilter}
+                statusFilter={statusFilter}
+                submitFilters={submitFilters}
+                resetFilters={resetFilters}
+                clearFilters={clearFilters}
+              />
+            }
             enableSearch
             handleSearch={handleSearch}
             {...getTableProps()}
