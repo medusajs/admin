@@ -45,7 +45,7 @@ const Shipping = ({ region }) => {
 
   const outbound = []
   const inbound = []
-  if (!loadingOptions) {
+  if (shipping_options) {
     for (const o of shipping_options) {
       if (o.is_return) {
         inbound.push(o)
@@ -63,7 +63,7 @@ const Shipping = ({ region }) => {
           <Actionables actions={outboundOptions} />
         </div>
         <div className="flex flex-col">
-          {loadingOptions ? (
+          {!shipping_options ? (
             <Flex
               flexDirection="column"
               alignItems="center"
@@ -76,8 +76,8 @@ const Shipping = ({ region }) => {
             </Flex>
           ) : (
             shipping_options
-              .filter(o => o.is_return === false && o.region_id === region.id)
-              .map(option => {
+              .filter((o) => o.is_return === false && o.region_id === region.id)
+              .map((option) => {
                 return (
                   <div key={option.id} className="mb-xsmall last:mb-0">
                     <ShippingOption
@@ -110,8 +110,8 @@ const Shipping = ({ region }) => {
             </Flex>
           ) : shipping_options ? (
             shipping_options
-              .filter(o => o.is_return && o.region_id === region.id)
-              .map(option => {
+              .filter((o) => o.is_return && o.region_id === region.id)
+              .map((option) => {
                 return (
                   <div key={option.id} className="mb-xsmall last:mb-0">
                     <ShippingOption
