@@ -477,24 +477,20 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       {
         label: product.status === "published" ? "Unpublish" : "Publish",
         onClick: () => {
-          setUpdateProduct(product)
-          updateProductHook.mutate(
-            {
+          Medusa.products
+            .update(product.id, {
               status: product.status === "published" ? "draft" : "published",
-            },
-            {
-              onSuccess: () => {
-                toaster(
-                  `Successfully ${
-                    product.status === "published" ? "unpublished" : "published"
-                  } product`,
-                  "success"
-                )
-                refetch()
-              },
-              onError: (err) => toaster(getErrorMessage(err), "error"),
-            }
-          )
+            })
+            .then(() =>
+              toaster(
+                `Successfully ${
+                  product.status === "published" ? "unpublished" : "published"
+                } product`,
+                "success"
+              )
+            )
+            .then(() => refetch())
+            .catch((err) => toaster(getErrorMessage(err), "error"))
         },
         icon:
           product.status === "published" ? (
