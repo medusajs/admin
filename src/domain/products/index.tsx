@@ -86,7 +86,7 @@ const ProductIndex = () => {
 
 const Products = () => {
   return (
-    <Router className="h-full">
+    <Router>
       <ProductIndex path="/" />
       <Details path=":id" />
       <New path="new" />
