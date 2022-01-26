@@ -41,19 +41,8 @@ const defaultQueryProps = {
 
 const OrderTable: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
-  const filtersOnLoad = qs.parse(location.search) as {
-    offset: number
-    limit: number
-  }
 
-  if (!filtersOnLoad.offset) {
-    filtersOnLoad.offset = 0
-  }
-
-  if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 14
-  }
-
+  const [filters, setFilters] = useState({})
   const [statusFilter, setStatusFilter] = useState<OrderFilter>({
     open: false,
     filter: null,
@@ -71,9 +60,48 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     filter: null,
   })
 
-  const [offset, setOffset] = useState(0)
-  const [limit, setLimit] = useState(14)
-  const [query, setQuery] = useState("")
+  useEffect(() => {
+    const filtersOnLoad = qs.parse(location.search)
+
+    if (filtersOnLoad.status?.length) {
+      setStatusFilter({
+        open: true,
+        filter: filtersOnLoad.status[0],
+      })
+    }
+    if (filtersOnLoad.fulfillment_status?.length) {
+      setFulfillmentFilter({
+        open: true,
+        filter: filtersOnLoad.fulfillment_status[0],
+      })
+    }
+    if (filtersOnLoad.payment_status?.length) {
+      setPaymentFilter({
+        open: true,
+        filter: filtersOnLoad.payment_status[0],
+      })
+    }
+
+    if (filtersOnLoad.q) {
+      setQuery(filtersOnLoad.q)
+    }
+
+    // TODO: Check if created at is in query on load
+    if (filtersOnLoad.created_at) {
+      setDateFilter({
+        open: true,
+        filter: filtersOnLoad.created_at,
+      })
+    }
+
+    setFilters({
+      ...filtersOnLoad,
+      limit: filtersOnLoad?.limit ? parseInt(filtersOnLoad.limit) : 14,
+      offset: filtersOnLoad?.offset ? parseInt(filtersOnLoad.offset) : 0,
+    })
+  }, [])
+
+  const [query, setQuery] = useState()
   const [currentPage, setCurrentPage] = useState(0)
   const [numPages, setNumPages] = useState(0)
 
@@ -175,10 +203,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const debouncedSearchTerm = useDebounce(query, 500)
 
-  const { orders, isLoading, refetch, isRefetching, count } = useAdminOrders({
+  const { orders, isLoading, isRefetching, count } = useAdminOrders({
     ...defaultQueryProps,
-    ...filtersOnLoad,
-    q: debouncedSearchTerm,
+    ...filters,
   })
 
   const {
@@ -201,7 +228,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       manualPagination: true,
       initialState: {
         pageIndex: currentPage,
-        pageSize: limit,
+        pageSize: filters.limit ?? 14,
       },
       pageCount: numPages,
       autoResetPage: false,
@@ -210,13 +237,14 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   )
 
   useEffect(() => {
-    const controlledPageCount = Math.ceil(count! / limit)
+    const controlledPageCount = Math.ceil(count! / filters.limit)
     setNumPages(controlledPageCount)
   }, [orders])
 
   const handleNext = () => {
     if (canNextPage) {
-      setOffset((old) => old + pageSize)
+      console.log(filters.offset, pageSize)
+      setFilters({ ...filters, offset: filters.offset + pageSize })
       setCurrentPage((old) => old + 1)
       nextPage()
     }
@@ -224,15 +252,15 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      setOffset((old) => old - pageSize)
+      setFilters({ ...filters, offset: filters.offset - pageSize })
       setCurrentPage((old) => old - 1)
       previousPage()
     }
   }
 
-  // Upon searching, we always start on first oage
+  // Upon searching, we reset all other filters
   const handleSearch = (q) => {
-    setOffset(0)
+    setFilters({ offset: 0, limit: filters.limit ?? 14 })
     setCurrentPage(0)
     setQuery(q)
   }
@@ -240,7 +268,6 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const atMidnight = (date) => {
     const result = moment(date)
     if (!moment.isMoment(result)) {
-      console.log("date is not instance of Moment: ", date)
       return null
     }
     result.hour(0)
@@ -252,14 +279,14 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   }
 
   const relativeDateFormatToTimestamp = (value) => {
-    // let [modifier, value] = dateFormat.split("=")
     const [count, option] = value.split("|")
-
     // relative days are always subtract
     let date = moment()
 
     date.subtract(count, option)
     date = atMidnight(date)!
+
+    console.log(date)
 
     const result = `${date.format("X")}`
 
@@ -277,22 +304,21 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     }, {})
   }
 
-  const replaceQueryString = (queryObject) => {
+  const updateUrl = (obj = {}) => {
+    const stringified = qs.stringify(obj)
+    window.history.replaceState(`/a/orders`, "", `${`?${stringified}`}`)
+  }
+
+  const refreshWithFilters = (queryObject) => {
     const searchObject = {
       ...queryObject,
       ...defaultQueryProps,
     }
 
-    console.log(searchObject)
-
     if (isEmpty(queryObject)) {
       resetFilters()
-      window.history.replaceState(
-        `/a/orders`,
-        "",
-        `?offset=${offset}&limit=${limit}`
-      )
-      refetch({ ...defaultQueryProps })
+      updateUrl({ offset: filters.offset, limit: filters.limit })
+      setFilters({ ...defaultQueryProps })
     } else {
       if (!searchObject.offset) {
         searchObject.offset = 0
@@ -302,25 +328,40 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
         searchObject.limit = 14
       }
 
-      const stringified = qs.stringify(queryObject)
-      window.history.replaceState(`/a/orders`, "", `${`?${stringified}`}`)
-      refetch({ ...searchObject })
+      updateUrl(queryObject)
+      setFilters({ ...searchObject })
     }
   }
 
   const submitFilters = () => {
-    const urlObject = {
+    let urlObject = {
       "payment_status[]": paymentFilter.filter,
       "fulfillment_status[]": fulfillmentFilter.filter,
       "status[]": statusFilter.filter,
     }
 
-    if (!isEmpty(dateFilter.filter)) {
+    if (!isEmpty(dateFilter.filter) && dateFilter.open) {
       const dateFormatted = formatDateFilter(dateFilter.filter)
-      urlObject.created_at = dateFormatted
+
+      const dateFilters = Object.entries(dateFormatted).reduce(
+        (acc, [key, value]) => {
+          return {
+            ...acc,
+            [`created_at[${key}]`]: value,
+          }
+        },
+        {}
+      )
+
+      urlObject = {
+        ...urlObject,
+        ...dateFilters,
+      }
     }
 
-    replaceQueryString(removeNullish(urlObject))
+    console.log(urlObject)
+
+    refreshWithFilters(removeNullish(urlObject))
   }
 
   const resetFilters = () => {
@@ -344,33 +385,14 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const clearFilters = () => {
     resetFilters()
-    replaceQueryString({})
+    refreshWithFilters({ limit: 14, offset: 0 })
   }
 
   useEffect(() => {
-    const filtersOnLoad = qs.parse(location.search, {
-      arrayFormat: "bracket",
-    })
-
-    if (filtersOnLoad.status?.length) {
-      setStatusFilter({
-        open: true,
-        filter: filtersOnLoad.status[0],
-      })
+    if (debouncedSearchTerm) {
+      refreshWithFilters({ q: query })
     }
-    if (filtersOnLoad.fulfillment_status?.length) {
-      setFulfillmentFilter({
-        open: true,
-        filter: filtersOnLoad.fulfillment_status[0],
-      })
-    }
-    if (filtersOnLoad.payment_status?.length) {
-      setPaymentFilter({
-        open: true,
-        filter: filtersOnLoad.payment_status[0],
-      })
-    }
-  }, [])
+  }, [debouncedSearchTerm])
 
   return (
     <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
@@ -433,9 +455,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
           </Table>
           <TablePagination
             count={count!}
-            limit={limit}
-            offset={offset}
-            pageSize={offset + rows.length}
+            limit={filters.limit}
+            offset={filters.offset}
+            pageSize={filters.offset + rows.length}
             title="Orders"
             currentPage={pageIndex}
             pageCount={pageCount}

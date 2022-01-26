@@ -245,9 +245,7 @@ const DateFilter = ({
    *
    */
   const handleDateFormat = (value) => {
-    const option =
-      select_ref?.current?.options[select_ref.current.options.selectedIndex]
-        ?.label
+    const option = daysMonthsValue
 
     switch (currentFilter) {
       case DateFilters.InTheLast:
