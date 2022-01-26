@@ -227,6 +227,10 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
               <OrderFilters
                 setStatusFilter={setStatusFilter}
                 statusFilter={statusFilter}
+                setFulfillmentFilter={setFulfillmentFilter}
+                fulfillmentFilter={fulfillmentFilter}
+                setPaymentFilter={setPaymentFilter}
+                paymentFilter={paymentFilter}
                 submitFilters={submitFilters}
                 resetFilters={resetFilters}
                 clearFilters={clearFilters}

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react"
+import * as PopoverPrimitive from "@radix-ui/react-popover"
+import clsx from "clsx"
 import moment from "moment"
+import React, { useEffect, useState } from "react"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import ClockIcon from "../../fundamentals/icons/clock-icon"
-import NumberScroller from "../number-scroller"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
-import clsx from "clsx"
+import NumberScroller from "../number-scroller"
 import { DateTimePickerProps } from "./types"
 
 const TimePicker: React.FC<DateTimePickerProps> = ({

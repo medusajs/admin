@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
-import React from "react"
+import React, { ReactNode } from "react"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
@@ -38,7 +38,7 @@ type SortingHeadCellProps = {
 } & React.HTMLAttributes<HTMLTableCellElement>
 
 type TableProps = {
-  filteringOptions?: FilteringOptionProps[]
+  filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
   searchPlaceholder?: string
   handleSearch?: (searchTerm: string) => void
@@ -81,9 +81,9 @@ const Table: TableType = React.forwardRef(
         <div className="w-full flex justify-between">
           {filteringOptions && (
             <div className="flex mb-2 self-end">
-              {filteringOptions.map((fo) => (
-                <FilteringOptions {...fo} />
-              ))}
+              {Array.isArray(filteringOptions)
+                ? filteringOptions.map((fo) => <FilteringOptions {...fo} />)
+                : filteringOptions}
             </div>
           )}
           <div className="flex">
@@ -244,7 +244,7 @@ Table.Row = React.forwardRef(
     >
       {children}
       {actions && (
-        <Table.Cell className="w-8">
+        <Table.Cell onClick={(e) => e.stopPropagation()} className="w-[32px]">
           <Actionables actions={actions} />
         </Table.Cell>
       )}
