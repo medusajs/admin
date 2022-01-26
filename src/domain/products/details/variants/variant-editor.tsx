@@ -14,6 +14,7 @@ import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 const numberFields = ["weight", "length", "width", "height"]
 
 const VariantEditor = ({
@@ -69,20 +70,8 @@ const VariantEditor = ({
     setPrices(newPrices)
   }
 
-  // const handlePriceChange = (index, e) => {
-  //   const element = e.target
-  //   const value = Math.round(element.value * 100)
-
-  //   const newPrices = [...prices]
-  //   newPrices[index] = {
-  //     ...newPrices[index],
-  //     amount: value,
-  //   }
-
-  //   setPrices(newPrices)
-  // }
-
   const handlePriceChange = (index, value) => {
+    console.log(value)
     const newPrices = [...prices]
     newPrices[index] = {
       ...newPrices[index],
@@ -126,14 +115,11 @@ const VariantEditor = ({
     const cleaned = convertEmptyStringToNull(data, numberFields)
 
     console.log("saved", cleaned)
-    return
 
     onSubmit(cleaned)
   }
 
   watch()
-
-  console.log(prices, currencyOptions)
 
   // as="form"
   return (
@@ -143,67 +129,54 @@ const VariantEditor = ({
           <h2 className="inter-xlarge-semibold">Edit Variant</h2>
         </Modal.Header>
         <Modal.Content>
-          <div>
-            <div>
-              <label className="inter-base-semibold">Prices</label>
+          <div className="mb-8">
+            <label className="inter-base-semibold">Prices</label>
+
+            <div className="grid grid-cols-1 gap-y-xsmall">
               {prices.map((p, index) => (
-                <Flex
-                  flexDirection="column"
-                  alignItems="center"
-                  mb={3}
+                <div
+                  className="flex items-center"
                   key={`${p.currency_code}${index}`}
                 >
-                  {/* <CInput
-                    edit={p.edit}
-                    currency={p.currency_code.toUpperCase()}
-                    currencyOptions={currencyOptions}
-                    value={p.amount / 100}
-                    onCurrencySelected={(currency) =>
-                      handleCurrencySelected(index, currency)
-                    }
-                    // onChange={(e) => handlePriceChange(index, e)}
-                  /> */}
+                  <div className="w-full">
+                    <CurrencyInput
+                      currencyCodes={currencyOptions.map((co) => co.value)}
+                      currentCurrency={p.currency_code.toUpperCase()}
+                      onChange={(currency) =>
+                        handleCurrencySelected(index, currency)
+                      }
+                      size="small"
+                    >
+                      <CurrencyInput.AmountInput
+                        label="amount"
+                        step={0.01}
+                        amount={p.amount}
+                        onChange={(value) => handlePriceChange(index, value)}
+                      />
+                    </CurrencyInput>
+                  </div>
 
-                  <CurrencyInput
-                    currencyCodes={currencyOptions.map((co) => co.value)}
-                    currentCurrency={p.currency_code.toUpperCase()}
-                    onChange={(currency) =>
-                      handleCurrencySelected(index, currency)
-                    }
-                    size="full"
-                  >
-                    <CurrencyInput.AmountInput
-                      label="amount"
-                      step={0.01}
-                      amount={p.amount}
-                      onChange={console.log}
-                      // onChange={(value) => handlePriceChange(index, value)}
-                    />
-                  </CurrencyInput>
-
-                  <Box
-                    ml={2}
-                    sx={{
-                      cursor: "pointer",
-                      "& svg": {
-                        transition: "fill 0.2s ease-in",
-                      },
-                      ":hover svg": { fill: "#4354a8" },
-                    }}
+                  <Button
+                    variant="ghost"
+                    size="small"
+                    className="ml-8 w-8 h-8 mr-2.5 text-grey-40 hover:text-grey-80 transition-colors"
                     onClick={() => removePrice(index)}
                   >
                     <TrashIcon />
-                  </Box>
-                </Flex>
-              ))}
-              {currencyOptions.length !== prices.length && (
-                <Flex mb={3}>
-                  <Button onClick={addPrice} size="small" variant="ghost">
-                    + Add a price
                   </Button>
-                </Flex>
-              )}
+                </div>
+              ))}
             </div>
+            {currencyOptions.length !== prices.length && (
+              <Button
+                className="mt-4"
+                onClick={addPrice}
+                size="small"
+                variant="ghost"
+              >
+                <PlusIcon size={20} /> Add a price
+              </Button>
+            )}
           </div>
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
@@ -211,22 +184,8 @@ const VariantEditor = ({
               <InfoTooltip content={"Stock and inventory information"} />
             </label>
             <div className="w-full mt-4 grid medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
-              <Input
-                mb={3}
-                label="SKU"
-                name="sku"
-                placeholder="SKU"
-                boldLabel={true}
-                ref={register}
-              />
-              <Input
-                mr={3}
-                label="EAN"
-                name="ean"
-                placeholder="EAN"
-                boldLabel={true}
-                ref={register}
-              />
+              <Input label="SKU" name="sku" placeholder="SKU" ref={register} />
+              <Input label="EAN" name="ean" placeholder="EAN" ref={register} />
               <Input
                 label="Inventory quantity"
                 name="inventory_quantity"
@@ -236,12 +195,10 @@ const VariantEditor = ({
               />
 
               <Input
-                mr={3}
                 label="UPC Barcode"
                 name="barcode"
                 placeholder="Barcode"
                 type="number"
-                boldLabel={true}
                 ref={register}
               />
             </div>

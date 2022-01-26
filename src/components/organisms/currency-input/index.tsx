@@ -54,7 +54,6 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
   children,
   className,
 }) => {
-  console.log(currencyCodes)
   const options: Option[] =
     currencyCodes?.map((code) => ({
       label: code.toUpperCase(),
@@ -139,6 +138,9 @@ const AmountInput: React.FC<AmountInputProps> = ({
   const [value, setValue] = useState<string | undefined>(
     amount ? `${amount}` : undefined
   )
+  const [loading, setLoading] = useState(true)
+  useEffect(() => setLoading(false), [])
+
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -154,16 +156,22 @@ const AmountInput: React.FC<AmountInputProps> = ({
     }
   }, [amount, currencyInfo])
 
+  useEffect(() => setLoading(false), [])
+
   /**
    * Returns the persited amount for the current currency
    */
   useEffect(() => {
+    if (loading) {
+      return
+    }
+
     let persistedAmount: number | undefined = undefined
 
     if (currencyInfo && value) {
       const amount = parseFloat(value)
       persistedAmount = persistedPrice(currencyInfo.code, amount)
-      console.log(amount, persistedAmount)
+      console.log("use effect", value, amount, persistedAmount)
     }
 
     if (onChange) {
@@ -176,8 +184,19 @@ const AmountInput: React.FC<AmountInputProps> = ({
 
     if (!allowNegative && newValue < 0) return
 
-    setValue(`${newValue}`)
+    setValue(`${newValue.toFixed(2)}`)
   }
+
+  // inputRef.current?.stepDown()
+  //     if (onChange) {
+  //       inputRef.current?.dispatchEvent(
+  //         new InputEvent("change", {
+  //           view: window,
+  //           bubbles: true,
+  //           cancelable: false,
+  //         })
+  //       )
+  //     }
 
   return (
     <InputContainer onClick={() => inputRef.current?.focus()}>
