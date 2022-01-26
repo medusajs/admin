@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from "react"
-import MultiSelect from "../../../components/molecules/select"
 import _ from "lodash"
-import Medusa from "../../../services/api"
-import { Text, Flex } from "rebass"
+import React, { useState } from "react"
+import { Flex, Text } from "rebass"
 import { ReactComponent as TrashIcon } from "../../../assets/svg/trash.svg"
+import MultiSelect from "../../../components/molecules/select"
+import Medusa from "../../../services/api"
 
 const ProductSelection = ({
   selectedProducts,
@@ -13,13 +13,13 @@ const ProductSelection = ({
   const [searchingProducts, setSearchingProducts] = useState(false)
   const [searchResults, setSearchResults] = useState([])
 
-  const fetchProduct = async q => {
+  const fetchProduct = async (q) => {
     const { data } = await Medusa.products.list({ q })
     setSearchResults([...data.products])
     setSearchingProducts(false)
   }
 
-  const handleProductSearch = async title => {
+  const handleProductSearch = async (title) => {
     setSearchingProducts(true)
     try {
       fetchProduct(title)
@@ -29,8 +29,12 @@ const ProductSelection = ({
   }
 
   const customRenderer = (selected, _option) => {
-    if (selected.length == 0) return "Select products"
-    if (selected.length == 1) return selected[0].label
+    if (selected.length == 0) {
+      return "Select products"
+    }
+    if (selected.length == 1) {
+      return selected[0].label
+    }
 
     return _.reduce(
       selected,
@@ -39,11 +43,11 @@ const ProductSelection = ({
     ).substring(1)
   }
 
-  const shortLabel = title =>
+  const shortLabel = (title) =>
     title.length > 20 ? `${title.substring(0, 19)}...` : title
 
-  const mapItems = items =>
-    items.map(product => ({
+  const mapItems = (items) =>
+    items.map((product) => ({
       label: shortLabel(product.title),
       value: product.id,
     }))
@@ -66,8 +70,8 @@ const ProductSelection = ({
           }}
           value={selectedProducts}
           onChange={setSelectedProducts}
-          onKeyUp={e => handleProductSearch(e.target.value)}
-          onKeyPress={e => handleProductSearch(e.target.value)}
+          onKeyUp={(e) => handleProductSearch(e.target.value)}
+          onKeyPress={(e) => handleProductSearch(e.target.value)}
           isLoading={searchingProducts}
         />
       </Flex>
