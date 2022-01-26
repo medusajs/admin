@@ -17,6 +17,7 @@
     "@radix-ui/react-collapsible": "^0.1.5",
     "@radix-ui/react-dialog": "^0.1.5",
     "@radix-ui/react-dropdown-menu": "^0.1.4",
+    "@radix-ui/react-popover": "^0.1.4",
     "@radix-ui/react-radio-group": "^0.1.4",
     "@radix-ui/react-tooltip": "^0.1.6",
     "@rebass/forms": "^4.0.6",
