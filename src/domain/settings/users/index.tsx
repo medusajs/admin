@@ -5,6 +5,7 @@ import BodyCard from "../../../components/organisms/body-card"
 import InviteModal from "../../../components/organisms/invite-modal"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import UserTable from "../../../components/templates/user-table"
+import DraggableTable from "../../../components/templates/draggable-table"
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState([])
@@ -12,21 +13,25 @@ const Users: React.FC = () => {
   const [shouldRefetch, setShouldRefetch] = useState(0)
   const [showInviteModal, setShowInviteModal] = useState(false)
 
+  const [entities, setEntities] = useState<any[]>([...users, ...invites])
+  useEffect(() => setEntities([...users, ...invites]), [users, invites])
+
   const triggerRefetch = () => {
-    setShouldRefetch(prev => prev + 1)
+    setShouldRefetch((prev) => prev + 1)
   }
 
   useEffect(() => {
     Medusa.users
       .list()
-      .then(res => res.data)
-      .then(userData => {
+      .then((res) => res.data)
+      .then((userData) => {
         Medusa.invites
           .list()
-          .then(res => res.data)
-          .then(inviteData => {
+          .then((res) => res.data)
+          .then((inviteData) => {
             setUsers(userData.users)
             setInvites(inviteData.invites)
+            setEntities([...userData.users, ...inviteData.invites])
           })
       })
   }, [shouldRefetch])
@@ -40,6 +45,17 @@ const Users: React.FC = () => {
           <PlusIcon size={20} />
         </span>
       ),
+    },
+  ]
+
+  const columns = [
+    {
+      Header: "ID",
+      accessor: "id", // accessor is the "key" in the data
+    },
+    {
+      Header: "Role",
+      accessor: "role",
     },
   ]
 
@@ -61,6 +77,11 @@ const Users: React.FC = () => {
               users={users}
               invites={invites}
               triggerRefetch={triggerRefetch}
+            />
+            <DraggableTable
+              entities={entities}
+              setEntities={setEntities}
+              columns={columns}
             />
           </div>
           <div className="inter-small-regular text-grey-50">
