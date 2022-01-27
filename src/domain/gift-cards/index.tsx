@@ -1,85 +1,77 @@
-import React, { useEffect, useState, useMemo, useContext } from "react"
 import { Router } from "@reach/router"
-import qs from "query-string"
-import { InterfaceContext } from "../../context/interface"
-
+import { navigate } from "gatsby"
+import {
+  useAdminDeleteProduct,
+  useAdminGiftCards,
+  useAdminProducts,
+  useAdminUpdateProduct,
+} from "medusa-react"
+import React from "react"
+import useToaster from "../../hooks/use-toaster"
+import { ProductStatus } from "../../types/shared"
+import { getErrorMessage } from "../../utils/error-messages"
 import ManageGiftCard from "./manage"
-import GiftCardDetail from "./detail"
-import BodyCard from "../../components/organisms/body-card"
-import PlusIcon from "../../components/fundamentals/icons/plus-icon"
-import GiftCardTable from "../../components/templates/gift-card-table"
-import PageDescription from "../../components/atoms/page-description"
-import { useAdminGiftCards } from "medusa-react"
-import Spinner from "../../components/atoms/spinner"
-
-const Index = () => {
-  const [query, setQuery] = useState({
-    offset: 0,
-    limit: 20,
-  })
-
-  const { gift_cards, isLoading } = useAdminGiftCards(query)
-
-  const searchQuery = (q) => {
-    const baseUrl = qs.parseUrl(window.location.href).url
-
-    const search = {
-      q,
-      offset: 0,
-      limit: 20,
-    }
-
-    const prepared = qs.stringify(search, {
-      skipNull: true,
-      skipEmptyString: true,
-    })
-
-    window.history.replaceState(baseUrl, "", `?${prepared}`)
-  }
-
-  const actionables = [
-    {
-      label: "Custom Gift Card",
-      onClick: () => console.log("create custom gift card"), // TODO
-      icon: <PlusIcon size={20} />,
-    },
-  ]
-
-  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
-  useEffect(onUnmount, [])
-  useEffect(() => {
-    setOnSearch(searchQuery)
-  }, [])
-
-  return (
-    <div className="flex flex-col grow h-full">
-      <div className="w-full flex flex-col grow">
-        <PageDescription
-          title="Gift Cards"
-          subtitle="Manage the Gift cards for your Medusa Store"
-        />
-        <BodyCard
-          title="History"
-          subtitle="See the history of purchased gift cards"
-          actionables={actionables}
-        >
-          {isLoading || !gift_cards ? (
-            <Spinner size="large" />
-          ) : (
-            <GiftCardTable giftCards={gift_cards} />
-          )}
-        </BodyCard>
-      </div>
-    </div>
-  )
-}
+import Overview from "./overview"
 
 const GiftCard = () => {
+  const { gift_cards: purchasedGiftCards } = useAdminGiftCards()
+  const { products: giftCards } = useAdminProducts({
+    is_giftcard: "true",
+  })
+  const giftCard = giftCards?.[0]
+
+  const updateGiftCard = useAdminUpdateProduct(giftCard?.id)
+  const deleteGiftCard = useAdminDeleteProduct(giftCard?.id)
+
+  const toaster = useToaster()
+
+  const updateGCStatus = () => {
+    let status: ProductStatus = ProductStatus.PUBLISHED
+    if (giftCard?.status === "published") {
+      status = ProductStatus.DRAFT
+    }
+
+    updateGiftCard.mutate(
+      { status },
+      {
+        onSuccess: () => toaster("Successfully updated Gift Card", "success"),
+        onError: (err) => toaster(getErrorMessage(err), "error"),
+      }
+    )
+  }
+
+  const updateGC = (data) => {
+    updateGiftCard.mutate(
+      { ...data },
+      {
+        onSuccess: () => toaster("Successfully updated Gift Card", "success"),
+        onError: (err) => toaster(getErrorMessage(err), "error"),
+      }
+    )
+  }
+
+  const deleteGC = () => {
+    deleteGiftCard.mutate(undefined, {
+      onSuccess: () => navigate("/a/gift-cards"),
+    })
+  }
+
   return (
     <Router>
-      <Index path="/" />
-      <ManageGiftCard path="manage" />
-      <GiftCardDetail path=":id" />
+      <Overview
+        path="/"
+        giftCard={giftCard}
+        onDelete={() => deleteGC()}
+        onUpdate={() => updateGCStatus()}
+      />
+      {giftCard && (
+        <ManageGiftCard
+          path="manage"
+          id={giftCard.id}
+          updateGiftCard={updateGC}
+          deleteGiftCard={deleteGC}
+        />
+      )}
     </Router>
   )
 }

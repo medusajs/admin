@@ -147,11 +147,11 @@ const TagInput: React.FC<TagInputProps> = ({
               }
             )}
           >
-            <div className="inline-block text-grey-0 h-full inter-small-semibold">
+            <div className="inline-block text-grey-0 h-full inter-small-semibold mr-1">
               {v}
             </div>
             <CrossIcon
-              className="inline"
+              className="inline cursor-pointer"
               size="16"
               color="#9CA3AF"
               onClick={() => handleRemove(index)}
