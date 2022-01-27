@@ -1,9 +1,16 @@
-import { useAdminDeleteVariant } from "medusa-react"
+import {
+  useAdminDeleteVariant,
+  useAdminStore,
+  useAdminUpdateVariant,
+} from "medusa-react"
 import React, { useState } from "react"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Table from "../../../components/molecules/table"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import EditDenominationsModal, {
+  PriceType,
+} from "../../../components/organisms/edit-denominations-modal"
 import { stringDisplayPrice } from "../../../utils/prices"
 
 type DenominationTableProps = {
@@ -20,6 +27,8 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
   const [selectedDenom, setSelectedDenom] = useState<string | null>(null)
 
   const deleteDenomination = useAdminDeleteVariant(giftCardId)
+  const updateDenoination = useAdminUpdateVariant(giftCardId)
+  const { store } = useAdminStore()
 
   const getDenominationPrices = (denomination) => {
     const sortHelper = (p1, p2) => {
@@ -60,7 +69,10 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
         actions={[
           {
             label: "Edit Denomination",
-            onClick: () => console.log("TODO: Should open denomination"),
+            onClick: () => {
+              setSelectedPrices(denomination.prices)
+              setShowEdit(true)
+            },
             icon: <EditIcon size={20} />,
           },
           {
@@ -87,8 +99,22 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
     deleteDenomination.mutateAsync(selectedDenom!)
   }
 
+  const [showEdit, setShowEdit] = useState(false)
+  const [selectedPrices, setSelectedPrices] = useState<PriceType[]>([])
+
+  const handleUpdateDenominations = (prices: PriceType[]) => {}
+
   return (
     <div className="w-full h-full overflow-y-scroll">
+      {showEdit && (
+        <EditDenominationsModal
+          denominations={selectedPrices}
+          currencyCodes={store ? store.currencies.map((c) => c.code) : []}
+          defaultNewCurrencyCode={store ? store.default_currency_code : "usd"}
+          handleClose={() => setShowEdit(!showEdit)}
+          onSubmit={(ps) => console.log(ps)}
+        />
+      )}
       <Table>
         <Table.Head>
           <Table.HeadRow>

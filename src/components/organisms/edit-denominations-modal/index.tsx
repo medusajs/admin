@@ -1,30 +1,30 @@
 import React from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
-import CurrencyInput from "../../organisms/currency-input"
 import Button from "../../fundamentals/button"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import InfoTooltip from "../../molecules/info-tooltip"
 import Modal from "../../molecules/modal"
+import CurrencyInput from "../../organisms/currency-input"
 
-type Denomination = {
-  currencyCode: string
+export type PriceType = {
+  currency_code: string
   amount: number
   id: string
 }
 
 type EditDenominationsModalProps = {
-  denominations: Denomination[]
+  denominations: PriceType[]
   handleClose: () => void
-  onSubmit: (denominations: Denomination[]) => void
+  onSubmit: (denominations: PriceType[]) => void
   defaultNewAmount?: number
   defaultNewCurrencyCode?: string
   currencyCodes?: string[]
 }
 
 type FormValues = {
-  denominations: Denomination[]
+  denominations: PriceType[]
 }
 
 const EditDenominationsModal = ({
@@ -40,7 +40,7 @@ const EditDenominationsModal = ({
       denominations,
     },
   })
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "denominations",
     keyName: "native_key",
@@ -48,13 +48,13 @@ const EditDenominationsModal = ({
 
   const onAmountChange = (index) => {
     return (amount) => {
-      update(index, { ...fields[index], amount })
+      fields[index] = { ...fields[index], amount }
     }
   }
 
   const onCurrencyChange = (index) => {
     return (currencyCode) => {
-      update(index, { ...fields[index], currencyCode })
+      fields[index] = { ...fields[index], currency_code: currencyCode }
     }
   }
 
@@ -82,7 +82,7 @@ const EditDenominationsModal = ({
                     <CurrencyInput
                       currencyCodes={currencyCodes}
                       onChange={onCurrencyChange(index)}
-                      currentCurrency={field.currencyCode}
+                      currentCurrency={field.currency_code}
                     >
                       <CurrencyInput.AmountInput
                         label="Amount"
@@ -107,7 +107,7 @@ const EditDenominationsModal = ({
               onClick={() =>
                 append({
                   amount: defaultNewAmount,
-                  currencyCode: defaultNewCurrencyCode,
+                  currency_code: defaultNewCurrencyCode,
                   id: uuidv4(),
                 })
               }
