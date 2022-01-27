@@ -41,6 +41,7 @@ type TableProps = {
   filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
   searchPlaceholder?: string
+  searchValue?: string
   containerClassName?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
@@ -67,6 +68,7 @@ const Table: TableType = React.forwardRef(
       children,
       enableSearch,
       searchPlaceholder,
+      searchValue,
       handleSearch,
       filteringOptions,
       containerClassName,
@@ -92,6 +94,7 @@ const Table: TableType = React.forwardRef(
             {enableSearch && (
               <TableSearch
                 placeholder={searchPlaceholder}
+                searchValue={searchValue}
                 onSearch={handleSearch}
               />
             )}
@@ -276,7 +279,7 @@ export const TablePagination = ({
     >
       <div>{`${offset + 1} - ${pageSize} of ${count} ${title}`}</div>
       <div className="flex space-x-4">
-        <div>{`${currentPage + 1} of ${pageCount}`}</div>
+        <div>{`${offset / 14} of ${pageCount}`}</div>
         <div className="flex space-x-4 items-center">
           <div
             className={clsx(

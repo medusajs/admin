@@ -8,6 +8,7 @@ import DraftOrderDetails from "./draft-orders/details"
 import NewOrder from "./new"
 
 const OrderIndex: React.FC<RouteComponentProps> = () => {
+
   return (
     <div className="flex flex-col grow h-full">
       <PageDescription
@@ -21,7 +22,8 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
           className="mb-0"
         >
           <div className="flex grow  flex-col pt-2 mt-large">
-            <OrderTable />
+            <OrderTable
+            />
           </div>
         </BodyCard>
       </div>

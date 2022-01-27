@@ -1,14 +1,14 @@
 import { RouteComponentProps, useLocation } from "@reach/router"
-import { isEmpty } from "lodash"
+import { debounce, isEmpty } from "lodash"
 import { useAdminOrders } from "medusa-react"
 import moment from "moment"
 import qs from "query-string"
 import React, { useEffect, useMemo, useState } from "react"
 import ReactCountryFlag from "react-country-flag"
 import { usePagination, useTable } from "react-table"
-import { useDebounce } from "../../../hooks/use-debounce"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import { removeNullish } from "../../../utils/remove-nullish"
+import { relativeDateFormatToTimestamp } from "../../../utils/time"
 import Spinner from "../../atoms/spinner"
 import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
@@ -42,7 +42,12 @@ const defaultQueryProps = {
 const OrderTable: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
 
-  const [filters, setFilters] = useState({})
+  const [currentPage, setCurrentPage] = useState(0)
+  const [filters, setFilters] = useState({
+    limit: 14,
+    offset: 0,
+  })
+  const [query, setQuery] = useState<string>()
   const [statusFilter, setStatusFilter] = useState<OrderFilter>({
     open: false,
     filter: null,
@@ -61,7 +66,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   })
 
   useEffect(() => {
-    const filtersOnLoad = qs.parse(location.search)
+    const filtersOnLoad = qs.parse(location.search, {
+      arrayFormat: "bracket",
+    })
 
     if (filtersOnLoad.status?.length) {
       setStatusFilter({
@@ -69,6 +76,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
         filter: filtersOnLoad.status[0],
       })
     }
+
     if (filtersOnLoad.fulfillment_status?.length) {
       setFulfillmentFilter({
         open: true,
@@ -83,7 +91,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     }
 
     if (filtersOnLoad.q) {
-      setQuery(filtersOnLoad.q)
+      setQuery(filtersOnLoad.q as string)
     }
 
     // TODO: Check if created at is in query on load
@@ -95,14 +103,14 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     }
 
     setFilters({
-      ...filtersOnLoad,
-      limit: filtersOnLoad?.limit ? parseInt(filtersOnLoad.limit) : 14,
-      offset: filtersOnLoad?.offset ? parseInt(filtersOnLoad.offset) : 0,
+      ...filters,
+      limit: filtersOnLoad?.limit ? parseInt(filtersOnLoad?.limit) : 14,
+      offset: filtersOnLoad?.offset ? parseInt(filtersOnLoad?.offset) : 0,
     })
+
+    setCurrentPage(filters.offset / filters.limit)
   }, [])
 
-  const [query, setQuery] = useState()
-  const [currentPage, setCurrentPage] = useState(0)
   const [numPages, setNumPages] = useState(0)
 
   const decideStatus = (status) => {
@@ -123,20 +131,24 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       {
         Header: "Order",
         accessor: "display_id",
-        Cell: ({ cell: { value } }) => <Table.Cell>{`#${value}`}</Table.Cell>,
+        Cell: ({ cell: { value }, index }) => (
+          <Table.Cell key={index}>{`#${value}`}</Table.Cell>
+        ),
       },
       {
         Header: "Date added",
         accessor: "created_at",
-        Cell: ({ cell: { value } }) => (
-          <Table.Cell>{moment(value).format("DD MMM YYYY")}</Table.Cell>
+        Cell: ({ cell: { value }, index }) => (
+          <Table.Cell key={index}>
+            {moment(value).format("DD MMM YYYY")}
+          </Table.Cell>
         ),
       },
       {
         Header: "Customer",
         accessor: "shipping_address",
-        Cell: ({ row, cell: { value } }) => (
-          <Table.Cell>
+        Cell: ({ row, cell: { value }, index }) => (
+          <Table.Cell key={index}>
             <CustomerAvatarItem
               customer={{
                 first_name: value.first_name,
@@ -150,20 +162,22 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       {
         Header: "Fulfillment",
         accessor: "fulfillment_status",
-        Cell: ({ cell: { value } }) => <Table.Cell>{value}</Table.Cell>,
+        Cell: ({ cell: { value }, index }) => (
+          <Table.Cell key={index}>{value}</Table.Cell>
+        ),
       },
       {
         Header: "Payment status",
         accessor: "payment_status",
-        Cell: ({ cell: { value } }) => (
-          <Table.Cell>{decideStatus(value)}</Table.Cell>
+        Cell: ({ cell: { value }, index }) => (
+          <Table.Cell key={index}>{decideStatus(value)}</Table.Cell>
         ),
       },
       {
         Header: () => <div className="text-right">Total</div>,
         accessor: "total",
-        Cell: ({ row, cell: { value } }) => (
-          <Table.Cell>
+        Cell: ({ row, cell: { value }, index }) => (
+          <Table.Cell key={index}>
             <div className="text-right">
               {formatAmountWithSymbol({
                 amount: value,
@@ -177,8 +191,8 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       {
         Header: "",
         accessor: "currency_code",
-        Cell: ({ cell: { value } }) => (
-          <Table.Cell className="w-[5%]">
+        Cell: ({ cell: { value }, index }) => (
+          <Table.Cell key={index} className="w-[5%]">
             <div className="text-right text-grey-40">{value.toUpperCase()}</div>
           </Table.Cell>
         ),
@@ -186,8 +200,8 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       {
         Header: "",
         accessor: "country_code",
-        Cell: ({ row }) => (
-          <Table.Cell className="w-[5%]">
+        Cell: ({ row, index }) => (
+          <Table.Cell className="w-[5%]" key={index}>
             <div className="flex w-full justify-end">
               <ReactCountryFlag
                 svg
@@ -201,12 +215,36 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     []
   )
 
-  const debouncedSearchTerm = useDebounce(query, 500)
+  // Upon searching, we reset all other filters
+  const handleSearch = (q) => {
+    setQuery(q)
+    setFilters({ offset: 0, limit: filters.limit ?? 14 })
+    setCurrentPage(0)
+  }
+
+  const debouncedSearch = useMemo(() => debounce(handleSearch, 500), [])
+
+  useEffect(() => {
+    if (query) {
+      refreshWithFilters({ q: query })
+    }
+  }, [query])
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel()
+    }
+  })
 
   const { orders, isLoading, isRefetching, count } = useAdminOrders({
     ...defaultQueryProps,
     ...filters,
   })
+
+  useEffect(() => {
+    const controlledPageCount = Math.ceil(count! / filters.limit)
+    setNumPages(controlledPageCount)
+  }, [orders])
 
   const {
     getTableProps,
@@ -227,8 +265,8 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       data: orders || [],
       manualPagination: true,
       initialState: {
-        pageIndex: currentPage,
         pageSize: filters.limit ?? 14,
+        pageIndex: currentPage,
       },
       pageCount: numPages,
       autoResetPage: false,
@@ -236,16 +274,12 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     usePagination
   )
 
-  useEffect(() => {
-    const controlledPageCount = Math.ceil(count! / filters.limit)
-    setNumPages(controlledPageCount)
-  }, [orders])
-
   const handleNext = () => {
     if (canNextPage) {
-      console.log(filters.offset, pageSize)
-      setFilters({ ...filters, offset: filters.offset + pageSize })
+      const newOffset = filters.offset + pageSize
+      setFilters({ ...filters, offset: newOffset })
       setCurrentPage((old) => old + 1)
+      updateUrlFromFilter({ ...filters, offset: newOffset })
       nextPage()
     }
   }
@@ -254,43 +288,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     if (canPreviousPage) {
       setFilters({ ...filters, offset: filters.offset - pageSize })
       setCurrentPage((old) => old - 1)
+      updateUrlFromFilter(filters)
       previousPage()
     }
-  }
-
-  // Upon searching, we reset all other filters
-  const handleSearch = (q) => {
-    setFilters({ offset: 0, limit: filters.limit ?? 14 })
-    setCurrentPage(0)
-    setQuery(q)
-  }
-
-  const atMidnight = (date) => {
-    const result = moment(date)
-    if (!moment.isMoment(result)) {
-      return null
-    }
-    result.hour(0)
-    result.minute(0)
-    result.second(0)
-    result.millisecond(0)
-
-    return result
-  }
-
-  const relativeDateFormatToTimestamp = (value) => {
-    const [count, option] = value.split("|")
-    // relative days are always subtract
-    let date = moment()
-
-    date.subtract(count, option)
-    date = atMidnight(date)!
-
-    console.log(date)
-
-    const result = `${date.format("X")}`
-
-    return result
   }
 
   const formatDateFilter = (filter) => {
@@ -304,7 +304,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     }, {})
   }
 
-  const updateUrl = (obj = {}) => {
+  const updateUrlFromFilter = (obj = {}) => {
     const stringified = qs.stringify(obj)
     window.history.replaceState(`/a/orders`, "", `${`?${stringified}`}`)
   }
@@ -317,7 +317,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
     if (isEmpty(queryObject)) {
       resetFilters()
-      updateUrl({ offset: filters.offset, limit: filters.limit })
+      updateUrlFromFilter({ offset: filters.offset, limit: filters.limit })
       setFilters({ ...defaultQueryProps })
     } else {
       if (!searchObject.offset) {
@@ -328,7 +328,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
         searchObject.limit = 14
       }
 
-      updateUrl(queryObject)
+      updateUrlFromFilter(queryObject)
       setFilters({ ...searchObject })
     }
   }
@@ -338,6 +338,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       "payment_status[]": paymentFilter.filter,
       "fulfillment_status[]": fulfillmentFilter.filter,
       "status[]": statusFilter.filter,
+      q: query,
     }
 
     if (!isEmpty(dateFilter.filter) && dateFilter.open) {
@@ -359,12 +360,11 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       }
     }
 
-    console.log(urlObject)
-
     refreshWithFilters(removeNullish(urlObject))
   }
 
   const resetFilters = () => {
+    handleSearch("")
     setStatusFilter({
       open: false,
       filter: null,
@@ -387,12 +387,6 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     resetFilters()
     refreshWithFilters({ limit: 14, offset: 0 })
   }
-
-  useEffect(() => {
-    if (debouncedSearchTerm) {
-      refreshWithFilters({ q: query })
-    }
-  }, [debouncedSearchTerm])
 
   return (
     <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
@@ -419,14 +413,19 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
               />
             }
             enableSearch
-            handleSearch={handleSearch}
+            handleSearch={debouncedSearch}
+            searchValue={query}
             {...getTableProps()}
           >
             <Table.Head>
-              {headerGroups?.map((headerGroup) => (
-                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((col) => (
+              {headerGroups?.map((headerGroup, index) => (
+                <Table.HeadRow
+                  key={index}
+                  {...headerGroup.getHeaderGroupProps()}
+                >
+                  {headerGroup.headers.map((col, index) => (
                     <Table.HeadCell
+                      key={index}
                       className="w-[100px]"
                       {...col.getHeaderProps()}
                     >
@@ -437,10 +436,11 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
               ))}
             </Table.Head>
             <Table.Body {...getTableBodyProps()}>
-              {rows.map((row) => {
+              {rows.map((row, index) => {
                 prepareRow(row)
                 return (
                   <Table.Row
+                    key={index}
                     color={"inherit"}
                     linkTo={row.original.id}
                     {...row.getRowProps()}
