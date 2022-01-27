@@ -1,6 +1,8 @@
+import clsx from "clsx"
 import { navigate } from "gatsby"
-import _ from "lodash"
+import { capitalize } from "lodash"
 import { useAdminOrder } from "medusa-react"
+import moment from "moment"
 import React, { useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import ReactJson from "react-json-view"
@@ -9,7 +11,11 @@ import { ReactComponent as ExternalLink } from "../../../assets/svg/external-lin
 import Avatar from "../../../components/atoms/avatar"
 import Button from "../../../components/button"
 import Dropdown from "../../../components/dropdown"
+import Badge from "../../../components/fundamentals/badge"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
+import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
+import EditIcon from "../../../components/fundamentals/icons/edit-icon"
+import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import Spinner from "../../../components/spinner"
@@ -254,84 +260,6 @@ const gatherFulfillments = (order) => {
   return toReturn
 }
 
-const PaymentDetails = ({ order }) => {
-  let manualRefund = 0
-  let swapRefund = 0
-  let returnRefund = 0
-
-  let swapAmount = 0
-
-  if (order?.refunds?.length) {
-    order.refunds.forEach((ref) => {
-      if (ref.reason === "other" || ref.reason === "discount") {
-        manualRefund += ref.amount
-      }
-      if (ref.reason === "return") {
-        returnRefund += ref.amount
-      }
-      if (ref.reason === "swap") {
-        swapRefund += ref.amount
-      }
-    })
-  }
-
-  if (order?.swaps?.length) {
-    swapAmount = _.sum(order.swaps.map((el) => el.difference_due))
-  }
-
-  return (
-    <Flex>
-      <Box flex={"0 20%"} pl={3} pr={5}>
-        {!!swapAmount && (
-          <Text pt={2} color="gray">
-            Total for swaps
-          </Text>
-        )}
-        {!!manualRefund && (
-          <Text pt={2} color="gray">
-            Refunded (manual)
-          </Text>
-        )}
-        {!!returnRefund && (
-          <Text pt={2} color="gray">
-            Refunded (returns)
-          </Text>
-        )}
-        <Text pt={2}>Net paid</Text>
-      </Box>
-      <Box px={3}>
-        {!!swapAmount && (
-          <Flex pt={2}>
-            <AlignedDecimal currency={order.currency_code} value={swapAmount} />
-          </Flex>
-        )}
-        {!!manualRefund && (
-          <Flex pt={2}>
-            <AlignedDecimal
-              currency={order.currency_code}
-              value={-manualRefund}
-            />
-          </Flex>
-        )}
-        {!!returnRefund && (
-          <Flex pt={2}>
-            <AlignedDecimal
-              currency={order.currency_code}
-              value={-returnRefund}
-            />
-          </Flex>
-        )}
-        <Flex pt={2}>
-          <AlignedDecimal
-            currency={order.currency_code}
-            value={order.paid_total - order.refunded_total}
-          />
-        </Flex>
-      </Box>
-    </Flex>
-  )
-}
-
 const OrderDetails = ({ id }) => {
   const [swapToFulfill, setSwapToFulfill] = useState(false)
   const [claimToFulfill, setClaimToFulfill] = useState(false)
@@ -440,56 +368,6 @@ const OrderDetails = ({ id }) => {
   }
 
   const events = buildTimeline(order, notifications, notes)
-
-  const decidePaymentButton = (paymentStatus) => {
-    const isSystemPayment = order?.payments?.some(
-      (p) => p.provider_id === "system"
-    )
-
-    const shouldShowNotice =
-      (paymentStatus === "awaiting" && isSystemPayment && !systemPaymentMenu) ||
-      (paymentStatus === "requires_action" &&
-        isSystemPayment &&
-        !systemPaymentMenu)
-
-    switch (true) {
-      case paymentStatus === "captured" ||
-        paymentStatus === "partially_refunded": {
-        return {
-          type: "primary",
-          label: "Refund",
-          onClick: () => setShowRefund(!showRefund),
-        }
-      }
-      case shouldShowNotice: {
-        return {
-          label: "Capture",
-          onClick: () => setSystemPaymentMenu(true),
-        }
-      }
-      case paymentStatus === "awaiting" ||
-        paymentStatus === "requires_action": {
-        return {
-          label: "Capture",
-          onClick: () => {
-            setCaptureLoading(true)
-            capturePayment()
-              .then(() => {
-                toaster("Succesfully captured payment", "success")
-                setCaptureLoading(true)
-              })
-              .catch((error) => {
-                toaster(getErrorMessage(error), "error")
-                setCaptureLoading(true)
-              })
-          },
-          isLoading: captureLoading,
-        }
-      }
-      default:
-        break
-    }
-  }
 
   const createNote = () => {
     Medusa.notes
@@ -640,13 +518,25 @@ const OrderDetails = ({ id }) => {
 
   const fulfillments = gatherFulfillments(order)
 
-  const DisplayTotal = ({ totalAmount, totalTitle }) => (
-    <div className="flex justify-between mt-4">
-      <div className="inter-small-regular text-grey-90">{totalTitle}</div>
+  const DisplayTotal = ({
+    totalAmount,
+    totalTitle,
+    subtitle = undefined,
+    totalColor = "text-grey-90",
+  }) => (
+    <div className="flex justify-between mt-4 items-center">
+      <div className="flex flex-col">
+        <div className="inter-small-regular text-grey-90">{totalTitle}</div>
+        {subtitle && (
+          <div className="inter-small-regular text-grey-50 mt-1">
+            {subtitle}
+          </div>
+        )}
+      </div>
       <div className="flex">
-        <div className="inter-small-regular text-grey-50 mr-3">
+        <div className={clsx(`inter-small-regular mr-3`, totalColor)}>
           {formatAmountWithSymbol({
-            amount: newOrder?.total,
+            amount: totalAmount,
             currency: newOrder?.currency_code,
             digits: 2,
             tax: newOrder?.tax_rate,
@@ -659,12 +549,63 @@ const OrderDetails = ({ id }) => {
     </div>
   )
 
+  if (!newOrder) {
+    return null
+  }
+
+  const OrderStatusComponent = () => {
+    switch (newOrder?.status) {
+      case "completed":
+        return <StatusDot title="Published" variant="success" />
+      case "pending":
+        return <StatusDot title="Processing" variant="default" />
+      case "canceled":
+        return <StatusDot title="Proposed" variant="warning" />
+      case "requires_action":
+        return <StatusDot title="Rejected" variant="danger" />
+      default:
+        return null
+    }
+  }
+
+  const PaymentStatusComponent = () => {
+    switch (newOrder?.payment_status) {
+      case "captured":
+        return <StatusDot title="Paid" variant="success" />
+      case "awaiting":
+        return <StatusDot title="Awaiting" variant="default" />
+      case "canceled":
+        return <StatusDot title="Canceled" variant="danger" />
+      case "requires_action":
+        return <StatusDot title="Requires Action" variant="danger" />
+      default:
+        return null
+    }
+  }
+
+  const FulfillmentStatusComponent = () => {
+    switch (newOrder?.fulfillment_status) {
+      case "shipped":
+        return <StatusDot title="Shipped" variant="success" />
+      case "fulfilled":
+        return <StatusDot title="Fulfilled" variant="warning" />
+      case "canceled":
+        return <StatusDot title="Canceled" variant="danger" />
+      case "partially_fulfilled":
+        return <StatusDot title="Partially fulfilled" variant="warning" />
+      case "requires_action":
+        return <StatusDot title="Requires Action" variant="danger" />
+      default:
+        return null
+    }
+  }
+
   return (
     <div>
       <Breadcrumb
-        currentPage={"Customer Details"}
-        previousBreadcrumb={"Customers"}
-        previousRoute="/a/customers"
+        currentPage={"Order Details"}
+        previousBreadcrumb={"Orders"}
+        previousRoute="/a/orders"
       />
       <div className="flex space-x-4">
         <div className="flex flex-col w-2/3 h-full">
@@ -672,6 +613,7 @@ const OrderDetails = ({ id }) => {
             className={"w-full mb-4 min-h-[200px]"}
             title="Order #2414"
             subtitle="29 January 2022, 23:01"
+            status={<OrderStatusComponent />}
             actionables={[
               {
                 label: "Cancel Order",
@@ -687,33 +629,39 @@ const OrderDetails = ({ id }) => {
                 <div className="inter-smaller-regular text-grey-50 mb-1">
                   Email
                 </div>
-                {/* <div>{moment(customer?.created_at).format("DD MMM YYYY")}</div> */}
-                <div>{"oli@medusajs.com"}</div>
+                <div>{newOrder?.email}</div>
               </div>
               <div className="flex flex-col pl-6">
                 <div className="inter-smaller-regular text-grey-50 mb-1">
                   Phone
                 </div>
-                <div>{"+45 27 82 62 03"}</div>
+                <div>{newOrder?.shipping_address?.phone || ""}</div>
               </div>
               <div className="flex flex-col pl-6">
                 <div className="inter-smaller-regular text-grey-50 mb-1">
                   Payment
                 </div>
-                <div>{"Stripe"}</div>
+                <div>
+                  {newOrder?.payments
+                    ?.map((p) => capitalize(p.provider_id))
+                    .join(", ")}
+                </div>
               </div>
             </div>
           </BodyCard>
           <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Summary">
             <div className="mt-6">
               {newOrder?.items?.map((item, i) => (
-                <div className="flex justify-between">
-                  <div className="flex">
-                    <div className="h-[48px] w-[35px] mr-4">
-                      <img src={item.thumbnail} className="rounded-rounded" />
+                <div className="flex justify-between mb-1 h-[64px] py-2 hover:bg-grey-5 rounded-rounded">
+                  <div className="flex space-x-4 justify-center">
+                    <div className="flex h-[48px] w-[36px]">
+                      <img
+                        src={item.thumbnail}
+                        className="rounded-rounded object-cover"
+                      />
                     </div>
-                    <div className="flex flex-col w-full">
-                      <span className="inter-small-regular text-grey-90">
+                    <div className="flex flex-col justify-center">
+                      <span className="inter-small-regular text-grey-90 max-w-[225px] truncate">
                         {item.title}
                       </span>
                       <span className="inter-small-regular text-grey-50">
@@ -721,8 +669,8 @@ const OrderDetails = ({ id }) => {
                       </span>
                     </div>
                   </div>
-                  <div className="flex">
-                    <div className="flex space-x-6 mr-3">
+                  <div className="flex  items-center">
+                    <div className="flex small:space-x-2 space-x-6 mr-3">
                       <div className="inter-small-regular text-grey-50">
                         {formatAmountWithSymbol({
                           amount: item.unit_price,
@@ -753,20 +701,41 @@ const OrderDetails = ({ id }) => {
                 totalAmount={newOrder?.subtotal}
                 totalTitle={"Subtotal"}
               />
+              {newOrder.discounts?.map((discount, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between mt-4 items-center"
+                >
+                  <div className="flex inter-small-regular text-grey-90 items-center">
+                    Discount:{" "}
+                    <Badge className="ml-3" variant="denomination">
+                      {discount.code}
+                    </Badge>
+                  </div>
+                  <div className="inter-small-regular text-grey-90">
+                    -
+                    {formatAmountWithSymbol({
+                      amount: newOrder?.total,
+                      currency: newOrder?.currency_code || "",
+                      digits: 2,
+                      tax: newOrder?.tax_rate,
+                    })}
+                  </div>
+                </div>
+              ))}
               <DisplayTotal
                 totalAmount={newOrder?.shipping_total}
                 totalTitle={"Shipping"}
               />
               <DisplayTotal
                 totalAmount={newOrder?.tax_total}
-                totalTitle={`Tax @ ${newOrder?.tax_rate}%`}
+                totalTitle={`Tax`}
               />
-
-              <div className="flex justify-between mt-4">
+              <div className="flex justify-between mt-4 items-center">
                 <div className="inter-small-regular text-grey-90">Total</div>
                 <div className="inter-xlarge-semibold text-grey-90">
                   {formatAmountWithSymbol({
-                    amount: newOrder?.subtotal,
+                    amount: newOrder?.total,
                     currency: newOrder?.currency_code || "",
                     digits: 2,
                     tax: newOrder?.tax_rate,
@@ -775,20 +744,62 @@ const OrderDetails = ({ id }) => {
               </div>
             </div>
           </BodyCard>
-          <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Payment">
+          <BodyCard
+            className={"w-full mb-4 min-h-0 h-auto"}
+            title="Payment"
+            status={<PaymentStatusComponent />}
+            actionables={[
+              {
+                label: "Capture Payment",
+                variant: "normal",
+                onClick: () => console.log("Capture order"),
+              },
+            ]}
+          >
             <div className="mt-6">
               {newOrder?.payments.map((payment) => (
-                <DisplayTotal
-                  totalAmount={payment?.amount}
-                  totalTitle={payment.id}
-                />
+                <div className="flex flex-col">
+                  <DisplayTotal
+                    totalAmount={payment?.amount}
+                    totalTitle={payment.id}
+                    subtitle={`${moment(payment?.created_at).format(
+                      "DD MMM YYYY hh:mm"
+                    )}`}
+                  />
+                  {!!payment.amount && (
+                    <div className="flex justify-between mt-4">
+                      <div className="flex">
+                        <div className="text-grey-40 mr-2">
+                          <CornerDownRightIcon />
+                        </div>
+                        <div className="inter-small-regular text-grey-90">
+                          Refunded
+                        </div>
+                      </div>
+                      <div className="flex">
+                        <div className="inter-small-regular text-grey-90 mr-3">
+                          -
+                          {formatAmountWithSymbol({
+                            amount: newOrder?.total,
+                            currency: newOrder?.currency_code,
+                            digits: 2,
+                            tax: newOrder?.tax_rate,
+                          })}
+                        </div>
+                        <div className="inter-small-regular text-grey-50">
+                          {newOrder.currency_code.toUpperCase()}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
               <div className="flex justify-between mt-4">
                 <div className="inter-small-semibold text-grey-90">
                   Total Paid
                 </div>
                 <div className="flex">
-                  <div className="inter-small-regular text-grey-90 mr-3">
+                  <div className="inter-small-semibold text-grey-90 mr-3">
                     {formatAmountWithSymbol({
                       amount: newOrder?.total,
                       currency: newOrder?.currency_code,
@@ -806,6 +817,25 @@ const OrderDetails = ({ id }) => {
           <BodyCard
             className={"w-full mb-4 min-h-0 h-auto"}
             title="Fulfillment"
+            status={<FulfillmentStatusComponent />}
+            actionables={[
+              {
+                label: "Create fulfillment",
+                icon: <CancelIcon />,
+                onClick: () => console.log("Create"),
+              },
+              {
+                label: "Mark as shipped",
+                icon: <CancelIcon />,
+                onClick: () => console.log("Shipped"),
+              },
+              {
+                label: "Cancel Fulfullment",
+                icon: <CancelIcon />,
+                variant: "danger",
+                onClick: () => console.log("Cancel Fulfillment"),
+              },
+            ]}
           >
             <div className="mt-6">
               {newOrder?.shipping_methods.map((method) => (
@@ -835,7 +865,18 @@ const OrderDetails = ({ id }) => {
               ))}
             </div>
           </BodyCard>
-          <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Customer">
+          <BodyCard
+            className={"w-full mb-4 min-h-0 h-auto"}
+            title="Customer"
+            actionables={[
+              {
+                label: "Edit Customer",
+                icon: <EditIcon />,
+                onClick: () => console.log("Edit Customer"),
+              },
+              {},
+            ]}
+          >
             <div className="mt-6">
               <div className="flex w-full space-x-4 items-center">
                 <div className="flex w-[40px] h-[40px] ">
@@ -860,32 +901,63 @@ const OrderDetails = ({ id }) => {
                   <div className="inter-small-regular text-grey-50 mb-1">
                     Contact
                   </div>
-                  <div>{newOrder?.email}</div>
+                  <div className="flex flex-col inter-small-regular">
+                    <span>{newOrder?.email}</span>
+                    <span>{newOrder?.shipping_address?.phone || ""}</span>
+                  </div>
                 </div>
                 <div className="flex flex-col pl-6">
                   <div className="inter-small-regular text-grey-50 mb-1">
                     Shipping
                   </div>
-                  <div className="flex flex-col pl-6">
+                  <div className="flex flex-col inter-small-regular">
                     <span>
                       {newOrder?.shipping_address.address_1}{" "}
                       {newOrder?.shipping_address.address_2}
                     </span>
+                    <span>
+                      {newOrder?.shipping_address.city}
+                      {", "}
+                      {newOrder?.shipping_address?.province || ""}
+                      {newOrder?.shipping_address?.postal_code}{" "}
+                      {newOrder?.shipping_address?.country_code?.toUpperCase()}
+                    </span>
                   </div>
                 </div>
                 <div className="flex flex-col pl-6">
                   <div className="inter-small-regular text-grey-50 mb-1">
-                    Shipping
+                    Billing
                   </div>
-                  <div className="flex flex-col pl-6">
-                    <span>
-                      {newOrder?.billing_address.address_1}{" "}
-                      {newOrder?.billing_address.address_2}
-                    </span>
+                  <div className="flex flex-col inter-small-regular">
+                    {newOrder?.billing_address ? (
+                      <>
+                        <span>
+                          {newOrder?.billing_address.address_1}{" "}
+                          {newOrder?.billing_address.address_2}
+                        </span>
+                        <span>
+                          {newOrder?.billing_address.city}
+                          {", "}
+                          {newOrder?.billing_address?.province || ""}
+                          {newOrder?.billing_address?.postal_code}{" "}
+                          {newOrder?.billing_address?.country_code?.toUpperCase()}
+                        </span>
+                      </>
+                    ) : (
+                      "No billing address"
+                    )}
                   </div>
                 </div>
               </div>
             </div>
+          </BodyCard>
+          <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Raw Order">
+            <ReactJson
+              style={{ marginTop: "15px" }}
+              name={false}
+              collapsed={true}
+              src={newOrder!}
+            />
           </BodyCard>
         </div>
         <BodyCard title="Timeline" className="w-1/3">

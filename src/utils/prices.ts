@@ -53,6 +53,7 @@ export const extractOptionPrice = (price, region) => {
  * that should be used to calculate the persited and display amount.
  */
 function getDecimalDigits(currency: string) {
+  console.log(currency)
   const divisionDigits = currencies[currency.toUpperCase()].decimal_digits
   return Math.pow(10, divisionDigits)
 }
