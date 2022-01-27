@@ -25,16 +25,16 @@ const SortingIcon: React.FC<SortingIconProps> = ({
       <path
         d="M4.66602 10L7.99935 13.3333L11.3327 10"
         stroke={descendingColor || color}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M4.66602 6.00008L7.99935 2.66675L11.3327 6.00008"
         stroke={ascendingColor || color}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )
