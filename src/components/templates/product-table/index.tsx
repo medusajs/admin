@@ -183,11 +183,11 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   const filtersOnLoad = qs.parse(window.location.search)
 
   if (!filtersOnLoad.offset) {
-    filtersOnLoad.offset = 0
+    filtersOnLoad.offset = offset
   }
 
   if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 14
+    filtersOnLoad.limit = limit
   }
 
   useEffect(() => {
@@ -313,15 +313,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
           </div>
         ),
       },
-      // TODO: INSERT WITH MORE ADVANCED QUERIES
-      // {
-      //   accessor: "col",
-      //   Header: "Total Sales",
-      // },
-      // {
-      //   Header: "Total Revenue",
-      //   accessor: "col-2",
-      // },
       {
         accessor: "col-3",
         Header: (
@@ -598,7 +589,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
             limit={limit}
             offset={offset}
             pageSize={offset + rows.length}
-            title="Customers"
+            title="Products"
             currentPage={pageIndex}
             pageCount={pageCount}
             nextPage={handleNext}
