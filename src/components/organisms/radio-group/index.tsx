@@ -14,16 +14,10 @@ type RadioGroupItemProps = {
 
 type RadioGroupSimpleItemProps = {
   label: string
-} & RadioGroupPrimitive.RadioGroupItemProps
+} & RadioGroupPrimitive.RadioGroupItemProps &
+  React.RefAttributes<HTMLButtonElement>
 
-const RadioGroup: React.FC<RadioGroupProps> & {
-  Item: React.FC<RadioGroupItemProps>
-  SimpleItem: React.FC<RadioGroupSimpleItemProps>
-} = ({ children, ...rest }) => {
-  return (
-    <RadioGroupPrimitive.Root {...rest}>{children}</RadioGroupPrimitive.Root>
-  )
-}
+const Root = RadioGroupPrimitive.Root
 
 const Item = ({
   label,
@@ -79,7 +73,9 @@ const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
 }) => {
   return (
     <label
-      className="flex items-center mr-large last:mr-0"
+      className={clsx("flex items-center mr-large last:mr-0", {
+        ["opacity-50 select-none pointer-events-none"]: rest.disabled,
+      })}
       htmlFor={rest.value}
     >
       <RadioGroupPrimitive.Item
@@ -104,7 +100,4 @@ const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
   )
 }
 
-RadioGroup.Item = Item
-RadioGroup.SimpleItem = SimpleItem
-
-export default RadioGroup
+export default { Root, Item, SimpleItem }

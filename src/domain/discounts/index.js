@@ -1,30 +1,27 @@
-import React, { useEffect, useRef, useState, useContext } from "react"
-import qs from "query-string"
 import { Router } from "@reach/router"
-import { Text, Box, Flex } from "rebass"
-import New from "./new"
-import Details from "./details"
-
-import useMedusa from "../../hooks/use-medusa"
-
+import { Checkbox, Label } from "@rebass/forms"
+import { navigate } from "gatsby"
+import qs from "query-string"
+import React, { useContext, useEffect, useRef, useState } from "react"
+import { Box, Flex, Text } from "rebass"
+import Button from "../../components/button"
+import Badge from "../../components/fundamentals/badge"
+import Spinner from "../../components/spinner"
 import {
+  BadgdeCellContent,
+  DefaultCellContent,
   Table,
   TableBody,
+  TableDataCell,
   TableHead,
   TableHeaderCell,
-  TableRow,
-  TableDataCell,
-  DefaultCellContent,
-  BadgdeCellContent,
   TableHeaderRow,
+  TableRow,
 } from "../../components/table"
-import Spinner from "../../components/spinner"
-import Badge from "../../components/fundamentals/badge"
-import { navigate } from "gatsby"
-import Button from "../../components/button"
-import { Checkbox, Input, Label } from "@rebass/forms"
-import { decideBadgeColor } from "../../utils/decide-badge-color"
 import { InterfaceContext } from "../../context/interface"
+import useMedusa from "../../hooks/use-medusa"
+import Edit from "./details"
+import New from "./new"
 
 const DiscountIndex = () => {
   const filtersOnLoad = qs.parse(window.location.search)
@@ -56,7 +53,7 @@ const DiscountIndex = () => {
 
   const searchRef = useRef(null)
 
-  const searchQuery = q => {
+  const searchQuery = (q) => {
     setOffset(0)
     const baseUrl = qs.parseUrl(window.location.href).url
 
@@ -113,7 +110,7 @@ const DiscountIndex = () => {
     })
   }
 
-  const handlePagination = direction => {
+  const handlePagination = (direction) => {
     const updatedOffset =
       direction === "next"
         ? parseInt(offset) + parseInt(limit)
@@ -264,7 +261,7 @@ const Discounts = () => {
   return (
     <Router>
       <DiscountIndex path="/" />
-      <Details path=":id" />
+      <Edit path=":id" />
       <New path="new" />
     </Router>
   )

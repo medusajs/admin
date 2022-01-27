@@ -72,18 +72,18 @@ const Regions = () => {
                 <Spinner size="large" variant="secondary" />
               </div>
             ) : (
-              <RadioGroup
+              <RadioGroup.Root
                 value={selectedRegion}
                 onValueChange={setSelectedRegion}
               >
-                {regions.map(r => {
+                {regions.map((r) => {
                   const providers = `Payment providers: ${
                     r.payment_providers
-                      .map(pp => paymentProvidersMapper(pp.id).label)
+                      .map((pp) => paymentProvidersMapper(pp.id).label)
                       .join(", ") || "not configured"
                   } - Fulfillment providers: ${
                     r.fulfillment_providers
-                      .map(fp => fulfillmentProvidersMapper(fp.id).label)
+                      .map((fp) => fulfillmentProvidersMapper(fp.id).label)
                       .join(", ") || "not configured"
                   }`
                   return (
@@ -92,7 +92,7 @@ const Regions = () => {
                       sublabel={
                         r.countries.length
                           ? `(${r.countries
-                              .map(c => c.display_name)
+                              .map((c) => c.display_name)
                               .join(", ")})`
                           : null
                       }
@@ -103,7 +103,7 @@ const Regions = () => {
                     ></RadioGroup.Item>
                   )
                 })}
-              </RadioGroup>
+              </RadioGroup.Root>
             )}
           </BodyCard>
           {selectedRegion && (
