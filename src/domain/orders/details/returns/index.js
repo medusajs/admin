@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react"
 import { Text, Flex, Box } from "rebass"
-import { Radio } from "@rebass/forms"
 import { useForm } from "react-hook-form"
 
-import Modal from "../../../../components/modal"
-import CurrencyInput from "../../../../components/currency-input"
+import Table from "../../../../components/molecules/table"
+import Modal from "../../../../components/molecules/modal"
+import CurrencyInput from "../../../../components/organisms/currency-input"
 import Input from "../../../../components/molecules/input"
-import Button from "../../../../components/button"
-import Select from "../../../../components/select"
+import Button from "../../../../components/fundamentals/button"
+import Select from "../../../../components/molecules/select"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
+import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
+import clsx from "clsx"
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
@@ -37,7 +40,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
   }, [order])
 
-  const handleReturnToggle = item => {
+  const handleReturnToggle = (item) => {
     const id = item.id
     const idx = toReturn.indexOf(id)
     if (idx !== -1) {
@@ -61,13 +64,17 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
   }
 
-  const isLineItemCanceled = item => {
+  const isLineItemCanceled = (item) => {
     const { swap_id, claim_order_id } = item
     const travFind = (col, id) =>
-      col.filter(f => f.id == id && f.canceled_at).length > 0
+      col.filter((f) => f.id == id && f.canceled_at).length > 0
 
-    if (swap_id) return travFind(order.swaps, swap_id)
-    if (claim_order_id) return travFind(order.claims, claim_order_id)
+    if (swap_id) {
+      return travFind(order.swaps, swap_id)
+    }
+    if (claim_order_id) {
+      return travFind(order.claims, claim_order_id)
+    }
     return false
   }
 
@@ -84,7 +91,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }, [])
 
   useEffect(() => {
-    const items = toReturn.map(t => allItems.find(i => i.id === t))
+    const items = toReturn.map((t) => allItems.find((i) => i.id === t))
     const total =
       items.reduce((acc, next) => {
         return (
@@ -101,23 +108,33 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
   }, [toReturn, quantities, shippingPrice])
 
-  const handleQuantity = (e, item) => {
-    const element = e.target
+  // onChange={(e) => handleQuantity(e, item)}
+  //                           value={}
+  //                           min={1}
+  //                           max={item.quantity - item.returned_quantity}
+  const handleQuantity = (change, item) => {
+    if (
+      (item.quantity - item.returned_quantity === quantities[item.id] &&
+        change > 0) ||
+      (quantities[item.id] === 1 && change < 0)
+    ) {
+      return
+    }
     const newQuantities = {
       ...quantities,
-      [item.id]: parseInt(element.value),
+      [item.id]: quantities[item.id] + change,
     }
 
     setQuantities(newQuantities)
   }
 
   const onSubmit = () => {
-    const items = toReturn.map(t => ({
+    const items = toReturn.map((t) => ({
       item_id: t,
       quantity: quantities[t],
     }))
 
-    let data = {
+    const data = {
       items,
       refund: Math.round(refundAmount),
       no_notification:
@@ -136,12 +153,12 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       return onReturn(data)
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
-        .catch(error => toaster(getErrorMessage(error), "error"))
+        .catch((error) => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }
 
-  const handleRefundUpdated = e => {
+  const handleRefundUpdated = (e) => {
     setRefundEdited(true)
     const element = e.target
     const value = element.value
@@ -170,11 +187,11 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
   }
 
-  const handleShippingSelected = e => {
-    const element = e.target
-    if (element.value !== "Add a shipping method") {
-      setShippingMethod(element.value)
-      const method = shippingOptions.find(o => element.value === o.id)
+  const handleShippingSelected = (selectedItem) => {
+    console.log(selectedItem)
+    if (selectedItem.value !== "Add a shipping method") {
+      setShippingMethod(selectedItem.value)
+      const method = shippingOptions.find((o) => selectedItem.value === o.id)
       setShippingPrice(method.amount * (1 + order.tax_rate / 100))
     } else {
       setShippingMethod()
@@ -182,7 +199,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
   }
 
-  const handleUpdateShippingPrice = e => {
+  const handleUpdateShippingPrice = (e) => {
     const element = e.target
     const value = element.value
     if (value >= 0) {
@@ -191,164 +208,177 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }
 
   return (
-    <Modal onClick={onDismiss}>
+    <Modal handleClose={onDismiss}>
       <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
-        <Modal.Header>Request Return</Modal.Header>
+        <Modal.Header handleClose={onDismiss}>
+          <h2 class="inter-xlarge-semibold">Request Return</h2>
+        </Modal.Header>
         <Modal.Content flexDirection="column">
-          <Box mb={3}>
-            <Text px={2}>Items to return</Text>
-            <Flex
-              sx={{
-                borderBottom: "hairline",
-              }}
-              justifyContent="space-between"
-              fontSize={1}
-              py={2}
-            >
-              <Box width={30} px={2} py={1}>
+          <div className="mb-7">
+            <h3 className="inter-base-semibold">Items to return</h3>
+            <Table>
+              <Table.HeadRow className="text-grey-50 inter-small-semibold">
+                <Table.HeadCell colspan={2}>Product Details</Table.HeadCell>
+                <Table.HeadCell className="text-right pr-8">
+                  Quantity
+                </Table.HeadCell>
+                <Table.HeadCell className="text-right">
+                  Refundable
+                </Table.HeadCell>
+                <Table.HeadCell></Table.HeadCell>
+              </Table.HeadRow>
+              {allItems.map((item) => {
+                // Only show items that have not been returned,
+                // and aren't canceled
+                if (
+                  item.returned_quantity === item.quantity ||
+                  isLineItemCanceled(item)
+                ) {
+                  return
+                }
+
+                return (
+                  <Table.Row className="last:border-b-0">
+                    <Table.Cell>
+                      <div className="ml-1 h-full flex items-center">
+                        <input
+                          checked={toReturn.includes(item.id)}
+                          onChange={() => handleReturnToggle(item)}
+                          type="checkbox"
+                        />
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="min-w-[240px] flex py-2">
+                        <div className="w-[30px] h-[40px] ">
+                          <img
+                            className="h-full w-full object-cover rounded"
+                            src={item.thumbnail}
+                          />
+                        </div>
+                        <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
+                          <span>
+                            <span className="text-grey-90">{item.title}</span>{" "}
+                            test
+                          </span>
+                          <span>{item.variant.title}</span>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell className="text-right w-32 pr-8">
+                      {toReturn.includes(item.id) ? (
+                        <div className="flex w-full text-right justify-end text-grey-50 ">
+                          <span
+                            onClick={() => handleQuantity(-1, item)}
+                            className="w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 mr-2"
+                          >
+                            <MinusIcon size={16} />
+                          </span>
+                          <span>{quantities[item.id] || ""}</span>
+                          <span
+                            onClick={() => handleQuantity(1, item)}
+                            className={clsx(
+                              "w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 ml-2"
+                            )}
+                          >
+                            <PlusIcon size={16} />
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-grey-40">
+                          {item.quantity - item.returned_quantity}
+                        </span>
+                      )}
+                    </Table.Cell>
+                    <Table.Cell className="text-right">
+                      {(item.refundable / 100).toFixed(2)}
+                    </Table.Cell>
+                    <Table.Cell className="text-right text-grey-40 pr-1">
+                      {order.currency_code.toUpperCase()}
+                    </Table.Cell>
+                  </Table.Row>
+                )
+              })}
+            </Table>
+          </div>
+
+          <div>
+            <h3 className="inter-base-semibold">Shipping</h3>
+            <Select
+              label="Shipping Method"
+              placeholder={"Add a shipping method"}
+              value={shippingMethod}
+              onChange={handleShippingSelected}
+              options={shippingOptions.map((o) => ({
+                label: o.name,
+                value: o.id,
+              }))}
+            />
+            {shippingMethod && (
+              <Flex>
+                <Box px={2} fontSize={1}>
+                  Shipping price (incl. taxes)
+                </Box>
+                <Box px={2} width={"170px"}>
+                  <CurrencyInput
+                    currency={order.currency_code}
+                    value={shippingPrice / 100}
+                    onChange={handleUpdateShippingPrice}
+                  />
+                </Box>
+              </Flex>
+            )}
+          </div>
+
+          {refundable >= 0 && (
+            <div className="flex justify-between mt-10">
+              <span className="inter-base-semibold">Total Refund</span>
+              <CurrencyInput
+                currency={order.currency_code}
+                value={refundAmount / 100}
+                onChange={handleRefundUpdated}
+              />
+            </div>
+          )}
+        </Modal.Content>
+        <Modal.Footer>
+          <div className="flex w-full justify-between">
+            <Flex>
+              <Box px={0} py={1}>
                 <input
-                  checked={returnAll}
-                  onChange={handleReturnAll}
+                  id="noNotification"
+                  name="noNotification"
+                  checked={!noNotification}
+                  onChange={() => setNoNotification(!noNotification)}
                   type="checkbox"
                 />
               </Box>
-              <Box width={400} px={2} py={1}>
-                Details
-              </Box>
-              <Box width={75} px={2} py={1}>
-                Quantity
-              </Box>
-              <Box width={110} px={2} py={1}>
-                Refundable
+              <Box px={2} py={1}>
+                <Text fontSize={1}>Send notifications</Text>
               </Box>
             </Flex>
-            {allItems.map(item => {
-              // Only show items that have not been returned,
-              // and aren't canceled
-              if (
-                item.returned_quantity === item.quantity ||
-                isLineItemCanceled(item)
-              ) {
-                return
-              }
-
-              return (
-                <Flex
-                  key={item.id}
-                  justifyContent="space-between"
-                  fontSize={2}
-                  py={2}
-                >
-                  <Box width={30} px={2} py={1}>
-                    <input
-                      checked={toReturn.includes(item.id)}
-                      onChange={() => handleReturnToggle(item)}
-                      type="checkbox"
-                    />
-                  </Box>
-                  <Box width={400} px={2} py={1}>
-                    <Text fontSize={1} lineHeight={"14px"}>
-                      {item.title}
-                    </Text>
-                    <Text fontSize={0}>{item.variant.sku}</Text>
-                  </Box>
-                  <Box width={75} px={2} py={1}>
-                    {toReturn.includes(item.id) ? (
-                      <Input
-                        type="number"
-                        onChange={e => handleQuantity(e, item)}
-                        value={quantities[item.id] || ""}
-                        min={1}
-                        max={item.quantity - item.returned_quantity}
-                      />
-                    ) : (
-                      item.quantity - item.returned_quantity
-                    )}
-                  </Box>
-                  <Box width={110} px={2} py={1}>
-                    <Text fontSize={1}>
-                      {(item.refundable / 100).toFixed(2)}{" "}
-                      {order.currency_code.toUpperCase()}
-                    </Text>
-                  </Box>
-                </Flex>
-              )
-            })}
-          </Box>
-
-          <Box mb={3}>
-            <Text>Shipping method</Text>
-            <Flex w={1} pt={2} justifyContent="space-between">
-              <Select
-                mr={3}
-                height={"32px"}
-                fontSize={1}
-                placeholder={"Add a shipping method"}
-                value={shippingMethod}
-                onChange={handleShippingSelected}
-                options={shippingOptions.map(o => ({
-                  label: o.name,
-                  value: o.id,
-                }))}
-              />
-              {shippingMethod && (
-                <Flex>
-                  <Box px={2} fontSize={1}>
-                    Shipping price (incl. taxes)
-                  </Box>
-                  <Box px={2} width={"170px"}>
-                    <CurrencyInput
-                      currency={order.currency_code}
-                      value={shippingPrice / 100}
-                      onChange={handleUpdateShippingPrice}
-                    />
-                  </Box>
-                </Flex>
-              )}
-            </Flex>
-          </Box>
-
-          {refundable >= 0 && (
-            <Flex
-              sx={{
-                borderTop: "hairline",
-              }}
-              w={1}
-              mt={3}
-              pt={3}
-              justifyContent="flex-end"
-            >
-              <Box px={2} fontSize={1}>
-                To refund
-              </Box>
-              <Box px={2} width={"170px"}>
-                <CurrencyInput
-                  currency={order.currency_code}
-                  value={refundAmount / 100}
-                  onChange={handleRefundUpdated}
-                />
-              </Box>
-            </Flex>
-          )}
-        </Modal.Content>
-        <Modal.Footer justifyContent="space-between">
-          <Flex>
-            <Box px={0} py={1}>
-              <input
-                id="noNotification"
-                name="noNotification"
-                checked={!noNotification}
-                onChange={() => setNoNotification(!noNotification)}
-                type="checkbox"
-              />
-            </Box>
-            <Box px={2} py={1}>
-              <Text fontSize={1}>Send notifications</Text>
-            </Box>
-          </Flex>
-          <Button loading={submitting} type="submit" variant="primary">
-            Complete
-          </Button>
+            <div className="flex gap-x-xsmall">
+              <Button
+                loading={submitting}
+                onClick={() => onDismiss()}
+                className="w-[112px]"
+                type="submit"
+                size="small"
+                variant="ghost"
+              >
+                Back
+              </Button>
+              <Button
+                loading={submitting}
+                className="w-[112px]"
+                type="submit"
+                size="small"
+                variant="primary"
+              >
+                Submit
+              </Button>
+            </div>
+          </div>
         </Modal.Footer>
       </Modal.Body>
     </Modal>
