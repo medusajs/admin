@@ -161,7 +161,6 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }
 
   const handleShippingSelected = (selectedItem) => {
-    console.log(selectedItem)
     if (selectedItem.value !== "Add a shipping method") {
       setShippingMethod(selectedItem)
       const method = shippingOptions.find((o) => selectedItem.value === o.id)
@@ -184,7 +183,6 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
   }
 
-  console.log(shippingMethod)
   return (
     <Modal handleClose={onDismiss}>
       <Modal.Body>
@@ -439,18 +437,6 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                 <InfoTooltip content="Notify customer of created return" />
               </span>
             </div>
-            {/* <div px={0} py={1}>
-              <input
-                id="noNotification"
-                name="noNotification"
-                checked={!noNotification}
-                onChange={() => setNoNotification(!noNotification)}
-                type="checkbox"
-              />
-            </div>
-            <div px={2} py={1}>
-              <Text fontSize={1}>Send notifications</Text>
-            </div> */}
             <div className="flex gap-x-xsmall">
               <Button
                 loading={submitting}
