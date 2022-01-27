@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react"
-import { Box, Flex } from "rebass"
 import styled from "@emotion/styled"
+import React, { useRef, useState } from "react"
+import { Box, Flex } from "rebass"
 import Typography from "../typography"
 
 const ENTER_KEY = 13
