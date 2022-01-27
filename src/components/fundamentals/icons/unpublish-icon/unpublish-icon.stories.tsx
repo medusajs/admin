@@ -15,7 +15,7 @@ export default {
   },
 } as ComponentMeta<typeof UnpublishIcon>
 
-const Template = args => <UnpublishIcon {...args} />
+const Template = (args) => <UnpublishIcon {...args} />
 
 export const Icon = Template.bind({})
 Icon.args = {
