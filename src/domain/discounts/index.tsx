@@ -40,7 +40,7 @@ const DiscountIndex = () => {
 
 const Discounts = () => {
   return (
-    <Router className="h-full">
+    <Router>
       <DiscountIndex path="/" />
       <Details path=":id" />
       <New path="new" />
