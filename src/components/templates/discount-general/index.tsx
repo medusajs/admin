@@ -13,12 +13,6 @@ import Textarea from "../../molecules/textarea"
 import BodyCard from "../../organisms/body-card"
 import RadioGroup from "../../organisms/radio-group"
 
-export enum DiscountRuleType {
-  FIXED = "fixed",
-  PERCENTAGE = "percentage",
-  FREE_SHIPPING = "free_shipping",
-}
-
 type DiscountGeneralProps = {
   isEdit: boolean
   isDisabled: boolean
@@ -88,14 +82,16 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
       className="h-auto"
       actionables={isEdit ? editActions : undefined}
       status={
-        <StatusSelector
-          isDraft={isDisabled}
-          activeState="Active"
-          draftState="Draft"
-          onChange={() => {
-            if (onStatusChange) onStatusChange()
-          }}
-        />
+        isEdit ? (
+          <StatusSelector
+            isDraft={isDisabled}
+            activeState="Active"
+            draftState="Draft"
+            onChange={() => {
+              if (onStatusChange) onStatusChange()
+            }}
+          />
+        ) : undefined
       }
     >
       <div className="mt-large">

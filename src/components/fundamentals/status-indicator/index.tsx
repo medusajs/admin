@@ -3,7 +3,7 @@ import React from "react"
 
 type StatusIndicatorProps = {
   title: string
-  variant: "primary" | "danger" | "warning" | "success" | "draft" | "active"
+  variant: "primary" | "danger" | "warning" | "success" | "active" | "default"
 } & React.HTMLAttributes<HTMLDivElement>
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({
@@ -17,8 +17,8 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
     "bg-rose-50": variant === "danger",
     "bg-yellow-50": variant === "warning",
     "bg-violet-60": variant === "primary",
-    "bg-grey-40": variant === "draft",
     "bg-emerald-40": variant === "active",
+    "bg-grey-40": variant === "default",
   })
   return (
     <div

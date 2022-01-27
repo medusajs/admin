@@ -1,4 +1,5 @@
 import { extractProductOptions, extractRegionOptions } from "./extract-options"
+import { displayAmount } from "./prices"
 
 type DiscountState = {
   code: string
@@ -13,7 +14,7 @@ type DiscountState = {
   ends_at?: Date
   starts_at: Date
   valid_duration: string
-  regions: { name: string; id: string }[]
+  regions: { name: string; id: string; currency_code: string }[]
   is_dynamic: boolean
   is_disabled: boolean
 }
@@ -90,10 +91,19 @@ export const hydrateDiscount = ({
 
   setValue("code", isEdit ? discount.code : `${discount.code}_COPY`)
   setValue("usage_limit", discount.usage_limit)
-  setValue("rule.value", discount.rule.value)
   setValue("rule.description", discount.rule.description)
   setAllocationItem(discount.rule.allocation === "item")
   setStartDate(discount.starts_at)
+
+  if (discount.rule.type === "fixed") {
+    const displayPrice = displayAmount(
+      discount.regions[0].currency_code,
+      discount.rule.value
+    )
+    setValue("rule.value", displayPrice)
+  } else {
+    setValue("rule.value", discount.rule.value)
+  }
 
   if (setIsDisabled) {
     setIsDisabled(discount.is_disabled)
@@ -129,6 +139,7 @@ export const hydrateDiscount = ({
     setDiscountType("percentage")
   } else {
     setDiscountType("fixed")
+
     if (isEdit && setRegionsDisabled) {
       setRegionsDisabled(true)
     }

@@ -18,6 +18,7 @@ import {
   extractRegionOptions,
 } from "../../../utils/extract-options"
 import { hydrateDiscount } from "../../../utils/hydrate-discount"
+import { persistedPrice } from "../../../utils/prices"
 import { DiscountFormType } from "../types"
 
 type NewProps = RouteComponentProps & PageProps
@@ -66,12 +67,22 @@ const New: React.FC<NewProps> = ({ location }) => {
 
   const methods = useForm()
 
+  const getPersistedPrice = (price: number) => {
+    if (!selectedRegions.length || !regions) return
+    const region = regions.find((r) => r.id === selectedRegions[0].value)
+    if (!region) return
+    return persistedPrice(region.currency_code, price)
+  }
+
   const buildPayload = (data: DiscountFormType, isDraft: boolean) => {
     return {
       ...data,
       rule: {
         ...data.rule,
-        value: parseFloat(data.rule.value),
+        value:
+          discountType === "fixed"
+            ? getPersistedPrice(parseFloat(data.rule.value))
+            : parseFloat(data.rule.value),
         type: discountType,
         allocation: allocationItem ? "item" : "total",
         valid_for: appliesToAll

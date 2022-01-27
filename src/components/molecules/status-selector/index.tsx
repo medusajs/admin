@@ -23,7 +23,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
           <Button variant="ghost" size="small">
             <StatusIndicator
               title={isDraft ? draftState : activeState}
-              variant={isDraft ? "draft" : "active"}
+              variant={isDraft ? "default" : "active"}
             />
           </Button>
         </DropdownMenu.Trigger>
@@ -41,7 +41,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
               >
                 <StatusIndicator
                   title={!isDraft ? draftState : activeState}
-                  variant={!isDraft ? "draft" : "active"}
+                  variant={!isDraft ? "default" : "active"}
                 />
               </Button>
             }

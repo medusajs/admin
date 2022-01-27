@@ -22,6 +22,7 @@ import {
   extractRegionOptions,
 } from "../../../utils/extract-options"
 import { hydrateDiscount } from "../../../utils/hydrate-discount"
+import { persistedPrice } from "../../../utils/prices"
 import { DiscountFormType } from "../types"
 
 type EditProps = {
@@ -150,6 +151,13 @@ const Edit: React.FC<EditProps> = ({ id }) => {
     )
   }
 
+  const getPersistedPrice = (price: number) => {
+    if (!selectedRegions.length || !regions) return
+    const region = regions.find((r) => r.id === selectedRegions[0].value)
+    if (!region) return
+    return persistedPrice(region.currency_code, price)
+  }
+
   const submit = (data: DiscountFormType) => {
     if (!discount) return
 
@@ -158,7 +166,10 @@ const Edit: React.FC<EditProps> = ({ id }) => {
       rule: {
         ...data.rule,
         id: discount.rule.id,
-        value: parseFloat(data.rule.value), // TODO: fix validation that prevents undefined value when type is free_shipping
+        value:
+          discountType === "fixed"
+            ? getPersistedPrice(parseFloat(data.rule.value))
+            : parseFloat(data.rule.value), // TODO: fix validation that prevents undefined value when type is free_shipping
         type: isFreeShipping ? "free_shipping" : discountType,
         allocation: allocationItem ? "item" : "total",
         valid_for: appliesToAll ? [] : selectedProducts.map((p) => p.value),
