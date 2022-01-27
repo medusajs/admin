@@ -350,7 +350,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   </CurrencyInput>
                   <Button
                     onClick={handleRemoveCustomShippingPrice}
-                    className="w-8 h-8 ml-8"
+                    className="w-8 h-8 ml-8 text-grey-40"
                     variant="ghost"
                     size="small"
                   >
@@ -373,6 +373,17 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
           {refundable >= 0 && (
             <div className="mt-10">
+              {!useCustomShippingPrice && shippingMethod && (
+                <div className="flex mb-4 inter-small-regular justify-between">
+                  <span>Shipping</span>
+                  <div>
+                    {displayAmount(order.currency_code, shippingPrice)}{" "}
+                    <span className="text-grey-40 ml-3">
+                      {order.currency_code.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              )}
               <div className="flex inter-base-semibold justify-between w-full">
                 <span>Total Refund</span>
                 <div className="flex items-center">
