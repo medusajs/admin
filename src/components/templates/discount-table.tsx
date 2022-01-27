@@ -35,7 +35,7 @@ const getDiscountStatus = (discount) => {
       return <StatusDot title="Active" variant="success" />
     }
   }
-  return <StatusDot title="Draft" variant="primary" />
+  return <StatusDot title="Draft" variant="default" />
 }
 
 const getDiscountAmount = (discount) => {
