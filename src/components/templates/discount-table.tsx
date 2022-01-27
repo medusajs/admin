@@ -18,7 +18,8 @@ import { useAdminCreateDiscount, useAdminDiscounts } from "medusa-react"
 import useToaster from "../../hooks/use-toaster"
 
 const getDiscountStatus = (discount) => {
-  if (!discount.disabled) {
+  console.log(discount)
+  if (!discount.is_disabled) {
     const date = new Date()
     if (new Date(discount.starts_at) > date) {
       return <StatusDot title="Scheduled" variant="warning" />
