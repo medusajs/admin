@@ -135,6 +135,10 @@ const AmountInput: React.FC<AmountInputProps> = ({
   onChange,
 }) => {
   const { currencyInfo } = useContext(CurrencyContext)
+
+  const [loading, setLoading] = useState(true)
+  useEffect(() => setLoading(false), [])
+
   const [value, setValue] = useState<string | undefined>(
     amount ? `${amount}` : undefined
   )
@@ -157,6 +161,10 @@ const AmountInput: React.FC<AmountInputProps> = ({
    * Returns the persited amount for the current currency
    */
   useEffect(() => {
+    if (loading) {
+      return
+    }
+
     let persistedAmount: number | undefined = undefined
 
     if (currencyInfo && value) {
