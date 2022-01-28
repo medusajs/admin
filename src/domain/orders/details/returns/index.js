@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import Table from "../../../../components/molecules/table"
 import Modal from "../../../../components/molecules/modal"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import Button from "../../../../components/fundamentals/button"
@@ -7,21 +6,17 @@ import Select from "../../../../components/molecules/select"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
 import { getErrorMessage } from "../../../../utils/error-messages"
-import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
-import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
-import clsx from "clsx"
-import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import { displayAmount } from "../../../../utils/prices"
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import Spinner from "../../../../components/atoms/spinner"
-import { useAdminShippingOptions } from "medusa-react"
+import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
+import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
-  const [returnAll, setReturnAll] = useState(false)
   const [refundable, setRefundable] = useState(0)
   const [refundAmount, setRefundAmount] = useState(0)
   const [toReturn, setToReturn] = useState([])
@@ -41,44 +36,6 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       setAllItems(filterItems(order, false))
     }
   }, [order])
-
-  const handleReturnToggle = (item) => {
-    const id = item.id
-    const idx = toReturn.indexOf(id)
-    if (idx !== -1) {
-      const newReturns = [...toReturn]
-      newReturns.splice(idx, 1)
-      setToReturn(newReturns)
-
-      if (returnAll) {
-        setReturnAll(false)
-      }
-    } else {
-      const newReturns = [...toReturn, id]
-      setToReturn(newReturns)
-
-      const newQuantities = {
-        ...quantities,
-        [item.id]: item.quantity - item.returned_quantity,
-      }
-
-      setQuantities(newQuantities)
-    }
-  }
-
-  const isLineItemCanceled = (item) => {
-    const { swap_id, claim_order_id } = item
-    const travFind = (col, id) =>
-      col.filter((f) => f.id == id && f.canceled_at).length > 0
-
-    if (swap_id) {
-      return travFind(order.swaps, swap_id)
-    }
-    if (claim_order_id) {
-      return travFind(order.claims, claim_order_id)
-    }
-    return false
-  }
 
   useEffect(() => {
     Medusa.shippingOptions
@@ -107,22 +64,6 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
     setRefundAmount(total)
   }, [toReturn, quantities, shippingPrice])
-
-  const handleQuantity = (change, item) => {
-    if (
-      (item.quantity - item.returned_quantity === quantities[item.id] &&
-        change > 0) ||
-      (quantities[item.id] === 1 && change < 0)
-    ) {
-      return
-    }
-    const newQuantities = {
-      ...quantities,
-      [item.id]: quantities[item.id] + change,
-    }
-
-    setQuantities(newQuantities)
-  }
 
   const onSubmit = () => {
     const items = toReturn.map((t) => ({
@@ -171,11 +112,12 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
   }
 
-  const handleRemoveCustomShippingPrice = () => {
-    const method = shippingOptions.find((o) => shippingMethod.value === o.id)
-    setShippingPrice(method.amount * (1 + order.tax_rate / 100))
-    setUseCustomShippingPrice(false)
-  }
+  useEffect(() => {
+    if (!useCustomShippingPrice && shippingMethod) {
+      const method = shippingOptions.find((o) => shippingMethod.value === o.id)
+      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
+    }
+  }, [useCustomShippingPrice, shippingMethod])
 
   const handleUpdateShippingPrice = (value) => {
     if (value >= 0) {
@@ -192,126 +134,14 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
         <Modal.Content flexDirection="column">
           <div className="mb-7">
             <h3 className="inter-base-semibold">Items to return</h3>
-            <Table>
-              <Table.HeadRow className="text-grey-50 inter-small-semibold">
-                <Table.HeadCell colspan={2}>Product Details</Table.HeadCell>
-                <Table.HeadCell className="text-right pr-8">
-                  Quantity
-                </Table.HeadCell>
-                <Table.HeadCell className="text-right">
-                  Refundable
-                </Table.HeadCell>
-                <Table.HeadCell></Table.HeadCell>
-              </Table.HeadRow>
-              <Table.Body>
-                {allItems.map((item) => {
-                  // Only show items that have not been returned,
-                  // and aren't canceled
-                  if (
-                    item.returned_quantity === item.quantity ||
-                    isLineItemCanceled(item)
-                  ) {
-                    return
-                  }
-                  const checked = toReturn.includes(item.id)
-                  return (
-                    <>
-                      <Table.Row
-                        className={clsx("border-b-grey-0 hover:bg-grey-0")}
-                      >
-                        <Table.Cell>
-                          <div className="items-center ml-1 h-full flex">
-                            <div
-                              onClick={() => handleReturnToggle(item)}
-                              className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border cursor-pointer rounded-base ${
-                                checked && "bg-violet-60"
-                              }`}
-                            >
-                              <span className="self-center">
-                                {checked && <CheckIcon size={16} />}
-                              </span>
-                            </div>
-
-                            <input
-                              className="hidden"
-                              checked={checked}
-                              tabIndex={-1}
-                              onChange={() => handleReturnToggle(item)}
-                              type="checkbox"
-                            />
-                          </div>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <div className="min-w-[240px] flex py-2">
-                            <div className="w-[30px] h-[40px] ">
-                              <img
-                                className="h-full w-full object-cover rounded"
-                                src={item.thumbnail}
-                              />
-                            </div>
-                            <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
-                              <span>
-                                <span className="text-grey-90">
-                                  {item.title}
-                                </span>{" "}
-                                test
-                              </span>
-                              <span>{item.variant.title}</span>
-                            </div>
-                          </div>
-                        </Table.Cell>
-                        <Table.Cell className="text-right w-32 pr-8">
-                          {toReturn.includes(item.id) ? (
-                            <div className="flex w-full text-right justify-end text-grey-50 ">
-                              <span
-                                onClick={() => handleQuantity(-1, item)}
-                                className="w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 mr-2"
-                              >
-                                <MinusIcon size={16} />
-                              </span>
-                              <span>{quantities[item.id] || ""}</span>
-                              <span
-                                onClick={() => handleQuantity(1, item)}
-                                className={clsx(
-                                  "w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 ml-2"
-                                )}
-                              >
-                                <PlusIcon size={16} />
-                              </span>
-                            </div>
-                          ) : (
-                            <span className="text-grey-40">
-                              {item.quantity - item.returned_quantity}
-                            </span>
-                          )}
-                        </Table.Cell>
-                        <Table.Cell className="text-right">
-                          {(item.refundable / 100).toFixed(2)}
-                        </Table.Cell>
-                        <Table.Cell className="text-right text-grey-40 pr-1">
-                          {order.currency_code.toUpperCase()}
-                        </Table.Cell>
-                      </Table.Row>
-                      {checked && (
-                        <Table.Row className="last:border-b-0 hover:bg-grey-0">
-                          <Table.Cell colspan={5}>
-                            <div className="w-full flex justify-end">
-                              <Button
-                                variant="ghost"
-                                size="small"
-                                className="border border-grey-20"
-                              >
-                                Select Reason
-                              </Button>
-                            </div>
-                          </Table.Cell>
-                        </Table.Row>
-                      )}
-                    </>
-                  )
-                })}
-              </Table.Body>
-            </Table>
+            <RMASelectProductTable
+              order={order}
+              allItems={allItems}
+              toReturn={toReturn}
+              setToReturn={setToReturn}
+              quantities={quantities}
+              setQuantities={setQuantities}
+            />
           </div>
 
           <div>
@@ -333,42 +163,15 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                 }))}
               />
             )}
-            {shippingMethod &&
-              (useCustomShippingPrice ? (
-                <div className="flex items-center">
-                  <CurrencyInput
-                    readOnly
-                    className="mt-4 w-full"
-                    size="small"
-                    currentCurrency={order.currency_code}
-                  >
-                    <CurrencyInput.AmountInput
-                      label={"Amount"}
-                      amount={shippingPrice}
-                      onChange={handleUpdateShippingPrice}
-                    />
-                  </CurrencyInput>
-                  <Button
-                    onClick={handleRemoveCustomShippingPrice}
-                    className="w-8 h-8 ml-8 text-grey-40"
-                    variant="ghost"
-                    size="small"
-                  >
-                    <TrashIcon size={20} />
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex w-full mt-4 justify-end">
-                  <Button
-                    onClick={() => setUseCustomShippingPrice(true)}
-                    variant="ghost"
-                    className="border border-grey-20"
-                    size="small"
-                  >
-                    Add custom price
-                  </Button>
-                </div>
-              ))}
+            {shippingMethod && (
+              <RMAShippingPrice
+                useCustomShippingPrice={useCustomShippingPrice}
+                shippingPrice={shippingPrice}
+                currency_code={order.currency_code}
+                updateShippingPrice={handleUpdateShippingPrice}
+                setUseCustomShippingPrice={setUseCustomShippingPrice}
+              />
+            )}
           </div>
 
           {refundable >= 0 && (
