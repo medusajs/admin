@@ -11,7 +11,7 @@ export type GiftCardVariant = {
 
 type TagGridProps = {
   tags: string[]
-  badgeVariant: "primary" | "danger" | "success" | "warning" | "denomination"
+  badgeVariant: "primary" | "danger" | "success" | "warning" | "default"
 }
 
 const TagGrid: React.FC<TagGridProps> = ({ tags, badgeVariant }) => {
@@ -30,7 +30,7 @@ const TagGrid: React.FC<TagGridProps> = ({ tags, badgeVariant }) => {
           </Badge>
         )
       })}
-      {remainder > 0 && <Badge variant="denomination">+{remainder}</Badge>}
+      {remainder > 0 && <Badge variant="default">+{remainder}</Badge>}
     </div>
   )
 }

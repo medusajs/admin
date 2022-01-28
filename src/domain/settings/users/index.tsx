@@ -13,18 +13,18 @@ const Users: React.FC = () => {
   const [showInviteModal, setShowInviteModal] = useState(false)
 
   const triggerRefetch = () => {
-    setShouldRefetch(prev => prev + 1)
+    setShouldRefetch((prev) => prev + 1)
   }
 
   useEffect(() => {
     Medusa.users
       .list()
-      .then(res => res.data)
-      .then(userData => {
+      .then((res) => res.data)
+      .then((userData) => {
         Medusa.invites
           .list()
-          .then(res => res.data)
-          .then(inviteData => {
+          .then((res) => res.data)
+          .then((inviteData) => {
             setUsers(userData.users)
             setInvites(inviteData.invites)
           })
@@ -44,7 +44,7 @@ const Users: React.FC = () => {
   ]
 
   return (
-    <div className="flex flex-col grow h-full">
+    <div className="flex flex-col h-full">
       <div className="w-full flex flex-col grow">
         <BreadCrumb
           previousRoute="/a/settings"
