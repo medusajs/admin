@@ -11,7 +11,7 @@ type RMASelectProductTableProps = {
   allItems: any[]
   toReturn: any[]
   setToReturn: (items: any[]) => void
-  quantities: any[]
+  quantities: any
   setQuantities: (quantities: any[]) => void
 }
 

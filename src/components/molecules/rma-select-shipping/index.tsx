@@ -5,7 +5,7 @@ import CurrencyInput from "../../organisms/currency-input"
 
 type RMAShippingPriceProps = {
   useCustomShippingPrice: boolean
-  shippingPrice: number
+  shippingPrice: number | undefined
   currency_code: string
   updateShippingPrice: (price: number | undefined) => void
   setUseCustomShippingPrice: (useCustomShippingPrice: boolean) => void

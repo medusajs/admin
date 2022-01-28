@@ -26,10 +26,10 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [shippingLoading, setShippingLoading] = useState(true)
   const [shippingOptions, setShippingOptions] = useState([])
   const [noNotification, setNoNotification] = useState(order.no_notification)
-  const [shippingPrice, setShippingPrice] = useState()
-  const [shippingMethod, setShippingMethod] = useState()
+  const [shippingPrice, setShippingPrice] = useState<number>()
+  const [shippingMethod, setShippingMethod] = useState(null)
 
-  const [allItems, setAllItems] = useState([])
+  const [allItems, setAllItems] = useState<any[]>([])
 
   useEffect(() => {
     if (order) {
@@ -107,7 +107,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       const method = shippingOptions.find((o) => selectedItem.value === o.id)
       setShippingPrice(method.amount * (1 + order.tax_rate / 100))
     } else {
-      setShippingMethod()
+      setShippingMethod(null)
       setShippingPrice(0)
     }
   }
@@ -138,7 +138,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
               order={order}
               allItems={allItems}
               toReturn={toReturn}
-              setToReturn={setToReturn}
+              setToReturn={(items) => setToReturn(items)}
               quantities={quantities}
               setQuantities={setQuantities}
             />
@@ -154,7 +154,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
               <Select
                 label="Shipping Method"
                 className="mt-2"
-                placeholder={"Add a shipping method"}
+                overrideStrings={{ search: "Add a shipping method" }}
                 value={shippingMethod}
                 onChange={handleShippingSelected}
                 options={shippingOptions.map((o) => ({
