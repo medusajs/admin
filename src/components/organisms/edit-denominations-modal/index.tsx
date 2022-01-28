@@ -15,7 +15,7 @@ export type PriceType = {
 }
 
 type EditDenominationsModalProps = {
-  denominations: PriceType[]
+  defaultDenominations: PriceType[]
   handleClose: () => void
   onSubmit: (denominations: PriceType[]) => void
   defaultNewAmount?: number
@@ -27,35 +27,53 @@ type FormValues = {
   denominations: PriceType[]
 }
 
+const augmentWithId = (obj) => ({ ...obj, id: obj.id ? obj.id : uuidv4() })
+
+const augmentWithIds = (list) => {
+  return list.map(augmentWithId)
+}
+
 const EditDenominationsModal = ({
-  denominations,
+  defaultDenominations = [],
   onSubmit,
   handleClose,
   currencyCodes,
   defaultNewAmount = 1000,
   defaultNewCurrencyCode = "USD",
 }: EditDenominationsModalProps) => {
-  const { control } = useForm<FormValues>({
-    defaultValues: {
-      denominations,
-    },
-  })
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "denominations",
-    keyName: "native_key",
-  })
+  const [denominations, setDenominations] = React.useState(
+    augmentWithIds(defaultDenominations)
+  )
 
   const onAmountChange = (index) => {
     return (amount) => {
-      fields[index] = { ...fields[index], amount }
+      const newDenominations = denominations.slice()
+      newDenominations[index] = { ...newDenominations[index], amount }
+      setDenominations(newDenominations)
     }
   }
 
   const onCurrencyChange = (index) => {
     return (currencyCode) => {
-      fields[index] = { ...fields[index], currency_code: currencyCode }
+      const newDenominations = denominations.slice()
+      newDenominations[index] = {
+        ...newDenominations[index],
+        currency_code: currencyCode,
+      }
+      setDenominations(newDenominations)
     }
+  }
+
+  const onClickDelete = (index) => {
+    return () => {
+      const newDenominations = denominations.slice()
+      newDenominations.splice(index, 1)
+      setDenominations(newDenominations)
+    }
+  }
+
+  const appendDenomination = (newDenomination) => {
+    setDenominations([...denominations, augmentWithId(newDenomination)])
   }
 
   return (
@@ -72,7 +90,7 @@ const EditDenominationsModal = ({
               </label>
               <InfoTooltip content={"Helpful denominations"} />
             </div>
-            {fields.map((field, index) => {
+            {denominations.map((field, index) => {
               return (
                 <div
                   key={field.id}
@@ -81,8 +99,8 @@ const EditDenominationsModal = ({
                   <div className="flex-1">
                     <CurrencyInput
                       currencyCodes={currencyCodes}
-                      onChange={onCurrencyChange(index)}
                       currentCurrency={field.currency_code}
+                      onChange={onCurrencyChange(index)}
                     >
                       <CurrencyInput.AmountInput
                         label="Amount"
@@ -93,7 +111,7 @@ const EditDenominationsModal = ({
                   </div>
                   <button className="ml-2xlarge">
                     <TrashIcon
-                      onClick={() => remove(index)}
+                      onClick={onClickDelete(index)}
                       className="text-grey-40"
                       size="20"
                     />
@@ -105,10 +123,9 @@ const EditDenominationsModal = ({
           <div className="mt-large">
             <Button
               onClick={() =>
-                append({
-                  amount: defaultNewAmount,
+                appendDenomination({
                   currency_code: defaultNewCurrencyCode,
-                  id: uuidv4(),
+                  amount: defaultNewAmount,
                 })
               }
               type="button"
@@ -134,7 +151,7 @@ const EditDenominationsModal = ({
               variant="primary"
               size="small"
               className="mr-2 min-w-[130px] justify-center"
-              onClick={() => onSubmit(fields)}
+              onClick={() => onSubmit(denominations)}
             >
               Save
             </Button>
