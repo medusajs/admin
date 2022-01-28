@@ -1,36 +1,29 @@
 import { RouteComponentProps, useLocation } from "@reach/router"
 import { debounce, isEmpty } from "lodash"
 import { useAdminOrders } from "medusa-react"
-import moment from "moment"
 import qs from "query-string"
-import React, { useEffect, useMemo, useState } from "react"
-import ReactCountryFlag from "react-country-flag"
+import React, { useEffect, useMemo, useReducer, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import { formatAmountWithSymbol } from "../../../utils/prices"
 import { removeNullish } from "../../../utils/remove-nullish"
-import { relativeDateFormatToTimestamp } from "../../../utils/time"
+import { formatDateFilter } from "../../../utils/time"
 import Spinner from "../../atoms/spinner"
-import StatusDot from "../../fundamentals/status-indicator"
-import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import Table, { TablePagination } from "../../molecules/table"
 import OrderFilters from "../order-filter-dropdown"
-
-const getColor = (index: number): string => {
-  const colors = [
-    "bg-fuschia-40",
-    "bg-pink-40",
-    "bg-orange-40",
-    "bg-teal-40",
-    "bg-cyan-40",
-    "bg-blue-40",
-    "bg-indigo-40",
-  ]
-  return colors[index % colors.length]
-}
+import useOrderTableColums from "./use-order-column"
 
 type OrderFilter = {
   open: boolean
-  filter: string | null
+  filter?: string | string[] | null
+}
+
+type OrderFiltersType = {
+  limit: number
+  offset: number
+  fulfillmentStatus?: OrderFilter
+  paymentStatus?: OrderFilter
+  date?: OrderFilter
+  status?: OrderFilter
+  q: string
 }
 
 const defaultQueryProps = {
@@ -39,186 +32,124 @@ const defaultQueryProps = {
     "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
 }
 
+const initialState: OrderFiltersType = {
+  limit: 14,
+  offset: 0,
+  status: { open: false, filter: null },
+  fulfillmentStatus: { open: false, filter: null },
+  paymentStatus: { open: false, filter: null },
+  date: { open: false, filter: null },
+  q: "",
+}
+
+function orderFiltersReducer(state, action) {
+  switch (action.type) {
+    case "status":
+      return { ...state, status: { ...action.payload } }
+    case "payment":
+      return { ...state, paymentStatus: { ...action.payload } }
+    case "fulfillment":
+      return { ...state, fulfillmentStatus: { ...action.payload } }
+    case "date":
+      return { ...state, date: { ...action.payload } }
+    case "query":
+      return { ...state, q: action.payload }
+    case "limit":
+      return { ...state, limit: action.payload }
+    case "offset":
+      return { ...state, offset: action.payload }
+    case "reset":
+      return {
+        status: { open: false, filter: null },
+        fulfillmentStatus: { open: false, filter: null },
+        paymentStatus: { open: false, filter: null },
+        date: { open: false, filter: null },
+      }
+    default:
+      return state
+  }
+}
+
 const OrderTable: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
 
-  const [currentPage, setCurrentPage] = useState(0)
-  const [filters, setFilters] = useState({
+  const filtersOnLoad = qs.parse(location.search, {
+    arrayFormat: "bracket",
+  })
+
+  const parseUrlFilter = (urlVal) => {
+    if (!urlVal) {
+      return { open: false, filter: null }
+    }
+
+    if (Array.isArray(urlVal)) {
+      return { open: true, filter: urlVal[0] }
+    } else {
+      return { open: true, filter: urlVal }
+    }
+  }
+
+  const initialOrderFilterState = {
     limit: 14,
     offset: 0,
-  })
+    status: parseUrlFilter(filtersOnLoad.status),
+    fulfillmentStatus: parseUrlFilter(filtersOnLoad.fulfillment_status),
+    paymentStatus: parseUrlFilter(filtersOnLoad.payment_status),
+    date: parseUrlFilter(filtersOnLoad.created_at),
+  }
+
+  const [state, dispatch] = useReducer(orderFiltersReducer, initialState)
+
+  const [currentPage, setCurrentPage] = useState(0)
+  // const [filters, setFilters] = useState<OrderFiltersType>(
+  //   initialOrderFilterState
+  // )
   const [query, setQuery] = useState<string>()
-  const [statusFilter, setStatusFilter] = useState<OrderFilter>({
-    open: false,
-    filter: null,
-  })
-  const [fulfillmentFilter, setFulfillmentFilter] = useState<OrderFilter>({
-    open: false,
-    filter: null,
-  })
-  const [paymentFilter, setPaymentFilter] = useState<OrderFilter>({
-    open: false,
-    filter: null,
-  })
-  const [dateFilter, setDateFilter] = useState<OrderFilter>({
-    open: false,
-    filter: null,
-  })
 
   useEffect(() => {
-    const filtersOnLoad = qs.parse(location.search, {
-      arrayFormat: "bracket",
-    })
-
-    if (filtersOnLoad.status?.length) {
-      setStatusFilter({
-        open: true,
-        filter: filtersOnLoad.status[0],
-      })
-    }
-
-    if (filtersOnLoad.fulfillment_status?.length) {
-      setFulfillmentFilter({
-        open: true,
-        filter: filtersOnLoad.fulfillment_status[0],
-      })
-    }
-    if (filtersOnLoad.payment_status?.length) {
-      setPaymentFilter({
-        open: true,
-        filter: filtersOnLoad.payment_status[0],
-      })
-    }
-
-    if (filtersOnLoad.q) {
-      setQuery(filtersOnLoad.q as string)
-    }
-
-    // TODO: Check if created at is in query on load
-    if (filtersOnLoad.created_at) {
-      setDateFilter({
-        open: true,
-        filter: filtersOnLoad.created_at,
-      })
-    }
-
-    setFilters({
-      ...filters,
-      limit: filtersOnLoad?.limit ? parseInt(filtersOnLoad?.limit) : 14,
-      offset: filtersOnLoad?.offset ? parseInt(filtersOnLoad?.offset) : 0,
-    })
-
-    setCurrentPage(filters.offset / filters.limit)
+    setCurrentPage(state.offset / state.limit)
   }, [])
 
   const [numPages, setNumPages] = useState(0)
 
-  const decideStatus = (status) => {
-    switch (status) {
-      case "captured":
-        return <StatusDot variant="success" title={"Paid"} />
-      case "awaiting":
-        return <StatusDot variant="warning" title={"Awaiting"} />
-      case "requires":
-        return <StatusDot variant="danger" title={"Requires action"} />
-      default:
-        return <StatusDot variant="primary" title={"N/A"} />
+  const constructFiltersFromState = () => {
+    let urlObject: any = {
+      "payment_status[]": state?.paymentStatus?.filter,
+      "fulfillment_status[]": state?.fulfillmentStatus?.filter,
+      "status[]": state?.status?.filter,
+      q: state.q,
+      limit: state?.limit || 14,
+      offset: state?.offset || 0,
     }
-  }
 
-  const columns = useMemo(
-    () => [
-      {
-        Header: "Order",
-        accessor: "display_id",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{`#${value}`}</Table.Cell>
-        ),
-      },
-      {
-        Header: "Date added",
-        accessor: "created_at",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>
-            {moment(value).format("DD MMM YYYY")}
-          </Table.Cell>
-        ),
-      },
-      {
-        Header: "Customer",
-        accessor: "shipping_address",
-        Cell: ({ row, cell: { value }, index }) => (
-          <Table.Cell key={index}>
-            <CustomerAvatarItem
-              customer={{
-                first_name: value.first_name,
-                last_name: value.last_name,
-              }}
-              color={getColor(row.index)}
-            />
-          </Table.Cell>
-        ),
-      },
-      {
-        Header: "Fulfillment",
-        accessor: "fulfillment_status",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{value}</Table.Cell>
-        ),
-      },
-      {
-        Header: "Payment status",
-        accessor: "payment_status",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{decideStatus(value)}</Table.Cell>
-        ),
-      },
-      {
-        Header: () => <div className="text-right">Total</div>,
-        accessor: "total",
-        Cell: ({ row, cell: { value }, index }) => (
-          <Table.Cell key={index}>
-            <div className="text-right">
-              {formatAmountWithSymbol({
-                amount: value,
-                currency: row.original.currency_code,
-                digits: 2,
-              })}
-            </div>
-          </Table.Cell>
-        ),
-      },
-      {
-        Header: "",
-        accessor: "currency_code",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index} className="w-[5%]">
-            <div className="text-right text-grey-40">{value.toUpperCase()}</div>
-          </Table.Cell>
-        ),
-      },
-      {
-        Header: "",
-        accessor: "country_code",
-        Cell: ({ row, index }) => (
-          <Table.Cell className="w-[5%]" key={index}>
-            <div className="flex w-full justify-end">
-              <ReactCountryFlag
-                svg
-                countryCode={row.original.shipping_address.country_code}
-              />
-            </div>
-          </Table.Cell>
-        ),
-      },
-    ],
-    []
-  )
+    if (!isEmpty(state.date.filter) && state.date.open) {
+      const dateFormatted = formatDateFilter(state.date.filter)
+
+      const dateFilters = Object.entries(dateFormatted).reduce(
+        (acc, [key, value]) => {
+          return {
+            ...acc,
+            [`created_at[${key}]`]: value,
+          }
+        },
+        {}
+      )
+
+      urlObject = {
+        ...urlObject,
+        ...dateFilters,
+      }
+    }
+
+    return removeNullish(urlObject)
+  }
 
   // Upon searching, we reset all other filters
   const handleSearch = (q) => {
     setQuery(q)
-    setFilters({ offset: 0, limit: filters.limit ?? 14 })
+    dispatch({ type: "limit", payload: 14 })
+    dispatch({ type: "offset", payload: 0 })
+    dispatch({ type: "offset", payload: 0 })
     setCurrentPage(0)
   }
 
@@ -238,13 +169,15 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const { orders, isLoading, isRefetching, count } = useAdminOrders({
     ...defaultQueryProps,
-    ...filters,
+    ...constructFiltersFromState(),
   })
 
   useEffect(() => {
-    const controlledPageCount = Math.ceil(count! / filters.limit)
+    const controlledPageCount = Math.ceil(count! / state.limit)
     setNumPages(controlledPageCount)
   }, [orders])
+
+  const [columns] = useOrderTableColums()
 
   const {
     getTableProps,
@@ -265,7 +198,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       data: orders || [],
       manualPagination: true,
       initialState: {
-        pageSize: filters.limit ?? 14,
+        pageSize: state.limit,
         pageIndex: currentPage,
       },
       pageCount: numPages,
@@ -276,32 +209,22 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const handleNext = () => {
     if (canNextPage) {
-      const newOffset = filters.offset + pageSize
-      setFilters({ ...filters, offset: newOffset })
+      const newOffset = state.offset + pageSize
+      // setFilters({ ...state, offset: newOffset })
       setCurrentPage((old) => old + 1)
-      updateUrlFromFilter({ ...filters, offset: newOffset })
+      updateUrlFromFilter({ ...state, offset: newOffset })
       nextPage()
     }
   }
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      setFilters({ ...filters, offset: filters.offset - pageSize })
+      const newOffset = state.offset - pageSize
+      // setFilters({ ...filters, offset: filters.offset - pageSize })
       setCurrentPage((old) => old - 1)
-      updateUrlFromFilter(filters)
+      updateUrlFromFilter({ ...state, offset: newOffset })
       previousPage()
     }
-  }
-
-  const formatDateFilter = (filter) => {
-    return Object.entries(filter).reduce((acc, [key, value]) => {
-      if (value.includes("|")) {
-        acc[key] = relativeDateFormatToTimestamp(value)
-      } else {
-        acc[key] = value
-      }
-      return acc
-    }, {})
   }
 
   const updateUrlFromFilter = (obj = {}) => {
@@ -317,70 +240,26 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
     if (isEmpty(queryObject)) {
       resetFilters()
-      updateUrlFromFilter({ offset: filters.offset, limit: filters.limit })
-      setFilters({ ...defaultQueryProps })
+      updateUrlFromFilter({ offset: 0, limit: 14 })
+      // setFilters({ ...defaultQueryProps })
     } else {
-      if (!searchObject.offset) {
-        searchObject.offset = 0
-      }
-
-      if (!searchObject.limit) {
-        searchObject.limit = 14
-      }
-
       updateUrlFromFilter(queryObject)
-      setFilters({ ...searchObject })
+      // setFilters({ ...searchObject })
     }
   }
 
   const submitFilters = () => {
-    let urlObject = {
-      "payment_status[]": paymentFilter.filter,
-      "fulfillment_status[]": fulfillmentFilter.filter,
-      "status[]": statusFilter.filter,
-      q: query,
-    }
-
-    if (!isEmpty(dateFilter.filter) && dateFilter.open) {
-      const dateFormatted = formatDateFilter(dateFilter.filter)
-
-      const dateFilters = Object.entries(dateFormatted).reduce(
-        (acc, [key, value]) => {
-          return {
-            ...acc,
-            [`created_at[${key}]`]: value,
-          }
-        },
-        {}
-      )
-
-      urlObject = {
-        ...urlObject,
-        ...dateFilters,
-      }
-    }
-
-    refreshWithFilters(removeNullish(urlObject))
+    const urlObject = constructFiltersFromState()
+    refreshWithFilters(urlObject)
   }
 
   const resetFilters = () => {
     handleSearch("")
-    setStatusFilter({
-      open: false,
-      filter: null,
-    })
-    setFulfillmentFilter({
-      open: false,
-      filter: null,
-    })
-    setPaymentFilter({
-      open: false,
-      filter: null,
-    })
-    setDateFilter({
-      open: false,
-      filter: null,
-    })
+    dispatch({ type: "reset" })
+  }
+
+  const setSingleFilter = (filterKey, filterVal) => {
+    dispatch({ type: filterKey, payload: filterVal })
   }
 
   const clearFilters = () => {
@@ -399,14 +278,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
           <Table
             filteringOptions={
               <OrderFilters
-                setStatusFilter={setStatusFilter}
-                statusFilter={statusFilter}
-                setFulfillmentFilter={setFulfillmentFilter}
-                fulfillmentFilter={fulfillmentFilter}
-                setPaymentFilter={setPaymentFilter}
-                paymentFilter={paymentFilter}
-                setDateFilter={setDateFilter}
-                dateFilter={dateFilter}
+                // setFilters={setFilters}
+                setSingleFilter={setSingleFilter}
+                filters={state}
                 submitFilters={submitFilters}
                 resetFilters={resetFilters}
                 clearFilters={clearFilters}
@@ -419,13 +293,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
           >
             <Table.Head>
               {headerGroups?.map((headerGroup, index) => (
-                <Table.HeadRow
-                  key={index}
-                  {...headerGroup.getHeaderGroupProps()}
-                >
-                  {headerGroup.headers.map((col, index) => (
+                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((col, headerIndex) => (
                     <Table.HeadCell
-                      key={index}
                       className="w-[100px]"
                       {...col.getHeaderProps()}
                     >
@@ -436,11 +306,10 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
               ))}
             </Table.Head>
             <Table.Body {...getTableBodyProps()}>
-              {rows.map((row, index) => {
+              {rows.map((row, rowIndex) => {
                 prepareRow(row)
                 return (
                   <Table.Row
-                    key={index}
                     color={"inherit"}
                     linkTo={row.original.id}
                     {...row.getRowProps()}
@@ -455,9 +324,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
           </Table>
           <TablePagination
             count={count!}
-            limit={filters.limit}
-            offset={filters.offset}
-            pageSize={filters.offset + rows.length}
+            limit={state.limit}
+            offset={state.offset}
+            pageSize={state.offset + rows.length}
             title="Orders"
             currentPage={pageIndex}
             pageCount={pageCount}

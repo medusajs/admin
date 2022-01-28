@@ -78,9 +78,7 @@ const FilterDropdownItem = ({
       <RadixCollapsible.Root
         className="w-full"
         open={open}
-        onOpenChange={(open) =>
-          setFilter((prevState) => ({ ...prevState, open }))
-        }
+        onOpenChange={(open) => setFilter({ filter: filters, open })}
       >
         <RadixCollapsible.Trigger
           className={clsx(
