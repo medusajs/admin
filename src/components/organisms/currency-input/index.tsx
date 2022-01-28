@@ -6,6 +6,7 @@ import { currencies, CurrencyType } from "../../../utils/currencies"
 import {
   displayAmount,
   persistedPrice,
+  getDecimalDigits,
   normalizeAmount,
 } from "../../../utils/prices"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
@@ -146,30 +147,11 @@ const AmountInput: React.FC<AmountInputProps> = ({
   const [value, setValue] = useState<string | undefined>(
     amount ? `${normalizeAmount(currencyInfo?.code, amount)}` : undefined
   )
-  console.log("value at the beg", value)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  // useEffect(() => {
-  //   inputRef.current?.dispatchEvent(new Event("blur"))
-  // }, [currencyInfo?.decimal_digits])
-
-  /**
-   * Get display amount of the current currency and amount
-   */
-  // useEffect(() => {
-  //   if (currencyInfo && amount) {
-  //     console.log("value on displayAmount", {
-  //       value: displayAmount(currencyInfo.code, amount),
-  //     })
-  //     setValue(`${displayAmount(currencyInfo.code, amount)}`)
-  //   }
-  // }, [amount, currencyInfo])
-
-  /**
-   * Returns the persited amount for the current currency
-   */
-  // useEffect(() => {
-  // }, [value, currencyInfo])
+  useEffect(() => {
+    inputRef.current?.dispatchEvent(new Event("blur"))
+  }, [currencyInfo?.decimal_digits])
 
   const handleManualValueChange = (val: number) => {
     const newValue = parseFloat(value ?? "0") + val
@@ -184,13 +166,18 @@ const AmountInput: React.FC<AmountInputProps> = ({
   const handleChange = (value) => {
     let persistedAmount: number | undefined = undefined
 
-    if (currencyInfo) {
-      const amount = parseFloat(value)
-      persistedAmount = persistedPrice(currencyInfo.code, amount)
-      setValue(`${displayAmount(currencyInfo.code, persistedAmount)}`)
+    if (!value) {
+      value = 0
     }
 
-    if (onChange) {
+    if (currencyInfo) {
+      const amount = parseFloat(value)
+      const multiplier = getDecimalDigits(currencyInfo.code)
+      persistedAmount = multiplier * amount
+      setValue(`${value}`)
+    }
+
+    if (onChange && persistedAmount) {
       onChange(persistedAmount)
     }
   }
