@@ -91,7 +91,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
           ) {
             return
           }
-          const checked = toReturn.includes(item.id)
+          const checked = !!toReturn?.includes(item.id)
           return (
             <>
               <Table.Row className={clsx("border-b-grey-0 hover:bg-grey-0")}>

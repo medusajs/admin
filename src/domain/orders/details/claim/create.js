@@ -4,7 +4,7 @@ import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
 
 import Pill from "../../../../components/pill"
-import Modal from "../../../../components/modal"
+import Modal from "../../../../components/molecules/modal"
 import ImageUpload from "../../../../components/image-upload"
 import Input from "../../../../components/molecules/input"
 import Button from "../../../../components/button"
@@ -20,8 +20,9 @@ import { ReactComponent as Edit } from "../../../../assets/svg/edit.svg"
 import { ReactSelect } from "../../../../components/react-select"
 import { extractOptionPrice } from "../../../../utils/prices"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 
-const removeNullish = obj =>
+const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
 const Cross = styled.span`
@@ -49,7 +50,7 @@ const StyledImageCard = styled(Box)`
   height: 100px;
   width: 100px;
 
-  border: ${props => (props.selected ? "1px solid #53725D" : "none")};
+  border: ${(props) => (props.selected ? "1px solid #53725D" : "none")};
 
   object-fit: contain;
 
@@ -65,7 +66,7 @@ const StyledImageBox = styled(Flex)`
   flex-wrap: wrap;
   .img-container {
     border: 1px solid black;
-    background-color: ${props => props.theme.colors.light};
+    background-color: ${(props) => props.theme.colors.light};
     height: 50px;
     width: 50px;
 
@@ -78,10 +79,10 @@ const StyledImageBox = styled(Flex)`
 `
 
 const extractPrice = (prices, order) => {
-  let price = prices.find(ma => ma.region_id === order.region_id)
+  let price = prices.find((ma) => ma.region_id === order.region_id)
 
   if (!price) {
-    price = prices.find(ma => ma.currency_code === order.currency_code)
+    price = prices.find((ma) => ma.currency_code === order.currency_code)
   }
 
   if (price) {
@@ -101,7 +102,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [noNotification, setNoNotification] = useState(order.no_notification)
   const [toPay, setToPay] = useState(0)
   const [toReturn, setToReturn] = useState({})
-  const [quantities, setQuantities] = useState({})
+  const [quantities, setQuantities] = useState([])
 
   const [itemsToAdd, setItemsToAdd] = useState([])
   const [shippingLoading, setShippingLoading] = useState(true)
@@ -127,16 +128,16 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   const addressForm = useForm()
 
-  const handleSaveAddress = data => {
+  const handleSaveAddress = (data) => {
     setShippingAddress(data.address)
     setShowAddress(false)
   }
 
-  const handleAddItemToClaim = variant => {
+  const handleAddItemToClaim = (variant) => {
     setItemsToAdd([...itemsToAdd, { ...variant, quantity: 1 }])
   }
 
-  const handleReturnToggle = item => {
+  const handleReturnToggle = (item) => {
     const id = item.id
 
     const newReturns = { ...toReturn }
@@ -156,13 +157,13 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     setToReturn(newReturns)
   }
 
-  const formatAddress = address => {
-    let addr = [address.address_1]
+  const formatAddress = (address) => {
+    const addr = [address.address_1]
     if (address.address_2) {
       addr.push(address.address_2)
     }
 
-    let city = `${address.postal_code} ${address.city}`
+    const city = `${address.postal_code} ${address.city}`
 
     return `${addr.join(", ")}, ${city}, ${address.country_code?.toUpperCase()}`
   }
@@ -175,7 +176,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     Medusa.regions.retrieve(order.region_id).then(({ data }) => {
-      setCountries(data.region.countries.map(c => c.iso_2))
+      setCountries(data.region.countries.map((c) => c.iso_2))
     })
     Medusa.shippingOptions
       .list({
@@ -190,7 +191,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     Medusa.regions.retrieve(order.region_id).then(({ data }) => {
-      setCountries(data.region.countries.map(c => c.iso_2))
+      setCountries(data.region.countries.map((c) => c.iso_2))
     })
     Medusa.shippingOptions
       .list({
@@ -240,7 +241,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     })
   }, [shippingMethod, showCustomPrice])
 
-  //useEffect(() => {
+  // useEffect(() => {
   //  const items = toReturn.map(t => order.items.find(i => i.id === t))
   //  const returnTotal =
   //    items.reduce((acc, next) => {
@@ -254,7 +255,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   //  }, 0)
 
   //  setToPay(newItemsTotal - returnTotal)
-  //}, [toReturn, quantities, shippingPrice, itemsToAdd])
+  // }, [toReturn, quantities, shippingPrice, itemsToAdd])
 
   const handleQuantity = (e, item) => {
     const element = e.target
@@ -281,7 +282,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     const data = {
       type: isReplace ? "replace" : "refund",
       claim_items,
-      additional_items: itemsToAdd.map(i => ({
+      additional_items: itemsToAdd.map((i) => ({
         variant_id: i.id,
         quantity: i.quantity,
       })),
@@ -319,7 +320,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       return onCreate(data)
         .then(() => onDismiss())
         .then(() => toaster("Successfully created claim", "success"))
-        .catch(error => toaster(getErrorMessage(error), "error"))
+        .catch((error) => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }
@@ -334,7 +335,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     setItemsToAdd(updated)
   }
 
-  const handleRemoveItem = index => {
+  const handleRemoveItem = (index) => {
     const updated = [...itemsToAdd]
     updated.splice(index, 1)
     setItemsToAdd(updated)
@@ -354,7 +355,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
           }
         }
       }
-      setQuantities(newQuantities)
+      // setQuantities(newQuantities)
       setToReturn(newReturns)
       setReturnAll(true)
     }
@@ -363,7 +364,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const handleNoteChange = (e, item) => {
     const element = e.target
 
-    setToReturn(prev => ({
+    setToReturn((prev) => ({
       ...prev,
       [item.id]: {
         ...(prev[item.id] || {}),
@@ -376,7 +377,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     Medusa.uploads.create(e.target.files).then(({ data }) => {
       const uploaded = data.uploads.map(({ url }) => url)
 
-      setToReturn(prev => ({
+      setToReturn((prev) => ({
         ...prev,
         [item.id]: {
           ...(prev[item.id] || {}),
@@ -392,7 +393,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
         ...toReturn,
         [item.id]: {
           ...(toReturn[item.id] || {}),
-          images: toReturn[item.id].images.filter(im => im !== url),
+          images: toReturn[item.id].images.filter((im) => im !== url),
         },
       })
     })
@@ -401,7 +402,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const handleReasonChange = (e, item) => {
     const element = e.target
 
-    setToReturn(prev => ({
+    setToReturn((prev) => ({
       ...prev,
       [item.id]: {
         ...(prev[item.id] || {}),
@@ -410,8 +411,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }))
   }
 
-  const handleReturnShippingSelected = so => {
-    const selectSo = returnShippingOptions.find(s => so.value === s.id)
+  const handleReturnShippingSelected = (so) => {
+    const selectSo = returnShippingOptions.find((s) => so.value === s.id)
     if (selectSo) {
       setReturnShippingMethod(selectSo)
       setReturnShippingPrice(selectSo.amount * (1 + order.tax_rate / 100))
@@ -421,8 +422,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }
   }
 
-  const handleShippingSelected = so => {
-    const selectSo = shippingOptions.find(s => so.value === s.id)
+  const handleShippingSelected = (so) => {
+    const selectSo = shippingOptions.find((s) => so.value === s.id)
     if (selectSo) {
       setShippingMethod(selectSo)
       setShippingPrice(selectSo.amount * (1 + order.tax_rate / 100))
@@ -440,7 +441,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   //   }
   // }
 
-  const handleProductSearch = val => {
+  const handleProductSearch = (val) => {
     Medusa.variants
       .list({
         q: val,
@@ -466,17 +467,30 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   ]
 
   return (
-    <Modal onClick={onDismiss}>
+    <Modal handleClose={onDismiss}>
       <Modal.Body
-        onSubmit={e => {
+        onSubmit={(e) => {
           e.preventDefault()
           onSubmit()
         }}
         as="form"
       >
-        <Modal.Header>Create Claim</Modal.Header>
-        <Modal.Content flexDirection="column">
-          <Box mb={3}>
+        <Modal.Header handleClose={onDismiss}>
+          <h2 class="inter-xlarge-semibold">Create Claim</h2>
+        </Modal.Header>
+        <Modal.Content>
+          <div>
+            <h3 className="inter-base-semibold">Items to claim</h3>
+            <RMASelectProductTable
+              order={order}
+              allItems={allItems}
+              toReturn={toReturn}
+              setToReturn={(items) => setToReturn(items)}
+              quantities={quantities}
+              setQuantities={setQuantities}
+            />
+          </div>
+          {/* <Box mb={3}>
             <Text sx={{ fontSize: 1, fontWeight: 600 }}>Items to claim</Text>
             <Flex
               sx={{
@@ -503,7 +517,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 Refundable
               </Box>
             </Flex>
-            {allItems.map(item => {
+            {allItems.map((item) => {
               // Only show items that have not been returned
               if (item.returned_quantity === item.quantity) {
                 return
@@ -535,7 +549,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                       {item.id in toReturn ? (
                         <Input
                           type="number"
-                          onChange={e => handleQuantity(e, item)}
+                          onChange={(e) => handleQuantity(e, item)}
                           value={toReturn[item.id].quantity || ""}
                           min={1}
                           max={item.quantity - item.returned_quantity}
@@ -569,7 +583,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                         fontSize={1}
                         placeholder={"Select reason"}
                         value={toReturn[item.id].reason}
-                        onChange={e => handleReasonChange(e, item)}
+                        onChange={(e) => handleReasonChange(e, item)}
                         options={reasonOptions}
                       />
                       <Box mx={3} sx={{ flex: 1 }}>
@@ -577,13 +591,13 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                           maxWidth="180px"
                           label="Note"
                           value={toReturn[item.id].note}
-                          onChange={e => handleNoteChange(e, item)}
+                          onChange={(e) => handleNoteChange(e, item)}
                         />
                       </Box>
                       <Box sx={{ flex: 1 }}>
                         <ImageUpload
                           button={toReturn[item.id].images?.length > 0}
-                          onChange={e => handleAddImage(e, item)}
+                          onChange={(e) => handleAddImage(e, item)}
                           name="files"
                           label="Images"
                         />
@@ -610,7 +624,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 </Flex>
               )
             })}
-          </Box>
+          </Box> */}
 
           <Box>
             <Text sx={{ fontSize: 1, fontWeight: 600 }}>
@@ -619,9 +633,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             <ReactSelect
               isClearable={false}
               placeholder="Select shipping..."
-              onChange={so => handleReturnShippingSelected(so)}
+              onChange={(so) => handleReturnShippingSelected(so)}
               options={
-                returnShippingOptions?.map(so => ({
+                returnShippingOptions?.map((so) => ({
                   value: so.id,
                   label: `${so.name} - ${extractOptionPrice(
                     so.amount,
@@ -662,7 +676,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                           <Input
                             type="number"
                             fontSize="12px"
-                            onChange={e =>
+                            onChange={(e) =>
                               setCustomOptionPrice({
                                 ...customOptionPrice,
                                 return: e.currentTarget.value,
@@ -729,7 +743,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                     onSearchChange={handleProductSearch}
                     searchPlaceholder={"Search by SKU, Name, etch."}
                   >
-                    {searchResults.map(s => (
+                    {searchResults.map((s) => (
                       <Flex
                         key={s.variant_id}
                         alignItems="center"
@@ -797,7 +811,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                         <Box width={75} px={2} py={1}>
                           <Input
                             type="number"
-                            onChange={e => handleToAddQuantity(e, index)}
+                            onChange={(e) => handleToAddQuantity(e, index)}
                             value={item.quantity || ""}
                             min={1}
                           />
@@ -848,9 +862,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 <ReactSelect
                   isClearable={false}
                   placeholder="Select shipping..."
-                  onChange={so => handleShippingSelected(so)}
+                  onChange={(so) => handleShippingSelected(so)}
                   options={
-                    shippingOptions?.map(so => ({
+                    shippingOptions?.map((so) => ({
                       value: so.id,
                       label: `${so.name}`,
                     })) || []
@@ -896,7 +910,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                               <Input
                                 type="number"
                                 fontSize="12px"
-                                onChange={e =>
+                                onChange={(e) =>
                                   setCustomOptionPrice({
                                     ...customOptionPrice,
                                     standard: e.currentTarget.value,
@@ -958,9 +972,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
           </Button>
         </Modal.Footer>
       </Modal.Body>
-      {showAddress && (
+      {/* {showAddress && (
         <Modal
-          onClick={e => {
+          onClick={(e) => {
             e.stopPropagation()
             setShowAddress(false)
           }}
@@ -998,7 +1012,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             </Modal.Footer>
           </Modal.Body>
         </Modal>
-      )}
+      )} */}
     </Modal>
   )
 }
