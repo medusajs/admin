@@ -165,7 +165,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   {order.currency_code.toUpperCase()}
                 </Table.Cell>
               </Table.Row>
-              {checked && (
+              {/* {checked && (
                 <Table.Row className="last:border-b-0 hover:bg-grey-0">
                   <Table.Cell colspan={5}>
                     <div className="w-full flex justify-end">
@@ -179,7 +179,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                     </div>
                   </Table.Cell>
                 </Table.Row>
-              )}
+              )} */}
             </>
           )
         })}
