@@ -211,7 +211,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
                   className="mt-2"
                   size="small"
                   currentCurrency={order.currency_code}
-                  readonly
+                  readOnly
                 >
                   <CurrencyInput.AmountInput
                     label={"Amount"}
@@ -253,7 +253,6 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
             </div>
             <div className="flex gap-x-xsmall">
               <Button
-                loading={submitting}
                 onClick={() => onDismiss()}
                 className="w-[112px]"
                 type="submit"
