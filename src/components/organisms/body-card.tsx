@@ -53,7 +53,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
             <div />
           )}
           <div className="flex items-center space-x-2">
-            {status && status}
+            {status && <div className="mr-2">{status}</div>}
             <Actionables
               actions={actionables}
               forceDots={forceDropdown}

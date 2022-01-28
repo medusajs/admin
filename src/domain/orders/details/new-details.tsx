@@ -1,190 +1,31 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import { capitalize } from "lodash"
-import { useAdminOrder } from "medusa-react"
+import {
+  useAdminCancelOrder,
+  useAdminOrder,
+  useAdminUpdateOrder,
+} from "medusa-react"
 import moment from "moment"
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import ReactJson from "react-json-view"
-import { Box, Flex, Text } from "rebass"
-import { ReactComponent as ExternalLink } from "../../../assets/svg/external-link.svg"
 import Avatar from "../../../components/atoms/avatar"
 import Spinner from "../../../components/atoms/spinner"
-import Button from "../../../components/button"
-import Dropdown from "../../../components/dropdown"
 import Badge from "../../../components/fundamentals/badge"
+import Button from "../../../components/fundamentals/button"
+import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
-import EditIcon from "../../../components/fundamentals/icons/edit-icon"
+import PackageIcon from "../../../components/fundamentals/icons/package-icon"
+import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
+import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
+import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
-
-const TrackingLink = ({ trackingLink }) => {
-  if (trackingLink.url) {
-    return (
-      <a
-        style={{ textDecoration: "none" }}
-        target="_blank"
-        href={trackingLink.url}
-      >
-        <Text
-          sx={{
-            fontWeight: "500",
-            color: "link",
-            svg: {
-              stroke: "link",
-              strokeWidth: "3",
-            },
-            ":hover": {
-              color: "medusa",
-              svg: {
-                stroke: "medusa",
-              },
-            },
-          }}
-        >
-          {trackingLink.tracking_number}
-          <Box display="inline" ml={1}>
-            <ExternalLink width="12" height="12" stroke="#5469D4" />
-          </Box>
-        </Text>
-      </a>
-    )
-  } else {
-    return <Text>{trackingLink.tracking_number}</Text>
-  }
-}
-
-const Fulfillment = ({
-  details,
-  order,
-  onUpdate,
-  onCancelOrderFulfillment,
-  onCancelClaimFulfillment,
-  onCancelSwapFulfillment,
-  toaster,
-}) => {
-  const { title, fulfillment } = details
-
-  const canceled = fulfillment.canceled_at !== null
-
-  const [expanded, setExpanded] = useState(!canceled)
-
-  useEffect(() => {
-    setExpanded(details.fulfillment.canceled_at === null)
-  }, [details])
-
-  const hasLinks =
-    fulfillment?.shipped_at && !!fulfillment?.tracking_links?.length
-
-  const cancelFulfillment = () => {
-    let cancel = undefined
-    switch (details.type) {
-      case "claim":
-        cancel = (id) =>
-          onCancelClaimFulfillment(fulfillment.claim_order_id, id)
-        break
-      case "swap":
-        cancel = (id) => onCancelSwapFulfillment(fulfillment.swap_id, id)
-        break
-      default:
-        cancel = onCancelOrderFulfillment
-        break
-    }
-
-    return cancel(fulfillment.id)
-      .then()
-      .catch((error) => {
-        toaster(getErrorMessage(error), "error")
-      })
-  }
-
-  return (
-    <Flex
-      sx={{
-        ":not(:last-of-type)": {
-          borderBottom: "hairline",
-        },
-      }}
-      p={3}
-      alignItems="center"
-      justifyContent="space-between"
-    >
-      <Box>
-        <Text>
-          {canceled
-            ? `${title} has been canceled`
-            : `${title} Fulfilled by provider ${fulfillment.provider_id}`}
-        </Text>
-
-        {expanded && (
-          <>
-            {(fulfillment.no_notification || false) !==
-              (order.no_notification || false) && (
-              <Box mt={2} pr={2}>
-                <Text color="gray">
-                  Notifications related to this fulfillment are
-                  {fulfillment.no_notification ? " disabled" : " enabled"}.
-                </Text>
-              </Box>
-            )}{" "}
-            {!fulfillment.shipped_at ? (
-              <Text my={1} color="gray">
-                Not shipped
-              </Text>
-            ) : (
-              <Text mt={1} color="grey">
-                Tracking
-              </Text>
-            )}
-            {hasLinks
-              ? fulfillment.tracking_links.map((tl) => (
-                  <TrackingLink trackingLink={tl} />
-                ))
-              : fulfillment.tracking_numbers.length > 0 && (
-                  <Text>{fulfillment.tracking_numbers.join(", ")}</Text>
-                )}
-          </>
-        )}
-      </Box>
-      {!canceled ? (
-        !fulfillment.shipped_at && (
-          <Flex>
-            <Button
-              mr={3}
-              variant={"primary"}
-              onClick={() => onUpdate(details)}
-            >
-              Mark Shipped
-            </Button>
-            <Dropdown>
-              <Text color="danger" onClick={cancelFulfillment}>
-                Cancel fulfillment
-              </Text>
-            </Dropdown>
-          </Flex>
-        )
-      ) : (
-        <Text
-          sx={{
-            fontWeight: "500",
-            color: "#89959C",
-            ":hover": {
-              color: "black",
-            },
-            cursor: "pointer",
-          }}
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? "Hide" : "Show"}
-        </Text>
-      )}
-    </Flex>
-  )
-}
 
 const gatherFulfillments = (order) => {
   const toReturn = []
@@ -232,6 +73,11 @@ const gatherFulfillments = (order) => {
 const OrderDetails = ({ id }) => {
   const { order, isLoading } = useAdminOrder(id)
 
+  const updateOrder = useAdminUpdateOrder(id)
+  const cancelOrder = useAdminCancelOrder(id)
+
+  const toaster = useToaster()
+
   const handleCopyToClip = (val) => {
     const tempInput = document.createElement("input")
     tempInput.value = val
@@ -241,25 +87,11 @@ const OrderDetails = ({ id }) => {
     document.body.removeChild(tempInput)
   }
 
+  // @ts-ignore
   useHotkeys("esc", () => navigate("/a/orders"))
   useHotkeys("command+i", () => handleCopyToClip(order?.display_id), {}, [
     order,
   ])
-
-  // TODO:
-  // Fulfillment action;
-  // if
-  //   some order.items -> fulfilled_quantity !== quantity &&
-  //   order.status !== canceled
-  // then Create fulfillment
-
-  // Timeline main actions:
-  // if
-  //   order.status !== "canceled" &&
-  //   fulfillment !== "returned" &&
-  //   no note
-  // then request return + register swap + register claim + add note
-  // else cancel show note + save note
 
   const DisplayTotal = ({
     totalAmount,
@@ -339,6 +171,58 @@ const OrderDetails = ({ id }) => {
     }
   }
 
+  const PaymentActionables = () => {
+    const isSystemPayment = order?.payments?.some(
+      (p) => p.provider_id === "system"
+    )
+
+    const { payment_status } = order!
+
+    // Default label and action
+    let label = "Capture payment"
+    let action = () => console.log("TODO: Capture payment")
+
+    let shouldShowNotice = false
+    // If payment is a system payment, we want to show a notice
+    if (payment_status === "awaiting" && isSystemPayment) {
+      shouldShowNotice = true
+    }
+
+    if (payment_status === "requires_action" && isSystemPayment) {
+      shouldShowNotice = true
+    }
+
+    switch (true) {
+      case payment_status === "captured" ||
+        payment_status === "partially_refunded": {
+        label = "Refund"
+        action = () => console.log("TODO: Show refund menu")
+        break
+      }
+
+      case shouldShowNotice: {
+        action = () =>
+          console.log(
+            "TODO: Show alert indicating, that you are capturing a system payment"
+          )
+        break
+      }
+
+      case payment_status === "awaiting" ||
+        payment_status === "requires_action": {
+        break
+      }
+      default:
+        break
+    }
+
+    return (
+      <Button variant="secondary" size="small" onClick={action}>
+        {label}
+      </Button>
+    )
+  }
+
   return (
     <div>
       <Breadcrumb
@@ -348,7 +232,7 @@ const OrderDetails = ({ id }) => {
       />
       <div className="flex space-x-4">
         {isLoading || !order ? (
-          <BodyCard> className="w-full pt-2xlarge flex items-center justify-center">
+          <BodyCard className="w-full pt-2xlarge flex items-center justify-center">
             <Spinner size={"large"} variant={"secondary"} />
           </BodyCard>
         ) : (
@@ -358,14 +242,19 @@ const OrderDetails = ({ id }) => {
               title="Order #2414"
               subtitle="29 January 2022, 23:01"
               status={<OrderStatusComponent />}
+              forceDropdown={true}
               actionables={[
                 {
                   label: "Cancel Order",
-                  icon: <CancelIcon />,
+                  icon: <CancelIcon size={"20"} />,
                   variant: "danger",
-                  onClick: () => console.log("Cancel order"),
+                  onClick: () =>
+                    cancelOrder.mutate(void {}, {
+                      onSuccess: () =>
+                        toaster("Successfully canceled order", "success"),
+                      onError: (err) => toaster(getErrorMessage(err), "error"),
+                    }),
                 },
-                {},
               ]}
             >
               <div className="flex mt-6 space-x-6 divide-x">
@@ -396,7 +285,10 @@ const OrderDetails = ({ id }) => {
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Summary">
               <div className="mt-6">
                 {order?.items?.map((item, i) => (
-                  <div key={i} className="flex justify-between mb-1 h-[64px] py-2 hover:bg-grey-5 rounded-rounded">
+                  <div
+                    key={i}
+                    className="flex justify-between mb-1 h-[64px] py-2 hover:bg-grey-5 rounded-rounded"
+                  >
                     <div className="flex space-x-4 justify-center">
                       <div className="flex h-[48px] w-[36px]">
                         <img
@@ -409,9 +301,9 @@ const OrderDetails = ({ id }) => {
                           {item.title}
                         </span>
                         {item?.variant && (
-                        <span className="inter-small-regular text-grey-50">
-                          {item.variant.sku}
-                        </span>
+                          <span className="inter-small-regular text-grey-50">
+                            {item.variant.sku}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -494,12 +386,12 @@ const OrderDetails = ({ id }) => {
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Payment"
               status={<PaymentStatusComponent />}
+              customActionable={<PaymentActionables />}
+              // TODO: Actionables should not be required if customActionable is provided
               actionables={[
                 {
-                  label: "Capture Payment",
-                  variant: "normal",
-                  icon: null,
                   onClick: () => console.log("Capture order"),
+                  label: "Capture Payment",
                 },
               ]}
             >
@@ -513,7 +405,7 @@ const OrderDetails = ({ id }) => {
                         "DD MMM YYYY hh:mm"
                       )}`}
                     />
-                    {!!payment.amount && (
+                    {!!payment.amount_refunded && (
                       <div className="flex justify-between mt-4">
                         <div className="flex">
                           <div className="text-grey-40 mr-2">
@@ -527,7 +419,7 @@ const OrderDetails = ({ id }) => {
                           <div className="inter-small-regular text-grey-90 mr-3">
                             -
                             {formatAmountWithSymbol({
-                              amount: order?.total,
+                              amount: payment?.amount_refunded,
                               currency: order?.currency_code,
                               digits: 2,
                               tax: order?.tax_rate,
@@ -565,22 +457,19 @@ const OrderDetails = ({ id }) => {
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Fulfillment"
               status={<FulfillmentStatusComponent />}
+              customActionable={
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => console.log("Create")}
+                >
+                  Create Fulfillment
+                </Button>
+              }
               actionables={[
                 {
                   label: "Create fulfillment",
-                  icon: <CancelIcon />,
                   onClick: () => console.log("Create"),
-                },
-                {
-                  label: "Mark as shipped",
-                  icon: <CancelIcon />,
-                  onClick: () => console.log("Shipped"),
-                },
-                {
-                  label: "Cancel Fulfullment",
-                  icon: <CancelIcon />,
-                  variant: "danger",
-                  onClick: () => console.log("Cancel Fulfillment"),
                 },
               ]}
             >
@@ -610,6 +499,57 @@ const OrderDetails = ({ id }) => {
                     </div>
                   </div>
                 ))}
+                <div className="mt-6 inter-small-regular ">
+                  {order?.fulfillments.map((fulfillment, i) => {
+                    const hasLinks = fulfillment?.tracking_links?.length
+
+                    return (
+                      <div className="flex w-full justify-between">
+                        <div className="flex flex-col space-y-1 py-2">
+                          <div className="text-grey-90">
+                            {fulfillment.canceled_at
+                              ? "Fulfillment has been canceled"
+                              : `Fulfilled by ${capitalize(
+                                  fulfillment.provider_id
+                                )}`}
+                          </div>
+                          <div className="text-grey-50">
+                            {!fulfillment.shipped_at
+                              ? "Not shipped"
+                              : "Tracking"}
+                            {hasLinks && (
+                              <span className="text-blue-60 ml-2">
+                                {fulfillment.tracking_links
+                                  .map((tl) => tl.tracking_number)
+                                  .join(", ")}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {!fulfillment.canceled_at && !fulfillment.shipped_at && (
+                          <div className="flex items-center space-x-2">
+                            <Actionables
+                              actions={[
+                                {
+                                  label: "Mark Shipped",
+                                  icon: <PackageIcon size={"20"} />,
+                                  onClick: () =>
+                                    console.log("TODO: mark as shipped"),
+                                },
+                                {
+                                  label: "Cancel Fulfillment",
+                                  icon: <CancelIcon size={"20"} />,
+                                  onClick: () =>
+                                    console.log("TODO: cancel fulfillment"),
+                                },
+                              ]}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </BodyCard>
             <BodyCard
@@ -617,11 +557,20 @@ const OrderDetails = ({ id }) => {
               title="Customer"
               actionables={[
                 {
-                  label: "Edit Customer",
-                  icon: <EditIcon />,
-                  onClick: () => console.log("Edit Customer"),
+                  label: "Edit Shipping Address",
+                  icon: <TruckIcon size={"20"} />,
+                  onClick: () => console.log("TODO: Open modal"),
                 },
-                {},
+                {
+                  label: "Edit Billing Address",
+                  icon: <TruckIcon size={"20"} />,
+                  onClick: () => console.log("TODO: Open modal"),
+                },
+                {
+                  label: "Go to Customer",
+                  icon: <DetailsIcon size={"20"} />, // TODO: Change to Contact icon
+                  onClick: () => navigate(`/a/customers/${order.customer.id}`),
+                },
               ]}
             >
               <div className="mt-6">

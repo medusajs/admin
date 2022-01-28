@@ -8,7 +8,7 @@ export type ActionType = {
   label: string
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
   variant?: "normal" | "danger"
-  icon: React.ReactNode
+  icon?: React.ReactNode
 }
 
 type ActionablesProps = {
