@@ -64,7 +64,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     } else {
       newReturns[id] = {
         images: imagesOnReturns ? [] : null,
-        reason_id: null,
+        reason: null,
         note: "",
         quantity: item.quantity - item.returned_quantity,
       }
@@ -78,7 +78,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
       ...toReturn,
       [id]: {
         ...toReturn[id],
-        reason_id: reason,
+        reason: reason,
         note: note,
       },
     }
@@ -99,6 +99,8 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     }
     return false
   }
+
+  console.log(toReturn)
 
   return (
     <Table>
@@ -194,13 +196,34 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
               </Table.Row>
               {checked && (
                 <Table.Row className="last:border-b-0 hover:bg-grey-0">
-                  <Table.Cell colspan={5}>
-                    <div className="w-full flex justify-end">
+                  {/* <Table.Cell></Table.Cell> */}
+                  <Table.Cell></Table.Cell>
+                  <Table.Cell colspan={2}>
+                    <div className="max-w-[470px] truncate">
+                      {toReturn[item.id]?.reason && (
+                        <span className="inter-small-regular text-grey-40">
+                          <span className="text-grey-80 mr-1">
+                            <span className="inter-small-semibold mr-1">
+                              {toReturn[item.id]?.reason.label}
+                            </span>
+                            {`(Value: ${toReturn[item.id]?.reason.value}),`}
+                          </span>
+                          {toReturn[item.id]?.note || ""}
+                        </span>
+                      )}
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell colspan={2}>
+                    <div className="flex w-full justify-end">
                       <Button
                         onClick={() =>
                           push(
-                            ReturnReasonScreen(pop, (reason, note) =>
-                              setReturnReason(reason, note, item.id)
+                            ReturnReasonScreen(
+                              pop,
+                              toReturn[item.id]?.reason,
+                              toReturn[item.id]?.note,
+                              (reason, note) =>
+                                setReturnReason(reason, note, item.id)
                             )
                           )
                         }
@@ -222,11 +245,17 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   )
 }
 
-const ReturnReasonScreen = (pop, setReturnReason) => {
+const ReturnReasonScreen = (pop, reason, note, setReturnReason) => {
   return {
     title: "Return Reasons",
     onBack: () => pop(),
-    view: <RMAReturnReasonSubModal onSubmit={setReturnReason} />,
+    view: (
+      <RMAReturnReasonSubModal
+        reason={reason}
+        existingNote={note}
+        onSubmit={setReturnReason}
+      />
+    ),
   }
 }
 

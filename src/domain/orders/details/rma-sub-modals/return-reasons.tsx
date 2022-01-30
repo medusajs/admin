@@ -8,6 +8,8 @@ import Select from "../../../../components/molecules/select"
 
 type RMAReturnReasonSubModalProps = {
   onSubmit: (reason, note) => void
+  reason?: any
+  existingNote?: string
 }
 
 // {
@@ -16,11 +18,15 @@ type RMAReturnReasonSubModalProps = {
 // }
 const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
   onSubmit,
+  reason,
+  existingNote,
 }) => {
   const { pop } = useContext(LayeredModalContext)
   const { isLoading, return_reasons } = useAdminReturnReasons()
-  const [note, setNote] = useState("")
-  const [selectedReason, setSelectedReason] = useState()
+  const [note, setNote] = useState(existingNote || "")
+  const [selectedReason, setSelectedReason] = useState(
+    reason ? { value: reason, label: reason.label } : undefined
+  )
 
   console.log(return_reasons)
 
@@ -38,7 +44,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
             value={selectedReason}
             onChange={setSelectedReason}
             options={
-              return_reasons?.map(({ id, label }) => ({ value: id, label })) ||
+              return_reasons?.map((rr) => ({ value: rr, label: rr.label })) ||
               []
             }
           />
