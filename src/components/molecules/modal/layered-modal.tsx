@@ -117,29 +117,7 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
                 <h2 className="inter-xlarge-semibold ml-5">{screen.title}</h2>
               </div>
             </Modal.Header>
-            {/* <Modal.Content className="h-full" isLargeModal={isLargeModal}> */}
             {screen.view}
-            {/* </Modal.Content> */}
-            {/* <Modal.Footer isLargeModal={isLargeModal}>
-              <div className="flex w-full justify-end gap-x-xsmall">
-                <Button
-                  variant="ghost"
-                  size="small"
-                  className="w-[112px]"
-                  onClick={screen.onBack}
-                >
-                  Back
-                </Button>
-                <Button
-                  variant="primary"
-                  className="w-[112px]"
-                  size="small"
-                  onClick={screen.onConfirm}
-                >
-                  Add
-                </Button>
-              </div>
-            </Modal.Footer> */}
           </>
         ) : (
           <></>
