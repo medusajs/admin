@@ -1,4 +1,4 @@
-import { ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
+import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import { capitalize, sum } from "lodash"
@@ -8,7 +8,11 @@ import {
   useAdminCancelOrder,
   useAdminCancelSwapFulfillment,
   useAdminCapturePayment,
+  useAdminCreateClaimShipment,
+  useAdminCreateShipment,
+  useAdminCreateSwapShipment,
   useAdminOrder,
+  useAdminUpdateOrder,
 } from "medusa-react"
 import moment from "moment"
 import React, { useState } from "react"
@@ -32,6 +36,7 @@ import DeletePrompt from "../../../components/organisms/delete-prompt"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
+import AddressModal from "./address-modal"
 
 const gatherAllFulfillments = (order) => {
   if (!order) {
@@ -105,11 +110,19 @@ const OrderDetails = ({ id }) => {
   const [deletePromptData, setDeletePromptData] = useState<DeletePromptData>(
     initDeleteState
   )
+  const [addressModal, setAddressModal] = useState<null | {
+    address: Address
+    type: "billing" | "shipping"
+  }>(null)
 
   const { order, isLoading } = useAdminOrder(id)
 
+  const markShipped = useAdminCreateShipment(id)
+  const markClaimShipped = useAdminCreateClaimShipment(id)
+  const markSwapShipped = useAdminCreateSwapShipment(id)
   const capturePayment = useAdminCapturePayment(id)
   const cancelOrder = useAdminCancelOrder(id)
+  const updateOrder = useAdminUpdateOrder(id)
   const cancelFulfillment = useAdminCancelFulfillment(id)
   const cancelSwapFulfillment = useAdminCancelSwapFulfillment(id)
   const cancelClaimFulfillment = useAdminCancelClaimFulfillment(id)
@@ -385,6 +398,35 @@ const OrderDetails = ({ id }) => {
     })
   }
 
+  const handleUpdateAddress = async ({ data, type }) => {
+    console.log(data)
+    const { email, ...rest } = data
+
+    const updateObj = {}
+
+    if (type === "shipping") {
+      updateObj["shipping_address"] = {
+        ...rest,
+      }
+    } else {
+      updateObj["billing_address"] = {
+        ...rest,
+      }
+    }
+
+    if (email) {
+      updateObj["email"] = email
+    }
+
+    return updateOrder.mutate(updateObj, {
+      onSuccess: () => {
+        toaster("Successfully updated address", "success")
+        setAddressModal(null)
+      },
+      onError: (err) => toaster(getErrorMessage(err), "error"),
+    })
+  }
+
   const handleCancelFulfillment = async ({
     resourceId,
     resourceType,
@@ -415,11 +457,57 @@ const OrderDetails = ({ id }) => {
     }
   }
 
+  const handleCreateShipment = ({ resourceId, resourceType, fulfillment }) => {
+    const tracking_numbers = fulfillment.tracking_numbers.map(
+      ({ value }) => value
+    )
+
+    switch (resourceType) {
+      case "swap":
+        return markSwapShipped.mutate(
+          {
+            swap_id: resourceId,
+            fulfillment_id: fulfillment.id,
+            tracking_numbers,
+          },
+          {
+            onSuccess: () => toaster("Swap marked as shipped", "success"),
+            onError: (err) => toaster(getErrorMessage(err), "error"),
+          }
+        )
+
+      case "claim":
+        return markClaimShipped.mutate(
+          {
+            claim_id: resourceId,
+            fulfillment_id: fulfillment.id,
+            tracking_numbers,
+          },
+          {
+            onSuccess: () => toaster("Claim marked as shipped", "success"),
+            onError: (err) => toaster(getErrorMessage(err), "error"),
+          }
+        )
+
+      default:
+        return markShipped.mutate(
+          {
+            fulfillment_id: fulfillment.id,
+            tracking_numbers,
+          },
+          {
+            onSuccess: () => toaster("Order marked as shipped", "success"),
+            onError: (err) => toaster(getErrorMessage(err), "error"),
+          }
+        )
+    }
+  }
+
   const FulFillment = ({ fulfillmentObj }) => {
     const { fulfillment } = fulfillmentObj
     const hasLinks = !!fulfillment.tracking_links?.length
 
-    const getCancelData = () => {
+    const getData = () => {
       switch (true) {
         case fulfillment?.claim_order_id:
           return {
@@ -461,7 +549,8 @@ const OrderDetails = ({ id }) => {
                 {
                   label: "Mark Shipped",
                   icon: <PackageIcon size={"20"} />,
-                  onClick: () => console.log("TODO: mark as shipped"),
+                  onClick: () =>
+                    handleCreateShipment({ ...getData(), fulfillment }),
                 },
                 {
                   label: "Cancel Fulfillment",
@@ -472,7 +561,7 @@ const OrderDetails = ({ id }) => {
                       show: true,
                       onDelete: () =>
                         handleCancelFulfillment({
-                          ...getCancelData(),
+                          ...getData(),
                           fulId: fulfillment.id,
                         }),
                     }),
@@ -551,7 +640,7 @@ const OrderDetails = ({ id }) => {
                 {order?.items?.map((item, i) => (
                   <div
                     key={i}
-                    className="flex justify-between mb-1 h-[64px] py-2 hover:bg-grey-5 rounded-rounded"
+                    className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded"
                   >
                     <div className="flex space-x-4 justify-center">
                       <div className="flex h-[48px] w-[36px]">
@@ -778,12 +867,23 @@ const OrderDetails = ({ id }) => {
                 {
                   label: "Edit Shipping Address",
                   icon: <TruckIcon size={"20"} />,
-                  onClick: () => console.log("TODO: Open modal"),
+                  onClick: () =>
+                    setAddressModal({
+                      address: order?.shipping_address,
+                      type: "shipping",
+                    }),
                 },
                 {
                   label: "Edit Billing Address",
                   icon: <DollarSignIcon size={"20"} />,
-                  onClick: () => console.log("TODO: Open modal"),
+                  onClick: () => {
+                    if (order.billing_address) {
+                      setAddressModal({
+                        address: order?.billing_address,
+                        type: "billing",
+                      })
+                    }
+                  },
                 },
                 {
                   label: "Go to Customer",
@@ -843,7 +943,16 @@ const OrderDetails = ({ id }) => {
           </BodyCard>
         </div>
       )}
-      {/* An attempt to make a reusable delete prompt, so we don't have to hold +5
+      {addressModal && (
+        <AddressModal
+          handleClose={() => setAddressModal(null)}
+          handleSave={(obj) => handleUpdateAddress(obj)}
+          address={addressModal.address}
+          type={addressModal.type}
+          email={order?.email}
+        />
+      )}
+      {/* An attempt to make a reusable delete prompt, so we don't have to hold +10
       state variables for showing different prompts */}
       {deletePromptData.show && (
         <DeletePrompt
