@@ -17,6 +17,7 @@ import clsx from "clsx"
 enum LayeredModalActions {
   PUSH,
   POP,
+  RESET,
 }
 
 type LayeredModalScreen = {
@@ -30,12 +31,14 @@ type ILayeredModalContext = {
   screens: LayeredModalScreen[]
   push: (screen: ReactNode) => void
   pop: () => void
+  reset: () => void
 }
 
 const defaultContext: ILayeredModalContext = {
   screens: [],
   push: (screen) => {},
   pop: () => {},
+  reset: () => {},
 }
 
 export const LayeredModalContext = React.createContext(defaultContext)
@@ -49,6 +52,9 @@ const reducer = (state, action) => {
     case LayeredModalActions.POP: {
       state.screens.pop()
       return { ...state }
+    }
+    case LayeredModalActions.RESET: {
+      return { ...state, screens: [] }
     }
   }
 }
@@ -71,6 +77,10 @@ export const LayeredModalProvider = ({ children }) => {
         pop: () => {
           dispatch({ type: LayeredModalActions.POP })
         },
+
+        reset: () => {
+          dispatch({ type: LayeredModalActions.RESET })
+        },
       }}
     >
       {children}
@@ -90,9 +100,14 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
   handleClose,
   isLargeModal = true,
 }) => {
+  const emptyScreensAndClose = () => {
+    context.reset()
+    handleClose()
+  }
+
   const screen = context.screens[context.screens.length - 1]
   return (
-    <Modal isLargeModal={isLargeModal} handleClose={handleClose}>
+    <Modal isLargeModal={isLargeModal} handleClose={emptyScreensAndClose}>
       <Modal.Body
         className={clsx(
           "transition-transform translate-x-full flex flex-col justify-between duration-500",
@@ -104,7 +119,7 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
       >
         {screen ? (
           <>
-            <Modal.Header handleClose={handleClose}>
+            <Modal.Header handleClose={emptyScreensAndClose}>
               <div className="flex items-center">
                 <Button
                   variant="ghost"
