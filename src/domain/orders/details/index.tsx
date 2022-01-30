@@ -1,13 +1,17 @@
+import { ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
 import clsx from "clsx"
 import { navigate } from "gatsby"
-import { capitalize } from "lodash"
+import { capitalize, sum } from "lodash"
 import {
+  useAdminCancelClaimFulfillment,
+  useAdminCancelFulfillment,
   useAdminCancelOrder,
+  useAdminCancelSwapFulfillment,
+  useAdminCapturePayment,
   useAdminOrder,
-  useAdminUpdateOrder,
 } from "medusa-react"
 import moment from "moment"
-import React from "react"
+import React, { useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import ReactJson from "react-json-view"
 import Avatar from "../../../components/atoms/avatar"
@@ -17,64 +21,98 @@ import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
+import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import PackageIcon from "../../../components/fundamentals/icons/package-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
 import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
+import DeletePrompt from "../../../components/organisms/delete-prompt"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 
-const gatherFulfillments = (order) => {
-  const toReturn = []
+const gatherAllFulfillments = (order) => {
+  if (!order) {
+    return []
+  }
+
+  type OrderDetailFulfillment = {
+    title: string
+    type: string
+    fulfillment: Fulfillment
+    swap?: Swap
+    claim?: ClaimOrder
+  }
+
+  const all: OrderDetailFulfillment[] = []
+
   order.fulfillments.forEach((f, index) => {
-    toReturn.push({
+    all.push({
       title: `Fulfillment #${index + 1}`,
       type: "default",
       fulfillment: f,
     })
   })
 
-  if (order.claims && order.claims.length) {
-    order.claims.forEach((s) => {
-      if (s.fulfillment_status !== "not_fulfilled") {
-        s.fulfillments.forEach((f, index) => {
-          toReturn.push({
-            title: `Claim Fulfillment #${index + 1}`,
+  if (order.claims?.length) {
+    order.claims.forEach((claim) => {
+      if (claim.fulfillment_status !== "not_fulfilled") {
+        claim.fulfillments.forEach((fulfillment, index) => {
+          all.push({
+            title: `Claim fulfillment #${index + 1}`,
             type: "claim",
-            fulfillment: f,
-            claim: s,
+            fulfillment,
+            claim,
           })
         })
       }
     })
   }
 
-  if (order.swaps && order.swaps.length) {
-    order.swaps.forEach((s) => {
-      if (s.fulfillment_status !== "not_fulfilled") {
-        s.fulfillments.forEach((f, index) => {
-          toReturn.push({
-            title: `Swap Fulfillment #${index + 1}`,
+  if (order.swaps?.length) {
+    order.swaps.forEach((swap) => {
+      if (swap.fulfillment_status !== "not_fulfilled") {
+        swap.fulfillments.forEach((fulfillment, index) => {
+          all.push({
+            title: `Swap fulfillment #${index + 1}`,
             type: "swap",
-            fulfillment: f,
-            swap: s,
+            fulfillment,
+            swap,
           })
         })
       }
     })
   }
 
-  return toReturn
+  return all
 }
 
 const OrderDetails = ({ id }) => {
+  type DeletePromptData = {
+    resource: string
+    onDelete: () => any
+    show: boolean
+  }
+
+  const initDeleteState: DeletePromptData = {
+    resource: "",
+    onDelete: () => Promise.resolve(console.log("Delete resource")),
+    show: false,
+  }
+
+  const [deletePromptData, setDeletePromptData] = useState<DeletePromptData>(
+    initDeleteState
+  )
+
   const { order, isLoading } = useAdminOrder(id)
 
-  const updateOrder = useAdminUpdateOrder(id)
+  const capturePayment = useAdminCapturePayment(id)
   const cancelOrder = useAdminCancelOrder(id)
+  const cancelFulfillment = useAdminCancelFulfillment(id)
+  const cancelSwapFulfillment = useAdminCancelSwapFulfillment(id)
+  const cancelClaimFulfillment = useAdminCancelClaimFulfillment(id)
 
   const toaster = useToaster()
 
@@ -124,6 +162,34 @@ const OrderDetails = ({ id }) => {
     </div>
   )
 
+  const Address = ({ title, addr }) => {
+    if (!addr?.id) {
+      return (
+        <div className="flex flex-col pl-6">
+          <div className="inter-small-regular text-grey-50 mb-1">{title}</div>
+          <div className="flex flex-col inter-small-regular">N/A</div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="flex flex-col pl-6">
+        <div className="inter-small-regular text-grey-50 mb-1">{title}</div>
+        <div className="flex flex-col inter-small-regular">
+          <span>
+            {addr?.address_1} {addr?.address_2}
+          </span>
+          <span>
+            {addr?.city}
+            {", "}
+            {addr?.province || ""}
+            {addr?.postal_code} {addr?.country_code?.toUpperCase()}
+          </span>
+        </div>
+      </div>
+    )
+  }
+
   const OrderStatusComponent = () => {
     switch (order?.status) {
       case "completed":
@@ -131,7 +197,7 @@ const OrderDetails = ({ id }) => {
       case "pending":
         return <StatusDot title="Processing" variant="default" />
       case "canceled":
-        return <StatusDot title="Proposed" variant="warning" />
+        return <StatusDot title="Canceled" variant="danger" />
       case "requires_action":
         return <StatusDot title="Rejected" variant="danger" />
       default:
@@ -171,6 +237,90 @@ const OrderDetails = ({ id }) => {
     }
   }
 
+  const PaymentDetails = () => {
+    let manualRefund = 0
+    let swapRefund = 0
+    let returnRefund = 0
+
+    const swapAmount = sum(order?.swaps.map((s) => s.difference_due) || [0])
+
+    if (order?.refunds?.length) {
+      order.refunds.forEach((ref) => {
+        if (ref.reason === "other" || ref.reason === "discount") {
+          manualRefund += ref.amount
+        }
+        if (ref.reason === "return") {
+          returnRefund += ref.amount
+        }
+        if (ref.reason === "swap") {
+          swapRefund += ref.amount
+        }
+      })
+    }
+
+    return (
+      <>
+        {!!swapAmount && (
+          <DisplayTotal
+            totalAmount={swapAmount}
+            totalTitle={"Total for Swaps"}
+          />
+        )}
+        {!!swapRefund && (
+          <DisplayTotal
+            totalAmount={returnRefund}
+            totalTitle={"Refunded for Swaps"}
+          />
+        )}
+        {!!returnRefund && (
+          <DisplayTotal
+            totalAmount={returnRefund}
+            totalTitle={"Refunded for Returns"}
+          />
+        )}
+        {!!manualRefund && (
+          <DisplayTotal
+            totalAmount={manualRefund}
+            totalTitle={"Manually refunded"}
+          />
+        )}
+        <div className="flex justify-between mt-4 items-center">
+          <div className="inter-base-semibold text-grey-90">Net Total</div>
+          <div className="inter-xlarge-semibold text-grey-90">
+            {formatAmountWithSymbol({
+              amount: order!.paid_total - order!.refunded_total,
+              currency: order?.currency_code || "",
+              digits: 2,
+              tax: order?.tax_rate,
+            })}
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  const TrackingLink = ({ trackingLink }) => {
+    if (trackingLink.url) {
+      return (
+        <a
+          style={{ textDecoration: "none" }}
+          target="_blank"
+          href={trackingLink.url}
+        >
+          <div className="text-blue-60 ml-2">
+            {trackingLink.tracking_number}{" "}
+          </div>
+        </a>
+      )
+    } else {
+      return (
+        <span className="text-blue-60 ml-2">
+          {trackingLink.tracking_number}{" "}
+        </span>
+      )
+    }
+  }
+
   const PaymentActionables = () => {
     const isSystemPayment = order?.payments?.some(
       (p) => p.provider_id === "system"
@@ -180,7 +330,12 @@ const OrderDetails = ({ id }) => {
 
     // Default label and action
     let label = "Capture payment"
-    let action = () => console.log("TODO: Capture payment")
+    let action = () => {
+      capturePayment.mutate(void {}, {
+        onSuccess: () => toaster("Successfully captured payment", "success"),
+        onError: (err) => toaster(getErrorMessage(err), "error"),
+      })
+    }
 
     let shouldShowNotice = false
     // If payment is a system payment, we want to show a notice
@@ -223,6 +378,115 @@ const OrderDetails = ({ id }) => {
     )
   }
 
+  const handleDeleteOrder = async () => {
+    return cancelOrder.mutate(void {}, {
+      onSuccess: () => toaster("Successfully canceled order", "success"),
+      onError: (err) => toaster(getErrorMessage(err), "error"),
+    })
+  }
+
+  const handleCancelFulfillment = async ({
+    resourceId,
+    resourceType,
+    fulId,
+  }) => {
+    switch (resourceType) {
+      case "swap":
+        return cancelSwapFulfillment.mutate(
+          { swap_id: resourceId, fulfillment_id: fulId },
+          {
+            onSuccess: () => toaster("Successfully canceled order", "success"),
+            onError: (err) => toaster(getErrorMessage(err), "error"),
+          }
+        )
+      case "claim":
+        return cancelClaimFulfillment.mutate(
+          { claim_id: resourceId, fulfillment_id: fulId },
+          {
+            onSuccess: () => toaster("Successfully canceled order", "success"),
+            onError: (err) => toaster(getErrorMessage(err), "error"),
+          }
+        )
+      default:
+        return cancelFulfillment.mutate(fulId, {
+          onSuccess: () => toaster("Successfully canceled order", "success"),
+          onError: (err) => toaster(getErrorMessage(err), "error"),
+        })
+    }
+  }
+
+  const FulFillment = ({ fulfillmentObj }) => {
+    const { fulfillment } = fulfillmentObj
+    const hasLinks = !!fulfillment.tracking_links?.length
+
+    const getCancelData = () => {
+      switch (true) {
+        case fulfillment?.claim_order_id:
+          return {
+            resourceId: fulfillment.claim_order_id,
+            resourceType: "claim",
+          }
+        case fulfillment?.swap_id:
+          return {
+            resourceId: fulfillment.swap_id,
+            resourceType: "swap",
+          }
+        default:
+          return { resourceId: order?.id, resourceType: "order" }
+      }
+    }
+
+    return (
+      <div className="flex w-full justify-between">
+        <div className="flex flex-col space-y-1 py-2">
+          <div className="text-grey-90">
+            {fulfillment.canceled_at
+              ? "Fulfillment has been canceled"
+              : `${fulfillmentObj.title} Fulfilled by ${capitalize(
+                  fulfillment.provider_id
+                )}`}
+          </div>
+          <div className="flex text-grey-50">
+            {!fulfillment.shipped_at ? "Not shipped" : "Tracking"}
+            {hasLinks &&
+              fulfillment.tracking_links.map((tl, j) => (
+                <TrackingLink key={j} trackingLink={tl} />
+              ))}
+          </div>
+        </div>
+        {!fulfillment.canceled_at && !fulfillment.shipped_at && (
+          <div className="flex items-center space-x-2">
+            <Actionables
+              actions={[
+                {
+                  label: "Mark Shipped",
+                  icon: <PackageIcon size={"20"} />,
+                  onClick: () => console.log("TODO: mark as shipped"),
+                },
+                {
+                  label: "Cancel Fulfillment",
+                  icon: <CancelIcon size={"20"} />,
+                  onClick: () =>
+                    setDeletePromptData({
+                      resource: "Fulfillment",
+                      show: true,
+                      onDelete: () =>
+                        handleCancelFulfillment({
+                          ...getCancelData(),
+                          fulId: fulfillment.id,
+                        }),
+                    }),
+                },
+              ]}
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  const allFulfillments = gatherAllFulfillments(order)
+
   return (
     <div>
       <Breadcrumb
@@ -230,12 +494,12 @@ const OrderDetails = ({ id }) => {
         previousBreadcrumb={"Orders"}
         previousRoute="/a/orders"
       />
-      <div className="flex space-x-4">
-        {isLoading || !order ? (
-          <BodyCard className="w-full pt-2xlarge flex items-center justify-center">
-            <Spinner size={"large"} variant={"secondary"} />
-          </BodyCard>
-        ) : (
+      {isLoading || !order ? (
+        <BodyCard className="w-full pt-2xlarge flex items-center justify-center">
+          <Spinner size={"large"} variant={"secondary"} />
+        </BodyCard>
+      ) : (
+        <div className="flex space-x-4">
           <div className="flex flex-col w-2/3 h-full">
             <BodyCard
               className={"w-full mb-4 min-h-[200px]"}
@@ -249,10 +513,10 @@ const OrderDetails = ({ id }) => {
                   icon: <CancelIcon size={"20"} />,
                   variant: "danger",
                   onClick: () =>
-                    cancelOrder.mutate(void {}, {
-                      onSuccess: () =>
-                        toaster("Successfully canceled order", "success"),
-                      onError: (err) => toaster(getErrorMessage(err), "error"),
+                    setDeletePromptData({
+                      resource: "Order",
+                      onDelete: () => handleDeleteOrder(),
+                      show: true,
                     }),
                 },
               ]}
@@ -346,7 +610,7 @@ const OrderDetails = ({ id }) => {
                   >
                     <div className="flex inter-small-regular text-grey-90 items-center">
                       Discount:{" "}
-                      <Badge className="ml-3" variant="denomination">
+                      <Badge className="ml-3" variant="default">
                         {discount.code}
                       </Badge>
                     </div>
@@ -370,16 +634,17 @@ const OrderDetails = ({ id }) => {
                   totalTitle={`Tax`}
                 />
                 <div className="flex justify-between mt-4 items-center">
-                  <div className="inter-small-regular text-grey-90">Total</div>
-                  <div className="inter-xlarge-semibold text-grey-90">
+                  <div className="inter-small-semibold text-grey-90">Total</div>
+                  <div className="inter-small-semibold text-grey-90">
                     {formatAmountWithSymbol({
-                      amount: order?.total,
+                      amount: order!.total,
                       currency: order?.currency_code || "",
                       digits: 2,
                       tax: order?.tax_rate,
                     })}
                   </div>
                 </div>
+                <PaymentDetails />
               </div>
             </BodyCard>
             <BodyCard
@@ -500,55 +765,9 @@ const OrderDetails = ({ id }) => {
                   </div>
                 ))}
                 <div className="mt-6 inter-small-regular ">
-                  {order?.fulfillments.map((fulfillment, i) => {
-                    const hasLinks = fulfillment?.tracking_links?.length
-
-                    return (
-                      <div className="flex w-full justify-between">
-                        <div className="flex flex-col space-y-1 py-2">
-                          <div className="text-grey-90">
-                            {fulfillment.canceled_at
-                              ? "Fulfillment has been canceled"
-                              : `Fulfilled by ${capitalize(
-                                  fulfillment.provider_id
-                                )}`}
-                          </div>
-                          <div className="text-grey-50">
-                            {!fulfillment.shipped_at
-                              ? "Not shipped"
-                              : "Tracking"}
-                            {hasLinks && (
-                              <span className="text-blue-60 ml-2">
-                                {fulfillment.tracking_links
-                                  .map((tl) => tl.tracking_number)
-                                  .join(", ")}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        {!fulfillment.canceled_at && !fulfillment.shipped_at && (
-                          <div className="flex items-center space-x-2">
-                            <Actionables
-                              actions={[
-                                {
-                                  label: "Mark Shipped",
-                                  icon: <PackageIcon size={"20"} />,
-                                  onClick: () =>
-                                    console.log("TODO: mark as shipped"),
-                                },
-                                {
-                                  label: "Cancel Fulfillment",
-                                  icon: <CancelIcon size={"20"} />,
-                                  onClick: () =>
-                                    console.log("TODO: cancel fulfillment"),
-                                },
-                              ]}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
+                  {allFulfillments.map((fulfillmentObj, i) => (
+                    <FulFillment key={i} fulfillmentObj={fulfillmentObj} />
+                  ))}
                 </div>
               </div>
             </BodyCard>
@@ -563,7 +782,7 @@ const OrderDetails = ({ id }) => {
                 },
                 {
                   label: "Edit Billing Address",
-                  icon: <TruckIcon size={"20"} />,
+                  icon: <DollarSignIcon size={"20"} />,
                   onClick: () => console.log("TODO: Open modal"),
                 },
                 {
@@ -602,48 +821,8 @@ const OrderDetails = ({ id }) => {
                       <span>{order?.shipping_address?.phone || ""}</span>
                     </div>
                   </div>
-                  <div className="flex flex-col pl-6">
-                    <div className="inter-small-regular text-grey-50 mb-1">
-                      Shipping
-                    </div>
-                    <div className="flex flex-col inter-small-regular">
-                      <span>
-                        {order?.shipping_address.address_1}{" "}
-                        {order?.shipping_address.address_2}
-                      </span>
-                      <span>
-                        {order?.shipping_address.city}
-                        {", "}
-                        {order?.shipping_address?.province || ""}
-                        {order?.shipping_address?.postal_code}{" "}
-                        {order?.shipping_address?.country_code?.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col pl-6">
-                    <div className="inter-small-regular text-grey-50 mb-1">
-                      Billing
-                    </div>
-                    <div className="flex flex-col inter-small-regular">
-                      {order?.billing_address ? (
-                        <>
-                          <span>
-                            {order?.billing_address.address_1}{" "}
-                            {order?.billing_address.address_2}
-                          </span>
-                          <span>
-                            {order?.billing_address.city}
-                            {", "}
-                            {order?.billing_address?.province || ""}
-                            {order?.billing_address?.postal_code}{" "}
-                            {order?.billing_address?.country_code?.toUpperCase()}
-                          </span>
-                        </>
-                      ) : (
-                        "No billing address"
-                      )}
-                    </div>
-                  </div>
+                  <Address title={"Shipping"} addr={order?.shipping_address} />
+                  <Address title={"Billing"} addr={order?.billing_address} />
                 </div>
               </div>
             </BodyCard>
@@ -659,11 +838,24 @@ const OrderDetails = ({ id }) => {
               />
             </BodyCard>
           </div>
-        )}
-        <BodyCard title="Timeline" className="w-1/3">
-          <div></div>
-        </BodyCard>
-      </div>
+          <BodyCard title="Timeline" className="w-1/3">
+            <div></div>
+          </BodyCard>
+        </div>
+      )}
+      {/* An attempt to make a reusable delete prompt, so we don't have to hold +5
+      state variables for showing different prompts */}
+      {deletePromptData.show && (
+        <DeletePrompt
+          text={"Are you sure?"}
+          heading={`Remove ${deletePromptData?.resource}`}
+          successText={`${
+            deletePromptData?.resource || "Resource"
+          } has been removed`}
+          onDelete={() => deletePromptData.onDelete()}
+          handleClose={() => setDeletePromptData(initDeleteState)}
+        />
+      )}
     </div>
   )
 }
