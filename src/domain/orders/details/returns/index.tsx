@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import Modal from "../../../../components/molecules/modal"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import Button from "../../../../components/fundamentals/button"
@@ -13,13 +13,21 @@ import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import Spinner from "../../../../components/atoms/spinner"
 import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import LayeredModal, {
+  LayeredModalContext,
+} from "../../../../components/molecules/modal/layered-modal"
+
+const removeNullish = (obj) =>
+  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
+  const layoutmodalcontext = useContext(LayeredModalContext)
+
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
   const [refundable, setRefundable] = useState(0)
   const [refundAmount, setRefundAmount] = useState(0)
-  const [toReturn, setToReturn] = useState([])
+  const [toReturn, setToReturn] = useState({})
   const [quantities, setQuantities] = useState({})
   const [useCustomShippingPrice, setUseCustomShippingPrice] = useState(false)
 
@@ -50,13 +58,15 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }, [])
 
   useEffect(() => {
-    const items = toReturn.map((t) => allItems.find((i) => i.id === t))
+    const items = Object.keys(toReturn).map((t) =>
+      allItems.find((i) => i.id === t)
+    )
     const total =
       items.reduce((acc, next) => {
         return (
           acc +
           (next.refundable / (next.quantity - next.returned_quantity)) *
-            quantities[next.id]
+            toReturn[next.id].quantity
         )
       }, 0) - (shippingPrice || 0)
 
@@ -66,10 +76,13 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }, [toReturn, quantities, shippingPrice])
 
   const onSubmit = () => {
-    const items = toReturn.map((t) => ({
-      item_id: t,
-      quantity: quantities[t],
-    }))
+    const items = Object.entries(toReturn).map(([key, value]) => {
+      const clean = removeNullish(value)
+      return {
+        item_id: key,
+        ...clean,
+      }
+    })
 
     const data = {
       items,
@@ -126,7 +139,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   }
 
   return (
-    <Modal handleClose={onDismiss}>
+    <LayeredModal context={layoutmodalcontext} handleClose={onDismiss}>
       <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
           <h2 class="inter-xlarge-semibold">Request Return</h2>
@@ -275,7 +288,7 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
           </div>
         </Modal.Footer>
       </Modal.Body>
-    </Modal>
+    </LayeredModal>
   )
 }
 
