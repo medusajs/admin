@@ -1,9 +1,11 @@
 import clsx from "clsx"
-import React from "react"
+import React, { useContext } from "react"
+import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
 import Button from "../../fundamentals/button"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
+import { LayeredModalContext } from "../../molecules/modal/layered-modal"
 import Table from "../../molecules/table"
 
 type RMASelectProductTableProps = {
@@ -11,52 +13,77 @@ type RMASelectProductTableProps = {
   allItems: any[]
   toReturn: any[]
   setToReturn: (items: any[]) => void
-  quantities: any
-  setQuantities: (quantities: any[]) => void
+  imagesOnReturns: any
+  // setQuantities: (quantities: any[]) => void
 }
 
 const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   order,
   allItems,
   toReturn,
-  quantities,
-  setQuantities,
+  imagesOnReturns = false,
+  // quantities,
+  // setQuantities,
   setToReturn,
 }) => {
+  const { push, pop } = useContext(LayeredModalContext)
+
   const handleQuantity = (change, item) => {
     if (
-      (item.quantity - item.returned_quantity === quantities[item.id] &&
+      (item.quantity - item.returned_quantity === toReturn[item.id].quantity &&
         change > 0) ||
-      (quantities[item.id] === 1 && change < 0)
+      (toReturn[item.id].quantity === 1 && change < 0)
     ) {
       return
     }
-    const newQuantities = {
-      ...quantities,
-      [item.id]: quantities[item.id] + change,
+    // const newQuantities = {
+    //   ...quantities,
+    //   [item.id]: quantities[item.id] + change,
+    // }
+
+    const newReturns = {
+      ...toReturn,
+      [item.id]: {
+        ...toReturn[item.id],
+        quantity: (toReturn[item.id]?.quantity || 0) + change,
+      },
     }
 
-    setQuantities(newQuantities)
+    setToReturn(newReturns)
+
+    // setQuantities(newQuantities)
   }
 
   const handleReturnToggle = (item) => {
     const id = item.id
-    const idx = toReturn.indexOf(id)
-    if (idx !== -1) {
-      const newReturns = [...toReturn]
-      newReturns.splice(idx, 1)
-      setToReturn(newReturns)
+
+    const newReturns = { ...toReturn }
+
+    if (id in toReturn) {
+      delete newReturns[id]
     } else {
-      const newReturns = [...toReturn, id]
-      setToReturn(newReturns)
-
-      const newQuantities = {
-        ...quantities,
-        [item.id]: item.quantity - item.returned_quantity,
+      newReturns[id] = {
+        images: imagesOnReturns ? [] : null,
+        reason_id: null,
+        note: "",
+        quantity: item.quantity - item.returned_quantity,
       }
-
-      setQuantities(newQuantities)
     }
+
+    setToReturn(newReturns)
+  }
+
+  const setReturnReason = (reason, note, id) => {
+    const newReturns = {
+      ...toReturn,
+      [id]: {
+        ...toReturn[id],
+        reason_id: reason,
+        note: note,
+      },
+    }
+
+    setToReturn(newReturns)
   }
 
   const isLineItemCanceled = (item) => {
@@ -91,7 +118,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
           ) {
             return
           }
-          const checked = !!toReturn?.includes(item.id)
+          const checked = item.id in toReturn
           return (
             <>
               <Table.Row className={clsx("border-b-grey-0 hover:bg-grey-0")}>
@@ -134,7 +161,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   </div>
                 </Table.Cell>
                 <Table.Cell className="text-right w-32 pr-8">
-                  {toReturn.includes(item.id) ? (
+                  {item.id in toReturn ? (
                     <div className="flex w-full text-right justify-end text-grey-50 ">
                       <span
                         onClick={() => handleQuantity(-1, item)}
@@ -142,7 +169,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                       >
                         <MinusIcon size={16} />
                       </span>
-                      <span>{quantities[item.id] || ""}</span>
+                      <span>{toReturn[item.id].quantity || ""}</span>
                       <span
                         onClick={() => handleQuantity(1, item)}
                         className={clsx(
@@ -165,11 +192,18 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   {order.currency_code.toUpperCase()}
                 </Table.Cell>
               </Table.Row>
-              {/* {checked && (
+              {checked && (
                 <Table.Row className="last:border-b-0 hover:bg-grey-0">
                   <Table.Cell colspan={5}>
                     <div className="w-full flex justify-end">
                       <Button
+                        onClick={() =>
+                          push(
+                            ReturnReasonScreen(pop, (reason, note) =>
+                              setReturnReason(reason, note, item.id)
+                            )
+                          )
+                        }
                         variant="ghost"
                         size="small"
                         className="border border-grey-20"
@@ -179,13 +213,21 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                     </div>
                   </Table.Cell>
                 </Table.Row>
-              )} */}
+              )}
             </>
           )
         })}
       </Table.Body>
     </Table>
   )
+}
+
+const ReturnReasonScreen = (pop, setReturnReason) => {
+  return {
+    title: "Return Reasons",
+    onBack: () => pop(),
+    view: <RMAReturnReasonSubModal onSubmit={setReturnReason} />,
+  }
 }
 
 export default RMASelectProductTable
