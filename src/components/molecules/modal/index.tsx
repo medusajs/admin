@@ -3,13 +3,15 @@ import CrossIcon from "../../fundamentals/icons/cross-icon"
 import clsx from "clsx"
 import * as Dialog from "@radix-ui/react-dialog"
 
-type ModalProps = {
+export type ModalProps = {
   isLargeModal?: boolean
   handleClose: () => void
 }
 
 type ModalChildProps = {
   isLargeModal?: boolean
+  className?: string
+  style?: object
 }
 
 type ModalHeaderProps = {
@@ -33,7 +35,7 @@ const Overlay: React.FC = ({ children }) => {
 
 const Content: React.FC = ({ children }) => {
   return (
-    <Dialog.Content className="bg-grey-0 min-w-modal rounded">
+    <Dialog.Content className="bg-grey-0 min-w-modal rounded overflow-x-hidden">
       {children}
     </Dialog.Content>
   )
@@ -57,18 +59,22 @@ const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
   )
 }
 
-Modal.Body = ({ children, isLargeModal }) => {
+Modal.Body = ({ children, isLargeModal, className, style }) => {
   return (
-    <div className="inter-base-regular" onClick={(e) => e.stopPropagation()}>
+    <div
+      style={style}
+      className={clsx("inter-base-regular", className)}
+      onClick={(e) => e.stopPropagation()}
+    >
       {addProp(children, { isLargeModal })}
     </div>
   )
 }
 
-Modal.Content = ({ children, isLargeModal }) => {
+Modal.Content = ({ children, className, isLargeModal }) => {
   return (
     <div
-      className={clsx("px-7 pt-5", {
+      className={clsx("px-7 pt-5", className, {
         ["w-largeModal pb-7"]: isLargeModal,
         ["pb-5"]: !isLargeModal,
       })}
@@ -100,7 +106,7 @@ Modal.Footer = ({ children, isLargeModal }) => {
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={clsx("px-7  pb-5 flex w-full", {
+      className={clsx("px-7 bottom-0 pb-5 flex w-full", {
         "border-t border-grey-20 pt-4": isLargeModal,
       })}
     >
