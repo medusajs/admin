@@ -22,6 +22,12 @@ export interface TimelineEvent {
     | "return"
     | "exchange"
     | "notification"
+    | "claim"
+}
+
+interface CancelableEvent {
+  canceledAt?: Date
+  isCanceled?: boolean
 }
 
 export interface OrderPlacedEvent extends TimelineEvent {
@@ -70,12 +76,23 @@ export interface NoteEvent extends TimelineEvent {
   authorId: string
 }
 
-export interface ExchangeEvent extends TimelineEvent {
+export interface ExchangeEvent extends TimelineEvent, CancelableEvent {
   paymentStatus: string
   fulfillmentStatus: string
   returnStatus: string
   returnItems: ReturnItem[]
   newItems: OrderItem[]
+  exchangeCartId?: string
+}
+
+export interface ClaimEvent extends TimelineEvent, CancelableEvent {
+  fulfillmentStatus?: string
+  refundStatus?: string
+  refundAmount?: number
+  currencyCode: string
+  claimItems: OrderItem[]
+  newItems: OrderItem[]
+  claimType: string
 }
 
 export interface NotificationEvent extends TimelineEvent {
@@ -101,6 +118,20 @@ export const useBuildTimelime = (orderId: string) => {
   const events: TimelineEvent[] | undefined = useMemo(() => {
     if (!order) return undefined
 
+    let allItems = [...order.items]
+
+    if (order.swaps && order.swaps.length) {
+      for (const swap of order.swaps) {
+        allItems = [...allItems, ...swap.additional_items]
+      }
+    }
+
+    if (order.claims && order.claims.length) {
+      for (const claim of order.claims) {
+        allItems = [...allItems, ...claim.additional_items]
+      }
+    }
+
     const events: TimelineEvent[] = []
 
     events.push({
@@ -112,10 +143,10 @@ export const useBuildTimelime = (orderId: string) => {
       type: "placed",
     } as OrderPlacedEvent)
 
-    if (order.canceled_at) {
+    if (order.status === "canceled") {
       events.push({
         id: `${order.id}-canceled`,
-        time: order.canceled_at,
+        time: order.updated_at,
         type: "canceled",
       } as TimelineEvent)
     }
@@ -137,7 +168,7 @@ export const useBuildTimelime = (orderId: string) => {
         id: event.id,
         time: event.created_at,
         type: "fulfilled",
-        items: event.items.map((item) => getLineItem(order, item.item_id)),
+        items: event.items.map((item) => getLineItem(allItems, item.item_id)),
         noNotification: event.no_notification,
       } as ItemsFulfilledEvent)
 
@@ -146,7 +177,7 @@ export const useBuildTimelime = (orderId: string) => {
           id: event.id,
           time: event.shipped_at,
           type: "shipped",
-          items: event.items.map((item) => getLineItem(order, item.item_id)),
+          items: event.items.map((item) => getLineItem(allItems, item.item_id)),
           noNotification: event.no_notification,
         } as ItemsShippedEvent)
       }
@@ -155,7 +186,7 @@ export const useBuildTimelime = (orderId: string) => {
     for (const event of order.returns) {
       events.push({
         id: event.id,
-        items: event.items.map((i) => getReturnItems(order, i)),
+        items: event.items.map((i) => getReturnItems(allItems, i)),
         status: event.status,
         currentStatus: event.status,
         time: event.updated_at,
@@ -166,7 +197,7 @@ export const useBuildTimelime = (orderId: string) => {
       if (event.status !== "requested") {
         events.push({
           id: event.id,
-          items: event.items.map((i) => getReturnItems(order, i)),
+          items: event.items.map((i) => getReturnItems(allItems, i)),
           status: "requested",
           time: event.created_at,
           type: "return",
@@ -179,20 +210,93 @@ export const useBuildTimelime = (orderId: string) => {
     for (const event of order.swaps) {
       events.push({
         id: event.id,
-        time: event.created_at,
-        noNotification: event.no_notification,
+        time: event.canceled_at ? event.canceled_at : event.created_at,
+        noNotification: event.no_notification === true, //type error
         fulfillmentStatus: event.fulfillment_status,
         paymentStatus: event.payment_status,
         returnStatus: event.return_order.status,
         type: "exchange",
         newItems: event.additional_items.map((i) => getSwapItem(i)),
         returnItems: event.return_order.items.map((i) =>
-          getReturnItems(order, i)
+          getReturnItems(allItems, i)
         ),
+        exchangeCartId:
+          event.payment_status !== "captured" && !event.canceled_at
+            ? event.cart_id
+            : undefined,
+        canceledAt: event.canceled_at,
       } as ExchangeEvent)
+
+      if (event.canceled_at) {
+        events.push({
+          id: event.id,
+          time: event.created_at,
+          noNotification: event.no_notification === true, //type error
+          fulfillmentStatus: event.fulfillment_status,
+          paymentStatus: event.payment_status,
+          returnStatus: event.return_order.status,
+          type: "exchange",
+          newItems: event.additional_items.map((i) => getSwapItem(i)),
+          returnItems: event.return_order.items.map((i) =>
+            getReturnItems(allItems, i)
+          ),
+          exchangeCartId:
+            event.payment_status !== "captured" && !event.canceled_at
+              ? event.cart_id
+              : undefined,
+          isCanceled: true,
+        } as ExchangeEvent)
+      }
     }
 
-    for (const event of order.claims) {
+    if (order.claims) {
+      for (const claim of order.claims) {
+        events.push({
+          id: claim.id,
+          type: "claim",
+          newItems: claim.additional_items.map((i) => ({
+            quantity: i.quantity,
+            title: i.title,
+            thumbnail: i.thumbnail,
+            variant: {
+              title: i.variant.title,
+            },
+          })),
+          fulfillmentStatus: claim.fulfillment_status,
+          refundStatus: claim.payment_status,
+          refundAmount: claim.refund_amount,
+          currencyCode: order.currency_code,
+          claimItems: claim.claim_items.map((i) => getClaimItem(i)),
+          time: claim.canceled_at ? claim.canceled_at : claim.created_at,
+          noNotification: claim.no_notification,
+          claimType: claim.type,
+          canceledAt: claim.canceled_at,
+        } as ClaimEvent)
+
+        if (claim.canceled_at) {
+          events.push({
+            id: `${claim.id}-created`,
+            type: "claim",
+            newItems: claim.additional_items.map((i) => ({
+              quantity: i.quantity,
+              title: i.title,
+              thumbnail: i.thumbnail,
+              variant: {
+                title: i.variant.title,
+              },
+            })),
+            fulfillmentStatus: claim.fulfillment_status,
+            refundStatus: claim.payment_status,
+            refundAmount: claim.refund_amount,
+            currencyCode: order.currency_code,
+            claimItems: claim.claim_items.map((i) => getClaimItem(i)),
+            time: claim.created_at,
+            noNotification: claim.no_notification,
+            claimType: claim.type,
+            isCanceled: true,
+          } as ClaimEvent)
+        }
+      }
     }
 
     if (notifications) {
@@ -237,8 +341,8 @@ export const useBuildTimelime = (orderId: string) => {
   return { events }
 }
 
-function getLineItem(order, itemId) {
-  const line = order.items.find((line) => line.id === itemId)
+function getLineItem(allItems, itemId) {
+  const line = allItems.find((line) => line.id === itemId)
 
   if (!line) return
 
@@ -250,8 +354,8 @@ function getLineItem(order, itemId) {
   }
 }
 
-function getReturnItems(order, item) {
-  const line = order.items.find((li) => li.id === item.item_id)
+function getReturnItems(allItems, item) {
+  const line = allItems.find((li) => li.id === item.item_id)
 
   if (!line) return
 
@@ -264,6 +368,17 @@ function getReturnItems(order, item) {
       title: line.variant.title,
     },
     thumbnail: line.thumbnail,
+  }
+}
+
+function getClaimItem(claimItem) {
+  return {
+    title: claimItem.item.title,
+    quantity: claimItem.quantity,
+    thumbnail: claimItem.item.thumbnail,
+    variant: {
+      title: claimItem.item.variant.title,
+    },
   }
 }
 

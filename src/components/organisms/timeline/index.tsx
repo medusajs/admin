@@ -2,6 +2,7 @@ import clsx from "clsx"
 import { useAdminCreateNote } from "medusa-react"
 import React from "react"
 import {
+  ClaimEvent,
   ExchangeEvent,
   ItemsFulfilledEvent,
   ItemsShippedEvent,
@@ -19,6 +20,7 @@ import BackIcon from "../../fundamentals/icons/back-icon"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import NoteInput from "../../molecules/note-input"
+import Claim from "../../molecules/timeline-events/claim"
 import Exchange from "../../molecules/timeline-events/exchange"
 import ItemsFulfilled from "../../molecules/timeline-events/items-fulfilled"
 import ItemsShipped from "../../molecules/timeline-events/items-shipped"
@@ -123,6 +125,8 @@ function switchOnType(event: TimelineEvent) {
       return <Return event={event as ReturnEvent} />
     case "exchange":
       return <Exchange event={event as ExchangeEvent} />
+    case "claim":
+      return <Claim event={event as ClaimEvent} />
     default:
       return <div>{event.type}</div>
   }

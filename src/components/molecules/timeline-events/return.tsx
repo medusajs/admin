@@ -30,16 +30,8 @@ function buildReturn(event: ReturnEvent) {
     case "requested":
       title = "Return Requested"
       icon = <AlertIcon size={20} className="text-orange-40" />
-      button = (
-        <Button
-          variant="secondary"
-          size="small"
-          disabled={event.currentStatus && event.currentStatus !== "requested"}
-          className={clsx("mt-large", {
-            ["pointer-events-none opacity-50"]:
-              event.currentStatus !== event.status,
-          })}
-        >
+      button = event.currentStatus && event.currentStatus === "requested" && (
+        <Button variant="secondary" size="small" className={clsx("mt-large")}>
           Receive Return
         </Button>
       )
@@ -50,7 +42,7 @@ function buildReturn(event: ReturnEvent) {
       break
     case "canceled":
       title = "Return Canceled"
-      icon = <CancelIcon size={20} className="text-rose-50" />
+      icon = <CancelIcon size={20} className="text-grey-50" />
       break
     case "requires_action":
       title = "Return Requires Action"
@@ -66,12 +58,23 @@ function buildReturn(event: ReturnEvent) {
     time: event.time,
     topNode: <EventActionables actions={actions} />,
     noNotification: event.noNotification,
-    children: [
-      event.items.map((i) => {
-        return <EventItemContainer item={i} />
-      }),
-      button,
-    ],
+    children:
+      event.status === "requested"
+        ? [
+            event.items.map((i) => {
+              return <EventItemContainer item={i} />
+            }),
+            button,
+          ]
+        : event.status === "received"
+        ? [
+            event.items.map((i) => (
+              <EventItemContainer
+                item={{ ...i, quantity: i.receivedQuantity ?? i.quantity }}
+              />
+            )),
+          ]
+        : null,
   }
 }
 

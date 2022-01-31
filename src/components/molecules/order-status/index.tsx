@@ -17,6 +17,10 @@ type ReturnStatusProps = {
   returnStatus: string
 }
 
+type RefundStatusProps = {
+  refundStatus: string
+}
+
 const PaymentStatus: React.FC<PaymentStatusProps> = ({ paymentStatus }) => {
   switch (paymentStatus) {
     case "captured":
@@ -85,4 +89,23 @@ const ReturnStatus: React.FC<ReturnStatusProps> = ({ returnStatus }) => {
   }
 }
 
-export { PaymentStatus, OrderStatus, FulfillmentStatus, ReturnStatus }
+const RefundStatus: React.FC<RefundStatusProps> = ({ refundStatus }) => {
+  switch (refundStatus) {
+    case "na":
+      return <StatusIndicator title="N/A" variant="default" />
+    case "not_refunded":
+      return <StatusIndicator title="Refunded" variant="default" />
+    case "refunded":
+      return <StatusIndicator title="Refunded" variant="success" />
+    default:
+      return null
+  }
+}
+
+export {
+  PaymentStatus,
+  OrderStatus,
+  FulfillmentStatus,
+  ReturnStatus,
+  RefundStatus,
+}
