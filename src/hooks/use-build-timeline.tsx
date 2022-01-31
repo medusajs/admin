@@ -237,8 +237,6 @@ export const useBuildTimelime = (orderId: string) => {
   return { events }
 }
 
-function getExchangeItems(order, swap) {}
-
 function getLineItem(order, itemId) {
   const line = order.items.find((line) => line.id === itemId)
 
