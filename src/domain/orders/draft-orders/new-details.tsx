@@ -24,6 +24,7 @@ import DeletePrompt from "../../../components/organisms/delete-prompt"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
+import AddressModal from "../details/address-modal"
 
 const DraftOrderDetails = ({ id }) => {
   type DeletePromptData = {
@@ -73,13 +74,13 @@ const DraftOrderDetails = ({ id }) => {
         <div className={clsx(`inter-small-regular mr-3`, totalColor)}>
           {formatAmountWithSymbol({
             amount: totalAmount,
-            currency: region.currency_code,
+            currency: draft_order?.cart.region.currency_code,
             digits: 2,
-            tax: region.tax_rate,
+            tax: draft_order?.cart.region.tax_rate,
           })}
         </div>
         <div className="inter-small-regular text-grey-50">
-          {region.currency_code.toUpperCase()}
+          {draft_order?.cart.region.currency_code.toUpperCase()}
         </div>
       </div>
     </div>
@@ -182,7 +183,7 @@ const DraftOrderDetails = ({ id }) => {
   return (
     <div>
       <Breadcrumb
-        currentPage={"Order Details"}
+        currentPage={"Draft Order Details"}
         previousBreadcrumb={"Orders"}
         previousRoute="/a/orders"
       />
@@ -198,43 +199,66 @@ const DraftOrderDetails = ({ id }) => {
               title="Order #2414"
               subtitle="29 January 2022, 23:01"
               status={<OrderStatusComponent />}
-              forceDropdown={true}
-              actionables={[
-                {
-                  label: "Cancel Draft Order",
-                  icon: null,
-                  // icon: <CancelIcon size={"20"} />,
-                  variant: "danger",
-                  onClick: () =>
-                    setDeletePromptData({
-                      resource: "Draft Order",
-                      onDelete: () => handleDeleteOrder(),
-                      show: true,
-                    }),
-                },
-              ]}
+              customActionable={
+                draft_order?.status === "completed" && (
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={() =>
+                      navigate(`/a/orders/${draft_order.order_id}}`)
+                    }
+                  >
+                    Go to Order
+                  </Button>
+                )
+              }
+              forceDropdown={draft_order?.status === "completed" ? false : true}
+              actionables={
+                draft_order?.status === "completed"
+                  ? [
+                      {
+                        label: "Go to Order",
+                        icon: null,
+                        onClick: () => console.log("Should not be here"),
+                      },
+                    ]
+                  : [
+                      {
+                        label: "Cancel Draft Order",
+                        icon: null,
+                        // icon: <CancelIcon size={"20"} />,
+                        variant: "danger",
+                        onClick: () =>
+                          setDeletePromptData({
+                            resource: "Draft Order",
+                            onDelete: () => handleDeleteOrder(),
+                            show: true,
+                          }),
+                      },
+                    ]
+              }
             >
               <div className="flex mt-6 space-x-6 divide-x">
                 <div className="flex flex-col">
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Email
                   </div>
-                  <div>{cart.email}</div>
+                  <div>{cart?.email}</div>
                 </div>
                 <div className="flex flex-col pl-6">
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Phone
                   </div>
-                  <div>{cart.shipping_address?.phone || ""}</div>
+                  <div>{cart?.shipping_address?.phone || ""}</div>
                 </div>
                 <div className="flex flex-col pl-6">
                   <div className="inter-smaller-regular text-grey-50 mb-1">
-                    Amount (DKK)
+                    Amount ({region?.currency_code.toUpperCase()})
                   </div>
                   <div>
                     {formatAmountWithSymbol({
-                      amount: cart.total,
-                      currency: region.currency_code,
+                      amount: cart?.total,
+                      currency: region?.currency_code,
                     })}
                   </div>
                 </div>
@@ -270,9 +294,9 @@ const DraftOrderDetails = ({ id }) => {
                         <div className="inter-small-regular text-grey-50">
                           {formatAmountWithSymbol({
                             amount: item.unit_price,
-                            currency: region.currency_code,
+                            currency: region?.currency_code,
                             digits: 2,
-                            tax: region.tax_rate,
+                            tax: region?.tax_rate,
                           })}
                         </div>
                         <div className="inter-small-regular text-grey-50">
@@ -281,23 +305,23 @@ const DraftOrderDetails = ({ id }) => {
                         <div className="inter-small-regular text-grey-90">
                           {formatAmountWithSymbol({
                             amount: item.unit_price * item.quantity,
-                            currency: region.currency_code,
+                            currency: region?.currency_code,
                             digits: 2,
-                            tax: region.tax_rate,
+                            tax: region?.tax_rate,
                           })}
                         </div>
                       </div>
                       <div className="inter-small-regular text-grey-50">
-                        {region.currency_code.toUpperCase()}
+                        {region?.currency_code.toUpperCase()}
                       </div>
                     </div>
                   </div>
                 ))}
                 <DisplayTotal
-                  totalAmount={draft_order?.cart.subtotal}
+                  totalAmount={draft_order?.cart?.subtotal}
                   totalTitle={"Subtotal"}
                 />
-                {cart.discounts?.map((discount, index) => (
+                {cart?.discounts?.map((discount, index) => (
                   <div
                     key={index}
                     className="flex justify-between mt-4 items-center"
@@ -311,27 +335,30 @@ const DraftOrderDetails = ({ id }) => {
                     <div className="inter-small-regular text-grey-90">
                       -
                       {formatAmountWithSymbol({
-                        amount: cart.discount_total,
-                        currency: region.currency_code || "",
+                        amount: cart?.discount_total,
+                        currency: region?.currency_code || "",
                         digits: 2,
-                        tax: region.tax_rate,
+                        tax: region?.tax_rate,
                       })}
                     </div>
                   </div>
                 ))}
                 <DisplayTotal
-                  totalAmount={cart.shipping_total}
+                  totalAmount={cart?.shipping_total}
                   totalTitle={"Shipping"}
                 />
-                <DisplayTotal totalAmount={cart.tax_total} totalTitle={`Tax`} />
+                <DisplayTotal
+                  totalAmount={cart?.tax_total}
+                  totalTitle={`Tax`}
+                />
                 <div className="flex justify-between mt-4 items-center">
                   <div className="inter-small-semibold text-grey-90">Total</div>
                   <div className="inter-xlarge-semibold text-grey-90">
                     {formatAmountWithSymbol({
-                      amount: cart.total,
-                      currency: region.currency_code || "",
+                      amount: cart?.total,
+                      currency: region?.currency_code || "",
                       digits: 2,
-                      tax: region.tax_rate,
+                      tax: region?.tax_rate,
                     })}
                   </div>
                 </div>
@@ -352,11 +379,11 @@ const DraftOrderDetails = ({ id }) => {
             >
               <div className="mt-6">
                 <DisplayTotal
-                  totalAmount={draft_order?.cart.subtotal}
+                  totalAmount={cart?.subtotal}
                   totalTitle={"Subtotal"}
                 />
                 <DisplayTotal
-                  totalAmount={cart.shipping_total}
+                  totalAmount={cart?.shipping_total}
                   totalTitle={"Shipping"}
                 />
                 <DisplayTotal
@@ -370,14 +397,14 @@ const DraftOrderDetails = ({ id }) => {
                   <div className="flex">
                     <div className="inter-small-semibold text-grey-90 mr-3">
                       {formatAmountWithSymbol({
-                        amount: cart.total,
-                        currency: region.currency_code,
+                        amount: cart?.total,
+                        currency: region?.currency_code,
                         digits: 2,
-                        tax: region.tax_rate,
+                        tax: region?.tax_rate,
                       })}
                     </div>
                     <div className="inter-small-regular text-grey-50">
-                      {region.currency_code.toUpperCase()}
+                      {region?.currency_code.toUpperCase()}
                     </div>
                   </div>
                 </div>
@@ -385,7 +412,7 @@ const DraftOrderDetails = ({ id }) => {
             </BodyCard>
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Shipping">
               <div className="mt-6">
-                {cart.shipping_methods.map((method) => (
+                {cart?.shipping_methods.map((method) => (
                   <div className="flex flex-col">
                     <span className="inter-small-regular text-grey-50">
                       Shipping Method
@@ -429,7 +456,7 @@ const DraftOrderDetails = ({ id }) => {
                   label: "Edit Billing Address",
                   icon: <DollarSignIcon size={"20"} />,
                   onClick: () => {
-                    if (cart.billing_address) {
+                    if (cart?.billing_address) {
                       setAddressModal({
                         address: cart?.billing_address,
                         type: "billing",
@@ -440,7 +467,7 @@ const DraftOrderDetails = ({ id }) => {
                 {
                   label: "Go to Customer",
                   icon: <DetailsIcon size={"20"} />, // TODO: Change to Contact icon
-                  onClick: () => navigate(`/a/customers/${cart.customer.id}`),
+                  onClick: () => navigate(`/a/customers/${cart?.customer.id}`),
                 },
               ]}
             >
@@ -455,11 +482,11 @@ const DraftOrderDetails = ({ id }) => {
                   </div>
                   <div>
                     <h1 className="inter-large-semibold text-grey-90">
-                      {`${cart?.shipping_address.first_name} ${cart?.shipping_address.last_name}`}
+                      {`${cart?.shipping_address?.first_name} ${cart?.shipping_address?.last_name}`}
                     </h1>
                     <span className="inter-small-regular text-grey-50">
-                      {cart?.shipping_address.city},{" "}
-                      {cart?.shipping_address.country_code}
+                      {cart?.shipping_address?.city},{" "}
+                      {cart?.shipping_address?.country_code}
                     </span>
                   </div>
                 </div>
@@ -492,7 +519,7 @@ const DraftOrderDetails = ({ id }) => {
           </div>
         </div>
       )}
-      {/* {addressModal && (
+      {addressModal && (
         <AddressModal
           handleClose={() => setAddressModal(null)}
           handleSave={(obj) => handleUpdateAddress(obj)}
@@ -500,7 +527,7 @@ const DraftOrderDetails = ({ id }) => {
           type={addressModal.type}
           email={cart?.email}
         />
-      )} */}
+      )}
       {/* An attempt to make a reusable delete prompt, so we don't have to hold +10
       state variables for showing different prompts */}
       {deletePromptData.show && (
