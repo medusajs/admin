@@ -3,7 +3,6 @@ import { useAdminDeleteNote, useAdminUser } from "medusa-react"
 import React, { useState } from "react"
 import { NoteEvent } from "../../../hooks/use-build-timeline"
 import { useIsMe } from "../../../hooks/use-is-me"
-import useToaster from "../../../hooks/use-toaster"
 import Avatar from "../../atoms/avatar"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import DeletePrompt from "../../organisms/delete-prompt"
@@ -18,7 +17,6 @@ const Note: React.FC<NoteProps> = ({ event }) => {
   const [showDelete, setShowDelete] = useState(false)
   const { user, isLoading } = useAdminUser(event.authorId)
   const deleteNote = useAdminDeleteNote(event.id)
-  const toaster = useToaster()
   const isMe = useIsMe(user?.id)
 
   if (isLoading || !user) {
@@ -65,6 +63,7 @@ const Note: React.FC<NoteProps> = ({ event }) => {
           onDelete={async () => deleteNote.mutate(undefined)}
           confirmText="Yes, delete"
           heading="Delete note"
+          successText="Deleted note"
         />
       )}
     </>

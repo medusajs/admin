@@ -101,9 +101,12 @@ export interface NotificationEvent extends TimelineEvent {
 }
 
 export const useBuildTimelime = (orderId: string) => {
-  const { order, isLoading: orderLoading, isError: orderError } = useAdminOrder(
-    orderId
-  )
+  const {
+    order,
+    isLoading: orderLoading,
+    isError: orderError,
+    refetch,
+  } = useAdminOrder(orderId)
   const {
     notes,
     isLoading: notesLoading,
@@ -338,7 +341,7 @@ export const useBuildTimelime = (orderId: string) => {
     notificationsError,
   ])
 
-  return { events }
+  return { events, refetch }
 }
 
 function getLineItem(allItems, itemId) {

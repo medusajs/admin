@@ -1,10 +1,13 @@
 import clsx from "clsx"
-import React from "react"
+import { useAdminCancelReturn } from "medusa-react"
+import React, { useState } from "react"
 import { ReturnEvent } from "../../../hooks/use-build-timeline"
 import Button from "../../fundamentals/button"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
 import CancelIcon from "../../fundamentals/icons/cancel-icon"
 import CheckCircleIcon from "../../fundamentals/icons/check-circle-icon"
+import TrashIcon from "../../fundamentals/icons/trash-icon"
+import DeletePrompt from "../../organisms/delete-prompt"
 import { ActionType } from "../actionables"
 import EventActionables from "./event-actionables"
 import EventContainer from "./event-container"
@@ -12,15 +15,49 @@ import EventItemContainer from "./event-item-container"
 
 type ReturnRequestedProps = {
   event: ReturnEvent
+  refetch: () => void
 }
 
-const Return: React.FC<ReturnRequestedProps> = ({ event }) => {
-  const args = buildReturn(event)
+const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
+  const [showCancel, setShowCancel] = useState(false)
+  const cancelReturn = useAdminCancelReturn(event.id)
 
-  return <EventContainer {...args} />
+  const handleCancel = () => {
+    cancelReturn.mutate(undefined, {
+      onSuccess: () => {
+        refetch()
+      },
+    })
+  }
+
+  const handleReceive = () => {
+    //TODO
+  }
+
+  const args = buildReturn(event, handleCancel, handleReceive)
+
+  return (
+    <>
+      <EventContainer {...args} />
+      {showCancel && (
+        <DeletePrompt
+          handleClose={() => setShowCancel(false)}
+          onDelete={async () => handleCancel()}
+          heading="Cancel return"
+          confirmText="Yes, cancel"
+          successText="Canceled return"
+          text="Are you sure you want to cancel this return?"
+        />
+      )}
+    </>
+  )
 }
 
-function buildReturn(event: ReturnEvent) {
+function buildReturn(
+  event: ReturnEvent,
+  onCancel: () => void,
+  onReceive: () => void
+) {
   let title: string = "Return"
   let icon: React.ReactNode
   let button: React.ReactNode
@@ -30,11 +67,24 @@ function buildReturn(event: ReturnEvent) {
     case "requested":
       title = "Return Requested"
       icon = <AlertIcon size={20} className="text-orange-40" />
-      button = event.currentStatus && event.currentStatus === "requested" && (
-        <Button variant="secondary" size="small" className={clsx("mt-large")}>
-          Receive Return
-        </Button>
-      )
+      if (event.currentStatus === "requested") {
+        button = event.currentStatus && event.currentStatus === "requested" && (
+          <Button
+            variant="secondary"
+            size="small"
+            className={clsx("mt-large")}
+            onClick={onReceive}
+          >
+            Receive Return
+          </Button>
+        )
+        actions.push({
+          icon: <TrashIcon size={20} />,
+          label: "Cancel return",
+          variant: "danger",
+          onClick: onCancel,
+        })
+      }
       break
     case "received":
       title = "Return Received"
@@ -46,7 +96,7 @@ function buildReturn(event: ReturnEvent) {
       break
     case "requires_action":
       title = "Return Requires Action"
-      icon = icon = <AlertIcon size={20} className="text-rose-50" />
+      icon = <AlertIcon size={20} className="text-rose-50" />
       break
     default:
       break

@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { useAdminCreateNote } from "medusa-react"
-import React from "react"
+import React, { useEffect } from "react"
 import {
   ClaimEvent,
   ExchangeEvent,
@@ -34,7 +34,7 @@ type indexProps = {
 }
 
 const Timeline: React.FC<indexProps> = ({ orderId }) => {
-  const { events } = useBuildTimelime(orderId)
+  const { events, refetch } = useBuildTimelime(orderId)
   const toaster = useToaster()
   const createNote = useAdminCreateNote()
 
@@ -71,6 +71,10 @@ const Timeline: React.FC<indexProps> = ({ orderId }) => {
     )
   }
 
+  useEffect(() => {
+    console.log("Timeline rerendered")
+  }, [])
+
   return (
     <div className="rounded-rounded bg-grey-0 border border-grey-20">
       <div className="py-large px-xlarge border-b border-grey-20">
@@ -100,7 +104,7 @@ const Timeline: React.FC<indexProps> = ({ orderId }) => {
         ) : (
           <div className="flex flex-col gap-y-base">
             {events.map((event, i) => {
-              return <div key={i}>{switchOnType(event)}</div>
+              return <div key={i}>{switchOnType(event, refetch)}</div>
             })}
           </div>
         )}
@@ -109,7 +113,7 @@ const Timeline: React.FC<indexProps> = ({ orderId }) => {
   )
 }
 
-function switchOnType(event: TimelineEvent) {
+function switchOnType(event: TimelineEvent, refetch: () => void) {
   switch (event.type) {
     case "placed":
       return <OrderPlaced event={event as OrderPlacedEvent} />
@@ -122,7 +126,7 @@ function switchOnType(event: TimelineEvent) {
     case "canceled":
       return <OrderCanceled event={event as TimelineEvent} />
     case "return":
-      return <Return event={event as ReturnEvent} />
+      return <Return event={event as ReturnEvent} refetch={refetch} />
     case "exchange":
       return <Exchange event={event as ExchangeEvent} />
     case "claim":
