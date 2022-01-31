@@ -55,8 +55,10 @@ export function persistedPrice(currency: string, amount: number): number {
 /**
  * Checks the list of currencies and returns the divider/multiplier
  * that should be used to calculate the persited and display amount.
+ * @param currency
+ * @returns {number}
  */
-function getDecimalDigits(currency: string) {
+export function getDecimalDigits(currency: string) {
   const divisionDigits = currencies[currency.toUpperCase()].decimal_digits
   return Math.pow(10, divisionDigits)
 }
