@@ -142,9 +142,9 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     <LayeredModal context={layoutmodalcontext} handleClose={onDismiss}>
       <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
-          <h2 class="inter-xlarge-semibold">Request Return</h2>
+          <h2 className="inter-xlarge-semibold">Request Return</h2>
         </Modal.Header>
-        <Modal.Content flexDirection="column">
+        <Modal.Content>
           <div className="mb-7">
             <h3 className="inter-base-semibold">Items to return</h3>
             <RMASelectProductTable

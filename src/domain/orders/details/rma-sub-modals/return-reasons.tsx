@@ -8,6 +8,9 @@ import Select from "../../../../components/molecules/select"
 
 type RMAReturnReasonSubModalProps = {
   onSubmit: (reason, note) => void
+  reason?: any
+  existingNote?: string
+  isLargeModal?: boolean
 }
 
 // {
@@ -16,11 +19,16 @@ type RMAReturnReasonSubModalProps = {
 // }
 const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
   onSubmit,
+  reason,
+  existingNote,
+  isLargeModal = true,
 }) => {
   const { pop } = useContext(LayeredModalContext)
   const { isLoading, return_reasons } = useAdminReturnReasons()
-  const [note, setNote] = useState("")
-  const [selectedReason, setSelectedReason] = useState()
+  const [note, setNote] = useState(existingNote || "")
+  const [selectedReason, setSelectedReason] = useState(
+    reason ? { value: reason, label: reason.label } : undefined
+  )
 
   console.log(return_reasons)
 
@@ -30,7 +38,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
 
   return (
     <>
-      <Modal.Content>
+      <Modal.Content isLargeModal={isLargeModal}>
         <div className="h-full">
           <h2 className="inter-base-semibold mb-4">Reason for Return</h2>
           <Select
@@ -38,7 +46,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
             value={selectedReason}
             onChange={setSelectedReason}
             options={
-              return_reasons?.map(({ id, label }) => ({ value: id, label })) ||
+              return_reasons?.map((rr) => ({ value: rr, label: rr.label })) ||
               []
             }
           />
@@ -50,7 +58,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
           />
         </div>
       </Modal.Content>
-      <Modal.Footer>
+      <Modal.Footer isLargeModal={isLargeModal}>
         <div className="flex w-full justify-end gap-x-xsmall">
           <Button
             variant="ghost"
