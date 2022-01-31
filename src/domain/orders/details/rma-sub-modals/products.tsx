@@ -244,7 +244,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
     <>
       <Modal.Content isLargeModal={isLargeModal}>
         <div className="h-full">
-          <h2 className="inter-base-semibold mb-4">Reason for Return</h2>
+          <h2 className="inter-base-semibold mb-4">Search for additional </h2>
         </div>
         <Table enableSearch handleSearch={handleSearch} {...getTableProps()}>
           <Table.Head>

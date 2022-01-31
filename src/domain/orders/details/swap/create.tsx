@@ -329,7 +329,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
 const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
   return {
-    title: "Return Reasons",
+    title: "Add Products",
     onBack: () => pop(),
     view: (
       <RMASelectProductSubModal

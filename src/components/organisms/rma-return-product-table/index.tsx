@@ -94,7 +94,7 @@ const RMAReturnProductsTable: React.FC<RMAReturnProductsTableProps> = ({
                 onClick={() => handleRemoveItem(index)}
                 variant="ghost"
                 size="small"
-                className="w-8 h-8"
+                className="w-8 h-8 text-grey-40"
               >
                 <TrashIcon size={20} />
               </Button>
