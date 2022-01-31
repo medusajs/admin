@@ -1,6 +1,6 @@
 import React from "react"
 import { OrderPlacedEvent } from "../../../hooks/use-build-timeline"
-import { stringDisplayPrice } from "../../../utils/prices"
+import { formatAmountWithSymbol } from "../../../utils/prices"
 import CheckCircleIcon from "../../fundamentals/icons/check-circle-icon"
 import EventContainer, { EventIconColor } from "./event-container"
 
@@ -16,9 +16,11 @@ const OrderPlaced: React.FC<OrderPlacedProps> = ({ event }) => {
     title: "Order Placed",
     topNode: (
       <div className="inter-small-semibold">
-        {stringDisplayPrice({
-          currencyCode: event.currency_code,
+        {formatAmountWithSymbol({
           amount: event.amount,
+          currency: event.currency_code,
+          tax: event.tax,
+          digits: 2,
         })}
       </div>
     ),

@@ -27,6 +27,7 @@ export interface TimelineEvent {
 export interface OrderPlacedEvent extends TimelineEvent {
   amount: number
   currency_code: string
+  tax?: number
 }
 
 interface OrderItem {
@@ -107,6 +108,7 @@ export const useBuildTimelime = (orderId: string) => {
       time: order.created_at,
       amount: order.total,
       currency_code: order.currency_code,
+      tax: order.tax_rate,
       type: "placed",
     } as OrderPlacedEvent)
 
