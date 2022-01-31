@@ -1,19 +1,28 @@
-import { useAdminUser } from "medusa-react"
-import React from "react"
+import clsx from "clsx"
+import { useAdminDeleteNote, useAdminUser } from "medusa-react"
+import React, { useState } from "react"
+import { NoteEvent } from "../../../hooks/use-build-timeline"
+import { useIsMe } from "../../../hooks/use-is-me"
+import useToaster from "../../../hooks/use-toaster"
 import Avatar from "../../atoms/avatar"
+import TrashIcon from "../../fundamentals/icons/trash-icon"
+import DeletePrompt from "../../organisms/delete-prompt"
+import EventActionables from "./event-actionables"
 import EventContainer from "./event-container"
-import { EventType } from "./event-type"
 
 type NoteProps = {
-  author_id: string
-  value: string
-} & EventType
+  event: NoteEvent
+}
 
-const note: React.FC<NoteProps> = ({ author_id, time }) => {
-  const { user, isLoading } = useAdminUser(author_id)
+const Note: React.FC<NoteProps> = ({ event }) => {
+  const [showDelete, setShowDelete] = useState(false)
+  const { user, isLoading } = useAdminUser(event.authorId)
+  const deleteNote = useAdminDeleteNote(event.id)
+  const toaster = useToaster()
+  const isMe = useIsMe(user?.id)
 
   if (isLoading || !user) {
-    return <div>Loading...</div>
+    return null
   }
 
   const name =
@@ -22,12 +31,44 @@ const note: React.FC<NoteProps> = ({ author_id, time }) => {
       : user.email
 
   return (
-    <EventContainer
-      title={name}
-      icon={<Avatar user={user} />}
-      date={time}
-    ></EventContainer>
+    <>
+      <EventContainer
+        title={name}
+        icon={<Avatar user={user} />}
+        time={event.time}
+        topNode={
+          <EventActionables
+            actions={[
+              {
+                label: "Delete",
+                icon: <TrashIcon size={20} />,
+                onClick: () => setShowDelete(!showDelete),
+                variant: "danger",
+              },
+            ]}
+          />
+        }
+        isFirst={event.first}
+      >
+        <div
+          className={clsx("rounded-2xl px-base py-base", {
+            "bg-grey-5": !isMe,
+            "bg-violet-5 text-violet-90": isMe,
+          })}
+        >
+          {event.value}
+        </div>
+      </EventContainer>
+      {showDelete && (
+        <DeletePrompt
+          handleClose={() => setShowDelete(!showDelete)}
+          onDelete={async () => deleteNote.mutate(undefined)}
+          confirmText="Yes, delete"
+          heading="Delete note"
+        />
+      )}
+    </>
   )
 }
 
-export default note
+export default Note
