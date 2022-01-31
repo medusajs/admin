@@ -1,8 +1,8 @@
 import { RouteComponentProps, useLocation } from "@reach/router"
-import { debounce, isEmpty } from "lodash"
+import { isEmpty } from "lodash"
 import { useAdminOrders } from "medusa-react"
 import qs from "query-string"
-import React, { useEffect, useMemo, useReducer, useState } from "react"
+import React, { useEffect, useReducer, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import { removeNullish } from "../../../utils/remove-nullish"
 import { formatDateFilter } from "../../../utils/time"
@@ -48,6 +48,8 @@ function orderFiltersReducer(state, action) {
   switch (action.type) {
     case "filters":
       return { ...state, ...action.payload }
+    case "query":
+      return { ...state, q: action.payload, limit: 14, offset: 0 }
     case "limit":
       return { ...state, limit: action.payload }
     case "offset":
@@ -88,7 +90,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const [state, dispatch] = useReducer(orderFiltersReducer, initialState)
   const [tempState, setTempState] = useState(initialState)
-  const [query, setQuery] = useState<string>()
+  const [query, setQuery] = useState(filtersOnLoad?.q)
 
   const [numPages, setNumPages] = useState(0)
 
@@ -123,18 +125,6 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
     return removeNullish(urlObject)
   }
-
-  useEffect(() => {
-    if (query) {
-      refreshWithFilters()
-    }
-  }, [query])
-
-  useEffect(() => {
-    return () => {
-      debouncedSearch.cancel()
-    }
-  })
 
   const initialFilters = constructFiltersFromState()
 
@@ -179,6 +169,16 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     usePagination
   )
 
+  // Debounced search
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      dispatch({ type: "query", payload: query })
+      gotoPage(0)
+    }, 400)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [query])
+
   const handleNext = () => {
     if (canNextPage) {
       const newOffset = state.offset + pageSize
@@ -193,14 +193,6 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       dispatch({ type: "offset", payload: newOffset })
       previousPage()
     }
-  }
-
-  // Upon searching, we reset all other filters
-  const handleSearch = (q) => {
-    setQuery(q)
-    dispatch({ type: "limit", payload: 14 })
-    dispatch({ type: "offset", payload: 0 })
-    gotoPage(0)
   }
 
   const updateUrlFromFilter = (obj = {}) => {
@@ -223,6 +215,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     gotoPage(0)
     updateUrlFromFilter()
     setTempState(initialState)
+    setQuery("")
   }
 
   const setSingleFilter = (filterKey, filterVal) => {
@@ -241,8 +234,6 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     refreshWithFilters()
   }
 
-  const debouncedSearch = useMemo(() => debounce(handleSearch, 500), [])
-
   useEffect(() => {
     refreshWithFilters()
   }, [state])
@@ -255,6 +246,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       fulfillment: parseUrlFilter(filtersOnLoad.fulfillment_status),
       payment: parseUrlFilter(filtersOnLoad.payment_status),
       date: parseUrlFilter(filtersOnLoad.created_at),
+      q: filtersOnLoad?.q || "",
     }
 
     setTempState(loadedFilters)
@@ -284,7 +276,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
               />
             }
             enableSearch
-            handleSearch={debouncedSearch}
+            handleSearch={setQuery}
             searchValue={query}
             {...getTableProps()}
           >
