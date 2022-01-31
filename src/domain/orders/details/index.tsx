@@ -11,8 +11,6 @@ import {
   useAdminCreateClaimShipment,
   useAdminCreateShipment,
   useAdminCreateSwapShipment,
-  useAdminNotes,
-  useAdminNotifications,
   useAdminOrder,
   useAdminUpdateOrder,
 } from "medusa-react"
@@ -122,15 +120,7 @@ const OrderDetails = ({ id }) => {
     type: "billing" | "shipping"
   }>(null)
 
-  const { order, isLoading, refetch } = useAdminOrder(id)
-  const { notes, isLoading: notesLoading } = useAdminNotes({
-    resource_id: id,
-  })
-  const {
-    notifications,
-    isLoading: notificationsLoading,
-    isError: notificationsError,
-  } = useAdminNotifications({ resource_id: id })
+  const { order, isLoading } = useAdminOrder(id)
 
   const markShipped = useAdminCreateShipment(id)
   const markClaimShipped = useAdminCreateClaimShipment(id)
