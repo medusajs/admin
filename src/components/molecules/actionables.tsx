@@ -13,13 +13,14 @@ export type ActionType = {
 
 type ActionablesProps = {
   actions?: ActionType[]
+  triggerClass: string
 }
 
 /**
  * A component that accepts multiple actionables and renders them as a dropdown menu.
  * If only a single actionable is provided, it will render a button instead.
  */
-const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
+const Actionables: React.FC<ActionablesProps> = ({ actions, triggerClass }) => {
   if (!actions?.length) {
     return null
   }
@@ -31,7 +32,7 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
           <Button
             variant="ghost"
             size="small"
-            className="w-xlarge h-xlarge focus:border-none focus:shadow-none"
+            className={clsx("w-xlarge h-xlarge", triggerClass)}
           >
             <MoreHorizontalIcon size={20} />
           </Button>

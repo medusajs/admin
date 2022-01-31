@@ -6,6 +6,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 type ModalProps = {
   isLargeModal?: boolean
   handleClose: () => void
+  open?: boolean
 }
 
 type ModalChildProps = {
@@ -45,9 +46,14 @@ const addProp = (children, prop) => {
   )
 }
 
-const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
+const Modal: ModalType = ({
+  open = true,
+  handleClose,
+  isLargeModal = true,
+  children,
+}) => {
   return (
-    <Dialog.Root open={true} onOpenChange={handleClose}>
+    <Dialog.Root open={open} onOpenChange={handleClose}>
       <Dialog.Portal>
         <Overlay>
           <Content>{addProp(children, { isLargeModal })}</Content>

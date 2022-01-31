@@ -363,6 +363,10 @@
   .vice-city {
     @apply bg-gradient-to-tr from-vice-start to-vice-stop;
   }
+
+  .hidden-actions[data-state="open"] {
+    opacity: 1;
+  }
 }
 
 /* Classes to remove number spinners from inputs of type number */

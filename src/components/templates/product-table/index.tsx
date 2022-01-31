@@ -28,23 +28,12 @@ import clsx from "clsx"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
 import qs from "query-string"
 import { useDebounce } from "../../../hooks/use-debounce"
+import ProductOverview from "./overview"
+import { getProductStatusVariant } from "../../../utils/product-status-variant"
+import useCopyProduct from "./use-copy-product"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
-
-const getProductStatusVariant = (title) => {
-  switch (title) {
-    case "proposed":
-      return "warning"
-    case "published":
-      return "success"
-    case "rejected":
-      return "danger"
-    case "draft":
-    default:
-      return "default"
-  }
-}
 
 type ProductTableProps = {}
 
@@ -62,7 +51,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   const [tags, setTags] = useState(null)
 
   const deleteProductHook = useAdminDeleteProduct(deleteProduct?.id)
-  const createProductHook = useAdminCreateProduct()
+  const handleCopyProduct = useCopyProduct()
   const updateProductHook = useAdminUpdateProduct(updateProduct?.id)
 
   const [statusFilter, setStatusFilter] = useState({
@@ -229,6 +218,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     ...filtersOnLoad,
     ...defaultQueryProps,
     q: debouncedSearchTerm,
+    limit: showList ? limit : 18,
   })
 
   const replaceQueryString = (queryObject) => {
@@ -397,66 +387,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     setQuery(q)
   }
 
-  const handleCopyProduct = async (product) => {
-    const copy = {
-      title: `${product.title} copy`,
-      description: `${product.description}`,
-      handle: `${product.handle}-copy`,
-    }
-
-    copy.options = product.options.map((po) => ({
-      title: po.title,
-    }))
-
-    copy.variants = product.variants.map((pv) => ({
-      title: pv.title,
-      inventory_quantity: pv.inventory_quantity,
-      prices: pv.prices.map((price) => {
-        const p = {
-          amount: price.amount,
-        }
-        if (price.region_id) {
-          p.region_id = price.region_id
-        }
-        if (price.currency_code) {
-          p.currency_code = price.currency_code
-        }
-
-        return p
-      }),
-      options: pv.options.map((pvo) => ({ value: pvo.value })),
-    }))
-
-    if (product.type) {
-      copy.type = {
-        id: product.type.id,
-        value: product.type.value,
-      }
-    }
-
-    if (product.collection_id) {
-      copy.collection_id = product.collection_id
-    }
-
-    if (product.tags) {
-      copy.tags = product.tags.map(({ id, value }) => ({ id, value }))
-    }
-
-    if (product.thumbnail) {
-      copy.thumbnail = product.thumbnail
-    }
-
-    await createProductHook.mutateAsync(copy, {
-      onSuccess: ({ product }) => {
-        navigate(`/a/products/${product.id}`)
-        toaster("Created a new return reason", "success")
-      },
-      onError: (error) => {
-        toaster(getErrorMessage(error), "error")
-      },
-    })
-  }
-
   const getActionablesForProduct = (product) => {
     return [
       {
@@ -520,6 +450,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       },
     ]
   }
+  console.log({ products })
 
   return (
     <div className="w-full h-full overflow-y-scroll">
@@ -548,41 +479,52 @@ const ProductTable: React.FC<ProductTableProps> = () => {
             handleSearch={handleSearch}
             {...getTableProps()}
           >
-            <Table.Head>
-              {headerGroups?.map((headerGroup) => (
-                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((col) => (
-                    <Table.HeadCell
-                      className="min-w-[100px]"
-                      {...col.getHeaderProps()}
-                    >
-                      {col.render("Header")}
-                    </Table.HeadCell>
+            {showList ? (
+              <>
+                <Table.Head>
+                  {headerGroups?.map((headerGroup) => (
+                    <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                      {headerGroup.headers.map((col) => (
+                        <Table.HeadCell
+                          className="min-w-[100px]"
+                          {...col.getHeaderProps()}
+                        >
+                          {col.render("Header")}
+                        </Table.HeadCell>
+                      ))}
+                    </Table.HeadRow>
                   ))}
-                </Table.HeadRow>
-              ))}
-            </Table.Head>
-            <Table.Body {...getTableBodyProps()}>
-              {rows.map((row) => {
-                prepareRow(row)
-                return (
-                  <Table.Row
-                    color={"inherit"}
-                    linkTo={`/a/products/${row.original.id}`}
-                    actions={getActionablesForProduct(row.original)}
-                    {...row.getRowProps()}
-                  >
-                    {row.cells.map((cell, index) => {
-                      return (
-                        <Table.Cell {...cell.getCellProps()}>
-                          {cell.render("Cell", { index })}
-                        </Table.Cell>
-                      )
-                    })}
-                  </Table.Row>
-                )
-              })}
-            </Table.Body>
+                </Table.Head>
+                <Table.Body {...getTableBodyProps()}>
+                  {rows.map((row) => {
+                    prepareRow(row)
+                    return (
+                      <Table.Row
+                        color={"inherit"}
+                        linkTo={`/a/products/${row.original.id}`}
+                        actions={getActionablesForProduct(row.original)}
+                        {...row.getRowProps()}
+                      >
+                        {row.cells.map((cell, index) => {
+                          return (
+                            <Table.Cell {...cell.getCellProps()}>
+                              {cell.render("Cell", { index })}
+                            </Table.Cell>
+                          )
+                        })}
+                      </Table.Row>
+                    )
+                  })}
+                </Table.Body>
+              </>
+            ) : (
+              <div>
+                <ProductOverview
+                  products={products}
+                  toggleListView={() => setShowList(true)}
+                />
+              </div>
+            )}
           </Table>
           <TablePagination
             count={count!}
