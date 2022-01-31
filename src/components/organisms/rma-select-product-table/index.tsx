@@ -14,7 +14,6 @@ type RMASelectProductTableProps = {
   toReturn: any[]
   setToReturn: (items: any[]) => void
   imagesOnReturns: any
-  // setQuantities: (quantities: any[]) => void
 }
 
 const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
@@ -22,8 +21,6 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   allItems,
   toReturn,
   imagesOnReturns = false,
-  // quantities,
-  // setQuantities,
   setToReturn,
 }) => {
   const { push, pop } = useContext(LayeredModalContext)
@@ -36,10 +33,6 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     ) {
       return
     }
-    // const newQuantities = {
-    //   ...quantities,
-    //   [item.id]: quantities[item.id] + change,
-    // }
 
     const newReturns = {
       ...toReturn,
@@ -50,8 +43,6 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     }
 
     setToReturn(newReturns)
-
-    // setQuantities(newQuantities)
   }
 
   const handleReturnToggle = (item) => {

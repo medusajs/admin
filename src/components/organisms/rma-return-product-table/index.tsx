@@ -52,14 +52,15 @@ const RMAReturnProductsTable: React.FC<RMAReturnProductsTableProps> = ({
                 <div className="w-[30px] h-[40px] ">
                   <img
                     className="h-full w-full object-cover rounded"
-                    src={item.thumbnail}
+                    src={item.product.thumbnail}
                   />
                 </div>
                 <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
                   <span>
-                    <span className="text-grey-90">{item.title}</span> test
+                    <span className="text-grey-90">{item.product.title}</span>{" "}
+                    test
                   </span>
-                  <span>{item.variant.title}</span>
+                  <span>{item.title}</span>
                 </div>
               </div>
             </Table.Cell>
@@ -71,7 +72,7 @@ const RMAReturnProductsTable: React.FC<RMAReturnProductsTableProps> = ({
                 >
                   <MinusIcon size={16} />
                 </span>
-                <span>{quantities[item.id] || ""}</span>
+                <span>{item.quantity || ""}</span>
                 <span
                   onClick={() => handleToAddQuantity(1, index)}
                   className={clsx(
