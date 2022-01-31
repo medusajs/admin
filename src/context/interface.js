@@ -2,7 +2,7 @@ import React, { useState } from "react"
 
 export const defaultInterfaceContext = {
   onSearch: query => {},
-  setOnSearch: () => {},
+  setOnSearch: (query) => {},
   onUnmount: () => {},
   display: false,
 }

@@ -191,7 +191,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   }
 
   const handleDelete = async () => {
-    deleteRegion.mutate(null, {
+    deleteRegion.mutate(undefined, {
       onSuccess: () => {
         if (onDelete) onDelete(null)
       },
@@ -246,12 +246,9 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                   ref={register}
                   className="mb-base"
                 />
-                {/* <Select
-                  enableSearch
-                  label="Currency"
-                  name="currency_code"
-                  options={currencies}
-                  value={selectedCurrency}
+                <CurrencyInput
+                  currentCurrency={selectedCurrency}
+                  currencyCodes={currencies}
                   onChange={handleChangeCurrency}
                   className="mb-base"
                 /> */}

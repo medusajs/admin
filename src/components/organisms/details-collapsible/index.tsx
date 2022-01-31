@@ -29,6 +29,7 @@ const DetailsCollapsible = ({
     >
       <RadixCollapsible.Trigger
         {...triggerProps}
+        type="button" // needed to prevent from tampering with form submission
         className={clsx({ ["mb-6"]: open }, triggerProps?.className)}
       >
         <div className="flex items-center">
