@@ -3,7 +3,7 @@ import React from "react"
 import PageDescription from "../../components/atoms/page-description"
 import BodyCard from "../../components/organisms/body-card"
 import OrderTable from "../../components/templates/order-table"
-import Details from "./details/new-details"
+import Details from "./details"
 import DraftOrderDetails from "./draft-orders/details"
 import NewOrder from "./new"
 

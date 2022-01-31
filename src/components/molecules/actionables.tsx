@@ -8,7 +8,7 @@ export type ActionType = {
   label: string
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
   variant?: "normal" | "danger"
-  icon: React.ReactNode
+  icon?: React.ReactNode
 }
 
 type ActionablesProps = {
@@ -34,9 +34,7 @@ const Actionables: React.FC<ActionablesProps> = ({
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          {customTrigger ? (
-            customTrigger
-          ) : (
+          {!customTrigger ? (
             <Button
               variant="ghost"
               size="small"
@@ -44,6 +42,8 @@ const Actionables: React.FC<ActionablesProps> = ({
             >
               <MoreHorizontalIcon size={20} />
             </Button>
+          ) : (
+            <div>{customTrigger}</div>
           )}
         </DropdownMenu.Trigger>
 
@@ -74,10 +74,16 @@ const Actionables: React.FC<ActionablesProps> = ({
       </DropdownMenu.Root>
     </div>
   ) : (
-    <Button variant="ghost" size="small" onClick={actions[0].onClick}>
-      {actions[0].icon}
-      {actions[0].label}
-    </Button>
+    <div>
+      {customTrigger ? (
+        <div>{customTrigger}</div>
+      ) : (
+        <Button variant="ghost" size="small" onClick={actions[0].onClick}>
+          {actions[0].icon}
+          {actions[0].label}
+        </Button>
+      )}
+    </div>
   )
 }
 

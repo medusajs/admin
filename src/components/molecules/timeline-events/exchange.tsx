@@ -1,50 +1,76 @@
 import React from "react"
 import { ExchangeEvent } from "../../../hooks/use-build-timeline"
-import StatusIndicator from "../../fundamentals/status-indicator"
-import EventContainer from "./event-container"
+import RefreshIcon from "../../fundamentals/icons/refresh-icon"
+import { FulfillmentStatus, PaymentStatus, ReturnStatus } from "../order-status"
+import EventContainer, { EventIconColor } from "./event-container"
+import EventItemContainer from "./event-item-container"
 
 type ExchangeProps = {
   event: ExchangeEvent
 }
 
-const ExchangeStatus = (event: ExchangeEvent) => {
-  const { paymentStatus, fulfillmentStatus, returnStatus } = event
-
+const ExchangeStatus: React.FC<ExchangeProps> = ({ event }) => {
   const divider = <div className="h-11 w-px bg-grey-20" />
 
   return (
-    <div className="flex items-center inter-small-regular">
+    <div className="flex items-center inter-small-regular gap-x-base truncate">
       <div className="flex flex-col gap-y-2xsmall">
         <span className="text-grey-50">Payment:</span>
-        <StatusIndicator
-          title={formatStatus(paymentStatus)}
-          variant="success"
-        />
+        <PaymentStatus paymentStatus={event.paymentStatus} />
       </div>
       {divider}
       <div className="flex flex-col gap-y-2xsmall">
         <span className="text-grey-50">Return:</span>
-        <StatusIndicator title={formatStatus(returnStatus)} variant="success" />
+        <ReturnStatus returnStatus={event.returnStatus} />
       </div>
       {divider}
       <div className="flex flex-col gap-y-2xsmall">
         <span className="text-grey-50">Fulfillment:</span>
-        <StatusIndicator
-          title={formatStatus(fulfillmentStatus)}
-          variant="success"
-        />
+        <FulfillmentStatus fulfillmentStatus={event.fulfillmentStatus} />
       </div>
     </div>
   )
 }
 
-const Exchange: React.FC<ExchangeProps> = ({}) => {
-  return <EventContainer />
-}
+const Exchange: React.FC<ExchangeProps> = ({ event }) => {
+  const returnItems = (
+    <div className="flex flex-col gap-y-small">
+      <span className="inter-small-regular text-grey-50">Return Items</span>
+      <div>
+        {event.returnItems.map((i) => (
+          <EventItemContainer item={{ ...i, quantity: i.requestedQuantity }} />
+        ))}
+      </div>
+    </div>
+  )
 
-function formatStatus(status: string) {
-  const split = status.split("_")
-  return split.map((c) => c[0].toUpperCase() + c.slice(1)).join(" ")
+  console.log(event.newItems)
+
+  const newItems = (
+    <div className="flex flex-col gap-y-small">
+      <span className="inter-small-regular text-grey-50">New Items</span>
+      <div>
+        {event.newItems.map((i) => (
+          <EventItemContainer item={i} />
+        ))}
+      </div>
+    </div>
+  )
+
+  const args = {
+    title: "Exchange Requested",
+    icon: <RefreshIcon size={20} />,
+    iconColor: EventIconColor.ORANGE,
+    time: event.time,
+    children: [
+      <div className="flex flex-col gap-y-base">
+        <ExchangeStatus event={event} />
+        {returnItems}
+        {newItems}
+      </div>,
+    ],
+  }
+  return <EventContainer {...args} />
 }
 
 export default Exchange

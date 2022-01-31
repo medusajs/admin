@@ -183,7 +183,7 @@ export const useBuildTimelime = (orderId: string) => {
         paymentStatus: event.payment_status,
         returnStatus: event.return_order.status,
         type: "exchange",
-        newItems: event.additional_items.map((i) => getLineItem(order, i)),
+        newItems: event.additional_items.map((i) => getSwapItem(i)),
         returnItems: event.return_order.items.map((i) =>
           getReturnItems(order, i)
         ),
@@ -264,5 +264,14 @@ function getReturnItems(order, item) {
       title: line.variant.title,
     },
     thumbnail: line.thumbnail,
+  }
+}
+
+function getSwapItem(item) {
+  return {
+    title: item.title,
+    quantity: item.quantity,
+    thumbnail: item.thumbnail,
+    variant: { title: item.variant.title },
   }
 }

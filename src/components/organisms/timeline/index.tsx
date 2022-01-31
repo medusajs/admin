@@ -2,6 +2,7 @@ import clsx from "clsx"
 import { useAdminCreateNote } from "medusa-react"
 import React from "react"
 import {
+  ExchangeEvent,
   ItemsFulfilledEvent,
   ItemsShippedEvent,
   NoteEvent,
@@ -18,6 +19,7 @@ import BackIcon from "../../fundamentals/icons/back-icon"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import NoteInput from "../../molecules/note-input"
+import Exchange from "../../molecules/timeline-events/exchange"
 import ItemsFulfilled from "../../molecules/timeline-events/items-fulfilled"
 import ItemsShipped from "../../molecules/timeline-events/items-shipped"
 import Note from "../../molecules/timeline-events/note"
@@ -68,7 +70,7 @@ const Timeline: React.FC<indexProps> = ({ orderId }) => {
   }
 
   return (
-    <div className="rounded-rounded bg-grey-0 border border-grey-20 w-[419px]">
+    <div className="rounded-rounded bg-grey-0 border border-grey-20">
       <div className="py-large px-xlarge border-b border-grey-20">
         <div className="flex items-center justify-between">
           <h3 className="inter-xlarge-semibold">Timeline</h3>
@@ -119,6 +121,8 @@ function switchOnType(event: TimelineEvent) {
       return <OrderCanceled event={event as TimelineEvent} />
     case "return":
       return <Return event={event as ReturnEvent} />
+    case "exchange":
+      return <Exchange event={event as ExchangeEvent} />
     default:
       return <div>{event.type}</div>
   }

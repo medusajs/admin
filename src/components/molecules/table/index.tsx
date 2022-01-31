@@ -245,7 +245,11 @@ Table.Row = React.forwardRef(
         { "cursor-pointer": linkTo !== undefined }
       )}
       {...props}
-      {...(linkTo && { onClick: () => navigate(linkTo) })}
+      {...(linkTo && {
+        onClick: () => {
+          navigate(linkTo)
+        },
+      })}
     >
       {children}
       {actions && (
