@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
+import React, { useState, useEffect, useContext } from "react"
 import Modal from "../../../../components/molecules/modal"
 import Button from "../../../../components/fundamentals/button"
 import Select from "../../../../components/molecules/select"
@@ -12,6 +11,13 @@ import RMAShippingPrice from "../../../../components/molecules/rma-select-shippi
 import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import LayeredModal, {
+  LayeredModalContext,
+} from "../../../../components/molecules/modal/layered-modal"
+import RMASelectProductSubModal from "../rma-sub-modals/products"
+
+const removeNullish = (obj) =>
+  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
 const extractPrice = (prices, order) => {
   let price = prices.find((ma) => ma.region_id === order.region_id)
@@ -28,10 +34,11 @@ const extractPrice = (prices, order) => {
 }
 
 const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
+  const layeredModalContext = useContext(LayeredModalContext)
   const [submitting, setSubmitting] = useState(false)
   const [toPay, setToPay] = useState(0)
-  const [toReturn, setToReturn] = useState([])
-  const [quantities, setQuantities] = useState({})
+  const [toReturn, setToReturn] = useState({})
+  // const [quantities, setQuantities] = useState({})
   const [useCustomShippingPrice, setUseCustomShippingPrice] = useState(false)
 
   const [itemsToAdd, setItemsToAdd] = useState([])
@@ -40,60 +47,15 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [shippingMethod, setShippingMethod] = useState()
   const [shippingPrice, setShippingPrice] = useState()
   const [noNotification, setNoNotification] = useState(order.no_notification)
-  const [searchResults, setSearchResults] = useState([])
 
   // Includes both order items and swap items
   const [allItems, setAllItems] = useState([])
-
-  const { register, setValue, handleSubmit } = useForm()
 
   useEffect(() => {
     if (order) {
       setAllItems(filterItems(order, false))
     }
   }, [order])
-
-  const handleAddItemToSwap = (variant) => {
-    setItemsToAdd([...itemsToAdd, { ...variant, quantity: 1 }])
-  }
-
-  // const isLineItemCanceled = (item) => {
-  //   const { swap_id, claim_order_id } = item
-  //   const travFind = (col, id) =>
-  //     col.filter((f) => f.id == id && f.canceled_at).length > 0
-
-  //   if (swap_id) {
-  //     return travFind(order.swaps, swap_id)
-  //   }
-  //   if (claim_order_id) {
-  //     return travFind(order.claims, claim_order_id)
-  //   }
-  //   return false
-  // }
-
-  // const handleReturnToggle = (item) => {
-  //   const id = item.id
-  //   const idx = toReturn.indexOf(id)
-  //   if (idx !== -1) {
-  //     const newReturns = [...toReturn]
-  //     newReturns.splice(idx, 1)
-  //     setToReturn(newReturns)
-
-  //     if (returnAll) {
-  //       setReturnAll(false)
-  //     }
-  //   } else {
-  //     const newReturns = [...toReturn, id]
-  //     setToReturn(newReturns)
-
-  //     const newQuantities = {
-  //       ...quantities,
-  //       [item.id]: item.quantity - item.returned_quantity,
-  //     }
-
-  //     setQuantities(newQuantities)
-  //   }
-  // }
 
   useEffect(() => {
     Medusa.shippingOptions
@@ -108,13 +70,16 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }, [])
 
   useEffect(() => {
-    const items = toReturn.map((t) => allItems.find((i) => i.id === t))
+    const items = Object.keys(toReturn).map((t) =>
+      allItems.find((i) => i.id === t)
+    )
+
     const returnTotal =
       items.reduce((acc, next) => {
         return (
           acc +
           (next.refundable / (next.quantity - next.returned_quantity)) *
-            quantities[next.id]
+            toReturn[next.id].quantity
         )
       }, 0) - (shippingPrice || 0)
 
@@ -125,54 +90,13 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }, 0)
 
     setToPay(newItemsTotal - returnTotal)
-  }, [toReturn, quantities, shippingPrice, itemsToAdd])
-
-  // const handleQuantity = (e, item) => {
-  //   const element = e.target
-  //   const newQuantities = {
-  //     ...quantities,
-  //     [item.id]: parseInt(element.value),
-  //   }
-
-  //   setQuantities(newQuantities)
-  // }
-
-  const onSubmit = () => {
-    const data = {
-      return_items: toReturn.map((t) => ({
-        item_id: t,
-        quantity: quantities[t],
-      })),
-      additional_items: itemsToAdd.map((i) => ({
-        variant_id: i.id,
-        quantity: i.quantity,
-      })),
-      no_notification:
-        noNotification !== order.no_notification ? noNotification : undefined,
-    }
-
-    if (shippingMethod) {
-      data.return_shipping = {
-        option_id: shippingMethod,
-        price: Math.round(shippingPrice / (1 + order.tax_rate / 100)),
-      }
-    }
-
-    if (onCreate) {
-      setSubmitting(true)
-      return onCreate(data)
-        .then(() => onDismiss())
-        .then(() => toaster("Successfully created swap", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
-        .finally(() => setSubmitting(false))
-    }
-  }
+  }, [toReturn, shippingPrice, itemsToAdd])
 
   const handleToAddQuantity = (value, index) => {
     const updated = [...itemsToAdd]
     updated[index] = {
       ...itemsToAdd[index],
-      quantity: value,
+      quantity: itemsToAdd[index].quantity + value,
     }
 
     setItemsToAdd(updated)
@@ -183,25 +107,6 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     updated.splice(index, 1)
     setItemsToAdd(updated)
   }
-
-  // const handleReturnAll = () => {
-  //   if (returnAll) {
-  //     setToReturn([])
-  //     setReturnAll(false)
-  //   } else {
-  //     const newReturns = []
-  //     const newQuantities = {}
-  //     for (const item of order.items) {
-  //       if (!item.returned) {
-  //         newReturns.push(item.id)
-  //         newQuantities[item.id] = item.quantity - item.returned_quantity
-  //       }
-  //     }
-  //     setQuantities(newQuantities)
-  //     setToReturn(newReturns)
-  //     setReturnAll(true)
-  //   }
-  // }
 
   const handleShippingSelected = (selectedItem) => {
     if (selectedItem.value !== "Add a shipping method") {
@@ -228,19 +133,54 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }
   }, [useCustomShippingPrice, shippingMethod])
 
-  const handleProductSearch = (val) => {
-    Medusa.variants
-      .list({
-        q: val,
-      })
-      .then(({ data }) => {
-        setSearchResults(data.variants)
-      })
+  const handleProductSelect = (variants) => {
+    setItemsToAdd((itemsToAdd) => [
+      ...itemsToAdd,
+      ...variants
+        .filter((variant) => itemsToAdd.indexOf((v) => v.id === variant.id) < 0)
+        .map((variant) => ({ ...variant, quantity: 1 })),
+    ])
+  }
+
+  const onSubmit = () => {
+    const items = Object.entries(toReturn).map(([key, value]) => {
+      const clean = removeNullish(value)
+      return {
+        item_id: key,
+        ...clean,
+      }
+    })
+
+    const data = {
+      return_items: items,
+      additional_items: itemsToAdd.map((i) => ({
+        variant_id: i.id,
+        quantity: i.quantity,
+      })),
+      no_notification:
+        noNotification !== order.no_notification ? noNotification : undefined,
+    }
+
+    if (shippingMethod) {
+      data.return_shipping = {
+        option_id: shippingMethod.value,
+        price: Math.round(shippingPrice / (1 + order.tax_rate / 100)),
+      }
+    }
+
+    if (onCreate) {
+      setSubmitting(true)
+      return onCreate(data)
+        .then(() => onDismiss())
+        .then(() => toaster("Successfully created swap", "success"))
+        .catch((error) => toaster(getErrorMessage(error), "error"))
+        .finally(() => setSubmitting(false))
+    }
   }
 
   return (
-    <Modal handleClose={onDismiss}>
-      <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
+    <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
+      <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
           <h2 className="inter-xlarge-semibold">Register Exchange</h2>
         </Modal.Header>
@@ -252,8 +192,6 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               allItems={allItems}
               toReturn={toReturn}
               setToReturn={(items) => setToReturn(items)}
-              quantities={quantities}
-              setQuantities={setQuantities}
             />
           </div>
 
@@ -286,45 +224,6 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               />
             )}
           </div>
-
-          {/* <Box my={3}>
-            <Text>Items to send</Text>
-            <Box mt={2}>
-              <Dropdown
-                leftAlign
-                toggleText={"+ Add product"}
-                showSearch
-                onSearchChange={handleProductSearch}
-                searchPlaceholder={"Search by SKU, Name, etch."}
-              >
-                {searchResults.map((s) => (
-                  <Flex
-                    key={s.variant_id}
-                    alignItems="center"
-                    onClick={() => handleAddItemToSwap(s)}
-                  >
-                    <Dot
-                      mr={3}
-                      bg={s.inventory_quantity > 0 ? "green" : "danger"}
-                    />
-                    <Box>
-                      <Text fontSize={0} mb={0} lineHeight={1}>
-                        {s.product.title} - {s.title}
-                      </Text>
-                      <Flex>
-                        <Text width={"100px"} mt={0} fontSize={"10px"}>
-                          {s.sku}
-                        </Text>
-                        <Text ml={2} mt={0} fontSize={"10px"}>
-                          In stock: {s.inventory_quantity}
-                        </Text>
-                      </Flex>
-                    </Box>
-                  </Flex>
-                ))}
-              </Dropdown>
-            </Box> */}
-
           <div className="flex justify-between mt-8 items-center">
             <h3 className="inter-base-semibold ">Items to send</h3>
             {itemsToAdd.length === 0 ? (
@@ -332,6 +231,15 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 variant="ghost"
                 className="border border-grey-20"
                 size="small"
+                onClick={() => {
+                  layeredModalContext.push(
+                    SelectProductsScreen(
+                      layeredModalContext.pop,
+                      itemsToAdd,
+                      handleProductSelect
+                    )
+                  )
+                }}
               >
                 Add Product
               </Button>
@@ -346,7 +254,6 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 itemsToAdd={itemsToAdd}
                 handleRemoveItem={handleRemoveItem}
                 handleToAddQuantity={handleToAddQuantity}
-                quantities={quantities}
               />
 
               <div className="flex w-full justify-end">
@@ -354,69 +261,21 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                   variant="ghost"
                   className="border border-grey-20"
                   size="small"
+                  onClick={() => {
+                    layeredModalContext.push(
+                      SelectProductsScreen(
+                        layeredModalContext.pop,
+                        itemsToAdd,
+                        console.log
+                      )
+                    )
+                  }}
                 >
                   Add Product
                 </Button>
               </div>
             </>
           )}
-          {/* <Box mt={3}>
-              {itemsToAdd.length > 0 && (
-                <Flex
-                  sx={{
-                    borderBottom: "hairline",
-                  }}
-                  justifyContent="space-between"
-                  fontSize={1}
-                  py={2}
-                >
-                  <Box width={30} px={2} py={1}></Box>
-                  <Box width={400} px={2} py={1}>
-                    Details
-                  </Box>
-                  <Box width={75} px={2} py={1}>
-                    Quantity
-                  </Box>
-                  <Box width={170} px={2} py={1}>
-                    Price
-                  </Box>
-                </Flex>
-              )}
-              {itemsToAdd.map((item, index) => {
-                return (
-                  <Flex
-                    key={item.variant_id}
-                    justifyContent="space-between"
-                    fontSize={2}
-                    py={2}
-                  >
-                    <Box width={30} px={2} py={1}></Box>
-                    <Box width={400} px={2} py={1}>
-                      <Text fontSize={1} lineHeight={"14px"}>
-                        {item.title}
-                      </Text>
-                      <Text fontSize={0}>{item.sku}</Text>
-                    </Box>
-                    <Box width={75} px={2} py={1}>
-                      <Input
-                        type="number"
-                        onChange={(e) => handleToAddQuantity(e, index)}
-                        value={item.quantity || ""}
-                        min={1}
-                      />
-                    </Box>
-                    <Box width={170} px={2} py={1}>
-                      <Text fontSize={1}>
-                        {extractPrice(item.prices, order).toFixed(2)}{" "}
-                        {order.currency_code.toUpperCase()}
-                      </Text>
-                    </Box>
-                    <Box onClick={() => handleRemoveItem(index)}>&times;</Box>
-                  </Flex>
-                )
-              })}
-          </Box>
-            </Box> */}
           <div className="flex justify-between items-center inter-base-semibold mt-8">
             <span>Difference</span>
             <span className="inter-large-semibold">
@@ -464,8 +323,21 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
           </div>
         </Modal.Footer>
       </Modal.Body>
-    </Modal>
+    </LayeredModal>
   )
+}
+
+const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
+  return {
+    title: "Return Reasons",
+    onBack: () => pop(),
+    view: (
+      <RMASelectProductSubModal
+        selectedItems={itemsToAdd || []}
+        onSubmit={setSelectedItems}
+      />
+    ),
+  }
 }
 
 export default SwapMenu
