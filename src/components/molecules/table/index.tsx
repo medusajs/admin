@@ -253,7 +253,7 @@ Table.Row = React.forwardRef(
     >
       {children}
       {actions && (
-        <Table.Cell onClick={(e) => e.stopPropagation()} className="w-8 py-1">
+        <Table.Cell onClick={(e) => e.stopPropagation()} className="w-[32px]">
           <Actionables actions={actions} />
         </Table.Cell>
       )}

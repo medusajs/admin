@@ -13,6 +13,8 @@ type BodyCardProps = {
     type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"]
   }[]
   actionables?: ActionType[]
+  forceDropdown?: boolean
+  customActionable?: React.ReactNode
   status?: React.ReactNode
 } & React.HTMLAttributes<HTMLDivElement>
 
@@ -21,6 +23,8 @@ const BodyCard: React.FC<BodyCardProps> = ({
   subtitle,
   events,
   actionables,
+  forceDropdown = false,
+  customActionable,
   status,
   className,
   children,
@@ -49,8 +53,12 @@ const BodyCard: React.FC<BodyCardProps> = ({
             <div />
           )}
           <div className="flex items-center space-x-2">
-            {status && status}
-            <Actionables actions={actionables} />
+            {status && <div className="mr-2">{status}</div>}
+            <Actionables
+              actions={actionables}
+              forceDots={forceDropdown}
+              customTrigger={customActionable}
+            />
           </div>
         </div>
         {subtitle && (
