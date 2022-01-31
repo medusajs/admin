@@ -1,27 +1,27 @@
-import React, { useState } from "react"
-import { OrderNumCell } from "../index"
+import { Router } from "@reach/router"
 import moment from "moment"
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeaderCell,
-  TableDataCell,
-  TableHeaderRow,
-  TableLinkRow,
-  DefaultCellContent,
-  BadgdeCellContent,
-} from "../../../components/table"
+import React, { useState } from "react"
 import ReactTooltip from "react-tooltip"
 import { Box, Flex, Text } from "rebass"
-import Badge from "../../../components/fundamentals/badge"
-import { decideBadgeColor } from "../../../utils/decide-badge-color"
-import Spinner from "../../../components/spinner"
-import useMedusa from "../../../hooks/use-medusa"
-import DraftOrderDetails from "./details"
-import { Router } from "@reach/router"
-import NewOrder from "../new/new-order"
 import Button from "../../../components/button"
+import Badge from "../../../components/fundamentals/badge"
+import Spinner from "../../../components/spinner"
+import {
+  BadgdeCellContent,
+  DefaultCellContent,
+  Table,
+  TableBody,
+  TableDataCell,
+  TableHead,
+  TableHeaderCell,
+  TableHeaderRow,
+  TableLinkRow,
+} from "../../../components/table"
+import useMedusa from "../../../hooks/use-medusa"
+import { decideBadgeColor } from "../../../utils/decide-badge-color"
+import { OrderNumCell } from "../index"
+import NewOrder from "../new/new-order"
+import DraftOrderDetails from "./new-details"
 
 const DraftOrderIndex = ({}) => {
   const [showNewOrder, setShowNewOrder] = useState(false)
