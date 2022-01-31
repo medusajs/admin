@@ -19,10 +19,11 @@ type OrderFilter = {
 type OrderFiltersType = {
   limit: number
   offset: number
-  fulfillmentStatus?: OrderFilter
-  paymentStatus?: OrderFilter
+  fulfillment?: OrderFilter
+  payment?: OrderFilter
   date?: OrderFilter
   status?: OrderFilter
+  pageIndex: number
   q: string
 }
 
@@ -36,34 +37,26 @@ const initialState: OrderFiltersType = {
   limit: 14,
   offset: 0,
   status: { open: false, filter: null },
-  fulfillmentStatus: { open: false, filter: null },
-  paymentStatus: { open: false, filter: null },
+  fulfillment: { open: false, filter: null },
+  payment: { open: false, filter: null },
   date: { open: false, filter: null },
+  pageIndex: 0,
   q: "",
 }
 
 function orderFiltersReducer(state, action) {
   switch (action.type) {
-    case "status":
-      return { ...state, status: { ...action.payload } }
-    case "payment":
-      return { ...state, paymentStatus: { ...action.payload } }
-    case "fulfillment":
-      return { ...state, fulfillmentStatus: { ...action.payload } }
-    case "date":
-      return { ...state, date: { ...action.payload } }
-    case "query":
-      return { ...state, q: action.payload }
+    case "filters":
+      return { ...state, ...action.payload }
     case "limit":
       return { ...state, limit: action.payload }
     case "offset":
       return { ...state, offset: action.payload }
+    case "pageIndex":
+      return { ...state, pageIndex: action.payload }
     case "reset":
       return {
-        status: { open: false, filter: null },
-        fulfillmentStatus: { open: false, filter: null },
-        paymentStatus: { open: false, filter: null },
-        date: { open: false, filter: null },
+        ...initialState,
       }
     default:
       return state
@@ -89,33 +82,20 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     }
   }
 
-  const initialOrderFilterState = {
-    limit: 14,
-    offset: 0,
-    status: parseUrlFilter(filtersOnLoad.status),
-    fulfillmentStatus: parseUrlFilter(filtersOnLoad.fulfillment_status),
-    paymentStatus: parseUrlFilter(filtersOnLoad.payment_status),
-    date: parseUrlFilter(filtersOnLoad.created_at),
-  }
+  const offs = parseInt(filtersOnLoad?.offset) || 0
+  const lim = parseInt(filtersOnLoad.limit) || 14
+  initialState.pageIndex = offs / lim
 
   const [state, dispatch] = useReducer(orderFiltersReducer, initialState)
-
-  const [currentPage, setCurrentPage] = useState(0)
-  // const [filters, setFilters] = useState<OrderFiltersType>(
-  //   initialOrderFilterState
-  // )
+  const [tempState, setTempState] = useState(initialState)
   const [query, setQuery] = useState<string>()
-
-  useEffect(() => {
-    setCurrentPage(state.offset / state.limit)
-  }, [])
 
   const [numPages, setNumPages] = useState(0)
 
   const constructFiltersFromState = () => {
     let urlObject: any = {
-      "payment_status[]": state?.paymentStatus?.filter,
-      "fulfillment_status[]": state?.fulfillmentStatus?.filter,
+      "payment_status[]": state?.payment?.filter,
+      "fulfillment_status[]": state?.fulfillment?.filter,
       "status[]": state?.status?.filter,
       q: state.q,
       limit: state?.limit || 14,
@@ -144,20 +124,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     return removeNullish(urlObject)
   }
 
-  // Upon searching, we reset all other filters
-  const handleSearch = (q) => {
-    setQuery(q)
-    dispatch({ type: "limit", payload: 14 })
-    dispatch({ type: "offset", payload: 0 })
-    dispatch({ type: "offset", payload: 0 })
-    setCurrentPage(0)
-  }
-
-  const debouncedSearch = useMemo(() => debounce(handleSearch, 500), [])
-
   useEffect(() => {
     if (query) {
-      refreshWithFilters({ q: query })
+      refreshWithFilters()
     }
   }, [query])
 
@@ -167,9 +136,11 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     }
   })
 
+  const initialFilters = constructFiltersFromState()
+
   const { orders, isLoading, isRefetching, count } = useAdminOrders({
     ...defaultQueryProps,
-    ...constructFiltersFromState(),
+    ...initialFilters,
   })
 
   useEffect(() => {
@@ -188,6 +159,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     canPreviousPage,
     canNextPage,
     pageCount,
+    gotoPage,
     nextPage,
     previousPage,
     // Get the state from the instance
@@ -199,7 +171,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       manualPagination: true,
       initialState: {
         pageSize: state.limit,
-        pageIndex: currentPage,
+        pageIndex: state.pageIndex,
       },
       pageCount: numPages,
       autoResetPage: false,
@@ -210,9 +182,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const handleNext = () => {
     if (canNextPage) {
       const newOffset = state.offset + pageSize
-      // setFilters({ ...state, offset: newOffset })
-      setCurrentPage((old) => old + 1)
-      updateUrlFromFilter({ ...state, offset: newOffset })
+      dispatch({ type: "offset", payload: newOffset })
       nextPage()
     }
   }
@@ -220,11 +190,17 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const handlePrev = () => {
     if (canPreviousPage) {
       const newOffset = state.offset - pageSize
-      // setFilters({ ...filters, offset: filters.offset - pageSize })
-      setCurrentPage((old) => old - 1)
-      updateUrlFromFilter({ ...state, offset: newOffset })
+      dispatch({ type: "offset", payload: newOffset })
       previousPage()
     }
+  }
+
+  // Upon searching, we reset all other filters
+  const handleSearch = (q) => {
+    setQuery(q)
+    dispatch({ type: "limit", payload: 14 })
+    dispatch({ type: "offset", payload: 0 })
+    gotoPage(0)
   }
 
   const updateUrlFromFilter = (obj = {}) => {
@@ -232,40 +208,62 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     window.history.replaceState(`/a/orders`, "", `${`?${stringified}`}`)
   }
 
-  const refreshWithFilters = (queryObject) => {
-    const searchObject = {
-      ...queryObject,
-      ...defaultQueryProps,
-    }
+  const refreshWithFilters = () => {
+    const filterObj = constructFiltersFromState()
 
-    if (isEmpty(queryObject)) {
-      resetFilters()
+    if (isEmpty(filterObj)) {
       updateUrlFromFilter({ offset: 0, limit: 14 })
-      // setFilters({ ...defaultQueryProps })
     } else {
-      updateUrlFromFilter(queryObject)
-      // setFilters({ ...searchObject })
+      updateUrlFromFilter(filterObj)
     }
-  }
-
-  const submitFilters = () => {
-    const urlObject = constructFiltersFromState()
-    refreshWithFilters(urlObject)
   }
 
   const resetFilters = () => {
-    handleSearch("")
     dispatch({ type: "reset" })
+    gotoPage(0)
+    updateUrlFromFilter()
+    setTempState(initialState)
   }
 
   const setSingleFilter = (filterKey, filterVal) => {
-    dispatch({ type: filterKey, payload: filterVal })
+    setTempState((prevState) => ({
+      ...prevState,
+      [filterKey]: filterVal,
+    }))
+  }
+
+  const submitFilters = () => {
+    dispatch({ type: "filters", payload: tempState })
   }
 
   const clearFilters = () => {
     resetFilters()
-    refreshWithFilters({ limit: 14, offset: 0 })
+    refreshWithFilters()
   }
+
+  const debouncedSearch = useMemo(() => debounce(handleSearch, 500), [])
+
+  useEffect(() => {
+    refreshWithFilters()
+  }, [state])
+
+  const setFiltersOnLoad = () => {
+    const loadedFilters = {
+      limit: filtersOnLoad?.limit ? parseInt(filtersOnLoad?.limit) : 14,
+      offset: filtersOnLoad?.offset ? parseInt(filtersOnLoad?.offset) : 0,
+      status: parseUrlFilter(filtersOnLoad.status),
+      fulfillment: parseUrlFilter(filtersOnLoad.fulfillment_status),
+      payment: parseUrlFilter(filtersOnLoad.payment_status),
+      date: parseUrlFilter(filtersOnLoad.created_at),
+    }
+
+    setTempState(loadedFilters)
+    dispatch({ type: "filters", payload: loadedFilters })
+  }
+
+  useEffect(() => {
+    setFiltersOnLoad()
+  }, [])
 
   return (
     <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
@@ -278,9 +276,8 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
           <Table
             filteringOptions={
               <OrderFilters
-                // setFilters={setFilters}
                 setSingleFilter={setSingleFilter}
-                filters={state}
+                filters={tempState}
                 submitFilters={submitFilters}
                 resetFilters={resetFilters}
                 clearFilters={clearFilters}

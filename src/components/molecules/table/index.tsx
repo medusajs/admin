@@ -279,7 +279,7 @@ export const TablePagination = ({
     >
       <div>{`${offset + 1} - ${pageSize} of ${count} ${title}`}</div>
       <div className="flex space-x-4">
-        <div>{`${offset / 14} of ${pageCount}`}</div>
+        <div>{`${currentPage + 1} of ${pageCount}`}</div>
         <div className="flex space-x-4 items-center">
           <div
             className={clsx(

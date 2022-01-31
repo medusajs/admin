@@ -43,7 +43,6 @@ const dateFilters = [
 ]
 
 const OrderFilters = ({
-  // setFilters,
   filters,
   submitFilters,
   resetFilters,
@@ -54,6 +53,7 @@ const OrderFilters = ({
   const [name, setName] = useState("")
 
   const onSubmit = () => {
+    console.log("hey")
     submitFilters()
   }
 
@@ -102,15 +102,15 @@ const OrderFilters = ({
         <FilterDropdownItem
           filterTitle="Payment Status"
           options={paymentFilters}
-          filters={filters.paymentStatus.filter}
-          open={filters.paymentStatus.open}
+          filters={filters.payment.filter}
+          open={filters.payment.open}
           setFilter={(val) => setSingleFilter("payment", val)}
         />
         <FilterDropdownItem
           filterTitle="Fulfillment Status"
           options={fulfillmentFilters}
-          filters={filters.fulfillmentStatus.filter}
-          open={filters.fulfillmentStatus.open}
+          filters={filters.fulfillment.filter}
+          open={filters.fulfillment.open}
           setFilter={(val) => setSingleFilter("fulfillment", val)}
         />
         <FilterDropdownItem
