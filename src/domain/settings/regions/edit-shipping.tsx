@@ -7,12 +7,13 @@ import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
+import CurrencyInput from "../../../components/organisms/currency-input"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
-  const { register, reset, handleSubmit } = useForm()
+  const { register, reset, handleSubmit, setValue } = useForm()
   const [adminOnly, setAdminOnly] = useState(shippingOption?.admin_only)
   const [showDelete, setShowDelete] = useState(false)
   const deleteOption = useAdminDeleteShippingOption(shippingOption.id)
@@ -20,17 +21,13 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   const toaster = useToaster()
 
   useEffect(() => {
-    const option = {
-      ...shippingOption,
-    }
-
     if (shippingOption.requirements) {
       const minSubtotal = shippingOption.requirements.find(
         (req) => req.type === "min_subtotal"
       )
       if (minSubtotal) {
-        option.requirements.min_subtotal = {
-          amount: minSubtotal.amount / 100,
+        shippingOption.requirements.min_subtotal = {
+          amount: minSubtotal.amount,
           id: minSubtotal.id,
         }
       }
@@ -38,18 +35,32 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
         (req) => req.type === "max_subtotal"
       )
       if (maxSubtotal) {
-        option.requirements.max_subtotal = {
-          amount: maxSubtotal.amount / 100,
+        shippingOption.requirements.max_subtotal = {
+          amount: maxSubtotal.amount,
           id: maxSubtotal.id,
         }
       }
     }
 
-    reset({ ...option, amount: option.amount / 100 })
+    reset({ ...shippingOption })
+    register("amount")
+    setValue("amount", shippingOption?.amount)
+
+    register("requirements.min_subtotal.amount")
+    setValue(
+      "requirements.min_subtotal.amount",
+      shippingOption?.requirements?.min_subtotal?.amount
+    )
+
+    register("requirements.max_subtotal.amount")
+    setValue(
+      "requirements.max_subtotal.amount",
+      shippingOption?.requirements?.max_subtotal?.amount
+    )
   }, [shippingOption])
 
   const handleDelete = async () => {
-    deleteOption.mutate(null, {
+    deleteOption.mutate(void {}, {
       onSuccess: () => {
         onClick()
         if (onDone) {
@@ -70,7 +81,12 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       return null
     }
 
-    return Object.entries(requirements).reduce((acc, [key, value]) => {
+    return Object.entries(requirements).reduce<
+      (
+        | { type: string; amount: number; id: string }
+        | { type: string; amount: number }
+      )[]
+    >((acc, [key, value]) => {
       if (value.amount && value.amount > 0) {
         const reqType = shippingOption.requirements.find(
           (req) => req.type === key
@@ -78,13 +94,13 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
         if (reqType) {
           acc.push({
             type: key,
-            amount: Math.round(value.amount * 100),
+            amount: value.amount,
             id: reqType.id,
           })
         } else {
           acc.push({
             type: key,
-            amount: Math.round(value.amount * 100),
+            amount: value.amount,
           })
         }
         return acc
@@ -92,6 +108,24 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
         return acc
       }
     }, [])
+  }
+
+  const handleMinChange = (amount: number | undefined) => {
+    if (amount) {
+      setValue("requirements.min_subtotal.amount", amount)
+    }
+  }
+
+  const handleMaxChange = (amount: number | undefined) => {
+    if (amount) {
+      setValue("requirements.max_subtotal.amount", amount)
+    }
+  }
+
+  const handleAmountChange = (amount: number | undefined) => {
+    if (amount) {
+      setValue("amount", amount)
+    }
   }
 
   const handleSave = (data: {
@@ -103,11 +137,12 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
 
     const payload = {
       name: data.name,
-      amount: Math.round(data.amount * 100),
-      requirements: reqs,
+      amount: data.amount,
+      requirements: reqs ?? [],
       admin_only: adminOnly,
     }
 
+    //TODO: fix AdminPostShippingOptionsOptionReq type
     updateOption.mutate(payload, {
       onSuccess: () => {
         toaster("Successfully updated shipping option", "success")
@@ -158,23 +193,17 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                     ref={register}
                     className="flex-grow"
                   />
-                  <div className="flex items-center gap-2xsmall">
-                    <Input
-                      label="Currency"
-                      value={region.currency_code.toUpperCase()}
-                      readOnly
-                      className="w-[120px] pointer-events-none"
-                      tabIndex={-1}
-                    />
-                    <Input
+                  <CurrencyInput
+                    readOnly
+                    currentCurrency={region.currency_code}
+                    size="small"
+                  >
+                    <CurrencyInput.AmountInput
+                      amount={shippingOption.amount}
                       label="Price"
-                      type="number"
-                      ref={register}
-                      name={"amount"}
-                      min={0}
-                      step={0.1}
+                      onChange={handleAmountChange}
                     />
-                  </div>
+                  </CurrencyInput>
                 </div>
                 <div className="mt-large mb-xlarge">
                   <label className="inline-flex items-center inter-base-semibold">
@@ -190,43 +219,39 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                     Show on website
                   </label>
                 </div>
-                <p className="inter-base-semibold mb-base">Requirements</p>
-                <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
-                  <div className="flex items-center gap-2xsmall">
-                    <Input
-                      label="Currency"
-                      value={region.currency_code.toUpperCase()}
-                      readOnly
-                      className="w-[120px] pointer-events-none"
-                      tabIndex={-1}
-                    />
-                    <Input
-                      label="Min. subtotal"
-                      type="number"
-                      name={`requirements.min_subtotal.amount`}
-                      min={0}
-                      ref={register}
-                      placeholder="0"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2xsmall">
-                    <Input
-                      label="Currency"
-                      value={region.currency_code.toUpperCase()}
-                      readOnly
-                      className="w-[120px] pointer-events-none"
-                      tabIndex={-1}
-                    />
-                    <Input
-                      label="Max. subtotal"
-                      type="number"
-                      min={0}
-                      name={`requirements.max_subtotal.amount`}
-                      ref={register}
-                      placeholder="100"
-                    />
-                  </div>
-                </div>
+                {!shippingOption.is_return && (
+                  <>
+                    <p className="inter-base-semibold mb-base">Requirements</p>
+                    <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
+                      <CurrencyInput
+                        readOnly
+                        currentCurrency={region.currency_code}
+                        size="small"
+                      >
+                        <CurrencyInput.AmountInput
+                          amount={
+                            shippingOption.requirements?.min_subtotal?.amount
+                          }
+                          label="Min. subtotal"
+                          onChange={handleMinChange}
+                        />
+                      </CurrencyInput>
+                      <CurrencyInput
+                        readOnly
+                        currentCurrency={region.currency_code}
+                        size="small"
+                      >
+                        <CurrencyInput.AmountInput
+                          amount={
+                            shippingOption.requirements?.max_subtotal?.amount
+                          }
+                          label="Max. subtotal"
+                          onChange={handleMaxChange}
+                        />
+                      </CurrencyInput>
+                    </div>
+                  </>
+                )}
                 <div className="mt-xlarge">
                   <p className="inter-base-semibold">Danger Zone</p>
                   <p className="inter-base-regular text-grey-50 mb-base">
