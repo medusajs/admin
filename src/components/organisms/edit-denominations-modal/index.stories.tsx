@@ -2,7 +2,6 @@ import { ComponentMeta, ComponentStory } from "@storybook/react"
 import * as React from "react"
 import EditDenominationsModal from "."
 import Button from "../../fundamentals/button"
-import { v4 as uuidv4 } from "uuid"
 
 export default {
   title: "Organisms/EditDenominationModal",
@@ -26,7 +25,7 @@ const Template: ComponentStory<typeof EditDenominationsModal> = (args) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  denominations: [],
+  defaultDenominations: [],
   onSubmit: console.log,
   currencyCodes: ["USD", "EUR", "GBP", "DKK", "NOK", "SEK"],
 }

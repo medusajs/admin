@@ -153,6 +153,12 @@ const AmountInput: React.FC<AmountInputProps> = ({
     inputRef.current?.dispatchEvent(new Event("blur"))
   }, [currencyInfo?.decimal_digits])
 
+  useEffect(() => {
+    if (currencyInfo && amount) {
+      setValue(`${normalizeAmount(currencyInfo?.code, amount)}`)
+    }
+  }, [amount])
+
   const handleManualValueChange = (val: number) => {
     const newValue = parseFloat(value ?? "0") + val
 

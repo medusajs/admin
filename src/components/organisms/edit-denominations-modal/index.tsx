@@ -1,5 +1,4 @@
 import React from "react"
-import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import Button from "../../fundamentals/button"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
@@ -11,7 +10,7 @@ import CurrencyInput from "../../organisms/currency-input"
 export type PriceType = {
   currency_code: string
   amount: number
-  id: string
+  id?: string
 }
 
 type EditDenominationsModalProps = {
@@ -21,10 +20,6 @@ type EditDenominationsModalProps = {
   defaultNewAmount?: number
   defaultNewCurrencyCode?: string
   currencyCodes?: string[]
-}
-
-type FormValues = {
-  denominations: PriceType[]
 }
 
 const augmentWithId = (obj) => ({ ...obj, id: obj.id ? obj.id : uuidv4() })
