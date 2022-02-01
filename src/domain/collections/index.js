@@ -3,7 +3,7 @@ import { navigate } from "gatsby"
 import { Router } from "@reach/router"
 import { Text, Flex, Box } from "rebass"
 import qs from "query-string"
-// import Details from "./details"
+import CollectionDetails from "./details"
 
 import useMedusa from "../../hooks/use-medusa"
 
@@ -183,7 +183,7 @@ const Collections = () => {
   return (
     <Router>
       <CollectionsIndex path="/" />
-      {/* <Details path=":id" /> */}
+      <CollectionDetails path=":id" />
     </Router>
   )
 }
