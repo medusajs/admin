@@ -13,13 +13,15 @@ import NewRegion from "./new"
 
 const Regions = () => {
   const { regions, isLoading, refetch } = useAdminRegions()
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
+  const [selectedRegion, setSelectedRegion] = useState<string | undefined>(
+    undefined
+  )
   const [addRegion, setAddRegion] = useState(false)
 
   useEffect(() => {
     const setRegion = () => {
       if (!isLoading && selectedRegion === null) {
-        setSelectedRegion(regions[0].id)
+        setSelectedRegion(regions?.[0]?.id)
       }
     }
 
@@ -28,9 +30,12 @@ const Regions = () => {
 
   const handleDelete = () => {
     refetch().then(({ data }) => {
-      const id = data.regions[0].id
+      const id = data?.regions?.[0]?.id
+
+      if (!id) return
+
       setSelectedRegion(id)
-      document.getElementById(id).scrollIntoView({
+      document.getElementById(id)?.scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "nearest",
@@ -41,7 +46,7 @@ const Regions = () => {
   const handleSelect = (id: string) => {
     refetch().then(() => {
       setSelectedRegion(id)
-      document.getElementById(id).scrollIntoView({
+      document.getElementById(id)?.scrollIntoView({
         behavior: "smooth",
       })
     })
@@ -67,7 +72,7 @@ const Regions = () => {
               },
             ]}
           >
-            {isLoading || !selectedRegion ? (
+            {isLoading || !regions ? (
               <div className="flex-grow h-full flex items-center justify-center">
                 <Spinner size="large" variant="secondary" />
               </div>
@@ -76,14 +81,14 @@ const Regions = () => {
                 value={selectedRegion}
                 onValueChange={setSelectedRegion}
               >
-                {regions.map(r => {
+                {regions.map((r) => {
                   const providers = `Payment providers: ${
                     r.payment_providers
-                      .map(pp => paymentProvidersMapper(pp.id).label)
+                      .map((pp) => paymentProvidersMapper(pp.id).label)
                       .join(", ") || "not configured"
                   } - Fulfillment providers: ${
                     r.fulfillment_providers
-                      .map(fp => fulfillmentProvidersMapper(fp.id).label)
+                      .map((fp) => fulfillmentProvidersMapper(fp.id).label)
                       .join(", ") || "not configured"
                   }`
                   return (
@@ -92,9 +97,9 @@ const Regions = () => {
                       sublabel={
                         r.countries.length
                           ? `(${r.countries
-                              .map(c => c.display_name)
+                              .map((c) => c.display_name)
                               .join(", ")})`
-                          : null
+                          : undefined
                       }
                       description={providers}
                       value={r.id}
