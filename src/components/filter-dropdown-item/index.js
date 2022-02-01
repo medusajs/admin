@@ -61,7 +61,7 @@ const FilterDropdownItem = ({
 
   const prefill = () => {
     try {
-      const prefilled = filters.split(",").reduce((acc, f) => {
+      const prefilled = filters.reduce((acc, f) => {
         acc[f] = true
         return acc
       }, {})
@@ -104,7 +104,7 @@ const FilterDropdownItem = ({
 
     setChecked(checkedState)
 
-    setFilter({ open: open, filter: newFilter.join(",").toString() })
+    setFilter({ open: open, filter: newFilter })
   }
 
   return (
@@ -181,11 +181,13 @@ const DateFilter = ({
   existingFilter,
   filterTitle,
 }) => {
+  console.warn("heyo", existingDate, existingFilter)
   const [currentFilter, setCurrentFilter] = useState(
     existingFilter || undefined
   )
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(new Date())
+  const [relativeFilter, setRelativeFilter] = useState(null)
   const select_ref = useRef()
   const input_ref = useRef()
 
@@ -295,6 +297,7 @@ const DateFilter = ({
               placeholder="2"
               inputStyle={{
                 p: "2px",
+                backgroundColor: "blue",
                 fontSize: "10px",
                 height: "25px",
                 marginRight: "2px;",
@@ -332,7 +335,7 @@ const DateFilter = ({
         )
 
       default:
-        return <Box>{currentFilter} - comming soon!</Box>
+        return <Box>{currentFilter} - coming soon!</Box>
     }
   }
   return (

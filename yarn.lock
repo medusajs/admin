@@ -2073,17 +2073,29 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@^1.0.8":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.10.tgz#c98ae6693c48e3f374af399530aca53a9a016406"
-  integrity sha512-zvtKwf5aWtP5O20AROE7Qi7Q2uir4EFl4FCOdnPAlbJu3LM3HZTWZmMIboIJqmx+bn6oJn7CChLiB3pDA0IKUg==
+"@medusajs/medusa-js@1.0.8-dev-1643721786646":
+  version "1.0.8-dev-1643721786646"
+  resolved "http://localhost:4873/@medusajs%2fmedusa-js/-/medusa-js-1.0.8-dev-1643721786646.tgz#90aae58ad178727df83459780d8d6202ad05f4df"
+  integrity sha512-sx+4dwTrpmIUYsd7WBaYG3u0dleY9hIs95YBB6hJF6g5m6vwBTCb3nOssc3WrqOaAcCHNOZ1ajv4YozG9bVJjg==
   dependencies:
-    "@medusajs/medusa" "^1.1.62"
+    "@medusajs/medusa" "^1.1.60"
     axios "^0.24.0"
     form-data "^4.0.0"
+    qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa@^1.1.60", "@medusajs/medusa@^1.1.61-alpha.14", "@medusajs/medusa@^1.1.62":
+"@medusajs/medusa-js@^1.0.9-alpha.25":
+  version "1.0.9-alpha.25"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.9-alpha.25.tgz#023028308cb3ddb8f481bba1d7e0ea2a7b4c9158"
+  integrity sha512-rqjMwhnEoL4sw5bwneWksXEGfqJ0bdZSLOuazUL5nzEL9m9RLMF1BlyN1+fQq6oY8aAm87r/aAqYM5ebMDJPjQ==
+  dependencies:
+    "@medusajs/medusa" "^1.1.61-alpha.25+16970329"
+    axios "^0.24.0"
+    form-data "^4.0.0"
+    qs "^6.10.3"
+    retry-axios "^2.6.0"
+
+"@medusajs/medusa@^1.1.60", "@medusajs/medusa@^1.1.61-alpha.14", "@medusajs/medusa@^1.1.61-alpha.25+16970329":
   version "1.1.62"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.62.tgz#edb37da7da3e5fef77820ea6fb2b5326af958037"
   integrity sha512-debQ5LqLYpOhVchHk9vWX+gRV11HbSTKJ9C4zkgXg9MhUbfH9PVZLtRQlqgEToNL8wZ6x5n6CeBWXZ38ooPtDQ==
@@ -11967,13 +11979,13 @@ medusa-core-utils@^1.1.31:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
-medusa-react@^0.1.2-alpha.23:
-  version "0.1.2-alpha.23"
-  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.1.2-alpha.23.tgz#1a971f47538d51005002f2ff29da509cb36b883b"
-  integrity sha512-NQi9TjgJ51l4sUOhM+khqA4jPgfW5R5k9e++iMMthmFuBj/494kwNV2SI/lTCxr2WsCeSki/C1MOqLunL2FQaQ==
+medusa-react@0.1.1-dev-1643721786646:
+  version "0.1.1-dev-1643721786646"
+  resolved "http://localhost:4873/medusa-react/-/medusa-react-0.1.1-dev-1643721786646.tgz#a88e4b3b0dffd88a7252c681ab1a316811cbfe18"
+  integrity sha512-7P7y6rdDnij+FXTvKNBVZRpr7IpQksud7dkBaC+dXRzHr1fRbFFUFNy8XSG6WRkMHq8Y4C48DXpBjr9d2X+ZzQ==
   dependencies:
     "@medusajs/medusa" "^1.1.60"
-    "@medusajs/medusa-js" "^1.0.8"
+    "@medusajs/medusa-js" "1.0.8-dev-1643721786646"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
@@ -14269,7 +14281,7 @@ qs@6.9.6:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.6.tgz#26ed3c8243a431b2924aca84cc90471f35d5a0ee"
   integrity sha512-TIRk4aqYLNoJUbd+g2lEdz5kLWIuTMRagAXxl78Q0RiVjAOugHmeKNGdd3cwo/ktpf9aL9epCfFqWDEKysUlLQ==
 
-qs@^6.10.0, qs@^6.9.4:
+qs@^6.10.0, qs@^6.10.3, qs@^6.9.4:
   version "6.10.3"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.3.tgz#d6cde1b2ffca87b5aa57889816c5f81535e22e8e"
   integrity sha512-wr7M2E0OFRfIfJZjKGieI8lBKb7fRCH4Fv5KNPEs7gJ8jadvotdsS08PzOKR7opXhZ/Xkjtt3WF9g38drmyRqQ==
