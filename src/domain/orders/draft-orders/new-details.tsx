@@ -2,10 +2,10 @@ import { Address } from "@medusajs/medusa"
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import {
-  useAdminCancelOrder,
+  useAdminDeleteDraftOrder,
   useAdminDraftOrder,
   useAdminDraftOrderRegisterPayment,
-  useAdminUpdateOrder,
+  useAdminUpdateDraftOrder,
 } from "medusa-react"
 import React, { useState } from "react"
 import ReactJson from "react-json-view"
@@ -16,6 +16,7 @@ import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
 // import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
+import ImagePlaceholderIcon from "../../../components/fundamentals/icons/image-placeholder-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
@@ -50,8 +51,8 @@ const DraftOrderDetails = ({ id }) => {
   const { draft_order, isLoading } = useAdminDraftOrder(id)
 
   const markPaid = useAdminDraftOrderRegisterPayment(id)
-  const cancelOrder = useAdminCancelOrder(id)
-  const updateOrder = useAdminUpdateOrder(id)
+  const cancelOrder = useAdminDeleteDraftOrder(id)
+  const updateOrder = useAdminUpdateDraftOrder(id)
 
   const toaster = useToaster()
 
@@ -272,11 +273,17 @@ const DraftOrderDetails = ({ id }) => {
                     className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded"
                   >
                     <div className="flex space-x-4 justify-center">
-                      <div className="flex h-[48px] w-[36px]">
-                        <img
-                          src={item.thumbnail}
-                          className="rounded-rounded object-cover"
-                        />
+                      <div className="flex h-[48px] w-[36px] rounded-rounded bg-grey-10 items-center justify-center">
+                        {item?.thumbnail ? (
+                          <img
+                            src={item.thumbnail}
+                            className="rounded-rounded object-cover"
+                          />
+                        ) : (
+                          <div className="text-grey-30">
+                            <ImagePlaceholderIcon />
+                          </div>
+                        )}
                       </div>
                       <div className="flex flex-col justify-center">
                         <span className="inter-small-regular text-grey-90 max-w-[225px] truncate">
@@ -367,15 +374,9 @@ const DraftOrderDetails = ({ id }) => {
             <BodyCard
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Payment"
-              customActionable={<PaymentActionables />}
-              // TODO: Actionables should not be required if customActionable is provided
-              actionables={[
-                {
-                  onClick: () => console.log("Capture order"),
-                  label: "Capture Payment",
-                  icon: null,
-                },
-              ]}
+              customActionable={
+                draft_order?.status !== "completed" && <PaymentActionables />
+              }
             >
               <div className="mt-6">
                 <DisplayTotal
