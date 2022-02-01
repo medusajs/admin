@@ -206,13 +206,13 @@ const OrderDetails = ({ id }) => {
   const OrderStatusComponent = () => {
     switch (order?.status) {
       case "completed":
-        return <StatusDot title="Published" variant="success" />
+        return <StatusDot title="Completed" variant="success" />
       case "pending":
         return <StatusDot title="Processing" variant="default" />
       case "canceled":
         return <StatusDot title="Canceled" variant="danger" />
       case "requires_action":
-        return <StatusDot title="Rejected" variant="danger" />
+        return <StatusDot title="Requires action" variant="danger" />
       default:
         return null
     }
@@ -349,6 +349,7 @@ const OrderDetails = ({ id }) => {
         onError: (err) => toaster(getErrorMessage(err), "error"),
       })
     }
+    const loading = capturePayment.isLoading
 
     let shouldShowNotice = false
     // If payment is a system payment, we want to show a notice
@@ -376,16 +377,21 @@ const OrderDetails = ({ id }) => {
         break
       }
 
-      case payment_status === "awaiting" ||
-        payment_status === "requires_action": {
-        break
+      case payment_status === "requires_action": {
+        return null
       }
       default:
         break
     }
 
     return (
-      <Button variant="secondary" size="small" onClick={action}>
+      <Button
+        variant="secondary"
+        size="small"
+        onClick={action}
+        loading={loading}
+        className="min-w-[130px]"
+      >
         {label}
       </Button>
     )
@@ -399,7 +405,6 @@ const OrderDetails = ({ id }) => {
   }
 
   const handleUpdateAddress = async ({ data, type }) => {
-    console.log(data)
     const { email, ...rest } = data
 
     const updateObj = {}
@@ -741,13 +746,6 @@ const OrderDetails = ({ id }) => {
               title="Payment"
               status={<PaymentStatusComponent />}
               customActionable={<PaymentActionables />}
-              // TODO: Actionables should not be required if customActionable is provided
-              actionables={[
-                {
-                  onClick: () => console.log("Capture order"),
-                  label: "Capture Payment",
-                },
-              ]}
             >
               <div className="mt-6">
                 {order?.payments.map((payment) => (
