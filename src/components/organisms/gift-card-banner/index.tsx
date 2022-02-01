@@ -65,8 +65,6 @@ const GiftCardBanner: React.FC<GiftCardBannerProps> = ({
           (price) => price.currency_code === defaultCurrency
         )
 
-        console.log(price)
-
         if (!price) {
           return ""
         }
@@ -84,7 +82,7 @@ const GiftCardBanner: React.FC<GiftCardBannerProps> = ({
       <BannerCard.Description>{description}</BannerCard.Description>
       <BannerCard.Footer>
         <div className="flex items-center justify-between">
-          <TagGrid tags={denominations} badgeVariant="denomination" />
+          <TagGrid tags={denominations} badgeVariant="default" />
           <StatusIndicator
             variant={status === "published" ? "success" : "danger"}
             title={status === "published" ? "Published" : "Unpublished"}

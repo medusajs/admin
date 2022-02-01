@@ -7,15 +7,14 @@ import {
   useAdminUpdateProduct,
 } from "medusa-react"
 import React from "react"
+import Overview from "./overview"
 import useToaster from "../../hooks/use-toaster"
-import { ProductStatus } from "../../types/shared"
 import { getErrorMessage } from "../../utils/error-messages"
 import ManageGiftCard from "./manage"
-import Overview from "./overview"
+import { ProductStatus } from "../../types/shared"
 
 const GiftCard = () => {
-  const { gift_cards: purchasedGiftCards } = useAdminGiftCards()
-  const { products: giftCards } = useAdminProducts({
+  const { products: giftCards, isLoading } = useAdminProducts({
     is_giftcard: "true",
   })
   const giftCard = giftCards?.[0]
@@ -52,7 +51,13 @@ const GiftCard = () => {
 
   const deleteGC = () => {
     deleteGiftCard.mutate(undefined, {
-      onSuccess: () => navigate("/a/gift-cards"),
+      onSuccess: () => {
+        toaster("Successfully deleted Gift Card")
+        navigate("/a/gift-cards")
+      },
+      onError: (err) => {
+        toaster(getErrorMessage(err))
+      },
     })
   }
 
@@ -60,9 +65,10 @@ const GiftCard = () => {
     <Router>
       <Overview
         path="/"
-        giftCard={giftCard}
+        giftCard={giftCards?.[0]}
         onDelete={() => deleteGC()}
         onUpdate={() => updateGCStatus()}
+        isLoading={isLoading}
       />
       {giftCard && (
         <ManageGiftCard

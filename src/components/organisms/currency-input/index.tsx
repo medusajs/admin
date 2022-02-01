@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 import AmountField from "react-currency-input-field"
 import { Option } from "../../../types/shared"
 import { currencies, CurrencyType } from "../../../utils/currencies"
-import { displayAmount, persistedPrice } from "../../../utils/prices"
+import { getDecimalDigits, normalizeAmount } from "../../../utils/prices"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import InputContainer from "../../fundamentals/input-container"
@@ -38,7 +38,9 @@ const CurrencyContext = React.createContext<CurrencyInputState>({
 })
 
 const getCurrencyInfo = (currencyCode?: string) => {
-  if (!currencyCode) return undefined
+  if (!currencyCode) {
+    return undefined
+  }
   const currencyInfo = currencies[currencyCode.toUpperCase()]
   return currencyInfo
 }
@@ -77,7 +79,9 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
     // Should not be nescessary, but the component we use for select input
     // has a bug where it passes a null object if you click on the label
     // of the already selected value
-    if (!currency) return
+    if (!currency) {
+      return
+    }
 
     setValue(currency)
     setSelectedCurrency(getCurrencyInfo(currency.value))
@@ -136,7 +140,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
 }) => {
   const { currencyInfo } = useContext(CurrencyContext)
   const [value, setValue] = useState<string | undefined>(
-    amount ? `${amount}` : undefined
+    amount ? `${normalizeAmount(currencyInfo?.code, amount)}` : undefined
   )
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -144,37 +148,39 @@ const AmountInput: React.FC<AmountInputProps> = ({
     inputRef.current?.dispatchEvent(new Event("blur"))
   }, [currencyInfo?.decimal_digits])
 
-  /**
-   * Get display amount of the current currency and amount
-   */
   useEffect(() => {
     if (currencyInfo && amount) {
-      setValue(`${displayAmount(currencyInfo.code, amount)}`)
+      setValue(`${normalizeAmount(currencyInfo?.code, amount)}`)
     }
-  }, [amount, currencyInfo])
-
-  /**
-   * Returns the persited amount for the current currency
-   */
-  useEffect(() => {
-    let persistedAmount: number | undefined = undefined
-
-    if (currencyInfo && value) {
-      const amount = parseFloat(value)
-      persistedAmount = persistedPrice(currencyInfo.code, amount)
-    }
-
-    if (onChange) {
-      onChange(persistedAmount)
-    }
-  }, [value, currencyInfo])
+  }, [amount])
 
   const handleManualValueChange = (val: number) => {
     const newValue = parseFloat(value ?? "0") + val
 
-    if (!allowNegative && newValue < 0) return
+    if (!allowNegative && newValue < 0) {
+      return
+    }
 
     setValue(`${newValue}`)
+  }
+
+  const handleChange = (value) => {
+    let persistedAmount: number | undefined = undefined
+
+    if (!value) {
+      value = 0
+    }
+
+    if (currencyInfo) {
+      const amount = parseFloat(value)
+      const multiplier = getDecimalDigits(currencyInfo.code)
+      persistedAmount = multiplier * amount
+      setValue(`${value}`)
+    }
+
+    if (onChange && persistedAmount) {
+      onChange(persistedAmount)
+    }
   }
 
   return (
@@ -190,9 +196,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
           className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
           decimalScale={currencyInfo?.decimal_digits}
           value={value}
-          onValueChange={(value) => {
-            setValue(value)
-          }}
+          onValueChange={handleChange}
           ref={inputRef}
           step={step}
           allowNegativeValue={allowNegative}

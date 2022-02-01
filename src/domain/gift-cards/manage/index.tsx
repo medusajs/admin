@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../../components/fundamentals/icons/unpublish-icon"
-import StatusIndicator from "../../../components/fundamentals/status-indicator"
+import StatusDot from "../../../components/fundamentals/status-indicator"
 import BreadCrumb from "../../../components/molecules/breadcrumb"
 import Input from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
@@ -55,8 +55,12 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
       // if undefined, assume you are removing
       update.type = null
     } else {
-      update.type = {
-        value: type.value,
+      if (type?.value) {
+        update.type = {
+          value: type.value,
+        }
+      } else {
+        update.type = null
       }
     }
 
@@ -86,13 +90,13 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   const StatusComponent = () => {
     switch (giftCard?.status) {
       case "published":
-        return <StatusIndicator title="Published" variant="success" />
+        return <StatusDot title="Published" variant="success" />
       case "draft":
-        return <StatusIndicator title="Draft" variant="default" />
+        return <StatusDot title="Draft" variant="default" />
       case "proposed":
-        return <StatusIndicator title="Proposed" variant="warning" />
+        return <StatusDot title="Proposed" variant="warning" />
       case "rejected":
-        return <StatusIndicator title="Rejected" variant="danger" />
+        return <StatusDot title="Rejected" variant="danger" />
       default:
         return null
     }
@@ -168,7 +172,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
               />
             </div>
             <DetailsCollapsible triggerProps={{ className: "ml-2" }}>
-              <div className="flex space-x-8">
+              <div className="flex space-x-8 pb-4">
                 <div className="flex flex-col w-1/2 space-y-4">
                   <Input
                     label="Handle"

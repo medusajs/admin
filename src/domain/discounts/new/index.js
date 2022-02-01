@@ -14,7 +14,8 @@ import Input from "../../../components/molecules/input"
 import Typography from "../../../components/typography"
 import ProductSelection from "../product-selection"
 
-import DatePicker from "../../../components/date-picker/date-picker"
+import DatePicker from "../../../components/atoms/date-picker/date-picker"
+import TimePicker from "../../../components/atoms/date-picker/time-picker"
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
 import InfoTooltip from "../../../components/info-tooltip"
@@ -24,7 +25,7 @@ import { getErrorMessage } from "../../../utils/error-messages"
 
 import { navigate } from "gatsby"
 
-const HorizontalDivider = props => (
+const HorizontalDivider = (props) => (
   <Box
     {...props}
     as="hr"
@@ -47,7 +48,7 @@ const StyledLabel = styled(Label)`
 
 const RequiredLabel = styled.div`
   ${Typography.Base}
-  ${props =>
+  ${(props) =>
     props.inline
       ? `
   text-align: right;
@@ -92,16 +93,16 @@ const NewDiscount = ({}) => {
   const { regions, isLoading: isLoadingRegions } = useMedusa("regions")
 
   const validRegions = () => {
-    let formattedRegions = regions.map(r => ({
+    const formattedRegions = regions.map((r) => ({
       label: r.name,
       value: r.id,
     }))
     return _.intersectionBy(formattedRegions, selectedRegions, "value").map(
-      v => v.value
+      (v) => v.value
     )
   }
 
-  const constructFreeShipping = data => {
+  const constructFreeShipping = (data) => {
     const req = {
       code: data.code,
       is_dynamic: false,
@@ -122,7 +123,7 @@ const NewDiscount = ({}) => {
     return req
   }
 
-  const submit = async data => {
+  const submit = async (data) => {
     if (isFreeShipping) {
       const disc = constructFreeShipping(data)
 
@@ -130,7 +131,7 @@ const NewDiscount = ({}) => {
         .create(disc)
         .then(() => toaster("Successfully created discount", "success"))
         .then(() => navigate("/a/discounts"))
-        .catch(error => toaster(getErrorMessage(error), "error"))
+        .catch((error) => toaster(getErrorMessage(error), "error"))
     }
 
     data.rule.value = parseInt(data.rule.value)
@@ -142,7 +143,7 @@ const NewDiscount = ({}) => {
     data.rule.allocation = isAllocatedToItem ? "item" : "total"
 
     if (items.length > 0) {
-      data.rule.valid_for = items.map(p => p.value)
+      data.rule.valid_for = items.map((p) => p.value)
     }
     data.regions = validRegions()
 
@@ -166,7 +167,7 @@ const NewDiscount = ({}) => {
         toaster("Successfully created discount", "success")
         navigate("/a/discounts")
       })
-      .catch(error => {
+      .catch((error) => {
         toaster(getErrorMessage(error), "error")
       })
   }
@@ -181,18 +182,21 @@ const NewDiscount = ({}) => {
     )
   }
 
-  const onRegionSelect = data => {
+  const onRegionSelect = (data) => {
     if (data.length > 1) {
       setIsPercentageDiscount(true)
     }
     setSelectedRegions(data)
   }
 
-  const handleSetShowRule = value => {
+  const handleSetShowRule = (value) => {
     setItems([])
     setShowRule(value)
   }
 
+  const startDateUpdate = (date) => {
+    setStartDate(date)
+  }
   return (
     <Flex
       as="form"
@@ -224,7 +228,7 @@ const NewDiscount = ({}) => {
           </RequiredLabel>
           <MultiSelect
             limitedWidth={true}
-            options={regions.map(el => ({
+            options={regions.map((el) => ({
               label: el.name,
               value: el.id,
             }))}
@@ -447,23 +451,17 @@ const NewDiscount = ({}) => {
             mb={[2, 2, 2, 0]}
             flexDirection="column"
           >
-            <StyledLabel pb={2} style={{ fontWeight: 500 }}>
-              Start date
-            </StyledLabel>
             <DatePicker
               date={startDate}
-              onChange={setStartDate}
-              enableTimepicker={true}
+              label={"Start date"}
+              onChange={startDateUpdate}
             />
           </Flex>
           <Flex width={[1, 1, 1, 1 / 2]} flexDirection="column">
-            <StyledLabel pb={2} style={{ fontWeight: 500 }}>
-              End date
-            </StyledLabel>
-            <DatePicker
-              date={endDate}
-              onChange={setEndDate}
-              enableTimepicker={true}
+            <TimePicker
+              date={startDate}
+              label={"Start time"}
+              onChange={startDateUpdate}
             />
           </Flex>
         </Flex>

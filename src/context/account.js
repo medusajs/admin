@@ -1,5 +1,4 @@
 import React, { useReducer } from "react"
-
 import Medusa from "../services/api"
 
 export const defaultAccountContext = {
@@ -14,7 +13,6 @@ export const defaultAccountContext = {
 export const AccountContext = React.createContext(defaultAccountContext)
 
 const reducer = (state, action) => {
-  console.log(action.payload)
   switch (action.type) {
     case "userAuthenticated":
       return {
@@ -66,14 +64,14 @@ export const AccountProvider = ({ children }) => {
           })
         },
 
-        handleLogout: details => {
+        handleLogout: (details) => {
           return Medusa.auth.deauthenticate(details).then(() => {
             dispatch({ type: "userLoggedOut" })
             return null
           })
         },
 
-        handleLogin: details => {
+        handleLogin: (details) => {
           return Medusa.auth.authenticate(details).then(({ data }) => {
             dispatch({ type: "userLoggedIn", payload: data.user })
             return data
