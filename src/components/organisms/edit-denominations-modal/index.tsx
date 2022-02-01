@@ -1,3 +1,4 @@
+import _ from "lodash"
 import * as React from "react"
 import { v4 as uuidv4 } from "uuid"
 import Button from "../../fundamentals/button"
@@ -20,12 +21,6 @@ type EditDenominationsModalProps = {
   defaultNewAmount?: number
   defaultNewCurrencyCode?: string
   currencyCodes?: string[]
-}
-
-const augmentWithId = (obj) => ({ ...obj, indexId: uuidv4() })
-
-const augmentWithIds = (list) => {
-  return list.map(augmentWithId)
 }
 
 const EditDenominationsModal = ({
@@ -78,6 +73,14 @@ const EditDenominationsModal = ({
       currency_code: availableCurrencies[0],
     }
     setDenominations([...denominations, augmentWithId(newDenomination)])
+  }
+
+  const submitHandler = () => {
+    const strippedDenominations = stripDenominationFromIndexId(denominations)
+
+    if (onSubmit) {
+      onSubmit(strippedDenominations)
+    }
   }
 
   return (
@@ -151,7 +154,7 @@ const EditDenominationsModal = ({
               variant="primary"
               size="small"
               className="mr-2 min-w-[130px] justify-center"
-              onClick={() => onSubmit(denominations)}
+              onClick={submitHandler}
             >
               Save
             </Button>
@@ -163,3 +166,13 @@ const EditDenominationsModal = ({
 }
 
 export default EditDenominationsModal
+
+const augmentWithId = (obj) => ({ ...obj, indexId: uuidv4() })
+
+const augmentWithIds = (list) => {
+  return list.map(augmentWithId)
+}
+
+const stripDenominationFromIndexId = (list) => {
+  return list.map((element) => _.omit(element, "indexId"))
+}
