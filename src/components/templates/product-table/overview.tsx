@@ -6,7 +6,7 @@ import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Actionables from "../../molecules/actionables"
-import useProductActionables from "./use-product-actionables"
+import useProductActions from "./use-product-actions"
 
 const ProductOverview = ({ products, toggleListView }) => {
   return (
@@ -40,7 +40,7 @@ const ProductOverview = ({ products, toggleListView }) => {
 }
 
 const ProductTile = ({ product }) => {
-  const { getActionables } = useProductActionables(product)
+  const { getActions } = useProductActions(product)
 
   return (
     <div className="p-base group rounded-rounded hover:bg-grey-5 flex-col">
@@ -49,7 +49,7 @@ const ProductTile = ({ product }) => {
           className={clsx("rounded-base inline-block absolute top-2 right-2")}
         >
           <Actionables
-            actions={getActionables(product)}
+            actions={getActions(product)}
             triggerClass="hidden-actions group-hover:opacity-100 focus-within:opacity-100 opacity-0 bg-grey-0"
           />
         </div>

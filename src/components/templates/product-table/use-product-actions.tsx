@@ -12,7 +12,7 @@ import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import { ActionType } from "../../molecules/actionables"
 import useCopyProduct from "./use-copy-product"
 
-const useProductActionables = (product) => {
+const useProductActions = (product) => {
   const toaster = useToaster()
   const dialog = useImperativeDialog()
   const copyProduct = useCopyProduct()
@@ -30,7 +30,7 @@ const useProductActionables = (product) => {
     }
   }
 
-  const getActionables = (product): ActionType[] => [
+  const getActions = (product): ActionType[] => [
     {
       label: "Edit",
       onClick: () => navigate(`/a/products/${product.id}`),
@@ -78,8 +78,8 @@ const useProductActionables = (product) => {
   ]
 
   return {
-    getActionables,
+    getActions,
   }
 }
 
-export default useProductActionables
+export default useProductActions
