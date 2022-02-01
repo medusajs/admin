@@ -52,8 +52,7 @@ const CollectionsIndex = () => {
     }
 
     createCollection.mutate(payload, {
-      onSuccess: (data) => {
-        console.log(data)
+      onSuccess: () => {
         toaster("Collection created", "success")
         refresh()
         setShowNew(false)
