@@ -1,4 +1,4 @@
-import React from "react"
+import * as React from "react"
 import { v4 as uuidv4 } from "uuid"
 import Button from "../../fundamentals/button"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
@@ -22,7 +22,7 @@ type EditDenominationsModalProps = {
   currencyCodes?: string[]
 }
 
-const augmentWithId = (obj) => ({ ...obj, id: obj.id ? obj.id : uuidv4() })
+const augmentWithId = (obj) => ({ ...obj, indexId: uuidv4() })
 
 const augmentWithIds = (list) => {
   return list.map(augmentWithId)
@@ -32,12 +32,17 @@ const EditDenominationsModal = ({
   defaultDenominations = [],
   onSubmit,
   handleClose,
-  currencyCodes,
+  currencyCodes = [],
   defaultNewAmount = 1000,
-  defaultNewCurrencyCode = "USD",
 }: EditDenominationsModalProps) => {
   const [denominations, setDenominations] = React.useState(
     augmentWithIds(defaultDenominations)
+  )
+  const selectedCurrencies = denominations.map(
+    (denomination) => denomination.currency_code
+  )
+  const availableCurrencies = currencyCodes?.filter(
+    (currency) => !selectedCurrencies.includes(currency)
   )
 
   const onAmountChange = (index) => {
@@ -67,7 +72,11 @@ const EditDenominationsModal = ({
     }
   }
 
-  const appendDenomination = (newDenomination) => {
+  const appendDenomination = () => {
+    const newDenomination = {
+      amount: defaultNewAmount,
+      currency_code: availableCurrencies[0],
+    }
     setDenominations([...denominations, augmentWithId(newDenomination)])
   }
 
@@ -88,7 +97,7 @@ const EditDenominationsModal = ({
             {denominations.map((field, index) => {
               return (
                 <div
-                  key={field.id}
+                  key={field.indexId}
                   className="first:mt-0 mt-xsmall flex items-center"
                 >
                   <div className="flex-1">
@@ -117,15 +126,11 @@ const EditDenominationsModal = ({
           </div>
           <div className="mt-large">
             <Button
-              onClick={() =>
-                appendDenomination({
-                  currency_code: defaultNewCurrencyCode,
-                  amount: defaultNewAmount,
-                })
-              }
+              onClick={appendDenomination}
               type="button"
               variant="ghost"
               size="small"
+              disabled={availableCurrencies.length === 0}
             >
               <PlusIcon size={20} />
               Add a price
