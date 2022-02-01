@@ -16,9 +16,7 @@ import RMASelectProductTable from "../../../../components/organisms/rma-select-p
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
-
-const removeNullish = (obj) =>
-  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
+import { removeNullish } from "../../../../utils/remove-nullish"
 
 const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const layoutmodalcontext = useContext(LayeredModalContext)

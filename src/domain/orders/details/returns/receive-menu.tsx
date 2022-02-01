@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react"
-import { Text, Flex, Box } from "rebass"
-
 import Modal from "../../../../components/molecules/modal"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import Button from "../../../../components/fundamentals/button"
@@ -139,26 +137,18 @@ const ReceiveMenu = ({
             <>
               {returnRequest.shipping_method &&
                 returnRequest.shipping_method.price !== undefined && (
-                  <Flex
-                    sx={{
-                      borderTop: "hairline",
-                    }}
-                    w={1}
-                    mt={3}
-                    pt={3}
-                    justifyContent="flex-end"
-                  >
-                    <Box fontSize={1} px={2}>
-                      Shipping cost
-                    </Box>
-                    <Box px={2} fontSize={1} width={170}>
+                  <div className="my-4 flex justify-between">
+                    <span className="inter-base-semibold">Shipping cost</span>
+                    <span>
                       {(
                         (returnRequest.shipping_method.price / 100) *
                         (1 + order.tax_rate / 100)
                       ).toFixed(2)}{" "}
-                      {order.currency_code.toUpperCase()}
-                    </Box>
-                  </Flex>
+                      <span className="text-grey-50">
+                        {order.currency_code.toUpperCase()}
+                      </span>
+                    </span>
+                  </div>
                 )}
 
               <div>

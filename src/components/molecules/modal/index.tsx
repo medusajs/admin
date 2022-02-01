@@ -11,7 +11,7 @@ export type ModalProps = {
 type ModalChildProps = {
   isLargeModal?: boolean
   className?: string
-  style?: object
+  style?: React.CSSProperties
 }
 
 type ModalHeaderProps = {
