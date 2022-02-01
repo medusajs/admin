@@ -10,11 +10,17 @@ export default {
 const Template: ComponentStory<typeof ViewRaw> = (args) => <ViewRaw {...args} />
 
 export const Default = Template.bind({})
-const product = {
+const metadata = {
   test: true,
   valid_days: ["monday", "wednesday", "friday"],
 }
 
 Default.args = {
-  raw: product,
+  raw: metadata,
+}
+
+export const WithName = Template.bind({})
+WithName.args = {
+  raw: metadata,
+  name: "metadata",
 }
