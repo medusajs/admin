@@ -297,7 +297,6 @@ const DateFilter = ({
               placeholder="2"
               inputStyle={{
                 p: "2px",
-                backgroundColor: "blue",
                 fontSize: "10px",
                 height: "25px",
                 marginRight: "2px;",
