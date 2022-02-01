@@ -13,13 +13,15 @@ import NewRegion from "./new"
 
 const Regions = () => {
   const { regions, isLoading, refetch } = useAdminRegions()
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
+  const [selectedRegion, setSelectedRegion] = useState<string | undefined>(
+    undefined
+  )
   const [addRegion, setAddRegion] = useState(false)
 
   useEffect(() => {
     const setRegion = () => {
       if (!isLoading && selectedRegion === null) {
-        setSelectedRegion(regions[0].id)
+        setSelectedRegion(regions?.[0]?.id)
       }
     }
 
@@ -28,9 +30,12 @@ const Regions = () => {
 
   const handleDelete = () => {
     refetch().then(({ data }) => {
-      const id = data.regions[0].id
+      const id = data?.regions?.[0]?.id
+
+      if (!id) return
+
       setSelectedRegion(id)
-      document.getElementById(id).scrollIntoView({
+      document.getElementById(id)?.scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "nearest",
@@ -41,7 +46,7 @@ const Regions = () => {
   const handleSelect = (id: string) => {
     refetch().then(() => {
       setSelectedRegion(id)
-      document.getElementById(id).scrollIntoView({
+      document.getElementById(id)?.scrollIntoView({
         behavior: "smooth",
       })
     })
@@ -67,7 +72,7 @@ const Regions = () => {
               },
             ]}
           >
-            {isLoading || !selectedRegion ? (
+            {isLoading || !regions ? (
               <div className="flex-grow h-full flex items-center justify-center">
                 <Spinner size="large" variant="secondary" />
               </div>
@@ -94,7 +99,7 @@ const Regions = () => {
                           ? `(${r.countries
                               .map((c) => c.display_name)
                               .join(", ")})`
-                          : null
+                          : undefined
                       }
                       description={providers}
                       value={r.id}

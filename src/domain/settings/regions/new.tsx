@@ -5,13 +5,16 @@ import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import Select from "../../../components/molecules/select"
+import CurrencyInput from "../../../components/organisms/currency-input"
 import useToaster from "../../../hooks/use-toaster"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const NewRegion = ({ onDone, onClick }) => {
-  const [currencies, setCurrencies] = useState([])
-  const [selectedCurrency, setSelectedCurrency] = useState(null)
+  const [currencies, setCurrencies] = useState<string[]>([])
+  const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>(
+    undefined
+  )
   const [countries, setCountries] = useState([])
   const [paymentOptions, setPaymentOptions] = useState([])
   const [paymentProviders, setPaymentProviders] = useState([])
@@ -24,23 +27,18 @@ const NewRegion = ({ onDone, onClick }) => {
   const toaster = useToaster()
 
   useEffect(() => {
-    if (storeIsLoading) return
+    if (storeIsLoading || !store) return
     register({ name: "currency_code" })
-    setCurrencies(
-      store.currencies.map(c => ({
-        value: c.code,
-        label: c.code.toUpperCase(),
-      }))
-    )
+    setCurrencies(store.currencies.map((currency) => currency.code))
     setPaymentOptions(
-      store.payment_providers.map(c => ({
+      store.payment_providers.map((c) => ({
         // Store Type is wrong, fix
         value: c.id,
         label: c.id,
       }))
     )
     setFulfillmentOptions(
-      store.fulfillment_providers.map(c => ({
+      store.fulfillment_providers.map((c) => ({
         // Store Type is wrong, fix
         value: c.id,
         label: c.id,
@@ -48,34 +46,34 @@ const NewRegion = ({ onDone, onClick }) => {
     )
   }, [store, storeIsLoading])
 
-  const handlePaymentChange = values => {
+  const handlePaymentChange = (values) => {
     setPaymentProviders(values)
     register({ name: "payment_providers" })
     setValue(
       "payment_providers",
-      values.map(c => c.value)
+      values.map((c) => c.value)
     )
   }
 
-  const handleFulfillmentChange = values => {
+  const handleFulfillmentChange = (values) => {
     setFulfillmentProviders(values)
     register({ name: "fulfillment_providers" })
     setValue(
       "fulfillment_providers",
-      values.map(c => c.value)
+      values.map((c) => c.value)
     )
   }
 
-  const handleChange = values => {
+  const handleChange = (values) => {
     setCountries(values)
     register({ name: "countries", required: true })
     setValue(
       "countries",
-      values.map(c => c.value)
+      values.map((c) => c.value)
     )
   }
 
-  const onSave = data => {
+  const onSave = (data) => {
     if (!data.countries?.length) {
       toaster("Choose at least one country", "error")
       return
@@ -84,7 +82,7 @@ const NewRegion = ({ onDone, onClick }) => {
     createRegion.mutate(
       {
         ...data,
-        currency_code: data.currency_code.value,
+        currency_code: data.currency_code,
         tax_rate: data.tax_rate * 100,
       },
       {
@@ -95,21 +93,21 @@ const NewRegion = ({ onDone, onClick }) => {
           }
           onClick()
         },
-        onError: error => {
+        onError: (error) => {
           toaster(getErrorMessage(error), "error")
         },
       }
     )
   }
 
-  const countryOptions = countryData.map(c => ({
+  const countryOptions = countryData.map((c) => ({
     label: c.name,
     value: c.alpha2,
   }))
 
-  const handleChangeCurrency = value => {
-    setValue("currency_code", value)
-    setSelectedCurrency(value)
+  const handleChangeCurrency = (currency: string) => {
+    setValue("currency_code", currency)
+    setSelectedCurrency(currency)
   }
 
   return (
@@ -131,14 +129,11 @@ const NewRegion = ({ onDone, onClick }) => {
                   ref={register}
                   className="mb-base min-w-[335px] w-full"
                 />
-                <Select
-                  enableSearch
-                  label="Currency"
-                  name="currency_code"
-                  options={currencies}
-                  value={selectedCurrency}
+                <CurrencyInput
+                  currencyCodes={currencies}
+                  currentCurrency={selectedCurrency}
                   onChange={handleChangeCurrency}
-                  className="mb-base min-w-[335px] w-full"
+                  className="items-baseline"
                 />
                 <Input
                   className="mb-base min-w-[335px] w-full"

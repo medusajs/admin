@@ -15,7 +15,10 @@ import FilterDropdownContainer from "../../components/molecules/filter-dropdown/
 import CheckIcon from "../../components/fundamentals/icons/check-icon"
 import clsx from "clsx"
 import SaveFilterItem from "../../components/molecules/filter-dropdown/save-field"
+<<<<<<< HEAD
 import ChevronDownIcon from "../../components/fundamentals/icons/chevron-down"
+=======
+>>>>>>> feat/revamp
 
 const statusFilters = ["proposed", "draft", "published", "rejected"]
 
@@ -30,6 +33,10 @@ const ProductsFilter = ({
   clearFilters,
   tagsFilter,
   resetFilters,
+<<<<<<< HEAD
+=======
+  sx,
+>>>>>>> feat/revamp
   ...rest
 }) => {
   const [name, setName] = useState("")
@@ -45,16 +52,20 @@ const ProductsFilter = ({
     clearFilters()
   }
 
+<<<<<<< HEAD
   const numberOfFilters = [statusFilter, collectionFilter, tagsFilter].reduce(
     (prev, curr) => prev + (curr.open ? 1 : 0),
     0
   )
 
+=======
+>>>>>>> feat/revamp
   return (
     <FilterDropdownContainer
       submitFilters={onSubmit}
       clearFilters={onClear}
       triggerElement={
+<<<<<<< HEAD
         <div
           className={clsx(
             "inter-small-regular text-grey-50 flex items-center pl-1.5 pr-0.5 rounded"
@@ -70,6 +81,11 @@ const ProductsFilter = ({
             </div>
           </div>
         </div>
+=======
+        <Button size="small" variant="primary">
+          Filter
+        </Button>
+>>>>>>> feat/revamp
       }
     >
       <FilterDropdownItem
