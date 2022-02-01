@@ -86,10 +86,17 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   const setReturnReason = (reason, note, files, id) => {
     let newReturns = {}
     if (imagesOnReturns) {
-      const uploadFiles = files.filter(
-        (f) => toReturn[id].images.indexOf(f) < 0
-      )
-      const deleteFiles = 
+      handleAddImages(files).then((res) => {
+        newReturns = {
+          ...toReturn,
+          [id]: {
+            ...toReturn[id],
+            reason: reason,
+            note: note,
+            images: [...toReturn[id].images, ...res],
+          },
+        }
+      })
     } else {
       newReturns = {
         ...toReturn,

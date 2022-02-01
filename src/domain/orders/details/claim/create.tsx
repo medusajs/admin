@@ -1,24 +1,11 @@
-import React, { useState, useEffect, useRef, useContext } from "react"
-import { Text, Flex, Box } from "rebass"
-import styled from "@emotion/styled"
-import { useForm } from "react-hook-form"
+import React, { useState, useEffect, useContext } from "react"
 
-import Pill from "../../../../components/pill"
 import Modal from "../../../../components/molecules/modal"
-import ImageUpload from "../../../../components/image-upload"
-import Input from "../../../../components/molecules/input"
 import Button from "../../../../components/fundamentals/button"
-import Dropdown from "../../../../components/dropdown"
-import TextArea from "../../../../components/textarea"
 import Select from "../../../../components/molecules/select"
-import AddressForm from "../address-form"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
 
-import { ReactComponent as Trash } from "../../../../assets/svg/trash.svg"
-import { ReactComponent as Edit } from "../../../../assets/svg/edit.svg"
-import { ReactSelect } from "../../../../components/react-select"
-import { extractOptionPrice } from "../../../../utils/prices"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 import LayeredModal, {
@@ -38,29 +25,13 @@ import InfoTooltip from "../../../../components/molecules/info-tooltip"
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
-const extractPrice = (prices, order) => {
-  let price = prices.find((ma) => ma.region_id === order.region_id)
-
-  if (!price) {
-    price = prices.find((ma) => ma.currency_code === order.currency_code)
-  }
-
-  if (price) {
-    return (price.amount * (1 + order.tax_rate / 100)) / 100
-  }
-
-  return 0
-}
-
 const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   console.log(order)
   const [shippingAddress, setShippingAddress] = useState({})
   const [countries, setCountries] = useState([])
   const [isReplace, toggleReplace] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [returnAll, setReturnAll] = useState(false)
   const [noNotification, setNoNotification] = useState(order.no_notification)
-  const [toPay, setToPay] = useState(0)
   const [toReturn, setToReturn] = useState({})
   const [quantities, setQuantities] = useState([])
 
@@ -80,33 +51,12 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     standard: 0,
     return: null,
   })
-  const [searchResults, setSearchResults] = useState([])
   const [ready, setReady] = useState(false)
 
   const layeredModalContext = useContext(LayeredModalContext)
 
   // Includes both order items and swap items
   const [allItems, setAllItems] = useState([])
-
-  const handleReturnToggle = (item) => {
-    const id = item.id
-
-    const newReturns = { ...toReturn }
-
-    if (id in toReturn) {
-      delete newReturns[id]
-    } else {
-      newReturns[id] = {
-        tags: [],
-        images: [],
-        reason: null,
-        note: "",
-        quantity: item.quantity - item.returned_quantity,
-      }
-    }
-
-    setToReturn(newReturns)
-  }
 
   const formatAddress = (address) => {
     const addr = [address.address_1]
@@ -176,8 +126,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   useEffect(() => {
     if (!isReplace) {
-      setShippingMethod()
-      setShippingPrice()
+      setShippingMethod(undefined)
+      setShippingPrice(undefined)
       setShowCustomPrice({
         ...showCustomPrice,
         standard: false,
@@ -207,19 +157,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   //  setToPay(newItemsTotal - returnTotal)
   // }, [toReturn, quantities, shippingPrice, itemsToAdd])
-
-  const handleQuantity = (e, item) => {
-    const element = e.target
-    const newReturns = {
-      ...toReturn,
-      [item.id]: {
-        ...toReturn[item.id],
-        quantity: parseInt(element.value),
-      },
-    }
-
-    setToReturn(newReturns)
-  }
 
   const onSubmit = () => {
     const claim_items = Object.entries(toReturn).map(([key, val]) => {
@@ -288,64 +225,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     const updated = [...itemsToAdd]
     updated.splice(index, 1)
     setItemsToAdd(updated)
-  }
-
-  const handleReturnAll = () => {
-    if (returnAll) {
-      setToReturn([])
-      setReturnAll(false)
-    } else {
-      const newReturns = []
-      const newQuantities = {}
-      for (const item of order.items) {
-        if (!item.returned) {
-          newReturns[item.id] = {
-            quantity: item.quantity - item.returned_quantity,
-          }
-        }
-      }
-      // setQuantities(newQuantities)
-      setToReturn(newReturns)
-      setReturnAll(true)
-    }
-  }
-
-  const handleAddImage = (e, item) => {
-    Medusa.uploads.create(e.target.files).then(({ data }) => {
-      const uploaded = data.uploads.map(({ url }) => url)
-
-      setToReturn((prev) => ({
-        ...prev,
-        [item.id]: {
-          ...(prev[item.id] || {}),
-          images: [...prev[item.id].images, ...uploaded],
-        },
-      }))
-    })
-  }
-
-  const handleImageDelete = (url, item) => {
-    Medusa.uploads.delete(url[0]).then(() => {
-      setToReturn({
-        ...toReturn,
-        [item.id]: {
-          ...(toReturn[item.id] || {}),
-          images: toReturn[item.id].images.filter((im) => im !== url),
-        },
-      })
-    })
-  }
-
-  const handleReasonChange = (e, item) => {
-    const element = e.target
-
-    setToReturn((prev) => ({
-      ...prev,
-      [item.id]: {
-        ...(prev[item.id] || {}),
-        reason: element.value,
-      },
-    }))
   }
 
   const handleReturnShippingSelected = (so) => {
