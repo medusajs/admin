@@ -1,5 +1,6 @@
 import { useAdminCollection } from "medusa-react"
 import React from "react"
+import { useForm } from "react-hook-form"
 import Spinner from "../../../components/atoms/spinner"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import InfoTooltip from "../../../components/molecules/info-tooltip"
@@ -12,6 +13,8 @@ type CollectionDetailsProps = {
 
 const CollectionDetails: React.FC<CollectionDetailsProps> = ({ id }) => {
   const { collection, isLoading } = useAdminCollection(id)
+
+  const { register, unregister, setValue, handleSubmit } = useForm()
 
   return (
     <div className="flex flex-col">
@@ -39,7 +42,10 @@ const CollectionDetails: React.FC<CollectionDetailsProps> = ({ id }) => {
             <InputField
               label="Handle"
               defaultValue={collection.handle}
-              tooltip={<InfoTooltip />}
+              prefix="/"
+              tooltip={
+                <InfoTooltip content="URL Slug for the product. Will be auto generated if left blank." />
+              }
             />
           </div>
         )}
