@@ -56,7 +56,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
             {status && status}
             <Actionables
               actions={actionables}
-              forceDots={forceDropdown}
+              forceDropdown={forceDropdown}
               customTrigger={customActionable}
             />
           </div>
