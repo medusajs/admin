@@ -2,7 +2,7 @@ import clsx from "clsx"
 import React from "react"
 
 type StatusIndicatorProps = {
-  title: string
+  title?: string
   variant: "primary" | "danger" | "warning" | "success" | "default"
 } & React.HTMLAttributes<HTMLDivElement>
 

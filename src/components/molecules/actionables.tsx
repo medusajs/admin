@@ -13,7 +13,7 @@ export type ActionType = {
 
 type ActionablesProps = {
   actions?: ActionType[]
-  triggerClass: string
+  triggerClass?: string
 }
 
 /**

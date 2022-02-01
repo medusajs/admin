@@ -66,7 +66,6 @@ const ProductTile = ({ product }) => {
                 {product.title}
               </p>
               <StatusIndicator
-                title=""
                 variant={getProductStatusVariant(product.status)}
                 className="shrink-0"
               />
