@@ -3,16 +3,17 @@ import ReactJson from "react-json-view"
 import * as Collapsible from "@radix-ui/react-collapsible"
 import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
 import Button from "../../fundamentals/button"
-import ClipboardCopyIcon from "../../fundamentals/icons/clipboard-copy-icon"
 import clsx from "clsx"
 import useClipboard from "../../../hooks/use-clipboard"
+import ClipboardCopyIcon from "../../fundamentals/icons/clipboard-copy-icon"
 
 type ViewRawProps = {
   raw: object
   title?: string
+  name?: string
 }
 
-const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data" }) => {
+const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data", name }) => {
   const [expanded, setExpanded] = useState(false)
   const [isCopied, handleCopy] = useClipboard(
     JSON.stringify(raw, undefined, 2),
@@ -53,6 +54,7 @@ const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data" }) => {
                 fontFamily: "Roboto Mono",
                 fontSize: "12px",
               }}
+              name={name}
             />
           </div>
           <div className="flex items-center justify-end w-full gap-x-xsmall text-grey-50 inter-small-regular">

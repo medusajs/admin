@@ -1,8 +1,6 @@
 import { graphql, useStaticQuery } from "gatsby"
 import PropTypes from "prop-types"
 import React from "react"
-import { Flex, Text } from "rebass"
-import { Body, Container, Content, Main } from "./elements"
 
 const Layout = ({ children }) => {
   const data = useStaticQuery(graphql`
@@ -16,26 +14,27 @@ const Layout = ({ children }) => {
   `)
 
   return (
-    <Container>
-      <Main>
-        <Content fontFamily={"body"}>
-          <Body p={3} mx="auto">
-            <Flex flexDirection="column" width={1} alignItems="center">
-              {children}
-              <Text fontSize={1} sx={{ "& a": { textDecoration: "none" } }}>
-                © Medusa Commerce <span>&#183;</span>{" "}
-                <a
-                  style={{ color: "inherit", textDecoration: "none" }}
-                  href="mailto:hello@medusa-commerce.com"
-                >
-                  Contact
-                </a>
-              </Text>
-            </Flex>
-          </Body>
-        </Content>
-      </Main>
-    </Container>
+    <div className="min-h-screen flex flex-col">
+      <div className="grid grid-cols-1 grid-rows-1 min-h-screen">
+        <div
+          className="flex flex-col items-center"
+          style={{
+            background: "linear-gradient(73.29deg, #7C53FF 0%, #F796FF 100%)",
+          }}
+        >
+          {children}
+          <div className="text-grey-0 inter-base-regular pb-12">
+            © Medusa Commerce <span>&#183;</span>{" "}
+            <a
+              style={{ color: "inherit", textDecoration: "none" }}
+              href="mailto:hello@medusajs.com"
+            >
+              Contact
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
