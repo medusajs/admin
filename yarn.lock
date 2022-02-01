@@ -2073,7 +2073,7 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@^1.0.11-adminc.21":
+"@medusajs/medusa-js@1.0.11-adminc.21+1b3f63b6", "@medusajs/medusa-js@^1.0.11-adminc.21":
   version "1.0.11-adminc.21"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-adminc.21.tgz#13eb30431381af86944723c36dcc8a8237fc03ca"
   integrity sha512-0G8aynrZ8oYnnwvt61QHDtZUFcVaCes64nicYy6CbBxyusQgUjXjIt5scEa7LJcdvxeROE/3WIyccd+aiJLpfQ==
@@ -2082,16 +2082,6 @@
     axios "^0.24.0"
     form-data "^4.0.0"
     qs "^6.10.3"
-    retry-axios "^2.6.0"
-
-"@medusajs/medusa-js@^1.0.11-adminc.21+1b3f63b6":
-  version "1.0.11-alpha.4"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-alpha.4.tgz#6543044ef682e30f2ea8d98c5a488b8d02d11212"
-  integrity sha512-59TZARfsfN6zvCW4cYjh46/v0jFMuOvWBiNQ1+dwKGWMq9Q+pOlT7dQNvzJz6d79JClZk7r+4FFdwr6ScpLv+g==
-  dependencies:
-    "@medusajs/medusa" "^1.1.63-alpha.4+7fcdac51"
-    axios "^0.24.0"
-    form-data "^4.0.0"
     retry-axios "^2.6.0"
 
 "@medusajs/medusa@^1.1.61-alpha.14":
@@ -2144,7 +2134,7 @@
     uuid "^8.3.1"
     winston "^3.2.1"
 
-"@medusajs/medusa@^1.1.63-adminc.21+1b3f63b6", "@medusajs/medusa@^1.1.63-alpha.4+7fcdac51":
+"@medusajs/medusa@^1.1.63-adminc.21+1b3f63b6":
   version "1.1.63-alpha.4"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.63-alpha.4.tgz#193fe7f85ee18224f02db317e320ba43be1a9f5f"
   integrity sha512-LSE3SlSssRF2kQC0NwxIBqbZyJK0xs4iNkm9gn1BudHlcep3xNG01uOoXZz3AyV2WvYe7VDOScV5iHGmNbCyLg==
