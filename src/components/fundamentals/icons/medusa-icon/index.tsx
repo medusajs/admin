@@ -1,11 +1,12 @@
 import React from "react"
 import IconProps from "../types/icon-type"
 
-const MedusaIcon: React.FC<IconProps> = ({ size = "16", ...attributes }) => {
+const MedusaIcon: React.FC<IconProps> = ({ size = "48", ...attributes }) => {
+  const width = +size * 0.9375 // width relative to height (from size prop)
   return (
     <svg
-      width="45"
-      height="48"
+      width={width}
+      height={size}
       viewBox="0 0 45 48"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

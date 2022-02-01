@@ -33,15 +33,13 @@ const SigninInput = React.forwardRef(
 
     return (
       <input
-        className={
-          (clsx(
-            "outline-none outline-0 remove-number-spinner leading-base",
-            "w-[320px] h-[48px] py-3 px-4 mt-4 border rounded-rounded",
-            "bg-grey-5 inter-base-regular placeholder:text-grey-40",
-            "focus-within:shadow-input focus-within:border-violet-60"
-          ),
-          className)
-        }
+        className={clsx(
+          "outline-none outline-0 remove-number-spinner leading-base",
+          "w-[320px] h-[48px] py-3 px-4 mt-4 border rounded-rounded",
+          "bg-grey-5 inter-base-regular placeholder:text-grey-40",
+          "focus-within:shadow-input focus-within:border-violet-60",
+          className
+        )}
         ref={inputRef}
         autoComplete="off"
         name={name}
