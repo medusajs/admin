@@ -37,6 +37,7 @@ import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
+import CreateFulfillmentModal from "./create-fulfillment"
 
 const gatherAllFulfillments = (order) => {
   if (!order) {
@@ -114,6 +115,8 @@ const OrderDetails = ({ id }) => {
     address: Address
     type: "billing" | "shipping"
   }>(null)
+
+  const [showFulfillment, setShowFulfillment] = useState(true)
 
   const { order, isLoading } = useAdminOrder(id)
 
@@ -950,6 +953,7 @@ const OrderDetails = ({ id }) => {
           email={order?.email}
         />
       )}
+      {showFulfillment && <CreateFulfillmentModal />}
       {/* An attempt to make a reusable delete prompt, so we don't have to hold +10
       state variables for showing different prompts */}
       {deletePromptData.show && (
