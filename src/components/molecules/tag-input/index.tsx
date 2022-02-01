@@ -13,6 +13,7 @@ const ARROW_RIGHT_KEY = 39
 type TagInputProps = {
   onChange: (values: string[]) => void
   label: string
+  showLabel?: boolean
   values: string[]
   containerProps?: React.HTMLAttributes<HTMLDivElement>
   withTooltip?: boolean
@@ -24,6 +25,7 @@ const TagInput: React.FC<TagInputProps> = ({
   onChange,
   values,
   label,
+  showLabel = true,
   containerProps,
   className,
   required,
@@ -131,10 +133,13 @@ const TagInput: React.FC<TagInputProps> = ({
       className={clsx("flex flex-wrap relative", className)}
       onFocus={handleOnContainerFocus}
     >
-      <InputHeader
-        label={label || "Tags (comma separated)"}
-        {...{ required, tooltipContent, tooltip }}
-      />
+      {showLabel && (
+        <InputHeader
+          label={label || "Tags (comma separated)"}
+          {...{ required, tooltipContent, tooltip }}
+        />
+      )}
+
       <div className="w-full flex mt-1 ml-0 flex-wrap">
         {values.map((v, index) => (
           <div
