@@ -40,14 +40,12 @@ const ProductOverview = ({ products, toggleListView }) => {
 }
 
 const ProductTile = ({ product }) => {
-  const actionsRef = React.useRef<HTMLDivElement>(null)
   const { getActionables } = useProductActionables(product)
 
   return (
     <div className="p-base group rounded-rounded hover:bg-grey-5 flex-col">
       <div className="relative">
         <div
-          ref={actionsRef}
           className={clsx("rounded-base inline-block absolute top-2 right-2")}
         >
           <Actionables
