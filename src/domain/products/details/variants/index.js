@@ -22,13 +22,15 @@ const Variants = ({
   const [variants, setVariants] = useState([])
 
   useEffect(() => {
-    if (isLoading) return
+    if (isLoading) {
+      return
+    }
 
-    const variants = product.variants.map(v => ({
+    const variants = product.variants.map((v) => ({
       ...v,
-      options: v.options.map(o => ({
+      options: v.options.map((o) => ({
         ...o,
-        title: product.options.find(po => po.id === o.option_id).title,
+        title: product.options.find((po) => po.id === o.option_id).title,
       })),
     }))
 
@@ -40,7 +42,7 @@ const Variants = ({
       label: "Add variant",
       onClick: () =>
         setNewVariant({
-          options: product.options.map(o => ({
+          options: product.options.map((o) => ({
             value: "",
             name: o.title,
             option_id: o.id,
@@ -56,11 +58,9 @@ const Variants = ({
     },
   ]
 
-  const handleSubmit = e => {
-    e.preventDefault()
-
-    const payload = variants.map(v => {
-      let cleanPrices = v.prices.map(rawPrice => {
+  const handleSubmit = (variants) => {
+    const payload = variants.map((v) => {
+      let cleanPrices = v.prices.map((rawPrice) => {
         if (typeof rawPrice.amount === "undefined" || rawPrice.amount === "") {
           return null
         }
@@ -98,7 +98,7 @@ const Variants = ({
         upc: v.upc || undefined,
         prices: cleanPrices,
         inventory_quantity: parseInt(v.inventory_quantity),
-        options: v.options.map(o => ({
+        options: v.options.map((o) => ({
           value: o.value,
           option_id: o.option_id,
         })),
@@ -115,10 +115,12 @@ const Variants = ({
       }
     })
 
+    console.log(payload)
+
     onSubmit({ variants: payload })
   }
 
-  const handleVariantEdited = data => {
+  const handleVariantEdited = (data) => {
     const newVs = [...variants]
     newVs[editIndex] = {
       ...newVs[editIndex],
@@ -134,29 +136,33 @@ const Variants = ({
     setEditVariant(null)
   }
 
-  const handleUpdateVariant = data => {
+  const handleUpdateVariant = (data) => {
     const updatedVariants = variants.slice()
     updatedVariants[editIndex] = { id: editVariant.id, ...data }
+    console.log(updatedVariants[editIndex])
     setVariants(updatedVariants)
     setNewVariant(null)
     setEditVariant(null)
+    handleSubmit(updatedVariants)
   }
 
-  const handleCreateVariant = data => {
+  const handleCreateVariant = (data) => {
     const variant = { ...newVariant, ...data }
     delete variant.id
-    setVariants([...variants, variant])
+    const newVariants = [...variants, variant]
+    setVariants(newVariants)
     setNewVariant(null)
     setEditVariant(null)
+    handleSubmit(newVariants)
   }
 
-  const handleCreateOption = data => {
+  const handleCreateOption = (data) => {
     optionMethods.create(data)
   }
 
   return (
     <>
-      <Card as="form" onSubmit={handleSubmit} my={4}>
+      <Card>
         <Card.Header dropdownOptions={dropdownOptions}>Variants</Card.Header>
         <Card.Body px={3}>
           {isLoading ? (
@@ -169,25 +175,20 @@ const Variants = ({
             <Flex width={1} flexDirection={"column"}>
               <VariantGrid
                 edit
-                onEdit={index => {
+                onEdit={(index) => {
                   setEditVariant(variants[index])
                   setEditIndex(index)
                 }}
-                onCopy={index => {
+                onCopy={(index) => {
                   setNewVariant(variants[index])
                 }}
                 product={product}
                 variants={variants}
-                onChange={vs => setVariants(vs)}
+                onChange={(vs) => setVariants(vs)}
               />
             </Flex>
           )}
         </Card.Body>
-        <Card.Footer px={3} justifyContent="flex-end" hideBorder={true}>
-          <Button variant="deep-blue" type="submit">
-            Save
-          </Button>
-        </Card.Footer>
       </Card>
       {showAddOption && (
         <NewOption
@@ -202,9 +203,12 @@ const Variants = ({
           isCopy={!!newVariant}
           options={product.options}
           onDelete={handleDeleteVariant}
-          onSubmit={data => {
-            if (newVariant) handleCreateVariant(data)
-            else if (editVariant) handleUpdateVariant(data)
+          onSubmit={(data) => {
+            if (newVariant) {
+              handleCreateVariant(data)
+            } else if (editVariant) {
+              handleUpdateVariant(data)
+            }
           }}
           onCancel={() => {
             setEditVariant(null)

@@ -1,15 +1,10 @@
-import styled from "@emotion/styled"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Box, Flex, Text } from "rebass"
 import { removeNullish } from "../../../../utils/remove-nullish"
 import Button from "../../../../components/fundamentals/button"
-import CInput from "../../../../components/currency-input"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
-import Typography from "../../../../components/typography"
-import useMedusa from "../../../../hooks/use-medusa"
 import { countries as countryData } from "../../../../utils/countries"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
@@ -17,6 +12,7 @@ import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import Select from "../../../../components/molecules/select"
+import { useAdminStore } from "medusa-react"
 const numberFields = ["weight", "length", "width", "height"]
 
 const VariantEditor = ({
@@ -32,8 +28,7 @@ const VariantEditor = ({
     value: c.alpha2.toLowerCase(),
   }))
 
-  const { store, isLoading } = useMedusa("store")
-  console.log(variant)
+  const { store, isLoading } = useAdminStore()
   const [currencyOptions, setCurrencyOptions] = useState([])
   const [prices, setPrices] = useState(variant.prices)
   const [selectedCountry, setSelectedCountry] = useState(
@@ -42,7 +37,6 @@ const VariantEditor = ({
       : undefined
   )
 
-  console.log("selected country", selectedCountry)
   const { setValue, getValues, register, reset, watch, handleSubmit } = useForm(
     variant
   )
@@ -84,7 +78,6 @@ const VariantEditor = ({
   }
 
   const handlePriceChange = (index, value) => {
-    console.log(value)
     const newPrices = [...prices]
     newPrices[index] = {
       ...newPrices[index],
@@ -116,8 +109,6 @@ const VariantEditor = ({
   }
 
   const handleSave = (data) => {
-    console.log("submitted", data)
-
     data.prices = prices.map(({ currency_code, region_id, amount }) => ({
       currency_code,
       region_id,
@@ -129,14 +120,11 @@ const VariantEditor = ({
     data.prices = data.prices.map((p) => removeNullish(p))
     const cleaned = convertEmptyStringToNull(data, numberFields)
 
-    console.log("saved", cleaned)
-
     onSubmit(cleaned)
   }
 
-  watch()
+  watch(["manage_inventory", "allow_backorder"])
 
-  // as="form"
   return (
     <Modal handleClose={onCancel}>
       <Modal.Body>
@@ -145,7 +133,10 @@ const VariantEditor = ({
         </Modal.Header>
         <Modal.Content>
           <div className="mb-8">
-            <label className="inter-base-semibold mb-4 flex items-center gap-xsmall">
+            <label
+              tabIndex={0}
+              className="inter-base-semibold mb-4 flex items-center gap-xsmall"
+            >
               {"Prices"}
               <InfoTooltip content={"Variant prices"} />
             </label>
@@ -342,17 +333,25 @@ const VariantEditor = ({
           </div>
         </Modal.Content>
         <Modal.Footer>
-          <Button onClick={onCancel} size="medium" variant="ghost">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit(handleSave)}
-            type="submit"
-            size="medium"
-            variant="primary"
-          >
-            {isCopy ? "Create" : "Edit"}
-          </Button>
+          <div className="flex w-full justify-end gap-x-base">
+            <Button
+              className="w-[127px]"
+              onClick={onCancel}
+              size="small"
+              variant="ghost"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit(handleSave)}
+              type="submit"
+              className="w-[127px]"
+              size="small"
+              variant="primary"
+            >
+              Save
+            </Button>
+          </div>
         </Modal.Footer>
       </Modal.Body>
     </Modal>
