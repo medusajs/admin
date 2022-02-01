@@ -53,10 +53,10 @@ const BodyCard: React.FC<BodyCardProps> = ({
             <div />
           )}
           <div className="flex items-center space-x-2">
-            {status && <div className="mr-2">{status}</div>}
+            {status && status}
             <Actionables
               actions={actionables}
-              forceDots={forceDropdown}
+              forceDropdown={forceDropdown}
               customTrigger={customActionable}
             />
           </div>
