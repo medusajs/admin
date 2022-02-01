@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useContext } from "react"
 import { Text, Flex, Box } from "rebass"
 import styled from "@emotion/styled"
 import { useForm } from "react-hook-form"
@@ -7,10 +7,10 @@ import Pill from "../../../../components/pill"
 import Modal from "../../../../components/molecules/modal"
 import ImageUpload from "../../../../components/image-upload"
 import Input from "../../../../components/molecules/input"
-import Button from "../../../../components/button"
+import Button from "../../../../components/fundamentals/button"
 import Dropdown from "../../../../components/dropdown"
 import TextArea from "../../../../components/textarea"
-import Select from "../../../../components/select"
+import Select from "../../../../components/molecules/select"
 import AddressForm from "../address-form"
 import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
@@ -21,62 +21,22 @@ import { ReactSelect } from "../../../../components/react-select"
 import { extractOptionPrice } from "../../../../utils/prices"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import LayeredModal, {
+  LayeredModalContext,
+} from "../../../../components/molecules/modal/layered-modal"
+import Spinner from "../../../../components/atoms/spinner"
+import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
+import clsx from "clsx"
+import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
+import RMASelectProductSubModal from "../rma-sub-modals/products"
+import CurrencyInput from "../../../../components/organisms/currency-input"
+import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import RMAEditAddressSubModal from "../rma-sub-modals/address"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
-
-const Cross = styled.span`
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin-right: 5px;
-  cursor: pointer;
-`
-
-const Dot = styled(Box)`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-`
-
-const ImageCardWrapper = styled(Box)`
-  position: relative;
-  display: inline-block;
-  height: 100px;
-  width: 100px;
-`
-
-const StyledImageCard = styled(Box)`
-  height: 100px;
-  width: 100px;
-
-  border: ${(props) => (props.selected ? "1px solid #53725D" : "none")};
-
-  object-fit: contain;
-
-  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0.12) 0px 1px 1px 0px, rgba(60, 66, 87, 0.16) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(60, 66, 87, 0.08) 0px 3px 9px 0px,
-    rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
-
-  border-radius: 3px;
-`
-
-const StyledImageBox = styled(Flex)`
-  flex-wrap: wrap;
-  .img-container {
-    border: 1px solid black;
-    background-color: ${(props) => props.theme.colors.light};
-    height: 50px;
-    width: 50px;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-  }
-`
 
 const extractPrice = (prices, order) => {
   let price = prices.find((ma) => ma.region_id === order.region_id)
@@ -93,9 +53,9 @@ const extractPrice = (prices, order) => {
 }
 
 const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
+  console.log(order)
   const [shippingAddress, setShippingAddress] = useState({})
   const [countries, setCountries] = useState([])
-  const [showAddress, setShowAddress] = useState(false)
   const [isReplace, toggleReplace] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [returnAll, setReturnAll] = useState(false)
@@ -123,19 +83,10 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [searchResults, setSearchResults] = useState([])
   const [ready, setReady] = useState(false)
 
+  const layeredModalContext = useContext(LayeredModalContext)
+
   // Includes both order items and swap items
   const [allItems, setAllItems] = useState([])
-
-  const addressForm = useForm()
-
-  const handleSaveAddress = (data) => {
-    setShippingAddress(data.address)
-    setShowAddress(false)
-  }
-
-  const handleAddItemToClaim = (variant) => {
-    setItemsToAdd([...itemsToAdd, { ...variant, quantity: 1 }])
-  }
 
   const handleReturnToggle = (item) => {
     const id = item.id
@@ -313,8 +264,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       ]
     }
 
-    // data.shipping_methods = order.shipping_methods.map(({ id }) => ({ id }))
-
     if (onCreate) {
       setSubmitting(true)
       return onCreate(data)
@@ -325,11 +274,11 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }
   }
 
-  const handleToAddQuantity = (e, index) => {
+  const handleToAddQuantity = (value, index) => {
     const updated = [...itemsToAdd]
     updated[index] = {
       ...itemsToAdd[index],
-      quantity: parseInt(e.target.value),
+      quantity: itemsToAdd[index].quantity + value,
     }
 
     setItemsToAdd(updated)
@@ -359,18 +308,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       setToReturn(newReturns)
       setReturnAll(true)
     }
-  }
-
-  const handleNoteChange = (e, item) => {
-    const element = e.target
-
-    setToReturn((prev) => ({
-      ...prev,
-      [item.id]: {
-        ...(prev[item.id] || {}),
-        note: element.value,
-      },
-    }))
   }
 
   const handleAddImage = (e, item) => {
@@ -441,40 +378,18 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   //   }
   // }
 
-  const handleProductSearch = (val) => {
-    Medusa.variants
-      .list({
-        q: val,
-      })
-      .then(({ data }) => {
-        setSearchResults(data.variants)
-      })
+  const handleProductSelect = (variants) => {
+    setItemsToAdd((itemsToAdd) => [
+      ...itemsToAdd,
+      ...variants
+        .filter((variant) => itemsToAdd.indexOf((v) => v.id === variant.id) < 0)
+        .map((variant) => ({ ...variant, quantity: 1 })),
+    ])
   }
 
-  const reasonOptions = [
-    {
-      label: "Missing Item",
-      value: "missing_item",
-    },
-    {
-      label: "Wrong Item",
-      value: "wrong_item",
-    },
-    {
-      label: "Production Failure",
-      value: "production_failure",
-    },
-  ]
-
   return (
-    <Modal handleClose={onDismiss}>
-      <Modal.Body
-        onSubmit={(e) => {
-          e.preventDefault()
-          onSubmit()
-        }}
-        as="form"
-      >
+    <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
+      <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
           <h2 class="inter-xlarge-semibold">Create Claim</h2>
         </Modal.Header>
@@ -490,407 +405,253 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
               setQuantities={setQuantities}
             />
           </div>
-          {/* <Box mb={3}>
-            <Text sx={{ fontSize: 1, fontWeight: 600 }}>Items to claim</Text>
-            <Flex
-              sx={{
-                borderBottom: "hairline",
-              }}
-              justifyContent="space-between"
-              fontSize={1}
-              py={2}
-            >
-              <Box width={30} px={2} py={1}>
-                <input
-                  checked={returnAll}
-                  onChange={handleReturnAll}
-                  type="checkbox"
-                />
-              </Box>
-              <Box width={400} px={2} py={1}>
-                Details
-              </Box>
-              <Box width={75} px={2} py={1}>
-                Quantity
-              </Box>
-              <Box width={170} px={2} py={1}>
-                Refundable
-              </Box>
-            </Flex>
-            {allItems.map((item) => {
-              // Only show items that have not been returned
-              if (item.returned_quantity === item.quantity) {
-                return
-              }
+          <div>
+            <h3 className="inter-base-semibold ">
+              Shipping Return{" "}
+              {returnShippingMethod && (
+                <span className="text-grey-40 inter-base-regular">
+                  ({returnShippingMethod.region.name})
+                </span>
+              )}
+            </h3>
+            {shippingLoading ? (
+              <div className="flex justify-center">
+                <Spinner size="medium" variant="secondary" />
+              </div>
+            ) : (
+              <Select
+                label="Shipping Method"
+                className="mt-2"
+                overrideStrings={{ search: "Add a shipping method" }}
+                value={
+                  returnShippingMethod
+                    ? {
+                        label: returnShippingMethod.name,
+                        value: returnShippingMethod.id,
+                      }
+                    : null
+                }
+                onChange={handleReturnShippingSelected}
+                options={returnShippingOptions.map((o) => ({
+                  label: o.name,
+                  value: o.id,
+                }))}
+              />
+            )}
+            {returnShippingMethod && (
+              <RMAShippingPrice
+                useCustomShippingPrice={showCustomPrice.return}
+                shippingPrice={customOptionPrice.return || null}
+                currency_code={returnShippingMethod.region.currency_code}
+                updateShippingPrice={(value) =>
+                  setCustomOptionPrice({
+                    ...customOptionPrice,
+                    return: value,
+                  })
+                }
+                setUseCustomShippingPrice={(value) => {
+                  setCustomOptionPrice({
+                    ...customOptionPrice,
+                    return: returnShippingMethod.amount,
+                  })
 
-              return (
-                <Flex sx={{ flexDirection: "column" }}>
-                  <Flex
-                    key={item.id}
-                    flexWrap="wrap"
-                    justifyContent="space-between"
-                    fontSize={2}
-                    py={2}
-                  >
-                    <Box width={30} px={2} py={1}>
-                      <input
-                        checked={item.id in toReturn}
-                        onChange={() => handleReturnToggle(item)}
-                        type="checkbox"
-                      />
-                    </Box>
-                    <Box width={400} px={2} py={1}>
-                      <Text fontSize={1} lineHeight={"14px"}>
-                        {item.title}
-                      </Text>
-                      <Text fontSize={0}>{item.variant.sku}</Text>
-                    </Box>
-                    <Box width={75} px={2} py={1}>
-                      {item.id in toReturn ? (
-                        <Input
-                          type="number"
-                          onChange={(e) => handleQuantity(e, item)}
-                          value={toReturn[item.id].quantity || ""}
-                          min={1}
-                          max={item.quantity - item.returned_quantity}
-                        />
-                      ) : (
-                        item.quantity - item.returned_quantity
-                      )}
-                    </Box>
-                    <Box width={170} px={2} py={1}>
-                      <Text fontSize={1}>
-                        {(item.refundable / 100).toFixed(2)}{" "}
-                        {order.currency_code.toUpperCase()}
-                      </Text>
-                    </Box>
-                  </Flex>
-                  {item.id in toReturn && (
-                    <Flex
-                      mx={-3}
-                      sx={{
-                        backgroundColor: "#fafafa",
-                        justifyContent: "space-between",
-                      }}
-                      py={3}
-                      px={3}
-                    >
-                      <Select
-                        sx={{ flex: 1 }}
-                        selectStyle={{ width: "100%" }}
-                        label="Reason"
-                        height={"32px"}
-                        fontSize={1}
-                        placeholder={"Select reason"}
-                        value={toReturn[item.id].reason}
-                        onChange={(e) => handleReasonChange(e, item)}
-                        options={reasonOptions}
-                      />
-                      <Box mx={3} sx={{ flex: 1 }}>
-                        <TextArea
-                          maxWidth="180px"
-                          label="Note"
-                          value={toReturn[item.id].note}
-                          onChange={(e) => handleNoteChange(e, item)}
-                        />
-                      </Box>
-                      <Box sx={{ flex: 1 }}>
-                        <ImageUpload
-                          button={toReturn[item.id].images?.length > 0}
-                          onChange={(e) => handleAddImage(e, item)}
-                          name="files"
-                          label="Images"
-                        />
-                        <StyledImageBox mt={1}>
-                          {toReturn[item.id].images?.map((url, i) => (
-                            <ImageCardWrapper mr={1} mt={1} key={i}>
-                              <StyledImageCard
-                                key={i}
-                                as="img"
-                                src={url}
-                                sx={{}}
-                              />
-                              <Cross
-                                onClick={() => handleImageDelete(url, item)}
-                              >
-                                &#x2715;
-                              </Cross>
-                            </ImageCardWrapper>
-                          ))}
-                        </StyledImageBox>
-                      </Box>
-                    </Flex>
-                  )}
-                </Flex>
-              )
-            })}
-          </Box> */}
-
-          <Box>
-            <Text sx={{ fontSize: 1, fontWeight: 600 }}>
-              Shipping method for returning items:
-            </Text>
-            <ReactSelect
-              isClearable={false}
-              placeholder="Select shipping..."
-              onChange={(so) => handleReturnShippingSelected(so)}
-              options={
-                returnShippingOptions?.map((so) => ({
-                  value: so.id,
-                  label: `${so.name} - ${extractOptionPrice(
-                    so.amount,
-                    so.region
-                  )}`,
-                })) || []
-              }
-            />
-            <Flex>
-              {returnShippingMethod ? (
-                <>
-                  <Text fontStyle="italic" fontSize={1} mt={1} color="#a2a1a1">
-                    Shipping to {returnShippingMethod.region.name}
-                  </Text>
-                  <Box ml="auto" />
-                  <Flex flexDirection="column">
-                    {!showCustomPrice.return && (
-                      <Button
-                        mt={2}
-                        fontSize="12px"
-                        variant="primary"
-                        width="140px"
-                        mb={2}
-                        disabled={!returnShippingMethod}
-                        onClick={() =>
-                          setShowCustomPrice({
-                            ...showCustomPrice,
-                            return: true,
-                          })
-                        }
-                      >
-                        {showCustomPrice.return ? "Submit" : "Set custom price"}
-                      </Button>
-                    )}
-                    {showCustomPrice.return && (
-                      <Flex flexDirection="column">
-                        <Flex width="140px" mt={3}>
-                          <Input
-                            type="number"
-                            fontSize="12px"
-                            onChange={(e) =>
-                              setCustomOptionPrice({
-                                ...customOptionPrice,
-                                return: e.currentTarget.value,
-                              })
-                            }
-                            value={customOptionPrice.return || null}
-                            placeholder={order.currency_code.toUpperCase()}
-                            min={0}
-                          />
-                          <Flex
-                            px={2}
-                            alignItems="center"
-                            onClick={() =>
-                              setShowCustomPrice({
-                                ...showCustomPrice,
-                                return: false,
-                              })
-                            }
-                          >
-                            &times;
-                          </Flex>
-                        </Flex>
-                        <Text fontSize="10px" fontStyle="italic">
-                          Custom price
-                        </Text>
-                      </Flex>
-                    )}
-                  </Flex>
-                </>
-              ) : null}
-            </Flex>
-          </Box>
-          <Flex mt={3} alignItems="center">
-            <Pill
-              height="28px"
-              width="50%"
+                  setShowCustomPrice({
+                    ...showCustomPrice,
+                    return: value,
+                  })
+                }}
+              />
+            )}
+          </div>
+          <div className="flex w-full mt-4 items-center inter-base-regular gap-x-xlarge">
+            <div
+              className="cursor-pointer items-center flex"
               onClick={() => {
                 toggleReplace(true)
               }}
-              active={isReplace}
-              mr={2}
             >
+              <div
+                className={clsx(
+                  "rounded-full w-5 h-5 flex mr-3 items-center justify-center",
+                  {
+                    "border-violet-60 border-2": isReplace,
+                    "border-grey-40 border": !isReplace,
+                  }
+                )}
+              >
+                {isReplace && (
+                  <div className="w-3 h-3 bg-violet-60 rounded-full"></div>
+                )}
+              </div>
               Replace
-            </Pill>
-            <Pill
-              height="28px"
-              width="50%"
+            </div>
+            <div
+              className="cursor-pointer items-center flex"
               onClick={() => {
                 toggleReplace(false)
               }}
-              active={!isReplace}
             >
-              Refund
-            </Pill>
-          </Flex>
-          {isReplace && (
-            <>
-              <Box my={3}>
-                <Text sx={{ fontSize: 1, fontWeight: 600 }}>Items to send</Text>
-                <Box mt={2}>
-                  <Dropdown
-                    toggleText={"+ Add product"}
-                    showSearch
-                    onSearchChange={handleProductSearch}
-                    searchPlaceholder={"Search by SKU, Name, etch."}
-                  >
-                    {searchResults.map((s) => (
-                      <Flex
-                        key={s.variant_id}
-                        alignItems="center"
-                        onClick={() => handleAddItemToClaim(s)}
-                      >
-                        <Dot
-                          mr={3}
-                          bg={s.inventory_quantity > 0 ? "green" : "danger"}
-                        />
-                        <Box>
-                          <Text fontSize={0} mb={0} lineHeight={1}>
-                            {s.product.title} - {s.title}
-                          </Text>
-                          <Flex>
-                            <Text width={"100px"} mt={0} fontSize={"10px"}>
-                              {s.sku}
-                            </Text>
-                            <Text ml={2} mt={0} fontSize={"10px"}>
-                              In stock: {s.inventory_quantity}
-                            </Text>
-                          </Flex>
-                        </Box>
-                      </Flex>
-                    ))}
-                  </Dropdown>
-                </Box>
-                <Box mt={3}>
-                  {itemsToAdd.length > 0 && (
-                    <Flex
-                      sx={{
-                        borderBottom: "hairline",
-                      }}
-                      justifyContent="space-between"
-                      fontSize={1}
-                      py={2}
-                    >
-                      <Box width={30} px={2} py={1}></Box>
-                      <Box width={400} px={2} py={1}>
-                        Details
-                      </Box>
-                      <Box width={75} px={2} py={1}>
-                        Quantity
-                      </Box>
-                      <Box width={170} px={2} py={1}>
-                        Price
-                      </Box>
-                    </Flex>
-                  )}
-                  {itemsToAdd.map((item, index) => {
-                    return (
-                      <Flex
-                        key={item.variant_id}
-                        sx={{ alignItems: "center" }}
-                        justifyContent="space-between"
-                        fontSize={2}
-                        py={2}
-                      >
-                        <Box width={30} px={2} py={1}></Box>
-                        <Box width={400} px={2} py={1}>
-                          <Text fontSize={1} lineHeight={"14px"}>
-                            {item.title}
-                          </Text>
-                          <Text fontSize={0}>{item.sku}</Text>
-                        </Box>
-                        <Box width={75} px={2} py={1}>
-                          <Input
-                            type="number"
-                            onChange={(e) => handleToAddQuantity(e, index)}
-                            value={item.quantity || ""}
-                            min={1}
-                          />
-                        </Box>
-                        <Box width={170} px={2} py={1}>
-                          <Text fontSize={1}>
-                            {extractPrice(item.prices, order).toFixed(2)}{" "}
-                            {order.currency_code.toUpperCase()}
-                          </Text>
-                        </Box>
-                        <Box
-                          variant={"buttons.link"}
-                          onClick={() => handleRemoveItem(index)}
-                        >
-                          <Trash />
-                        </Box>
-                      </Flex>
-                    )
-                  })}
-                </Box>
-                {shippingAddress.address_1 ? (
-                  <Flex sx={{ alignItems: "center" }}>
-                    <Text sx={{ fontSize: 0 }}>
-                      Shipping to: {formatAddress(shippingAddress)}
-                    </Text>
-                    <Text
-                      ml={3}
-                      onClick={() => setShowAddress(true)}
-                      variant={"buttons.link"}
-                    >
-                      <Edit /> Edit
-                    </Text>
-                  </Flex>
-                ) : (
-                  <Text
-                    onClick={() => setShowAddress(true)}
-                    variant={"buttons.link"}
-                    sx={{ display: "inline-block" }}
-                  >
-                    Ship to a different address
-                  </Text>
+              <div
+                className={clsx(
+                  "rounded-full w-5 h-5 flex mr-3 items-center justify-center",
+                  {
+                    "border-violet-60 border-2": !isReplace,
+                    "border-grey-40 border": isReplace,
+                  }
                 )}
-              </Box>
-              <Box>
-                <Text sx={{ fontSize: 1, fontWeight: 600 }} mb={2}>
-                  Shipping method for new items:
-                </Text>
-                <ReactSelect
-                  isClearable={false}
-                  placeholder="Select shipping..."
-                  onChange={(so) => handleShippingSelected(so)}
+              >
+                {!isReplace && (
+                  <div className="w-3 h-3 bg-violet-60 rounded-full"></div>
+                )}
+              </div>
+              Refund
+            </div>
+          </div>
+          {isReplace && (
+            <div className="mt-8">
+              <div className="flex justify-between items-center">
+                <h3 className="inter-base-semibold ">Items to send</h3>
+                {itemsToAdd.length === 0 ? (
+                  <Button
+                    variant="ghost"
+                    className="border border-grey-20"
+                    size="small"
+                    onClick={() => {
+                      layeredModalContext.push(
+                        SelectProductsScreen(
+                          layeredModalContext.pop,
+                          itemsToAdd,
+                          handleProductSelect
+                        )
+                      )
+                    }}
+                  >
+                    Add Product
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </div>
+              {itemsToAdd.length > 0 && (
+                <>
+                  <RMAReturnProductsTable
+                    order={order}
+                    itemsToAdd={itemsToAdd}
+                    handleRemoveItem={handleRemoveItem}
+                    handleToAddQuantity={handleToAddQuantity}
+                  />
+
+                  <div className="flex w-full justify-end">
+                    <Button
+                      variant="ghost"
+                      className="border border-grey-20"
+                      size="small"
+                      onClick={() => {
+                        layeredModalContext.push(
+                          SelectProductsScreen(
+                            layeredModalContext.pop,
+                            itemsToAdd,
+                            handleProductSelect
+                          )
+                        )
+                      }}
+                    >
+                      Add Product
+                    </Button>
+                  </div>
+                </>
+              )}
+              <div className="mt-8">
+                <span className="inter-base-semibold">Shipping Address</span>
+                {shippingAddress.address_1 ? (
+                  <>
+                    <div className="flex w-full inter-small-regular text-grey-50">
+                      {formatAddress(shippingAddress)}
+                    </div>
+                    <div className="flex w-full justify-end">
+                      <Button
+                        onClick={() => {
+                          layeredModalContext.push(
+                            showEditAddressScreen(
+                              layeredModalContext.pop,
+                              shippingAddress,
+                              order,
+                              countries,
+                              setShippingAddress
+                            )
+                          )
+                        }}
+                        variant="ghost"
+                        size="small"
+                        className="border border-grey-20"
+                      >
+                        Edit
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <span className="flex w-full inter-small-regular text-grey-50">
+                      {formatAddress(order.shipping_address)}
+                    </span>
+                    <div className="flex w-full justify-end">
+                      <Button
+                        onClick={() => {
+                          layeredModalContext.push(
+                            showEditAddressScreen(
+                              layeredModalContext.pop,
+                              order.shipping_address,
+                              order,
+                              countries,
+                              setShippingAddress
+                            )
+                          )
+                        }}
+                        variant="ghost"
+                        size="small"
+                        className="border border-grey-20"
+                      >
+                        Ship to a different address
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div>
+                <h3 className="inter-base-semibold mt-8">Shipping new</h3>
+                <span className="inter-small-regular text-grey-50">
+                  Shipping new items is free pr. default. Use custom price, if
+                  this is not the case
+                </span>
+                <Select
+                  label="Shipping Method"
+                  className="mt-2"
+                  overrideStrings={{ search: "Add a shipping method" }}
+                  value={
+                    shippingMethod
+                      ? {
+                          label: shippingMethod?.name,
+                          value: shippingMethod?.id,
+                        }
+                      : null
+                  }
+                  onChange={handleShippingSelected}
                   options={
-                    shippingOptions?.map((so) => ({
-                      value: so.id,
-                      label: `${so.name}`,
+                    shippingOptions.map((o) => ({
+                      label: o.name,
+                      value: o.id,
                     })) || []
                   }
                 />
-                <Flex>
+                <div>
                   {shippingMethod ? (
                     <>
-                      <Text
-                        fontStyle="italic"
-                        fontSize={1}
-                        mt={1}
-                        color="#a2a1a1"
-                      >
-                        Shipping new items is free pr. default. Use custom
-                        price, if this is not the case
-                      </Text>
-                      <Box ml="auto" />
-                      <Flex flexDirection="column">
+                      <div className="flex justify-end w-full">
                         {!showCustomPrice.standard && (
                           <Button
-                            mt={2}
-                            fontSize="12px"
-                            variant="primary"
-                            width="140px"
-                            mb={2}
+                            variant="ghost"
+                            size="small"
+                            className="border border-grey-20 mt-4 "
                             disabled={!shippingMethod}
                             onClick={() =>
                               setShowCustomPrice({
@@ -905,116 +666,135 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                           </Button>
                         )}
                         {showCustomPrice.standard && (
-                          <Flex flexDirection="column">
-                            <Flex width="140px" mt={3}>
-                              <Input
-                                type="number"
-                                fontSize="12px"
-                                onChange={(e) =>
+                          <div className="flex w-full items-center">
+                            <CurrencyInput
+                              readOnly
+                              className="mt-4 w-full"
+                              size="small"
+                              currentCurrency={order.currency_code}
+                            >
+                              <CurrencyInput.AmountInput
+                                label={"Amount"}
+                                amount={customOptionPrice.standard}
+                                onChange={(value) =>
                                   setCustomOptionPrice({
                                     ...customOptionPrice,
-                                    standard: e.currentTarget.value,
+                                    standard: value,
                                   })
                                 }
-                                value={customOptionPrice.standard || null}
-                                placeholder={order.currency_code.toUpperCase()}
-                                min={0}
                               />
-                              <Flex
-                                px={2}
-                                alignItems="center"
-                                onClick={() =>
-                                  setShowCustomPrice({
-                                    ...showCustomPrice,
-                                    standard: false,
-                                  })
-                                }
-                              >
-                                &times;
-                              </Flex>
-                            </Flex>
-                            <Text fontSize="10px" fontStyle="italic">
-                              Custom price
-                            </Text>
-                          </Flex>
+                            </CurrencyInput>
+                            <Button
+                              onClick={() =>
+                                setShowCustomPrice({
+                                  ...showCustomPrice,
+                                  standard: false,
+                                })
+                              }
+                              className="w-8 h-8 ml-8 text-grey-40"
+                              variant="ghost"
+                              size="small"
+                            >
+                              <TrashIcon size={20} />
+                            </Button>
+                          </div>
                         )}
-                      </Flex>
+                      </div>
                     </>
                   ) : null}
-                </Flex>
-              </Box>
-            </>
+                </div>
+              </div>
+            </div>
           )}
         </Modal.Content>
         <Modal.Footer>
-          <Flex>
-            <Box px={0} py={1}>
+          <div className="flex w-full justify-between">
+            <div
+              className="items-center h-full flex cursor-pointer"
+              onClick={() => setNoNotification(!noNotification)}
+            >
+              <div
+                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
+                  !noNotification && "bg-violet-60"
+                }`}
+              >
+                <span className="self-center">
+                  {!noNotification && <CheckIcon size={16} />}
+                </span>
+              </div>
               <input
                 id="noNotification"
+                className="hidden"
                 name="noNotification"
                 checked={!noNotification}
                 onChange={() => setNoNotification(!noNotification)}
                 type="checkbox"
               />
-            </Box>
-            <Box px={2} py={1}>
-              <Text fontSize={1}>Send notifications</Text>
-            </Box>
-          </Flex>
-          <Box ml="auto" />
-          <Button
-            disabled={!ready}
-            loading={submitting}
-            type="submit"
-            variant="primary"
-          >
-            Complete
-          </Button>
-        </Modal.Footer>
-      </Modal.Body>
-      {/* {showAddress && (
-        <Modal
-          onClick={(e) => {
-            e.stopPropagation()
-            setShowAddress(false)
-          }}
-        >
-          <Modal.Body>
-            <Modal.Header fontSize={1}>Shipping address</Modal.Header>
-            <Modal.Content>
-              <AddressForm
-                address={shippingAddress}
-                country={order.shipping_address.country_code}
-                allowedCountries={countries}
-                form={addressForm}
-              />
-            </Modal.Content>
-            <Modal.Footer justifyContent="flex-end">
-              {shippingAddress.address_1 && (
-                <Text
-                  mr={3}
-                  onClick={() => {
-                    setShippingAddress({})
-                    setShowAddress(false)
-                  }}
-                  variant="buttons.link"
-                >
-                  Clear Address
-                </Text>
-              )}
+              <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
+                Send notifications
+                <InfoTooltip content="Notify customer of created return" />
+              </span>
+            </div>
+            <div className="flex gap-x-xsmall">
               <Button
-                onClick={addressForm.handleSubmit(handleSaveAddress)}
+                onClick={() => onDismiss()}
+                className="w-[112px]"
+                type="submit"
+                size="small"
+                variant="ghost"
+              >
+                Back
+              </Button>
+              <Button
+                onClick={onSubmit}
+                disabled={!ready}
                 loading={submitting}
+                className="w-[112px]"
+                size="small"
                 variant="primary"
               >
-                Save
+                Complete
               </Button>
-            </Modal.Footer>
-          </Modal.Body>
-        </Modal>
-      )} */}
-    </Modal>
+            </div>
+          </div>
+        </Modal.Footer>
+      </Modal.Body>
+    </LayeredModal>
   )
+}
+
+const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
+  return {
+    title: "Add Products",
+    onBack: () => pop(),
+    view: (
+      <RMASelectProductSubModal
+        selectedItems={itemsToAdd || []}
+        onSubmit={setSelectedItems}
+      />
+    ),
+  }
+}
+
+const showEditAddressScreen = (
+  pop,
+  address,
+  order,
+  countries,
+  setShippingAddress
+) => {
+  return {
+    title: "Edit Address",
+    onBack: () => pop(),
+    view: (
+      <RMAEditAddressSubModal
+        onSubmit={setShippingAddress}
+        address={address}
+        order={order}
+        countries={countries}
+      />
+    ),
+  }
 }
 
 export default ClaimMenu

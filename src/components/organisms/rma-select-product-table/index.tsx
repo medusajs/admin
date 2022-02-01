@@ -7,6 +7,7 @@ import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import { LayeredModalContext } from "../../molecules/modal/layered-modal"
 import Table from "../../molecules/table"
+import Medusa from "../../../services/api"
 
 type RMASelectProductTableProps = {
   order: any
@@ -64,14 +65,40 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     setToReturn(newReturns)
   }
 
-  const setReturnReason = (reason, note, id) => {
-    const newReturns = {
-      ...toReturn,
-      [id]: {
-        ...toReturn[id],
-        reason: reason,
-        note: note,
-      },
+  const handleAddImages = (files) => {
+    return Medusa.uploads
+      .create(files)
+      .then(({ data }) => data.uploads.map(({ url }) => url))
+  }
+
+  const handleImageDelete = (url, item) => {
+    Medusa.uploads.delete(url[0]).then(() => {
+      setToReturn({
+        ...toReturn,
+        [item.id]: {
+          ...(toReturn[item.id] || {}),
+          images: toReturn[item.id].images.filter((im) => im !== url),
+        },
+      })
+    })
+  }
+
+  const setReturnReason = (reason, note, files, id) => {
+    let newReturns = {}
+    if (imagesOnReturns) {
+      const uploadFiles = files.filter(
+        (f) => toReturn[id].images.indexOf(f) < 0
+      )
+      const deleteFiles = 
+    } else {
+      newReturns = {
+        ...toReturn,
+        [id]: {
+          ...toReturn[id],
+          reason: reason,
+          note: note,
+        },
+      }
     }
 
     setToReturn(newReturns)
@@ -213,8 +240,9 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                               pop,
                               toReturn[item.id]?.reason,
                               toReturn[item.id]?.note,
-                              (reason, note) =>
-                                setReturnReason(reason, note, item.id)
+                              imagesOnReturns,
+                              (reason, note, files) =>
+                                setReturnReason(reason, note, files, item.id)
                             )
                           )
                         }
@@ -236,7 +264,13 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   )
 }
 
-const ReturnReasonScreen = (pop, reason, note, setReturnReason) => {
+const ReturnReasonScreen = (
+  pop,
+  reason,
+  note,
+  imagesOnReturns,
+  setReturnReason
+) => {
   return {
     title: "Return Reasons",
     onBack: () => pop(),
@@ -244,6 +278,7 @@ const ReturnReasonScreen = (pop, reason, note, setReturnReason) => {
       <RMAReturnReasonSubModal
         reason={reason}
         existingNote={note}
+        addImage={imagesOnReturns}
         onSubmit={setReturnReason}
       />
     ),

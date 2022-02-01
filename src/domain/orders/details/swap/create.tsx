@@ -266,7 +266,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
                       SelectProductsScreen(
                         layeredModalContext.pop,
                         itemsToAdd,
-                        console.log
+                        handleProductSelect
                       )
                     )
                   }}

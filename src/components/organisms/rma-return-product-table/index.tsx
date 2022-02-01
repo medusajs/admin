@@ -11,7 +11,6 @@ type RMAReturnProductsTableProps = {
   itemsToAdd: any[]
   handleToAddQuantity: (value, index) => void
   handleRemoveItem: (index) => void
-  quantities: any
 }
 
 const extractPrice = (prices, order) => {
@@ -32,7 +31,6 @@ const RMAReturnProductsTable: React.FC<RMAReturnProductsTableProps> = ({
   order,
   itemsToAdd,
   handleRemoveItem,
-  quantities,
   handleToAddQuantity,
 }) => {
   return (
