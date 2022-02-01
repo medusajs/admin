@@ -49,6 +49,8 @@ const VariantEditor = ({
     variant.options.forEach((option, index) => {
       register(`options.${index}.option_id`)
       setValue(`options.${index}.option_id`, option.option_id)
+      register(`options.${index}.value`)
+      setValue(`options.${index}.value`, option.value)
     })
   }, [variant])
 

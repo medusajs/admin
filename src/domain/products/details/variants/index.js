@@ -115,8 +115,6 @@ const Variants = ({
       }
     })
 
-    console.log(payload)
-
     onSubmit({ variants: payload })
   }
 
@@ -139,7 +137,6 @@ const Variants = ({
   const handleUpdateVariant = (data) => {
     const updatedVariants = variants.slice()
     updatedVariants[editIndex] = { id: editVariant.id, ...data }
-    console.log(updatedVariants[editIndex])
     setVariants(updatedVariants)
     setNewVariant(null)
     setEditVariant(null)
@@ -154,10 +151,6 @@ const Variants = ({
     setNewVariant(null)
     setEditVariant(null)
     handleSubmit(newVariants)
-  }
-
-  const handleCreateOption = (data) => {
-    optionMethods.create(data)
   }
 
   return (
