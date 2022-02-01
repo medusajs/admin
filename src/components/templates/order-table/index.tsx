@@ -38,6 +38,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const [query, setQuery] = useState(filtersOnLoad?.query)
   const [numPages, setNumPages] = useState(0)
 
+console.log(queryObject)
   const { orders, isLoading, isRefetching, count } = useAdminOrders(queryObject)
 
   useEffect(() => {

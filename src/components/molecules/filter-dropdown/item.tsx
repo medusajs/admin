@@ -494,7 +494,7 @@ const RightPopover = ({ trigger, children }) => (
       side="right"
       align="start"
       alignOffset={-8}
-      sideOffset={4}
+      sideOffset={20}
       className="flex flex-col bg-grey-0 rounded-rounded shadow-dropdown p-2 top-2/4"
     >
       {children}
