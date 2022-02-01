@@ -1,4 +1,4 @@
-import { ComponentMeta } from "@storybook/react"
+import { ComponentMeta, ComponentStory } from "@storybook/react"
 import React from "react"
 import CurrencyInput from "."
 
@@ -7,7 +7,9 @@ export default {
   component: CurrencyInput,
 } as ComponentMeta<typeof CurrencyInput>
 
-const Template = (args) => <CurrencyInput {...args} />
+const Template: ComponentStory<typeof CurrencyInput> = (args) => (
+  <CurrencyInput {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {
@@ -18,7 +20,7 @@ Default.args = {
 export const ReadOnly = Template.bind({})
 ReadOnly.args = {
   currentCurrency: "usd",
-  readonly: true,
+  readOnly: true,
 }
 
 const TemplateWithAmount = (args) => (

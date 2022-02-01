@@ -55,10 +55,13 @@ const FilteringOptions: React.FC<FilteringOptionProps> = ({
                 opt.onClick()
                 setSelected(opt.title)
               }}
-              disabled={opt.count < 1}
+              disabled={typeof opt.count !== "undefined" && opt.count < 1}
               className={clsx(
                 "py-1.5 my-1 w-48 px-3 flex items-center rounded text-grey-90  hover:border-0 hover:outline-none inter-small-semibold",
-                { "cursor-pointer hover:bg-grey-10": opt.count > 0 }
+                {
+                  "cursor-pointer hover:bg-grey-10":
+                    typeof opt.count === "undefined" || opt.count > 0,
+                }
               )}
             >
               {selected === opt.title && (

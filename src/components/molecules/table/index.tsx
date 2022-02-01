@@ -79,13 +79,10 @@ const Table: TableType = React.forwardRef(
     return (
       <div className="flex flex-col">
         <div className="w-full flex justify-between">
-          {filteringOptions && (
-            <div className="flex mb-2 self-end">
-              {filteringOptions.map((fo) => (
-                <FilteringOptions {...fo} />
-              ))}
-            </div>
-          )}
+          <div className="flex mb-2 self-end">
+            {filteringOptions &&
+              filteringOptions.map((fo) => <FilteringOptions {...fo} />)}
+          </div>
           <div className="flex">
             {enableSearch && (
               <TableSearch
@@ -240,11 +237,15 @@ Table.Row = React.forwardRef(
         { "cursor-pointer": linkTo !== undefined }
       )}
       {...props}
-      {...(linkTo && { onClick: () => navigate(linkTo) })}
+      {...(linkTo && {
+        onClick: () => {
+          navigate(linkTo)
+        },
+      })}
     >
       {children}
       {actions && (
-        <Table.Cell className="w-8">
+        <Table.Cell onClick={(e) => e.stopPropagation()} className="w-8 py-1">
           <Actionables actions={actions} />
         </Table.Cell>
       )}

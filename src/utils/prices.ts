@@ -47,6 +47,17 @@ export const extractOptionPrice = (price, region) => {
   return `${amount} ${region.currency_code.toUpperCase()}`
 }
 
+/**
+ * Checks the list of currencies and returns the divider/multiplier
+ * that should be used to calculate the persited and display amount.
+ * @param currency
+ * @returns {number}
+ */
+export function getDecimalDigits(currency: string) {
+  const divisionDigits = currencies[currency.toUpperCase()].decimal_digits
+  return Math.pow(10, divisionDigits)
+}
+
 export function persistedPrice(currency: string, amount: number): number {
   const multiplier = getDecimalDigits(currency)
   return amount * multiplier
@@ -59,13 +70,4 @@ export const stringDisplayPrice = ({ amount, currencyCode }) => {
 
   const display = displayAmount(currencyCode, amount)
   return `${display} ${currencyCode.toUpperCase()}`
-}
-
-/**
- * Checks the list of currencies and returns the divider/multiplier
- * that should be used to calculate the persited and display amount.
- */
-function getDecimalDigits(currency: string) {
-  const divisionDigits = currencies[currency.toUpperCase()].decimal_digits
-  return Math.pow(10, divisionDigits)
 }
