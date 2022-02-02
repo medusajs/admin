@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import React, { useContext } from "react"
 import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
+import { displayAmount } from "../../../utils/prices"
 import Button from "../../fundamentals/button"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
@@ -91,8 +92,6 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     return false
   }
 
-  console.log(toReturn)
-
   return (
     <Table>
       <Table.HeadRow className="text-grey-50 inter-small-semibold">
@@ -149,7 +148,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                       <span>
                         <span className="text-grey-90">{item.title}</span> test
                       </span>
-                      <span>{item.variant.title}</span>
+                      <span>{item?.variant?.title || ""}</span>
                     </div>
                   </div>
                 </Table.Cell>
@@ -179,7 +178,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   )}
                 </Table.Cell>
                 <Table.Cell className="text-right">
-                  {(item.refundable / 100).toFixed(2)}
+                  {displayAmount(order.currency_code, item.refundable)}
                 </Table.Cell>
                 <Table.Cell className="text-right text-grey-40 pr-1">
                   {order.currency_code.toUpperCase()}
@@ -187,7 +186,6 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
               </Table.Row>
               {checked && (
                 <Table.Row className="last:border-b-0 hover:bg-grey-0">
-                  {/* <Table.Cell></Table.Cell> */}
                   <Table.Cell></Table.Cell>
                   <Table.Cell colspan={2}>
                     <div className="max-w-[470px] truncate">

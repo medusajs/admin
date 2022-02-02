@@ -13,10 +13,6 @@ type RMAReturnReasonSubModalProps = {
   isLargeModal?: boolean
 }
 
-// {
-//   // onSelectReturnReason,
-//   // enableImages,
-// }
 const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
   onSubmit,
   reason,
@@ -24,13 +20,11 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
   isLargeModal = true,
 }) => {
   const { pop } = useContext(LayeredModalContext)
-  const { isLoading, return_reasons } = useAdminReturnReasons()
+  const { return_reasons } = useAdminReturnReasons()
   const [note, setNote] = useState(existingNote || "")
   const [selectedReason, setSelectedReason] = useState(
     reason ? { value: reason, label: reason.label } : undefined
   )
-
-  console.log(return_reasons)
 
   const onChange = (value) => {
     setNote(value.target.value)

@@ -2,6 +2,7 @@ import React from "react"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import clsx from "clsx"
 import * as Dialog from "@radix-ui/react-dialog"
+import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
 
 export type ModalProps = {
   isLargeModal?: boolean
@@ -11,7 +12,7 @@ export type ModalProps = {
 type ModalChildProps = {
   isLargeModal?: boolean
   className?: string
-  style?: object
+  style?: React.CSSProperties
 }
 
 type ModalHeaderProps = {
@@ -34,8 +35,15 @@ const Overlay: React.FC = ({ children }) => {
 }
 
 const Content: React.FC = ({ children }) => {
+  const { height } = useWindowDimensions()
+  const style = {
+    maxHeight: height - 64,
+  }
   return (
-    <Dialog.Content className="bg-grey-0 min-w-modal rounded overflow-x-hidden">
+    <Dialog.Content
+      style={style}
+      className="bg-grey-0 min-w-modal rounded overflow-x-hidden"
+    >
       {children}
     </Dialog.Content>
   )
@@ -63,7 +71,7 @@ Modal.Body = ({ children, isLargeModal, className, style }) => {
   return (
     <div
       style={style}
-      className={clsx("inter-base-regular", className)}
+      className={clsx("inter-base-regular h-full", className)}
       onClick={(e) => e.stopPropagation()}
     >
       {addProp(children, { isLargeModal })}
@@ -72,9 +80,14 @@ Modal.Body = ({ children, isLargeModal, className, style }) => {
 }
 
 Modal.Content = ({ children, className, isLargeModal }) => {
+  const { height } = useWindowDimensions()
+  const style = {
+    maxHeight: height - 64 - 141,
+  }
   return (
     <div
-      className={clsx("px-7 pt-5", className, {
+      style={style}
+      className={clsx("px-7 pt-5 overflow-y-scroll", className, {
         ["w-largeModal pb-7"]: isLargeModal,
         ["pb-5"]: !isLargeModal,
       })}
@@ -92,9 +105,9 @@ Modal.Header = ({ handleClose = undefined, children }) => {
     >
       <div className="pb-1 flex w-full justify-end">
         {handleClose && (
-          <span onClick={handleClose} className="text-grey-50 cursor-pointer">
+          <button onClick={handleClose} className="text-grey-50 cursor-pointer">
             <CrossIcon size={20} />
-          </span>
+          </button>
         )}
       </div>
       {children}
