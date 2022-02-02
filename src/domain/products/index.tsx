@@ -1,15 +1,15 @@
-import React, { useEffect, useContext } from "react"
-import { navigate } from "gatsby"
-import { InterfaceContext } from "../../context/interface"
 import { Router } from "@reach/router"
-import ProductTable from "../../components/templates/product-table"
-import New from "./new"
-import Details from "./details"
-import useMedusa from "../../hooks/use-medusa"
+import { navigate } from "gatsby"
 import qs from "query-string"
+import React, { useContext, useEffect } from "react"
 import PageDescription from "../../components/atoms/page-description"
-import BodyCard from "../../components/organisms/body-card"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
+import BodyCard from "../../components/organisms/body-card"
+import ProductTable from "../../components/templates/product-table"
+import { InterfaceContext } from "../../context/interface"
+import useMedusa from "../../hooks/use-medusa"
+import Details from "./details"
+import New from "./new"
 
 const ProductIndex = () => {
   const filtersOnLoad = qs.parse(window.location.search)

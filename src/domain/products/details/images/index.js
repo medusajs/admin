@@ -16,7 +16,7 @@ const Images = ({ product, refresh, toaster }) => {
 
   useEffect(() => {
     if (product) {
-      let imgs = product.images.map(img => img.url)
+      let imgs = product.images.map((img) => img.url)
       imgs = [...new Set(imgs)].filter(Boolean)
       setImages([...imgs])
     }
@@ -30,12 +30,12 @@ const Images = ({ product, refresh, toaster }) => {
         const uploaded = data.uploads.map(({ url }) => url)
         return uploaded
       })
-      .then(uploadedImgs => {
-        let minusLocalImages = _.difference(
+      .then((uploadedImgs) => {
+        const minusLocalImages = _.difference(
           images,
-          uploads.map(u => u.preview)
+          uploads.map((u) => u.preview)
         )
-        let allImages = [...minusLocalImages, ...uploadedImgs]
+        const allImages = [...minusLocalImages, ...uploadedImgs]
         Medusa.products
           .update(product.id, { images: allImages })
           .then(() => {
@@ -45,7 +45,7 @@ const Images = ({ product, refresh, toaster }) => {
             refresh({ id: product.id })
             toaster("Successfully saved images", "success")
           })
-          .catch(error => toaster(getErrorMessage(error), "error"))
+          .catch((error) => toaster(getErrorMessage(error), "error"))
       })
   }
 
@@ -56,34 +56,37 @@ const Images = ({ product, refresh, toaster }) => {
         <ImagesDropzone
           images={images}
           value={uploads}
-          onChange={files => {
+          onChange={(files) => {
             setUploads([...uploads, ...files])
-            let merged = [...images, ...files.map(f => f.preview)]
+            const merged = [...images, ...files.map((f) => f.preview)]
             setImages(merged)
             setIsDirty(true)
           }}
         >
-          {images.map(image => (
+          {images.map((image) => (
             <ImagesDropzone.Preview
               key={image}
-              onClick={e => {
+              onClick={(e) => {
                 e.stopPropagation()
               }}
               sx={{ position: "relative" }}
               src={image}
             >
               <CloseIcon
-                onClick={e => {
+                onClick={(e) => {
                   e.stopPropagation()
-                  const newImages = images.filter(img => image != img)
+                  const newImages = images.filter((img) => image != img)
                   setImages(newImages)
-                  const newUploads = uploads.filter(img => image != img.preview)
+                  const newUploads = uploads.filter(
+                    (img) => image != img.preview
+                  )
                   setUploads(newUploads)
                   setIsDirty(true)
                 }}
                 style={{
                   position: "absolute",
                   right: 5,
+                  zIndex: 5,
                   top: 5,
                   cursor: "pointer",
                 }}

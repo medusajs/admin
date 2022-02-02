@@ -1,6 +1,6 @@
-import React, { ReactNode, useState } from "react"
 import * as RadixPopover from "@radix-ui/react-popover"
-
+import React, { ReactNode, useEffect, useRef, useState } from "react"
+import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
 import Button from "../../fundamentals/button"
 
 type FilterDropdownContainerProps = {
@@ -15,7 +15,18 @@ const FilterDropdownContainer: React.FC<FilterDropdownContainerProps> = ({
   triggerElement,
   children,
 }) => {
+  const { height } = useWindowDimensions()
+  const ref = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [heightStyle, setHeightStyle] = useState({
+    maxHeight: height,
+  })
+
+  useEffect(() => {
+    setHeightStyle({
+      maxHeight: height - ref?.current?.getBoundingClientRect().y - 50,
+    })
+  }, [ref])
 
   const onSubmit = () => {
     setIsOpen(false)
@@ -29,10 +40,13 @@ const FilterDropdownContainer: React.FC<FilterDropdownContainerProps> = ({
 
   return (
     <RadixPopover.Root open={isOpen} onOpenChange={setIsOpen}>
-      <RadixPopover.Trigger asChild>{triggerElement}</RadixPopover.Trigger>
+      <RadixPopover.Trigger ref={ref} asChild>
+        {triggerElement}
+      </RadixPopover.Trigger>
       <RadixPopover.Content
         sideOffset={8}
-        className="bg-grey-0 rounded-rounded shadow-dropdown max-w-[272px] py-4"
+        style={heightStyle}
+        className="bg-grey-0 overflow-y-scroll rounded-rounded shadow-dropdown max-w-[272px] py-4"
       >
         <div className="flex px-4 pb-4 border-b border-grey-20">
           <Button

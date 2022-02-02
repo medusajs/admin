@@ -2,7 +2,7 @@ import React from "react"
 import InfoTooltip from "../molecules/info-tooltip"
 
 export type InputHeaderProps = {
-  label: string
+  label?: string
   required?: boolean
   tooltipContent?: string
   tooltip?: React.ReactNode

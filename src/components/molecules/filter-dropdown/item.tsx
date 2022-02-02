@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useRef } from "react"
 import * as RadixCollapsible from "@radix-ui/react-collapsible"
 import * as RadixPopover from "@radix-ui/react-popover"
+import clsx from "clsx"
+import moment from "moment"
+import React, { useEffect, useState } from "react"
+import { DateFilters } from "../../../utils/filters"
 import { addHours, atMidnight, dateToUnixTimestamp } from "../../../utils/time"
 import { CalendarComponent } from "../../atoms/date-picker/date-picker"
-import ChevronUpIcon from "../../fundamentals/icons/chevron-up"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
-import { DateFilters } from "../../../utils/filters"
-import InputField from "../input"
-import moment from "moment"
-import clsx from "clsx"
 import CheckIcon from "../../fundamentals/icons/check-icon"
+import ChevronUpIcon from "../../fundamentals/icons/chevron-up"
+import InputField from "../input"
+
+const DAY_IN_SECONDS = 86400
 
 const FilterDropdownItem = ({
   filterTitle,
@@ -22,7 +24,7 @@ const FilterDropdownItem = ({
 
   const prefill = () => {
     try {
-      const prefilled = filters.split(",").reduce((acc, f) => {
+      const prefilled = filters.reduce((acc, f) => {
         acc[f] = true
         return acc
       }, {})
@@ -65,7 +67,7 @@ const FilterDropdownItem = ({
 
     setChecked(checkedState)
 
-    setFilter({ open: open, filter: newFilter.join(",").toString() })
+    setFilter({ open: open, filter: newFilter })
   }
 
   return (
@@ -78,9 +80,7 @@ const FilterDropdownItem = ({
       <RadixCollapsible.Root
         className="w-full"
         open={open}
-        onOpenChange={(open) =>
-          setFilter((prevState) => ({ ...prevState, open }))
-        }
+        onOpenChange={(open) => setFilter({ filter: filters, open })}
       >
         <RadixCollapsible.Trigger
           className={clsx(
@@ -167,117 +167,199 @@ const FilterDropdownItem = ({
 
 export default FilterDropdownItem
 
+const parseDateFilter = (filter) => {
+  if (!filter) {
+    return {}
+  }
+  const dateEntries = Object.entries(filter)
+
+  /**
+   * From a query object we need to figure out which date filter that is
+   * being used of the following:
+   *
+   * InTheLast: { gt: "x|[days|months]" }
+   * OlderThan: { lt: "x|[days|months]" }
+   * Between: { lt: [ts], gt: [ts] }
+   * After: { gt: [ts] }
+   * Before: { lt: [ts] },
+   * EqualTo: { lt: [midnight], gt: [morning] }
+   *
+   */
+
+  const flags = {
+    sawGt: false,
+    sawLt: false,
+    sawGtRelative: false,
+    sawLtRelative: false,
+  }
+
+  for (const [key, value] of dateEntries) {
+    switch (key) {
+      case "gt": {
+        flags.sawGt = true
+        flags.sawGtRelative = value.includes("|")
+        break
+      }
+      case "lt": {
+        flags.sawLt = true
+        flags.sawLtRelative = value.includes("|")
+        break
+      }
+      default: {
+        break
+      }
+    }
+  }
+
+  if (flags.sawGt && flags.sawGtRelative) {
+    const [amount, daysMonths] = filter.gt.split("|")
+    return {
+      filterType: DateFilters.InTheLast,
+      daysMonthsValue: daysMonths,
+      relativeAmount: amount,
+      value: null,
+    }
+  }
+
+  if (flags.sawLt && flags.sawLtRelative) {
+    const [amount, daysMonths] = filter.lt.split("|")
+    return {
+      filterType: DateFilters.OlderThan,
+      daysMonthsValue: daysMonths,
+      relativeAmount: amount,
+      value: null,
+    }
+  }
+
+  if (flags.sawLt && flags.sawGt) {
+    const startDate = filter.gt
+    const endDate = filter.lt
+
+    if (endDate - startDate === DAY_IN_SECONDS) {
+      return {
+        filterType: DateFilters.EqualTo,
+        value: moment.unix(startDate).toDate(),
+      }
+    }
+  }
+
+  if (flags.sawLt) {
+    const endDate = filter.lt
+    return {
+      filterType: DateFilters.Before,
+      value: moment.unix(endDate).toDate(),
+    }
+  }
+
+  if (flags.sawGt) {
+    const startDate = filter.gt
+    return {
+      filterType: DateFilters.After,
+      value: moment.unix(startDate).toDate(),
+    }
+  }
+
+  return {}
+}
+
 const DateFilter = ({
   options,
   open,
   setFilter,
   existingDate,
   existingFilter,
-  filterTitle,
 }) => {
-  const [currentFilter, setCurrentFilter] = useState(
-    existingFilter || undefined
-  )
-  const [startDate, setStartDate] = useState(null)
-  const [endDate, setEndDate] = useState(new Date())
-  const select_ref = useRef()
-  const input_ref = useRef()
-
-  useEffect(() => {
-    if (existingDate && typeof existingDate === "string") {
-      const [start] = existingDate.split(",")
-      const parsed = moment.unix(start).toDate()
-      if (parsed instanceof Date && !isNaN(parsed)) {
-        setStartDate(parsed)
-      }
+  const initialVals = useMemo(() => {
+    const parsed = parseDateFilter(existingDate)
+    return {
+      filterType: options[0],
+      value: null,
+      relativeAmount: undefined,
+      daysMonthsValue: "days",
+      ...parsed,
     }
   }, [existingDate])
 
-  useEffect(() => {
-    handleSetFilter(startDate)
-  }, [currentFilter])
+  const [currentFilter, setCurrentFilter] = useState(initialVals.filterType)
+  const [relativeAmount, setRelativeAmount] = useState(
+    initialVals.relativeAmount
+  )
+  const [daysMonthsValue, setDaysMonthsValue] = useState(
+    initialVals.daysMonthsValue
+  )
+  const [startDate, setStartDate] = useState(initialVals.value)
 
   useEffect(() => {
-    if (open && !currentFilter) {
-      setCurrentFilter(options[0])
-    }
-  }, [open])
-
-  useEffect(() => {
-    if (!open) {
-      setStartDate(null)
-    }
-  }, [open])
-
-  const handleSetFilter = (value) => {
     switch (currentFilter) {
       case DateFilters.InTheLast:
       case DateFilters.OlderThan:
-        if (!select_ref) {
-          console.error("select ref not existing")
-          break
-        }
         setFilter({
           open: true,
-          filter: handleDateFormat(value),
+          filter: handleDateFormat(relativeAmount),
         })
         break
       case DateFilters.EqualTo:
         setFilter({
           open: true,
-          filter: handleDateFormat(value),
+          filter: handleDateFormat(startDate),
         })
         break
       default:
         setFilter({
           open: true,
-          filter: handleDateFormat(value),
+          filter: handleDateFormat(startDate),
         })
     }
-  }
+  }, [currentFilter, relativeAmount, daysMonthsValue, startDate])
 
-  /**
-   * Takes the current selection of dates and formats it.
-   * Since the date can be absolute in terms of a date or relative in terms of "3 days old", we have to account for both
-   * the output should follow this format: [lt|gt|eq|gte|lte]=unixTimestamp | number_option_filter
-   * e.g: [lt]=124323459 or [lt]={3:days:is_in_the_last}
-   * @param value
-   *
-   */
-  const handleDateFormat = (value) => {
-    const option =
-      select_ref?.current?.options[select_ref.current.options.selectedIndex]
-        ?.label
-
+  const handleDateFormat = (value: string | null) => {
     switch (currentFilter) {
-      case DateFilters.InTheLast:
+      case DateFilters.InTheLast: {
         // Relative date
-        return { gt: `${value}|${option}` }
+        return { gt: `${value}|${daysMonthsValue}` }
+      }
 
-      case DateFilters.OlderThan:
+      case DateFilters.OlderThan: {
         // Relative date:
-        return { lt: `${value}|${option}` }
+        return { lt: `${value}|${daysMonthsValue}` }
+      }
 
-      case DateFilters.EqualTo:
-        value = atMidnight(value)
-        const day = dateToUnixTimestamp(value.toDate())
-        const nextDay = dateToUnixTimestamp(addHours(value, 24).toDate())
-        return { gt: day, lt: nextDay }
+      case DateFilters.EqualTo: {
+        const momentToSet = atMidnight(value)
+        if (momentToSet) {
+          const day = dateToUnixTimestamp(momentToSet.toDate())
+          const nextDay = dateToUnixTimestamp(
+            addHours(momentToSet, 24).toDate()
+          )
+          return { gt: day, lt: nextDay }
+        } else {
+          return {}
+        }
+      }
 
-      case DateFilters.After:
-        value = atMidnight(value)
-        return { gt: dateToUnixTimestamp(value.toDate()) }
+      case DateFilters.After: {
+        const momentToSet = atMidnight(value)
+        if (momentToSet) {
+          return { gt: dateToUnixTimestamp(momentToSet.toDate()) }
+        } else {
+          return {}
+        }
+      }
 
-      case DateFilters.Before:
-        value = atMidnight(value)
-        return { lt: dateToUnixTimestamp(value.toDate()) }
+      case DateFilters.Before: {
+        const momentToSet = atMidnight(value)
+        if (momentToSet) {
+          return { lt: dateToUnixTimestamp(momentToSet.toDate()) }
+        } else {
+          return {}
+        }
+      }
 
-      default:
-        return ""
+      default: {
+        return {}
+      }
     }
   }
-
-  const [daysMonthsValue, setDaysMonthsValue] = useState("Days")
 
   const handleFilterContent = () => {
     switch (currentFilter) {
@@ -287,10 +369,12 @@ const DateFilter = ({
           <div className="flex flex-col w-full">
             <InputField
               className="pt-0 pb-1"
-              ref={input_ref}
               type="number"
               placeholder="2"
-              onChange={(e) => handleSetFilter(e.target.value)}
+              value={relativeAmount}
+              onChange={(e) => {
+                setRelativeAmount(e.target.value)
+              }}
             />
             <RightPopover
               trigger={
@@ -303,11 +387,8 @@ const DateFilter = ({
               }
             >
               <PopoverOptions
-                options={["Days", "Months"]}
-                onClick={(value) => {
-                  setDaysMonthsValue(value)
-                  handleSetFilter(value)
-                }}
+                options={["days", "months"]}
+                onClick={setDaysMonthsValue}
                 selectedItem={daysMonthsValue}
               />
             </RightPopover>
@@ -333,7 +414,6 @@ const DateFilter = ({
               <CalendarComponent
                 date={startDate}
                 onChange={(date) => {
-                  handleSetFilter(date)
                   setStartDate(date)
                 }}
               />
@@ -342,7 +422,7 @@ const DateFilter = ({
         )
 
       default:
-        return <span>{currentFilter} - comming soon!</span>
+        return <span>{currentFilter} - coming soon!</span>
     }
   }
   return (

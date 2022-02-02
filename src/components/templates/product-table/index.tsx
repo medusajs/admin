@@ -1,15 +1,15 @@
+import _ from "lodash"
 import { useAdminCollections, useAdminProducts } from "medusa-react"
+import qs from "query-string"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import _ from "lodash"
+import ProductsFilter from "../../../domain/products/filter-dropdown"
+import { useDebounce } from "../../../hooks/use-debounce"
+import Medusa from "../../../services/api"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
-import Medusa from "../../../services/api"
-import ProductsFilter from "../../../domain/products/filter-dropdown"
-import qs from "query-string"
-import { useDebounce } from "../../../hooks/use-debounce"
-import useProductTableColumn from "./use-product-column"
 import useProductActions from "./use-product-actions"
+import useProductTableColumn from "./use-product-column"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})

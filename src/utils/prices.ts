@@ -1,4 +1,5 @@
 import { currencies } from "./currencies"
+const noDivisionCurrencies = ["krw", "jpy"]
 
 export function normalizeAmount(currency: string, amount: number): number {
   const divisor = getDecimalDigits(currency)
@@ -47,9 +48,20 @@ export const extractOptionPrice = (price, region) => {
   return `${amount} ${region.currency_code.toUpperCase()}`
 }
 
+/**
+ * Checks the list of currencies and returns the divider/multiplier
+ * that should be used to calculate the persited and display amount.
+ * @param currency
+ * @return {number}
+ */
+export function getDecimalDigits(currency: string) {
+  const divisionDigits = currencies[currency.toUpperCase()].decimal_digits
+  return Math.pow(10, divisionDigits)
+}
+
 export function persistedPrice(currency: string, amount: number): number {
   const multiplier = getDecimalDigits(currency)
-  return Math.floor(amount) * multiplier
+  return amount * multiplier
 }
 
 export const stringDisplayPrice = ({ amount, currencyCode }) => {
@@ -60,12 +72,23 @@ export const stringDisplayPrice = ({ amount, currencyCode }) => {
   const display = displayAmount(currencyCode, amount)
   return `${display} ${currencyCode.toUpperCase()}`
 }
+export function formatAmountWithSymbol({ amount, currency, digits, tax = 0 }) {
+  let locale = "en-US"
 
-/**
- * Checks the list of currencies and returns the divider/multiplier
- * that should be used to calculate the persited and display amount.
- */
-function getDecimalDigits(currency: string) {
-  const divisionDigits = currencies[currency.toUpperCase()].decimal_digits
-  return Math.pow(10, divisionDigits)
+  // We need this to display 'Kr' instead of 'DKK'
+  if (currency.toLowerCase() === "dkk") {
+    locale = "da-DK"
+  }
+
+  if (noDivisionCurrencies.includes(currency.toLowerCase())) {
+    digits = 0
+  }
+
+  const normalizedAmount = normalizeAmount(currency, amount)
+
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    minimumFractionDigits: digits,
+  }).format(normalizedAmount * (1 + tax / 100))
 }

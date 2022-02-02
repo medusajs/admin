@@ -114,10 +114,11 @@ const Fulfillment = ({
     let cancel = undefined
     switch (details.type) {
       case "claim":
-        cancel = id => onCancelClaimFulfillment(fulfillment.claim_order_id, id)
+        cancel = (id) =>
+          onCancelClaimFulfillment(fulfillment.claim_order_id, id)
         break
       case "swap":
-        cancel = id => onCancelSwapFulfillment(fulfillment.swap_id, id)
+        cancel = (id) => onCancelSwapFulfillment(fulfillment.swap_id, id)
         break
       default:
         cancel = onCancelOrderFulfillment
@@ -126,7 +127,7 @@ const Fulfillment = ({
 
     return cancel(fulfillment.id)
       .then()
-      .catch(error => {
+      .catch((error) => {
         toaster(getErrorMessage(error), "error")
       })
   }
@@ -170,7 +171,7 @@ const Fulfillment = ({
               </Text>
             )}
             {hasLinks
-              ? fulfillment.tracking_links.map(tl => (
+              ? fulfillment.tracking_links.map((tl) => (
                   <TrackingLink trackingLink={tl} />
                 ))
               : fulfillment.tracking_numbers.length > 0 && (
@@ -215,7 +216,7 @@ const Fulfillment = ({
   )
 }
 
-const Divider = props => (
+const Divider = (props) => (
   <Box
     {...props}
     as="hr"
@@ -228,7 +229,7 @@ const Divider = props => (
   />
 )
 
-const gatherFulfillments = order => {
+const gatherFulfillments = (order) => {
   const toReturn = []
   order.fulfillments.forEach((f, index) => {
     toReturn.push({
@@ -239,7 +240,7 @@ const gatherFulfillments = order => {
   })
 
   if (order.claims && order.claims.length) {
-    order.claims.forEach(s => {
+    order.claims.forEach((s) => {
       if (s.fulfillment_status !== "not_fulfilled") {
         s.fulfillments.forEach((f, index) => {
           toReturn.push({
@@ -254,7 +255,7 @@ const gatherFulfillments = order => {
   }
 
   if (order.swaps && order.swaps.length) {
-    order.swaps.forEach(s => {
+    order.swaps.forEach((s) => {
       if (s.fulfillment_status !== "not_fulfilled") {
         s.fulfillments.forEach((f, index) => {
           toReturn.push({
@@ -279,7 +280,7 @@ const PaymentDetails = ({ order }) => {
   let swapAmount = 0
 
   if (order?.refunds?.length) {
-    order.refunds.forEach(ref => {
+    order.refunds.forEach((ref) => {
       if (ref.reason === "other" || ref.reason === "discount") {
         manualRefund += ref.amount
       }
@@ -293,7 +294,7 @@ const PaymentDetails = ({ order }) => {
   }
 
   if (order?.swaps?.length) {
-    swapAmount = _.sum(order.swaps.map(el => el.difference_due))
+    swapAmount = _.sum(order.swaps.map((el) => el.difference_due))
   }
 
   return (
@@ -431,8 +432,8 @@ const OrderDetails = ({ id }) => {
     }
   }, [order])
 
-  const handleCopyToClip = val => {
-    var tempInput = document.createElement("input")
+  const handleCopyToClip = (val) => {
+    const tempInput = document.createElement("input")
     tempInput.value = val
     document.body.appendChild(tempInput)
     tempInput.select()
@@ -456,9 +457,9 @@ const OrderDetails = ({ id }) => {
 
   const events = buildTimeline(order, notifications, notes)
 
-  const decidePaymentButton = paymentStatus => {
+  const decidePaymentButton = (paymentStatus) => {
     const isSystemPayment = order?.payments?.some(
-      p => p.provider_id === "system"
+      (p) => p.provider_id === "system"
     )
 
     const shouldShowNotice =
@@ -493,7 +494,7 @@ const OrderDetails = ({ id }) => {
                 toaster("Succesfully captured payment", "success")
                 setCaptureLoading(true)
               })
-              .catch(error => {
+              .catch((error) => {
                 toaster(getErrorMessage(error), "error")
                 setCaptureLoading(true)
               })
@@ -510,7 +511,7 @@ const OrderDetails = ({ id }) => {
     Medusa.notes
       .create(order.id, "order", note)
       .then(() => {
-        Medusa.notes.listByResource(order.id).then(response => {
+        Medusa.notes.listByResource(order.id).then((response) => {
           setNotes(response.data.notes)
         })
       })
@@ -521,7 +522,7 @@ const OrderDetails = ({ id }) => {
       })
   }
 
-  const handleEnterNote = event => {
+  const handleEnterNote = (event) => {
     if (event.key === "Enter") {
       createNote()
     }
@@ -549,7 +550,7 @@ const OrderDetails = ({ id }) => {
 
     if (
       allItems.every(
-        item => item.returned_quantity === item.fulfilled_quantity
+        (item) => item.returned_quantity === item.fulfilled_quantity
       ) &&
       fulfillmentStatus !== "not_fulfilled" &&
       fulfillmentStatus !== "fulfilled" &&
@@ -559,8 +560,8 @@ const OrderDetails = ({ id }) => {
     }
 
     if (
-      allItems.find(item => !item.returned_quantity) &&
-      allItems.find(item => item.returned_quantity)
+      allItems.find((item) => !item.returned_quantity) &&
+      allItems.find((item) => item.returned_quantity)
     ) {
       fulfillmentStatus = "partially_returned"
     }
@@ -570,7 +571,7 @@ const OrderDetails = ({ id }) => {
 
   let fulfillmentAction
   const canFulfill = order.items.some(
-    item => item.fulfilled_quantity !== item.quantity
+    (item) => item.fulfilled_quantity !== item.quantity
   )
 
   if (canFulfill && order.status !== "canceled") {
@@ -593,7 +594,7 @@ const OrderDetails = ({ id }) => {
   }
 
   let lineAction
-  let lineDropdown = []
+  const lineDropdown = []
   if (
     order.status !== "canceled" &&
     getFulfillmentStatus() !== "returned" &&
@@ -645,11 +646,11 @@ const OrderDetails = ({ id }) => {
       },
     })
   }
-  const wrapCancel = func => {
-    return param => {
+  const wrapCancel = (func) => {
+    return (param) => {
       func(param)
         .then()
-        .catch(error => toaster(getErrorMessage(error), "error"))
+        .catch((error) => toaster(getErrorMessage(error), "error"))
     }
   }
 
@@ -814,7 +815,7 @@ const OrderDetails = ({ id }) => {
               placeholder="Add note"
               m={3}
               value={note}
-              onChange={e => setNote(e.target.value)}
+              onChange={(e) => setNote(e.target.value)}
               onKeyPress={handleEnterNote}
             />
             <Button
@@ -847,18 +848,18 @@ const OrderDetails = ({ id }) => {
           <Timeline
             events={events}
             order={order}
-            onResendNotification={n => setNotificationResend(n)}
+            onResendNotification={(n) => setNotificationResend(n)}
             onSaveClaim={updateClaim}
             onCancelClaim={wrapCancel(cancelClaim)}
-            onFulfillClaim={claim => setClaimToFulfill(claim)}
+            onFulfillClaim={(claim) => setClaimToFulfill(claim)}
             onReceiveClaim={receiveClaim}
             onProcessSwapPayment={processSwapPayment}
-            onFulfillSwap={swap => setSwapToFulfill(swap)}
-            onReceiveReturn={ret => setToReceive(ret)}
+            onFulfillSwap={(swap) => setSwapToFulfill(swap)}
+            onReceiveReturn={(ret) => setToReceive(ret)}
             onCancelReturn={cancelReturn}
             onCancelSwap={wrapCancel(cancelSwap)}
             toaster={toaster}
-            onUpdateNotes={notes => setNotes(notes)}
+            onUpdateNotes={(notes) => setNotes(notes)}
           />
         </Card.Body>
       </Card>
@@ -975,7 +976,7 @@ const OrderDetails = ({ id }) => {
             }
           >
             {order?.shipping_methods?.length ? (
-              order.shipping_methods.map(method => (
+              order.shipping_methods.map((method) => (
                 <Box key={method._id}>
                   <Box pl={3} pr={2}>
                     <Text pb={1} color="gray">
@@ -1010,7 +1011,7 @@ const OrderDetails = ({ id }) => {
           </Flex>
           <Flex width={1} flexDirection="column">
             {fulfillments.length > 0
-              ? fulfillments.map(f => (
+              ? fulfillments.map((f) => (
                   <Fulfillment
                     key={f.fulfillment.id}
                     details={f}
@@ -1076,7 +1077,6 @@ const OrderDetails = ({ id }) => {
       )}
       {showReturnMenu && (
         <ReturnMenu
-          onReturn={requestReturn}
           order={order}
           onDismiss={() => setShowReturnMenu(false)}
           toaster={toaster}
@@ -1155,7 +1155,7 @@ const OrderDetails = ({ id }) => {
               .then(() => {
                 toaster("Order was canceled", "success")
               })
-              .catch(error => {
+              .catch((error) => {
                 toaster(getErrorMessage(error), "error")
               })
               .finally(() => {
