@@ -1,68 +1,38 @@
 import { RouteComponentProps, useLocation } from "@reach/router"
 import { useAdminDraftOrders } from "medusa-react"
-import qs from "query-string"
-import React, { useEffect, useReducer, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
 import useDraftOrderTableColumns from "./use-draft-order-column"
+import { useDraftOrderFilters } from "./use-draft-order-filters"
 
-type DraftOrderFiltersType = {
-  limit: number
-  offset: number
-  pageIndex: number
-  q: string
-}
-
-const initialState: DraftOrderFiltersType = {
-  limit: 14,
-  offset: 0,
-  pageIndex: 0,
-  q: "",
-}
-
-function orderFiltersReducer(state, action) {
-  switch (action.type) {
-    case "query":
-      return { ...state, q: action.payload, limit: 14, offset: 0 }
-    case "limit":
-      return { ...state, limit: action.payload }
-    case "offset":
-      return { ...state, offset: action.payload }
-    case "pageIndex":
-      return { ...state, pageIndex: action.payload }
-    case "reset":
-      return {
-        ...initialState,
-      }
-    default:
-      return state
-  }
-}
+const DEFAULT_PAGE_SIZE = 15
 
 const DraftOrderTable: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
 
-  const filtersOnLoad = qs.parse(location.search, {
-    arrayFormat: "bracket",
-  })
+  const {
+    reset,
+    paginate,
+    setQuery: setFreeText,
+    queryObject,
+  } = useDraftOrderFilters(location.search, {})
 
-  const offs = parseInt(filtersOnLoad?.offset as string) || 0
-  const lim = parseInt(filtersOnLoad?.limit as string) || 14
-  initialState.pageIndex = offs / lim
+  const filtersOnLoad = queryObject
 
-  const [state, dispatch] = useReducer(orderFiltersReducer, initialState)
-  const [query, setQuery] = useState((filtersOnLoad?.q as string) || "")
+  const offs = parseInt(filtersOnLoad?.offset) || 0
+  const lim = parseInt(filtersOnLoad?.limit) || DEFAULT_PAGE_SIZE
+
+  const [query, setQuery] = useState(filtersOnLoad?.query)
   const [numPages, setNumPages] = useState(0)
 
-  const { draft_orders, isLoading, isRefetching, count } = useAdminDraftOrders({
-    offset: state?.offset || 0,
-    limit: state?.limit || 14,
-    q: state?.q || "",
-  })
+  const { draft_orders, isLoading, isRefetching, count } = useAdminDraftOrders(
+    queryObject
+  )
 
   useEffect(() => {
-    const controlledPageCount = Math.ceil(count! / state.limit)
+    const controlledPageCount = Math.ceil(count! / queryObject.limit)
     setNumPages(controlledPageCount)
   }, [draft_orders])
 
@@ -81,15 +51,15 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
     nextPage,
     previousPage,
     // Get the state from the instance
-    state: { pageIndex, pageSize },
+    state: { pageIndex },
   } = useTable(
     {
       columns,
       data: draft_orders || [],
       manualPagination: true,
       initialState: {
-        pageSize: state.limit,
-        pageIndex: state.pageIndex,
+        pageSize: lim,
+        pageIndex: offs / lim,
       },
       pageCount: numPages,
       autoResetPage: false,
@@ -100,8 +70,13 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
   // Debounced search
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch({ type: "query", payload: query })
-      gotoPage(0)
+      if (query) {
+        setFreeText(query)
+        gotoPage(0)
+      } else {
+        // if we delete query string, we reset the table view
+        reset()
+      }
     }, 400)
 
     return () => clearTimeout(delayDebounceFn)
@@ -109,16 +84,14 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
 
   const handleNext = () => {
     if (canNextPage) {
-      const newOffset = state.offset + pageSize
-      dispatch({ type: "offset", payload: newOffset })
+      paginate(1)
       nextPage()
     }
   }
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      const newOffset = state.offset - pageSize
-      dispatch({ type: "offset", payload: newOffset })
+      paginate(-1)
       previousPage()
     }
   }
@@ -171,9 +144,9 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
           </Table>
           <TablePagination
             count={count!}
-            limit={state.limit}
-            offset={state.offset}
-            pageSize={state.offset + rows.length}
+            limit={queryObject.limit}
+            offset={queryObject.offset}
+            pageSize={queryObject.offset + rows.length}
             title="Draft Orders"
             currentPage={pageIndex}
             pageCount={pageCount}

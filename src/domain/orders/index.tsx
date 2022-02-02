@@ -10,14 +10,14 @@ import DraftOrderDetails from "./draft-orders/details"
 import NewOrder from "./new"
 
 const VIEWS = [
-  "orders",
+  "overview",
   "drafts",
   // "swaps", <- TODO
   // "returns" <- TODO
 ]
 
 const OrderIndex: React.FC<RouteComponentProps> = () => {
-  const [view, setView] = useState("orders")
+  const [view, setView] = useState("overview")
 
   const CurrentView = () => {
     switch (view) {
