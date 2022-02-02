@@ -8,7 +8,7 @@ import GripIcon from "../fundamentals/icons/grip-icon"
 import Button from "../fundamentals/button"
 import TrashIcon from "../fundamentals/icons/trash-icon"
 import update from "immutability-helper"
-import _ from "lodash"
+import { debounce } from "lodash"
 
 type DraggableTableProps = {
   entities: any[]
@@ -63,7 +63,7 @@ const DraggableTable: React.FC<DraggableTableProps> = ({
     )
   }
 
-  const debouncedMoveRow = useMemo(() => _.debounce(moveRow, 100), [])
+  const debouncedMoveRow = useMemo(() => debounce(moveRow, 100), [])
 
   useEffect(() => {
     return () => {
