@@ -1,21 +1,11 @@
-import React, { useState, useRef, useEffect } from "react"
-import * as RadixPopover from "@radix-ui/react-popover"
-
-import styled from "@emotion/styled"
-import { Flex, Box } from "rebass"
-
-import TagInput from "../../components/molecules/tag-input"
-import Button from "../../components/fundamentals/button"
-import FilterDropdownItem from "../../components/molecules/filter-dropdown/item"
-import Tooltip from "../../components/tooltip"
-import ReactTooltip from "react-tooltip"
-import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
-import { DateFilters } from "../../utils/filters"
-import FilterDropdownContainer from "../../components/molecules/filter-dropdown/container"
-import CheckIcon from "../../components/fundamentals/icons/check-icon"
 import clsx from "clsx"
-import SaveFilterItem from "../../components/molecules/filter-dropdown/save-field"
+import React, { useRef, useState } from "react"
+import CheckIcon from "../../components/fundamentals/icons/check-icon"
 import ChevronDownIcon from "../../components/fundamentals/icons/chevron-down"
+import FilterDropdownContainer from "../../components/molecules/filter-dropdown/container"
+import FilterDropdownItem from "../../components/molecules/filter-dropdown/item"
+import SaveFilterItem from "../../components/molecules/filter-dropdown/save-field"
+import TagInput from "../../components/molecules/tag-input"
 
 const statusFilters = ["proposed", "draft", "published", "rejected"]
 

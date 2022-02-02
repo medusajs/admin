@@ -66,10 +66,13 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
         className
       )}
     >
-      <span>
-        {placeholder ||
-          "Drag and drop an image here, or click to select a file"}
-      </span>
+      <div className="flex flex-col items-center">
+        <p>
+          Drop your images here, or{" "}
+          <span className="text-violet-60">click to browse</span>
+        </p>
+        {placeholder}
+      </div>
       {fileUploadError && (
         <span className="text-rose-60">
           {errorMessage || "Please upload an image file"}

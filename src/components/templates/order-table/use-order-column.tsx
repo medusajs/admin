@@ -13,9 +13,11 @@ const useOrderTableColums = () => {
       case "captured":
         return <StatusDot variant="success" title={"Paid"} />
       case "awaiting":
-        return <StatusDot variant="warning" title={"Awaiting"} />
-      case "requires":
+        return <StatusDot variant="default" title={"Awaiting"} />
+      case "requires_action":
         return <StatusDot variant="danger" title={"Requires action"} />
+      case "canceled":
+        return <StatusDot variant="warning" title={"Canceled"} />
       default:
         return <StatusDot variant="primary" title={"N/A"} />
     }

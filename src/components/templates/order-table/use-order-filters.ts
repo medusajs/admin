@@ -92,6 +92,7 @@ const reducer = (
         payment: action.payload.payment,
         status: action.payload.status,
         date: action.payload.date,
+        query: action?.payload?.query,
       }
     }
     case "setQuery": {
@@ -201,7 +202,7 @@ export const useOrderFilters = (
 
       dispatch({ type: "setOffset", payload: nextOffset })
     } else {
-      const nextOffset = Math.min(state.offset - state.limit, 0)
+      const nextOffset = Math.max(state.offset - state.limit, 0)
       dispatch({ type: "setOffset", payload: nextOffset })
     }
   }
@@ -228,6 +229,7 @@ export const useOrderFilters = (
           open: false,
           filter: null,
         },
+        query: null,
       },
     })
   }
@@ -243,8 +245,10 @@ export const useOrderFilters = (
   const getQueryObject = () => {
     const toQuery: any = { ...state.additionalFilters }
     for (const [key, value] of Object.entries(state)) {
-      if (key === "query" && typeof value === "string") {
-        toQuery["q"] = value
+      if (key === "query") {
+        if (value && typeof value === "string") {
+          toQuery["q"] = value
+        }
       } else if (key === "offset" || key === "limit") {
         toQuery[key] = value
       } else if (value.open) {
@@ -271,8 +275,10 @@ export const useOrderFilters = (
 
     const toQuery: any = {}
     for (const [key, value] of Object.entries(objToUse)) {
-      if (key === "query" && typeof value === "string") {
-        toQuery["q"] = value
+      if (key === "query") {
+        if (value && typeof value === "string") {
+          toQuery["q"] = value
+        }
       } else if (key === "offset" || key === "limit") {
         toQuery[key] = value
       } else if (value.open) {
