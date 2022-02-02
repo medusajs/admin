@@ -89,6 +89,7 @@ const DraggableTable: React.FC<DraggableTableProps> = ({
           return
         }
 
+        return // TODO: fix hover/drop action
         // if (latestMoved?.from === dragIndex && latestMoved?.to === hoverIndex) {
         //   return
         // }
@@ -197,20 +198,6 @@ const DraggableTable: React.FC<DraggableTableProps> = ({
                   />
                 )
             )}
-            {/* {rows.map((row) => {
-              prepareRow(row)
-              return (
-                <Table.DraggableRow {...{ onDelete }} {...row.getRowProps()}>
-                  {row.cells.map((cell, index) => {
-                    return (
-                      <Table.Cell {...cell.getCellProps()}>
-                        {cell.render("Cell", { index })}
-                      </Table.Cell>
-                    )
-                  })}
-                </Table.DraggableRow>
-              )
-            })} */}
           </Table.Body>
         </Table>
       </DndProvider>
