@@ -1,21 +1,36 @@
+import {
+  AdminPostOrdersOrderClaimsClaimFulfillmentsReq,
+  AdminPostOrdersOrderFulfillmentsReq,
+  AdminPostOrdersOrderSwapsSwapFulfillmentsReq,
+  ClaimOrder,
+  Order,
+  Swap,
+} from "@medusajs/medusa"
 import clsx from "clsx"
+import {
+  useAdminCreateFulfillment,
+  useAdminFulfillClaim,
+  useAdminFulfillSwap,
+} from "medusa-react"
 import React, { useState } from "react"
-import { useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import Modal from "../../../../components/molecules/modal"
 import Table from "../../../../components/molecules/table"
-import Metadata from "../../../../components/organisms/metadata"
+import Metadata, {
+  MetadataField,
+} from "../../../../components/organisms/metadata"
+import useToaster from "../../../../hooks/use-toaster"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 type CreateFulfillmentModalProps = {
-  handleClose: () => void
-  handleSave: () => Promise<void>
+  handleCancel: () => void
   address?: object
   email?: string
-  // orderToFulfill: Order | ClaimOrder | Swap | undefined
-  orderToFulfill: any
+  orderToFulfill: Order | ClaimOrder | Swap
+  orderId: string
 }
 
 const ItemsTable = ({
@@ -70,7 +85,7 @@ const ItemsTable = ({
 
   return (
     <Table>
-      <Table.HeadRow className="text-grey-50 inter-small-semibold">
+      <Table.HeadRow className="text-grey-50 inter-small-semibold border-t border-t-grey-20">
         <Table.HeadCell>Details</Table.HeadCell>
         <Table.HeadCell />
         <Table.HeadCell className="text-right pr-8">Quantity</Table.HeadCell>
@@ -80,7 +95,7 @@ const ItemsTable = ({
           const checked = toFulfill.includes(item.id)
           return (
             <>
-              <Table.Row className={clsx("border-b-grey-0 hover:bg-grey-0")}>
+              <Table.Row className={"border-b-grey-0 hover:bg-grey-0"}>
                 <Table.Cell className="w-[50px]">
                   <div className="items-center ml-1 h-full flex">
                     <div
@@ -113,7 +128,7 @@ const ItemsTable = ({
                     </div>
                     <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
                       <span>
-                        <span className="text-grey-90">{item.title}</span> test
+                        <span className="text-grey-90">{item.title}</span>
                       </span>
                       <span>{item?.variant?.title || ""}</span>
                     </div>
@@ -165,35 +180,110 @@ const ItemsTable = ({
 }
 
 const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
-  handleClose,
-  handleSave,
+  handleCancel,
   orderToFulfill,
+  orderId,
 }) => {
-  const [toFulfill, setToFulfill] = useState([])
+  const [toFulfill, setToFulfill] = useState<string[]>([])
   const [quantities, setQuantities] = useState({})
-
-  const { register, handleSubmit, reset, control } = useForm()
+  const [noNotis, setNoNotis] = useState(false)
+  const [metadata, setMetadata] = useState<MetadataField[]>([
+    { key: "", value: "" },
+  ])
 
   const items =
     "items" in orderToFulfill
       ? orderToFulfill.items
       : orderToFulfill.additional_items
 
+  const createOrderFulfillment = useAdminCreateFulfillment(orderId)
+  const createSwapFulfillment = useAdminFulfillSwap(orderId)
+  const createClaimFulfillment = useAdminFulfillClaim(orderId)
+
+  const toaster = useToaster()
+
+  const createFulfillment = () => {
+    const [type] = orderToFulfill.id.split("_")
+
+    type actionType =
+      | typeof createOrderFulfillment
+      | typeof createSwapFulfillment
+      | typeof createClaimFulfillment
+
+    let action: actionType = createOrderFulfillment
+    let successText = "Successfully fulfilled order"
+    let requestObj
+
+    const preparedMetadata = metadata.reduce((acc, next) => {
+      if (next.key) {
+        return {
+          ...acc,
+          [next.key]: next.value,
+        }
+      } else {
+        return acc
+      }
+    }, {})
+
+    switch (type) {
+      case "swap":
+        action = createSwapFulfillment
+        successText = "Successfully fulfilled swap"
+        requestObj = {
+          metadata: preparedMetadata,
+          no_notification: noNotis,
+        } as AdminPostOrdersOrderSwapsSwapFulfillmentsReq
+        break
+
+      case "claim":
+        action = createClaimFulfillment
+        successText = "Successfully fulfilled claim"
+        requestObj = {
+          metadata: preparedMetadata,
+          no_notification: noNotis,
+        } as AdminPostOrdersOrderClaimsClaimFulfillmentsReq
+        break
+
+      default:
+        requestObj = {
+          metadata: preparedMetadata,
+          no_notification: noNotis,
+        } as AdminPostOrdersOrderFulfillmentsReq
+        requestObj.items = toFulfill
+          .map((itemId) => ({ item_id: itemId, quantity: quantities[itemId] }))
+          .filter((t) => !!t)
+        break
+    }
+
+    action.mutate(requestObj, {
+      onSuccess: () => {
+        toaster(successText, "success")
+        handleCancel()
+      },
+      onError: (err) => toaster(getErrorMessage(err), "error"),
+    })
+  }
+
   return (
-    <Modal handleClose={handleClose}>
+    <Modal handleClose={handleCancel}>
       <Modal.Body>
-        <Modal.Header handleClose={handleClose}>
+        <Modal.Header handleClose={handleCancel}>
           <span className="inter-xlarge-semibold">Create Fulfillment</span>
         </Modal.Header>
         <Modal.Content>
-          <ItemsTable
-            items={items}
-            toFulfill={toFulfill}
-            setToFulfill={setToFulfill}
-            quantities={quantities}
-            setQuantities={setQuantities}
-          />
-          <Metadata control={control} />
+          <div className="flex flex-col">
+            <span className="inter-base-semibold mb-2">Items</span>
+            <ItemsTable
+              items={items}
+              toFulfill={toFulfill}
+              setToFulfill={setToFulfill}
+              quantities={quantities}
+              setQuantities={setQuantities}
+            />
+            <div className="mt-4">
+              <Metadata metadata={metadata} setMetadata={setMetadata} />
+            </div>
+          </div>
         </Modal.Content>
         <Modal.Footer>
           <div className="flex w-full h-8 justify-end">
@@ -201,7 +291,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
               variant="ghost"
               className="mr-2 w-32 text-small justify-center"
               size="large"
-              onClick={handleClose}
+              onClick={handleCancel}
             >
               Cancel
             </Button>
@@ -209,9 +299,10 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
               size="large"
               className="w-32 text-small justify-center"
               variant="primary"
-              onClick={handleSave}
+              disabled={!toFulfill?.length}
+              onClick={createFulfillment}
             >
-              Save
+              Complete
             </Button>
           </div>
         </Modal.Footer>

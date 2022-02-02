@@ -1,4 +1,12 @@
-import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
+import {
+  Address,
+  AdminPostOrdersOrderClaimsClaimFulfillmentsReq,
+  AdminPostOrdersOrderFulfillmentsReq,
+  AdminPostOrdersOrderSwapsSwapFulfillmentsReq,
+  ClaimOrder,
+  Fulfillment,
+  Swap,
+} from "@medusajs/medusa"
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import { capitalize, sum } from "lodash"
@@ -9,8 +17,11 @@ import {
   useAdminCancelSwapFulfillment,
   useAdminCapturePayment,
   useAdminCreateClaimShipment,
+  useAdminCreateFulfillment,
   useAdminCreateShipment,
   useAdminCreateSwapShipment,
+  useAdminFulfillClaim,
+  useAdminFulfillSwap,
   useAdminOrder,
   useAdminRegion,
   useAdminUpdateOrder,
@@ -118,7 +129,7 @@ const OrderDetails = ({ id }) => {
     type: "billing" | "shipping"
   }>(null)
 
-  const [showFulfillment, setShowFulfillment] = useState(true)
+  const [showFulfillment, setShowFulfillment] = useState(false)
 
   const { order, isLoading } = useAdminOrder(id)
 
@@ -128,9 +139,61 @@ const OrderDetails = ({ id }) => {
   const capturePayment = useAdminCapturePayment(id)
   const cancelOrder = useAdminCancelOrder(id)
   const updateOrder = useAdminUpdateOrder(id)
+
   const cancelFulfillment = useAdminCancelFulfillment(id)
   const cancelSwapFulfillment = useAdminCancelSwapFulfillment(id)
   const cancelClaimFulfillment = useAdminCancelClaimFulfillment(id)
+
+  const createOrderFulfillment = useAdminCreateFulfillment(id)
+  const createSwapFulfillment = useAdminFulfillSwap(id)
+  const createClaimFulfillment = useAdminFulfillClaim(id)
+
+  const createFulfillment = (
+    type: "swap" | "claim" | "order" = "order",
+    itemsToFulfill?: []
+  ) => {
+    type actionType =
+      | typeof createOrderFulfillment
+      | typeof createSwapFulfillment
+      | typeof createClaimFulfillment
+
+    let action: actionType = createOrderFulfillment
+    let successText = "Successfully fulfilled order"
+    let requestObj
+
+    switch (type) {
+      case "swap":
+        action = createSwapFulfillment
+        successText = "Successfully fulfilled swap"
+        requestObj = {
+          metadata: {},
+          no_notification: false,
+        } as AdminPostOrdersOrderSwapsSwapFulfillmentsReq
+        break
+
+      case "claim":
+        action = createClaimFulfillment
+        successText = "Successfully fulfilled claim"
+        requestObj = {
+          metadata: {},
+          no_notification: false,
+        } as AdminPostOrdersOrderClaimsClaimFulfillmentsReq
+        break
+
+      default:
+        requestObj = {
+          metadata: {},
+          no_notification: false,
+        } as AdminPostOrdersOrderFulfillmentsReq
+        requestObj.items = itemsToFulfill
+        break
+    }
+
+    action.mutate(requestObj, {
+      onSuccess: () => toaster(successText),
+      onError: (err) => toaster(getErrorMessage(err), "error"),
+    })
+  }
 
   const { region } = useAdminRegion(order?.region_id)
 
@@ -150,7 +213,7 @@ const OrderDetails = ({ id }) => {
   const DisplayTotal = ({
     totalAmount,
     totalTitle,
-    subtitle = undefined,
+    subtitle = "",
     totalColor = "text-grey-90",
   }) => (
     <div className="flex justify-between mt-4 items-center">
@@ -845,20 +908,17 @@ const OrderDetails = ({ id }) => {
               title="Fulfillment"
               status={<FulfillmentStatusComponent />}
               customActionable={
-                <Button
-                  variant="secondary"
-                  size="small"
-                  onClick={() => console.log("Create")}
-                >
-                  Create Fulfillment
-                </Button>
+                order.fulfillment_status !== "fulfilled" &&
+                order.status !== "canceled" && (
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={() => setShowFulfillment(true)}
+                  >
+                    Create Fulfillment
+                  </Button>
+                )
               }
-              actionables={[
-                {
-                  label: "Create fulfillment",
-                  onClick: () => console.log("Create"),
-                },
-              ]}
             >
               <div className="mt-6">
                 {order?.shipping_methods.map((method) => (
@@ -965,7 +1025,11 @@ const OrderDetails = ({ id }) => {
         />
       )}
       {showFulfillment && order && (
-        <CreateFulfillmentModal orderToFulfill={order} />
+        <CreateFulfillmentModal
+          orderToFulfill={order as any}
+          handleCancel={() => setShowFulfillment(false)}
+          orderId={order.id}
+        />
       )}
       {/* An attempt to make a reusable delete prompt, so we don't have to hold +10
       state variables for showing different prompts */}
