@@ -34,7 +34,7 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
   useEffect(() => {
     const controlledPageCount = Math.ceil(count! / queryObject.limit)
     setNumPages(controlledPageCount)
-  }, [draft_orders])
+  }, [count, queryObject])
 
   const [columns] = useDraftOrderTableColumns()
 
