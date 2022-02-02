@@ -99,12 +99,13 @@ const useOrderTableColums = () => {
         accessor: "country_code",
         Cell: ({ row, index }) => (
           <Table.Cell className="w-[5%]" key={index}>
-            <div className="flex w-full justify-end">
+            <div className="flex rounded-rounded w-full justify-end">
               <ReactCountryFlag
+                className={"rounded"}
                 svg
                 countryCode={row.original.shipping_address.country_code}
               />
-            </div>
+              </div>
           </Table.Cell>
         ),
       },
