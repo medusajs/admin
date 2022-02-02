@@ -118,7 +118,7 @@ const OrderDetails = ({ id }) => {
     type: "billing" | "shipping"
   }>(null)
 
-  const [showFulfillment, setShowFulfillment] = useState(false)
+  const [showFulfillment, setShowFulfillment] = useState(true)
 
   const { order, isLoading } = useAdminOrder(id)
 
@@ -964,7 +964,9 @@ const OrderDetails = ({ id }) => {
           allowedCountries={region?.countries}
         />
       )}
-      {showFulfillment && <CreateFulfillmentModal />}
+      {showFulfillment && order && (
+        <CreateFulfillmentModal orderToFulfill={order} />
+      )}
       {/* An attempt to make a reusable delete prompt, so we don't have to hold +10
       state variables for showing different prompts */}
       {deletePromptData.show && (
