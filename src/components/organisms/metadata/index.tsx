@@ -1,13 +1,13 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import Button from "../../fundamentals/button"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import InputField from "../../molecules/input"
 
 type AddMetadataProps = {
-  control: any
+  metadata: MetadataField[]
+  setMetadata: (metadata: MetadataField[]) => void
   heading?: string
-  existingMetadata?: object
 }
 
 export type MetadataField = {
@@ -16,60 +16,56 @@ export type MetadataField = {
 }
 
 const Metadata: React.FC<AddMetadataProps> = ({
-  control,
+  metadata,
+  setMetadata,
   heading = "Metadata",
-  existingMetadata,
 }) => {
-  const [keyPairs, setKeyPairs] = React.useState<MetadataField[]>([])
+  const [localData, setLocalData] = useState<MetadataField[]>([])
+
+  useEffect(() => {
+    setLocalData(metadata)
+  }, [metadata])
 
   const addKeyPair = () => {
-    const baseName = `metadata.${keyPairs.length}`
+    setMetadata([...metadata, { key: ``, value: `` }])
+  }
 
-    setKeyPairs([
-      ...keyPairs,
-      { key: `${baseName}.key`, value: `${baseName}.value` },
-    ])
+  const onKeyChange = (index: number) => {
+    return (key: string) => {
+      const newFields = metadata
+      newFields[index] = { key: key, value: newFields[index].value }
+      setMetadata(newFields)
+    }
+  }
+
+  const onValueChange = (index: number) => {
+    return (value: any) => {
+      const newFields = metadata
+      newFields[index] = {
+        key: newFields[index].key,
+        value: value,
+      }
+      setMetadata(newFields)
+    }
   }
 
   const deleteKeyPair = (index: number) => {
-    control.unregister(keyPairs[index].key)
-    control.unregister(keyPairs[index].value)
-
-    setKeyPairs(keyPairs.filter((_, i) => i !== index))
-  }
-
-  useEffect(() => {
-    if (existingMetadata) {
-      for (const key of Object.keys(existingMetadata)) {
-        control.register(`metadata.${keyPairs.length}.key`)
-        control.register(`metadata.${keyPairs.length}.value`)
-
-        addKeyPair()
-
-        control.setValue(`metadata.${keyPairs.length}.key`, key)
-        control.setValue(
-          `metadata.${keyPairs.length}.value`,
-          existingMetadata[key]
-        )
-      }
+    return () => {
+      setMetadata(metadata.filter((_, i) => i !== index))
     }
-  }, [existingMetadata])
+  }
 
   return (
     <div>
       <span className="inter-base-semibold">{heading}</span>
       <div className="flex flex-col mt-base gap-y-base">
-        {keyPairs.map((keyPair, index) => {
+        {localData.map((field, index) => {
           return (
-            <DeletableElement
-              key={index}
-              index={index}
-              onDelete={deleteKeyPair}
-            >
-              <KeyPair
-                k={keyPair.key}
-                v={keyPair.value}
-                register={control.register}
+            <DeletableElement key={index} onDelete={deleteKeyPair(index)}>
+              <Field
+                field={field}
+                updateKey={onKeyChange(index)}
+                updateValue={onValueChange(index)}
               />
             </DeletableElement>
           )
@@ -90,32 +86,42 @@ const Metadata: React.FC<AddMetadataProps> = ({
   )
 }
 
-type KeyPairProps = {
-  k: string
-  v: string
-  register: any
-} & React.HTMLAttributes<HTMLDivElement>
+type FieldProps = {
+  field: MetadataField
+  updateKey: (key: string) => void
+  updateValue: (value: string) => void
+}
 
-const KeyPair: React.FC<KeyPairProps> = ({ k, v, register }) => {
+const Field: React.FC<FieldProps> = ({ field, updateKey, updateValue }) => {
   return (
     <div className="flex items-center w-full gap-x-xsmall">
       <div className="maw-w-[200px]">
-        <InputField label="Key" name={k} ref={register({ required: true })} />
+        <InputField
+          label="Key"
+          defaultValue={field.key}
+          onChange={(e) => {
+            updateKey(e.currentTarget.value)
+          }}
+        />
       </div>
       <div className="flex-grow">
-        <InputField label="Value" name={v} ref={register({ required: true })} />
+        <InputField
+          label="Value"
+          defaultValue={field.value}
+          onChange={(e) => {
+            updateValue(e.currentTarget.value)
+          }}
+        />
       </div>
     </div>
   )
 }
 
 type DeletableElementProps = {
-  onDelete: (index: number) => void
-  index: number
+  onDelete: () => void
 }
 
 const DeletableElement: React.FC<DeletableElementProps> = ({
-  index,
   onDelete,
   children,
 }) => {
@@ -127,7 +133,7 @@ const DeletableElement: React.FC<DeletableElementProps> = ({
         size="small"
         className="text-grey-40 justify-end"
         type="button"
-        onClick={() => onDelete(index)}
+        onClick={onDelete}
       >
         <TrashIcon size={20} />
       </Button>

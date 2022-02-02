@@ -27,28 +27,27 @@ const CollectionsIndex = () => {
   const [showNew, setShowNew] = useState(false)
   const createCollection = useAdminCreateCollection()
   const toaster = useToaster()
-  const { collections, isLoading, refresh, total_count } = useMedusa(
-    "collections",
-    {
-      search: `?${qs.stringify(filtersOnLoad)}`,
-    }
-  )
+  const { collections, isLoading, refresh } = useMedusa("collections", {
+    search: `?${qs.stringify(filtersOnLoad)}`,
+  })
 
-  const handleAddNew = (data) => {
+  const handleAddNew = (data, metadata) => {
     const payload = {
       title: data.title,
       handle: data.handle,
     }
 
-    if (data.metadata) {
-      const metadata = data.metadata.reduce((acc, next) => {
-        return {
-          ...acc,
-          [next.key]: next.value,
-        }
-      }, {})
+    if (metadata) {
+      const payloadMetadata = metadata
+        .filter((m) => m.key && m.value)
+        .reduce((acc, next) => {
+          return {
+            ...acc,
+            [next.key]: next.value,
+          }
+        }, {})
 
-      payload.metadata = metadata
+      payload.metadata = payloadMetadata
     }
 
     createCollection.mutate(payload, {

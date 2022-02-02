@@ -19,7 +19,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
   isEdit = false,
   collection,
 }) => {
-  const { register, setValue, handleSubmit, control } = useForm()
+  const { register, setValue, handleSubmit } = useForm()
   const [metadata, setMetadata] = useState<MetadataField[]>([])
 
   if (isEdit && !collection) {
@@ -37,8 +37,10 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
       setValue("handle", collection.handle)
 
       if (collection.metadata) {
-        Object.entries(collection.metadata).map(([key, value], i) => {
-          setMetadata([...metadata, { key, value }])
+        Object.entries(collection.metadata).map(([key, value]) => {
+          const newMeta = metadata
+          newMeta.push({ key, value })
+          setMetadata(newMeta)
         })
       }
     }
@@ -86,10 +88,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
               </div>
             </div>
             <div className="mt-xlarge w-full">
-              <Metadata
-                control={control}
-                existingMetadata={collection?.metadata}
-              />
+              <Metadata setMetadata={setMetadata} metadata={metadata} />
             </div>
           </Modal.Content>
           <Modal.Footer>

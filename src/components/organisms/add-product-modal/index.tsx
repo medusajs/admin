@@ -1,5 +1,6 @@
 import { useAdminProducts } from "medusa-react"
-import React from "react"
+import React, { useState } from "react"
+import { useDebounce } from "../../../hooks/use-debounce"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
 import CollectionProductTable from "../../templates/collection-product-table"
@@ -13,10 +14,22 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   handleClose,
   onSubmit,
 }) => {
+  const [query, setQuery] = useState("")
+  const limit = 10
+  const [offset, setOffset] = useState(0)
+
+  const debouncedSearchTerm = useDebounce(query, 500)
+
   const { products, isLoading } = useAdminProducts({
-    offset: 0,
-    limit: 10,
+    q: debouncedSearchTerm,
+    offset: offset,
+    limit: limit,
   })
+
+  const handleSearch = (q) => {
+    setOffset(0)
+    setQuery(q)
+  }
 
   return (
     <Modal handleClose={handleClose}>
@@ -25,11 +38,13 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           <h3 className="inter-xlarge-semibold">Add Products</h3>
         </Modal.Header>
         <Modal.Content>
-          <CollectionProductTable
-            loadingProducts={isLoading}
-            handleSearch={console.log}
-            products={products}
-          />
+          <div className="h-[650px]">
+            <CollectionProductTable
+              loadingProducts={isLoading}
+              handleSearch={handleSearch}
+              products={products}
+            />
+          </div>
         </Modal.Content>
         <Modal.Footer>
           <div className="flex items-center justify-end gap-x-xsmall w-full">
