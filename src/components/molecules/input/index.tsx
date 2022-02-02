@@ -18,6 +18,7 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
     onDelete?: MouseEventHandler<HTMLSpanElement>
     onChange?: ChangeEventHandler<HTMLInputElement>
     onFocus?: FocusEventHandler<HTMLInputElement>
+    prefix?: string
     props?: React.HTMLAttributes<HTMLDivElement>
   }
 

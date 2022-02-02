@@ -49,6 +49,7 @@
     "react-collapse": "^5.0.1",
     "react-collapsible": "^2.8.3",
     "react-country-flag": "^2.3.0",
+    "react-currency-input-field": "^3.6.4",
     "react-datepicker": "^3.6.0",
     "react-dom": "^16.12.0",
     "react-dropzone": "^11.3.4",
@@ -63,7 +64,8 @@
     "react-toast-notifications": "^2.4.0",
     "react-tooltip": "^4.2.10",
     "rebass": "^4.0.7",
-    "stream-browserify": "^3.0.0"
+    "stream-browserify": "^3.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",

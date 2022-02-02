@@ -4,86 +4,19 @@ import {
   useAdminDeleteProduct,
   useAdminGiftCards,
   useAdminProducts,
-  useAdminStore,
   useAdminUpdateProduct,
 } from "medusa-react"
 import React from "react"
-import PageDescription from "../../components/atoms/page-description"
-import PlusIcon from "../../components/fundamentals/icons/plus-icon"
-import BannerCard from "../../components/molecules/banner-card"
-import BodyCard from "../../components/organisms/body-card"
-import GiftCardBanner from "../../components/organisms/gift-card-banner"
-import GiftCardTable from "../../components/templates/gift-card-table"
+import Overview from "./overview"
 import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
 import ManageGiftCard from "./manage"
-
-const Index = ({ giftCards, giftCard, updateStatus, deleteGiftCard }) => {
-  const { store } = useAdminStore()
-
-  const actionables = [
-    {
-      label: "Custom Gift Card",
-      onClick: () => console.log("create custom gift card"), // TODO: open modal
-      icon: <PlusIcon size={20} />,
-    },
-  ]
-
-  const TopBanner = () => {
-    if (giftCard) {
-      return (
-        <GiftCardBanner
-          title={giftCard.title}
-          status={giftCard.status}
-          description={giftCard.description}
-          thumbnail={giftCard.thumbnail}
-          variants={giftCard.variants}
-          defaultCurrency={store?.default_currency_code || ""}
-          onEdit={() => navigate("/a/gift-cards/manage")}
-          onUnpublish={() => updateStatus()}
-          onDelete={() => deleteGiftCard()}
-        />
-      )
-    } else {
-      return (
-        <BannerCard title="You’re ready to sell your first gift card?">
-          <BannerCard.Description
-            cta={{
-              label: "Create Gift Card",
-              onClick: () => console.log("TODO: Open modal"),
-            }}
-          >
-            No gift card have been added yet. Click the "Create Gift Card"
-            button to add one. This is a growth opportunity!
-          </BannerCard.Description>
-        </BannerCard>
-      )
-    }
-  }
-
-  return (
-    <div className="flex flex-col grow h-full">
-      <PageDescription
-        title={"Gift Cards"}
-        subtitle="Manage the Gift Cards of your store"
-      />
-      <div className="w-full flex flex-col grow space-y-4">
-        <TopBanner />
-        <BodyCard
-          title="History"
-          subtitle="See the history of purchased gift cards"
-          actionables={actionables}
-        >
-          <GiftCardTable giftCards={giftCards} />
-        </BodyCard>
-      </div>
-    </div>
-  )
-}
+import { ProductStatus } from "../../types/shared"
 
 const GiftCard = () => {
-  const { gift_cards: purchasedGiftCards } = useAdminGiftCards()
-  const { products: giftCards } = useAdminProducts({ is_giftcard: "true" })
+  const { products: giftCards, isLoading } = useAdminProducts({
+    is_giftcard: "true",
+  })
   const giftCard = giftCards?.[0]
 
   const updateGiftCard = useAdminUpdateProduct(giftCard?.id)
@@ -92,9 +25,9 @@ const GiftCard = () => {
   const toaster = useToaster()
 
   const updateGCStatus = () => {
-    let status = "published"
+    let status: ProductStatus = ProductStatus.PUBLISHED
     if (giftCard?.status === "published") {
-      status = "draft"
+      status = ProductStatus.DRAFT
     }
 
     updateGiftCard.mutate(
@@ -117,7 +50,7 @@ const GiftCard = () => {
   }
 
   const deleteGC = () => {
-    deleteGiftCard.mutate(null, {
+    deleteGiftCard.mutate(undefined, {
       onSuccess: () => {
         toaster("Successfully deleted Gift Card")
         navigate("/a/gift-cards")
@@ -130,12 +63,12 @@ const GiftCard = () => {
 
   return (
     <Router>
-      <Index
+      <Overview
         path="/"
-        giftCards={purchasedGiftCards}
         giftCard={giftCards?.[0]}
-        deleteGiftCard={() => deleteGC()}
-        updateStatus={() => updateGCStatus()}
+        onDelete={() => deleteGC()}
+        onUpdate={() => updateGCStatus()}
+        isLoading={isLoading}
       />
       {giftCard && (
         <ManageGiftCard
