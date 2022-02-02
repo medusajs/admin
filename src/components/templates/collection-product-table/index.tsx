@@ -17,7 +17,7 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
   setProducts,
 }) => {
   const [query, setQuery] = useState("")
-  const [limit, setLimit] = useState(5)
+  const [limit, setLimit] = useState(10)
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
