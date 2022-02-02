@@ -71,6 +71,8 @@ const ReturnMenu = ({ order, onDismiss, toaster }) => {
 
   const onSubmit = () => {
     const items = Object.entries(toReturn).map(([key, value]) => {
+      value.reason_id = value.reason?.id
+      delete value.reason
       const clean = removeNullish(value)
       return {
         item_id: key,
@@ -92,15 +94,13 @@ const ReturnMenu = ({ order, onDismiss, toaster }) => {
       }
     }
 
-    if (onReturn) {
-      setSubmitting(true)
-      return requestReturnOrder
-        .mutateAsync(data)
-        .then(() => onDismiss())
-        .then(() => toaster("Successfully returned order", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
-        .finally(() => setSubmitting(false))
-    }
+    setSubmitting(true)
+    return requestReturnOrder
+      .mutateAsync(data)
+      .then(() => onDismiss())
+      .then(() => toaster("Successfully returned order", "success"))
+      .catch((error) => toaster(getErrorMessage(error), "error"))
+      .finally(() => setSubmitting(false))
   }
 
   const handleRefundUpdated = (value) => {

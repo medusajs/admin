@@ -10,12 +10,14 @@ type RMAReturnReasonSubModalProps = {
   onSubmit: (reason, note) => void
   reason?: any
   existingNote?: string
+  isLargeModal?: boolean
 }
 
 const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
   onSubmit,
   reason,
   existingNote,
+  isLargeModal = true,
 }) => {
   const { pop } = useContext(LayeredModalContext)
   const { return_reasons } = useAdminReturnReasons()
@@ -30,7 +32,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
 
   return (
     <>
-      <Modal.Content>
+      <Modal.Content isLargeModal={isLargeModal}>
         <div className="h-full">
           <h2 className="inter-base-semibold mb-4">Reason for Return</h2>
           <Select
@@ -50,7 +52,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
           />
         </div>
       </Modal.Content>
-      <Modal.Footer>
+      <Modal.Footer isLargeModal={isLargeModal}>
         <div className="flex w-full justify-end gap-x-xsmall">
           <Button
             variant="ghost"
