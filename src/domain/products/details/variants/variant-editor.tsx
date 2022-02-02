@@ -1,28 +1,21 @@
+import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { removeNullish } from "../../../../utils/remove-nullish"
 import Button from "../../../../components/fundamentals/button"
-import CurrencyInput from "../../../../components/organisms/currency-input"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
+import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
-import { countries as countryData } from "../../../../utils/countries"
-import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import Select from "../../../../components/molecules/select"
-import { useAdminStore } from "medusa-react"
+import CurrencyInput from "../../../../components/organisms/currency-input"
+import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
+import { countries as countryData } from "../../../../utils/countries"
+import { removeNullish } from "../../../../utils/remove-nullish"
 const numberFields = ["weight", "length", "width", "height"]
 
-const VariantEditor = ({
-  variant,
-  options,
-  onSubmit,
-  onDelete,
-  onCancel,
-  isCopy,
-}) => {
+const VariantEditor = ({ variant, onSubmit, onCancel }) => {
   const countryOptions = countryData.map((c) => ({
     label: c.name,
     value: c.alpha2.toLowerCase(),
@@ -127,13 +120,34 @@ const VariantEditor = ({
 
   watch(["manage_inventory", "allow_backorder"])
 
+  const variantTitle = variant.options
+    .map((opt) => opt?.value || "")
+    .join(" / ")
+
   return (
     <Modal handleClose={onCancel}>
       <Modal.Body>
         <Modal.Header handleClose={onCancel}>
-          <h2 className="inter-xlarge-semibold">Edit Variant</h2>
+          <h2 className="inter-xlarge-semibold">
+            Edit Variant{" "}
+            <span className="text-grey-50 inter-xlarge-regular">
+              ({variantTitle})
+            </span>
+          </h2>
         </Modal.Header>
         <Modal.Content>
+          <div className="mb-8">
+            <label
+              tabIndex={0}
+              className="inter-base-semibold mb-4 flex items-center gap-xsmall"
+            >
+              {"General"}
+            </label>
+
+            <div className="grid grid-cols-1 ">
+              <Input label="Title" name="title" ref={register} />
+            </div>
+          </div>
           <div className="mb-8">
             <label
               tabIndex={0}
