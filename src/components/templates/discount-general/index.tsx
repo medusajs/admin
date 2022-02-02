@@ -68,7 +68,9 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
     {
       label: "Delete",
       onClick: () => {
-        if (onDelete) onDelete()
+        if (onDelete) {
+          onDelete()
+        }
       },
       icon: <TrashIcon size={20} />,
       variant: "danger",
@@ -88,7 +90,9 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
             activeState="Active"
             draftState="Draft"
             onChange={() => {
-              if (onStatusChange) onStatusChange()
+              if (onStatusChange) {
+                onStatusChange()
+              }
             }}
           />
         ) : undefined
@@ -135,7 +139,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                     placeholder="10"
                     prefix={discountType === "percentage" ? "%" : undefined}
                     name="rule.value"
-                    ref={register({ required: true })}
+                    ref={register({ required: !isFreeShipping })}
                     className={clsx({
                       ["opacity-50 pointer-events-none select-none"]:
                         isFreeShipping || isEdit,

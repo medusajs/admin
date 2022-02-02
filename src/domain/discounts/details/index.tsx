@@ -82,8 +82,9 @@ const Edit: React.FC<EditProps> = ({ id }) => {
   }, [products])
 
   useEffect(() => {
-    if (discountType === "fixed" && selectedRegions.length > 1)
+    if (discountType === "fixed" && selectedRegions.length > 1) {
       setDiscountType("percentage")
+    }
   }, [selectedRegions, discountType])
 
   const methods = useForm<DiscountFormType>()
@@ -136,7 +137,9 @@ const Edit: React.FC<EditProps> = ({ id }) => {
   }
 
   const handleStatusUpdate = () => {
-    if (!discount) return
+    if (!discount) {
+      return
+    }
 
     updateDiscount.mutate(
       { is_disabled: !isDisabled },
@@ -152,24 +155,27 @@ const Edit: React.FC<EditProps> = ({ id }) => {
   }
 
   const getPersistedPrice = (price: number) => {
-    if (!selectedRegions.length || !regions) return
+    if (!selectedRegions.length || !regions) {
+      return
+    }
     const region = regions.find((r) => r.id === selectedRegions[0].value)
-    if (!region) return
+    if (!region) {
+      return
+    }
     return persistedPrice(region.currency_code, price)
   }
 
   const submit = (data: DiscountFormType) => {
-    if (!discount) return
+    if (!discount) {
+      return
+    }
 
     const payload = {
       ...data,
       rule: {
         ...data.rule,
         id: discount.rule.id,
-        value:
-          discountType === "fixed"
-            ? getPersistedPrice(parseFloat(data.rule.value))
-            : parseFloat(data.rule.value), // TODO: fix validation that prevents undefined value when type is free_shipping
+        value: discount.rule.value,
         type: isFreeShipping ? "free_shipping" : discountType,
         allocation: allocationItem ? "item" : "total",
         valid_for: appliesToAll ? [] : selectedProducts.map((p) => p.value),

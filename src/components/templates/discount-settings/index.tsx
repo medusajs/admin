@@ -6,6 +6,7 @@ import AvailabilityDuration from "../../molecules/availability-duration"
 import InfoTooltip from "../../molecules/info-tooltip"
 import InputField from "../../molecules/input"
 import ConnectForm from "../../molecules/nested-form"
+import Section from "../../molecules/section"
 import Select from "../../molecules/select"
 import BodyCard from "../../organisms/body-card"
 import RadioGroup from "../../organisms/radio-group"
@@ -184,7 +185,7 @@ const DiscountSettings: React.FC<DiscountSettingsProps> = ({
                   onSubmitDate={setStartDate}
                 />
                 <TimePicker
-                  label="Expiry time"
+                  label="Start time"
                   date={startDate}
                   onSubmitDate={setStartDate}
                 />
@@ -242,34 +243,6 @@ const DiscountSettings: React.FC<DiscountSettingsProps> = ({
         )}
       </ConnectForm>
     </BodyCard>
-  )
-}
-
-type SectionProps = {
-  title: string
-  description: string
-  tooltip?: string
-}
-
-const Section: React.FC<SectionProps> = ({
-  title,
-  description,
-  tooltip,
-  children,
-}) => {
-  return (
-    <div>
-      <div className="flex items-center mb-2xsmall">
-        <h3 className="inter-base-semibold">{title}</h3>
-        {tooltip && (
-          <div className="flex items-center ml-1.5">
-            <InfoTooltip content={tooltip} />
-          </div>
-        )}
-      </div>
-      <p className="inter-small-regular text-grey-50 mb-base">{description}</p>
-      {children}
-    </div>
   )
 }
 
