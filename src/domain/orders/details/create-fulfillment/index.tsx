@@ -7,6 +7,7 @@ import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import Modal from "../../../../components/molecules/modal"
 import Table from "../../../../components/molecules/table"
+import Metadata from "../../../../components/organisms/metadata"
 
 type CreateFulfillmentModalProps = {
   handleClose: () => void
@@ -171,7 +172,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
   const [toFulfill, setToFulfill] = useState([])
   const [quantities, setQuantities] = useState({})
 
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, reset, control } = useForm()
 
   const items =
     "items" in orderToFulfill
@@ -192,6 +193,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
             quantities={quantities}
             setQuantities={setQuantities}
           />
+          <Metadata control={control} />
         </Modal.Content>
         <Modal.Footer>
           <div className="flex w-full h-8 justify-end">
