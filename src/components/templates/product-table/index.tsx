@@ -198,7 +198,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     if (filtersOnLoad.tags?.length) {
       setFilterTagsById(filtersOnLoad.tags[0].split(","))
     }
-    console.log(filtersOnLoad)
   }, [])
 
   const defaultQueryProps = {
@@ -450,7 +449,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       },
     ]
   }
-  console.log({ products })
 
   return (
     <div className="w-full h-full overflow-y-scroll">
