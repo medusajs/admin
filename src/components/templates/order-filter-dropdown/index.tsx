@@ -1,8 +1,9 @@
 import clsx from "clsx"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
 import FilterDropdownItem from "../../../components/molecules/filter-dropdown/item"
 import SaveFilterItem from "../../../components/molecules/filter-dropdown/save-field"
+import TabFilter from "../../../components/molecules/filter-tab"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 
 const statusFilters = [
@@ -43,86 +44,136 @@ const dateFilters = [
 ]
 
 const OrderFilters = ({
-  setStatusFilter,
-  statusFilter,
-  setFulfillmentFilter,
-  fulfillmentFilter,
-  setPaymentFilter,
-  paymentFilter,
-  dateFilter,
-  setDateFilter,
+  tabs,
+  activeTab,
+  onTabClick,
+  onSaveTab,
+  onRemoveTab,
+  filters,
   submitFilters,
-  resetFilters,
   clearFilters,
-  ...rest
 }) => {
+  const [tempState, setTempState] = useState(filters)
   const [name, setName] = useState("")
 
+  const handleRemoveTab = (val) => {
+    if (onRemoveTab) {
+      onRemoveTab(val)
+    }
+  }
+
+  const handleSaveTab = () => {
+    if (onSaveTab) {
+      onSaveTab(name, tempState)
+    }
+  }
+
+  const handleTabClick = (tabName: string) => {
+    if (onTabClick) {
+      onTabClick(tabName)
+    }
+  }
+
+  useEffect(() => {
+    setTempState(filters)
+  }, [filters])
+
   const onSubmit = () => {
-    submitFilters()
+    submitFilters(tempState)
   }
 
   const onClear = () => {
     clearFilters()
   }
 
-  const numberOfFilters = [
-    statusFilter,
-    paymentFilter,
-    fulfillmentFilter,
-    dateFilter,
-  ].reduce((prev, curr) => prev + (curr.open ? 1 : 0), 0)
+  const setSingleFilter = (filterKey, filterVal) => {
+    setTempState((prevState) => ({
+      ...prevState,
+      [filterKey]: filterVal,
+    }))
+  }
+
+  const numberOfFilters = Object.entries(filters).reduce(
+    (acc, [key, value]) => {
+      if (value?.open) {
+        acc = acc + 1
+      }
+      return acc
+    },
+    0
+  )
 
   return (
-    <FilterDropdownContainer
-      submitFilters={onSubmit}
-      clearFilters={onClear}
-      triggerElement={
-        <div className={clsx("flex items-center space-x-1 cursor-pointer")}>
-          <div className="flex items-center rounded-rounded bg-grey-5 border border-grey-20 inter-small-semibold px-2 h-6">
-            Filters
-            <div className="text-grey-40 ml-1 flex items-center rounded">
-              <span className="text-violet-60 inter-small-semibold">
-                {numberOfFilters ? numberOfFilters : "0"}
-              </span>
+    <div className="flex space-x-1">
+      <FilterDropdownContainer
+        submitFilters={onSubmit}
+        clearFilters={onClear}
+        triggerElement={
+          <button
+            className={clsx(
+              "flex rounded-rounded items-center space-x-1 focus-visible:outline-none focus-visible:shadow-input focus-visible:border-violet-60"
+            )}
+          >
+            <div className="flex rounded-rounded items-center bg-grey-5 border border-grey-20 inter-small-semibold px-2 h-6">
+              Filters
+              <div className="text-grey-40 ml-1 flex items-center rounded">
+                <span className="text-violet-60 inter-small-semibold">
+                  {numberOfFilters ? numberOfFilters : "0"}
+                </span>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center rounded-rounded bg-grey-5 border border-grey-20 inter-small-semibold p-1">
-            <PlusIcon size={14} />
-          </div>
-        </div>
-      }
-    >
-      <FilterDropdownItem
-        filterTitle="Status"
-        options={statusFilters}
-        filters={statusFilter.filter}
-        open={statusFilter.open}
-        setFilter={setStatusFilter}
-      />
-      <FilterDropdownItem
-        filterTitle="Payment Status"
-        options={paymentFilters}
-        filters={paymentFilter.filter}
-        open={paymentFilter.open}
-        setFilter={setPaymentFilter}
-      />
-      <FilterDropdownItem
-        filterTitle="Fulfillment Status"
-        options={fulfillmentFilters}
-        filters={fulfillmentFilter.filter}
-        open={fulfillmentFilter.open}
-        setFilter={setFulfillmentFilter}
-      />
-      <FilterDropdownItem
-        filterTitle="Date"
-        options={dateFilters}
-        filters={dateFilter.filter}
-        open={dateFilter.open}
-        setFilter={setDateFilter}
-      />
-      <SaveFilterItem saveFilter={console.log} name={name} setName={setName} />
-    </FilterDropdownContainer>
+            <div className="flex items-center rounded-rounded bg-grey-5 border border-grey-20 inter-small-semibold p-1">
+              <PlusIcon size={14} />
+            </div>
+          </button>
+        }
+      >
+        <FilterDropdownItem
+          filterTitle="Status"
+          options={statusFilters}
+          filters={tempState.status.filter}
+          open={tempState.status.open}
+          setFilter={(val) => setSingleFilter("status", val)}
+        />
+        <FilterDropdownItem
+          filterTitle="Payment Status"
+          options={paymentFilters}
+          filters={tempState.payment.filter}
+          open={tempState.payment.open}
+          setFilter={(val) => setSingleFilter("payment", val)}
+        />
+        <FilterDropdownItem
+          filterTitle="Fulfillment Status"
+          options={fulfillmentFilters}
+          filters={tempState.fulfillment.filter}
+          open={tempState.fulfillment.open}
+          setFilter={(val) => setSingleFilter("fulfillment", val)}
+        />
+        <FilterDropdownItem
+          filterTitle="Date"
+          options={dateFilters}
+          filters={tempState.date.filter}
+          open={tempState.date.open}
+          setFilter={(val) => setSingleFilter("date", val)}
+        />
+        <SaveFilterItem
+          saveFilter={handleSaveTab}
+          name={name}
+          setName={setName}
+        />
+      </FilterDropdownContainer>
+      {tabs &&
+        tabs.map((t) => (
+          <TabFilter
+            key={t.value}
+            onClick={() => handleTabClick(t.value)}
+            label={t.label}
+            isActive={activeTab === t.value}
+            removable={!!t.removable}
+            onRemove={() => handleRemoveTab(t.value)}
+          />
+        ))}
+    </div>
   )
 }
 
