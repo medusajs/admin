@@ -1,6 +1,4 @@
-import { useAdminProducts } from "medusa-react"
-import React, { useState } from "react"
-import { useDebounce } from "../../../hooks/use-debounce"
+import React from "react"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
 import CollectionProductTable from "../../templates/collection-product-table"
@@ -8,29 +6,14 @@ import CollectionProductTable from "../../templates/collection-product-table"
 type AddProductModalProps = {
   handleClose: () => void
   onSubmit: () => void
+  collectionProducts: any[]
 }
 
 const AddProductModal: React.FC<AddProductModalProps> = ({
   handleClose,
   onSubmit,
+  collectionProducts,
 }) => {
-  const [query, setQuery] = useState("")
-  const limit = 10
-  const [offset, setOffset] = useState(0)
-
-  const debouncedSearchTerm = useDebounce(query, 500)
-
-  const { products, isLoading } = useAdminProducts({
-    q: debouncedSearchTerm,
-    offset: offset,
-    limit: limit,
-  })
-
-  const handleSearch = (q) => {
-    setOffset(0)
-    setQuery(q)
-  }
-
   return (
     <Modal handleClose={handleClose}>
       <Modal.Body>
@@ -39,11 +22,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         </Modal.Header>
         <Modal.Content>
           <div className="h-[650px]">
-            <CollectionProductTable
-              loadingProducts={isLoading}
-              handleSearch={handleSearch}
-              products={products}
-            />
+            <CollectionProductTable addedProducts={collectionProducts} />
           </div>
         </Modal.Content>
         <Modal.Footer>

@@ -8,7 +8,7 @@ import Metadata, { MetadataField } from "../../organisms/metadata"
 
 type CollectionModalProps = {
   onClose: () => void
-  onSubmit: (values: any, metadata?: MetadataField[]) => void
+  onSubmit: (values: any, metadata: MetadataField[]) => void
   isEdit?: boolean
   collection?: any
 }

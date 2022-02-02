@@ -1,3 +1,5 @@
+import { RouteComponentProps } from "@reach/router"
+import { navigate } from "gatsby"
 import {
   useAdminCollection,
   useAdminDeleteCollection,
@@ -5,20 +7,17 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import Spinner from "../../../components/atoms/spinner"
-import Breadcrumb from "../../../components/molecules/breadcrumb"
-import BodyCard from "../../../components/organisms/body-card"
-import { RouteComponentProps } from "@reach/router"
-import Actionables from "../../../components/molecules/actionables"
-import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import ViewRaw from "../../../components/molecules/view-raw"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
-import CollectionModal from "../../../components/templates/collection-modal"
-import CollectionProductTable from "../../../components/templates/collection-product-table"
-import DeletePrompt from "../../../components/organisms/delete-prompt"
-import { navigate } from "gatsby"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
+import Actionables from "../../../components/molecules/actionables"
+import Breadcrumb from "../../../components/molecules/breadcrumb"
+import ViewRaw from "../../../components/molecules/view-raw"
 import AddProductModal from "../../../components/organisms/add-product-modal"
+import BodyCard from "../../../components/organisms/body-card"
+import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { MetadataField } from "../../../components/organisms/metadata"
+import CollectionModal from "../../../components/templates/collection-modal"
 
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
@@ -130,11 +129,18 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
           ]}
         >
           <div className="mt-large">
-            <CollectionProductTable
-              products={collection?.products}
+            {/* <CollectionProductTable
+              products={
+                collection?.products?.map((p) => ({
+                  title: p.title,
+                  id: p.id,
+                  thumbnail: p.thumbnail,
+                  status: p.status,
+                })) ?? []
+              }
               handleSearch={console.log}
-              loadingProducts={true}
-            />
+              loadingProducts={!collection}
+            /> */}
           </div>
         </BodyCard>
       </div>
@@ -159,6 +165,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
         <AddProductModal
           handleClose={() => setShowAddProducts(!showAddProducts)}
           onSubmit={() => {}}
+          collectionProducts={collection?.products ?? []}
         />
       )}
     </>
