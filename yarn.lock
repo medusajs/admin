@@ -2073,15 +2073,25 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@1.0.11-adminc.21+1b3f63b6", "@medusajs/medusa-js@^1.0.11-adminc.21":
-  version "1.0.11-adminc.21"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-adminc.21.tgz#13eb30431381af86944723c36dcc8a8237fc03ca"
-  integrity sha512-0G8aynrZ8oYnnwvt61QHDtZUFcVaCes64nicYy6CbBxyusQgUjXjIt5scEa7LJcdvxeROE/3WIyccd+aiJLpfQ==
+"@medusajs/medusa-js@^1.0.11-adminc.7":
+  version "1.0.11-adminc.7"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-adminc.7.tgz#36b0d70fd4e54f8cccdb012db5d192fa925327f8"
+  integrity sha512-/dwGnRDv800Z0Q6KORQF6bTVnktZKxTLkg41sH+WdKn9TB14SAm/YDPLGV0sGJnpoetNNu3dyoHdapaVptbl4A==
   dependencies:
-    "@medusajs/medusa" "^1.1.63-adminc.21+1b3f63b6"
+    "@medusajs/medusa" "^1.1.63-adminc.7+a81227fa"
     axios "^0.24.0"
     form-data "^4.0.0"
     qs "^6.10.3"
+    retry-axios "^2.6.0"
+
+"@medusajs/medusa-js@^1.0.11-adminc.7+a81227fa":
+  version "1.0.11-alpha.4"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-alpha.4.tgz#6543044ef682e30f2ea8d98c5a488b8d02d11212"
+  integrity sha512-59TZARfsfN6zvCW4cYjh46/v0jFMuOvWBiNQ1+dwKGWMq9Q+pOlT7dQNvzJz6d79JClZk7r+4FFdwr6ScpLv+g==
+  dependencies:
+    "@medusajs/medusa" "^1.1.63-alpha.4+7fcdac51"
+    axios "^0.24.0"
+    form-data "^4.0.0"
     retry-axios "^2.6.0"
 
 "@medusajs/medusa@^1.1.61-alpha.14":
@@ -2134,7 +2144,7 @@
     uuid "^8.3.1"
     winston "^3.2.1"
 
-"@medusajs/medusa@^1.1.63-adminc.21+1b3f63b6":
+"@medusajs/medusa@^1.1.63-adminc.7+a81227fa", "@medusajs/medusa@^1.1.63-alpha.4+7fcdac51":
   version "1.1.63-alpha.4"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.63-alpha.4.tgz#193fe7f85ee18224f02db317e320ba43be1a9f5f"
   integrity sha512-LSE3SlSssRF2kQC0NwxIBqbZyJK0xs4iNkm9gn1BudHlcep3xNG01uOoXZz3AyV2WvYe7VDOScV5iHGmNbCyLg==
@@ -12018,13 +12028,13 @@ medusa-core-utils@^1.1.31:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
-medusa-react@^0.1.4-adminc.21:
-  version "0.1.4-adminc.21"
-  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.1.4-adminc.21.tgz#e726c14c3e285298ef406015e1ef898a2972b1c4"
-  integrity sha512-Xxt5C/xvUtBZXp+Gj6RGCzqPr187JRaiDjaG+iwGNS9NYW9wW8MJNLUJ7zFidAR5xmjoPk95x8pKC9eGzu1Jeg==
+medusa-react@^0.1.4-adminc.7:
+  version "0.1.4-adminc.7"
+  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.1.4-adminc.7.tgz#078e3abb2455896e10375aa8542e286dfda9ee45"
+  integrity sha512-jk3+pMMddDdPGrBZVaBXNIS2e8IWfZrn1Mui7OU7vnjNsCFk85B82Tl/tLGwUH68YnjjKzFtIcyi4YTerptGfQ==
   dependencies:
-    "@medusajs/medusa" "^1.1.63-adminc.21+1b3f63b6"
-    "@medusajs/medusa-js" "1.0.11-adminc.21+1b3f63b6"
+    "@medusajs/medusa" "^1.1.63-adminc.7+a81227fa"
+    "@medusajs/medusa-js" "^1.0.11-adminc.7+a81227fa"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
