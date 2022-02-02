@@ -3,7 +3,7 @@ import { navigate } from "gatsby"
 import { Router } from "@reach/router"
 import { Text, Flex, Box } from "rebass"
 import qs from "query-string"
-// import Details from "./details"
+import CollectionDetails from "./details"
 
 import useMedusa from "../../hooks/use-medusa"
 
@@ -18,7 +18,7 @@ import {
 } from "../../components/table"
 import Button from "../../components/button"
 import Spinner from "../../components/spinner"
-import AddCollectionModal from "../../components/templates/add-collection-modal"
+import CollectionModal from "../../components/templates/collection-modal"
 import { useAdminCreateCollection } from "medusa-react"
 import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
@@ -170,7 +170,7 @@ const CollectionsIndex = () => {
         </Flex>
       </Flex>
       {showNew && (
-        <AddCollectionModal
+        <CollectionModal
           onClose={() => setShowNew(!showNew)}
           onSubmit={handleAddNew}
         />
@@ -183,7 +183,7 @@ const Collections = () => {
   return (
     <Router>
       <CollectionsIndex path="/" />
-      {/* <Details path=":id" /> */}
+      <CollectionDetails path=":id" />
     </Router>
   )
 }

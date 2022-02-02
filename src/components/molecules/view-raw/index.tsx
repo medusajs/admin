@@ -1,10 +1,10 @@
+import * as Collapsible from "@radix-ui/react-collapsible"
+import clsx from "clsx"
 import React, { useState } from "react"
 import ReactJson from "react-json-view"
-import * as Collapsible from "@radix-ui/react-collapsible"
-import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
-import Button from "../../fundamentals/button"
-import clsx from "clsx"
 import useClipboard from "../../../hooks/use-clipboard"
+import Button from "../../fundamentals/button"
+import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
 import ClipboardCopyIcon from "../../fundamentals/icons/clipboard-copy-icon"
 
 type ViewRawProps = {
@@ -63,7 +63,10 @@ const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data", name }) => {
               variant="ghost"
               size="small"
               type="button"
-              onClick={handleCopy}
+              onClick={(e) => {
+                e.currentTarget.blur()
+                handleCopy()
+              }}
             >
               <ClipboardCopyIcon size={20} />
             </Button>
