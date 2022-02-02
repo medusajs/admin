@@ -223,7 +223,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      setOffset((old) => old - pageSize)
+      setOffset((old) => Math.max(old - pageSize, 0))
       setCurrentPage((old) => old - 1)
       previousPage()
     }
@@ -281,7 +281,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
           offset={offset}
           pageSize={offset + rows.length}
           title="Products"
-          currentPage={pageIndex}
+          currentPage={currentPage}
           pageCount={pageCount}
           nextPage={handleNext}
           prevPage={handlePrev}

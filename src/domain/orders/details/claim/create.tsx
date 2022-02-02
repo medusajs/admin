@@ -284,8 +284,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
               setQuantities={setQuantities}
             />
           </div>
-          <div>
-            <h3 className="inter-base-semibold ">
+          <div className="mt-4">
+            <h3 className="inter-base-semibold">
               Shipping Return{" "}
               {returnShippingMethod && (
                 <span className="text-grey-40 inter-base-regular">
