@@ -1,25 +1,10 @@
-import {
-  useAdminCollections,
-  useAdminCreateProduct,
-  useAdminDeleteProduct,
-  useAdminProducts,
-  useAdminUpdateProduct,
-} from "medusa-react"
+import { useAdminCollections, useAdminProducts } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import _ from "lodash"
 import Spinner from "../../atoms/spinner"
-import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
-import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
-import EditIcon from "../../fundamentals/icons/edit-icon"
 import Table, { TablePagination } from "../../molecules/table"
-import TrashIcon from "../../fundamentals/icons/trash-icon"
-import { navigate } from "gatsby"
-import useToaster from "../../../hooks/use-toaster"
 import Medusa from "../../../services/api"
-import PublishIcon from "../../fundamentals/icons/publish-icon"
-import { getErrorMessage } from "../../../utils/error-messages"
-import DeletePrompt from "../../organisms/delete-prompt"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
 import qs from "query-string"
 import { useDebounce } from "../../../hooks/use-debounce"
@@ -33,15 +18,12 @@ type ProductTableProps = {}
 
 const ProductTable: React.FC<ProductTableProps> = () => {
   const [offset, setOffset] = useState(0)
-  const [deleteProduct, setDeleteProduct] = useState(undefined)
   const [collectionsList, setCollectionsList] = useState<string[]>([])
   const [limit, setLimit] = useState(14)
   const [query, setQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [tags, setTags] = useState(null)
-
-  const deleteProductHook = useAdminDeleteProduct(deleteProduct?.id)
 
   const [statusFilter, setStatusFilter] = useState({
     open: false,
@@ -359,14 +341,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
             hasPrev={canPreviousPage}
           />
         </>
-      )}
-      {deleteProduct && (
-        <DeletePrompt
-          handleClose={() => setDeleteProduct(undefined)}
-          onDelete={async () => {
-            deleteProductHook.mutateAsync().then(() => refetch())
-          }}
-        />
       )}
     </div>
   )
