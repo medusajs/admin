@@ -265,7 +265,7 @@ module.exports = {
       animation: {
         ring: "ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
         "fade-in-right":
-          "fade-in-right 0.5s cubic-bezier(0.5, 0, 0.5, 1) forwards",
+          "fade-in-right 0.3s cubic-bezier(0.5, 0, 0.5, 1) forwards",
       },
       lineClamp: {
         "[var(--lines)]": "var(--lines)",

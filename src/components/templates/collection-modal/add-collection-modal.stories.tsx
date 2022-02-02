@@ -1,14 +1,14 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react"
 import React from "react"
-import AddCollectionModal from "."
+import CollectionModal from "."
 
 export default {
   title: "Template/AddCollectionModal",
-  component: AddCollectionModal,
-} as ComponentMeta<typeof AddCollectionModal>
+  component: CollectionModal,
+} as ComponentMeta<typeof CollectionModal>
 
-const Template: ComponentStory<typeof AddCollectionModal> = (args) => (
-  <AddCollectionModal {...args} />
+const Template: ComponentStory<typeof CollectionModal> = (args) => (
+  <CollectionModal {...args} />
 )
 
 export const Default = Template.bind({})

@@ -39,7 +39,9 @@ const Overview: React.FC<OverviewProps> = ({
   ]
 
   const giftCardWithCurrency = useMemo(() => {
-    if (!giftCard || !store) return null
+    if (!giftCard || !store) {
+      return null
+    }
 
     return { ...giftCard, defaultCurrency: store.default_currency_code }
   }, [giftCard, store])

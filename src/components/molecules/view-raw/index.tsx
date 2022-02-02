@@ -63,7 +63,10 @@ const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data", name }) => {
               variant="ghost"
               size="small"
               type="button"
-              onClick={handleCopy}
+              onClick={(e) => {
+                e.currentTarget.blur()
+                handleCopy()
+              }}
             >
               <ClipboardCopyIcon size={20} />
             </Button>

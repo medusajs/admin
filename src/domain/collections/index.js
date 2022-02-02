@@ -18,7 +18,7 @@ import {
 } from "../../components/table"
 import Button from "../../components/button"
 import Spinner from "../../components/spinner"
-import AddCollectionModal from "../../components/templates/add-collection-modal"
+import CollectionModal from "../../components/templates/collection-modal"
 import { useAdminCreateCollection } from "medusa-react"
 import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
@@ -170,7 +170,7 @@ const CollectionsIndex = () => {
         </Flex>
       </Flex>
       {showNew && (
-        <AddCollectionModal
+        <CollectionModal
           onClose={() => setShowNew(!showNew)}
           onSubmit={handleAddNew}
         />

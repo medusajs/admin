@@ -1,28 +1,59 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../fundamentals/button"
 import InfoTooltip from "../../molecules/info-tooltip"
 import InputField from "../../molecules/input"
 import Modal from "../../molecules/modal"
-import AddMetadata from "../../organisms/add-metadata"
+import Metadata from "../../organisms/metadata"
 
-type AddCollectionModalProps = {
+type CollectionModalProps = {
   onClose: () => void
   onSubmit: (values: any) => void
+  isEdit?: boolean
+  collection?: any
 }
 
-const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
+const CollectionModal: React.FC<CollectionModalProps> = ({
   onClose,
   onSubmit,
+  isEdit = false,
+  collection,
 }) => {
-  const { register, unregister, handleSubmit } = useForm()
+  const { register, setValue, handleSubmit, control } = useForm()
+
+  if (isEdit && !collection) {
+    throw new Error("Collection is required for edit")
+  }
+
+  useEffect(() => {
+    register("title", { required: true })
+    register("handle")
+  }, [])
+
+  useEffect(() => {
+    if (isEdit && collection) {
+      setValue("title", collection.title)
+      setValue("handle", collection.handle)
+
+      if (collection.metadata) {
+        Object.entries(collection.metadata).map(([key, value], i) => {
+          register(`metadata.${i}.key`, { required: true })
+          register(`metadata.${i}.value`, { required: true })
+          setValue(`metadata.${i}.key`, key)
+          setValue(`metadata.${i}.value`, value)
+        })
+      }
+    }
+  }, [collection, isEdit])
 
   return (
     <Modal handleClose={onClose}>
       <Modal.Body>
         <Modal.Header handleClose={onClose}>
           <div>
-            <h1 className="inter-xlarge-semibold mb-2xsmall">Add Collection</h1>
+            <h1 className="inter-xlarge-semibold mb-2xsmall">
+              {isEdit ? "Edit Collection" : "Add Collection"}
+            </h1>
             <p className="inter-small-regular text-grey-50">
               To create a collection, all you need is a title and a handle.
             </p>
@@ -37,32 +68,40 @@ const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
                   label="Title"
                   required
                   placeholder="Sunglasses"
-                  ref={register({ required: true })}
                   name="title"
+                  ref={register({ required: true })}
                 />
                 <InputField
                   label="Handle"
                   placeholder="sunglasses"
-                  ref={register}
                   name="handle"
                   prefix="/"
                   tooltip={
                     <InfoTooltip content="URL Slug for the product. Will be auto generated if left blank." />
                   }
+                  ref={register}
                 />
               </div>
             </div>
             <div className="mt-xlarge w-full">
-              <AddMetadata register={register} unregister={unregister} />
+              <Metadata
+                control={control}
+                existingMetadata={collection?.metadata}
+              />
             </div>
           </Modal.Content>
           <Modal.Footer>
             <div className="flex items-center justify-end w-full gap-x-xsmall">
-              <Button variant="secondary" size="small">
+              <Button
+                variant="secondary"
+                size="small"
+                type="button"
+                onClick={onClose}
+              >
                 Cancel
               </Button>
               <Button variant="primary" size="small">
-                Publish collection
+                {`${isEdit ? "Save" : "Publish"} collection`}
               </Button>
             </div>
           </Modal.Footer>
@@ -72,4 +111,4 @@ const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
   )
 }
 
-export default AddCollectionModal
+export default CollectionModal
