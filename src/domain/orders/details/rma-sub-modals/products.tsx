@@ -1,5 +1,5 @@
 import { useAdminVariants } from "medusa-react"
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import Button from "../../../../components/fundamentals/button"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
@@ -10,7 +10,6 @@ import { useDebounce } from "../../../../hooks/use-debounce"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import clsx from "clsx"
 import Spinner from "../../../../components/atoms/spinner"
-import { clamp } from "lodash"
 
 const getProductStatusVariant = (status) => {
   switch (status) {
@@ -69,12 +68,9 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   selectedItems,
   isLargeModal = true,
 }) => {
-  const heightRef = useRef(null)
-  const [style, setStyle] = useState(undefined)
-
+  const PAGE_SIZE = 12
   const { pop } = useContext(LayeredModalContext)
   const [query, setQuery] = useState("")
-  const [limit, setLimit] = useState(12)
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
@@ -85,13 +81,13 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
 
   const { isLoading, count, variants } = useAdminVariants({
     q: debouncedSearchTerm,
-    limit: limit,
+    limit: PAGE_SIZE,
     offset,
   })
 
   useEffect(() => {
     if (typeof count !== "undefined") {
-      setNumPages(Math.ceil(count / limit))
+      setNumPages(Math.ceil(count / PAGE_SIZE))
     }
   }, [count])
 
@@ -163,7 +159,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
       manualPagination: true,
       initialState: {
         pageIndex: currentPage,
-        pageSize: limit,
+        pageSize: PAGE_SIZE,
         selectedRowIds: selectedItems.reduce((prev, { id }) => {
           prev[id] = true
           return prev
@@ -289,7 +285,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
           </Table>
           <TablePagination
             count={count!}
-            limit={limit}
+            limit={PAGE_SIZE}
             offset={offset}
             pageSize={offset + rows.length}
             title="Products"
