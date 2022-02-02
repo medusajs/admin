@@ -83,6 +83,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       if (query) {
         setFreeText(query)
         gotoPage(0)
+      } else {
+        // if we delete query string, we reset the table view
+        reset()
       }
     }, 400)
 
@@ -120,6 +123,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const clearFilters = () => {
     reset()
+    setQuery("")
   }
 
   useEffect(() => {

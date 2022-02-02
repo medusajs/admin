@@ -80,6 +80,7 @@ const reducer = (
         payment: action.payload.payment,
         status: action.payload.status,
         date: action.payload.date,
+        query: action?.payload?.query,
       }
     }
     case "setQuery": {
@@ -182,6 +183,7 @@ export const useOrderFilters = (
           open: false,
           filter: null,
         },
+        query: null,
       },
     })
   }
@@ -201,7 +203,7 @@ export const useOrderFilters = (
         toQuery["q"] = value
       } else if (key === "offset" || key === "limit") {
         toQuery[key] = value
-      } else if (value.open) {
+      } else if (value?.open) {
         if (key === "date") {
           toQuery[stateFilterMap[key]] = formatDateFilter(
             value.filter as OrderDateFilter
@@ -227,7 +229,7 @@ export const useOrderFilters = (
         toQuery["q"] = value
       } else if (key === "offset" || key === "limit") {
         toQuery[key] = value
-      } else if (value.open) {
+      } else if (value?.open) {
         toQuery[stateFilterMap[key]] = value.filter
       }
     }
