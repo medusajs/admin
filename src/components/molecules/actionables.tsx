@@ -59,9 +59,9 @@ const Actionables: React.FC<ActionablesProps> = ({
                     variant="ghost"
                     size="small"
                     className={clsx("w-full justify-start", {
-                      "text-rose-50": action.variant === "danger",
+                      "text-rose-50": action?.variant === "danger",
                     })}
-                    onClick={action.onClick}
+                    onClick={action?.onClick}
                   >
                     {action.icon}
                     {action.label}

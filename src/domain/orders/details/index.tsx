@@ -12,6 +12,7 @@ import {
   useAdminCreateShipment,
   useAdminCreateSwapShipment,
   useAdminOrder,
+  useAdminRegion,
   useAdminUpdateOrder,
 } from "medusa-react"
 import moment from "moment"
@@ -33,6 +34,7 @@ import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import useClipboard from "../../../hooks/use-clipboard"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
@@ -116,7 +118,7 @@ const OrderDetails = ({ id }) => {
     type: "billing" | "shipping"
   }>(null)
 
-  const [showFulfillment, setShowFulfillment] = useState(true)
+  const [showFulfillment, setShowFulfillment] = useState(false)
 
   const { order, isLoading } = useAdminOrder(id)
 
@@ -130,22 +132,20 @@ const OrderDetails = ({ id }) => {
   const cancelSwapFulfillment = useAdminCancelSwapFulfillment(id)
   const cancelClaimFulfillment = useAdminCancelClaimFulfillment(id)
 
+  const { region } = useAdminRegion(order?.region_id)
+
   const toaster = useToaster()
 
-  const handleCopyToClip = (val) => {
-    const tempInput = document.createElement("input")
-    tempInput.value = val
-    document.body.appendChild(tempInput)
-    tempInput.select()
-    document.execCommand("copy")
-    document.body.removeChild(tempInput)
-  }
+  const [handleCopy] = useClipboard(order?.display_id, {
+    successDuration: 5500,
+    onCopied: () => toaster("Copied order id!", "success"),
+  })
 
   // @ts-ignore
   useHotkeys("esc", () => navigate("/a/orders"))
-  useHotkeys("command+i", () => handleCopyToClip(order?.display_id), {}, [
-    order,
-  ])
+  useHotkeys("command+i", () => {
+    handleCopy
+  })
 
   const DisplayTotal = ({
     totalAmount,
@@ -584,6 +584,38 @@ const OrderDetails = ({ id }) => {
 
   const allFulfillments = gatherAllFulfillments(order)
 
+  const customerActionables = [
+    {
+      label: "Edit Shipping Address",
+      icon: <TruckIcon size={"20"} />,
+      onClick: () =>
+        setAddressModal({
+          address: order?.shipping_address,
+          type: "shipping",
+        }),
+    },
+    {
+      label: "Go to Customer",
+      icon: <DetailsIcon size={"20"} />,
+      onClick: () => navigate(`/a/customers/${order.customer.id}`),
+    },
+  ]
+
+  if (order?.billing_address) {
+    customerActionables.push({
+      label: "Edit Billing Address",
+      icon: <DollarSignIcon size={"20"} />,
+      onClick: () => {
+        if (order.billing_address) {
+          setAddressModal({
+            address: order?.billing_address,
+            type: "billing",
+          })
+        }
+      },
+    })
+  }
+
   return (
     <div>
       <Breadcrumb
@@ -864,34 +896,7 @@ const OrderDetails = ({ id }) => {
             <BodyCard
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Customer"
-              actionables={[
-                {
-                  label: "Edit Shipping Address",
-                  icon: <TruckIcon size={"20"} />,
-                  onClick: () =>
-                    setAddressModal({
-                      address: order?.shipping_address,
-                      type: "shipping",
-                    }),
-                },
-                {
-                  label: "Edit Billing Address",
-                  icon: <DollarSignIcon size={"20"} />,
-                  onClick: () => {
-                    if (order.billing_address) {
-                      setAddressModal({
-                        address: order?.billing_address,
-                        type: "billing",
-                      })
-                    }
-                  },
-                },
-                {
-                  label: "Go to Customer",
-                  icon: <DetailsIcon size={"20"} />, // TODO: Change to Contact icon
-                  onClick: () => navigate(`/a/customers/${order.customer.id}`),
-                },
-              ]}
+              actionables={customerActionables}
             >
               <div className="mt-6">
                 <div className="flex w-full space-x-4 items-center">
@@ -931,12 +936,17 @@ const OrderDetails = ({ id }) => {
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Raw Order"
             >
-              <ReactJson
-                style={{ marginTop: "15px" }}
-                name={false}
-                collapsed={true}
-                src={order!}
-              />
+              <div className="flex flex-col min-h-[100px] mt-4 bg-grey-5 px-3 py-2 h-full rounded-rounded">
+                <span className="inter-base-semibold">
+                  Data{" "}
+                  <span className="text-grey-50 inter-base-regular">
+                    (1 item)
+                  </span>
+                </span>
+                <div className="flex flex-grow items-center mt-4">
+                  <ReactJson name={false} collapsed={true} src={order} />
+                </div>
+              </div>
             </BodyCard>
           </div>
           <BodyCard title="Timeline" className="w-1/3">
@@ -951,6 +961,7 @@ const OrderDetails = ({ id }) => {
           address={addressModal.address}
           type={addressModal.type}
           email={order?.email}
+          allowedCountries={region?.countries}
         />
       )}
       {showFulfillment && <CreateFulfillmentModal />}
