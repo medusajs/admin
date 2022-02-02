@@ -251,6 +251,24 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                   currencyCodes={currencies}
                   onChange={handleChangeCurrency}
                   className="mb-base"
+                /> */}
+                <CurrencyInput
+                  currentCurrency={selectedCurrency}
+                  currencyCodes={currencies}
+                  onChange={handleChangeCurrency}
+                  className="mb-base"
+                />
+                <CurrencyInput
+                  currentCurrency={selectedCurrency}
+                  currencyCodes={currencies}
+                  onChange={handleChangeCurrency}
+                  className="mb-base"
+                />
+                <CurrencyInput
+                  currentCurrency={selectedCurrency}
+                  currencyCodes={currencies}
+                  onChange={handleChangeCurrency}
+                  className="mb-base"
                 />
                 <Input
                   className="mb-base"
