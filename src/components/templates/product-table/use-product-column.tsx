@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import moment from "moment"
-import React, { useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import ReactCountryFlag from "react-country-flag"
 import { getColor } from "../../../utils/color"
 import { formatAmountWithSymbol } from "../../../utils/prices"
@@ -12,7 +12,9 @@ import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import Table from "../../molecules/table"
 
-const useProductTableColumn = (showList, setShowList) => {
+const useProductTableColumn = () => {
+  const [showList, setShowList] = useState(true)
+
   const getProductStatus = (title) => {
     switch (title) {
       case "proposed":
@@ -103,7 +105,7 @@ const useProductTableColumn = (showList, setShowList) => {
     [showList]
   )
 
-  return [columns]
+  return [columns, showList]
 }
 
 export default useProductTableColumn

@@ -39,7 +39,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   const [query, setQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(0)
   const [numPages, setNumPages] = useState(0)
-  const [showList, setShowList] = useState(true)
   const [tags, setTags] = useState(null)
 
   const deleteProductHook = useAdminDeleteProduct(deleteProduct?.id)
@@ -219,7 +218,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     if (_.entries(queryObject).length === 0) {
       resetFilters()
       window.history.replaceState({}, "", "/a/products")
-      refetch({ ...defaultQueryProps })
+      refetch()
     } else {
       if (!searchObject.offset) {
         searchObject.offset = 0
@@ -231,7 +230,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
 
       const query = qs.stringify(queryObject)
       window.history.replaceState(`/a/products`, "", `${`?${query}`}`)
-      refetch({ ...searchObject })
+      refetch()
     }
   }
 
@@ -241,7 +240,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     }
   }, [isLoadingCollections])
 
-  const [columns] = useProductTableColumn(showList, setShowList)
+  const [columns] = useProductTableColumn()
 
   const {
     getTableProps,
