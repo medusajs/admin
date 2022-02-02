@@ -89,7 +89,7 @@ const DraggableTable: React.FC<DraggableTableProps> = ({
           return
         }
 
-        return // TODO: fix hover/drop action
+        // return // TODO: fix hover/drop action
         // if (latestMoved?.from === dragIndex && latestMoved?.to === hoverIndex) {
         //   return
         // }
