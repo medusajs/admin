@@ -1,5 +1,5 @@
 import { useAdminVariants } from "medusa-react"
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
 import Button from "../../../../components/fundamentals/button"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
@@ -9,6 +9,8 @@ import StatusIndicator from "../../../../components/fundamentals/status-indicato
 import { useDebounce } from "../../../../hooks/use-debounce"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import clsx from "clsx"
+import Spinner from "../../../../components/atoms/spinner"
+import { clamp } from "lodash"
 
 const getProductStatusVariant = (status) => {
   switch (status) {
@@ -67,9 +69,12 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   selectedItems,
   isLargeModal = true,
 }) => {
+  const heightRef = useRef(null)
+  const [style, setStyle] = useState(undefined)
+
   const { pop } = useContext(LayeredModalContext)
   const [query, setQuery] = useState("")
-  const [limit, setLimit] = useState(5)
+  const [limit, setLimit] = useState(12)
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
@@ -243,51 +248,59 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   return (
     <>
       <Modal.Content isLargeModal={isLargeModal}>
-        <div className="h-full">
-          <h2 className="inter-base-semibold mb-4">Search for additional </h2>
+        <div className="min-h-[680px]">
+          <Table
+            enableSearch
+            searchPlaceholder="Search Products.."
+            handleSearch={handleSearch}
+            {...getTableProps()}
+          >
+            <Table.Head>
+              {headerGroups.map((headerGroup) => (
+                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <Table.HeadCell {...column.getHeaderProps()}>
+                      {column.render("Header")}
+                    </Table.HeadCell>
+                  ))}
+                </Table.HeadRow>
+              ))}
+            </Table.Head>
+            <Table.Body {...getTableBodyProps()}>
+              {isLoading ? (
+                <Spinner size="large" />
+              ) : (
+                rows.map((row, i) => {
+                  prepareRow(row)
+                  return (
+                    <Table.Row {...row.getRowProps()}>
+                      {row.cells.map((cell) => {
+                        return (
+                          <Table.Cell {...cell.getCellProps()}>
+                            {cell.render("Cell")}
+                          </Table.Cell>
+                        )
+                      })}
+                    </Table.Row>
+                  )
+                })
+              )}
+            </Table.Body>
+          </Table>
+          <TablePagination
+            count={count!}
+            limit={limit}
+            offset={offset}
+            pageSize={offset + rows.length}
+            title="Products"
+            currentPage={pageIndex}
+            pageCount={pageCount}
+            nextPage={handleNext}
+            prevPage={handlePrev}
+            hasNext={canNextPage}
+            hasPrev={canPreviousPage}
+          />
         </div>
-        <Table enableSearch handleSearch={handleSearch} {...getTableProps()}>
-          <Table.Head>
-            {headerGroups.map((headerGroup) => (
-              <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <Table.HeadCell {...column.getHeaderProps()}>
-                    {column.render("Header")}
-                  </Table.HeadCell>
-                ))}
-              </Table.HeadRow>
-            ))}
-          </Table.Head>
-          <Table.Body {...getTableBodyProps()}>
-            {rows.map((row, i) => {
-              prepareRow(row)
-              return (
-                <Table.Row {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <Table.Cell {...cell.getCellProps()}>
-                        {cell.render("Cell")}
-                      </Table.Cell>
-                    )
-                  })}
-                </Table.Row>
-              )
-            })}
-          </Table.Body>
-        </Table>
-        <TablePagination
-          count={count!}
-          limit={limit}
-          offset={offset}
-          pageSize={offset + rows.length}
-          title="Products"
-          currentPage={pageIndex}
-          pageCount={pageCount}
-          nextPage={handleNext}
-          prevPage={handlePrev}
-          hasNext={canNextPage}
-          hasPrev={canPreviousPage}
-        />
       </Modal.Content>
       <Modal.Footer isLargeModal={isLargeModal}>
         <div className="flex w-full justify-end gap-x-xsmall">

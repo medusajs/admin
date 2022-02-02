@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React from "react"
+import { displayAmount } from "../../../utils/prices"
 import Button from "../../fundamentals/button"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
@@ -22,7 +23,10 @@ const extractPrice = (prices, order) => {
   }
 
   if (price) {
-    return (price.amount * (1 + order.tax_rate / 100)) / 100
+    return displayAmount(
+      order.currency_code,
+      price.amount * (1 + order.tax_rate / 100)
+    )
   }
 
   return 0

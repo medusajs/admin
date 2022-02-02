@@ -15,6 +15,7 @@ import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
 import RMASelectProductSubModal from "../rma-sub-modals/products"
+import { displayAmount, normalizeAmount } from "../../../../utils/prices"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -27,7 +28,10 @@ const extractPrice = (prices, order) => {
   }
 
   if (price) {
-    return (price.amount * (1 + order.tax_rate / 100)) / 100
+    return normalizeAmount(
+      order.currency_code,
+      price.amount * (1 + order.tax_rate / 100)
+    )
   }
 
   return 0
@@ -279,7 +283,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
           <div className="flex justify-between items-center inter-base-semibold mt-8">
             <span>Difference</span>
             <span className="inter-large-semibold">
-              {(toPay / 100).toFixed(2)} {order.currency_code.toUpperCase()}
+              {displayAmount(order.currency_code, toPay)}{" "}
+              {order.currency_code.toUpperCase()}
             </span>
           </div>
         </Modal.Content>
