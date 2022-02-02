@@ -1,15 +1,17 @@
-import React, { useEffect, useRef } from "react"
 import clsx from "clsx"
+import React, { useEffect, useRef } from "react"
 import SearchIcon from "../../fundamentals/icons/search-icon"
 
 type TableSearchProps = {
   onSearch: (term: string) => void
   placeholder?: string
+  searchValue?: string
 } & React.HTMLAttributes<HTMLDivElement>
 
 const TableSearch: React.FC<TableSearchProps> = ({
   onSearch,
   placeholder = "Search",
+  searchValue,
   className,
   ...props
 }) => {
@@ -22,6 +24,7 @@ const TableSearch: React.FC<TableSearchProps> = ({
         inputRef?.current?.placeholder?.replace(/\s+/g, "").length || 20
     }
   }, [])
+
   return (
     <div
       className={clsx(
@@ -39,6 +42,7 @@ const TableSearch: React.FC<TableSearchProps> = ({
       <input
         type="text"
         ref={inputRef}
+        value={searchValue}
         className={clsx(
           "focus:outline-none focus:border-none inter-small-regular w-full focus:w-50 focus:bg-grey-5 focus:text-grey-90 caret-violet-60"
         )}

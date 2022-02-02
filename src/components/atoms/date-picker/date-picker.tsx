@@ -1,26 +1,16 @@
+import * as PopoverPrimitive from "@radix-ui/react-popover"
+import clsx from "clsx"
+import moment from "moment"
 import React, { useEffect, useState } from "react"
 import ReactDatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import Button from "../../fundamentals/button"
-import moment from "moment"
-import ChevronRightIcon from "../../fundamentals/icons/chevron-right-icon"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import ChevronLeftIcon from "../../fundamentals/icons/chevron-left-icon"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
+import ChevronRightIcon from "../../fundamentals/icons/chevron-right-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
-import clsx from "clsx"
 import { DateTimePickerProps } from "./types"
-
-const getDateClassname = (d, tempDate) => {
-  return moment(d).format("YY,MM,DD") === moment(tempDate).format("YY,MM,DD")
-    ? "date chosen"
-    : `date ${
-        moment(d).format("YY,MM,DD") < moment(new Date()).format("YY,MM,DD")
-          ? "past"
-          : ""
-      }`
-}
 
 const DatePicker: React.FC<DateTimePickerProps> = ({
   date,
@@ -80,7 +70,6 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
           className="rounded-rounded px-8  border border-grey-20 bg-grey-0 w-full shadow-dropdown"
         >
           <CalendarComponent date={tempDate} onChange={setTempDate} />
-
           <div className="flex w-full mb-8 mt-5">
             <Button
               variant="ghost"

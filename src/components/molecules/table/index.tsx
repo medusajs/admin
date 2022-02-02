@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
-import React from "react"
+import React, { ReactNode } from "react"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
@@ -38,9 +38,11 @@ type SortingHeadCellProps = {
 } & React.HTMLAttributes<HTMLTableCellElement>
 
 type TableProps = {
-  filteringOptions?: FilteringOptionProps[]
+  filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
   searchPlaceholder?: string
+  searchValue?: string
+  containerClassName?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
 
@@ -66,8 +68,10 @@ const Table: TableType = React.forwardRef(
       children,
       enableSearch,
       searchPlaceholder,
+      searchValue,
       handleSearch,
       filteringOptions,
+      containerClassName,
       ...props
     }: TableProps,
     ref
@@ -78,15 +82,19 @@ const Table: TableType = React.forwardRef(
 
     return (
       <div className="flex flex-col">
-        <div className="w-full flex justify-between">
-          <div className="flex mb-2 self-end">
-            {filteringOptions &&
-              filteringOptions.map((fo) => <FilteringOptions {...fo} />)}
-          </div>
+        <div className="w-full flex justify-between mb-2">
+          {filteringOptions && (
+            <div className="flex mb-2 self-end">
+              {Array.isArray(filteringOptions)
+                ? filteringOptions.map((fo) => <FilteringOptions {...fo} />)
+                : filteringOptions}
+            </div>
+          )}
           <div className="flex">
             {enableSearch && (
               <TableSearch
                 placeholder={searchPlaceholder}
+                searchValue={searchValue}
                 onSearch={handleSearch}
               />
             )}
@@ -146,7 +154,7 @@ Table.HeadCell = React.forwardRef(
     }: React.HTMLAttributes<HTMLTableCellElement>,
     ref
   ) => (
-    <th ref={ref} className={clsx("text-left py-2.5", className)} {...props}>
+    <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>
       {children}
     </th>
   )
