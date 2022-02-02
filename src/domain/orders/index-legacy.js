@@ -152,8 +152,8 @@ const OrderIndex = () => {
     }
 
     switch (true) {
-      case clean["fulfillment_status[]"] === "shipped" &&
-        clean["payment_status[]"] === "captured":
+      case clean.fulfillment_status === ["shipped"] &&
+        clean.payment_status === ["captured"]:
         setActiveFilterTab("completed")
         break
       case (clean["fulfillment_status[]"] === "not_fulfilled,fulfilled" ||

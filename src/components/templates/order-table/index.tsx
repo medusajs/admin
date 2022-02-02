@@ -22,6 +22,11 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
 
   const {
+    removeTab,
+    setTab,
+    saveTab,
+    availableTabs: filterTabs,
+    activeFilterTab,
     reset,
     paginate,
     setFilters,
@@ -136,6 +141,11 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
           <Table
             filteringOptions={
               <OrderFilters
+                onRemoveTab={removeTab}
+                onSaveTab={saveTab}
+                onTabClick={setTab}
+                tabs={filterTabs}
+                activeTab={activeFilterTab}
                 filters={filters}
                 submitFilters={setFilters}
                 clearFilters={clearFilters}

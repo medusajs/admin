@@ -12024,7 +12024,7 @@ medusa-react@^0.1.4-adminc.21:
   integrity sha512-Xxt5C/xvUtBZXp+Gj6RGCzqPr187JRaiDjaG+iwGNS9NYW9wW8MJNLUJ7zFidAR5xmjoPk95x8pKC9eGzu1Jeg==
   dependencies:
     "@medusajs/medusa" "^1.1.63-adminc.21+1b3f63b6"
-    "@medusajs/medusa-js" "^1.0.11-adminc.21+1b3f63b6"
+    "@medusajs/medusa-js" "1.0.11-adminc.21+1b3f63b6"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
