@@ -14,6 +14,7 @@ type CollectionProductTableProps = {
   loadingProducts: boolean
   products?: CollectionProductTableItem[]
   handleSearch: (value: string) => void
+  rowElement: (item: CollectionProductTableItem) => React.ReactNode
 }
 
 const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
