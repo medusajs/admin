@@ -154,17 +154,6 @@ const Edit: React.FC<EditProps> = ({ id }) => {
     )
   }
 
-  const getPersistedPrice = (price: number) => {
-    if (!selectedRegions.length || !regions) {
-      return
-    }
-    const region = regions.find((r) => r.id === selectedRegions[0].value)
-    if (!region) {
-      return
-    }
-    return persistedPrice(region.currency_code, price)
-  }
-
   const submit = (data: DiscountFormType) => {
     if (!discount) {
       return
@@ -185,7 +174,6 @@ const Edit: React.FC<EditProps> = ({ id }) => {
       ends_at: hasExpiryDate ? expiryDate : null,
       regions: selectedRegions.map(({ value }) => value),
       valid_duration: availabilityDuration,
-      is_disabled: false,
       is_dynamic: isDynamic,
     }
 
