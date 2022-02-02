@@ -2,7 +2,7 @@ import React, { useMemo } from "react"
 import { Column } from "react-table"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Table from "../../molecules/table"
-import { AddCollectionProductTableItem } from "./types"
+import { SimpleProductType } from "./types"
 
 const useCollectionProductColumns = () => {
   const decideStatus = (status: string) => {
@@ -24,7 +24,7 @@ const useCollectionProductColumns = () => {
     }
   }
 
-  const columns: Column<AddCollectionProductTableItem>[] = useMemo(
+  const columns: Column<SimpleProductType>[] = useMemo(
     () => [
       {
         accessor: "thumbnail",

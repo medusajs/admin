@@ -65,6 +65,11 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
     })
   }
 
+  const handleAddProducts = (productIds: any[]) => {
+    console.log("should add these products:", productIds) // TODO: API does not support this yet
+    setShowAddProducts(false)
+  }
+
   return (
     <>
       <div className="flex flex-col">
@@ -164,7 +169,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
       {showAddProducts && (
         <AddProductModal
           handleClose={() => setShowAddProducts(!showAddProducts)}
-          onSubmit={() => {}}
+          onSubmit={handleAddProducts}
           collectionProducts={collection?.products ?? []}
         />
       )}

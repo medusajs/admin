@@ -5,7 +5,7 @@ import CollectionProductTable from "../../templates/collection-product-table"
 
 type AddProductModalProps = {
   handleClose: () => void
-  onSubmit: () => void
+  onSubmit: (ids: any[]) => void
   collectionProducts: any[]
 }
 
@@ -14,6 +14,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   onSubmit,
   collectionProducts,
 }) => {
+  const [selectedProducts, setSelectedProducts] = React.useState<any[]>([])
+
+  const handleSelectProduct = () => {
+    if (selectedProducts.length > 0) {
+      onSubmit(selectedProducts.map((p) => p.id))
+    }
+  }
+
   return (
     <Modal handleClose={handleClose}>
       <Modal.Body>
@@ -22,7 +30,10 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         </Modal.Header>
         <Modal.Content>
           <div className="h-[650px]">
-            <CollectionProductTable addedProducts={collectionProducts} />
+            <CollectionProductTable
+              addedProducts={collectionProducts}
+              setProducts={setSelectedProducts}
+            />
           </div>
         </Modal.Content>
         <Modal.Footer>
@@ -30,7 +41,12 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             <Button variant="ghost" size="small" className="w-eventButton">
               Cancel
             </Button>
-            <Button variant="primary" size="small" className="w-eventButton">
+            <Button
+              variant="primary"
+              size="small"
+              className="w-eventButton"
+              onClick={handleSelectProduct}
+            >
               Save
             </Button>
           </div>

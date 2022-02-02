@@ -1,6 +1,6 @@
 import { useAdminProducts } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import { Column, usePagination, useRowSelect, useTable } from "react-table"
+import { usePagination, useRowSelect, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import Table, { TablePagination } from "../../molecules/table"
@@ -57,7 +57,7 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
     ])
   }, [products])
 
-  const columns = useCollectionProductColumns() as readonly Column<any[]>[]
+  const columns = useCollectionProductColumns()
 
   const {
     rows,
@@ -143,7 +143,7 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
   }
 
   useEffect(() => {
-    console.log("products", selectedProducts)
+    setProducts(selectedProducts)
   }, [selectedProducts])
 
   return (

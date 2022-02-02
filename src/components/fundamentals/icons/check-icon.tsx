@@ -4,7 +4,7 @@ import IconProps from "./types/icon-type"
 const CheckIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
-  attributes,
+  ...attributes
 }) => {
   return (
     <svg
@@ -18,9 +18,9 @@ const CheckIcon: React.FC<IconProps> = ({
       <path
         d="M13.3334 4L6.00008 11.3333L2.66675 8"
         stroke={color}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )
