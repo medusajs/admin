@@ -3,9 +3,22 @@ import Picker, { SKIN_TONE_NEUTRAL } from "emoji-picker-react"
 import React from "react"
 import Button from "../../fundamentals/button"
 import HappyIcon from "../../fundamentals/icons/happy-icon"
+import "./style.css"
 
 type indexProps = {
   onEmojiClick: (emoji: string) => void
+}
+
+const groupNames = {
+  smileys_people: "Smileys & People",
+  animals_nature: "Animals & Nature",
+  food_drink: "Food & Drink",
+  travel_places: "Travel & Places",
+  activities: "Activities",
+  objects: "Objects",
+  symbols: "Symbols",
+  flags: "Flags",
+  recently_used: "Recently Used",
 }
 
 const EmojiPicker: React.FC<indexProps> = ({ onEmojiClick }) => {
@@ -32,7 +45,12 @@ const EmojiPicker: React.FC<indexProps> = ({ onEmojiClick }) => {
           skinTone={SKIN_TONE_NEUTRAL}
           groupNames={{ smileys_people: "PEOPLE" }}
           native
-          pickerStyle={{ border: "none" }}
+          pickerStyle={{
+            border: "none",
+          }}
+          disableSkinTonePicker={true}
+          searchPlaceholder={"Search Emoji..."}
+          groupNames={groupNames}
         />
       </DropdownMenu.Content>
     </DropdownMenu.Root>
