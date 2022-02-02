@@ -1,29 +1,27 @@
+import { RouteComponentProps } from "@reach/router"
+import { navigate } from "gatsby"
 import {
   useAdminCollection,
   useAdminDeleteCollection,
   useAdminUpdateCollection,
 } from "medusa-react"
 import React, { useState } from "react"
-import { useForm } from "react-hook-form"
 import Spinner from "../../../components/atoms/spinner"
-import Breadcrumb from "../../../components/molecules/breadcrumb"
-import BodyCard from "../../../components/organisms/body-card"
-import { RouteComponentProps } from "@reach/router"
-import Actionables from "../../../components/molecules/actionables"
-import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import Button from "../../../components/fundamentals/button"
-import ViewRaw from "../../../components/molecules/view-raw"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
-import CollectionModal from "../../../components/templates/collection-modal"
-import CollectionProductTable from "../../../components/templates/collection-product-table"
-import DeletePrompt from "../../../components/organisms/delete-prompt"
-import { navigate } from "gatsby"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
+import Actionables from "../../../components/molecules/actionables"
+import Breadcrumb from "../../../components/molecules/breadcrumb"
+import ViewRaw from "../../../components/molecules/view-raw"
 import AddProductModal from "../../../components/organisms/add-product-modal"
+import BodyCard from "../../../components/organisms/body-card"
+import DeletePrompt from "../../../components/organisms/delete-prompt"
+import { MetadataField } from "../../../components/organisms/metadata"
+import CollectionModal from "../../../components/templates/collection-modal"
 
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
-  const { collection, isLoading, isError } = useAdminCollection(ensuredPath)
+  const { collection, isLoading, refetch } = useAdminCollection(ensuredPath)
   const deleteCollection = useAdminDeleteCollection(ensuredPath)
   const updateCollection = useAdminUpdateCollection(ensuredPath)
   const [showEdit, setShowEdit] = useState(false)
@@ -36,7 +34,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
     })
   }
 
-  const handleUpdateDetails = (data: any) => {
+  const handleUpdateDetails = (data: any, metadata: MetadataField[]) => {
     const payload: {
       title: string
       handle?: string
@@ -46,23 +44,26 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
       handle: data.handle,
     }
 
-    if (data.metadata) {
-      const metadata = data.metadata.reduce((acc, next) => {
-        return {
-          ...acc,
-          [next.key]: next.value,
-        }
-      }, {})
+    if (metadata.length > 0) {
+      const payloadMetadata = metadata
+        .filter((m) => m.key && m.value) // remove empty metadata
+        .reduce((acc, next) => {
+          return {
+            ...acc,
+            [next.key]: next.value,
+          }
+        }, {})
 
-      payload.metadata = metadata
+      payload.metadata = payloadMetadata // deleting metadata will not work as it's not supported by the core
     }
 
     updateCollection.mutate(payload, {
-      onSuccess: () => setShowEdit(false),
+      onSuccess: () => {
+        setShowEdit(false)
+        refetch()
+      },
     })
   }
-
-  const { register, unregister, setValue, handleSubmit, formState } = useForm()
 
   return (
     <>
@@ -128,11 +129,18 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
           ]}
         >
           <div className="mt-large">
-            <CollectionProductTable
-              products={collection?.products}
+            {/* <CollectionProductTable
+              products={
+                collection?.products?.map((p) => ({
+                  title: p.title,
+                  id: p.id,
+                  thumbnail: p.thumbnail,
+                  status: p.status,
+                })) ?? []
+              }
               handleSearch={console.log}
-              loadingProducts={true}
-            />
+              loadingProducts={!collection}
+            /> */}
           </div>
         </BodyCard>
       </div>
@@ -157,6 +165,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
         <AddProductModal
           handleClose={() => setShowAddProducts(!showAddProducts)}
           onSubmit={() => {}}
+          collectionProducts={collection?.products ?? []}
         />
       )}
     </>

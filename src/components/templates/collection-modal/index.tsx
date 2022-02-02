@@ -1,14 +1,14 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../fundamentals/button"
 import InfoTooltip from "../../molecules/info-tooltip"
 import InputField from "../../molecules/input"
 import Modal from "../../molecules/modal"
-import Metadata from "../../organisms/metadata"
+import Metadata, { MetadataField } from "../../organisms/metadata"
 
 type CollectionModalProps = {
   onClose: () => void
-  onSubmit: (values: any) => void
+  onSubmit: (values: any, metadata: MetadataField[]) => void
   isEdit?: boolean
   collection?: any
 }
@@ -19,7 +19,8 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
   isEdit = false,
   collection,
 }) => {
-  const { register, setValue, handleSubmit, control } = useForm()
+  const { register, setValue, handleSubmit } = useForm()
+  const [metadata, setMetadata] = useState<MetadataField[]>([])
 
   if (isEdit && !collection) {
     throw new Error("Collection is required for edit")
@@ -36,15 +37,18 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
       setValue("handle", collection.handle)
 
       if (collection.metadata) {
-        Object.entries(collection.metadata).map(([key, value], i) => {
-          register(`metadata.${i}.key`, { required: true })
-          register(`metadata.${i}.value`, { required: true })
-          setValue(`metadata.${i}.key`, key)
-          setValue(`metadata.${i}.value`, value)
+        Object.entries(collection.metadata).map(([key, value]) => {
+          const newMeta = metadata
+          newMeta.push({ key, value })
+          setMetadata(newMeta)
         })
       }
     }
   }, [collection, isEdit])
+
+  const submit = (data: any) => {
+    onSubmit(data, metadata)
+  }
 
   return (
     <Modal handleClose={onClose}>
@@ -59,7 +63,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
             </p>
           </div>
         </Modal.Header>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(submit)}>
           <Modal.Content isLargeModal>
             <div>
               <h2 className="inter-base-semibold mb-base">Details</h2>
@@ -84,10 +88,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
               </div>
             </div>
             <div className="mt-xlarge w-full">
-              <Metadata
-                control={control}
-                existingMetadata={collection?.metadata}
-              />
+              <Metadata setMetadata={setMetadata} metadata={metadata} />
             </div>
           </Modal.Content>
           <Modal.Footer>

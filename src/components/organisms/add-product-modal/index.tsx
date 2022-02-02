@@ -1,4 +1,3 @@
-import { useAdminProducts } from "medusa-react"
 import React from "react"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
@@ -7,17 +6,14 @@ import CollectionProductTable from "../../templates/collection-product-table"
 type AddProductModalProps = {
   handleClose: () => void
   onSubmit: () => void
+  collectionProducts: any[]
 }
 
 const AddProductModal: React.FC<AddProductModalProps> = ({
   handleClose,
   onSubmit,
+  collectionProducts,
 }) => {
-  const { products, isLoading } = useAdminProducts({
-    offset: 0,
-    limit: 10,
-  })
-
   return (
     <Modal handleClose={handleClose}>
       <Modal.Body>
@@ -25,11 +21,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           <h3 className="inter-xlarge-semibold">Add Products</h3>
         </Modal.Header>
         <Modal.Content>
-          <CollectionProductTable
-            loadingProducts={isLoading}
-            handleSearch={console.log}
-            products={products}
-          />
+          <div className="h-[650px]">
+            <CollectionProductTable addedProducts={collectionProducts} />
+          </div>
         </Modal.Content>
         <Modal.Footer>
           <div className="flex items-center justify-end gap-x-xsmall w-full">
