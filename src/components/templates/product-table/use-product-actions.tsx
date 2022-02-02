@@ -1,5 +1,9 @@
 import { navigate } from "gatsby"
-import { useAdminDeleteProduct, useAdminUpdateProduct } from "medusa-react"
+import {
+  useAdminCreateProduct,
+  useAdminDeleteProduct,
+  useAdminUpdateProduct,
+} from "medusa-react"
 import * as React from "react"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useToaster from "../../../hooks/use-toaster"
@@ -30,7 +34,7 @@ const useProductActions = (product) => {
     }
   }
 
-  const getActions = (product): ActionType[] => [
+  const getActions = (): ActionType[] => [
     {
       label: "Edit",
       onClick: () => navigate(`/a/products/${product.id}`),

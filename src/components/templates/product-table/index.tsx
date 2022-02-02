@@ -1,36 +1,22 @@
-import {
-  useAdminCollections,
-  useAdminCreateProduct,
-  useAdminDeleteProduct,
-  useAdminProducts,
-  useAdminUpdateProduct,
-} from "medusa-react"
+import clsx from "clsx"
+import _ from "lodash"
+import { useAdminCollections, useAdminProducts } from "medusa-react"
+import qs from "query-string"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import _, { filter } from "lodash"
-import Spinner from "../../atoms/spinner"
-import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
-import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
-import EditIcon from "../../fundamentals/icons/edit-icon"
-import StatusIndicator from "../../fundamentals/status-indicator"
-import Table, { TablePagination } from "../../molecules/table"
-import ImagePlaceholder from "../../fundamentals/image-placeholder"
-import TrashIcon from "../../fundamentals/icons/trash-icon"
-import { navigate } from "gatsby"
+import ProductsFilter from "../../../domain/products/filter-dropdown"
+import { useDebounce } from "../../../hooks/use-debounce"
 import useToaster from "../../../hooks/use-toaster"
 import Medusa from "../../../services/api"
-import PublishIcon from "../../fundamentals/icons/publish-icon"
-import { getErrorMessage } from "../../../utils/error-messages"
-import DeletePrompt from "../../organisms/delete-prompt"
+import { getProductStatusVariant } from "../../../utils/product-status-variant"
+import Spinner from "../../atoms/spinner"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
-import clsx from "clsx"
-import ProductsFilter from "../../../domain/products/filter-dropdown"
-import qs from "query-string"
-import { useDebounce } from "../../../hooks/use-debounce"
+import ImagePlaceholder from "../../fundamentals/image-placeholder"
+import StatusIndicator from "../../fundamentals/status-indicator"
+import Table, { TablePagination } from "../../molecules/table"
 import ProductOverview from "./overview"
-import { getProductStatusVariant } from "../../../utils/product-status-variant"
-import useCopyProduct from "./use-copy-product"
+import useProductActions from "./use-product-actions"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -39,8 +25,6 @@ type ProductTableProps = {}
 
 const ProductTable: React.FC<ProductTableProps> = () => {
   const [offset, setOffset] = useState(0)
-  const [deleteProduct, setDeleteProduct] = useState(undefined)
-  const [updateProduct, setUpdateProduct] = useState(undefined)
   const [collectionsList, setCollectionsList] = useState<string[]>([])
   const [limit, setLimit] = useState(14)
   const [query, setQuery] = useState("")
@@ -49,10 +33,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   const [showList, setShowList] = useState(true)
   const toaster = useToaster()
   const [tags, setTags] = useState(null)
-
-  const deleteProductHook = useAdminDeleteProduct(deleteProduct?.id)
-  const handleCopyProduct = useCopyProduct()
-  const updateProductHook = useAdminUpdateProduct(updateProduct?.id)
 
   const [statusFilter, setStatusFilter] = useState({
     open: false,
@@ -386,70 +366,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     setQuery(q)
   }
 
-  const getActionablesForProduct = (product) => {
-    return [
-      {
-        label: "Edit",
-        onClick: () => navigate(`/a/products/${product.id}`),
-        icon: <EditIcon size={20} />,
-      },
-      {
-        label: product.status === "published" ? "Unpublish" : "Publish",
-        onClick: () => {
-          setUpdateProduct(product)
-          updateProductHook.mutate(
-            {
-              status: product.status === "published" ? "draft" : "published",
-            },
-            {
-              onSuccess: () => {
-                toaster(
-                  `Successfully ${
-                    product.status === "published" ? "unpublished" : "published"
-                  } product`,
-                  "success"
-                )
-                refetch()
-              },
-              onError: (err) => toaster(getErrorMessage(err), "error"),
-            }
-          )
-          // Medusa.products
-          //   .update(product.id, {
-          //     status: product.status === "published" ? "draft" : "published",
-          //   })
-          //   .then(() =>
-          //     toaster(
-          //       `Successfully ${
-          //         product.status === "published" ? "unpublished" : "published"
-          //       } product`,
-          //       "success"
-          //     )
-          //   )
-          //   .then(() => refetch())
-          //   .catch((err) => toaster(getErrorMessage(err), "error"))
-        },
-        icon:
-          product.status === "published" ? (
-            <UnpublishIcon size={20} />
-          ) : (
-            <PublishIcon size={20} />
-          ),
-      },
-      {
-        label: "Duplicate",
-        onClick: () => handleCopyProduct(product),
-        icon: <DuplicateIcon size={20} />,
-      },
-      {
-        label: "Delete",
-        variant: "danger",
-        onClick: () => setDeleteProduct(product),
-        icon: <TrashIcon size={20} />,
-      },
-    ]
-  }
-
   return (
     <div className="w-full h-full overflow-y-scroll">
       {isLoading || isRefetching || !products ? (
@@ -496,22 +412,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
                 <Table.Body {...getTableBodyProps()}>
                   {rows.map((row) => {
                     prepareRow(row)
-                    return (
-                      <Table.Row
-                        color={"inherit"}
-                        linkTo={`/a/products/${row.original.id}`}
-                        actions={getActionablesForProduct(row.original)}
-                        {...row.getRowProps()}
-                      >
-                        {row.cells.map((cell, index) => {
-                          return (
-                            <Table.Cell {...cell.getCellProps()}>
-                              {cell.render("Cell", { index })}
-                            </Table.Cell>
-                          )
-                        })}
-                      </Table.Row>
-                    )
+                    return <ProductRow row={row} />
                   })}
                 </Table.Body>
               </>
@@ -539,15 +440,28 @@ const ProductTable: React.FC<ProductTableProps> = () => {
           />
         </>
       )}
-      {deleteProduct && (
-        <DeletePrompt
-          handleClose={() => setDeleteProduct(undefined)}
-          onDelete={async () => {
-            deleteProductHook.mutateAsync().then(() => refetch())
-          }}
-        />
-      )}
     </div>
+  )
+}
+
+const ProductRow = ({ row, actions }) => {
+  const product = row.original
+  const { getActions } = useProductActions(product)
+  return (
+    <Table.Row
+      color={"inherit"}
+      linkTo={`/a/products/${row.original.id}`}
+      actions={getActions()}
+      {...row.getRowProps()}
+    >
+      {row.cells.map((cell, index) => {
+        return (
+          <Table.Cell {...cell.getCellProps()}>
+            {cell.render("Cell", { index })}
+          </Table.Cell>
+        )
+      })}
+    </Table.Row>
   )
 }
 

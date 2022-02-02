@@ -84,7 +84,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.28.0",
     "gatsby-plugin-postcss": "^5.4.0",
-    "medusa-react": "^0.1.2-alpha.24",
+    "medusa-react": "0.1.4-adminc.21",
     "postcss": "^8.4.5",
     "prettier": "2.0.5",
     "react-query": "^3.34.7",

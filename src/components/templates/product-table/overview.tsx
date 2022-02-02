@@ -49,13 +49,13 @@ const ProductTile = ({ product }) => {
           className={clsx("rounded-base inline-block absolute top-2 right-2")}
         >
           <Actionables
-            actions={getActions(product)}
+            actions={getActions()}
             triggerClass="hidden-actions group-hover:opacity-100 focus-within:opacity-100 opacity-0 bg-grey-0"
           />
         </div>
         <Link to={`${product.id}`}>
           <img
-            className="min-h-[230px] block object-fill rounded-rounded"
+            className="min-h-[230px] block object-cover rounded-rounded"
             src={product.thumbnail}
           />
           <div>
