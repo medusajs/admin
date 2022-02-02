@@ -2,7 +2,9 @@ import moment from "moment"
 import React, { useMemo } from "react"
 import ReactCountryFlag from "react-country-flag"
 import { getColor } from "../../../utils/color"
+import { isoAlpha2Countries } from "../../../utils/countries"
 import { formatAmountWithSymbol } from "../../../utils/prices"
+import Tooltip from "../../atoms/tooltip"
 import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import Table from "../../molecules/table"
@@ -26,10 +28,13 @@ const useOrderTableColums = () => {
   const columns = useMemo(
     () => [
       {
-        Header: "Order",
+        Header: <Table.HeadCell className="pl-2">Order</Table.HeadCell>,
         accessor: "display_id",
         Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{`#${value}`}</Table.Cell>
+          <Table.Cell
+            key={index}
+            className="text-grey-90 group-hover:text-violet-60 min-w-[100px] pl-2"
+          >{`#${value}`}</Table.Cell>
         ),
       },
       {
@@ -37,7 +42,9 @@ const useOrderTableColums = () => {
         accessor: "created_at",
         Cell: ({ cell: { value }, index }) => (
           <Table.Cell key={index}>
-            {moment(value).format("DD MMM YYYY")}
+            <Tooltip content={moment(value).format("DD MMM YYYY hh:mm a")}>
+              {moment(value).format("DD MMM YYYY")}
+            </Tooltip>
           </Table.Cell>
         ),
       },
@@ -98,12 +105,21 @@ const useOrderTableColums = () => {
         Header: "",
         accessor: "country_code",
         Cell: ({ row, index }) => (
-          <Table.Cell className="w-[5%]" key={index}>
-            <div className="flex w-full justify-end">
-              <ReactCountryFlag
-                svg
-                countryCode={row.original.shipping_address.country_code}
-              />
+          <Table.Cell className="w-[5%] pr-2" key={index}>
+            <div className="flex rounded-rounded w-full justify-end">
+              <Tooltip
+                content={
+                  isoAlpha2Countries[
+                    row.original.shipping_address.country_code.toUpperCase()
+                  ] || row.original.shipping_address.country_code.toUpperCase()
+                }
+              >
+                <ReactCountryFlag
+                  className={"rounded"}
+                  svg
+                  countryCode={row.original.shipping_address.country_code}
+                />
+              </Tooltip>
             </div>
           </Table.Cell>
         ),

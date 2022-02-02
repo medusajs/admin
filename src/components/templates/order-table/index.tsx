@@ -23,6 +23,11 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
 
   const {
+    removeTab,
+    setTab,
+    saveTab,
+    availableTabs: filterTabs,
+    activeFilterTab,
     reset,
     paginate,
     setFilters,
@@ -135,6 +140,11 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       <Table
         filteringOptions={
           <OrderFilters
+            onRemoveTab={removeTab}
+            onSaveTab={saveTab}
+            onTabClick={setTab}
+            tabs={filterTabs}
+            activeTab={activeFilterTab}
             filters={filters}
             submitFilters={setFilters}
             clearFilters={clearFilters}
@@ -172,6 +182,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
                   color={"inherit"}
                   linkTo={row.original.id}
                   {...row.getRowProps()}
+                  className="group"
                 >
                   {row.cells.map((cell, index) => {
                     return cell.render("Cell", { index })
