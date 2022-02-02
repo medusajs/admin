@@ -444,7 +444,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   )
 }
 
-const ProductRow = ({ row, actions }) => {
+const ProductRow = ({ row }) => {
   const product = row.original
   const { getActions } = useProductActions(product)
   return (
