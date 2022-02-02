@@ -21,7 +21,7 @@ const useDraftOrderTableColumns = () => {
         Header: "Draft",
         accessor: "display_id",
         Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{`#${value}`}</Table.Cell>
+          <Table.Cell key={index} className="pl-2">{`#${value}`}</Table.Cell>
         ),
       },
       {
@@ -61,7 +61,9 @@ const useDraftOrderTableColumns = () => {
         Header: "Status",
         accessor: "status",
         Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{decideStatus(value)}</Table.Cell>
+          <Table.Cell key={index} className="pr-2">
+            {decideStatus(value)}
+          </Table.Cell>
         ),
       },
     ],
