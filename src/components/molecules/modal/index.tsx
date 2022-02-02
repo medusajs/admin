@@ -4,13 +4,15 @@ import clsx from "clsx"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
 
-type ModalProps = {
+export type ModalProps = {
   isLargeModal?: boolean
   handleClose: () => void
 }
 
 type ModalChildProps = {
   isLargeModal?: boolean
+  className?: string
+  style?: React.CSSProperties
 }
 
 type ModalHeaderProps = {
@@ -38,7 +40,10 @@ const Content: React.FC = ({ children }) => {
     maxHeight: height - 64,
   }
   return (
-    <Dialog.Content style={style} className="bg-grey-0 min-w-modal rounded">
+    <Dialog.Content
+      style={style}
+      className="bg-grey-0 min-w-modal rounded overflow-x-hidden"
+    >
       {children}
     </Dialog.Content>
   )
@@ -62,10 +67,11 @@ const Modal: ModalType = ({ handleClose, isLargeModal = true, children }) => {
   )
 }
 
-Modal.Body = ({ children, isLargeModal }) => {
+Modal.Body = ({ children, isLargeModal, className, style }) => {
   return (
     <div
-      className="inter-base-regular h-full"
+      style={style}
+      className={clsx("inter-base-regular h-full", className)}
       onClick={(e) => e.stopPropagation()}
     >
       {addProp(children, { isLargeModal })}
@@ -73,7 +79,7 @@ Modal.Body = ({ children, isLargeModal }) => {
   )
 }
 
-Modal.Content = ({ children, isLargeModal }) => {
+Modal.Content = ({ children, className, isLargeModal }) => {
   const { height } = useWindowDimensions()
   const style = {
     maxHeight: height - 64 - 141,
@@ -81,7 +87,7 @@ Modal.Content = ({ children, isLargeModal }) => {
   return (
     <div
       style={style}
-      className={clsx("px-7 pt-5 overflow-y-scroll", {
+      className={clsx("px-7 pt-5 overflow-y-scroll", className, {
         ["w-largeModal pb-7"]: isLargeModal,
         ["pb-5"]: !isLargeModal,
       })}
@@ -113,7 +119,7 @@ Modal.Footer = ({ children, isLargeModal }) => {
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={clsx("px-7  pb-5 flex w-full", {
+      className={clsx("px-7 bottom-0 pb-5 flex w-full", {
         "border-t border-grey-20 pt-4": isLargeModal,
       })}
     >

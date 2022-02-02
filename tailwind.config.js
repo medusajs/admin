@@ -261,6 +261,8 @@ module.exports = {
       },
       transitionProperty: {
         width: "width margin",
+        height: "height",
+        display: "display opacity",
       },
       animation: {
         ring: "ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
