@@ -194,7 +194,6 @@ const Edit: React.FC<EditProps> = ({ id }) => {
       {
         onSuccess: () => {
           toaster("Successfully updated discount", "success")
-          navigate("/a/discounts")
         },
         onError: (error) => {
           toaster(getErrorMessage(error), "error")
