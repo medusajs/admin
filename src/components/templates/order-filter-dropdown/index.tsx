@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
 import FilterDropdownItem from "../../../components/molecules/filter-dropdown/item"
 import SaveFilterItem from "../../../components/molecules/filter-dropdown/save-field"
@@ -42,23 +42,27 @@ const dateFilters = [
   "is equal to",
 ]
 
-const OrderFilters = ({
-  filters,
-  submitFilters,
-  resetFilters,
-  clearFilters,
-  setSingleFilter,
-  ...rest
-}) => {
+const OrderFilters = ({ filters, submitFilters, clearFilters }) => {
+  const [tempState, setTempState] = useState(filters)
   const [name, setName] = useState("")
 
+  useEffect(() => {
+    setTempState(filters)
+  }, [filters])
+
   const onSubmit = () => {
-    console.log("hey")
-    submitFilters()
+    submitFilters(tempState)
   }
 
   const onClear = () => {
     clearFilters()
+  }
+
+  const setSingleFilter = (filterKey, filterVal) => {
+    setTempState((prevState) => ({
+      ...prevState,
+      [filterKey]: filterVal,
+    }))
   }
 
   const numberOfFilters = Object.entries(filters).reduce(
@@ -95,29 +99,29 @@ const OrderFilters = ({
         <FilterDropdownItem
           filterTitle="Status"
           options={statusFilters}
-          filters={filters.status.filter}
-          open={filters.status.open}
+          filters={tempState.status.filter}
+          open={tempState.status.open}
           setFilter={(val) => setSingleFilter("status", val)}
         />
         <FilterDropdownItem
           filterTitle="Payment Status"
           options={paymentFilters}
-          filters={filters.payment.filter}
-          open={filters.payment.open}
+          filters={tempState.payment.filter}
+          open={tempState.payment.open}
           setFilter={(val) => setSingleFilter("payment", val)}
         />
         <FilterDropdownItem
           filterTitle="Fulfillment Status"
           options={fulfillmentFilters}
-          filters={filters.fulfillment.filter}
-          open={filters.fulfillment.open}
+          filters={tempState.fulfillment.filter}
+          open={tempState.fulfillment.open}
           setFilter={(val) => setSingleFilter("fulfillment", val)}
         />
         <FilterDropdownItem
           filterTitle="Date"
           options={dateFilters}
-          filters={filters.date.filter}
-          open={filters.date.open}
+          filters={tempState.date.filter}
+          open={tempState.date.open}
           setFilter={(val) => setSingleFilter("date", val)}
         />
         <SaveFilterItem
