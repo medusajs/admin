@@ -22,7 +22,6 @@ import {
   extractRegionOptions,
 } from "../../../utils/extract-options"
 import { hydrateDiscount } from "../../../utils/hydrate-discount"
-import { persistedPrice } from "../../../utils/prices"
 import { DiscountFormType } from "../types"
 
 type EditProps = {
