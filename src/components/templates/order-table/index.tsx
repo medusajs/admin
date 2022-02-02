@@ -182,6 +182,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
                   color={"inherit"}
                   linkTo={row.original.id}
                   {...row.getRowProps()}
+                  className="group"
                 >
                   {row.cells.map((cell, index) => {
                     return cell.render("Cell", { index })

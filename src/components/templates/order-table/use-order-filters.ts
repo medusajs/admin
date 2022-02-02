@@ -1,6 +1,6 @@
-import { useMemo, useReducer, useState } from "react"
 import { omit } from "lodash"
 import qs from "qs"
+import { useMemo, useReducer, useState } from "react"
 import { relativeDateFormatToTimestamp } from "../../../utils/time"
 
 type OrderDateFilter = null | {
@@ -301,11 +301,6 @@ export const useOrderFilters = (
   const activeFilterTab = useMemo(() => {
     const clean = omit(representationObject, ["limit", "offset"])
     const stringified = qs.stringify(clean)
-
-    console.log(stringified)
-    for (const t of tabs) {
-      console.log(t.representationString)
-    }
 
     const existsInSaved = tabs.find(
       (el) => el.representationString === stringified
