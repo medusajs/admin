@@ -10,7 +10,7 @@ type AddMetadataProps = {
   existingMetadata?: object
 }
 
-type KP = {
+export type MetadataField = {
   key: string
   value: any
 }
@@ -20,7 +20,7 @@ const Metadata: React.FC<AddMetadataProps> = ({
   heading = "Metadata",
   existingMetadata,
 }) => {
-  const [keyPairs, setKeyPairs] = React.useState<KP[]>([])
+  const [keyPairs, setKeyPairs] = React.useState<MetadataField[]>([])
 
   const addKeyPair = () => {
     const baseName = `metadata.${keyPairs.length}`
