@@ -3,7 +3,7 @@ import styled from "@emotion/styled"
 import { Flex, Box } from "rebass"
 
 import Button from "../../components/button"
-import FilterDropdownItem from "../../components/filter-dropdown-item"
+import FilterDropdownItem from "../../components/molecules/filter-dropdown/item"
 import qs from "query-string"
 import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
 import InputField from "../../components/molecules/input"
@@ -56,7 +56,7 @@ const Divider = styled(Box)`
 `
 
 const DropdownContainer = styled.div`
-  ${props => `
+  ${(props) => `
     display: ${props.isOpen ? "block" : "none"};
     transform: translate3d(-20px, 44px, 0px);  
   `};
@@ -136,7 +136,7 @@ const OrderFilterButton = ({
   const [numFilters, setNumFilters] = useState()
   const ref = useRef(null)
 
-  const handleClickOutside = event => {
+  const handleClickOutside = (event) => {
     if (ref.current && !ref.current.contains(event.target) && isOpen) {
       setIsOpen(false)
     }
@@ -176,7 +176,7 @@ const OrderFilterButton = ({
     submitFilters()
   }
 
-  const saveTab = val => {
+  const saveTab = (val) => {
     resetFilters()
     setSaveValue("")
     setIsOpen(false)
@@ -275,7 +275,7 @@ const OrderFilterButton = ({
           <InputField
             value={saveValue}
             placeholder="Name"
-            onChange={e => setSaveValue(e.target.value)}
+            onChange={(e) => setSaveValue(e.target.value)}
             sx={{ flex: "1", marginRight: "5px", height: "25px" }}
             inputStyle={{ height: "25px", fontSize: "10px !important" }}
           />
