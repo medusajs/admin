@@ -17,8 +17,9 @@ import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
 import { removeNullish } from "../../../../utils/remove-nullish"
+import { useAdminRequestReturn } from "medusa-react"
 
-const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
+const ReturnMenu = ({ order, onDismiss, toaster }) => {
   const layoutmodalcontext = useContext(LayeredModalContext)
 
   const [submitting, setSubmitting] = useState(false)
@@ -36,6 +37,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [shippingMethod, setShippingMethod] = useState(null)
 
   const [allItems, setAllItems] = useState<any[]>([])
+
+  const requestReturnOrder = useAdminRequestReturn(order.id)
 
   useEffect(() => {
     if (order) {
@@ -98,7 +101,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
     if (onReturn) {
       setSubmitting(true)
-      return onReturn(data)
+      return requestReturnOrder
+        .mutateAsync(data)
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
         .catch((error) => toaster(getErrorMessage(error), "error"))
