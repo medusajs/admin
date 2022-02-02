@@ -3,9 +3,16 @@ import Spinner from "../../atoms/spinner"
 import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
 
+type CollectionProductTableItem = {
+  id: string
+  thumbnail?: string
+  title: string
+  status: string
+}
+
 type CollectionProductTableProps = {
   loadingProducts: boolean
-  products?: any[]
+  products?: CollectionProductTableItem[]
   handleSearch: (value: string) => void
 }
 
@@ -16,6 +23,9 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
 }) => {
   const [filteringOptions, setFilteringOptions] = useState<
     FilteringOptionProps[]
+  >([])
+  const [shownProducts, setShownProducts] = useState<
+    CollectionProductTableItem[]
   >([])
 
   useEffect(() => {
@@ -38,6 +48,8 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
         ],
       },
     ])
+
+    setShownProducts(products ?? [])
   }, [products])
 
   return (
@@ -54,8 +66,8 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
           </div>
         ) : (
           <div>
-            {products?.map((product, index) => (
-              <p key={index}>{JSON.stringify(product, undefined, 2)}</p>
+            {shownProducts?.map((product, index) => (
+              <p key={index}>{product.id}</p>
             ))}
           </div>
         )}

@@ -18,6 +18,8 @@ import CollectionModal from "../../../components/templates/collection-modal"
 import CollectionProductTable from "../../../components/templates/collection-product-table"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { navigate } from "gatsby"
+import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import AddProductModal from "../../../components/organisms/add-product-modal"
 
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
@@ -26,6 +28,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const updateCollection = useAdminUpdateCollection(ensuredPath)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
+  const [showAddProducts, setShowAddProducts] = useState(false)
 
   const handleDelete = () => {
     deleteCollection.mutate(undefined, {
@@ -116,12 +119,21 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
         <BodyCard
           title="Products"
           subtitle="To start selling, all you need is a name, price, and image."
+          actionables={[
+            {
+              label: "Add Product",
+              icon: <PlusIcon size="20" />,
+              onClick: () => setShowAddProducts(!showAddProducts),
+            },
+          ]}
         >
-          <CollectionProductTable
-            products={collection?.products}
-            handleSearch={console.log}
-            loadingProducts={true}
-          />
+          <div className="mt-large">
+            <CollectionProductTable
+              products={collection?.products}
+              handleSearch={console.log}
+              loadingProducts={true}
+            />
+          </div>
         </BodyCard>
       </div>
       {showEdit && (
@@ -139,6 +151,12 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
           successText="Successfully deleted collection"
           onDelete={async () => handleDelete()}
           confirmText="Yes, delete"
+        />
+      )}
+      {showAddProducts && (
+        <AddProductModal
+          handleClose={() => setShowAddProducts(!showAddProducts)}
+          onSubmit={() => {}}
         />
       )}
     </>
