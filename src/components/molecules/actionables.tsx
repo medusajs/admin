@@ -13,28 +13,38 @@ export type ActionType = {
 
 type ActionablesProps = {
   actions?: ActionType[]
+  customTrigger?: React.ReactNode
+  forceDropdown?: boolean
 }
 
 /**
  * A component that accepts multiple actionables and renders them as a dropdown menu.
  * If only a single actionable is provided, it will render a button instead.
  */
-const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
+const Actionables: React.FC<ActionablesProps> = ({
+  actions,
+  customTrigger,
+  forceDropdown = false,
+}) => {
   if (!actions?.length) {
     return null
   }
 
-  return actions.length > 1 ? (
+  return actions.length > 1 || forceDropdown ? (
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <Button
-            variant="ghost"
-            size="small"
-            className="w-xlarge h-xlarge focus:border-none focus:shadow-none"
-          >
-            <MoreHorizontalIcon size={20} />
-          </Button>
+          {!customTrigger ? (
+            <Button
+              variant="ghost"
+              size="small"
+              className="w-xlarge h-xlarge focus:border-none focus:shadow-none"
+            >
+              <MoreHorizontalIcon size={20} />
+            </Button>
+          ) : (
+            <div>{customTrigger}</div>
+          )}
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content
@@ -64,10 +74,16 @@ const Actionables: React.FC<ActionablesProps> = ({ actions }) => {
       </DropdownMenu.Root>
     </div>
   ) : (
-    <Button variant="ghost" size="small" onClick={actions[0].onClick}>
-      {actions[0].icon}
-      {actions[0].label}
-    </Button>
+    <div>
+      {customTrigger ? (
+        <div>{customTrigger}</div>
+      ) : (
+        <Button variant="ghost" size="small" onClick={actions[0].onClick}>
+          {actions[0].icon}
+          {actions[0].label}
+        </Button>
+      )}
+    </div>
   )
 }
 

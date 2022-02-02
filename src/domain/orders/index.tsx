@@ -2,7 +2,6 @@ import { RouteComponentProps, Router } from "@reach/router"
 import clsx from "clsx"
 import { capitalize } from "lodash"
 import React, { useState } from "react"
-import PageDescription from "../../components/atoms/page-description"
 import BodyCard from "../../components/organisms/body-card"
 import DraftOrderTable from "../../components/templates/draft-order-table"
 import OrderTable from "../../components/templates/order-table"
@@ -31,10 +30,6 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
 
   return (
     <div className="flex flex-col grow h-full">
-      <PageDescription
-        title={"Orders"}
-        subtitle="Manage the Orders of your store"
-      />
       <div className="w-full flex flex-col grow">
         <BodyCard className="mb-0">
           <div className="flex inter-large-semibold text-grey-40 space-x-4">
