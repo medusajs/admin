@@ -5,16 +5,14 @@ import {
   useAdminProducts,
   useAdminUpdateProduct,
 } from "medusa-react"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import _, { filter } from "lodash"
+import _ from "lodash"
 import Spinner from "../../atoms/spinner"
 import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
-import StatusIndicator from "../../fundamentals/status-indicator"
 import Table, { TablePagination } from "../../molecules/table"
-import ImagePlaceholder from "../../fundamentals/image-placeholder"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import { navigate } from "gatsby"
 import useToaster from "../../../hooks/use-toaster"
@@ -22,48 +20,29 @@ import Medusa from "../../../services/api"
 import PublishIcon from "../../fundamentals/icons/publish-icon"
 import { getErrorMessage } from "../../../utils/error-messages"
 import DeletePrompt from "../../organisms/delete-prompt"
-import ListIcon from "../../fundamentals/icons/list-icon"
-import TileIcon from "../../fundamentals/icons/tile-icon"
-import clsx from "clsx"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
 import qs from "query-string"
 import { useDebounce } from "../../../hooks/use-debounce"
+import useProductTableColumn from "./use-product-column"
+import useProductActions from "./use-product-actions"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
-
-const getProductStatusVariant = (title) => {
-  switch (title) {
-    case "proposed":
-      return "warning"
-    case "published":
-      return "success"
-    case "rejected":
-      return "danger"
-    case "draft":
-    default:
-      return "default"
-  }
-}
 
 type ProductTableProps = {}
 
 const ProductTable: React.FC<ProductTableProps> = () => {
   const [offset, setOffset] = useState(0)
   const [deleteProduct, setDeleteProduct] = useState(undefined)
-  const [updateProduct, setUpdateProduct] = useState(undefined)
   const [collectionsList, setCollectionsList] = useState<string[]>([])
   const [limit, setLimit] = useState(14)
   const [query, setQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [showList, setShowList] = useState(true)
-  const toaster = useToaster()
   const [tags, setTags] = useState(null)
 
   const deleteProductHook = useAdminDeleteProduct(deleteProduct?.id)
-  const createProductHook = useAdminCreateProduct()
-  const updateProductHook = useAdminUpdateProduct(updateProduct?.id)
 
   const [statusFilter, setStatusFilter] = useState({
     open: false,
@@ -262,85 +241,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     }
   }, [isLoadingCollections])
 
-  const columns = useMemo(
-    () => [
-      {
-        Header: "Name",
-        accessor: "title",
-        Cell: ({ row: { original } }) => {
-          return (
-            <div className="flex items-center">
-              <div className="h-[40px] w-[30px] my-1.5 flex items-center mr-4">
-                {original.thumbnail ? (
-                  <img
-                    src={original.thumbnail}
-                    className="h-full object-cover rounded-soft"
-                  />
-                ) : (
-                  <ImagePlaceholder />
-                )}
-              </div>
-              {original.title}
-            </div>
-          )
-        },
-      },
-      {
-        Header: "Collection",
-        accessor: "collection", // accessor is the "key" in the data
-        Cell: ({ cell: { value } }) => {
-          return <div>{value?.title || "-"}</div>
-        },
-      },
-      {
-        Header: "Status",
-        accessor: "status",
-        Cell: ({ cell: { value } }) => (
-          <StatusIndicator
-            title={`${value.charAt(0).toUpperCase()}${value.slice(1)}`}
-            variant={getProductStatusVariant(value)}
-          />
-        ),
-      },
-      {
-        Header: "Inventory",
-        accessor: "variants",
-        Cell: ({ cell: { value } }) => (
-          <div>
-            {value.reduce((acc, next) => acc + next.inventory_quantity, 0)}
-            {" in stock for "}
-            {value.length} variant(s)
-          </div>
-        ),
-      },
-      {
-        accessor: "col-3",
-        Header: (
-          <div className="text-right flex justify-end">
-            <span
-              onClick={() => setShowList(true)}
-              className={clsx("hover:bg-grey-5 cursor-pointer rounded p-0.5", {
-                "text-grey-90": showList,
-                "text-grey-40": !showList,
-              })}
-            >
-              <ListIcon size={20} />
-            </span>
-            <span
-              onClick={() => setShowList(false)}
-              className={clsx("hover:bg-grey-5 cursor-pointer rounded p-0.5", {
-                "text-grey-90": !showList,
-                "text-grey-40": showList,
-              })}
-            >
-              <TileIcon size={20} />
-            </span>
-          </div>
-        ),
-      },
-    ],
-    [showList]
-  )
+  const [columns] = useProductTableColumn(showList, setShowList)
 
   const {
     getTableProps,
@@ -397,130 +298,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     setQuery(q)
   }
 
-  const handleCopyProduct = async (product) => {
-    const copy = {
-      title: `${product.title} copy`,
-      description: `${product.description}`,
-      handle: `${product.handle}-copy`,
-    }
-
-    copy.options = product.options.map((po) => ({
-      title: po.title,
-    }))
-
-    copy.variants = product.variants.map((pv) => ({
-      title: pv.title,
-      inventory_quantity: pv.inventory_quantity,
-      prices: pv.prices.map((price) => {
-        const p = {
-          amount: price.amount,
-        }
-        if (price.region_id) {
-          p.region_id = price.region_id
-        }
-        if (price.currency_code) {
-          p.currency_code = price.currency_code
-        }
-
-        return p
-      }),
-      options: pv.options.map((pvo) => ({ value: pvo.value })),
-    }))
-
-    if (product.type) {
-      copy.type = {
-        id: product.type.id,
-        value: product.type.value,
-      }
-    }
-
-    if (product.collection_id) {
-      copy.collection_id = product.collection_id
-    }
-
-    if (product.tags) {
-      copy.tags = product.tags.map(({ id, value }) => ({ id, value }))
-    }
-
-    if (product.thumbnail) {
-      copy.thumbnail = product.thumbnail
-    }
-
-    await createProductHook.mutateAsync(copy, {
-      onSuccess: ({ product }) => {
-        navigate(`/a/products/${product.id}`)
-        toaster("Created a new return reason", "success")
-      },
-      onError: (error) => {
-        toaster(getErrorMessage(error), "error")
-      },
-    })
-  }
-
-  const getActionablesForProduct = (product) => {
-    return [
-      {
-        label: "Edit",
-        onClick: () => navigate(`/a/products/${product.id}`),
-        icon: <EditIcon size={20} />,
-      },
-      {
-        label: product.status === "published" ? "Unpublish" : "Publish",
-        onClick: () => {
-          setUpdateProduct(product)
-          updateProductHook.mutate(
-            {
-              status: product.status === "published" ? "draft" : "published",
-            },
-            {
-              onSuccess: () => {
-                toaster(
-                  `Successfully ${
-                    product.status === "published" ? "unpublished" : "published"
-                  } product`,
-                  "success"
-                )
-                refetch()
-              },
-              onError: (err) => toaster(getErrorMessage(err), "error"),
-            }
-          )
-          // Medusa.products
-          //   .update(product.id, {
-          //     status: product.status === "published" ? "draft" : "published",
-          //   })
-          //   .then(() =>
-          //     toaster(
-          //       `Successfully ${
-          //         product.status === "published" ? "unpublished" : "published"
-          //       } product`,
-          //       "success"
-          //     )
-          //   )
-          //   .then(() => refetch())
-          //   .catch((err) => toaster(getErrorMessage(err), "error"))
-        },
-        icon:
-          product.status === "published" ? (
-            <UnpublishIcon size={20} />
-          ) : (
-            <PublishIcon size={20} />
-          ),
-      },
-      {
-        label: "Duplicate",
-        onClick: () => handleCopyProduct(product),
-        icon: <DuplicateIcon size={20} />,
-      },
-      {
-        label: "Delete",
-        variant: "danger",
-        onClick: () => setDeleteProduct(product),
-        icon: <TrashIcon size={20} />,
-      },
-    ]
-  }
-
   return (
     <div className="w-full h-full overflow-y-scroll">
       {isLoading || isRefetching || !products ? (
@@ -565,22 +342,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
             <Table.Body {...getTableBodyProps()}>
               {rows.map((row) => {
                 prepareRow(row)
-                return (
-                  <Table.Row
-                    color={"inherit"}
-                    linkTo={`/a/products/${row.original.id}`}
-                    actions={getActionablesForProduct(row.original)}
-                    {...row.getRowProps()}
-                  >
-                    {row.cells.map((cell, index) => {
-                      return (
-                        <Table.Cell {...cell.getCellProps()}>
-                          {cell.render("Cell", { index })}
-                        </Table.Cell>
-                      )
-                    })}
-                  </Table.Row>
-                )
+                return <ProductRow row={row} />
               })}
             </Table.Body>
           </Table>
@@ -611,4 +373,27 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   )
 }
 
+const ProductRow = ({ row }) => {
+  const product = row.original
+  const { getActions } = useProductActions(product)
+
+  return (
+    <Table.Row
+      color={"inherit"}
+      linkTo={`/a/products/${product.id}`}
+      actions={getActions(product)}
+      {...row.getRowProps()}
+    >
+      {" "}
+      {row.cells.map((cell, index) => {
+        return (
+          <Table.Cell {...cell.getCellProps()}>
+            {" "}
+            {cell.render("Cell", { index })}{" "}
+          </Table.Cell>
+        )
+      })}{" "}
+    </Table.Row>
+  )
+}
 export default ProductTable
