@@ -1,4 +1,5 @@
 import { RouteComponentProps, useLocation } from "@reach/router"
+import clsx from "clsx"
 import { isEmpty } from "lodash"
 import { useAdminOrders } from "medusa-react"
 import qs from "qs"
@@ -38,7 +39,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const [query, setQuery] = useState(filtersOnLoad?.query)
   const [numPages, setNumPages] = useState(0)
 
-  const { orders, isLoading, isRefetching, count } = useAdminOrders(queryObject)
+  const { orders, isLoading, count } = useAdminOrders(queryObject)
 
   useEffect(() => {
     const controlledPageCount = Math.ceil(count! / queryObject.limit)
@@ -60,7 +61,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     nextPage,
     previousPage,
     // Get the state from the instance
-    state: { pageIndex, pageSize },
+    state: { pageIndex },
   } = useTable(
     {
       columns,
@@ -126,72 +127,70 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   }, [representationObject])
 
   return (
-    <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
-      {isLoading || !orders ? (
-        <div className="w-full pt-2xlarge flex items-center justify-center">
-          <Spinner size={"large"} variant={"secondary"} />
-        </div>
-      ) : (
-        <>
-          <Table
-            filteringOptions={
-              <OrderFilters
-                filters={filters}
-                submitFilters={setFilters}
-                clearFilters={clearFilters}
-              />
-            }
-            enableSearch
-            handleSearch={setQuery}
-            searchValue={query}
-            {...getTableProps()}
-          >
-            <Table.Head>
-              {headerGroups?.map((headerGroup, index) => (
-                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((col, headerIndex) => (
-                    <Table.HeadCell
-                      className="w-[100px]"
-                      {...col.getHeaderProps()}
-                    >
-                      {col.render("Header")}
-                    </Table.HeadCell>
-                  ))}
-                </Table.HeadRow>
-              ))}
-            </Table.Head>
-            <Table.Body {...getTableBodyProps()}>
-              {rows.map((row, rowIndex) => {
-                prepareRow(row)
-                return (
-                  <Table.Row
-                    color={"inherit"}
-                    linkTo={row.original.id}
-                    {...row.getRowProps()}
-                  >
-                    {row.cells.map((cell, index) => {
-                      return cell.render("Cell", { index })
-                    })}
-                  </Table.Row>
-                )
-              })}
-            </Table.Body>
-          </Table>
-          <TablePagination
-            count={count!}
-            limit={queryObject.limit}
-            offset={queryObject.offset}
-            pageSize={queryObject.offset + rows.length}
-            title="Orders"
-            currentPage={pageIndex}
-            pageCount={pageCount}
-            nextPage={handleNext}
-            prevPage={handlePrev}
-            hasNext={canNextPage}
-            hasPrev={canPreviousPage}
+    <div className="w-full overflow-y-scroll flex flex-col justify-between min-h-[300px] h-full ">
+      <Table
+        filteringOptions={
+          <OrderFilters
+            filters={filters}
+            submitFilters={setFilters}
+            clearFilters={clearFilters}
           />
-        </>
-      )}
+        }
+        enableSearch
+        handleSearch={setQuery}
+        searchValue={query}
+        {...getTableProps()}
+        className={clsx({ ["relative"]: isLoading })}
+      >
+        <Table.Head>
+          {headerGroups?.map((headerGroup, index) => (
+            <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((col, headerIndex) => (
+                <Table.HeadCell {...col.getHeaderProps()}>
+                  {col.render("Header")}
+                </Table.HeadCell>
+              ))}
+            </Table.HeadRow>
+          ))}
+        </Table.Head>
+        {isLoading || !orders ? (
+          <div className="flex w-full h-full absolute items-center justify-center mt-10">
+            <div className="">
+              <Spinner size={"large"} variant={"secondary"} />
+            </div>
+          </div>
+        ) : (
+          <Table.Body {...getTableBodyProps()}>
+            {rows.map((row, rowIndex) => {
+              prepareRow(row)
+              return (
+                <Table.Row
+                  color={"inherit"}
+                  linkTo={row.original.id}
+                  {...row.getRowProps()}
+                >
+                  {row.cells.map((cell, index) => {
+                    return cell.render("Cell", { index })
+                  })}
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        )}
+      </Table>
+      <TablePagination
+        count={count!}
+        limit={queryObject.limit}
+        offset={queryObject.offset}
+        pageSize={queryObject.offset + rows.length}
+        title="Orders"
+        currentPage={pageIndex}
+        pageCount={pageCount}
+        nextPage={handleNext}
+        prevPage={handlePrev}
+        hasNext={canNextPage}
+        hasPrev={canPreviousPage}
+      />
     </div>
   )
 }

@@ -1,5 +1,5 @@
-import { useMemo, useReducer } from "react"
 import qs from "qs"
+import { useMemo, useReducer } from "react"
 import { relativeDateFormatToTimestamp } from "../../../utils/time"
 
 type OrderDateFilter = null | {
@@ -155,7 +155,7 @@ export const useOrderFilters = (
 
       dispatch({ type: "setOffset", payload: nextOffset })
     } else {
-      const nextOffset = Math.min(state.offset - state.limit, 0)
+      const nextOffset = Math.abs(state.offset - state.limit)
       dispatch({ type: "setOffset", payload: nextOffset })
     }
   }
