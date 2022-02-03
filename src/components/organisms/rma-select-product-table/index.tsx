@@ -68,22 +68,10 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     setToReturn(newReturns)
   }
 
-  const handleAddImages = (files) => {
+  const handleAddImages = async (files) => {
     return Medusa.uploads
       .create(files)
       .then(({ data }) => data.uploads.map(({ url }) => url))
-  }
-
-  const handleImageDelete = (url, item) => {
-    Medusa.uploads.delete(url[0]).then(() => {
-      setToReturn({
-        ...toReturn,
-        [item.id]: {
-          ...(toReturn[item.id] || {}),
-          images: toReturn[item.id].images.filter((im) => im !== url),
-        },
-      })
-    })
   }
 
   const setReturnReason = (reason, note, files, id) => {
@@ -96,9 +84,10 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
             ...toReturn[id],
             reason: reason,
             note: note,
-            images: [...toReturn[id].images, ...res],
+            images: [...(toReturn[id].images || []), ...res],
           },
         }
+        setToReturn(newReturns)
       })
     } else {
       newReturns = {
@@ -109,9 +98,9 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
           note: note,
         },
       }
-    }
 
-    setToReturn(newReturns)
+      setToReturn(newReturns)
+    }
   }
 
   const isLineItemCanceled = (item) => {
@@ -131,7 +120,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   return (
     <Table>
       <Table.HeadRow className="text-grey-50 inter-small-semibold">
-        <Table.HeadCell colspan={2}>Product Details</Table.HeadCell>
+        <Table.HeadCell colSpan={2}>Product Details</Table.HeadCell>
         <Table.HeadCell className="text-right pr-8">Quantity</Table.HeadCell>
         <Table.HeadCell className="text-right">Refundable</Table.HeadCell>
         <Table.HeadCell></Table.HeadCell>
@@ -231,9 +220,16 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                             <span className="inter-small-semibold mr-1">
                               {toReturn[item.id]?.reason.label}
                             </span>
-                            {`(Value: ${toReturn[item.id]?.reason.value}),`}
                           </span>
                           {toReturn[item.id]?.note || ""}
+                          <span className="ml-2">
+                          ({toReturn[item.id]?.images?.length > 0 && (
+                            <>
+                            {toReturn[item.id]?.images?.length} image
+                            {toReturn[item.id]?.images?.length > 1 ? "s" : ""}
+                            </>
+                          )})
+                      </span>
                         </span>
                       )}
                     </div>
