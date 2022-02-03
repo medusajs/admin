@@ -1,20 +1,11 @@
-import React, { useState, useRef, useEffect } from "react"
-import * as RadixPopover from "@radix-ui/react-popover"
-
-import styled from "@emotion/styled"
-import { Flex, Box } from "rebass"
-
-import TagInput from "../../components/molecules/tag-input"
-import Button from "../../components/fundamentals/button"
-import FilterDropdownItem from "../../components/molecules/filter-dropdown/item"
-import Tooltip from "../../components/tooltip"
-import ReactTooltip from "react-tooltip"
-import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
-import { DateFilters } from "../../utils/filters"
-import FilterDropdownContainer from "../../components/molecules/filter-dropdown/container"
-import CheckIcon from "../../components/fundamentals/icons/check-icon"
 import clsx from "clsx"
+import React, { useRef, useState } from "react"
+import CheckIcon from "../../components/fundamentals/icons/check-icon"
+import ChevronDownIcon from "../../components/fundamentals/icons/chevron-down"
+import FilterDropdownContainer from "../../components/molecules/filter-dropdown/container"
+import FilterDropdownItem from "../../components/molecules/filter-dropdown/item"
 import SaveFilterItem from "../../components/molecules/filter-dropdown/save-field"
+import TagInput from "../../components/molecules/tag-input"
 
 const statusFilters = ["proposed", "draft", "published", "rejected"]
 
@@ -29,7 +20,6 @@ const ProductsFilter = ({
   clearFilters,
   tagsFilter,
   resetFilters,
-  sx,
   ...rest
 }) => {
   const [name, setName] = useState("")
@@ -45,14 +35,31 @@ const ProductsFilter = ({
     clearFilters()
   }
 
+  const numberOfFilters = [statusFilter, collectionFilter, tagsFilter].reduce(
+    (prev, curr) => prev + (curr.open ? 1 : 0),
+    0
+  )
+
   return (
     <FilterDropdownContainer
       submitFilters={onSubmit}
       clearFilters={onClear}
       triggerElement={
-        <Button size="small" variant="primary">
-          Filter
-        </Button>
+        <div
+          className={clsx(
+            "inter-small-regular text-grey-50 flex items-center pl-1.5 pr-0.5 rounded"
+          )}
+        >
+          <div className="flex items-center">
+            Custom filter:
+            <div className="text-grey-40 ml-0.5 flex px-1.5 active:bg-grey-5 hover:bg-grey-5 cursor-pointer items-center rounded">
+              <span className="text-violet-60 inter-small-semibold">
+                {numberOfFilters ? numberOfFilters : ""}
+              </span>
+              <ChevronDownIcon size={16} />
+            </div>
+          </div>
+        </div>
       }
     >
       <FilterDropdownItem

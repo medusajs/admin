@@ -48,7 +48,9 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   const [showDanger, setShowDanger] = useState(false)
 
   useEffect(() => {
-    if (!store || !region) return
+    if (!store || !region) {
+      return
+    }
     register({ name: "currency_code" })
     setValue("currency_code", region.currency_code)
     setSelectedCurrency(region.currency_code)
@@ -56,21 +58,27 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   }, [store, region])
 
   useEffect(() => {
-    if (!payment_providers) return
+    if (!payment_providers) {
+      return
+    }
     setPaymentOptions(
       payment_providers.map((c) => paymentProvidersMapper(c.id))
     )
   }, [payment_providers])
 
   useEffect(() => {
-    if (!fulfillment_options) return
+    if (!fulfillment_options) {
+      return
+    }
     setFulfillmentOptions(
       fulfillment_options.map((c) => fulfillmentProvidersMapper(c.provider_id))
     )
   }, [fulfillment_options])
 
   useEffect(() => {
-    if (!region) return
+    if (!region) {
+      return
+    }
     reset({ ...region, tax_rate: region.tax_rate / 100 })
     register({ name: "countries" })
     register({ name: "payment_providers" })
@@ -102,7 +110,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   }, [region])
 
   const getCurrencies = (storeCurrencies) => {
-    let currs = storeCurrencies
+    const currs = storeCurrencies
       .filter((item) => item.code !== region?.currency_code)
       .map((el) => el.code)
     currs.unshift(region?.currency_code)
@@ -193,7 +201,9 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   const handleDelete = async () => {
     deleteRegion.mutate(undefined, {
       onSuccess: () => {
-        if (onDelete) onDelete(null)
+        if (onDelete) {
+          onDelete(null)
+        }
       },
       onError: (error) => {
         toaster(getErrorMessage(error), "error")
@@ -244,18 +254,6 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                   name="name"
                   label="Name"
                   ref={register}
-                  className="mb-base"
-                />
-                <CurrencyInput
-                  currentCurrency={selectedCurrency}
-                  currencyCodes={currencies}
-                  onChange={handleChangeCurrency}
-                  className="mb-base"
-                /> */}
-                <CurrencyInput
-                  currentCurrency={selectedCurrency}
-                  currencyCodes={currencies}
-                  onChange={handleChangeCurrency}
                   className="mb-base"
                 />
                 <CurrencyInput

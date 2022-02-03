@@ -12,16 +12,6 @@ import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import { DateTimePickerProps } from "./types"
 
-const getDateClassname = (d, tempDate) => {
-  return moment(d).format("YY,MM,DD") === moment(tempDate).format("YY,MM,DD")
-    ? "date chosen"
-    : `date ${
-        moment(d).format("YY,MM,DD") < moment(new Date()).format("YY,MM,DD")
-          ? "past"
-          : ""
-      }`
-}
-
 const DatePicker: React.FC<DateTimePickerProps> = ({
   date,
   onSubmitDate,
@@ -80,7 +70,6 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
           className="rounded-rounded px-8  border border-grey-20 bg-grey-0 w-full shadow-dropdown"
         >
           <CalendarComponent date={tempDate} onChange={setTempDate} />
-
           <div className="flex w-full mb-8 mt-5">
             <Button
               variant="ghost"
