@@ -38,6 +38,10 @@ const reasonOptions = [
     label: "Production Failure",
     value: "production_failure",
   },
+  {
+    label: "Other",
+    value: "other",
+  },
 ]
 
 const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
@@ -175,6 +179,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
 
   const onSubmit = () => {
     const claim_items = Object.entries(toReturn).map(([key, val]) => {
+      val.reason = val.reason?.value
       const clean = removeNullish(val)
       return {
         item_id: key,
@@ -298,6 +303,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             <RMASelectProductTable
               order={order}
               allItems={allItems}
+              imagesOnReturns={true}
               customReturnOptions={reasonOptions}
               toReturn={toReturn}
               setToReturn={(items) => setToReturn(items)}

@@ -87,9 +87,8 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   }
 
   const setReturnReason = (reason, note, files, id) => {
-    console.log(reason)
     let newReturns = {}
-    if (imagesOnReturns) {
+    if (imagesOnReturns && files?.length) {
       handleAddImages(files).then((res) => {
         newReturns = {
           ...toReturn,
