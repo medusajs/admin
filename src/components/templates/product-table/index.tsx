@@ -211,15 +211,17 @@ const ProductTable: React.FC<ProductTableProps> = () => {
         accessor: "title",
         Cell: ({ row: { original } }) => {
           return (
-            <div className="flex items-center">
-              <div className="w-[38px] h-[38px] mr-4">
+            <div className="flex items-center py-[7px]">
+              <div className="w-[30px] h-[40px] rounded-soft overflow-hidden mr-4">
                 {original.thumbnail ? (
                   <img
                     src={original.thumbnail}
                     className="h-full object-contain rounded-soft"
                   />
                 ) : (
-                  <ImagePlaceholder />
+                  <div className="flex items-center justify-center w-[30px] h-[40px] rounded-soft bg-grey-5">
+                    <ImagePlaceholder size={16} />
+                  </div>
                 )}
               </div>
               {original.title}
