@@ -223,12 +223,11 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                           </span>
                           {toReturn[item.id]?.note || ""}
                           <span className="ml-2">
-                          ({toReturn[item.id]?.images?.length > 0 && (
+                          {toReturn[item.id]?.images?.length > 0 && (
                             <>
-                            {toReturn[item.id]?.images?.length} image
-                            {toReturn[item.id]?.images?.length > 1 ? "s" : ""}
+                              ({toReturn[item.id]?.images?.length} image {toReturn[item.id]?.images?.length > 1 ? "s" : ""})
                             </>
-                          )})
+                          )}
                       </span>
                         </span>
                       )}
