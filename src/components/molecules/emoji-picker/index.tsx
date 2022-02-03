@@ -3,7 +3,6 @@ import Picker, { SKIN_TONE_NEUTRAL } from "emoji-picker-react"
 import React from "react"
 import Button from "../../fundamentals/button"
 import HappyIcon from "../../fundamentals/icons/happy-icon"
-import "./style.css"
 
 type indexProps = {
   onEmojiClick: (emoji: string) => void
@@ -45,9 +44,6 @@ const EmojiPicker: React.FC<indexProps> = ({ onEmojiClick }) => {
           skinTone={SKIN_TONE_NEUTRAL}
           groupNames={{ smileys_people: "PEOPLE" }}
           native
-          pickerStyle={{
-            border: "none",
-          }}
           disableSkinTonePicker={true}
           searchPlaceholder={"Search Emoji..."}
           groupNames={groupNames}
