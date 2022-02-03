@@ -98,6 +98,7 @@ const Field: React.FC<FieldProps> = ({ field, updateKey, updateValue }) => {
       <div className="maw-w-[200px]">
         <InputField
           label="Key"
+          placeholder="Some key"
           defaultValue={field.key}
           onChange={(e) => {
             updateKey(e.currentTarget.value)
@@ -107,6 +108,7 @@ const Field: React.FC<FieldProps> = ({ field, updateKey, updateValue }) => {
       <div className="flex-grow">
         <InputField
           label="Value"
+          placeholder="Some value"
           defaultValue={field.value}
           onChange={(e) => {
             updateValue(e.currentTarget.value)

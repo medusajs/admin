@@ -1,12 +1,4 @@
-import {
-  Address,
-  AdminPostOrdersOrderClaimsClaimFulfillmentsReq,
-  AdminPostOrdersOrderFulfillmentsReq,
-  AdminPostOrdersOrderSwapsSwapFulfillmentsReq,
-  ClaimOrder,
-  Fulfillment,
-  Swap,
-} from "@medusajs/medusa"
+import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import { capitalize, sum } from "lodash"
@@ -17,11 +9,8 @@ import {
   useAdminCancelSwapFulfillment,
   useAdminCapturePayment,
   useAdminCreateClaimShipment,
-  useAdminCreateFulfillment,
   useAdminCreateShipment,
   useAdminCreateSwapShipment,
-  useAdminFulfillClaim,
-  useAdminFulfillSwap,
   useAdminOrder,
   useAdminRegion,
   useAdminUpdateOrder,
@@ -51,6 +40,7 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
+import OrderLine from "./order-line"
 
 const gatherAllFulfillments = (order) => {
   if (!order) {
@@ -143,57 +133,6 @@ const OrderDetails = ({ id }) => {
   const cancelFulfillment = useAdminCancelFulfillment(id)
   const cancelSwapFulfillment = useAdminCancelSwapFulfillment(id)
   const cancelClaimFulfillment = useAdminCancelClaimFulfillment(id)
-
-  const createOrderFulfillment = useAdminCreateFulfillment(id)
-  const createSwapFulfillment = useAdminFulfillSwap(id)
-  const createClaimFulfillment = useAdminFulfillClaim(id)
-
-  const createFulfillment = (
-    type: "swap" | "claim" | "order" = "order",
-    itemsToFulfill?: []
-  ) => {
-    type actionType =
-      | typeof createOrderFulfillment
-      | typeof createSwapFulfillment
-      | typeof createClaimFulfillment
-
-    let action: actionType = createOrderFulfillment
-    let successText = "Successfully fulfilled order"
-    let requestObj
-
-    switch (type) {
-      case "swap":
-        action = createSwapFulfillment
-        successText = "Successfully fulfilled swap"
-        requestObj = {
-          metadata: {},
-          no_notification: false,
-        } as AdminPostOrdersOrderSwapsSwapFulfillmentsReq
-        break
-
-      case "claim":
-        action = createClaimFulfillment
-        successText = "Successfully fulfilled claim"
-        requestObj = {
-          metadata: {},
-          no_notification: false,
-        } as AdminPostOrdersOrderClaimsClaimFulfillmentsReq
-        break
-
-      default:
-        requestObj = {
-          metadata: {},
-          no_notification: false,
-        } as AdminPostOrdersOrderFulfillmentsReq
-        requestObj.items = itemsToFulfill
-        break
-    }
-
-    action.mutate(requestObj, {
-      onSuccess: () => toaster(successText),
-      onError: (err) => toaster(getErrorMessage(err), "error"),
-    })
-  }
 
   const { region } = useAdminRegion(order?.region_id)
 
@@ -741,55 +680,7 @@ const OrderDetails = ({ id }) => {
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Summary">
               <div className="mt-6">
                 {order?.items?.map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded"
-                  >
-                    <div className="flex space-x-4 justify-center">
-                      <div className="flex h-[48px] w-[36px]">
-                        <img
-                          src={item.thumbnail}
-                          className="rounded-rounded object-cover"
-                        />
-                      </div>
-                      <div className="flex flex-col justify-center">
-                        <span className="inter-small-regular text-grey-90 max-w-[225px] truncate">
-                          {item.title}
-                        </span>
-                        {item?.variant && (
-                          <span className="inter-small-regular text-grey-50">
-                            {item.variant.sku}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex  items-center">
-                      <div className="flex small:space-x-2 medium:space-x-4 large:space-x-6 mr-3">
-                        <div className="inter-small-regular text-grey-50">
-                          {formatAmountWithSymbol({
-                            amount: item.unit_price,
-                            currency: order?.currency_code,
-                            digits: 2,
-                            tax: order?.tax_rate,
-                          })}
-                        </div>
-                        <div className="inter-small-regular text-grey-50">
-                          x {item.quantity}
-                        </div>
-                        <div className="inter-small-regular text-grey-90">
-                          {formatAmountWithSymbol({
-                            amount: item.unit_price * item.quantity,
-                            currency: order?.currency_code,
-                            digits: 2,
-                            tax: order?.tax_rate,
-                          })}
-                        </div>
-                      </div>
-                      <div className="inter-small-regular text-grey-50">
-                        {order?.currency_code.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
+                  <OrderLine key={i} item={item} region={order?.region} />
                 ))}
                 <DisplayTotal
                   totalAmount={order?.subtotal}
@@ -909,7 +800,8 @@ const OrderDetails = ({ id }) => {
               status={<FulfillmentStatusComponent />}
               customActionable={
                 order.fulfillment_status !== "fulfilled" &&
-                order.status !== "canceled" && (
+                order.status !== "canceled" &&
+                order.fulfillment_status !== "shipped" && (
                   <Button
                     variant="secondary"
                     size="small"
