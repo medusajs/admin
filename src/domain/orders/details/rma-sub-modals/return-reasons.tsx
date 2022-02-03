@@ -63,7 +63,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
             }
           />
           <InputField
-            label={"note"}
+            label={"Note"}
             value={note}
             className="my-4"
             onChange={(val) => onChange(val)}

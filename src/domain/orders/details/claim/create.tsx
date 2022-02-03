@@ -41,7 +41,6 @@ const reasonOptions = [
 ]
 
 const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
-  console.log(order)
   const [shippingAddress, setShippingAddress] = useState({})
   const [countries, setCountries] = useState([])
   const [isReplace, toggleReplace] = useState(false)
@@ -52,7 +51,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [itemsToAdd, setItemsToAdd] = useState<any[]>([])
   const [shippingLoading, setShippingLoading] = useState(true)
   const [returnShippingOptions, setReturnShippingOptions] = useState<any[]>([])
-  const [returnShippingMethod, setReturnShippingMethod] = useState()
+  const [returnShippingMethod, setReturnShippingMethod] = useState<
+    object | null
+  >(null)
   const [returnShippingPrice, setReturnShippingPrice] = useState()
   const [shippingOptions, setShippingOptions] = useState([])
   const [shippingMethod, setShippingMethod] = useState()
@@ -242,12 +243,17 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   }
 
   const handleReturnShippingSelected = (so) => {
+    if (!so) {
+      setReturnShippingMethod(null)
+      return
+    }
+
     const selectSo = returnShippingOptions.find((s) => so.value === s.id)
     if (selectSo) {
       setReturnShippingMethod(selectSo)
       setReturnShippingPrice(selectSo.amount * (1 + order.tax_rate / 100))
     } else {
-      setReturnShippingMethod()
+      setReturnShippingMethod(null)
       setReturnShippingPrice(0)
     }
   }
@@ -297,8 +303,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
               setToReturn={(items) => setToReturn(items)}
             />
           </div>
-          <div>
-            <h3 className="inter-base-semibold ">
+          <div className="mt-4">
+            <h3 className="inter-base-semibold">
               Shipping Return{" "}
               {returnShippingMethod && (
                 <span className="text-grey-40 inter-base-regular">
@@ -312,6 +318,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
               </div>
             ) : (
               <Select
+                clearSelected
                 label="Shipping Method"
                 className="mt-2"
                 overrideStrings={{ search: "Add a shipping method" }}
