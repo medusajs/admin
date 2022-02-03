@@ -2073,12 +2073,21 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
+<<<<<<< HEAD
 "@medusajs/medusa-js@^1.0.11-alpha.9", "@medusajs/medusa-js@^1.0.11-alpha.9+59bb4132":
   version "1.0.11-alpha.9"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-alpha.9.tgz#28020af761be039a3b15885a57744c1b69f58818"
   integrity sha512-liqkM5KOTsjZRIs9LFuOhbL66PHAs2ukvN1Qdn3f2Hpx6YLs2+OiW2Wt6DFn+i/R9rKi8jy83YH0irK+sKsVNg==
   dependencies:
     "@medusajs/medusa" "^1.1.63-alpha.9+59bb4132"
+=======
+"@medusajs/medusa-js@^1.0.11-alpha.7", "@medusajs/medusa-js@^1.0.11-alpha.7+a81227fa":
+  version "1.0.11-alpha.7"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-alpha.7.tgz#23a950f8927521641192e31f29b4eae55f32ef2b"
+  integrity sha512-3XhYRyKZU3z/gkf5RxD934S+c6YB0GCGKNXgHVPSiwtMSXRGBho5vxbP4V3VihtwTnYIYjcXBbCL952YAAIpsQ==
+  dependencies:
+    "@medusajs/medusa" "^1.1.63-alpha.7+a81227fa"
+>>>>>>> origin/feat/revamp
     axios "^0.24.0"
     form-data "^4.0.0"
     qs "^6.10.3"
@@ -2134,10 +2143,17 @@
     uuid "^8.3.1"
     winston "^3.2.1"
 
+<<<<<<< HEAD
 "@medusajs/medusa@^1.1.63-alpha.9+59bb4132":
   version "1.1.63-alpha.9"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.63-alpha.9.tgz#a0d511b8c1b94b86216964b233020af6f593ecc0"
   integrity sha512-8JofT2ID4EZvouzkOzBV0M8o5Xdp8jmmvwAzsebd2KtpdZ7vzn/+O/s+OMh3FZv75/g54z6+Fudx3nQd+MQiNw==
+=======
+"@medusajs/medusa@^1.1.63-alpha.7+a81227fa":
+  version "1.1.63-alpha.7"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.63-alpha.7.tgz#76cac5096ac9bc2fc5641654c7e75ba2a3a09498"
+  integrity sha512-PvYLUVdC6IwwHa5/+U8TZVItT5MOP0oibia2Ewdwf3x/IN6HJHx4qdUPTqdVYy03p0WQiZfgw2qewlwiZ/8PXA==
+>>>>>>> origin/feat/revamp
   dependencies:
     "@hapi/joi" "^16.1.8"
     "@medusajs/medusa-cli" "^1.1.27"
@@ -2744,6 +2760,21 @@
   integrity sha512-g3hnE/UcOg7REdewduRPAK88EPuLZtaq7sA9ouu8S+YEtnyFRI16jgv6GZYe3VMoQLL1T171ebmEPtDjyxWLzw==
   dependencies:
     "@babel/runtime" "^7.13.10"
+
+"@react-dnd/asap@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@react-dnd/asap/-/asap-4.0.0.tgz#b300eeed83e9801f51bd66b0337c9a6f04548651"
+  integrity sha512-0XhqJSc6pPoNnf8DhdsPHtUhRzZALVzYMTzRwV4VI6DJNJ/5xxfL9OQUwb8IH5/2x7lSf7nAZrnzUD+16VyOVQ==
+
+"@react-dnd/invariant@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@react-dnd/invariant/-/invariant-2.0.0.tgz#09d2e81cd39e0e767d7da62df9325860f24e517e"
+  integrity sha512-xL4RCQBCBDJ+GRwKTFhGUW8GXa4yoDfJrPbLblc3U09ciS+9ZJXJ3Qrcs/x2IODOdIE5kQxvMmE2UKyqUictUw==
+
+"@react-dnd/shallowequal@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@react-dnd/shallowequal/-/shallowequal-2.0.0.tgz#a3031eb54129f2c66b2753f8404266ec7bf67f0a"
+  integrity sha512-Pc/AFTdwZwEKJxFJvlxrSmGe/di+aAOBn60sremrpLo6VI/6cmiUYNNwlI5KNYttg7uypzA3ILPMPgxB2GYZEg==
 
 "@rebass/forms@^4.0.6":
   version "4.0.6"
@@ -3856,6 +3887,13 @@
   integrity sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==
   dependencies:
     defer-to-connect "^2.0.0"
+
+"@tailwindcss/forms@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@tailwindcss/forms/-/forms-0.4.0.tgz#a46715e347a32d216a3973eb67473bd29ae3798e"
+  integrity sha512-DeaQBx6EgEeuZPQACvC+mKneJsD8am1uiJugjgQK1+/Vt+Ai0GpFBC2T2fqnUad71WgOxyrZPE6BG1VaI6YqfQ==
+  dependencies:
+    mini-svg-data-uri "^1.2.3"
 
 "@tailwindcss/line-clamp@^0.3.1":
   version "0.3.1"
@@ -7407,6 +7445,15 @@ dlv@^1.1.3:
   resolved "https://registry.yarnpkg.com/dlv/-/dlv-1.1.3.tgz#5c198a8a11453596e751494d49874bc7732f2e79"
   integrity sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==
 
+dnd-core@14.0.1:
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-14.0.1.tgz#76d000e41c494983210fb20a48b835f81a203c2e"
+  integrity sha512-+PVS2VPTgKFPYWo3vAFEA8WPbTf7/xo43TifH9G8S1KqnrQu0o77A3unrF5yOugy4mIz7K5wAVFHUcha7wsz6A==
+  dependencies:
+    "@react-dnd/asap" "^4.0.0"
+    "@react-dnd/invariant" "^2.0.0"
+    redux "^4.1.1"
+
 doctrine@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-2.1.0.tgz#5cd01fc101621b42c4cd7f5d1a66243716d3f39d"
@@ -10138,7 +10185,7 @@ hmac-drbg@^1.0.1:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.1:
+hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
   integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
@@ -10355,6 +10402,11 @@ immer@8.0.1:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/immer/-/immer-8.0.1.tgz#9c73db683e2b3975c424fb0572af5889877ae656"
   integrity sha512-aqXhGP7//Gui2+UrEtvxZxSquQVXTpZ7KDxfCcKAF3Vysvw0CViVaW9RZ1j1xlIYqaaaipBoqdqeibkc18PNvA==
+
+immutability-helper@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/immutability-helper/-/immutability-helper-3.1.1.tgz#2b86b2286ed3b1241c9e23b7b21e0444f52f77b7"
+  integrity sha512-Q0QaXjPjwIju/28TsugCHNEASwoCcJSyJV3uO1sOIQGI0jKgm9f41Lvz0DZj3n46cNCyAZTsEYoY4C2bVRUzyQ==
 
 import-fresh@^3.0.0, import-fresh@^3.1.0, import-fresh@^3.2.1:
   version "3.3.0"
@@ -12018,6 +12070,7 @@ medusa-core-utils@^1.1.31:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
+<<<<<<< HEAD
 medusa-react@^0.1.4-alpha.9:
   version "0.1.4-alpha.9"
   resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.1.4-alpha.9.tgz#350d0741b6921a8d48a885844783827a64f26b03"
@@ -12025,6 +12078,15 @@ medusa-react@^0.1.4-alpha.9:
   dependencies:
     "@medusajs/medusa" "^1.1.63-alpha.9+59bb4132"
     "@medusajs/medusa-js" "^1.0.11-alpha.9+59bb4132"
+=======
+medusa-react@^0.1.4-alpha.7:
+  version "0.1.4-alpha.7"
+  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.1.4-alpha.7.tgz#20baae8dc80bfdff315030c9efc6ce6a93b24311"
+  integrity sha512-sJXFm+Hum4p9rXmnqciwpbk8l+Qb7HPdXyZLwBZwHILoSB4Et8niwGmlGKtIPL3bSKhUB2/mIWZr2RDn6sbxtw==
+  dependencies:
+    "@medusajs/medusa" "^1.1.63-alpha.7+a81227fa"
+    "@medusajs/medusa-js" "^1.0.11-alpha.7+a81227fa"
+>>>>>>> origin/feat/revamp
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
@@ -12243,7 +12305,7 @@ mini-css-extract-plugin@1.6.2:
     schema-utils "^3.0.0"
     webpack-sources "^1.1.0"
 
-mini-svg-data-uri@^1.4.3:
+mini-svg-data-uri@^1.2.3, mini-svg-data-uri@^1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/mini-svg-data-uri/-/mini-svg-data-uri-1.4.3.tgz#43177b2e93766ba338931a3e2a84a3dfd3a222b8"
   integrity sha512-gSfqpMRC8IxghvMcxzzmMnWpXAChSA+vy4cia33RgerMS8Fex95akUyQZPbxJJmeBGiGmK7n/1OpUX8ksRjIdA==
@@ -14510,6 +14572,24 @@ react-dev-utils@^11.0.4:
     strip-ansi "6.0.0"
     text-table "0.2.0"
 
+react-dnd-html5-backend@^14.1.0:
+  version "14.1.0"
+  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-14.1.0.tgz#b35a3a0c16dd3a2bfb5eb7ec62cf0c2cace8b62f"
+  integrity sha512-6ONeqEC3XKVf4eVmMTe0oPds+c5B9Foyj8p/ZKLb7kL2qh9COYxiBHv3szd6gztqi/efkmriywLUVlPotqoJyw==
+  dependencies:
+    dnd-core "14.0.1"
+
+react-dnd@^14.0.5:
+  version "14.0.5"
+  resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-14.0.5.tgz#ecf264e220ae62e35634d9b941502f3fca0185ed"
+  integrity sha512-9i1jSgbyVw0ELlEVt/NkCUkxy1hmhJOkePoCH713u75vzHGyXhPDm28oLfc2NMSBjZRM1Y+wRjHXJT3sPrTy+A==
+  dependencies:
+    "@react-dnd/invariant" "^2.0.0"
+    "@react-dnd/shallowequal" "^2.0.0"
+    dnd-core "14.0.1"
+    fast-deep-equal "^3.1.3"
+    hoist-non-react-statics "^3.3.2"
+
 react-docgen-typescript@^2.0.0:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/react-docgen-typescript/-/react-docgen-typescript-2.2.2.tgz#4611055e569edc071204aadb20e1c93e1ab1659c"
@@ -14980,7 +15060,7 @@ redux-thunk@^2.4.0:
   resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.4.1.tgz#0dd8042cf47868f4b29699941de03c9301a75714"
   integrity sha512-OOYGNY5Jy2TWvTL1KgAlVy6dcx3siPJ1wTq741EPyUKfn6W6nChdICjZwCd0p8AZBs5kWpZlbkXW2nE/zjUa+Q==
 
-redux@4.1.2:
+redux@4.1.2, redux@^4.1.1:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.1.2.tgz#140f35426d99bb4729af760afcf79eaaac407104"
   integrity sha512-SH8PglcebESbd/shgf6mii6EIoRM0zrQyjcuQ+ojmfxjTtE0z9Y8pa62iA/OJ58qjP6j27uyW4kUF4jl/jd6sw==
