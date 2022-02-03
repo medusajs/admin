@@ -1,226 +1,83 @@
-import _ from "lodash"
-import { useAdminCollections, useAdminProducts } from "medusa-react"
-import qs from "query-string"
+import { isEmpty } from "lodash"
+import { useLocation } from "@reach/router"
+import { useAdminProducts } from "medusa-react"
+import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
-import { useDebounce } from "../../../hooks/use-debounce"
-import Medusa from "../../../services/api"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
 import useProductActions from "./use-product-actions"
 import useProductTableColumn from "./use-product-column"
+import { useProductFilters } from "./use-product-filters"
 
-const removeNullish = (obj) =>
-  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
+const DEFAULT_PAGE_SIZE = 15
 
 type ProductTableProps = {}
 
+const defaultQueryProps = {
+  fields: "id,title,type,thumbnail",
+  expand: "variants,options,variants.prices,variants.options,collection,tags",
+}
+
 const ProductTable: React.FC<ProductTableProps> = () => {
-  const [offset, setOffset] = useState(0)
-  const [collectionsList, setCollectionsList] = useState<string[]>([])
-  const [limit, setLimit] = useState(14)
-  const [query, setQuery] = useState("")
-  const [currentPage, setCurrentPage] = useState(0)
-  const [numPages, setNumPages] = useState(0)
-  const [tags, setTags] = useState(null)
-
-  const [statusFilter, setStatusFilter] = useState({
-    open: false,
-    filter: null,
-  })
-  const [collectionFilter, setCollectionFilter] = useState({
-    open: false,
-    filter: null,
-  })
-  const [tagsFilter, setTagsFilter] = useState({
-    open: false,
-    filter: null,
-    invalidTagsMessage: null,
-  })
-
-  const resetFilters = () => {
-    setStatusFilter({
-      open: false,
-      filter: null,
-    })
-    setCollectionFilter({
-      open: false,
-      filter: null,
-    })
-    setTagsFilter({
-      open: false,
-      filter: null,
-      invalidTagsMessage: null,
-    })
-  }
-
-  const clearFilters = () => {
-    resetFilters()
-    setOffset(0)
-    replaceQueryString({})
-  }
-
-  const submitFilters = async () => {
-    const collectionIds = collectionFilter.filter
-      ? collectionFilter.filter
-          .split(",")
-          .map((cf) => collections.find((c) => c.title === cf)?.id)
-          .filter(Boolean)
-          .join(",")
-      : null
-
-    const tagIds = tagsFilter.filter
-      ? tagsFilter.filter
-          .map((tag) => tag.trim())
-          .map((tag) => tags?.find((t) => t.value === tag)?.id)
-          .filter(Boolean)
-          .join(",")
-      : null
-
-    const urlObject = {
-      "status[]": statusFilter.open ? statusFilter.filter : null,
-      "collection_id[]": collectionFilter.open ? collectionIds : null,
-      "tags[]": tagsFilter.open && tagIds?.length > 0 ? tagIds : null,
-    }
-
-    const url = { ...removeNullish(urlObject) }
-
-    replaceQueryString(url)
-  }
-
-  const { collections, isLoading: isLoadingCollections } = useAdminCollections()
-
-  const toggleFilterTags = async (tagsFilter) => {
-    if (!tags) {
-      const tagsResponse = await Medusa.products.listTagsByUsage()
-      setTags(tagsResponse.data.tags)
-    }
-
-    const invalidTags = tagsFilter.filter?.filter((tag) =>
-      tags.every((t) => t.value !== tag)
-    )
-
-    tagsFilter.invalidTagsMessage =
-      invalidTags?.length > 0
-        ? invalidTags?.length === 1
-          ? `${invalidTags[0]} is not a valid tag`
-          : `${invalidTags} are not valid tags`
-        : null
-
-    setTagsFilter(tagsFilter)
-  }
-
-  const setFilterTagsById = async (tagIds) => {
-    let ts = []
-    if (!tags) {
-      const tagsResponse = await Medusa.products.listTagsByUsage()
-      setTags(tagsResponse.data.tags)
-      ts = tagsResponse.data.tags
-    } else {
-      ts = tags
-    }
-
-    const tagValues = ts
-      .filter((tag) => tagIds.indexOf(tag.id) > -1)
-      .map((t) => t.value)
-
-    setTagsFilter({ open: true, filter: tagValues })
-  }
-
-  const setCollectionsFilterById = async (collectionIds) => {
-    const collectionsResponse = await Medusa.collections.list()
-    const ts = collectionsResponse.data.collections
-
-    const tagValues = ts
-      .filter((collection) => collectionIds.indexOf(collection.id) > -1)
-      .map((t) => t.title)
-      .join(",")
-
-    setCollectionFilter({ open: true, filter: tagValues })
-  }
-
-  const filtersOnLoad = qs.parse(window.location.search)
-
-  if (!filtersOnLoad.offset) {
-    filtersOnLoad.offset = offset
-  }
-
-  if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = limit
-  }
-
-  useEffect(() => {
-    const filtersOnLoad = qs.parse(window.location.search, {
-      arrayFormat: "bracket",
-    })
-
-    if (filtersOnLoad.status?.length) {
-      setStatusFilter({
-        open: true,
-        filter: filtersOnLoad.status[0],
-      })
-    }
-
-    if (filtersOnLoad.collection_id?.length) {
-      setCollectionsFilterById(filtersOnLoad.collection_id[0].split(","))
-    }
-
-    if (filtersOnLoad.tags?.length) {
-      setFilterTagsById(filtersOnLoad.tags[0].split(","))
-    }
-    console.log(filtersOnLoad)
-  }, [])
-
-  const defaultQueryProps = {
-    fields: "id,title,type,thumbnail",
-    expand: "variants,options,variants.prices,variants.options,collection,tags",
-  }
-
-  const debouncedSearchTerm = useDebounce(query, 500)
+  const location = useLocation()
 
   const {
-    products,
-    isLoading,
-    refetch,
-    isRefetching,
-    count,
-  } = useAdminProducts({
-    ...filtersOnLoad,
-    ...defaultQueryProps,
-    q: debouncedSearchTerm,
-  })
+    removeTab,
+    setTab,
+    saveTab,
+    availableTabs: filterTabs,
+    activeFilterTab,
+    reset,
+    paginate,
+    setFilters,
+    filters,
+    setQuery: setFreeText,
+    queryObject,
+    representationObject,
+  } = useProductFilters(location.search, defaultQueryProps)
 
-  const replaceQueryString = (queryObject) => {
-    const searchObject = {
-      ...queryObject,
-      ...defaultQueryProps,
+  const offs = parseInt(queryObject.offset) || 0
+  const limit = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
+
+  const [query, setQuery] = useState(queryObject.query)
+  const [numPages, setNumPages] = useState(0)
+
+  const clearFilters = () => {
+    reset()
+    setQuery("")
+  }
+
+  const { products, isLoading, isRefetching, count } = useAdminProducts(
+    queryObject
+  )
+
+  useEffect(() => {
+    if (typeof count !== "undefined") {
+      const controlledPageCount = Math.ceil(count / limit)
+      setNumPages(controlledPageCount)
     }
+  }, [count])
 
-    if (_.entries(queryObject).length === 0) {
-      resetFilters()
-      window.history.replaceState({}, "", "/a/products")
-      refetch()
+  const updateUrlFromFilter = (obj = {}) => {
+    const stringified = qs.stringify(obj)
+    window.history.replaceState(`/a/products`, "", `${`?${stringified}`}`)
+  }
+
+  const refreshWithFilters = () => {
+    const filterObj = representationObject
+
+    if (isEmpty(filterObj)) {
+      updateUrlFromFilter({ offset: 0, limit: DEFAULT_PAGE_SIZE })
     } else {
-      if (!searchObject.offset) {
-        searchObject.offset = 0
-      }
-
-      if (!searchObject.limit) {
-        searchObject.limit = 14
-      }
-
-      const query = qs.stringify(queryObject)
-      window.history.replaceState(`/a/products`, "", `${`?${query}`}`)
-      refetch()
+      updateUrlFromFilter(filterObj)
     }
   }
 
   useEffect(() => {
-    if (!isLoadingCollections && collections?.length) {
-      setCollectionsList(collections.map((c) => c.title))
-    }
-  }, [isLoadingCollections])
+    refreshWithFilters()
+  }, [representationObject])
 
   const [columns] = useProductTableColumn()
 
@@ -230,6 +87,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     headerGroups,
     rows,
     prepareRow,
+    gotoPage,
     canPreviousPage,
     canNextPage,
     pageCount,
@@ -243,7 +101,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       data: products || [],
       manualPagination: true,
       initialState: {
-        pageIndex: currentPage,
+        pageIndex: Math.floor(offs / limit),
         pageSize: limit,
       },
       pageCount: numPages,
@@ -252,96 +110,98 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     usePagination
   )
 
+  // Debounced search
   useEffect(() => {
-    const controlledPageCount = Math.ceil(count! / limit)
-    setNumPages(controlledPageCount)
-  }, [products])
+    const delayDebounceFn = setTimeout(() => {
+      if (query) {
+        setFreeText(query)
+        gotoPage(0)
+      } else {
+        if (typeof query !== "undefined") {
+          // if we delete query string, we reset the table view
+          reset()
+        }
+      }
+    }, 400)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [query])
 
   const handleNext = () => {
     if (canNextPage) {
-      setOffset((old) => old + pageSize)
-      setCurrentPage((old) => old + 1)
+      paginate(1)
       nextPage()
     }
   }
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      setOffset((old) => old - pageSize)
-      setCurrentPage((old) => old - 1)
+      paginate(-1)
       previousPage()
     }
   }
 
-  const handleSearch = (q) => {
-    setOffset(0)
-    setCurrentPage(0)
-    setQuery(q)
-  }
-
   return (
     <div className="w-full h-full overflow-y-scroll">
-      {isLoading || isRefetching || !products ? (
-        <div className="w-full pt-2xlarge flex items-center justify-center">
-          <Spinner size={"large"} variant={"secondary"} />
-        </div>
-      ) : (
-        <>
-          <Table
-            filteringOptions={
-              <ProductsFilter
-                setStatusFilter={setStatusFilter}
-                statusFilter={statusFilter}
-                setCollectionFilter={setCollectionFilter}
-                collectionFilter={collectionFilter}
-                collections={collectionsList}
-                setTagsFilter={toggleFilterTags}
-                submitFilters={submitFilters}
-                tagsFilter={tagsFilter}
-                resetFilters={resetFilters}
-                clearFilters={clearFilters}
-              />
-            }
-            enableSearch
-            handleSearch={handleSearch}
-            {...getTableProps()}
-          >
-            <Table.Head>
-              {headerGroups?.map((headerGroup) => (
-                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((col) => (
-                    <Table.HeadCell
-                      className="min-w-[100px]"
-                      {...col.getHeaderProps()}
-                    >
-                      {col.render("Header")}
-                    </Table.HeadCell>
-                  ))}
-                </Table.HeadRow>
-              ))}
-            </Table.Head>
+      <>
+        <Table
+          filteringOptions={
+            <ProductsFilter
+              filters={filters}
+              submitFilters={setFilters}
+              clearFilters={clearFilters}
+              tabs={filterTabs}
+              onTabClick={setTab}
+              activeTab={activeFilterTab}
+              onRemoveTab={removeTab}
+              onSaveTab={saveTab}
+            />
+          }
+          enableSearch
+          handleSearch={setQuery}
+          {...getTableProps()}
+        >
+          <Table.Head>
+            {headerGroups?.map((headerGroup) => (
+              <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((col) => (
+                  <Table.HeadCell
+                    className="min-w-[100px]"
+                    {...col.getHeaderProps()}
+                  >
+                    {col.render("Header")}
+                  </Table.HeadCell>
+                ))}
+              </Table.HeadRow>
+            ))}
+          </Table.Head>
+          {isLoading || isRefetching || !products ? (
+            <div className="w-full pt-2xlarge flex items-center justify-center">
+              <Spinner size={"large"} variant={"secondary"} />
+            </div>
+          ) : (
             <Table.Body {...getTableBodyProps()}>
               {rows.map((row) => {
                 prepareRow(row)
                 return <ProductRow row={row} />
               })}
             </Table.Body>
-          </Table>
-          <TablePagination
-            count={count!}
-            limit={limit}
-            offset={offset}
-            pageSize={offset + rows.length}
-            title="Products"
-            currentPage={pageIndex}
-            pageCount={pageCount}
-            nextPage={handleNext}
-            prevPage={handlePrev}
-            hasNext={canNextPage}
-            hasPrev={canPreviousPage}
-          />
-        </>
-      )}
+          )}
+        </Table>
+        <TablePagination
+          count={count!}
+          limit={limit}
+          offset={offs}
+          pageSize={offs + rows.length}
+          title="Products"
+          currentPage={pageIndex}
+          pageCount={pageCount}
+          nextPage={handleNext}
+          prevPage={handlePrev}
+          hasNext={canNextPage}
+          hasPrev={canPreviousPage}
+        />
+      </>
     </div>
   )
 }

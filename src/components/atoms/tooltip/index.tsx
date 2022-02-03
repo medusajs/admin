@@ -8,6 +8,7 @@ type TooltipProps = RadixTooltip.TooltipContentProps &
     "open" | "defaultOpen" | "onOpenChange" | "delayDuration"
   > & {
     content: string
+    side?: "bottom" | "left" | "top" | "right"
   }
 
 const Tooltip = ({
@@ -18,6 +19,7 @@ const Tooltip = ({
   onOpenChange,
   delayDuration,
   className,
+  side,
   ...props
 }: TooltipProps) => {
   return (
@@ -30,7 +32,7 @@ const Tooltip = ({
       >
         <RadixTooltip.Trigger>{children}</RadixTooltip.Trigger>
         <RadixTooltip.Content
-          side="bottom"
+          side={side ?? "bottom"}
           sideOffset={8}
           align="center"
           className={clsx(
