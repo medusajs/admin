@@ -19,6 +19,8 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
   const [selectedRegion, setSelectedRegion] = useState<any>(null)
   const [giftCardAmount, setGiftCardAmount] = useState(0)
 
+  const { register, handleSubmit, formState } = useForm()
+
   const toaster = useToaster()
 
   const createGiftCard = useAdminCreateGiftCard()
@@ -32,9 +34,10 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
     }
   }, [isLoading])
 
-  const { register, handleSubmit } = useForm()
-
   const onSubmit = (data) => {
+    if (!giftCardAmount) {
+      return
+    }
     const update = {
       region_id: selectedRegion.value.id,
       value: Math.round(
