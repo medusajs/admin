@@ -32,13 +32,12 @@ export const addHours = (date, hours) => {
  */
 
 export const relativeDateFormatToTimestamp = (value) => {
-  // let [modifier, value] = dateFormat.split("=")
   const [count, option] = value.split("|")
 
   // relative days are always subtract
   let date = moment()
 
-  date.subtract(count, option)
+  date.subtract(parseInt(count), option)
   date = atMidnight(date)
 
   const result = `${date.format("X")}`

@@ -248,17 +248,36 @@ module.exports = {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
         },
+        "fade-in-right": {
+          "0%": {
+            opacity: "0",
+            transform: "translateX(10px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateX(0)",
+          },
+        },
       },
       transitionProperty: {
         width: "width margin",
+        height: "height",
+        display: "display opacity",
       },
       animation: {
         ring: "ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
+        "fade-in-right":
+          "fade-in-right 0.5s cubic-bezier(0.5, 0, 0.5, 1) forwards",
       },
       lineClamp: {
         "[var(--lines)]": "var(--lines)",
       },
     },
   },
-  plugins: [require("@tailwindcss/line-clamp")],
+  plugins: [
+    require("@tailwindcss/line-clamp"),
+    require("@tailwindcss/forms")({
+      strategy: "class",
+    }),
+  ],
 }

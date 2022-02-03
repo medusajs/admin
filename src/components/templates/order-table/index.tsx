@@ -1,31 +1,17 @@
 import { RouteComponentProps, useLocation } from "@reach/router"
+import clsx from "clsx"
 import { isEmpty } from "lodash"
 import { useAdminOrders } from "medusa-react"
-import qs from "query-string"
-import React, { useEffect, useReducer, useState } from "react"
+import qs from "qs"
+import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import { removeNullish } from "../../../utils/remove-nullish"
-import { formatDateFilter } from "../../../utils/time"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
 import OrderFilters from "../order-filter-dropdown"
 import useOrderTableColums from "./use-order-column"
+import { useOrderFilters } from "./use-order-filters"
 
-type OrderFilter = {
-  open: boolean
-  filter?: string | string[] | null
-}
-
-type OrderFiltersType = {
-  limit: number
-  offset: number
-  fulfillment?: OrderFilter
-  payment?: OrderFilter
-  date?: OrderFilter
-  status?: OrderFilter
-  pageIndex: number
-  q: string
-}
+const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {
   expand: "shipping_address",
@@ -33,108 +19,35 @@ const defaultQueryProps = {
     "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
 }
 
-const initialState: OrderFiltersType = {
-  limit: 14,
-  offset: 0,
-  status: { open: false, filter: null },
-  fulfillment: { open: false, filter: null },
-  payment: { open: false, filter: null },
-  date: { open: false, filter: null },
-  pageIndex: 0,
-  q: "",
-}
-
-function orderFiltersReducer(state, action) {
-  switch (action.type) {
-    case "filters":
-      return { ...state, ...action.payload }
-    case "query":
-      return { ...state, q: action.payload, limit: 14, offset: 0 }
-    case "limit":
-      return { ...state, limit: action.payload }
-    case "offset":
-      return { ...state, offset: action.payload }
-    case "pageIndex":
-      return { ...state, pageIndex: action.payload }
-    case "reset":
-      return {
-        ...initialState,
-      }
-    default:
-      return state
-  }
-}
-
 const OrderTable: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
 
-  const filtersOnLoad = qs.parse(location.search, {
-    arrayFormat: "bracket",
-  })
-
-  const parseUrlFilter = (urlVal) => {
-    if (!urlVal) {
-      return { open: false, filter: null }
-    }
-
-    if (Array.isArray(urlVal)) {
-      return { open: true, filter: urlVal[0] }
-    } else {
-      return { open: true, filter: urlVal }
-    }
-  }
+  const {
+    removeTab,
+    setTab,
+    saveTab,
+    availableTabs: filterTabs,
+    activeFilterTab,
+    reset,
+    paginate,
+    setFilters,
+    filters,
+    setQuery: setFreeText,
+    queryObject,
+    representationObject,
+  } = useOrderFilters(location.search, defaultQueryProps)
+  const filtersOnLoad = queryObject
 
   const offs = parseInt(filtersOnLoad?.offset) || 0
-  const lim = parseInt(filtersOnLoad.limit) || 14
-  initialState.pageIndex = offs / lim
+  const lim = parseInt(filtersOnLoad.limit) || DEFAULT_PAGE_SIZE
 
-  const [state, dispatch] = useReducer(orderFiltersReducer, initialState)
-  const [tempState, setTempState] = useState(initialState)
-  const [query, setQuery] = useState(filtersOnLoad?.q)
-
+  const [query, setQuery] = useState(filtersOnLoad?.query)
   const [numPages, setNumPages] = useState(0)
 
-  const constructFiltersFromState = () => {
-    let urlObject: any = {
-      "payment_status[]": state?.payment?.filter,
-      "fulfillment_status[]": state?.fulfillment?.filter,
-      "status[]": state?.status?.filter,
-      q: state.q,
-      limit: state?.limit || 14,
-      offset: state?.offset || 0,
-    }
-
-    if (!isEmpty(state.date.filter) && state.date.open) {
-      const dateFormatted = formatDateFilter(state.date.filter)
-
-      const dateFilters = Object.entries(dateFormatted).reduce(
-        (acc, [key, value]) => {
-          return {
-            ...acc,
-            [`created_at[${key}]`]: value,
-          }
-        },
-        {}
-      )
-
-      urlObject = {
-        ...urlObject,
-        ...dateFilters,
-      }
-    }
-
-    return removeNullish(urlObject)
-  }
-
-  const initialFilters = constructFiltersFromState()
-
-  const { orders, isLoading, isRefetching, count } = useAdminOrders({
-    ...defaultQueryProps,
-    ...initialFilters,
-  })
+  const { orders, isLoading, count } = useAdminOrders(queryObject)
 
   useEffect(() => {
-    const controlledPageCount = Math.ceil(count! / state.limit)
+    const controlledPageCount = Math.ceil(count! / queryObject.limit)
     setNumPages(controlledPageCount)
   }, [orders])
 
@@ -153,15 +66,15 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     nextPage,
     previousPage,
     // Get the state from the instance
-    state: { pageIndex, pageSize },
+    state: { pageIndex },
   } = useTable(
     {
       columns,
       data: orders || [],
       manualPagination: true,
       initialState: {
-        pageSize: state.limit,
-        pageIndex: state.pageIndex,
+        pageSize: lim,
+        pageIndex: offs / lim,
       },
       pageCount: numPages,
       autoResetPage: false,
@@ -172,8 +85,13 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   // Debounced search
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch({ type: "query", payload: query })
-      gotoPage(0)
+      if (query) {
+        setFreeText(query)
+        gotoPage(0)
+      } else {
+        // if we delete query string, we reset the table view
+        reset()
+      }
     }, 400)
 
     return () => clearTimeout(delayDebounceFn)
@@ -181,16 +99,14 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const handleNext = () => {
     if (canNextPage) {
-      const newOffset = state.offset + pageSize
-      dispatch({ type: "offset", payload: newOffset })
+      paginate(1)
       nextPage()
     }
   }
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      const newOffset = state.offset - pageSize
-      dispatch({ type: "offset", payload: newOffset })
+      paginate(-1)
       previousPage()
     }
   }
@@ -201,131 +117,95 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   }
 
   const refreshWithFilters = () => {
-    const filterObj = constructFiltersFromState()
+    const filterObj = representationObject
 
     if (isEmpty(filterObj)) {
-      updateUrlFromFilter({ offset: 0, limit: 14 })
+      updateUrlFromFilter({ offset: 0, limit: DEFAULT_PAGE_SIZE })
     } else {
       updateUrlFromFilter(filterObj)
     }
   }
 
-  const resetFilters = () => {
-    dispatch({ type: "reset" })
-    gotoPage(0)
-    updateUrlFromFilter()
-    setTempState(initialState)
+  const clearFilters = () => {
+    reset()
     setQuery("")
   }
 
-  const setSingleFilter = (filterKey, filterVal) => {
-    setTempState((prevState) => ({
-      ...prevState,
-      [filterKey]: filterVal,
-    }))
-  }
-
-  const submitFilters = () => {
-    dispatch({ type: "filters", payload: tempState })
-  }
-
-  const clearFilters = () => {
-    resetFilters()
-    refreshWithFilters()
-  }
-
   useEffect(() => {
     refreshWithFilters()
-  }, [state])
-
-  const setFiltersOnLoad = () => {
-    const loadedFilters = {
-      limit: filtersOnLoad?.limit ? parseInt(filtersOnLoad?.limit) : 14,
-      offset: filtersOnLoad?.offset ? parseInt(filtersOnLoad?.offset) : 0,
-      status: parseUrlFilter(filtersOnLoad.status),
-      fulfillment: parseUrlFilter(filtersOnLoad.fulfillment_status),
-      payment: parseUrlFilter(filtersOnLoad.payment_status),
-      date: parseUrlFilter(filtersOnLoad.created_at),
-      q: filtersOnLoad?.q || "",
-    }
-
-    setTempState(loadedFilters)
-    dispatch({ type: "filters", payload: loadedFilters })
-  }
-
-  useEffect(() => {
-    setFiltersOnLoad()
-  }, [])
+  }, [representationObject])
 
   return (
-    <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
-      {isLoading || isRefetching || !orders ? (
-        <div className="w-full pt-2xlarge flex items-center justify-center">
-          <Spinner size={"large"} variant={"secondary"} />
-        </div>
-      ) : (
-        <>
-          <Table
-            filteringOptions={
-              <OrderFilters
-                setSingleFilter={setSingleFilter}
-                filters={tempState}
-                submitFilters={submitFilters}
-                resetFilters={resetFilters}
-                clearFilters={clearFilters}
-              />
-            }
-            enableSearch
-            handleSearch={setQuery}
-            searchValue={query}
-            {...getTableProps()}
-          >
-            <Table.Head>
-              {headerGroups?.map((headerGroup, index) => (
-                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((col, headerIndex) => (
-                    <Table.HeadCell
-                      className="w-[100px]"
-                      {...col.getHeaderProps()}
-                    >
-                      {col.render("Header")}
-                    </Table.HeadCell>
-                  ))}
-                </Table.HeadRow>
-              ))}
-            </Table.Head>
-            <Table.Body {...getTableBodyProps()}>
-              {rows.map((row, rowIndex) => {
-                prepareRow(row)
-                return (
-                  <Table.Row
-                    color={"inherit"}
-                    linkTo={row.original.id}
-                    {...row.getRowProps()}
-                  >
-                    {row.cells.map((cell, index) => {
-                      return cell.render("Cell", { index })
-                    })}
-                  </Table.Row>
-                )
-              })}
-            </Table.Body>
-          </Table>
-          <TablePagination
-            count={count!}
-            limit={state.limit}
-            offset={state.offset}
-            pageSize={state.offset + rows.length}
-            title="Orders"
-            currentPage={pageIndex}
-            pageCount={pageCount}
-            nextPage={handleNext}
-            prevPage={handlePrev}
-            hasNext={canNextPage}
-            hasPrev={canPreviousPage}
+    <div className="w-full overflow-y-scroll flex flex-col justify-between min-h-[300px] h-full ">
+      <Table
+        filteringOptions={
+          <OrderFilters
+            onRemoveTab={removeTab}
+            onSaveTab={saveTab}
+            onTabClick={setTab}
+            tabs={filterTabs}
+            activeTab={activeFilterTab}
+            filters={filters}
+            submitFilters={setFilters}
+            clearFilters={clearFilters}
           />
-        </>
-      )}
+        }
+        enableSearch
+        handleSearch={setQuery}
+        searchValue={query}
+        {...getTableProps()}
+        className={clsx({ ["relative"]: isLoading })}
+      >
+        <Table.Head>
+          {headerGroups?.map((headerGroup, index) => (
+            <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((col, headerIndex) => (
+                <Table.HeadCell {...col.getHeaderProps()}>
+                  {col.render("Header")}
+                </Table.HeadCell>
+              ))}
+            </Table.HeadRow>
+          ))}
+        </Table.Head>
+        {isLoading || !orders ? (
+          <div className="flex w-full h-full absolute items-center justify-center mt-10">
+            <div className="">
+              <Spinner size={"large"} variant={"secondary"} />
+            </div>
+          </div>
+        ) : (
+          <Table.Body {...getTableBodyProps()}>
+            {rows.map((row, rowIndex) => {
+              prepareRow(row)
+              return (
+                <Table.Row
+                  color={"inherit"}
+                  linkTo={row.original.id}
+                  {...row.getRowProps()}
+                  className="group"
+                >
+                  {row.cells.map((cell, index) => {
+                    return cell.render("Cell", { index })
+                  })}
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        )}
+      </Table>
+      <TablePagination
+        count={count!}
+        limit={queryObject.limit}
+        offset={queryObject.offset}
+        pageSize={queryObject.offset + rows.length}
+        title="Orders"
+        currentPage={pageIndex}
+        pageCount={pageCount}
+        nextPage={handleNext}
+        prevPage={handlePrev}
+        hasNext={canNextPage}
+        hasPrev={canPreviousPage}
+      />
     </div>
   )
 }

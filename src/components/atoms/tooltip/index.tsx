@@ -1,6 +1,6 @@
+import React from "react"
 import * as RadixTooltip from "@radix-ui/react-tooltip"
 import clsx from "clsx"
-import React from "react"
 
 type TooltipProps = RadixTooltip.TooltipContentProps &
   Pick<
@@ -34,7 +34,7 @@ const Tooltip = ({
           sideOffset={8}
           align="center"
           className={clsx(
-            "inter-small-semibold text-grey-50 text-center",
+            "inter-small-semibold text-grey-50",
             "bg-grey-5 py-[6px] px-[12px] shadow-dropdown rounded",
             "border border-solid border-grey-20",
             "max-w-[220px]",
