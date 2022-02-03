@@ -129,6 +129,7 @@ const New: React.FC<NewProps> = ({ location }) => {
   }
 
   const submitData = (payload, successMessage) => {
+    console.log(payload)
     discounts.mutate(
       { ...payload },
       {
