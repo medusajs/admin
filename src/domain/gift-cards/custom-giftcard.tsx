@@ -67,7 +67,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
         <Modal.Content>
           <div className="flex flex-col">
             <span className="inter-base-semibold">Value</span>
-            <div className="flex gap-x-2xsmall">
+            <div className="flex gap-x-2xsmall mt-4">
               <div className="w-[267px]">
                 <Select
                   label={"Region"}
