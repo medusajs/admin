@@ -11,6 +11,7 @@ import { useAdminRefundPayment } from "medusa-react"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import AlertIcon from "../../../../components/fundamentals/icons/alert-icon"
 
 const RefundMenu = ({ order, onDismiss }) => {
   const [note, setNote] = useState("")
@@ -67,16 +68,20 @@ const RefundMenu = ({ order, onDismiss }) => {
           <h2 className="inter-xlarge-semibold">Create a refund</h2>
         </Modal.Header>
         <Modal.Content>
-          <div className="flex flex-col">
-            <span className="inter-base-semibold">Details</span>
-            {isSystemPayment && (
-              <span className="inter-small-regular text-grey-50">
+          {isSystemPayment && (
+            <div className="inter-small-regular mb-6 p-4 text-orange-50 bg-orange-5 rounded-rounded flex text-grey-50">
+              <div className="h-full mr-3">
+                <AlertIcon size={20} />
+              </div>
+              <div className="flex flex-col">
+                <span className="inter-small-semibold">Attention!</span>
                 One or more of your payments is a system payment. Be aware, that
                 captures and refunds are not handled by Medusa for such
                 payments.
-              </span>
-            )}
-          </div>
+              </div>
+            </div>
+          )}
+          <span className="inter-base-semibold">Details</span>
           <div className="grid gap-y-base mt-4">
             <CurrencyInput
               size="small"
