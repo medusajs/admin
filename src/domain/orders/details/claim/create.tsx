@@ -25,6 +25,21 @@ import InfoTooltip from "../../../../components/molecules/info-tooltip"
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
+const reasonOptions = [
+  {
+    label: "Missing Item",
+    value: "missing_item",
+  },
+  {
+    label: "Wrong Item",
+    value: "wrong_item",
+  },
+  {
+    label: "Production Failure",
+    value: "production_failure",
+  },
+]
+
 const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   console.log(order)
   const [shippingAddress, setShippingAddress] = useState({})
@@ -33,11 +48,10 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [submitting, setSubmitting] = useState(false)
   const [noNotification, setNoNotification] = useState(order.no_notification)
   const [toReturn, setToReturn] = useState({})
-  const [quantities, setQuantities] = useState([])
 
-  const [itemsToAdd, setItemsToAdd] = useState([])
+  const [itemsToAdd, setItemsToAdd] = useState<any[]>([])
   const [shippingLoading, setShippingLoading] = useState(true)
-  const [returnShippingOptions, setReturnShippingOptions] = useState([])
+  const [returnShippingOptions, setReturnShippingOptions] = useState<any[]>([])
   const [returnShippingMethod, setReturnShippingMethod] = useState()
   const [returnShippingPrice, setReturnShippingPrice] = useState()
   const [shippingOptions, setShippingOptions] = useState([])
@@ -56,7 +70,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const layeredModalContext = useContext(LayeredModalContext)
 
   // Includes both order items and swap items
-  const [allItems, setAllItems] = useState([])
+  const [allItems, setAllItems] = useState<any[]>([])
 
   const formatAddress = (address) => {
     const addr = [address.address_1]
@@ -278,10 +292,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             <RMASelectProductTable
               order={order}
               allItems={allItems}
+              customReturnOptions={reasonOptions}
               toReturn={toReturn}
               setToReturn={(items) => setToReturn(items)}
-              quantities={quantities}
-              setQuantities={setQuantities}
             />
           </div>
           <div>

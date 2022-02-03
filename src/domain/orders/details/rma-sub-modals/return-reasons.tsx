@@ -12,32 +12,29 @@ type RMAReturnReasonSubModalProps = {
   onSubmit: (reason, note, images) => void
   reason?: any
   existingNote?: string
+  customReturnOptions?: any[]
   addImage?: boolean
   isLargeModal?: boolean
 }
 
-// {
-//   // onSelectReturnReason,
-//   // enableImages,
-// }
 const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
   onSubmit,
   reason,
   existingNote,
+  customReturnOptions = undefined,
   addImage,
   isLargeModal = true,
 }) => {
   const { pop } = useContext(LayeredModalContext)
-  const { isLoading, return_reasons } = useAdminReturnReasons()
+  const { return_reasons } = useAdminReturnReasons()
   const [note, setNote] = useState(existingNote || "")
   const [files, setFiles] = useState<any[]>([])
   const [selectedReason, setSelectedReason] = useState(
-    reason ? { value: reason, label: reason.label } : undefined
+    reason ? { value: reason, label: reason.label } : null
   )
 
   const onFileChosen = (file) => {
     setFiles((files) => [...files, ...file])
-    console.log(file)
   }
 
   const removeFileFromList = (file) => {
@@ -60,6 +57,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
             value={selectedReason}
             onChange={setSelectedReason}
             options={
+              customReturnOptions ||
               return_reasons?.map((rr) => ({ value: rr, label: rr.label })) ||
               []
             }
@@ -70,42 +68,42 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
             className="my-4"
             onChange={(val) => onChange(val)}
           />
-          {/* {addImage && ( */}
-          <div>
-            {files.map((f) => (
-              <div className="flex items-center w-full justify-between my-8">
-                <div className="flex items-center">
-                  <div className="w-20 h-20 bg-voilet-60">
-                    <img
-                      className="object-cover rounded-rounded w-full h-full"
-                      src={window.URL.createObjectURL(f)}
-                    />
+          {addImage && (
+            <div>
+              {files.map((f) => (
+                <div className="flex items-center w-full justify-between my-8">
+                  <div className="flex items-center">
+                    <div className="w-20 h-20 bg-voilet-60">
+                      <img
+                        className="object-cover rounded-rounded w-full h-full"
+                        src={window.URL.createObjectURL(f)}
+                      />
+                    </div>
+                    <div className="inter-small-regular ml-8 flex flex-col">
+                      {f.name}
+                      <span className="text-grey-50">
+                        {(f.size / 1000).toFixed(2)} KB
+                      </span>
+                    </div>
                   </div>
-                  <div className="inter-small-regular ml-8 flex flex-col">
-                    {f.name}
-                    <span className="text-grey-50">
-                      {(f.size / 1000).toFixed(2)} KB
-                    </span>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="small"
+                    className="w-8 h-8 text-grey-40"
+                    onClick={() => removeFileFromList(f)}
+                  >
+                    <TrashIcon size={20} />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="small"
-                  className="w-8 h-8 text-grey-40"
-                  onClick={() => removeFileFromList(f)}
-                >
-                  <TrashIcon size={20} />
-                </Button>
+              ))}
+              <div className="h-20">
+                <FileUploadField
+                  onFileChosen={onFileChosen}
+                  filetypes={["image/png", "image/jpeg"]}
+                />
               </div>
-            ))}
-            <div className="h-20">
-              <FileUploadField
-                onFileChosen={onFileChosen}
-                filetypes={["image/png", "image/jpeg"]}
-              />
             </div>
-          </div>
-          {/* )} */}
+          )}
         </div>
       </Modal.Content>
       <Modal.Footer isLargeModal={isLargeModal}>

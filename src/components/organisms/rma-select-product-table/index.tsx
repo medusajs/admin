@@ -12,15 +12,17 @@ import Medusa from "../../../services/api"
 type RMASelectProductTableProps = {
   order: any
   allItems: any[]
-  toReturn: any[]
-  setToReturn: (items: any[]) => void
-  imagesOnReturns: any
+  toReturn: any
+  setToReturn: (items: any) => void
+  customReturnOptions?: any[]
+  imagesOnReturns?: any
 }
 
 const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   order,
   allItems,
   toReturn,
+  customReturnOptions = undefined,
   imagesOnReturns = false,
   setToReturn,
 }) => {
@@ -84,6 +86,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   }
 
   const setReturnReason = (reason, note, files, id) => {
+    console.log(reason)
     let newReturns = {}
     if (imagesOnReturns) {
       handleAddImages(files).then((res) => {
@@ -247,6 +250,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                               pop,
                               toReturn[item.id]?.reason,
                               toReturn[item.id]?.note,
+                              customReturnOptions,
                               imagesOnReturns,
                               (reason, note, files) =>
                                 setReturnReason(reason, note, files, item.id)
@@ -275,6 +279,7 @@ const ReturnReasonScreen = (
   pop,
   reason,
   note,
+  customReturnOptions,
   imagesOnReturns,
   setReturnReason
 ) => {
@@ -285,6 +290,7 @@ const ReturnReasonScreen = (
       <RMAReturnReasonSubModal
         reason={reason}
         existingNote={note}
+        customReturnOptions={customReturnOptions}
         addImage={imagesOnReturns}
         onSubmit={setReturnReason}
       />
