@@ -101,7 +101,6 @@ const RefundMenu = ({ order, onDismiss }) => {
               options={reasonOptions}
             />
             <TextArea
-              inline
               label="Note"
               placeholder="Discount for loyal customer"
               value={note}
@@ -109,7 +108,7 @@ const RefundMenu = ({ order, onDismiss }) => {
             />
           </div>
         </Modal.Content>
-        <Modal.Footer justifyContent="space-between">
+        <Modal.Footer>
           <div className="flex w-full  justify-between">
             <div
               className="items-center h-full flex cursor-pointer"
