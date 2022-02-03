@@ -31,8 +31,10 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
   form.register("address.country_code")
 
   const setCountry = (value) => {
-    setSelectedCountry(value)
-    form.setValue("address.country_code", value.value)
+    if (value) {
+      setSelectedCountry(value)
+      form.setValue("address.country_code", value.value)
+    }
   }
 
   useEffect(() => {
