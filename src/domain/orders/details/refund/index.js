@@ -1,121 +1,156 @@
-import React, { useState, useEffect } from "react"
-import { Text, Flex, Box } from "rebass"
+import React, { useState } from "react"
 
-import Modal from "../../../../components/modal"
-import CurrencyInput from "../../../../components/currency-input"
-import Button from "../../../../components/button"
-import TextArea from "../../../../components/textarea"
-import Select from "../../../../components/select"
+import Modal from "../../../../components/molecules/modal"
+import CurrencyInput from "../../../../components/organisms/currency-input"
+import Button from "../../../../components/fundamentals/button"
+import TextArea from "../../../../components/molecules/textarea"
+import Select from "../../../../components/molecules/select"
+
+import useToaster from "../../../../hooks/use-toaster"
+import { useAdminRefundPayment } from "medusa-react"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
-import useMedusa from "../../../../hooks/use-medusa"
-
-const RefundMenu = ({ order, onRefund, onDismiss, toaster }) => {
+const RefundMenu = ({ order, onDismiss }) => {
   const [note, setNote] = useState("")
-  const [reason, setReason] = useState("discount")
+  const [reason, setReason] = useState({ label: "Discount", value: "discount" })
   const [refundAmount, setRefundAmount] = useState(0)
   const [noNotification, setNoNotification] = useState(order.no_notification)
+
+  const toaster = useToaster()
+  const createRefund = useAdminRefundPayment(order.id)
 
   const reasonOptions = [
     { label: "Discount", value: "discount" },
     { label: "Other", value: "other" },
   ]
 
-  const onSubmit = e => {
-    e.preventDefault()
-    if (onRefund) {
-      return onRefund({
-        amount: Math.round(refundAmount * 100),
-        reason,
+  const onSubmit = (e) => {
+    createRefund.mutate(
+      {
+        amount: refundAmount,
+        reason: reason.value,
+        no_notification: noNotification,
         note,
-        no_notification:
-          noNotification !== order.no_notification ? noNotification : undefined,
-      })
-        .then(() => onDismiss())
-        .then(() => toaster("Successfully refunded order", "success"))
-        .catch(error => toaster(getErrorMessage(error), "error"))
-    }
+      },
+      {
+        onSuccess: () => {
+          toaster("Successfully refunded order", "success")
+          onDismiss()
+        },
+        onError: (error) => {
+          toaster(getErrorMessage(error), "error")
+        },
+      }
+    )
   }
 
-  const handleNoteChange = e => {
-    const element = e.target
-    setNote(element.value)
+  const handleNoteChange = (e) => {
+    setNote(e.target.value)
   }
 
-  const handleRefundUpdated = e => {
+  const handleRefundUpdated = (value) => {
     const refundable = order.total - order.refunded_total
-    const element = e.target
-    const value = parseFloat(element.value) || ""
 
     if (value === "" || (value <= refundable && value >= 0)) {
       setRefundAmount(value)
     }
   }
 
-  const isSystemPayment = order.payments.some(p => p.provider_id === "system")
+  const isSystemPayment = order.payments.some((p) => p.provider_id === "system")
 
   return (
-    <Modal onClick={onDismiss}>
-      <Modal.Body as="form" onSubmit={onSubmit}>
-        <Modal.Header>Create a refund</Modal.Header>
-        <Modal.Content flexDirection="column" maxWidth="500px">
-          {isSystemPayment && (
-            <Text
-              fontSize={1}
-              fontStyle="italic"
-              mb={4}
-              width="100%"
-              textAlign="center"
-            >
-              One or more of your payments is a system payment. Be aware, that
-              captures and refunds are not handled by Medusa for such payments.
-            </Text>
-          )}
-          <Box px={2}>
+    <Modal handleClose={onDismiss}>
+      <Modal.Body>
+        <Modal.Header handleClose={onDismiss}>
+          <h2 className="inter-xlarge-semibold">Create a refund</h2>
+        </Modal.Header>
+        <Modal.Content>
+          <div className="flex flex-col">
+            <span className="inter-base-semibold">Details</span>
+            {isSystemPayment && (
+              <span className="inter-small-regular text-grey-50">
+                One or more of your payments is a system payment. Be aware, that
+                captures and refunds are not handled by Medusa for such
+                payments.
+              </span>
+            )}
+          </div>
+          <div className="grid gap-y-base mt-4">
             <CurrencyInput
-              inline
-              label="Refund Amount"
-              currency={order.currency_code}
-              value={refundAmount}
-              onChange={handleRefundUpdated}
-            />
-          </Box>
-          <Box mt={4} px={2}>
+              size="small"
+              currentCurrency={order.currency_code}
+              readOnly
+            >
+              <CurrencyInput.AmountInput
+                label={"Refund Amount"}
+                value={refundAmount}
+                onChange={handleRefundUpdated}
+              />
+            </CurrencyInput>
             <Select
-              inline
               label="Reason"
               value={reason}
-              onChange={e => setReason(e.target.value)}
+              onChange={(value) => setReason(value)}
               options={reasonOptions}
             />
-          </Box>
-          <Box mt={3} px={2}>
             <TextArea
               inline
               label="Note"
+              placeholder="Placeholder..."
               value={note}
               onChange={handleNoteChange}
             />
-          </Box>
+          </div>
         </Modal.Content>
         <Modal.Footer justifyContent="space-between">
-          <Flex>
-            <Box px={0} py={1}>
+          <div className="flex w-full  justify-between">
+            <div
+              className="items-center h-full flex cursor-pointer"
+              onClick={() => setNoNotification(!noNotification)}
+            >
+              <div
+                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
+                  !noNotification && "bg-violet-60"
+                }`}
+              >
+                <span className="self-center">
+                  {!noNotification && <CheckIcon size={16} />}
+                </span>
+              </div>
               <input
                 id="noNotification"
+                className="hidden"
                 name="noNotification"
                 checked={!noNotification}
                 onChange={() => setNoNotification(!noNotification)}
                 type="checkbox"
               />
-            </Box>
-            <Box px={2} py={1}>
-              <Text fontSize={1}>Send notifications</Text>
-            </Box>
-          </Flex>
-          <Button type="submit" variant="primary">
-            Complete
-          </Button>
+              <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
+                Send notifications
+                <InfoTooltip content="Notify customer of created return" />
+              </span>
+            </div>
+            <div className="flex gap-x-xsmall">
+              <Button
+                onClick={onDismiss}
+                size="small"
+                className="w-[112px]"
+                variant="ghost"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={onSubmit}
+                size="small"
+                className="w-[112px]"
+                variant="primary"
+              >
+                Complete
+              </Button>
+            </div>
+          </div>
         </Modal.Footer>
       </Modal.Body>
     </Modal>

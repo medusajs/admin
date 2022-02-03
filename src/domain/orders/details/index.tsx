@@ -40,6 +40,7 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
+import CreateRefundModal from "./refund"
 import OrderLine from "./order-line"
 
 const gatherAllFulfillments = (order) => {
@@ -120,6 +121,7 @@ const OrderDetails = ({ id }) => {
   }>(null)
 
   const [showFulfillment, setShowFulfillment] = useState(false)
+  const [showRefund, setShowRefund] = useState(false)
 
   const { order, isLoading } = useAdminOrder(id)
 
@@ -370,7 +372,7 @@ const OrderDetails = ({ id }) => {
       case payment_status === "captured" ||
         payment_status === "partially_refunded": {
         label = "Refund"
-        action = () => console.log("TODO: Show refund menu")
+        action = () => setShowRefund(true)
         break
       }
 
@@ -921,6 +923,12 @@ const OrderDetails = ({ id }) => {
           orderToFulfill={order as any}
           handleCancel={() => setShowFulfillment(false)}
           orderId={order.id}
+        />
+      )}
+      {showRefund && order && (
+        <CreateRefundModal
+          order={order}
+          onDismiss={() => setShowRefund(false)}
         />
       )}
       {/* An attempt to make a reusable delete prompt, so we don't have to hold +10
