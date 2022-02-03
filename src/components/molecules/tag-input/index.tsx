@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
+import Tooltip from "../../atoms/tooltip"
 
 const ENTER_KEY = 13
 const TAB_KEY = 9
@@ -12,7 +13,8 @@ const ARROW_RIGHT_KEY = 39
 
 type TagInputProps = {
   onChange: (values: string[]) => void
-  label: string
+  onValidate?: (value: string) => void
+  label?: string
   showLabel?: boolean
   values: string[]
   containerProps?: React.HTMLAttributes<HTMLDivElement>
@@ -23,6 +25,7 @@ type TagInputProps = {
 
 const TagInput: React.FC<TagInputProps> = ({
   onChange,
+  onValidate,
   values,
   label,
   showLabel = true,
@@ -35,10 +38,32 @@ const TagInput: React.FC<TagInputProps> = ({
   tooltip,
   ...props
 }) => {
+  const [invalid, setInvalid] = useState(false)
   const [highlighted, setHighlighted] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const handleAddValue = (newVal) => {
+    let update = newVal
+
+    if (typeof onValidate !== "undefined") {
+      update = onValidate(newVal)
+    }
+
+    if (update) {
+      onChange([...values, update])
+      if (inputRef?.current) {
+        inputRef.current.value = ""
+      }
+    } else {
+      setInvalid(true)
+    }
+  }
+
   const handleKeyDown = (e) => {
+    if (invalid) {
+      setInvalid(false)
+    }
+
     if (!inputRef?.current) {
       return
     }
@@ -75,8 +100,7 @@ const TagInput: React.FC<TagInputProps> = ({
         break
       case TAB_KEY: // Creates new tag
         if (value) {
-          onChange([...values, value])
-          inputRef.current.value = ""
+          handleAddValue(value)
           e.preventDefault()
         }
         break
@@ -123,8 +147,8 @@ const TagInput: React.FC<TagInputProps> = ({
     const value = inputRef.current.value
 
     if (value?.endsWith(",")) {
-      onChange([...values, value.slice(0, -1)])
-      inputRef.current.value = ""
+      inputRef.current.value = value.slice(0, -1)
+      handleAddValue(value.slice(0, -1))
     }
   }
 
@@ -140,40 +164,46 @@ const TagInput: React.FC<TagInputProps> = ({
         />
       )}
 
-      <div className="w-full flex mt-1 ml-0 flex-wrap">
-        {values.map((v, index) => (
-          <div
-            key={index}
-            className={clsx(
-              "items-center justify-center whitespace-nowrap w-max bg-grey-90 rounded",
-              "px-2 mb-1 mr-2 leading-6",
-              {
-                ["bg-grey-70"]: index === highlighted,
-              }
-            )}
-          >
-            <div className="inline-block text-grey-0 h-full inter-small-semibold mr-1">
-              {v}
+      <Tooltip
+        open={invalid}
+        side={"top"}
+        content={`${inputRef?.current?.value} is not a valid tag`}
+      >
+        <div className="w-full flex mt-1 ml-0 flex-wrap">
+          {values.map((v, index) => (
+            <div
+              key={index}
+              className={clsx(
+                "items-center justify-center whitespace-nowrap w-max bg-grey-90 rounded",
+                "px-2 mb-1 mr-2 leading-6",
+                {
+                  ["bg-grey-70"]: index === highlighted,
+                }
+              )}
+            >
+              <div className="inline-block text-grey-0 h-full inter-small-semibold mr-1">
+                {v}
+              </div>
+              <CrossIcon
+                className="inline cursor-pointer"
+                size="16"
+                color="#9CA3AF"
+                onClick={() => handleRemove(index)}
+              />
             </div>
-            <CrossIcon
-              className="inline cursor-pointer"
-              size="16"
-              color="#9CA3AF"
-              onClick={() => handleRemove(index)}
-            />
-          </div>
-        ))}
-        <input
-          id="tag-input"
-          ref={inputRef}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          onChange={handleInput}
-          className={clsx("bg-grey-5 focus:outline-none max-w-[100px]")}
-          placeholder={values?.length ? "" : placeholder} // only visible if no tags exist
-          {...props}
-        />
-      </div>
+          ))}
+          <input
+            id="tag-input"
+            ref={inputRef}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            onChange={handleInput}
+            className={clsx("bg-grey-5 focus:outline-none")}
+            placeholder={values?.length ? "" : placeholder} // only visible if no tags exist
+            {...props}
+          />
+        </div>
+      </Tooltip>
     </InputContainer>
   )
 }
