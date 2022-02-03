@@ -30,8 +30,6 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
 
   form.register("address.country_code")
 
-  console.log(country, countryOptions, address)
-
   const setCountry = (value) => {
     setSelectedCountry(value)
     form.setValue("address.country_code", value.value)
@@ -129,26 +127,15 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
               })}
               name="address.city"
             />
-
-            {countryOptions.length === 1 ? (
-              <Input
-                ref={form.register}
-                disabled
-                name="address.country_code"
-                label="Country"
-                value={countryOptions[0].value}
-              />
-            ) : (
-              <Select
-                ref={form.register}
-                name="address.country_code"
-                label="Country"
-                options={countryOptions}
-                onChange={setCountry}
-                value={selectedCountry}
-                defaultValue="Choose a country"
-              />
-            )}
+            <Select
+              ref={form.register}
+              name="address.country_code"
+              label="Country"
+              options={countryOptions}
+              onChange={setCountry}
+              value={selectedCountry}
+              defaultValue="Choose a country"
+            />
           </div>
         </div>
       </div>
