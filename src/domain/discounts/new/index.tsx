@@ -109,9 +109,9 @@ const New: React.FC<NewProps> = ({ location }) => {
     discounts.mutate(
       { ...payload },
       {
-        onSuccess: () => {
+        onSuccess: ({ discount }) => {
           toaster(successMessage, "success")
-          navigate("/a/discounts")
+          navigate(`/a/discounts/${discount.id}`)
         },
         onError: (error) => {
           toaster(getErrorMessage(error), "error")
