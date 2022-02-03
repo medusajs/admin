@@ -40,6 +40,7 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
+import MarkShippedModal from "./mark-shipped"
 import OrderLine from "./order-line"
 
 const gatherAllFulfillments = (order) => {
@@ -120,6 +121,7 @@ const OrderDetails = ({ id }) => {
   }>(null)
 
   const [showFulfillment, setShowFulfillment] = useState(false)
+  const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
   const { order, isLoading } = useAdminOrder(id)
 
@@ -559,8 +561,7 @@ const OrderDetails = ({ id }) => {
                 {
                   label: "Mark Shipped",
                   icon: <PackageIcon size={"20"} />,
-                  onClick: () =>
-                    handleCreateShipment({ ...getData(), fulfillment }),
+                  onClick: () => setFullfilmentToShip(fulfillment),
                 },
                 {
                   label: "Cancel Fulfillment",
@@ -800,7 +801,7 @@ const OrderDetails = ({ id }) => {
               status={<FulfillmentStatusComponent />}
               customActionable={
                 order.fulfillment_status !== "fulfilled" &&
-                order.status !== "canceled" &&
+                order.fulfillment_status !== "canceled" &&
                 order.fulfillment_status !== "shipped" && (
                   <Button
                     variant="secondary"
@@ -920,6 +921,14 @@ const OrderDetails = ({ id }) => {
         <CreateFulfillmentModal
           orderToFulfill={order as any}
           handleCancel={() => setShowFulfillment(false)}
+          orderId={order.id}
+        />
+      )}
+      {fullfilmentToShip && order && (
+        <MarkShippedModal
+          orderToShip={order as any}
+          handleCancel={() => setFullfilmentToShip(null)}
+          fulfillment={fullfilmentToShip}
           orderId={order.id}
         />
       )}
