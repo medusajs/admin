@@ -2,7 +2,6 @@ import { useAdminProducts } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
-import useToaster from "../../../hooks/use-toaster"
 import Medusa from "../../../services/api"
 import Spinner from "../../atoms/spinner"
 import Button from "../../fundamentals/button"
@@ -25,7 +24,6 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
   const [currentPage, setCurrentPage] = useState(0)
   const debouncedSearchTerm = useDebounce(query, 500)
 
-  const toaster = useToaster()
   const [showDelete, setShowDelete] = useState(false)
   const [idToDelete, setIdToDelete] = useState<string | undefined>(undefined)
 
