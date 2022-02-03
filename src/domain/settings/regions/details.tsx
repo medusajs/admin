@@ -162,7 +162,6 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       {
         onSuccess: () => {
           toaster("Successfully updated region", "success")
-          // handleRefetch()
         },
         onError: (error) => {
           toaster(getErrorMessage(error), "error")
