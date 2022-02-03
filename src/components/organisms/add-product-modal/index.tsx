@@ -1,7 +1,7 @@
 import React from "react"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
-import CollectionProductTable from "../../templates/collection-product-table"
+import AddProductsTable from "../../templates/collection-product-table/add-product-table"
 
 type AddProductModalProps = {
   handleClose: () => void
@@ -30,7 +30,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         </Modal.Header>
         <Modal.Content>
           <div className="h-[650px]">
-            <CollectionProductTable
+            <AddProductsTable
               addedProducts={collectionProducts}
               setProducts={setSelectedProducts}
             />

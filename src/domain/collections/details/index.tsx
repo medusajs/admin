@@ -18,10 +18,12 @@ import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { MetadataField } from "../../../components/organisms/metadata"
 import CollectionModal from "../../../components/templates/collection-modal"
+import ViewProductsTable from "../../../components/templates/collection-product-table/view-products-table"
 
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
   const { collection, isLoading, refetch } = useAdminCollection(ensuredPath)
+
   const deleteCollection = useAdminDeleteCollection(ensuredPath)
   const updateCollection = useAdminUpdateCollection(ensuredPath)
   const [showEdit, setShowEdit] = useState(false)
@@ -72,7 +74,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full">
         <Breadcrumb
           currentPage="Edit Collection"
           previousBreadcrumb="Collections"
@@ -125,6 +127,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
         <BodyCard
           title="Products"
           subtitle="To start selling, all you need is a name, price, and image."
+          className="h-full"
           actionables={[
             {
               label: "Add Product",
@@ -133,19 +136,14 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
             },
           ]}
         >
-          <div className="mt-large">
-            {/* <CollectionProductTable
-              products={
-                collection?.products?.map((p) => ({
-                  title: p.title,
-                  id: p.id,
-                  thumbnail: p.thumbnail,
-                  status: p.status,
-                })) ?? []
-              }
-              handleSearch={console.log}
-              loadingProducts={!collection}
-            /> */}
+          <div className="mt-large h-full">
+            {isLoading || !collection ? (
+              <div className="flex items-center w-full h-12">
+                <Spinner variant="secondary" size="large" />
+              </div>
+            ) : (
+              <ViewProductsTable collectionId={collection.id} />
+            )}
           </div>
         </BodyCard>
       </div>

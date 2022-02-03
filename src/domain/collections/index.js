@@ -1,27 +1,25 @@
-import React, { useState } from "react"
-import { navigate } from "gatsby"
 import { Router } from "@reach/router"
-import { Text, Flex, Box } from "rebass"
+import { navigate } from "gatsby"
+import { useAdminCreateCollection } from "medusa-react"
 import qs from "query-string"
-import CollectionDetails from "./details"
-
-import useMedusa from "../../hooks/use-medusa"
-
+import React, { useState } from "react"
+import { Box, Flex, Text } from "rebass"
+import Button from "../../components/button"
+import Spinner from "../../components/spinner"
 import {
   Table,
   TableBody,
+  TableDataCell,
   TableHead,
   TableHeaderCell,
-  TableRow,
-  TableDataCell,
   TableHeaderRow,
+  TableRow,
 } from "../../components/table"
-import Button from "../../components/button"
-import Spinner from "../../components/spinner"
 import CollectionModal from "../../components/templates/collection-modal"
-import { useAdminCreateCollection } from "medusa-react"
+import useMedusa from "../../hooks/use-medusa"
 import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
+import CollectionDetails from "./details"
 
 const CollectionsIndex = () => {
   const [showNew, setShowNew] = useState(false)
@@ -180,7 +178,7 @@ const CollectionsIndex = () => {
 
 const Collections = () => {
   return (
-    <Router>
+    <Router className="h-full">
       <CollectionsIndex path="/" />
       <CollectionDetails path=":id" />
     </Router>

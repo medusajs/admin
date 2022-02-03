@@ -2,28 +2,25 @@ import { useAdminProducts } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
+import Spinner from "../../atoms/spinner"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import Table, { TablePagination } from "../../molecules/table"
-import { FilteringOptionProps } from "../../molecules/table/filtering-option"
 import useCollectionProductColumns from "./use-collection-product-columns"
 
-type CollectionProductTableProps = {
+type AddProductsTableProps = {
   addedProducts: any[]
   setProducts: (products: any) => void
 }
 
-const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
+const AddProductsTable: React.FC<AddProductsTableProps> = ({
   addedProducts,
   setProducts,
 }) => {
+  const limit = 10
   const [query, setQuery] = useState("")
-  const [limit, setLimit] = useState(10)
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
-  const [filteringOptions, setFilteringOptions] = useState<
-    FilteringOptionProps[]
-  >([])
 
   const [selectedProducts, setSelectedProducts] = useState<any[]>([])
 
@@ -34,28 +31,6 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
     limit: limit,
     offset,
   })
-
-  useEffect(() => {
-    setFilteringOptions([
-      {
-        title: "Sort by",
-        options: [
-          {
-            title: "All",
-            onClick: () => {},
-          },
-          {
-            title: "Newest",
-            onClick: () => {},
-          },
-          {
-            title: "Oldest",
-            onClick: () => {},
-          },
-        ],
-      },
-    ])
-  }, [products])
 
   const columns = useCollectionProductColumns()
 
@@ -69,7 +44,6 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
     pageCount,
     nextPage,
     previousPage,
-    // Get the state from the instance
     state: { pageIndex, pageSize, selectedRowIds },
   } = useTable(
     {
@@ -79,7 +53,7 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
       initialState: {
         pageIndex: currentPage,
         pageSize: limit,
-        selectedRowIds: addedProducts?.reduce((prev, { id }) => {
+        selectedRowIds: addedProducts.reduce((prev, { id }) => {
           prev[id] = true
           return prev
         }, {}),
@@ -153,15 +127,18 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col justify-between overflow-y-scroll">
-      <Table
-        enableSearch
-        handleSearch={handleSearch}
-        searchPlaceholder="Search Products"
-        filteringOptions={filteringOptions}
-        {...getTableProps()}
-        className="h-full"
-      >
-        {isLoading || !products ? null : (
+      {isLoading || !products ? (
+        <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
+          <Spinner size="large" variant="secondary" />
+        </div>
+      ) : (
+        <Table
+          enableSearch
+          handleSearch={handleSearch}
+          searchPlaceholder="Search Products"
+          {...getTableProps()}
+          className="h-full"
+        >
           <Table.Body {...getTableBodyProps()}>
             {rows.map((row) => {
               prepareRow(row)
@@ -178,8 +155,8 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
               )
             })}
           </Table.Body>
-        )}
-      </Table>
+        </Table>
+      )}
       <TablePagination
         count={count!}
         limit={limit}
@@ -197,4 +174,4 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
   )
 }
 
-export default CollectionProductTable
+export default AddProductsTable
