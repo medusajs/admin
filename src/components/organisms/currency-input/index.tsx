@@ -66,14 +66,24 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
     CurrencyType | undefined
   >(getCurrencyInfo(currentCurrency))
 
-  const [value, setValue] = useState<Option | undefined>(
+  const [value, setValue] = useState<Option | null>(
     currentCurrency
       ? {
           label: currentCurrency.toUpperCase(),
           value: currentCurrency,
         }
-      : undefined
+      : null
   )
+
+  useEffect(() => {
+    if (currentCurrency) {
+      setSelectedCurrency(getCurrencyInfo(currentCurrency))
+      setValue({
+        label: currentCurrency.toUpperCase(),
+        value: currentCurrency,
+      })
+    }
+  }, [currentCurrency])
 
   const onCurrencyChange = (currency: Option) => {
     // Should not be nescessary, but the component we use for select input
