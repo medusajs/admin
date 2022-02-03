@@ -71,3 +71,7 @@ export const stringDisplayPrice = ({ amount, currencyCode }) => {
   const display = displayAmount(currencyCode, amount)
   return `${display} ${currencyCode.toUpperCase()}`
 }
+
+export const getNativeSymbol = (currencyCode: string) => {
+  return currencies[currencyCode.toUpperCase()].symbol_native
+}

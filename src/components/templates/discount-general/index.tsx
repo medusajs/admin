@@ -36,6 +36,7 @@ type DiscountGeneralProps = {
   onDelete?: () => void
   onDuplicate?: () => void
   onStatusChange?: () => void
+  nativeSymbol?: string
 }
 
 const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
@@ -54,6 +55,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
   onDelete,
   onDuplicate,
   onStatusChange,
+  nativeSymbol,
 }) => {
   const editActions: ActionType[] = [
     {
@@ -137,7 +139,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                     required
                     type="number"
                     placeholder="10"
-                    prefix={discountType === "percentage" ? "%" : undefined}
+                    prefix={discountType === "percentage" ? "%" : nativeSymbol}
                     name="rule.value"
                     ref={register({ required: !isFreeShipping })}
                     className={clsx({

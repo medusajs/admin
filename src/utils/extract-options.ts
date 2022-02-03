@@ -1,6 +1,6 @@
 export function extractRegionOptions(
   regions: any[] | undefined
-): { label: string; value: string }[] {
+): { label: string; value: string; currency: string }[] {
   if (!regions) {
     return []
   }
@@ -8,6 +8,7 @@ export function extractRegionOptions(
   return regions.map((region) => ({
     label: region.name,
     value: region.id,
+    currency: region.currency_code,
   }))
 }
 

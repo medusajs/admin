@@ -18,7 +18,7 @@ import {
   extractRegionOptions,
 } from "../../../utils/extract-options"
 import { hydrateDiscount } from "../../../utils/hydrate-discount"
-import { persistedPrice } from "../../../utils/prices"
+import { getNativeSymbol, persistedPrice } from "../../../utils/prices"
 import { DiscountFormType } from "../types"
 
 type NewProps = RouteComponentProps & PageProps
@@ -37,9 +37,16 @@ const New: React.FC<NewProps> = ({ location }) => {
   const [selectedRegions, setSelectedRegions] = useState<
     { label: string; value: string }[]
   >([])
-  const regionOptions: { label: string; value: string }[] = useMemo(() => {
+  const regionOptions: {
+    label: string
+    value: string
+    currency: string
+  }[] = useMemo(() => {
     return extractRegionOptions(regions)
   }, [regions])
+  const [nativeSymbol, setNativeSymbol] = useState<string | undefined>(
+    undefined
+  )
 
   // Settings state
   const [isFreeShipping, setIsFreeShipping] = useState(false)
@@ -65,6 +72,22 @@ const New: React.FC<NewProps> = ({ location }) => {
       setDiscountType("percentage")
     }
   }, [selectedRegions, discountType])
+
+  useEffect(() => {
+    if (selectedRegions.length) {
+      const selectedRegion = regionOptions.find(
+        (r) => r.value === selectedRegions[0].value
+      )
+
+      if (selectedRegion) {
+        setNativeSymbol(getNativeSymbol(selectedRegion.currency))
+      }
+    }
+
+    if (!selectedRegions.length) {
+      setNativeSymbol(undefined)
+    }
+  }, [selectedRegions])
 
   const methods = useForm()
 
@@ -99,7 +122,7 @@ const New: React.FC<NewProps> = ({ location }) => {
       starts_at: startDate,
       ends_at: expiryDate,
       regions: selectedRegions.map(({ value }) => value),
-      valid_duration: availabilityDuration,
+      valid_duration: !isDynamic ? undefined : availabilityDuration,
       is_disabled: isDraft,
       is_dynamic: isDynamic,
     }
@@ -177,6 +200,7 @@ const New: React.FC<NewProps> = ({ location }) => {
               isFreeShipping={isFreeShipping}
               isDynamic={isDynamic}
               setIsDynamic={setIsDynamic}
+              nativeSymbol={nativeSymbol}
             />
             <DiscountSettings
               appliesToAll={appliesToAll}
