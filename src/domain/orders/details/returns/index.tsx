@@ -3,7 +3,6 @@ import Modal from "../../../../components/molecules/modal"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import Button from "../../../../components/fundamentals/button"
 import Select from "../../../../components/molecules/select"
-import Medusa from "../../../../services/api"
 import { filterItems } from "../utils/create-filtering"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
@@ -16,11 +15,10 @@ import RMASelectProductTable from "../../../../components/organisms/rma-select-p
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
+import { removeNullish } from "../../../../utils/remove-nullish"
+import { useAdminRequestReturn, useAdminShippingOptions } from "medusa-react"
 
-const removeNullish = (obj) =>
-  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
-
-const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
+const ReturnMenu = ({ order, onDismiss, toaster }) => {
   const layoutmodalcontext = useContext(LayeredModalContext)
 
   const [submitting, setSubmitting] = useState(false)
@@ -31,13 +29,13 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
   const [quantities, setQuantities] = useState({})
   const [useCustomShippingPrice, setUseCustomShippingPrice] = useState(false)
 
-  const [shippingLoading, setShippingLoading] = useState(true)
-  const [shippingOptions, setShippingOptions] = useState([])
   const [noNotification, setNoNotification] = useState(order.no_notification)
   const [shippingPrice, setShippingPrice] = useState<number>()
   const [shippingMethod, setShippingMethod] = useState(null)
 
   const [allItems, setAllItems] = useState<any[]>([])
+
+  const requestReturnOrder = useAdminRequestReturn(order.id)
 
   useEffect(() => {
     if (order) {
@@ -45,17 +43,13 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
     }
   }, [order])
 
-  useEffect(() => {
-    Medusa.shippingOptions
-      .list({
-        region_id: order.region_id,
-        is_return: true,
-      })
-      .then(({ data }) => {
-        setShippingOptions(data.shipping_options)
-        setShippingLoading(false)
-      })
-  }, [])
+  const {
+    isLoading: shippingLoading,
+    shipping_options: shippingOptions,
+  } = useAdminShippingOptions({
+    region_id: order.region_id,
+    is_return: "true",
+  })
 
   useEffect(() => {
     const items = Object.keys(toReturn).map((t) =>
@@ -77,6 +71,8 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
 
   const onSubmit = () => {
     const items = Object.entries(toReturn).map(([key, value]) => {
+      value.reason_id = value.reason?.id
+      delete value.reason
       const clean = removeNullish(value)
       return {
         item_id: key,
@@ -98,14 +94,13 @@ const ReturnMenu = ({ order, onReturn, onDismiss, toaster }) => {
       }
     }
 
-    if (onReturn) {
-      setSubmitting(true)
-      return onReturn(data)
-        .then(() => onDismiss())
-        .then(() => toaster("Successfully returned order", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
-        .finally(() => setSubmitting(false))
-    }
+    setSubmitting(true)
+    return requestReturnOrder
+      .mutateAsync(data)
+      .then(() => onDismiss())
+      .then(() => toaster("Successfully returned order", "success"))
+      .catch((error) => toaster(getErrorMessage(error), "error"))
+      .finally(() => setSubmitting(false))
   }
 
   const handleRefundUpdated = (value) => {

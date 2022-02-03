@@ -1,19 +1,17 @@
-import React, { useState, useRef, useEffect, useContext } from "react"
+import React, { useState, useMemo, useRef, useEffect, useContext } from "react"
 import { navigate } from "gatsby"
-import _ from "lodash"
+import { isEmpty, omit, pick } from "lodash"
 import { Router } from "@reach/router"
+import { useAdminOrders } from "medusa-react"
 import { Text, Box, Flex } from "rebass"
-import { Input } from "@rebass/forms"
 import styled from "@emotion/styled"
 import moment from "moment"
 import qs from "qs"
-import { default as queryString } from "query-string"
 import ReactCountryFlag from "react-country-flag"
 import ReactTooltip from "react-tooltip"
 import { useHotkeys } from "react-hotkeys-hook"
 import { ReactComponent as Cross } from "../../assets/svg/cross.svg"
 
-import DraftOrders from "./draft-orders"
 import DraftOrderDetails from "./draft-orders/details"
 import NewOrder from "./new/new-order"
 
@@ -31,14 +29,13 @@ import {
   BadgdeCellContent,
 } from "../../components/table"
 import Badge from "../../components/fundamentals/badge"
+import { useOrderFilters } from "./use-order-filters"
 
 import { displayAmount } from "../../utils/prices"
 import { decideBadgeColor } from "../../utils/decide-badge-color"
-import useMedusa from "../../hooks/use-medusa"
 import Spinner from "../../components/spinner"
 import Button from "../../components/button"
 import Filter from "./filter-dropdown"
-import { relativeDateFormatToTimestamp } from "../../utils/time"
 import { InterfaceContext } from "../../context/interface"
 
 const defaultQueryProps = {
@@ -47,7 +44,7 @@ const defaultQueryProps = {
     "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
 }
 
-const removeNullish = obj =>
+const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
 
 const TabButton = styled(Flex)`
@@ -67,7 +64,7 @@ const TabButton = styled(Flex)`
     margin-left: 5px;
     cursor: pointer;
   }
-  ${props =>
+  ${(props) =>
     props.active &&
     `
     border-bottom: 1px solid black;
@@ -91,57 +88,35 @@ export const OrderNumCell = styled(Text)`
   &:hover {
     color: #454b54;
   }
-  ${props => props.isCanceled && "text-decoration: line-through;"}
+  ${(props) => props.isCanceled && "text-decoration: line-through;"}
 `
 
-const allowedFilters = [
-  "status",
-  "fulfillment_status",
-  "payment_status",
-  "status[]",
-  "fulfillment_status[]",
-  "payment_status[]",
-  "created_at[lt]",
-  "created_at[lte]",
-  "created_at[gt]",
-  "created_at[gte]",
-  "q",
-  "offset",
-  "limit",
-]
+const OrderIndex = () => {
+  const {
+    status: statusFilter,
+    fulfillment: fulfillmentFilter,
+    payment: paymentFilter,
+    date: dateFilter,
+    reset: resetFilters,
+    setDateFilter,
+    setFulfillmentFilter,
+    setPaymentFilter,
+    setStatusFilter,
+    queryObject,
+    paginate,
+    getQueryObject,
+    getQueryString,
+  } = useOrderFilters(window.location.search.substring(1), defaultQueryProps)
 
-const OrderIndex = ({}) => {
-  let filtersOnLoad = { offset: undefined, limit: undefined }
-
-  filtersOnLoad = prepareSearchParams(window.location.search.substring(1), {})
-
-  if (!filtersOnLoad.offset) {
-    filtersOnLoad.offset = 0
-  }
-
-  if (!filtersOnLoad.limit) {
-    filtersOnLoad.limit = 20
-  }
+  const filtersOnLoad = queryObject
 
   const { setOnSearch, onUnmount } = useContext(InterfaceContext)
   useEffect(onUnmount, [])
 
-  const {
-    orders: allOrders,
-    hasCache,
-    isLoading,
-    refresh,
-    isReloading,
-    toaster,
-  } = useMedusa("orders", {
-    search: {
-      ...filtersOnLoad,
-      ...defaultQueryProps,
-    },
-  })
+  const { orders, isLoading, isRefetching, count } = useAdminOrders(queryObject)
 
-  const handleCopyToClip = val => {
-    var tempInput = document.createElement("input")
+  const handleCopyToClip = (val) => {
+    const tempInput = document.createElement("input")
     tempInput.value = val
     document.body.appendChild(tempInput)
     tempInput.select()
@@ -154,98 +129,21 @@ const OrderIndex = ({}) => {
   const [query, setQuery] = useState(null)
   const [limit, setLimit] = useState(filtersOnLoad.limit || 20)
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
-  const [orders, setOrders] = useState([])
   const [filterTabs, setFilterTabs] = useState()
   const [activeFilterTab, setActiveFilterTab] = useState("all")
-  const [fetching, setFetching] = useState(false)
   const [showNewOrder, setShowNewOrder] = useState(false)
-
-  const [statusFilter, setStatusFilter] = useState({
-    open: false,
-    filter: null,
-  })
-  const [fulfillmentFilter, setFulfillmentFilter] = useState({
-    open: false,
-    filter: null,
-  })
-  const [paymentFilter, setPaymentFilter] = useState({
-    open: false,
-    filter: null,
-  })
-
-  const [dateFilter, setDateFilter] = useState({
-    open: false,
-    filter: null,
-  })
-
-  const resetFilters = () => {
-    setStatusFilter({
-      open: false,
-      filter: null,
-    })
-    setFulfillmentFilter({
-      open: false,
-      filter: null,
-    })
-    setPaymentFilter({
-      open: false,
-      filter: null,
-    })
-    setDateFilter({
-      open: false,
-      filter: null,
-    })
-  }
 
   useEffect(() => {
     decideTab()
-  }, [])
-
-  function prepareSearchParams(str, queryParts = {}) {
-    const fs = qs.parse(str)
-
-    for (const [key, value] of Object.entries(fs)) {
-      if (key.startsWith("created_at")) {
-        fs[key] = formatDateFilter(value) || null
-      }
-    }
-
-    const stringifiedFilters = qs.stringify({ ...fs, ...queryParts })
-    const toSend = queryString.parse(stringifiedFilters)
-
-    return toSend
-  }
-
-  const deconstructQueryString = () => {
-    const queries = decodeURIComponent(window.location.search.substring(1))
-    const filters = {}
-
-    let createdFilters = []
-    queries.split("&").map(query => {
-      const [k, v] = query.split("=")
-      if (allowedFilters.includes(k)) {
-        if (k.startsWith("fulfillment"))
-          setFulfillmentFilter({ open: true, filter: v })
-        if (k.startsWith("payment")) setPaymentFilter({ open: true, filter: v })
-        if (k.startsWith("status")) setStatusFilter({ open: true, filter: v })
-        if (k.startsWith("created_at")) createdFilters.push(v)
-        filters[k] = v
-      }
-
-      if (createdFilters.length) {
-        setDateFilter({ open: true, filter: createdFilters.join(",") })
-      }
-    })
-
-    return filters
-  }
+  }, [queryObject])
 
   const decideTab = () => {
-    const filtersFromUrl = deconstructQueryString()
-    const savedTabs = getLocalStorageFilters()
+    const tabRelevant = removeNullish(queryObject)
+    const clean = omit(tabRelevant, ["limit", "offset"])
 
+    const savedTabs = getLocalStorageFilters()
     const existsInSaved = savedTabs.find(
-      el => el.value === qs.stringify(filtersFromUrl)
+      (el) => el.value === qs.stringify(clean)
     )
 
     if (existsInSaved) {
@@ -254,15 +152,14 @@ const OrderIndex = ({}) => {
     }
 
     switch (true) {
-      case filtersFromUrl["fulfillment_status[]"] === "shipped" &&
-        filtersFromUrl["payment_status[]"] === "captured":
+      case clean.fulfillment_status === ["shipped"] &&
+        clean.payment_status === ["captured"]:
         setActiveFilterTab("completed")
         break
-      case (filtersFromUrl["fulfillment_status[]"] ===
-        "not_fulfilled,fulfilled" ||
-        filtersFromUrl["fulfillment_status[]"] === "fulfilled,not_fulfilled") &&
-        (filtersFromUrl["payment_status"] === "awaiting" ||
-          filtersFromUrl["payment_status[]"] === "awaiting"):
+      case (clean["fulfillment_status[]"] === "not_fulfilled,fulfilled" ||
+        clean["fulfillment_status[]"] === "fulfilled,not_fulfilled") &&
+        (clean["payment_status"] === "awaiting" ||
+          clean["payment_status[]"] === "awaiting"):
         setActiveFilterTab("incomplete")
         break
       default:
@@ -270,7 +167,7 @@ const OrderIndex = ({}) => {
     }
   }
 
-  const isInViewport = el => {
+  const isInViewport = (el) => {
     const rect = el.getBoundingClientRect()
     return (
       rect.top >= 0 &&
@@ -281,7 +178,7 @@ const OrderIndex = ({}) => {
     )
   }
 
-  const searchHandler = q => {
+  const searchHandler = (q) => {
     setOffset(0)
     resetFilters()
     setQuery(q)
@@ -303,8 +200,8 @@ const OrderIndex = ({}) => {
     {},
     [searchRef]
   )
-  useHotkeys("j", () => setActiveIndex(i => Math.min(i + 1, 50)))
-  useHotkeys("k", () => setActiveIndex(i => Math.max(i - 1, 0)))
+  useHotkeys("j", () => setActiveIndex((i) => Math.min(i + 1, 50)))
+  useHotkeys("k", () => setActiveIndex((i) => Math.max(i - 1, 0)))
   useHotkeys(
     "command+i",
     () => {
@@ -340,88 +237,20 @@ const OrderIndex = ({}) => {
   }, [activeIndex])
 
   useEffect(() => {
-    if (allOrders) {
-      setOrders(allOrders)
-    }
-  }, [allOrders])
-
-  useEffect(() => {
     const savedTabs = getLocalStorageFilters()
     setFilterTabs(savedTabs)
   }, [])
 
-  function formatDateFilter(filter) {
-    let dateFormatted = Object.entries(filter).reduce((acc, [key, value]) => {
-      if (value.includes("|")) {
-        acc[key] = relativeDateFormatToTimestamp(value)
-      } else {
-        acc[key] = value
-      }
-      return acc
-    }, {})
-
-    return dateFormatted
-  }
-
-  const handlePagination = direction => {
-    const updatedOffset =
-      direction === "next"
-        ? parseInt(offset) + parseInt(limit)
-        : parseInt(offset) - parseInt(limit)
-
-    handleTabClick(activeFilterTab, {
-      offset: updatedOffset,
-    }).then(() => {
-      setOffset(updatedOffset)
-    })
-  }
-
-  const handleQueryParts = () => {
-    // if the datefilter includes "|" it is a relative date and we have to format it to timestamp
-    const queryParts = {}
-
-    if (query) {
-      queryParts["q"] = query
-    }
-
-    if (!_.isEmpty(dateFilter.filter)) {
-      let dateFormatted = formatDateFilter(dateFilter.filter)
-      queryParts.created_at = dateFormatted
-    }
-
-    if (paymentFilter.filter) {
-      queryParts["payment_status[]"] = paymentFilter.filter
-    }
-
-    if (fulfillmentFilter.filter) {
-      queryParts["fulfillment_status[]"] = fulfillmentFilter.filter
-    }
-
-    if (statusFilter.filter) {
-      queryParts["status[]"] = statusFilter.filter
-    }
-
-    return queryParts
+  const handlePagination = (direction) => {
+    paginate(direction === "next" ? 1 : -1)
   }
 
   const submit = () => {
-    const url = qs.stringify(
-      {
-        "payment_status[]": paymentFilter.filter,
-        "fulfillment_status[]": fulfillmentFilter.filter,
-        "status[]": statusFilter.filter,
-        created_at: dateFilter.filter,
-        q: query,
-      },
-      { skipNulls: true }
-    )
-
-    handleTabClick({ value: url }, handleQueryParts())
+    handleTabClick({ value: getQueryString() }, getQueryObject())
   }
 
-  const replaceQueryString = queryObject => {
-    let params = ""
-    if (_.isEmpty(queryObject)) {
+  const replaceQueryString = (queryObject) => {
+    if (isEmpty(queryObject)) {
       window.history.replaceState(
         `/a/orders`,
         "",
@@ -429,20 +258,6 @@ const OrderIndex = ({}) => {
       )
       resetFilters()
     } else {
-      const clean = removeNullish(queryObject)
-      const query = { offset: offset || 0, ...clean }
-
-      params = Object.entries(query)
-        .map(([k, v]) => {
-          if (k === "created_at") {
-            return qs.stringify({ [k]: v })
-          } else {
-            return `${k}=${v}`
-          }
-        })
-        .filter(s => !!s)
-        .join("&")
-
       window.history.replaceState(`/a/orders`, "", `${`?${params}`}`)
     }
 
@@ -450,7 +265,6 @@ const OrderIndex = ({}) => {
   }
 
   const handleTabClick = async (tab, queryParts = {}) => {
-    setFetching(true)
     resetFilters()
 
     let searchObject = {
@@ -463,19 +277,16 @@ const OrderIndex = ({}) => {
 
     switch (tab) {
       case "completed":
-        //setQuery("")
         searchObject["fulfillment_status[]"] = "shipped"
         searchObject["payment_status[]"] = "captured"
         break
       case "incomplete":
-        //setQuery("")
         searchObject["fulfillment_status[]"] = ["not_fulfilled", "fulfilled"]
         searchObject["payment_status[]"] = "awaiting"
         break
       case "all":
         break
       default:
-        //setQuery("")
         const toSend = prepareSearchParams(tab.value, queryParts)
 
         if (!tab.value) {
@@ -494,7 +305,7 @@ const OrderIndex = ({}) => {
         return
     }
 
-    const urlFilters = _.pick(searchObject, allowedFilters)
+    const urlFilters = pick(searchObject, allowedFilters)
 
     if (!urlFilters.offset) {
       urlFilters.offset = 0
@@ -532,7 +343,7 @@ const OrderIndex = ({}) => {
     return []
   }
 
-  const handleSaveTab = saveValue => {
+  const handleSaveTab = (saveValue) => {
     const localStorageUrl = qs.stringify(
       {
         "payment_status[]": paymentFilter.filter,
@@ -559,7 +370,7 @@ const OrderIndex = ({}) => {
 
     handleTabClick(
       { label: saveValue, value: localStorageUrl },
-      handleQueryParts()
+      getQueryObject()
     )
   }
 
@@ -600,7 +411,7 @@ const OrderIndex = ({}) => {
             setPaymentFilter={setPaymentFilter}
             setFulfillmentFilter={setFulfillmentFilter}
             resetFilters={resetFilters}
-            handleSaveTab={value => handleSaveTab(value)}
+            handleSaveTab={(value) => handleSaveTab(value)}
           />
           <Button ml={2} onClick={() => setShowNewOrder(true)} variant={"cta"}>
             New draft order
@@ -650,7 +461,7 @@ const OrderIndex = ({}) => {
                 </Text>
                 <Cross
                   className="cross-icon"
-                  onClick={e => handleDeleteFilter(tab, e)}
+                  onClick={(e) => handleDeleteFilter(tab, e)}
                   data-for={tab.value}
                   data-tip="Delete filter"
                 />
@@ -659,7 +470,7 @@ const OrderIndex = ({}) => {
             ))}
         </Flex>
       </Flex>
-      {(isLoading && !hasCache) || isReloading || fetching ? (
+      {isLoading ? (
         <Flex
           flexDirection="column"
           alignItems="center"
