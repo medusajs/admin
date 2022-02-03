@@ -14,23 +14,19 @@ export type ActionType = {
 type ActionablesProps = {
   actions?: ActionType[]
   customTrigger?: React.ReactNode
-  forceDots?: boolean
+  forceDropdown?: boolean
 }
 
-/**
- * A component that accepts multiple actionables and renders them as a dropdown menu.
- * If only a single actionable is provided, it will render a button instead.
- */
 const Actionables: React.FC<ActionablesProps> = ({
   actions,
   customTrigger,
-  forceDots = false,
+  forceDropdown = false,
 }) => {
   if (!actions?.length) {
     return null
   }
 
-  return actions.length > 1 || forceDots ? (
+  return actions.length > 1 || forceDropdown ? (
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
