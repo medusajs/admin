@@ -52,14 +52,16 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
   const { store } = useAdminStore()
 
   useEffect(() => {
-    if (!store) return
+    if (!store) {
+      return
+    }
 
     if (!store.payment_link_template) {
       setPaymentFormatWarning(
         "No payment link has been set for this store. Please update store settings."
       )
     }
-    if (store.payment_link_template.indexOf("{cart_id}") === -1) {
+    if (store.payment_link_template?.indexOf("{cart_id}") === -1) {
       setPaymentFormatWarning(
         "Store payment link does not have the default format, as it does not contain '{cart_id}'. Either update the payment link to include '{cart_id}' or update this method to reflect the format of your payment link."
       )

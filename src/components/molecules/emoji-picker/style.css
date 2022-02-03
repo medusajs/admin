@@ -1,0 +1,91 @@
+.emoji-picker-react {
+    padding: 16px;
+}
+
+.emoji-picker-react .emoji-group {
+    padding: 0;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.emoji-picker-react .emoji-group:before {
+    font-family: "Inter";
+    text-transform: none !important;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.native {
+    font-size: 24px;
+}
+
+.emoji-picker-react input.emoji-search {
+    background-color: #F9FAFB;
+    border-radius: 4px;
+    border-color: #E5E7EB;
+    margin: 0;
+    width: 100%;
+    font-size: 12px;
+    font-family: "Inter";
+    color: #111827;
+    caret-color: #7C3AED;
+}
+
+.emoji-picker-react input.emoji-search::placeholder {
+    font-size: 12px;
+    font-family: "Inter";
+    color: #9CA3AF;
+}
+
+.emoji-picker-react .emoji-categories button.icn-smileys_people {
+ background-image: url("../../../assets/svg-2.0/happy.svg")
+}
+
+.emoji-picker-react .emoji-categories button.icn-animals_nature {
+    background-image: url("../../../assets/svg-2.0/sprout.svg")
+}
+
+.emoji-picker-react .emoji-categories button.icn-food_drink {
+    background-image: url("../../../assets/svg-2.0/carrot.svg")
+}
+
+.emoji-picker-react .emoji-categories button.icn-travel_places {
+    background-image: url("../../../assets/svg-2.0/plane.svg")
+}
+
+.emoji-picker-react .emoji-categories button.icn-activities {
+    background-image: url("../../../assets/svg-2.0/controller.svg")
+}
+
+.emoji-picker-react .emoji-categories button.icn-objects {
+    background-image: url("../../../assets/svg-2.0/lightbulb.svg")
+}
+
+.emoji-picker-react .emoji-categories button.icn-symbols {
+    background-image: url("../../../assets/svg-2.0/heart.svg")
+}
+
+.emoji-picker-react .emoji-categories button.icn-flags {
+    background-image: url("../../../assets/svg-2.0/flag.svg")
+}
+
+.emoji-picker-react .emoji-categories button {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+}
+
+.emoji-picker-react .emoji-categories button.active {
+    background-color: white;
+}
+
+.emoji-picker-react .emoji-categories {
+    background-color: #F3F4F6;
+    padding: 4px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.emoji-picker-react .active-category-indicator-wrapper .active-category-indicator {
+    display: none;
+}
