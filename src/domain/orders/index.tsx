@@ -6,7 +6,7 @@ import BodyCard from "../../components/organisms/body-card"
 import DraftOrderTable from "../../components/templates/draft-order-table"
 import OrderTable from "../../components/templates/order-table"
 import Details from "./details"
-import DraftOrderDetails from "./draft-orders/details"
+import DraftOrderDetails from "./draft-orders"
 import NewOrder from "./new"
 
 const VIEWS = [

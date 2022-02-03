@@ -131,7 +131,7 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
                 return (
                   <Table.Row
                     color={"inherit"}
-                    linkTo={row.original.id}
+                    linkTo={`draft/${row.original.id}`}
                     {...row.getRowProps()}
                   >
                     {row.cells.map((cell, index) => {
