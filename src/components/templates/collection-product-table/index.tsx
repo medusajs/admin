@@ -121,6 +121,11 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
     ])
   }, [selectedRowIds])
 
+  useEffect(() => {
+    const controlledPageCount = Math.ceil(count! / limit)
+    setNumPages(controlledPageCount)
+  }, [products, count, limit])
+
   const handleNext = () => {
     if (canNextPage) {
       setOffset((old) => old + pageSize)
