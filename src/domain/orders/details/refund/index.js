@@ -103,7 +103,7 @@ const RefundMenu = ({ order, onDismiss }) => {
             <TextArea
               inline
               label="Note"
-              placeholder="Placeholder..."
+              placeholder="Discount for loyal customer"
               value={note}
               onChange={handleNoteChange}
             />
