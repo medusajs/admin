@@ -1,5 +1,4 @@
 import { currencies } from "./currencies"
-const noDivisionCurrencies = ["krw", "jpy"]
 
 export function normalizeAmount(currency: string, amount: number): number {
   const divisor = getDecimalDigits(currency)
