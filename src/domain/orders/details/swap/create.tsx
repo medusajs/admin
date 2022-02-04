@@ -28,10 +28,7 @@ const extractPrice = (prices, order) => {
   }
 
   if (price) {
-    return normalizeAmount(
-      order.currency_code,
-      price.amount * (1 + order.tax_rate / 100)
-    )
+    return normalizeAmount(order.currency_code, price.amount)
   }
 
   return 0
@@ -116,7 +113,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (selectedItem.value !== "Add a shipping method") {
       setShippingMethod(selectedItem)
       const method = shippingOptions.find((o) => selectedItem.value === o.id)
-      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
+      setShippingPrice(method.amount)
     } else {
       setShippingMethod()
       setShippingPrice(0)
@@ -133,7 +130,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (!useCustomShippingPrice && shippingMethod && shippingOptions) {
       const method = shippingOptions.find((o) => shippingMethod.value === o.id)
       console.log(shippingMethod, method)
-      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
+      setShippingPrice(method.amount)
     }
   }, [useCustomShippingPrice, shippingMethod])
 
@@ -168,7 +165,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (shippingMethod) {
       data.return_shipping = {
         option_id: shippingMethod.value,
-        price: Math.round(shippingPrice / (1 + order.tax_rate / 100)),
+        price: Math.round(shippingPrice),
       }
     }
 
