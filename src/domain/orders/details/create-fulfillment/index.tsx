@@ -137,6 +137,31 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
         </Modal.Content>
         <Modal.Footer>
           <div className="flex w-full h-8 justify-end">
+           <div
+              className="items-center h-full flex cursor-pointer"
+              onClick={() => setNoNotis(!noNotis)}
+            >
+              <div
+                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
+                  !noNotis && "bg-violet-60"
+                }`}
+              >
+                <span className="self-center">
+                  {!noNotis && <CheckIcon size={16} />}
+                </span>
+              </div>
+              <input
+                id="noNotification"
+                className="hidden"
+                name="noNotification"
+                checked={!noNotis}
+                type="checkbox"
+              />
+              <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
+                Send notifications
+                <InfoTooltip content="" />
+              </span>
+            </div>
             <Button
               variant="ghost"
               className="mr-2 w-32 text-small justify-center"
