@@ -2,7 +2,9 @@ import clsx from "clsx"
 import { Link } from "gatsby"
 import * as React from "react"
 import { getProductStatusVariant } from "../../../utils/product-status-variant"
+import Button from "../../fundamentals/button"
 import ListIcon from "../../fundamentals/icons/list-icon"
+import MoreHorizontalIcon from "../../fundamentals/icons/more-horizontal-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Actionables from "../../molecules/actionables"
@@ -32,7 +34,7 @@ const ProductOverview = ({ products, toggleListView }) => {
       </div>
       <div className="grid grid-cols-6">
         {products.map((product) => (
-          <ProductTile product={} />
+          <ProductTile product={product} />
         ))}
       </div>
     </>
@@ -50,7 +52,15 @@ const ProductTile = ({ product }) => {
         >
           <Actionables
             actions={getActions()}
-            triggerClass="hidden-actions group-hover:opacity-100 focus-within:opacity-100 opacity-0 bg-grey-0"
+            customTrigger={
+              <Button
+                variant="ghost"
+                size="small"
+                className="w-xlarge h-xlarge hidden-actions group-hover:opacity-100 focus-within:opacity-100 opacity-0 bg-grey-0"
+              >
+                <MoreHorizontalIcon size={20} />
+              </Button>
+            }
           />
         </div>
         <Link to={`${product.id}`}>

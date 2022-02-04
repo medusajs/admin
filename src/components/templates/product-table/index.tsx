@@ -13,6 +13,7 @@ import { useProductFilters } from "./use-product-filters"
 import ProductOverview from "./overview"
 
 const DEFAULT_PAGE_SIZE = 15
+const DEFAULT_PAGE_SIZE_TILE_VIEW = 18
 
 type ProductTableProps = {}
 
@@ -33,6 +34,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     reset,
     paginate,
     setFilters,
+    setLimit,
     filters,
     setQuery: setFreeText,
     queryObject,
@@ -40,7 +42,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   } = useProductFilters(location.search, defaultQueryProps)
 
   const offs = parseInt(queryObject.offset) || 0
-  const limit = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
+  const limit = parseInt(queryObject.limit)
 
   const [query, setQuery] = useState(queryObject.query)
   const [numPages, setNumPages] = useState(0)
@@ -80,7 +82,21 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     refreshWithFilters()
   }, [representationObject])
 
-  const [columns, showList, setShowList] = useProductTableColumn()
+  const setTileView = () => {
+    setLimit(DEFAULT_PAGE_SIZE_TILE_VIEW)
+    setShowList(false)
+  }
+
+  const setListView = () => {
+    setLimit(DEFAULT_PAGE_SIZE)
+    setShowList(true)
+  }
+  const [showList, setShowList] = React.useState(true)
+  const [columns] = useProductTableColumn({
+    setTileView,
+    setListView,
+    showList,
+  })
 
   const {
     getTableProps,
@@ -178,24 +194,26 @@ const ProductTable: React.FC<ProductTableProps> = () => {
                   </Table.HeadRow>
                 ))}
               </Table.Head>
-              {isLoading || isRefetching || !products ? (
-                <div className="w-full pt-2xlarge flex items-center justify-center">
-                  <Spinner size={"large"} variant={"secondary"} />
-                </div>
-              ) : (
+              <LoadingContainer
+                isLoading={isLoading || isRefetching || !products}
+              >
                 <Table.Body {...getTableBodyProps()}>
                   {rows.map((row) => {
                     prepareRow(row)
                     return <ProductRow row={row} />
                   })}
                 </Table.Body>
-              )}
+              </LoadingContainer>
             </>
           ) : (
-            <ProductOverview
-              products={products}
-              toggleListView={() => setShowList(true)}
-            />
+            <LoadingContainer
+              isLoading={isLoading || isRefetching || !products}
+            >
+              <ProductOverview
+                products={products}
+                toggleListView={setListView}
+              />
+            </LoadingContainer>
           )}
         </Table>
         <TablePagination
@@ -213,6 +231,16 @@ const ProductTable: React.FC<ProductTableProps> = () => {
         />
       </>
     </div>
+  )
+}
+
+const LoadingContainer = ({ isLoading, children }) => {
+  return isLoading ? (
+    <div className="w-full pt-2xlarge flex items-center justify-center">
+      <Spinner size={"large"} variant={"secondary"} />
+    </div>
+  ) : (
+    children
   )
 }
 
