@@ -12,7 +12,7 @@ type NotificationProps = {
   event: NotificationEvent
 }
 
-const ShipmentNotice: React.FC<NotificationProps> = ({ event }) => {
+const Notification: React.FC<NotificationProps> = ({ event }) => {
   const toaster = useToaster()
   const resendNotification = useAdminResendNotification(event.id)
 
@@ -59,4 +59,4 @@ const ReceiverNode: React.FC<{ email: string }> = ({ email }) => {
   )
 }
 
-export default ShipmentNotice
+export default Notification

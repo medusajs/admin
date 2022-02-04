@@ -1,12 +1,20 @@
 import clsx from "clsx"
-import { useAdminCreateNote } from "medusa-react"
-import React, { useEffect } from "react"
+import {
+  useAdminCreateClaim,
+  useAdminCreateNote,
+  useAdminCreateSwap,
+  useAdminOrder,
+} from "medusa-react"
+import React, { useState } from "react"
+import ClaimMenu from "../../../domain/orders/details/claim/create"
+import SwapMenu from "../../../domain/orders/details/swap/create"
 import {
   ClaimEvent,
   ExchangeEvent,
   ItemsFulfilledEvent,
   ItemsShippedEvent,
   NoteEvent,
+  NotificationEvent,
   OrderPlacedEvent,
   ReturnEvent,
   TimelineEvent,
@@ -25,18 +33,24 @@ import Exchange from "../../molecules/timeline-events/exchange"
 import ItemsFulfilled from "../../molecules/timeline-events/items-fulfilled"
 import ItemsShipped from "../../molecules/timeline-events/items-shipped"
 import Note from "../../molecules/timeline-events/note"
+import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Return from "../../molecules/timeline-events/return"
 
-type indexProps = {
+type TimelineProps = {
   orderId: string
 }
 
-const Timeline: React.FC<indexProps> = ({ orderId }) => {
+const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   const { events, refetch } = useBuildTimelime(orderId)
   const toaster = useToaster()
   const createNote = useAdminCreateNote()
+  const { order } = useAdminOrder(orderId)
+  const [showCreateSwap, setshowCreateSwap] = useState(false)
+  const [showCreateClaim, setshowCreateClaim] = useState(false)
+  const createSwap = useAdminCreateSwap(orderId)
+  const createClaim = useAdminCreateClaim(orderId)
 
   const actions: ActionType[] = [
     {
@@ -47,17 +61,19 @@ const Timeline: React.FC<indexProps> = ({ orderId }) => {
     {
       icon: <RefreshIcon size={20} />,
       label: "Register Exchange",
-      onClick: () => {},
+      onClick: () => setshowCreateSwap(true),
     },
     {
       icon: <AlertIcon size={20} />,
       label: "Register Claim",
-      onClick: () => {},
+      onClick: () => setshowCreateClaim(true),
     },
   ]
 
   const handleCreateNote = (value: string | undefined) => {
-    if (!value) return
+    if (!value) {
+      return
+    }
     createNote.mutate(
       {
         resource_id: orderId,
@@ -71,45 +87,59 @@ const Timeline: React.FC<indexProps> = ({ orderId }) => {
     )
   }
 
-  useEffect(() => {
-    console.log("Timeline rerendered")
-  }, [])
-
   return (
-    <div className="rounded-rounded bg-grey-0 border border-grey-20">
-      <div className="py-large px-xlarge border-b border-grey-20">
-        <div className="flex items-center justify-between">
-          <h3 className="inter-xlarge-semibold">Timeline</h3>
+    <>
+      <div className="rounded-rounded bg-grey-0 border border-grey-20">
+        <div className="py-large px-xlarge border-b border-grey-20">
+          <div className="flex items-center justify-between">
+            <h3 className="inter-xlarge-semibold">Timeline</h3>
+            <div
+              className={clsx({
+                "pointer-events-none opacity-50": !events,
+              })}
+            >
+              <Actionables actions={actions} />
+            </div>
+          </div>
           <div
-            className={clsx({
+            className={clsx("mt-base", {
               "pointer-events-none opacity-50": !events,
             })}
           >
-            <Actionables actions={actions} />
+            <NoteInput onSubmit={handleCreateNote} />
           </div>
         </div>
-        <div
-          className={clsx("mt-base", {
-            "pointer-events-none opacity-50": !events,
-          })}
-        >
-          <NoteInput onSubmit={handleCreateNote} />
+        <div className="py-large px-xlarge">
+          {!events ? (
+            <div className="h-96 w-full flex items-center justify-center">
+              <Spinner variant="secondary" size="large" />
+            </div>
+          ) : (
+            <div className="flex flex-col gap-y-base">
+              {events.map((event, i) => {
+                return <div key={i}>{switchOnType(event, refetch)}</div>
+              })}
+            </div>
+          )}
         </div>
       </div>
-      <div className="py-large px-xlarge">
-        {!events ? (
-          <div className="h-96 w-full flex items-center justify-center">
-            <Spinner variant="secondary" size="large" />
-          </div>
-        ) : (
-          <div className="flex flex-col gap-y-base">
-            {events.map((event, i) => {
-              return <div key={i}>{switchOnType(event, refetch)}</div>
-            })}
-          </div>
-        )}
-      </div>
-    </div>
+      {showCreateSwap && (
+        <SwapMenu
+          order={order}
+          onCreate={createSwap.mutateAsync}
+          toaster={toaster}
+          onDismiss={() => setshowCreateSwap(false)}
+        />
+      )}
+      {showCreateClaim && (
+        <ClaimMenu
+          order={order}
+          onCreate={createClaim.mutateAsync}
+          toaster={toaster}
+          onDismiss={() => setshowCreateClaim(false)}
+        />
+      )}
+    </>
   )
 }
 
@@ -131,8 +161,10 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
       return <Exchange event={event as ExchangeEvent} />
     case "claim":
       return <Claim event={event as ClaimEvent} />
+    case "notification":
+      return <Notification event={event as NotificationEvent} />
     default:
-      return <div>{event.type}</div>
+      return null
   }
 }
 

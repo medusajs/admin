@@ -12,7 +12,7 @@ const ItemsFulfilled: React.FC<ItemsFulfilledProps> = ({ event }) => {
   const args = {
     icon: <PackageIcon size={20} />,
     time: event.time,
-    title: "Items Fulfilled",
+    title: `${event.isExchangeFulfillment ? "Exchange " : ""}Items Fulfilled`,
     children: event.items.map((item) => <EventItemContainer item={item} />),
     noNotification: event.noNotification,
     isFirst: event.first,

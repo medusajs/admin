@@ -13,7 +13,7 @@ const EventActionables: React.FC<EventActionablesProps> = ({ actions }) => {
     </button>
   )
   return (
-    <Actionables customTrigger={EventTrigger} forceDots actions={actions} />
+    <Actionables customTrigger={EventTrigger} forceDropdown actions={actions} />
   )
 }
 

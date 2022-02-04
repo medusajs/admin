@@ -31,7 +31,7 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
   }
 
   const handleReceive = () => {
-    //TODO
+    // TODO
   }
 
   const args = buildReturn(event, handleCancel, handleReceive)
@@ -61,7 +61,7 @@ function buildReturn(
   let title: string = "Return"
   let icon: React.ReactNode
   let button: React.ReactNode
-  let actions: ActionType[] = []
+  const actions: ActionType[] = []
 
   switch (event.status) {
     case "requested":

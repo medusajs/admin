@@ -12,7 +12,9 @@ type EventItemContainerProps = {
 }
 
 const EventItemContainer: React.FC<EventItemContainerProps> = ({ item }) => {
-  if (!item) return null
+  if (!item) {
+    return null
+  }
   return (
     <div className="flex items-center gap-x-small mb-base last:mb-0">
       {item.thumbnail && (

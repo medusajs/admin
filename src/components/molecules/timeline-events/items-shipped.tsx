@@ -12,7 +12,7 @@ const ItemsShipped: React.FC<ItemsShippedProps> = ({ event }) => {
   const args = {
     icon: <TruckIcon size={20} />,
     time: event.time,
-    title: "Items Shipped",
+    title: `${event.isExchangeFulfillment ? "Exchange " : ""}Items Shipped`,
     children: event.items.map((item) => <EventItemContainer item={item} />),
     noNotification: event.noNotification,
     isFirst: event.first,

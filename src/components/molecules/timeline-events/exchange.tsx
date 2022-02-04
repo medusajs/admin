@@ -1,4 +1,8 @@
-import { useAdminCancelSwap, useAdminStore } from "medusa-react"
+import {
+  useAdminCancelReturn,
+  useAdminCancelSwap,
+  useAdminStore,
+} from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { ExchangeEvent } from "../../../hooks/use-build-timeline"
 import CopyToClipboard from "../../atoms/copy-to-clipboard"
@@ -41,8 +45,10 @@ const ExchangeStatus: React.FC<ExchangeProps> = ({ event }) => {
 }
 
 const Exchange: React.FC<ExchangeProps> = ({ event }) => {
-  const [showDelete, setShowDelete] = useState(false)
-  const cancelExchange = useAdminCancelSwap(event.id)
+  const [showCancel, setShowCancel] = useState(false)
+  const [showCancelReturn, setShowCancelReturn] = useState(false)
+  const cancelExchange = useAdminCancelSwap(event.orderId)
+  const cancelReturn = useAdminCancelReturn(event.returnId)
   const [differenceCardId, setDifferenceCardId] = useState<string | undefined>(
     undefined
   )
@@ -83,6 +89,10 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
     cancelExchange.mutate(event.id)
   }
 
+  const handleCancelReturn = () => {
+    cancelReturn.mutate()
+  }
+
   const returnItems = getReturnItems(event)
   const newItems = getNewItems(event)
 
@@ -92,7 +102,16 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
     actions.push({
       label: "Cancel exchange",
       icon: <CancelIcon size={20} />,
-      onClick: () => setShowDelete(!showDelete),
+      onClick: () => setShowCancel(!showCancel),
+      variant: "danger",
+    })
+  }
+
+  if (event.returnStatus !== "canceled") {
+    actions.push({
+      label: "Cancel return",
+      icon: <CancelIcon size={20} />,
+      onClick: handleCancelReturn,
       variant: "danger",
     })
   }
@@ -109,7 +128,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
       : EventIconColor.ORANGE,
     time: event.time,
     noNotification: event.noNotification,
-    topNode: actions.length > 0 && <EventActionables actions={actions} />,
+    topNode: getActions(event, actions),
     children: !event.canceledAt && [
       <div className="flex flex-col gap-y-base">
         <ExchangeStatus event={event} />
@@ -134,13 +153,24 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
   return (
     <>
       <EventContainer {...args} />
-      {showDelete && (
+      {showCancel && (
         <DeletePrompt
-          handleClose={() => setShowDelete(!showDelete)}
+          handleClose={() => setShowCancel(!showCancel)}
           onDelete={async () => handleCancelExchange()}
           confirmText="Yes, cancel"
           heading="Cancel exchange"
           text="Are you sure you want to cancel this exchange?"
+          successText="Exchange canceled"
+        />
+      )}
+      {showCancelReturn && (
+        <DeletePrompt
+          handleClose={() => setShowCancelReturn(!showCancelReturn)}
+          onDelete={async () => handleCancelReturn()}
+          confirmText="Yes, cancel"
+          heading="Cancel return"
+          text="Are you sure you want to cancel this return?"
+          successText="Return canceled"
         />
       )}
     </>
@@ -190,6 +220,26 @@ function getReturnItems(event: ExchangeEvent) {
       </div>
     </div>
   )
+}
+
+function getActions(event: ExchangeEvent, actions: ActionType[]) {
+  if (actions.length === 0) {
+    return null
+  }
+
+  // if (event.returnStatus !== "canceled") {
+  //   return (
+  //     <div className="flex items-center opacity-50">
+  //       <Tooltip content="Return must be canceled before the exchange can be canceled">
+  //         <div className="pointer-events-none">
+  //           <EventActionables actions={actions} />
+  //         </div>
+  //       </Tooltip>
+  //     </div>
+  //   )
+  // }
+
+  return <EventActionables actions={actions} />
 }
 
 export default Exchange
