@@ -26,8 +26,6 @@ const RefundMenu = ({ order, onDismiss }) => {
   ]
 
   const onSubmit = (e) => {
-    console.log("On submit ", refundAmount)
-    return
     createRefund.mutate(
       {
         amount: refundAmount,
@@ -54,14 +52,11 @@ const RefundMenu = ({ order, onDismiss }) => {
   const handleRefundUpdated = (value) => {
     const refundable = order.total - order.refunded_total
 
-    console.log("currency update", value)
-
     if (value === "" || (value <= refundable && value >= 0)) {
       setRefundAmount(value)
     }
   }
 
-  console.log("state", refundAmount)
   const isSystemPayment = order.payments.some((p) => p.provider_id === "system")
 
   return (
