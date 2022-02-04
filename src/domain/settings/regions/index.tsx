@@ -77,7 +77,7 @@ const Regions = () => {
                 <Spinner size="large" variant="secondary" />
               </div>
             ) : (
-              <RadioGroup
+              <RadioGroup.Root
                 value={selectedRegion}
                 onValueChange={setSelectedRegion}
               >
@@ -108,7 +108,7 @@ const Regions = () => {
                     ></RadioGroup.Item>
                   )
                 })}
-              </RadioGroup>
+              </RadioGroup.Root>
             )}
           </BodyCard>
           {selectedRegion && (

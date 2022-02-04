@@ -154,7 +154,11 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
     }
 
     updateRegion.mutate(
-      { ...data, tax_rate: data.tax_rate * 100 },
+      {
+        ...data,
+        tax_rate: data.tax_rate * 100,
+        currency_code: selectedCurrency,
+      },
       {
         onSuccess: () => {
           toaster("Successfully updated region", "success")
