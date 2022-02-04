@@ -1,17 +1,15 @@
-import React, { useState } from "react"
-
-import Modal from "../../../../components/molecules/modal"
-import CurrencyInput from "../../../../components/organisms/currency-input"
-import Button from "../../../../components/fundamentals/button"
-import TextArea from "../../../../components/molecules/textarea"
-import Select from "../../../../components/molecules/select"
-
-import useToaster from "../../../../hooks/use-toaster"
 import { useAdminRefundPayment } from "medusa-react"
+import React, { useState } from "react"
+import Button from "../../../../components/fundamentals/button"
+import AlertIcon from "../../../../components/fundamentals/icons/alert-icon"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import Modal from "../../../../components/molecules/modal"
+import Select from "../../../../components/molecules/select"
+import TextArea from "../../../../components/molecules/textarea"
+import CurrencyInput from "../../../../components/organisms/currency-input"
+import useToaster from "../../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../../utils/error-messages"
-import AlertIcon from "../../../../components/fundamentals/icons/alert-icon"
 
 const RefundMenu = ({ order, onDismiss }) => {
   const [note, setNote] = useState("")
@@ -28,6 +26,8 @@ const RefundMenu = ({ order, onDismiss }) => {
   ]
 
   const onSubmit = (e) => {
+    console.log("On submit ", refundAmount)
+    return
     createRefund.mutate(
       {
         amount: refundAmount,
@@ -54,11 +54,14 @@ const RefundMenu = ({ order, onDismiss }) => {
   const handleRefundUpdated = (value) => {
     const refundable = order.total - order.refunded_total
 
+    console.log("currency update", value)
+
     if (value === "" || (value <= refundable && value >= 0)) {
       setRefundAmount(value)
     }
   }
 
+  console.log("state", refundAmount)
   const isSystemPayment = order.payments.some((p) => p.provider_id === "system")
 
   return (

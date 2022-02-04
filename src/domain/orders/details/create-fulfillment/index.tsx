@@ -13,6 +13,8 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import Button from "../../../../components/fundamentals/button"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import Metadata, {
   MetadataField,
@@ -136,24 +138,51 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
           </div>
         </Modal.Content>
         <Modal.Footer>
-          <div className="flex w-full h-8 justify-end">
-            <Button
-              variant="ghost"
-              className="mr-2 w-32 text-small justify-center"
-              size="large"
-              onClick={handleCancel}
+          <div className="flex w-full h-8 justify-between">
+            <div
+              className="items-center h-full flex cursor-pointer"
+              onClick={() => setNoNotis(!noNotis)}
             >
-              Cancel
-            </Button>
-            <Button
-              size="large"
-              className="w-32 text-small justify-center"
-              variant="primary"
-              disabled={!toFulfill?.length}
-              onClick={createFulfillment}
-            >
-              Complete
-            </Button>
+              <div
+                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
+                  !noNotis && "bg-violet-60"
+                }`}
+              >
+                <span className="self-center">
+                  {!noNotis && <CheckIcon size={16} />}
+                </span>
+              </div>
+              <input
+                id="noNotification"
+                className="hidden"
+                name="noNotification"
+                checked={!noNotis}
+                type="checkbox"
+              />
+              <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
+                Send notifications
+                <InfoTooltip content="" />
+              </span>
+            </div>
+            <div className="flex">
+              <Button
+                variant="ghost"
+                className="mr-2 w-32 text-small justify-center"
+                size="large"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="large"
+                className="w-32 text-small justify-center"
+                variant="primary"
+                disabled={!toFulfill?.length}
+                onClick={createFulfillment}
+              >
+                Complete
+              </Button>
+            </div>
           </div>
         </Modal.Footer>
       </Modal.Body>

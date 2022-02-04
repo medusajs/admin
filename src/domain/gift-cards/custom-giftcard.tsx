@@ -108,12 +108,14 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                 label={"Email"}
                 required
                 name="metadata.email"
+                placeholder="lebron@james.com"
                 type="email"
                 ref={register({ required: true })}
               />
               <Textarea
                 label={"Personal Message"}
                 rows={7}
+                placeholder="Something nice to someone special"
                 name="metadata.personal_message"
                 ref={register()}
               />

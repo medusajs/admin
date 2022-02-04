@@ -4,7 +4,6 @@ import { Box, Flex } from "rebass"
 import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
 import Button from "../../components/button"
 import FilterDropdownItem from "../../components/molecules/filter-dropdown/item"
-import { ReactComponent as Filter } from "../../assets/svg/filter.svg"
 import InputField from "../../components/molecules/input"
 import {
   DateFilters,

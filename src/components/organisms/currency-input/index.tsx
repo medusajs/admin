@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { useContext, useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
 import AmountField from "react-currency-input-field"
 import { Option } from "../../../types/shared"
 import { currencies, CurrencyType } from "../../../utils/currencies"
@@ -66,14 +66,24 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
     CurrencyType | undefined
   >(getCurrencyInfo(currentCurrency))
 
-  const [value, setValue] = useState<Option | undefined>(
+  const [value, setValue] = useState<Option | null>(
     currentCurrency
       ? {
           label: currentCurrency.toUpperCase(),
           value: currentCurrency,
         }
-      : undefined
+      : null
   )
+
+  useEffect(() => {
+    if (currentCurrency) {
+      setSelectedCurrency(getCurrencyInfo(currentCurrency))
+      setValue({
+        label: currentCurrency.toUpperCase(),
+        value: currentCurrency,
+      })
+    }
+  }, [currentCurrency])
 
   const onCurrencyChange = (currency: Option) => {
     // Should not be nescessary, but the component we use for select input
@@ -136,33 +146,19 @@ const AmountInput: React.FC<AmountInputProps> = ({
   amount,
   step = 1,
   allowNegative = false,
+  onValidate,
   onChange,
 }) => {
   const { currencyInfo } = useContext(CurrencyContext)
-  const [value, setValue] = useState<string | undefined>(
-    amount ? `${normalizeAmount(currencyInfo?.code, amount)}` : undefined
-  )
+  const value = useMemo(() => {
+    return amount ? `${normalizeAmount(currencyInfo?.code, amount)}` : undefined
+  }, [amount, currencyInfo])
+
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     inputRef.current?.dispatchEvent(new Event("blur"))
   }, [currencyInfo?.decimal_digits])
-
-  useEffect(() => {
-    if (currencyInfo && amount) {
-      setValue(`${normalizeAmount(currencyInfo?.code, amount)}`)
-    }
-  }, [amount])
-
-  const handleManualValueChange = (val: number) => {
-    const newValue = parseFloat(value ?? "0") + val
-
-    if (!allowNegative && newValue < 0) {
-      return
-    }
-
-    setValue(`${newValue}`)
-  }
 
   const handleChange = (value) => {
     let persistedAmount: number | undefined = undefined
@@ -174,13 +170,29 @@ const AmountInput: React.FC<AmountInputProps> = ({
     if (currencyInfo) {
       const amount = parseFloat(value)
       const multiplier = getDecimalDigits(currencyInfo.code)
-      persistedAmount = multiplier * amount
-      setValue(`${value}`)
+      persistedAmount = Math.round(multiplier * amount)
     }
 
-    if (onChange && persistedAmount) {
+    const validAmount = true
+    // if (onValidate) {
+    //   validAmount = onValidate(value)
+    // }
+
+    if (onChange) {
       onChange(persistedAmount)
     }
+  }
+
+  const handleManualValueChange = (val: number) => {
+    const newValue = (amount ?? 0) + val
+
+    if (!allowNegative && newValue < 0) {
+      return
+    }
+
+    const normalized = normalizeAmount(currencyInfo?.code, newValue)
+
+    handleChange(`${normalized}`)
   }
 
   return (
@@ -206,14 +218,14 @@ const AmountInput: React.FC<AmountInputProps> = ({
           <button
             className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
             type="button"
-            onClick={() => handleManualValueChange(-step)}
+            onClick={() => handleManualValueChange(-1)}
           >
             <MinusIcon size={16} />
           </button>
           <button
             type="button"
             className="text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
-            onClick={() => handleManualValueChange(step)}
+            onClick={() => handleManualValueChange(1)}
           >
             <PlusIcon size={16} />
           </button>

@@ -1,5 +1,4 @@
 import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
-import clsx from "clsx"
 import { navigate } from "gatsby"
 import { capitalize, sum } from "lodash"
 import {
@@ -16,7 +15,7 @@ import {
   useAdminUpdateOrder,
 } from "medusa-react"
 import moment from "moment"
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import ReactJson from "react-json-view"
 import Avatar from "../../../components/atoms/avatar"
@@ -27,10 +26,7 @@ import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
-import PackageIcon from "../../../components/fundamentals/icons/package-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
-import StatusDot from "../../../components/fundamentals/status-indicator"
-import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
@@ -40,20 +36,30 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
-import CreateRefundModal from "./refund"
 import OrderLine from "./order-line"
+import CreateRefundModal from "./refund"
+import {
+  DisplayTotal,
+  FormattedAddress,
+  FormattedFulfillment,
+  FulfillmentStatusComponent,
+  OrderStatusComponent,
+  PaymentActionables,
+  PaymentDetails,
+  PaymentStatusComponent,
+} from "./templates"
+
+type OrderDetailFulfillment = {
+  title: string
+  type: string
+  fulfillment: Fulfillment
+  swap?: Swap
+  claim?: ClaimOrder
+}
 
 const gatherAllFulfillments = (order) => {
   if (!order) {
     return []
-  }
-
-  type OrderDetailFulfillment = {
-    title: string
-    type: string
-    fulfillment: Fulfillment
-    swap?: Swap
-    claim?: ClaimOrder
   }
 
   const all: OrderDetailFulfillment[] = []
@@ -99,19 +105,19 @@ const gatherAllFulfillments = (order) => {
   return all
 }
 
+type DeletePromptData = {
+  resource: string
+  onDelete: () => any
+  show: boolean
+}
+
+const initDeleteState: DeletePromptData = {
+  resource: "",
+  onDelete: () => Promise.resolve(console.log("Delete resource")),
+  show: false,
+}
+
 const OrderDetails = ({ id }) => {
-  type DeletePromptData = {
-    resource: string
-    onDelete: () => any
-    show: boolean
-  }
-
-  const initDeleteState: DeletePromptData = {
-    resource: "",
-    onDelete: () => Promise.resolve(console.log("Delete resource")),
-    show: false,
-  }
-
   const [deletePromptData, setDeletePromptData] = useState<DeletePromptData>(
     initDeleteState
   )
@@ -136,7 +142,10 @@ const OrderDetails = ({ id }) => {
   const cancelSwapFulfillment = useAdminCancelSwapFulfillment(id)
   const cancelClaimFulfillment = useAdminCancelClaimFulfillment(id)
 
-  const { region } = useAdminRegion(order?.region_id)
+  // @ts-ignore
+  const { region } = useAdminRegion(order?.region_id, {
+    enabled: !!order?.region_id,
+  })
 
   const toaster = useToaster()
 
@@ -151,113 +160,13 @@ const OrderDetails = ({ id }) => {
     handleCopy
   })
 
-  const DisplayTotal = ({
-    totalAmount,
-    totalTitle,
-    subtitle = "",
-    totalColor = "text-grey-90",
-  }) => (
-    <div className="flex justify-between mt-4 items-center">
-      <div className="flex flex-col">
-        <div className="inter-small-regular text-grey-90">{totalTitle}</div>
-        {subtitle && (
-          <div className="inter-small-regular text-grey-50 mt-1">
-            {subtitle}
-          </div>
-        )}
-      </div>
-      <div className="flex">
-        <div className={clsx(`inter-small-regular mr-3`, totalColor)}>
-          {formatAmountWithSymbol({
-            amount: totalAmount,
-            currency: order?.currency_code,
-            digits: 2,
-            tax: order?.tax_rate,
-          })}
-        </div>
-        <div className="inter-small-regular text-grey-50">
-          {order?.currency_code.toUpperCase()}
-        </div>
-      </div>
-    </div>
-  )
-
-  const Address = ({ title, addr }) => {
-    if (!addr?.id) {
-      return (
-        <div className="flex flex-col pl-6">
-          <div className="inter-small-regular text-grey-50 mb-1">{title}</div>
-          <div className="flex flex-col inter-small-regular">N/A</div>
-        </div>
-      )
-    }
-
-    return (
-      <div className="flex flex-col pl-6">
-        <div className="inter-small-regular text-grey-50 mb-1">{title}</div>
-        <div className="flex flex-col inter-small-regular">
-          <span>
-            {addr?.address_1} {addr?.address_2}
-          </span>
-          <span>
-            {addr?.city}
-            {", "}
-            {addr?.province || ""}
-            {addr?.postal_code} {addr?.country_code?.toUpperCase()}
-          </span>
-        </div>
-      </div>
-    )
-  }
-
-  const OrderStatusComponent = () => {
-    switch (order?.status) {
-      case "completed":
-        return <StatusDot title="Completed" variant="success" />
-      case "pending":
-        return <StatusDot title="Processing" variant="default" />
-      case "canceled":
-        return <StatusDot title="Canceled" variant="danger" />
-      case "requires_action":
-        return <StatusDot title="Requires action" variant="danger" />
-      default:
-        return null
-    }
-  }
-
-  const PaymentStatusComponent = () => {
-    switch (order?.payment_status) {
-      case "captured":
-        return <StatusDot title="Paid" variant="success" />
-      case "awaiting":
-        return <StatusDot title="Awaiting" variant="default" />
-      case "canceled":
-        return <StatusDot title="Canceled" variant="danger" />
-      case "requires_action":
-        return <StatusDot title="Requires Action" variant="danger" />
-      default:
-        return null
-    }
-  }
-
-  const FulfillmentStatusComponent = () => {
-    switch (order?.fulfillment_status) {
-      case "shipped":
-        return <StatusDot title="Shipped" variant="success" />
-      case "fulfilled":
-        return <StatusDot title="Fulfilled" variant="warning" />
-      case "canceled":
-        return <StatusDot title="Canceled" variant="danger" />
-      case "partially_fulfilled":
-        return <StatusDot title="Partially fulfilled" variant="warning" />
-      case "requires_action":
-        return <StatusDot title="Requires Action" variant="danger" />
-      default:
-        return null
-    }
-  }
-
-  const PaymentDetails = () => {
+  const {
+    hasMovements,
+    swapAmount,
+    manualRefund,
+    swapRefund,
+    returnRefund,
+  } = useMemo(() => {
     let manualRefund = 0
     let swapRefund = 0
     let returnRefund = 0
@@ -277,132 +186,14 @@ const OrderDetails = ({ id }) => {
         }
       })
     }
-
-    return (
-      <>
-        {!!swapAmount && (
-          <DisplayTotal
-            totalAmount={swapAmount}
-            totalTitle={"Total for Swaps"}
-          />
-        )}
-        {!!swapRefund && (
-          <DisplayTotal
-            totalAmount={returnRefund}
-            totalTitle={"Refunded for Swaps"}
-          />
-        )}
-        {!!returnRefund && (
-          <DisplayTotal
-            totalAmount={returnRefund}
-            totalTitle={"Refunded for Returns"}
-          />
-        )}
-        {!!manualRefund && (
-          <DisplayTotal
-            totalAmount={manualRefund}
-            totalTitle={"Manually refunded"}
-          />
-        )}
-        <div className="flex justify-between mt-4 items-center">
-          <div className="inter-base-semibold text-grey-90">Net Total</div>
-          <div className="inter-xlarge-semibold text-grey-90">
-            {formatAmountWithSymbol({
-              amount: order!.paid_total - order!.refunded_total,
-              currency: order?.currency_code || "",
-              digits: 2,
-              tax: order?.tax_rate,
-            })}
-          </div>
-        </div>
-      </>
-    )
-  }
-
-  const TrackingLink = ({ trackingLink }) => {
-    if (trackingLink.url) {
-      return (
-        <a
-          style={{ textDecoration: "none" }}
-          target="_blank"
-          href={trackingLink.url}
-        >
-          <div className="text-blue-60 ml-2">
-            {trackingLink.tracking_number}{" "}
-          </div>
-        </a>
-      )
-    } else {
-      return (
-        <span className="text-blue-60 ml-2">
-          {trackingLink.tracking_number}{" "}
-        </span>
-      )
+    return {
+      hasMovements: swapAmount + manualRefund + swapRefund + returnRefund !== 0,
+      swapAmount,
+      manualRefund,
+      swapRefund,
+      returnRefund,
     }
-  }
-
-  const PaymentActionables = () => {
-    const isSystemPayment = order?.payments?.some(
-      (p) => p.provider_id === "system"
-    )
-
-    const { payment_status } = order!
-
-    // Default label and action
-    let label = "Capture payment"
-    let action = () => {
-      capturePayment.mutate(void {}, {
-        onSuccess: () => toaster("Successfully captured payment", "success"),
-        onError: (err) => toaster(getErrorMessage(err), "error"),
-      })
-    }
-    const loading = capturePayment.isLoading
-
-    let shouldShowNotice = false
-    // If payment is a system payment, we want to show a notice
-    if (payment_status === "awaiting" && isSystemPayment) {
-      shouldShowNotice = true
-    }
-
-    if (payment_status === "requires_action" && isSystemPayment) {
-      shouldShowNotice = true
-    }
-
-    switch (true) {
-      case payment_status === "captured" ||
-        payment_status === "partially_refunded": {
-        label = "Refund"
-        action = () => setShowRefund(true)
-        break
-      }
-
-      case shouldShowNotice: {
-        action = () =>
-          console.log(
-            "TODO: Show alert indicating, that you are capturing a system payment"
-          )
-        break
-      }
-
-      case payment_status === "requires_action": {
-        return null
-      }
-      default:
-        break
-    }
-
-    return (
-      <Button
-        variant="secondary"
-        size="small"
-        onClick={action}
-        loading={loading}
-        className="min-w-[130px]"
-      >
-        {label}
-      </Button>
-    )
-  }
+  }, [order])
 
   const handleDeleteOrder = async () => {
     return cancelOrder.mutate(void {}, {
@@ -515,77 +306,6 @@ const OrderDetails = ({ id }) => {
     }
   }
 
-  const FulFillment = ({ fulfillmentObj }) => {
-    const { fulfillment } = fulfillmentObj
-    const hasLinks = !!fulfillment.tracking_links?.length
-
-    const getData = () => {
-      switch (true) {
-        case fulfillment?.claim_order_id:
-          return {
-            resourceId: fulfillment.claim_order_id,
-            resourceType: "claim",
-          }
-        case fulfillment?.swap_id:
-          return {
-            resourceId: fulfillment.swap_id,
-            resourceType: "swap",
-          }
-        default:
-          return { resourceId: order?.id, resourceType: "order" }
-      }
-    }
-
-    return (
-      <div className="flex w-full justify-between">
-        <div className="flex flex-col space-y-1 py-2">
-          <div className="text-grey-90">
-            {fulfillment.canceled_at
-              ? "Fulfillment has been canceled"
-              : `${fulfillmentObj.title} Fulfilled by ${capitalize(
-                  fulfillment.provider_id
-                )}`}
-          </div>
-          <div className="flex text-grey-50">
-            {!fulfillment.shipped_at ? "Not shipped" : "Tracking"}
-            {hasLinks &&
-              fulfillment.tracking_links.map((tl, j) => (
-                <TrackingLink key={j} trackingLink={tl} />
-              ))}
-          </div>
-        </div>
-        {!fulfillment.canceled_at && !fulfillment.shipped_at && (
-          <div className="flex items-center space-x-2">
-            <Actionables
-              actions={[
-                {
-                  label: "Mark Shipped",
-                  icon: <PackageIcon size={"20"} />,
-                  onClick: () =>
-                    handleCreateShipment({ ...getData(), fulfillment }),
-                },
-                {
-                  label: "Cancel Fulfillment",
-                  icon: <CancelIcon size={"20"} />,
-                  onClick: () =>
-                    setDeletePromptData({
-                      resource: "Fulfillment",
-                      show: true,
-                      onDelete: () =>
-                        handleCancelFulfillment({
-                          ...getData(),
-                          fulId: fulfillment.id,
-                        }),
-                    }),
-                },
-              ]}
-            />
-          </div>
-        )}
-      </div>
-    )
-  }
-
   const allFulfillments = gatherAllFulfillments(order)
 
   const customerActionables = [
@@ -638,7 +358,7 @@ const OrderDetails = ({ id }) => {
               className={"w-full mb-4 min-h-[200px]"}
               title="Order #2414"
               subtitle="29 January 2022, 23:01"
-              status={<OrderStatusComponent />}
+              status={<OrderStatusComponent status={order?.status} />}
               forceDropdown={true}
               actionables={[
                 {
@@ -665,7 +385,7 @@ const OrderDetails = ({ id }) => {
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Phone
                   </div>
-                  <div>{order?.shipping_address?.phone || ""}</div>
+                  <div>{order?.shipping_address?.phone || "N/A"}</div>
                 </div>
                 <div className="flex flex-col pl-6">
                   <div className="inter-smaller-regular text-grey-50 mb-1">
@@ -685,6 +405,7 @@ const OrderDetails = ({ id }) => {
                   <OrderLine key={i} item={item} region={order?.region} />
                 ))}
                 <DisplayTotal
+                  currency={order?.currency_code}
                   totalAmount={order?.subtotal}
                   totalTitle={"Subtotal"}
                 />
@@ -711,37 +432,49 @@ const OrderDetails = ({ id }) => {
                   </div>
                 ))}
                 <DisplayTotal
+                  currency={order?.currency_code}
                   totalAmount={order?.shipping_total}
                   totalTitle={"Shipping"}
                 />
                 <DisplayTotal
+                  currency={order?.currency_code}
                   totalAmount={order?.tax_total}
                   totalTitle={`Tax`}
                 />
-                <div className="flex justify-between mt-4 items-center">
-                  <div className="inter-small-semibold text-grey-90">Total</div>
-                  <div className="inter-small-semibold text-grey-90">
-                    {formatAmountWithSymbol({
-                      amount: order!.total,
-                      currency: order?.currency_code || "",
-                      digits: 2,
-                      tax: order?.tax_rate,
-                    })}
-                  </div>
-                </div>
-                <PaymentDetails />
+                <DisplayTotal
+                  variant={"large"}
+                  currency={order?.currency_code}
+                  totalAmount={order?.total}
+                  totalTitle={hasMovements ? "Original Total" : "Total"}
+                />
+                <PaymentDetails
+                  manualRefund={manualRefund}
+                  swapAmount={swapAmount}
+                  swapRefund={swapRefund}
+                  returnRefund={returnRefund}
+                  paidTotal={order?.paid_total}
+                  refundedTotal={order?.refunded_total}
+                  currency={order?.currency_code}
+                />
               </div>
             </BodyCard>
             <BodyCard
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Payment"
-              status={<PaymentStatusComponent />}
-              customActionable={<PaymentActionables />}
+              status={<PaymentStatusComponent status={order?.payment_status} />}
+              customActionable={
+                <PaymentActionables
+                  order={order}
+                  capturePayment={capturePayment}
+                  showRefundMenu={() => setShowRefund(true)}
+                />
+              }
             >
               <div className="mt-6">
                 {order?.payments.map((payment) => (
                   <div className="flex flex-col">
                     <DisplayTotal
+                      currency={order?.currency_code}
                       totalAmount={payment?.amount}
                       totalTitle={payment.id}
                       subtitle={`${moment(payment?.created_at).format(
@@ -764,8 +497,6 @@ const OrderDetails = ({ id }) => {
                             {formatAmountWithSymbol({
                               amount: payment?.amount_refunded,
                               currency: order?.currency_code,
-                              digits: 2,
-                              tax: order?.tax_rate,
                             })}
                           </div>
                           <div className="inter-small-regular text-grey-50">
@@ -783,10 +514,8 @@ const OrderDetails = ({ id }) => {
                   <div className="flex">
                     <div className="inter-small-semibold text-grey-90 mr-3">
                       {formatAmountWithSymbol({
-                        amount: order?.total,
+                        amount: order?.paid_total - order?.refunded_total,
                         currency: order?.currency_code,
-                        digits: 2,
-                        tax: order?.tax_rate,
                       })}
                     </div>
                     <div className="inter-small-regular text-grey-50">
@@ -799,7 +528,11 @@ const OrderDetails = ({ id }) => {
             <BodyCard
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Fulfillment"
-              status={<FulfillmentStatusComponent />}
+              status={
+                <FulfillmentStatusComponent
+                  status={order?.fulfillment_status}
+                />
+              }
               customActionable={
                 order.fulfillment_status !== "fulfilled" &&
                 order.status !== "canceled" &&
@@ -842,7 +575,19 @@ const OrderDetails = ({ id }) => {
                 ))}
                 <div className="mt-6 inter-small-regular ">
                   {allFulfillments.map((fulfillmentObj, i) => (
-                    <FulFillment key={i} fulfillmentObj={fulfillmentObj} />
+                    <FormattedFulfillment
+                      key={i}
+                      order={order}
+                      onCreateShipment={handleCreateShipment}
+                      onCancelFulfillment={(data) =>
+                        setDeletePromptData({
+                          resource: "Fulfillment",
+                          show: true,
+                          onDelete: () => handleCancelFulfillment(data),
+                        })
+                      }
+                      fulfillmentObj={fulfillmentObj}
+                    />
                   ))}
                 </div>
               </div>
@@ -881,8 +626,14 @@ const OrderDetails = ({ id }) => {
                       <span>{order?.shipping_address?.phone || ""}</span>
                     </div>
                   </div>
-                  <Address title={"Shipping"} addr={order?.shipping_address} />
-                  <Address title={"Billing"} addr={order?.billing_address} />
+                  <FormattedAddress
+                    title={"Shipping"}
+                    addr={order?.shipping_address}
+                  />
+                  <FormattedAddress
+                    title={"Billing"}
+                    addr={order?.billing_address}
+                  />
                 </div>
               </div>
             </BodyCard>
