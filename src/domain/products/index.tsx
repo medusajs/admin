@@ -1,7 +1,7 @@
-import { Router } from "@reach/router"
+import { Router, useLocation } from "@reach/router"
 import clsx from "clsx"
 import { navigate } from "gatsby"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import PageDescription from "../../components/atoms/page-description"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
@@ -12,7 +12,18 @@ import Details from "./details"
 import New from "./new"
 
 const ProductIndex = () => {
+  const location = useLocation()
   const [view, setView] = useState("products")
+
+  useEffect(() => {
+    if (location.search.includes("?view=collections")) {
+      setView("collections")
+    }
+  }, [location])
+
+  useEffect(() => {
+    location.search = ""
+  }, [view])
 
   const CurrentView = () => {
     switch (view) {

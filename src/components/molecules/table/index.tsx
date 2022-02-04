@@ -83,12 +83,14 @@ const Table: TableType = React.forwardRef(
     return (
       <div className="flex flex-col">
         <div className="w-full flex justify-between mb-2">
-          {filteringOptions && (
+          {filteringOptions ? (
             <div className="flex mb-2 self-end">
               {Array.isArray(filteringOptions)
                 ? filteringOptions.map((fo) => <FilteringOptions {...fo} />)
                 : filteringOptions}
             </div>
+          ) : (
+            <span aria-hidden />
           )}
           <div className="flex">
             {enableSearch && (
