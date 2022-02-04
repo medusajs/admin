@@ -13,6 +13,8 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import Button from "../../../../components/fundamentals/button"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import Metadata, {
   MetadataField,
@@ -136,8 +138,8 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
           </div>
         </Modal.Content>
         <Modal.Footer>
-          <div className="flex w-full h-8 justify-end">
-           <div
+          <div className="flex w-full h-8 justify-between">
+            <div
               className="items-center h-full flex cursor-pointer"
               onClick={() => setNoNotis(!noNotis)}
             >
@@ -162,23 +164,25 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
                 <InfoTooltip content="" />
               </span>
             </div>
-            <Button
-              variant="ghost"
-              className="mr-2 w-32 text-small justify-center"
-              size="large"
-              onClick={handleCancel}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="large"
-              className="w-32 text-small justify-center"
-              variant="primary"
-              disabled={!toFulfill?.length}
-              onClick={createFulfillment}
-            >
-              Complete
-            </Button>
+            <div className="flex">
+              <Button
+                variant="ghost"
+                className="mr-2 w-32 text-small justify-center"
+                size="large"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="large"
+                className="w-32 text-small justify-center"
+                variant="primary"
+                disabled={!toFulfill?.length}
+                onClick={createFulfillment}
+              >
+                Complete
+              </Button>
+            </div>
           </div>
         </Modal.Footer>
       </Modal.Body>
