@@ -140,14 +140,14 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       <Table
         filteringOptions={
           <OrderFilters
-            onRemoveTab={removeTab}
-            onSaveTab={saveTab}
-            onTabClick={setTab}
-            tabs={filterTabs}
-            activeTab={activeFilterTab}
             filters={filters}
             submitFilters={setFilters}
             clearFilters={clearFilters}
+            tabs={filterTabs}
+            onTabClick={setTab}
+            activeTab={activeFilterTab}
+            onRemoveTab={removeTab}
+            onSaveTab={saveTab}
           />
         }
         enableSearch

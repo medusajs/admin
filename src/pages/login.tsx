@@ -12,6 +12,7 @@ const LoginPage = () => {
   const login = useAdminLogin()
   const { handleSubmit, register } = useForm()
   const [resetPassword, setResetPassword] = useState(false)
+  const [isInvalidLogin, setIsInvalidLogin] = useState(false)
 
   const handleLogin = (data) => {
     if (resetPassword) {
@@ -25,6 +26,9 @@ const LoginPage = () => {
         {
           onSuccess: () => {
             navigate("/a")
+          },
+          onError: (err) => {
+            setIsInvalidLogin(true)
           },
         }
       )
@@ -82,6 +86,11 @@ const LoginPage = () => {
                   name="password"
                   ref={register({ required: true })}
                 />
+                {isInvalidLogin && (
+                  <span className="text-rose-50 w-full mt-2 inter-small-regular">
+                    These credentials do not match our records
+                  </span>
+                )}
                 <Button
                   className="rounded-rounded mt-4 w-[320px] inter-base-regular"
                   variant="primary"
