@@ -224,7 +224,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      setOffset((old) => old - pageSize)
+      setOffset((old) => Math.max(old - pageSize, 0))
       setCurrentPage((old) => old - 1)
       previousPage()
     }
@@ -251,17 +251,6 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
             handleSearch={handleSearch}
             {...getTableProps()}
           >
-            <Table.Head>
-              {headerGroups.map((headerGroup) => (
-                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <Table.HeadCell {...column.getHeaderProps()}>
-                      {column.render("Header")}
-                    </Table.HeadCell>
-                  ))}
-                </Table.HeadRow>
-              ))}
-            </Table.Head>
             <Table.Body {...getTableBodyProps()}>
               {isLoading ? (
                 <Spinner size="large" />
