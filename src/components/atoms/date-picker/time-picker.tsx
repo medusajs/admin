@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react"
+import * as PopoverPrimitive from "@radix-ui/react-popover"
+import clsx from "clsx"
 import moment from "moment"
+import React, { useEffect, useState } from "react"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import ClockIcon from "../../fundamentals/icons/clock-icon"
-import NumberScroller from "../number-scroller"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
-import clsx from "clsx"
+import NumberScroller from "../number-scroller"
 import { DateTimePickerProps } from "./types"
 
 const TimePicker: React.FC<DateTimePickerProps> = ({
@@ -17,17 +17,21 @@ const TimePicker: React.FC<DateTimePickerProps> = ({
   tooltipContent,
   tooltip,
 }) => {
-  const [selectedMinute, setSelectedMinute] = useState(date?.getUTCMinutes())
-  const [selectedHour, setSelectedHour] = useState(date?.getUTCHours())
+  const [selectedMinute, setSelectedMinute] = useState(
+    new Date(date)?.getUTCMinutes()
+  )
+  const [selectedHour, setSelectedHour] = useState(
+    new Date(date)?.getUTCHours()
+  )
 
   useEffect(() => {
-    setSelectedMinute(date?.getUTCMinutes())
-    setSelectedHour(date?.getUTCHours())
+    setSelectedMinute(new Date(date)?.getUTCMinutes())
+    setSelectedHour(new Date(date)?.getUTCHours())
   }, [date])
 
   useEffect(() => {
     if (date && selectedHour && selectedMinute) {
-      const newDate = new Date(date.getTime())
+      const newDate = new Date(new Date(date).getTime())
       newDate.setUTCHours(selectedHour)
       newDate.setUTCMinutes(selectedMinute)
       onSubmitDate(newDate)

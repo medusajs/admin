@@ -15,8 +15,10 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Input from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
 import BodyCard from "../../../components/organisms/body-card"
+import CurrencyInput from "../../../components/organisms/currency-input"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import useToaster from "../../../hooks/use-toaster"
+import { Option } from "../../../types/shared"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
@@ -25,12 +27,12 @@ import Shipping from "./shipping"
 
 const RegionDetails = ({ id, onDelete, handleSelect }) => {
   const [currencies, setCurrencies] = useState([])
-  const [countries, setCountries] = useState([])
-  const [selectedCurrency, setSelectedCurrency] = useState(null)
-  const [paymentOptions, setPaymentOptions] = useState([])
-  const [paymentProviders, setPaymentProviders] = useState([])
-  const [fulfillmentOptions, setFulfillmentOptions] = useState([])
-  const [fulfillmentProviders, setFulfillmentProviders] = useState([])
+  const [countries, setCountries] = useState<Option[]>([])
+  const [selectedCurrency, setSelectedCurrency] = useState<string>()
+  const [paymentOptions, setPaymentOptions] = useState<Option[]>([])
+  const [paymentProviders, setPaymentProviders] = useState<Option[]>([])
+  const [fulfillmentOptions, setFulfillmentOptions] = useState<Option[]>([])
+  const [fulfillmentProviders, setFulfillmentProviders] = useState<Option[]>([])
 
   const { register, reset, setValue, handleSubmit } = useForm()
   const toaster = useToaster()
@@ -39,47 +41,44 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   const createRegion = useAdminCreateRegion()
   const deleteRegion = useAdminDeleteRegion(id)
   const { region, isLoading: regionIsLoading } = useAdminRegion(id)
-  const {
-    payment_providers,
-    isLoading: paymentIsLoading,
-  } = useAdminStorePaymentProviders()
-  const {
-    fulfillment_options,
-    isLoading: fulfillmentIsLoading,
-  } = useAdminRegionFulfillmentOptions(id)
+  const { payment_providers } = useAdminStorePaymentProviders()
+  const { fulfillment_options } = useAdminRegionFulfillmentOptions(id)
   const updateRegion = useAdminUpdateRegion(id)
 
   const [showDanger, setShowDanger] = useState(false)
 
   useEffect(() => {
-    if (!store || !region) return
+    if (!store || !region) {
+      return
+    }
     register({ name: "currency_code" })
     setValue("currency_code", region.currency_code)
-    setSelectedCurrency({
-      value: region.currency_code,
-      label: region.currency_code.toUpperCase(),
-    })
+    setSelectedCurrency(region.currency_code)
     setCurrencies(getCurrencies(store.currencies))
   }, [store, region])
 
   useEffect(() => {
-    if (paymentIsLoading) return
+    if (!payment_providers) {
+      return
+    }
     setPaymentOptions(
       payment_providers.map((c) => paymentProvidersMapper(c.id))
     )
-  }, [payment_providers, paymentIsLoading])
+  }, [payment_providers])
 
   useEffect(() => {
-    if (fulfillmentIsLoading) return
+    if (!fulfillment_options) {
+      return
+    }
     setFulfillmentOptions(
-      fulfillment_options?.map((c) =>
-        fulfillmentProvidersMapper(c.provider_id)
-      ) ?? []
+      fulfillment_options.map((c) => fulfillmentProvidersMapper(c.provider_id))
     )
-  }, [fulfillment_options, fulfillmentIsLoading])
+  }, [fulfillment_options])
 
   useEffect(() => {
-    if (regionIsLoading) return
+    if (!region) {
+      return
+    }
     reset({ ...region, tax_rate: region.tax_rate / 100 })
     register({ name: "countries" })
     register({ name: "payment_providers" })
@@ -103,25 +102,20 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
 
     setValue(
       "fulfillment_providers",
-      region.fulfillment_providers.map((v) => v.id)
+      region?.fulfillment_providers.map((v) => v.id)
     )
     setFulfillmentProviders(
       region.fulfillment_providers.map((v) => fulfillmentProvidersMapper(v.id))
     )
-  }, [region, regionIsLoading])
+  }, [region])
 
   const getCurrencies = (storeCurrencies) => {
-    let currs = storeCurrencies
-      .filter((item) => item.code !== region.currency_code)
+    const currs = storeCurrencies
+      .filter((item) => item.code !== region?.currency_code)
       .map((el) => el.code)
-    currs.unshift(region.currency_code)
+    currs.unshift(region?.currency_code)
 
-    return (
-      currs.map((c) => ({
-        value: c,
-        label: c.toUpperCase(),
-      })) || []
-    )
+    return currs ?? []
   }
 
   const handlePaymentChange = (values) => {
@@ -160,7 +154,11 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
     }
 
     updateRegion.mutate(
-      { ...data, tax_rate: data.tax_rate * 100 },
+      {
+        ...data,
+        tax_rate: data.tax_rate * 100,
+        currency_code: selectedCurrency,
+      },
       {
         onSuccess: () => {
           toaster("Successfully updated region", "success")
@@ -178,6 +176,11 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   }))
 
   const handleDuplicate = () => {
+    if (!region) {
+      toaster("Region not found", "error")
+      return
+    }
+
     const payload = {
       currency_code: region.currency_code,
       tax_rate: region.tax_rate,
@@ -200,9 +203,11 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   }
 
   const handleDelete = async () => {
-    deleteRegion.mutate(null, {
+    deleteRegion.mutate(undefined, {
       onSuccess: () => {
-        if (onDelete) onDelete(null)
+        if (onDelete) {
+          onDelete(null)
+        }
       },
       onError: (error) => {
         toaster(getErrorMessage(error), "error")
@@ -255,12 +260,9 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                   ref={register}
                   className="mb-base"
                 />
-                <Select
-                  enableSearch
-                  label="Currency"
-                  name="currency_code"
-                  options={currencies}
-                  value={selectedCurrency}
+                <CurrencyInput
+                  currentCurrency={selectedCurrency}
+                  currencyCodes={currencies}
                   onChange={handleChangeCurrency}
                   className="mb-base"
                 />

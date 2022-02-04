@@ -1,9 +1,5 @@
 import { navigate } from "gatsby"
-import {
-  useAdminCreateProduct,
-  useAdminDeleteProduct,
-  useAdminUpdateProduct,
-} from "medusa-react"
+import { useAdminDeleteProduct, useAdminUpdateProduct } from "medusa-react"
 import * as React from "react"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useToaster from "../../../hooks/use-toaster"

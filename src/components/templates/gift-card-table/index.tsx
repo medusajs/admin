@@ -1,6 +1,6 @@
 import moment from "moment"
 import React, { useEffect, useState } from "react"
-import StatusDot from "../../fundamentals/status-indicator"
+import StatusIndicator from "../../fundamentals/status-indicator"
 import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
 
@@ -102,16 +102,16 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
         key={`giftCard-${index}`}
         color={"inherit"}
       >
-        <Table.Cell className="w-60">{giftCard.code}</Table.Cell>
+        <Table.Cell className="w-[200px] truncate">{giftCard.code}</Table.Cell>
         <Table.Cell
-          className="w-60"
+          className="truncate"
           {...(giftCard.order && {
             linkTo: `/a/orders/${giftCard.order.id}`,
           })}
         >
           {giftCard.order && `# ${giftCard.order.display_id}`}
         </Table.Cell>
-        <Table.Cell className="w-72">
+        <Table.Cell className="">
           {(giftCard.value &&
             `${(
               ((1 + giftCard.region.tax_rate / 100) * giftCard.value) /
@@ -120,17 +120,17 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
             <>&nbsp;</>
           )}
         </Table.Cell>
-        <Table.Cell className="w-64">
+        <Table.Cell className="">
           {giftCard.balance ? (
             `${(
               ((1 + giftCard.region.tax_rate / 100) * giftCard.balance) /
               100
             ).toFixed(2)} ${giftCard.region.currency_code.toUpperCase()}`
           ) : (
-            <StatusDot title="None" variant="danger" />
+            <StatusIndicator title="None" variant="danger" />
           )}
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell className="truncate">
           {moment(giftCard.created_at).format("MMM Do YYYY")}
         </Table.Cell>
         <Table.Cell></Table.Cell>

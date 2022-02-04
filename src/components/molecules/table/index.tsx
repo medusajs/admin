@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
-import React from "react"
+import React, { ReactNode } from "react"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
@@ -41,6 +41,8 @@ type TableProps = {
   filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
   searchPlaceholder?: string
+  searchValue?: string
+  containerClassName?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
 
@@ -66,8 +68,10 @@ const Table: TableType = React.forwardRef(
       children,
       enableSearch,
       searchPlaceholder,
+      searchValue,
       handleSearch,
       filteringOptions,
+      containerClassName,
       ...props
     }: TableProps,
     ref
@@ -78,7 +82,7 @@ const Table: TableType = React.forwardRef(
 
     return (
       <div className="flex flex-col">
-        <div className="w-full flex justify-between">
+        <div className="w-full flex justify-between mb-2">
           {filteringOptions && (
             <div className="flex mb-2 self-end">
               {Array.isArray(filteringOptions)
@@ -90,6 +94,7 @@ const Table: TableType = React.forwardRef(
             {enableSearch && (
               <TableSearch
                 placeholder={searchPlaceholder}
+                searchValue={searchValue}
                 onSearch={handleSearch}
               />
             )}
@@ -146,10 +151,10 @@ Table.HeadCell = React.forwardRef(
       className,
       children,
       ...props
-    }: React.HTMLAttributes<HTMLTableCellElement>,
+    }: React.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number },
     ref
   ) => (
-    <th ref={ref} className={clsx("text-left py-2.5", className)} {...props}>
+    <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>
       {children}
     </th>
   )
@@ -240,7 +245,11 @@ Table.Row = React.forwardRef(
         { "cursor-pointer": linkTo !== undefined }
       )}
       {...props}
-      {...(linkTo && { onClick: () => navigate(linkTo) })}
+      {...(linkTo && {
+        onClick: () => {
+          navigate(linkTo)
+        },
+      })}
     >
       {children}
       {actions && (

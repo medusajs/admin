@@ -32,7 +32,7 @@ const ProductOverview = ({ products, toggleListView }) => {
       </div>
       <div className="grid grid-cols-6">
         {products.map((product) => (
-          <ProductTile product={product} />
+          <ProductTile product={} />
         ))}
       </div>
     </>
