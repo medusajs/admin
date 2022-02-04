@@ -382,7 +382,6 @@ const OrderDetails = ({ id }) => {
     order,
     update: updateOrder,
     capturePayment,
-    requestReturn,
     receiveReturn,
     cancelReturn,
     receiveClaim,

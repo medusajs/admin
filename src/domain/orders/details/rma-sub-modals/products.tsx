@@ -1,5 +1,5 @@
 import { useAdminVariants } from "medusa-react"
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import React, { useRef, useContext, useEffect, useMemo, useState } from "react"
 import Button from "../../../../components/fundamentals/button"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
@@ -246,6 +246,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
       <Modal.Content isLargeModal={isLargeModal}>
         <div className="min-h-[680px]">
           <Table
+            immediateSearchFocus
             enableSearch
             searchPlaceholder="Search Products.."
             handleSearch={handleSearch}
