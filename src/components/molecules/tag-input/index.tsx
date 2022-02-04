@@ -161,44 +161,6 @@ const TagInput: React.FC<TagInputProps> = ({
         <InputHeader
           label={label || "Tags (comma separated)"}
           {...{ required, tooltipContent, tooltip }}
-<<<<<<< HEAD
-        />
-      )}
-
-      <div className="w-full flex mt-1 ml-0 flex-wrap">
-        {values.map((v, index) => (
-          <div
-            key={index}
-            className={clsx(
-              "items-center justify-center whitespace-nowrap w-max bg-grey-90 rounded",
-              "px-2 mb-1 mr-2 leading-6",
-              {
-                ["bg-grey-70"]: index === highlighted,
-              }
-            )}
-          >
-            <div className="inline-block text-grey-0 h-full inter-small-semibold">
-              {v}
-            </div>
-            <CrossIcon
-              className="inline"
-              size="16"
-              color="#9CA3AF"
-              onClick={() => handleRemove(index)}
-            />
-          </div>
-        ))}
-        <input
-          id="tag-input"
-          ref={inputRef}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          onChange={handleInput}
-          className={clsx("bg-grey-5 focus:outline-none max-w-[100px]")}
-          placeholder={values?.length ? "" : placeholder} // only visible if no tags exist
-          {...props}
-=======
->>>>>>> feat/revamp
         />
       )}
 
