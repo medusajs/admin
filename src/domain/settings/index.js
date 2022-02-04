@@ -33,7 +33,7 @@ const SettingsIndex = () => {
       />
       <SettingsCard
         heading={"Currencies"}
-        description={"Manage the markets you wil operate within"}
+        description={"Manage the markets you will operate within"}
         icon={<CoinsIcon />}
         to={`/a/settings/currencies`}
       />
