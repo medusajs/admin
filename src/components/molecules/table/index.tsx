@@ -40,6 +40,7 @@ type SortingHeadCellProps = {
 type TableProps = {
   filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
+  immediateSearchFocus?: boolean
   searchPlaceholder?: string
   searchValue?: string
   containerClassName?: string
@@ -67,6 +68,7 @@ const Table: TableType = React.forwardRef(
       className,
       children,
       enableSearch,
+      immediateSearchFocus,
       searchPlaceholder,
       searchValue,
       handleSearch,
@@ -93,6 +95,7 @@ const Table: TableType = React.forwardRef(
           <div className="flex">
             {enableSearch && (
               <TableSearch
+                autoFocus={immediateSearchFocus}
                 placeholder={searchPlaceholder}
                 searchValue={searchValue}
                 onSearch={handleSearch}

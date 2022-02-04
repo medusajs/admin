@@ -22,11 +22,11 @@ const Actionables: React.FC<ActionablesProps> = ({
   customTrigger,
   forceDropdown = false,
 }) => {
-  if (!actions?.length) {
+  if (!actions?.length && !customTrigger) {
     return null
   }
 
-  return actions.length > 1 || forceDropdown ? (
+  return actions?.length > 1 || forceDropdown ? (
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -55,9 +55,9 @@ const Actionables: React.FC<ActionablesProps> = ({
                     variant="ghost"
                     size="small"
                     className={clsx("w-full justify-start", {
-                      "text-rose-50": action.variant === "danger",
+                      "text-rose-50": action?.variant === "danger",
                     })}
-                    onClick={action.onClick}
+                    onClick={action?.onClick}
                   >
                     {action.icon}
                     {action.label}
