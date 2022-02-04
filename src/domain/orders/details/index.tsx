@@ -30,6 +30,7 @@ import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import Timeline from "../../../components/organisms/timeline"
 import useClipboard from "../../../hooks/use-clipboard"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -650,9 +651,7 @@ const OrderDetails = ({ id }) => {
               </div>
             </BodyCard>
           </div>
-          <BodyCard title="Timeline" className="w-1/3">
-            <div></div>
-          </BodyCard>
+          <Timeline orderId={order.id} />
         </div>
       )}
       {addressModal && (

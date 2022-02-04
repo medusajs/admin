@@ -106,7 +106,7 @@ function buildReturn(
     title,
     icon,
     time: event.time,
-    topNode: <EventActionables actions={actions} />,
+    topNode: actions.length > 0 && <EventActionables actions={actions} />,
     noNotification: event.noNotification,
     children:
       event.status === "requested"
