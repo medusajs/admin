@@ -1,8 +1,7 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react"
 import * as RadixPopover from "@radix-ui/react-popover"
-
-import Button from "../../fundamentals/button"
+import React, { ReactNode, useEffect, useRef, useState } from "react"
 import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
+import Button from "../../fundamentals/button"
 
 type FilterDropdownContainerProps = {
   submitFilters: () => void

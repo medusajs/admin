@@ -151,7 +151,7 @@ Table.HeadCell = React.forwardRef(
       className,
       children,
       ...props
-    }: React.HTMLAttributes<HTMLTableCellElement>,
+    }: React.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number },
     ref
   ) => (
     <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>

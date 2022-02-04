@@ -131,15 +131,7 @@ export const CalendarComponent = ({ date, onChange }) => (
     inline
     onChange={onChange}
     calendarClassName="date-picker"
-    dayClassName={(d) => {
-      return moment(d).format("YY,MM,DD") === moment(date).format("YY,MM,DD")
-        ? "date chosen"
-        : `date ${
-            moment(d).format("YY,MM,DD") < moment(new Date()).format("YY,MM,DD")
-              ? "past"
-              : ""
-          }`
-    }}
+    dayClassName={(d) => getDateClassname(d, date)}
     renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
       <CustomHeader
         date={date}
