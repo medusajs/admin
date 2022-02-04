@@ -34,19 +34,19 @@ import useClipboard from "../../../hooks/use-clipboard"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
-import {
-  FormattedFulfillment,
-  PaymentActionables,
-  OrderStatusComponent,
-  PaymentStatusComponent,
-  FulfillmentStatusComponent,
-  PaymentDetails,
-  DisplayTotal,
-  FormattedAddress,
-} from "./templates"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
 import OrderLine from "./order-line"
+import {
+  DisplayTotal,
+  FormattedAddress,
+  FormattedFulfillment,
+  FulfillmentStatusComponent,
+  OrderStatusComponent,
+  PaymentActionables,
+  PaymentDetails,
+  PaymentStatusComponent,
+} from "./templates"
 
 type OrderDetailFulfillment = {
   title: string
@@ -383,7 +383,7 @@ const OrderDetails = ({ id }) => {
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Phone
                   </div>
-                  <div>{order?.shipping_address?.phone || ""}</div>
+                  <div>{order?.shipping_address?.phone || "N/A"}</div>
                 </div>
                 <div className="flex flex-col pl-6">
                   <div className="inter-smaller-regular text-grey-50 mb-1">
