@@ -25,7 +25,7 @@ const ProductIndex = () => {
     <div className="flex flex-col h-full">
       <PageDescription
         title="Products"
-        subtitle="Manage the products for your Medusa Store"
+        subtitle="Manage the products of your Medusa Store"
       />
       <div className="w-full flex flex-col grow">
         <BodyCard actionables={actionables}>
