@@ -12,9 +12,7 @@ import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import Table from "../../molecules/table"
 
-const useProductTableColumn = () => {
-  const [showList, setShowList] = useState(true)
-
+const useProductTableColumn = ({ setTileView, setListView, showList }) => {
   const getProductStatus = (title) => {
     switch (title) {
       case "proposed":
@@ -81,7 +79,7 @@ const useProductTableColumn = () => {
         Header: (
           <div className="text-right flex justify-end">
             <span
-              onClick={() => setShowList(true)}
+              onClick={setListView}
               className={clsx("hover:bg-grey-5 cursor-pointer rounded p-0.5", {
                 "text-grey-90": showList,
                 "text-grey-40": !showList,
@@ -90,7 +88,7 @@ const useProductTableColumn = () => {
               <ListIcon size={20} />
             </span>
             <span
-              onClick={() => setShowList(false)}
+              onClick={setTileView}
               className={clsx("hover:bg-grey-5 cursor-pointer rounded p-0.5", {
                 "text-grey-90": !showList,
                 "text-grey-40": showList,
@@ -105,7 +103,7 @@ const useProductTableColumn = () => {
     [showList]
   )
 
-  return [columns, showList]
+  return [columns] as const
 }
 
 export default useProductTableColumn

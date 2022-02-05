@@ -43,7 +43,7 @@ const Actionables: React.FC<ActionablesProps> = ({
               <MoreHorizontalIcon size={20} />
             </Button>
           ) : (
-            <div>{customTrigger}</div>
+            customTrigger
           )}
         </DropdownMenu.Trigger>
 
