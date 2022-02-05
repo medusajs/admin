@@ -12,8 +12,8 @@ const useCollectionActions = (collection) => {
 
   const handleDelete = async () => {
     const shouldDelete = await dialog({
-      heading: "Delete Product",
-      text: "Are you sure you want to delete this product?",
+      heading: "Delete Collection",
+      text: "Are you sure you want to delete this collection?",
     })
 
     if (shouldDelete) {
@@ -21,10 +21,10 @@ const useCollectionActions = (collection) => {
     }
   }
 
-  const getActions = (product): ActionType[] => [
+  const getActions = (coll): ActionType[] => [
     {
       label: "Edit",
-      onClick: () => navigate(`/a/collections/${product.id}`),
+      onClick: () => navigate(`/a/collections/${coll.id}`),
       icon: <EditIcon size={20} />,
     },
     {
