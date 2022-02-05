@@ -1,14 +1,14 @@
 import { Link } from "gatsby"
-import React from "react"
+import React, { ReactNode } from "react"
 import ChevronRightIcon from "../../fundamentals/icons/chevron-right-icon"
 
 type SettingsCardProps = {
-  icon: React.FC
+  icon: ReactNode
   heading: string
   description: string
   to?: string
   externalLink?: string
-  disabled: boolean
+  disabled?: boolean
 }
 
 const SettingsCard: React.FC<SettingsCardProps> = ({
