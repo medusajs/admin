@@ -3,6 +3,7 @@ import React from "react"
 import { ToastProvider } from "react-toast-notifications"
 import "./src/assets/styles/global.css"
 import { LayeredModalProvider } from "./src/components/molecules/modal/layered-modal"
+import { SteppedProvider } from "./src/components/molecules/modal/stepped-modal"
 import { AccountProvider } from "./src/context/account"
 import { CacheProvider } from "./src/context/cache"
 import { InterfaceProvider } from "./src/context/interface"
@@ -21,9 +22,11 @@ export const wrapPageElement = ({ element }) => {
         <AccountProvider>
           <InterfaceProvider>
             <ToastProvider autoDismiss={true} placement="bottom-left">
-              <LayeredModalProvider>
-                <Provider>{element}</Provider>
-              </LayeredModalProvider>
+              <SteppedProvider>
+                <LayeredModalProvider>
+                  <Provider>{element}</Provider>
+                </LayeredModalProvider>
+              </SteppedProvider>
             </ToastProvider>
           </InterfaceProvider>
         </AccountProvider>
