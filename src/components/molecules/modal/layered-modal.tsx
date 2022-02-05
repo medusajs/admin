@@ -110,7 +110,7 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
     <Modal isLargeModal={isLargeModal} handleClose={emptyScreensAndClose}>
       <Modal.Body
         className={clsx(
-          "transition-transform translate-x-full flex flex-col justify-between duration-500",
+          "transition-transform translate-x-full flex flex-col justify-between duration-100",
           {
             "translate-x-0": typeof screen !== "undefined",
           }
@@ -139,7 +139,7 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
         )}
       </Modal.Body>
       <div
-        className={clsx("transition-transform duration-500", {
+        className={clsx("transition-transform duration-100", {
           "-translate-x-full": typeof screen !== "undefined",
         })}
       >

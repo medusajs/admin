@@ -10,6 +10,7 @@ import BodyCard from "../../components/organisms/body-card"
 import DeletePrompt from "../../components/organisms/delete-prompt"
 import GiftCardBanner from "../../components/organisms/gift-card-banner"
 import GiftCardTable from "../../components/templates/gift-card-table"
+import CustomGiftcard from "./custom-giftcard"
 import NewGiftCard from "./new"
 
 type OverviewProps = {
@@ -28,12 +29,13 @@ const Overview: React.FC<OverviewProps> = ({
   const { store } = useAdminStore()
   const { gift_cards: giftCards } = useAdminGiftCards()
   const [showCreate, setShowCreate] = useState(false)
+  const [showCreateCustom, setShowCreateCustom] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
 
   const actionables = [
     {
       label: "Custom Gift Card",
-      onClick: () => console.log("create custom gift card"), // TODO: open modal
+      onClick: () => setShowCreateCustom(true),
       icon: <PlusIcon size={20} />,
     },
   ]
@@ -93,6 +95,9 @@ const Overview: React.FC<OverviewProps> = ({
           </div>
         )}
       </div>
+      {showCreateCustom && (
+        <CustomGiftcard onDismiss={() => setShowCreateCustom(false)} />
+      )}
       {showCreate && <NewGiftCard onClose={() => setShowCreate(!showCreate)} />}
       {showDelete && (
         <DeletePrompt

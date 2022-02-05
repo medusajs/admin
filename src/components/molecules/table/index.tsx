@@ -40,6 +40,7 @@ type SortingHeadCellProps = {
 type TableProps = {
   filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
+  immediateSearchFocus?: boolean
   searchPlaceholder?: string
   searchValue?: string
   containerClassName?: string
@@ -67,6 +68,7 @@ const Table: TableType = React.forwardRef(
       className,
       children,
       enableSearch,
+      immediateSearchFocus,
       searchPlaceholder,
       searchValue,
       handleSearch,
@@ -95,6 +97,7 @@ const Table: TableType = React.forwardRef(
           <div className="flex">
             {enableSearch && (
               <TableSearch
+                autoFocus={immediateSearchFocus}
                 placeholder={searchPlaceholder}
                 searchValue={searchValue}
                 onSearch={handleSearch}
@@ -153,7 +156,7 @@ Table.HeadCell = React.forwardRef(
       className,
       children,
       ...props
-    }: React.HTMLAttributes<HTMLTableCellElement>,
+    }: React.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number },
     ref
   ) => (
     <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>
@@ -255,7 +258,7 @@ Table.Row = React.forwardRef(
     >
       {children}
       {actions && (
-        <Table.Cell onClick={(e) => e.stopPropagation()} className="w-8 py-1">
+        <Table.Cell onClick={(e) => e.stopPropagation()} className="w-[32px]">
           <Actionables actions={actions} />
         </Table.Cell>
       )}

@@ -12,13 +12,12 @@ type RadioGroupItemProps = {
 } & RadioGroupPrimitive.RadioGroupItemProps &
   React.RefAttributes<HTMLButtonElement>
 
-const RadioGroup: React.FC<RadioGroupProps> & {
-  Item: React.FC<RadioGroupItemProps>
-} = ({ children, ...rest }) => {
-  return (
-    <RadioGroupPrimitive.Root {...rest}>{children}</RadioGroupPrimitive.Root>
-  )
-}
+type RadioGroupSimpleItemProps = {
+  label: string
+} & RadioGroupPrimitive.RadioGroupItemProps &
+  React.RefAttributes<HTMLButtonElement>
+
+const Root = RadioGroupPrimitive.Root
 
 const Item = ({
   label,
@@ -68,6 +67,37 @@ const Item = ({
   )
 }
 
-RadioGroup.Item = Item
+const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
+  label,
+  ...rest
+}) => {
+  return (
+    <label
+      className={clsx("flex items-center mr-large last:mr-0", {
+        ["opacity-50 select-none pointer-events-none"]: rest.disabled,
+      })}
+      htmlFor={rest.value}
+    >
+      <RadioGroupPrimitive.Item
+        {...rest}
+        id={rest.value}
+        className={clsx(
+          "radio-outer-ring outline-0",
+          "shrink-0 w-[20px] h-[20px] shadow-[0_0_0_1px] shadow-[#D1D5DB] rounded-circle"
+        )}
+      >
+        <RadioGroupPrimitive.Indicator
+          className={clsx(
+            "flex items-center justify-center w-full h-full relative",
+            "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
+          )}
+        />
+      </RadioGroupPrimitive.Item>
+      <span className="ml-small inter-base-regular cursor-pointer">
+        {label}
+      </span>
+    </label>
+  )
+}
 
-export default RadioGroup
+export default { Root, Item, SimpleItem }

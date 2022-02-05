@@ -23,7 +23,6 @@ import ViewProductsTable from "../../../components/templates/collection-product-
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
   const { collection, isLoading, refetch } = useAdminCollection(ensuredPath)
-
   const deleteCollection = useAdminDeleteCollection(ensuredPath)
   const updateCollection = useAdminUpdateCollection(ensuredPath)
   const [showEdit, setShowEdit] = useState(false)
