@@ -15,7 +15,6 @@ const Sidebar: React.FC = () => {
   const [currentlyOpen, setCurrentlyOpen] = useState(-1)
   const [users, setUsers] = useState([])
 
-  const productsChildren = [{ pageLink: "/a/collections", text: "Collections" }]
   const ordersChildren = [
     { pageLink: "/a/draft-orders", text: "Drafts" },
     { pageLink: "/a/swaps", text: "Swaps" },

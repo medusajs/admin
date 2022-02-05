@@ -92,7 +92,7 @@ const Table: TableType = React.forwardRef(
                 : filteringOptions}
             </div>
           ) : (
-            <span />
+            <span aria-hidden />
           )}
           <div className="flex">
             {enableSearch && (

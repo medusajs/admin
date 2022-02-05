@@ -16,6 +16,7 @@ type BodyCardProps = {
   forceDropdown?: boolean
   customActionable?: React.ReactNode
   status?: React.ReactNode
+  customHeader?: React.ReactNode
 } & React.HTMLAttributes<HTMLDivElement>
 
 const BodyCard: React.FC<BodyCardProps> = ({
@@ -26,6 +27,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
   forceDropdown = false,
   customActionable,
   status,
+  customHeader,
   className,
   children,
   ...rest
@@ -47,11 +49,14 @@ const BodyCard: React.FC<BodyCardProps> = ({
         onScroll={scrollListener}
       >
         <div className="flex items-center justify-between">
-          {title ? (
+          {customHeader ? (
+            <div>{customHeader}</div>
+          ) : title ? (
             <h1 className="inter-xlarge-semibold text-grey-90">{title}</h1>
           ) : (
             <div />
           )}
+
           <div className="flex items-center space-x-2">
             {status && status}
             <Actionables
