@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import { OrderNumCell } from "../index"
 import moment from "moment"
 import {
   Table,
@@ -91,10 +90,10 @@ const DraftOrderIndex = ({}) => {
                   id={`draft-order-${el.id}`}
                 >
                   <TableDataCell>
-                    <OrderNumCell
+                    {/* <OrderNumCell
                       fontWeight={500}
                       color={"link"}
-                    >{`#${el.display_id}`}</OrderNumCell>
+                    >{`#${el.display_id}`}</OrderNumCell> */}
                   </TableDataCell>
                   <TableDataCell>
                     <DefaultCellContent>
