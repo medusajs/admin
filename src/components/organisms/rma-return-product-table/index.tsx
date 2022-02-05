@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React from "react"
+import { formatAmountWithSymbol } from "../../../utils/prices"
 import Button from "../../fundamentals/button"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
@@ -7,6 +8,7 @@ import TrashIcon from "../../fundamentals/icons/trash-icon"
 import Table from "../../molecules/table"
 
 type RMAReturnProductsTableProps = {
+  isAdditionalItems?: boolean
   order: any
   itemsToAdd: any[]
   handleToAddQuantity: (value, index) => void
@@ -21,13 +23,17 @@ const extractPrice = (prices, order) => {
   }
 
   if (price) {
-    return (price.amount * (1 + order.tax_rate / 100)) / 100
+    return formatAmountWithSymbol({
+      currency: order.currency_code,
+      amount: price.amount * (1 + order.tax_rate / 100),
+    })
   }
 
   return 0
 }
 
 const RMAReturnProductsTable: React.FC<RMAReturnProductsTableProps> = ({
+  isAdditionalItems,
   order,
   itemsToAdd,
   handleRemoveItem,
@@ -38,7 +44,9 @@ const RMAReturnProductsTable: React.FC<RMAReturnProductsTableProps> = ({
       <Table.HeadRow className="text-grey-50 inter-small-semibold">
         <Table.HeadCell>Product Details</Table.HeadCell>
         <Table.HeadCell className="text-right pr-8">Quantity</Table.HeadCell>
-        <Table.HeadCell className="text-right">Refundable</Table.HeadCell>
+        <Table.HeadCell className="text-right">
+          {isAdditionalItems ? "Unit Price" : "Refundable"}
+        </Table.HeadCell>
         <Table.HeadCell></Table.HeadCell>
         <Table.HeadCell></Table.HeadCell>
       </Table.HeadRow>
@@ -82,7 +90,7 @@ const RMAReturnProductsTable: React.FC<RMAReturnProductsTableProps> = ({
               </div>
             </Table.Cell>
             <Table.Cell className="text-right">
-              {extractPrice(item.prices, order).toFixed(2)}
+              {extractPrice(item.prices, order)}
             </Table.Cell>
             <Table.Cell className="text-right text-grey-40 pr-1">
               {order.currency_code.toUpperCase()}

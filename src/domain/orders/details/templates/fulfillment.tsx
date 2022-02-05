@@ -1,15 +1,13 @@
-import React from "react"
 import { capitalize } from "lodash"
-
+import React from "react"
 import CancelIcon from "../../../../components/fundamentals/icons/cancel-icon"
 import PackageIcon from "../../../../components/fundamentals/icons/package-icon"
 import Actionables from "../../../../components/molecules/actionables"
-
 import { TrackingLink } from "./tracking-link"
 
 export const FormattedFulfillment = ({
-  onCreateShipment,
   onCancelFulfillment,
+  setFullfilmentToShip,
   order,
   fulfillmentObj,
 }) => {
@@ -58,7 +56,7 @@ export const FormattedFulfillment = ({
               {
                 label: "Mark Shipped",
                 icon: <PackageIcon size={"20"} />,
-                onClick: () => onCreateShipment({ ...getData(), fulfillment }),
+                onClick: () => setFullfilmentToShip(fulfillment),
               },
               {
                 label: "Cancel Fulfillment",

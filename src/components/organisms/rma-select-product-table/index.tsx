@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import React, { useContext } from "react"
 import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
-import { displayAmount } from "../../../utils/prices"
+import { formatAmountWithSymbol } from "../../../utils/prices"
 import Button from "../../fundamentals/button"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
@@ -203,7 +203,10 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   )}
                 </Table.Cell>
                 <Table.Cell className="text-right">
-                  {displayAmount(order.currency_code, item.refundable)}
+                  {formatAmountWithSymbol({
+                    currency: order.currency_code,
+                    amount: item.refundable,
+                  })}
                 </Table.Cell>
                 <Table.Cell className="text-right text-grey-40 pr-1">
                   {order.currency_code.toUpperCase()}
@@ -223,12 +226,16 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                           </span>
                           {toReturn[item.id]?.note || ""}
                           <span className="ml-2">
-                          {toReturn[item.id]?.images?.length > 0 && (
-                            <>
-                              ({toReturn[item.id]?.images?.length} image {toReturn[item.id]?.images?.length > 1 ? "s" : ""})
-                            </>
-                          )}
-                      </span>
+                            {toReturn[item.id]?.images?.length > 0 && (
+                              <>
+                                ({toReturn[item.id]?.images?.length} image{" "}
+                                {toReturn[item.id]?.images?.length > 1
+                                  ? "s"
+                                  : ""}
+                                )
+                              </>
+                            )}
+                          </span>
                         </span>
                       )}
                     </div>

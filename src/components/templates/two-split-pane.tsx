@@ -3,7 +3,7 @@ import React, { Children } from "react"
 import { useComputedHeight } from "../../hooks/use-computed-height"
 
 type TwoSplitPaneProps = {
-  className: string
+  className?: string
 }
 
 const TwoSplitPane: React.FC<TwoSplitPaneProps> = ({ className, children }) => {

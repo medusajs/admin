@@ -31,7 +31,8 @@ const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data", name }) => {
             <p className="inter-base-semibold">
               {title}{" "}
               <span className="inter-base-regular text-grey-50">
-                ({Object.keys(raw).length})
+                ({Object.keys(raw).length}{" "}
+                {Object.keys(raw).length === 1 ? "item" : "items"})
               </span>
             </p>
             <Button variant="ghost" size="small" className="text-grey-50">
@@ -49,11 +50,11 @@ const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data", name }) => {
             <ReactJson
               src={raw}
               enableClipboard={false}
-              shouldCollapse={false}
               style={{
                 fontFamily: "Roboto Mono",
                 fontSize: "12px",
               }}
+              shouldCollapse={false}
               name={name}
             />
           </div>
