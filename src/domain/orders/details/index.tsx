@@ -36,6 +36,7 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
+import MarkShippedModal from "./mark-shipped"
 import OrderLine from "./order-line"
 import {
   DisplayTotal,
@@ -126,6 +127,7 @@ const OrderDetails = ({ id }) => {
   }>(null)
 
   const [showFulfillment, setShowFulfillment] = useState(false)
+  const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
   const { order, isLoading } = useAdminOrder(id)
 
@@ -575,7 +577,6 @@ const OrderDetails = ({ id }) => {
                     <FormattedFulfillment
                       key={i}
                       order={order}
-                      onCreateShipment={handleCreateShipment}
                       onCancelFulfillment={(data) =>
                         setDeletePromptData({
                           resource: "Fulfillment",
@@ -584,6 +585,7 @@ const OrderDetails = ({ id }) => {
                         })
                       }
                       fulfillmentObj={fulfillmentObj}
+                      setFullfilmentToShip={setFullfilmentToShip}
                     />
                   ))}
                 </div>
@@ -670,6 +672,14 @@ const OrderDetails = ({ id }) => {
         <CreateFulfillmentModal
           orderToFulfill={order as any}
           handleCancel={() => setShowFulfillment(false)}
+          orderId={order.id}
+        />
+      )}
+      {fullfilmentToShip && order && (
+        <MarkShippedModal
+          orderToShip={order as any}
+          handleCancel={() => setFullfilmentToShip(null)}
+          fulfillment={fullfilmentToShip}
           orderId={order.id}
         />
       )}

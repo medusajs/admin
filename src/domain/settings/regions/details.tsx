@@ -257,7 +257,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                 <Input
                   name="name"
                   label="Name"
-                  ref={register}
+                  ref={register({ required: true })}
                   className="mb-base"
                 />
                 <CurrencyInput
@@ -275,7 +275,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                   max={1}
                   name="tax_rate"
                   label="Tax Rate"
-                  ref={register}
+                  ref={register({ max: 1, min: 0 })}
                 />
                 <Input
                   placeholder="1000"
