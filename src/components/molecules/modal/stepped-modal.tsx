@@ -1,19 +1,7 @@
-import React, {
-  ReactNode,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react"
+import React, { ReactNode, useReducer } from "react"
 import Modal, { ModalProps } from "../../molecules/modal"
 import Button from "../../fundamentals/button"
-import Medusa from "../../../services/api"
-import useMedusa from "../../../hooks/use-medusa"
-import InputField from "../../molecules/input"
-import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import clsx from "clsx"
-import { PrimaryLargeLoading } from "../../fundamentals/button/button.stories"
 import LayeredModal, { ILayeredModalContext } from "./layered-modal"
 
 enum SteppedActions {
@@ -128,12 +116,6 @@ export const SteppedProvider = ({ children }) => {
     >
       {children}
     </SteppedContext.Provider>
-  )
-}
-
-const addProp = (children, prop) => {
-  return React.Children.map(children, (child) =>
-    React.cloneElement(child, prop)
   )
 }
 
