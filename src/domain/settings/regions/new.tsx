@@ -27,7 +27,9 @@ const NewRegion = ({ onDone, onClick }) => {
   const toaster = useToaster()
 
   useEffect(() => {
-    if (storeIsLoading || !store) return
+    if (storeIsLoading || !store) {
+      return
+    }
     register({ name: "currency_code" })
     setCurrencies(store.currencies.map((currency) => currency.code))
     setPaymentOptions(
@@ -126,7 +128,7 @@ const NewRegion = ({ onDone, onClick }) => {
                 <Input
                   name="name"
                   label="Name"
-                  ref={register}
+                  ref={register({ required: true })}
                   className="mb-base min-w-[335px] w-full"
                 />
                 <CurrencyInput
@@ -144,7 +146,7 @@ const NewRegion = ({ onDone, onClick }) => {
                   max={1}
                   name="tax_rate"
                   label="Tax Rate"
-                  ref={register}
+                  ref={register({ max: 1, min: 0 })}
                 />
                 <Input
                   placeholder="1000"

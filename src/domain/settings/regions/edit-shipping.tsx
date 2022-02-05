@@ -142,7 +142,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       admin_only: adminOnly,
     }
 
-    //TODO: fix AdminPostShippingOptionsOptionReq type
+    // TODO: fix AdminPostShippingOptionsOptionReq type
     updateOption.mutate(payload, {
       onSuccess: () => {
         toaster("Successfully updated shipping option", "success")
@@ -175,7 +175,9 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
               <Modal.Header handleClose={onClick}>
                 <div>
                   <h1 className="inter-xlarge-semibold">
-                    Edit Shipping Option
+                    {shippingOption.is_return
+                      ? "Edit Return Shipping Option"
+                      : "Edit Shipping Option"}
                   </h1>
                 </div>
               </Modal.Header>

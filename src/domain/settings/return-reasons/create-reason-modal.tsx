@@ -1,5 +1,5 @@
 import { useAdminCreateReturnReason } from "medusa-react"
-import React, { useEffect } from "react"
+import React from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
@@ -26,7 +26,7 @@ const CreateReturnReasonModal = ({
   const toaster = useToaster()
   const createRR = useAdminCreateReturnReason()
 
-  const onCreate = async data => {
+  const onCreate = async (data) => {
     await createRR.mutateAsync(data, {
       onSuccess: () => {
         toaster("Created a new return reason", "success")
@@ -47,14 +47,14 @@ const CreateReturnReasonModal = ({
         <Modal.Content>
           <div className="flex">
             <Input
-              ref={register}
+              ref={register({ required: true })}
               name="value"
               label="Value"
               placeholder="wrong_size"
             />
             <Input
               className="ml-base"
-              ref={register}
+              ref={register({ required: true })}
               name="label"
               label="Label"
               placeholder="Wrong size"
