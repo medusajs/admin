@@ -19,8 +19,6 @@ const OrderPlaced: React.FC<OrderPlacedProps> = ({ event }) => {
         {formatAmountWithSymbol({
           amount: event.amount,
           currency: event.currency_code,
-          tax: event.tax,
-          digits: 2,
         })}
       </div>
     ),

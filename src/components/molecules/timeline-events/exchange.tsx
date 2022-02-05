@@ -46,7 +46,7 @@ const ExchangeStatus: React.FC<ExchangeProps> = ({ event }) => {
 
 const Exchange: React.FC<ExchangeProps> = ({ event }) => {
   const [showCancel, setShowCancel] = useState(false)
-  const [showCancelReturn, setShowCancelReturn] = useState(false)
+  // const [showCancelReturn, setShowCancelReturn] = useState(false)
   const cancelExchange = useAdminCancelSwap(event.orderId)
   const cancelReturn = useAdminCancelReturn(event.returnId)
   const [differenceCardId, setDifferenceCardId] = useState<string | undefined>(
@@ -123,16 +123,25 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
     ) : (
       <RefreshIcon size={20} />
     ),
+    expandable: !!event.canceledAt,
     iconColor: event.canceledAt
       ? EventIconColor.DEFAULT
       : EventIconColor.ORANGE,
     time: event.time,
     noNotification: event.noNotification,
     topNode: getActions(event, actions),
-    children: !event.canceledAt && [
+    children: [
       <div className="flex flex-col gap-y-base">
-        <ExchangeStatus event={event} />
-        {paymentLink}
+        {event.canceledAt && (
+          <div>
+            <span className="mr-2 inter-small-semibold">Requested on:</span>
+            <span className="text-grey-50">
+              {new Date(event.time).toUTCString()}
+            </span>
+          </div>
+        )}
+        {!event.canceledAt && <ExchangeStatus event={event} />}
+        {!event.canceledAt && paymentLink}
         {returnItems}
         {newItems}
         <div className="flex items-center gap-x-xsmall">
@@ -163,7 +172,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
           successText="Exchange canceled"
         />
       )}
-      {showCancelReturn && (
+      {/* showCancelReturn && (
         <DeletePrompt
           handleClose={() => setShowCancelReturn(!showCancelReturn)}
           onDelete={async () => handleCancelReturn()}
@@ -172,7 +181,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
           text="Are you sure you want to cancel this return?"
           successText="Return canceled"
         />
-      )}
+          )*/}
     </>
   )
 }
@@ -201,10 +210,7 @@ function getPaymentLink(
         {paymentFormatWarning && <InfoTooltip content={paymentFormatWarning} />}
         <span>Payment link:</span>
       </div>
-      <CopyToClipboard
-        value={differenceCardId}
-        displayValue={exchangeCartId?.replace("cart_", "")}
-      />
+      <CopyToClipboard value={differenceCardId} displayValue={exchangeCartId} />
     </div>
   ) : null
 }

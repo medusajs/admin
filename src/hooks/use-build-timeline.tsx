@@ -100,6 +100,8 @@ export interface ClaimEvent extends TimelineEvent, CancelableEvent {
   claimItems: OrderItem[]
   newItems: OrderItem[]
   claimType: string
+  claim: any
+  order: any
 }
 
 export interface NotificationEvent extends TimelineEvent {
@@ -241,9 +243,7 @@ export const useBuildTimelime = (orderId: string) => {
           getReturnItems(allItems, i)
         ),
         exchangeCartId:
-          event.payment_status !== "captured" && !event.canceled_at
-            ? event.cart_id
-            : undefined,
+          event.payment_status !== "captured" ? event.cart_id : undefined,
         canceledAt: event.canceled_at,
         orderId: event.order_id,
       } as ExchangeEvent)
@@ -274,29 +274,6 @@ export const useBuildTimelime = (orderId: string) => {
           } as ItemsShippedEvent)
         }
       }
-
-      if (event.canceled_at) {
-        events.push({
-          id: event.id,
-          time: event.created_at,
-          noNotification: event.no_notification === true,
-          fulfillmentStatus: event.fulfillment_status,
-          paymentStatus: event.payment_status,
-          returnStatus: event.return_order.status,
-          returnId: event.return_order.id,
-          type: "exchange",
-          newItems: event.additional_items.map((i) => getSwapItem(i)),
-          returnItems: event.return_order.items.map((i) =>
-            getReturnItems(allItems, i)
-          ),
-          exchangeCartId:
-            event.payment_status !== "captured" && !event.canceled_at
-              ? event.cart_id
-              : undefined,
-          isCanceled: true,
-          orderId: event.order_id,
-        } as ExchangeEvent)
-      }
     }
 
     if (order.claims) {
@@ -322,6 +299,8 @@ export const useBuildTimelime = (orderId: string) => {
           claimType: claim.type,
           canceledAt: claim.canceled_at,
           orderId: order.id,
+          claim,
+          order,
         } as ClaimEvent)
 
         if (claim.canceled_at) {

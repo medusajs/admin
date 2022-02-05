@@ -12,6 +12,11 @@ type NotificationProps = {
   event: NotificationEvent
 }
 
+const notificationTitleMap = {
+  "order.placed": "Order Confirmation Sent",
+  "order.shipment_created": "Shipment Confirmation Sent",
+}
+
 const Notification: React.FC<NotificationProps> = ({ event }) => {
   const toaster = useToaster()
   const resendNotification = useAdminResendNotification(event.id)
@@ -40,7 +45,7 @@ const Notification: React.FC<NotificationProps> = ({ event }) => {
   return (
     <EventContainer
       icon={<MailIcon size={20} />}
-      title={event.title}
+      title={notificationTitleMap[event.title] || event.title}
       time={event.time}
       topNode={actions}
       midNode={<ReceiverNode email={event.to} />}

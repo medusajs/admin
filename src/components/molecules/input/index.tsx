@@ -77,7 +77,7 @@ const InputField = React.forwardRef(
       <InputContainer
         className={className}
         key={name}
-        onClick={() => inputRef?.current?.focus()}
+        onClick={() => !fieldProps.disabled && inputRef?.current?.focus()}
         {...props}
       >
         {label && (
