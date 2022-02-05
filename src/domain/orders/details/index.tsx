@@ -38,6 +38,7 @@ import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
 import MarkShippedModal from "./mark-shipped"
 import OrderLine from "./order-line"
+import CreateRefundModal from "./refund"
 import {
   DisplayTotal,
   FormattedAddress,
@@ -127,6 +128,7 @@ const OrderDetails = ({ id }) => {
   }>(null)
 
   const [showFulfillment, setShowFulfillment] = useState(false)
+  const [showRefund, setShowRefund] = useState(false)
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
   const { order, isLoading } = useAdminOrder(id)
@@ -458,6 +460,7 @@ const OrderDetails = ({ id }) => {
                 <PaymentActionables
                   order={order}
                   capturePayment={capturePayment}
+                  showRefundMenu={() => setShowRefund(true)}
                 />
               }
             >
@@ -665,6 +668,12 @@ const OrderDetails = ({ id }) => {
           orderToFulfill={order as any}
           handleCancel={() => setShowFulfillment(false)}
           orderId={order.id}
+        />
+      )}
+      {showRefund && order && (
+        <CreateRefundModal
+          order={order}
+          onDismiss={() => setShowRefund(false)}
         />
       )}
       {fullfilmentToShip && order && (

@@ -1,10 +1,13 @@
 import React from "react"
-
+import Button from "../../../../components/fundamentals/button"
 import useToaster from "../../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../../utils/error-messages"
-import Button from "../../../../components/fundamentals/button"
 
-export const PaymentActionables = ({ order, capturePayment }) => {
+export const PaymentActionables = ({
+  order,
+  capturePayment,
+  showRefundMenu,
+}) => {
   const toaster = useToaster()
   const isSystemPayment = order?.payments?.some(
     (p) => p.provider_id === "system"
@@ -36,7 +39,7 @@ export const PaymentActionables = ({ order, capturePayment }) => {
     case payment_status === "captured" ||
       payment_status === "partially_refunded": {
       label = "Refund"
-      action = () => console.log("TODO: Show refund menu")
+      action = () => showRefundMenu()
       break
     }
 
