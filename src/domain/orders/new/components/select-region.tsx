@@ -1,4 +1,5 @@
 import React, { useEffect } from "react"
+import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Select from "../../../../components/molecules/select"
 
 const SelectRegionScreen = ({ handleRegionSelect, region, options }) => {

@@ -3,7 +3,7 @@ import qs from "query-string"
 import Medusa from "../../../../services/api"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import AddressForm from "../../../../components/address-form"
+import AddressForm from "../../../../components/templates/address-form"
 
 import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
@@ -176,12 +176,14 @@ const ShippingDetails = ({
           </div>
         </div>
       ) : (
-        <AddressForm
-          allowedCountries={region.countries?.map((c) => c.iso_2) || []}
-          country={shipping?.country_code}
-          form={form}
-          type="shipping"
-        />
+        <div className="mt-4">
+          <AddressForm
+            allowedCountries={region.countries?.map((c) => c.iso_2) || []}
+            country={shipping?.country_code}
+            form={form}
+            type="shipping"
+          />
+        </div>
       )}
     </div>
   )

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import AddressForm from "../../../../components/address-form"
+import AddressForm from "../../../../components/templates/address-form"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 
 const Billing = ({ form, region }) => {

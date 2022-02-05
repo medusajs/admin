@@ -34,7 +34,7 @@ const SelectShippingMethod = ({
         </span>
       </span>
 
-      {shippingOptions?.length ? (
+      {!shippingOptions?.length ? (
         <div className="inter-small-regular mt-6 p-4 text-orange-50 bg-orange-5 rounded-rounded flex text-grey-50">
           <div className="h-full mr-3">
             <AlertIcon size={20} />
