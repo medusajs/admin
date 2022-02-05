@@ -6,7 +6,7 @@ import CurrencyInput from "../../organisms/currency-input"
 type RMAShippingPriceProps = {
   useCustomShippingPrice: boolean
   shippingPrice: number | undefined
-  currency_code: string
+  currencyCode: string
   updateShippingPrice: (price: number | undefined) => void
   setUseCustomShippingPrice: (useCustomShippingPrice: boolean) => void
 }
@@ -14,7 +14,7 @@ type RMAShippingPriceProps = {
 const RMAShippingPrice: React.FC<RMAShippingPriceProps> = ({
   useCustomShippingPrice,
   shippingPrice,
-  currency_code,
+  currencyCode,
   updateShippingPrice,
   setUseCustomShippingPrice,
 }) => {
@@ -24,10 +24,10 @@ const RMAShippingPrice: React.FC<RMAShippingPriceProps> = ({
         readOnly
         className="mt-4 w-full"
         size="small"
-        currentCurrency={currency_code}
+        currentCurrency={currencyCode}
       >
         <CurrencyInput.AmountInput
-          label={"Amount"}
+          label={"Amount (excl. tax)"}
           amount={shippingPrice}
           onChange={updateShippingPrice}
         />

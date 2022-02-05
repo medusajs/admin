@@ -17,17 +17,21 @@ const TimePicker: React.FC<DateTimePickerProps> = ({
   tooltipContent,
   tooltip,
 }) => {
-  const [selectedMinute, setSelectedMinute] = useState(date?.getUTCMinutes())
-  const [selectedHour, setSelectedHour] = useState(date?.getUTCHours())
+  const [selectedMinute, setSelectedMinute] = useState(
+    new Date(date)?.getUTCMinutes()
+  )
+  const [selectedHour, setSelectedHour] = useState(
+    new Date(date)?.getUTCHours()
+  )
 
   useEffect(() => {
-    setSelectedMinute(date?.getUTCMinutes())
-    setSelectedHour(date?.getUTCHours())
+    setSelectedMinute(new Date(date)?.getUTCMinutes())
+    setSelectedHour(new Date(date)?.getUTCHours())
   }, [date])
 
   useEffect(() => {
     if (date && selectedHour && selectedMinute) {
-      const newDate = new Date(date.getTime())
+      const newDate = new Date(new Date(date).getTime())
       newDate.setUTCHours(selectedHour)
       newDate.setUTCMinutes(selectedMinute)
       onSubmitDate(newDate)
