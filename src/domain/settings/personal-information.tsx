@@ -57,13 +57,13 @@ const PersonalInformation = () => {
   return (
     <div>
       <BreadCrumb
-        currentPage={"Personal information"}
+        currentPage={"Personal Information"}
         previousBreadcrumb={"Settings"}
         previousRoute="/a/settings"
       />
       <TwoSplitPane>
         <BodyCard
-          title="Personal information"
+          title="Personal Information"
           subtitle="Manage your Medusa profile"
           events={events}
           className={"h-auto max-h-full"}
