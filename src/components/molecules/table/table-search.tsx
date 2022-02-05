@@ -3,12 +3,14 @@ import React, { useEffect, useRef } from "react"
 import SearchIcon from "../../fundamentals/icons/search-icon"
 
 type TableSearchProps = {
+  autoFocus?: boolean
   onSearch: (term: string) => void
   placeholder?: string
   searchValue?: string
 } & React.HTMLAttributes<HTMLDivElement>
 
 const TableSearch: React.FC<TableSearchProps> = ({
+  autoFocus,
   onSearch,
   placeholder = "Search",
   searchValue,
@@ -16,10 +18,10 @@ const TableSearch: React.FC<TableSearchProps> = ({
   ...props
 }) => {
   const ref = useRef(null)
-  const inputRef = useRef(null)
+  const inputRef: React.RefObject<HTMLInputElement> = useRef(null)
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef && inputRef.current) {
       inputRef.current.size =
         inputRef?.current?.placeholder?.replace(/\s+/g, "").length || 20
     }
@@ -40,6 +42,7 @@ const TableSearch: React.FC<TableSearchProps> = ({
         {placeholder}
       </span>
       <input
+        autoFocus={autoFocus}
         type="text"
         ref={inputRef}
         value={searchValue}

@@ -1,19 +1,26 @@
 import { Router, useLocation } from "@reach/router"
 import clsx from "clsx"
 import { navigate } from "gatsby"
+import { useAdminCreateCollection } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import PageDescription from "../../components/atoms/page-description"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
-import AddCollectionModal from "../../components/templates/add-collection-modal"
+import AddCollectionModal from "../../components/templates/collection-modal"
 import CollectionsTable from "../../components/templates/collections-table"
 import ProductTable from "../../components/templates/product-table"
+import useToaster from "../../hooks/use-toaster"
+import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./details"
 import New from "./new"
 
 const ProductIndex = () => {
   const location = useLocation()
   const [view, setView] = useState("products")
+
+  const toaster = useToaster()
+
+  const createCollection = useAdminCreateCollection()
 
   useEffect(() => {
     if (location.search.includes("?view=collections")) {
@@ -88,6 +95,29 @@ const ProductIndex = () => {
     )
   }
 
+  const handleCreateCollection = async (data, colMetadata) => {
+    const metadata = colMetadata
+      .filter((m) => m.key && m.value) // remove empty metadata
+      .reduce((acc, next) => {
+        return {
+          ...acc,
+          [next.key]: next.value,
+        }
+      }, {})
+
+    await createCollection.mutateAsync(
+      { ...data, metadata },
+      {
+        onSuccess: ({ collection }) => {
+          toaster("Successfully created collection", "success")
+          navigate(`/a/collections/${collection.id}`)
+          setShowNewCollection(false)
+        },
+        onError: (err) => toaster(getErrorMessage(err), "error"),
+      }
+    )
+  }
+
   return (
     <>
       <div className="flex flex-col h-full">
@@ -107,7 +137,7 @@ const ProductIndex = () => {
       {showNewCollection && (
         <AddCollectionModal
           onClose={() => setShowNewCollection(!showNewCollection)}
-          onSubmit={console.log}
+          onSubmit={handleCreateCollection}
         />
       )}
     </>

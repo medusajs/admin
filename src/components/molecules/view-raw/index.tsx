@@ -1,10 +1,10 @@
+import * as Collapsible from "@radix-ui/react-collapsible"
+import clsx from "clsx"
 import React, { useState } from "react"
 import ReactJson from "react-json-view"
-import * as Collapsible from "@radix-ui/react-collapsible"
-import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
-import Button from "../../fundamentals/button"
-import clsx from "clsx"
 import useClipboard from "../../../hooks/use-clipboard"
+import Button from "../../fundamentals/button"
+import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
 import ClipboardCopyIcon from "../../fundamentals/icons/clipboard-copy-icon"
 
 type ViewRawProps = {
@@ -31,7 +31,8 @@ const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data", name }) => {
             <p className="inter-base-semibold">
               {title}{" "}
               <span className="inter-base-regular text-grey-50">
-                ({Object.keys(raw).length})
+                ({Object.keys(raw).length}{" "}
+                {Object.keys(raw).length === 1 ? "item" : "items"})
               </span>
             </p>
             <Button variant="ghost" size="small" className="text-grey-50">
@@ -49,11 +50,11 @@ const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data", name }) => {
             <ReactJson
               src={raw}
               enableClipboard={false}
-              shouldCollapse={false}
               style={{
                 fontFamily: "Roboto Mono",
                 fontSize: "12px",
               }}
+              shouldCollapse={false}
               name={name}
             />
           </div>
@@ -63,7 +64,10 @@ const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data", name }) => {
               variant="ghost"
               size="small"
               type="button"
-              onClick={handleCopy}
+              onClick={(e) => {
+                e.currentTarget.blur()
+                handleCopy()
+              }}
             >
               <ClipboardCopyIcon size={20} />
             </Button>
