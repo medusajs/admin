@@ -1,27 +1,34 @@
-import { RouteComponentProps, useLocation } from "@reach/router"
+import React, { useEffect, useState } from "react"
 import clsx from "clsx"
 import { isEmpty } from "lodash"
-import { useAdminOrders } from "medusa-react"
+import { navigate } from "gatsby"
 import qs from "qs"
-import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
+import { useAdminCreateDiscount, useAdminDiscounts } from "medusa-react"
 
-import Spinner from "../../atoms/spinner"
+import EditIcon from "../../fundamentals/icons/edit-icon"
+import TrashIcon from "../../fundamentals/icons/trash-icon"
 import Table, { TablePagination } from "../../molecules/table"
-import OrderFilters from "../order-filter-dropdown"
-import useOrderTableColums from "./use-order-column"
-import { useOrderFilters } from "./use-order-filters"
+import DiscountFilters from "../discount-filter-dropdown"
+import Medusa from "../../../services/api"
+import DeletePrompt from "../../organisms/delete-prompt"
+import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
+import Badge from "../../fundamentals/badge"
+import Spinner from "../../atoms/spinner"
+import { InterfaceContext } from "../../../context/interface"
+import { getErrorMessage } from "../../../utils/error-messages"
+import useToaster from "../../../hooks/use-toaster"
+import { useDiscountFilters } from "./use-discount-filters"
+import { useDiscountTableColumns } from "./use-discount-columns"
 
 const DEFAULT_PAGE_SIZE = 15
 
-const defaultQueryProps = {
-  expand: "shipping_address",
-  fields:
-    "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
-}
+const defaultQueryProps = {}
 
-const OrderTable: React.FC<RouteComponentProps> = () => {
-  const location = useLocation()
+const DiscountTable: React.FC = () => {
+  const toaster = useToaster()
+  const [deleteDiscount, setDeleteDiscount] = useState(undefined)
+  const createDiscount = useAdminCreateDiscount()
 
   const {
     removeTab,
@@ -36,23 +43,64 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     setQuery: setFreeText,
     queryObject,
     representationObject,
-  } = useOrderFilters(location.search, defaultQueryProps)
-  const filtersOnLoad = queryObject
+  } = useDiscountFilters(location.search, defaultQueryProps)
 
-  const offs = parseInt(filtersOnLoad?.offset) || 0
-  const lim = parseInt(filtersOnLoad.limit) || DEFAULT_PAGE_SIZE
+  const offs = parseInt(queryObject?.offset) || 0
+  const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const [query, setQuery] = useState(filtersOnLoad?.query)
+  const { discounts, isLoading, count } = useAdminDiscounts({
+    is_dynamic: false,
+    ...queryObject,
+  })
+
+  const [query, setQuery] = useState("")
   const [numPages, setNumPages] = useState(0)
 
-  const { orders, isLoading, count } = useAdminOrders(queryObject)
-
   useEffect(() => {
-    const controlledPageCount = Math.ceil(count! / queryObject.limit)
-    setNumPages(controlledPageCount)
-  }, [orders])
+    if (count && queryObject.limit) {
+      const controlledPageCount = Math.ceil(count! / queryObject.limit)
+      if (controlledPageCount !== numPages) {
+        setNumPages(controlledPageCount)
+      }
+    }
+  }, [count, queryObject.limit])
 
-  const [columns] = useOrderTableColums()
+  const duplicateDiscount = (discount) => {
+    const newRule = {
+      description: discount.rule.description,
+      type: discount.rule.type,
+      value: discount.rule.value,
+      allocation: discount.rule.allocation,
+      valid_for: discount.rule.valid_for.map((product) => product.id),
+    }
+    const newDiscount = {
+      code: `${discount.code} DUPLICATE`,
+      is_dynamic: discount.isDynamic,
+      rule: newRule,
+      starts_at: discount.starts_at,
+      ends_at: discount.ends_at,
+      regions: discount.regions.map((region) => region.id),
+      valid_duration: discount.valid_duration,
+      usage_limit: discount.usage_limit,
+      is_disabled: discount.is_disabled,
+      metadata: discount.metadata,
+    }
+
+    createDiscount
+      .mutateAsync(newDiscount)
+      .then(() => {
+        toaster("Successfully created discount", "success")
+      })
+      .catch((error) => {
+        toaster(getErrorMessage(error), "error")
+      })
+  }
+
+  const handleDiscountSearch = (q: string) => {
+    setQuery(q)
+  }
+
+  const [columns] = useDiscountTableColumns()
 
   const {
     getTableProps,
@@ -71,7 +119,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   } = useTable(
     {
       columns,
-      data: orders || [],
+      data: discounts || [],
       manualPagination: true,
       initialState: {
         pageSize: lim,
@@ -82,6 +130,8 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     },
     usePagination
   )
+
+  console.log("pageindex", pageIndex)
 
   // Debounced search
   useEffect(() => {
@@ -114,7 +164,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const updateUrlFromFilter = (obj = {}) => {
     const stringified = qs.stringify(obj)
-    window.history.replaceState(`/a/orders`, "", `${`?${stringified}`}`)
+    window.history.replaceState(`/a/discounts`, "", `${`?${stringified}`}`)
   }
 
   const refreshWithFilters = () => {
@@ -140,7 +190,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
     <div className="w-full overflow-y-scroll flex flex-col justify-between min-h-[300px] h-full ">
       <Table
         filteringOptions={
-          <OrderFilters
+          <DiscountFilters
             filters={filters}
             submitFilters={setFilters}
             clearFilters={clearFilters}
@@ -168,7 +218,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
             </Table.HeadRow>
           ))}
         </Table.Head>
-        {isLoading || !orders ? (
+        {isLoading || !discounts ? (
           <div className="flex w-full h-full absolute items-center justify-center mt-10">
             <div className="">
               <Spinner size={"large"} variant={"secondary"} />
@@ -199,8 +249,8 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
         limit={queryObject.limit}
         offset={queryObject.offset}
         pageSize={queryObject.offset + rows.length}
-        title="Orders"
-        currentPage={pageIndex}
+        title="Discounts"
+        currentPage={pageIndex + 1}
         pageCount={pageCount}
         nextPage={handleNext}
         prevPage={handlePrev}
@@ -211,4 +261,4 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   )
 }
 
-export default OrderTable
+export default DiscountTable
