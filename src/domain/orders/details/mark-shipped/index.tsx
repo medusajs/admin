@@ -4,9 +4,11 @@ import {
   useAdminCreateShipment,
   useAdminCreateSwapShipment,
 } from "medusa-react"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import useToaster from "../../../../hooks/use-toaster"
@@ -26,6 +28,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
   handleCancel,
 }) => {
   const { control, register, watch } = useForm({})
+  const [noNotis, setNoNotis] = useState(false)
 
   const {
     fields,
@@ -77,6 +80,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
           fulfillment_id: fulfillment.id,
           swap_id: orderToShip.id,
           tracking_numbers,
+          no_notification: noNotis,
         }
         successText = "Successfully marked swap as shipped"
         break
@@ -87,6 +91,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
           fulfillment_id: fulfillment.id,
           claim_id: orderToShip.id,
           tracking_numbers,
+          no_notification: noNotis,
         }
         successText = "Successfully marked claim as shipped"
         break
@@ -95,6 +100,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
         requestObj = {
           fulfillment_id: fulfillment.id,
           tracking_numbers,
+          no_notification: noNotis,
         }
         break
     }
@@ -152,23 +158,50 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
           </div>
         </Modal.Content>
         <Modal.Footer>
-          <div className="flex w-full h-8 justify-end">
-            <Button
-              variant="ghost"
-              className="mr-2 w-32 text-small justify-center"
-              size="large"
-              onClick={handleCancel}
+          <div className="flex w-full h-8 justify-between">
+            <div
+              className="items-center h-full flex cursor-pointer"
+              onClick={() => setNoNotis(!noNotis)}
             >
-              Cancel
-            </Button>
-            <Button
-              size="large"
-              className="w-32 text-small justify-center"
-              variant="primary"
-              onClick={markShipped}
-            >
-              Complete
-            </Button>
+              <div
+                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
+                  !noNotis && "bg-violet-60"
+                }`}
+              >
+                <span className="self-center">
+                  {!noNotis && <CheckIcon size={16} />}
+                </span>
+              </div>
+              <input
+                id="noNotification"
+                className="hidden"
+                name="noNotification"
+                checked={!noNotis}
+                type="checkbox"
+              />
+              <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
+                Send notifications
+                <InfoTooltip content="" />
+              </span>
+            </div>
+            <div className="flex">
+              <Button
+                variant="ghost"
+                className="mr-2 w-32 text-small justify-center"
+                size="large"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="large"
+                className="w-32 text-small justify-center"
+                variant="primary"
+                onClick={markShipped}
+              >
+                Complete
+              </Button>
+            </div>
           </div>
         </Modal.Footer>
       </Modal.Body>
