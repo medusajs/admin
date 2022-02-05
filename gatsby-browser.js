@@ -1,6 +1,7 @@
 import { MedusaProvider } from "medusa-react"
 import React from "react"
 import { ToastProvider } from "react-toast-notifications"
+import "./src/assets/styles/emoji-picker.css"
 import "./src/assets/styles/global.css"
 import { LayeredModalProvider } from "./src/components/molecules/modal/layered-modal"
 import { AccountProvider } from "./src/context/account"

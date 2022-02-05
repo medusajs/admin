@@ -30,6 +30,7 @@ import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import Timeline from "../../../components/organisms/timeline"
 import useClipboard from "../../../hooks/use-clipboard"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -38,6 +39,7 @@ import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
 import MarkShippedModal from "./mark-shipped"
 import OrderLine from "./order-line"
+import CreateRefundModal from "./refund"
 import {
   DisplayTotal,
   FormattedAddress,
@@ -127,6 +129,7 @@ const OrderDetails = ({ id }) => {
   }>(null)
 
   const [showFulfillment, setShowFulfillment] = useState(false)
+  const [showRefund, setShowRefund] = useState(false)
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
   const { order, isLoading } = useAdminOrder(id)
@@ -137,7 +140,6 @@ const OrderDetails = ({ id }) => {
   const capturePayment = useAdminCapturePayment(id)
   const cancelOrder = useAdminCancelOrder(id)
   const updateOrder = useAdminUpdateOrder(id)
-
   const cancelFulfillment = useAdminCancelFulfillment(id)
   const cancelSwapFulfillment = useAdminCancelSwapFulfillment(id)
   const cancelClaimFulfillment = useAdminCancelClaimFulfillment(id)
@@ -410,26 +412,18 @@ const OrderDetails = ({ id }) => {
                   totalTitle={"Subtotal"}
                 />
                 {order?.discounts?.map((discount, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between mt-4 items-center"
-                  >
-                    <div className="flex inter-small-regular text-grey-90 items-center">
-                      Discount:{" "}
-                      <Badge className="ml-3" variant="default">
-                        {discount.code}
-                      </Badge>
-                    </div>
-                    <div className="inter-small-regular text-grey-90">
-                      -
-                      {formatAmountWithSymbol({
-                        amount: order?.discount_total,
-                        currency: order?.currency_code || "",
-                        digits: 2,
-                        tax: order?.tax_rate,
-                      })}
-                    </div>
-                  </div>
+                  <DisplayTotal
+                    currency={order?.currency_code}
+                    totalAmount={-1 * order?.discount_total}
+                    totalTitle={
+                      <div className="flex inter-small-regular text-grey-90 items-center">
+                        Discount:{" "}
+                        <Badge className="ml-3" variant="default">
+                          {discount.code}
+                        </Badge>
+                      </div>
+                    }
+                  />
                 ))}
                 <DisplayTotal
                   currency={order?.currency_code}
@@ -466,6 +460,7 @@ const OrderDetails = ({ id }) => {
                 <PaymentActionables
                   order={order}
                   capturePayment={capturePayment}
+                  showRefundMenu={() => setShowRefund(true)}
                 />
               }
             >
@@ -653,9 +648,7 @@ const OrderDetails = ({ id }) => {
               </div>
             </BodyCard>
           </div>
-          <BodyCard title="Timeline" className="w-1/3">
-            <div></div>
-          </BodyCard>
+          <Timeline orderId={order.id} />
         </div>
       )}
       {addressModal && (
@@ -673,6 +666,12 @@ const OrderDetails = ({ id }) => {
           orderToFulfill={order as any}
           handleCancel={() => setShowFulfillment(false)}
           orderId={order.id}
+        />
+      )}
+      {showRefund && order && (
+        <CreateRefundModal
+          order={order}
+          onDismiss={() => setShowRefund(false)}
         />
       )}
       {fullfilmentToShip && order && (

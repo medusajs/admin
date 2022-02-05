@@ -70,7 +70,6 @@ const Sidebar: React.FC = () => {
             icon={<DollarSignIcon />}
             triggerHandler={triggerHandler}
             text={"Orders"}
-            subItems={ordersChildren}
           />
           <SidebarMenuItem
             pageLink={"/a/products"}
