@@ -1,42 +1,39 @@
-import React, { useState, useMemo, useRef, useEffect, useContext } from "react"
+import styled from "@emotion/styled"
+import { Router } from "@reach/router"
 import { navigate } from "gatsby"
 import { isEmpty, omit, pick } from "lodash"
-import { Router } from "@reach/router"
 import { useAdminOrders } from "medusa-react"
-import { Text, Box, Flex } from "rebass"
-import styled from "@emotion/styled"
 import moment from "moment"
 import qs from "qs"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import ReactCountryFlag from "react-country-flag"
-import ReactTooltip from "react-tooltip"
 import { useHotkeys } from "react-hotkeys-hook"
+import ReactTooltip from "react-tooltip"
+import { Box, Flex, Text } from "rebass"
 import { ReactComponent as Cross } from "../../assets/svg/cross.svg"
-
-import DraftOrderDetails from "./draft-orders/details"
-import NewOrder from "./new/new-order"
-
-import Details from "./details"
-import New from "./new"
+import Button from "../../components/button"
+import Badge from "../../components/fundamentals/badge"
+import Spinner from "../../components/spinner"
 import {
+  BadgdeCellContent,
+  DefaultCellContent,
   Table,
   TableBody,
+  TableDataCell,
   TableHead,
   TableHeaderCell,
-  TableDataCell,
   TableHeaderRow,
   TableLinkRow,
-  DefaultCellContent,
-  BadgdeCellContent,
 } from "../../components/table"
-import Badge from "../../components/fundamentals/badge"
-import { useOrderFilters } from "./use-order-filters"
-
-import { displayAmount } from "../../utils/prices"
-import { decideBadgeColor } from "../../utils/decide-badge-color"
-import Spinner from "../../components/spinner"
-import Button from "../../components/button"
-import Filter from "./filter-dropdown"
 import { InterfaceContext } from "../../context/interface"
+import { decideBadgeColor } from "../../utils/decide-badge-color"
+import { displayAmount } from "../../utils/prices"
+import Details from "./details"
+import DraftOrderDetails from "./draft-orders/details"
+import Filter from "./filter-dropdown"
+import New from "./new"
+import NewOrder from "./new/new-order"
+import { useOrderFilters } from "./use-order-filters"
 
 const defaultQueryProps = {
   expand: "shipping_address",
@@ -205,7 +202,9 @@ const OrderIndex = () => {
   useHotkeys(
     "command+i",
     () => {
-      if (activeIndex === -1) return
+      if (activeIndex === -1) {
+        return
+      }
       const o = orders[activeIndex]
       handleCopyToClip(o.display_id)
     },
@@ -215,7 +214,9 @@ const OrderIndex = () => {
   useHotkeys(
     "enter",
     () => {
-      if (activeIndex === -1) return
+      if (activeIndex === -1) {
+        return
+      }
       const o = orders[activeIndex]
       navigate(`/a/orders/${o.id}`)
     },
@@ -267,7 +268,7 @@ const OrderIndex = () => {
   const handleTabClick = async (tab, queryParts = {}) => {
     resetFilters()
 
-    let searchObject = {
+    const searchObject = {
       q: query,
       ...queryParts,
       ...defaultQueryProps,
@@ -324,7 +325,7 @@ const OrderIndex = () => {
 
   const clear = () => {
     const baseUrl = qs.parse(window.location.href).url
-    //setQuery("")
+    // setQuery("")
     window.history.replaceState(baseUrl, "", `?limit=${limit}&offset=${offset}`)
     refresh()
   }
@@ -365,7 +366,7 @@ const OrderIndex = () => {
       localStorage.setItem("orders::filters", JSON.stringify(newFilters))
     }
 
-    let newTabs = [...getLocalStorageFilters()]
+    const newTabs = [...getLocalStorageFilters()]
     setFilterTabs(newTabs)
 
     handleTabClick(

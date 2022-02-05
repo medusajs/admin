@@ -17,10 +17,6 @@ type ActionablesProps = {
   forceDropdown?: boolean
 }
 
-/**
- * A component that accepts multiple actionables and renders them as a dropdown menu.
- * If only a single actionable is provided, it will render a button instead.
- */
 const Actionables: React.FC<ActionablesProps> = ({
   actions,
   customTrigger,
