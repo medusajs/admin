@@ -410,26 +410,18 @@ const OrderDetails = ({ id }) => {
                   totalTitle={"Subtotal"}
                 />
                 {order?.discounts?.map((discount, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between mt-4 items-center"
-                  >
-                    <div className="flex inter-small-regular text-grey-90 items-center">
-                      Discount:{" "}
-                      <Badge className="ml-3" variant="default">
-                        {discount.code}
-                      </Badge>
-                    </div>
-                    <div className="inter-small-regular text-grey-90">
-                      -
-                      {formatAmountWithSymbol({
-                        amount: order?.discount_total,
-                        currency: order?.currency_code || "",
-                        digits: 2,
-                        tax: order?.tax_rate,
-                      })}
-                    </div>
-                  </div>
+                  <DisplayTotal
+                    currency={order?.currency_code}
+                    totalAmount={-1 * order?.discount_total}
+                    totalTitle={
+                      <div className="flex inter-small-regular text-grey-90 items-center">
+                        Discount:{" "}
+                        <Badge className="ml-3" variant="default">
+                          {discount.code}
+                        </Badge>
+                      </div>
+                    }
+                  />
                 ))}
                 <DisplayTotal
                   currency={order?.currency_code}

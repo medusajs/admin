@@ -237,7 +237,7 @@
   }
 
   .badge-default {
-    @apply bg-grey-10 text-grey-90 whitespace-nowrap;
+    @apply inter-small-regular bg-grey-10 text-grey-90 whitespace-nowrap;
   }
 
   .btn {
