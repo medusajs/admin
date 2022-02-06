@@ -1,3 +1,4 @@
+import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import Medusa from "../../../services/api"
 import CustomerIcon from "../../fundamentals/icons/customer-icon"
@@ -11,28 +12,10 @@ import SidebarMenuItem from "../../molecules/sidebar-menu-item"
 import SidebarTeam from "../sidebar-team"
 
 const Sidebar: React.FC = () => {
-  const [storeName, setStoreName] = useState("")
   const [currentlyOpen, setCurrentlyOpen] = useState(-1)
   const [users, setUsers] = useState([])
 
-  const ordersChildren = [
-    { pageLink: "/a/draft-orders", text: "Drafts" },
-    { pageLink: "/a/swaps", text: "Swaps" },
-    { pageLink: "/a/returns", text: "Returns" },
-  ]
-
-  const fetchStore = async () => {
-    const cache = localStorage.getItem("medusa::cache::store")
-    if (cache) {
-      setStoreName(cache)
-    } else {
-      const { data } = await Medusa.store.retrieve()
-      if (data.store) {
-        localStorage.setItem("medusa::cache::store", data.store.name)
-        setStoreName(data.store.name)
-      }
-    }
-  }
+  const { store } = useAdminStore()
 
   const fetchUsers = async () => {
     Medusa.users.list().then(({ data }) => {
@@ -41,7 +24,6 @@ const Sidebar: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchStore()
     fetchUsers()
   }, [])
 
@@ -59,10 +41,7 @@ const Sidebar: React.FC = () => {
   return (
     <div className="min-w-sidebar max-w-sidebar h-screen overflow-y-scroll bg-gray-0 border-r border-grey-20 py-4xlarge px-base">
       <div className="h-full ">
-        <SidebarCompanyLogo
-          imageUrl={"https://img.icons8.com/ios/50/000000/online-shopping.png"}
-          storeName={storeName || "Medusa Store"}
-        />
+        <SidebarCompanyLogo storeName={store?.name} />
 
         <div className="border-b pb-3.5 border-grey-20">
           <SidebarMenuItem

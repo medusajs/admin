@@ -1,23 +1,9 @@
 import React from "react"
 import Avatar from "../../atoms/avatar"
-import clsx from "clsx"
 
 type SidebarTeamMemberProps = {
   color?: string
   user: any
-}
-
-const getInitial = (
-  firstName: string,
-  lastName: string,
-  email: string
-): string => {
-  return (
-    firstName?.charAt(0)?.toUpperCase() ||
-    lastName?.charAt(0)?.toUpperCase() ||
-    email?.charAt(0)?.toUpperCase() ||
-    ""
-  )
 }
 
 const SidebarTeamMember: React.FC<SidebarTeamMemberProps> = ({
