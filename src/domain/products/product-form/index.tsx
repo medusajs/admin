@@ -17,6 +17,11 @@ const ProductForm = ({ product }) => {
       <div>
         <General />
       </div>
+      {isVariantsView && (
+        <div className="mt-large">
+          <Variants product={product} />
+        </div>
+      )}
       <div className="mt-large">
         <Prices
           currencyCodes={currencyCodes}
@@ -27,12 +32,6 @@ const ProductForm = ({ product }) => {
       <div className="mt-large">
         <Images />
       </div>
-      {isVariantsView ||
-        (true && (
-          <div className="mt-large">
-            <Variants product={product} />
-          </div>
-        ))}
       <div className="mt-large">
         <StockAndInventory />
       </div>
