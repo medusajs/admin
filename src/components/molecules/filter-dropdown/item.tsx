@@ -2,10 +2,11 @@ import * as RadixCollapsible from "@radix-ui/react-collapsible"
 import * as RadixPopover from "@radix-ui/react-popover"
 import clsx from "clsx"
 import moment from "moment"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { DateFilters } from "../../../utils/filters"
 import { addHours, atMidnight, dateToUnixTimestamp } from "../../../utils/time"
 import { CalendarComponent } from "../../atoms/date-picker/date-picker"
+import Spinner from "../../atoms/spinner"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import ChevronUpIcon from "../../fundamentals/icons/chevron-up"
@@ -19,26 +20,37 @@ const FilterDropdownItem = ({
   filters,
   open,
   setFilter,
+  isLoading,
+  hasMore,
+  hasPrev,
+  onShowNext,
+  onShowPrev,
 }) => {
-  const [checked, setChecked] = useState({})
-
-  const prefill = () => {
+  const prefilled = useMemo(() => {
     try {
-      const prefilled = filters.reduce((acc, f) => {
+      const toReturn = filters.reduce((acc, f) => {
         acc[f] = true
         return acc
       }, {})
-      setChecked(prefilled)
-    } catch (er) {
-      setChecked({})
+      return toReturn
+    } catch (e) {
+      return {}
+    }
+  }, [filters])
+
+  const [checked, setChecked] = useState(prefilled)
+
+  const handlePrev = () => {
+    if (onShowPrev) {
+      onShowPrev()
     }
   }
 
-  useEffect(() => {
-    if (filters) {
-      prefill()
+  const handleNext = () => {
+    if (onShowNext) {
+      onShowNext()
     }
-  }, [filters])
+  }
 
   useEffect(() => {
     if (!open) {
@@ -116,7 +128,21 @@ const FilterDropdownItem = ({
           )}
         </RadixCollapsible.Trigger>
         <RadixCollapsible.Content className="w-full">
-          {filterTitle === "Date" ? (
+          {hasPrev && (
+            <div className="py-2 pl-6 flex">
+              <button
+                onClick={handlePrev}
+                className="font-semibold hover:text-violet-60 text-grey-90"
+              >
+                Back
+              </button>
+            </div>
+          )}
+          {isLoading ? (
+            <div className="py-1 flex justify-center items-center">
+              <Spinner size={"large"} variant={"secondary"} />
+            </div>
+          ) : filterTitle === "Date" ? (
             <DateFilter
               options={options}
               open={open}
@@ -125,39 +151,62 @@ const FilterDropdownItem = ({
               filterTitle={filterTitle}
             />
           ) : (
-            options.map((el, i) => (
-              <div
-                className={clsx(
-                  "w-full flex hover:bg-grey-20 my-1 py-1.5 pl-6 items-center rounded",
-                  {
-                    "inter-small-semibold": checked[el],
-                    "inter-small-regular": !checked[el],
-                  }
-                )}
-                key={i}
-                onClick={() => onCheck(el)}
-              >
+            options.map((el, i) => {
+              let value: string
+              let label: string
+
+              if (typeof el === "string") {
+                value = el
+                label = el
+              } else {
+                value = el.value
+                label = el.label
+              }
+
+              return (
                 <div
-                  className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border mr-2 rounded-base ${
-                    checked[el] === true && "bg-violet-60"
-                  }`}
+                  className={clsx(
+                    "w-full flex hover:bg-grey-20 my-1 py-1.5 pl-6 items-center rounded",
+                    {
+                      "inter-small-semibold": checked[value],
+                      "inter-small-regular": !checked[value],
+                    }
+                  )}
+                  key={i}
+                  onClick={() => onCheck(value)}
                 >
-                  <span className="self-center">
-                    {checked[el] === true && <CheckIcon size={16} />}
-                  </span>
+                  <div
+                    className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border mr-2 rounded-base ${
+                      checked[value] === true && "bg-violet-60"
+                    }`}
+                  >
+                    <span className="self-center">
+                      {checked[value] === true && <CheckIcon size={16} />}
+                    </span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="hidden"
+                    id={value}
+                    name={label}
+                    value={value}
+                    checked={checked[value] === true}
+                    style={{ marginRight: "5px" }}
+                  />
+                  {label}
                 </div>
-                <input
-                  type="checkbox"
-                  className="hidden"
-                  id={el}
-                  name={el}
-                  value={el}
-                  checked={checked[el] === true}
-                  style={{ marginRight: "5px" }}
-                />
-                {el}
-              </div>
-            ))
+              )
+            })
+          )}
+          {hasMore && (
+            <div className="py-2 pl-6 flex">
+              <button
+                onClick={handleNext}
+                className="font-semibold hover:text-violet-60 text-grey-90"
+              >
+                Show more
+              </button>
+            </div>
           )}
         </RadixCollapsible.Content>
       </RadixCollapsible.Root>

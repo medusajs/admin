@@ -40,6 +40,7 @@ type SortingHeadCellProps = {
 type TableProps = {
   filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
+  immediateSearchFocus?: boolean
   searchPlaceholder?: string
   searchValue?: string
   containerClassName?: string
@@ -67,6 +68,7 @@ const Table: TableType = React.forwardRef(
       className,
       children,
       enableSearch,
+      immediateSearchFocus,
       searchPlaceholder,
       searchValue,
       handleSearch,
@@ -83,16 +85,19 @@ const Table: TableType = React.forwardRef(
     return (
       <div className="flex flex-col">
         <div className="w-full flex justify-between mb-2">
-          {filteringOptions && (
+          {filteringOptions ? (
             <div className="flex mb-2 self-end">
               {Array.isArray(filteringOptions)
                 ? filteringOptions.map((fo) => <FilteringOptions {...fo} />)
                 : filteringOptions}
             </div>
+          ) : (
+            <span aria-hidden />
           )}
           <div className="flex">
             {enableSearch && (
               <TableSearch
+                autoFocus={immediateSearchFocus}
                 placeholder={searchPlaceholder}
                 searchValue={searchValue}
                 onSearch={handleSearch}
@@ -151,7 +156,7 @@ Table.HeadCell = React.forwardRef(
       className,
       children,
       ...props
-    }: React.HTMLAttributes<HTMLTableCellElement>,
+    }: React.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number },
     ref
   ) => (
     <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>
@@ -283,7 +288,7 @@ export const TablePagination = ({
     >
       <div>{`${offset + 1} - ${pageSize} of ${count} ${title}`}</div>
       <div className="flex space-x-4">
-        <div>{`${currentPage + 1} of ${pageCount}`}</div>
+        <div>{`${currentPage} of ${pageCount}`}</div>
         <div className="flex space-x-4 items-center">
           <div
             className={clsx(

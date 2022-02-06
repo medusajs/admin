@@ -1,6 +1,8 @@
 import moment from "moment"
 import React, { useEffect, useState } from "react"
+import { formatAmountWithSymbol } from "../../../utils/prices"
 import StatusIndicator from "../../fundamentals/status-indicator"
+import InfoTooltip from "../../molecules/info-tooltip"
 import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
 
@@ -112,20 +114,31 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
           {giftCard.order && `# ${giftCard.order.display_id}`}
         </Table.Cell>
         <Table.Cell className="">
-          {(giftCard.value &&
-            `${(
-              ((1 + giftCard.region.tax_rate / 100) * giftCard.value) /
-              100
-            ).toFixed(2)} ${giftCard.region.currency_code.toUpperCase()}`) || (
-            <>&nbsp;</>
+          {giftCard?.region ? (
+            formatAmountWithSymbol({
+              amount: giftCard.value,
+              currency: giftCard.region.currency_code,
+            })
+          ) : (
+            <div className="flex items-center space-x-2">
+              <span>N / A</span>
+              <InfoTooltip content={"Region has been deleted"} />
+            </div>
           )}
         </Table.Cell>
         <Table.Cell className="">
           {giftCard.balance ? (
-            `${(
-              ((1 + giftCard.region.tax_rate / 100) * giftCard.balance) /
-              100
-            ).toFixed(2)} ${giftCard.region.currency_code.toUpperCase()}`
+            giftCard?.region ? (
+              formatAmountWithSymbol({
+                amount: giftCard.value,
+                currency: giftCard.region.currency_code,
+              })
+            ) : (
+              <div className="flex items-center space-x-2">
+                <span>N / A</span>
+                <InfoTooltip content={"Region has been deleted"} />
+              </div>
+            )
           ) : (
             <StatusIndicator title="None" variant="danger" />
           )}

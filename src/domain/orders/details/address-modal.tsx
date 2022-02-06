@@ -1,12 +1,14 @@
-import React, { useEffect } from "react"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
+import Select from "../../../components/molecules/select"
 
 type AddressModalProps = {
   handleClose: () => void
   handleSave: ({ data, type }) => Promise<void>
+  allowedCountries: string[]
   address?: object
   email?: string
   type: "shipping" | "billing"
@@ -15,18 +17,33 @@ type AddressModalProps = {
 const AddressModal: React.FC<AddressModalProps> = ({
   address,
   email,
+  allowedCountries = [],
   handleClose,
   handleSave,
   type,
 }) => {
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, setValue } = useForm({
+    defaultValues: { ...address, email },
+  })
 
-  useEffect(() => {
-    reset({
-      ...address,
-      email,
-    })
-  }, [])
+  register("country_code")
+
+  const countryOptions = allowedCountries
+    .map((c) => ({ label: c.display_name, value: c.iso_2 }))
+    .filter(Boolean)
+
+  const [selectedCountry, setSelectedCountry] = useState(
+    countryOptions.find((o) => o.value === address?.country_code)
+  )
+
+  const setCountry = (value) => {
+    if (!value) {
+      setSelectedCountry(undefined)
+    } else {
+      setSelectedCountry(value)
+      setValue("country_code", value.value)
+    }
+  }
 
   const submit = (data) => {
     // Note: Data will contain email as well, which is not a part of addresses
@@ -46,27 +63,79 @@ const AddressModal: React.FC<AddressModalProps> = ({
           <div className="space-y-4">
             <span className="inter-base-semibold">General</span>
             <div className="flex space-x-4">
-              <Input label="First name" name="first_name" ref={register} />
-              <Input label="Last name" name="last_name" ref={register} />
+              <Input
+                label="First name"
+                name="first_name"
+                placeholder="First name"
+                ref={register}
+              />
+              <Input
+                label="Last name"
+                name="last_name"
+                placeholder="Last name"
+                ref={register}
+              />
             </div>
             <div className="flex mt-4 space-x-4">
-              <Input label="Email" name="email" ref={register} />
-              <Input label="Phone" name="phone" ref={register} />
+              <Input
+                label="Email"
+                name="email"
+                ref={register}
+                placeholder="Email"
+              />
+              <Input
+                label="Phone"
+                name="phone"
+                ref={register}
+                placeholder="Phone"
+              />
             </div>
           </div>
           <div className="space-y-4 mt-8">
             <span className="inter-base-semibold">Address</span>
             <div className="flex space-x-4">
-              <Input label="Address" name="address_1" ref={register} />
-              <Input label="Address 2" name="address_2" ref={register} />
+              <Input
+                label="Address"
+                name="address_1"
+                ref={register}
+                placeholder="Address 1"
+              />
+              <Input
+                label="Address 2"
+                name="address_2"
+                ref={register}
+                placeholder="Address 2"
+              />
             </div>
             <div className="flex space-x-4">
-              <Input label="State" name="province" ref={register} />
-              <Input label="Postal code" name="postal_code" ref={register} />
+              <Input
+                label="State"
+                name="province"
+                ref={register}
+                placeholder="State or province"
+              />
+              <Input
+                label="Postal code"
+                name="postal_code"
+                ref={register}
+                placeholder="Postal code"
+              />
             </div>
             <div className="flex space-x-4">
-              <Input label="City" name="city" ref={register} />
-              <Input label="Country code" name="country_code" ref={register} />
+              <Input
+                label="City"
+                name="city"
+                ref={register}
+                placeholder="City"
+              />
+              <Select
+                ref={register}
+                name="country_code"
+                label="Country"
+                options={countryOptions}
+                onChange={setCountry}
+                value={selectedCountry}
+              />
             </div>
           </div>
         </Modal.Content>

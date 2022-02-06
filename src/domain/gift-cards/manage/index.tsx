@@ -2,7 +2,9 @@ import {
   useAdminProduct,
   useAdminProductTypes,
   useAdminStore,
+  useAdminUpdateVariant,
 } from "medusa-react"
+import { ProductVariant } from "medusa-react/dist/types"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
@@ -15,6 +17,9 @@ import Select from "../../../components/molecules/select"
 import TagInput from "../../../components/molecules/tag-input"
 import BodyCard from "../../../components/organisms/body-card"
 import DetailsCollapsible from "../../../components/organisms/details-collapsible"
+import EditDenominationsModal from "../../../components/organisms/edit-denominations-modal"
+import useToaster from "../../../hooks/use-toaster"
+import { getErrorMessage } from "../../../utils/error-messages"
 import DenominationTable from "./denomination-table"
 
 type ManageGiftCardProps = {
@@ -32,6 +37,10 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   const { store } = useAdminStore()
   const { product: giftCard, isSuccess } = useAdminProduct(id)
   const { types } = useAdminProductTypes()
+  const [editDenom, setEditDenom] = useState<null | ProductVariant>(null)
+  const updateGiftCardVariant = useAdminUpdateVariant(id)
+
+  const toaster = useToaster()
 
   const { register, handleSubmit, reset } = useForm()
 
@@ -69,6 +78,31 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
     }
 
     updateGiftCard(update)
+  }
+
+  const submitDenomations = (denoms) => {
+    updateGiftCardVariant.mutate(
+      {
+        variant_id: editDenom!.id,
+        prices: denoms.map(({ amount, currency_code }) => ({
+          amount,
+          currency_code,
+        })),
+        title: editDenom!.title,
+        inventory_quantity: editDenom!.inventory_quantity,
+        options: editDenom!.options.map((opt) => ({
+          option_id: opt.option_id,
+          value: opt.value,
+        })),
+      },
+      {
+        onSuccess: () => {
+          toaster("Successfully updated denominations", "success")
+          setEditDenom(null)
+        },
+        onError: (err) => toaster(getErrorMessage(err), "error"),
+      }
+    )
   }
 
   useEffect(() => {
@@ -151,6 +185,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
                 <Input
                   label="Name"
                   name="title"
+                  placeholder="Add name"
                   defaultValue={giftCard?.title}
                   ref={register}
                 />
@@ -177,6 +212,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
                   <Input
                     label="Handle"
                     name="handle"
+                    placeholder="Product handle"
                     defaultValue={giftCard?.handle}
                     ref={register}
                     tooltipContent="URL of the product"
@@ -224,6 +260,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
             giftCardId={giftCard?.id || ""}
             denominations={giftCard?.variants || []}
             defaultCurrency={store?.default_currency_code || ""}
+            setEditDenom={setEditDenom}
           />
         </BodyCard>
         <BodyCard
@@ -234,6 +271,18 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
           {/* TODO: Add image components */}
         </BodyCard>
       </form>
+      {editDenom && (
+        <EditDenominationsModal
+          currencyCodes={store?.currencies.map((c) => c.code)}
+          onSubmit={submitDenomations}
+          defaultDenominations={editDenom.prices.map((p) => ({
+            amount: p.amount,
+            currency_code: p.currency_code,
+            id: p.id,
+          }))}
+          handleClose={() => setEditDenom(null)}
+        />
+      )}
     </div>
   )
 }

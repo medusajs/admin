@@ -1,5 +1,4 @@
 import { currencies } from "./currencies"
-const noDivisionCurrencies = ["krw", "jpy"]
 
 export function normalizeAmount(currency: string, amount: number): number {
   const divisor = getDecimalDigits(currency)
@@ -77,7 +76,19 @@ export const getNativeSymbol = (currencyCode: string) => {
   return currencies[currencyCode.toUpperCase()].symbol_native
 }
 
-export function formatAmountWithSymbol({ amount, currency, digits, tax = 0 }) {
+type FormatMoneyProps = {
+  amount: number
+  currency: string
+  digits?: number
+  tax?: number
+}
+
+export function formatAmountWithSymbol({
+  amount,
+  currency,
+  digits,
+  tax = 0,
+}: FormatMoneyProps) {
   let locale = "en-US"
 
   // We need this to display 'Kr' instead of 'DKK'
@@ -85,9 +96,7 @@ export function formatAmountWithSymbol({ amount, currency, digits, tax = 0 }) {
     locale = "da-DK"
   }
 
-  if (noDivisionCurrencies.includes(currency.toLowerCase())) {
-    digits = 0
-  }
+  digits = digits ?? currencies[currency.toUpperCase()].decimal_digits
 
   const normalizedAmount = normalizeAmount(currency, amount)
 

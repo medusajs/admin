@@ -1,26 +1,29 @@
 import clsx from "clsx"
 import React, { useContext } from "react"
 import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
-import { displayAmount } from "../../../utils/prices"
+import { formatAmountWithSymbol } from "../../../utils/prices"
 import Button from "../../fundamentals/button"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import { LayeredModalContext } from "../../molecules/modal/layered-modal"
 import Table from "../../molecules/table"
+import Medusa from "../../../services/api"
 
 type RMASelectProductTableProps = {
   order: any
   allItems: any[]
-  toReturn: any[]
-  setToReturn: (items: any[]) => void
-  imagesOnReturns: any
+  toReturn: any
+  setToReturn: (items: any) => void
+  customReturnOptions?: any[]
+  imagesOnReturns?: any
 }
 
 const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   order,
   allItems,
   toReturn,
+  customReturnOptions = undefined,
   imagesOnReturns = false,
   setToReturn,
 }) => {
@@ -65,17 +68,39 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     setToReturn(newReturns)
   }
 
-  const setReturnReason = (reason, note, id) => {
-    const newReturns = {
-      ...toReturn,
-      [id]: {
-        ...toReturn[id],
-        reason: reason,
-        note: note,
-      },
-    }
+  const handleAddImages = async (files) => {
+    return Medusa.uploads
+      .create(files)
+      .then(({ data }) => data.uploads.map(({ url }) => url))
+  }
 
-    setToReturn(newReturns)
+  const setReturnReason = (reason, note, files, id) => {
+    let newReturns = {}
+    if (imagesOnReturns && files?.length) {
+      handleAddImages(files).then((res) => {
+        newReturns = {
+          ...toReturn,
+          [id]: {
+            ...toReturn[id],
+            reason: reason,
+            note: note,
+            images: [...(toReturn[id].images || []), ...res],
+          },
+        }
+        setToReturn(newReturns)
+      })
+    } else {
+      newReturns = {
+        ...toReturn,
+        [id]: {
+          ...toReturn[id],
+          reason: reason,
+          note: note,
+        },
+      }
+
+      setToReturn(newReturns)
+    }
   }
 
   const isLineItemCanceled = (item) => {
@@ -95,7 +120,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   return (
     <Table>
       <Table.HeadRow className="text-grey-50 inter-small-semibold">
-        <Table.HeadCell colspan={2}>Product Details</Table.HeadCell>
+        <Table.HeadCell colSpan={2}>Product Details</Table.HeadCell>
         <Table.HeadCell className="text-right pr-8">Quantity</Table.HeadCell>
         <Table.HeadCell className="text-right">Refundable</Table.HeadCell>
         <Table.HeadCell></Table.HeadCell>
@@ -118,7 +143,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   <div className="items-center ml-1 h-full flex">
                     <div
                       onClick={() => handleReturnToggle(item)}
-                      className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border cursor-pointer rounded-base ${
+                      className={`mr-4 w-5 h-5 flex justify-center text-grey-0 border-grey-30 border cursor-pointer rounded-base ${
                         checked && "bg-violet-60"
                       }`}
                     >
@@ -178,7 +203,10 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   )}
                 </Table.Cell>
                 <Table.Cell className="text-right">
-                  {displayAmount(order.currency_code, item.refundable)}
+                  {formatAmountWithSymbol({
+                    currency: order.currency_code,
+                    amount: item.refundable,
+                  })}
                 </Table.Cell>
                 <Table.Cell className="text-right text-grey-40 pr-1">
                   {order.currency_code.toUpperCase()}
@@ -195,9 +223,19 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                             <span className="inter-small-semibold mr-1">
                               {toReturn[item.id]?.reason.label}
                             </span>
-                            {`(Value: ${toReturn[item.id]?.reason.value}),`}
                           </span>
                           {toReturn[item.id]?.note || ""}
+                          <span className="ml-2">
+                            {toReturn[item.id]?.images?.length > 0 && (
+                              <>
+                                ({toReturn[item.id]?.images?.length} image{" "}
+                                {toReturn[item.id]?.images?.length > 1
+                                  ? "s"
+                                  : ""}
+                                )
+                              </>
+                            )}
+                          </span>
                         </span>
                       )}
                     </div>
@@ -211,8 +249,10 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                               pop,
                               toReturn[item.id]?.reason,
                               toReturn[item.id]?.note,
-                              (reason, note) =>
-                                setReturnReason(reason, note, item.id)
+                              customReturnOptions,
+                              imagesOnReturns,
+                              (reason, note, files) =>
+                                setReturnReason(reason, note, files, item.id)
                             )
                           )
                         }
@@ -234,7 +274,14 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   )
 }
 
-const ReturnReasonScreen = (pop, reason, note, setReturnReason) => {
+const ReturnReasonScreen = (
+  pop,
+  reason,
+  note,
+  customReturnOptions,
+  imagesOnReturns,
+  setReturnReason
+) => {
   return {
     title: "Return Reasons",
     onBack: () => pop(),
@@ -242,6 +289,8 @@ const ReturnReasonScreen = (pop, reason, note, setReturnReason) => {
       <RMAReturnReasonSubModal
         reason={reason}
         existingNote={note}
+        customReturnOptions={customReturnOptions}
+        addImage={imagesOnReturns}
         onSubmit={setReturnReason}
       />
     ),

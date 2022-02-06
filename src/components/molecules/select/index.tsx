@@ -103,7 +103,10 @@ const Select = React.forwardRef(
       if (values.length) {
         onChange(isMultiSelect ? values : values[values.length - 1])
       } else {
-        onChange(isMultiSelect ? [] : undefined)
+        onChange(isMultiSelect ? [] : null)
+      }
+      if (!isMultiSelect) {
+        setIsOpen(false)
       }
     }
 

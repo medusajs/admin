@@ -49,7 +49,7 @@ const ReturnReasons = () => {
               onClick: handleOpen,
             },
           ]}
-          subtitle="Manage the markets that you will operate within"
+          subtitle="Manage reasons for returned items"
         >
           <div className="mt-large">
             {isLoading ? (
@@ -57,7 +57,7 @@ const ReturnReasons = () => {
                 <Spinner variant="secondary" />
               </div>
             ) : (
-              <RadioGroup
+              <RadioGroup.Root
                 onValueChange={(value) =>
                   setSelectedReason(findReasonByValue(return_reasons, value))
                 }
@@ -66,13 +66,12 @@ const ReturnReasons = () => {
                 {return_reasons?.map((reason) => (
                   <RadioGroup.Item
                     label={reason.label}
-                    sublabel={`(Value: ${reason.value})`}
                     description={reason.description}
                     className="mt-xsmall"
                     value={reason.value}
                   />
                 ))}
-              </RadioGroup>
+              </RadioGroup.Root>
             )}
           </div>
         </BodyCard>

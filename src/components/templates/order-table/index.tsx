@@ -140,14 +140,14 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       <Table
         filteringOptions={
           <OrderFilters
-            onRemoveTab={removeTab}
-            onSaveTab={saveTab}
-            onTabClick={setTab}
-            tabs={filterTabs}
-            activeTab={activeFilterTab}
             filters={filters}
             submitFilters={setFilters}
             clearFilters={clearFilters}
+            tabs={filterTabs}
+            onTabClick={setTab}
+            activeTab={activeFilterTab}
+            onRemoveTab={removeTab}
+            onSaveTab={saveTab}
           />
         }
         enableSearch
@@ -199,7 +199,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
         offset={queryObject.offset}
         pageSize={queryObject.offset + rows.length}
         title="Orders"
-        currentPage={pageIndex}
+        currentPage={pageIndex + 1}
         pageCount={pageCount}
         nextPage={handleNext}
         prevPage={handlePrev}
