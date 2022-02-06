@@ -92,7 +92,7 @@ const Table: TableType = React.forwardRef(
                 : filteringOptions}
             </div>
           ) : (
-            <span />
+            <span aria-hidden />
           )}
           <div className="flex">
             {enableSearch && (
@@ -288,7 +288,7 @@ export const TablePagination = ({
     >
       <div>{`${offset + 1} - ${pageSize} of ${count} ${title}`}</div>
       <div className="flex space-x-4">
-        <div>{`${currentPage + 1} of ${pageCount}`}</div>
+        <div>{`${currentPage} of ${pageCount}`}</div>
         <div className="flex space-x-4 items-center">
           <div
             className={clsx(

@@ -17,10 +17,6 @@ type ActionablesProps = {
   forceDropdown?: boolean
 }
 
-/**
- * A component that accepts multiple actionables and renders them as a dropdown menu.
- * If only a single actionable is provided, it will render a button instead.
- */
 const Actionables: React.FC<ActionablesProps> = ({
   actions,
   customTrigger,
@@ -38,12 +34,12 @@ const Actionables: React.FC<ActionablesProps> = ({
             <Button
               variant="ghost"
               size="small"
-              className="w-xlarge h-xlarge focus:border-none focus:shadow-none"
+              className="w-xlarge h-xlarge focus-visible:outline-none focus-visible:shadow-input focus-visible:border-violet-60 focus:shadow-none"
             >
               <MoreHorizontalIcon size={20} />
             </Button>
           ) : (
-            <div>{customTrigger}</div>
+            customTrigger
           )}
         </DropdownMenu.Trigger>
 

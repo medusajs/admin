@@ -9,3 +9,8 @@ export enum ProductStatus {
   PUBLISHED = "published",
   REJECTED = "rejected",
 }
+
+export type DateFilter = null | {
+  gt?: string
+  lt?: string
+}

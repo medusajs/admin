@@ -257,6 +257,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                 <Input
                   name="name"
                   label="Name"
+                  placeholder="Region name..."
                   ref={register({ required: true })}
                   className="mb-base"
                 />

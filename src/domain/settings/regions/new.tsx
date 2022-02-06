@@ -128,6 +128,7 @@ const NewRegion = ({ onDone, onClick }) => {
                 <Input
                   name="name"
                   label="Name"
+                  placeholder="Region name..."
                   ref={register({ required: true })}
                   className="mb-base min-w-[335px] w-full"
                 />

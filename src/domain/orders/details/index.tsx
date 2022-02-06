@@ -27,9 +27,12 @@ import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
+import Tooltip from "../../../components/atoms/tooltip"
+import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import Timeline from "../../../components/organisms/timeline"
 import useClipboard from "../../../hooks/use-clipboard"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -38,6 +41,7 @@ import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
 import MarkShippedModal from "./mark-shipped"
 import OrderLine from "./order-line"
+import CreateRefundModal from "./refund"
 import {
   DisplayTotal,
   FormattedAddress,
@@ -127,6 +131,7 @@ const OrderDetails = ({ id }) => {
   }>(null)
 
   const [showFulfillment, setShowFulfillment] = useState(false)
+  const [showRefund, setShowRefund] = useState(false)
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
   const { order, isLoading } = useAdminOrder(id)
@@ -137,7 +142,6 @@ const OrderDetails = ({ id }) => {
   const capturePayment = useAdminCapturePayment(id)
   const cancelOrder = useAdminCancelOrder(id)
   const updateOrder = useAdminUpdateOrder(id)
-
   const cancelFulfillment = useAdminCancelFulfillment(id)
   const cancelSwapFulfillment = useAdminCancelSwapFulfillment(id)
   const cancelClaimFulfillment = useAdminCancelClaimFulfillment(id)
@@ -149,16 +153,19 @@ const OrderDetails = ({ id }) => {
 
   const toaster = useToaster()
 
-  const [handleCopy] = useClipboard(order?.display_id, {
+  const [, handleCopy] = useClipboard(order?.display_id, {
     successDuration: 5500,
-    onCopied: () => toaster("Copied order id!", "success"),
+    onCopied: () => toaster("Order ID copied", "success"),
+  })
+
+  const [, handleCopyEmail] = useClipboard(order?.email, {
+    successDuration: 5500,
+    onCopied: () => toaster("Email copied", "success"),
   })
 
   // @ts-ignore
   useHotkeys("esc", () => navigate("/a/orders"))
-  useHotkeys("command+i", () => {
-    handleCopy
-  })
+  useHotkeys("command+i", handleCopy)
 
   const {
     hasMovements,
@@ -353,11 +360,20 @@ const OrderDetails = ({ id }) => {
         </BodyCard>
       ) : (
         <div className="flex space-x-4">
-          <div className="flex flex-col w-2/3 h-full">
+          <div className="flex flex-col w-7/12 h-full">
             <BodyCard
               className={"w-full mb-4 min-h-[200px]"}
-              title="Order #2414"
-              subtitle="29 January 2022, 23:01"
+              customHeader={
+                <Tooltip side="top" content={"Copy ID"}>
+                  <button
+                    className="inter-xlarge-semibold text-grey-90 active:text-violet-90 cursor-pointer gap-x-2 flex items-center"
+                    onClick={handleCopy}
+                  >
+                    #{order.display_id} <ClipboardCopyIcon size={16} />
+                  </button>
+                </Tooltip>
+              }
+              subtitle={moment(order.created_at).format("d MMMM YYYY hh:mm a")}
               status={<OrderStatusComponent status={order?.status} />}
               forceDropdown={true}
               actionables={[
@@ -379,7 +395,13 @@ const OrderDetails = ({ id }) => {
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Email
                   </div>
-                  <div>{order?.email}</div>
+                  <button
+                    className="text-grey-90 active:text-violet-90 cursor-pointer gap-x-1 flex items-center"
+                    onClick={handleCopyEmail}
+                  >
+                    {order?.email}
+                    <ClipboardCopyIcon size={12} />
+                  </button>
                 </div>
                 <div className="flex flex-col pl-6">
                   <div className="inter-smaller-regular text-grey-50 mb-1">
@@ -410,26 +432,18 @@ const OrderDetails = ({ id }) => {
                   totalTitle={"Subtotal"}
                 />
                 {order?.discounts?.map((discount, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between mt-4 items-center"
-                  >
-                    <div className="flex inter-small-regular text-grey-90 items-center">
-                      Discount:{" "}
-                      <Badge className="ml-3" variant="default">
-                        {discount.code}
-                      </Badge>
-                    </div>
-                    <div className="inter-small-regular text-grey-90">
-                      -
-                      {formatAmountWithSymbol({
-                        amount: order?.discount_total,
-                        currency: order?.currency_code || "",
-                        digits: 2,
-                        tax: order?.tax_rate,
-                      })}
-                    </div>
-                  </div>
+                  <DisplayTotal
+                    currency={order?.currency_code}
+                    totalAmount={-1 * order?.discount_total}
+                    totalTitle={
+                      <div className="flex inter-small-regular text-grey-90 items-center">
+                        Discount:{" "}
+                        <Badge className="ml-3" variant="default">
+                          {discount.code}
+                        </Badge>
+                      </div>
+                    }
+                  />
                 ))}
                 <DisplayTotal
                   currency={order?.currency_code}
@@ -466,6 +480,7 @@ const OrderDetails = ({ id }) => {
                 <PaymentActionables
                   order={order}
                   capturePayment={capturePayment}
+                  showRefundMenu={() => setShowRefund(true)}
                 />
               }
             >
@@ -653,9 +668,7 @@ const OrderDetails = ({ id }) => {
               </div>
             </BodyCard>
           </div>
-          <BodyCard title="Timeline" className="w-1/3">
-            <div></div>
-          </BodyCard>
+          <Timeline orderId={order.id} />
         </div>
       )}
       {addressModal && (
@@ -673,6 +686,12 @@ const OrderDetails = ({ id }) => {
           orderToFulfill={order as any}
           handleCancel={() => setShowFulfillment(false)}
           orderId={order.id}
+        />
+      )}
+      {showRefund && order && (
+        <CreateRefundModal
+          order={order}
+          onDismiss={() => setShowRefund(false)}
         />
       )}
       {fullfilmentToShip && order && (
