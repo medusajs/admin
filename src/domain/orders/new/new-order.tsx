@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useContext } from "react"
 import _ from "lodash"
 import { useForm } from "react-hook-form"
 import { debounce } from "lodash"
+import { navigate } from "gatsby"
 import Medusa from "../../../services/api"
 import Button from "../../../components/fundamentals/button"
 import useMedusa from "../../../hooks/use-medusa"
@@ -236,8 +237,8 @@ const NewOrder = ({ onDismiss, refresh }) => {
 
     setCreatingOrder(true)
     try {
-      await Medusa.draftOrders.create(draftOrder)
-      refresh()
+      const { data } = await Medusa.draftOrders.create(draftOrder)
+      navigate(`/a/draft-orders/${data.draft_order.id}`)
       onDismiss()
     } catch (error) {
       onDismiss()
@@ -293,6 +294,15 @@ const NewOrder = ({ onDismiss, refresh }) => {
             })) || []
           }
         />,
+        <Items
+          items={items}
+          handleAddItems={handleAddItems}
+          handleAddQuantity={handleAddQuantity}
+          handleRemoveItem={handleRemoveItem}
+          handleAddCustom={addCustomItem}
+          selectedRegion={region}
+          handlePriceChange={handlePriceChange}
+        />,
         <SelectShippingMethod
           shippingOptions={getValidShippingOptions()}
           handleOptionSelect={handleOptionSelect}
@@ -302,15 +312,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
           setShowCustomPrice={setShowCustomPrice}
           setCustomOptionPrice={setCustomOptionPrice}
           customOptionPrice={customOptionPrice}
-        />,
-        <Items
-          items={items}
-          handleAddItems={handleAddItems}
-          handleAddQuantity={handleAddQuantity}
-          handleRemoveItem={handleRemoveItem}
-          handleAddCustom={addCustomItem}
-          selectedRegion={region}
-          handlePriceChange={handlePriceChange}
         />,
         <ShippingDetails
           form={form}

@@ -48,7 +48,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
         className="pt-medium px-xlarge flex flex-col grow overflow-y-scroll"
         onScroll={scrollListener}
       >
-        <div className="flex items-center justify-between pt-6">
+        <div className="flex items-center justify-between mt-6 h-xlarge">
           {customHeader ? (
             <div>{customHeader}</div>
           ) : title ? (

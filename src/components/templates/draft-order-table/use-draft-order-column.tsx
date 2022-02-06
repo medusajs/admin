@@ -28,9 +28,11 @@ const useDraftOrderTableColumns = () => {
         Header: "Order",
         accessor: "order_display_id",
         Cell: ({ row }, index) => (
-          <Table.Cell
-            key={index}
-          >{`#${row.original.order.display_id}`}</Table.Cell>
+          <Table.Cell key={index}>
+            {row.original.order?.display_id
+              ? `#${row.original.order?.display_id}`
+              : ""}
+          </Table.Cell>
         ),
       },
       {

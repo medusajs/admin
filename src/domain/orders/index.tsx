@@ -1,31 +1,19 @@
 import { RouteComponentProps, Router } from "@reach/router"
-import React, { useState } from "react"
+import React, { useMemo } from "react"
+import { navigate } from "gatsby"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
-import DraftOrderTable from "../../components/templates/draft-order-table"
 import OrderTable from "../../components/templates/order-table"
 import Details from "./details"
-import DraftOrderDetails from "./draft-orders/details"
-import NewOrder from "./new"
 
-const VIEWS = [
-  "orders",
-  "drafts",
-  // "swaps", <- TODO
-  // "returns" <- TODO
-]
+const VIEWS = ["orders", "drafts"]
 
 const OrderIndex: React.FC<RouteComponentProps> = () => {
-  const [view, setView] = useState("orders")
+  const view = "orders"
 
-  const CurrentView = () => {
-    switch (view) {
-      case "drafts":
-        return <DraftOrderTable />
-      default:
-        return <OrderTable />
-    }
-  }
+  const actions = useMemo(() => {
+    return []
+  }, [view])
 
   return (
     <div className="flex flex-col grow h-full">
@@ -34,12 +22,17 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
           customHeader={
             <TableViewHeader
               views={VIEWS}
-              setActiveView={setView}
+              setActiveView={(v) => {
+                if (v === "drafts") {
+                  navigate(`/a/draft-orders`)
+                }
+              }}
               activeView={view}
             />
           }
+          actionables={actions}
         >
-          <CurrentView />
+          <OrderTable />
         </BodyCard>
       </div>
     </div>
@@ -51,8 +44,6 @@ const Orders = () => {
     <Router>
       <OrderIndex path="/" />
       <Details path=":id" />
-      <DraftOrderDetails path="/draft/:id" />
-      <NewOrder path="/new" />
     </Router>
   )
 }
