@@ -20,15 +20,15 @@ import { useHotkeys } from "react-hotkeys-hook"
 import ReactJson from "react-json-view"
 import Avatar from "../../../components/atoms/avatar"
 import Spinner from "../../../components/atoms/spinner"
+import Tooltip from "../../../components/atoms/tooltip"
 import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
+import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
-import Tooltip from "../../../components/atoms/tooltip"
-import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
@@ -568,7 +568,7 @@ const OrderDetails = ({ id }) => {
                       Shipping Method
                     </span>
                     <span className="inter-small-regular text-grey-90 mt-2">
-                      {method?.shipping_option.name || ""}
+                      {method?.shipping_option?.name || ""}
                     </span>
                     <div className="flex flex-col min-h-[100px] mt-8 bg-grey-5 px-3 py-2 h-full">
                       <span className="inter-base-semibold">
