@@ -1,15 +1,12 @@
-import React, { useState } from "react"
 import { navigate } from "gatsby"
-import { Flex, Box, Text, Image } from "rebass"
-import qs from "qs"
 import jwt from "jsonwebtoken"
-
-import LoginLayout from "../components/login-layout"
-import SEO from "../components/seo"
-import InputField from "../components/molecules/input"
+import qs from "qs"
+import React, { useState } from "react"
+import { Box, Flex, Text } from "rebass"
 import Button from "../components/button"
-import { ReactComponent as Graphic } from "../assets/login-graphic.svg"
-
+import LoginLayout from "../components/login-layout"
+import InputField from "../components/molecules/input"
+import SEO from "../components/seo"
 import Medusa from "../services/api"
 
 const ResetPasswordPage = ({ location }) => {
@@ -27,7 +24,7 @@ const ResetPasswordPage = ({ location }) => {
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
 
-  const resetPassword = async event => {
+  const resetPassword = async (event) => {
     event.preventDefault()
 
     if (password === repeatPassword) {
@@ -36,7 +33,7 @@ const ResetPasswordPage = ({ location }) => {
         .then(() => {
           navigate("/login")
         })
-        .catch(error => {})
+        .catch((error) => {})
     }
   }
 
@@ -50,13 +47,6 @@ const ResetPasswordPage = ({ location }) => {
         justifyContent="center"
         sx={{ position: "relative" }}
       >
-        <Flex
-          alignItems="center"
-          justifyContent="center"
-          sx={{ position: "absolute", top: "80px", width: "100%" }}
-        >
-          <Graphic />
-        </Flex>
         <Flex
           backgroundColor="#fefefe"
           width={5 / 12}
@@ -104,7 +94,7 @@ const ResetPasswordPage = ({ location }) => {
                     label="New password"
                     boldLabel={true}
                     value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <InputField
                     mb={3}
@@ -113,7 +103,7 @@ const ResetPasswordPage = ({ location }) => {
                     label="Repeat password"
                     boldLabel={true}
                     value={repeatPassword}
-                    onChange={e => setRepeatPassword(e.target.value)}
+                    onChange={(e) => setRepeatPassword(e.target.value)}
                   />
                   <Button type="submit" variant={"cta"} mt={4} width={1 / 4}>
                     Login

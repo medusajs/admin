@@ -18,8 +18,6 @@ import Regions from "./regions"
 import RegionDetails from "./regions/details"
 import NewRegion from "./regions/new"
 import ReturnReasons from "./return-reasons"
-import ShippingProfileDetail from "./shipping-profiles/details"
-import NewShippingProfile from "./shipping-profiles/new"
 import Users from "./users"
 
 const SettingsIndex = () => {
@@ -88,9 +86,6 @@ const Settings = () => (
     <Currencies path="currencies" />
 
     <ReturnReasons path="return-reasons" />
-
-    <NewShippingProfile path="shipping-profiles/new" />
-    <ShippingProfileDetail path="shipping-profiles/:id" />
 
     <Regions path="regions" />
     <RegionDetails path="regions/:id" />

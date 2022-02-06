@@ -1,14 +1,8 @@
-import React from "react"
-import { navigate } from "gatsby"
-import { Router } from "@reach/router"
-import { Text, Box, Flex } from "rebass"
-import styled from "@emotion/styled"
 import qs from "query-string"
-
-import Medusa from "../../services/api"
-import useMedusa from "../../hooks/use-medusa"
-import Spinner from "../../components/spinner"
+import React from "react"
+import { Box } from "rebass"
 import Button from "../../components/button"
+import Medusa from "../../services/api"
 
 const Oauth = ({ app_name }) => {
   const { code, state } = qs.parse(location.search)
