@@ -13,7 +13,7 @@ import {
   VARIANTS_VIEW,
 } from "../form/product-form-context"
 
-const General = () => {
+const General = ({ showViewOptions = true }) => {
   const { register, control, setViewType, viewType } = useProductForm()
   const { types } = useAdminProductTypes()
   const { collections } = useAdminCollections()
@@ -104,20 +104,22 @@ const General = () => {
             control={control}
           />
         </div>
-        <RadioGroup.Root
-          value={viewType}
-          onValueChange={setViewType}
-          className="flex items-center gap-4"
-        >
-          <RadioGroup.SimpleItem
-            label="Simple product"
-            value={SINGLE_PRODUCT_VIEW}
-          />
-          <RadioGroup.SimpleItem
-            label="Product with variants"
-            value={VARIANTS_VIEW}
-          />
-        </RadioGroup.Root>
+        {showViewOptions && (
+          <RadioGroup.Root
+            value={viewType}
+            onValueChange={setViewType}
+            className="flex items-center gap-4"
+          >
+            <RadioGroup.SimpleItem
+              label="Simple product"
+              value={SINGLE_PRODUCT_VIEW}
+            />
+            <RadioGroup.SimpleItem
+              label="Product with variants"
+              value={VARIANTS_VIEW}
+            />
+          </RadioGroup.Root>
+        )}
       </div>
     </BodyCard>
   )

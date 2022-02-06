@@ -70,10 +70,20 @@ const NewProductPage = () => {
         >
           Cancel
         </Button>
-        <SaveAsDraftButton variant="secondary" size="small" type="button">
+        <SaveAsDraftButton
+          loading={createProduct.isLoading}
+          variant="secondary"
+          size="small"
+          type="button"
+        >
           Save as draft
         </SaveAsDraftButton>
-        <PublishButton variant="primary" size="medium" type="button">
+        <PublishButton
+          loading={createProduct.isLoading}
+          variant="primary"
+          size="medium"
+          type="button"
+        >
           Publish Product
         </PublishButton>
       </div>

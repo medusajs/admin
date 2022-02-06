@@ -7,7 +7,7 @@ import Prices from "./sections/prices"
 import StockAndInventory from "./sections/stock-inventory"
 import Variants from "./sections/variants"
 
-const ProductForm = ({ product }) => {
+const ProductForm = ({ product, isEdit = false }) => {
   const { isVariantsView } = useProductForm()
   const { store } = useAdminStore()
   const currencyCodes = store?.currencies.map((currency) => currency.code)
@@ -15,9 +15,9 @@ const ProductForm = ({ product }) => {
   return (
     <>
       <div>
-        <General />
+        <General showViewOptions={!isEdit} />
       </div>
-      {isVariantsView && (
+      {(isVariantsView || isEdit) && (
         <div className="mt-large">
           <Variants product={product} />
         </div>
