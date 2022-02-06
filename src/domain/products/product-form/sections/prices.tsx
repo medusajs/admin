@@ -110,7 +110,7 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
               type="button"
               variant="ghost"
               size="small"
-              disabled={availableCurrencies.length === 0}
+              disabled={availableCurrencies?.length === 0}
             >
               <PlusIcon size={20} />
               Add a price

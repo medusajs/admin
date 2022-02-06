@@ -10,7 +10,6 @@ const columns = [
     Header: "Image",
     accessor: "image",
     Cell: ({ cell }) => {
-      console.log({ cell })
       return (
         <div className="py-base large:w-[176px] xsmall:w-[80px]">
           <img
@@ -41,11 +40,12 @@ const columns = [
     Header: <div className="text-center">Thumbnail</div>,
     accessor: "thumbnail",
     Cell: ({ cell }) => {
+      console.log({ cell })
       return (
         <div className="flex justify-center">
           <RadioGroup.SimpleItem
             className="justify-center"
-            value={cell.row.original.url}
+            value={cell.row.index}
           />
         </div>
       )
@@ -61,17 +61,20 @@ const Images = () => {
     setImages,
     appendImage,
     removeImage,
+    watch,
   } = useProductForm()
+
+  const thumbnail = watch("thumbnail", 0)
 
   useEffect(() => {
     register({ name: "thumbnail", type: "custom" })
-  }, [])
+  }, [register])
 
   return (
     <BodyCard title="Images" subtitle="Add up to 10 images to your product">
       <div className="mt-base">
         <RadioGroup.Root
-          defaultValue={images[0]?.url}
+          value={thumbnail}
           onValueChange={(value) => {
             setValue("thumbnail", value)
           }}

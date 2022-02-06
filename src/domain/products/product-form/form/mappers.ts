@@ -1,4 +1,5 @@
 export const productToFormValuesMapper = (product) => {
+  console.log({ product })
   return {
     ...product,
     collection: product?.collection
@@ -7,7 +8,12 @@ export const productToFormValuesMapper = (product) => {
     type: product?.type
       ? { id: product.type.id, label: product.type.value }
       : null,
-    images: product?.images || [],
+    images: product?.images?.length
+      ? product.images
+      : product?.thumbnail
+      ? [{ url: product?.thumbnail }]
+      : [],
+    thumbnail: 0,
   }
 }
 
@@ -17,7 +23,9 @@ export const formValuesToProductMapper = (values) => {
     handle: values.handle,
     status: values.status || "published",
     description: values.description,
-    thumbnail: values.thumbnail,
+    thumbnail: values?.images?.length
+      ? values.images[values.thumbnail]
+      : values.thumbnail,
     collection_id: values?.collection ? values.collection.value : "",
     type: values?.type
       ? { id: values.type.value, value: values.type.label }
