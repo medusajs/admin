@@ -7,6 +7,7 @@ import {
 import { ProductVariant } from "medusa-react/dist/types"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import FileUploadField from "../../../components/atoms/file-upload-field"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../../components/fundamentals/icons/unpublish-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
@@ -17,9 +18,12 @@ import TagInput from "../../../components/molecules/tag-input"
 import BodyCard from "../../../components/organisms/body-card"
 import DetailsCollapsible from "../../../components/organisms/details-collapsible"
 import EditDenominationsModal from "../../../components/organisms/edit-denominations-modal"
+import RadioGroup from "../../../components/organisms/radio-group"
+import DraggableTable from "../../../components/templates/draggable-table"
 import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import DenominationTable from "./denomination-table"
+import useGiftCardImageColumns from "./use-gift-card-image-columns"
 
 type ManageGiftCardProps = {
   path: string
@@ -38,10 +42,11 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   const { types } = useAdminProductTypes()
   const [editDenom, setEditDenom] = useState<null | ProductVariant>(null)
   const updateGiftCardVariant = useAdminUpdateVariant(id)
+  const [images, setImages] = useState<any[]>([])
 
   const toaster = useToaster()
 
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, reset, setValue } = useForm()
 
   const [type, setType] = useState<{ label: string; value: string } | null>(
     giftCard?.type
@@ -55,6 +60,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   register("title")
   register("subtitle")
   register("description")
+  register("thumbnail")
 
   const submit = (data) => {
     const update = { ...data }
@@ -104,6 +110,16 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
     )
   }
 
+  const appendImage = (image) => setImages([...images, image])
+
+  const removeImage = (image) => {
+    const idx = images.findIndex((img) => img.image === image.image)
+    if (idx !== -1) {
+      images.splice(idx, 1)
+    }
+    setImages([...images])
+  }
+
   useEffect(() => {
     if (!isSuccess) {
       return
@@ -119,6 +135,8 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
       setType({ value: giftCard.type.value, label: giftCard.type.value })
     }
   }, [giftCard])
+
+  const [columns] = useGiftCardImageColumns()
 
   const StatusComponent = () => {
     switch (giftCard?.status) {
@@ -260,7 +278,33 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
           subtitle="Manage your Gift Card images"
           className={"h-auto w-full"}
         >
-          {/* TODO: Add image components */}
+          <div className="mt-base">
+            <RadioGroup.Root
+              // defaultValue={entities[0].image}
+              onValueChange={(value) => {
+                setValue("thumbnail", value)
+              }}
+            >
+              <DraggableTable
+                onDelete={removeImage}
+                columns={columns}
+                entities={images}
+                setEntities={setImages}
+              />
+            </RadioGroup.Root>
+          </div>
+          <div className="mt-2xlarge">
+            <FileUploadField
+              onFileChosen={(files) => {
+                const file = files[0]
+                const url = URL.createObjectURL(file)
+                appendImage({ url, name: file.name, size: file.size })
+              }}
+              placeholder="1200 x 1600 (3:4) recommended, up to 10MB each"
+              filetypes={["png"]}
+              className="py-large"
+            />
+          </div>
         </BodyCard>
       </form>
       {editDenom && (
