@@ -111,6 +111,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
     }))
 
     data.origin_country = selectedCountry?.label
+    data.inventory_quantity = parseInt(data.inventory_quantity)
 
     data.prices = data.prices.map((p) => removeNullish(p))
     const cleaned = convertEmptyStringToNull(data, numberFields)
@@ -223,7 +224,6 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
                 label="UPC Barcode"
                 name="barcode"
                 placeholder="Barcode"
-                type="number"
                 ref={register}
               />
             </div>

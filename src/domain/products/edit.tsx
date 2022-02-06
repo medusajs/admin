@@ -27,7 +27,7 @@ const EditProductPage = ({ id }) => {
       product={productToFormValuesMapper(product)}
       onSubmit={console.log}
     >
-      <ProductForm />
+      <ProductForm product={product} />
     </ProductFormProvider>
   )
 }
