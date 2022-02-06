@@ -25,6 +25,7 @@ export const formValuesToProductMapper = (values) => {
     images: values?.images || [],
     options: [{ title: "Default Option" }],
     tags: values?.tags ? values.tags.map((tag) => ({ value: tag })) : [],
+    // TODO: handle addition with multiple variants
     variants: [
       {
         title: values?.title,
