@@ -35,7 +35,7 @@ const EditProductPage = ({ id }) => {
       product={productToFormValuesMapper(product)}
       onSubmit={console.log}
     >
-      <ProductForm />
+      <ProductForm product={product} />
       <div className="mt-base flex justify-end items-center gap-x-2">
         <Button
           variant="secondary"
