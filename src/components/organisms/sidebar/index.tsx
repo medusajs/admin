@@ -11,6 +11,8 @@ import SidebarCompanyLogo from "../../molecules/sidebar-company-logo"
 import SidebarMenuItem from "../../molecules/sidebar-menu-item"
 import SidebarTeam from "../sidebar-team"
 
+const ICON_SIZE = 18
+
 const Sidebar: React.FC = () => {
   const [currentlyOpen, setCurrentlyOpen] = useState(-1)
   const [users, setUsers] = useState([])
@@ -46,37 +48,37 @@ const Sidebar: React.FC = () => {
         <div className="border-b pb-3.5 border-grey-20">
           <SidebarMenuItem
             pageLink={"/a/orders"}
-            icon={<DollarSignIcon />}
+            icon={<DollarSignIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Orders"}
           />
           <SidebarMenuItem
             pageLink={"/a/products"}
-            icon={<TagIcon />}
+            icon={<TagIcon size={ICON_SIZE} />}
             text={"Products"}
             triggerHandler={triggerHandler}
           />
           <SidebarMenuItem
             pageLink={"/a/customers"}
-            icon={<CustomerIcon />}
+            icon={<CustomerIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Customers"}
           />
           <SidebarMenuItem
             pageLink={"/a/discounts"}
-            icon={<PercentIcon />}
+            icon={<PercentIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Discounts"}
           />
           <SidebarMenuItem
             pageLink={"/a/gift-cards"}
-            icon={<GiftIcon />}
+            icon={<GiftIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Gift Cards"}
           />
           <SidebarMenuItem
             pageLink={"/a/settings"}
-            icon={<GearIcon />}
+            icon={<GearIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Settings"}
           />
