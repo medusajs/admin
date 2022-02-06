@@ -6,7 +6,7 @@ import BodyCard from "../../../../components/organisms/body-card"
 import { useProductForm } from "../form/product-form-context"
 
 const StockAndInventory = () => {
-  const { register } = useProductForm()
+  const { register, isVariantsView } = useProductForm()
   return (
     <BodyCard
       title="Stock & Inventory"

@@ -14,6 +14,11 @@ export const productToFormValuesMapper = (product) => {
       ? [{ url: product?.thumbnail }]
       : [],
     thumbnail: 0,
+    prices: product?.variants.length
+      ? product.variants[0].prices.map((price) => ({
+          price: { currency_code: price.currency_code, amount: price.amount },
+        }))
+      : [],
   }
 }
 
