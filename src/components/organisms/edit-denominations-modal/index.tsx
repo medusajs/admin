@@ -108,6 +108,7 @@ const EditDenominationsModal = ({
                       currencyCodes={currencyCodes}
                       currentCurrency={field.currency_code}
                       onChange={onCurrencyChange(index)}
+                      size="medium"
                     >
                       <CurrencyInput.AmountInput
                         label="Amount"

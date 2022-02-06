@@ -5,7 +5,7 @@ import PageDescription from "../../components/atoms/page-description"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
 import ProductTable from "../../components/templates/product-table"
-import Details from "./details"
+import { ProductDetailPage, NewProductPage } from "./details/index.tsx"
 import New from "./new"
 
 const ProductIndex = () => {
@@ -40,8 +40,8 @@ const Products = () => {
   return (
     <Router>
       <ProductIndex path="/" />
-      <Details path=":id" />
-      <New path="new" />
+      <ProductDetailPage path=":id" />
+      <NewProductPage path="new" />
     </Router>
   )
 }

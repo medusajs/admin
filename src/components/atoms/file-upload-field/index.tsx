@@ -20,7 +20,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
   const [fileUploadError, setFileUploadError] = useState(false)
 
   const handleFileUpload = (e) => {
-    onFileChosen(e.target.files)
+    onFileChosen(Array.from(e.target.files))
   }
 
   const handleFileDrop = (e) => {

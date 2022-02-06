@@ -141,7 +141,7 @@ const DraggableTable: React.FC<DraggableTableProps> = ({
 
     return (
       <Table.Row ref={dropRef} style={{ opacity }}>
-        <Table.Cell className="max-w-content">
+        <Table.Cell className="medium:w-[72px] small:w-auto">
           <Button
             ref={dragRef}
             variant="ghost"
