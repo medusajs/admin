@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react"
 import BodyCard from "../../../../components/organisms/body-card"
 import VariantGrid from "../../../../components/variant-grid"
+import NewOption from "../../details/variants/option-edit"
 
 const Variants = ({ product }) => {
   const [variants, setVariants] = useState([])
+  const [showAddOption, setShowAddOption] = useState(false)
 
   useEffect(() => {
     if (product?.variants) {
@@ -11,7 +13,7 @@ const Variants = ({ product }) => {
         ...v,
         options: v.options.map((o) => ({
           ...o,
-          title: product.options.find((po) => po.id === o.option_id).title,
+          title: product.options.find((po) => po.id === o.option_id)?.title,
         })),
       }))
 
@@ -28,8 +30,8 @@ const Variants = ({ product }) => {
       forceDropdown={true}
       actionables={[
         {
-          label: "Add option",
-          onClick: () => console.log("TODO"),
+          label: "Edit options",
+          onClick: () => setShowAddOption(true),
           icon: null,
         },
       ]}
@@ -40,6 +42,13 @@ const Variants = ({ product }) => {
           <VariantGrid edit product={product} variants={variants} />
         )}
       </div>
+      {showAddOption && (
+        <NewOption
+          productId={product.id}
+          options={product.options}
+          onDismiss={() => setShowAddOption(false)}
+        />
+      )}
     </BodyCard>
   )
 }
