@@ -50,10 +50,10 @@ const General = () => {
             ref={register}
           />
           <Input
-            tooltipContent="Handles are used for this and that"
+            tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
             label="Handle"
             name="handle"
-            placeholder="/bathrobes"
+            placeholder="/bathrobe"
             ref={register}
           />
         </div>

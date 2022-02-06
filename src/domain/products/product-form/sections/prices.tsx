@@ -43,7 +43,11 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
       <div className="mt-base">
         <div className="flex items-center mb-base">
           <h6 className="inter-base-semibold text-grey-90 mr-1.5">Prices</h6>
-          <InfoTooltip content={"Some helpful content"} />
+          <InfoTooltip
+            content={
+              "Give products a price for each of the currencies that you sell in."
+            }
+          />
         </div>
         <div className="max-w-[630px]">
           {fields.map((field, index) => {

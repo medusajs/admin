@@ -14,13 +14,16 @@ const Variants = () => {
   return (
     <BodyCard
       title="Variants"
-      subtitle="Add variations of this product. Offer your customers different
-options for price, color, format, size, shape, etc."
+      subtitle="Add variations of this product. Offer your customers different options for price, color, format, size, shape, etc."
     >
       <div className="mt-large">
         <div className="flex items-center mb-base">
           <h6 className="inter-base-semibold text-grey-90 mr-1.5">General</h6>
-          <InfoTooltip content={"Some helpful content"} />
+          <InfoTooltip
+            content={
+              "Add options to generate variants of a product. Options should be properties that differ across variants of the same product for example size or color."
+            }
+          />
         </div>
         <div className="max-w-[565px]">
           {Array(3)
