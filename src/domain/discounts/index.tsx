@@ -1,12 +1,12 @@
-import React from "react"
 import { Router } from "@reach/router"
-import New from "./new"
-import Details from "./details"
 import { navigate } from "gatsby"
-import PageDescription from "../../components/atoms/page-description"
-import BodyCard from "../../components/organisms/body-card"
+import React from "react"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
+import BodyCard from "../../components/organisms/body-card"
+import TableViewHeader from "../../components/organisms/custom-table-header"
 import DiscountTable from "../../components/templates/discount-table"
+import Details from "./details"
+import New from "./new"
 
 const DiscountIndex = () => {
   const actionables = [
@@ -19,19 +19,12 @@ const DiscountIndex = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <PageDescription
-        title={"Discounts"}
-        subtitle={"Manage the discounts for your Medusa store"}
-      />
       <div className="w-full flex flex-col grow">
         <BodyCard
-          title="Overview"
-          subtitle="See the overview of created discounts"
           actionables={actionables}
+          customHeader={<TableViewHeader views={["discounts"]} />}
         >
-          <div className="flex grow flex-col">
-            <DiscountTable />
-          </div>
+          <DiscountTable />
         </BodyCard>
       </div>
     </div>
