@@ -169,7 +169,7 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
     case "exchange":
       return <Exchange event={event as ExchangeEvent} refetch={refetch} />
     case "claim":
-      return <Claim event={event as ClaimEvent} />
+      return <Claim event={event as ClaimEvent} refetch={refetch} />
     case "notification":
       return <Notification event={event as NotificationEvent} />
     default:

@@ -54,7 +54,7 @@ interface ReturnItem extends OrderItem {
 }
 
 interface FulfillmentEvent extends TimelineEvent {
-  isExchangeFulfillment?: boolean
+  sourceType: "claim" | "exchange" | undefined
 }
 
 export interface ItemsFulfilledEvent extends FulfillmentEvent {
@@ -264,7 +264,7 @@ export const useBuildTimelime = (orderId: string) => {
           items: event.additional_items.map((i) => getSwapItem(i)),
           noNotification: event.no_notification,
           orderId: order.id,
-          isExchangeFulfillment: true,
+          sourceType: "exchange",
         } as ItemsFulfilledEvent)
 
         if (event.fulfillments[0].shipped_at) {
@@ -275,7 +275,7 @@ export const useBuildTimelime = (orderId: string) => {
             items: event.additional_items.map((i) => getSwapItem(i)),
             noNotification: event.no_notification,
             orderId: order.id,
-            isExchangeFulfillment: true,
+            sourceType: "exchange",
           } as ItemsShippedEvent)
         }
       }
@@ -308,6 +308,32 @@ export const useBuildTimelime = (orderId: string) => {
           order,
         } as ClaimEvent)
 
+        if (
+          claim.fulfillment_status === "fulfilled" ||
+          claim.fulfillment_status === "shipped"
+        ) {
+          events.push({
+            id: claim.id,
+            time: claim.fulfillments[0].created_at,
+            type: "fulfilled",
+            items: claim.additional_items.map((i) => getSwapItem(i)),
+            noNotification: claim.no_notification,
+            orderId: order.id,
+            sourceType: "claim",
+          } as ItemsFulfilledEvent)
+
+          if (claim.fulfillments[0].shipped_at) {
+            events.push({
+              id: claim.id,
+              time: claim.fulfillments[0].shipped_at,
+              type: "shipped",
+              items: claim.additional_items.map((i) => getSwapItem(i)),
+              noNotification: claim.no_notification,
+              orderId: order.id,
+              sourceType: "claim",
+            } as ItemsShippedEvent)
+          }
+        }
         if (claim.canceled_at) {
           events.push({
             id: `${claim.id}-created`,
