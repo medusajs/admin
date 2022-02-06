@@ -191,6 +191,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                     label="Name"
                     name="name"
                     ref={register}
+                    placeholder="Shipping option name"
                     className="flex-grow"
                   />
                   <CurrencyInput
