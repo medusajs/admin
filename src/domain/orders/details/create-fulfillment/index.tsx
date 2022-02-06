@@ -92,6 +92,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
         action = createClaimFulfillment
         successText = "Successfully fulfilled claim"
         requestObj = {
+          claim_id: orderToFulfill.id,
           metadata: preparedMetadata,
           no_notification: noNotis,
         } as AdminPostOrdersOrderClaimsClaimFulfillmentsReq
