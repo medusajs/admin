@@ -5,7 +5,6 @@ import { useAdminOrders } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
-
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
 import OrderFilters from "../order-filter-dropdown"
@@ -200,7 +199,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
         offset={queryObject.offset}
         pageSize={queryObject.offset + rows.length}
         title="Orders"
-        currentPage={pageIndex}
+        currentPage={pageIndex + 1}
         pageCount={pageCount}
         nextPage={handleNext}
         prevPage={handlePrev}

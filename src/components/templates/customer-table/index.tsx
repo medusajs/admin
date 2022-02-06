@@ -204,7 +204,7 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
             offset={offset}
             pageSize={offset + rows.length}
             title="Customers"
-            currentPage={pageIndex}
+            currentPage={pageIndex + 1}
             pageCount={pageCount}
             nextPage={handleNext}
             prevPage={handlePrev}
