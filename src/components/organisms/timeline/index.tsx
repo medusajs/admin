@@ -37,6 +37,7 @@ import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Return from "../../molecules/timeline-events/return"
+import ReturnMenu from "../../../domain/orders/details/returns"
 
 type TimelineProps = {
   orderId: string
@@ -47,6 +48,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   const toaster = useToaster()
   const createNote = useAdminCreateNote()
   const { order } = useAdminOrder(orderId)
+  const [showRequestReturn, setShowRequestReturn] = useState(false)
   const [showCreateSwap, setshowCreateSwap] = useState(false)
   const [showCreateClaim, setshowCreateClaim] = useState(false)
   const createSwap = useAdminCreateSwap(orderId)
@@ -56,7 +58,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
     {
       icon: <BackIcon size={20} />,
       label: "Request Return",
-      onClick: () => {},
+      onClick: () => setShowRequestReturn(true),
     },
     {
       icon: <RefreshIcon size={20} />,
@@ -123,6 +125,13 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
           )}
         </div>
       </div>
+      {showRequestReturn && (
+        <ReturnMenu
+          order={order}
+          toaster={toaster}
+          onDismiss={() => setShowRequestReturn(false)}
+        />
+      )}
       {showCreateSwap && (
         <SwapMenu
           order={order}
