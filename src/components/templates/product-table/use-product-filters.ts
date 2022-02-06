@@ -18,6 +18,7 @@ type ProductFilterAction =
   | { type: "setStatus"; payload: null | string[] | string }
   | { type: "setFulfillment"; payload: null | string[] | string }
   | { type: "setPayment"; payload: null | string[] | string }
+  | { type: "setLimit"; payload: number }
 
 interface ProductFilterState {
   query?: string | null
@@ -106,6 +107,12 @@ const reducer = (
         date: newDateFilters,
       }
     }
+    case "setLimit": {
+      return {
+        ...state,
+        limit: action.payload,
+      }
+    }
     case "setOffset": {
       return {
         ...state,
@@ -192,6 +199,10 @@ export const useProductFilters = (
 
   const setDefaultFilters = (filters: ProductDefaultFilters | null) => {
     dispatch({ type: "setDefaults", payload: filters })
+  }
+
+  const setLimit = (limit: number) => {
+    dispatch({ type: "setLimit", payload: limit })
   }
 
   const paginate = (direction: 1 | -1) => {
@@ -469,6 +480,7 @@ export const useProductFilters = (
     setFilters,
     setDefaultFilters,
     setDateFilter,
+    setLimit,
     setFulfillmentFilter,
     setPaymentFilter,
     setStatusFilter,

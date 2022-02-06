@@ -15,7 +15,6 @@ const StockAndInventory = () => {
       <div className="mt-large">
         <div className="flex items-center mb-base">
           <h6 className="inter-base-semibold text-grey-90 mr-1.5">General</h6>
-          <InfoTooltip content={"Some helpful content"} />
         </div>
         <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-large">
           <Input
@@ -45,7 +44,11 @@ const StockAndInventory = () => {
               label="Manage Inventory"
               ref={register}
             />
-            <InfoTooltip content={"something"} />
+            <InfoTooltip
+              content={
+                "When checked Medusa will regulate the inventory when orders and returns are made."
+              }
+            />
           </div>
           <div className="flex item-center gap-x-1.5">
             <Checkbox
@@ -53,14 +56,17 @@ const StockAndInventory = () => {
               ref={register}
               label="Allow backorders"
             />
-            <InfoTooltip content={"something"} />
+            <InfoTooltip
+              content={
+                "When checked the product will be available for purchase despite the product being sold out."
+              }
+            />
           </div>
         </div>
         <div className="flex items-center mb-base">
           <h6 className="inter-base-semibold text-grey-90 mr-1.5">
             Dimensions
           </h6>
-          <InfoTooltip content={"Some helpful content"} />
         </div>
         <div className="flex gap-x-8">
           <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-4 mb-large">

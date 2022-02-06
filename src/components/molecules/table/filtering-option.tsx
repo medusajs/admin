@@ -1,8 +1,8 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import clsx from "clsx"
-import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
-import CheckIcon from "../../fundamentals/icons/check-icon"
 import React, { useState } from "react"
+import CheckIcon from "../../fundamentals/icons/check-icon"
+import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
 
 export type FilteringOptionProps = {
   title: string

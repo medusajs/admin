@@ -16,7 +16,9 @@ export const useObserveWidth = (ref: MutableRefObject<any>): number => {
       observer.current.observe(ref.current)
     }
 
-    return () => observer.current.unobserve(ref.current)
+    if (observer?.current && ref?.current) {
+      return () => observer.current.unobserve(ref?.current)
+    }
   }, [ref, observer])
 
   return currentWidth

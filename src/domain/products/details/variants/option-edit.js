@@ -1,14 +1,12 @@
-import React, { useMemo, useState } from "react"
 import {
   useAdminCreateProductOption,
-  useAdminUpdateProductOption,
   useAdminDeleteProductOption,
+  useAdminUpdateProductOption,
 } from "medusa-react"
-import { useFieldArray, useForm } from "react-hook-form"
-
+import React, { useMemo, useState } from "react"
 import Button from "../../../../components/fundamentals/button"
-import Modal from "../../../../components/molecules/modal"
 import Input from "../../../../components/molecules/input"
+import Modal from "../../../../components/molecules/modal"
 import useToaster from "../../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../../utils/error-messages"
 

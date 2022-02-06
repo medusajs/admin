@@ -1,54 +1,51 @@
-import React, { useState } from "react"
-import { navigate } from "gatsby"
 import { Router } from "@reach/router"
-import { Text, Flex, Box } from "rebass"
+import { navigate } from "gatsby"
+import { useAdminCreateCollection } from "medusa-react"
 import qs from "query-string"
-// import Details from "./details"
-
-import useMedusa from "../../hooks/use-medusa"
-
+import React, { useState } from "react"
+import { Box, Flex, Text } from "rebass"
+import Button from "../../components/button"
+import Spinner from "../../components/spinner"
 import {
   Table,
   TableBody,
+  TableDataCell,
   TableHead,
   TableHeaderCell,
-  TableRow,
-  TableDataCell,
   TableHeaderRow,
+  TableRow,
 } from "../../components/table"
-import Button from "../../components/button"
-import Spinner from "../../components/spinner"
-import AddCollectionModal from "../../components/templates/add-collection-modal"
-import { useAdminCreateCollection } from "medusa-react"
+import CollectionModal from "../../components/templates/collection-modal"
+import useMedusa from "../../hooks/use-medusa"
 import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
+import CollectionDetails from "./details"
 
 const CollectionsIndex = () => {
   const [showNew, setShowNew] = useState(false)
   const createCollection = useAdminCreateCollection()
   const toaster = useToaster()
-  const { collections, isLoading, refresh, total_count } = useMedusa(
-    "collections",
-    {
-      search: `?${qs.stringify(filtersOnLoad)}`,
-    }
-  )
+  const { collections, isLoading, refresh } = useMedusa("collections", {
+    search: `?${qs.stringify(filtersOnLoad)}`,
+  })
 
-  const handleAddNew = (data) => {
+  const handleAddNew = (data, metadata) => {
     const payload = {
       title: data.title,
       handle: data.handle,
     }
 
-    if (data.metadata) {
-      const metadata = data.metadata.reduce((acc, next) => {
-        return {
-          ...acc,
-          [next.key]: next.value,
-        }
-      }, {})
+    if (metadata) {
+      const payloadMetadata = metadata
+        .filter((m) => m.key && m.value)
+        .reduce((acc, next) => {
+          return {
+            ...acc,
+            [next.key]: next.value,
+          }
+        }, {})
 
-      payload.metadata = metadata
+      payload.metadata = payloadMetadata
     }
 
     createCollection.mutate(payload, {
@@ -170,7 +167,7 @@ const CollectionsIndex = () => {
         </Flex>
       </Flex>
       {showNew && (
-        <AddCollectionModal
+        <CollectionModal
           onClose={() => setShowNew(!showNew)}
           onSubmit={handleAddNew}
         />
@@ -181,9 +178,9 @@ const CollectionsIndex = () => {
 
 const Collections = () => {
   return (
-    <Router>
+    <Router className="h-full">
       <CollectionsIndex path="/" />
-      {/* <Details path=":id" /> */}
+      <CollectionDetails path=":id" />
     </Router>
   )
 }

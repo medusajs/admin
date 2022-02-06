@@ -30,7 +30,7 @@ const useProductActions = (product) => {
     }
   }
 
-  const getActions = (product): ActionType[] => [
+  const getActions = (): ActionType[] => [
     {
       label: "Edit",
       onClick: () => navigate(`/a/products/${product.id}`),

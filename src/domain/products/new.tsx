@@ -99,7 +99,7 @@ const PublishButton = ({ children, ...props }: ButtonProps) => {
   const { onSubmit, handleSubmit } = useProductForm()
 
   const onPublish = (values) => {
-    onSubmit({ ...values, status: "publish" })
+    onSubmit({ ...values, status: "published" })
   }
   return (
     <Button {...props} onClick={handleSubmit(onPublish)}>

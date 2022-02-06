@@ -6,7 +6,13 @@ import Input from "../../../components/molecules/input"
 
 import { countries } from "../../../utils/countries"
 
-const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
+const AddressForm = ({
+  form = {},
+  type = "address",
+  country,
+  address,
+  allowedCountries,
+}) => {
   const countryOptions = countries
     .map((c) => {
       if (allowedCountries) {
@@ -28,12 +34,12 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
     )
   )
 
-  form.register("address.country_code")
+  form.register(`${type}.country_code`)
 
   const setCountry = (value) => {
     if (value) {
       setSelectedCountry(value)
-      form.setValue("address.country_code", value.value)
+      form.setValue(`${type}.country_code`, value.value)
     }
   }
 
@@ -41,7 +47,7 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
     if (!isEmpty(address)) {
       form.reset({ address: { ...address } })
     } else if (country) {
-      form.setValue("address.country_code", country)
+      form.setValue(`${type}.country_code`, country)
     }
   }, [])
 
@@ -59,7 +65,7 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
               placeholder="First Name"
               label="First Name"
               required={true}
-              name="address.first_name"
+              name={`${type}.first_name`}
             />
             <Input
               ref={form.register({
@@ -68,7 +74,7 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
               placeholder="Last Name"
               label="Last Name"
               required={true}
-              name="address.last_name"
+              name={`${type}.last_name`}
             />
             <Input
               mb={2}
@@ -78,7 +84,7 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
               placeholder="Phone"
               label="Phone"
               required={true}
-              name="address.phone"
+              name={`${type}.phone`}
             />
           </div>
         </div>
@@ -92,13 +98,13 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
               placeholder="Address 1"
               label="Address 1"
               required={true}
-              name="address.address_1"
+              name={`${type}.address_1`}
             />
             <Input
               ref={form.register}
               placeholder="Address 2"
               label="Address 2"
-              name="address.address_2"
+              name={`${type}.address_2`}
             />
           </div>
           <div className="grid grid-cols-2 gap-x-base gap-y-base">
@@ -107,7 +113,7 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
               ref={form.register}
               placeholder="Province"
               label="Province"
-              name="address.province"
+              name={`${type}.province`}
             />
             <Input
               mb={2}
@@ -117,7 +123,7 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
               placeholder="Postal code"
               label="Postal code"
               required={true}
-              name="address.postal_code"
+              name={`${type}.postal_code`}
             />
             <Input
               mb={2}
@@ -127,11 +133,11 @@ const AddressForm = ({ form = {}, country, address, allowedCountries }) => {
               ref={form.register({
                 required: true,
               })}
-              name="address.city"
+              name={`${type}.city`}
             />
             <Select
               ref={form.register}
-              name="address.country_code"
+              name={`${type}.country_code`}
               label="Country"
               options={countryOptions}
               onChange={setCountry}

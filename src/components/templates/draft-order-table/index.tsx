@@ -131,7 +131,7 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
                 return (
                   <Table.Row
                     color={"inherit"}
-                    linkTo={row.original.id}
+                    linkTo={`/a/draft-orders/${row.original.id}`}
                     {...row.getRowProps()}
                   >
                     {row.cells.map((cell, index) => {
@@ -148,7 +148,7 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
             offset={queryObject.offset}
             pageSize={queryObject.offset + rows.length}
             title="Draft Orders"
-            currentPage={pageIndex}
+            currentPage={pageIndex + 1}
             pageCount={pageCount}
             nextPage={handleNext}
             prevPage={handlePrev}
