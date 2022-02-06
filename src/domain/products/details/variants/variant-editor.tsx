@@ -224,7 +224,6 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
                 label="UPC Barcode"
                 name="barcode"
                 placeholder="Barcode"
-                type="number"
                 ref={register}
               />
             </div>

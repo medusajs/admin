@@ -1,5 +1,5 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import { useAdminUpdateVariant } from "medusa-react"
+import { useAdminDeleteVariant, useAdminUpdateVariant } from "medusa-react"
 import React, { useState } from "react"
 import { Box } from "rebass"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
@@ -8,6 +8,8 @@ import { getErrorMessage } from "../../utils/error-messages"
 import Button from "../fundamentals/button"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import MoreHorizontalIcon from "../fundamentals/icons/more-horizontal-icon"
+import TrashIcon from "../fundamentals/icons/trash-icon"
+import DeletePrompt from "../organisms/delete-prompt"
 import { TableHead, TableHeaderCell } from "../table"
 import { StyledTable, Td, Wrapper } from "./elements"
 
@@ -81,8 +83,10 @@ const getColumns = (product, edit) => {
 
 const VariantGrid = ({ product, variants, edit }) => {
   const [selectedVariant, setSelectedVariant] = useState(null)
+  const [toDelete, setToDelete] = useState(null)
 
   const updateVariant = useAdminUpdateVariant(product.id)
+  const deleteVariant = useAdminDeleteVariant(product.id)
   const toaster = useToaster()
 
   const columns = getColumns(product, edit)
@@ -106,6 +110,10 @@ const VariantGrid = ({ product, variants, edit }) => {
         },
       }
     )
+  }
+
+  const handleDeleteVariant = async () => {
+    return deleteVariant.mutate(toDelete?.id)
   }
 
   return (
@@ -164,6 +172,17 @@ const VariantGrid = ({ product, variants, edit }) => {
                         Edit
                       </Button>
                     </DropdownMenu.Item>
+                    <DropdownMenu.Item className="mb-1 last:mb-0">
+                      <Button
+                        variant="ghost"
+                        size="small"
+                        className={"w-full justify-start text-rose-50"}
+                        onClick={() => setToDelete(v)}
+                      >
+                        <TrashIcon />
+                        Delete
+                      </Button>
+                    </DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
               </Box>
@@ -176,6 +195,13 @@ const VariantGrid = ({ product, variants, edit }) => {
           variant={selectedVariant}
           onCancel={() => setSelectedVariant(null)}
           onSubmit={handleUpdateVariant}
+        />
+      )}
+      {toDelete && (
+        <DeletePrompt
+          onDelete={handleDeleteVariant}
+          handleClose={() => setToDelete(null)}
+          successText="Successfully deleted variant"
         />
       )}
     </Wrapper>
