@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { Flex, Text } from "rebass"
 import Select from "../molecules/select"
 import Input from "../molecules/input"
 import { countries } from "../../utils/countries"
-import { isEmpty } from "lodash"
 
 const AddressForm = ({
   form = {},
@@ -48,29 +45,6 @@ const AddressForm = ({
 
   return (
     <div>
-      {/* <div>
-          {countryOptions.length === 1 ? (
-            <>
-              <Text fontSize={1}>{countryOptions[0].label}</Text>
-              <input
-                ref={form.register}
-                name={`${[type]}.country_code`}
-                type="hidden"
-                value={countryOptions[0].value}
-              />
-            </>
-          ) : (
-            <Select
-              ref={form.register}
-              name={`${[type]}.country_code`}
-              flex="50% 0 0"
-              value={country || null}
-              placeholder="Select country in region"
-              selectStyle={{ maxWidth: "210px" }}
-              options={countryOptions}
-            />
-          )}
-        </div> */}
       <span className="inter-base-semibold">General</span>
       <div className="grid grid-cols-2 gap-x-base gap-y-base mt-4 mb-8">
         <Input
