@@ -1,17 +1,17 @@
 import React from "react"
 
 type SidebarCompanyLogoProps = {
-  imageUrl: string
-  storeName: string
+  storeName?: string
 }
 
 const SidebarCompanyLogo: React.FC<SidebarCompanyLogoProps> = ({
-  imageUrl,
   storeName,
 }: SidebarCompanyLogoProps) => {
   return (
-    <div className="flex px-2 mb-3.5 items-center">
-      <img className="object-contain h-7 w-7 mb-0" src={imageUrl} />
+    <div className="flex items-center bg-grey-0 px-2.5 py-1.5 w-full mb-4">
+      <div className="w-[32px] h-[32px] flex items-center justify-center bg-grey-90 text-grey-0 rounded">
+        <div>{storeName?.slice(0, 1) || "M"}</div>
+      </div>
       <span className="font-semibold ml-2.5">{storeName}</span>
     </div>
   )
