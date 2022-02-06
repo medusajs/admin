@@ -384,7 +384,7 @@ function getLineItem(allItems, itemId) {
     title: line.title,
     quantity: line.quantity,
     thumbnail: line.thumbnail,
-    variant: { title: line.variant.title },
+    variant: { title: line?.variant?.title || "-" },
   }
 }
 
@@ -401,7 +401,7 @@ function getReturnItems(allItems, item) {
     requestedQuantity: item.requested_quantity,
     receivedQuantity: item.received_quantity,
     variant: {
-      title: line.variant.title,
+      title: line?.variant?.title || "-",
     },
     thumbnail: line.thumbnail,
   }
