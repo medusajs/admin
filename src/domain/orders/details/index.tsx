@@ -27,6 +27,7 @@ import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
+import Tooltip from "../../../components/atoms/tooltip"
 import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
@@ -363,12 +364,14 @@ const OrderDetails = ({ id }) => {
             <BodyCard
               className={"w-full mb-4 min-h-[200px]"}
               customHeader={
-                <button
-                  className="inter-xlarge-semibold text-grey-90 active:text-violet-90 cursor-pointer gap-x-2 flex items-center"
-                  onClick={handleCopy}
-                >
-                  #{order.display_id} <ClipboardCopyIcon size={16} />
-                </button>
+                <Tooltip side="top" content={"Copy ID"}>
+                  <button
+                    className="inter-xlarge-semibold text-grey-90 active:text-violet-90 cursor-pointer gap-x-2 flex items-center"
+                    onClick={handleCopy}
+                  >
+                    #{order.display_id} <ClipboardCopyIcon size={16} />
+                  </button>
+                </Tooltip>
               }
               subtitle={moment(order.created_at).format("d MMMM YYYY hh:mm a")}
               status={<OrderStatusComponent status={order?.status} />}
