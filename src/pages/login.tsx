@@ -25,7 +25,7 @@ const LoginPage = () => {
         },
         {
           onSuccess: () => {
-            navigate("/a")
+            navigate("/a/orders")
           },
           onError: (err) => {
             setIsInvalidLogin(true)

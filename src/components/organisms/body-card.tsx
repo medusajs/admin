@@ -5,7 +5,7 @@ import Button from "../fundamentals/button"
 import Actionables, { ActionType } from "../molecules/actionables"
 
 type BodyCardProps = {
-  title?: string
+  title?: string | JSX.Element | React.ReactNode
   subtitle?: string
   events?: {
     label: string
@@ -16,6 +16,7 @@ type BodyCardProps = {
   forceDropdown?: boolean
   customActionable?: React.ReactNode
   status?: React.ReactNode
+  customHeader?: React.ReactNode
 } & React.HTMLAttributes<HTMLDivElement>
 
 const BodyCard: React.FC<BodyCardProps> = ({
@@ -26,6 +27,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
   forceDropdown = false,
   customActionable,
   status,
+  customHeader,
   className,
   children,
   ...rest
@@ -43,15 +45,18 @@ const BodyCard: React.FC<BodyCardProps> = ({
         <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-transparent h-xlarge z-10" />
       )}
       <div
-        className="pt-large px-xlarge flex flex-col grow overflow-y-scroll"
+        className="pt-medium px-xlarge flex flex-col grow overflow-y-scroll"
         onScroll={scrollListener}
       >
-        <div className="flex items-center justify-between">
-          {title ? (
+        <div className="flex items-center justify-between mt-6 h-xlarge">
+          {customHeader ? (
+            <div>{customHeader}</div>
+          ) : title ? (
             <h1 className="inter-xlarge-semibold text-grey-90">{title}</h1>
           ) : (
             <div />
           )}
+
           <div className="flex items-center space-x-2">
             {status && status}
             <Actionables

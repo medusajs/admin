@@ -22,7 +22,7 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
   triggerHandler,
   subItems = [],
 }: SidebarMenuItemProps) => {
-  const activeStyles = "bg-grey-10 font-semibold"
+  const activeStyles = "bg-grey-10 text-violet-50"
   return (
     <Collapsible
       transitionTime={150}
@@ -30,13 +30,13 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
       {...triggerHandler()}
       trigger={
         <Link
-          className={`py-1.5 px-3 my-0.5 rounded-base flex hover:bg-grey-10 items-center`}
+          className={`py-1.5 px-3 my-0.5 rounded-base flex text-grey-90 hover:bg-grey-10 items-center`}
           activeClassName={activeStyles}
           to={pageLink}
           partiallyActive
         >
-          <span className="text-grey-50 items-start">{icon}</span>
-          <span className="text-grey-90 ml-3">{text}</span>
+          <span className="items-start">{icon}</span>
+          <span className="ml-3">{text}</span>
         </Link>
       }
     >

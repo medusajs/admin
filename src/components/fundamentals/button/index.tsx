@@ -4,7 +4,7 @@ import Spinner from "../../atoms/spinner"
 
 export type ButtonProps = {
   variant: "primary" | "secondary" | "ghost" | "danger"
-  size: "small" | "medium" | "large"
+  size?: "small" | "medium" | "large"
   loading?: boolean
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
 

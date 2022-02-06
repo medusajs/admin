@@ -2,7 +2,7 @@ import clsx from "clsx"
 import React from "react"
 
 type StatusIndicatorProps = {
-  title: string
+  title?: string
   variant: "primary" | "danger" | "warning" | "success" | "active" | "default"
 } & React.HTMLAttributes<HTMLDivElement>
 
@@ -25,10 +25,8 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
       className={clsx("flex items-center inter-small-regular", className)}
       {...props}
     >
-      <div
-        className={clsx("w-1.5 h-1.5 mr-2 self-center rounded-full", dotClass)}
-      />
-      {title}
+      <div className={clsx("w-1.5 h-1.5 self-center rounded-full", dotClass)} />
+      {title && <span className="ml-2">{title}</span>}
     </div>
   )
 }
