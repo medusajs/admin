@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import React, { useContext } from "react"
 import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
+import Medusa from "../../../services/api"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import Button from "../../fundamentals/button"
 import CheckIcon from "../../fundamentals/icons/check-icon"
@@ -8,7 +9,6 @@ import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import { LayeredModalContext } from "../../molecules/modal/layered-modal"
 import Table from "../../molecules/table"
-import Medusa from "../../../services/api"
 
 type RMASelectProductTableProps = {
   order: any
@@ -171,7 +171,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                     </div>
                     <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
                       <span>
-                        <span className="text-grey-90">{item.title}</span> test
+                        <span className="text-grey-90">{item.title}</span>
                       </span>
                       <span>{item?.variant?.title || ""}</span>
                     </div>

@@ -18,22 +18,16 @@ const ReceiveMenu = ({
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
   const [refundAmount, setRefundAmount] = useState(0)
-  const [toReturn, setToReturn] = useState([])
+  const [toReturn, setToReturn] = useState({})
   const [quantities, setQuantities] = useState({})
 
   const [allItems, setAllItems] = useState([])
 
   useEffect(() => {
     if (order) {
-      let temp = [...order.items]
+      const ids = returnRequest.items.map((i) => i.item_id)
 
-      if (order.swaps && order.swaps.length) {
-        for (const s of order.swaps) {
-          temp = [...temp, ...s.additional_items]
-        }
-      }
-
-      setAllItems(temp)
+      setAllItems(order.items.filter((i) => ids.includes(i.id)))
     }
   }, [order])
 
@@ -47,7 +41,7 @@ const ReceiveMenu = ({
         !item.returned &&
         item.quantity - item.returned_quantity > 0
       ) {
-        returns.push(i.item_id)
+        returns[i.item_id] = item
         qty = {
           ...qty,
           [i.item_id]: i.quantity,
@@ -60,13 +54,20 @@ const ReceiveMenu = ({
   }, [allItems])
 
   useEffect(() => {
-    if (!toReturn.length) {
+    if (!Object.entries(toReturn).length) {
       return
     }
 
-    const items = toReturn.map((t) => allItems.find((i) => i.id === t))
+    console.log(toReturn)
+
+    const items = Object.keys(toReturn).map((t) =>
+      allItems.find((i) => i.id === t)
+    )
+
+    console.log(items)
     const total =
       items.reduce((acc, next) => {
+        console.log(acc, next)
         return acc + (next.refundable / next.quantity) * quantities[next.id]
       }, 0) -
       ((returnRequest.shipping_method &&
@@ -79,14 +80,14 @@ const ReceiveMenu = ({
   }, [toReturn, quantities])
 
   const onSubmit = () => {
-    const items = toReturn.map((t) => ({
-      item_id: t,
-      quantity: quantities[t],
+    const items = Object.keys(toReturn).map((k) => ({
+      item_id: k,
+      quantity: quantities[k],
     }))
 
     if (returnRequest.is_swap && onReceiveSwap) {
       setSubmitting(true)
-      return onReceiveReturn(items)
+      return onReceiveSwap(items)
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
         .catch((error) => toaster(getErrorMessage(error), "error"))
@@ -118,7 +119,7 @@ const ReceiveMenu = ({
     <Modal handleClose={onDismiss}>
       <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
-          <h2 class="inter-xlarge-semibold">Receive Return</h2>
+          <h2 className="inter-xlarge-semibold">Receive Return</h2>
         </Modal.Header>
         <Modal.Content>
           <h3 className="inter-base-semibold">Items to receive</h3>
@@ -127,8 +128,6 @@ const ReceiveMenu = ({
             allItems={allItems}
             toReturn={toReturn}
             setToReturn={(items) => setToReturn(items)}
-            quantities={quantities}
-            setQuantities={setQuantities}
           />
 
           {!returnRequest.is_swap && (

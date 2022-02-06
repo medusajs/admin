@@ -110,7 +110,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
     refetch()
   }
 
-  const handleReceiveReturn = (items) => {
+  const handleReceiveReturn = async (items) => {
     receiveReturn.mutate({
       swap_id: event.id,
       items,

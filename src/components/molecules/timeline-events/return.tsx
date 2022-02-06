@@ -1,13 +1,10 @@
 import clsx from "clsx"
-import {
-  useAdminCancelReturn,
-  useAdminOrder,
-  useAdminReceiveReturn,
-} from "medusa-react"
+import { useAdminCancelReturn, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
 import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
 import { ReturnEvent } from "../../../hooks/use-build-timeline"
 import useToaster from "../../../hooks/use-toaster"
+import Medusa from "../../../services/api"
 import Button from "../../fundamentals/button"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
 import CancelIcon from "../../fundamentals/icons/cancel-icon"
@@ -28,7 +25,6 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
   const [showCancel, setShowCancel] = useState(false)
   const [shwoReceive, setShowReceive] = useState(false)
   const cancelReturn = useAdminCancelReturn(event.id)
-  const receiveReturn = useAdminReceiveReturn(event.id)
 
   const { order } = useAdminOrder(event.orderId)
 
@@ -42,8 +38,9 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
     })
   }
 
-  const handleReceive = async () => {
-    return await receiveReturn.mutateAsync()
+  const handleReceive = async (id, payload) => {
+    await Medusa.orders.receiveReturn(id, payload)
+    refetch()
   }
 
   const args = buildReturn(event, handleCancel, () => setShowReceive(true))
