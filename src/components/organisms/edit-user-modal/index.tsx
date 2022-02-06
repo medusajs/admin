@@ -51,12 +51,14 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
           <div className="w-full flex mb-4">
             <InputField
               label="First Name"
+              placeholder="First name..."
               onChange={e => setFirstName(e.target.value)}
               value={first_name}
               className="mr-4"
             />
             <InputField
               label="Last Name"
+              placeholder="Last name..."
               onChange={e => setLastName(e.target.value)}
               value={last_name}
             />
