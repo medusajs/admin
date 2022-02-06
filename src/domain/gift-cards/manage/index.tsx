@@ -151,6 +151,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
                 <Input
                   label="Name"
                   name="title"
+                  placeholder="Add name"
                   defaultValue={giftCard?.title}
                   ref={register}
                 />
@@ -177,6 +178,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
                   <Input
                     label="Handle"
                     name="handle"
+                    placeholder="Product handle"
                     defaultValue={giftCard?.handle}
                     ref={register}
                     tooltipContent="URL of the product"
