@@ -4,7 +4,7 @@ import Spinner from "../../atoms/spinner"
 
 type ButtonProps = {
   variant: "primary" | "secondary" | "ghost" | "danger"
-  size: "small" | "medium" | "large"
+  size?: "small" | "medium" | "large"
   loading?: boolean
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
 
@@ -19,7 +19,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const handleClick = e => {
+    const handleClick = (e) => {
       if (!loading && attributes.onClick) {
         attributes.onClick(e)
       }

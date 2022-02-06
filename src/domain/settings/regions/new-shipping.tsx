@@ -159,7 +159,11 @@ const NewShipping = ({
         <Modal.Body>
           <Modal.Header handleClose={onClick}>
             <div>
-              <h1 className="inter-xlarge-semibold">Add Shipping Option</h1>
+              <h1 className="inter-xlarge-semibold">
+                {isReturn
+                  ? "Add Return Shipping Option"
+                  : "Add Shipping Option"}
+              </h1>
             </div>
           </Modal.Header>
           <Modal.Content>

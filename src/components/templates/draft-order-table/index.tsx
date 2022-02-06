@@ -148,7 +148,7 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
             offset={queryObject.offset}
             pageSize={queryObject.offset + rows.length}
             title="Draft Orders"
-            currentPage={pageIndex}
+            currentPage={pageIndex + 1}
             pageCount={pageCount}
             nextPage={handleNext}
             prevPage={handlePrev}

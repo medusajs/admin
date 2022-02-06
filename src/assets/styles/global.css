@@ -237,7 +237,7 @@
   }
 
   .badge-default {
-    @apply bg-grey-10 text-grey-90 whitespace-nowrap;
+    @apply inter-small-regular bg-grey-10 text-grey-90 whitespace-nowrap;
   }
 
   .btn {
@@ -362,6 +362,10 @@
 @layer utilities {
   .vice-city {
     @apply bg-gradient-to-tr from-vice-start to-vice-stop;
+  }
+
+  .hidden-actions[data-state="open"] {
+    opacity: 1;
   }
 }
 

@@ -58,7 +58,7 @@ const AccountDetails = () => {
         <BreadCrumb
           previousRoute="/a/settings/"
           previousBreadcrumb="Settings"
-          currentPage="Store details"
+          currentPage="Store Details"
         />
         <BodyCard
           events={[
@@ -69,7 +69,7 @@ const AccountDetails = () => {
             },
             { label: "Cancel Changes", type: "button", onClick: handleCancel },
           ]}
-          title="Store details"
+          title="Store Details"
           subtitle="Manage your business details"
         >
           <h6 className="mt-large inter-base-semibold">General</h6>

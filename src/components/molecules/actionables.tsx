@@ -8,7 +8,7 @@ export type ActionType = {
   label: string
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
   variant?: "normal" | "danger"
-  icon: React.ReactNode
+  icon?: React.ReactNode
 }
 
 type ActionablesProps = {
@@ -17,20 +17,16 @@ type ActionablesProps = {
   forceDropdown?: boolean
 }
 
-/**
- * A component that accepts multiple actionables and renders them as a dropdown menu.
- * If only a single actionable is provided, it will render a button instead.
- */
 const Actionables: React.FC<ActionablesProps> = ({
   actions,
   customTrigger,
   forceDropdown = false,
 }) => {
-  if (!actions?.length) {
+  if (!actions?.length && !customTrigger) {
     return null
   }
 
-  return actions.length > 1 || forceDropdown ? (
+  return actions?.length > 1 || forceDropdown ? (
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -43,7 +39,7 @@ const Actionables: React.FC<ActionablesProps> = ({
               <MoreHorizontalIcon size={20} />
             </Button>
           ) : (
-            <div>{customTrigger}</div>
+            customTrigger
           )}
         </DropdownMenu.Trigger>
 
@@ -59,9 +55,9 @@ const Actionables: React.FC<ActionablesProps> = ({
                     variant="ghost"
                     size="small"
                     className={clsx("w-full justify-start", {
-                      "text-rose-50": action.variant === "danger",
+                      "text-rose-50": action?.variant === "danger",
                     })}
-                    onClick={action.onClick}
+                    onClick={action?.onClick}
                   >
                     {action.icon}
                     {action.label}

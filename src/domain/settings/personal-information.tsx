@@ -25,12 +25,12 @@ const PersonalInformation = () => {
   register("first_name")
   register("last_name")
 
-  const submit = data => {
+  const submit = (data) => {
     handleUpdateUser(user.id, data)
       .then(() => {
         toaster("Successfully updated user", "success")
       })
-      .catch(err => {
+      .catch((err) => {
         toaster(getErrorMessage(err), "error")
       })
   }
@@ -46,24 +46,24 @@ const PersonalInformation = () => {
     },
   ]
 
-  const handleFileUpload = async files => {
+  const handleFileUpload = async (files) => {
     setModalIsOpen(false)
     setIsLoadingProfilePicture(true)
-    //TODO upload files
-    await new Promise(r => setTimeout(r, 2000))
+    // TODO upload files
+    await new Promise((r) => setTimeout(r, 2000))
     setIsLoadingProfilePicture(false)
   }
 
   return (
     <div>
       <BreadCrumb
-        currentPage={"Personal information"}
+        currentPage={"Personal Information"}
         previousBreadcrumb={"Settings"}
         previousRoute="/a/settings"
       />
       <TwoSplitPane>
         <BodyCard
-          title="Personal information"
+          title="Personal Information"
           subtitle="Manage your Medusa profile"
           events={events}
           className={"h-auto max-h-full"}
@@ -98,15 +98,17 @@ const PersonalInformation = () => {
               <Input
                 label="First name"
                 name="first_name"
+                placeholder="Lebron"
                 defaultValue={user.first_name}
-                onChange={e => setValue("first_name", e.target.value)}
+                onChange={(e) => setValue("first_name", e.target.value)}
                 className="mr-4"
               />
               <Input
                 label="Last name"
                 name="last_name"
+                placeholder="James"
                 defaultValue={user.last_name}
-                onChange={e => setValue("last_name", e.target.value)}
+                onChange={(e) => setValue("last_name", e.target.value)}
               />
             </div>
             <Input label="Email" value={user.email} disabled className="mt-6" />

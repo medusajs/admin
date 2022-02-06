@@ -56,15 +56,16 @@ const useCopyProduct = () => {
       copy.thumbnail = product.thumbnail
     }
 
-    await createProduct.mutateAsync(copy, {
-      onSuccess: ({ product }) => {
-        navigate(`/a/products/${product.id}`)
+    try {
+      const data = await createProduct.mutateAsync(copy)
+      const newProduct = data?.product
+      if (newProduct) {
+        navigate(`/a/products/${newProduct.id}`)
         toaster("Created a new product", "success")
-      },
-      onError: (error) => {
-        toaster(getErrorMessage(error), "error")
-      },
-    })
+      }
+    } catch (err) {
+      toaster(getErrorMessage(err), "error")
+    }
   }
 
   return handleCopyProduct

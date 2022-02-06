@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react"
 import Medusa from "../../../services/api"
-import SidebarMenuItem from "../../molecules/sidebar-menu-item"
-import SidebarCompanyLogo from "../../molecules/sidebar-company-logo"
-import SidebarTeam from "../sidebar-team"
-
-import GiftIcon from "../../fundamentals/icons/gift-icon"
-import GearIcon from "../../fundamentals/icons/gear-icon"
-import PercentIcon from "../../fundamentals/icons/percent-icon"
 import CustomerIcon from "../../fundamentals/icons/customer-icon"
 import DollarSignIcon from "../../fundamentals/icons/dollar-sign-icon"
+import GearIcon from "../../fundamentals/icons/gear-icon"
+import GiftIcon from "../../fundamentals/icons/gift-icon"
+import PercentIcon from "../../fundamentals/icons/percent-icon"
 import TagIcon from "../../fundamentals/icons/tag-icon"
+import SidebarCompanyLogo from "../../molecules/sidebar-company-logo"
+import SidebarMenuItem from "../../molecules/sidebar-menu-item"
+import SidebarTeam from "../sidebar-team"
 
 const Sidebar: React.FC = () => {
   const [storeName, setStoreName] = useState("")
   const [currentlyOpen, setCurrentlyOpen] = useState(-1)
   const [users, setUsers] = useState([])
 
-  const productsChildren = [{ pageLink: "/a/collections", text: "Collections" }]
   const ordersChildren = [
     { pageLink: "/a/draft-orders", text: "Drafts" },
     { pageLink: "/a/swaps", text: "Swaps" },
@@ -72,14 +70,12 @@ const Sidebar: React.FC = () => {
             icon={<DollarSignIcon />}
             triggerHandler={triggerHandler}
             text={"Orders"}
-            subItems={ordersChildren}
           />
           <SidebarMenuItem
             pageLink={"/a/products"}
             icon={<TagIcon />}
             text={"Products"}
             triggerHandler={triggerHandler}
-            subItems={productsChildren}
           />
           <SidebarMenuItem
             pageLink={"/a/customers"}
