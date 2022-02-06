@@ -1,24 +1,12 @@
-import React, { useState, useRef, useCallback } from "react"
-import { Text, Flex, Box } from "rebass"
-
-import GridEditor from "./editors"
-import DefaultEditor from "./editors/default"
-import OptionEditor from "./editors/option"
-import { ReactComponent as EditIcon } from "../../assets/svg/edit-pencil.svg"
-import { ReactComponent as ClipboardIcon } from "../../assets/svg/clipboard.svg"
-
-import Button from "../button"
-
-import {
-  Th,
-  Td,
-  Wrapper,
-  StyledTable,
-  DragHandle,
-  InputField,
-} from "./elements"
-import { TableDataCell, TableHead, TableHeaderCell } from "../table"
-import Dropdown from "../dropdown"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import React, { useCallback, useRef, useState } from "react"
+import { Box } from "rebass"
+import VariantEditor from "../../domain/products/details/variants/variant-editor"
+import Button from "../fundamentals/button"
+import EditIcon from "../fundamentals/icons/edit-icon"
+import MoreHorizontalIcon from "../fundamentals/icons/more-horizontal-icon"
+import { TableHead, TableHeaderCell } from "../table"
+import { StyledTable, Td, Wrapper } from "./elements"
 
 const ENTER_KEY = 13
 const TAB_KEY = 9
@@ -27,38 +15,33 @@ const ARROW_DOWN_KEY = 40
 
 const getColumns = (product, edit) => {
   const defaultFields = [
-    { header: "TITLE", field: "title" },
-    { header: "SKU", field: "sku" },
-    { header: "EAN", field: "ean" },
-    { header: "INVENTORY", field: "inventory_quantity" },
+    { header: "Title", field: "title" },
+    { header: "Sku", field: "sku" },
+    { header: "Ean", field: "ean" },
+    { header: "Inventory", field: "inventory_quantity" },
   ]
 
   if (edit) {
-    const optionColumns = product.options.map(o => ({
+    const optionColumns = product.options.map((o) => ({
       header: o.title,
       field: "options",
       editor: "option",
       option_id: o.id,
-      formatter: variantOptions => {
-        return (variantOptions.find(val => val.option_id === o.id) || {}).value
+      formatter: (variantOptions) => {
+        return (variantOptions.find((val) => val.option_id === o.id) || {})
+          .value
       },
     }))
 
     return [
       ...optionColumns,
       {
-        header: "PRICES",
+        header: "Prices",
         field: "prices",
         editor: "prices",
         buttonText: "Edit",
-        formatter: prices => {
+        formatter: (prices) => {
           return `${prices.length} price(s)`
-          // return prices
-          //   .map(
-          //     ({ currency_code, amount }) =>
-          //       `${(amount / 100).toFixed(2)} ${currency_code.toUpperCase()}`
-          //   )
-          //   .join(", ")
         },
       },
       ...defaultFields,
@@ -68,8 +51,8 @@ const getColumns = (product, edit) => {
       {
         header: "",
         field: "options",
-        formatter: value => {
-          const options = value.map(v => {
+        formatter: (value) => {
+          const options = value.map((v) => {
             if (v.value) {
               return v.value
             }
@@ -83,21 +66,15 @@ const getColumns = (product, edit) => {
       },
       ...defaultFields,
       {
-        header: "PRICES",
+        header: "Prices",
         field: "prices",
         editor: "prices",
         buttonText: "Edit",
-        formatter: prices => {
+        formatter: (prices) => {
           if (!prices) {
             return ""
           }
           return `${prices.length} price(s)`
-          // return prices
-          //   .map(
-          //     ({ currency_code, amount }) =>
-          //       `${amount / 100} ${currency_code.toUpperCase()}`
-          //   )
-          //   .join(", ")
         },
       },
     ]
@@ -107,11 +84,12 @@ const getColumns = (product, edit) => {
 const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
   const [dragEnd, setDragEnd] = useState()
   const [selectedCell, setSelectedCell] = useState({})
+  const [selectedVariant, setSelectedVariant] = useState(null)
 
   const columns = getColumns(product, edit)
 
   const inputRef = useRef()
-  const setRef = useCallback(node => {
+  const setRef = useCallback((node) => {
     if (node) {
       node.focus()
     }
@@ -119,7 +97,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
     inputRef.current = node
   }, [])
 
-  const handleDragEnter = e => {
+  const handleDragEnter = (e) => {
     const element = e.target
     if (selectedCell.col === parseInt(element.dataset.col)) {
       setDragEnd(parseInt(element.dataset.row))
@@ -154,7 +132,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
     onChange(newVariants)
   }
 
-  const isDraggedOver = cell => {
+  const isDraggedOver = (cell) => {
     if (selectedCell.col === cell.col) {
       if (dragEnd > selectedCell.row) {
         return selectedCell.row < cell.row && cell.row <= dragEnd
@@ -166,7 +144,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
     return false
   }
 
-  const handleKey = e => {
+  const handleKey = (e) => {
     switch (e.keyCode) {
       case ENTER_KEY:
         e.preventDefault()
@@ -239,7 +217,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
       <StyledTable as="table">
         <TableHead>
           <tr>
-            {columns.map(c => (
+            {columns.map((c) => (
               <TableHeaderCell head={c.headCol} key={c.field}>
                 {c.header}
               </TableHeaderCell>
@@ -257,89 +235,58 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
                   data-row={row}
                   dragover={isDraggedOver({ col, row })}
                   onDragEnter={handleDragEnter}
-                  onClick={() =>
-                    !c.readOnly &&
-                    setSelectedCell({
-                      field: c.field,
-                      value: v[c.field],
-                      row,
-                      col,
-                    })
-                  }
                   selected={
                     selectedCell.row === row && selectedCell.col === col
                   }
                   head={c.headCol}
                 >
-                  {!(selectedCell.row === row && selectedCell.col === col) &&
-                    getDisplayValue(v, c, isDraggedOver({ col, row }))}
-                  {selectedCell.row === row && selectedCell.col === col && (
-                    <>
-                      <GridEditor
-                        ref={setRef}
-                        column={c}
-                        index={row}
-                        value={v[c.field]}
-                        onKeyDown={handleKey}
-                        onChange={handleChange}
-                      />
-                      <DragHandle draggable onDragEnd={handleDragEnd} />
-                    </>
-                  )}
+                  {getDisplayValue(v, c, isDraggedOver({ col, row }))}
                 </Td>
               ))}
-              {onEdit ? (
-                <Box
-                  as="td"
-                  sx={{
-                    padding: "4px",
-                    borderBottom: "1px solid rgba(0,0,0,0.2)",
-                    backgroundColor: "white",
-                    textAlign: "right",
-                  }}
-                >
-                  <Dropdown
-                    minHeight="24px"
-                    dropdownWidth="120px"
-                    width="28px"
-                    sx={{
-                      height: 0,
-                      padding: 0,
-                    }}
+              <Box
+                as="td"
+                sx={{
+                  padding: "4px",
+                  borderBottom: "1px solid rgba(0,0,0,0.2)",
+                  backgroundColor: "white",
+                  textAlign: "right",
+                }}
+              >
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger asChild>
+                    <div className="flex min-h-[40px] items-center justify-end cursor-pointer">
+                      <MoreHorizontalIcon size={20} />
+                    </div>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content
+                    sideOffset={5}
+                    className="border bg-grey-0 border-grey-20 rounded-rounded shadow-dropdown p-xsmall min-w-[200px] z-30"
                   >
-                    <Flex
-                      sx={{ padding: "8px 12px !important" }}
-                      alignItems="center"
-                      onClick={() => onEdit(row)}
-                    >
-                      <EditIcon />
-                      <Text ml={1} fontSize={14}>
+                    <DropdownMenu.Item className="mb-1 last:mb-0">
+                      <Button
+                        variant="ghost"
+                        size="small"
+                        className={"w-full justify-start"}
+                        onClick={() => setSelectedVariant(v)}
+                      >
+                        <EditIcon />
                         Edit
-                      </Text>
-                    </Flex>
-                    <Flex
-                      sx={{ padding: "8px 12px !important" }}
-                      alignItems="center"
-                      onClick={() => onCopy(row)}
-                    >
-                      <ClipboardIcon />
-                      <Text ml={1} fontSize={14}>
-                        Copy
-                      </Text>
-                    </Flex>
-                  </Dropdown>
-                </Box>
-              ) : (
-                <Box
-                  as="td"
-                  height="24px"
-                  sx={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}
-                />
-              )}
+                      </Button>
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              </Box>
             </tr>
           ))}
         </tbody>
       </StyledTable>
+      {selectedVariant && (
+        <VariantEditor
+          variant={selectedVariant}
+          onCancel={() => setSelectedVariant(null)}
+          onSubmit={() => console.log("hello")}
+        />
+      )}
     </Wrapper>
   )
 }

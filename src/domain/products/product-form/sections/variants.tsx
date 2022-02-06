@@ -1,71 +1,94 @@
-import React from "react"
-import Button from "../../../../components/fundamentals/button"
-import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
-import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
-import Input from "../../../../components/molecules/input"
-import TagInput from "../../../../components/molecules/tag-input"
+import React, { useEffect, useState } from "react"
 import BodyCard from "../../../../components/organisms/body-card"
+import VariantGrid from "../../../../components/variant-grid"
 import { useProductForm } from "../form/product-form-context"
 
-const Variants = () => {
+const Variants = ({ product }) => {
   const { register } = useProductForm()
-  const [variations, setVariations] = React.useState([])
+
+  const [showAddOption, setShowAddOption] = useState(false)
+  const [editVariant, setEditVariant] = useState("")
+  const [newVariant, setNewVariant] = useState("")
+  const [editIndex, setEditIndex] = useState("")
+  const [variants, setVariants] = useState([])
+
+  const handleSubmit = (data) => {
+    console.log(data)
+  }
+
+  console.log(product)
+  const handleUpdateVariant = (data) => {
+    const updatedVariants = variants.slice()
+    updatedVariants[editIndex] = { id: editVariant.id, ...data }
+    setVariants(updatedVariants)
+    setNewVariant(null)
+    setEditVariant(null)
+    handleSubmit(updatedVariants)
+  }
+
+  const handleCreateVariant = (data) => {
+    const variant = { ...newVariant, ...data }
+    delete variant.id
+    const newVariants = [...variants, variant]
+    setVariants(newVariants)
+    setNewVariant(null)
+    setEditVariant(null)
+    handleSubmit(newVariants)
+  }
+
+  useEffect(() => {
+    if (product?.variants) {
+      const variants = product?.variants?.map((v) => ({
+        ...v,
+        options: v.options.map((o) => ({
+          ...o,
+          title: product.options.find((po) => po.id === o.option_id).title,
+        })),
+      }))
+
+      setVariants(variants)
+    }
+  }, [product])
+
   return (
     <BodyCard
       title="Variants"
       subtitle="Add variations of this product. Offer your customers different
 options for price, color, format, size, shape, etc."
+      forceDropdown={true}
+      actionables={[
+        {
+          label: "Add option",
+          onClick: () =>
+            setNewVariant({
+              options: product?.options.map((o) => ({
+                value: "",
+                name: o.title,
+                option_id: o.id,
+              })),
+              prices: [],
+            }),
+          icon: null,
+        },
+      ]}
     >
       <div className="mt-large">
-        <div className="flex items-center mb-base">
-          <h6 className="inter-base-semibold text-grey-90 mr-1.5">General</h6>
-          <InfoTooltip content={"Some helpful content"} />
-        </div>
-        <div className="max-w-[565px]">
-          {Array(3)
-            .fill(0)
-            .map((_) => (
-              <div className="last:mb-0 mb-xsmall flex items-center gap-x-1">
-                <Input
-                  required
-                  name="title"
-                  label="Option Title"
-                  placeholder="Color, Size..."
-                  ref={register}
-                />
-                <TagInput
-                  required
-                  placeholder="Blue, Green..."
-                  name="variations"
-                  label="Variations (separated by comma)"
-                  values={variations}
-                  onChange={(values) => {
-                    setVariations(values)
-                  }}
-                />
-                <button className="ml-large">
-                  <TrashIcon
-                    // onClick={onClickDelete(index)}
-                    className="text-grey-40"
-                    size="20"
-                  />
-                </button>
-              </div>
-            ))}
-        </div>
-        <div className="mt-large mb-small">
-          <Button
-            // onClick={appendDenomination}
-            type="button"
-            variant="ghost"
-            size="small"
-            // disabled={availableCurrencies.length === 0}
-          >
-            <PlusIcon size={20} />
-            Add a price
-          </Button>
-        </div>
+        <div className="mt-large mb-small"></div>
+        {product?.variants && (
+          <VariantGrid
+            edit
+            onEdit={(index) => {
+              setEditVariant(variants[index])
+              setEditIndex(index)
+            }}
+            onCopy={(index) => {
+              setNewVariant(variants[index])
+            }}
+            product={product}
+            variants={variants}
+            onChange={(vs) => setVariants(vs)}
+          />
+        )}
       </div>
     </BodyCard>
   )

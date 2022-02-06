@@ -1,16 +1,11 @@
-import React, { useState, useEffect } from "react"
-import { Text, Flex, Box } from "rebass"
-import { useForm, useFieldArray } from "react-hook-form"
-
+import React, { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { Flex, Text } from "rebass"
+import Button from "../../../../components/button"
 import Modal from "../../../../components/modal"
 import Input from "../../../../components/molecules/input"
-import CurrencyInput from "../../../../components/currency-input"
-import Button from "../../../../components/button"
-
-import useMedusa from "../../../../hooks/use-medusa"
 
 const NewOption = ({ options, optionMethods, onDelete, onClick }) => {
-  const [toAdd, setToAdd] = useState([])
   const { control, setValue, register, handleSubmit } = useForm({
     defaultValues: {
       options,
@@ -30,7 +25,7 @@ const NewOption = ({ options, optionMethods, onDelete, onClick }) => {
     })
   }, [options])
 
-  const onRemove = id => {
+  const onRemove = (id) => {
     optionMethods.delete(id)
   }
 
@@ -38,7 +33,7 @@ const NewOption = ({ options, optionMethods, onDelete, onClick }) => {
     append()
   }
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     const toAdd = data.toAdd || []
     const options = data.options || []
     Promise.all(
@@ -50,7 +45,7 @@ const NewOption = ({ options, optionMethods, onDelete, onClick }) => {
     )
       .then(() => {
         Promise.all(
-          options.map(o =>
+          options.map((o) =>
             optionMethods.update(o._id, {
               title: o.title,
             })
