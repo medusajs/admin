@@ -1,5 +1,10 @@
 export const productToFormValuesMapper = (product) => {
   console.log({ product })
+
+  let thumbnail = product?.images.length
+    ? product.images.findIndex((img) => img.url)
+    : 0
+  thumbnail = thumbnail === -1 ? 0 : thumbnail
   return {
     ...product,
     collection: product?.collection
@@ -13,7 +18,7 @@ export const productToFormValuesMapper = (product) => {
       : product?.thumbnail
       ? [{ url: product?.thumbnail }]
       : [],
-    thumbnail: 0,
+    thumbnail,
     prices: product?.variants.length
       ? product.variants[0].prices.map((price) => ({
           price: { currency_code: price.currency_code, amount: price.amount },
