@@ -26,6 +26,7 @@ import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
+import { DisplayTotal } from "../details/templates"
 
 const DraftOrderDetails = ({ id }) => {
   type DeletePromptData = {
@@ -55,37 +56,6 @@ const DraftOrderDetails = ({ id }) => {
   const updateOrder = useAdminUpdateDraftOrder(id)
 
   const toaster = useToaster()
-
-  const DisplayTotal = ({
-    totalAmount,
-    totalTitle,
-    subtitle = undefined,
-    totalColor = "text-grey-90",
-  }) => (
-    <div className="flex justify-between mt-4 items-center">
-      <div className="flex flex-col">
-        <div className="inter-small-regular text-grey-90">{totalTitle}</div>
-        {subtitle && (
-          <div className="inter-small-regular text-grey-50 mt-1">
-            {subtitle}
-          </div>
-        )}
-      </div>
-      <div className="flex">
-        <div className={clsx(`inter-small-regular mr-3`, totalColor)}>
-          {formatAmountWithSymbol({
-            amount: totalAmount,
-            currency: draft_order?.cart.region.currency_code,
-            digits: 2,
-            tax: draft_order?.cart.region.tax_rate,
-          })}
-        </div>
-        <div className="inter-small-regular text-grey-50">
-          {draft_order?.cart.region.currency_code.toUpperCase()}
-        </div>
-      </div>
-    </div>
-  )
 
   const Address = ({ title, addr }) => {
     if (!addr?.id) {
@@ -185,8 +155,8 @@ const DraftOrderDetails = ({ id }) => {
     <div>
       <Breadcrumb
         currentPage={"Draft Order Details"}
-        previousBreadcrumb={"Orders"}
-        previousRoute="/a/orders"
+        previousBreadcrumb={"Draft Orders"}
+        previousRoute="/a/draft-orders"
       />
       {isLoading || !draft_order ? (
         <BodyCard className="w-full pt-2xlarge flex items-center justify-center">
@@ -325,6 +295,7 @@ const DraftOrderDetails = ({ id }) => {
                   </div>
                 ))}
                 <DisplayTotal
+                  currency={region?.currency_code}
                   totalAmount={draft_order?.cart?.subtotal}
                   totalTitle={"Subtotal"}
                 />
@@ -351,24 +322,21 @@ const DraftOrderDetails = ({ id }) => {
                   </div>
                 ))}
                 <DisplayTotal
+                  currency={region?.currency_code}
                   totalAmount={cart?.shipping_total}
                   totalTitle={"Shipping"}
                 />
                 <DisplayTotal
+                  currency={region?.currency_code}
                   totalAmount={cart?.tax_total}
                   totalTitle={`Tax`}
                 />
-                <div className="flex justify-between mt-4 items-center">
-                  <div className="inter-small-semibold text-grey-90">Total</div>
-                  <div className="inter-xlarge-semibold text-grey-90">
-                    {formatAmountWithSymbol({
-                      amount: cart?.total,
-                      currency: region?.currency_code || "",
-                      digits: 2,
-                      tax: region?.tax_rate,
-                    })}
-                  </div>
-                </div>
+                <DisplayTotal
+                  currency={region?.currency_code}
+                  variant="large"
+                  totalAmount={cart?.total}
+                  totalTitle={`Total`}
+                />
               </div>
             </BodyCard>
             <BodyCard
@@ -380,35 +348,26 @@ const DraftOrderDetails = ({ id }) => {
             >
               <div className="mt-6">
                 <DisplayTotal
+                  currency={region?.currency_code}
                   totalAmount={cart?.subtotal}
                   totalTitle={"Subtotal"}
                 />
                 <DisplayTotal
+                  currency={region?.currency_code}
                   totalAmount={cart?.shipping_total}
                   totalTitle={"Shipping"}
                 />
                 <DisplayTotal
+                  currency={region?.currency_code}
                   totalAmount={cart?.tax_total}
                   totalTitle={"Tax"}
                 />
-                <div className="flex justify-between mt-4">
-                  <div className="inter-small-semibold text-grey-90">
-                    Total Paid
-                  </div>
-                  <div className="flex">
-                    <div className="inter-small-semibold text-grey-90 mr-3">
-                      {formatAmountWithSymbol({
-                        amount: cart?.total,
-                        currency: region?.currency_code,
-                        digits: 2,
-                        tax: region?.tax_rate,
-                      })}
-                    </div>
-                    <div className="inter-small-regular text-grey-50">
-                      {region?.currency_code.toUpperCase()}
-                    </div>
-                  </div>
-                </div>
+                <DisplayTotal
+                  variant="bold"
+                  currency={region?.currency_code}
+                  totalAmount={cart?.total}
+                  totalTitle={"Total to pay"}
+                />
               </div>
             </BodyCard>
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Shipping">

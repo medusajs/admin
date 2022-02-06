@@ -355,7 +355,7 @@ const OrderDetails = ({ id }) => {
         </BodyCard>
       ) : (
         <div className="flex space-x-4">
-          <div className="flex flex-col w-2/3 h-full">
+          <div className="flex flex-col w-7/12 h-full">
             <BodyCard
               className={"w-full mb-4 min-h-[200px]"}
               title="Order #2414"
