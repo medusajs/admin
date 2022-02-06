@@ -26,7 +26,7 @@ import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
-import { DisplayTotal } from "../details/templates"
+import { FormattedAddress, DisplayTotal } from "../details/templates"
 
 const DraftOrderDetails = ({ id }) => {
   type DeletePromptData = {
@@ -56,34 +56,6 @@ const DraftOrderDetails = ({ id }) => {
   const updateOrder = useAdminUpdateDraftOrder(id)
 
   const toaster = useToaster()
-
-  const Address = ({ title, addr }) => {
-    if (!addr?.id) {
-      return (
-        <div className="flex flex-col pl-6">
-          <div className="inter-small-regular text-grey-50 mb-1">{title}</div>
-          <div className="flex flex-col inter-small-regular">N/A</div>
-        </div>
-      )
-    }
-
-    return (
-      <div className="flex flex-col pl-6">
-        <div className="inter-small-regular text-grey-50 mb-1">{title}</div>
-        <div className="flex flex-col inter-small-regular">
-          <span>
-            {addr?.address_1} {addr?.address_2}
-          </span>
-          <span>
-            {addr?.city}
-            {", "}
-            {addr?.province || ""}
-            {addr?.postal_code} {addr?.country_code?.toUpperCase()}
-          </span>
-        </div>
-      </div>
-    )
-  }
 
   const OrderStatusComponent = () => {
     switch (draft_order?.status) {
@@ -460,8 +432,8 @@ const DraftOrderDetails = ({ id }) => {
                       <span>{cart?.shipping_address?.phone || ""}</span>
                     </div>
                   </div>
-                  <Address title={"Shipping"} addr={cart?.shipping_address} />
-                  <Address title={"Billing"} addr={cart?.billing_address} />
+                  <FormattedAddress title={"Shipping"} addr={cart?.shipping_address} />
+                  <FormattedAddress title={"Billing"} addr={cart?.billing_address} />
                 </div>
               </div>
             </BodyCard>

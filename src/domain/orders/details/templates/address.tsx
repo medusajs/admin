@@ -20,7 +20,7 @@ export const FormattedAddress = ({ title, addr }) => {
         <span>
           {addr?.city}
           {", "}
-          {addr?.province || ""}
+          {`${addr?.province} ` || ""}
           {addr?.postal_code} {addr?.country_code?.toUpperCase()}
         </span>
       </div>
