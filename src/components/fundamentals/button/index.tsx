@@ -2,7 +2,7 @@ import clsx from "clsx"
 import React, { Children } from "react"
 import Spinner from "../../atoms/spinner"
 
-type ButtonProps = {
+export type ButtonProps = {
   variant: "primary" | "secondary" | "ghost" | "danger"
   size: "small" | "medium" | "large"
   loading?: boolean
@@ -19,7 +19,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const handleClick = e => {
+    const handleClick = (e) => {
       if (!loading && attributes.onClick) {
         attributes.onClick(e)
       }

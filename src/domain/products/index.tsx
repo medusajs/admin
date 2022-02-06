@@ -5,8 +5,8 @@ import PageDescription from "../../components/atoms/page-description"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
 import ProductTable from "../../components/templates/product-table"
-import { ProductDetailPage, NewProductPage } from "./details/index.tsx"
-import New from "./new"
+import NewProductPage from "./new"
+import EditProductPage from "./edit"
 
 const ProductIndex = () => {
   const actionables = [
@@ -40,7 +40,7 @@ const Products = () => {
   return (
     <Router>
       <ProductIndex path="/" />
-      <ProductDetailPage path=":id" />
+      <EditProductPage path=":id" />
       <NewProductPage path="new" />
     </Router>
   )
