@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import BodyCard from "../../../../components/organisms/body-card"
 import VariantGrid from "../../../../components/variant-grid"
 import { useProductForm } from "../form/product-form-context"
+import NewOption from "../../details/variants/option-edit"
 
 const Variants = ({ product }) => {
   const { register } = useProductForm()
@@ -42,7 +43,7 @@ const Variants = ({ product }) => {
         ...v,
         options: v.options.map((o) => ({
           ...o,
-          title: product.options.find((po) => po.id === o.option_id).title,
+          title: product.options.find((po) => po.id === o.option_id)?.title,
         })),
       }))
 
@@ -53,21 +54,12 @@ const Variants = ({ product }) => {
   return (
     <BodyCard
       title="Variants"
-      subtitle="Add variations of this product. Offer your customers different
-options for price, color, format, size, shape, etc."
+      subtitle="Add variations of this product. Offer your customers different options for price, color, format, size, shape, etc."
       forceDropdown={true}
       actionables={[
         {
-          label: "Add option",
-          onClick: () =>
-            setNewVariant({
-              options: product?.options.map((o) => ({
-                value: "",
-                name: o.title,
-                option_id: o.id,
-              })),
-              prices: [],
-            }),
+          label: "Edit options",
+          onClick: () => setShowAddOption(true),
           icon: null,
         },
       ]}
@@ -90,6 +82,13 @@ options for price, color, format, size, shape, etc."
           />
         )}
       </div>
+      {showAddOption && (
+        <NewOption
+          productId={product.id}
+          options={product.options}
+          onDismiss={() => setShowAddOption(false)}
+        />
+      )}
     </BodyCard>
   )
 }
