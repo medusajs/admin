@@ -1,7 +1,13 @@
 import clsx from "clsx"
-import { useAdminCancelReturn } from "medusa-react"
+import {
+  useAdminCancelReturn,
+  useAdminOrder,
+  useAdminReceiveReturn,
+} from "medusa-react"
 import React, { useState } from "react"
+import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
 import { ReturnEvent } from "../../../hooks/use-build-timeline"
+import useToaster from "../../../hooks/use-toaster"
 import Button from "../../fundamentals/button"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
 import CancelIcon from "../../fundamentals/icons/cancel-icon"
@@ -20,7 +26,13 @@ type ReturnRequestedProps = {
 
 const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
   const [showCancel, setShowCancel] = useState(false)
+  const [shwoReceive, setShowReceive] = useState(false)
   const cancelReturn = useAdminCancelReturn(event.id)
+  const receiveReturn = useAdminReceiveReturn(event.id)
+
+  const { order } = useAdminOrder(event.orderId)
+
+  const toaster = useToaster()
 
   const handleCancel = () => {
     cancelReturn.mutate(undefined, {
@@ -30,11 +42,11 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
     })
   }
 
-  const handleReceive = () => {
-    // TODO
+  const handleReceive = async () => {
+    return await receiveReturn.mutateAsync()
   }
 
-  const args = buildReturn(event, handleCancel, handleReceive)
+  const args = buildReturn(event, handleCancel, () => setShowReceive(true))
 
   return (
     <>
@@ -47,6 +59,15 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
           confirmText="Yes, cancel"
           successText="Canceled return"
           text="Are you sure you want to cancel this return?"
+        />
+      )}
+      {shwoReceive && (
+        <ReceiveMenu
+          onDismiss={() => setShowReceive(false)}
+          toaster={toaster}
+          onReceiveReturn={handleReceive}
+          order={order}
+          returnRequest={event.raw}
         />
       )}
     </>

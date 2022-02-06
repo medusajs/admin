@@ -1,3 +1,4 @@
+import { Return, Swap } from "@medusajs/medusa"
 import {
   useAdminNotes,
   useAdminNotifications,
@@ -75,6 +76,7 @@ export interface ReturnEvent extends TimelineEvent {
   items: ReturnItem[]
   status: ReturnStatus
   currentStatus?: ReturnStatus
+  raw: Return
 }
 
 export interface NoteEvent extends TimelineEvent {
@@ -90,6 +92,7 @@ export interface ExchangeEvent extends TimelineEvent, CancelableEvent {
   returnItems: ReturnItem[]
   newItems: OrderItem[]
   exchangeCartId?: string
+  raw: Swap
 }
 
 export interface ClaimEvent extends TimelineEvent, CancelableEvent {
@@ -212,6 +215,7 @@ export const useBuildTimelime = (orderId: string) => {
         type: "return",
         noNotification: event.no_notification,
         orderId: order.id,
+        raw: (event as unknown) as Return,
       } as ReturnEvent)
 
       if (event.status !== "requested") {
@@ -246,6 +250,7 @@ export const useBuildTimelime = (orderId: string) => {
           event.payment_status !== "captured" ? event.cart_id : undefined,
         canceledAt: event.canceled_at,
         orderId: event.order_id,
+        raw: (event as unknown) as Swap,
       } as ExchangeEvent)
 
       if (

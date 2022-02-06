@@ -82,6 +82,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
         action = createSwapFulfillment
         successText = "Successfully fulfilled swap"
         requestObj = {
+          swap_id: orderToFulfill.id,
           metadata: preparedMetadata,
           no_notification: noNotis,
         } as AdminPostOrdersOrderSwapsSwapFulfillmentsReq

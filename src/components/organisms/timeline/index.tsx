@@ -7,6 +7,7 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import ClaimMenu from "../../../domain/orders/details/claim/create"
+import ReturnMenu from "../../../domain/orders/details/returns"
 import SwapMenu from "../../../domain/orders/details/swap/create"
 import {
   ClaimEvent,
@@ -37,7 +38,6 @@ import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Return from "../../molecules/timeline-events/return"
-import ReturnMenu from "../../../domain/orders/details/returns"
 
 type TimelineProps = {
   orderId: string
@@ -167,7 +167,7 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
     case "return":
       return <Return event={event as ReturnEvent} refetch={refetch} />
     case "exchange":
-      return <Exchange event={event as ExchangeEvent} />
+      return <Exchange event={event as ExchangeEvent} refetch={refetch} />
     case "claim":
       return <Claim event={event as ClaimEvent} />
     case "notification":

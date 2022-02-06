@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
+import Button from "../../../../components/fundamentals/button"
+import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import Modal from "../../../../components/molecules/modal"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import Button from "../../../../components/fundamentals/button"
-import { getErrorMessage } from "../../../../utils/error-messages"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
-import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 
 const ReceiveMenu = ({
   order,
@@ -86,9 +86,7 @@ const ReceiveMenu = ({
 
     if (returnRequest.is_swap && onReceiveSwap) {
       setSubmitting(true)
-      return onReceiveReturn(returnRequest.id, {
-        items,
-      })
+      return onReceiveReturn(items)
         .then(() => onDismiss())
         .then(() => toaster("Successfully returned order", "success"))
         .catch((error) => toaster(getErrorMessage(error), "error"))
