@@ -2096,7 +2096,7 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@^1.0.11-alpha.9", "@medusajs/medusa-js@^1.0.11-alpha.9+59bb4132":
+"@medusajs/medusa-js@^1.0.11-alpha.9+59bb4132":
   version "1.0.11-alpha.9"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-alpha.9.tgz#28020af761be039a3b15885a57744c1b69f58818"
   integrity sha512-liqkM5KOTsjZRIs9LFuOhbL66PHAs2ukvN1Qdn3f2Hpx6YLs2+OiW2Wt6DFn+i/R9rKi8jy83YH0irK+sKsVNg==
@@ -2107,10 +2107,21 @@
     qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa@^1.1.61-alpha.14":
-  version "1.1.62"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.62.tgz#edb37da7da3e5fef77820ea6fb2b5326af958037"
-  integrity sha512-debQ5LqLYpOhVchHk9vWX+gRV11HbSTKJ9C4zkgXg9MhUbfH9PVZLtRQlqgEToNL8wZ6x5n6CeBWXZ38ooPtDQ==
+"@medusajs/medusa-js@^1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.12.tgz#7874fefb4e65ae4fbe9e0e73bf386d02a6297c8b"
+  integrity sha512-g3uFtTUFrso+0Kopp8rIzgdAVpJLo9hiBbZ2xeTdojVrex7VB9zUPc6tBa5TQmPQysI/QlPfdFM+dALGRdCDRA==
+  dependencies:
+    "@medusajs/medusa" "^1.1.64"
+    axios "^0.24.0"
+    form-data "^4.0.0"
+    qs "^6.10.3"
+    retry-axios "^2.6.0"
+
+"@medusajs/medusa@^1.1.63-alpha.9+59bb4132":
+  version "1.1.63-alpha.9"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.63-alpha.9.tgz#a0d511b8c1b94b86216964b233020af6f593ecc0"
+  integrity sha512-8JofT2ID4EZvouzkOzBV0M8o5Xdp8jmmvwAzsebd2KtpdZ7vzn/+O/s+OMh3FZv75/g54z6+Fudx3nQd+MQiNw==
   dependencies:
     "@hapi/joi" "^16.1.8"
     "@medusajs/medusa-cli" "^1.1.27"
@@ -2157,10 +2168,10 @@
     uuid "^8.3.1"
     winston "^3.2.1"
 
-"@medusajs/medusa@^1.1.63-alpha.9+59bb4132":
-  version "1.1.63-alpha.9"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.63-alpha.9.tgz#a0d511b8c1b94b86216964b233020af6f593ecc0"
-  integrity sha512-8JofT2ID4EZvouzkOzBV0M8o5Xdp8jmmvwAzsebd2KtpdZ7vzn/+O/s+OMh3FZv75/g54z6+Fudx3nQd+MQiNw==
+"@medusajs/medusa@^1.1.64":
+  version "1.1.64"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.64.tgz#236f04fad06dafed4fd0f3aed4d06307acc07a5b"
+  integrity sha512-u2TTNygrIUt90PvTCqzlMEYCKTVffTLp9n/Ix+VXHW/DIhauPk74izyNGAgU9oLYWw/H0JLEu3O+6Jv18AKSTA==
   dependencies:
     "@hapi/joi" "^16.1.8"
     "@medusajs/medusa-cli" "^1.1.27"
