@@ -92,16 +92,16 @@ const General = () => {
             options={typeOptions}
           />
           <Controller
+            name="tags"
             render={({ onChange, value }) => (
               <TagInput
                 label="Tags (separated by comma)"
                 placeholder="Spring, Summer..."
                 onChange={onChange}
-                values={value}
+                values={value || []}
               />
             )}
             control={control}
-            name="tags"
           />
         </div>
         <RadioGroup.Root
