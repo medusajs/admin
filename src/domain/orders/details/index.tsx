@@ -27,6 +27,7 @@ import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
+import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
@@ -151,16 +152,19 @@ const OrderDetails = ({ id }) => {
 
   const toaster = useToaster()
 
-  const [handleCopy] = useClipboard(order?.display_id, {
+  const [, handleCopy] = useClipboard(order?.display_id, {
     successDuration: 5500,
-    onCopied: () => toaster("Copied order id!", "success"),
+    onCopied: () => toaster("Order ID copied", "success"),
+  })
+
+  const [, handleCopyEmail] = useClipboard(order?.email, {
+    successDuration: 5500,
+    onCopied: () => toaster("Email copied", "success"),
   })
 
   // @ts-ignore
   useHotkeys("esc", () => navigate("/a/orders"))
-  useHotkeys("command+i", () => {
-    handleCopy
-  })
+  useHotkeys("command+i", handleCopy)
 
   const {
     hasMovements,
@@ -358,8 +362,15 @@ const OrderDetails = ({ id }) => {
           <div className="flex flex-col w-7/12 h-full">
             <BodyCard
               className={"w-full mb-4 min-h-[200px]"}
-              title="Order #2414"
-              subtitle="29 January 2022, 23:01"
+              customHeader={
+                <button
+                  className="inter-xlarge-semibold text-grey-90 active:text-violet-90 cursor-pointer gap-x-2 flex items-center"
+                  onClick={handleCopy}
+                >
+                  #{order.display_id} <ClipboardCopyIcon size={16} />
+                </button>
+              }
+              subtitle={moment(order.created_at).format("d MMMM YYYY hh:mm a")}
               status={<OrderStatusComponent status={order?.status} />}
               forceDropdown={true}
               actionables={[
@@ -381,7 +392,13 @@ const OrderDetails = ({ id }) => {
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Email
                   </div>
-                  <div>{order?.email}</div>
+                  <button
+                    className="text-grey-90 active:text-violet-90 cursor-pointer gap-x-1 flex items-center"
+                    onClick={handleCopyEmail}
+                  >
+                    {order?.email}
+                    <ClipboardCopyIcon size={12} />
+                  </button>
                 </div>
                 <div className="flex flex-col pl-6">
                   <div className="inter-smaller-regular text-grey-50 mb-1">

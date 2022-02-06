@@ -32,6 +32,8 @@ const useClipboard = (text, options = {}) => {
     onCopied()
   }, [text, onCopied, setIsCopied])
 
+  console.log(typeof handleCopy)
+
   return [isCopied, handleCopy]
 }
 
