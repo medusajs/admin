@@ -1,18 +1,18 @@
 module.exports = {
   siteMetadata: {
-    title: `Medusa Admin`,
+    title: `Admin`,
     description: `The best ecommerce software.`,
     author: `@medusajs`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
-    //{
+    // {
     //  resolve: `gatsby-source-filesystem`,
     //  options: {
     //    name: `images`,
     //    path: `${__dirname}/src/images`,
     //  },
-    //},
+    // },
     {
       resolve: "gatsby-plugin-svgr",
       options: {

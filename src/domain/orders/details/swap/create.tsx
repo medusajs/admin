@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useMemo, useState, useEffect, useContext } from "react"
 import Modal from "../../../../components/molecules/modal"
 import Button from "../../../../components/fundamentals/button"
 import Select from "../../../../components/molecules/select"
@@ -15,6 +15,10 @@ import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
 import RMASelectProductSubModal from "../rma-sub-modals/products"
+import {
+  formatAmountWithSymbol,
+  normalizeAmount,
+} from "../../../../utils/prices"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -27,7 +31,7 @@ const extractPrice = (prices, order) => {
   }
 
   if (price) {
-    return (price.amount * (1 + order.tax_rate / 100)) / 100
+    return normalizeAmount(order.currency_code, price.amount)
   }
 
   return 0
@@ -36,9 +40,7 @@ const extractPrice = (prices, order) => {
 const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const layeredModalContext = useContext(LayeredModalContext)
   const [submitting, setSubmitting] = useState(false)
-  const [toPay, setToPay] = useState(0)
   const [toReturn, setToReturn] = useState({})
-  // const [quantities, setQuantities] = useState({})
   const [useCustomShippingPrice, setUseCustomShippingPrice] = useState(false)
 
   const [itemsToAdd, setItemsToAdd] = useState([])
@@ -49,12 +51,11 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const [noNotification, setNoNotification] = useState(order.no_notification)
 
   // Includes both order items and swap items
-  const [allItems, setAllItems] = useState([])
-
-  useEffect(() => {
+  const allItems = useMemo(() => {
     if (order) {
-      setAllItems(filterItems(order, false))
+      return filterItems(order, false)
     }
+    return []
   }, [order])
 
   useEffect(() => {
@@ -69,12 +70,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       })
   }, [])
 
-  useEffect(() => {
+  const returnTotal = useMemo(() => {
     const items = Object.keys(toReturn).map((t) =>
       allItems.find((i) => i.id === t)
     )
 
-    const returnTotal =
+    return (
       items.reduce((acc, next) => {
         return (
           acc +
@@ -82,15 +83,16 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
             toReturn[next.id].quantity
         )
       }, 0) - (shippingPrice || 0)
+    )
+  }, [toReturn, shippingPrice])
 
-    const newItemsTotal = itemsToAdd.reduce((acc, next) => {
+  const additionalTotal = useMemo(() => {
+    return itemsToAdd.reduce((acc, next) => {
       const price = extractPrice(next.prices, order)
-      const lineTotal = price * 100 * next.quantity
+      const lineTotal = price * 100 * next.quantity * (1 + order.tax_rate / 100)
       return acc + lineTotal
     }, 0)
-
-    setToPay(newItemsTotal - returnTotal)
-  }, [toReturn, shippingPrice, itemsToAdd])
+  }, [itemsToAdd])
 
   const handleToAddQuantity = (value, index) => {
     const updated = [...itemsToAdd]
@@ -112,7 +114,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (selectedItem.value !== "Add a shipping method") {
       setShippingMethod(selectedItem)
       const method = shippingOptions.find((o) => selectedItem.value === o.id)
-      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
+      setShippingPrice(method.amount)
     } else {
       setShippingMethod()
       setShippingPrice(0)
@@ -129,7 +131,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (!useCustomShippingPrice && shippingMethod && shippingOptions) {
       const method = shippingOptions.find((o) => shippingMethod.value === o.id)
       console.log(shippingMethod, method)
-      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
+      setShippingPrice(method.amount)
     }
   }, [useCustomShippingPrice, shippingMethod])
 
@@ -145,6 +147,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
   const onSubmit = () => {
     const items = Object.entries(toReturn).map(([key, value]) => {
       const clean = removeNullish(value)
+
+      if (clean.reason) {
+        clean.reason_id = clean.reason.value.value.id
+        delete clean.reason
+      }
+
       return {
         item_id: key,
         ...clean,
@@ -164,7 +172,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
     if (shippingMethod) {
       data.return_shipping = {
         option_id: shippingMethod.value,
-        price: Math.round(shippingPrice / (1 + order.tax_rate / 100)),
+        price: Math.round(shippingPrice),
       }
     }
 
@@ -218,7 +226,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               <RMAShippingPrice
                 useCustomShippingPrice={useCustomShippingPrice}
                 shippingPrice={shippingPrice}
-                currency_code={order.currency_code}
+                currencyCode={order.currency_code}
                 updateShippingPrice={handleUpdateShippingPrice}
                 setUseCustomShippingPrice={setUseCustomShippingPrice}
               />
@@ -250,6 +258,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
           {itemsToAdd.length > 0 && (
             <>
               <RMAReturnProductsTable
+                isAdditionalItems
                 order={order}
                 itemsToAdd={itemsToAdd}
                 handleRemoveItem={handleRemoveItem}
@@ -276,14 +285,39 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               </div>
             </>
           )}
-          <div className="flex justify-between items-center inter-base-semibold mt-8">
-            <span>Difference</span>
+          <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-8">
+            <span>Return Total</span>
+            <span>
+              {formatAmountWithSymbol({
+                currency: order.currency_code,
+                amount: returnTotal,
+              })}
+            </span>
+          </div>
+          <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-2">
+            <span>Additional Total</span>
+            <span>
+              {formatAmountWithSymbol({
+                currency: order.currency_code,
+                amount: additionalTotal,
+              })}
+            </span>
+          </div>
+          <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-2">
+            <span>Outbond Shipping</span>
+            <span>Calculated at checkout</span>
+          </div>
+          <div className="flex justify-between items-center inter-base-semibold mt-4">
+            <span>Estimated difference</span>
             <span className="inter-large-semibold">
-              {(toPay / 100).toFixed(2)} {order.currency_code.toUpperCase()}
+              {formatAmountWithSymbol({
+                currency: order.currency_code,
+                amount: additionalTotal - returnTotal,
+              })}
             </span>
           </div>
         </Modal.Content>
-        <Modal.Footer justifyContent="space-between">
+        <Modal.Footer>
           <div className="flex w-full justify-between">
             <div
               className="items-center h-full flex cursor-pointer"
@@ -307,13 +341,15 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
               />
               <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                 Send notifications
-                <InfoTooltip content="Notify customer of created return" />
+                <InfoTooltip content="If unchecked the customer will not receive communication about this exchange" />
               </span>
             </div>
 
             <Button
               onClick={onSubmit}
-              disabled={toReturn.length === 0 || itemsToAdd.length === 0}
+              disabled={
+                Object.keys(toReturn).length === 0 || itemsToAdd.length === 0
+              }
               loading={submitting}
               type="submit"
               variant="primary"

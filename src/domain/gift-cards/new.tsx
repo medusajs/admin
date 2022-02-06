@@ -37,7 +37,9 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
   const toaster = useToaster()
 
   const handleValueUpdate = (name: string, value?: number) => {
-    if (!value) return
+    if (!value) {
+      return
+    }
     setValue(name, value)
   }
 
@@ -67,7 +69,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
 
   const handleFileUpload = async (files) => {
     setUploading(true)
-    //TODO upload files
+    // TODO upload files
     await new Promise((r) => setTimeout(r, 2000))
     setUploading(false)
   }

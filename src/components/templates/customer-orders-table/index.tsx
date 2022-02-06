@@ -72,7 +72,7 @@ const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
                 linkTo={`/a/orders/${order.id}`}
                 className="py-2"
               >
-                <Table.Cell className="text-grey-40 w-20">
+                <Table.Cell className="text-grey-90 w-20">
                   #{order.display_id}
                 </Table.Cell>
                 <Table.Cell className="w-40 flex">

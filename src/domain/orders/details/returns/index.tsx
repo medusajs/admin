@@ -69,11 +69,14 @@ const ReturnMenu = ({ order, onDismiss, toaster }) => {
     setRefundAmount(total)
   }, [toReturn, quantities, shippingPrice])
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const items = Object.entries(toReturn).map(([key, value]) => {
-      value.reason_id = value.reason?.id
-      delete value.reason
-      const clean = removeNullish(value)
+      const toSet = {
+        reason_id: value.reason?.value.id,
+        ...value
+      }
+      delete toSet.reason
+      const clean = removeNullish(toSet)
       return {
         item_id: key,
         ...clean,
