@@ -10,6 +10,7 @@ import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import Input from "../../molecules/input"
 import Select from "../../molecules/select"
+import Tooltip from "../../atoms/tooltip"
 
 type CurrencyInputProps = {
   currencyCodes?: string[]
@@ -31,6 +32,8 @@ type AmountInputProps = {
   step?: number
   allowNegative?: boolean
   onChange?: (amount: number | undefined) => void
+  onValidate?: (amount: number | undefined) => boolean
+  invalidMessage?: string
 }
 
 const CurrencyContext = React.createContext<CurrencyInputState>({
@@ -147,8 +150,11 @@ const AmountInput: React.FC<AmountInputProps> = ({
   step = 1,
   allowNegative = false,
   onChange,
+  onValidate,
+  invalidMessage,
 }) => {
   const { currencyInfo } = useContext(CurrencyContext)
+  const [invalid, setInvalid] = useState<boolean>(false)
   const [value, setValue] = useState<string | undefined>(
     amount ? `${normalizeAmount(currencyInfo?.code, amount)}` : undefined
   )
@@ -164,16 +170,6 @@ const AmountInput: React.FC<AmountInputProps> = ({
     }
   }, [amount])
 
-  const handleManualValueChange = (val: number) => {
-    const newValue = parseFloat(value ?? "0") + val
-
-    if (!allowNegative && newValue < 0) {
-      return
-    }
-
-    setValue(`${newValue}`)
-  }
-
   const handleChange = (value) => {
     let persistedAmount: number | undefined = undefined
 
@@ -185,12 +181,33 @@ const AmountInput: React.FC<AmountInputProps> = ({
       const amount = parseFloat(value)
       const multiplier = getDecimalDigits(currencyInfo.code)
       persistedAmount = multiplier * amount
-      setValue(`${value}`)
     }
 
-    if (onChange && persistedAmount) {
-      onChange(persistedAmount)
+    if (onChange && typeof persistedAmount !== "undefined") {
+      const updateAmount = Math.round(persistedAmount)
+      let update = true
+      if (onValidate) {
+        update = onValidate(updateAmount)
+      }
+
+      if (update) {
+        onChange(updateAmount)
+        setValue(`${value}`)
+        setInvalid(false)
+      } else {
+        setInvalid(true)
+      }
     }
+  }
+
+  const handleManualValueChange = (val: number) => {
+    const newValue = parseFloat(value ?? "0") + val
+
+    if (!allowNegative && newValue < 0) {
+      return
+    }
+
+    handleChange(`${newValue}`)
   }
 
   return (
@@ -198,9 +215,15 @@ const AmountInput: React.FC<AmountInputProps> = ({
       <InputHeader label={label} required={required} />
       <div className="flex items-center mt-2xsmall">
         {currencyInfo?.symbol_native && (
-          <span className="inter-base-regular text-grey-40 mr-xsmall">
-            {currencyInfo.symbol_native}
-          </span>
+          <Tooltip
+            open={invalid}
+            side={"top"}
+            content={invalidMessage || "Amount is not valid"}
+          >
+            <span className="inter-base-regular text-grey-40 mr-xsmall">
+              {currencyInfo.symbol_native}
+            </span>
+          </Tooltip>
         )}
         <AmountField
           className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"

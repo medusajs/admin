@@ -1,40 +1,23 @@
+import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import Medusa from "../../../services/api"
-import SidebarMenuItem from "../../molecules/sidebar-menu-item"
-import SidebarCompanyLogo from "../../molecules/sidebar-company-logo"
-import SidebarTeam from "../sidebar-team"
-
-import GiftIcon from "../../fundamentals/icons/gift-icon"
-import GearIcon from "../../fundamentals/icons/gear-icon"
-import PercentIcon from "../../fundamentals/icons/percent-icon"
 import CustomerIcon from "../../fundamentals/icons/customer-icon"
 import DollarSignIcon from "../../fundamentals/icons/dollar-sign-icon"
+import GearIcon from "../../fundamentals/icons/gear-icon"
+import GiftIcon from "../../fundamentals/icons/gift-icon"
+import PercentIcon from "../../fundamentals/icons/percent-icon"
 import TagIcon from "../../fundamentals/icons/tag-icon"
+import SidebarCompanyLogo from "../../molecules/sidebar-company-logo"
+import SidebarMenuItem from "../../molecules/sidebar-menu-item"
+import SidebarTeam from "../sidebar-team"
+
+const ICON_SIZE = 18
 
 const Sidebar: React.FC = () => {
-  const [storeName, setStoreName] = useState("")
   const [currentlyOpen, setCurrentlyOpen] = useState(-1)
   const [users, setUsers] = useState([])
 
-  const productsChildren = [{ pageLink: "/a/collections", text: "Collections" }]
-  const ordersChildren = [
-    { pageLink: "/a/draft-orders", text: "Drafts" },
-    { pageLink: "/a/swaps", text: "Swaps" },
-    { pageLink: "/a/returns", text: "Returns" },
-  ]
-
-  const fetchStore = async () => {
-    const cache = localStorage.getItem("medusa::cache::store")
-    if (cache) {
-      setStoreName(cache)
-    } else {
-      const { data } = await Medusa.store.retrieve()
-      if (data.store) {
-        localStorage.setItem("medusa::cache::store", data.store.name)
-        setStoreName(data.store.name)
-      }
-    }
-  }
+  const { store } = useAdminStore()
 
   const fetchUsers = async () => {
     Medusa.users.list().then(({ data }) => {
@@ -43,7 +26,6 @@ const Sidebar: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchStore()
     fetchUsers()
   }, [])
 
@@ -59,49 +41,44 @@ const Sidebar: React.FC = () => {
   triggerHandler.id = 0
 
   return (
-    <div className="min-w-sidebar max-w-sidebar h-screen overflow-y-scroll bg-gray-0 border-r border-grey-20 py-4xlarge px-base">
+    <div className="min-w-sidebar max-w-sidebar h-screen overflow-y-scroll bg-gray-0 border-r border-grey-20 py-base px-base">
       <div className="h-full ">
-        <SidebarCompanyLogo
-          imageUrl={"https://img.icons8.com/ios/50/000000/online-shopping.png"}
-          storeName={storeName || "Medusa Store"}
-        />
+        <SidebarCompanyLogo storeName={store?.name} />
 
         <div className="border-b pb-3.5 border-grey-20">
           <SidebarMenuItem
             pageLink={"/a/orders"}
-            icon={<DollarSignIcon />}
+            icon={<DollarSignIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Orders"}
-            subItems={ordersChildren}
           />
           <SidebarMenuItem
             pageLink={"/a/products"}
-            icon={<TagIcon />}
+            icon={<TagIcon size={ICON_SIZE} />}
             text={"Products"}
             triggerHandler={triggerHandler}
-            subItems={productsChildren}
           />
           <SidebarMenuItem
             pageLink={"/a/customers"}
-            icon={<CustomerIcon />}
+            icon={<CustomerIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Customers"}
           />
           <SidebarMenuItem
             pageLink={"/a/discounts"}
-            icon={<PercentIcon />}
+            icon={<PercentIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Discounts"}
           />
           <SidebarMenuItem
             pageLink={"/a/gift-cards"}
-            icon={<GiftIcon />}
+            icon={<GiftIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Gift Cards"}
           />
           <SidebarMenuItem
             pageLink={"/a/settings"}
-            icon={<GearIcon />}
+            icon={<GearIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Settings"}
           />

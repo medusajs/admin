@@ -2,16 +2,16 @@ import { Router } from "@reach/router"
 import { navigate } from "gatsby"
 import {
   useAdminDeleteProduct,
-  useAdminGiftCards,
   useAdminProducts,
   useAdminUpdateProduct,
 } from "medusa-react"
 import React from "react"
-import Overview from "./overview"
 import useToaster from "../../hooks/use-toaster"
-import { getErrorMessage } from "../../utils/error-messages"
-import ManageGiftCard from "./manage"
 import { ProductStatus } from "../../types/shared"
+import { getErrorMessage } from "../../utils/error-messages"
+import GiftCardDetails from "./details"
+import ManageGiftCard from "./manage"
+import Overview from "./overview"
 
 const GiftCard = () => {
   const { products: giftCards, isLoading } = useAdminProducts({
@@ -70,6 +70,7 @@ const GiftCard = () => {
         onUpdate={() => updateGCStatus()}
         isLoading={isLoading}
       />
+      <GiftCardDetails path=":id" />
       {giftCard && (
         <ManageGiftCard
           path="manage"

@@ -1,7 +1,12 @@
+import clsx from "clsx"
 import React, { Children } from "react"
 import { useComputedHeight } from "../../hooks/use-computed-height"
 
-const TwoSplitPane: React.FC = ({ children }) => {
+type TwoSplitPaneProps = {
+  className?: string
+}
+
+const TwoSplitPane: React.FC<TwoSplitPaneProps> = ({ className, children }) => {
   const childrenCount = Children.count(children)
   const { ref, height } = useComputedHeight(32)
 
@@ -17,7 +22,10 @@ const TwoSplitPane: React.FC = ({ children }) => {
 
   return (
     <div
-      className="grid gap-large grid-cols-1 medium:grid-cols-2"
+      className={clsx(
+        "grid gap-large grid-cols-1 medium:grid-cols-2",
+        className
+      )}
       style={heightClass}
       ref={ref}
     >

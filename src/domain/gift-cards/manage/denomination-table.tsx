@@ -10,12 +10,14 @@ type DenominationTableProps = {
   giftCardId: string
   denominations: any[]
   defaultCurrency: string
+  setEditDenom: (denom) => void
 }
 
 const DenominationTable: React.FC<DenominationTableProps> = ({
   giftCardId,
   denominations,
   defaultCurrency,
+  setEditDenom,
 }) => {
   const [selectedDenom, setSelectedDenom] = useState<string | null>(null)
 
@@ -60,7 +62,7 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
         actions={[
           {
             label: "Edit Denomination",
-            onClick: () => console.log("TODO: Should open denomination"),
+            onClick: () => setEditDenom(denomination),
             icon: <EditIcon size={20} />,
           },
           {

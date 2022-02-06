@@ -6,11 +6,12 @@ const ImagePlaceholder: React.FC<IconProps> = ({
   color = "#b8b8bf",
   ...attributes
 }) => {
+  const height = +size * 0.75
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
-      height={size}
+      height={height}
       viewBox="0 0 64 48"
     >
       <path

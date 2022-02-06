@@ -7,6 +7,10 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
             test: /react-json-view/,
             use: loaders.null(),
           },
+          {
+            test: /emoji-picker-react/,
+            use: loaders.null(),
+          },
         ],
       },
     })

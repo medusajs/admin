@@ -1,83 +1,50 @@
 import { RouteComponentProps } from "@reach/router"
+import { navigate } from "gatsby"
+import { isEmpty } from "lodash"
 import { useAdminCustomers } from "medusa-react"
-import moment from "moment"
-import React, { useEffect, useMemo, useState } from "react"
+import qs from "qs"
+import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import { useDebounce } from "../../../hooks/use-debounce"
 import Spinner from "../../atoms/spinner"
 import DetailsIcon from "../../fundamentals/details-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
-import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import Table, { TablePagination } from "../../molecules/table"
+import { useCustomerColumns } from "./use-customer-columns"
+import { useCustomerFilters } from "./use-customer-filters"
 
-const getColor = (index: number): string => {
-  const colors = [
-    "bg-fuschia-40",
-    "bg-pink-40",
-    "bg-orange-40",
-    "bg-teal-40",
-    "bg-cyan-40",
-    "bg-blue-40",
-    "bg-indigo-40",
-  ]
-  return colors[index % colors.length]
+const DEFAULT_PAGE_SIZE = 15
+
+const defaultQueryProps = {
+  expand: "orders",
 }
 
 const CustomerTable: React.FC<RouteComponentProps> = () => {
-  const [offset, setOffset] = useState(0)
-  const [limit, setLimit] = useState(14)
-  const [query, setQuery] = useState("")
-  const [currentPage, setCurrentPage] = useState(0)
+  const {
+    reset,
+    paginate,
+    setQuery: setFreeText,
+    queryObject,
+    representationObject,
+  } = useCustomerFilters(location.search, defaultQueryProps)
+
+  const offs = parseInt(queryObject?.offset) || 0
+  const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
+
+  const { customers, isLoading, count } = useAdminCustomers({
+    ...queryObject,
+  })
+
+  const [query, setQuery] = useState(queryObject.query)
   const [numPages, setNumPages] = useState(0)
 
-  const columns = useMemo(
-    () => [
-      {
-        Header: "Date added",
-        accessor: "created_at", // accessor is the "key" in the data
-        Cell: ({ cell: { value } }) => moment(value).format("DD MMM YYYY"),
-      },
-      {
-        Header: "Name",
-        accessor: "customer",
-        Cell: ({ row }) => (
-          <CustomerAvatarItem
-            customer={row.original}
-            color={getColor(row.index)}
-          />
-        ),
-      },
-      {
-        Header: "Email",
-        accessor: "email",
-      },
-      {
-        Header: "",
-        accessor: "col",
-      },
-      {
-        accessor: "orders",
-        Header: () => <div className="text-right">Orders</div>,
-        Cell: ({ cell: { value } }) => (
-          <div className="text-right">{value?.length || 0}</div>
-        ),
-      },
-      {
-        Header: "",
-        accessor: "col-2",
-      },
-    ],
-    []
-  )
+  useEffect(() => {
+    if (typeof count !== "undefined") {
+      const controlledPageCount = Math.ceil(count / lim)
+      setNumPages(controlledPageCount)
+    }
+  }, [count])
 
-  const debouncedSearchTerm = useDebounce(query, 500)
-
-  const { customers, isLoading, isRefetching, count } = useAdminCustomers({
-    q: debouncedSearchTerm,
-    expand: "orders",
-    limit,
-    offset,
-  })
+  const [columns] = useCustomerColumns()
 
   const {
     getTableProps,
@@ -88,18 +55,19 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
     canPreviousPage,
     canNextPage,
     pageCount,
+    gotoPage,
     nextPage,
     previousPage,
     // Get the state from the instance
-    state: { pageIndex, pageSize },
+    state: { pageIndex },
   } = useTable(
     {
       columns,
       data: customers || [],
       manualPagination: true,
       initialState: {
-        pageIndex: currentPage,
-        pageSize: limit,
+        pageSize: lim,
+        pageIndex: offs / lim,
       },
       pageCount: numPages,
       autoResetPage: false,
@@ -107,112 +75,124 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
     usePagination
   )
 
+  // Debounced search
   useEffect(() => {
-    const controlledPageCount = Math.ceil(count! / limit)
-    setNumPages(controlledPageCount)
-  }, [customers])
+    const delayDebounceFn = setTimeout(() => {
+      if (query) {
+        setFreeText(query)
+        gotoPage(0)
+      } else {
+        if (typeof query !== "undefined") {
+          // if we delete query string, we reset the table view
+          reset()
+        }
+      }
+    }, 400)
 
-  const rowActions = [
-    {
-      label: "Details",
-      onClick: () => console.log("hello"),
-      icon: <DetailsIcon size={20} />,
-    },
-    {
-      label: "Edit",
-      onClick: () => console.log("hello"),
-      icon: <EditIcon size={20} />,
-    },
-  ]
+    return () => clearTimeout(delayDebounceFn)
+  }, [query])
 
   const handleNext = () => {
     if (canNextPage) {
-      setOffset((old) => old + pageSize)
-      setCurrentPage((old) => old + 1)
+      paginate(1)
       nextPage()
     }
   }
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      setOffset((old) => old - pageSize)
-      setCurrentPage((old) => old - 1)
+      paginate(-1)
       previousPage()
     }
   }
 
-  // Upon searching, we always start on first oage
-  const handleSearch = (q) => {
-    setOffset(0)
-    setCurrentPage(0)
-    setQuery(q)
+  const updateUrlFromFilter = (obj = {}) => {
+    const stringified = qs.stringify(obj)
+    window.history.replaceState(`/a/discounts`, "", `${`?${stringified}`}`)
   }
+
+  const refreshWithFilters = () => {
+    const filterObj = representationObject
+
+    if (isEmpty(filterObj)) {
+      updateUrlFromFilter({ offset: 0, limit: DEFAULT_PAGE_SIZE })
+    } else {
+      updateUrlFromFilter(filterObj)
+    }
+  }
+
+  useEffect(() => {
+    refreshWithFilters()
+  }, [representationObject])
 
   return (
     <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
-      {isLoading || isRefetching || !customers ? (
-        <div className="w-full pt-2xlarge flex items-center justify-center">
-          <Spinner size={"large"} variant={"secondary"} />
-        </div>
-      ) : (
-        <>
-          <Table
-            filteringOptions={[]}
-            enableSearch
-            handleSearch={handleSearch}
-            {...getTableProps()}
-          >
-            <Table.Head>
-              {headerGroups?.map((headerGroup) => (
-                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((col) => (
-                    <Table.HeadCell
-                      className="w-[100px]"
-                      {...col.getHeaderProps()}
-                    >
-                      {col.render("Header")}
-                    </Table.HeadCell>
-                  ))}
-                </Table.HeadRow>
+      <Table enableSearch handleSearch={setQuery} {...getTableProps()}>
+        <Table.Head>
+          {headerGroups?.map((headerGroup) => (
+            <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((col) => (
+                <Table.HeadCell className="w-[100px]" {...col.getHeaderProps()}>
+                  {col.render("Header")}
+                </Table.HeadCell>
               ))}
-            </Table.Head>
-            <Table.Body {...getTableBodyProps()}>
-              {rows.map((row) => {
-                prepareRow(row)
-                return (
-                  <Table.Row
-                    color={"inherit"}
-                    actions={rowActions}
-                    linkTo={row.original.id}
-                    {...row.getRowProps()}
-                  >
-                    {row.cells.map((cell, index) => {
-                      return (
-                        <Table.Cell {...cell.getCellProps()}>
-                          {cell.render("Cell", { index })}
-                        </Table.Cell>
-                      )
-                    })}
-                  </Table.Row>
-                )
-              })}
-            </Table.Body>
-          </Table>
-          <TablePagination
-            count={count!}
-            limit={limit}
-            offset={offset}
-            pageSize={offset + rows.length}
-            title="Customers"
-            currentPage={pageIndex}
-            pageCount={pageCount}
-            nextPage={handleNext}
-            prevPage={handlePrev}
-            hasNext={canNextPage}
-            hasPrev={canPreviousPage}
-          />
-        </>
-      )}
+            </Table.HeadRow>
+          ))}
+        </Table.Head>
+        {isLoading || !customers ? (
+          <div className="flex w-full h-full absolute items-center justify-center mt-10">
+            <div className="">
+              <Spinner size={"large"} variant={"secondary"} />
+            </div>
+          </div>
+        ) : (
+          <Table.Body {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row)
+              return (
+                <Table.Row
+                  color={"inherit"}
+                  actions={[
+                    {
+                      label: "Edit",
+                      onClick: () => navigate(row.original.id),
+                      icon: <EditIcon size={20} />,
+                    },
+                    {
+                      label: "Details",
+                      onClick: () => navigate(row.original.id),
+                      icon: <DetailsIcon size={20} />,
+                    },
+                  ]}
+                  linkTo={row.original.id}
+                  {...row.getRowProps()}
+                >
+                  {row.cells.map((cell, index) => {
+                    return (
+                      <Table.Cell {...cell.getCellProps()}>
+                        {cell.render("Cell", { index })}
+                      </Table.Cell>
+                    )
+                  })}
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        )}
+      </Table>
+      <TablePagination
+        count={count!}
+        limit={queryObject.limit}
+        offset={queryObject.offset}
+        pageSize={queryObject.offset + rows.length}
+        title="Customers"
+        currentPage={pageIndex + 1}
+        pageCount={pageCount}
+        nextPage={handleNext}
+        prevPage={handlePrev}
+        hasNext={canNextPage}
+        hasPrev={canPreviousPage}
+      />
     </div>
   )
 }

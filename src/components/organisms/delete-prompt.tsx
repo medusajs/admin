@@ -1,8 +1,8 @@
 import React, { useState } from "react"
-import Modal from "../molecules/modal"
-import Button from "../fundamentals/button"
 import useMedusa from "../../hooks/use-medusa"
 import { getErrorMessage } from "../../utils/error-messages"
+import Button from "../fundamentals/button"
+import Modal from "../molecules/modal"
 
 type DeletePromptProps = {
   heading?: string
