@@ -31,7 +31,7 @@ export const formValuesToProductMapper = (values) => {
     thumbnail: values?.images?.length
       ? values.images[values.thumbnail]
       : values.thumbnail,
-    collection_id: values?.collection ? values.collection.value : "",
+    collection_id: values?.collection ? values.collection.value : undefined,
     type: values?.type
       ? { id: values.type.value, value: values.type.label }
       : undefined,
