@@ -93,14 +93,17 @@ const General = ({ showViewOptions = true }) => {
           />
           <Controller
             name="tags"
-            render={({ onChange, value }) => (
-              <TagInput
-                label="Tags (separated by comma)"
-                placeholder="Spring, Summer..."
-                onChange={onChange}
-                values={value || []}
-              />
-            )}
+            render={({ onChange, value }) => {
+              console.log(value)
+              return (
+                <TagInput
+                  label="Tags (separated by comma)"
+                  placeholder="Spring, Summer..."
+                  onChange={onChange}
+                  values={value?.map(({ value }) => value) || []}
+                />
+              )
+            }}
             control={control}
           />
         </div>
