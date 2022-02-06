@@ -1,11 +1,10 @@
 import { Router, useLocation } from "@reach/router"
-import clsx from "clsx"
 import { navigate } from "gatsby"
 import { useAdminCreateCollection } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import PageDescription from "../../components/atoms/page-description"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
+import TableViewHeader from "../../components/organisms/custom-table-header"
 import AddCollectionModal from "../../components/templates/collection-modal"
 import CollectionsTable from "../../components/templates/collections-table"
 import ProductTable from "../../components/templates/product-table"
@@ -13,6 +12,8 @@ import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./details"
 import New from "./new"
+
+const VIEWS = ["products", "collections"]
 
 const ProductIndex = () => {
   const location = useLocation()
@@ -72,29 +73,6 @@ const ProductIndex = () => {
 
   const [showNewCollection, setShowNewCollection] = useState(false)
 
-  const CustomHeader = () => {
-    return (
-      <div className="flex inter-large-semibold gap-x-base text-grey-40">
-        <div
-          onClick={() => setView("products")}
-          className={clsx("cursor-pointer", {
-            "text-grey-90": view === "products",
-          })}
-        >
-          Products
-        </div>
-        <div
-          onClick={() => setView("collections")}
-          className={clsx("cursor-pointer", {
-            "text-grey-90": view === "collections",
-          })}
-        >
-          Collections
-        </div>
-      </div>
-    )
-  }
-
   const handleCreateCollection = async (data, colMetadata) => {
     const metadata = colMetadata
       .filter((m) => m.key && m.value) // remove empty metadata
@@ -120,15 +98,17 @@ const ProductIndex = () => {
 
   return (
     <>
-      <div className="flex flex-col h-full">
-        <PageDescription
-          title="Products"
-          subtitle="Manage the products for your Medusa Store"
-        />
+      <div className="flex flex-col grow h-full">
         <div className="w-full flex flex-col grow">
           <BodyCard
             actionables={CurrentAction()}
-            customHeader={<CustomHeader />}
+            customHeader={
+              <TableViewHeader
+                views={VIEWS}
+                setActiveView={setView}
+                activeView={view}
+              />
+            }
           >
             <CurrentView />
           </BodyCard>
