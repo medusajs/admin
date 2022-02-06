@@ -21,6 +21,7 @@ import EditDenominationsModal from "../../../components/organisms/edit-denominat
 import RadioGroup from "../../../components/organisms/radio-group"
 import DraggableTable from "../../../components/templates/draggable-table"
 import useToaster from "../../../hooks/use-toaster"
+import Medusa from "../../../services/api"
 import { getErrorMessage } from "../../../utils/error-messages"
 import DenominationTable from "./denomination-table"
 import useGiftCardImageColumns from "./use-gift-card-image-columns"
@@ -42,7 +43,9 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   const { types } = useAdminProductTypes()
   const [editDenom, setEditDenom] = useState<null | ProductVariant>(null)
   const updateGiftCardVariant = useAdminUpdateVariant(id)
+
   const [images, setImages] = useState<any[]>([])
+  const [localImages, setLocalImages] = useState<any[]>([])
 
   const toaster = useToaster()
 
@@ -110,20 +113,34 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
     )
   }
 
-  const appendImage = (image) => setImages([...images, image])
+  const appendImage = async (image) => {
+    const { data } = await Medusa.uploads.create([image])
+    const newImages = data.uploads.map(({ url }) => url)
+    updateGiftCard({
+      images: [...newImages, ...localImages.map(({ url }) => url)],
+    })
+  }
 
   const removeImage = (image) => {
-    const idx = images.findIndex((img) => img.image === image.image)
+    const idx = localImages.findIndex((img) => img.id === image.id)
     if (idx !== -1) {
-      images.splice(idx, 1)
+      localImages.splice(idx, 1)
     }
-    setImages([...images])
+
+    const newImages = localImages.map(({ url }) => url)
+    updateGiftCard({
+      images: newImages,
+    })
+
+    setLocalImages([...localImages])
   }
 
   useEffect(() => {
     if (!isSuccess) {
       return
     }
+
+    setLocalImages(giftCard?.images)
 
     reset({
       ...giftCard,
@@ -281,15 +298,13 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
           <div className="mt-base">
             <RadioGroup.Root
               // defaultValue={entities[0].image}
-              onValueChange={(value) => {
-                setValue("thumbnail", value)
-              }}
+              onValueChange={(value) => setValue("thumbnail", value)}
             >
               <DraggableTable
                 onDelete={removeImage}
                 columns={columns}
-                entities={images}
-                setEntities={setImages}
+                entities={localImages}
+                setEntities={setLocalImages}
               />
             </RadioGroup.Root>
           </div>
@@ -298,7 +313,11 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
               onFileChosen={(files) => {
                 const file = files[0]
                 const url = URL.createObjectURL(file)
-                appendImage({ url, name: file.name, size: file.size })
+                setLocalImages([
+                  ...localImages,
+                  { url, name: file.name, size: file.size },
+                ])
+                appendImage(file)
               }}
               placeholder="1200 x 1600 (3:4) recommended, up to 10MB each"
               filetypes={["png"]}

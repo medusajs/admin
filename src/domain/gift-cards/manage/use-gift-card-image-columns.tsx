@@ -8,7 +8,6 @@ const useGiftCardImageColumns = () => {
         Header: "Image",
         accessor: "image",
         Cell: ({ cell }) => {
-          console.log({ cell })
           return (
             <div className="py-base large:w-[176px] xsmall:w-[80px]">
               <img
