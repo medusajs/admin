@@ -9,16 +9,26 @@ import CurrencyInput from "../../../../components/organisms/currency-input"
 import { useProductForm } from "../form/product-form-context"
 
 const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
-  const { register, control } = useProductForm()
+  const { register, control, watch } = useProductForm()
   const { fields, append, remove } = useFieldArray({
     control,
     name: "prices",
     keyName: "indexId",
   })
-  const selectedCurrencies = fields.map((field) => field.price.currency_code)
+  const watchedFields = watch("prices", fields)
+  const selectedCurrencies = watchedFields.map(
+    (field) => field.price.currency_code
+  )
   const availableCurrencies = currencyCodes?.filter(
     (currency) => !selectedCurrencies.includes(currency)
   )
+
+  const controlledFields = fields.map((field, index) => {
+    return {
+      ...field,
+      ...watchedFields[index],
+    }
+  })
 
   const appendPrice = () => {
     let newCurrency = availableCurrencies[0]
@@ -46,7 +56,7 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
           <InfoTooltip content={"Some helpful content"} />
         </div>
         <div className="max-w-[630px]">
-          {fields.map((field, index) => {
+          {controlledFields.map((field, index) => {
             return (
               <div
                 key={field.indexId}
@@ -65,6 +75,7 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
                           currencyCodes={currencyCodes}
                           currentCurrency={value?.currency_code}
                           size="medium"
+                          readOnly={index === 0}
                           onChange={(code) =>
                             onChange({ ...value, currency_code: code })
                           }
@@ -81,7 +92,7 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
                     }}
                   />
                 </div>
-                {field.price?.currency_code !== defaultCurrencyCode ? (
+                {index !== 0 ? (
                   <button className="ml-large">
                     <TrashIcon
                       onClick={deletePrice(index)}
@@ -99,7 +110,7 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
               type="button"
               variant="ghost"
               size="small"
-              // disabled={availableCurrencies.length === 0}
+              disabled={availableCurrencies.length === 0}
             >
               <PlusIcon size={20} />
               Add a price
