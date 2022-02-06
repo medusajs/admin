@@ -1,35 +1,20 @@
-import React, { useEffect, useState } from "react"
 import clsx from "clsx"
 import { isEmpty } from "lodash"
-import { navigate } from "gatsby"
+import { useAdminDiscounts } from "medusa-react"
 import qs from "qs"
+import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import { useAdminCreateDiscount, useAdminDiscounts } from "medusa-react"
-
-import EditIcon from "../../fundamentals/icons/edit-icon"
-import TrashIcon from "../../fundamentals/icons/trash-icon"
+import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
 import DiscountFilters from "../discount-filter-dropdown"
-import Medusa from "../../../services/api"
-import DeletePrompt from "../../organisms/delete-prompt"
-import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
-import Badge from "../../fundamentals/badge"
-import Spinner from "../../atoms/spinner"
-import { InterfaceContext } from "../../../context/interface"
-import { getErrorMessage } from "../../../utils/error-messages"
-import useToaster from "../../../hooks/use-toaster"
-import { useDiscountFilters } from "./use-discount-filters"
 import { useDiscountTableColumns } from "./use-discount-columns"
+import { useDiscountFilters } from "./use-discount-filters"
 
 const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {}
 
 const DiscountTable: React.FC = () => {
-  const toaster = useToaster()
-  const [deleteDiscount, setDeleteDiscount] = useState(undefined)
-  const createDiscount = useAdminCreateDiscount()
-
   const {
     removeTab,
     setTab,
@@ -65,41 +50,6 @@ const DiscountTable: React.FC = () => {
     }
   }, [count, queryObject.limit])
 
-  const duplicateDiscount = (discount) => {
-    const newRule = {
-      description: discount.rule.description,
-      type: discount.rule.type,
-      value: discount.rule.value,
-      allocation: discount.rule.allocation,
-      valid_for: discount.rule.valid_for.map((product) => product.id),
-    }
-    const newDiscount = {
-      code: `${discount.code} DUPLICATE`,
-      is_dynamic: discount.isDynamic,
-      rule: newRule,
-      starts_at: discount.starts_at,
-      ends_at: discount.ends_at,
-      regions: discount.regions.map((region) => region.id),
-      valid_duration: discount.valid_duration,
-      usage_limit: discount.usage_limit,
-      is_disabled: discount.is_disabled,
-      metadata: discount.metadata,
-    }
-
-    createDiscount
-      .mutateAsync(newDiscount)
-      .then(() => {
-        toaster("Successfully created discount", "success")
-      })
-      .catch((error) => {
-        toaster(getErrorMessage(error), "error")
-      })
-  }
-
-  const handleDiscountSearch = (q: string) => {
-    setQuery(q)
-  }
-
   const [columns] = useDiscountTableColumns()
 
   const {
@@ -130,8 +80,6 @@ const DiscountTable: React.FC = () => {
     },
     usePagination
   )
-
-  console.log("pageindex", pageIndex)
 
   // Debounced search
   useEffect(() => {

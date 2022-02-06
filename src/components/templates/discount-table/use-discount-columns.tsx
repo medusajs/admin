@@ -1,10 +1,9 @@
+import { end, parse } from "iso8601-duration"
 import React, { useMemo } from "react"
-import Badge from "../../fundamentals/badge"
 import { formatAmountWithSymbol } from "../../../utils/prices"
-import Tooltip from "../../atoms/tooltip"
+import Badge from "../../fundamentals/badge"
 import StatusDot from "../../fundamentals/status-indicator"
 import Table from "../../molecules/table"
-import { parse, end } from "iso8601-duration"
 
 const getDiscountStatus = (discount) => {
   if (!discount.is_disabled) {
@@ -95,7 +94,7 @@ export const useDiscountTableColumns = () => {
         Header: <div className="w-[60px]" />,
         id: "currency",
         Cell: ({ row: { original }, index }) => (
-          <Table.Cell className="px-2" key={index}>
+          <Table.Cell className="px-2 text-grey-40" key={index}>
             {getCurrencySymbol(original)}
           </Table.Cell>
         ),
