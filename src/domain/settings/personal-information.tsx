@@ -98,6 +98,7 @@ const PersonalInformation = () => {
               <Input
                 label="First name"
                 name="first_name"
+                placeholder="First name..."
                 defaultValue={user.first_name}
                 onChange={e => setValue("first_name", e.target.value)}
                 className="mr-4"
@@ -105,6 +106,7 @@ const PersonalInformation = () => {
               <Input
                 label="Last name"
                 name="last_name"
+                placeholder="Last name..."
                 defaultValue={user.last_name}
                 onChange={e => setValue("last_name", e.target.value)}
               />
