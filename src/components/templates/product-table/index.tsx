@@ -7,10 +7,10 @@ import { usePagination, useTable } from "react-table"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
+import ProductOverview from "./overview"
 import useProductActions from "./use-product-actions"
 import useProductTableColumn from "./use-product-column"
 import { useProductFilters } from "./use-product-filters"
-import ProductOverview from "./overview"
 
 const DEFAULT_PAGE_SIZE = 15
 const DEFAULT_PAGE_SIZE_TILE_VIEW = 18
@@ -222,7 +222,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
           offset={offs}
           pageSize={offs + rows.length}
           title="Products"
-          currentPage={pageIndex}
+          currentPage={pageIndex + 1}
           pageCount={pageCount}
           nextPage={handleNext}
           prevPage={handlePrev}

@@ -1,15 +1,15 @@
+import clsx from "clsx"
 import { useAdminVariants } from "medusa-react"
-import React, { useRef, useContext, useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
+import { usePagination, useRowSelect, useTable } from "react-table"
+import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import StatusIndicator from "../../../../components/fundamentals/status-indicator"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import Table, { TablePagination } from "../../../../components/molecules/table"
-import { useTable, usePagination, useRowSelect } from "react-table"
-import StatusIndicator from "../../../../components/fundamentals/status-indicator"
 import { useDebounce } from "../../../../hooks/use-debounce"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import clsx from "clsx"
-import Spinner from "../../../../components/atoms/spinner"
 
 const getProductStatusVariant = (status) => {
   switch (status) {
@@ -279,7 +279,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
             offset={offset}
             pageSize={offset + rows.length}
             title="Products"
-            currentPage={pageIndex}
+            currentPage={pageIndex + 1}
             pageCount={pageCount}
             nextPage={handleNext}
             prevPage={handlePrev}
