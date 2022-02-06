@@ -7,7 +7,6 @@ import {
 import { ProductVariant } from "medusa-react/dist/types"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../../components/fundamentals/icons/unpublish-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
@@ -248,13 +247,6 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
           title="Denominations"
           subtitle="Manage your denominations"
           className={"h-auto w-full"}
-          actionables={[
-            {
-              label: "Add denominations",
-              onClick: () => console.log("TODO: Should open modal"),
-              icon: <PlusIcon />,
-            },
-          ]}
         >
           <DenominationTable
             giftCardId={giftCard?.id || ""}
