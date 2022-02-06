@@ -44,8 +44,8 @@ export const formValuesToProductMapper = (values) => {
         title: values?.title,
         allow_backorder: values.allow_backorders,
         manage_inventory: values.manage_inventory,
-        sku: values?.sku,
-        ean: values?.ean,
+        sku: values?.sku || null,
+        ean: values?.ean || null,
         inventory_quantity: values?.inventory_quantity
           ? parseInt(values?.inventory_quantity, 10)
           : undefined,
