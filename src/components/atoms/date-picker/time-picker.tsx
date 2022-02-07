@@ -8,6 +8,7 @@ import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import NumberScroller from "../number-scroller"
 import { DateTimePickerProps } from "./types"
+import { isNil } from "lodash"
 
 const TimePicker: React.FC<DateTimePickerProps> = ({
   date,
@@ -30,7 +31,7 @@ const TimePicker: React.FC<DateTimePickerProps> = ({
   }, [date])
 
   useEffect(() => {
-    if (date && selectedHour && selectedMinute) {
+    if (date && !isNil(selectedHour) && !isNil(selectedMinute)) {
       const newDate = new Date(new Date(date).getTime())
       newDate.setUTCHours(selectedHour)
       newDate.setUTCMinutes(selectedMinute)
