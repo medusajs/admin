@@ -5,7 +5,7 @@ import Typography from "../typography"
 
 const Tooltip = styled(ReactTooltip)`
   ${Typography.Base};
-  box-shadow: ${props => props.theme.shadows.popover} !important;
+  box-shadow: ${(props) => props.theme.shadows.popover} !important;
   padding: 0 !important;
   border: none !important;
   overflow: hidden;
@@ -32,7 +32,9 @@ const computePosition = (position, event, triggerElement, tooltipElement) => {
   const leftPosition = arrowLeft - (tooltipElement.clientWidth - 30)
 
   const oldSheet = document.getElementById(`tooltip-styles-${id}`)
-  if (oldSheet) document.body.removeChild(oldSheet)
+  if (oldSheet) {
+    document.body.removeChild(oldSheet)
+  }
 
   const sheet = document.createElement("style")
   sheet.setAttribute("id", "tooltip-styles")
@@ -58,13 +60,13 @@ const computePosition = (position, event, triggerElement, tooltipElement) => {
 
 const Popover = ({ children, id }) => {
   const ref = useRef()
-  const forceClose = e => {
+  const forceClose = (e) => {
     const current = ref.current
     current.tooltipRef = null
     ReactTooltip.hide()
   }
 
-  const rebuildPopover = e => {
+  const rebuildPopover = (e) => {
     ReactTooltip.rebuild()
   }
 
@@ -83,7 +85,7 @@ const Popover = ({ children, id }) => {
       place="bottom"
       overridePosition={computePosition}
     >
-      {React.Children.map(children, child => {
+      {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child, { forceClose, rebuildPopover })
         }

@@ -1,8 +1,7 @@
 import React from "react"
-
+import DefaultEditor from "./default"
 import OptionEditor from "./option"
 import PricesEditor from "./prices"
-import DefaultEditor from "./default"
 
 const GridEditor = React.forwardRef(
   ({ column, value, index, onChange, ...rest }, ref) => {
@@ -11,7 +10,7 @@ const GridEditor = React.forwardRef(
         <PricesEditor
           ref={ref}
           value={value}
-          onChange={value => onChange(index, column.field, value)}
+          onChange={(value) => onChange(index, column.field, value)}
           index={index}
           {...rest}
         />
@@ -24,7 +23,7 @@ const GridEditor = React.forwardRef(
           ref={ref}
           optionId={column.option_id}
           value={value}
-          onChange={value => onChange(index, column.field, value)}
+          onChange={(value) => onChange(index, column.field, value)}
           {...rest}
         />
       )
@@ -34,7 +33,7 @@ const GridEditor = React.forwardRef(
       <DefaultEditor
         ref={ref}
         value={value}
-        onChange={value => onChange(index, column.field, value)}
+        onChange={(value) => onChange(index, column.field, value)}
         {...rest}
       />
     )

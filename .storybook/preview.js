@@ -1,18 +1,15 @@
-import { addParameters, addDecorator } from "@storybook/react"
-import ThemeDecorator from "./theme-decorator"
+import "../src/assets/styles/global.css"
 
-addParameters({
-  backgrounds: [
-    { name: "light", value: "#fefefe", default: true },
-    { name: "dark", value: "#212121" },
-  ],
-})
+export const parameters = {
+  actions: { argTypesRegex: "^on[A-Z].*" },
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/,
+    },
+  },
+}
 
-// automatically import all files ending in *.stories.js
-addDecorator(ThemeDecorator)
-
-// Gatsby's Link overrides:
-// Gatsby defines a global called ___loader to prevent its method calls from creating console errors you override it here
 global.___loader = {
   enqueue: () => {},
   hovering: () => {},

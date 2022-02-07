@@ -1,0 +1,383 @@
+@tailwind base;
+@tailwind components;
+
+@font-face {
+  font-family: "Inter";
+  src: url("../../fonts/Inter-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../../fonts/Inter-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("../../fonts/RobotoMono-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("../../fonts/RobotoMono-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer components {
+  .inter-5xlarge-regular {
+    @apply font-sans text-5xlarge leading-4xlarge font-normal;
+  }
+  .inter-5xlarge-semibold {
+    @apply font-sans text-5xlarge leading-4xlarge font-semibold;
+  }
+
+  .inter-4xlarge-regular {
+    @apply font-sans text-4xlarge leading-3xlarge font-normal;
+  }
+  .inter-4xlarge-semibold {
+    @apply font-sans text-4xlarge leading-3xlarge font-semibold;
+  }
+
+  .inter-3xlarge-regular {
+    @apply font-sans text-3xlarge leading-2xlarge font-normal;
+  }
+  .inter-3xlarge-semibold {
+    @apply font-sans text-3xlarge leading-2xlarge font-semibold;
+  }
+
+  .inter-2xlarge-regular {
+    @apply font-sans text-2xlarge leading-xlarge font-normal;
+  }
+  .inter-2xlarge-semibold {
+    @apply font-sans text-2xlarge leading-xlarge font-semibold;
+  }
+
+  .inter-xlarge-regular {
+    @apply font-sans text-xlarge leading-large font-normal;
+  }
+  .inter-xlarge-semibold {
+    @apply font-sans text-xlarge leading-large font-semibold;
+  }
+
+  .inter-large-regular {
+    @apply font-sans text-large leading-base font-normal;
+  }
+  .inter-large-semibold {
+    @apply font-sans text-large leading-base font-semibold;
+  }
+
+  .inter-base-regular {
+    @apply font-sans text-base leading-base font-normal;
+  }
+  .inter-base-semibold {
+    @apply font-sans text-base leading-base font-semibold;
+  }
+
+  .inter-small-regular {
+    @apply font-sans text-small leading-small font-normal;
+  }
+  .inter-small-semibold {
+    @apply font-sans text-small leading-small font-semibold;
+  }
+
+  .inter-xsmall-regular {
+    @apply font-sans text-xsmall leading-xsmall font-normal;
+  }
+  .inter-xsmall-semibold {
+    @apply font-sans text-xsmall leading-xsmall font-semibold;
+  }
+
+  .mono-5xlarge-regular {
+    @apply font-mono text-5xlarge leading-4xlarge font-normal;
+  }
+  .mono-5xlarge-semibold {
+    @apply font-mono text-5xlarge leading-4xlarge font-bold;
+  }
+
+  .mono-4xlarge-regular {
+    @apply font-mono text-4xlarge leading-3xlarge font-normal;
+  }
+  .mono-4xlarge-semibold {
+    @apply font-mono text-4xlarge leading-3xlarge font-bold;
+  }
+
+  .mono-3xlarge-regular {
+    @apply font-mono text-3xlarge leading-2xlarge font-normal;
+  }
+  .mono-3xlarge-semibold {
+    @apply font-mono text-3xlarge leading-2xlarge font-bold;
+  }
+
+  .mono-2xlarge-regular {
+    @apply font-mono text-2xlarge leading-xlarge font-normal;
+  }
+  .mono-2xlarge-semibold {
+    @apply font-mono text-2xlarge leading-xlarge font-bold;
+  }
+
+  .mono-xlarge-regular {
+    @apply font-mono text-xlarge leading-large font-normal;
+  }
+  .mono-xlarge-semibold {
+    @apply font-mono text-xlarge leading-large font-bold;
+  }
+
+  .mono-large-regular {
+    @apply font-mono text-large leading-base font-normal;
+  }
+  .mono-large-semibold {
+    @apply font-mono text-large leading-base font-bold;
+  }
+
+  .mono-base-regular {
+    @apply font-mono text-base leading-base font-normal;
+  }
+  .mono-base-semibold {
+    @apply font-mono text-base leading-base font-bold;
+  }
+
+  .mono-small-regular {
+    @apply font-mono text-small leading-small font-normal;
+  }
+  .mono-small-semibold {
+    @apply font-mono text-small leading-small font-bold;
+  }
+
+  .mono-xsmall-regular {
+    @apply font-mono text-xsmall leading-xsmall font-normal;
+  }
+  .mono-xsmall-semibold {
+    @apply font-mono text-xsmall leading-xsmall font-bold;
+  }
+
+  .radio-outer-ring > span[data-state="checked"] {
+    @apply rounded-circle shadow-[#7C3AED] shadow-[0_0_0_2px];
+  }
+
+  .multiselect-styling {
+    @apply p-0 -mx-3 mt-1 outline-0 cursor-text;
+
+    .dropdown-container {
+      @apply border-none bg-inherit relative focus-within:shadow-none cursor-text !important;
+    }
+
+    .dropdown-content {
+      @apply rounded-rounded w-full -mt-3 pt-0 -top-full shadow-input absolute !important;
+    }
+
+    .select-item {
+      @apply p-2 my-1 mx-2 rounded bg-grey-0 focus:bg-grey-10 hover:bg-grey-10 flex !important;
+    }
+
+    .select-panel > div::before {
+      content: url("../../assets/svg-2.0/search.svg");
+      width: 2rem;
+      height: 1.5rem;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search {
+      @apply py-4 flex items-center px-3 !important;
+    }
+    .search input {
+      @apply h-6 text-grey-90 !important;
+    }
+    .search .search-clear-button {
+      @apply mr-4 !important;
+    }
+
+    .options {
+      @apply mt-1 !important;
+    }
+
+    .dropdown-heading-dropdown-arrow,
+    .dropdown-search-clear-icon {
+      @apply hidden;
+    }
+
+    .dropdown-heading {
+      @apply py-0 px-3 outline-0 h-6 cursor-text truncate !important;
+    }
+  }
+}
+
+@layer components {
+  .badge {
+    @apply w-min py-0.5 px-2 rounded inter-small-semibold;
+  }
+
+  .badge-primary {
+    @apply bg-violet-60 bg-opacity-10 text-violet-60;
+  }
+
+  .badge-danger {
+    @apply bg-rose-50 bg-opacity-10 text-rose-50;
+  }
+
+  .badge-success {
+    @apply bg-teal-50 bg-opacity-10 text-teal-50;
+  }
+
+  .badge-warning {
+    @apply bg-yellow-40 bg-opacity-20 text-yellow-60;
+  }
+
+  .badge-default {
+    @apply inter-small-regular bg-grey-10 text-grey-90 whitespace-nowrap;
+  }
+
+  .btn {
+    @apply flex items-center justify-center rounded-base focus:outline-none focus:shadow-cta;
+  }
+
+  .btn-large {
+    @apply inter-base-semibold px-large py-small;
+  }
+
+  .btn-medium {
+    @apply inter-base-semibold px-base py-xsmall;
+  }
+
+  .btn-small {
+    @apply inter-small-semibold px-small py-[6px];
+  }
+
+  .btn-primary {
+    @apply bg-violet-60 text-grey-0 hover:bg-violet-50 active:bg-violet-70  disabled:bg-grey-20 disabled:text-grey-40;
+  }
+
+  .btn-secondary {
+    @apply bg-grey-0 text-grey-90 border border-grey-20 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60  focus:border-violet-60 disabled:bg-grey-0 disabled:text-grey-30;
+  }
+
+  .btn-danger {
+    @apply bg-rose-50 text-grey-0 hover:bg-rose-40 active:bg-rose-60 disabled:bg-grey-20 disabled:text-grey-40;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-grey-90 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60  focus:border-violet-60 disabled:bg-transparent disabled:text-grey-30;
+  }
+
+  .btn-primary-large {
+    @apply btn btn-large btn-primary;
+  }
+  .btn-primary-medium {
+    @apply btn btn-medium;
+  }
+  .btn-primary-small {
+    @apply btn btn-small;
+  }
+  .btn-secondary-large {
+    @apply btn btn-large btn-seconday;
+  }
+  .btn-secondary-medium {
+    @apply btn btn-medium btn-seconday;
+  }
+  .btn-secondary-small {
+    @apply btn btn-small btn-seconday;
+  }
+  .btn-ghost-large {
+    @apply btn btn-large btn-ghost;
+  }
+  .btn-ghost-medium {
+    @apply btn btn-medium btn-ghost;
+  }
+  .btn-ghost-small {
+    @apply btn btn-small btn-ghost;
+  }
+}
+
+@layer components {
+  .date-picker {
+    @apply border-0 outline-none pt-6 !important;
+
+    .react-datepicker__month-container {
+      .react-datepicker__header {
+        @apply bg-inherit border-0;
+      }
+    }
+
+    .react-datepicker__day-names {
+      @apply inter-base-semibold pt-4;
+
+      .react-datepicker__day-name {
+        @apply w-[40px] m-0;
+      }
+    }
+
+    .react-datepicker__month {
+      @apply m-0;
+    }
+    .react-datepicker__day {
+      @apply inter-base-regular;
+    }
+    .react-datepicker__day--today {
+      @apply text-grey-90 inter-base-semibold bg-grey-10 rounded !important;
+    }
+
+    .react-datepicker__day--outside-month,
+    .past {
+      @apply text-grey-40 !important;
+    }
+
+    .date {
+      @apply text-grey-90 m-[0px] w-[38px] h-[38px] align-middle relative leading-none pt-3;
+      :hover {
+        @apply cursor-pointer;
+      }
+    }
+    .chosen,
+    .react-datepicker__day--keyboard-selected {
+      @apply bg-violet-60 text-grey-0 inter-base-semibold leading-none !important;
+    }
+  }
+
+  .time-list::-webkit-scrollbar {
+    /* chrome */
+    display: none;
+  }
+
+  .time-list {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
+@tailwind utilities;
+
+@layer utilities {
+  .vice-city {
+    @apply bg-gradient-to-tr from-vice-start to-vice-stop;
+  }
+
+  .hidden-actions[data-state="open"] {
+    opacity: 1;
+  }
+}
+
+/* Classes to remove number spinners from inputs of type number */
+/* Chrome, Safari, Edge, Opera */
+.remove-number-spinner::-webkit-outer-spin-button,
+.remove-number-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.remove-number-spinner {
+  -moz-appearance: textfield;
+}

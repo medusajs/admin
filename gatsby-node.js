@@ -7,8 +7,20 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
             test: /react-json-view/,
             use: loaders.null(),
           },
+          {
+            test: /emoji-picker-react/,
+            use: loaders.null(),
+          },
         ],
       },
     })
   }
+  actions.setWebpackConfig({
+    resolve: {
+      fallback: {
+        crypto: require.resolve("crypto-browserify"),
+        stream: require.resolve("stream-browserify"),
+      },
+    },
+  })
 }

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { navigate } from "gatsby"
 
 import useMedusa from "../../hooks/use-medusa"
-import Input from "../../components/input"
+import Input from "../../components/molecules/input"
 import Card from "../../components/card"
 import Button from "../../components/button"
 import Spinner from "../../components/spinner"
