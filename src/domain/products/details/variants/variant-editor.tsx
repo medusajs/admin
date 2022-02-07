@@ -13,7 +13,6 @@ import CurrencyInput from "../../../../components/organisms/currency-input"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
 import { removeNullish } from "../../../../utils/remove-nullish"
-const numberFields = ["weight", "length", "width", "height"]
 
 const VariantEditor = ({ variant, onSubmit, onCancel }) => {
   const countryOptions = countryData.map((c) => ({
@@ -114,8 +113,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
     data.inventory_quantity = parseInt(data.inventory_quantity)
 
     data.prices = data.prices.map((p) => removeNullish(p))
-    const cleaned = convertEmptyStringToNull(data, numberFields)
-
+    const cleaned = convertEmptyStringToNull(data)
     onSubmit(cleaned)
   }
 

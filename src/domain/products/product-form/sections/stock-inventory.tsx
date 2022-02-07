@@ -6,63 +6,71 @@ import BodyCard from "../../../../components/organisms/body-card"
 import { useProductForm } from "../form/product-form-context"
 
 const StockAndInventory = () => {
-  const { register } = useProductForm()
+  const { isVariantsView, register } = useProductForm()
   return (
     <BodyCard
       title="Stock & Inventory"
       subtitle="To start selling, all you need is a name, price, and image"
     >
       <div className="mt-large">
-        <div className="flex items-center mb-base">
-          <h6 className="inter-base-semibold text-grey-90 mr-1.5">General</h6>
-        </div>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-large">
-          <Input
-            label="Stock Keeping Unit (SKU)"
-            name="sku"
-            placeholder="SUN-G, JK1234..."
-            ref={register}
-          />
-          <Input
-            label="Barcode (EAN)"
-            name="ean"
-            placeholder="1231231231234..."
-            ref={register}
-          />
-          <Input
-            label="Quantity in stock"
-            name="inventory_quantity"
-            type="number"
-            placeholder="100"
-            ref={register}
-          />
-        </div>
-        <div className="flex items-center gap-4 mb-xlarge">
-          <div className="flex item-center gap-x-1.5">
-            <Checkbox
-              name="manage_inventory"
-              label="Manage Inventory"
-              ref={register}
-            />
-            <InfoTooltip
-              content={
-                "When checked Medusa will regulate the inventory when orders and returns are made."
-              }
-            />
+        {!isVariantsView && (
+          <>
+            <div className="flex items-center mb-base">
+              <h6 className="inter-base-semibold text-grey-90 mr-1.5">
+                General
+              </h6>
+            </div>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-large">
+              <Input
+                label="Stock Keeping Unit (SKU)"
+                name="sku"
+                placeholder="SUN-G, JK1234..."
+                ref={register}
+              />
+              <Input
+                label="Barcode (EAN)"
+                name="ean"
+                placeholder="1231231231234..."
+                ref={register}
+              />
+              <Input
+                label="Quantity in stock"
+                name="inventory_quantity"
+                type="number"
+                placeholder="100"
+                ref={register}
+              />
+            </div>
+          </>
+        )}
+        {!isVariantsView && (
+          <div className="flex items-center gap-4 mb-xlarge">
+            <div className="flex item-center gap-x-1.5">
+              <Checkbox
+                name="manage_inventory"
+                label="Manage Inventory"
+                ref={register}
+              />
+              <InfoTooltip
+                content={
+                  "When checked Medusa will regulate the inventory when orders and returns are made."
+                }
+              />
+            </div>
+            <div className="flex item-center gap-x-1.5">
+              <Checkbox
+                name="allow_backorder"
+                ref={register}
+                label="Allow backorders"
+              />
+              <InfoTooltip
+                content={
+                  "When checked the product will be available for purchase despite the product being sold out."
+                }
+              />
+            </div>
           </div>
-          <div className="flex item-center gap-x-1.5">
-            <Checkbox
-              name="allow_backorder"
-              ref={register}
-              label="Allow backorders"
-            />
-            <InfoTooltip
-              content={
-                "When checked the product will be available for purchase despite the product being sold out."
-              }
-            />
-          </div>
-        </div>
+        )}
         <div className="flex items-center mb-base">
           <h6 className="inter-base-semibold text-grey-90 mr-1.5">
             Dimensions

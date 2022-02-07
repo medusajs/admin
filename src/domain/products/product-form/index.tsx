@@ -27,13 +27,15 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
           <Variants product={product} />
         </div>
       )}
-      <div className="mt-large">
-        <Prices
-          currencyCodes={currencyCodes}
-          defaultCurrencyCode={store?.default_currency_code}
-          defaultAmount={1000}
-        />
-      </div>
+      {!isVariantsView && (
+        <div className="mt-large">
+          <Prices
+            currencyCodes={currencyCodes}
+            defaultCurrencyCode={store?.default_currency_code}
+            defaultAmount={1000}
+          />
+        </div>
+      )}
       <div className="mt-large">
         <Images />
       </div>

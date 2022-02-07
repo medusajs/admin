@@ -8,6 +8,7 @@ export const SINGLE_PRODUCT_VIEW = "single"
 type PRODUCT_VIEW = typeof VARIANTS_VIEW | typeof SINGLE_PRODUCT_VIEW
 
 const defaultProduct = {
+  variants: [],
   images: [],
   prices: [],
   type: null,
@@ -33,7 +34,7 @@ export const ProductFormProvider = ({
   }
 
   const [viewType, setViewType] = React.useState<PRODUCT_VIEW>(
-    SINGLE_PRODUCT_VIEW
+    product.variants?.length > 1 ? VARIANTS_VIEW : SINGLE_PRODUCT_VIEW
   )
 
   const methods = useForm()

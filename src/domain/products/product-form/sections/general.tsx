@@ -68,12 +68,11 @@ const General = ({ showViewOptions = true }) => {
           <Textarea
             name="description"
             id="description"
-            required
             label="Description"
             placeholder="Short description of the product..."
             className="row-span-full"
             rows={8}
-            ref={register({ required: true })}
+            ref={register}
           />
           <Controller
             as={Select}

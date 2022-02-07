@@ -16,8 +16,8 @@ import { StyledTable, Td, Wrapper } from "./elements"
 const getColumns = (product, edit) => {
   const defaultFields = [
     { header: "Title", field: "title" },
-    { header: "Sku", field: "sku" },
-    { header: "Ean", field: "ean" },
+    { header: "SKU", field: "sku" },
+    { header: "EAN", field: "ean" },
     { header: "Inventory", field: "inventory_quantity" },
   ]
 
