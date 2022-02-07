@@ -8,10 +8,10 @@ import TableViewHeader from "../../components/organisms/custom-table-header"
 import AddCollectionModal from "../../components/templates/collection-modal"
 import CollectionsTable from "../../components/templates/collections-table"
 import ProductTable from "../../components/templates/product-table"
+import NewProductPage from "./new"
+import EditProductPage from "./edit"
 import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
-import Details from "./details"
-import New from "./new"
 
 const VIEWS = ["products", "collections"]
 
@@ -128,8 +128,8 @@ const Products = () => {
   return (
     <Router>
       <ProductIndex path="/" />
-      <Details path=":id" />
-      <New path="new" />
+      <EditProductPage path=":id" />
+      <NewProductPage path="new" />
     </Router>
   )
 }

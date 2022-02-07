@@ -94,6 +94,7 @@ const InputField = React.forwardRef(
             placeholder={placeholder || "Placeholder"}
             onChange={onChange}
             onFocus={onFocus}
+            required={required}
             {...fieldProps}
           />
 

@@ -27,7 +27,7 @@ type MultiSelectProps = {
   isMultiSelect?: boolean
   labelledBy?: string
   options: { label: string; value: string; disabled?: boolean }[]
-  value:
+  value?:
     | { label: string; value: string }[]
     | { label: string; value: string }
     | null
@@ -35,7 +35,7 @@ type MultiSelectProps = {
   isLoading?: boolean
   shouldToggleOnHover?: boolean
   overrideStrings?: object
-  onChange: (values: any[] | any) => void
+  onChange?: (values: any[] | any) => void
   disabled?: boolean
   enableSearch?: boolean
   isCreatable?: boolean
