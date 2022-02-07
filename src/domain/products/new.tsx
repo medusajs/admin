@@ -5,35 +5,19 @@ import Button, { ButtonProps } from "../../components/fundamentals/button"
 import useToaster from "../../hooks/use-toaster"
 import Medusa from "../../services/api"
 import { getErrorMessage } from "../../utils/error-messages"
-import ProductDetail from "./product-form"
-import { formValuesToProductMapper } from "./product-form/form/mappers"
+import ProductForm from "./product-form"
+import { formValuesToCreateProductMapper } from "./product-form/form/mappers"
 import {
   ProductFormProvider,
   useProductForm,
 } from "./product-form/form/product-form-context"
-
-const getImages = (images, uploaded) => {
-  const result: any[] = []
-  let i = 0
-  let j = 0
-  for (i = 0; i < images.length; i++) {
-    const image = images[i].url
-    if (image.startsWith("blob")) {
-      result.push(uploaded[j])
-      j++
-    } else {
-      result.push(image)
-    }
-  }
-  return result
-}
+import { consolidateImages } from "./product-form/utils"
 
 const NewProductPage = () => {
   const toaster = useToaster()
   const createProduct = useAdminCreateProduct()
 
   const onSubmit = async (data) => {
-    console.log({ data: formValuesToProductMapper(data) })
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
@@ -45,10 +29,10 @@ const NewProductPage = () => {
       })
     const newData = {
       ...data,
-      images: getImages(data.images, uploadedImgs),
+      images: consolidateImages(data.images, uploadedImgs),
     }
 
-    createProduct.mutate(formValuesToProductMapper(newData), {
+    createProduct.mutate(formValuesToCreateProductMapper(newData), {
       onSuccess: () => {
         toaster("Product created successfully", "success")
       },
@@ -60,7 +44,7 @@ const NewProductPage = () => {
 
   return (
     <ProductFormProvider onSubmit={onSubmit}>
-      <ProductDetail />
+      <ProductForm />
       <div className="mt-base flex justify-end items-center gap-x-2">
         <Button
           variant="secondary"

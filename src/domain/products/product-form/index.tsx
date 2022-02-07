@@ -7,7 +7,12 @@ import Prices from "./sections/prices"
 import StockAndInventory from "./sections/stock-inventory"
 import Variants from "./sections/variants"
 
-const ProductForm = ({ product, isEdit = false }) => {
+type ProductFormProps = {
+  product?: any
+  isEdit?: boolean
+}
+
+const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
   const { isVariantsView } = useProductForm()
   const { store } = useAdminStore()
   const currencyCodes = store?.currencies.map((currency) => currency.code)

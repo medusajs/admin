@@ -21,8 +21,6 @@ const Variants = ({ product }) => {
     }
   }, [product])
 
-  console.log(variants)
-
   return (
     <BodyCard
       title="Variants"

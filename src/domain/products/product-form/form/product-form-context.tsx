@@ -46,7 +46,6 @@ export const ProductFormProvider = ({
   }, [product])
 
   const handleSubmit = (values) => {
-    console.log("onsubmit:", { values })
     onSubmit({ ...values, images })
   }
 

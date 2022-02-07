@@ -40,7 +40,6 @@ const columns = [
     Header: <div className="text-center">Thumbnail</div>,
     accessor: "thumbnail",
     Cell: ({ cell }) => {
-      console.log({ cell })
       return (
         <div className="flex justify-center">
           <RadioGroup.SimpleItem
