@@ -1,6 +1,4 @@
 import medusaRequest, { multipartRequest } from "./request"
-import qs from "query-string"
-import _ from "lodash"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -336,6 +334,11 @@ export default {
     list(search = {}) {
       const path = `/admin/collections`
       return medusaRequest("GET", path)
+    },
+
+    addProducts(id, payload) {
+      const path = `/admin/collections/${id}/products`
+      return medusaRequest("POST", path, payload)
     },
   },
 

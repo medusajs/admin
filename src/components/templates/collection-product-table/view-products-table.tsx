@@ -12,10 +12,12 @@ import useViewProductColumns from "./use-view-product-columns"
 
 type ViewProductsTableProps = {
   collectionId: string
+  refetchCollection: () => void
 }
 
 const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
   collectionId,
+  refetchCollection,
 }) => {
   const limit = 10
   const [query, setQuery] = useState("")
@@ -36,7 +38,7 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
 
   useEffect(() => {
     refetch() // Ensure we get the latest data
-  }, [])
+  }, [collectionId])
 
   const handleRemoveProduct = () => {
     if (idToDelete) {
@@ -46,6 +48,7 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
         })
         .then(() => {
           refetch()
+          refetchCollection()
         })
     }
   }

@@ -5,7 +5,7 @@ import AddProductsTable from "../../templates/collection-product-table/add-produ
 
 type AddProductModalProps = {
   handleClose: () => void
-  onSubmit: (ids: any[]) => void
+  onSubmit: (selectedIds: string[], removedIds: string[]) => void
   collectionProducts: any[]
 }
 
@@ -16,9 +16,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 }) => {
   const [selectedProducts, setSelectedProducts] = React.useState<any[]>([])
 
-  const handleSelectProduct = () => {
+  const handleSelectProduct = async () => {
     if (selectedProducts.length > 0) {
-      onSubmit(selectedProducts.map((p) => p.id))
+      const allIds = collectionProducts.map((product) => product.id)
+
+      const selectedIds = selectedProducts.map((product) => product.id)
+      const removedIds = allIds.filter((id) => !selectedIds.includes(id))
+
+      await onSubmit(selectedIds, removedIds)
     }
   }
 
@@ -38,14 +43,19 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         </Modal.Content>
         <Modal.Footer>
           <div className="flex items-center justify-end gap-x-xsmall w-full">
-            <Button variant="ghost" size="small" className="w-eventButton">
+            <Button
+              variant="ghost"
+              size="small"
+              className="w-eventButton"
+              onClick={handleClose}
+            >
               Cancel
             </Button>
             <Button
               variant="primary"
               size="small"
               className="w-eventButton"
-              onClick={handleSelectProduct}
+              onClick={async () => await handleSelectProduct()}
             >
               Save
             </Button>
