@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react"
-import BodyCard from "../../../../components/organisms/body-card"
 import Button from "../../../../components/fundamentals/button"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import TagInput from "../../../../components/molecules/tag-input"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import Input from "../../../../components/molecules/input"
+import TagInput from "../../../../components/molecules/tag-input"
+import BodyCard from "../../../../components/organisms/body-card"
 import VariantGrid from "../../../../components/variant-grid"
-import NewOption from "../../details/variants/option-edit"
 import { getCombinations } from "../../../../utils/get-combinations"
+import NewOption from "../../details/variants/option-edit"
 import { useProductForm } from "../form/product-form-context"
 
 const Variants = ({ isEdit, product }) => {
@@ -89,6 +90,8 @@ const Variants = ({ isEdit, product }) => {
     }
   }, [product])
 
+  console.log(variants)
+
   return (
     <BodyCard
       title="Variants"
@@ -110,7 +113,7 @@ const Variants = ({ isEdit, product }) => {
             Product Options
           </h6>
         </div>
-        <div className="flex flex-col gap-y-base w-full">
+        <div className="flex flex-col gap-y-base w-full mb-4">
           {options.map((o, index) => (
             <div key={index} className="flex items-center">
               <div className="flex gap-x-small grow">
@@ -144,10 +147,16 @@ const Variants = ({ isEdit, product }) => {
             </Button>
           </div>
         </div>
-        {console.log(JSON.stringify(variants, null, 2))}
-        {product?.variants && (
-          <VariantGrid edit product={product} variants={variants} />
-        )}
+        <div className="flex justify-center mb-base flex-col space-y-2">
+          <div className="flex space-x-2">
+            <h6 className="inter-base-semibold text-grey-90">Variants</h6>
+            <InfoTooltip content="Add product options to create variants" />
+          </div>
+          <span className="inter-small-regular text-grey-50">
+            Edit variants after creating the product
+          </span>
+        </div>
+        <VariantGrid edit={isEdit} product={product} variants={variants} />
       </div>
       {showAddOption && (
         <NewOption
