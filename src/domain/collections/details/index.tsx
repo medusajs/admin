@@ -75,7 +75,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
     removedIds: string[]
   ) => {
     await Medusa.collections
-      .addProducts(collection?.id, {
+      .updateProducts(collection?.id, {
         addProductIds: addedIds,
         removeProductIds: removedIds,
       })
