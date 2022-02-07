@@ -156,6 +156,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                   className="w-1/2"
                   placeholder="Summer Sale 2022"
                   name="rule.description"
+                  rows={8}
                   ref={register({ required: true })}
                 />
               </div>
