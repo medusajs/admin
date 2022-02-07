@@ -70,7 +70,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
             label="Handle"
             name="handle"
-            placeholder="/bathrobe"
+            placeholder="my-bathrobe"
             ref={register({ required: true })}
           />
         </div>
