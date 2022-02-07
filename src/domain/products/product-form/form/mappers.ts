@@ -11,6 +11,7 @@ export const productToFormValuesMapper = (product) => {
     type: product?.type
       ? { id: product.type.id, label: product.type.value }
       : null,
+    tags: product?.tags ? product.tags.map((t) => t.value) : [],
     images: product?.images?.length
       ? product.images
       : product?.thumbnail

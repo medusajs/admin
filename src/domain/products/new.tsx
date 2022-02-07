@@ -33,8 +33,9 @@ const NewProductPage = () => {
     }
 
     createProduct.mutate(formValuesToCreateProductMapper(newData), {
-      onSuccess: () => {
+      onSuccess: ({ product }) => {
         toaster("Product created successfully", "success")
+        navigate(`/a/products/${product.id}`)
       },
       onError: (error) => {
         toaster(getErrorMessage(error), "error")

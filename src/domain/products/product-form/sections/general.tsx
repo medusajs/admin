@@ -47,14 +47,14 @@ const General = ({ showViewOptions = true }) => {
             name="title"
             placeholder="Jacket, Sunglasses..."
             required
-            ref={register}
+            ref={register({ required: true })}
           />
           <Input
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
             label="Handle"
             name="handle"
             placeholder="/bathrobe"
-            ref={register}
+            ref={register({ required: true })}
           />
         </div>
         <label
@@ -73,7 +73,7 @@ const General = ({ showViewOptions = true }) => {
             placeholder="Short description of the product..."
             className="row-span-full"
             rows={8}
-            ref={register}
+            ref={register({ required: true })}
           />
           <Controller
             as={Select}
@@ -94,13 +94,12 @@ const General = ({ showViewOptions = true }) => {
           <Controller
             name="tags"
             render={({ onChange, value }) => {
-              console.log(value)
               return (
                 <TagInput
                   label="Tags (separated by comma)"
                   placeholder="Spring, Summer..."
                   onChange={onChange}
-                  values={value?.map(({ value }) => value) || []}
+                  values={value || []}
                 />
               )
             }}
