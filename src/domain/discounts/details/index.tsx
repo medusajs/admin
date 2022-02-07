@@ -215,7 +215,8 @@ const Edit: React.FC<EditProps> = ({ id }) => {
         previousRoute="/a/discounts"
       />
       <FormProvider {...methods}>
-        <form>
+        {/* disable accidental submissions */}
+        <form onSubmit={(e) => e.preventDefault()}>
           <div className="flex flex-col gap-y-large">
             <DiscountGeneral
               isEdit={true}
