@@ -1,17 +1,13 @@
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { useAdminDeleteVariant, useAdminUpdateVariant } from "medusa-react"
 import React, { useState } from "react"
-import { Box } from "rebass"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
+import useImperativeDialog from "../../hooks/use-imperative-dialog"
 import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
-import Button from "../fundamentals/button"
 import EditIcon from "../fundamentals/icons/edit-icon"
-import MoreHorizontalIcon from "../fundamentals/icons/more-horizontal-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
-import DeletePrompt from "../organisms/delete-prompt"
-import { TableHead, TableHeaderCell } from "../table"
-import { StyledTable, Td, Wrapper } from "./elements"
+import Table from "../molecules/table"
+import { Wrapper } from "./elements"
 
 const getColumns = (product, edit) => {
   const defaultFields = [
@@ -49,7 +45,7 @@ const getColumns = (product, edit) => {
   } else {
     return [
       {
-        header: "",
+        header: "Variant",
         field: "options",
         formatter: (value) => {
           const options = value.map((v) => {
@@ -65,29 +61,18 @@ const getColumns = (product, edit) => {
         headCol: true,
       },
       ...defaultFields,
-      {
-        header: "Prices",
-        field: "prices",
-        editor: "prices",
-        buttonText: "Edit",
-        formatter: (prices) => {
-          if (!prices) {
-            return ""
-          }
-          return `${prices.length} price(s)`
-        },
-      },
     ]
   }
 }
 
 const VariantGrid = ({ product, variants, edit }) => {
   const [selectedVariant, setSelectedVariant] = useState(null)
-  const [toDelete, setToDelete] = useState(null)
 
-  const updateVariant = useAdminUpdateVariant(product.id)
-  const deleteVariant = useAdminDeleteVariant(product.id)
+  const updateVariant = useAdminUpdateVariant(product?.id)
+  const deleteVariant = useAdminDeleteVariant(product?.id)
+
   const toaster = useToaster()
+  const dialog = useImperativeDialog()
 
   const columns = getColumns(product, edit)
 
@@ -112,96 +97,71 @@ const VariantGrid = ({ product, variants, edit }) => {
     )
   }
 
-  const handleDeleteVariant = async () => {
-    return deleteVariant.mutate(toDelete?.id)
+  const handleDeleteVariant = async (variant) => {
+    const shouldDelete = await dialog({
+      heading: "Delete product variant",
+      text: "Are you sure?",
+    })
+
+    if (shouldDelete) {
+      return deleteVariant.mutate(variant.id)
+    }
+  }
+
+  const editVariantActions = (variant) => {
+    return [
+      {
+        label: "Edit",
+        icon: <EditIcon />,
+        onClick: () => setSelectedVariant(variant),
+      },
+      {
+        label: "Delete",
+        icon: <TrashIcon />,
+        onClick: () => handleDeleteVariant(variant),
+        variant: "danger",
+      },
+    ]
   }
 
   return (
     <Wrapper>
-      <StyledTable as="table">
-        <TableHead>
-          <tr>
-            {columns.map((c) => (
-              <TableHeaderCell head={c.headCol} key={c.field}>
-                {c.header}
-              </TableHeaderCell>
+      <Table>
+        <Table.Head>
+          <Table.HeadRow>
+            {columns.map((col) => (
+              <Table.HeadCell className="w-[100px]">
+                {col.header}
+              </Table.HeadCell>
             ))}
-            <TableHeaderCell width="100px" />
-          </tr>
-        </TableHead>
-        <tbody>
-          {variants.map((v, row) => (
-            <tr key={row}>
-              {columns.map((c, col) => (
-                <Td
-                  key={`${row}-${col}`}
-                  data-col={col}
-                  data-row={row}
-                  head={c.headCol}
-                >
-                  {getDisplayValue(v, c)}
-                </Td>
-              ))}
-              <Box
-                as="td"
-                sx={{
-                  padding: "4px",
-                  borderBottom: "1px solid rgba(0,0,0,0.2)",
-                  backgroundColor: "white",
-                  textAlign: "right",
-                }}
+          </Table.HeadRow>
+        </Table.Head>
+        <Table.Body>
+          {variants.map((variant, index) => {
+            return (
+              <Table.Row
+                color={"inherit"}
+                key={index}
+                actions={edit && editVariantActions(variant)}
+                className="hover:bg-grey-0"
               >
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger asChild>
-                    <div className="flex min-h-[40px] items-center justify-end cursor-pointer">
-                      <MoreHorizontalIcon size={20} />
-                    </div>
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content
-                    sideOffset={5}
-                    className="border bg-grey-0 border-grey-20 rounded-rounded shadow-dropdown p-xsmall min-w-[200px] z-30"
-                  >
-                    <DropdownMenu.Item className="mb-1 last:mb-0">
-                      <Button
-                        variant="ghost"
-                        size="small"
-                        className={"w-full justify-start"}
-                        onClick={() => setSelectedVariant(v)}
-                      >
-                        <EditIcon />
-                        Edit
-                      </Button>
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item className="mb-1 last:mb-0">
-                      <Button
-                        variant="ghost"
-                        size="small"
-                        className={"w-full justify-start text-rose-50"}
-                        onClick={() => setToDelete(v)}
-                      >
-                        <TrashIcon />
-                        Delete
-                      </Button>
-                    </DropdownMenu.Item>
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
-              </Box>
-            </tr>
-          ))}
-        </tbody>
-      </StyledTable>
+                {columns.map((col, index) => {
+                  return (
+                    <Table.Cell key={index}>
+                      {getDisplayValue(variant, col)}
+                    </Table.Cell>
+                  )
+                })}
+              </Table.Row>
+            )
+          })}
+        </Table.Body>
+      </Table>
       {selectedVariant && (
         <VariantEditor
           variant={selectedVariant}
           onCancel={() => setSelectedVariant(null)}
           onSubmit={handleUpdateVariant}
-        />
-      )}
-      {toDelete && (
-        <DeletePrompt
-          onDelete={handleDeleteVariant}
-          handleClose={() => setToDelete(null)}
-          successText="Successfully deleted variant"
         />
       )}
     </Wrapper>

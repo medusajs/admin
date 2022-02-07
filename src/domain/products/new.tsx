@@ -32,15 +32,17 @@ const NewProductPage = () => {
       images: consolidateImages(data.images, uploadedImgs),
     }
 
-    createProduct.mutate(formValuesToCreateProductMapper(newData), {
-      onSuccess: ({ product }) => {
-        toaster("Product created successfully", "success")
-        navigate(`/a/products/${product.id}`)
-      },
-      onError: (error) => {
-        toaster(getErrorMessage(error), "error")
-      },
-    })
+    console.log(data)
+
+    // createProduct.mutate(formValuesToCreateProductMapper(newData), {
+    //   onSuccess: ({ product }) => {
+    //     toaster("Product created successfully", "success")
+    //     navigate(`/a/products/${product.id}`)
+    //   },
+    //   onError: (error) => {
+    //     toaster(getErrorMessage(error), "error")
+    //   },
+    // })
   }
 
   return (

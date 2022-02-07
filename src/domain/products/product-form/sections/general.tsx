@@ -54,7 +54,7 @@ const General = ({ showViewOptions = true }) => {
             label="Handle"
             name="handle"
             placeholder="my-bathrobe"
-            ref={register({ required: true })}
+            ref={register}
           />
         </div>
         <label
