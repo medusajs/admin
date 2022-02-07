@@ -135,7 +135,7 @@ const DiscountTable: React.FC = () => {
   }, [representationObject])
 
   return (
-    <div className="w-full overflow-y-scroll flex flex-col justify-between min-h-[300px] h-full ">
+    <div className="w-full overflow-y-auto flex flex-col justify-between min-h-[300px] h-full ">
       <Table
         filteringOptions={
           <DiscountFilters

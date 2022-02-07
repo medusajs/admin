@@ -154,7 +154,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
   const handleGiftCardSearch = (term: string) => {}
 
   return (
-    <div className="w-full h-full overflow-y-scroll">
+    <div className="w-full h-full overflow-y-auto">
       <Table
         filteringOptions={filteringOptions}
         enableSearch
