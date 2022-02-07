@@ -3,6 +3,8 @@ export function decideBadgeColor(batchLabel) {
     case "captured":
     case "completed":
     case "shipped":
+    case "published":
+    case "registered":
     case "difference_refunded":
     case "received":
       return {
@@ -15,6 +17,7 @@ export function decideBadgeColor(batchLabel) {
     case "partially_fulfilled":
     case "partially_shipped":
     case "partially_returned":
+    case "draft":
     case "returned":
       return {
         bgColor: "#ffd733",
@@ -22,6 +25,7 @@ export function decideBadgeColor(batchLabel) {
       }
     case "cancelled":
     case "requires_action":
+    case "rejected":
     case "failed":
       return {
         bgColor: "#ff4133",

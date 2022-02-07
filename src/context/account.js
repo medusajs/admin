@@ -1,13 +1,12 @@
 import React, { useReducer } from "react"
-
 import Medusa from "../services/api"
 
 export const defaultAccountContext = {
   isLoggedIn: false,
   id: "",
   name: "",
-  firstName: "",
-  lastName: "",
+  first_name: "",
+  last_name: "",
   email: "",
 }
 
@@ -19,8 +18,15 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: true,
-        id: action.payload._id,
+        id: action.payload.id,
         email: action.payload.email,
+        first_name: action.payload?.first_name,
+        last_name: action.payload?.last_name,
+      }
+    case "updateUser":
+      return {
+        ...state,
+        ...action.payload,
       }
     case "userLoggedOut":
       return defaultAccountContext
@@ -28,10 +34,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: true,
-        id: action.payload._id,
+        id: action.payload.id,
         email: action.payload.email,
+        first_name: action.payload?.first_name,
+        last_name: action.payload?.last_name,
       }
-      break
     default:
       return state
   }
@@ -51,14 +58,20 @@ export const AccountProvider = ({ children }) => {
           })
         },
 
-        handleLogout: details => {
-          return Medusa.auth.deauthenticate(details).then(() => {
-            dispatch({ type: "userLoggedOut" })
-            return data
+        handleUpdateUser: (id, user) => {
+          return Medusa.users.update(id, user).then(({ data }) => {
+            dispatch({ type: "updateUser", payload: data.user })
           })
         },
 
-        handleLogin: details => {
+        handleLogout: (details) => {
+          return Medusa.auth.deauthenticate(details).then(() => {
+            dispatch({ type: "userLoggedOut" })
+            return null
+          })
+        },
+
+        handleLogin: (details) => {
           return Medusa.auth.authenticate(details).then(({ data }) => {
             dispatch({ type: "userLoggedIn", payload: data.user })
             return data

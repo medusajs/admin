@@ -1,8 +1,7 @@
-import React, { useEffect } from "react"
-
-import Layout from "../components/layout"
-import SEO from "../components/seo"
 import { navigate } from "gatsby"
+import React, { useEffect } from "react"
+import SEO from "../components/seo"
+import Layout from "../components/templates/layout"
 
 const IndexPage = () => {
   useEffect(() => {

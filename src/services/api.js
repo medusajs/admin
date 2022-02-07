@@ -2,8 +2,17 @@ import medusaRequest, { multipartRequest } from "./request"
 import qs from "query-string"
 import _ from "lodash"
 
-const removeNullish = obj =>
+const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
+
+const buildQueryFromObject = (search, prefix = "") =>
+  Object.entries(search)
+    .map(([key, value]) =>
+      typeof value === "object"
+        ? buildQueryFromObject(value, key)
+        : `${prefix ? `${prefix}[${key}]` : `${key}`}=${value}`
+    )
+    .join("&")
 
 export default {
   returnReasons: {
@@ -22,6 +31,10 @@ export default {
     update(id, payload) {
       const path = `/admin/return-reasons/${id}`
       return medusaRequest("POST", path, payload)
+    },
+    delete(id) {
+      const path = `/admin/return-reasons/${id}`
+      return medusaRequest("DELETE", path)
     },
   },
   apps: {
@@ -45,24 +58,46 @@ export default {
       return medusaRequest("POST", path, details)
     },
     deauthenticate(details) {
-      return Promise.resolve()
-      // const path = `/admin/auth`
-      // return medusaRequest("DELETE", path)
+      const path = `/admin/auth`
+      return medusaRequest("DELETE", path)
     },
   },
   notifications: {
     list(search = {}) {
       const params = Object.keys(search)
-        .map(k => `${k}=${search[k]}`)
+        .map((k) => `${k}=${search[k]}`)
         .join("&")
-      let path = `/admin/notifications${params && `?${params}`}`
+      const path = `/admin/notifications${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
     resend(id, config) {
-      let path = `/admin/notifications/${id}/resend`
+      const path = `/admin/notifications/${id}/resend`
       return medusaRequest("POST", path, config)
     },
   },
+  notes: {
+    listByResource(resourceId) {
+      const path = `/admin/notes?resource_id=${resourceId}`
+      return medusaRequest("GET", path)
+    },
+    async create(resourceId, resourceType, value) {
+      const path = `/admin/notes/`
+      return medusaRequest("POST", path, {
+        resource_id: resourceId,
+        resource_type: resourceType,
+        value,
+      })
+    },
+    update(id, value) {
+      const path = `admin/notes/${id}`
+      return medusaRequest("POST", path, { value })
+    },
+    delete(id) {
+      const path = `admin/notes/${id}`
+      return medusaRequest("DELETE", path)
+    },
+  },
+
   customers: {
     retrieve(customerId) {
       const path = `/admin/customers/${customerId}`
@@ -71,6 +106,10 @@ export default {
     list(search = "") {
       const path = `/admin/customers${search}`
       return medusaRequest("GET", path)
+    },
+    update(customerId, update) {
+      const path = `admin/customers/${customerId}`
+      return medusaRequest("POST", path, update)
     },
   },
   store: {
@@ -134,7 +173,7 @@ export default {
 
     list(search = {}) {
       const params = Object.keys(search)
-        .map(k => `${k}=${search[k]}`)
+        .map((k) => `${k}=${search[k]}`)
         .join("&")
       const path = `/admin/gift-cards${params && `?${params}`}`
       return medusaRequest("GET", path)
@@ -154,9 +193,9 @@ export default {
   variants: {
     list(search = {}) {
       const params = Object.keys(search)
-        .map(k => `${k}=${search[k]}`)
+        .map((k) => `${k}=${search[k]}`)
         .join("&")
-      let path = `/admin/variants${params && `?${params}`}`
+      const path = `/admin/variants${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
   },
@@ -184,19 +223,19 @@ export default {
 
     list(search = {}) {
       const params = Object.keys(search)
-        .map(k => `${k}=${search[k]}`)
+        .map((k) => `${k}=${search[k]}`)
         .join("&")
-      let path = `/admin/products${params && `?${params}`}`
+      const path = `/admin/products${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
 
     listTypes() {
-      let path = `/admin/products/types`
+      const path = `/admin/products/types`
       return medusaRequest("GET", path)
     },
 
     listTagsByUsage() {
-      let path = `/admin/products/tag-usage`
+      const path = `/admin/products/tag-usage`
       return medusaRequest("GET", path)
     },
 
@@ -258,15 +297,15 @@ export default {
 
     list(search = {}) {
       const params = Object.keys(search)
-        .map(k => {
+        .map((k) => {
           if (search[k] === "" || search[k] === null) {
             return null
           }
           return `${k}=${search[k]}`
         })
-        .filter(s => !!s)
+        .filter((s) => !!s)
         .join("&")
-      let path = `/admin/swaps${params && `?${params}`}`
+      const path = `/admin/swaps${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
   },
@@ -275,10 +314,10 @@ export default {
     list(search = {}) {
       const clean = removeNullish(search)
       const params = Object.keys(clean)
-        .map(k => `${k}=${search[k]}`)
-        .filter(s => !!s)
+        .map((k) => `${k}=${search[k]}`)
+        .filter((s) => !!s)
         .join("&")
-      let path = `/admin/returns${params && `?${params}`}`
+      const path = `/admin/returns${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
   },
@@ -295,7 +334,7 @@ export default {
     },
 
     list(search = {}) {
-      let path = `/admin/collections`
+      const path = `/admin/collections`
       return medusaRequest("GET", path)
     },
   },
@@ -330,13 +369,13 @@ export default {
 
     retrieve(orderId, search = {}) {
       const params = Object.keys(search)
-        .map(k => {
+        .map((k) => {
           if (search[k] === "" || search[k] === null) {
             return null
           }
           return `${k}=${search[k]}`
         })
-        .filter(s => !!s)
+        .filter((s) => !!s)
         .join("&")
       const path = `/admin/orders/${orderId}${params && `?${params}`}`
       return medusaRequest("GET", path)
@@ -350,11 +389,11 @@ export default {
     list(search = {}) {
       const clean = removeNullish(search)
       const params = Object.keys(clean)
-        .map(k => `${k}=${search[k]}`)
-        .filter(s => !!s)
+        .map((k) => `${k}=${search[k]}`)
+        .filter((s) => !!s)
         .join("&")
 
-      let path = `/admin/orders${params && `?${params}`}`
+      const path = `/admin/orders${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
 
@@ -482,7 +521,7 @@ export default {
 
     list(search = {}) {
       const params = Object.keys(search)
-        .map(k => `${k}=${search[k]}`)
+        .map((k) => `${k}=${search[k]}`)
         .join("&")
       const path = `/admin/shipping-options${params && `?${params}`}`
       return medusaRequest("GET", path)
@@ -512,13 +551,11 @@ export default {
 
     delete(discountId) {
       const path = `/admin/discounts/${discountId}`
-      return medusaRequest("POST", path, update)
+      return medusaRequest("DELETE", path)
     },
 
     list(search = {}) {
-      const params = Object.keys(search)
-        .map(k => `${k}=${search[k]}`)
-        .join("&")
+      const params = buildQueryFromObject(search)
       const path = `/admin/discounts${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
@@ -622,16 +659,68 @@ export default {
 
     list(search = {}) {
       const params = Object.keys(search)
-        .map(k => {
+        .map((k) => {
           if (search[k] === "" || search[k] === null) {
             return null
           }
           return `${k}=${search[k]}`
         })
-        .filter(s => !!s)
+        .filter((s) => !!s)
         .join("&")
-      let path = `/admin/draft-orders${params && `?${params}`}`
+      const path = `/admin/draft-orders${params && `?${params}`}`
       return medusaRequest("GET", path)
+    },
+  },
+  invites: {
+    create(data) {
+      const path = `/admin/invites`
+      return medusaRequest("POST", path, data)
+    },
+    resend(inviteId) {
+      const path = `/admin/invites/${inviteId}/resend`
+      return medusaRequest("POST", path)
+    },
+    delete(inviteId) {
+      const path = `/admin/invites/${inviteId}`
+      return medusaRequest("DELETE", path)
+    },
+    list() {
+      const path = `/admin/invites`
+      return medusaRequest("GET", path)
+    },
+    accept(data) {
+      const path = `/admin/invites/accept`
+      return medusaRequest("POST", path, data)
+    },
+  },
+  users: {
+    resetPasswordToken(data) {
+      const path = `/admin/users/password-token`
+      return medusaRequest("POST", path, data)
+    },
+    resetPassword(data) {
+      const path = `/admin/users/reset-password`
+      return medusaRequest("POST", path, data)
+    },
+
+    list() {
+      const path = `/admin/users`
+      return medusaRequest("GET", path)
+    },
+
+    retrieve(userId) {
+      const path = `/admin/users/${userId}`
+      return medusaRequest("GET", path)
+    },
+
+    update(userId, data) {
+      const path = `/admin/users/${userId}`
+      return medusaRequest("POST", path, data)
+    },
+
+    delete(userId) {
+      const path = `/admin/users/${userId}`
+      return medusaRequest("DELETE", path)
     },
   },
 }

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, useContext } from "react"
 import _ from "lodash"
 import { Router } from "@reach/router"
 import { Text, Box, Flex } from "rebass"
@@ -20,12 +20,13 @@ import {
   DefaultCellContent,
   BadgdeCellContent,
 } from "../../../components/table"
-import Badge from "../../../components/badge"
+import Badge from "../../../components/fundamentals/badge"
 
 import { decideBadgeColor } from "../../../utils/decide-badge-color"
 import useMedusa from "../../../hooks/use-medusa"
 import Spinner from "../../../components/spinner"
 import Button from "../../../components/button"
+import { InterfaceContext } from "../../../context/interface"
 
 const OrderNumCell = styled(Text)`
   z-index: 1000;
@@ -63,23 +64,7 @@ const SwapIndex = ({}) => {
   const [offset, setOffset] = useState(filtersOnLoad.offset || 0)
   const [fetching, setFetching] = useState(false)
 
-  const onKeyDown = event => {
-    switch (event.key) {
-      case "Enter":
-        event.preventDefault()
-        event.stopPropagation()
-        searchQuery()
-        break
-      case "Esc":
-      case "Escape":
-        searchRef.current.blur()
-        break
-      default:
-        break
-    }
-  }
-
-  const searchQuery = () => {
+  const searchQuery = query => {
     setOffset(0)
     const baseUrl = qs.parse(window.location.href).url
 
@@ -99,6 +84,13 @@ const SwapIndex = ({}) => {
       },
     })
   }
+
+  const { setOnSearch, onUnmount } = useContext(InterfaceContext)
+  useEffect(onUnmount, [])
+
+  useEffect(() => {
+    setOnSearch(searchQuery)
+  }, [])
 
   const handlePagination = direction => {
     const updatedOffset =
@@ -132,30 +124,6 @@ const SwapIndex = ({}) => {
           Swaps
         </Text>
       </Flex>
-      <Flex>
-        <Box mb={3} sx={{ maxWidth: "300px" }} mr={2}>
-          <Input
-            ref={searchRef}
-            height="30px"
-            fontSize="12px"
-            id="email"
-            name="q"
-            type="text"
-            placeholder="Search swaps"
-            onKeyDown={onKeyDown}
-            onChange={e => setQuery(e.target.value)}
-            value={query}
-          />
-        </Box>
-        <Button
-          onClick={() => searchQuery()}
-          variant={"primary"}
-          fontSize="12px"
-          mr={2}
-        >
-          Search
-        </Button>
-      </Flex>
       {isLoading || isReloading || fetching ? (
         <Flex
           flexDirection="column"
@@ -167,7 +135,7 @@ const SwapIndex = ({}) => {
             <Spinner dark />
           </Box>
         </Flex>
-      ) : !swaps.length ? (
+      ) : !swaps?.length ? (
         <Flex alignItems="center" justifyContent="center" mt="10%">
           <Text height="75px" fontSize="16px">
             No swaps found

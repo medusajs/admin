@@ -3,7 +3,7 @@ import { Text, Flex, Box } from "rebass"
 import { useForm, useFieldArray } from "react-hook-form"
 
 import Modal from "../../../components/modal"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Button from "../../../components/button"
 
 import useMedusa from "../../../hooks/use-medusa"

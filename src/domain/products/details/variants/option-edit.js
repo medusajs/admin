@@ -1,106 +1,146 @@
-import React, { useState, useEffect } from "react"
-import { Text, Flex, Box } from "rebass"
-import { useForm, useFieldArray } from "react-hook-form"
+import {
+  useAdminCreateProductOption,
+  useAdminDeleteProductOption,
+  useAdminUpdateProductOption,
+} from "medusa-react"
+import React, { useMemo, useState } from "react"
+import Button from "../../../../components/fundamentals/button"
+import Input from "../../../../components/molecules/input"
+import Modal from "../../../../components/molecules/modal"
+import useToaster from "../../../../hooks/use-toaster"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
-import Modal from "../../../../components/modal"
-import Input from "../../../../components/input"
-import CurrencyInput from "../../../../components/currency-input"
-import Button from "../../../../components/button"
-
-import useMedusa from "../../../../hooks/use-medusa"
-
-const NewOption = ({ options, optionMethods, onDelete, onClick }) => {
-  const [toAdd, setToAdd] = useState([])
-  const { control, setValue, register, handleSubmit } = useForm({
-    defaultValues: {
-      options,
-      toAdd: [],
-    },
-  })
-
-  const { fields, remove, append } = useFieldArray({
-    control,
-    name: "toAdd",
-  })
-
-  useEffect(() => {
-    options.forEach((o, index) => {
-      register({ name: `options[${index}]._id` })
-      setValue(`options[${index}]._id`, o._id)
-    })
+const NewOption = ({ productId, options, onDismiss }) => {
+  const optionsArray = useMemo(() => {
+    return [...options]
   }, [options])
 
-  const onRemove = id => {
-    optionMethods.delete(id)
+  const [toSave, setToSave] = useState(optionsArray)
+  const toaster = useToaster()
+
+  const createOption = useAdminCreateProductOption(productId)
+  const updateOption = useAdminUpdateProductOption(productId)
+  const deleteOption = useAdminDeleteProductOption(productId)
+
+  const onAddOption = (e) => {
+    e.preventDefault()
+    setToSave((prev) => {
+      const newVal = [...prev]
+      newVal.push({
+        id: `${Math.random()}`,
+        title: "",
+        isNew: true,
+      })
+      return newVal
+    })
   }
 
-  const onAddOption = () => {
-    append()
+  const onRemove = (id) => {
+    setToSave((prev) => {
+      const newVal = [...prev]
+      const idx = newVal.findIndex((o) => o.id === id)
+      if (idx !== -1) {
+        const editVal = newVal[idx]
+        if (editVal.created_at) {
+          newVal.splice(idx, 1, { ...editVal, isRemoved: true })
+          return newVal
+        } else {
+          newVal.splice(idx, 1)
+          return newVal
+        }
+      }
+      return prev
+    })
   }
 
-  const onSubmit = data => {
-    const toAdd = data.toAdd || []
-    const options = data.options || []
-    Promise.all(
-      toAdd.map((o, index) =>
-        optionMethods.create(o).then(() => {
-          remove(index)
-        })
-      )
+  const onChange = (id, e) => {
+    const value = e.target.value
+    setToSave((prev) => {
+      const newVal = [...prev]
+      const idx = newVal.findIndex((o) => o.id === id)
+      if (idx !== -1) {
+        const editVal = newVal[idx]
+        newVal.splice(idx, 1, { ...editVal, title: value, editted: true })
+        return newVal
+      }
+      return prev
+    })
+  }
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+
+    await Promise.all(
+      toSave.map(async (o) => {
+        if (o.isRemoved) {
+          return deleteOption.mutateAsync(o.id)
+        } else if (o.isNew) {
+          return createOption.mutateAsync({
+            title: o.title,
+          })
+        } else if (o.editted) {
+          return updateOption.mutateAsync({
+            option_id: o.id,
+            title: o.title,
+          })
+        }
+      })
     )
       .then(() => {
-        Promise.all(
-          options.map(o =>
-            optionMethods.update(o._id, {
-              title: o.title,
-            })
-          )
-        )
+        toaster("Options updated", "success")
+        onDismiss()
       })
-      .then(() => onClick())
+      .catch((err) => {
+        toaster(getErrorMessage(err), "error")
+      })
   }
 
   return (
-    <Modal onClick={onClick}>
-      <Modal.Body as="form" onSubmit={handleSubmit(onSubmit)}>
-        <Modal.Header>
-          <Text>Add Option</Text>
-        </Modal.Header>
-        <Modal.Content flexDirection="column">
-          {options.map((o, index) => (
-            <Flex mb={3} alignItems="flex-end" key={o._id}>
-              <Input
-                label="Title"
-                name={`options[${index}].title`}
-                ref={register}
-              />
-              <Button onClick={() => onRemove(o._id)} variant="primary" ml={3}>
-                Remove
+    <Modal handleClose={onDismiss} isLargeModal={false}>
+      <form onSubmit={onSubmit}>
+        <Modal.Body>
+          <Modal.Header>
+            <h2>Add Option</h2>
+          </Modal.Header>
+          <Modal.Content flexDirection="column">
+            {toSave.map(
+              (o, index) =>
+                !o.isRemoved && (
+                  <div className="flex gap-y-2" key={o.id}>
+                    <Input
+                      deletable
+                      label="Title"
+                      name={`toAdd[${index}].title`}
+                      value={o.title}
+                      onChange={(v) => onChange(o.id, v)}
+                      onDelete={() => onRemove(o.id)}
+                    />
+                  </div>
+                )
+            )}
+            <div className="flex w-full justify-end mt-4">
+              <Button size="small" variant="secondary" onClick={onAddOption}>
+                + Add option
               </Button>
-            </Flex>
-          ))}
-          {fields.map((o, index) => (
-            <Flex mb={3} alignItems="flex-end" key={o.id}>
-              <Input
-                label="Title"
-                name={`toAdd[${index}].title`}
-                ref={register()}
-              />
-              <Button onClick={() => remove(index)} variant="primary" ml={3}>
-                Remove
+            </div>
+          </Modal.Content>
+          <Modal.Footer>
+            <div className="flex w-full h-8 justify-end">
+              <Button
+                variant="ghost"
+                className="mr-2 w-32 text-small justify-center"
+                size="large"
+                onClick={onDismiss}
+              >
+                Cancel
               </Button>
-            </Flex>
-          ))}
-          <Button variant="primary" onClick={onAddOption}>
-            + Add option
-          </Button>
-        </Modal.Content>
-        <Modal.Footer justifyContent="flex-end">
-          <Button type="submit" variant="primary">
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal.Body>
+              <Button type="submit" variant="primary">
+                Save
+              </Button>
+            </div>
+          </Modal.Footer>
+        </Modal.Body>
+      </form>
     </Modal>
   )
 }
