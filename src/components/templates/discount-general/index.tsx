@@ -59,7 +59,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
 }) => {
   const editActions: ActionType[] = [
     {
-      label: "Dublicate",
+      label: "Duplicate",
       onClick: () => {
         if (onDuplicate) {
           onDuplicate()
