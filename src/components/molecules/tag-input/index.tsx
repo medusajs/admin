@@ -26,7 +26,7 @@ type TagInputProps = {
 const TagInput: React.FC<TagInputProps> = ({
   onChange,
   onValidate,
-  values,
+  values = [],
   label,
   showLabel = true,
   containerProps,

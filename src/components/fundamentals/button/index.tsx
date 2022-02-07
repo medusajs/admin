@@ -2,7 +2,7 @@ import clsx from "clsx"
 import React, { Children } from "react"
 import Spinner from "../../atoms/spinner"
 
-type ButtonProps = {
+export type ButtonProps = {
   variant: "primary" | "secondary" | "ghost" | "danger"
   size?: "small" | "medium" | "large"
   loading?: boolean
