@@ -136,6 +136,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                   />
                   <InputField
                     label="Amount"
+                    min={0}
                     required
                     type="number"
                     placeholder="10"
