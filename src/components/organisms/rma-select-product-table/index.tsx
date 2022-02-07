@@ -29,6 +29,10 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
 }) => {
   const { push, pop } = useContext(LayeredModalContext)
 
+  console.log(allItems)
+
+  const isSwapOrClaim = order.swap_id || order.claim_id ? true : false
+
   const handleQuantity = (change, item) => {
     if (
       (item.quantity - item.returned_quantity === toReturn[item.id].quantity &&
@@ -240,30 +244,32 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                       )}
                     </div>
                   </Table.Cell>
-                  <Table.Cell colspan={2}>
-                    <div className="flex w-full justify-end">
-                      <Button
-                        onClick={() =>
-                          push(
-                            ReturnReasonScreen(
-                              pop,
-                              toReturn[item.id]?.reason,
-                              toReturn[item.id]?.note,
-                              customReturnOptions,
-                              imagesOnReturns,
-                              (reason, note, files) =>
-                                setReturnReason(reason, note, files, item.id)
+                  {!isSwapOrClaim && (
+                    <Table.Cell colspan={2}>
+                      <div className="flex w-full justify-end">
+                        <Button
+                          onClick={() =>
+                            push(
+                              ReturnReasonScreen(
+                                pop,
+                                toReturn[item.id]?.reason,
+                                toReturn[item.id]?.note,
+                                customReturnOptions,
+                                imagesOnReturns,
+                                (reason, note, files) =>
+                                  setReturnReason(reason, note, files, item.id)
+                              )
                             )
-                          )
-                        }
-                        variant="ghost"
-                        size="small"
-                        className="border border-grey-20"
-                      >
-                        Select Reason
-                      </Button>
-                    </div>
-                  </Table.Cell>
+                          }
+                          variant="ghost"
+                          size="small"
+                          className="border border-grey-20"
+                        >
+                          Select Reason
+                        </Button>
+                      </div>
+                    </Table.Cell>
+                  )}
                 </Table.Row>
               )}
             </>

@@ -58,8 +58,6 @@ const ReceiveMenu = ({
       return
     }
 
-    console.log(toReturn)
-
     const items = Object.keys(toReturn).map((t) =>
       allItems.find((i) => i.id === t)
     )
@@ -67,7 +65,6 @@ const ReceiveMenu = ({
     console.log(items)
     const total =
       items.reduce((acc, next) => {
-        console.log(acc, next)
         return acc + (next.refundable / next.quantity) * quantities[next.id]
       }, 0) -
       ((returnRequest.shipping_method &&
@@ -96,6 +93,7 @@ const ReceiveMenu = ({
 
     if (!returnRequest.is_swap && onReceiveReturn) {
       setSubmitting(true)
+      console.log(refundAmount)
       return onReceiveReturn(returnRequest.id, {
         items,
         refund: Math.round(refundAmount),
