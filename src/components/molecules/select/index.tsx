@@ -38,6 +38,7 @@ type MultiSelectProps = {
     | { label: string; value: string }[]
     | { label: string; value: string }
     | null
+  filterOptions?: (q: string) => any[]
   hasSelectAll?: boolean
   isLoading?: boolean
   shouldToggleOnHover?: boolean
@@ -87,7 +88,6 @@ const Placeholder = (props: PlaceholderProps) => {
 }
 
 const SingleValue = ({ children, ...props }: SingleValueProps) => {
-  console.log(props)
   if (props.selectProps.menuIsOpen && props.selectProps.isSearchable) {
     return null
   }
@@ -182,7 +182,6 @@ const SSelect = React.forwardRef(
       labelledBy = "label",
       options,
       onCreateOption,
-      ...selectOptions
     }: MultiSelectProps,
     ref
   ) => {

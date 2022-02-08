@@ -67,7 +67,6 @@ const ShippingDetails = ({
   }
 
   const onCustomerSelect = async (val) => {
-    console.log(val)
     const email = /\(([^()]*)\)$/.exec(val?.label)
 
     if (!val || !email) {
@@ -104,7 +103,6 @@ const ShippingDetails = ({
   }
 
   const onCustomerCreate = (val) => {
-    console.log(val)
     setCustomerAddresses([])
     setAddNew(true)
     form.setValue("email", val)
