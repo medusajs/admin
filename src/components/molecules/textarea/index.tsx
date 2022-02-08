@@ -2,10 +2,12 @@ import clsx from "clsx"
 import React, { useImperativeHandle, useRef } from "react"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
+import EmojiPicker from "../emoji-picker"
 
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label: string
   key?: string
+  enableEmoji?: boolean
   withTooltip?: boolean
   tooltipText?: string
   tooltipProps?: any
@@ -25,6 +27,7 @@ const Textarea = React.forwardRef(
       tooltipProps = {},
       containerProps,
       className,
+      enableEmoji = false,
       rows = 2,
       ...props
     }: TextareaProps,
@@ -38,6 +41,11 @@ const Textarea = React.forwardRef(
       if (inputRef.current) {
         inputRef.current.scrollTop = 0
       }
+    }
+
+    const handleAddEmoji = (e) => {
+      console.log(e)
+      console.log(inputRef.current?.selectionStart)
     }
 
     return (
@@ -74,6 +82,7 @@ const Textarea = React.forwardRef(
             {...props}
           />
         </div>
+        {enableEmoji && <EmojiPicker onEmojiClick={handleAddEmoji} />}
       </InputContainer>
     )
   }
