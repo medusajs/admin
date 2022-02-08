@@ -6,7 +6,6 @@ export const useHighlightSearch = (query: string) => {
     const parts = text.split(new RegExp(`(${query})`, "gi"))
     return (
       <span>
-        {" "}
         {parts.map((part: string, i: number) => (
           <span
             key={i}
@@ -16,7 +15,7 @@ export const useHighlightSearch = (query: string) => {
           >
             {part}
           </span>
-        ))}{" "}
+        ))}
       </span>
     )
   }
