@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useContext, useRef, useState } from "react"
+import React, { useContext, useRef, useState } from "react"
 import Select, {
   ClearIndicatorProps,
   components,
@@ -18,17 +18,6 @@ import SearchIcon from "../../fundamentals/icons/search-icon"
 import { CacheProvider } from "@emotion/react"
 import createCache from "@emotion/cache"
 import { ModalContext } from "../modal"
-
-type OptionType = React.OptionHTMLAttributes<HTMLOptionElement> & {
-  key?: string
-}
-
-type ItemRendererProps = {
-  checked?: boolean
-  onClick?: ChangeEventHandler<HTMLElement>
-  disabled?: boolean
-  option?: OptionType
-}
 
 type MultiSelectProps = {
   // component props
@@ -56,42 +45,6 @@ type MultiSelectProps = {
   clearSelected?: boolean
   onCreateOption?: (value: string) => { value: string; label: string }
 }
-
-// const valueRenderer = (selected, _options) => {
-//   return selected.length && selected[0]
-//     ? selected.map(({ label }) => label).join(", ")
-//     : undefined
-// }
-
-// const ItemRenderer: React.FC<ItemRendererProps> = ({
-//   checked,
-//   option,
-//   onClick,
-//   disabled,
-// }) => (
-//   <div className={`item-renderer ${disabled && "disabled"} w-full h-full`}>
-//     <div className="items-center h-full flex">
-//       <div
-//         className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-//           checked && "bg-violet-60"
-//         }`}
-//       >
-//         <span className="self-center">
-//           {checked && <CheckIcon size={16} />}
-//         </span>
-//       </div>
-//       <input
-//         className="hidden"
-//         type="checkbox"
-//         onChange={onClick}
-//         checked={checked}
-//         tabIndex={-1}
-//         disabled={disabled}
-//       />
-//       <span className="ml-3 text-grey-90">{option.label}</span>
-//     </div>
-//   </div>
-// )
 
 const MultiValueLabel = ({ ...props }: MultiValueProps) => {
   const isLast =
@@ -285,32 +238,6 @@ const SSelect = React.forwardRef(
           />
         </CacheProvider>
         {isOpen && enableSearch && <div className="w-full h-5" />}
-        {/* <MultiSelect
-          labelledBy={labelledBy}
-          value={isMultiSelect ? value : value ? [value] : []}
-          isOpen={isOpen}
-          hasSelectAll={hasSelectAll}
-          ItemRenderer={ItemRenderer}
-          className="multiselect-styling"
-          overrideStrings={{
-            search: "Search...",
-            ...overrideStrings,
-          }}
-          ClearIcon={
-            <span className="text-grey-40">
-              <XCircleIcon size={20} />
-            </span>
-          }
-          onChange={handleSelect}
-          valueRenderer={valueRenderer}
-          {...selectOptions}
-          disableSearch={!enableSearch}
-          ClearSelectedIcon={
-            <span className="text-grey-40">
-              {clearSelected && <XCircleIcon size={20} />}
-            </span>
-          }
-        /> */}
       </InputContainer>
     )
   }
