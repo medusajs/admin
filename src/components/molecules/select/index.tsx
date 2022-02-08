@@ -282,14 +282,6 @@ const GetSelect = ({
   handleClose,
   ...props
 }) => {
-  // const onChangeCreate = (newVal, meta) => {
-  //   if (meta.action === "create-option") {
-  //     onCreateOption(newVal)
-  //   } else {
-  //     onChange(newVal)
-  //   }
-  // }
-
   if (isCreatable) {
     return searchBackend ? (
       <AsyncCreatableSelect
