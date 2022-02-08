@@ -181,6 +181,7 @@ const SSelect = React.forwardRef(
       placeholder = "Search...",
       labelledBy = "label",
       options,
+      onCreateOption,
       ...selectOptions
     }: MultiSelectProps,
     ref
@@ -201,6 +202,13 @@ const SSelect = React.forwardRef(
     const onClickOption = (val) => {
       onChange(val)
       if (!isMultiSelect) {
+        setIsOpen(false)
+      }
+    }
+
+    const handleOnCreateOption = (val) => {
+      if (onCreateOption) {
+        onCreateOption(val)
         setIsOpen(false)
       }
     }
@@ -247,7 +255,7 @@ const SSelect = React.forwardRef(
             classNamePrefix="react-select"
             placeholder={placeholder}
             className="react-select-container"
-            onCreateOption={selectOptions.onCreateOption}
+            onCreateOption={handleOnCreateOption}
             components={{
               DropdownIndicator: () => null,
               IndicatorSeparator: () => null,
@@ -272,40 +280,39 @@ const GetSelect = ({
   isCreatable,
   searchBackend,
   onCreateOption,
-  onChange,
   handleClose,
   ...props
 }) => {
-  const onChangeCreate = (newVal, meta) => {
-    if (meta.action === "create-option") {
-      onCreateOption(newVal)
-    } else {
-      onChange(newVal)
-    }
-  }
+  // const onChangeCreate = (newVal, meta) => {
+  //   if (meta.action === "create-option") {
+  //     onCreateOption(newVal)
+  //   } else {
+  //     onChange(newVal)
+  //   }
+  // }
 
   if (isCreatable) {
     return searchBackend ? (
       <AsyncCreatableSelect
         defaultOptions={true}
-        onChange={onChangeCreate}
+        // onChange={onChangeCreate}
+        onCreateOption={onCreateOption}
         loadOptions={searchBackend}
         {...props}
       />
     ) : (
-      <CreatableSelect {...props} onChange={onChangeCreate} />
+      <CreatableSelect {...props} onCreateOption={onCreateOption} />
     )
   } else if (searchBackend) {
     return (
       <AsyncSelect
-        onChange={onChange}
         defaultOptions={true}
         loadOptions={searchBackend}
         {...props}
       />
     )
   }
-  return <Select {...props} onChange={onChange} />
+  return <Select {...props} />
 }
 
 export default SSelect

@@ -104,6 +104,7 @@ const ShippingDetails = ({
   }
 
   const onCustomerCreate = (val) => {
+    console.log(val)
     setCustomerAddresses([])
     setAddNew(true)
     form.setValue("email", val)
