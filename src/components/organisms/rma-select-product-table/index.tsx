@@ -17,6 +17,7 @@ type RMASelectProductTableProps = {
   setToReturn: (items: any) => void
   customReturnOptions?: any[]
   imagesOnReturns?: any
+  isSwapOrClaim?: boolean
 }
 
 const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
@@ -26,12 +27,9 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   customReturnOptions = undefined,
   imagesOnReturns = false,
   setToReturn,
+  isSwapOrClaim = false,
 }) => {
   const { push, pop } = useContext(LayeredModalContext)
-
-  console.log(allItems)
-
-  const isSwapOrClaim = order.swap_id || order.claim_id ? true : false
 
   const handleQuantity = (change, item) => {
     if (
@@ -246,7 +244,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   </Table.Cell>
                   {!isSwapOrClaim && (
                     <Table.Cell colspan={2}>
-                      <div className="flex w-full justify-end">
+                      <div className="flex w-full justify-end mb-small">
                         <Button
                           onClick={() =>
                             push(

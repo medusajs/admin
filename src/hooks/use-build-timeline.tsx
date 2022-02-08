@@ -77,6 +77,7 @@ export interface ReturnEvent extends TimelineEvent {
   status: ReturnStatus
   currentStatus?: ReturnStatus
   raw: Return
+  refunded?: boolean
 }
 
 export interface NoteEvent extends TimelineEvent {
@@ -216,6 +217,7 @@ export const useBuildTimelime = (orderId: string) => {
         noNotification: event.no_notification,
         orderId: order.id,
         raw: (event as unknown) as Return,
+        refunded: getWasRefundClaim(event.claim_order_id, order),
       } as ReturnEvent)
 
       if (event.status !== "requested") {
@@ -456,4 +458,14 @@ function getSwapItem(item) {
     thumbnail: item.thumbnail,
     variant: { title: item.variant.title },
   }
+}
+
+function getWasRefundClaim(claimId, order) {
+  const claim = order.claims.find((c) => c.id === claimId)
+
+  if (!claim) {
+    return false
+  }
+
+  return claim.type === "refund"
 }

@@ -7,13 +7,26 @@ import RMASelectProductTable from "../../../../components/organisms/rma-select-p
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
 
-const ReceiveMenu = ({
+type ReceiveMenuProps = {
+  order: any
+  returnRequest: any
+  onDismiss: () => void
+  onReceiveSwap?: (payload: any) => Promise<void>
+  onReceiveReturn?: (id: string, payload: any) => Promise<void>
+  toaster: any
+  isSwapOrClaim?: boolean
+  refunded?: boolean
+}
+
+const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   order,
   returnRequest,
   onReceiveReturn,
   onReceiveSwap,
   onDismiss,
   toaster,
+  isSwapOrClaim = false,
+  refunded = false,
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
@@ -93,7 +106,6 @@ const ReceiveMenu = ({
 
     if (!returnRequest.is_swap && onReceiveReturn) {
       setSubmitting(true)
-      console.log(refundAmount)
       return onReceiveReturn(returnRequest.id, {
         items,
         refund: Math.round(refundAmount),
@@ -126,6 +138,7 @@ const ReceiveMenu = ({
             allItems={allItems}
             toReturn={toReturn}
             setToReturn={(items) => setToReturn(items)}
+            isSwapOrClaim={isSwapOrClaim}
           />
 
           {!returnRequest.is_swap && (
@@ -145,42 +158,43 @@ const ReceiveMenu = ({
                     </span>
                   </div>
                 )}
-
-              <div>
-                <div className="flex inter-base-semibold justify-between w-full">
-                  <span>Total Refund</span>
-                  <div className="flex items-center">
-                    {!refundEdited && (
-                      <>
-                        <span
-                          className="mr-2 cursor-pointer text-grey-40"
-                          onClick={() => setRefundEdited(true)}
-                        >
-                          <EditIcon size={20} />{" "}
-                        </span>
-                        {`${displayAmount(
-                          order.currency_code,
-                          refundAmount
-                        )} ${order.currency_code.toUpperCase()}`}
-                      </>
-                    )}
+              {!refunded && (
+                <div>
+                  <div className="flex inter-base-semibold justify-between w-full">
+                    <span>Total Refund</span>
+                    <div className="flex items-center">
+                      {!refundEdited && (
+                        <>
+                          <span
+                            className="mr-2 cursor-pointer text-grey-40"
+                            onClick={() => setRefundEdited(true)}
+                          >
+                            <EditIcon size={20} />{" "}
+                          </span>
+                          {`${displayAmount(
+                            order.currency_code,
+                            refundAmount
+                          )} ${order.currency_code.toUpperCase()}`}
+                        </>
+                      )}
+                    </div>
                   </div>
+                  {refundEdited && (
+                    <CurrencyInput
+                      className="mt-2"
+                      size="small"
+                      currentCurrency={order.currency_code}
+                      readOnly
+                    >
+                      <CurrencyInput.AmountInput
+                        label={"Amount"}
+                        amount={refundAmount}
+                        onChange={handleRefundUpdated}
+                      />
+                    </CurrencyInput>
+                  )}
                 </div>
-                {refundEdited && (
-                  <CurrencyInput
-                    className="mt-2"
-                    size="small"
-                    currentCurrency={order.currency_code}
-                    readOnly
-                  >
-                    <CurrencyInput.AmountInput
-                      label={"Amount"}
-                      amount={refundAmount}
-                      onChange={handleRefundUpdated}
-                    />
-                  </CurrencyInput>
-                )}
-              </div>
+              )}
             </>
           )}
         </Modal.Content>

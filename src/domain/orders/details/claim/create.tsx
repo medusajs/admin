@@ -252,6 +252,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }
 
     const selectSo = returnShippingOptions.find((s) => so.value === s.id)
+    console.log(selectSo)
     if (selectSo) {
       setReturnShippingMethod(selectSo)
       setReturnShippingPrice(selectSo.amount * (1 + order.tax_rate / 100))
@@ -293,7 +294,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
       <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
-          <h2 class="inter-xlarge-semibold">Create Claim</h2>
+          <h2 className="inter-xlarge-semibold">Create Claim</h2>
         </Modal.Header>
         <Modal.Content>
           <div>
@@ -344,8 +345,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
             {returnShippingMethod && (
               <RMAShippingPrice
                 useCustomShippingPrice={showCustomPrice.return}
-                shippingPrice={customOptionPrice.return || null}
-                currency_code={returnShippingMethod.region.currency_code}
+                shippingPrice={customOptionPrice.return || undefined}
+                currencyCode={returnShippingMethod.region.currency_code}
                 updateShippingPrice={(value) =>
                   setCustomOptionPrice({
                     ...customOptionPrice,

@@ -26,6 +26,8 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
   const [shwoReceive, setShowReceive] = useState(false)
   const cancelReturn = useAdminCancelReturn(event.id)
 
+  console.log(event)
+
   const { order } = useAdminOrder(event.orderId)
 
   const toaster = useToaster()
@@ -65,6 +67,10 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
           onReceiveReturn={handleReceive}
           order={order}
           returnRequest={event.raw}
+          isSwapOrClaim={
+            event.raw.claim_order_id !== null || event.raw.swap_id !== null
+          }
+          refunded={event.refunded}
         />
       )}
     </>
