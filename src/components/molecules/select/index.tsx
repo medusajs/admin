@@ -7,7 +7,11 @@ import Select, {
   MultiValueProps,
   OptionProps,
   PlaceholderProps,
+  SingleValueProps,
 } from "react-select"
+import AsyncSelect from "react-select/async"
+import CreatableSelect from "react-select/creatable"
+import AsyncCreatableSelect from "react-select/async-creatable"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
@@ -80,6 +84,15 @@ const Placeholder = (props: PlaceholderProps) => {
   return props.selectProps.menuIsOpen ? null : (
     <components.Placeholder {...props} />
   )
+}
+
+const SingleValue = ({ children, ...props }: SingleValueProps) => {
+  console.log(props)
+  if (props.selectProps.menuIsOpen && props.selectProps.isSearchable) {
+    return null
+  }
+
+  return <components.SingleValue {...props}>{children}</components.SingleValue>
 }
 
 const Input = (props: InputProps) => {
@@ -163,6 +176,8 @@ const SSelect = React.forwardRef(
       enableSearch = false,
       overrideStrings,
       clearSelected,
+      isCreatable,
+      filterOptions,
       placeholder = "Search...",
       labelledBy = "label",
       options,
@@ -175,14 +190,19 @@ const SSelect = React.forwardRef(
     const [isOpen, setIsOpen] = useState(false)
 
     const selectRef = useRef(null)
+
     const onClick = () => {
-      setIsOpen(true)
-      selectRef.current?.focus()
+      if (!isOpen) {
+        setIsOpen(true)
+        selectRef.current?.focus()
+      }
     }
 
     const onClickOption = (val) => {
-      console.log("clicked")
       onChange(val)
+      if (!isMultiSelect) {
+        setIsOpen(false)
+      }
     }
 
     return (
@@ -206,8 +226,11 @@ const SSelect = React.forwardRef(
             prepend: true,
           })}
         >
-          <Select
+          <GetSelect
+            isCreatable={isCreatable}
+            searchBackend={filterOptions}
             options={options}
+            handleClose={() => setIsOpen(false)}
             ref={selectRef}
             value={value}
             isMulti={isMultiSelect}
@@ -224,6 +247,7 @@ const SSelect = React.forwardRef(
             classNamePrefix="react-select"
             placeholder={placeholder}
             className="react-select-container"
+            onCreateOption={selectOptions.onCreateOption}
             components={{
               DropdownIndicator: () => null,
               IndicatorSeparator: () => null,
@@ -234,6 +258,7 @@ const SSelect = React.forwardRef(
               ClearIndicator,
               Input,
               Menu,
+              SingleValue,
             }}
           />
         </CacheProvider>
@@ -242,5 +267,45 @@ const SSelect = React.forwardRef(
     )
   }
 )
+
+const GetSelect = ({
+  isCreatable,
+  searchBackend,
+  onCreateOption,
+  onChange,
+  handleClose,
+  ...props
+}) => {
+  const onChangeCreate = (newVal, meta) => {
+    if (meta.action === "create-option") {
+      onCreateOption(newVal)
+    } else {
+      onChange(newVal)
+    }
+  }
+
+  if (isCreatable) {
+    return searchBackend ? (
+      <AsyncCreatableSelect
+        defaultOptions={true}
+        onChange={onChangeCreate}
+        loadOptions={searchBackend}
+        {...props}
+      />
+    ) : (
+      <CreatableSelect {...props} onChange={onChangeCreate} />
+    )
+  } else if (searchBackend) {
+    return (
+      <AsyncSelect
+        onChange={onChange}
+        defaultOptions={true}
+        loadOptions={searchBackend}
+        {...props}
+      />
+    )
+  }
+  return <Select {...props} onChange={onChange} />
+}
 
 export default SSelect

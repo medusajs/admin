@@ -45,7 +45,7 @@ const ShippingDetails = ({
   }, [shipping])
 
   // "region",
-  const debouncedFetch = (options, filter) => {
+  const debouncedFetch = (filter) => {
     const prepared = qs.stringify(
       {
         q: filter,
@@ -67,6 +67,7 @@ const ShippingDetails = ({
   }
 
   const onCustomerSelect = async (val) => {
+    console.log(val)
     const email = /\(([^()]*)\)$/.exec(val?.label)
 
     if (!val || !email) {
