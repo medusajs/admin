@@ -61,7 +61,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
             />
           </div>
           <div className="flex items-center justify-between">
-            <h1 className="inter-xlarge-semibold text-grey-90">
+            <h1 className="inter-xlarge-semibold text-grey-90 truncate max-w-[50%]">
               {customerName()}
             </h1>
             <Actionables actions={actions} />
@@ -79,7 +79,9 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
           </div>
           <div className="flex flex-col pl-6">
             <div className="inter-smaller-regular text-grey-50 mb-1">Phone</div>
-            <div>{customer?.phone || "N/A"}</div>
+            <div className="truncate max-w-[200px]">
+              {customer?.phone || "N/A"}
+            </div>
           </div>
           <div className="flex flex-col pl-6">
             <div className="inter-smaller-regular text-grey-50 mb-1">

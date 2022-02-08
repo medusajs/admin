@@ -2,9 +2,6 @@ import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
 import clsx from "clsx"
 import React from "react"
 
-type RadioGroupProps = RadioGroupPrimitive.RadioGroupProps &
-  React.RefAttributes<HTMLDivElement>
-
 type RadioGroupItemProps = {
   label: string
   sublabel?: string
@@ -13,7 +10,7 @@ type RadioGroupItemProps = {
   React.RefAttributes<HTMLButtonElement>
 
 type RadioGroupSimpleItemProps = {
-  label: string
+  label?: string
 } & RadioGroupPrimitive.RadioGroupItemProps &
   React.RefAttributes<HTMLButtonElement>
 
@@ -93,9 +90,11 @@ const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
           )}
         />
       </RadioGroupPrimitive.Item>
-      <span className="ml-small inter-base-regular cursor-pointer">
-        {label}
-      </span>
+      {label && (
+        <span className="ml-small inter-base-regular cursor-pointer">
+          {label}
+        </span>
+      )}
     </label>
   )
 }

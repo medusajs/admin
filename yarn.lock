@@ -142,7 +142,7 @@
     "@babel/helper-replace-supers" "^7.16.7"
     "@babel/helper-split-export-declaration" "^7.16.7"
 
-"@babel/helper-create-regexp-features-plugin@^7.16.7":
+"@babel/helper-create-regexp-features-plugin@^7.10.1", "@babel/helper-create-regexp-features-plugin@^7.16.7":
   version "7.17.0"
   resolved "https://registry.yarnpkg.com/@babel/helper-create-regexp-features-plugin/-/helper-create-regexp-features-plugin-7.17.0.tgz#1dcc7d40ba0c6b6b25618997c5dbfd310f186fe1"
   integrity sha512-awO2So99wG6KnlE+TPs6rn83gCz5WlEePJDTnLEqbchMVrBeAujURVphRdigsk094VhvZehFoNOihSlcBjwsXA==
@@ -255,7 +255,7 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.10.4.tgz#2f75a831269d4f677de49986dff59927533cf375"
   integrity sha512-O4KCvQA6lLiMU9l2eawBPMf1xPP8xPfB3iEQw150hOVTqj/rfXz0ThTb4HEzqQfs2Bmo5Ay8BzxfzVtBrr9dVg==
 
-"@babel/helper-plugin-utils@^7.0.0", "@babel/helper-plugin-utils@^7.10.4", "@babel/helper-plugin-utils@^7.12.13", "@babel/helper-plugin-utils@^7.13.0", "@babel/helper-plugin-utils@^7.14.5", "@babel/helper-plugin-utils@^7.16.7", "@babel/helper-plugin-utils@^7.8.0", "@babel/helper-plugin-utils@^7.8.3":
+"@babel/helper-plugin-utils@^7.0.0", "@babel/helper-plugin-utils@^7.10.1", "@babel/helper-plugin-utils@^7.10.4", "@babel/helper-plugin-utils@^7.12.13", "@babel/helper-plugin-utils@^7.13.0", "@babel/helper-plugin-utils@^7.14.5", "@babel/helper-plugin-utils@^7.16.7", "@babel/helper-plugin-utils@^7.8.0", "@babel/helper-plugin-utils@^7.8.3":
   version "7.16.7"
   resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.16.7.tgz#aa3a8ab4c3cceff8e65eb9e73d87dc4ff320b2f5"
   integrity sha512-Qg3Nk7ZxpgMrsox6HreY1ZNKdBq7K72tDSliA6dCl5f007jR4ne8iD5UzuNnCJH2xBf2BEEVGr+/OL6Gdp7RxA==
@@ -301,7 +301,7 @@
   dependencies:
     "@babel/types" "^7.16.7"
 
-"@babel/helper-validator-identifier@^7.16.7":
+"@babel/helper-validator-identifier@^7.10.1", "@babel/helper-validator-identifier@^7.16.7":
   version "7.16.7"
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.16.7.tgz#e8c602438c4a8195751243da9031d1607d247cad"
   integrity sha512-hsEnFemeiW4D08A5gUAZxLBTXpZ39P+a+DGDsHw1yxqyQ/jzFEnxf5uTEGp+3bzAbNOxU1paTgYS4ECU/IgfDw==
@@ -714,13 +714,21 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.16.7"
 
-"@babel/plugin-transform-dotall-regex@^7.16.7", "@babel/plugin-transform-dotall-regex@^7.4.4":
+"@babel/plugin-transform-dotall-regex@^7.16.7":
   version "7.16.7"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-dotall-regex/-/plugin-transform-dotall-regex-7.16.7.tgz#6b2d67686fab15fb6a7fd4bd895d5982cfc81241"
   integrity sha512-Lyttaao2SjZF6Pf4vk1dVKv8YypMpomAbygW+mU5cYP3S5cWTfCJjG8xV6CFdzGFlfWK81IjL9viiTvpb6G7gQ==
   dependencies:
     "@babel/helper-create-regexp-features-plugin" "^7.16.7"
     "@babel/helper-plugin-utils" "^7.16.7"
+
+"@babel/plugin-transform-dotall-regex@^7.4.4":
+  version "7.10.1"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-dotall-regex/-/plugin-transform-dotall-regex-7.10.1.tgz"
+  integrity sha512-19VIMsD1dp02RvduFUmfzj8uknaO3uiHHF0s3E1OHnVsNj8oge8EQ5RzHRbJjGSetRnkEuBYO7TG1M5kKjGLOA==
+  dependencies:
+    "@babel/helper-create-regexp-features-plugin" "^7.10.1"
+    "@babel/helper-plugin-utils" "^7.10.1"
 
 "@babel/plugin-transform-duplicate-keys@^7.16.7":
   version "7.16.7"
@@ -1116,17 +1124,31 @@
     source-map-support "^0.5.16"
 
 "@babel/runtime-corejs3@^7.10.2":
-  version "7.17.0"
-  resolved "https://registry.yarnpkg.com/@babel/runtime-corejs3/-/runtime-corejs3-7.17.0.tgz#9de2f75b3ca4b68628c01bd76410b64faa4644f7"
-  integrity sha512-qeydncU80ravKzovVncW3EYaC1ji3GpntdPgNcJy9g7hHSY6KX+ne1cbV3ov7Zzm4F1z0+QreZPCuw1ynkmYNg==
+  version "7.11.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime-corejs3/-/runtime-corejs3-7.11.0.tgz"
+  integrity sha512-K0ioacsw8JgzDSPpUiGWokMvLzGvnZPXLrTsJfyHPrFsnp4yoKn+Ap/8NNZgWKZG9o5+qotH8tAa8AXn8gTN5A==
   dependencies:
-    core-js-pure "^3.20.2"
+    core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.0", "@babel/runtime@^7.10.2", "@babel/runtime@^7.12.0", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.14.6", "@babel/runtime@^7.14.8", "@babel/runtime@^7.15.4", "@babel/runtime@^7.16.3", "@babel/runtime@^7.16.7", "@babel/runtime@^7.3.1", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.2", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2", "@babel/runtime@^7.9.6":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.2", "@babel/runtime@^7.12.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2", "@babel/runtime@^7.9.6":
+  version "7.13.8"
+  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.13.8.tgz"
+  integrity sha512-CwQljpw6qSayc0fRG1soxHAKs1CnQMOChm4mlQP6My0kf9upVGizj/KhlTTgyUnETmHpcUXjaluNAkteRFuafg==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
+"@babel/runtime@^7.10.0", "@babel/runtime@^7.12.5", "@babel/runtime@^7.14.6", "@babel/runtime@^7.14.8", "@babel/runtime@^7.15.4", "@babel/runtime@^7.16.3", "@babel/runtime@^7.16.7", "@babel/runtime@^7.6.2":
   version "7.17.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.17.0.tgz#b8d142fc0f7664fb3d9b5833fd40dcbab89276c0"
   integrity sha512-etcO/ohMNaNA2UBdaXBBSX/3aEzFMRrVfaPv8Ptc0k+cWpWW0QFiGZ2XnVqQZI1Cf734LbPGmqBKWESfW4x/dQ==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
+"@babel/runtime@^7.13.10":
+  version "7.16.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.16.5.tgz#7f3e34bf8bdbbadf03fbb7b1ea0d929569c9487a"
+  integrity sha512-TXWihFIS3Pyv5hzR7j6ihmeLkZfrXGxAr5UfSl8CHf+6q/wpiYDkUau0czckpYG8QmnCIuPpdLtuA9VmuGGyMA==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -1155,12 +1177,21 @@
     debug "^4.1.0"
     globals "^11.1.0"
 
-"@babel/types@^7.0.0-beta.49", "@babel/types@^7.12.11", "@babel/types@^7.12.6", "@babel/types@^7.12.7", "@babel/types@^7.15.4", "@babel/types@^7.16.0", "@babel/types@^7.16.7", "@babel/types@^7.16.8", "@babel/types@^7.17.0", "@babel/types@^7.2.0", "@babel/types@^7.4.4":
+"@babel/types@^7.0.0-beta.49", "@babel/types@^7.12.11", "@babel/types@^7.12.6", "@babel/types@^7.12.7", "@babel/types@^7.15.4", "@babel/types@^7.16.0", "@babel/types@^7.16.7", "@babel/types@^7.16.8", "@babel/types@^7.17.0", "@babel/types@^7.2.0":
   version "7.17.0"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.17.0.tgz#a826e368bccb6b3d84acd76acad5c0d87342390b"
   integrity sha512-TmKSNO4D5rzhL5bjWFcVHHLETzfQ/AmbKpKPOSjlP0WoHZ6L911fgoOKY4Alp/emzG4cHJdyN49zpgkbXFEHHw==
   dependencies:
     "@babel/helper-validator-identifier" "^7.16.7"
+    to-fast-properties "^2.0.0"
+
+"@babel/types@^7.4.4":
+  version "7.10.2"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.10.2.tgz"
+  integrity sha512-AD3AwWBSz0AWF0AkCN9VPiWrvldXq+/e3cHa4J89vo4ymjz1XwrBFFVZmkJTsQIPNk+ZVomPSXUJqq8yyjZsng==
+  dependencies:
+    "@babel/helper-validator-identifier" "^7.10.1"
+    lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
 "@base2/pretty-print-object@1.0.1":
@@ -2096,7 +2127,7 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@^1.0.11-alpha.9", "@medusajs/medusa-js@^1.0.11-alpha.9+59bb4132":
+"@medusajs/medusa-js@^1.0.11-alpha.9+59bb4132":
   version "1.0.11-alpha.9"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-alpha.9.tgz#28020af761be039a3b15885a57744c1b69f58818"
   integrity sha512-liqkM5KOTsjZRIs9LFuOhbL66PHAs2ukvN1Qdn3f2Hpx6YLs2+OiW2Wt6DFn+i/R9rKi8jy83YH0irK+sKsVNg==
@@ -2107,10 +2138,21 @@
     qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa@^1.1.61-alpha.14":
-  version "1.1.62"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.62.tgz#edb37da7da3e5fef77820ea6fb2b5326af958037"
-  integrity sha512-debQ5LqLYpOhVchHk9vWX+gRV11HbSTKJ9C4zkgXg9MhUbfH9PVZLtRQlqgEToNL8wZ6x5n6CeBWXZ38ooPtDQ==
+"@medusajs/medusa-js@^1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.12.tgz#7874fefb4e65ae4fbe9e0e73bf386d02a6297c8b"
+  integrity sha512-g3uFtTUFrso+0Kopp8rIzgdAVpJLo9hiBbZ2xeTdojVrex7VB9zUPc6tBa5TQmPQysI/QlPfdFM+dALGRdCDRA==
+  dependencies:
+    "@medusajs/medusa" "^1.1.64"
+    axios "^0.24.0"
+    form-data "^4.0.0"
+    qs "^6.10.3"
+    retry-axios "^2.6.0"
+
+"@medusajs/medusa@^1.1.63-alpha.9+59bb4132":
+  version "1.1.63-alpha.9"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.63-alpha.9.tgz#a0d511b8c1b94b86216964b233020af6f593ecc0"
+  integrity sha512-8JofT2ID4EZvouzkOzBV0M8o5Xdp8jmmvwAzsebd2KtpdZ7vzn/+O/s+OMh3FZv75/g54z6+Fudx3nQd+MQiNw==
   dependencies:
     "@hapi/joi" "^16.1.8"
     "@medusajs/medusa-cli" "^1.1.27"
@@ -2157,10 +2199,10 @@
     uuid "^8.3.1"
     winston "^3.2.1"
 
-"@medusajs/medusa@^1.1.63-alpha.9+59bb4132":
-  version "1.1.63-alpha.9"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.63-alpha.9.tgz#a0d511b8c1b94b86216964b233020af6f593ecc0"
-  integrity sha512-8JofT2ID4EZvouzkOzBV0M8o5Xdp8jmmvwAzsebd2KtpdZ7vzn/+O/s+OMh3FZv75/g54z6+Fudx3nQd+MQiNw==
+"@medusajs/medusa@^1.1.64":
+  version "1.1.64"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.64.tgz#236f04fad06dafed4fd0f3aed4d06307acc07a5b"
+  integrity sha512-u2TTNygrIUt90PvTCqzlMEYCKTVffTLp9n/Ix+VXHW/DIhauPk74izyNGAgU9oLYWw/H0JLEu3O+6Jv18AKSTA==
   dependencies:
     "@hapi/joi" "^16.1.8"
     "@medusajs/medusa-cli" "^1.1.27"
@@ -6730,7 +6772,7 @@ core-js-compat@^3.20.2, core-js-compat@^3.21.0, core-js-compat@^3.8.1:
     browserslist "^4.19.1"
     semver "7.0.0"
 
-core-js-pure@^3.20.2, core-js-pure@^3.8.1, core-js-pure@^3.8.2:
+core-js-pure@^3.0.0, core-js-pure@^3.8.1, core-js-pure@^3.8.2:
   version "3.21.0"
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.21.0.tgz#819adc8dfb808205ce25b51d50591becd615db7e"
   integrity sha512-VaJUunCZLnxuDbo1rNOzwbet9E1K9joiXS5+DQMPtgxd24wfsZbJZMMfQLGYMlCUvSxLfsRUUhoOR2x28mFfeg==
@@ -11854,7 +11896,7 @@ lodash.without@^4.4.0:
   resolved "https://registry.yarnpkg.com/lodash.without/-/lodash.without-4.4.0.tgz#3cd4574a00b67bae373a94b748772640507b7aac"
   integrity sha1-PNRXSgC2e643OpS3SHcmQFB7eqw=
 
-lodash@4.17.21, lodash@^4.17.10, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.4:
+lodash@4.17.21, lodash@^4.17.10, lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.4:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==

@@ -1,14 +1,13 @@
+import update from "immutability-helper"
+import { debounce } from "lodash"
 import React, { useEffect, useMemo, useRef, useState } from "react"
-
-import Table from "../molecules/table"
 import { DndProvider, useDrag, useDrop } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { useTable } from "react-table"
-import GripIcon from "../fundamentals/icons/grip-icon"
 import Button from "../fundamentals/button"
+import GripIcon from "../fundamentals/icons/grip-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
-import update from "immutability-helper"
-import { debounce } from "lodash"
+import Table from "../molecules/table"
 
 type DraggableTableProps = {
   entities: any[]
@@ -141,7 +140,7 @@ const DraggableTable: React.FC<DraggableTableProps> = ({
 
     return (
       <Table.Row ref={dropRef} style={{ opacity }}>
-        <Table.Cell className="max-w-content">
+        <Table.Cell className="medium:w-[72px] small:w-auto">
           <Button
             ref={dragRef}
             variant="ghost"

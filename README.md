@@ -66,6 +66,15 @@ After these four steps and only a couple of minutes, you now have a complete com
    ```
 4. **Go to [http://localhost:7000](http://localhost:7000)**
 
+You can create your own user for the admin by running:
+```
+medusa user -e some@email.com -p some-password
+```
+Alternatively, if you've seeded your server with our dummy data, you can use the following credentials:
+```
+admin@medusa-test.com // supersecret
+```
+
 ## 🛒 Setting up a storefront for your Medusa project
 Medusa is a headless commerce engine which means that it can be used for any type of digital commerce experience - you may use it as the backend for an app, a voice application, social commerce experiences or a traditional e-commerce website, you may even want to integrate Medusa into your own software to enable commerce functionality. All of these are use cases that Medusa supports - to learn more read the documentation or reach out.
 
