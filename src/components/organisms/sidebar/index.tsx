@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
   const fetchUsers = async () => {
     Medusa.users.list().then(({ data }) => {
       setUsers(data.users)
-    })
+    }).catch(e => {});
   }
 
   useEffect(() => {
