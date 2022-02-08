@@ -26,6 +26,7 @@ export interface TimelineEvent {
     | "exchange_fulfilled"
     | "notification"
     | "claim"
+    | "refund"
 }
 
 interface CancelableEvent {
@@ -63,6 +64,13 @@ export interface ItemsFulfilledEvent extends FulfillmentEvent {
 
 export interface ItemsShippedEvent extends FulfillmentEvent {
   items: OrderItem[]
+}
+
+export interface RefundEvent extends TimelineEvent {
+  amount: number
+  reason: string
+  currencyCode: string
+  note?: string
 }
 
 enum ReturnStatus {
@@ -182,6 +190,18 @@ export const useBuildTimelime = (orderId: string) => {
           orderId: order.id,
         } as NoteEvent)
       }
+    }
+
+    for (const event of order.refunds) {
+      events.push({
+        amount: event.amount,
+        currencyCode: order.currency_code,
+        id: event.id,
+        note: event.note,
+        reason: event.reason,
+        time: event.created_at,
+        type: "refund",
+      } as RefundEvent)
     }
 
     for (const event of order.fulfillments) {

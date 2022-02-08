@@ -114,16 +114,10 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   }
 
   const handleReceiveReturn = async (items) => {
-    receiveReturn.mutate(
-      {
-        swap_id: event.id,
-        items,
-      },
-      {
-        onSuccess: (data) => console.log(data),
-        onError: (error) => console.log(error),
-      }
-    )
+    receiveReturn.mutate({
+      swap_id: event.id,
+      items,
+    })
 
     setShowReceiveReturn(false)
   }
@@ -150,8 +144,6 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
       variant: "danger",
     })
   }
-
-  console.log(event.raw)
 
   const args = {
     title: event.canceledAt ? "Exchange Canceled" : "Exchange Requested",

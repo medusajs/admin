@@ -17,6 +17,7 @@ import {
   NoteEvent,
   NotificationEvent,
   OrderPlacedEvent,
+  RefundEvent,
   ReturnEvent,
   TimelineEvent,
   useBuildTimelime,
@@ -37,6 +38,7 @@ import Note from "../../molecules/timeline-events/note"
 import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
+import Refund from "../../molecules/timeline-events/refund"
 import Return from "../../molecules/timeline-events/return"
 
 type TimelineProps = {
@@ -172,6 +174,8 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
       return <Claim event={event as ClaimEvent} refetch={refetch} />
     case "notification":
       return <Notification event={event as NotificationEvent} />
+    case "refund":
+      return <Refund event={event as RefundEvent} />
     default:
       return null
   }

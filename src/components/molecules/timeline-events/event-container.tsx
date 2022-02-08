@@ -51,9 +51,7 @@ const EventContainer: React.FC<EventContainerProps> = ({
         </div>
         <div className="flex items-center gap-x-xsmall">
           {noNotification && (
-            <Tooltip
-              content="Notifications related to this event are disabled"
-            >
+            <Tooltip content="Notifications related to this event are disabled">
               <BellOffIcon size={20} className="text-grey-40" />
             </Tooltip>
           )}

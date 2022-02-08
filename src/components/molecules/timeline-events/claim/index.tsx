@@ -27,8 +27,6 @@ const Claim: React.FC<ClaimProps> = ({ event, refetch }) => {
   const [showCancel, setShowCancel] = useState(false)
   const [showFulfillment, setShowFulfillment] = useState(false)
 
-  console.log(event)
-
   const handleCancel = () => {
     cancelClaim.mutate("") // error on hook endpoint is /admin/orders/claim_01FTRG93AK830MS285CB20CBJW/claims//cancel
   }

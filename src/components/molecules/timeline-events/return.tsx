@@ -23,10 +23,8 @@ type ReturnRequestedProps = {
 
 const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
   const [showCancel, setShowCancel] = useState(false)
-  const [shwoReceive, setShowReceive] = useState(false)
+  const [showReceive, setShowReceive] = useState(false)
   const cancelReturn = useAdminCancelReturn(event.id)
-
-  console.log(event)
 
   const { order } = useAdminOrder(event.orderId)
 
@@ -60,7 +58,7 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
           text="Are you sure you want to cancel this return?"
         />
       )}
-      {shwoReceive && (
+      {showReceive && (
         <ReceiveMenu
           onDismiss={() => setShowReceive(false)}
           toaster={toaster}
