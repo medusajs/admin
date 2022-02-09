@@ -93,7 +93,7 @@ Modal.Content = ({ children, className, isLargeModal }) => {
   return (
     <div
       style={style}
-      className={clsx("px-7 pt-5 overflow-y-scroll", className, {
+      className={clsx("px-7 pt-5 overflow-y-auto", className, {
         ["w-largeModal pb-7"]: isLargeModal,
         ["pb-5"]: !isLargeModal,
       })}

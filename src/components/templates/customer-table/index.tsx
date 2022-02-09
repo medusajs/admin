@@ -126,7 +126,7 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
   }, [representationObject])
 
   return (
-    <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
+    <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
       <Table enableSearch handleSearch={setQuery} {...getTableProps()}>
         <Table.Head>
           {headerGroups?.map((headerGroup) => (

@@ -134,7 +134,7 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
 
   return (
     <>
-      <div className="w-full h-full flex flex-col justify-between overflow-y-scroll">
+      <div className="w-full h-full flex flex-col justify-between overflow-y-auto">
         {!products?.length ? (
           <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
             {isLoading ? (

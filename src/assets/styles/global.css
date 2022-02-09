@@ -367,6 +367,23 @@
   .hidden-actions[data-state="open"] {
     opacity: 1;
   }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent 
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-rounded bg-grey-30
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-grey-40
+  }
 }
 
 /* Classes to remove number spinners from inputs of type number */
