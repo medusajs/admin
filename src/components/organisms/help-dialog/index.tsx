@@ -82,7 +82,7 @@ const MailDialog = ({ onDismiss }) => {
           }}
           rows={8}
         >
-          <EmojiPickerEl
+          <EmojiPicker
             isOpen={showEmojiPicker}
             onChange={setShowEmojiPicker}
             onEmojiClick={handleAddEmoji}
@@ -111,7 +111,7 @@ const MailDialog = ({ onDismiss }) => {
   )
 }
 
-const EmojiPickerEl = ({ isOpen, onChange, onEmojiClick }) => {
+const EmojiPicker = ({ isOpen, onChange, onEmojiClick }) => {
   return (
     <RadixDropdown.Root open={isOpen} onOpenChange={(val) => onChange(val)}>
       <RadixDropdown.Trigger>
