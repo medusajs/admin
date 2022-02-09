@@ -66,7 +66,7 @@ After these four steps and only a couple of minutes, you now have a complete com
    ```
 4. **Go to [http://localhost:7000](http://localhost:7000)**
 
-You can create your own user for the admin by running:
+Back to your Medusa engine installation directory, you can create your own user for the admin by running:
 ```
 medusa user -e some@email.com -p some-password
 ```
