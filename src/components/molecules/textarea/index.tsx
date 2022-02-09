@@ -2,15 +2,11 @@ import clsx from "clsx"
 import React, { useImperativeHandle, useRef } from "react"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
-import EmojiPicker from "../emoji-picker"
-import * as RadixDropdown from "@radix-ui/react-popover"
-import Picker, { SKIN_TONE_NEUTRAL } from "emoji-picker-react"
-import Button from "../../fundamentals/button"
-import HappyIcon from "../../fundamentals/icons/happy-icon"
 
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label: string
   key?: string
+  enableEmoji?: boolean
   withTooltip?: boolean
   tooltipText?: string
   tooltipProps?: any
@@ -31,6 +27,7 @@ const Textarea = React.forwardRef(
       tooltipProps = {},
       containerProps,
       className,
+      enableEmoji = false,
       rows = 2,
       children,
       ...props
@@ -45,6 +42,11 @@ const Textarea = React.forwardRef(
       if (inputRef.current) {
         inputRef.current.scrollTop = 0
       }
+    }
+
+    const handleAddEmoji = (e) => {
+      console.log(e)
+      console.log(inputRef.current?.selectionStart)
     }
 
     return (

@@ -12,15 +12,15 @@ const MailDialog = ({ onDismiss }) => {
   const [subject, setSubject] = useState("")
   const [body, setBody] = useState("")
   const [bodySelectionStart, setBodySelectionStart] = useState(0)
-  const [link, setLink] = useState("mailto:hello@medusajs.com")
+  const [link, setLink] = useState("mailto:support@medusajs.com")
   const ref = React.useRef(null)
   const [showEmojiPicker, setShowEmojiPicker] = React.useState(false)
 
   React.useEffect(() => {
     setLink(
-      `mailto:hello@medusajs.com?subject=${encodeURI(subject)}&body=${encodeURI(
-        body
-      )}`
+      `mailto:support@medusajs.com?subject=${encodeURI(
+        subject
+      )}&body=${encodeURI(body)}`
     )
   }, [subject, body])
 
@@ -55,7 +55,7 @@ const MailDialog = ({ onDismiss }) => {
   return (
     <div
       ref={ref}
-      className="bg-grey-0 w-[400px] overflow-auto shadow-dropdown rounded-rounded p-8 top-[64px] bottom-2 right-3 rounded overflow-x-hidden fixed right-0 flex flex-col justify-between"
+      className="bg-grey-0 w-[400px] shadow-dropdown rounded-rounded p-8 top-[64px] bottom-2 right-3 rounded overflow-x-hidden fixed flex flex-col justify-between"
     >
       <div className="overflow-visible">
         <h1 className="inter-xlarge-semibold mb-1">How can we help?</h1>
