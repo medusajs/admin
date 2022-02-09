@@ -71,6 +71,7 @@
     "react-tooltip": "^4.2.10",
     "rebass": "^4.0.7",
     "stream-browserify": "^3.0.0",
+    "tailwindcss-theme-swapper": "^0.4.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

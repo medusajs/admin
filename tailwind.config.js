@@ -1,22 +1,24 @@
+const themeSwapper = require("tailwindcss-theme-swapper")
+
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     screens: {},
     extend: {
       colors: {
-        grey: {
-          0: "#FFFFFF",
-          5: "#F9FAFB",
-          10: "#F3F4F6",
-          20: "#E5E7EB",
-          30: "#D1D5DB",
-          40: "#9CA3AF",
-          50: "#6B7280",
-          60: "#4B5563",
-          70: "#374151",
-          80: "#1F2937",
-          90: "#111827",
-        },
+        // grey: {
+        //   0: "#FFFFFF",
+        //   5: "#F9FAFB",
+        //   10: "#F3F4F6",
+        //   20: "#E5E7EB",
+        //   30: "#D1D5DB",
+        //   40: "#9CA3AF",
+        //   50: "#6B7280",
+        //   60: "#4B5563",
+        //   70: "#374151",
+        //   80: "#1F2937",
+        //   90: "#111827",
+        // },
         violet: {
           5: "#F5F3FF",
           10: "#EDE9FE",
@@ -278,6 +280,52 @@ module.exports = {
     require("@tailwindcss/line-clamp"),
     require("@tailwindcss/forms")({
       strategy: "class",
+    }),
+    themeSwapper({
+      themes: [
+        {
+          name: "dark",
+          selectors: [":root"],
+          theme: {
+            colors: {
+              grey: {
+                0: "#FFFFFF",
+                5: "#F9FAFB",
+                10: "#F3F4F6",
+                20: "#E5E7EB",
+                30: "#D1D5DB",
+                40: "#9CA3AF",
+                50: "#6B7280",
+                60: "#4B5563",
+                70: "#374151",
+                80: "#1F2937",
+                90: "#111827",
+              },
+            },
+          },
+        },
+        {
+          name: "base",
+          selectors: [":root"],
+          theme: {
+            colors: {
+              grey: {
+                90: "#FFFFFF",
+                80: "#F9FAFB",
+                70: "#F3F4F6",
+                60: "#E5E7EB",
+                50: "#D1D5DB",
+                40: "#9CA3AF",
+                30: "#6B7280",
+                20: "#4B5563",
+                10: "#374151",
+                5: "#1F2937",
+                0: "#111827",
+              },
+            },
+          },
+        },
+      ],
     }),
   ],
 }
