@@ -63,7 +63,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
       { ...data },
       {
         onSuccess: () => {
-          toaster("Succesfully updated gift card", "success")
+          toaster("Succesfully updated Gift Card", "success")
           setShowEdit(false)
           setShowUpdateBalance(false)
         },

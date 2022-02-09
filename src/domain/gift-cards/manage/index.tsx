@@ -247,7 +247,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
                 </div>
                 <TagInput
                   label="Tags (separated by comma)"
-                  tooltipContent="Tags are one word descriptors for the gift card"
+                  tooltipContent="Tags are one word descriptors for the Gift Card"
                   placeholder={"sprint, summer"}
                   className="w-1/2"
                   values={tags}

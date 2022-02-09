@@ -82,7 +82,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
     const trimmedName = data.name.trim()
 
     if (!trimmedName) {
-      toaster("Please enter a name for the gift card", "error")
+      toaster("Please enter a name for the Gift Card", "error")
       focusByName("name")
       return
     }
@@ -111,7 +111,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
       },
       {
         onSuccess: () => {
-          toaster("Successfully created gift card", "success")
+          toaster("Successfully created Gift Card", "success")
           refetch()
           navigate("/a/gift-cards/manage")
         },
@@ -139,13 +139,13 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
               <InputField
                 label={"Name"}
                 required
-                placeholder="The best gift card"
+                placeholder="The best Gift Card"
                 name="name"
                 ref={register({ required: true })}
               />
               <Textarea
                 label="Description"
-                placeholder="The best gift card of all time"
+                placeholder="The best Gift Card of all time"
                 name="description"
                 ref={register}
               />

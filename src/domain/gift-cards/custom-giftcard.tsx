@@ -59,7 +59,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
     createGiftCard.mutate(update, {
       onSuccess: () => {
-        toaster("Created Custom gift card", "success")
+        toaster("Created Custom Gift Card", "success")
         onDismiss()
       },
       onError: (error) => {
