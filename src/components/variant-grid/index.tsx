@@ -1,4 +1,3 @@
-import clsx from "clsx"
 import { useAdminDeleteVariant, useAdminUpdateVariant } from "medusa-react"
 import React, { useState } from "react"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
@@ -7,6 +6,7 @@ import useImperativeDialog from "../../hooks/use-imperative-dialog"
 import { getErrorMessage } from "../../utils/error-messages"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
+import GridInput from "../molecules/grid-input"
 import Table from "../molecules/table"
 import { Wrapper } from "./elements"
 import { useGridColumns } from "./use-grid-columns"
@@ -108,14 +108,8 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
                           {getDisplayValue(variant, col)}
                         </div>
                       ) : (
-                        <input
+                        <GridInput
                           key={j}
-                          className={clsx(
-                            "outline-none outline-0 leading-base bg-transparent",
-                            "py-4 px-2 w-full h-full border rounded-rounded border-transparent",
-                            "inter-small-regular placeholder:text-grey-40",
-                            "focus-within:shadow-input focus-within:border focus-within:border-violet-60"
-                          )}
                           value={variant[col.field]}
                           onChange={({ currentTarget }) =>
                             handleChange(i, col.field, currentTarget.value)

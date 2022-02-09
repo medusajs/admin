@@ -12,16 +12,9 @@ export const useGridColumns = (product, isEditing) => {
     const optionColumns = product.options.map((o) => ({
       header: o.title,
       field: "options",
-      editor: "option",
-      option_id: o.id,
       formatter: (variantOptions) => {
         const displayVal = variantOptions.find((val) => val.option_id === o.id)
-
-        if (displayVal) {
-          return capitalize(displayVal.value)
-        } else {
-          return " - "
-        }
+        return displayVal?.value || " - "
       },
     }))
 
@@ -30,11 +23,7 @@ export const useGridColumns = (product, isEditing) => {
       {
         header: "Prices",
         field: "prices",
-        editor: "prices",
-        buttonText: "Edit",
-        formatter: (prices) => {
-          return `${prices.length} price(s)`
-        },
+        formatter: (prices) => `${prices.length} price(s)`,
       },
       ...defaultFields,
     ]
