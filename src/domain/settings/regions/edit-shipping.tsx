@@ -265,7 +265,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                     onClick={() => setShowDelete(true)}
                     className="text-rose-50 inter-base-semibold"
                   >
-                    Delete Option
+                    Delete
                   </button>
                 </div>
               </Modal.Content>
