@@ -1,15 +1,20 @@
-import { Link } from "gatsby"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Button from "../../fundamentals/button"
 import DiscordIcon from "../../fundamentals/icons/discord-icon"
 import InputField from "../../molecules/input"
 import Textarea from "../../molecules/textarea"
 
+import * as RadixDropdown from "@radix-ui/react-popover"
+import Picker, { SKIN_TONE_NEUTRAL } from "emoji-picker-react"
+import HappyIcon from "../../fundamentals/icons/happy-icon"
+
 const MailDialog = ({ onDismiss }) => {
   const [subject, setSubject] = useState("")
   const [body, setBody] = useState("")
+  const [bodySelectionStart, setBodySelectionStart] = useState(0)
   const [link, setLink] = useState("mailto:hello@medusajs.com")
   const ref = React.useRef(null)
+  const [showEmojiPicker, setShowEmojiPicker] = React.useState(false)
 
   React.useEffect(() => {
     setLink(
@@ -19,9 +24,17 @@ const MailDialog = ({ onDismiss }) => {
     )
   }, [subject, body])
 
+  useEffect(() => {
+    console.log(showEmojiPicker)
+  }, [showEmojiPicker])
+
   React.useEffect(() => {
     const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
+      if (
+        ref.current &&
+        !ref.current.contains(event.target) &&
+        !showEmojiPicker
+      ) {
         onDismiss && onDismiss()
       }
     }
@@ -29,14 +42,22 @@ const MailDialog = ({ onDismiss }) => {
     return () => {
       document.removeEventListener("click", handleClickOutside, true)
     }
-  }, [onDismiss])
+  }, [onDismiss, showEmojiPicker])
+
+  const handleAddEmoji = (e) => {
+    setBody(
+      `${body.slice(0, bodySelectionStart)}${e} ${body.slice(
+        bodySelectionStart
+      )}`
+    )
+  }
 
   return (
     <div
       ref={ref}
-      className="bg-grey-0 w-[400px] shadow-dropdown rounded-rounded p-8 top-[64px] bottom-2 right-3 rounded overflow-x-hidden fixed right-0 flex flex-col justify-between"
+      className="bg-grey-0 w-[400px] overflow-auto shadow-dropdown rounded-rounded p-8 top-[64px] bottom-2 right-3 rounded overflow-x-hidden fixed right-0 flex flex-col justify-between"
     >
-      <div>
+      <div className="overflow-visible">
         <h1 className="inter-xlarge-semibold mb-1">How can we help?</h1>
         <h2 className="inter-small-regular text-grey-50 mb-6">
           We usually respond in a few hours
@@ -53,15 +74,26 @@ const MailDialog = ({ onDismiss }) => {
           placeholder="Write a message..."
           className="overflow-visible"
           value={body}
-          onChange={(e) => setBody(e.target.value)}
+          onSelect={(e) =>
+            setBodySelectionStart(e?.target?.selectionStart || 0)
+          }
+          onChange={(e) => {
+            setBody(e.target.value)
+          }}
           rows={8}
-        />
+        >
+          <EmojiPickerEl
+            isOpen={showEmojiPicker}
+            onChange={setShowEmojiPicker}
+            onEmojiClick={handleAddEmoji}
+          />
+        </Textarea>
       </div>
       <div className="flex flex-col items-center">
         <span className="text-grey-40 mb-3">
-          <Link to="https://discord.gg/medusajs">
+          <a href="https://discord.gg/medusajs">
             <DiscordIcon size={24} />
-          </Link>
+          </a>
         </span>
         <span className="inter-small-regular w-full text-center text-grey-40">
           Feel free to join a community of
@@ -76,6 +108,49 @@ const MailDialog = ({ onDismiss }) => {
         </a>
       </div>
     </div>
+  )
+}
+
+const EmojiPickerEl = ({ isOpen, onChange, onEmojiClick }) => {
+  return (
+    <RadixDropdown.Root open={isOpen} onOpenChange={(val) => onChange(val)}>
+      <RadixDropdown.Trigger>
+        <Button
+          variant="ghost"
+          size="small"
+          className="focus:border-none focus:shadow-none text-grey-40 hover:text-violet-60 p-0 h-5 w-5"
+        >
+          <HappyIcon size={20} />
+        </Button>
+      </RadixDropdown.Trigger>
+
+      <RadixDropdown.Content
+        sideOffset={5}
+        className="border bg-grey-0 border-grey-20 transform-none rounded-rounded shadow-dropdown overflow-hidden min-w-[200px] z-[100]"
+      >
+        <Picker
+          onEmojiClick={(e, data) => {
+            onEmojiClick(data.emoji)
+          }}
+          disableAutoFocus={true}
+          skinTone={SKIN_TONE_NEUTRAL}
+          native
+          disableSkinTonePicker={true}
+          searchPlaceholder={"Search Emoji..."}
+          groupNames={{
+            smileys_people: "Smileys & People",
+            animals_nature: "Animals & Nature",
+            food_drink: "Food & Drink",
+            travel_places: "Travel & Places",
+            activities: "Activities",
+            objects: "Objects",
+            symbols: "Symbols",
+            flags: "Flags",
+            recently_used: "Recently Used",
+          }}
+        />
+      </RadixDropdown.Content>
+    </RadixDropdown.Root>
   )
 }
 
