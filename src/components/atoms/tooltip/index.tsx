@@ -1,6 +1,6 @@
-import React from "react"
 import * as RadixTooltip from "@radix-ui/react-tooltip"
 import clsx from "clsx"
+import React from "react"
 
 type TooltipProps = RadixTooltip.TooltipContentProps &
   Pick<
@@ -30,7 +30,7 @@ const Tooltip = ({
         onOpenChange={onOpenChange}
         delayDuration={delayDuration}
       >
-        <RadixTooltip.Trigger>{children}</RadixTooltip.Trigger>
+        <RadixTooltip.Trigger type="button">{children}</RadixTooltip.Trigger>
         <RadixTooltip.Content
           side={side ?? "bottom"}
           sideOffset={8}

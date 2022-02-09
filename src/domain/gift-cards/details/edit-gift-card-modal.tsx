@@ -6,7 +6,6 @@ import Select from "../../../components/molecules/select"
 const EditGiftCardModal = ({
   handleClose,
   handleSave,
-  giftCard,
   updating,
   regions,
   region,
@@ -61,6 +60,7 @@ const EditGiftCardModal = ({
                 size="small"
                 onClick={handleClose}
                 className="mr-2"
+                type="button"
               >
                 Cancel
               </Button>
