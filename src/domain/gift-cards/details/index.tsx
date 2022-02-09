@@ -63,7 +63,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
       { ...data },
       {
         onSuccess: () => {
-          toaster("Succesfully updated Gift Card", "success")
+          toaster("Succesfully updated gift card", "success")
           setShowEdit(false)
           setShowUpdateBalance(false)
         },
@@ -79,27 +79,27 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
         previousBreadcrumb={"Gift Cards"}
         previousRoute="/a/gift-cards"
       />
-      <BodyCard
-        className={"h-auto min-h-0 w-full"}
-        title={`${gift_card?.code}`}
-        subtitle={`Gift Card id: ${gift_card?.id}`}
-        status={
-          <StatusSelector
-            isDraft={!!gift_card?.is_disabled}
-            activeState={"Active"}
-            draftState={"Disable"}
-            onChange={() =>
-              handleUpdate({ is_disabled: !gift_card?.is_disabled })
-            }
-          />
-        }
-        actionables={actions}
-      >
-        {isLoading || !gift_card ? (
-          <div className="w-full pt-2xlarge flex items-center justify-center">
-            <Spinner size={"large"} variant={"secondary"} />
-          </div>
-        ) : (
+      {isLoading || !gift_card ? (
+        <div className="w-full bg-grey-0 border border-grey-20 rounded-rounded py-xlarge flex items-center justify-center">
+          <Spinner size={"large"} variant={"secondary"} />
+        </div>
+      ) : (
+        <BodyCard
+          className={"h-auto min-h-0 w-full"}
+          title={`${gift_card?.code}`}
+          subtitle={`Gift Card id: ${gift_card?.id}`}
+          status={
+            <StatusSelector
+              isDraft={!!gift_card?.is_disabled}
+              activeState={"Active"}
+              draftState={"Disable"}
+              onChange={() =>
+                handleUpdate({ is_disabled: !gift_card?.is_disabled })
+              }
+            />
+          }
+          actionables={actions}
+        >
           <div className="flex justify-between">
             <div className="flex mt-6 space-x-6 divide-x">
               <div className="flex flex-col">
@@ -135,8 +135,8 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
               <Badge variant="default">{gift_card?.region?.name}</Badge>
             </div>
           </div>
-        )}
-      </BodyCard>
+        </BodyCard>
+      )}
       {showUpdateBalance && (
         <UpdateBalanceModal
           giftCard={gift_card}
