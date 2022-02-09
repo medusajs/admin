@@ -17,6 +17,7 @@ import CurrencyInput from "../../components/organisms/currency-input"
 import useToaster from "../../hooks/use-toaster"
 import { ProductStatus } from "../../types/shared"
 import { getErrorMessage } from "../../utils/error-messages"
+import { focusByName } from "../../utils/focus-by-name"
 
 type NewGiftCardProps = {
   onClose: () => void
@@ -58,7 +59,6 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
         />
       </CurrencyInput>
     )
-    register(name, { required: true })
     setDenominations([...denominations, { name, component }])
   }
 
@@ -79,8 +79,17 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
     description?: string
     denominations: number[]
   }) => {
+    const trimmedName = data.name.trim()
+
+    if (!trimmedName) {
+      toaster("Please enter a name for the gift card", "error")
+      focusByName("name")
+      return
+    }
+
     if (!data.denominations) {
       toaster("Please add at least one denomination", "error")
+      focusByName("add-denomination")
       return
     }
 
@@ -175,6 +184,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
                 })}
               </div>
               <Button
+                name="add-denomination"
                 variant="ghost"
                 size="small"
                 onClick={addDenomination}

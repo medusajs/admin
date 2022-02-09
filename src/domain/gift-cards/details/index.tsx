@@ -10,6 +10,8 @@ import Spinner from "../../../components/atoms/spinner"
 import Badge from "../../../components/fundamentals/badge"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
+import PublishIcon from "../../../components/fundamentals/icons/publish-icon"
+import UnpublishIcon from "../../../components/fundamentals/icons/unpublish-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import StatusSelector from "../../../components/molecules/status-selector"
 import BodyCard from "../../../components/organisms/body-card"
@@ -39,6 +41,15 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
       label: "Edit",
       onClick: () => setShowEdit(true),
       icon: <EditIcon size={20} />,
+    },
+    {
+      label: `${gift_card?.is_disabled ? "Activate" : "Disable"}`,
+      onClick: () => handleUpdate({ is_disabled: !gift_card?.is_disabled }),
+      icon: gift_card?.is_disabled ? (
+        <PublishIcon size={20} />
+      ) : (
+        <UnpublishIcon size={20} />
+      ),
     },
     {
       label: "Update balance",
@@ -76,7 +87,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
           <StatusSelector
             isDraft={!!gift_card?.is_disabled}
             activeState={"Active"}
-            draftState={"Disabled"}
+            draftState={"Disable"}
             onChange={() =>
               handleUpdate({ is_disabled: !gift_card?.is_disabled })
             }
@@ -137,8 +148,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
       )}
       {showEdit && (
         <EditGiftCardModal
-          giftCard={gift_card}
-          handleClose={() => setShowUpdateBalance(false)}
+          handleClose={() => setShowEdit(false)}
           handleSave={handleUpdate}
           regions={regions}
           region={gift_card?.region}

@@ -53,7 +53,7 @@ const Overview: React.FC<OverviewProps> = ({
       <div className="flex flex-col grow h-full">
         <PageDescription
           title="Gift Cards"
-          subtitle="Manage the settings for your Medusa Store"
+          subtitle="Manage the Gift Cards of your Medusa store"
         />
         {!isLoading ? (
           <>
@@ -73,7 +73,7 @@ const Overview: React.FC<OverviewProps> = ({
                       onClick: () => setShowCreate(true),
                     }}
                   >
-                    No gift card have been added yet. Click the "Create Gift
+                    No gift card has been added yet. Click the "Create Gift
                     Card" button to add one. This is a growth opportunity!
                   </BannerCard.Description>
                 </BannerCard>
