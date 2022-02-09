@@ -57,7 +57,7 @@ const MailDialog = ({ onDismiss }) => {
       ref={ref}
       className="bg-grey-0 w-[400px] shadow-dropdown rounded-rounded p-8 top-[64px] bottom-2 right-3 rounded overflow-x-hidden fixed flex flex-col justify-between"
     >
-      <div className="overflow-visible">
+      <div>
         <h1 className="inter-xlarge-semibold mb-1">How can we help?</h1>
         <h2 className="inter-small-regular text-grey-50 mb-6">
           We usually respond in a few hours
@@ -72,7 +72,6 @@ const MailDialog = ({ onDismiss }) => {
         <Textarea
           label={"How can we help?"}
           placeholder="Write a message..."
-          className="overflow-visible"
           value={body}
           onSelect={(e) =>
             setBodySelectionStart(e?.target?.selectionStart || 0)
@@ -126,7 +125,7 @@ const EmojiPicker = ({ isOpen, onChange, onEmojiClick }) => {
 
       <RadixDropdown.Content
         sideOffset={5}
-        className="border bg-grey-0 border-grey-20 -translate-x-1/2 rounded-rounded shadow-dropdown overflow-hidden min-w-[200px] z-[100]"
+        className="border bg-grey-0 border-grey-20 -translate-x-1/2 rounded-rounded shadow-dropdown min-w-[200px] z-[100]"
       >
         <Picker
           onEmojiClick={(e, data) => {
