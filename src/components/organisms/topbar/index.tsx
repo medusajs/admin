@@ -1,18 +1,22 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { navigate } from "gatsby"
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import { AccountContext } from "../../../context/account"
 import Avatar from "../../atoms/avatar"
 import Button from "../../fundamentals/button"
 import GearIcon from "../../fundamentals/icons/gear-icon"
+import HelpCircleIcon from "../../fundamentals/icons/help-circle"
 import SignOutIcon from "../../fundamentals/icons/log-out-icon"
 import NotificationBell from "../../molecules/notification-bell"
 import SearchBar from "../../molecules/search-bar"
+import MailDialog from "../help-dialog"
 
 const Topbar: React.FC = () => {
   const { first_name, last_name, email, handleLogout } = useContext(
     AccountContext
   )
+
+  const [showSupportform, setShowSupportForm] = useState(false)
 
   const logOut = () => {
     handleLogout()
@@ -23,6 +27,14 @@ const Topbar: React.FC = () => {
     <div className="w-full min-h-topbar max-h-topbar pr-xlarge pl-base bg-grey-0 border-b border-grey-20 sticky top-0 flex items-center justify-between z-40">
       <SearchBar />
       <div className="flex items-center">
+        <Button
+          size="small"
+          variant="ghost"
+          className="w-8 h-8 mr-3"
+          onClick={() => setShowSupportForm(!showSupportform)}
+        >
+          <HelpCircleIcon size={24} />
+        </Button>
         <NotificationBell hasNotifications={false} />
         <div className="ml-large w-large h-large">
           <DropdownMenu.Root>
@@ -62,6 +74,9 @@ const Topbar: React.FC = () => {
           </DropdownMenu.Root>
         </div>
       </div>
+      {showSupportform && (
+        <MailDialog onDismiss={() => setShowSupportForm(false)} />
+      )}
     </div>
   )
 }
