@@ -7,6 +7,7 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import ClaimMenu from "../../../domain/orders/details/claim/create"
+import ReturnMenu from "../../../domain/orders/details/returns"
 import SwapMenu from "../../../domain/orders/details/swap/create"
 import {
   ClaimEvent,
@@ -37,7 +38,6 @@ import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Return from "../../molecules/timeline-events/return"
-import ReturnMenu from "../../../domain/orders/details/returns"
 
 type TimelineProps = {
   orderId: string
@@ -83,8 +83,8 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
         value: value,
       },
       {
-        onSuccess: () => toaster("Added note", "success"),
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onSuccess: () => toaster("Success", "Added note", "success"),
+        onError: (err) => toaster("Error", getErrorMessage(err), "error"),
       }
     )
   }

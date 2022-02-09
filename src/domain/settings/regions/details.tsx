@@ -161,10 +161,10 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       },
       {
         onSuccess: () => {
-          toaster("Successfully updated region", "success")
+          toaster("Success", "Successfully updated region", "success")
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          toaster("Error", getErrorMessage(error), "error")
         },
       }
     )
@@ -177,7 +177,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
 
   const handleDuplicate = () => {
     if (!region) {
-      toaster("Region not found", "error")
+      toaster("Error", "Region not found", "error")
       return
     }
 
@@ -193,11 +193,11 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
 
     createRegion.mutate(payload, {
       onSuccess: ({ region }) => {
-        toaster("Successfully duplicated region", "success")
+        toaster("Success", "Successfully duplicated region", "success")
         handleSelect(region.id)
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        toaster("Error", getErrorMessage(error), "error")
       },
     })
   }
@@ -210,7 +210,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
         }
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        toaster("Error", getErrorMessage(error), "error")
       },
     })
   }

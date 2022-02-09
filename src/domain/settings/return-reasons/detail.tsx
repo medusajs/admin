@@ -1,4 +1,3 @@
-import { navigate } from "gatsby"
 import {
   useAdminDeleteReturnReason,
   useAdminUpdateReturnReason,
@@ -35,14 +34,16 @@ const ReturnReasonDetail = ({ reason }) => {
     deleteRR.mutate(null)
   }
 
-  const onSave = data => {
-    if (data.label === "") return
+  const onSave = (data) => {
+    if (data.label === "") {
+      return
+    }
     updateRR.mutate(data, {
       onSuccess: () => {
-        toaster("Successfully updated return reason", "success")
+        toaster("Success", "Successfully updated return reason", "success")
       },
-      onError: error => {
-        toaster(getErrorMessage(error), "error")
+      onError: (error) => {
+        toaster("Error", getErrorMessage(error), "error")
       },
     })
   }

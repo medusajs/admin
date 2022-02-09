@@ -133,11 +133,11 @@ const New: React.FC<NewProps> = ({ location }) => {
       { ...payload },
       {
         onSuccess: ({ discount }) => {
-          toaster(successMessage, "success")
+          toaster("Success", successMessage, "success")
           navigate(`/a/discounts/${discount.id}`)
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          toaster("Error", getErrorMessage(error), "error")
         },
       }
     )

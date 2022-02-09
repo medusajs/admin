@@ -69,7 +69,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       },
       onError: (error) => {
         setShowDelete(false)
-        toaster(getErrorMessage(error), "error")
+        toaster("Error", getErrorMessage(error), "error")
       },
     })
   }
@@ -145,14 +145,14 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
     // TODO: fix AdminPostShippingOptionsOptionReq type
     updateOption.mutate(payload, {
       onSuccess: () => {
-        toaster("Successfully updated shipping option", "success")
+        toaster("Success", "Successfully updated shipping option", "success")
         if (onDone) {
           onDone()
         }
         onClick()
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        toaster("Error", getErrorMessage(error), "error")
       },
     })
   }

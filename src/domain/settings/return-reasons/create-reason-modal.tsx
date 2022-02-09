@@ -29,10 +29,14 @@ const CreateReturnReasonModal = ({
   const onCreate = async (data) => {
     await createRR.mutateAsync(data, {
       onSuccess: () => {
-        toaster("Created a new return reason", "success")
+        toaster("Success", "Created a new return reason", "success")
       },
       onError: () => {
-        toaster("Cant create a Return reason with an existing code", "error")
+        toaster(
+          "Error",
+          "Cant create a Return reason with an existing code",
+          "error"
+        )
       },
     })
     handleClose()

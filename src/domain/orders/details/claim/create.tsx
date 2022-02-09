@@ -1,26 +1,24 @@
-import React, { useState, useEffect, useContext } from "react"
-
-import Modal from "../../../../components/molecules/modal"
+import clsx from "clsx"
+import React, { useContext, useEffect, useState } from "react"
+import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import Select from "../../../../components/molecules/select"
-import Medusa from "../../../../services/api"
-import { filterItems } from "../utils/create-filtering"
-
-import { getErrorMessage } from "../../../../utils/error-messages"
-import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
-import Spinner from "../../../../components/atoms/spinner"
 import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
-import clsx from "clsx"
-import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
-import RMASelectProductSubModal from "../rma-sub-modals/products"
+import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
+import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import Medusa from "../../../../services/api"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import RMAEditAddressSubModal from "../rma-sub-modals/address"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import RMASelectProductSubModal from "../rma-sub-modals/products"
+import { filterItems } from "../utils/create-filtering"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -225,8 +223,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       setSubmitting(true)
       return onCreate(data)
         .then(() => onDismiss())
-        .then(() => toaster("Successfully created claim", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
+        .then(() => toaster("Success", "Successfully created claim", "success"))
+        .catch((error) => toaster("Error", getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }

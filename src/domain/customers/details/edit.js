@@ -18,11 +18,11 @@ const EditCustomerModal = ({ handleClose, customer }) => {
     updateCustomer.mutate(data, {
       onSuccess: () => {
         handleClose()
-        toaster("Successfully updated customer", "success")
+        toaster("Success", "Successfully updated customer", "success")
       },
       onError: (err) => {
         handleClose()
-        toaster(getErrorMessage(err), "error")
+        toaster("Error", getErrorMessage(err), "error")
       },
     })
   }

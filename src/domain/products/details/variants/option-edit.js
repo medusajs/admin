@@ -87,11 +87,11 @@ const NewOption = ({ productId, options, onDismiss }) => {
       })
     )
       .then(() => {
-        toaster("Options updated", "success")
+        toaster("Success", "Options updated", "success")
         onDismiss()
       })
       .catch((err) => {
-        toaster(getErrorMessage(err), "error")
+        toaster("Error", getErrorMessage(err), "error")
       })
   }
 

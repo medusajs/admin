@@ -102,11 +102,11 @@ const VariantGrid = ({ product, variants, edit }) => {
       { variant_id: selectedVariant?.id, ...data },
       {
         onSuccess: () => {
-          toaster("Successfully update variant", "success")
+          toaster("Success", "Successfully update variant", "success")
           setSelectedVariant(null)
         },
         onError: (err) => {
-          toaster(getErrorMessage(err), "error")
+          toaster("Error", getErrorMessage(err), "error")
         },
       }
     )

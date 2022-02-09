@@ -1,19 +1,15 @@
-import React from "react"
-import { useForm } from "react-hook-form"
-import { Flex } from "rebass"
-import ReactJson from "react-json-view"
 import { navigate } from "gatsby"
-
-import Information from "./information"
-import Variants from "./variants"
-import Images from "./images"
-
-import useMedusa from "../../../hooks/use-medusa"
-import NotFound from "../../../components/not-found"
+import React from "react"
+import ReactJson from "react-json-view"
+import { Flex } from "rebass"
 import Card from "../../../components/card"
-import Options from "./options"
-import InventoryManager from "./inventory"
+import NotFound from "../../../components/not-found"
+import useMedusa from "../../../hooks/use-medusa"
 import { getErrorMessage } from "../../../utils/error-messages"
+import Images from "./images"
+import Information from "./information"
+import InventoryManager from "./inventory"
+import Variants from "./variants"
 
 const ProductDetail = ({ id }) => {
   const {
@@ -31,24 +27,24 @@ const ProductDetail = ({ id }) => {
   const handleProductDelete = () => {
     productDelete().then(() => {
       refresh({ id })
-      toaster("The product was deleted", "success")
+      toaster("Success", "The product was deleted", "success")
       navigate("/a/products")
     })
   }
 
-  const handleDetailsSubmit = data => {
+  const handleDetailsSubmit = (data) => {
     update(data)
       .then(() => {
         refresh({ id })
-        toaster("Successfully updated product", "success")
+        toaster("Success", "Successfully updated product", "success")
       })
-      .catch(error => toaster(getErrorMessage(error), "error"))
+      .catch((error) => toaster("Error", getErrorMessage(error), "error"))
   }
 
-  const handleVariantsSubmit = data => {
+  const handleVariantsSubmit = (data) => {
     update(data).then(() => {
       refresh({ id })
-      toaster("Successfully updated product", "success")
+      toaster("Success", "Successfully updated product", "success")
     })
   }
 
@@ -70,7 +66,7 @@ const ProductDetail = ({ id }) => {
         variantMethods={variants}
         product={product}
         isLoading={isLoading}
-        onChange={vs => setVariants(vs)}
+        onChange={(vs) => setVariants(vs)}
         onSubmit={handleVariantsSubmit}
         toaster={toaster}
       />

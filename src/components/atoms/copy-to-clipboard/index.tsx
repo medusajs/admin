@@ -26,7 +26,7 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
 
   useEffect(() => {
     if (isCopied) {
-      toaster("Copied!", "success")
+      toaster("Success", "Copied!", "success")
     }
   }, [isCopied])
 

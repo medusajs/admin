@@ -113,7 +113,7 @@ const Edit: React.FC<EditProps> = ({ id }) => {
 
   const handleDelete = () => {
     if (!discount) {
-      toaster("Discount not found", "error")
+      toaster("Error", "Discount not found", "error")
     }
 
     deleteDiscount.mutate(undefined, {
@@ -125,7 +125,7 @@ const Edit: React.FC<EditProps> = ({ id }) => {
 
   const handleDuplicate = () => {
     if (!discount) {
-      toaster("Discount not found", "error")
+      toaster("Error", "Discount not found", "error")
     }
 
     navigate(`/a/discounts/new`, {
@@ -144,10 +144,10 @@ const Edit: React.FC<EditProps> = ({ id }) => {
       { is_disabled: !isDisabled },
       {
         onSuccess: () => {
-          toaster("Discount updated", "success")
+          toaster("Success", "Discount updated", "success")
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          toaster("Error", getErrorMessage(error), "error")
         },
       }
     )
@@ -180,10 +180,10 @@ const Edit: React.FC<EditProps> = ({ id }) => {
       { ...payload }, // TODO: fix wrong type on rule.value and rule.valid_for
       {
         onSuccess: () => {
-          toaster("Successfully updated discount", "success")
+          toaster("Success", "Successfully updated discount", "success")
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          toaster("Error", getErrorMessage(error), "error")
         },
       }
     )

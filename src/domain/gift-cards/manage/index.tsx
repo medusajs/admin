@@ -96,10 +96,10 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
       },
       {
         onSuccess: () => {
-          toaster("Successfully updated denominations", "success")
+          toaster("Success", "Successfully updated denominations", "success")
           setEditDenom(null)
         },
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onError: (err) => toaster("Error", getErrorMessage(err), "error"),
       }
     )
   }

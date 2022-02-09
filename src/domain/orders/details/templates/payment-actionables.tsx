@@ -19,8 +19,9 @@ export const PaymentActionables = ({
   let label = "Capture payment"
   let action = () => {
     capturePayment.mutate(void {}, {
-      onSuccess: () => toaster("Successfully captured payment", "success"),
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onSuccess: () =>
+        toaster("Success", "Successfully captured payment", "success"),
+      onError: (err) => toaster("Error", getErrorMessage(err), "error"),
     })
   }
   const loading = capturePayment.isLoading

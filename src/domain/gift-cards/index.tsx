@@ -33,8 +33,9 @@ const GiftCard = () => {
     updateGiftCard.mutate(
       { status },
       {
-        onSuccess: () => toaster("Successfully updated Gift Card", "success"),
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onSuccess: () =>
+          toaster("Success", "Successfully updated Gift Card", "success"),
+        onError: (err) => toaster("Error", getErrorMessage(err), "error"),
       }
     )
   }
@@ -43,8 +44,9 @@ const GiftCard = () => {
     updateGiftCard.mutate(
       { ...data },
       {
-        onSuccess: () => toaster("Successfully updated Gift Card", "success"),
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onSuccess: () =>
+          toaster("Success", "Successfully updated Gift Card", "success"),
+        onError: (err) => toaster("Error", getErrorMessage(err), "error"),
       }
     )
   }
@@ -52,11 +54,11 @@ const GiftCard = () => {
   const deleteGC = () => {
     deleteGiftCard.mutate(undefined, {
       onSuccess: () => {
-        toaster("Successfully deleted Gift Card")
+        toaster("Success", "Successfully deleted Gift Card", "success")
         navigate("/a/gift-cards")
       },
       onError: (err) => {
-        toaster(getErrorMessage(err))
+        toaster("Error", getErrorMessage(err), "error")
       },
     })
   }

@@ -1,6 +1,6 @@
 import { useAdminRefundPayment } from "medusa-react"
 import React, { useMemo, useState } from "react"
-import { useForm, Controller } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import AlertIcon from "../../../../components/fundamentals/icons/alert-icon"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
@@ -43,11 +43,11 @@ const RefundMenu = ({ order, onDismiss }) => {
       },
       {
         onSuccess: () => {
-          toaster("Successfully refunded order", "success")
+          toaster("Success", "Successfully refunded order", "success")
           onDismiss()
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          toaster("Error", getErrorMessage(error), "error")
         },
       }
     )

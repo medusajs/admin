@@ -95,14 +95,14 @@ const NewShipping = ({
 
     createShippingOption.mutate(payload, {
       onSuccess: () => {
-        toaster("Successfully created shipping option", "success")
+        toaster("Success", "Successfully created shipping option", "success")
         if (onCreated) {
           onCreated()
         }
         onClick()
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        toaster("Error", getErrorMessage(error), "error")
       },
     })
   }

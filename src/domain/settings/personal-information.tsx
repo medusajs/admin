@@ -28,10 +28,10 @@ const PersonalInformation = () => {
   const submit = (data) => {
     handleUpdateUser(user.id, data)
       .then(() => {
-        toaster("Successfully updated user", "success")
+        toaster("Success", "Successfully updated user", "success")
       })
       .catch((err) => {
-        toaster(getErrorMessage(err), "error")
+        toaster("Error", getErrorMessage(err), "error")
       })
   }
 

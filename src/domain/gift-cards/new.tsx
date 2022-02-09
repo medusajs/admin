@@ -80,7 +80,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
     denominations: number[]
   }) => {
     if (!data.denominations) {
-      toaster("Please add at least one denomination", "error")
+      toaster("Error", "Please add at least one denomination", "error")
       return
     }
 
@@ -102,12 +102,12 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
       },
       {
         onSuccess: () => {
-          toaster("Successfully created gift card", "success")
+          toaster("Success", "Successfully created gift card", "success")
           refetch()
           navigate("/a/gift-cards/manage")
         },
         onError: (err) => {
-          toaster(getErrorMessage(err), "error")
+          toaster("Error", getErrorMessage(err), "error")
         },
       }
     )

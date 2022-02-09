@@ -31,8 +31,8 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
 
     setIsLoading(true)
     onDelete()
-      .then(() => toaster(successText, "success"))
-      .catch((err) => toaster(getErrorMessage(err), "error"))
+      .then(() => toaster("Success", successText, "success"))
+      .catch((err) => toaster("Error", getErrorMessage(err), "error"))
       .finally(() => {
         setIsLoading(false)
         handleClose()

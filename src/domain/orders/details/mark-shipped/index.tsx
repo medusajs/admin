@@ -107,10 +107,10 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
 
     action.mutate(requestObj, {
       onSuccess: () => {
-        toaster(successText, "success")
+        toaster("Success", successText, "success")
         handleCancel()
       },
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onError: (err) => toaster("Error", getErrorMessage(err), "error"),
     })
   }
 

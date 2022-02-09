@@ -109,7 +109,11 @@ const UserTable: React.FC<UserTableProps> = ({
               Medusa.invites
                 .resend(invite.id)
                 .then(() => {
-                  toaster("Invitiation link has been resent", "success")
+                  toaster(
+                    "Success",
+                    "Invitiation link has been resent",
+                    "success"
+                  )
                 })
                 .then(() => triggerRefetch())
             },
@@ -281,7 +285,7 @@ const UserTable: React.FC<UserTableProps> = ({
             handleClose={handleClose}
             user={selectedUser}
             onSubmit={() => {
-              toaster("User has been updated", "success")
+              toaster("Success", "User has been updated", "success")
               triggerRefetch()
             }}
           />
@@ -292,7 +296,7 @@ const UserTable: React.FC<UserTableProps> = ({
           heading={"Remove invite"}
           onDelete={() =>
             Medusa.invites.delete(selectedInvite.id).then(() => {
-              toaster("Invitiation has been removed", "success")
+              toaster("Success", "Invitiation has been removed", "success")
               triggerRefetch()
             })
           }

@@ -4,6 +4,7 @@ import React from "react"
 import Spinner from "../../components/atoms/spinner"
 import Button, { ButtonProps } from "../../components/fundamentals/button"
 import useToaster from "../../hooks/use-toaster"
+import Medusa from "../../services/api"
 import { getErrorMessage } from "../../utils/error-messages"
 import ProductForm from "./product-form"
 import {
@@ -14,7 +15,6 @@ import {
   ProductFormProvider,
   useProductForm,
 } from "./product-form/form/product-form-context"
-import Medusa from "../../services/api"
 import { consolidateImages } from "./product-form/utils"
 
 const EditProductPage = ({ id }) => {
@@ -42,10 +42,10 @@ const EditProductPage = ({ id }) => {
 
     updateProduct.mutate(formValuesToUpdateProductMapper(newData), {
       onSuccess: () => {
-        toaster("Product updated successfully", "success")
+        toaster("Success", "Product updated successfully", "success")
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        toaster("Error", getErrorMessage(error), "error")
       },
     })
   }

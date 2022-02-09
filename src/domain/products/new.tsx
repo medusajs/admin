@@ -1,6 +1,6 @@
-import * as React from "react"
 import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
+import * as React from "react"
 import Button, { ButtonProps } from "../../components/fundamentals/button"
 import useToaster from "../../hooks/use-toaster"
 import Medusa from "../../services/api"
@@ -34,11 +34,11 @@ const NewProductPage = () => {
 
     createProduct.mutate(formValuesToCreateProductMapper(newData), {
       onSuccess: ({ product }) => {
-        toaster("Product created successfully", "success")
+        toaster("Success", "Product created successfully", "success")
         navigate(`/a/products/${product.id}`)
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        toaster("Error", getErrorMessage(error), "error")
       },
     })
   }

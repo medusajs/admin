@@ -77,7 +77,7 @@ const NewRegion = ({ onDone, onClick }) => {
 
   const onSave = (data) => {
     if (!data.countries?.length) {
-      toaster("Choose at least one country", "error")
+      toaster("Success", "Choose at least one country", "error")
       return
     }
 
@@ -89,14 +89,14 @@ const NewRegion = ({ onDone, onClick }) => {
       },
       {
         onSuccess: ({ region }) => {
-          toaster("Successfully created region", "success")
+          toaster("Success", "Successfully created region", "success")
           if (onDone) {
             onDone(region.id)
           }
           onClick()
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          toaster("Error", getErrorMessage(error), "error")
         },
       }
     )

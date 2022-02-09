@@ -61,10 +61,10 @@ const useCopyProduct = () => {
       const newProduct = data?.product
       if (newProduct) {
         navigate(`/a/products/${newProduct.id}`)
-        toaster("Created a new product", "success")
+        toaster("Success", "Created a new product", "success")
       }
     } catch (err) {
-      toaster(getErrorMessage(err), "error")
+      toaster("Error", getErrorMessage(err), "error")
     }
   }
 

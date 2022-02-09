@@ -50,12 +50,12 @@ const CollectionsIndex = () => {
 
     createCollection.mutate(payload, {
       onSuccess: () => {
-        toaster("Collection created", "success")
+        toaster("Success", "Collection created", "success")
         refresh()
         setShowNew(false)
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        toaster("Error", getErrorMessage(error), "error")
       },
     })
   }

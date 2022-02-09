@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useContext } from "react"
-import Modal from "../../../../components/molecules/modal"
-import CurrencyInput from "../../../../components/organisms/currency-input"
-import Button from "../../../../components/fundamentals/button"
-import Select from "../../../../components/molecules/select"
-import { filterItems } from "../utils/create-filtering"
-import { getErrorMessage } from "../../../../utils/error-messages"
-import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
-import { displayAmount } from "../../../../utils/prices"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import { useAdminRequestReturn, useAdminShippingOptions } from "medusa-react"
+import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
-import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
-import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import Button from "../../../../components/fundamentals/button"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
+import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
+import Select from "../../../../components/molecules/select"
+import CurrencyInput from "../../../../components/organisms/currency-input"
+import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import { getErrorMessage } from "../../../../utils/error-messages"
+import { displayAmount } from "../../../../utils/prices"
 import { removeNullish } from "../../../../utils/remove-nullish"
-import { useAdminRequestReturn, useAdminShippingOptions } from "medusa-react"
+import { filterItems } from "../utils/create-filtering"
 
 const ReturnMenu = ({ order, onDismiss, toaster }) => {
   const layoutmodalcontext = useContext(LayeredModalContext)
@@ -73,7 +73,7 @@ const ReturnMenu = ({ order, onDismiss, toaster }) => {
     const items = Object.entries(toReturn).map(([key, value]) => {
       const toSet = {
         reason_id: value.reason?.value.id,
-        ...value
+        ...value,
       }
       delete toSet.reason
       const clean = removeNullish(toSet)
@@ -101,8 +101,8 @@ const ReturnMenu = ({ order, onDismiss, toaster }) => {
     return requestReturnOrder
       .mutateAsync(data)
       .then(() => onDismiss())
-      .then(() => toaster("Successfully returned order", "success"))
-      .catch((error) => toaster(getErrorMessage(error), "error"))
+      .then(() => toaster("Success", "Successfully returned order", "success"))
+      .catch((error) => toaster("Error", getErrorMessage(error), "error"))
       .finally(() => setSubmitting(false))
   }
 

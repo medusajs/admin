@@ -43,9 +43,9 @@ const Images = ({ product, refresh, toaster }) => {
             setUploads([])
             setIsDirty(false)
             refresh({ id: product.id })
-            toaster("Successfully saved images", "success")
+            toaster("Success", "Successfully saved images", "success")
           })
-          .catch((error) => toaster(getErrorMessage(error), "error"))
+          .catch((error) => toaster("Error", getErrorMessage(error), "error"))
       })
   }
 

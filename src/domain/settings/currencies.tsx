@@ -70,10 +70,10 @@ const CurrencySettings = () => {
       },
       {
         onSuccess: () => {
-          toaster("Successfully updated currencies", "success")
+          toaster("Success", "Successfully updated currencies", "success")
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          toaster("Error", getErrorMessage(error), "error")
         },
       }
     )

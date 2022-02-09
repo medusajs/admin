@@ -47,13 +47,14 @@ const useProductActions = (product) => {
           {
             onSuccess: () => {
               toaster(
+                "Success",
                 `Successfully ${
                   product.status === "published" ? "unpublished" : "published"
                 } product`,
                 "success"
               )
             },
-            onError: (err) => toaster(getErrorMessage(err), "error"),
+            onError: (err) => toaster("Error", getErrorMessage(err), "error"),
           }
         )
       },

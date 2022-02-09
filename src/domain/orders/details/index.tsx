@@ -155,12 +155,12 @@ const OrderDetails = ({ id }) => {
 
   const [, handleCopy] = useClipboard(order?.display_id, {
     successDuration: 5500,
-    onCopied: () => toaster("Order ID copied", "success"),
+    onCopied: () => toaster("Success", "Order ID copied", "success"),
   })
 
   const [, handleCopyEmail] = useClipboard(order?.email, {
     successDuration: 5500,
-    onCopied: () => toaster("Email copied", "success"),
+    onCopied: () => toaster("Success", "Email copied", "success"),
   })
 
   // @ts-ignore
@@ -204,8 +204,9 @@ const OrderDetails = ({ id }) => {
 
   const handleDeleteOrder = async () => {
     return cancelOrder.mutate(void {}, {
-      onSuccess: () => toaster("Successfully canceled order", "success"),
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onSuccess: () =>
+        toaster("Success", "Successfully canceled order", "success"),
+      onError: (err) => toaster("Error", getErrorMessage(err), "error"),
     })
   }
 
@@ -230,10 +231,10 @@ const OrderDetails = ({ id }) => {
 
     return updateOrder.mutate(updateObj, {
       onSuccess: () => {
-        toaster("Successfully updated address", "success")
+        toaster("Success", "Successfully updated address", "success")
         setAddressModal(null)
       },
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onError: (err) => toaster("Error", getErrorMessage(err), "error"),
     })
   }
 
@@ -247,22 +248,25 @@ const OrderDetails = ({ id }) => {
         return cancelSwapFulfillment.mutate(
           { swap_id: resourceId, fulfillment_id: fulId },
           {
-            onSuccess: () => toaster("Successfully canceled order", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
+            onSuccess: () =>
+              toaster("Success", "Successfully canceled order", "success"),
+            onError: (err) => toaster("Error", getErrorMessage(err), "error"),
           }
         )
       case "claim":
         return cancelClaimFulfillment.mutate(
           { claim_id: resourceId, fulfillment_id: fulId },
           {
-            onSuccess: () => toaster("Successfully canceled order", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
+            onSuccess: () =>
+              toaster("Success", "Successfully canceled order", "success"),
+            onError: (err) => toaster("Error", getErrorMessage(err), "error"),
           }
         )
       default:
         return cancelFulfillment.mutate(fulId, {
-          onSuccess: () => toaster("Successfully canceled order", "success"),
-          onError: (err) => toaster(getErrorMessage(err), "error"),
+          onSuccess: () =>
+            toaster("Success", "Successfully canceled order", "success"),
+          onError: (err) => toaster("Error", getErrorMessage(err), "error"),
         })
     }
   }
@@ -281,8 +285,9 @@ const OrderDetails = ({ id }) => {
             tracking_numbers,
           },
           {
-            onSuccess: () => toaster("Swap marked as shipped", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
+            onSuccess: () =>
+              toaster("Success", "Swap marked as shipped", "success"),
+            onError: (err) => toaster("Error", getErrorMessage(err), "error"),
           }
         )
 
@@ -294,8 +299,9 @@ const OrderDetails = ({ id }) => {
             tracking_numbers,
           },
           {
-            onSuccess: () => toaster("Claim marked as shipped", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
+            onSuccess: () =>
+              toaster("Success", "Claim marked as shipped", "success"),
+            onError: (err) => toaster("Error", getErrorMessage(err), "error"),
           }
         )
 
@@ -306,8 +312,9 @@ const OrderDetails = ({ id }) => {
             tracking_numbers,
           },
           {
-            onSuccess: () => toaster("Order marked as shipped", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
+            onSuccess: () =>
+              toaster("Success", "Order marked as shipped", "success"),
+            onError: (err) => toaster("Error", getErrorMessage(err), "error"),
           }
         )
     }
