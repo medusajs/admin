@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import React, { useState } from "react"
 import Tooltip from "../../../components/atoms/tooltip"
 import Button from "../../../components/fundamentals/button"
@@ -14,16 +15,12 @@ const UpdateBalanceModal = ({
   const [balance, setBalance] = useState(giftCard.balance)
 
   const handleChange = (amount: number | undefined) => {
-    if (amount) {
+    if (typeof amount !== undefined) {
       setBalance(amount)
     }
   }
 
   const onSubmit = () => {
-    if (balance > giftCard.value) {
-      return
-    }
-
     if (handleSave) {
       handleSave({ balance })
     }
@@ -34,6 +31,17 @@ const UpdateBalanceModal = ({
       <Modal.Body>
         <Modal.Header handleClose={handleClose}>
           <span className="inter-xlarge-semibold">Update Balance</span>
+          <span
+            className={clsx(
+              "inter-small-regular text-rose-50 mt-2xsmall transition-display delay-75",
+              {
+                hidden: !(balance > giftCard.value),
+              }
+            )}
+          >
+            Balance can't be updated to a value that is greater than the
+            original amount
+          </span>
         </Modal.Header>
         <Modal.Content>
           <CurrencyInput readOnly currentCurrency={currencyCode} size="small">
