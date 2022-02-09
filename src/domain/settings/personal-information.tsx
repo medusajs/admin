@@ -2,14 +2,18 @@ import clsx from "clsx"
 import { navigate } from "gatsby"
 import React, { useContext, useState } from "react"
 import { useForm } from "react-hook-form"
+import DarkModeSprite from "../../assets/svg-2.0/dark-mode.svg"
+import LightModeSprite from "../../assets/svg-2.0/light-mode.svg"
 import Avatar from "../../components/atoms/avatar"
 import Spinner from "../../components/atoms/spinner"
 import BreadCrumb from "../../components/molecules/breadcrumb"
 import Input from "../../components/molecules/input"
 import BodyCard from "../../components/organisms/body-card"
 import FileUploadModal from "../../components/organisms/file-upload-modal"
+import RadioGroup from "../../components/organisms/radio-group"
 import TwoSplitPane from "../../components/templates/two-split-pane"
 import { AccountContext } from "../../context/account"
+import { ThemeContext } from "../../context/theme"
 import useMedusa from "../../hooks/use-medusa"
 import { getErrorMessage } from "../../utils/error-messages"
 
@@ -21,6 +25,8 @@ const PersonalInformation = () => {
   const { update, toaster, isLoading, ...test } = useMedusa("users", {
     id: user.id,
   })
+
+  const { changeTheme, theme } = useContext(ThemeContext)
 
   register("first_name")
   register("last_name")
@@ -120,6 +126,24 @@ const PersonalInformation = () => {
               handleClose={() => setModalIsOpen(false)}
             />
           )}
+        </BodyCard>
+        <BodyCard
+          title="Theme preferences"
+          subtitle="Change the appearnce of your admin system"
+          className="dark:bg-grey-90"
+        >
+          <RadioGroup.Root onValueChange={changeTheme} defaultValue={theme}>
+            <div className="flex items-center gap-x-xlarge">
+              <div className="flex flex-col gap-y-large">
+                <img src={LightModeSprite} />
+                <RadioGroup.SimpleItem label="Light Mode" value={"light"} />
+              </div>
+              <div className="flex flex-col gap-y-large">
+                <img src={DarkModeSprite} />
+                <RadioGroup.SimpleItem label="Dark Mode" value={"dark"} />
+              </div>
+            </div>
+          </RadioGroup.Root>
         </BodyCard>
       </TwoSplitPane>
     </div>

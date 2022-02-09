@@ -8,6 +8,7 @@ import { SteppedProvider } from "./src/components/molecules/modal/stepped-modal"
 import { AccountProvider } from "./src/context/account"
 import { CacheProvider } from "./src/context/cache"
 import { InterfaceProvider } from "./src/context/interface"
+import { ThemeProvider } from "./src/context/theme"
 import { medusaUrl, queryClient } from "./src/services/config"
 import { ThemeProvider as Provider } from "./src/theme"
 
@@ -19,19 +20,21 @@ export const wrapPageElement = ({ element }) => {
         client: queryClient,
       }}
     >
-      <CacheProvider>
-        <AccountProvider>
-          <InterfaceProvider>
-            <ToastProvider autoDismiss={true} placement="bottom-left">
-              <SteppedProvider>
-                <LayeredModalProvider>
-                  <Provider>{element}</Provider>
-                </LayeredModalProvider>
-              </SteppedProvider>
-            </ToastProvider>
-          </InterfaceProvider>
-        </AccountProvider>
-      </CacheProvider>
+      <ThemeProvider>
+        <CacheProvider>
+          <AccountProvider>
+            <InterfaceProvider>
+              <ToastProvider autoDismiss={true} placement="bottom-left">
+                <SteppedProvider>
+                  <LayeredModalProvider>
+                    <Provider>{element}</Provider>
+                  </LayeredModalProvider>
+                </SteppedProvider>
+              </ToastProvider>
+            </InterfaceProvider>
+          </AccountProvider>
+        </CacheProvider>
+      </ThemeProvider>
     </MedusaProvider>
   )
 }
