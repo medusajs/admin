@@ -9,6 +9,8 @@ import Textarea from "../../components/molecules/textarea"
 import CurrencyInput from "../../components/organisms/currency-input"
 import useToaster from "../../hooks/use-toaster"
 import { getErrorMessage } from "../../utils/error-messages"
+import { focusByName } from "../../utils/focus-by-name"
+import { validateEmail } from "../../utils/validate-email"
 
 type CustomGiftcardProps = {
   onDismiss: () => void
@@ -19,7 +21,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
   const [selectedRegion, setSelectedRegion] = useState<any>(null)
   const [giftCardAmount, setGiftCardAmount] = useState(0)
 
-  const { register, handleSubmit, formState } = useForm()
+  const { register, handleSubmit } = useForm()
 
   const toaster = useToaster()
 
@@ -36,8 +38,17 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
   const onSubmit = (data) => {
     if (!giftCardAmount) {
+      toaster("Error", "Please enter an amount", "error")
+      focusByName("amount")
       return
     }
+
+    if (!validateEmail(data.metadata.email)) {
+      toaster("Error", "Invalid email address", "error")
+      focusByName("metadata.email")
+      return
+    }
+
     const update = {
       region_id: selectedRegion.value.id,
       value: Math.round(
@@ -48,7 +59,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
     createGiftCard.mutate(update, {
       onSuccess: () => {
-        toaster("Success", "Created Custom gift card", "success")
+        toaster("Success", "Created Custom Gift Card", "success")
         onDismiss()
       },
       onError: (error) => {
@@ -96,6 +107,8 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                     onChange={(value) => {
                       setGiftCardAmount(value || 0)
                     }}
+                    name="amount"
+                    required={true}
                   />
                 </CurrencyInput>
               </div>

@@ -186,7 +186,7 @@ const New: React.FC<NewProps> = ({ location }) => {
         previousRoute="/a/discounts"
       />
       <FormProvider {...methods}>
-        <form>
+        <form onSubmit={(e) => e.preventDefault()}>
           <div className="flex flex-col gap-y-large">
             <DiscountGeneral
               isEdit={false}

@@ -111,9 +111,9 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
             linkTo: `/a/orders/${giftCard.order.id}`,
           })}
         >
-          {giftCard.order && `# ${giftCard.order.display_id}`}
+          {giftCard.order ? `# ${giftCard.order.display_id}` : "-"}
         </Table.Cell>
-        <Table.Cell className="">
+        <Table.Cell>
           {giftCard?.region ? (
             formatAmountWithSymbol({
               amount: giftCard.value,

@@ -54,11 +54,7 @@ const GiftCard = () => {
   const deleteGC = () => {
     deleteGiftCard.mutate(undefined, {
       onSuccess: () => {
-        toaster("Success", "Successfully deleted Gift Card", "success")
         navigate("/a/gift-cards")
-      },
-      onError: (err) => {
-        toaster("Error", getErrorMessage(err), "error")
       },
     })
   }

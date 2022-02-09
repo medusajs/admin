@@ -13,6 +13,7 @@ import StatusDot from "../../../components/fundamentals/status-indicator"
 import BreadCrumb from "../../../components/molecules/breadcrumb"
 import Input from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
+import StatusSelector from "../../../components/molecules/status-selector"
 import TagInput from "../../../components/molecules/tag-input"
 import BodyCard from "../../../components/organisms/body-card"
 import DetailsCollapsible from "../../../components/organisms/details-collapsible"
@@ -147,7 +148,20 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
           title="Product information"
           subtitle="Manage the settings for your Gift Card"
           className={"h-auto w-full"}
-          status={<StatusComponent />}
+          status={
+            <StatusSelector
+              activeState="Published"
+              draftState="Draft"
+              isDraft={giftCard?.status === "draft"}
+              onChange={() => {
+                if (giftCard?.status === "published") {
+                  submit({ status: "draft" })
+                } else {
+                  submit({ status: "published" })
+                }
+              }}
+            />
+          }
           actionables={[
             {
               label:
@@ -233,7 +247,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
                 </div>
                 <TagInput
                   label="Tags (separated by comma)"
-                  tooltipContent="Tags are one word descriptors for the gift card"
+                  tooltipContent="Tags are one word descriptors for the Gift Card"
                   placeholder={"sprint, summer"}
                   className="w-1/2"
                   values={tags}
