@@ -1,4 +1,4 @@
-export const getCombinations = options => {
+export const getCombinations = (options) => {
   if (options.length === 0) {
     return []
   }
@@ -6,7 +6,7 @@ export const getCombinations = options => {
   if (options.length === 1) {
     const values = options.shift().values
     if (values.length > 0) {
-      return values.map(v => [v])
+      return values.map((v) => [v])
     }
 
     return [""]
