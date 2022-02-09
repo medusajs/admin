@@ -44,7 +44,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   const [editDenom, setEditDenom] = useState<null | ProductVariant>(null)
   const updateGiftCardVariant = useAdminUpdateVariant(id)
 
-  const [images, setImages] = useState<any[]>([])
+  const [thumbnail, setThumbnail] = useState<string>()
   const [localImages, setLocalImages] = useState<any[]>([])
 
   const toaster = useToaster()
@@ -141,6 +141,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
     }
 
     setLocalImages(giftCard?.images)
+    setThumbnail(giftCard?.thumbnail || null)
 
     reset({
       ...giftCard,
@@ -297,8 +298,12 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
         >
           <div className="mt-base">
             <RadioGroup.Root
+              value={thumbnail}
               // defaultValue={entities[0].image}
-              onValueChange={(value) => setValue("thumbnail", value)}
+              onValueChange={(value) => {
+                setThumbnail(value)
+                setValue("thumbnail", value)
+              }}
             >
               <DraggableTable
                 onDelete={removeImage}
