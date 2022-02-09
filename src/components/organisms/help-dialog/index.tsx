@@ -8,14 +8,14 @@ import Textarea from "../../molecules/textarea"
 const MailDialog = ({ onDismiss }) => {
   const [subject, setSubject] = useState("")
   const [body, setBody] = useState("")
-  const [link, setLink] = useState("mailto:hello@medusajs.com")
+  const [link, setLink] = useState("mailto:support@medusajs.com")
   const ref = React.useRef(null)
 
   React.useEffect(() => {
     setLink(
-      `mailto:hello@medusajs.com?subject=${encodeURI(subject)}&body=${encodeURI(
-        body
-      )}`
+      `mailto:support@medusajs.com?subject=${encodeURI(
+        subject
+      )}&body=${encodeURI(body)}`
     )
   }, [subject, body])
 
@@ -59,7 +59,7 @@ const MailDialog = ({ onDismiss }) => {
       </div>
       <div className="flex flex-col items-center">
         <span className="text-grey-40 mb-3">
-          <Link to="https://discord.gg/medusajs">
+          <Link to="https://discord.gg/medusajs" target={"_blank"}>
             <DiscordIcon size={24} />
           </Link>
         </span>
