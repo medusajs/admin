@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useMemo } from "react"
 import { Text, Flex, Box, Image } from "rebass"
 import { navigate } from "gatsby"
 import styled from "@emotion/styled"
@@ -8,57 +8,12 @@ import ReactTooltip from "react-tooltip"
 import { ReactComponent as Clipboard } from "../../../../assets/svg/clipboard.svg"
 import { decideBadgeColor } from "../../../../utils/decide-badge-color"
 import Typography from "../../../../components/typography"
-import Badge from "../../../../components/badge"
+import Badge from "../../../../components/fundamentals/badge"
+import LineItem from "../line-item"
 import Dropdown from "../../../../components/dropdown"
 import useMedusa from "../../../../hooks/use-medusa"
+import CopyToClipboard from "../../../../components/copy-to-clipboard"
 import SwapDetails from "./swap-details/"
-
-const LineItemLabel = styled(Text)`
-  ${Typography.Base};
-
-  cursor: pointer;
-
-  font-size: 10px;
-`
-
-const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = lineItem.variant.product.id
-
-  return (
-    <Flex alignItems="center">
-      <Flex flex={1} alignItems="center">
-        <Box alignSelf={"center"} minWidth={"35px"}>
-          {lineItem.quantity} x
-        </Box>
-        <Box mx={2}>
-          <Image
-            src={lineItem.thumbnail || ""}
-            sx={{
-              objectFit: "contain",
-              objectPosition: "center",
-              width: 35,
-              height: 35,
-            }}
-          />
-        </Box>
-        <Box>
-          <LineItemLabel
-            ml={2}
-            mr={5}
-            onClick={() => navigate(`/a/products/${productId}`)}
-          >
-            {lineItem.title}
-            <br /> {lineItem.variant.sku}
-            <br />
-            {((100 + taxRate) * lineItem.unit_price) / 10000}{" "}
-            {currency.toUpperCase()}
-          </LineItemLabel>
-        </Box>
-      </Flex>
-    </Flex>
-  )
-}
-
 export default ({
   event,
   order,
@@ -68,6 +23,7 @@ export default ({
   onCancelSwap,
   onCancelReturn,
 }) => {
+  const fontColor = event.isLatest ? "medusa" : "inactive"
   const { store, isLoading, toaster } = useMedusa("store")
 
   const payStatusColors = decideBadgeColor(event.raw.payment_status)
@@ -84,6 +40,12 @@ export default ({
 
   const canceled = event.raw.canceled_at !== null
   const [expanded, setExpanded] = useState(!canceled)
+
+  const paymentLink = useMemo(() => {
+    if (!store || !store.payment_link_template) return ""
+
+    return store.payment_link_template.replace(/\{cart_id\}/, event.raw.cart_id)
+  }, [store])
 
   useEffect(() => {
     setExpanded(event.raw.canceled_at === null)
@@ -143,85 +105,61 @@ export default ({
 
   return (
     <Flex>
-      <Box width={"100%"} sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
-        <Flex mb={4} px={3} width={"100%"} justifyContent="space-between">
-          <Box>
+      <Box width={"100%"}>
+        <Flex mb={1} px={3} width={"100%"} justifyContent="space-between">
+          <Flex alignItems="flex-start">
             <Flex mb={2}>
-              <Text mr={100} fontSize={1} color="grey" fontWeight="500">
-                {canceled ? "Swap Canceled" : "Swap Requested"}
-              </Text>
-              {expanded && (
-                <Box>
-                  {!isLoading && store.swap_link_template && (
-                    <Text
-                      sx={{
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        var tempInput = document.createElement("input")
-                        tempInput.value = store.swap_link_template.replace(
-                          /\{cart_id\}/,
-                          event.raw.cart_id
-                        )
-                        document.body.appendChild(tempInput)
-
-                        tempInput.select()
-                        document.execCommand("copy")
-                        document.body.removeChild(tempInput)
-                        toaster("Link copied to clipboard", "success")
-                      }}
-                      color="grey"
-                      data-for={event.raw.cart_id}
-                      data-tip={store.swap_link_template.replace(
-                        /\{cart_id\}/,
-                        event.raw.cart_id
-                      )}
-                    >
-                      <ReactTooltip
-                        id={event.raw.cart_id}
-                        place="top"
-                        effect="solid"
-                      />
-                      {!canceled && (
-                        <Flex>
-                          Copy Payment Link
-                          <Box ml={1}>
-                            <Clipboard fill="grey" width="8" height="8" />
-                          </Box>
-                        </Flex>
-                      )}
-                    </Text>
-                  )}
-                </Box>
-              )}
+              <Flex flexDirection="column">
+                <Text
+                  mr={100}
+                  fontSize={1}
+                  mb={2}
+                  color={fontColor}
+                  fontWeight="500"
+                >
+                  {canceled ? "Swap Canceled" : "Swap Requested"}
+                </Text>
+                <Text fontSize="11px" color={fontColor}>
+                  {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+                </Text>
+              </Flex>
             </Flex>
             {expanded && (
               <>
-                {" "}
-                <Text fontSize="11px" color="grey">
-                  {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
-                </Text>
                 {(event.no_notification || false) !==
                   (order.no_notification || false) && (
                   <Box mt={2} pr={2}>
-                    <Text color="gray">
+                    <Text color={fontColor}>
                       Notifications related to this swap are
                       {event.no_notification ? " disabled" : " enabled"}.
                     </Text>
                   </Box>
                 )}
-                <Flex mt={4}>
-                  <Text mr={2} fontSize={1} color="grey">
-                    Payment Status
-                  </Text>
-                  <Badge
-                    mr={4}
-                    color={payStatusColors.color}
-                    bg={payStatusColors.bgColor}
-                  >
-                    {event.raw.payment_status}
-                  </Badge>
-                  <Text mr={2} fontSize={1} color="grey">
+                <Flex alignItems="baseline">
+                  <Flex mr={4} flexDirection="column">
+                    <Flex alignItems="baseline">
+                      <Text mr={2} fontSize={1} color={fontColor}>
+                        Payment Status
+                      </Text>
+                      <Badge
+                        color={payStatusColors.color}
+                        bg={payStatusColors.bgColor}
+                      >
+                        {event.raw.payment_status}
+                      </Badge>
+                    </Flex>
+                    {store?.payment_link_template &&
+                      !canceled &&
+                      event.raw.payment_status !== "captured" && (
+                        <CopyToClipboard
+                          label="Copy payment link"
+                          tooltipText={paymentLink}
+                          copyText={paymentLink}
+                          fillColor={fontColor}
+                        />
+                      )}
+                  </Flex>
+                  <Text mr={2} fontSize={1} color={fontColor}>
                     Return Status
                   </Text>
                   <Badge
@@ -231,7 +169,7 @@ export default ({
                   >
                     {event.raw.return_order.status}
                   </Badge>
-                  <Text mr={2} fontSize={1} color="grey">
+                  <Text mr={2} fontSize={1} color={fontColor}>
                     Fulfillment Status
                   </Text>
                   <Badge
@@ -243,24 +181,27 @@ export default ({
                 </Flex>
               </>
             )}
-          </Box>
+          </Flex>
           <Flex>
             <SwapDetails
               event={event}
               order={order}
+              paymentLink={paymentLink}
               onReceiveReturn={onReceiveReturn}
               onFulfillSwap={onFulfillSwap}
               swapId={event.raw.id}
               onProcessPayment={onProcessPayment}
             />
             {actions.length > 0 && (
-              <Dropdown>
-                {actions.map(o => (
-                  <Text color={o.variant} onClick={o.onClick}>
-                    {o.label}
-                  </Text>
-                ))}
-              </Dropdown>
+              <Flex ml={2}>
+                <Dropdown>
+                  {actions.map(o => (
+                    <Text color={o.variant} onClick={o.onClick}>
+                      {o.label}
+                    </Text>
+                  ))}
+                </Dropdown>
+              </Flex>
             )}
           </Flex>
         </Flex>
@@ -269,16 +210,16 @@ export default ({
             <Flex mx={3} justifyContent="space-between" alignItems="center">
               <Box>
                 <Flex mb={2}>
-                  <Text mr={2}>Return items</Text>
+                  <Text color={fontColor} mr={2}>
+                    Return items
+                  </Text>
                 </Flex>
                 {event.return_lines.map((lineItem, i) => (
                   <LineItem
+                    fontColor={fontColor}
+                    order={order}
                     key={lineItem.id}
-                    currency={order.currency_code}
                     lineItem={lineItem}
-                    taxRate={order.tax_rate}
-                    onReceiveReturn={onReceiveReturn}
-                    rawEvent={event.raw}
                   />
                 ))}
               </Box>
@@ -286,16 +227,16 @@ export default ({
             <Flex mx={3} justifyContent="space-between" alignItems="center">
               <Box>
                 <Flex mt={3} mb={2}>
-                  <Text mr={2}>New items</Text>
+                  <Text color={fontColor} mr={2}>
+                    New items
+                  </Text>
                 </Flex>
                 {event.items.map((lineItem, i) => (
                   <LineItem
+                    fontColor={fontColor}
+                    order={order}
                     key={lineItem.id}
-                    currency={order.currency_code}
                     lineItem={lineItem}
-                    taxRate={order.tax_rate}
-                    onReceiveReturn={onReceiveReturn}
-                    rawEvent={event.raw}
                   />
                 ))}
               </Box>

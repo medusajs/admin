@@ -6,59 +6,13 @@ import moment from "moment"
 
 import { decideBadgeColor } from "../../../../utils/decide-badge-color"
 import Typography from "../../../../components/typography"
-import Badge from "../../../../components/badge"
+import Badge from "../../../../components/fundamentals/badge"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
-
+import LineItem from "../line-item"
 import useMedusa from "../../../../hooks/use-medusa"
 
 import ClaimEdit from "./edit"
-
-const LineItemLabel = styled(Text)`
-  ${Typography.Base};
-
-  cursor: pointer;
-
-  font-size: 10px;
-`
-
-const LineItem = ({ lineItem, currency, taxRate }) => {
-  const productId = lineItem.variant.product.id
-
-  return (
-    <Flex alignItems="center">
-      <Flex flex={1} alignItems="center">
-        <Box alignSelf={"center"} minWidth={"35px"}>
-          {lineItem.quantity} x
-        </Box>
-        <Box mx={2}>
-          <Image
-            src={lineItem.thumbnail || ""}
-            sx={{
-              objectFit: "contain",
-              objectPosition: "center",
-              width: 35,
-              height: 35,
-            }}
-          />
-        </Box>
-        <Box>
-          <LineItemLabel
-            ml={2}
-            mr={5}
-            onClick={() => navigate(`/a/products/${productId}`)}
-          >
-            {lineItem.title}
-            <br /> {lineItem.variant.sku}
-            <br />
-            {((100 + taxRate) * lineItem.unit_price) / 10000}{" "}
-            {currency.toUpperCase()}
-          </LineItemLabel>
-        </Box>
-      </Flex>
-    </Flex>
-  )
-}
 
 export default ({
   event,
@@ -68,6 +22,8 @@ export default ({
   onReceiveReturn,
   onCancelClaim,
 }) => {
+  const fontColor = event.isLatest ? "medusa" : "inactive"
+
   const { toaster } = useMedusa("store")
   const [showEditClaim, setShowEditClaim] = useState(false)
 
@@ -108,18 +64,20 @@ export default ({
 
   return (
     <Flex>
-      <Box width={"100%"} sx={{ borderBottom: "hairline" }} pb={3} mb={3}>
-        <Flex mb={4} px={3} width={"100%"} justifyContent="space-between">
+      <Box width={"100%"}>
+        <Flex mb={2} px={3} width={"100%"} justifyContent="space-between">
           <Box>
-            <Flex mb={2} justifyContent="space-between">
-              <Text mr={100} fontSize={1} color="grey" fontWeight="500">
+            <Flex flexDirection="column">
+              <Text mr={100} fontSize={1} color={fontColor} fontWeight="500">
                 {canceled ? "Claim Canceled" : "Claim Created"}
+              </Text>
+              <Text fontSize="11px" color={fontColor}>
+                {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
               </Text>
             </Flex>
             {expanded && (
               <>
-                <Text fontSize="11px" color="grey">
-                  {moment(event.time).format("MMMM Do YYYY, H:mm:ss")}
+                <Text fontSize="11px" color={fontColor}>
                   {(event.no_notification || false) !==
                     (order.no_notification || false) && (
                     <Box mt={2} pr={2}>
@@ -132,7 +90,7 @@ export default ({
                 </Text>
                 {event.claim_type === "replace" ? (
                   <Flex mt={4}>
-                    <Text mr={2} fontSize={1} color="grey">
+                    <Text mr={2} fontSize={1} color={fontColor}>
                       Fulfillment Status
                     </Text>
                     <Badge
@@ -144,7 +102,7 @@ export default ({
                   </Flex>
                 ) : (
                   <Flex mt={4}>
-                    <Text mr={2} fontSize={1} color="grey">
+                    <Text mr={2} fontSize={1} color={fontColor}>
                       Payment Status
                     </Text>
                     <Badge
@@ -161,13 +119,26 @@ export default ({
 
           <Box>
             {actions.length > 0 && !canceled && (
-              <Dropdown>
-                {actions.map(o => (
-                  <Text color={o.variant} onClick={o.onClick}>
-                    {o.label}
-                  </Text>
-                ))}
-              </Dropdown>
+              <Flex>
+                <Box mr={2}>
+                  {!canceled && (
+                    <Button
+                      onClick={() => setShowEditClaim(true)}
+                      variant="primary"
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </Box>
+
+                <Dropdown>
+                  {actions.map(o => (
+                    <Text color={o.variant} onClick={o.onClick}>
+                      {o.label}
+                    </Text>
+                  ))}
+                </Dropdown>
+              </Flex>
             )}
             {canceled && (
               <Text
@@ -191,53 +162,45 @@ export default ({
             <Flex mx={3} justifyContent="space-between" alignItems="center">
               <Box>
                 <Flex mb={2}>
-                  <Text mr={2}>Claimed items</Text>
+                  <Text color={fontColor} mr={2}>
+                    Claimed items
+                  </Text>
                 </Flex>
                 {event.claim_items.map((lineItem, i) => (
                   <LineItem
+                    fontColor={fontColor}
                     key={lineItem.id}
-                    currency={order.currency_code}
+                    order={order}
                     lineItem={lineItem}
-                    taxRate={order.tax_rate}
-                    onReceiveReturn={onReceiveReturn}
-                    rawEvent={event.raw}
                   />
                 ))}
-              </Box>
-              <Box>
-                {!canceled && (
-                  <Button
-                    onClick={() => setShowEditClaim(true)}
-                    variant="primary"
-                  >
-                    Edit
-                  </Button>
-                )}
               </Box>
             </Flex>
             {event.claim_type === "replace" ? (
               <Flex mx={3} justifyContent="space-between" alignItems="center">
                 <Box>
                   <Flex mt={3} mb={2}>
-                    <Text mr={2}>New items</Text>
+                    <Text color={fontColor} mr={2}>
+                      New items
+                    </Text>
                   </Flex>
                   {event.items.map((lineItem, i) => (
                     <LineItem
+                      fontColor={fontColor}
                       key={lineItem.id}
-                      currency={order.currency_code}
+                      order={order}
                       lineItem={lineItem}
-                      taxRate={order.tax_rate}
-                      onReceiveReturn={onReceiveReturn}
-                      rawEvent={event.raw}
                     />
                   ))}
                 </Box>
               </Flex>
             ) : (
               <Flex mx={3} justifyContent="space-between" alignItems="center">
-                <Box>
+                <Box color={fontColor}>
                   <Flex mt={3} mb={2}>
-                    <Text mr={2}>Amount refunded</Text>
+                    <Text color={fontColor} mr={2}>
+                      Amount refunded
+                    </Text>
                   </Flex>
                   {event.raw.refund_amount / 100}{" "}
                   {order.currency_code.toUpperCase()}

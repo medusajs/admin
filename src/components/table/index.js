@@ -1,7 +1,7 @@
-import React from "react"
-import { Box, Flex, Text } from "rebass"
 import styled from "@emotion/styled"
 import { Link } from "gatsby"
+import React from "react"
+import { Box, Flex, Text } from "rebass"
 
 const StyledTable = styled(Box)`
   // box-shadow: 0 0 0 1px rgba(63, 63, 68, 0.05),
@@ -19,7 +19,7 @@ const StyledTableRow = styled(Flex)`
     bottom: 0;
     width: 3px;
     height: 100%;
-    background-color: ${props =>
+    background-color: ${(props) =>
       props.isHighlighted ? "#454545" : "transparent"};
   }
   td:nth-of-type(1) {
@@ -57,7 +57,7 @@ const StyledTableLinkRow = styled(Link)`
     bottom: 0;
     width: 3px;
     height: 100%;
-    background-color: ${props =>
+    background-color: ${(props) =>
       props.isHighlighted ? "#454545" : "transparent"};
   }
   // td:nth-of-type(1) {
@@ -181,15 +181,14 @@ export const TableHeaderCell = React.forwardRef((props, ref) => (
     as="th"
     variant="th"
     height="30px"
+    textAlign="left"
     lineHeight="30px"
     p={0}
-    px={3}
     width="100%"
     color={"dark"}
     fontSize={0}
     {...props}
     sx={{
-      textTransform: "uppercase",
       ...props.sx,
     }}
   />

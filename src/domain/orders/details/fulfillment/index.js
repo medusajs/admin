@@ -2,9 +2,10 @@ import React, { useState } from "react"
 import { Text, Flex, Box } from "rebass"
 import { Radio } from "@rebass/forms"
 import { useForm, useFieldArray } from "react-hook-form"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 import Modal from "../../../../components/modal"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import Button from "../../../../components/button"
 
 const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
@@ -77,7 +78,7 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
         })
           .then(() => onDismiss())
           .then(() => toaster(`Successfully fulfilled ${type}`, "success"))
-          .catch(() => toaster(`Failed to fulfill ${type}`, "error"))
+          .catch(error => toaster(getErrorMessage(error), "error"))
           .finally(() => setSubmitting(false))
       default:
         const items = toFulfill
@@ -107,7 +108,7 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
           })
             .then(() => onDismiss())
             .then(() => toaster("Successfully fulfilled order", "success"))
-            .catch(() => toaster("Failed to fulfill order", "error"))
+            .catch(error => toaster(getErrorMessage(error), "error"))
             .finally(() => setSubmitting(false))
         }
     }

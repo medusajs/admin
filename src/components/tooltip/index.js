@@ -22,6 +22,7 @@ const StyledTooltip = styled(Tooltip)`
     0px 0px 0px 1px rgba(136, 152, 170, 0.1),
     0px 4px 4px 0px rgba(136, 152, 170, 0.1) !important;
   padding: 8px 12px;
+  max-width: 300px;
   &:after {
     margin-right: 4px;
   }
@@ -29,5 +30,4 @@ const StyledTooltip = styled(Tooltip)`
     opacity: 1;
   }
 `
-
 export default StyledTooltip

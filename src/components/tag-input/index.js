@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from "react"
-import { Box, Flex } from "rebass"
 import styled from "@emotion/styled"
+import React, { useRef, useState } from "react"
+import { Box, Flex } from "rebass"
 import Typography from "../typography"
 
 const ENTER_KEY = 13
@@ -9,46 +9,9 @@ const BACKSPACE_KEY = 8
 const ARROW_LEFT_KEY = 37
 const ARROW_RIGHT_KEY = 39
 
-const Remove = styled.div`
-  cursor: pointer;
-  display: inline-block;
-  padding-left: 5px;
-`
-
-const TextWrapper = styled.div`
-  display: inline-block;
-`
-
-const TagBox = styled(Box)`
-  white-space: nowrap;
-
-  ${props =>
-    props.highlighted &&
-    `
-      box-shadow: ${props.theme.shadows.tagBoxShadow};
-  `}
-`
-
-const StyledInput = styled.input`
-  ${Typography.Base}
-  width: 100%;
-  height: 100%;
-  background-color: transparent;
-  border: none;
-  padding: 8px;
-  &:focus {
-    outline: none;
-  }
-
-  &::placeholder {
-    opacity: 0.2;
-  }
-`
-
-const TagInput = ({ onChange, values, ...props }) => {
+const TagInput = ({ onChange, values, onBlur = () => {}, ...props }) => {
   const [isFocused, setFocused] = useState(false)
   const [highlighted, setHighlighted] = useState(-1)
-  const containerRef = useRef()
   const inputRef = useRef()
 
   const handleKeyDown = e => {
@@ -111,6 +74,7 @@ const TagInput = ({ onChange, values, ...props }) => {
   const handleBlur = () => {
     setHighlighted(-1)
     setFocused(false)
+    onBlur()
   }
 
   const handleFocus = () => {
@@ -126,13 +90,10 @@ const TagInput = ({ onChange, values, ...props }) => {
   }
 
   return (
-    <Flex
-      fontSize={1}
-      alignItems="center"
+    <Wrapper
       className={isFocused ? "tag__focus" : ""}
       focused={isFocused}
       variant="forms.input"
-      style={{ position: "relative" }}
     >
       {values.map((v, index) => (
         <TagBox
@@ -156,8 +117,53 @@ const TagInput = ({ onChange, values, ...props }) => {
         placeholder={!values.length ? props.placeholder : ""}
         type="text"
       />
-    </Flex>
+    </Wrapper>
   )
 }
+
+const Wrapper = styled(Flex)`
+  flex-wrap: wrap;
+  position: relative;
+  align-items: center;
+  font-size: 14px;
+`
+
+const Remove = styled.div`
+  cursor: pointer;
+  display: inline-block;
+  padding-left: 5px;
+`
+
+const TextWrapper = styled.div`
+  display: inline-block;
+`
+
+const TagBox = styled(Box)`
+  white-space: nowrap;
+
+  ${props =>
+    props.highlighted &&
+    `
+      box-shadow: ${props.theme.shadows.tagBoxShadow};
+  `}
+`
+
+const StyledInput = styled.input`
+  ${Typography.Base}
+  width: 0;
+  flex-grow: 1;
+  min-width: 50px;
+  height: 100%;
+  background-color: transparent;
+  border: none;
+  padding: 8px;
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    opacity: 0.2;
+  }
+`
 
 export default TagInput

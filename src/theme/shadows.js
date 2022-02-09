@@ -1,4 +1,8 @@
 export default {
+  popover: `
+  0 0 0 1px hsla(0, 0%, 0%, 0.1),
+  0 4px 11px hsla(0, 0%, 0%, 0.1)
+`,
   pill: `
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,
@@ -63,6 +67,9 @@ export default {
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,
       rgba(60, 66, 87, 0.08) 0px 2px 5px 0px;
+    `,
+  loginBoxShadow: `
+      rgba(60, 66, 87, 0.3) 0px 5px 8px 0px;
     `,
   buttonBoxShadowHover: `
       rgba(0, 0, 0, 0) 0px 0px 0px 0px,

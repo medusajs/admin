@@ -5,11 +5,9 @@ import { Box, Text, Flex } from "rebass"
 import Select from "../select"
 import { DateFilters } from "../../utils/filters"
 import { addHours, atMidnight, dateToUnixTimestamp } from "../../utils/time"
-import InputField from "../input"
-import ReactDatePicker from "react-datepicker"
-import DatePicker from "../date-picker/date-picker"
+import InputField from "../molecules/input"
+import DatePicker from "../atoms/date-picker/date-picker"
 import moment from "moment"
-import { instanceOf } from "prop-types"
 
 const DropdownItemWrapper = styled(Text)`
   font-size: 12px;
@@ -37,13 +35,16 @@ const CollapseContainer = styled.div`
   display: flex;
   align-items: center;
 
-  // background-color: ${props => props.theme.colors.gray};
+  background-color: ${(props) => props.theme.colors.light};
+  border-bottom: 1px solid ${(props) => props.theme.colors.lightest};
   padding: 7px;
   padding-left: 10px;
 
-  ${props =>
+  ${(props) =>
     props.last &&
     `
+      border-bottom:none;
+
       margin-bottom: 0;
       padding-bottom: 7px;
   `}
@@ -60,7 +61,7 @@ const FilterDropdownItem = ({
 
   const prefill = () => {
     try {
-      const prefilled = filters.split(",").reduce((acc, f) => {
+      const prefilled = filters.reduce((acc, f) => {
         acc[f] = true
         return acc
       }, {})
@@ -82,7 +83,7 @@ const FilterDropdownItem = ({
     }
   }, [open])
 
-  const onCheck = filter => {
+  const onCheck = (filter) => {
     const checkedState = checked
 
     if (!checkedState[filter]) {
@@ -103,13 +104,15 @@ const FilterDropdownItem = ({
 
     setChecked(checkedState)
 
-    setFilter({ open: open, filter: newFilter.join(",").toString() })
+    setFilter({ open: open, filter: newFilter })
   }
 
   return (
     <DropdownItemWrapper>
       <DropdownItem
-        onClick={() => setFilter(prevState => ({ ...prevState, open: !open }))}
+        onClick={() =>
+          setFilter((prevState) => ({ ...prevState, open: !open }))
+        }
         open={open}
       >
         <input
@@ -156,7 +159,7 @@ const FilterDropdownItem = ({
 export default FilterDropdownItem
 
 const DateFilterContainer = styled(Box)`
-  background-color: ${props => props.theme.colors.gray};
+  background-color: ${(props) => props.theme.colors.gray};
   padding: 7px;
   padding-left: 10px;
   padding-right: 10px;
@@ -178,11 +181,13 @@ const DateFilter = ({
   existingFilter,
   filterTitle,
 }) => {
+  console.warn("heyo", existingDate, existingFilter)
   const [currentFilter, setCurrentFilter] = useState(
     existingFilter || undefined
   )
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(new Date())
+  const [relativeFilter, setRelativeFilter] = useState(null)
   const select_ref = useRef()
   const input_ref = useRef()
 
@@ -212,7 +217,7 @@ const DateFilter = ({
     }
   }, [open])
 
-  const handleSetFilter = value => {
+  const handleSetFilter = (value) => {
     switch (currentFilter) {
       case DateFilters.InTheLast:
       case DateFilters.OlderThan:
@@ -247,8 +252,8 @@ const DateFilter = ({
    * @param value
    *
    */
-  const handleDateFormat = value => {
-    let option =
+  const handleDateFormat = (value) => {
+    const option =
       select_ref?.current?.options[select_ref.current.options.selectedIndex]
         ?.label
 
@@ -263,8 +268,8 @@ const DateFilter = ({
 
       case DateFilters.EqualTo:
         value = atMidnight(value)
-        let day = dateToUnixTimestamp(value.toDate())
-        let nextDay = dateToUnixTimestamp(addHours(value, 24).toDate())
+        const day = dateToUnixTimestamp(value.toDate())
+        const nextDay = dateToUnixTimestamp(addHours(value, 24).toDate())
         return { gt: day, lt: nextDay }
 
       case DateFilters.After:
@@ -297,7 +302,7 @@ const DateFilter = ({
                 marginRight: "2px;",
               }}
               height="25px"
-              onChange={e => handleSetFilter(e.target.value)}
+              onChange={(e) => handleSetFilter(e.target.value)}
             />
             <Select
               ref={select_ref}
@@ -320,7 +325,7 @@ const DateFilter = ({
           <Flex>
             <DatePicker
               date={startDate}
-              onChange={date => {
+              onChange={(date) => {
                 handleSetFilter(date)
                 setStartDate(date)
               }}
@@ -329,7 +334,7 @@ const DateFilter = ({
         )
 
       default:
-        return <Box>{currentFilter} - comming soon!</Box>
+        return <Box>{currentFilter} - coming soon!</Box>
     }
   }
   return (
@@ -338,10 +343,10 @@ const DateFilter = ({
         className="date-select"
         name={currentFilter}
         flex="1"
-        options={options.map(filter => {
+        options={options.map((filter) => {
           return { value: filter }
         })}
-        onChange={e => setCurrentFilter(e.target.value)}
+        onChange={(e) => setCurrentFilter(e.target.value)}
       />
       {currentFilter && <Box className="content">{handleFilterContent()}</Box>}
     </DateFilterContainer>

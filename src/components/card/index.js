@@ -2,16 +2,13 @@ import React from "react"
 import { Flex, Box, Text, Card as RebassCard } from "rebass"
 import styled from "@emotion/styled"
 
-import Badge from "../badge"
+import Badge from "../fundamentals/badge"
 import Dropdown from "../dropdown"
 import Button from "../button"
 import Typography from "../typography"
 
 const Card = styled(RebassCard)`
   ${Typography.Base}
-  // box-shadow:
-  //   0 7px 13px 0 rgba(60,66,87,.03),
-  //   0 3px 6px 0 rgba(0,0,0,.08);
   border-radius: 2px;
   height: 100%;
 `
@@ -28,13 +25,30 @@ const StyledHeader = styled(Flex)`
   ${props =>
     !props.hideBorder &&
     `
-  border-top: 1px solid #e3e8ee;
+  
 `}
 `
 
-Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
+Card.Header = ({
+  children,
+  badge,
+  dropdownOptions,
+  action,
+  removeBorderTop,
+  ...rest
+}) => {
+  if (action && !Array.isArray(action)) {
+    action = [action]
+  }
+
+  let style = {}
+
+  if (!removeBorderTop) {
+    style = { borderTop: "1px solid #e3e8ee" }
+  }
+
   return (
-    <StyledHeader alignItems="center" {...rest}>
+    <StyledHeader sx={style} alignItems="center" {...rest}>
       <Flex p={3} flexGrow="1" fontWeight="bold" alignItems="center">
         <Text fontSize={20}>{children}</Text>
         {!!badge && (
@@ -47,17 +61,18 @@ Card.Header = ({ children, badge, dropdownOptions, action, ...rest }) => {
           </Badge>
         )}
       </Flex>
-      {!!action && (
-        <Button
-          loading={action.isLoading}
-          onClick={action.onClick}
-          disabled={action.disabled}
-          mr={3}
-          variant={action.type || "cta"}
-        >
-          {action.label}
-        </Button>
-      )}
+      {!!action &&
+        action.map(a => (
+          <Button
+            loading={a.isLoading}
+            onClick={a.onClick}
+            disabled={a.disabled}
+            mr={3}
+            variant={a.type || "cta"}
+          >
+            {a.label}
+          </Button>
+        ))}
       {dropdownOptions && dropdownOptions.length > 0 && (
         <Dropdown mr={3}>
           {dropdownOptions.map(o => (

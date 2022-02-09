@@ -1,14 +1,10 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Flex, Text } from "rebass"
-import { isEmpty } from "lodash"
-import Select from "../select"
-import Input from "../input"
+import Select from "../molecules/select"
+import Input from "../molecules/input"
 import { countries } from "../../utils/countries"
-
-const inputStyle = {
-  height: "33px",
-}
+import { isEmpty } from "lodash"
 
 const AddressForm = ({
   form = {},
@@ -17,9 +13,9 @@ const AddressForm = ({
   type = "address",
 }) => {
   const countryOptions = countries
-    .map(c => {
+    .map((c) => {
       if (allowedCountries) {
-        const clean = allowedCountries.map(c => c.toLowerCase())
+        const clean = allowedCountries.map((c) => c.toLowerCase())
         if (clean.includes(c.alpha2.toLowerCase())) {
           return { label: c.name, value: c.alpha2.toLowerCase() }
         } else {
@@ -31,19 +27,28 @@ const AddressForm = ({
     })
     .filter(Boolean)
 
+  const [selectedCountry, setSelectedCountry] = useState(
+    countryOptions.find((o) => o.value === country)
+  )
+
+  form.register(`${type}.country_code`)
+
+  const setCountry = (value) => {
+    if (value) {
+      setSelectedCountry(value)
+      form.setValue(`${type}.country_code`, value.value)
+    }
+  }
+
   useEffect(() => {
-    if (country) {
+    if (country && !form.getValues(`${[type].country_code}`)) {
       form.setValue(`${[type].country_code}`, country)
     }
   }, [])
 
   return (
-    <Flex width="100%" sx={{ flexDirection: "column" }}>
-      <Flex width="100%" flexDirection="column" mb={3}>
-        <Flex mb={3} width="100%">
-          <Text mr={3} fontSize={1} flex="10% 0 0">
-            Country
-          </Text>
+    <div>
+      {/* <div>
           {countryOptions.length === 1 ? (
             <>
               <Text fontSize={1}>{countryOptions[0].label}</Text>
@@ -65,93 +70,102 @@ const AddressForm = ({
               options={countryOptions}
             />
           )}
-        </Flex>
-        <Flex width="100%">
-          <Text mr={3} fontSize={1} flex="10% 0 0">
-            Address
-          </Text>
-          <Flex sx={{ flexDirection: "column", flex: "100%" }}>
-            <Flex mb={2} flex={"100%"}>
-              <Input
-                mr={1}
-                sx={{ flex: 1 }}
-                inputStyle={inputStyle}
-                ref={form.register({
-                  required: true,
-                })}
-                placeholder="First Name"
-                required={true}
-                name={`${[type]}.first_name`}
-              />
-              <Input
-                sx={{ flex: 1 }}
-                inputStyle={inputStyle}
-                ref={form.register({
-                  required: true,
-                })}
-                placeholder="Last Name"
-                required={true}
-                name={`${[type]}.last_name`}
-              />
-            </Flex>
-            <Input
-              mb={2}
-              inputStyle={inputStyle}
-              ref={form.register({
-                required: true,
-              })}
-              placeholder="Address 1"
-              required={true}
-              name={`${[type]}.address_1`}
-            />
-            <Input
-              mb={2}
-              inputStyle={inputStyle}
-              ref={form.register}
-              placeholder="Address 2"
-              name={`${[type]}.address_2`}
-            />
-            <Input
-              mb={2}
-              inputStyle={inputStyle}
-              ref={form.register}
-              placeholder="Province"
-              name={`${[type]}.province`}
-            />
-            <Input
-              mb={2}
-              inputStyle={inputStyle}
-              ref={form.register({
-                required: true,
-              })}
-              placeholder="Postal code"
-              required={true}
-              name={`${[type]}.postal_code`}
-            />
-            <Input
-              mb={2}
-              inputStyle={inputStyle}
-              ref={form.register}
-              placeholder="City"
-              ref={form.register({
-                required: true,
-              })}
-              name={`${[type]}.city`}
-            />
-            <Input
-              mb={2}
-              inputStyle={inputStyle}
-              ref={form.register({
-                required: true,
-              })}
-              placeholder="Phone"
-              required={true}
-              name={`${[type]}.phone`}
-            />
-          </Flex>
-        </Flex>
-      </Flex>
-    </Flex>
+        </div> */}
+      <span className="inter-base-semibold">General</span>
+      <div className="grid grid-cols-2 gap-x-base gap-y-base mt-4 mb-8">
+        <Input
+          ref={form.register({
+            required: true,
+          })}
+          placeholder="First Name"
+          label="First Name"
+          required={true}
+          name={`${[type]}.first_name`}
+        />
+        <Input
+          ref={form.register({
+            required: true,
+          })}
+          placeholder="Last Name"
+          label="Last Name"
+          required={true}
+          name={`${[type]}.last_name`}
+        />
+        <Input
+          ref={form.register({
+            required: true,
+          })}
+          placeholder="Email"
+          label="Email"
+          type="email"
+          required={true}
+          name={`email`}
+        />
+        <Input
+          ref={form.register({
+            required: true,
+          })}
+          placeholder="Phone"
+          label="Phone"
+          required={true}
+          name={`${[type]}.phone`}
+        />
+      </div>
+
+      <span className="inter-base-semibold">{`${
+        type !== "address"
+          ? `${type.charAt(0).toUpperCase()}${type.slice(1)} `
+          : ""
+      }Address`}</span>
+      <div className="mt-4">
+        <Input
+          ref={form.register({
+            required: true,
+          })}
+          placeholder="Address 1"
+          label="Address 1"
+          required={true}
+          name={`${[type]}.address_1`}
+        />
+        <div className="grid grid-cols-2 gap-x-base gap-y-base mt-4">
+          <Input
+            ref={form.register}
+            placeholder="Province"
+            label="Province"
+            name={`${[type]}.province`}
+          />
+          <Input
+            ref={form.register({
+              required: true,
+            })}
+            placeholder="Postal code"
+            label="Postal code"
+            required={true}
+            name={`${[type]}.postal_code`}
+          />
+          <Input
+            ref={form.register}
+            placeholder="City"
+            label="City"
+            ref={form.register({
+              required: true,
+            })}
+            name={`${[type]}.city`}
+          />
+          <Select
+            ref={form.register}
+            name={`${[type]}.country_code`}
+            label="Country"
+            required
+            value={country || null}
+            options={countryOptions}
+            onChange={setCountry}
+            value={selectedCountry}
+            defaultValue="Choose a country"
+          />
+        </div>
+      </div>
+    </div>
   )
 }
 export default AddressForm

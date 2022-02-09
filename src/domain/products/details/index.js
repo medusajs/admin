@@ -11,8 +11,12 @@ import useMedusa from "../../../hooks/use-medusa"
 import NotFound from "../../../components/not-found"
 import Card from "../../../components/card"
 import InventoryManager from "./inventory"
+<<<<<<< HEAD
 import Spinner from "../../../components/spinner"
 import MetadataForm from "../../../components/metadata-form"
+=======
+import { getErrorMessage } from "../../../utils/error-messages"
+>>>>>>> 362ccd2b89a6c0e16cb4e6fd65344329bca124c8
 
 const ProductDetail = ({ id }) => {
   const {
@@ -36,10 +40,12 @@ const ProductDetail = ({ id }) => {
   }
 
   const handleDetailsSubmit = data => {
-    update(data).then(() => {
-      refresh({ id })
-      toaster("Successfully updated product", "success")
-    })
+    update(data)
+      .then(() => {
+        refresh({ id })
+        toaster("Successfully updated product", "success")
+      })
+      .catch(error => toaster(getErrorMessage(error), "error"))
   }
 
   const handleVariantsSubmit = data => {

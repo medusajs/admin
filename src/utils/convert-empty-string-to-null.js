@@ -1,7 +1,7 @@
-export const convertEmptyStringToNull = (data, fields) => {
+export const convertEmptyStringToNull = (data) => {
   const obj = { ...data }
-  Object.keys(data).forEach(k => {
-    if (fields.includes(k) && obj[k] === "") {
+  Object.keys(data).forEach((k) => {
+    if (obj[k] === "") {
       obj[k] = null
     }
   })

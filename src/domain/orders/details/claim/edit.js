@@ -8,13 +8,14 @@ import Pill from "../../../../components/pill"
 import Modal from "../../../../components/modal"
 import CurrencyInput from "../../../../components/currency-input"
 import ImageUpload from "../../../../components/image-upload"
-import Input from "../../../../components/input"
+import Input from "../../../../components/molecules/input"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
 import TextArea from "../../../../components/textarea"
 import Select from "../../../../components/select"
 import Typography from "../../../../components/typography"
 import Medusa from "../../../../services/api"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const removeNullish = obj =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -125,7 +126,7 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
       })
         .then(() => onDismiss())
         .then(() => toaster("Successfully updated claim", "success"))
-        .catch(() => toaster("Failed to update claim", "error"))
+        .catch(error => toaster(getErrorMessage(error), "error"))
         .finally(() => setSubmitting(false))
     }
   }

@@ -1,32 +1,18 @@
+import { ThemeProvider as Provider } from "emotion-theming"
 import React from "react"
 import breakpoints from "./breakpoints"
 import buttons from "./buttons"
-import spacing from "./spacing"
-import shadows from "./shadows"
+import colors from "./colors"
 import forms from "./forms"
-import { ThemeProvider as Provider } from "emotion-theming"
-
-import "../fonts/index.css"
+import shadows from "./shadows"
+import spacing from "./spacing"
+import text from "./text"
 
 export const theme = {
-  colors: {
-    link: "#5469D3",
-    primary: "#3b77ff",
-    secondary: "#79B28A",
-    medusaGreen: "#454B54",
-    medusa: "#454B54",
-    danger: "#FF7675",
-    muted: "#E3E8EE",
-    gray: "#a3acb9",
-    lightest: "#fefefe",
-    light: "#f0f0f0",
-    dark: "#454545",
-    darkest: "#212121",
-    placeholder: "#a3acb9",
-    blue: "#5469d4",
-  },
+  colors,
   borders: {
     hairline: "1px solid #E3E8EE",
+    subtle: `1px solid ${colors.light}`,
   },
   fontSizes: [12, 14, 16, 18, 22],
   fonts: {
@@ -66,8 +52,8 @@ export const theme = {
   shadows,
   variants: {
     loginCard: {
-      boxShadow: "buttonBoxShadow",
-      borderRadius: "3px",
+      boxShadow: "loginBoxShadow",
+      borderRadius: "5px",
     },
     badge: {
       fontSize: "0",
@@ -81,6 +67,7 @@ export const theme = {
   },
   forms,
   buttons,
+  text,
 }
 
 export const ThemeProvider = ({ children }) => (

@@ -9,7 +9,7 @@ import Select from "react-select"
 
 import Button from "../../../components/button"
 import Pill from "../../../components/pill"
-import Input from "../../../components/input"
+import Input from "../../../components/molecules/input"
 import Spinner from "../../../components/spinner"
 import CurrencyInput from "../../../components/currency-input"
 import TagInput from "../../../components/tag-input"
@@ -24,6 +24,8 @@ import Creatable from "react-select/creatable"
 
 import { getCombinations } from "./utils/get-combinations"
 import { Label } from "@rebass/forms"
+import _ from "lodash"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const StyledSelect = styled(Select)`
   font-size: 14px;
@@ -405,8 +407,7 @@ const NewProduct = ({ }) => {
       const { data } = await Medusa.products.create(product)
       navigate(`/a/products/${data.product.id}`)
     } catch (error) {
-      const errorData = error.response.data.message
-      toaster(`${errorData[0].message}`, "error")
+      toaster(getErrorMessage(error), "error")
     }
   }
 

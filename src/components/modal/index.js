@@ -4,7 +4,7 @@ import { Flex } from "rebass"
 
 const Modal = styled(Flex)`
   position: fixed;
-  z-index: 1001;
+  z-index: 999;
   top: 0;
   left: 0;
 
