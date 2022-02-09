@@ -126,7 +126,7 @@ const EmojiPicker = ({ isOpen, onChange, onEmojiClick }) => {
 
       <RadixDropdown.Content
         sideOffset={5}
-        className="border bg-grey-0 border-grey-20 transform-none rounded-rounded shadow-dropdown overflow-hidden min-w-[200px] z-[100]"
+        className="border bg-grey-0 border-grey-20 -translate-x-1/2 rounded-rounded shadow-dropdown overflow-hidden min-w-[200px] z-[100]"
       >
         <Picker
           onEmojiClick={(e, data) => {
