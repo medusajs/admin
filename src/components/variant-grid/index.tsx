@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import { useAdminDeleteVariant, useAdminUpdateVariant } from "medusa-react"
 import React, { useState } from "react"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
@@ -8,64 +9,9 @@ import EditIcon from "../fundamentals/icons/edit-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
 import Table from "../molecules/table"
 import { Wrapper } from "./elements"
+import { useGridColumns } from "./use-grid-columns"
 
-const getColumns = (product, edit) => {
-  const defaultFields = [
-    { header: "Title", field: "title" },
-    { header: "SKU", field: "sku" },
-    { header: "EAN", field: "ean" },
-    { header: "Inventory", field: "inventory_quantity" },
-  ]
-
-  if (edit) {
-    const optionColumns = product.options.map((o) => ({
-      header: o.title,
-      field: "options",
-      editor: "option",
-      option_id: o.id,
-      formatter: (variantOptions) => {
-        return (variantOptions.find((val) => val.option_id === o.id) || {})
-          .value
-      },
-    }))
-
-    return [
-      ...optionColumns,
-      {
-        header: "Prices",
-        field: "prices",
-        editor: "prices",
-        buttonText: "Edit",
-        formatter: (prices) => {
-          return `${prices.length} price(s)`
-        },
-      },
-      ...defaultFields,
-    ]
-  } else {
-    return [
-      {
-        header: "Variant",
-        field: "options",
-        formatter: (value) => {
-          const options = value.map((v) => {
-            if (v.value) {
-              return v.value
-            }
-            return v
-          })
-
-          return options.join(" / ")
-        },
-        readOnly: true,
-        headCol: true,
-      },
-      ...defaultFields,
-    ]
-  }
-}
-
-const VariantGrid = ({ product, variants, edit }) => {
+const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
   const [selectedVariant, setSelectedVariant] = useState(null)
 
   const updateVariant = useAdminUpdateVariant(product.id)
@@ -74,11 +20,20 @@ const VariantGrid = ({ product, variants, edit }) => {
 
   const dialog = useImperativeDialog()
 
-  const columns = getColumns(product, edit)
+  const columns = useGridColumns(product, edit)
+
+  const handleChange = (index, field, value) => {
+    const newVariants = [...variants]
+    newVariants[index] = {
+      ...newVariants[index],
+      [field]: value,
+    }
+
+    onVariantsChange(newVariants)
+  }
 
   const getDisplayValue = (variant, column) => {
     const { formatter, field } = column
-
     return formatter ? formatter(variant[field]) : variant[field]
   }
 
@@ -130,25 +85,43 @@ const VariantGrid = ({ product, variants, edit }) => {
         <Table.Head>
           <Table.HeadRow>
             {columns.map((col) => (
-              <Table.HeadCell className="w-[100px]">
+              <Table.HeadCell className="w-[100px] px-2 py-4">
                 {col.header}
               </Table.HeadCell>
             ))}
           </Table.HeadRow>
         </Table.Head>
         <Table.Body>
-          {variants.map((variant, index) => {
+          {variants.map((variant, i) => {
             return (
               <Table.Row
                 color={"inherit"}
-                key={index}
+                key={i}
                 actions={edit && editVariantActions(variant)}
-                className="hover:bg-grey-0"
+                className="py-4"
               >
-                {columns.map((col, index) => {
+                {columns.map((col, j) => {
                   return (
-                    <Table.Cell key={index}>
-                      {getDisplayValue(variant, col)}
+                    <Table.Cell key={j} className="p-1">
+                      {edit ? (
+                        <div className="px-2 py-4">
+                          {getDisplayValue(variant, col)}
+                        </div>
+                      ) : (
+                        <input
+                          key={j}
+                          className={clsx(
+                            "outline-none outline-0 leading-base bg-transparent",
+                            "py-4 px-2 w-full h-full border rounded-rounded border-transparent",
+                            "inter-small-regular placeholder:text-grey-40",
+                            "focus-within:shadow-input focus-within:border focus-within:border-violet-60"
+                          )}
+                          value={variant[col.field]}
+                          onChange={({ currentTarget }) =>
+                            handleChange(i, col.field, currentTarget.value)
+                          }
+                        />
+                      )}
                     </Table.Cell>
                   )
                 })}

@@ -8,9 +8,10 @@ export const SINGLE_PRODUCT_VIEW = "single"
 type PRODUCT_VIEW = typeof VARIANTS_VIEW | typeof SINGLE_PRODUCT_VIEW
 
 const defaultProduct = {
-  variants: [],
+  variants: [] as any[],
   images: [],
   prices: [],
+  options: [],
   type: null,
   collection: null,
   thumbnail: "",
@@ -23,6 +24,8 @@ export const ProductFormProvider = ({
   children,
 }) => {
   const [images, setImages] = React.useState<any[]>([])
+  const [variants, setVariants] = React.useState<any[]>([])
+  const [productOptions, setProductOptions] = React.useState<any[]>([])
 
   const appendImage = (image) => setImages([...images, image])
 
@@ -45,16 +48,42 @@ export const ProductFormProvider = ({
       ...product,
     })
     setImages(product.images)
+    setProductOptions(product.options)
+
+    if (product?.variants) {
+      const variants = product?.variants?.map((v) => ({
+        ...v,
+        options: v.options.map((o) => ({
+          ...o,
+          title: product.options.find((po) => po.id === o.option_id)?.title,
+        })),
+      }))
+
+      setVariants(variants)
+    }
+
+    if (product?.options) {
+      const options = product?.options?.map((po) => ({
+        name: po.title,
+        values: po.values.map((v) => v.value),
+      }))
+
+      setProductOptions(options)
+    }
   }, [product])
 
   const handleSubmit = (values) => {
-    onSubmit({ ...values, images })
+    onSubmit({ ...values, images, variants, options: productOptions })
   }
 
   return (
     <FormProvider {...methods}>
       <ProductFormContext.Provider
         value={{
+          productOptions,
+          setProductOptions,
+          variants,
+          setVariants,
           images,
           setImages,
           appendImage,
@@ -72,6 +101,10 @@ export const ProductFormProvider = ({
 }
 
 const ProductFormContext = React.createContext<{
+  productOptions: any[]
+  setProductOptions: (vars: any[]) => void
+  variants: any[]
+  setVariants: (vars: any[]) => void
   images: any[]
   setImages: (images: any[]) => void
   appendImage: (image: any) => void
