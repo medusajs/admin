@@ -1,10 +1,10 @@
 import clsx from "clsx"
 import { Link } from "gatsby"
 import React from "react"
-import SectionCollapsible from "./section-collapsible"
+import SectionCollapsible from "../section-collapsible"
 import { useAdminCustomers } from "medusa-react"
-import useKeyboardNavigationList from "./use-keyboard-navigation-list"
-import Avatar from "../../atoms/avatar"
+import useKeyboardNavigationList from "../use-keyboard-navigation-list"
+import Avatar from "../../../atoms/avatar"
 
 type CustomerResultsProps = {
   customers: ReturnType<typeof useAdminCustomers>["customers"]
@@ -29,13 +29,13 @@ const CustomerResults = ({
                 index: offset + index,
               })}
               className={clsx(
-                "px-base group py-1.5 hover:bg-grey-5 rounded-rounded",
+                "px-base group py-1.5 focus:bg-grey-5 rounded-rounded",
                 { "bg-grey-5": selected === offset + index }
               )}
             >
               <Link
                 to={`/a/customers/${customer.id}`}
-                className="px-base group py-1.5 hover:bg-grey-5 flex items-center rounded-rounded justify-between"
+                className="px-base py-1.5 flex items-center rounded-rounded justify-between"
               >
                 <div className="flex items-center gap-x-3">
                   <div className="w-[20px] h-[20px] shrink-0">
@@ -49,7 +49,7 @@ const CustomerResults = ({
                 </div>
                 <span
                   className={clsx(
-                    "group-hover:visible group-focus:visible text-grey-40 inter-small-regular",
+                    "group-focus:visible text-grey-40 inter-small-regular",
                     {
                       invisible: selected !== offset + index,
                     }

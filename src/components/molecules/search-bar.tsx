@@ -36,12 +36,12 @@ const SearchBar: React.FC = () => {
         className="flex items-center px-small py-[6px]"
       >
         <SearchIcon className="text-grey-40" />
+        <div className="ml-5">
+          <OSShortcut macModifiers="⌘" winModifiers="Ctrl" keys="K" />
+        </div>
         <span className="ml-xsmall text-grey-40 inter-base-regular">
           Search anything...
         </span>
-        <div className="ml-base">
-          <OSShortcut macModifiers="⌘" winModifiers="Ctrl" keys="K" />
-        </div>
       </button>
       {showSearchModal && <SearchModal handleClose={closeModal} />}
     </>

@@ -1,9 +1,9 @@
 import clsx from "clsx"
 import { Link } from "gatsby"
 import React from "react"
-import SectionCollapsible from "./section-collapsible"
+import SectionCollapsible from "../section-collapsible"
 import { useAdminProducts } from "medusa-react"
-import useKeyboardNavigationList from "./use-keyboard-navigation-list"
+import useKeyboardNavigationList from "../use-keyboard-navigation-list"
 
 type ProductResultsProps = {
   products: ReturnType<typeof useAdminProducts>["products"]
@@ -19,10 +19,7 @@ const ProductResults = ({
   selected,
 }: ProductResultsProps) => {
   return products.length > 0 ? (
-    <SectionCollapsible
-      title={"Products"}
-      length={products?.slice(0, 5).length || 0}
-    >
+    <SectionCollapsible title={"Products"} length={products.length || 0}>
       <div className="mt-large">
         <div className="flex flex-col">
           {products?.slice(0, 5).map((product, index) => (
@@ -31,8 +28,10 @@ const ProductResults = ({
                 index: offset + index,
               })}
               className={clsx(
-                "px-base group py-1.5 hover:bg-grey-5 rounded-rounded",
-                { "bg-grey-5": selected === offset + index }
+                "px-base py-1.5 group focus:bg-grey-5 rounded-rounded",
+                {
+                  "bg-grey-5": selected === offset + index,
+                }
               )}
             >
               <Link
@@ -50,7 +49,7 @@ const ProductResults = ({
                 </div>
                 <span
                   className={clsx(
-                    "group-hover:visible group-focus:visible text-grey-40 inter-small-regular",
+                    "group-focus:visible text-grey-40 inter-small-regular",
                     {
                       invisible: selected !== offset + index,
                     }

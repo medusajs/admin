@@ -7,8 +7,8 @@ const useKeyboardNavigationList = ({ length = 0 }) => {
 
   const getInputProps = () => {
     return {
-      "aria-activedescendant": `product-item-${selected}`,
-      "aria-controls": "results-menu",
+      "aria-activedescendant": `result-item-${selected}`,
+      "aria-controls": "results-list",
       onKeyDown: (e) => {
         if (e.key === "ArrowDown") {
           e.preventDefault()
@@ -25,7 +25,7 @@ const useKeyboardNavigationList = ({ length = 0 }) => {
     return {
       tabIndex: index,
       role: "option",
-      id: `product-item-${index}`,
+      id: `result-item-${index}`,
       "aria-selected": selected === index,
       ref: (el) => {
         liRefs.current[index] = el
@@ -41,22 +41,31 @@ const useKeyboardNavigationList = ({ length = 0 }) => {
     return {
       tabIndex: 0,
       role: "listbox",
-      id: "results-menu",
+      id: "results-list",
     }
   }
 
   const enterHandler = (e) => {
     if (e.key === "Enter") {
-      console.log("enter clicked")
       setPressed(true)
     }
   }
 
   React.useEffect(() => {
     if (pressed) {
-      liRefs.current[selected]?.children[0].click()
+      const child = liRefs.current[selected]?.children[0] as HTMLAnchorElement
+      child?.click()
     }
   }, [pressed, selected])
+
+  React.useLayoutEffect(() => {
+    if (liRefs.current[selected]) {
+      liRefs.current[selected]?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      })
+    }
+  }, [selected])
 
   React.useEffect(() => {
     window.addEventListener("keydown", enterHandler)

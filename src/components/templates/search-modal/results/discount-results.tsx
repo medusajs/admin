@@ -1,9 +1,9 @@
 import clsx from "clsx"
 import { Link } from "gatsby"
 import React from "react"
-import SectionCollapsible from "./section-collapsible"
+import SectionCollapsible from "../section-collapsible"
 import { useAdminDiscounts } from "medusa-react"
-import useKeyboardNavigationList from "./use-keyboard-navigation-list"
+import useKeyboardNavigationList from "../use-keyboard-navigation-list"
 
 type DiscountResultsProps = {
   discounts: ReturnType<typeof useAdminDiscounts>["discounts"]
@@ -26,13 +26,13 @@ const DiscountResults = ({
             <li
               {...getLIProps({ index: offset + index })}
               className={clsx(
-                "px-base group py-1.5 hover:bg-grey-5 rounded-rounded",
+                "px-base py-1.5 group focus:bg-grey-5 rounded-rounded",
                 { "bg-grey-5": selected === offset + index }
               )}
             >
               <Link
                 to={`/a/discounts/${discount.id}`}
-                className="px-base group py-1.5 hover:bg-grey-5 flex items-center rounded-rounded justify-between"
+                className="px-base py-1.5 flex items-center rounded-rounded justify-between"
               >
                 <div className="flex items-center gap-x-3">
                   <div className="py-0.5 px-2 bg-grey-10 rounded-rounded">
@@ -44,7 +44,7 @@ const DiscountResults = ({
                 </div>
                 <span
                   className={clsx(
-                    "group-hover:visible group-focus:visible text-grey-40 inter-small-regular",
+                    "group-focus:visible text-grey-40 inter-small-regular",
                     {
                       invisible: selected !== offset + index,
                     }
