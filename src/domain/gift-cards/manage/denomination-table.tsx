@@ -61,7 +61,7 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
         color={"inherit"}
         actions={[
           {
-            label: "Edit Denomination",
+            label: "Edit denomination",
             onClick: () => setEditDenom(denomination),
             icon: <EditIcon size={20} />,
           },

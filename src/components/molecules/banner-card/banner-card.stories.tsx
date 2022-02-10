@@ -27,7 +27,7 @@ CTA.args = {
       onClick: () => {},
     },
   },
-  text: `No gift card have been added yet. Click the "Create Gift Card" button to add one. This is a growth opportunity!`,
+  text: `No gift card has been added yet. Click the "Create Gift Card" button to add one. This is a growth opportunity!`,
 }
 
 export const GiftCard = Template.bind({})
