@@ -15,8 +15,8 @@ type DeletePromptProps = {
 }
 
 const DeletePrompt: React.FC<DeletePromptProps> = ({
-  heading = "Are you sure?",
-  text = "Are you sure you want to delete?",
+  heading = "Are you sure you want to delete?",
+  text = "",
   successText = "Delete successful",
   cancelText = "No, cancel",
   confirmText = "Yes, remove",
