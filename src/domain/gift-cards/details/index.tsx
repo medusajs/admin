@@ -15,7 +15,7 @@ import UnpublishIcon from "../../../components/fundamentals/icons/unpublish-icon
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import StatusSelector from "../../../components/molecules/status-selector"
 import BodyCard from "../../../components/organisms/body-card"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import EditGiftCardModal from "./edit-gift-card-modal"
@@ -31,7 +31,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
 
   const updateGiftCard = useAdminUpdateGiftCard(gift_card?.id)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const [showUpdateBalance, setShowUpdateBalance] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
@@ -63,11 +63,11 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
       { ...data },
       {
         onSuccess: () => {
-          toaster("Success", "Succesfully updated Gift Card", "success")
+          notification("Success", "Succesfully updated Gift Card", "success")
           setShowEdit(false)
           setShowUpdateBalance(false)
         },
-        onError: (err) => toaster("Error", getErrorMessage(err), "error"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
     )
   }

@@ -67,7 +67,7 @@ const StyledImageBox = styled(Flex)`
   }
 `
 
-const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
+const ClaimEdit = ({ claim, order, onSave, onDismiss, notification }) => {
   const [items, setItems] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [noNotification, setNoNotification] = useState(claim.no_notification)
@@ -120,8 +120,12 @@ const ClaimEdit = ({ claim, order, onSave, onDismiss, toaster }) => {
         no_notification: noNotification !== null ? noNotification : undefined,
       })
         .then(() => onDismiss())
-        .then(() => toaster("Success", "Successfully updated claim", "success"))
-        .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully updated claim", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
   }

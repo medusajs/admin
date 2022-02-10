@@ -7,7 +7,7 @@ import Input from "../../../../components/molecules/input"
 import Medusa from "../../../../services/api"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
-const ResendMenu = ({ notification, onDismiss, toaster }) => {
+const ResendMenu = ({ notification, onDismiss, notificationFn }) => {
   const { errors, register, setValue, handleSubmit } = useForm({})
 
   useEffect(() => {
@@ -20,8 +20,10 @@ const ResendMenu = ({ notification, onDismiss, toaster }) => {
         to: data.to,
       })
       .then(() => onDismiss())
-      .then(() => toaster("Success", "The notification was resent", "success"))
-      .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+      .then(() =>
+        notificationFn("Success", "The notification was resent", "success")
+      )
+      .catch((error) => notification("Error", getErrorMessage(error), "error"))
   }
 
   return (

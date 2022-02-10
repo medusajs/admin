@@ -13,7 +13,7 @@ const ReceiveMenu = ({
   onReceiveReturn,
   onReceiveSwap,
   onDismiss,
-  toaster,
+  notification,
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
@@ -91,9 +91,11 @@ const ReceiveMenu = ({
       })
         .then(() => onDismiss())
         .then(() =>
-          toaster("Success", "Successfully returned order", "success")
+          notification("Success", "Successfully returned order", "success")
         )
-        .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
 
@@ -105,9 +107,11 @@ const ReceiveMenu = ({
       })
         .then(() => onDismiss())
         .then(() =>
-          toaster("Success", "Successfully returned order", "success")
+          notification("Success", "Successfully returned order", "success")
         )
-        .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
   }

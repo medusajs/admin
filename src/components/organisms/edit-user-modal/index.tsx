@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import useMedusa from "../../../hooks/use-medusa"
+import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import { getErrorMessage } from "../../../utils/error-messages"
 import Button from "../../fundamentals/button"
@@ -26,7 +26,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
   const [email, setEmail] = useState(user.email)
   const [first_name, setFirstName] = useState(user.first_name)
   const [last_name, setLastName] = useState(user.last_name)
-  const { toaster } = useMedusa("store")
+  const notification = useNotification()
 
   const submit = () => {
     setIsLoading(true)
@@ -36,7 +36,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
         last_name,
       })
       .then((res) => onSubmit())
-      .catch((err) => toaster("Error", getErrorMessage(err), "error"))
+      .catch((err) => notification("Error", getErrorMessage(err), "error"))
 
     handleClose()
   }

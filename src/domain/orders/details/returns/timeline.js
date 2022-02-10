@@ -6,7 +6,13 @@ import Dropdown from "../../../../components/dropdown"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import LineItem from "../line-item"
 
-export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
+export default ({
+  event,
+  order,
+  onReceiveReturn,
+  onCancelReturn,
+  notification,
+}) => {
   const fontColor = event.isLatest ? "medusa" : "inactive"
 
   const canceled = event.status === "canceled"
@@ -19,7 +25,7 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
   const cancelReturn = () => {
     return onCancelReturn(event.raw.id)
       .then()
-      .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+      .catch((error) => notification("Error", getErrorMessage(error), "error"))
   }
 
   return (

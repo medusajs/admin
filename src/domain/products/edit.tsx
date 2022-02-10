@@ -3,7 +3,7 @@ import { useAdminProduct, useAdminUpdateProduct } from "medusa-react"
 import React from "react"
 import Spinner from "../../components/atoms/spinner"
 import Button, { ButtonProps } from "../../components/fundamentals/button"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
 import { getErrorMessage } from "../../utils/error-messages"
 import ProductForm from "./product-form"
@@ -18,7 +18,7 @@ import {
 import { consolidateImages } from "./product-form/utils"
 
 const EditProductPage = ({ id }) => {
-  const toaster = useToaster()
+  const notification = useNotification()
   const { product, isLoading } = useAdminProduct(id)
   const updateProduct = useAdminUpdateProduct(id)
 
@@ -42,10 +42,10 @@ const EditProductPage = ({ id }) => {
 
     updateProduct.mutate(formValuesToUpdateProductMapper(newData), {
       onSuccess: () => {
-        toaster("Success", "Product updated successfully", "success")
+        notification("Success", "Product updated successfully", "success")
       },
       onError: (error) => {
-        toaster("Error", getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }

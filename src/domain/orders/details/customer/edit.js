@@ -13,7 +13,7 @@ const CustomerInformationEdit = ({
   shippingData,
   onUpdate,
   onDismiss,
-  toaster,
+  notification,
 }) => {
   const { register, handleSubmit } = useForm()
   const [submitting, setSubmitting] = useState(false)
@@ -26,13 +26,13 @@ const CustomerInformationEdit = ({
     return onUpdate(data)
       .then(() => onDismiss())
       .then(() =>
-        toaster(
+        notification(
           "Success",
           "Successfully updated customer information",
           "success"
         )
       )
-      .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+      .catch((error) => notification("Error", getErrorMessage(error), "error"))
       .finally(() => setSubmitting(false))
   }
 

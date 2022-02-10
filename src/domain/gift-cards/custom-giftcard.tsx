@@ -7,7 +7,7 @@ import Modal from "../../components/molecules/modal"
 import Select from "../../components/molecules/select"
 import Textarea from "../../components/molecules/textarea"
 import CurrencyInput from "../../components/organisms/currency-input"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import { focusByName } from "../../utils/focus-by-name"
 import { validateEmail } from "../../utils/validate-email"
@@ -23,7 +23,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
   const { register, handleSubmit } = useForm()
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const createGiftCard = useAdminCreateGiftCard()
 
@@ -38,13 +38,13 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
   const onSubmit = (data) => {
     if (!giftCardAmount) {
-      toaster("Error", "Please enter an amount", "error")
+      notification("Error", "Please enter an amount", "error")
       focusByName("amount")
       return
     }
 
     if (!validateEmail(data.metadata.email)) {
-      toaster("Error", "Invalid email address", "error")
+      notification("Error", "Invalid email address", "error")
       focusByName("metadata.email")
       return
     }
@@ -59,11 +59,11 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
     createGiftCard.mutate(update, {
       onSuccess: () => {
-        toaster("Success", "Created Custom Gift Card", "success")
+        notification("Success", "Created Custom Gift Card", "success")
         onDismiss()
       },
       onError: (error) => {
-        toaster("Error", getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
         onDismiss()
       },
     })

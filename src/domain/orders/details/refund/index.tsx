@@ -9,7 +9,7 @@ import Modal from "../../../../components/molecules/modal"
 import Select from "../../../../components/molecules/select"
 import TextArea from "../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 const RefundMenu = ({ order, onDismiss }) => {
@@ -17,7 +17,7 @@ const RefundMenu = ({ order, onDismiss }) => {
 
   const [noNotification, setNoNotification] = useState(order.no_notification)
 
-  const toaster = useToaster()
+  const notification = useNotification()
   const createRefund = useAdminRefundPayment(order.id)
 
   const refundable = useMemo(() => {
@@ -43,11 +43,11 @@ const RefundMenu = ({ order, onDismiss }) => {
       },
       {
         onSuccess: () => {
-          toaster("Success", "Successfully refunded order", "success")
+          notification("Success", "Successfully refunded order", "success")
           onDismiss()
         },
         onError: (error) => {
-          toaster("Error", getErrorMessage(error), "error")
+          notification("Error", getErrorMessage(error), "error")
         },
       }
     )

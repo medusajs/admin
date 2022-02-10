@@ -18,7 +18,7 @@ import { displayAmount } from "../../../../utils/prices"
 import { removeNullish } from "../../../../utils/remove-nullish"
 import { filterItems } from "../utils/create-filtering"
 
-const ReturnMenu = ({ order, onDismiss, toaster }) => {
+const ReturnMenu = ({ order, onDismiss, notification }) => {
   const layoutmodalcontext = useContext(LayeredModalContext)
 
   const [submitting, setSubmitting] = useState(false)
@@ -101,8 +101,10 @@ const ReturnMenu = ({ order, onDismiss, toaster }) => {
     return requestReturnOrder
       .mutateAsync(data)
       .then(() => onDismiss())
-      .then(() => toaster("Success", "Successfully returned order", "success"))
-      .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+      .then(() =>
+        notification("Success", "Successfully returned order", "success")
+      )
+      .catch((error) => notification("Error", getErrorMessage(error), "error"))
       .finally(() => setSubmitting(false))
   }
 

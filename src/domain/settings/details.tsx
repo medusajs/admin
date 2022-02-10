@@ -4,14 +4,14 @@ import { useForm } from "react-hook-form"
 import BreadCrumb from "../../components/molecules/breadcrumb"
 import Input from "../../components/molecules/input"
 import BodyCard from "../../components/organisms/body-card"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 
 const AccountDetails = () => {
   const { register, reset, handleSubmit } = useForm()
   const { store, isSuccess } = useAdminStore()
   const updateStore = useAdminUpdateStore()
-  const toaster = useToaster()
+  const notification = useNotification()
 
   useEffect(() => {
     if (!isSuccess) {
@@ -40,16 +40,16 @@ const AccountDetails = () => {
       !validateUrl(data.payment_link_template) ||
       !validateUrl(data.invite_link_template)
     ) {
-      toaster("Error", "Malformed url", "error")
+      notification("Error", "Malformed url", "error")
       return
     }
 
     updateStore.mutate(data, {
       onSuccess: () => {
-        toaster("Success", "Successfully updated store", "success")
+        notification("Success", "Successfully updated store", "success")
       },
       onError: (error) => {
-        toaster("Error", getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }

@@ -6,7 +6,7 @@ import Modal from "../../../../components/modal"
 import Input from "../../../../components/molecules/input"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
-const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
+const FulfillMenu = ({ type, order, onFulfill, onDismiss, notification }) => {
   const [submitting, setSubmitting] = useState(false)
   const [itemError, setItemError] = useState("")
   const [fulfillAll, setFulfillAll] = useState(false)
@@ -76,9 +76,11 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
         })
           .then(() => onDismiss())
           .then(() =>
-            toaster("Success", `Successfully fulfilled ${type}`, "success")
+            notification("Success", `Successfully fulfilled ${type}`, "success")
           )
-          .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+          .catch((error) =>
+            notification("Error", getErrorMessage(error), "error")
+          )
           .finally(() => setSubmitting(false))
       default:
         const items = toFulfill
@@ -108,9 +110,11 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
           })
             .then(() => onDismiss())
             .then(() =>
-              toaster("Success", "Successfully fulfilled order", "success")
+              notification("Success", "Successfully fulfilled order", "success")
             )
-            .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+            .catch((error) =>
+              notification("Error", getErrorMessage(error), "error")
+            )
             .finally(() => setSubmitting(false))
         }
     }

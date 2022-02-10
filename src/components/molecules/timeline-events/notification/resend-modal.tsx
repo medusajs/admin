@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 type ResendModalProps = {
@@ -24,7 +24,7 @@ const ResendModal: React.FC<ResendModalProps> = ({
     defaultValues: { to: email },
   })
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const handleResend = (data) => {
     resendNotification.mutate(
@@ -33,10 +33,14 @@ const ResendModal: React.FC<ResendModalProps> = ({
       },
       {
         onSuccess: () => {
-          toaster("Success", `Notification re-send to ${data.to}`, "success")
+          notification(
+            "Success",
+            `Notification re-send to ${data.to}`,
+            "success"
+          )
           handleCancel()
         },
-        onError: (err) => toaster("Error", getErrorMessage(err), "error"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
     )
   }

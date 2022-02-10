@@ -16,7 +16,7 @@ const FulfillmentEdit = ({
   onCreateSwapShipment,
   onCreateShipment,
   onDismiss,
-  toaster,
+  notification,
 }) => {
   const { control, errors, register, setValue, handleSubmit } = useForm({})
 
@@ -47,9 +47,15 @@ const FulfillmentEdit = ({
           })
             .then(() => onDismiss())
             .then(() =>
-              toaster("Success", "Fulfillment was marked shipped", "success")
+              notification(
+                "Success",
+                "Fulfillment was marked shipped",
+                "success"
+              )
             )
-            .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+            .catch((error) =>
+              notification("Error", getErrorMessage(error), "error")
+            )
         }
         break
 
@@ -61,9 +67,15 @@ const FulfillmentEdit = ({
           })
             .then(() => onDismiss())
             .then(() =>
-              toaster("Success", "Fulfillment was marked shipped", "success")
+              notification(
+                "Success",
+                "Fulfillment was marked shipped",
+                "success"
+              )
             )
-            .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+            .catch((error) =>
+              notification("Error", getErrorMessage(error), "error")
+            )
         }
         break
 
@@ -75,9 +87,15 @@ const FulfillmentEdit = ({
           })
             .then(() => onDismiss())
             .then(() =>
-              toaster("Success", "Fulfillment was marked shipped", "success")
+              notification(
+                "Success",
+                "Fulfillment was marked shipped",
+                "success"
+              )
             )
-            .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+            .catch((error) =>
+              notification("Error", getErrorMessage(error), "error")
+            )
         }
         break
     }

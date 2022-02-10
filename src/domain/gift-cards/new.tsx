@@ -14,7 +14,7 @@ import InputField from "../../components/molecules/input"
 import Modal from "../../components/molecules/modal"
 import Textarea from "../../components/molecules/textarea"
 import CurrencyInput from "../../components/organisms/currency-input"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { ProductStatus } from "../../types/shared"
 import { getErrorMessage } from "../../utils/error-messages"
 import { focusByName } from "../../utils/focus-by-name"
@@ -35,7 +35,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
   const { refetch } = useAdminProducts()
   const giftCard = useAdminCreateProduct()
   const [denominations, setDenominations] = useState<Denomination[]>([])
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const handleValueUpdate = (name: string, value?: number) => {
     if (!value) {
@@ -82,13 +82,13 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
     const trimmedName = data.name.trim()
 
     if (!trimmedName) {
-      toaster("Error", "Please enter a name for the Gift Card", "error")
+      notification("Error", "Please enter a name for the Gift Card", "error")
       focusByName("name")
       return
     }
 
     if (!data.denominations) {
-      toaster("Error", "Please add at least one denomination", "error")
+      notification("Error", "Please add at least one denomination", "error")
       focusByName("add-denomination")
       return
     }
@@ -111,12 +111,12 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
       },
       {
         onSuccess: () => {
-          toaster("Success", "Successfully created Gift Card", "success")
+          notification("Success", "Successfully created Gift Card", "success")
           refetch()
           navigate("/a/gift-cards/manage")
         },
         onError: (err) => {
-          toaster("Error", getErrorMessage(err), "error")
+          notification("Error", getErrorMessage(err), "error")
         },
       }
     )

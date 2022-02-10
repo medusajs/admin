@@ -16,6 +16,7 @@ import TagInput from "../../../components/tag-input"
 import Typography from "../../../components/typography"
 import VariantGrid from "../../../components/variant-grid"
 import useMedusa from "../../../hooks/use-medusa"
+import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { getCombinations } from "./utils/get-combinations"
@@ -117,10 +118,11 @@ const NewProduct = ({}) => {
   const [tags, setTags] = useState([])
   const [frequentTags, setFrequentTags] = useState([])
   const [currencyOptions, setCurrencyOptions] = useState([])
-  const { store, isLoading, toaster } = useMedusa("store")
+  const { store, isLoading } = useMedusa("store")
   const { collections, isLoading: isLoadingCollections } = useMedusa(
     "collections"
   )
+  const notification = useNotification()
   const {
     register,
     handleSubmit,
@@ -389,7 +391,7 @@ const NewProduct = ({}) => {
     const product = parseProduct(data)
 
     if (!variants.length && hasVariants) {
-      toaster(
+      notification(
         `Missing variants. Consider using the simple product, if only one variant should exists`,
         "error"
       )
@@ -400,7 +402,7 @@ const NewProduct = ({}) => {
       const { data } = await Medusa.products.create(product)
       navigate(`/a/products/${data.product.id}`)
     } catch (error) {
-      toaster("Error", getErrorMessage(error), "error")
+      notification("Error", getErrorMessage(error), "error")
     }
   }
 
@@ -437,7 +439,11 @@ const NewProduct = ({}) => {
         }
       })
 
-      toaster("Error", `Missing info: ${requiredErrors.join(", ")}`, "error")
+      notification(
+        "Error",
+        `Missing info: ${requiredErrors.join(", ")}`,
+        "error"
+      )
     }
   }, [errors])
 

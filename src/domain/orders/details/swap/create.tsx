@@ -37,7 +37,7 @@ const extractPrice = (prices, order) => {
   return 0
 }
 
-const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
+const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
   const layeredModalContext = useContext(LayeredModalContext)
   const [submitting, setSubmitting] = useState(false)
   const [toReturn, setToReturn] = useState({})
@@ -180,8 +180,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       setSubmitting(true)
       return onCreate(data)
         .then(() => onDismiss())
-        .then(() => toaster("Success", "Successfully created swap", "success"))
-        .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully created swap", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
   }

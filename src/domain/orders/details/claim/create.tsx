@@ -42,7 +42,7 @@ const reasonOptions = [
   },
 ]
 
-const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
+const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
   const [shippingAddress, setShippingAddress] = useState({})
   const [countries, setCountries] = useState([])
   const [isReplace, toggleReplace] = useState(false)
@@ -223,8 +223,12 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       setSubmitting(true)
       return onCreate(data)
         .then(() => onDismiss())
-        .then(() => toaster("Success", "Successfully created claim", "success"))
-        .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully created claim", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
   }
@@ -293,7 +297,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
       <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
-          <h2 class="inter-xlarge-semibold">Create Claim</h2>
+          <h2 className="inter-xlarge-semibold">Create Claim</h2>
         </Modal.Header>
         <Modal.Content>
           <div>

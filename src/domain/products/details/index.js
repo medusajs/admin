@@ -5,6 +5,7 @@ import { Flex } from "rebass"
 import Card from "../../../components/card"
 import NotFound from "../../../components/not-found"
 import useMedusa from "../../../hooks/use-medusa"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import Images from "./images"
 import Information from "./information"
@@ -20,14 +21,15 @@ const ProductDetail = ({ id }) => {
     delete: productDelete,
     update,
     refresh,
-    toaster,
     didFail,
   } = useMedusa("products", { id })
+
+  const notification = useNotification()
 
   const handleProductDelete = () => {
     productDelete().then(() => {
       refresh({ id })
-      toaster("Success", "The product was deleted", "success")
+      notification("Success", "The product was deleted", "success")
       navigate("/a/products")
     })
   }
@@ -36,15 +38,15 @@ const ProductDetail = ({ id }) => {
     update(data)
       .then(() => {
         refresh({ id })
-        toaster("Success", "Successfully updated product", "success")
+        notification("Success", "Successfully updated product", "success")
       })
-      .catch((error) => toaster("Error", getErrorMessage(error), "error"))
+      .catch((error) => notification("Error", getErrorMessage(error), "error"))
   }
 
   const handleVariantsSubmit = (data) => {
     update(data).then(() => {
       refresh({ id })
-      toaster("Success", "Successfully updated product", "success")
+      notification("Success", "Successfully updated product", "success")
     })
   }
 

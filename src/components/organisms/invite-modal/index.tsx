@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import useMedusa from "../../../hooks/use-medusa"
+import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import Button from "../../fundamentals/button"
 import InputField from "../../molecules/input"
@@ -13,7 +13,7 @@ const InviteModal: React.FC<InviteModalProps> = ({ handleClose }) => {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState("member")
-  const { toaster } = useMedusa("collections")
+  const notification = useNotification()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -30,11 +30,11 @@ const InviteModal: React.FC<InviteModalProps> = ({ handleClose }) => {
       .then((_res) => {
         setIsLoading(false)
         handleClose()
-        toaster("Success", "user(s) invited", "success")
+        notification("Success", "user(s) invited", "success")
       })
       .catch((_error) => {
         setIsLoading(false)
-        toaster("Error", "Could not add user(s)", "error")
+        notification("Error", "Could not add user(s)", "error")
         handleClose()
       })
   }

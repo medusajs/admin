@@ -21,7 +21,7 @@ import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
@@ -54,7 +54,7 @@ const DraftOrderDetails = ({ id }) => {
   const cancelOrder = useAdminDeleteDraftOrder(id)
   const updateOrder = useAdminUpdateDraftOrder(id)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const OrderStatusComponent = () => {
     switch (draft_order?.status) {
@@ -73,8 +73,8 @@ const DraftOrderDetails = ({ id }) => {
     const action = () => {
       markPaid.mutate(void {}, {
         onSuccess: () =>
-          toaster("Success", "Successfully mark as paid", "success"),
-        onError: (err) => toaster("Error", getErrorMessage(err), "error"),
+          notification("Success", "Successfully mark as paid", "success"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       })
     }
 
@@ -88,8 +88,8 @@ const DraftOrderDetails = ({ id }) => {
   const handleDeleteOrder = async () => {
     return cancelOrder.mutate(void {}, {
       onSuccess: () =>
-        toaster("Success", "Successfully canceled order", "success"),
-      onError: (err) => toaster("Error", getErrorMessage(err), "error"),
+        notification("Success", "Successfully canceled order", "success"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 
@@ -114,10 +114,10 @@ const DraftOrderDetails = ({ id }) => {
 
     return updateOrder.mutate(updateObj, {
       onSuccess: () => {
-        toaster("Success", "Successfully updated address", "success")
+        notification("Success", "Successfully updated address", "success")
         setAddressModal(null)
       },
-      onError: (err) => toaster("Error", getErrorMessage(err), "error"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 

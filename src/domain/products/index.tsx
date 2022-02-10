@@ -8,7 +8,7 @@ import TableViewHeader from "../../components/organisms/custom-table-header"
 import AddCollectionModal from "../../components/templates/collection-modal"
 import CollectionsTable from "../../components/templates/collections-table"
 import ProductTable from "../../components/templates/product-table"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import EditProductPage from "./edit"
 import NewProductPage from "./new"
@@ -19,7 +19,7 @@ const ProductIndex = () => {
   const location = useLocation()
   const [view, setView] = useState("products")
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const createCollection = useAdminCreateCollection()
 
@@ -87,11 +87,11 @@ const ProductIndex = () => {
       { ...data, metadata },
       {
         onSuccess: ({ collection }) => {
-          toaster("Success", "Successfully created collection", "success")
+          notification("Success", "Successfully created collection", "success")
           navigate(`/a/collections/${collection.id}`)
           setShowNewCollection(false)
         },
-        onError: (err) => toaster("Error", getErrorMessage(err), "error"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
     )
   }

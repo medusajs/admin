@@ -11,7 +11,7 @@ import Button from "../../../components/fundamentals/button"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import DiscountGeneral from "../../../components/templates/discount-general"
 import DiscountSettings from "../../../components/templates/discount-settings"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import {
   extractProductOptions,
@@ -27,7 +27,7 @@ const New: React.FC<NewProps> = ({ location }) => {
   const { regions } = useAdminRegions()
   const { products } = useAdminProducts()
   const discounts = useAdminCreateDiscount()
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const toDuplicate = location.state?.discount
 
@@ -133,11 +133,11 @@ const New: React.FC<NewProps> = ({ location }) => {
       { ...payload },
       {
         onSuccess: ({ discount }) => {
-          toaster("Success", successMessage, "success")
+          notification("Success", successMessage, "success")
           navigate(`/a/discounts/${discount.id}`)
         },
         onError: (error) => {
-          toaster("Error", getErrorMessage(error), "error")
+          notification("Error", getErrorMessage(error), "error")
         },
       }
     )
