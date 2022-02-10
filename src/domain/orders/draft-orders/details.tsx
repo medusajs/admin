@@ -1,5 +1,4 @@
 import { Address } from "@medusajs/medusa"
-import clsx from "clsx"
 import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
@@ -26,7 +25,7 @@ import useToaster from "../../../hooks/use-toaster"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
-import { FormattedAddress, DisplayTotal } from "../details/templates"
+import { DisplayTotal, FormattedAddress } from "../details/templates"
 
 const DraftOrderDetails = ({ id }) => {
   type DeletePromptData = {
@@ -432,8 +431,14 @@ const DraftOrderDetails = ({ id }) => {
                       <span>{cart?.shipping_address?.phone || ""}</span>
                     </div>
                   </div>
-                  <FormattedAddress title={"Shipping"} addr={cart?.shipping_address} />
-                  <FormattedAddress title={"Billing"} addr={cart?.billing_address} />
+                  <FormattedAddress
+                    title={"Shipping"}
+                    addr={cart?.shipping_address}
+                  />
+                  <FormattedAddress
+                    title={"Billing"}
+                    addr={cart?.billing_address}
+                  />
                 </div>
               </div>
             </BodyCard>
