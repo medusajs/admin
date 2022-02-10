@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react"
+import React, { useMemo, useEffect, useState } from "react"
+import { LineItem, ReturnItem } from "@medusajs/medusa"
 import Button from "../../../../components/fundamentals/button"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import Modal from "../../../../components/molecules/modal"
@@ -34,26 +35,17 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   const [toReturn, setToReturn] = useState({})
   const [quantities, setQuantities] = useState({})
 
-  const [allItems, setAllItems] = useState([])
-
-  useEffect(() => {
-    if (order) {
-      const ids = returnRequest.items.map((i) => i.item_id)
-
-      setAllItems(order.items.filter((i) => ids.includes(i.id)))
-    }
+  const allItems: LineItem[] = useMemo(() => {
+    const ids = returnRequest.items.map((i: ReturnItem) => i.item_id)
+    return order.items.filter((i: LineItem) => ids.includes(i.id))
   }, [order])
 
   useEffect(() => {
     const returns = []
     let qty = {}
-    returnRequest.items.forEach((i) => {
+    returnRequest.items.forEach((i: ReturnItem) => {
       const item = allItems.find((l) => l.id === i.item_id)
-      if (
-        item &&
-        !item.returned &&
-        item.quantity - item.returned_quantity > 0
-      ) {
+      if (item && item.quantity - item.returned_quantity > 0) {
         returns[i.item_id] = item
         qty = {
           ...qty,
@@ -75,10 +67,9 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
       allItems.find((i) => i.id === t)
     )
 
-    console.log(items)
     const total =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next.id]
+        return acc + ((next.refundable || 0) / next.quantity) * quantities[next.id]
       }, 0) -
       ((returnRequest.shipping_method &&
         returnRequest.shipping_method.price * (1 + order.tax_rate / 100)) ||

@@ -2,7 +2,7 @@ import {
   useAdminCancelReturn,
   useAdminCancelSwap,
   useAdminOrder,
-  useAdminReceiveSwap,
+  useAdminReceiveReturn,
   useAdminStore,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
@@ -61,7 +61,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const [showCreateFulfillment, setShowCreateFulfillment] = useState(false)
   const cancelExchange = useAdminCancelSwap(event.orderId)
   const cancelReturn = useAdminCancelReturn(event.returnId)
-  const receiveReturn = useAdminReceiveSwap(event.returnId)
+  const receiveReturn = useAdminReceiveReturn(event.returnId)
   const [differenceCardId, setDifferenceCardId] = useState<string | undefined>(
     undefined
   )
@@ -114,10 +114,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   }
 
   const handleReceiveReturn = async (items) => {
-    receiveReturn.mutate({
-      swap_id: event.id,
-      items,
-    })
+    receiveReturn.mutate({ items })
 
     setShowReceiveReturn(false)
   }
