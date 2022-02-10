@@ -58,14 +58,14 @@ const useKeyboardNavigationList = ({ length = 0 }) => {
     }
   }, [pressed, selected])
 
-  React.useLayoutEffect(() => {
-    if (liRefs.current[selected]) {
-      liRefs.current[selected]?.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      })
-    }
-  }, [selected])
+  // React.useLayoutEffect(() => {
+  //   if (liRefs.current[selected]) {
+  //     liRefs.current[selected]?.scrollIntoView({
+  //       behavior: "smooth",
+  //       block: "end",
+  //     })
+  //   }
+  // }, [selected])
 
   React.useEffect(() => {
     window.addEventListener("keydown", enterHandler)
