@@ -1,8 +1,15 @@
 import * as React from "react"
 
+const offsetTopRelativeTo = (element, ancestor) => {
+  const elementCoords = element.getBoundingClientRect()
+  const ancestorCoords = ancestor.getBoundingClientRect()
+  return Math.abs(elementCoords.top - ancestorCoords.top)
+}
+
 const useKeyboardNavigationList = ({ length = 0 }) => {
+  const ulRef = React.useRef<HTMLUListElement | null>(null)
   const liRefs = React.useRef<Array<HTMLLIElement | null>>([])
-  const [selected, setSelected] = React.useState(0)
+  const [selected, setSelected] = React.useState({ index: 0, source: "hover" })
   const [pressed, setPressed] = React.useState(false)
 
   const getInputProps = () => {
@@ -12,10 +19,16 @@ const useKeyboardNavigationList = ({ length = 0 }) => {
       onKeyDown: (e) => {
         if (e.key === "ArrowDown") {
           e.preventDefault()
-          setSelected((selected) => Math.min(selected + 1, length - 1))
+          setSelected(({ index }) => ({
+            index: index + 1 > length - 1 ? 0 : index + 1,
+            source: "keyboard",
+          }))
         } else if (e.key === "ArrowUp") {
           e.preventDefault()
-          setSelected((selected) => Math.max(selected - 1, 0))
+          setSelected(({ index }) => ({
+            index: Math.max(index - 1, 0),
+            source: "keyboard",
+          }))
         }
       },
     }
@@ -30,8 +43,8 @@ const useKeyboardNavigationList = ({ length = 0 }) => {
       ref: (el) => {
         liRefs.current[index] = el
       },
-      onMouseEnter: () => {
-        setSelected(index)
+      onMouseEnter: (e) => {
+        setSelected({ index, source: "hover" })
       },
       ...props,
     }
@@ -42,6 +55,7 @@ const useKeyboardNavigationList = ({ length = 0 }) => {
       tabIndex: 0,
       role: "listbox",
       id: "results-list",
+      ref: ulRef,
     }
   }
 
@@ -53,19 +67,36 @@ const useKeyboardNavigationList = ({ length = 0 }) => {
 
   React.useEffect(() => {
     if (pressed) {
-      const child = liRefs.current[selected]?.children[0] as HTMLAnchorElement
+      const child = liRefs.current[selected.index]
+        ?.children[0] as HTMLAnchorElement
       child?.click()
     }
   }, [pressed, selected])
 
-  // React.useLayoutEffect(() => {
-  //   if (liRefs.current[selected]) {
-  //     liRefs.current[selected]?.scrollIntoView({
-  //       behavior: "smooth",
-  //       block: "end",
-  //     })
-  //   }
-  // }, [selected])
+  React.useLayoutEffect(() => {
+    if (selected.source === "hover") {
+      return
+    }
+    const selectedLI = liRefs.current[selected.index]
+    const ul = ulRef.current
+    // if there is an overflow
+    if (ul && selectedLI && ul.scrollHeight > ul.clientHeight) {
+      const scrollBottom = ul.clientHeight + ul.scrollTop
+      const elementBottom =
+        offsetTopRelativeTo(selectedLI, ul) +
+        ul?.scrollTop +
+        selectedLI.offsetHeight
+      const elementTop = selectedLI.offsetTop
+      // scroll down if selected item is downward
+      if (elementBottom > scrollBottom) {
+        ul.scrollTop = elementBottom - ul.clientHeight
+      }
+      // scroll up if selected item is upward
+      else if (elementTop < scrollBottom) {
+        ul.scrollTop = Math.abs(ul.offsetTop - selectedLI.offsetTop)
+      }
+    }
+  }, [selected])
 
   React.useEffect(() => {
     window.addEventListener("keydown", enterHandler)
@@ -78,7 +109,7 @@ const useKeyboardNavigationList = ({ length = 0 }) => {
     getInputProps,
     getLIProps,
     getULProps,
-    selected,
+    selected: selected.index,
   } as const
 }
 

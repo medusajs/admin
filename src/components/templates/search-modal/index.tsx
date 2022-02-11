@@ -58,16 +58,19 @@ const SearchModal = ({ handleClose }) => {
   return (
     <RadixDialog.Root open onOpenChange={handleClose}>
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className="fixed z-50 inset-0">
+        <RadixDialog.Overlay
+          className={clsx(
+            "fixed pt-[140px] pb-[100px] z-50 inset-0 backdrop-blur-sm",
+            { flex: totalLength > 0 }
+          )}
+        >
           <RadixDialog.Content
             className={clsx(
-              "fixed overflow-y-auto bg-grey-0 min-w-modal rounded-rounded shadow-searchModal",
-              "-translate-x-1/2 top-[15%] left-1/2",
-              { "bottom-[15%]": totalLength > 0 }
+              "max-w-[640px] flex mx-auto bg-grey-0 rounded-rounded shadow-searchModal"
             )}
           >
-            <div className="px-xlarge py-large flex flex-col">
-              <div className="flex items-center gap-x-4 pb-large border-solid border-b -mx-xlarge px-xlarge border-grey-20">
+            <div className="py-large flex-1 flex flex-col">
+              <div className="flex items-center gap-x-4 pb-large border-solid px-xlarge border-b border-grey-20">
                 <SearchIcon className="text-grey-40" />
                 <Input
                   className="flex-1"
@@ -77,15 +80,18 @@ const SearchModal = ({ handleClose }) => {
                   {...getInputProps()}
                 />
               </div>
-              <KeyboardShortcuts className="mt-xlarge flex items-center gap-x-3 text-grey-40 inter-small-regular" />
+              <KeyboardShortcuts className="mt-xlarge px-xlarge flex items-center gap-x-3 text-grey-40 inter-small-regular" />
               {totalLength > 0 ? (
-                <div className="mt-large">
+                <ul
+                  {...getULProps()}
+                  className="flex-1 overflow-y-auto mt-large px-xlarge"
+                >
                   {isFetching ? (
                     <div className="w-full pt-2xlarge flex items-center justify-center">
                       <Spinner size={"large"} variant={"secondary"} />
                     </div>
                   ) : (
-                    <ul {...getULProps()}>
+                    <>
                       <div>
                         <CustomerResults
                           customers={customers}
@@ -112,9 +118,9 @@ const SearchModal = ({ handleClose }) => {
                           selected={selected}
                         />
                       </div>
-                    </ul>
+                    </>
                   )}
-                </div>
+                </ul>
               ) : null}
             </div>
           </RadixDialog.Content>
