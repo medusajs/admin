@@ -97,7 +97,7 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
   }
 
   return (
-    <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
+    <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
       {isLoading || isRefetching || !draft_orders ? (
         <div className="w-full pt-2xlarge flex items-center justify-center">
           <Spinner size={"large"} variant={"secondary"} />
