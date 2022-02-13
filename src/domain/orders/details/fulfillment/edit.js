@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from "react"
-import { Text, Flex, Box } from "rebass"
-import { Radio } from "@rebass/forms"
-import { useForm, useFieldArray } from "react-hook-form"
-
-import Modal from "../../../../components/modal"
-import CurrencyInput from "../../../../components/currency-input"
-import Input from "../../../../components/molecules/input"
+import React, { useEffect } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { Box, Flex } from "rebass"
 import Button from "../../../../components/button"
-
-import useMedusa from "../../../../hooks/use-medusa"
+import Modal from "../../../../components/modal"
+import Input from "../../../../components/molecules/input"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 const FulfillmentEdit = ({
@@ -21,7 +16,7 @@ const FulfillmentEdit = ({
   onCreateSwapShipment,
   onCreateShipment,
   onDismiss,
-  toaster,
+  notification,
 }) => {
   const { control, errors, register, setValue, handleSubmit } = useForm({})
 
@@ -40,7 +35,7 @@ const FulfillmentEdit = ({
     })
   }, [])
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     const tracking_numbers = data.tracking_numbers.map(({ value }) => value)
 
     switch (type) {
@@ -51,8 +46,16 @@ const FulfillmentEdit = ({
             tracking_numbers,
           })
             .then(() => onDismiss())
-            .then(() => toaster("Fulfillment was marked shipped", "success"))
-            .catch(error => toaster(getErrorMessage(error), "error"))
+            .then(() =>
+              notification(
+                "Success",
+                "Fulfillment was marked shipped",
+                "success"
+              )
+            )
+            .catch((error) =>
+              notification("Error", getErrorMessage(error), "error")
+            )
         }
         break
 
@@ -63,8 +66,16 @@ const FulfillmentEdit = ({
             tracking_numbers,
           })
             .then(() => onDismiss())
-            .then(() => toaster("Fulfillment was marked shipped", "success"))
-            .catch(error => toaster(getErrorMessage(error), "error"))
+            .then(() =>
+              notification(
+                "Success",
+                "Fulfillment was marked shipped",
+                "success"
+              )
+            )
+            .catch((error) =>
+              notification("Error", getErrorMessage(error), "error")
+            )
         }
         break
 
@@ -75,8 +86,16 @@ const FulfillmentEdit = ({
             tracking_numbers,
           })
             .then(() => onDismiss())
-            .then(() => toaster("Fulfillment was marked shipped", "success"))
-            .catch(error => toaster(getErrorMessage(error), "error"))
+            .then(() =>
+              notification(
+                "Success",
+                "Fulfillment was marked shipped",
+                "success"
+              )
+            )
+            .catch((error) =>
+              notification("Error", getErrorMessage(error), "error")
+            )
         }
         break
     }

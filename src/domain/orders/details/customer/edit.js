@@ -1,12 +1,10 @@
+import { Input } from "@rebass/forms"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
-import _ from "lodash"
-import Modal from "../../../../components/modal"
-import Button from "../../../../components/button"
-import Select from "../../../../components/select"
-import { Input } from "@rebass/forms"
-import { getErrorMessage } from "../../../../utils/error-messages"
 import { Flex, Text } from "rebass"
+import Button from "../../../../components/button"
+import Modal from "../../../../components/modal"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const CustomerInformationEdit = ({
   order,
@@ -15,7 +13,7 @@ const CustomerInformationEdit = ({
   shippingData,
   onUpdate,
   onDismiss,
-  toaster,
+  notification,
 }) => {
   const { register, handleSubmit } = useForm()
   const [submitting, setSubmitting] = useState(false)
@@ -23,14 +21,18 @@ const CustomerInformationEdit = ({
   const [billing, setBilling] = useState(billingData)
   const [shipping, setShipping] = useState(shippingData)
 
-  const onSubmit = async data => {
+  const onSubmit = async (data) => {
     setSubmitting(true)
     return onUpdate(data)
       .then(() => onDismiss())
       .then(() =>
-        toaster("Successfully updated customer information", "success")
+        notification(
+          "Success",
+          "Successfully updated customer information",
+          "success"
+        )
       )
-      .catch(error => toaster(getErrorMessage(error), "error"))
+      .catch((error) => notification("Error", getErrorMessage(error), "error"))
       .finally(() => setSubmitting(false))
   }
 

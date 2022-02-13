@@ -18,7 +18,7 @@ import TagInput from "../../../components/molecules/tag-input"
 import BodyCard from "../../../components/organisms/body-card"
 import DetailsCollapsible from "../../../components/organisms/details-collapsible"
 import EditDenominationsModal from "../../../components/organisms/edit-denominations-modal"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import DenominationTable from "./denomination-table"
 
@@ -40,7 +40,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   const [editDenom, setEditDenom] = useState<null | ProductVariant>(null)
   const updateGiftCardVariant = useAdminUpdateVariant(id)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const { register, handleSubmit, reset } = useForm()
 
@@ -97,10 +97,14 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
       },
       {
         onSuccess: () => {
-          toaster("Successfully updated denominations", "success")
+          notification(
+            "Success",
+            "Successfully updated denominations",
+            "success"
+          )
           setEditDenom(null)
         },
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
     )
   }
