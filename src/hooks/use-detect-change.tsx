@@ -39,8 +39,6 @@ const useDetectChange = ({ isDirty, reset, options }: UseDetectChangeProps) => {
       )
     }
 
-    console.log(isDirty)
-
     if (isDirty) {
       showToaster()
     } else {
