@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import React, { useEffect } from "react"
 import useClipboard from "../../../hooks/use-clipboard"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import Button from "../../fundamentals/button"
 import ClipboardCopyIcon from "../../fundamentals/icons/clipboard-copy-icon"
 
@@ -22,11 +22,11 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
     onCopied: onCopy,
     successDuration: successDuration,
   })
-  const toaster = useToaster()
+  const notification = useNotification()
 
   useEffect(() => {
     if (isCopied) {
-      toaster("Copied!", "success")
+      notification("Success", "Copied!", "success")
     }
   }, [isCopied])
 

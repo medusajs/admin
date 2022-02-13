@@ -1,10 +1,10 @@
 import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const useCopyProduct = () => {
-  const toaster = useToaster()
+  const notification = useNotification()
   const createProduct = useAdminCreateProduct()
 
   const handleCopyProduct = async (product) => {
@@ -61,10 +61,10 @@ const useCopyProduct = () => {
       const newProduct = data?.product
       if (newProduct) {
         navigate(`/a/products/${newProduct.id}`)
-        toaster("Created a new product", "success")
+        notification("Success", "Created a new product", "success")
       }
     } catch (err) {
-      toaster(getErrorMessage(err), "error")
+      notification("Error", getErrorMessage(err), "error")
     }
   }
 

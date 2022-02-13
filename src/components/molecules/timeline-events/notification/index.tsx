@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { NotificationEvent } from "../../../../hooks/use-build-timeline"
-import useToaster from "../../../../hooks/use-toaster"
 import ArrowRightIcon from "../../../fundamentals/icons/arrow-right-icon"
 import MailIcon from "../../../fundamentals/icons/mail-icon"
 import SendIcon from "../../../fundamentals/icons/send-icon"

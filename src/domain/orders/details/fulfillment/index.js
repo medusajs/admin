@@ -1,14 +1,12 @@
 import React, { useState } from "react"
-import { Text, Flex, Box } from "rebass"
-import { Radio } from "@rebass/forms"
-import { useForm, useFieldArray } from "react-hook-form"
-import { getErrorMessage } from "../../../../utils/error-messages"
-
+import { useFieldArray, useForm } from "react-hook-form"
+import { Box, Flex, Text } from "rebass"
+import Button from "../../../../components/button"
 import Modal from "../../../../components/modal"
 import Input from "../../../../components/molecules/input"
-import Button from "../../../../components/button"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
-const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
+const FulfillMenu = ({ type, order, onFulfill, onDismiss, notification }) => {
   const [submitting, setSubmitting] = useState(false)
   const [itemError, setItemError] = useState("")
   const [fulfillAll, setFulfillAll] = useState(false)
@@ -22,7 +20,7 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
     name: "metadata",
   })
 
-  const handleFulfillToggle = item => {
+  const handleFulfillToggle = (item) => {
     setItemError("")
 
     const id = item.id
@@ -58,7 +56,7 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
     setQuantities(newQuantities)
   }
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     let metadata = {}
     if (data.metadata) {
       metadata = data.metadata.reduce((acc, next) => {
@@ -77,12 +75,16 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
           metadata,
         })
           .then(() => onDismiss())
-          .then(() => toaster(`Successfully fulfilled ${type}`, "success"))
-          .catch(error => toaster(getErrorMessage(error), "error"))
+          .then(() =>
+            notification("Success", `Successfully fulfilled ${type}`, "success")
+          )
+          .catch((error) =>
+            notification("Error", getErrorMessage(error), "error")
+          )
           .finally(() => setSubmitting(false))
       default:
         const items = toFulfill
-          .map(t => {
+          .map((t) => {
             if (quantities[t]) {
               return {
                 item_id: t,
@@ -90,7 +92,7 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
               }
             }
           })
-          .filter(t => !!t)
+          .filter((t) => !!t)
 
         if (!items.length) {
           setItemError("You must select at least one item to fulfill")
@@ -107,8 +109,12 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
                 : undefined,
           })
             .then(() => onDismiss())
-            .then(() => toaster("Successfully fulfilled order", "success"))
-            .catch(error => toaster(getErrorMessage(error), "error"))
+            .then(() =>
+              notification("Success", "Successfully fulfilled order", "success")
+            )
+            .catch((error) =>
+              notification("Error", getErrorMessage(error), "error")
+            )
             .finally(() => setSubmitting(false))
         }
     }
@@ -171,7 +177,7 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
               Quantity
             </Box>
           </Flex>
-          {items.map(item => {
+          {items.map((item) => {
             // Only show items that have not been fulfilled
             if (item.fulfilled) {
               return
@@ -195,7 +201,7 @@ const FulfillMenu = ({ type, order, onFulfill, onDismiss, toaster }) => {
                   {toFulfill.includes(item.id) ? (
                     <Input
                       type="number"
-                      onChange={e => handleQuantity(e, item)}
+                      onChange={(e) => handleQuantity(e, item)}
                       value={quantities[item.id] || ""}
                       min={1}
                       max={item.quantity - item.fulfilled_quantity}

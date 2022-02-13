@@ -1,4 +1,3 @@
-import { navigate } from "gatsby"
 import {
   useAdminDeleteReturnReason,
   useAdminUpdateReturnReason,
@@ -11,7 +10,7 @@ import Input from "../../../components/molecules/input"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import useModal from "../../../hooks/use-modal"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import CreateReturnReasonModal from "./create-reason-modal"
 
@@ -27,22 +26,24 @@ const ReturnReasonDetail = ({ reason }) => {
     handleOpen: handleOpenPrompt,
   } = useModal()
   const { register, reset, handleSubmit } = useForm()
-  const toaster = useToaster()
+  const notification = useNotification()
   const deleteRR = useAdminDeleteReturnReason(reason?.id)
   const updateRR = useAdminUpdateReturnReason(reason?.id)
 
   const handleDeletion = async () => {
-    deleteRR.mutate(null)
+    deleteRR.mutate(undefined)
   }
 
-  const onSave = data => {
-    if (data.label === "") return
+  const onSave = (data) => {
+    if (data.label === "") {
+      return
+    }
     updateRR.mutate(data, {
       onSuccess: () => {
-        toaster("Successfully updated return reason", "success")
+        notification("Success", "Successfully updated return reason", "success")
       },
-      onError: error => {
-        toaster(getErrorMessage(error), "error")
+      onError: (error) => {
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }

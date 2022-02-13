@@ -14,6 +14,7 @@ const defaultProduct = {
   type: null,
   collection: null,
   thumbnail: "",
+  titel: "",
 }
 
 export const ProductFormProvider = ({
