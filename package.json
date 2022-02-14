@@ -1,9 +1,10 @@
 {
-  "name": "medusa-admin",
-  "private": true,
-  "description": "A proprietary Admin system to manage Medusa Stores",
-  "version": "0.1.0",
-  "author": "@medusajs",
+  "name": "@lambdacurry/gatsby-theme-medusa-admin",
+  "private": false,
+  "main": "index.js",
+  "version": "1.0.11",
+  "description": "This Gatsby theme was created based on the proprietary Medusa admin system to manage Medusa Stores developed by @medusajs",
+  "author": "@lambdacurry",
   "resolutions": {
     "devcert": "1.2.0",
     "postcss": "^8.4.5"
@@ -117,9 +118,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/medusajs/admin"
+    "url": "https://github.com/lambda-curry/gatsby-theme-medusa-admin"
   },
   "bugs": {
-    "url": "https://github.com/medusajs/admin/issues"
+    "url": "https://github.com/lambda-curry/gatsby-theme-medusa-admin/issues"
   }
 }
