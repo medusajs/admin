@@ -147,7 +147,7 @@ const ClearIndicatorFunc = (setIsOpen) => ({
 }
 
 const Option = ({ className, ...props }: OptionProps) => {
-  // is selected for single select: state.data === state.selectProps.value
+  console.log(props)
   return (
     <components.Option
       {...props}
@@ -157,18 +157,26 @@ const Option = ({ className, ...props }: OptionProps) => {
         className={`item-renderer h-full hover:bg-grey-10 py-2 px-2 cursor-pointer rounded`}
       >
         <div className="items-center h-full flex">
-          <div
-            className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-              props.isSelected && "bg-violet-60"
-            }`}
-          >
-            <span className="self-center">
-              {props.isSelected && <CheckIcon size={16} />}
+          {props.data?.value !== "all" && props.data?.label !== "Select All" ? (
+            <>
+              <div
+                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
+                  props.isSelected && "bg-violet-60"
+                }`}
+              >
+                <span className="self-center">
+                  {props.isSelected && <CheckIcon size={16} />}
+                </span>
+              </div>
+              <span className="ml-3 text-grey-90 inter-base-regular">
+                {props.data.label}
+              </span>
+            </>
+          ) : (
+            <span className="text-grey-90 inter-base-regular">
+              {props.data.label}
             </span>
-          </div>
-          <span className="ml-3 text-grey-90 inter-base-regular">
-            {props.data.label}
-          </span>
+          )}
         </div>
       </div>
     </components.Option>
@@ -212,9 +220,18 @@ const SSelect = React.forwardRef(
     }
 
     const onClickOption = (val) => {
-      onChange(val)
-      if (!isMultiSelect) {
-        setIsOpen(false)
+      if (
+        val.length &&
+        val.find((option) => option.value === "all") &&
+        hasSelectAll &&
+        isMultiSelect
+      ) {
+        onChange(options)
+      } else {
+        onChange(val)
+        if (!isMultiSelect) {
+          setIsOpen(false)
+        }
       }
     }
 
@@ -249,7 +266,11 @@ const SSelect = React.forwardRef(
           <GetSelect
             isCreatable={isCreatable}
             searchBackend={filterOptions}
-            options={options}
+            options={
+              hasSelectAll && isMultiSelect
+                ? [{ value: "all", label: "Select All" }, ...options]
+                : options
+            }
             handleClose={() => setIsOpen(false)}
             ref={selectRef}
             value={value}
