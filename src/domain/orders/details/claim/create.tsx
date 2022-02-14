@@ -285,8 +285,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
     ])
   }
 
-  console.log(returnShippingMethod?.region)
-
   return (
     <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
       <Modal.Body>
