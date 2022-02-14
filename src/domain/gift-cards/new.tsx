@@ -14,9 +14,10 @@ import InputField from "../../components/molecules/input"
 import Modal from "../../components/molecules/modal"
 import Textarea from "../../components/molecules/textarea"
 import CurrencyInput from "../../components/organisms/currency-input"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { ProductStatus } from "../../types/shared"
 import { getErrorMessage } from "../../utils/error-messages"
+import { focusByName } from "../../utils/focus-by-name"
 
 type NewGiftCardProps = {
   onClose: () => void
@@ -34,7 +35,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
   const { refetch } = useAdminProducts()
   const giftCard = useAdminCreateProduct()
   const [denominations, setDenominations] = useState<Denomination[]>([])
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const handleValueUpdate = (name: string, value?: number) => {
     if (!value) {
@@ -58,7 +59,6 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
         />
       </CurrencyInput>
     )
-    register(name, { required: true })
     setDenominations([...denominations, { name, component }])
   }
 
@@ -79,8 +79,17 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
     description?: string
     denominations: number[]
   }) => {
+    const trimmedName = data.name.trim()
+
+    if (!trimmedName) {
+      notification("Error", "Please enter a name for the Gift Card", "error")
+      focusByName("name")
+      return
+    }
+
     if (!data.denominations) {
-      toaster("Please add at least one denomination", "error")
+      notification("Error", "Please add at least one denomination", "error")
+      focusByName("add-denomination")
       return
     }
 
@@ -102,12 +111,12 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
       },
       {
         onSuccess: () => {
-          toaster("Successfully created gift card", "success")
+          notification("Success", "Successfully created Gift Card", "success")
           refetch()
           navigate("/a/gift-cards/manage")
         },
         onError: (err) => {
-          toaster(getErrorMessage(err), "error")
+          notification("Error", getErrorMessage(err), "error")
         },
       }
     )
@@ -130,13 +139,13 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
               <InputField
                 label={"Name"}
                 required
-                placeholder="The best gift card"
+                placeholder="The best Gift Card"
                 name="name"
                 ref={register({ required: true })}
               />
               <Textarea
                 label="Description"
-                placeholder="The best gift card of all time"
+                placeholder="The best Gift Card of all time"
                 name="description"
                 ref={register}
               />
@@ -175,6 +184,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
                 })}
               </div>
               <Button
+                name="add-denomination"
                 variant="ghost"
                 size="small"
                 onClick={addDenomination}

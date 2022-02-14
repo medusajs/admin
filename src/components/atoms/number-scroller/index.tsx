@@ -18,7 +18,7 @@ const NumberScroller: React.FC<NumberScrollerProps> = ({
     <div
       {...props}
       className={clsx(
-        "flex flex-col time-list h-[305px] overflow-y-scroll",
+        "flex flex-col time-list h-[305px] overflow-y-auto",
         className
       )}
     >

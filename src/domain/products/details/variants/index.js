@@ -5,6 +5,7 @@ import Spinner from "../../../../components/spinner"
 import VariantGrid from "../../../../components/variant-grid"
 import NewOption from "./option-edit"
 import VariantEditor from "./variant-editor"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 const Variants = ({
   product,
@@ -114,6 +115,17 @@ const Variants = ({
     })
 
     onSubmit({ variants: payload })
+  }
+
+  const handleVariantEdited = (data) => {
+    const newVs = [...variants]
+    newVs[editIndex] = {
+      ...newVs[editIndex],
+      ...data,
+    }
+
+    setVariants(newVs)
+    setEditVariant(null)
   }
 
   const handleDeleteVariant = () => {

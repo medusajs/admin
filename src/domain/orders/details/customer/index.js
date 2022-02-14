@@ -1,14 +1,12 @@
-import styled from "@emotion/styled"
-import { Input } from "@rebass/forms"
 import { navigate } from "gatsby"
-import React, { useState } from "react"
+import { isEmpty } from "lodash"
+import React from "react"
 import { Box, Text } from "rebass"
 import Card from "../../../../components/card"
-import CustomerInformationEdit from "./edit"
 import { countryLookup } from "../../../../utils/countries"
-import { isEmpty } from "lodash"
+import CustomerInformationEdit from "./edit"
 
-const formatShippingOrBillingAddress = shippingOrBillingAddress => {
+const formatShippingOrBillingAddress = (shippingOrBillingAddress) => {
   const postalCode = shippingOrBillingAddress.postal_code || ""
   const city = shippingOrBillingAddress.city || ""
   const province = shippingOrBillingAddress.province || ""
@@ -25,7 +23,7 @@ const CustomerInformation = ({
   setShow,
   show,
   canceled,
-  toaster,
+  notification,
 }) => {
   const actions = []
 
@@ -107,7 +105,7 @@ const CustomerInformation = ({
       {show && (
         <CustomerInformationEdit
           order={order}
-          toaster={toaster}
+          notification={notification}
           onUpdate={updateOrder}
           customerData={{ email: order.email }}
           shippingData={order.shipping_address}

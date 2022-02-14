@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import useMedusa from "../../hooks/use-medusa"
+import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import RefreshIcon from "../fundamentals/icons/refresh-icon"
@@ -36,7 +36,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedUser, setSelectedUser] = useState(null)
   const [deleteUser, setDeleteUser] = useState(false)
   const [selectedInvite, setSelectedInvite] = useState(null)
-  const { toaster } = useMedusa("store")
+  const notification = useNotification()
 
   useEffect(() => {
     setElements([
@@ -109,7 +109,11 @@ const UserTable: React.FC<UserTableProps> = ({
               Medusa.invites
                 .resend(invite.id)
                 .then(() => {
-                  toaster("Invitiation link has been resent", "success")
+                  notification(
+                    "Success",
+                    "Invitiation link has been resent",
+                    "success"
+                  )
                 })
                 .then(() => triggerRefetch())
             },
@@ -247,7 +251,7 @@ const UserTable: React.FC<UserTableProps> = ({
   }
 
   return (
-    <div className="w-full h-full overflow-y-scroll">
+    <div className="w-full h-full overflow-y-auto">
       <Table
         filteringOptions={filteringOptions}
         enableSearch
@@ -270,7 +274,7 @@ const UserTable: React.FC<UserTableProps> = ({
             heading={"Remove user"}
             onDelete={() =>
               Medusa.users.delete(selectedUser.id).then(() => {
-                toaster("User has been removed", "success")
+                notification("Success", "User has been removed", "success")
                 triggerRefetch()
               })
             }
@@ -281,7 +285,7 @@ const UserTable: React.FC<UserTableProps> = ({
             handleClose={handleClose}
             user={selectedUser}
             onSubmit={() => {
-              toaster("User has been updated", "success")
+              notification("Success", "User has been updated", "success")
               triggerRefetch()
             }}
           />
@@ -292,7 +296,7 @@ const UserTable: React.FC<UserTableProps> = ({
           heading={"Remove invite"}
           onDelete={() =>
             Medusa.invites.delete(selectedInvite.id).then(() => {
-              toaster("Invitiation has been removed", "success")
+              notification("Success", "Invitiation has been removed", "success")
               triggerRefetch()
             })
           }

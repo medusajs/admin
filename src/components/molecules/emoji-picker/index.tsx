@@ -35,7 +35,6 @@ const EmojiPicker: React.FC<indexProps> = ({ onEmojiClick }) => {
 
       <DropdownMenu.Content
         sideOffset={5}
-        portalled
         className="border bg-grey-0 border-grey-20 rounded-rounded shadow-dropdown overflow-hidden min-w-[200px] z-30"
       >
         <Picker

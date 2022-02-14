@@ -1,20 +1,22 @@
+import { useAdminStore, useAdminUpdateStore } from "medusa-react"
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import BreadCrumb from "../../components/molecules/breadcrumb"
 import Input from "../../components/molecules/input"
 import BodyCard from "../../components/organisms/body-card"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
-import { useAdminStore, useAdminUpdateStore } from "medusa-react"
 
 const AccountDetails = () => {
   const { register, reset, handleSubmit } = useForm()
   const { store, isSuccess } = useAdminStore()
   const updateStore = useAdminUpdateStore()
-  const toaster = useToaster()
+  const notification = useNotification()
 
   useEffect(() => {
-    if (!isSuccess) return
+    if (!isSuccess) {
+      return
+    }
     reset({
       name: store.name,
       swap_link_template: store.swap_link_template,
@@ -32,22 +34,22 @@ const AccountDetails = () => {
     })
   }
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     if (
       !validateUrl(data.swap_link_template) ||
       !validateUrl(data.payment_link_template) ||
       !validateUrl(data.invite_link_template)
     ) {
-      toaster("Malformed url", "error")
+      notification("Error", "Malformed url", "error")
       return
     }
 
     updateStore.mutate(data, {
       onSuccess: () => {
-        toaster("Successfully updated store", "success")
+        notification("Success", "Successfully updated store", "success")
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }
@@ -108,7 +110,7 @@ const AccountDetails = () => {
   )
 }
 
-const validateUrl = address => {
+const validateUrl = (address) => {
   if (!address || address === "") {
     return true
   }

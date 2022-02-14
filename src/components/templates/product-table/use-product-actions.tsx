@@ -2,7 +2,7 @@ import { navigate } from "gatsby"
 import { useAdminDeleteProduct, useAdminUpdateProduct } from "medusa-react"
 import * as React from "react"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
@@ -13,7 +13,7 @@ import { ActionType } from "../../molecules/actionables"
 import useCopyProduct from "./use-copy-product"
 
 const useProductActions = (product) => {
-  const toaster = useToaster()
+  const notification = useNotification()
   const dialog = useImperativeDialog()
   const copyProduct = useCopyProduct()
   const deleteProduct = useAdminDeleteProduct(product?.id)
@@ -46,14 +46,16 @@ const useProductActions = (product) => {
           },
           {
             onSuccess: () => {
-              toaster(
+              notification(
+                "Success",
                 `Successfully ${
                   product.status === "published" ? "unpublished" : "published"
                 } product`,
                 "success"
               )
             },
-            onError: (err) => toaster(getErrorMessage(err), "error"),
+            onError: (err) =>
+              notification("Error", getErrorMessage(err), "error"),
           }
         )
       },
