@@ -7,7 +7,7 @@ import React, { useMemo, useState } from "react"
 import Button from "../../../../components/fundamentals/button"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 const NewOption = ({ productId, options, onDismiss }) => {
@@ -16,7 +16,7 @@ const NewOption = ({ productId, options, onDismiss }) => {
   }, [options])
 
   const [toSave, setToSave] = useState(optionsArray)
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const createOption = useAdminCreateProductOption(productId)
   const updateOption = useAdminUpdateProductOption(productId)
@@ -87,11 +87,11 @@ const NewOption = ({ productId, options, onDismiss }) => {
       })
     )
       .then(() => {
-        toaster("Options updated", "success")
+        notification("Success", "Options updated", "success")
         onDismiss()
       })
       .catch((err) => {
-        toaster(getErrorMessage(err), "error")
+        notification("Error", getErrorMessage(err), "error")
       })
   }
 

@@ -59,11 +59,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
 }) => {
   const editActions: ActionType[] = [
     {
-<<<<<<< HEAD
-      label: "Dublicate",
-=======
       label: "Duplicate",
->>>>>>> fix/missing-product-details
       onClick: () => {
         if (onDuplicate) {
           onDuplicate()
@@ -115,55 +111,6 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                 The code your customers will enter during checkout. Uppercase
                 letters and numbers only.
               </p>
-<<<<<<< HEAD
-              <div className="flex gap-x-xlarge mt-base w-full">
-                <div className="flex flex-col w-1/2 gap-y-base">
-                  <InputField
-                    label="Code"
-                    placeholder="SUMMERSALE10"
-                    required
-                    name="code"
-                    ref={register({ required: true })}
-                  />
-                  <Select
-                    label="Choose valid regions"
-                    options={regionOptions}
-                    isMultiSelect
-                    enableSearch
-                    value={selectedRegions}
-                    onChange={setSelectedRegions}
-                    required
-                    hasSelectAll
-                    className={clsx({
-                      ["opacity-50 pointer-events-none select-none"]: regionIsDisabled,
-                    })}
-                    disabled={regionIsDisabled}
-                  />
-                  <InputField
-                    label="Amount"
-                    required
-                    type="number"
-                    placeholder="10"
-                    prefix={discountType === "percentage" ? "%" : nativeSymbol}
-                    name="rule.value"
-                    ref={register({ required: !isFreeShipping })}
-                    className={clsx({
-                      ["opacity-50 pointer-events-none select-none"]:
-                        isFreeShipping || isEdit,
-                    })}
-                    tabIndex={isFreeShipping || isEdit ? -1 : 0}
-                    disabled={isFreeShipping || isEdit}
-                  />
-                </div>
-                <Textarea
-                  label="Description"
-                  required
-                  className="w-1/2"
-                  placeholder="Summer Sale 2022"
-                  name="rule.description"
-                  ref={register({ required: true })}
-                />
-=======
               <div className="grid gap-x-xlarge gap-y-base mt-base grid-rows-3 grid-cols-2">
                 <InputField
                   label="Code"
@@ -211,7 +158,6 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                   tabIndex={isFreeShipping || isEdit ? -1 : 0}
                   disabled={isFreeShipping || isEdit}
                 />
->>>>>>> fix/missing-product-details
               </div>
               <RadioGroup.Root
                 value={isFreeShipping ? undefined : discountType}
