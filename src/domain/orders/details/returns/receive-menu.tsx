@@ -25,6 +25,8 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   onReceiveSwap,
   onDismiss,
   notification,
+  isSwapOrClaim,
+  refunded,
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)

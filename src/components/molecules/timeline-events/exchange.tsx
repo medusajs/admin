@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react"
 import CreateFulfillmentModal from "../../../domain/orders/details/create-fulfillment"
 import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
 import { ExchangeEvent } from "../../../hooks/use-build-timeline"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import CopyToClipboard from "../../atoms/copy-to-clipboard"
 import Button from "../../fundamentals/button"
 import CancelIcon from "../../fundamentals/icons/cancel-icon"
@@ -71,7 +71,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const { store } = useAdminStore()
   const { order } = useAdminOrder(event.orderId)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   useEffect(() => {
     if (!store) {
@@ -229,7 +229,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
           }}
           onReceiveSwap={handleReceiveReturn}
           onDismiss={() => setShowReceiveReturn(false)}
-          toaster={toaster}
+          notification={notification}
           isSwapOrClaim={true}
         />
       )}

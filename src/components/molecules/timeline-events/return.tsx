@@ -3,7 +3,7 @@ import { useAdminCancelReturn, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
 import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
 import { ReturnEvent } from "../../../hooks/use-build-timeline"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import Button from "../../fundamentals/button"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
@@ -28,7 +28,7 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
 
   const { order } = useAdminOrder(event.orderId)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const handleCancel = () => {
     cancelReturn.mutate(undefined, {
@@ -61,7 +61,7 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
       {showReceive && (
         <ReceiveMenu
           onDismiss={() => setShowReceive(false)}
-          toaster={toaster}
+          notification={notification}
           onReceiveReturn={handleReceive}
           order={order}
           returnRequest={event.raw}
