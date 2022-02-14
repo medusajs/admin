@@ -48,8 +48,8 @@ const SaveNotification: React.FC<SaveNotificationProps> = ({
   }
 
   return (
-    <ToasterContainer visible={toast.visible} className="p-0 pl-base w-[448px]">
-      <div className="py-base">{getIcon(icon)}</div>
+    <ToasterContainer visible={toast.visible} className="py-0 px-0 w-[448px]">
+      <div className="py-base pl-base">{getIcon(icon)}</div>
       <div className="flex flex-col ml-small mr-base gap-y-2xsmall flex-grow py-base">
         <span className="inter-small-semibold">{title}</span>
         <span className="inter-small-regular text-grey-50">{message}</span>

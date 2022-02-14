@@ -1,5 +1,6 @@
 import React from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
+import useDetectChange from "../../../../hooks/use-detect-change"
 
 export const VARIANTS_VIEW = "variants"
 
@@ -39,6 +40,24 @@ export const ProductFormProvider = ({
   )
 
   const methods = useForm()
+
+  const handleSubmission = async () => {
+    const values = methods.getValues()
+    onSubmit({ ...values, images })
+  }
+
+  useDetectChange({
+    isDirty: methods.formState.isDirty,
+    reset: () =>
+      methods.reset({
+        ...product,
+      }),
+    options: {
+      fn: handleSubmission,
+      title: "You have unsaved changes",
+      message: "Do you want to save your changes?",
+    },
+  })
 
   React.useEffect(() => {
     methods.reset({
