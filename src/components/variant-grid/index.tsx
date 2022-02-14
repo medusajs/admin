@@ -8,7 +8,6 @@ import EditIcon from "../fundamentals/icons/edit-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
 import GridInput from "../molecules/grid-input"
 import Table from "../molecules/table"
-import { Wrapper } from "./elements"
 import { useGridColumns } from "./use-grid-columns"
 
 const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
@@ -67,12 +66,12 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
     return [
       {
         label: "Edit",
-        icon: <EditIcon />,
+        icon: <EditIcon size={20} />,
         onClick: () => setSelectedVariant(variant),
       },
       {
         label: "Delete",
-        icon: <TrashIcon />,
+        icon: <TrashIcon size={20} />,
         onClick: () => handleDeleteVariant(variant),
         variant: "danger",
       },
@@ -80,7 +79,7 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
   }
 
   return (
-    <Wrapper>
+    <>
       <Table>
         <Table.Head>
           <Table.HeadRow>
@@ -95,16 +94,15 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
           {variants.map((variant, i) => {
             return (
               <Table.Row
-                color={"inherit"}
                 key={i}
+                color={"inherit"}
                 actions={edit && editVariantActions(variant)}
-                className="py-4"
               >
                 {columns.map((col, j) => {
                   return (
-                    <Table.Cell key={j} className="p-1">
+                    <Table.Cell key={j}>
                       {edit ? (
-                        <div className="px-2 py-4">
+                        <div className="px-2 py-4 truncate">
                           {getDisplayValue(variant, col)}
                         </div>
                       ) : (
@@ -131,7 +129,7 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
           onSubmit={handleUpdateVariant}
         />
       )}
-    </Wrapper>
+    </>
   )
 }
 
