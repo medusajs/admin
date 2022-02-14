@@ -1,24 +1,33 @@
-import clsx from "clsx"
-import React from "react"
+import { useEffect } from "react"
 
-export const useHighlightSearch = (query: string) => {
+export const useHighlightSearch = (name: string, query: string) => {
   function getHighlightedSearch(text: string) {
     const parts = text.split(new RegExp(`(${query})`, "gi"))
-    return (
-      <span>
-        {parts.map((part: string, i: number) => (
-          <span
-            key={i}
-            className={clsx({
-              "bg-orange-10": part.toLowerCase() === query.toLowerCase(),
-            })}
-          >
-            {part}
-          </span>
-        ))}
-      </span>
-    )
+
+    const str: string[] = []
+
+    for (const part of parts) {
+      if (part.toLowerCase() === query.toLowerCase()) {
+        str.push(`<mark class="bg-orange-10">${part}</mark>`)
+      } else {
+        str.push(part)
+      }
+    }
+
+    return str.join("")
   }
 
-  return { getHighlightedSearch }
+  useEffect(() => {
+    const children = document.getElementsByName(name)
+
+    if (children) {
+      const childArray = Array.from(children)
+      for (const child of childArray) {
+        child.innerHTML = child.innerHTML.replace(
+          child.innerHTML,
+          getHighlightedSearch(child.innerText)
+        )
+      }
+    }
+  }, [query, name])
 }
