@@ -160,7 +160,6 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
         enableSearch
         searchPlaceholder={"Search Gift Cards"}
         handleSearch={handleGiftCardSearch}
-        id="gift-card-table"
       >
         <Table.Head>
           <Table.HeadRow>
