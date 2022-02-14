@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { Box, Flex } from "rebass"
-import Button from "../../../../components/button"
 import Card from "../../../../components/card"
 import Spinner from "../../../../components/spinner"
 import VariantGrid from "../../../../components/variant-grid"
 import NewOption from "./option-edit"
 import VariantEditor from "./variant-editor"
-import { getErrorMessage } from "../../../../utils/error-messages"
 
 const Variants = ({
   product,
@@ -118,52 +116,11 @@ const Variants = ({
     onSubmit({ variants: payload })
   }
 
-  const handleVariantEdited = (data) => {
-    const newVs = [...variants]
-    newVs[editIndex] = {
-      ...newVs[editIndex],
-      ...data,
-    }
-
-    setVariants(newVs)
-    setEditVariant(null)
-  }
-
   const handleDeleteVariant = () => {
     variantMethods.delete(editVariant.id)
     setEditVariant(null)
   }
 
-<<<<<<< HEAD
-  const handleUpdateVariant = data => {
-    const parsedData = {
-      ...data,
-      inventory_quantity: parseInt(data.inventory_quantity),
-    }
-
-    const cleanedData = convertEmptyStringToNull(parsedData, numberFields)
-
-    variantMethods
-      .update(editVariant.id, cleanedData)
-      .then(res => {
-        setNewVariant(null)
-        setEditVariant(null)
-        toaster("Successfully updated variant", "success")
-      })
-      .catch(() => toaster("Failed to update variant", "error"))
-  }
-
-  const handleCreateVariant = data => {
-    const cleanedData = convertEmptyStringToNull(data, numberFields)
-    variantMethods
-      .create(cleanedData)
-      .then(data => {
-        setNewVariant(null)
-        setEditVariant(null)
-        toaster("Successfully created variant", "success")
-      })
-      .catch(() => toaster("Failed to update variant", "error"))
-=======
   const handleUpdateVariant = (data) => {
     const updatedVariants = variants.slice()
     updatedVariants[editIndex] = { id: editVariant.id, ...data }
@@ -171,7 +128,6 @@ const Variants = ({
     setNewVariant(null)
     setEditVariant(null)
     handleSubmit(updatedVariants)
->>>>>>> 362ccd2b89a6c0e16cb4e6fd65344329bca124c8
   }
 
   const handleCreateVariant = (data) => {
