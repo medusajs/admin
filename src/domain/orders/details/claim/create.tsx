@@ -159,22 +159,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
     })
   }, [shippingMethod, showCustomPrice])
 
-  // useEffect(() => {
-  //  const items = toReturn.map(t => order.items.find(i => i.id === t))
-  //  const returnTotal =
-  //    items.reduce((acc, next) => {
-  //      return acc + (next.refundable / next.quantity) * quantities[next.id]
-  //    }, 0) - (shippingPrice || 0)
-
-  //  const newItemsTotal = itemsToAdd.reduce((acc, next) => {
-  //    const price = extractPrice(next.prices, order)
-  //    const lineTotal = price * 100 * next.quantity
-  //    return acc + lineTotal
-  //  }, 0)
-
-  //  setToPay(newItemsTotal - returnTotal)
-  // }, [toReturn, quantities, shippingPrice, itemsToAdd])
-
   const onSubmit = () => {
     const claim_items = Object.entries(toReturn).map(([key, val]) => {
       val.reason = val.reason?.value
