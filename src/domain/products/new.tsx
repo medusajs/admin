@@ -21,18 +21,19 @@ const NewProductPage = () => {
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
-    const uploadedImgs = await Medusa.uploads
-      .create(images)
-      .then(({ data }) => {
-        const uploaded = data.uploads.map(({ url }) => url)
-        return uploaded
-      })
-    const newData = {
-      ...data,
-      images: consolidateImages(data.images, uploadedImgs),
+
+    if (images.length) {
+      const uploadedImgs = await Medusa.uploads
+        .create(images)
+        .then(({ data }) => {
+          const uploaded = data.uploads.map(({ url }) => url)
+          return uploaded
+        })
+
+      data.images = consolidateImages(data.images, uploadedImgs)
     }
 
-    createProduct.mutate(formValuesToCreateProductMapper(newData), {
+    createProduct.mutate(formValuesToCreateProductMapper(data), {
       onSuccess: ({ product }) => {
         notification("Success", "Product created successfully", "success")
         navigate(`/a/products/${product.id}`)
