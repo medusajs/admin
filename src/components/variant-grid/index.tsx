@@ -1,8 +1,8 @@
 import { useAdminDeleteVariant, useAdminUpdateVariant } from "medusa-react"
 import React, { useState } from "react"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
-import useNotification from "../../hooks/use-notification"
 import useImperativeDialog from "../../hooks/use-imperative-dialog"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
@@ -13,10 +13,10 @@ import { useGridColumns } from "./use-grid-columns"
 const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
   const [selectedVariant, setSelectedVariant] = useState(null)
 
-  const updateVariant = useAdminUpdateVariant(product.id)
-  const deleteVariant = useAdminDeleteVariant(product.id)
-  const notification = useNotification()
+  const updateVariant = useAdminUpdateVariant(product?.id)
+  const deleteVariant = useAdminDeleteVariant(product?.id)
 
+  const notification = useNotification()
   const dialog = useImperativeDialog()
 
   const columns = useGridColumns(product, edit)

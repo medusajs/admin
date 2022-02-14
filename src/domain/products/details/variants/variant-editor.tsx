@@ -111,6 +111,10 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
 
     data.origin_country = selectedCountry?.label
     data.inventory_quantity = parseInt(data.inventory_quantity)
+    data.weight = data?.weight ? parseInt(data.weight, 10) : undefined
+    data.height = data?.height ? parseInt(data.height, 10) : undefined
+    data.width = data?.width ? parseInt(data.width, 10) : undefined
+    data.length = data?.length ? parseInt(data.length, 10) : undefined
 
     data.prices = data.prices.map((p) => removeNullish(p))
     const cleaned = convertEmptyStringToNull(data)
