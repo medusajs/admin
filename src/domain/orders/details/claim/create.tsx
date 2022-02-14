@@ -276,14 +276,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
     }
   }
 
-  // const handleUpdateShippingPrice = e => {
-  //   const element = e.target
-  //   const value = element.value
-  //   if (value >= 0) {
-  //     setShippingPrice(parseFloat(value) * 100)
-  //   }
-  // }
-
   const handleProductSelect = (variants) => {
     setItemsToAdd((itemsToAdd) => [
       ...itemsToAdd,
@@ -292,6 +284,8 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
         .map((variant) => ({ ...variant, quantity: 1 })),
     ])
   }
+
+  console.log(returnShippingMethod?.region)
 
   return (
     <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
@@ -313,7 +307,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
           </div>
           <div className="mt-4">
             <h3 className="inter-base-semibold">
-              Shipping Return{" "}
+              Shipping Return
               {returnShippingMethod && (
                 <span className="text-grey-40 inter-base-regular">
                   ({returnShippingMethod.region.name})
@@ -349,7 +343,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
               <RMAShippingPrice
                 useCustomShippingPrice={showCustomPrice.return}
                 shippingPrice={customOptionPrice.return || null}
-                currency_code={returnShippingMethod.region.currency_code}
+                currencyCode={returnShippingMethod.region.currency_code}
                 updateShippingPrice={(value) =>
                   setCustomOptionPrice({
                     ...customOptionPrice,
