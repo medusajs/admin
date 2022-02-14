@@ -126,10 +126,14 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
 
     data.prices = data.prices.map((p) => removeNullish(p))
 
+    const emptyMetadata = Object.keys(variant.metadata).reduce(
+      (acc, key) => ({ ...acc, [key]: null }),
+      {}
+    )
     data.metadata = data.metadata.reduce((acc, { key, value }) => {
       acc[key] = value
       return acc
-    }, {})
+    }, emptyMetadata)
 
     const cleaned = convertEmptyStringToNull(data)
     onSubmit(cleaned)
