@@ -25,8 +25,10 @@ import { navigate } from "gatsby"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import StatusSelector from "../../../../components/molecules/status-selector"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import Checkbox from "../../../../components/atoms/checkbox"
 
-const General = ({ showViewOptions = true, isEdit = false }) => {
+const General = ({ showViewOptions = true, isEdit = false, product }) => {
   const { register, control, setViewType, viewType } = useProductForm()
   const { types } = useAdminProductTypes()
   const { collections } = useAdminCollections()
@@ -42,6 +44,7 @@ const General = ({ showViewOptions = true, isEdit = false }) => {
   return (
     <GeneralBodyCard
       isEdit={isEdit}
+      product={product}
       title="General"
       subtitle="To start selling, all you need is a name, price, and image"
     >
@@ -78,7 +81,7 @@ const General = ({ showViewOptions = true, isEdit = false }) => {
           Give your product a short and clear description. 120-160 characters is
           the recommended length for search engines.
         </label>
-        <div className="grid grid-rows-3 grid-cols-2 gap-x-8 gap-y-4 mb-xlarge">
+        <div className="grid grid-rows-3 grid-cols-2 gap-x-8 gap-y-4 mb-large">
           <Textarea
             name="description"
             id="description"
@@ -119,6 +122,14 @@ const General = ({ showViewOptions = true, isEdit = false }) => {
             control={control}
           />
         </div>
+        <div className="flex item-center gap-x-1.5 mb-xlarge">
+          <Checkbox name="discountable" ref={register} label="Discountable" />
+          <InfoTooltip
+            content={
+              "When unchecked discounts will not be applied to this product"
+            }
+          />
+        </div>
         {showViewOptions && (
           <RadioGroup.Root
             value={viewType}
@@ -140,11 +151,10 @@ const General = ({ showViewOptions = true, isEdit = false }) => {
   )
 }
 
-const GeneralBodyCard = ({ isEdit, ...props }) => {
+const GeneralBodyCard = ({ isEdit, product, ...props }) => {
   const params = useParams()
   const dialog = useImperativeDialog()
   const notification = useNotification()
-  const { product } = useAdminProduct(params.id)
   const updateProduct = useAdminUpdateProduct(params?.id)
   const deleteProduct = useAdminDeleteProduct(params?.id)
 

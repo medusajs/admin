@@ -46,7 +46,7 @@ const NewProductPage = () => {
   return (
     <ProductFormProvider onSubmit={onSubmit}>
       <ProductForm />
-      <div className="mt-base flex justify-end items-center gap-x-2">
+      <div className="mt-base pb-xlarge flex justify-end items-center gap-x-2">
         <Button
           variant="secondary"
           size="small"
