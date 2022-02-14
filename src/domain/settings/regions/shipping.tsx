@@ -30,7 +30,7 @@ const Shipping = ({ region }) => {
   const outboundOptions = [
     {
       icon: <PlusIcon />,
-      label: "Add option",
+      label: "Add Option",
       onClick: () => setAddOption(true),
     },
   ]
@@ -38,7 +38,7 @@ const Shipping = ({ region }) => {
   const inboundDropdownOptions = [
     {
       icon: <PlusIcon />,
-      label: "Add return",
+      label: "Add Return",
       onClick: () => setAddReturnOption(true),
     },
   ]

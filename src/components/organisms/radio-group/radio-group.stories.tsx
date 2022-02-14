@@ -37,28 +37,28 @@ storiesOf("Organisms/RadioGroup", module).add("controlled", () => {
   const [value, setValue] = useState("value", val)
 
   return (
-    <RadioGroup value={value} onValueChange={v => setValue(v)}>
-      {values.map(value => {
+    <RadioGroup.Root value={value} onValueChange={(v) => setValue(v)}>
+      {values.map((value) => {
         return (
           <RadioGroup.Item
             key={value.id}
             value={value.id}
             label={value.name}
             sublabel={`(${value.countries
-              .map(c => c.display_name)
+              .map((c) => c.display_name)
               .join(", ")})`}
             description={value.description}
           />
         )
       })}
-    </RadioGroup>
+    </RadioGroup.Root>
   )
 })
 
-const Template = args => (
+const Template = (args) => (
   <div>
-    <RadioGroup {...args}>
-      {values.map(value => {
+    <RadioGroup.Root {...args}>
+      {values.map((value) => {
         return (
           <RadioGroup.Item
             key={value.id}
@@ -68,14 +68,14 @@ const Template = args => (
           />
         )
       })}
-    </RadioGroup>
+    </RadioGroup.Root>
   </div>
 )
 
 export const Default = Template.bind({})
 Default.args = {
   value: val,
-  onValueChange: v => {
+  onValueChange: (v) => {
     val = v
   },
 }

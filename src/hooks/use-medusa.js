@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useContext } from "react"
-import { useToasts } from "react-toast-notifications"
-
+import { useContext, useEffect, useState } from "react"
 import { CacheContext } from "../context/cache"
 import Medusa from "../services/api"
-import ToastLabel from "../components/toast"
+import useNotification from "./use-notification"
 
 const getCacheKey = (endpoint, subcomponent, query) => {
   if (!query) {
@@ -33,8 +31,6 @@ const useMedusa = (endpoint, query) => {
   const [isReloading, setReloading] = useState(false)
   const [didFail, setDidFail] = useState(false)
   const [result, setResult] = useState(hasCache ? cache[cacheKey] : {})
-
-  const { addToast } = useToasts()
 
   const fetchData = async (refresh, query) => {
     if (refresh) {
@@ -78,26 +74,24 @@ const useMedusa = (endpoint, query) => {
     }
   }
 
-  const toaster = (text, type) => {
-    return addToast(<ToastLabel>{text}</ToastLabel>, { appearance: type })
-  }
+  const notification = useNotification()
 
   useEffect(() => {
     fetchData(false, query)
   }, [])
 
-  let value = {
+  const value = {
     ...result,
-    refresh: query => fetchData(true, query),
+    refresh: (query) => fetchData(true, query),
     hasCache,
     isLoading,
     isReloading,
-    toaster,
+    notification,
     didFail,
   }
 
   if (subcomponent.update && query && query.id) {
-    value.update = updateData =>
+    value.update = (updateData) =>
       subcomponent.update(query.id, updateData).then(({ data }) => {
         setResult(data)
       })
@@ -128,7 +122,7 @@ const useMedusa = (endpoint, query) => {
           })
         }
 
-        value.refund = payload => {
+        value.refund = (payload) => {
           return subcomponent
             .refund(query.id, payload)
             .then(({ data }) => setResult(data))
@@ -140,13 +134,13 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
-        value.createShipment = payload => {
+        value.createShipment = (payload) => {
           return subcomponent
             .createShipment(query.id, payload)
             .then(({ data }) => setResult(data))
         }
 
-        value.processSwapPayment = swapId => {
+        value.processSwapPayment = (swapId) => {
           return subcomponent
             .processSwapPayment(query.id, swapId)
             .then(({ data }) => setResult(data))
@@ -164,26 +158,26 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
-        value.createSwap = payload => {
+        value.createSwap = (payload) => {
           return subcomponent
             .createSwap(query.id, payload)
             .then(({ data }) => setResult(data))
         }
 
-        value.cancelSwap = swap => {
+        value.cancelSwap = (swap) => {
           return subcomponent
             .cancelReturn(swap.return_order.id)
             .then(({ data }) => subcomponent.cancelSwap(query.id, swap.id))
             .then(({ data }) => setResult(data))
         }
 
-        value.createClaim = payload => {
+        value.createClaim = (payload) => {
           return subcomponent
             .createClaim(query.id, payload)
             .then(({ data }) => setResult(data))
         }
 
-        value.cancelClaim = claimId => {
+        value.cancelClaim = (claimId) => {
           return subcomponent
             .cancelClaim(query.id, claimId)
             .then(({ data }) => setResult(data))
@@ -213,19 +207,19 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
-        value.createFulfillment = payload => {
+        value.createFulfillment = (payload) => {
           return subcomponent
             .createFulfillment(query.id, payload)
             .then(({ data }) => setResult(data))
         }
 
-        value.cancelFulfillment = fulfillmentId => {
+        value.cancelFulfillment = (fulfillmentId) => {
           return subcomponent
             .cancelFulfillment(query.id, fulfillmentId)
             .then(({ data }) => setResult(data))
         }
 
-        value.requestReturn = payload => {
+        value.requestReturn = (payload) => {
           return subcomponent
             .requestReturn(query.id, payload)
             .then(({ data }) => setResult(data))
@@ -237,7 +231,7 @@ const useMedusa = (endpoint, query) => {
             .then(({ data }) => setResult(data))
         }
 
-        value.cancelReturn = returnId => {
+        value.cancelReturn = (returnId) => {
           return subcomponent
             .cancelReturn(returnId)
             .then(({ data }) => setResult(data))
@@ -251,16 +245,16 @@ const useMedusa = (endpoint, query) => {
       }
       break
     case "store":
-      value.update = updateData => {
+      value.update = (updateData) => {
         return subcomponent.update(updateData).then(({ data }) => {
           setResult(data)
         })
       }
-      value.addCurrency = code =>
+      value.addCurrency = (code) =>
         subcomponent.addCurrency(code).then(({ data }) => {
           setResult(data)
         })
-      value.removeCurrency = code =>
+      value.removeCurrency = (code) =>
         subcomponent.removeCurrency(code).then(({ data }) => {
           setResult(data)
         })
@@ -268,14 +262,14 @@ const useMedusa = (endpoint, query) => {
     case "products":
       if (query && query.id) {
         const variantMethods = {
-          create: variant => {
+          create: (variant) => {
             return subcomponent.variants
               .create(query.id, variant)
               .then(({ data }) => {
                 setResult(data)
               })
           },
-          retrieve: variantId => {
+          retrieve: (variantId) => {
             return subcomponent.variants
               .retrieve(query.id, variantId)
               .then(({ data }) => {
@@ -289,7 +283,7 @@ const useMedusa = (endpoint, query) => {
                 setResult(data)
               })
           },
-          delete: variantId => {
+          delete: (variantId) => {
             return subcomponent.variants
               .delete(query.id, variantId)
               .then(({ data }) => {
@@ -303,7 +297,7 @@ const useMedusa = (endpoint, query) => {
         value.variants = variantMethods
 
         const optionMethods = {
-          create: option => {
+          create: (option) => {
             return subcomponent.options
               .create(query.id, option)
               .then(({ data }) => {
@@ -317,7 +311,7 @@ const useMedusa = (endpoint, query) => {
                 setResult(data)
               })
           },
-          delete: optionId => {
+          delete: (optionId) => {
             return subcomponent.options
               .delete(query.id, optionId)
               .then(({ data }) => {

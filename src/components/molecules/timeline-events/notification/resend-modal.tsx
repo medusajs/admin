@@ -1,17 +1,10 @@
 import { useAdminResendNotification } from "medusa-react"
-import {
-  useAdminCreateClaimShipment,
-  useAdminCreateShipment,
-  useAdminCreateSwapShipment,
-} from "medusa-react"
-import React, { useEffect, useState } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
+import React from "react"
+import { useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 type ResendModalProps = {
@@ -31,7 +24,7 @@ const ResendModal: React.FC<ResendModalProps> = ({
     defaultValues: { to: email },
   })
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const handleResend = (data) => {
     resendNotification.mutate(
@@ -40,10 +33,14 @@ const ResendModal: React.FC<ResendModalProps> = ({
       },
       {
         onSuccess: () => {
-          toaster(`Notification re-send to ${data.to}`, "success")
+          notification(
+            "Success",
+            `Notification re-send to ${data.to}`,
+            "success"
+          )
           handleCancel()
         },
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
     )
   }

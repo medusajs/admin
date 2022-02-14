@@ -4,13 +4,13 @@ import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import InputField from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const EditCustomerModal = ({ handleClose, customer }) => {
   const { register, reset, handleSubmit } = useForm()
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const updateCustomer = useAdminUpdateCustomer(customer.id)
 
@@ -18,11 +18,11 @@ const EditCustomerModal = ({ handleClose, customer }) => {
     updateCustomer.mutate(data, {
       onSuccess: () => {
         handleClose()
-        toaster("Successfully updated customer", "success")
+        notification("Success", "Successfully updated customer", "success")
       },
       onError: (err) => {
         handleClose()
-        toaster(getErrorMessage(err), "error")
+        notification("Error", getErrorMessage(err), "error")
       },
     })
   }

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
+import Button from "../../../../components/fundamentals/button"
+import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import Modal from "../../../../components/molecules/modal"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import Button from "../../../../components/fundamentals/button"
-import { getErrorMessage } from "../../../../utils/error-messages"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
-import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 
 const ReceiveMenu = ({
   order,
@@ -13,7 +13,7 @@ const ReceiveMenu = ({
   onReceiveReturn,
   onReceiveSwap,
   onDismiss,
-  toaster,
+  notification,
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
@@ -90,8 +90,12 @@ const ReceiveMenu = ({
         items,
       })
         .then(() => onDismiss())
-        .then(() => toaster("Successfully returned order", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully returned order", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
 
@@ -102,8 +106,12 @@ const ReceiveMenu = ({
         refund: Math.round(refundAmount),
       })
         .then(() => onDismiss())
-        .then(() => toaster("Successfully returned order", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully returned order", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
   }

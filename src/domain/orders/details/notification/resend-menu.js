@@ -1,30 +1,29 @@
-import React, { useState, useEffect } from "react"
-import { Text, Flex, Box } from "rebass"
-import { Radio } from "@rebass/forms"
-import { useForm, useFieldArray } from "react-hook-form"
-import { getErrorMessage } from "../../../../utils/error-messages"
-
+import React, { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { Box, Flex } from "rebass"
+import Button from "../../../../components/button"
 import Modal from "../../../../components/modal"
 import Input from "../../../../components/molecules/input"
-import Button from "../../../../components/button"
-
 import Medusa from "../../../../services/api"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
-const ResendMenu = ({ notification, onDismiss, toaster }) => {
+const ResendMenu = ({ notification, onDismiss, notificationFn }) => {
   const { errors, register, setValue, handleSubmit } = useForm({})
 
   useEffect(() => {
     setValue("to", notification.to)
   }, [])
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     return Medusa.notifications
       .resend(notification.id, {
         to: data.to,
       })
       .then(() => onDismiss())
-      .then(() => toaster("The notification was resent", "success"))
-      .catch(error => toaster(getErrorMessage(error), "error"))
+      .then(() =>
+        notificationFn("Success", "The notification was resent", "success")
+      )
+      .catch((error) => notification("Error", getErrorMessage(error), "error"))
   }
 
   return (

@@ -17,14 +17,14 @@ import {
 } from "../../components/table"
 import CollectionModal from "../../components/templates/collection-modal"
 import useMedusa from "../../hooks/use-medusa"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import CollectionDetails from "./details"
 
 const CollectionsIndex = () => {
   const [showNew, setShowNew] = useState(false)
   const createCollection = useAdminCreateCollection()
-  const toaster = useToaster()
+  const notification = useNotification()
   const { collections, isLoading, refresh } = useMedusa("collections", {
     search: `?${qs.stringify(filtersOnLoad)}`,
   })
@@ -50,12 +50,12 @@ const CollectionsIndex = () => {
 
     createCollection.mutate(payload, {
       onSuccess: () => {
-        toaster("Collection created", "success")
+        notification("Success", "Collection created", "success")
         refresh()
         setShowNew(false)
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }

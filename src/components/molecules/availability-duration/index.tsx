@@ -58,6 +58,7 @@ const AvailabilityDuration: React.FC<AvailabilityDurationProps> = ({
             placeholder="0"
             value={durationYears}
             onChange={(e) => setDurationYears(getValue(e))}
+            min={0}
           />
           <InputField
             label="Months"
@@ -65,6 +66,7 @@ const AvailabilityDuration: React.FC<AvailabilityDurationProps> = ({
             placeholder="0"
             value={durationMonths}
             onChange={(e) => setDurationMonths(getValue(e))}
+            min={0}
           />
           <InputField
             label="Days"
@@ -72,6 +74,7 @@ const AvailabilityDuration: React.FC<AvailabilityDurationProps> = ({
             placeholder="0"
             value={durationDays}
             onChange={(e) => setDurationDays(getValue(e))}
+            min={0}
           />
           <InputField
             label="Hours"
@@ -79,6 +82,7 @@ const AvailabilityDuration: React.FC<AvailabilityDurationProps> = ({
             placeholder="0"
             value={durationHours}
             onChange={(e) => setDurationHours(getValue(e))}
+            min={0}
           />
           <InputField
             label="Minutes"
@@ -86,6 +90,7 @@ const AvailabilityDuration: React.FC<AvailabilityDurationProps> = ({
             placeholder="0"
             value={durationMinutes}
             onChange={(e) => setDurationMinutes(getValue(e))}
+            min={0}
           />
         </div>
       )}

@@ -4,13 +4,13 @@ import AmountField from "react-currency-input-field"
 import { Option } from "../../../types/shared"
 import { currencies, CurrencyType } from "../../../utils/currencies"
 import { getDecimalDigits, normalizeAmount } from "../../../utils/prices"
+import Tooltip from "../../atoms/tooltip"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import Input from "../../molecules/input"
 import Select from "../../molecules/select"
-import Tooltip from "../../atoms/tooltip"
 
 type CurrencyInputProps = {
   currencyCodes?: string[]
@@ -34,7 +34,7 @@ type AmountInputProps = {
   onChange?: (amount: number | undefined) => void
   onValidate?: (amount: number | undefined) => boolean
   invalidMessage?: string
-}
+} & React.InputHTMLAttributes<HTMLInputElement>
 
 const CurrencyContext = React.createContext<CurrencyInputState>({
   currencyInfo: undefined,
@@ -152,6 +152,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
   onChange,
   onValidate,
   invalidMessage,
+  ...rest
 }) => {
   const { currencyInfo } = useContext(CurrencyContext)
   const [invalid, setInvalid] = useState<boolean>(false)
@@ -211,7 +212,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
   }
 
   return (
-    <InputContainer onClick={() => inputRef.current?.focus()}>
+    <InputContainer onClick={() => inputRef.current?.focus()} {...rest}>
       <InputHeader label={label} required={required} />
       <div className="flex items-center mt-2xsmall">
         {currencyInfo?.symbol_native && (

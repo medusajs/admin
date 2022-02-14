@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import useMedusa from "../../hooks/use-medusa"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import Button from "../fundamentals/button"
 import Modal from "../molecules/modal"
@@ -15,15 +15,15 @@ type DeletePromptProps = {
 }
 
 const DeletePrompt: React.FC<DeletePromptProps> = ({
-  heading = "Are you sure?",
-  text = "Are you sure you want to delete?",
+  heading = "Are you sure you want to delete?",
+  text = "",
   successText = "Delete successful",
   cancelText = "No, cancel",
   confirmText = "Yes, remove",
   handleClose,
   onDelete,
 }) => {
-  const { toaster } = useMedusa("store")
+  const notification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = (e) => {
@@ -31,8 +31,8 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
 
     setIsLoading(true)
     onDelete()
-      .then(() => toaster(successText, "success"))
-      .catch((err) => toaster(getErrorMessage(err), "error"))
+      .then(() => notification("Success", successText, "success"))
+      .catch((err) => notification("Error", getErrorMessage(err), "error"))
       .finally(() => {
         setIsLoading(false)
         handleClose()

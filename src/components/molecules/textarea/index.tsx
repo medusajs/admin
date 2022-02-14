@@ -6,9 +6,11 @@ import InputHeader from "../../fundamentals/input-header"
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label: string
   key?: string
+  enableEmoji?: boolean
   withTooltip?: boolean
   tooltipText?: string
   tooltipProps?: any
+  children?: any
   containerProps?: React.HTMLAttributes<HTMLDivElement>
 }
 
@@ -25,7 +27,9 @@ const Textarea = React.forwardRef(
       tooltipProps = {},
       containerProps,
       className,
+      enableEmoji = false,
       rows = 2,
+      children,
       ...props
     }: TextareaProps,
     ref
@@ -38,6 +42,11 @@ const Textarea = React.forwardRef(
       if (inputRef.current) {
         inputRef.current.scrollTop = 0
       }
+    }
+
+    const handleAddEmoji = (e) => {
+      console.log(e)
+      console.log(inputRef.current?.selectionStart)
     }
 
     return (
@@ -74,6 +83,7 @@ const Textarea = React.forwardRef(
             {...props}
           />
         </div>
+        {children}
       </InputContainer>
     )
   }
