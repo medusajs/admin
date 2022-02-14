@@ -55,7 +55,6 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
 
   useEffect(() => {
     register(`metadata`)
-    console.log(">>>", metadata)
     setValue(`metadata`, metadata)
   }, [metadata])
 
