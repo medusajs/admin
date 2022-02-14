@@ -107,7 +107,7 @@ const Variants = ({ isEdit, product }) => {
                 Product Options
               </h6>
             </div>
-            <div className="flex flex-col gap-y-base w-full mb-4">
+            <div className="flex flex-col gap-y-base max-w-[570px] w-full mb-4">
               {productOptions.map((o, index) => (
                 <div key={index} className="flex items-center">
                   <div className="flex gap-x-small grow">
@@ -131,7 +131,7 @@ const Variants = ({ isEdit, product }) => {
                     className="ml-large"
                     onClick={() => handleRemoveOption(index)}
                   >
-                    <TrashIcon />
+                    <TrashIcon className="text-grey-40" />
                   </button>
                 </div>
               ))}
