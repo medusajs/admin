@@ -121,13 +121,26 @@ const Input = (props: InputProps) => {
   )
 }
 
-const ClearIndicator = ({ ...props }: ClearIndicatorProps) => {
+const ClearIndicatorFunc = (setIsOpen) => ({
+  ...props
+}: ClearIndicatorProps) => {
   if (props.selectProps.menuIsOpen && props.selectProps.isMulti) {
     return <></>
   }
 
+  const {
+    innerProps: { ref, ...restInnerProps },
+  } = props
+
   return (
-    <div className="hover:bg-grey-10 text-grey-40 rounded cursor-pointer">
+    <div
+      onMouseDown={(e) => {
+        setIsOpen(true)
+        restInnerProps.onMouseDown(e)
+      }}
+      ref={ref}
+      className="hover:bg-grey-10 text-grey-40 rounded cursor-pointer"
+    >
       <XCircleIcon size={20} />
     </div>
   )
@@ -175,7 +188,7 @@ const SSelect = React.forwardRef(
       hasSelectAll,
       enableSearch = false,
       overrideStrings,
-      clearSelected,
+      clearSelected = false,
       isCreatable,
       filterOptions,
       placeholder = "Search...",
@@ -262,10 +275,10 @@ const SSelect = React.forwardRef(
               Placeholder,
               MultiValueLabel,
               Option,
-              ClearIndicator,
               Input,
               Menu,
               SingleValue,
+              ClearIndicator: ClearIndicatorFunc(setIsOpen),
             }}
           />
         </CacheProvider>
