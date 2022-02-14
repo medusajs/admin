@@ -2,6 +2,7 @@ import React from "react"
 import DefaultEditor from "./default"
 import OptionEditor from "./option"
 import PricesEditor from "./prices"
+import MetadataEditor from "./metadata"
 
 const GridEditor = React.forwardRef(
   ({ column, value, index, onChange, ...rest }, ref) => {
@@ -22,6 +23,17 @@ const GridEditor = React.forwardRef(
         <OptionEditor
           ref={ref}
           optionId={column.option_id}
+          value={value}
+          onChange={(value) => onChange(index, column.field, value)}
+          {...rest}
+        />
+      )
+    }
+
+    if (column.field === "metadata") {
+      return (
+        <MetadataEditor
+          ref={ref}
           value={value}
           onChange={(value) => onChange(index, column.field, value)}
           {...rest}

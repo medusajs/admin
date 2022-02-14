@@ -10,9 +10,19 @@ type AddMetadataProps = {
   heading?: string
 }
 
+enum MetadataErrors {
+  duplicate_keys = "duplicate_keys",
+}
+
 export type MetadataField = {
   key: string
   value: any
+}
+
+function testForDuplicateKeys(metadata) {
+  const keys = metadata.map((m) => m.key)
+  const uniqueKeys = [...new Set(keys)]
+  return keys.length !== uniqueKeys.length
 }
 
 const Metadata: React.FC<AddMetadataProps> = ({
@@ -21,6 +31,7 @@ const Metadata: React.FC<AddMetadataProps> = ({
   heading = "Metadata",
 }) => {
   const [localData, setLocalData] = useState<MetadataField[]>([])
+  const [error, setError] = useState<MetadataErrors>()
 
   useEffect(() => {
     setLocalData(metadata)
@@ -30,29 +41,31 @@ const Metadata: React.FC<AddMetadataProps> = ({
     setMetadata([...metadata, { key: ``, value: `` }])
   }
 
-  const onKeyChange = (index: number) => {
-    return (key: string) => {
-      const newFields = metadata
-      newFields[index] = { key: key, value: newFields[index].value }
-      setMetadata(newFields)
+  const onKeyChange = (index: number) => (key: string) => {
+    const newFields = metadata
+    newFields[index] = { key, value: newFields[index].value }
+
+    if (testForDuplicateKeys(newFields)) {
+      setError(MetadataErrors.duplicate_keys)
+      return
     }
+
+    setError(undefined)
+    setMetadata(newFields)
   }
 
-  const onValueChange = (index: number) => {
-    return (value: any) => {
-      const newFields = metadata
-      newFields[index] = {
-        key: newFields[index].key,
-        value: value,
-      }
-      setMetadata(newFields)
+  const onValueChange = (index: number) => (value: any) => {
+    const newFields = metadata
+    newFields[index] = {
+      key: newFields[index].key,
+      value: value,
     }
+    setMetadata(newFields)
   }
 
-  const deleteKeyPair = (index: number) => {
-    return () => {
-      setMetadata(metadata.filter((_, i) => i !== index))
-    }
+  const deleteKeyPair = (index: number) => () => {
+    setError(undefined)
+    setMetadata(metadata.filter((_, i) => i !== index))
   }
 
   return (
@@ -70,6 +83,9 @@ const Metadata: React.FC<AddMetadataProps> = ({
             </DeletableElement>
           )
         })}
+        {error === MetadataErrors.duplicate_keys && (
+          <p className="text-orange-60">Metadata cannot have duplicate keys.</p>
+        )}
         <div>
           <Button
             variant="secondary"

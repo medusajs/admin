@@ -1,6 +1,5 @@
 import React, { useState, useRef, useCallback } from "react"
 import { Text, Flex, Box } from "rebass"
-
 import GridEditor from "./editors"
 import DefaultEditor from "./editors/default"
 import OptionEditor from "./editors/option"
@@ -31,16 +30,22 @@ const getColumns = (product, edit) => {
     { header: "SKU", field: "sku" },
     { header: "EAN", field: "ean" },
     { header: "INVENTORY", field: "inventory_quantity" },
+    {
+      header: "METADATA",
+      field: "metadata",
+      formatter: JSON.stringify,
+    },
   ]
 
   if (edit) {
-    const optionColumns = product.options.map(o => ({
+    const optionColumns = product.options.map((o) => ({
       header: o.title,
       field: "options",
       editor: "option",
       option_id: o.id,
-      formatter: variantOptions => {
-        return (variantOptions.find(val => val.option_id === o.id) || {}).value
+      formatter: (variantOptions) => {
+        return (variantOptions.find((val) => val.option_id === o.id) || {})
+          .value
       },
     }))
 
@@ -51,7 +56,7 @@ const getColumns = (product, edit) => {
         field: "prices",
         editor: "prices",
         buttonText: "Edit",
-        formatter: prices => {
+        formatter: (prices) => {
           return `${prices.length} price(s)`
           // return prices
           //   .map(
@@ -68,8 +73,8 @@ const getColumns = (product, edit) => {
       {
         header: "",
         field: "options",
-        formatter: value => {
-          const options = value.map(v => {
+        formatter: (value) => {
+          const options = value.map((v) => {
             if (v.value) {
               return v.value
             }
@@ -87,7 +92,7 @@ const getColumns = (product, edit) => {
         field: "prices",
         editor: "prices",
         buttonText: "Edit",
-        formatter: prices => {
+        formatter: (prices) => {
           if (!prices) {
             return ""
           }
@@ -111,7 +116,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
   const columns = getColumns(product, edit)
 
   const inputRef = useRef()
-  const setRef = useCallback(node => {
+  const setRef = useCallback((node) => {
     if (node) {
       node.focus()
     }
@@ -119,7 +124,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
     inputRef.current = node
   }, [])
 
-  const handleDragEnter = e => {
+  const handleDragEnter = (e) => {
     const element = e.target
     if (selectedCell.col === parseInt(element.dataset.col)) {
       setDragEnd(parseInt(element.dataset.row))
@@ -140,7 +145,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
       }
     }
 
-    onChange(newVariants)
+    newVariants.forEach(onChange)
     setDragEnd(undefined)
   }
 
@@ -151,10 +156,10 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
       [field]: value,
     }
 
-    onChange(newVariants)
+    onChange(newVariants[index])
   }
 
-  const isDraggedOver = cell => {
+  const isDraggedOver = (cell) => {
     if (selectedCell.col === cell.col) {
       if (dragEnd > selectedCell.row) {
         return selectedCell.row < cell.row && cell.row <= dragEnd
@@ -166,7 +171,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
     return false
   }
 
-  const handleKey = e => {
+  const handleKey = (e) => {
     switch (e.keyCode) {
       case ENTER_KEY:
         e.preventDefault()
@@ -239,7 +244,7 @@ const VariantGrid = ({ product, variants, onChange, edit, onEdit, onCopy }) => {
       <StyledTable as="table">
         <TableHead>
           <tr>
-            {columns.map(c => (
+            {columns.map((c) => (
               <TableHeaderCell head={c.headCol} key={c.field}>
                 {c.header}
               </TableHeaderCell>
