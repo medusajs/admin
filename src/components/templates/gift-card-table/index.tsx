@@ -1,6 +1,5 @@
 import moment from "moment"
 import React, { useEffect, useState } from "react"
-import { useHighlighter } from "../../../hooks/use-highlight-search"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import InfoTooltip from "../../molecules/info-tooltip"
@@ -34,10 +33,6 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
   const handleSort = () => {
     // TODO Correct sorting with api update
   }
-
-  const [query, setQuery] = useState("")
-
-  useHighlighter("search_code", query)
 
   useEffect(() => {
     if (sortingClicked) {
@@ -109,9 +104,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
         key={`giftCard-${index}`}
         color={"inherit"}
       >
-        <Table.Cell className="w-[200px] truncate" name="search_code">
-          {giftCard.code}
-        </Table.Cell>
+        <Table.Cell className="w-[200px] truncate">{giftCard.code}</Table.Cell>
         <Table.Cell
           className="truncate"
           {...(giftCard.order && {
@@ -166,7 +159,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
         filteringOptions={filteringOptions}
         enableSearch
         searchPlaceholder={"Search Gift Cards"}
-        handleSearch={setQuery}
+        handleSearch={handleGiftCardSearch}
         id="gift-card-table"
       >
         <Table.Head>
