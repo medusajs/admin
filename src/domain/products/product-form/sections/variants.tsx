@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import BodyCard from "../../../../components/organisms/body-card"
-import VariantGrid from "../../../../components/variant-grid/index"
+import VariantGrid from "../../../../components/variant-grid"
 import NewOption from "../../details/variants/option-edit"
 
 const Variants = ({ product }) => {

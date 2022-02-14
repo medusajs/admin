@@ -61,7 +61,7 @@ const Metadata: React.FC<AddMetadataProps> = ({
       <div className="flex flex-col mt-base gap-y-base">
         {localData.map((field, index) => {
           return (
-            <DeletableElement key={index} onDelete={deleteKeyPair(index)}>
+            <DeletableElement key={field.key} onDelete={deleteKeyPair(index)}>
               <Field
                 field={field}
                 updateKey={onKeyChange(index)}

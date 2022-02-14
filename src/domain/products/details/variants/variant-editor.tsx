@@ -10,6 +10,7 @@ import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
+import Metadata from "../../../../components/organisms/metadata"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
 import { removeNullish } from "../../../../utils/remove-nullish"
@@ -23,6 +24,12 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
   const { store, isLoading } = useAdminStore()
   const [currencyOptions, setCurrencyOptions] = useState([])
   const [prices, setPrices] = useState(variant.prices)
+  const [metadata, setMetadata] = useState(
+    Object.keys(variant.metadata).map((key) => ({
+      key,
+      value: variant.metadata[key],
+    }))
+  )
   const [selectedCountry, setSelectedCountry] = useState(
     variant.origin_country
       ? countryOptions.find((cd) => cd.label === variant.origin_country)
@@ -45,6 +52,12 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
       setValue(`options.${index}.value`, option.value)
     })
   }, [variant])
+
+  useEffect(() => {
+    register(`metadata`)
+    console.log(">>>", metadata)
+    setValue(`metadata`, metadata)
+  }, [metadata])
 
   const getCurrencyOptions = () => {
     return ((store && store.currencies) || [])
@@ -113,6 +126,12 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
     data.inventory_quantity = parseInt(data.inventory_quantity)
 
     data.prices = data.prices.map((p) => removeNullish(p))
+
+    data.metadata = data.metadata.reduce((acc, { key, value }) => {
+      acc[key] = value
+      return acc
+    }, {})
+
     const cleaned = convertEmptyStringToNull(data)
     onSubmit(cleaned)
   }
@@ -345,6 +364,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               />
             </div>
           </div>
+          <Metadata metadata={metadata} setMetadata={setMetadata} />
         </Modal.Content>
         <Modal.Footer>
           <div className="flex w-full justify-end gap-x-base">
