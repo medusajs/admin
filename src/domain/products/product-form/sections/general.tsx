@@ -1,4 +1,10 @@
-import { useAdminCollections, useAdminProductTypes } from "medusa-react"
+import {
+  useAdminCollections,
+  useAdminDeleteProduct,
+  useAdminProduct,
+  useAdminProductTypes,
+  useAdminUpdateProduct,
+} from "medusa-react"
 import React from "react"
 import { Controller } from "react-hook-form"
 import Input from "../../../../components/molecules/input"
@@ -7,13 +13,20 @@ import TagInput from "../../../../components/molecules/tag-input"
 import Textarea from "../../../../components/molecules/textarea"
 import BodyCard from "../../../../components/organisms/body-card"
 import RadioGroup from "../../../../components/organisms/radio-group"
+import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import {
   SINGLE_PRODUCT_VIEW,
   useProductForm,
   VARIANTS_VIEW,
 } from "../form/product-form-context"
+import { useParams } from "@reach/router"
+import useNotification from "../../../../hooks/use-notification"
+import { navigate } from "gatsby"
+import { getErrorMessage } from "../../../../utils/error-messages"
+import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import StatusSelector from "../../../../components/molecules/status-selector"
 
-const General = ({ showViewOptions = true }) => {
+const General = ({ showViewOptions = true, isEdit = false }) => {
   const { register, control, setViewType, viewType } = useProductForm()
   const { types } = useAdminProductTypes()
   const { collections } = useAdminCollections()
@@ -27,7 +40,8 @@ const General = ({ showViewOptions = true }) => {
     })) || []
 
   return (
-    <BodyCard
+    <GeneralBodyCard
+      isEdit={isEdit}
       title="General"
       subtitle="To start selling, all you need is a name, price, and image"
     >
@@ -122,7 +136,83 @@ const General = ({ showViewOptions = true }) => {
           </RadioGroup.Root>
         )}
       </div>
-    </BodyCard>
+    </GeneralBodyCard>
+  )
+}
+
+const GeneralBodyCard = ({ isEdit, ...props }) => {
+  const params = useParams()
+  const dialog = useImperativeDialog()
+  const notification = useNotification()
+  const { product } = useAdminProduct(params.id)
+  const updateProduct = useAdminUpdateProduct(params?.id)
+  const deleteProduct = useAdminDeleteProduct(params?.id)
+
+  const onDelete = async () => {
+    const shouldDelete = await dialog({
+      heading: "Delete Product",
+      text: "Are you sure you want to delete this product",
+    })
+    if (shouldDelete) {
+      deleteProduct.mutate(undefined, {
+        onSuccess: () => {
+          notification("Success", "Product deleted successfully", "success")
+          navigate("/a/products/")
+        },
+        onError: (err) => {
+          notification("Ooops", getErrorMessage(err), "error")
+        },
+      })
+    }
+  }
+
+  const onStatusChange = async () => {
+    const newStatus = product?.status === "published" ? "draft" : "published"
+    updateProduct.mutate(
+      {
+        status: newStatus,
+      },
+      {
+        onSuccess: () => {
+          const pastTense = newStatus === "published" ? "published" : "drafted"
+          notification(
+            "Success",
+            `Product ${pastTense} successfully`,
+            "success"
+          )
+        },
+        onError: (err) => {
+          notification("Ooops", getErrorMessage(err), "error")
+        },
+      }
+    )
+  }
+
+  const actionables = [
+    {
+      label: "Delete Product",
+      onClick: onDelete,
+      variant: "danger" as const,
+      icon: <TrashIcon />,
+    },
+  ]
+
+  return (
+    <BodyCard
+      actionables={isEdit ? actionables : undefined}
+      forceDropdown
+      status={
+        isEdit ? (
+          <StatusSelector
+            isDraft={product?.status === "draft"}
+            activeState="Published"
+            draftState="Draft"
+            onChange={onStatusChange}
+          />
+        ) : undefined
+      }
+      {...props}
+    />
   )
 }
 
