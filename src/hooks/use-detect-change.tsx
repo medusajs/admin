@@ -44,6 +44,10 @@ const useDetectChange = ({ isDirty, reset, options }: UseDetectChangeProps) => {
     if (isDirty) {
       showToaster()
     }
+
+    return () => {
+      toast.dismiss("form-change")
+    }
   }, [isDirty, options])
 }
 

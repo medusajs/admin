@@ -28,8 +28,6 @@ const SaveNotification: React.FC<SaveNotificationProps> = ({
   onSave,
   reset,
 }) => {
-  console.log(onSave)
-
   const onDismiss = () => {
     global.dismiss(toast.id)
   }

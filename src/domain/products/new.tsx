@@ -1,14 +1,10 @@
 import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
 import * as React from "react"
-import Button, { ButtonProps } from "../../components/fundamentals/button"
 import Medusa from "../../services/api"
 import ProductForm from "./product-form"
 import { formValuesToCreateProductMapper } from "./product-form/form/mappers"
-import {
-  ProductFormProvider,
-  useProductForm,
-} from "./product-form/form/product-form-context"
+import { ProductFormProvider } from "./product-form/form/product-form-context"
 import { consolidateImages } from "./product-form/utils"
 
 const NewProductPage = () => {
@@ -39,60 +35,7 @@ const NewProductPage = () => {
   return (
     <ProductFormProvider onSubmit={onSubmit}>
       <ProductForm />
-      <div className="mt-base flex justify-end items-center gap-x-2">
-        <Button
-          variant="secondary"
-          size="small"
-          type="button"
-          onClick={() => navigate(-1)}
-        >
-          Cancel
-        </Button>
-        <SaveAsDraftButton
-          loading={createProduct.isLoading}
-          variant="secondary"
-          size="small"
-          type="button"
-        >
-          Save as draft
-        </SaveAsDraftButton>
-        <PublishButton
-          loading={createProduct.isLoading}
-          variant="primary"
-          size="medium"
-          type="button"
-        >
-          Publish Product
-        </PublishButton>
-      </div>
     </ProductFormProvider>
-  )
-}
-
-const SaveAsDraftButton = ({ children, ...props }: ButtonProps) => {
-  const { onSubmit, handleSubmit } = useProductForm()
-
-  const onSaveDraft = (values) => {
-    onSubmit({ ...values, status: "draft" })
-  }
-
-  return (
-    <Button {...props} onClick={handleSubmit(onSaveDraft)}>
-      {children}
-    </Button>
-  )
-}
-
-const PublishButton = ({ children, ...props }: ButtonProps) => {
-  const { onSubmit, handleSubmit } = useProductForm()
-
-  const onPublish = (values) => {
-    onSubmit({ ...values, status: "published" })
-  }
-  return (
-    <Button {...props} onClick={handleSubmit(onPublish)}>
-      {children}
-    </Button>
   )
 }
 
