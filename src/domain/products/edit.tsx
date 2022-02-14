@@ -5,7 +5,6 @@ import Spinner from "../../components/atoms/spinner"
 import Button, { ButtonProps } from "../../components/fundamentals/button"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
-import { getErrorMessage } from "../../utils/error-messages"
 import ProductForm from "./product-form"
 import {
   formValuesToUpdateProductMapper,
@@ -40,14 +39,7 @@ const EditProductPage = ({ id }) => {
       images: consolidateImages(data.images, uploadedImgs),
     }
 
-    updateProduct.mutate(formValuesToUpdateProductMapper(newData), {
-      onSuccess: () => {
-        notification("Success", "Product updated successfully", "success")
-      },
-      onError: (error) => {
-        notification("Error", getErrorMessage(error), "error")
-      },
-    })
+    updateProduct.mutate(formValuesToUpdateProductMapper(newData))
   }
 
   return isLoading ? (

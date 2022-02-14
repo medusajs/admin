@@ -2,9 +2,7 @@ import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
 import * as React from "react"
 import Button, { ButtonProps } from "../../components/fundamentals/button"
-import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
-import { getErrorMessage } from "../../utils/error-messages"
 import ProductForm from "./product-form"
 import { formValuesToCreateProductMapper } from "./product-form/form/mappers"
 import {
@@ -14,7 +12,6 @@ import {
 import { consolidateImages } from "./product-form/utils"
 
 const NewProductPage = () => {
-  const notification = useNotification()
   const createProduct = useAdminCreateProduct()
 
   const onSubmit = async (data) => {
@@ -34,11 +31,7 @@ const NewProductPage = () => {
 
     createProduct.mutate(formValuesToCreateProductMapper(newData), {
       onSuccess: ({ product }) => {
-        notification("Success", "Product created successfully", "success")
         navigate(`/a/products/${product.id}`)
-      },
-      onError: (error) => {
-        notification("Error", getErrorMessage(error), "error")
       },
     })
   }

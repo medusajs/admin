@@ -7,6 +7,8 @@ type Options = {
   title: string
   message: string
   icon?: ReactNode
+  confirmText?: string
+  cancelText?: string
 }
 
 type UseDetectChangeProps = {
@@ -41,8 +43,6 @@ const useDetectChange = ({ isDirty, reset, options }: UseDetectChangeProps) => {
 
     if (isDirty) {
       showToaster()
-    } else {
-      toast.dismiss("form-change")
     }
   }, [isDirty, options])
 }

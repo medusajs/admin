@@ -12,6 +12,8 @@ type SaveNotificationProps = {
   icon?: ReactNode
   title?: string
   message?: string
+  confirmText?: string
+  cancelText?: string
   onSave: () => Promise<void>
   reset: () => void
 }
@@ -21,12 +23,20 @@ const SaveNotification: React.FC<SaveNotificationProps> = ({
   icon,
   title = "Unsaved changes",
   message = "You have unsaved changes. Do you want to save and publish or discard them?",
+  confirmText = "Save",
+  cancelText = "Discard",
   onSave,
   reset,
 }) => {
+  console.log(onSave)
+
   const onDismiss = () => {
-    reset()
     global.dismiss(toast.id)
+  }
+
+  const onDiscard = () => {
+    reset()
+    onDismiss()
   }
 
   const handleSave = () => {
@@ -38,11 +48,13 @@ const SaveNotification: React.FC<SaveNotificationProps> = ({
       .then(() => {
         global.custom((t) => <SuccessState toast={t} onDismiss={onDismiss} />, {
           id: toast.id,
+          duration: 5000,
         })
       })
       .catch((_err) => {
         global.custom((t) => <ErrorState toast={t} onDismiss={onDismiss} />, {
           id: toast.id,
+          duration: 5000,
         })
       })
   }
@@ -59,13 +71,13 @@ const SaveNotification: React.FC<SaveNotificationProps> = ({
           onClick={handleSave}
           className="inter-small-semibold flex items-center justify-center h-1/2 border-b border-grey-20 px-base text-violet-60"
         >
-          Publish
+          {confirmText}
         </button>
         <button
           className="inter-small-semibold flex items-center justify-center h-1/2 px-base"
-          onClick={onDismiss}
+          onClick={onDiscard}
         >
-          Discard
+          {cancelText}
         </button>
       </div>
     </ToasterContainer>

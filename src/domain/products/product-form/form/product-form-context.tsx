@@ -12,10 +12,26 @@ const defaultProduct = {
   variants: [],
   images: [],
   prices: [],
+  tags: [],
   type: null,
   collection: null,
   thumbnail: "",
-  titel: "",
+  title: "",
+  handle: "",
+  description: "",
+  sku: "",
+  ean: "",
+  inventory_quantity: "",
+  manage_inventory: false,
+  allow_backorder: false,
+  weight: "",
+  height: "",
+  width: "",
+  length: "",
+  mid_code: "",
+  hs_code: "",
+  origin_country: "",
+  material: "",
 }
 
 export const ProductFormProvider = ({
@@ -41,34 +57,36 @@ export const ProductFormProvider = ({
 
   const methods = useForm()
 
-  const handleSubmission = async () => {
-    const values = methods.getValues()
+  const handleReset = () => {
+    methods.reset({
+      ...product,
+    })
+    setImages(product.images)
+  }
+
+  React.useEffect(() => {
+    handleReset()
+  }, [product])
+
+  const handleSubmit = (values) => {
     onSubmit({ ...values, images })
+  }
+
+  const handleSubmission = async () => {
+    const { getValues } = methods
+    const values = getValues()
+    handleSubmit({ ...values })
   }
 
   useDetectChange({
     isDirty: methods.formState.isDirty,
-    reset: () =>
-      methods.reset({
-        ...product,
-      }),
+    reset: handleReset,
     options: {
       fn: handleSubmission,
       title: "You have unsaved changes",
       message: "Do you want to save your changes?",
     },
   })
-
-  React.useEffect(() => {
-    methods.reset({
-      ...product,
-    })
-    setImages(product.images)
-  }, [product])
-
-  const handleSubmit = (values) => {
-    onSubmit({ ...values, images })
-  }
 
   return (
     <FormProvider {...methods}>
