@@ -46,7 +46,7 @@ const FilterDropdownContainer: React.FC<FilterDropdownContainerProps> = ({
       <RadixPopover.Content
         sideOffset={8}
         style={heightStyle}
-        className="bg-grey-0 overflow-y-scroll rounded-rounded shadow-dropdown max-w-[272px] py-4"
+        className="bg-grey-0 overflow-y-auto rounded-rounded shadow-dropdown max-w-[272px] py-4"
       >
         <div className="flex px-4 pb-4 border-b border-grey-20">
           <Button

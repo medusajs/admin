@@ -42,7 +42,7 @@ const reasonOptions = [
   },
 ]
 
-const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
+const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
   const [shippingAddress, setShippingAddress] = useState({})
   const [countries, setCountries] = useState([])
   const [isReplace, toggleReplace] = useState(false)
@@ -223,8 +223,12 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       setSubmitting(true)
       return onCreate(data)
         .then(() => onDismiss())
-        .then(() => toaster("Successfully created claim", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully created claim", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
   }

@@ -32,7 +32,9 @@ const Regions = () => {
     refetch().then(({ data }) => {
       const id = data?.regions?.[0]?.id
 
-      if (!id) return
+      if (!id) {
+        return
+      }
 
       setSelectedRegion(id)
       document.getElementById(id)?.scrollIntoView({

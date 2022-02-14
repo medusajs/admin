@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from "react"
-import { Text, Flex, Box, Image } from "rebass"
 import moment from "moment"
-
+import React, { useEffect, useState } from "react"
+import { Box, Flex, Text } from "rebass"
 import Button from "../../../../components/button"
 import Dropdown from "../../../../components/dropdown"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import LineItem from "../line-item"
 
-export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
+export default ({
+  event,
+  order,
+  onReceiveReturn,
+  onCancelReturn,
+  notification,
+}) => {
   const fontColor = event.isLatest ? "medusa" : "inactive"
 
   const canceled = event.status === "canceled"
@@ -20,7 +25,7 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
   const cancelReturn = () => {
     return onCancelReturn(event.raw.id)
       .then()
-      .catch(error => toaster(getErrorMessage(error), "error"))
+      .catch((error) => notification("Error", getErrorMessage(error), "error"))
   }
 
   return (
@@ -77,7 +82,7 @@ export default ({ event, order, onReceiveReturn, onCancelReturn, toaster }) => {
         <Box mt={2}>
           <Flex justifyContent="space-between">
             <Box>
-              {event.items.map(lineItem => (
+              {event.items.map((lineItem) => (
                 <LineItem
                   fontColor={fontColor}
                   key={lineItem._id}

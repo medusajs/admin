@@ -61,6 +61,7 @@
     "react-dropzone": "^11.3.4",
     "react-helmet": "^6.0.0",
     "react-hook-form": "^6.7.2",
+    "react-hot-toast": "^2.2.0",
     "react-hotkeys-hook": "^2.4.0",
     "react-json-view": "^1.19.1",
     "react-multi-select-component": "^4.1.15",

@@ -13,7 +13,7 @@ type ReceiveMenuProps = {
   onDismiss: () => void
   onReceiveSwap?: (payload: any) => Promise<void>
   onReceiveReturn?: (id: string, payload: any) => Promise<void>
-  toaster: any
+  notification: any
   isSwapOrClaim?: boolean
   refunded?: boolean
 }
@@ -24,9 +24,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   onReceiveReturn,
   onReceiveSwap,
   onDismiss,
-  toaster,
-  isSwapOrClaim = false,
-  refunded = false,
+  notification,
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
@@ -98,8 +96,12 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
       setSubmitting(true)
       return onReceiveSwap(items)
         .then(() => onDismiss())
-        .then(() => toaster("Successfully returned order", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully returned order", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
 
@@ -110,8 +112,12 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
         refund: Math.round(refundAmount),
       })
         .then(() => onDismiss())
-        .then(() => toaster("Successfully returned order", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully returned order", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
   }

@@ -45,7 +45,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
         <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-transparent h-xlarge z-10" />
       )}
       <div
-        className="pt-medium px-xlarge flex flex-col grow overflow-y-scroll"
+        className="pt-medium px-xlarge flex flex-col grow overflow-y-auto"
         onScroll={scrollListener}
       >
         <div className="flex items-center justify-between mt-6 h-xlarge">

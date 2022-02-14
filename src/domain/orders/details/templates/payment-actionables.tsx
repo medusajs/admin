@@ -1,6 +1,6 @@
 import React from "react"
 import Button from "../../../../components/fundamentals/button"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 export const PaymentActionables = ({
@@ -8,7 +8,7 @@ export const PaymentActionables = ({
   capturePayment,
   showRefundMenu,
 }) => {
-  const toaster = useToaster()
+  const notification = useNotification()
   const isSystemPayment = order?.payments?.some(
     (p) => p.provider_id === "system"
   )
@@ -19,8 +19,9 @@ export const PaymentActionables = ({
   let label = "Capture payment"
   let action = () => {
     capturePayment.mutate(void {}, {
-      onSuccess: () => toaster("Successfully captured payment", "success"),
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onSuccess: () =>
+        notification("Success", "Successfully captured payment", "success"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
   const loading = capturePayment.isLoading

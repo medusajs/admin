@@ -1,31 +1,25 @@
-import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
-import _ from "lodash"
-import { useForm } from "react-hook-form"
-import { Text, Flex, Box } from "rebass"
 import { navigate } from "gatsby"
-import Typography from "../../../components/typography"
-import Select from "react-select"
-
-import Button from "../../../components/button"
-import Pill from "../../../components/pill"
-import Input from "../../../components/molecules/input"
-import Spinner from "../../../components/spinner"
-import CurrencyInput from "../../../components/currency-input"
-import TagInput from "../../../components/tag-input"
-import ImageUpload from "../../../components/image-upload"
-import TextArea from "../../../components/textarea"
-import VariantGrid from "../../../components/variant-grid"
-
-import Medusa from "../../../services/api"
-import useMedusa from "../../../hooks/use-medusa"
-
-import Creatable from "react-select/creatable"
-
-import { getCombinations } from "./utils/get-combinations"
-import { Label } from "@rebass/forms"
 import _ from "lodash"
+import React, { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import Select from "react-select"
+import Creatable from "react-select/creatable"
+import { Box, Flex, Text } from "rebass"
+import Button from "../../../components/button"
+import CurrencyInput from "../../../components/currency-input"
+import ImageUpload from "../../../components/image-upload"
+import Input from "../../../components/molecules/input"
+import Pill from "../../../components/pill"
+import Spinner from "../../../components/spinner"
+import TagInput from "../../../components/tag-input"
+import Typography from "../../../components/typography"
+import VariantGrid from "../../../components/variant-grid"
+import useMedusa from "../../../hooks/use-medusa"
+import useNotification from "../../../hooks/use-notification"
+import Medusa from "../../../services/api"
 import { getErrorMessage } from "../../../utils/error-messages"
+import { getCombinations } from "./utils/get-combinations"
 
 const StyledSelect = styled(Select)`
   font-size: 14px;
@@ -60,7 +54,7 @@ const StyledImageCard = styled(Box)`
   height: 200px;
   width: 200px;
 
-  border: ${props => (props.selected ? "1px solid #53725D" : "none")};
+  border: ${(props) => (props.selected ? "1px solid #53725D" : "none")};
 
   object-fit: contain;
 
@@ -76,7 +70,7 @@ const StyledImageBox = styled(Flex)`
   flex-wrap: wrap;
   .img-container {
     border: 1px solid black;
-    background-color: ${props => props.theme.colors.light};
+    background-color: ${(props) => props.theme.colors.light};
     height: 50px;
     width: 50px;
 
@@ -96,7 +90,7 @@ const StyledImageBox = styled(Flex)`
 
 const RequiredLabel = styled.div`
   ${Typography.Base}
-  ${props =>
+  ${(props) =>
     props.inline
       ? `
   text-align: right;
@@ -112,7 +106,7 @@ const RequiredLabel = styled.div`
   }
 `
 
-const NewProduct = ({ }) => {
+const NewProduct = ({}) => {
   const [hasVariants, setHasVariants] = useState(false)
   const [variants, setVariants] = useState([])
   const [options, setOptions] = useState([])
@@ -124,10 +118,11 @@ const NewProduct = ({ }) => {
   const [tags, setTags] = useState([])
   const [frequentTags, setFrequentTags] = useState([])
   const [currencyOptions, setCurrencyOptions] = useState([])
-  const { store, isLoading, toaster } = useMedusa("store")
+  const { store, isLoading } = useMedusa("store")
   const { collections, isLoading: isLoadingCollections } = useMedusa(
     "collections"
   )
+  const notification = useNotification()
   const {
     register,
     handleSubmit,
@@ -161,33 +156,33 @@ const NewProduct = ({ }) => {
     const os = [...options]
     const combinations = getCombinations(os)
 
-    const newVariants = combinations.map(optionValues => {
+    const newVariants = combinations.map((optionValues) => {
       if (!optionValues) {
         return null
       }
 
-      const existing = variants.find(v =>
+      const existing = variants.find((v) =>
         v.options.every((value, index) => optionValues[index] === value)
       ) || { prices: [] }
 
-      existing.options = optionValues.filter(v => v !== "")
+      existing.options = optionValues.filter((v) => v !== "")
 
       return existing
     })
 
-    setVariants(newVariants.filter(v => !!v))
+    setVariants(newVariants.filter((v) => !!v))
   }, [options])
 
   const getCurrencyOptions = () => {
     return ((store && store.currencies) || [])
-      .map(v => ({
+      .map((v) => ({
         value: v.code.toUpperCase(),
         label: v.code.toUpperCase(),
       }))
       .filter(
-        o =>
+        (o) =>
           !prices.find(
-            p =>
+            (p) =>
               !p.edit && p.currency_code.toUpperCase() === o.value.toUpperCase()
           )
       )
@@ -230,7 +225,7 @@ const NewProduct = ({ }) => {
     setPrices(newPrices)
   }
 
-  const removePrice = index => {
+  const removePrice = (index) => {
     const newPrices = [...prices]
     newPrices.splice(index, 1)
     setPrices(newPrices)
@@ -290,13 +285,13 @@ const NewProduct = ({ }) => {
     setOptions(newOptions)
   }
 
-  const handleRemoveOption = index => {
+  const handleRemoveOption = (index) => {
     const newOptions = [...options]
     newOptions.splice(index, 1)
     setOptions(newOptions)
   }
 
-  const handleAddOption = e => {
+  const handleAddOption = (e) => {
     setOptions([
       ...options,
       {
@@ -306,7 +301,7 @@ const NewProduct = ({ }) => {
     ])
   }
 
-  const parseProduct = data => {
+  const parseProduct = (data) => {
     let parseOptions = [
       {
         name: "Default Option",
@@ -331,7 +326,7 @@ const NewProduct = ({ }) => {
 
     if (hasVariants) {
       parseOptions = options
-      parseVariants = variants.map(v => ({
+      parseVariants = variants.map((v) => ({
         title: v.title,
         sku: v.sku || null,
         ean: v.ean || null,
@@ -340,7 +335,7 @@ const NewProduct = ({ }) => {
           currency_code,
           amount: Math.round(amount),
         })),
-        options: v.options.map(o => ({ value: o })),
+        options: v.options.map((o) => ({ value: o })),
       }))
     }
 
@@ -348,12 +343,12 @@ const NewProduct = ({ }) => {
       images,
       title: data.title,
       description: data.description,
-      options: parseOptions.map(o => ({ title: o.name })),
+      options: parseOptions.map((o) => ({ title: o.name })),
       variants: parseVariants,
     }
 
     if (collection && !_.isEmpty(collection)) {
-      const coll = collections.find(c => c.id === collection.value)
+      const coll = collections.find((c) => c.id === collection.value)
       if (coll) {
         p.collection_id = coll.id
       }
@@ -373,13 +368,13 @@ const NewProduct = ({ }) => {
     }
 
     if (tags && tags.length) {
-      p.tags = tags.map(t => ({ value: t }))
+      p.tags = tags.map((t) => ({ value: t }))
     }
 
     return p
   }
 
-  const onAddMore = data => {
+  const onAddMore = (data) => {
     const product = parseProduct(data)
     Medusa.products.create(product).then(({ data }) => {
       reset()
@@ -389,14 +384,14 @@ const NewProduct = ({ }) => {
     })
   }
 
-  const priceFormatter = value =>
+  const priceFormatter = (value) =>
     value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
 
-  const submit = async data => {
+  const submit = async (data) => {
     const product = parseProduct(data)
 
     if (!variants.length && hasVariants) {
-      toaster(
+      notification(
         `Missing variants. Consider using the simple product, if only one variant should exists`,
         "error"
       )
@@ -407,44 +402,48 @@ const NewProduct = ({ }) => {
       const { data } = await Medusa.products.create(product)
       navigate(`/a/products/${data.product.id}`)
     } catch (error) {
-      toaster(getErrorMessage(error), "error")
+      notification("Error", getErrorMessage(error), "error")
     }
   }
 
-  const onImageChange = e => {
+  const onImageChange = (e) => {
     Medusa.uploads.create(e.target.files).then(({ data }) => {
       const uploaded = data.uploads.map(({ url }) => url)
       setImages(images.concat(uploaded))
     })
   }
 
-  const handleImageDelete = url => {
+  const handleImageDelete = (url) => {
     Medusa.uploads.delete(url[0]).then(() => {
-      setImages(images.filter(im => im !== url))
+      setImages(images.filter((im) => im !== url))
     })
   }
 
-  const handleTypeChange = selectedOption => {
+  const handleTypeChange = (selectedOption) => {
     setSelectedType(selectedOption)
   }
 
-  const handleTagChange = newTags => {
+  const handleTagChange = (newTags) => {
     setTags(newTags)
   }
 
-  const handleCollectionChange = selectedOption => {
+  const handleCollectionChange = (selectedOption) => {
     setCollection(selectedOption)
   }
 
   useEffect(() => {
     if (Object.keys(errors).length) {
-      const requiredErrors = Object.keys(errors).map(err => {
+      const requiredErrors = Object.keys(errors).map((err) => {
         if (errors[err].type === "required") {
           return err
         }
       })
 
-      toaster(`Missing info: ${requiredErrors.join(", ")}`, "error")
+      notification(
+        "Error",
+        `Missing info: ${requiredErrors.join(", ")}`,
+        "error"
+      )
     }
   }, [errors])
 
@@ -489,7 +488,7 @@ const NewProduct = ({ }) => {
               placeholder="Select collection..."
               onChange={handleCollectionChange}
               options={
-                collections?.map(col => ({
+                collections?.map((col) => ({
                   value: col.id,
                   label: col.title,
                 })) || []
@@ -503,7 +502,7 @@ const NewProduct = ({ }) => {
               placeholder="Select type..."
               onChange={handleTypeChange}
               options={
-                types?.map(typ => ({
+                types?.map((typ) => ({
                   value: typ.value,
                   label: typ.value,
                 })) || []
@@ -516,7 +515,7 @@ const NewProduct = ({ }) => {
             <TagInput
               placeholder="Spring, summer..."
               values={tags}
-              onChange={values => handleTagChange(values)}
+              onChange={(values) => handleTagChange(values)}
             />
             {frequentTags && frequentTags.length ? (
               <Flex mt={1}>
@@ -524,7 +523,7 @@ const NewProduct = ({ }) => {
                   Frequently used tags:{" "}
                 </Text>
                 <Text fontSize="10px">
-                  {frequentTags.map(t => t.value).join(", ")}
+                  {frequentTags.map((t) => t.value).join(", ")}
                 </Text>
               </Flex>
             ) : null}
@@ -584,7 +583,7 @@ const NewProduct = ({ }) => {
                   <Box>
                     <Input
                       name={`options[${index}].name`}
-                      onChange={e => updateOptionName(e, index)}
+                      onChange={(e) => updateOptionName(e, index)}
                       label="Option title"
                       placeholder="Color"
                       required={true}
@@ -595,7 +594,7 @@ const NewProduct = ({ }) => {
                     <TagInput
                       placeholder="Blue, Green"
                       values={o.values}
-                      onChange={values => updateOptionValue(index, values)}
+                      onChange={(values) => updateOptionValue(index, values)}
                     />
                   </Box>
                   <Box>
@@ -619,7 +618,7 @@ const NewProduct = ({ }) => {
                 <Flex flexDirection="column" flexGrow="1">
                   <VariantGrid
                     variants={variants}
-                    onChange={vs => setVariants(vs)}
+                    onChange={(vs) => setVariants(vs)}
                   />
                 </Flex>
               </>
@@ -643,10 +642,10 @@ const NewProduct = ({ }) => {
                         currency={p.currency_code.toUpperCase()}
                         currencyOptions={currencyOptions}
                         value={p.amount}
-                        onCurrencySelected={currency =>
+                        onCurrencySelected={(currency) =>
                           handleCurrencySelected(index, currency)
                         }
-                        onChange={e => handlePriceChange(index, e)}
+                        onChange={(e) => handlePriceChange(index, e)}
                         label={index === 0 ? "Price" : ""}
                         removable={index !== 0}
                         onRemove={() => removePrice(index)}

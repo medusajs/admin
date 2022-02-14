@@ -1,5 +1,4 @@
 import { Address } from "@medusajs/medusa"
-import clsx from "clsx"
 import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
@@ -22,11 +21,11 @@ import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
-import { FormattedAddress, DisplayTotal } from "../details/templates"
+import { DisplayTotal, FormattedAddress } from "../details/templates"
 
 const DraftOrderDetails = ({ id }) => {
   type DeletePromptData = {
@@ -55,7 +54,7 @@ const DraftOrderDetails = ({ id }) => {
   const cancelOrder = useAdminDeleteDraftOrder(id)
   const updateOrder = useAdminUpdateDraftOrder(id)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const OrderStatusComponent = () => {
     switch (draft_order?.status) {
@@ -73,8 +72,9 @@ const DraftOrderDetails = ({ id }) => {
     const label = "Mark as paid"
     const action = () => {
       markPaid.mutate(void {}, {
-        onSuccess: () => toaster("Successfully mark as paid", "success"),
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onSuccess: () =>
+          notification("Success", "Successfully mark as paid", "success"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       })
     }
 
@@ -87,8 +87,9 @@ const DraftOrderDetails = ({ id }) => {
 
   const handleDeleteOrder = async () => {
     return cancelOrder.mutate(void {}, {
-      onSuccess: () => toaster("Successfully canceled order", "success"),
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onSuccess: () =>
+        notification("Success", "Successfully canceled order", "success"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 
@@ -113,10 +114,10 @@ const DraftOrderDetails = ({ id }) => {
 
     return updateOrder.mutate(updateObj, {
       onSuccess: () => {
-        toaster("Successfully updated address", "success")
+        notification("Success", "Successfully updated address", "success")
         setAddressModal(null)
       },
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 
@@ -432,8 +433,14 @@ const DraftOrderDetails = ({ id }) => {
                       <span>{cart?.shipping_address?.phone || ""}</span>
                     </div>
                   </div>
-                  <FormattedAddress title={"Shipping"} addr={cart?.shipping_address} />
-                  <FormattedAddress title={"Billing"} addr={cart?.billing_address} />
+                  <FormattedAddress
+                    title={"Shipping"}
+                    addr={cart?.shipping_address}
+                  />
+                  <FormattedAddress
+                    title={"Billing"}
+                    addr={cart?.billing_address}
+                  />
                 </div>
               </div>
             </BodyCard>
