@@ -252,7 +252,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }
 
     const selectSo = returnShippingOptions.find((s) => so.value === s.id)
-    console.log(selectSo)
     if (selectSo) {
       setReturnShippingMethod(selectSo)
       setReturnShippingPrice(selectSo.amount * (1 + order.tax_rate / 100))

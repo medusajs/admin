@@ -39,7 +39,7 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
   }
 
   const handleReceive = async (id, payload) => {
-    await Medusa.orders.receiveReturn(id, payload)
+    await Medusa.orders.receiveReturn(id, payload) // TODO: replace with hook from medusa-react
     refetch()
   }
 

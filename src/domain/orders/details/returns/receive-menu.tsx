@@ -75,7 +75,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
       allItems.find((i) => i.id === t)
     )
 
-    console.log(items)
     const total =
       items.reduce((acc, next) => {
         return acc + (next.refundable / next.quantity) * quantities[next.id]
