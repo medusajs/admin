@@ -1,3 +1,4 @@
+import { uniqBy } from "lodash"
 import {
   useAdminProduct,
   useAdminProductTypes,
@@ -127,11 +128,17 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
       localImages.splice(idx, 1)
     }
 
-    const newImages = localImages.map(({ url }) => url)
-    updateGiftCard({
-      images: newImages,
-    })
+    const updateReq: Record<string, unknown> = {
+      // pull out urls from all images
+      images: localImages.map(({ url }) => url),
+    }
 
+    // check if we should remove as thumbnail as well
+    if (image.url === giftCard?.thumbnail) {
+      updateReq.thumbnail = null
+    }
+
+    updateGiftCard({ ...updateReq })
     setLocalImages([...localImages])
   }
 
@@ -140,8 +147,21 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
       return
     }
 
-    setLocalImages(giftCard?.images)
-    setThumbnail(giftCard?.thumbnail || null)
+    const allImages = [...giftCard?.images]
+
+    if (giftCard?.thumbnail) {
+      const thumbnailExists = giftCard.images.find(
+        (i) => i.url === giftCard.thumbnail
+      )
+
+      // if thumbnail is not present in images, we add it
+      if (!thumbnailExists) {
+        allImages.push({ url: giftCard?.thumbnail })
+      }
+      setThumbnail(giftCard?.thumbnail || undefined)
+    }
+
+    setLocalImages(uniqBy(allImages, "url"))
 
     reset({
       ...giftCard,
