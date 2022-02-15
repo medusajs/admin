@@ -47,7 +47,11 @@ const General = ({ showViewOptions = true }) => {
             name="title"
             placeholder="Jacket, Sunglasses..."
             required
-            ref={register({ required: true })}
+            ref={register({
+              required: true,
+              minLength: 1,
+              pattern: /(.|\s)*\S(.|\s)*/,
+            })}
           />
           <Input
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
