@@ -8,7 +8,7 @@ import ImagesDropzone from "../../../../components/image-dropzone"
 import Medusa from "../../../../services/api"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
-const Images = ({ product, refresh, toaster }) => {
+const Images = ({ product, refresh, notification }) => {
   const [uploads, setUploads] = useState([])
   const [images, setImages] = useState([])
   const [isSavingImages, setIsSavingImages] = useState(false)
@@ -43,9 +43,11 @@ const Images = ({ product, refresh, toaster }) => {
             setUploads([])
             setIsDirty(false)
             refresh({ id: product.id })
-            toaster("Successfully saved images", "success")
+            notification("Success", "Successfully saved images", "success")
           })
-          .catch((error) => toaster(getErrorMessage(error), "error"))
+          .catch((error) =>
+            notification("Error", getErrorMessage(error), "error")
+          )
       })
   }
 

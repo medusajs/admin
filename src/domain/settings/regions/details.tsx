@@ -17,7 +17,7 @@ import Select from "../../../components/molecules/select"
 import BodyCard from "../../../components/organisms/body-card"
 import CurrencyInput from "../../../components/organisms/currency-input"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { Option } from "../../../types/shared"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -35,7 +35,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   const [fulfillmentProviders, setFulfillmentProviders] = useState<Option[]>([])
 
   const { register, reset, setValue, handleSubmit } = useForm()
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const { store, isLoading: storeIsLoading } = useAdminStore()
   const createRegion = useAdminCreateRegion()
@@ -161,10 +161,10 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       },
       {
         onSuccess: () => {
-          toaster("Successfully updated region", "success")
+          notification("Success", "Successfully updated region", "success")
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          notification("Error", getErrorMessage(error), "error")
         },
       }
     )
@@ -177,7 +177,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
 
   const handleDuplicate = () => {
     if (!region) {
-      toaster("Region not found", "error")
+      notification("Error", "Region not found", "error")
       return
     }
 
@@ -193,11 +193,11 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
 
     createRegion.mutate(payload, {
       onSuccess: ({ region }) => {
-        toaster("Successfully duplicated region", "success")
+        notification("Success", "Successfully duplicated region", "success")
         handleSelect(region.id)
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }
@@ -210,7 +210,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
         }
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }

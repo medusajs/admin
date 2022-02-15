@@ -19,7 +19,7 @@ import Modal from "../../../../components/molecules/modal"
 import Metadata, {
   MetadataField,
 } from "../../../../components/organisms/metadata"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import CreateFulfillmentItemsTable from "./item-table"
 
@@ -52,7 +52,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
   const createSwapFulfillment = useAdminFulfillSwap(orderId)
   const createClaimFulfillment = useAdminFulfillClaim(orderId)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const createFulfillment = () => {
     const [type] = orderToFulfill.id.split("_")
@@ -109,10 +109,10 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
 
     action.mutate(requestObj, {
       onSuccess: () => {
-        toaster(successText, "success")
+        notification("Success", successText, "success")
         handleCancel()
       },
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 

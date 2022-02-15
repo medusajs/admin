@@ -11,7 +11,7 @@ import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 type MarkShippedModalProps = {
@@ -57,7 +57,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
   const markSwapShipped = useAdminCreateSwapShipment(orderId)
   const markClaimShipped = useAdminCreateClaimShipment(orderId)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const markShipped = () => {
     const [type] = orderToShip.id.split("_")
@@ -107,10 +107,10 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
 
     action.mutate(requestObj, {
       onSuccess: () => {
-        toaster(successText, "success")
+        notification("Success", successText, "success")
         handleCancel()
       },
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 

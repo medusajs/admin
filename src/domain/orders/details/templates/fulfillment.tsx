@@ -9,7 +9,7 @@ import CancelIcon from "../../../../components/fundamentals/icons/cancel-icon"
 import PackageIcon from "../../../../components/fundamentals/icons/package-icon"
 import Actionables from "../../../../components/molecules/actionables"
 import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { TrackingLink } from "./tracking-link"
 
@@ -19,7 +19,7 @@ export const FormattedFulfillment = ({
   fulfillmentObj,
 }) => {
   const dialog = useImperativeDialog()
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const cancelFulfillment = useAdminCancelFulfillment(order.id)
   const cancelSwapFulfillment = useAdminCancelSwapFulfillment(order.id)
@@ -62,22 +62,28 @@ export const FormattedFulfillment = ({
         return cancelSwapFulfillment.mutate(
           { swap_id: resourceId, fulfillment_id: fulfillment.id },
           {
-            onSuccess: () => toaster("Successfully canceled swap", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
+            onSuccess: () =>
+              notification("Success", "Successfully canceled swap", "success"),
+            onError: (err) =>
+              notification("Error", getErrorMessage(err), "error"),
           }
         )
       case "claim":
         return cancelClaimFulfillment.mutate(
           { claim_id: resourceId, fulfillment_id: fulfillment.id },
           {
-            onSuccess: () => toaster("Successfully canceled claim", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
+            onSuccess: () =>
+              notification("Success", "Successfully canceled claim", "success"),
+            onError: (err) =>
+              notification("Error", getErrorMessage(err), "error"),
           }
         )
       default:
         return cancelFulfillment.mutate(fulfillment.id, {
-          onSuccess: () => toaster("Successfully canceled order", "success"),
-          onError: (err) => toaster(getErrorMessage(err), "error"),
+          onSuccess: () =>
+            notification("Success", "Successfully canceled order", "success"),
+          onError: (err) =>
+            notification("Error", getErrorMessage(err), "error"),
         })
     }
   }

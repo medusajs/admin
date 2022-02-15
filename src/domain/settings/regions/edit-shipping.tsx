@@ -9,7 +9,7 @@ import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import CurrencyInput from "../../../components/organisms/currency-input"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
@@ -18,7 +18,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
   const [showDelete, setShowDelete] = useState(false)
   const deleteOption = useAdminDeleteShippingOption(shippingOption.id)
   const updateOption = useAdminUpdateShippingOption(shippingOption.id)
-  const toaster = useToaster()
+  const notification = useNotification()
 
   useEffect(() => {
     if (shippingOption.requirements) {
@@ -69,7 +69,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
       },
       onError: (error) => {
         setShowDelete(false)
-        toaster(getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }
@@ -145,14 +145,18 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
     // TODO: fix AdminPostShippingOptionsOptionReq type
     updateOption.mutate(payload, {
       onSuccess: () => {
-        toaster("Successfully updated shipping option", "success")
+        notification(
+          "Success",
+          "Successfully updated shipping option",
+          "success"
+        )
         if (onDone) {
           onDone()
         }
         onClick()
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }
@@ -265,7 +269,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                     onClick={() => setShowDelete(true)}
                     className="text-rose-50 inter-base-semibold"
                   >
-                    Delete Option
+                    Delete
                   </button>
                 </div>
               </Modal.Content>

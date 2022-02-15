@@ -1,8 +1,8 @@
-import * as React from "react"
 import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
+import * as React from "react"
 import Button, { ButtonProps } from "../../components/fundamentals/button"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
 import { getErrorMessage } from "../../utils/error-messages"
 import ProductForm from "./product-form"
@@ -14,31 +14,32 @@ import {
 import { consolidateImages } from "./product-form/utils"
 
 const NewProductPage = () => {
-  const toaster = useToaster()
+  const notification = useNotification()
   const createProduct = useAdminCreateProduct()
 
   const onSubmit = async (data) => {
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
-    const uploadedImgs = await Medusa.uploads
-      .create(images)
-      .then(({ data }) => {
-        const uploaded = data.uploads.map(({ url }) => url)
-        return uploaded
-      })
-    const newData = {
-      ...data,
-      images: consolidateImages(data.images, uploadedImgs),
+
+    if (images.length) {
+      const uploadedImgs = await Medusa.uploads
+        .create(images)
+        .then(({ data }) => {
+          const uploaded = data.uploads.map(({ url }) => url)
+          return uploaded
+        })
+
+      data.images = consolidateImages(data.images, uploadedImgs)
     }
 
-    createProduct.mutate(formValuesToCreateProductMapper(newData), {
+    createProduct.mutate(formValuesToCreateProductMapper(data), {
       onSuccess: ({ product }) => {
-        toaster("Product created successfully", "success")
+        notification("Success", "Product created successfully", "success")
         navigate(`/a/products/${product.id}`)
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }

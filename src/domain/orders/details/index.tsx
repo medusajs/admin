@@ -28,7 +28,7 @@ import BodyCard from "../../../components/organisms/body-card"
 import Timeline from "../../../components/organisms/timeline"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
@@ -126,16 +126,16 @@ const OrderDetails = ({ id }) => {
     enabled: !!order?.region_id,
   })
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const [, handleCopy] = useClipboard(order?.display_id, {
     successDuration: 5500,
-    onCopied: () => toaster("Order ID copied", "success"),
+    onCopied: () => notification("Success", "Order ID copied", "success"),
   })
 
   const [, handleCopyEmail] = useClipboard(order?.email, {
     successDuration: 5500,
-    onCopied: () => toaster("Email copied", "success"),
+    onCopied: () => notification("Success", "Email copied", "success"),
   })
 
   // @ts-ignore
@@ -188,8 +188,9 @@ const OrderDetails = ({ id }) => {
     }
 
     return cancelOrder.mutate(void {}, {
-      onSuccess: () => toaster("Successfully canceled order", "success"),
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onSuccess: () =>
+        notification("Success", "Successfully canceled order", "success"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 
@@ -214,10 +215,10 @@ const OrderDetails = ({ id }) => {
 
     return updateOrder.mutate(updateObj, {
       onSuccess: () => {
-        toaster("Successfully updated address", "success")
+        notification("Success", "Successfully updated address", "success")
         setAddressModal(null)
       },
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 

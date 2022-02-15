@@ -5,7 +5,7 @@ import BreadCrumb from "../../components/molecules/breadcrumb"
 import Select from "../../components/molecules/select"
 import BodyCard from "../../components/organisms/body-card"
 import TwoSplitPane from "../../components/templates/two-split-pane"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { currencies } from "../../utils/currencies"
 import { getErrorMessage } from "../../utils/error-messages"
 
@@ -22,7 +22,7 @@ const CurrencySettings = () => {
     label: "",
   })
 
-  const toaster = useToaster()
+  const notification = useNotification()
   const { isLoading, store } = useAdminStore()
   const updateStore = useAdminUpdateStore()
 
@@ -70,10 +70,10 @@ const CurrencySettings = () => {
       },
       {
         onSuccess: () => {
-          toaster("Successfully updated currencies", "success")
+          notification("Success", "Successfully updated currencies", "success")
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          notification("Error", getErrorMessage(error), "error")
         },
       }
     )

@@ -29,6 +29,7 @@ type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
 
 type TableCellProps = React.HTMLAttributes<HTMLTableCellElement> & {
   linkTo?: string
+  name?: string
 }
 
 type SortingHeadCellProps = {
