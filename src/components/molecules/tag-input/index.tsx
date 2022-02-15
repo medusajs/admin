@@ -132,7 +132,12 @@ const TagInput: React.FC<TagInputProps> = ({
   }
 
   const handleBlur = (e) => {
+    const value = inputRef?.current?.value
     setHighlighted(-1)
+
+    if (value) {
+      handleAddValue(value)
+    }
   }
 
   const handleOnContainerFocus = () => {
