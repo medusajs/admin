@@ -32,7 +32,7 @@ const DiscountResults = ({
             >
               <Link
                 to={`/a/discounts/${discount.id}`}
-                className="px-base py-1.5 flex items-center rounded-rounded justify-between"
+                className="py-1.5 flex items-center rounded-rounded justify-between"
               >
                 <div className="flex items-center gap-x-3">
                   <div className="py-0.5 px-2 bg-grey-10 rounded-rounded">

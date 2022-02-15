@@ -1,6 +1,7 @@
 import {
   useAdminCustomers,
   useAdminDiscounts,
+  useAdminOrders,
   useAdminProducts,
 } from "medusa-react"
 import React from "react"
@@ -15,6 +16,9 @@ import KeyboardShortcuts from "./keyboard-shortcuts"
 import ProductResults from "./results/product-results"
 import useKeyboardNavigationList from "./use-keyboard-navigation-list"
 import clsx from "clsx"
+import OrderResults from "./results/order-results"
+import CrossIcon from "../../fundamentals/icons/cross-icon"
+import Tooltip from "../../atoms/tooltip"
 
 const getTotal = (...lists) =>
   lists.reduce((total, list = []) => total + list.length, 0)
@@ -23,7 +27,18 @@ const SearchModal = ({ handleClose }) => {
   const [q, setQ] = React.useState("")
   const query = useDebounce(q, 500)
   const onChange = (e) => setQ(e.target.value)
+  const handleClear = () => {
+    setQ("")
+  }
 
+  const { orders, isFetching: isFetchingOrders } = useAdminOrders(
+    {
+      display_id: query,
+      limit: 5,
+      offset: 0,
+    },
+    { enabled: !!query, keepPreviousData: true }
+  )
   const { customers, isFetching: isFetchingCustomers } = useAdminCustomers(
     {
       q: query,
@@ -42,9 +57,12 @@ const SearchModal = ({ handleClose }) => {
   )
 
   const isFetching =
-    isFetchingDiscounts || isFetchingCustomers || isFetchingProducts
+    isFetchingDiscounts ||
+    isFetchingCustomers ||
+    isFetchingProducts ||
+    isFetchingOrders
 
-  const totalLength = getTotal(products, discounts, customers)
+  const totalLength = getTotal(products, discounts, customers, orders)
 
   const {
     getInputProps,
@@ -79,6 +97,13 @@ const SearchModal = ({ handleClose }) => {
                   placeholder="Search typing to search..."
                   {...getInputProps()}
                 />
+                <Tooltip
+                  className="bg-grey-0"
+                  onClick={handleClear}
+                  content="Clear search"
+                >
+                  <CrossIcon className="flex text-grey-50" />
+                </Tooltip>
               </div>
               <KeyboardShortcuts className="mt-xlarge px-xlarge flex items-center gap-x-3 text-grey-40 inter-small-regular" />
               {totalLength > 0 ? (
@@ -93,6 +118,15 @@ const SearchModal = ({ handleClose }) => {
                   ) : (
                     <>
                       <div>
+                        <OrderResults
+                          orders={orders}
+                          offset={0}
+                          getLIProps={getLIProps}
+                          selected={selected}
+                        />
+                      </div>
+
+                      <div className="mt-xlarge">
                         <CustomerResults
                           customers={customers}
                           offset={0}

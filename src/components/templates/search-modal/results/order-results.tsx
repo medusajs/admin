@@ -2,49 +2,43 @@ import clsx from "clsx"
 import { Link } from "gatsby"
 import React from "react"
 import SectionCollapsible from "../section-collapsible"
-import { useAdminCustomers } from "medusa-react"
+import { useAdminOrders } from "medusa-react"
 import useKeyboardNavigationList from "../use-keyboard-navigation-list"
-import Avatar from "../../../atoms/avatar"
 
-type CustomerResultsProps = {
-  customers: ReturnType<typeof useAdminCustomers>["customers"]
+type OrderResultsProps = {
+  orders: ReturnType<typeof useAdminOrders>["orders"]
   getLIProps: ReturnType<typeof useKeyboardNavigationList>["getLIProps"]
   offset: number
   selected: number
 }
 
-const CustomerResults = ({
-  customers = [],
+const OrderResults = ({
+  orders = [],
   getLIProps,
   offset,
   selected,
-}: CustomerResultsProps) => {
-  return customers.length > 0 ? (
-    <SectionCollapsible title={"Customers"} length={customers?.length || 0}>
+}: OrderResultsProps) => {
+  return orders.length > 0 ? (
+    <SectionCollapsible title={"Orders"} length={orders?.length || 0}>
       <div className="mt-large">
         <div className="flex flex-col">
-          {customers?.map((customer, index) => (
+          {orders?.map((order, index) => (
             <li
-              {...getLIProps({
-                index: offset + index,
+              {...getLIProps({ index: offset + index })}
+              className={clsx("py-1.5 group focus:bg-grey-5 rounded-rounded", {
+                "bg-grey-5": selected === offset + index,
               })}
-              className={clsx(
-                "px-base group py-1.5 focus:bg-grey-5 rounded-rounded",
-                { "bg-grey-5": selected === offset + index }
-              )}
             >
               <Link
-                to={`/a/customers/${customer.id}`}
-                className="py-1.5 flex items-center rounded-rounded justify-between"
+                to={`/a/orders/${order.id}`}
+                className="px-base py-1.5 flex items-center rounded-rounded justify-between"
               >
                 <div className="flex items-center gap-x-3">
-                  <div className="w-[20px] h-[20px] shrink-0">
-                    <Avatar user={customer} />
-                  </div>
+                  <span className="inter-small-semibold">
+                    #{order.display_id}
+                  </span>
                   <p className="inter-small-regular text-grey-90">
-                    {customer?.first_name
-                      ? `${customer?.first_name} ${customer?.last_name}`
-                      : customer.email}
+                    {order.email}
                   </p>
                 </div>
                 <span
@@ -66,4 +60,4 @@ const CustomerResults = ({
   ) : null
 }
 
-export default CustomerResults
+export default OrderResults
