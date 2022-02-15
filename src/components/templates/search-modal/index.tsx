@@ -66,7 +66,7 @@ const SearchModal = ({ handleClose }) => {
         >
           <RadixDialog.Content
             className={clsx(
-              "max-w-[640px] flex mx-auto bg-grey-0 rounded-rounded shadow-searchModal"
+              "max-w-[640px] flex-1 flex mx-auto bg-grey-0 rounded-rounded shadow-searchModal"
             )}
           >
             <div className="py-large flex-1 flex flex-col">
