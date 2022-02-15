@@ -115,7 +115,7 @@ const OrderDetails = ({ id }) => {
 
   const [emailModal, setEmailModal] = useState<null | {
     email: string
-  }>()
+  }>(null)
 
   const [showFulfillment, setShowFulfillment] = useState(false)
   const [showRefund, setShowRefund] = useState(false)
@@ -229,8 +229,12 @@ const OrderDetails = ({ id }) => {
 
     return updateOrder.mutate(updateObj, {
       onSuccess: () => {
-        notification("Success", "Successfully updated email address", "success")
-        setAddressModal(null)
+        notification(
+          "Success",
+          "Successfully updated the email address",
+          "success"
+        )
+        setEmailModal(null)
       },
       onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })

@@ -1,4 +1,3 @@
-import { Country } from "@medusajs/medusa"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
@@ -9,8 +8,8 @@ import Select from "../../../components/molecules/select"
 type AddressModalProps = {
   handleClose: () => void
   handleSave: ({ data, type }) => Promise<void>
-  allowedCountries?: Country[]
-  address?: object & { country_code: string }
+  allowedCountries: string[]
+  address?: object
   type: "shipping" | "billing"
 }
 
