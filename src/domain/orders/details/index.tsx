@@ -201,17 +201,15 @@ const OrderDetails = ({ id }) => {
   }
 
   const handleUpdateAddress = async ({ data, type }) => {
-    const { ...rest } = data
-
     const updateObj = {}
 
     if (type === "shipping") {
       updateObj["shipping_address"] = {
-        ...rest,
+        ...data,
       }
     } else {
       updateObj["billing_address"] = {
-        ...rest,
+        ...data,
       }
     }
 
