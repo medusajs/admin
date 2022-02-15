@@ -36,8 +36,20 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   const [quantities, setQuantities] = useState({})
 
   const allItems: LineItem[] = useMemo(() => {
-    const ids = returnRequest.items.map((i: ReturnItem) => i.item_id)
-    return order.items.filter((i: LineItem) => ids.includes(i.id))
+    return order.items.map((i: LineItem) => {
+      const found = returnRequest.items.find(
+        (ri: ReturnItem) => ri.item_id === i.id
+      )
+
+      if (found) {
+        return {
+          ...i,
+          quantity: found.quantity,
+        }
+      } else {
+        return null
+      }
+    }).filter(Boolean)
   }, [order])
 
   useEffect(() => {

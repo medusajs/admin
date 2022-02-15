@@ -98,7 +98,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
 
       default:
         requestObj = {
-          fulfillment_id: resourceId,
+          fulfillment_id: fulfillment.id,
           tracking_numbers,
           no_notification: noNotis,
         }
