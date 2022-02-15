@@ -6,7 +6,7 @@ import {
   useAdminUpdateProduct,
 } from "medusa-react"
 import React from "react"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { ProductStatus } from "../../types/shared"
 import { getErrorMessage } from "../../utils/error-messages"
 import GiftCardDetails from "./details"
@@ -22,7 +22,7 @@ const GiftCard = () => {
   const updateGiftCard = useAdminUpdateProduct(giftCard?.id)
   const deleteGiftCard = useAdminDeleteProduct(giftCard?.id)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const updateGCStatus = () => {
     let status: ProductStatus = ProductStatus.PUBLISHED
@@ -33,8 +33,9 @@ const GiftCard = () => {
     updateGiftCard.mutate(
       { status },
       {
-        onSuccess: () => toaster("Successfully updated Gift Card", "success"),
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onSuccess: () =>
+          notification("Success", "Successfully updated Gift Card", "success"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
     )
   }
@@ -43,8 +44,9 @@ const GiftCard = () => {
     updateGiftCard.mutate(
       { ...data },
       {
-        onSuccess: () => toaster("Successfully updated Gift Card", "success"),
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onSuccess: () =>
+          notification("Success", "Successfully updated Gift Card", "success"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
     )
   }
@@ -52,11 +54,7 @@ const GiftCard = () => {
   const deleteGC = () => {
     deleteGiftCard.mutate(undefined, {
       onSuccess: () => {
-        toaster("Successfully deleted Gift Card")
         navigate("/a/gift-cards")
-      },
-      onError: (err) => {
-        toaster(getErrorMessage(err))
       },
     })
   }

@@ -2,14 +2,8 @@ import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
 import { navigate } from "gatsby"
 import { capitalize, sum } from "lodash"
 import {
-  useAdminCancelClaimFulfillment,
-  useAdminCancelFulfillment,
   useAdminCancelOrder,
-  useAdminCancelSwapFulfillment,
   useAdminCapturePayment,
-  useAdminCreateClaimShipment,
-  useAdminCreateShipment,
-  useAdminCreateSwapShipment,
   useAdminOrder,
   useAdminRegion,
   useAdminUpdateOrder,
@@ -31,10 +25,10 @@ import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-i
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
-import DeletePrompt from "../../../components/organisms/delete-prompt"
 import Timeline from "../../../components/organisms/timeline"
 import useClipboard from "../../../hooks/use-clipboard"
-import useToaster from "../../../hooks/use-toaster"
+import useImperativeDialog from "../../../hooks/use-imperative-dialog"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
@@ -109,22 +103,9 @@ const gatherAllFulfillments = (order) => {
   return all
 }
 
-type DeletePromptData = {
-  resource: string
-  onDelete: () => any
-  show: boolean
-}
-
-const initDeleteState: DeletePromptData = {
-  resource: "",
-  onDelete: () => Promise.resolve(console.log("Delete resource")),
-  show: false,
-}
-
 const OrderDetails = ({ id }) => {
-  const [deletePromptData, setDeletePromptData] = useState<DeletePromptData>(
-    initDeleteState
-  )
+  const dialog = useImperativeDialog()
+
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
     type: "billing" | "shipping"
@@ -136,31 +117,25 @@ const OrderDetails = ({ id }) => {
 
   const { order, isLoading } = useAdminOrder(id)
 
-  const markShipped = useAdminCreateShipment(id)
-  const markClaimShipped = useAdminCreateClaimShipment(id)
-  const markSwapShipped = useAdminCreateSwapShipment(id)
   const capturePayment = useAdminCapturePayment(id)
   const cancelOrder = useAdminCancelOrder(id)
   const updateOrder = useAdminUpdateOrder(id)
-  const cancelFulfillment = useAdminCancelFulfillment(id)
-  const cancelSwapFulfillment = useAdminCancelSwapFulfillment(id)
-  const cancelClaimFulfillment = useAdminCancelClaimFulfillment(id)
 
   // @ts-ignore
   const { region } = useAdminRegion(order?.region_id, {
     enabled: !!order?.region_id,
   })
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const [, handleCopy] = useClipboard(order?.display_id, {
     successDuration: 5500,
-    onCopied: () => toaster("Order ID copied", "success"),
+    onCopied: () => notification("Success", "Order ID copied", "success"),
   })
 
   const [, handleCopyEmail] = useClipboard(order?.email, {
     successDuration: 5500,
-    onCopied: () => toaster("Email copied", "success"),
+    onCopied: () => notification("Success", "Email copied", "success"),
   })
 
   // @ts-ignore
@@ -203,9 +178,19 @@ const OrderDetails = ({ id }) => {
   }, [order])
 
   const handleDeleteOrder = async () => {
+    const shouldDelete = await dialog({
+      heading: "Cancel order",
+      text: "Are you sure you want to cancel the order?",
+    })
+
+    if (!shouldDelete) {
+      return
+    }
+
     return cancelOrder.mutate(void {}, {
-      onSuccess: () => toaster("Successfully canceled order", "success"),
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onSuccess: () =>
+        notification("Success", "Successfully canceled order", "success"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 
@@ -230,87 +215,11 @@ const OrderDetails = ({ id }) => {
 
     return updateOrder.mutate(updateObj, {
       onSuccess: () => {
-        toaster("Successfully updated address", "success")
+        notification("Success", "Successfully updated address", "success")
         setAddressModal(null)
       },
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
-  }
-
-  const handleCancelFulfillment = async ({
-    resourceId,
-    resourceType,
-    fulId,
-  }) => {
-    switch (resourceType) {
-      case "swap":
-        return cancelSwapFulfillment.mutate(
-          { swap_id: resourceId, fulfillment_id: fulId },
-          {
-            onSuccess: () => toaster("Successfully canceled order", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
-          }
-        )
-      case "claim":
-        return cancelClaimFulfillment.mutate(
-          { claim_id: resourceId, fulfillment_id: fulId },
-          {
-            onSuccess: () => toaster("Successfully canceled order", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
-          }
-        )
-      default:
-        return cancelFulfillment.mutate(fulId, {
-          onSuccess: () => toaster("Successfully canceled order", "success"),
-          onError: (err) => toaster(getErrorMessage(err), "error"),
-        })
-    }
-  }
-
-  const handleCreateShipment = ({ resourceId, resourceType, fulfillment }) => {
-    const tracking_numbers = fulfillment.tracking_numbers.map(
-      ({ value }) => value
-    )
-
-    switch (resourceType) {
-      case "swap":
-        return markSwapShipped.mutate(
-          {
-            swap_id: resourceId,
-            fulfillment_id: fulfillment.id,
-            tracking_numbers,
-          },
-          {
-            onSuccess: () => toaster("Swap marked as shipped", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
-          }
-        )
-
-      case "claim":
-        return markClaimShipped.mutate(
-          {
-            claim_id: resourceId,
-            fulfillment_id: fulfillment.id,
-            tracking_numbers,
-          },
-          {
-            onSuccess: () => toaster("Claim marked as shipped", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
-          }
-        )
-
-      default:
-        return markShipped.mutate(
-          {
-            fulfillment_id: fulfillment.id,
-            tracking_numbers,
-          },
-          {
-            onSuccess: () => toaster("Order marked as shipped", "success"),
-            onError: (err) => toaster(getErrorMessage(err), "error"),
-          }
-        )
-    }
   }
 
   const allFulfillments = gatherAllFulfillments(order)
@@ -381,12 +290,7 @@ const OrderDetails = ({ id }) => {
                   label: "Cancel Order",
                   icon: <CancelIcon size={"20"} />,
                   variant: "danger",
-                  onClick: () =>
-                    setDeletePromptData({
-                      resource: "Order",
-                      onDelete: () => handleDeleteOrder(),
-                      show: true,
-                    }),
+                  onClick: () => handleDeleteOrder(),
                 },
               ]}
             >
@@ -592,13 +496,6 @@ const OrderDetails = ({ id }) => {
                     <FormattedFulfillment
                       key={i}
                       order={order}
-                      onCancelFulfillment={(data) =>
-                        setDeletePromptData({
-                          resource: "Fulfillment",
-                          show: true,
-                          onDelete: () => handleCancelFulfillment(data),
-                        })
-                      }
                       fulfillmentObj={fulfillmentObj}
                       setFullfilmentToShip={setFullfilmentToShip}
                     />
@@ -700,19 +597,6 @@ const OrderDetails = ({ id }) => {
           handleCancel={() => setFullfilmentToShip(null)}
           fulfillment={fullfilmentToShip}
           orderId={order.id}
-        />
-      )}
-      {/* An attempt to make a reusable delete prompt, so we don't have to hold +10
-      state variables for showing different prompts */}
-      {deletePromptData.show && (
-        <DeletePrompt
-          text={"Are you sure?"}
-          heading={`Remove ${deletePromptData?.resource}`}
-          successText={`${
-            deletePromptData?.resource || "Resource"
-          } has been removed`}
-          onDelete={() => deletePromptData.onDelete()}
-          handleClose={() => setDeletePromptData(initDeleteState)}
         />
       )}
     </div>

@@ -41,7 +41,7 @@ const Sidebar: React.FC = () => {
   triggerHandler.id = 0
 
   return (
-    <div className="min-w-sidebar max-w-sidebar h-screen overflow-y-scroll bg-gray-0 border-r border-grey-20 py-base px-base">
+    <div className="min-w-sidebar max-w-sidebar h-screen overflow-y-auto bg-gray-0 border-r border-grey-20 py-base px-base">
       <div className="h-full ">
         <SidebarCompanyLogo storeName={store?.name} />
 

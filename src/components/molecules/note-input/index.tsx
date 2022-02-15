@@ -2,16 +2,23 @@ import React, { useCallback, useRef, useState } from "react"
 import SendIcon from "../../fundamentals/icons/send-icon"
 import EmojiPicker from "../emoji-picker"
 
-type NoteInput = {
+type NoteInputProps = {
   onSubmit: (note: string | undefined) => void
 }
 
-const NoteInput: React.FC<NoteInput> = ({ onSubmit }) => {
+const NoteInput: React.FC<NoteInputProps> = ({ onSubmit }) => {
   const [note, setNote] = useState<string | undefined>(undefined)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const handleAddEmoji = (emoji: string) => {
     setNote(`${note ? note : ""}${emoji}`)
+  }
+
+  const handleSubmit = () => {
+    if (onSubmit && note) {
+      onSubmit(note)
+      setNote("")
+    }
   }
 
   const onKeyDownHandler = useCallback(
@@ -20,10 +27,7 @@ const NoteInput: React.FC<NoteInput> = ({ onSubmit }) => {
         case "Enter":
           event.preventDefault()
           event.stopPropagation()
-          if (onSubmit && note) {
-            onSubmit(note)
-            setNote("")
-          }
+          handleSubmit()
           inputRef.current?.blur()
           break
         case "Esc":
@@ -53,12 +57,14 @@ const NoteInput: React.FC<NoteInput> = ({ onSubmit }) => {
             className="flex-grow bg-transparent inter-base-regular placeholder:text-grey-40 focus:outline-none"
             ref={inputRef}
             id="note-input"
+            autoComplete="off"
             onKeyDown={onKeyDownHandler}
           />
         </div>
         <button
           className="text-grey-30 hover:text-violet-60"
-          onClick={() => onSubmit(note)}
+          type="button"
+          onClick={handleSubmit}
         >
           <SendIcon size={20} />
         </button>

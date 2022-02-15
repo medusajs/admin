@@ -6,7 +6,7 @@ import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import Select from "../../../components/molecules/select"
 import CurrencyInput from "../../../components/organisms/currency-input"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
 
@@ -24,7 +24,7 @@ const NewRegion = ({ onDone, onClick }) => {
   const { store, isLoading: storeIsLoading } = useAdminStore()
   const createRegion = useAdminCreateRegion()
   const { register, setValue, handleSubmit } = useForm()
-  const toaster = useToaster()
+  const notification = useNotification()
 
   useEffect(() => {
     if (storeIsLoading || !store) {
@@ -77,7 +77,7 @@ const NewRegion = ({ onDone, onClick }) => {
 
   const onSave = (data) => {
     if (!data.countries?.length) {
-      toaster("Choose at least one country", "error")
+      notification("Success", "Choose at least one country", "error")
       return
     }
 
@@ -89,14 +89,14 @@ const NewRegion = ({ onDone, onClick }) => {
       },
       {
         onSuccess: ({ region }) => {
-          toaster("Successfully created region", "success")
+          notification("Success", "Successfully created region", "success")
           if (onDone) {
             onDone(region.id)
           }
           onClick()
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          notification("Error", getErrorMessage(error), "error")
         },
       }
     )

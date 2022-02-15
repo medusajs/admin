@@ -3,7 +3,7 @@ import { useAdminDeleteVariant, useAdminUpdateVariant } from "medusa-react"
 import React, { useState } from "react"
 import { Box } from "rebass"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import Button from "../fundamentals/button"
 import EditIcon from "../fundamentals/icons/edit-icon"
@@ -87,7 +87,7 @@ const VariantGrid = ({ product, variants, edit }) => {
 
   const updateVariant = useAdminUpdateVariant(product.id)
   const deleteVariant = useAdminDeleteVariant(product.id)
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const columns = getColumns(product, edit)
 
@@ -102,11 +102,11 @@ const VariantGrid = ({ product, variants, edit }) => {
       { variant_id: selectedVariant?.id, ...data },
       {
         onSuccess: () => {
-          toaster("Successfully update variant", "success")
+          notification("Success", "Successfully update variant", "success")
           setSelectedVariant(null)
         },
         onError: (err) => {
-          toaster(getErrorMessage(err), "error")
+          notification("Error", getErrorMessage(err), "error")
         },
       }
     )

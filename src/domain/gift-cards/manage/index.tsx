@@ -13,11 +13,12 @@ import StatusDot from "../../../components/fundamentals/status-indicator"
 import BreadCrumb from "../../../components/molecules/breadcrumb"
 import Input from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
+import StatusSelector from "../../../components/molecules/status-selector"
 import TagInput from "../../../components/molecules/tag-input"
 import BodyCard from "../../../components/organisms/body-card"
 import DetailsCollapsible from "../../../components/organisms/details-collapsible"
 import EditDenominationsModal from "../../../components/organisms/edit-denominations-modal"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import DenominationTable from "./denomination-table"
 
@@ -39,7 +40,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   const [editDenom, setEditDenom] = useState<null | ProductVariant>(null)
   const updateGiftCardVariant = useAdminUpdateVariant(id)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const { register, handleSubmit, reset } = useForm()
 
@@ -96,10 +97,14 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
       },
       {
         onSuccess: () => {
-          toaster("Successfully updated denominations", "success")
+          notification(
+            "Success",
+            "Successfully updated denominations",
+            "success"
+          )
           setEditDenom(null)
         },
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
     )
   }
@@ -147,7 +152,20 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
           title="Product information"
           subtitle="Manage the settings for your Gift Card"
           className={"h-auto w-full"}
-          status={<StatusComponent />}
+          status={
+            <StatusSelector
+              activeState="Published"
+              draftState="Draft"
+              isDraft={giftCard?.status === "draft"}
+              onChange={() => {
+                if (giftCard?.status === "published") {
+                  submit({ status: "draft" })
+                } else {
+                  submit({ status: "published" })
+                }
+              }}
+            />
+          }
           actionables={[
             {
               label:
@@ -233,7 +251,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
                 </div>
                 <TagInput
                   label="Tags (separated by comma)"
-                  tooltipContent="Tags are one word descriptors for the gift card"
+                  tooltipContent="Tags are one word descriptors for the Gift Card"
                   placeholder={"sprint, summer"}
                   className="w-1/2"
                   values={tags}
