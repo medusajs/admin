@@ -13,6 +13,7 @@ import useToaster from "../../../hooks/use-toaster"
 import CopyToClipboard from "../../atoms/copy-to-clipboard"
 import Button from "../../fundamentals/button"
 import CancelIcon from "../../fundamentals/icons/cancel-icon"
+import { getErrorMessage } from "../../../utils/error-messages"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 import DeletePrompt from "../../organisms/delete-prompt"
 import { ActionType } from "../actionables"
@@ -114,9 +115,18 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   }
 
   const handleReceiveReturn = async (items) => {
-    receiveReturn.mutate({ items })
-
-    setShowReceiveReturn(false)
+    receiveReturn.mutate(
+      { items },
+      {
+        onSuccess: () => {
+          setShowReceiveReturn(false)
+          refetch()
+        },
+        onError: (err) => {
+          toaster(getErrorMessage(err), "error")
+        },
+      }
+    )
   }
 
   const returnItems = getReturnItems(event)
