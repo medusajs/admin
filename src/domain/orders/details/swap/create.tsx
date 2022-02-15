@@ -1,24 +1,24 @@
-import React, { useMemo, useState, useEffect, useContext } from "react"
-import Modal from "../../../../components/molecules/modal"
-import Button from "../../../../components/fundamentals/button"
-import Select from "../../../../components/molecules/select"
-import Medusa from "../../../../services/api"
-import { filterItems } from "../utils/create-filtering"
-import { getErrorMessage } from "../../../../utils/error-messages"
-import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
-import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
-import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
-import RMASelectProductSubModal from "../rma-sub-modals/products"
+import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
+import Select from "../../../../components/molecules/select"
+import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
+import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import Medusa from "../../../../services/api"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import {
   formatAmountWithSymbol,
   normalizeAmount,
 } from "../../../../utils/prices"
+import RMASelectProductSubModal from "../rma-sub-modals/products"
+import { filterItems } from "../utils/create-filtering"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -37,7 +37,7 @@ const extractPrice = (prices, order) => {
   return 0
 }
 
-const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
+const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
   const layeredModalContext = useContext(LayeredModalContext)
   const [submitting, setSubmitting] = useState(false)
   const [toReturn, setToReturn] = useState({})
@@ -180,8 +180,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, toaster }) => {
       setSubmitting(true)
       return onCreate(data)
         .then(() => onDismiss())
-        .then(() => toaster("Successfully created swap", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully created swap", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
   }

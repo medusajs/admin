@@ -16,7 +16,7 @@ const SidebarTeamMember: React.FC<SidebarTeamMemberProps> = ({
       : user.email
 
   return (
-    <div className="flex items-center bg-grey-0 px-2.5 py-1.5 w-full">
+    <div className="flex items-center bg-inherit px-2.5 py-1.5 w-full">
       <div className="w-[24px] h-[24px]">
         <Avatar user={user} color={color} />
       </div>

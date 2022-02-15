@@ -53,7 +53,7 @@ const Overview: React.FC<OverviewProps> = ({
       <div className="flex flex-col grow h-full">
         <PageDescription
           title="Gift Cards"
-          subtitle="Manage the settings for your Medusa Store"
+          subtitle="Manage the Gift Cards of your Medusa store"
         />
         {!isLoading ? (
           <>
@@ -66,15 +66,14 @@ const Overview: React.FC<OverviewProps> = ({
                   onUnpublish={onUpdate}
                 />
               ) : (
-                <BannerCard title="You're ready to sell your first gift card?">
+                <BannerCard title="Are you ready to sell your first Gift Card?">
                   <BannerCard.Description
                     cta={{
                       label: "Create Gift Card",
                       onClick: () => setShowCreate(true),
                     }}
                   >
-                    No gift card have been added yet. Click the "Create Gift
-                    Card" button to add one. This is a growth opportunity!
+                    No Gift Card has been added yet.
                   </BannerCard.Description>
                 </BannerCard>
               )}
@@ -82,7 +81,7 @@ const Overview: React.FC<OverviewProps> = ({
             <div className="w-full flex flex-col grow">
               <BodyCard
                 title="History"
-                subtitle="See the history of purchased gift cards"
+                subtitle="See the history of purchased Gift Cards"
                 actionables={actionables}
               >
                 {giftCards && <GiftCardTable giftCards={giftCards} />}

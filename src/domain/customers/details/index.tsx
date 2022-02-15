@@ -52,7 +52,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
       />
       <BodyCard className={"h-auto w-full pt-[100px] mb-4"}>
         <div className="h-[120px] w-full absolute top-0 right-0 left-0 bg-gradient-to-b from-fuschia-20 z-0" />
-        <div className="flex flex-col grow overflow-y-scroll">
+        <div className="flex flex-col grow overflow-y-auto">
           <div className="w-[64px] h-[64px] mb-4">
             <Avatar
               user={customer}

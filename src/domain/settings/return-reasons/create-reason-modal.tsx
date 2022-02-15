@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 
 type CreateReturnReasonModalProps = {
   handleClose: () => void
@@ -23,16 +23,20 @@ const CreateReturnReasonModal = ({
       description: initialReason?.description,
     },
   })
-  const toaster = useToaster()
+  const notification = useNotification()
   const createRR = useAdminCreateReturnReason()
 
   const onCreate = async (data) => {
     await createRR.mutateAsync(data, {
       onSuccess: () => {
-        toaster("Created a new return reason", "success")
+        notification("Success", "Created a new return reason", "success")
       },
       onError: () => {
-        toaster("Cant create a Return reason with an existing code", "error")
+        notification(
+          "Error",
+          "Cant create a Return reason with an existing code",
+          "error"
+        )
       },
     })
     handleClose()

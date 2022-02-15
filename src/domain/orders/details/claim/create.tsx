@@ -1,26 +1,24 @@
-import React, { useState, useEffect, useContext } from "react"
-
-import Modal from "../../../../components/molecules/modal"
+import clsx from "clsx"
+import React, { useContext, useEffect, useState } from "react"
+import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import Select from "../../../../components/molecules/select"
-import Medusa from "../../../../services/api"
-import { filterItems } from "../utils/create-filtering"
-
-import { getErrorMessage } from "../../../../utils/error-messages"
-import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
-import Spinner from "../../../../components/atoms/spinner"
 import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
-import clsx from "clsx"
-import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
-import RMASelectProductSubModal from "../rma-sub-modals/products"
+import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
+import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import Medusa from "../../../../services/api"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import RMAEditAddressSubModal from "../rma-sub-modals/address"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import RMASelectProductSubModal from "../rma-sub-modals/products"
+import { filterItems } from "../utils/create-filtering"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -44,7 +42,7 @@ const reasonOptions = [
   },
 ]
 
-const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
+const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
   const [shippingAddress, setShippingAddress] = useState({})
   const [countries, setCountries] = useState([])
   const [isReplace, toggleReplace] = useState(false)
@@ -161,22 +159,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     })
   }, [shippingMethod, showCustomPrice])
 
-  // useEffect(() => {
-  //  const items = toReturn.map(t => order.items.find(i => i.id === t))
-  //  const returnTotal =
-  //    items.reduce((acc, next) => {
-  //      return acc + (next.refundable / next.quantity) * quantities[next.id]
-  //    }, 0) - (shippingPrice || 0)
-
-  //  const newItemsTotal = itemsToAdd.reduce((acc, next) => {
-  //    const price = extractPrice(next.prices, order)
-  //    const lineTotal = price * 100 * next.quantity
-  //    return acc + lineTotal
-  //  }, 0)
-
-  //  setToPay(newItemsTotal - returnTotal)
-  // }, [toReturn, quantities, shippingPrice, itemsToAdd])
-
   const onSubmit = () => {
     const claim_items = Object.entries(toReturn).map(([key, val]) => {
       val.reason = val.reason?.value
@@ -225,8 +207,12 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
       setSubmitting(true)
       return onCreate(data)
         .then(() => onDismiss())
-        .then(() => toaster("Successfully created claim", "success"))
-        .catch((error) => toaster(getErrorMessage(error), "error"))
+        .then(() =>
+          notification("Success", "Successfully created claim", "success")
+        )
+        .catch((error) =>
+          notification("Error", getErrorMessage(error), "error")
+        )
         .finally(() => setSubmitting(false))
     }
   }
@@ -274,14 +260,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     }
   }
 
-  // const handleUpdateShippingPrice = e => {
-  //   const element = e.target
-  //   const value = element.value
-  //   if (value >= 0) {
-  //     setShippingPrice(parseFloat(value) * 100)
-  //   }
-  // }
-
   const handleProductSelect = (variants) => {
     setItemsToAdd((itemsToAdd) => [
       ...itemsToAdd,
@@ -295,7 +273,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
     <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
       <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
-          <h2 class="inter-xlarge-semibold">Create Claim</h2>
+          <h2 className="inter-xlarge-semibold">Create Claim</h2>
         </Modal.Header>
         <Modal.Content>
           <div>
@@ -311,7 +289,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
           </div>
           <div className="mt-4">
             <h3 className="inter-base-semibold">
-              Shipping Return{" "}
+              Shipping Return
               {returnShippingMethod && (
                 <span className="text-grey-40 inter-base-regular">
                   ({returnShippingMethod.region.name})
@@ -347,7 +325,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
               <RMAShippingPrice
                 useCustomShippingPrice={showCustomPrice.return}
                 shippingPrice={customOptionPrice.return || null}
-                currency_code={returnShippingMethod.region.currency_code}
+                currencyCode={returnShippingMethod.region.currency_code}
                 updateShippingPrice={(value) =>
                   setCustomOptionPrice({
                     ...customOptionPrice,

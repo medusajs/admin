@@ -7,6 +7,7 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import ClaimMenu from "../../../domain/orders/details/claim/create"
+import ReturnMenu from "../../../domain/orders/details/returns"
 import SwapMenu from "../../../domain/orders/details/swap/create"
 import {
   ClaimEvent,
@@ -16,11 +17,12 @@ import {
   NoteEvent,
   NotificationEvent,
   OrderPlacedEvent,
+  RefundEvent,
   ReturnEvent,
   TimelineEvent,
   useBuildTimelime,
 } from "../../../hooks/use-build-timeline"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import Spinner from "../../atoms/spinner"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
@@ -36,8 +38,8 @@ import Note from "../../molecules/timeline-events/note"
 import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
+import Refund from "../../molecules/timeline-events/refund"
 import Return from "../../molecules/timeline-events/return"
-import ReturnMenu from "../../../domain/orders/details/returns"
 
 type TimelineProps = {
   orderId: string
@@ -45,7 +47,7 @@ type TimelineProps = {
 
 const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   const { events, refetch } = useBuildTimelime(orderId)
-  const toaster = useToaster()
+  const notification = useNotification()
   const createNote = useAdminCreateNote()
   const { order } = useAdminOrder(orderId)
   const [showRequestReturn, setShowRequestReturn] = useState(false)
@@ -83,8 +85,8 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
         value: value,
       },
       {
-        onSuccess: () => toaster("Added note", "success"),
-        onError: (err) => toaster(getErrorMessage(err), "error"),
+        onSuccess: () => notification("Success", "Added note", "success"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
     )
   }
@@ -128,7 +130,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
       {showRequestReturn && (
         <ReturnMenu
           order={order}
-          toaster={toaster}
+          notification={notification}
           onDismiss={() => setShowRequestReturn(false)}
         />
       )}
@@ -136,7 +138,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
         <SwapMenu
           order={order}
           onCreate={createSwap.mutateAsync}
-          toaster={toaster}
+          notification={notification}
           onDismiss={() => setshowCreateSwap(false)}
         />
       )}
@@ -144,7 +146,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
         <ClaimMenu
           order={order}
           onCreate={createClaim.mutateAsync}
-          toaster={toaster}
+          notification={notification}
           onDismiss={() => setshowCreateClaim(false)}
         />
       )}
@@ -167,11 +169,13 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
     case "return":
       return <Return event={event as ReturnEvent} refetch={refetch} />
     case "exchange":
-      return <Exchange event={event as ExchangeEvent} />
+      return <Exchange event={event as ExchangeEvent} refetch={refetch} />
     case "claim":
-      return <Claim event={event as ClaimEvent} />
+      return <Claim event={event as ClaimEvent} refetch={refetch} />
     case "notification":
       return <Notification event={event as NotificationEvent} />
+    case "refund":
+      return <Refund event={event as RefundEvent} />
     default:
       return null
   }

@@ -7,8 +7,10 @@ import Modal from "../../components/molecules/modal"
 import Select from "../../components/molecules/select"
 import Textarea from "../../components/molecules/textarea"
 import CurrencyInput from "../../components/organisms/currency-input"
-import useToaster from "../../hooks/use-toaster"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
+import { focusByName } from "../../utils/focus-by-name"
+import { validateEmail } from "../../utils/validate-email"
 
 type CustomGiftcardProps = {
   onDismiss: () => void
@@ -19,9 +21,9 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
   const [selectedRegion, setSelectedRegion] = useState<any>(null)
   const [giftCardAmount, setGiftCardAmount] = useState(0)
 
-  const { register, handleSubmit, formState } = useForm()
+  const { register, handleSubmit } = useForm()
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const createGiftCard = useAdminCreateGiftCard()
 
@@ -36,8 +38,17 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
   const onSubmit = (data) => {
     if (!giftCardAmount) {
+      notification("Error", "Please enter an amount", "error")
+      focusByName("amount")
       return
     }
+
+    if (!validateEmail(data.metadata.email)) {
+      notification("Error", "Invalid email address", "error")
+      focusByName("metadata.email")
+      return
+    }
+
     const update = {
       region_id: selectedRegion.value.id,
       value: Math.round(
@@ -48,11 +59,11 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
     createGiftCard.mutate(update, {
       onSuccess: () => {
-        toaster("Created Custom gift card", "success")
+        notification("Success", "Created Custom Gift Card", "success")
         onDismiss()
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
         onDismiss()
       },
     })
@@ -96,6 +107,8 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                     onChange={(value) => {
                       setGiftCardAmount(value || 0)
                     }}
+                    name="amount"
+                    required={true}
                   />
                 </CurrencyInput>
               </div>

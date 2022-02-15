@@ -64,7 +64,6 @@ const RMAReturnProductsTable: React.FC<RMAReturnProductsTableProps> = ({
                 <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
                   <span>
                     <span className="text-grey-90">{item.product.title}</span>{" "}
-                    test
                   </span>
                   <span>{item.title}</span>
                 </div>

@@ -83,6 +83,7 @@ const DiscountSettings: React.FC<DiscountSettingsProps> = ({
                 label="Number of redemptions"
                 type="number"
                 placeholder="5"
+                min={1}
               />
             </Section>
             <Section

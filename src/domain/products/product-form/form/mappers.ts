@@ -66,7 +66,7 @@ export const formValuesToCreateProductMapper = (values) => {
     mid_code: values.mid_code,
     hs_code: values.hs_code,
     is_giftcard: false,
-    discountable: true,
+    discountable: values.discountable,
   }
 }
 
@@ -107,6 +107,6 @@ export const formValuesToUpdateProductMapper = (values) => {
     origin_country: values.origin_country,
     mid_code: values.mid_code,
     hs_code: values.hs_code,
-    discountable: true,
+    discountable: values.discountable,
   }
 }

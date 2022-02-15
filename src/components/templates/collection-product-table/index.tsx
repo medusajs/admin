@@ -147,7 +147,7 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
   }, [selectedProducts])
 
   return (
-    <div className="w-full h-full flex flex-col justify-between overflow-y-scroll">
+    <div className="w-full h-full flex flex-col justify-between overflow-y-auto">
       <Table
         enableSearch
         handleSearch={handleSearch}

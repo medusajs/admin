@@ -1,10 +1,10 @@
 import React, { useState } from "react"
-import Button from "../../fundamentals/button"
-import Modal from "../../molecules/modal"
-import InputField from "../../molecules/input"
+import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
-import useMedusa from "../../../hooks/use-medusa"
 import { getErrorMessage } from "../../../utils/error-messages"
+import Button from "../../fundamentals/button"
+import InputField from "../../molecules/input"
+import Modal from "../../molecules/modal"
 
 type EditUserModalProps = {
   handleClose: () => void
@@ -26,7 +26,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
   const [email, setEmail] = useState(user.email)
   const [first_name, setFirstName] = useState(user.first_name)
   const [last_name, setLastName] = useState(user.last_name)
-  const { toaster } = useMedusa("store")
+  const notification = useNotification()
 
   const submit = () => {
     setIsLoading(true)
@@ -35,8 +35,8 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
         first_name,
         last_name,
       })
-      .then(res => onSubmit())
-      .catch(err => toaster(getErrorMessage(err), "error"))
+      .then((res) => onSubmit())
+      .catch((err) => notification("Error", getErrorMessage(err), "error"))
 
     handleClose()
   }
@@ -52,14 +52,14 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
             <InputField
               label="First Name"
               placeholder="First name..."
-              onChange={e => setFirstName(e.target.value)}
+              onChange={(e) => setFirstName(e.target.value)}
               value={first_name}
               className="mr-4"
             />
             <InputField
               label="Last Name"
               placeholder="Last name..."
-              onChange={e => setLastName(e.target.value)}
+              onChange={(e) => setLastName(e.target.value)}
               value={last_name}
             />
           </div>
