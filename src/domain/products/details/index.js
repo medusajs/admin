@@ -2,6 +2,7 @@ import { navigate } from "gatsby"
 import React from "react"
 import ReactJson from "react-json-view"
 import { Flex } from "rebass"
+import Spinner from "../../../components/atoms/spinner"
 import Card from "../../../components/card"
 import NotFound from "../../../components/not-found"
 import useMedusa from "../../../hooks/use-medusa"
@@ -16,12 +17,14 @@ const ProductDetail = ({ id }) => {
   const {
     product,
     variants,
+    setVariants,
     options,
     isLoading,
     delete: productDelete,
     update,
     refresh,
     didFail,
+    toaster,
   } = useMedusa("products", { id })
 
   const notification = useNotification()
@@ -50,8 +53,13 @@ const ProductDetail = ({ id }) => {
     })
   }
 
-  if (didFail) return <NotFound />
-  if (!product) return <Spinner />
+  if (didFail) {
+    return <NotFound />
+  }
+
+  if (!product) {
+    return <Spinner />
+  }
 
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
@@ -78,7 +86,6 @@ const ProductDetail = ({ id }) => {
         toaster={toaster}
       />
       <InventoryManager product={product} onSubmit={handleDetailsSubmit} />
-      <MetadataForm parent={product} onSubmit={handleDetailsSubmit} />
       <Card mr={3} width="100%">
         <Card.Header>Raw product</Card.Header>
         <Card.Body>
