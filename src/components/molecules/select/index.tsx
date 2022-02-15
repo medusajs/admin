@@ -210,6 +210,7 @@ const SSelect = React.forwardRef(
     const [isOpen, setIsOpen] = useState(false)
 
     let selectRef = useRef(null)
+    let containerRef = useRef(null)
 
     const onClick = () => {
       if (!isOpen) {
@@ -260,7 +261,7 @@ const SSelect = React.forwardRef(
         isClearable={clearSelected}
         onChange={onClickOption}
         closeMenuOnScroll={(e) => {
-          if (isOpen) {
+          if (isOpen && e.target?.contains(containerRef.current)) {
             setIsOpen(!isOpen)
           }
         }}
@@ -290,30 +291,32 @@ const SSelect = React.forwardRef(
     )
 
     return (
-      <InputContainer
-        key={name}
-        onFocusLost={() => setIsOpen(false)}
-        onClick={onClick}
-        className={clsx(className, { "bg-white rounded-t-rounded": isOpen })}
-      >
-        {isOpen && enableSearch ? (
-          <></>
-        ) : (
-          <div className="w-full flex text-grey-50 pr-0.5 justify-between pointer-events-none cursor-pointer">
-            <InputHeader {...{ label, required }} />
-            <ArrowDownIcon size={16} />
-          </div>
-        )}
-        <CacheProvider
-          value={createCache({
-            key: "my-select-cache",
-            prepend: true,
-          })}
+      <div ref={containerRef}>
+        <InputContainer
+          key={name}
+          onFocusLost={() => setIsOpen(false)}
+          onClick={onClick}
+          className={clsx(className, { "bg-white rounded-t-rounded": isOpen })}
         >
-          {select}
-        </CacheProvider>
-        {isOpen && enableSearch && <div className="w-full h-5" />}
-      </InputContainer>
+          {isOpen && enableSearch ? (
+            <></>
+          ) : (
+            <div className="w-full flex text-grey-50 pr-0.5 justify-between pointer-events-none cursor-pointer">
+              <InputHeader {...{ label, required }} />
+              <ArrowDownIcon size={16} />
+            </div>
+          )}
+          <CacheProvider
+            value={createCache({
+              key: "my-select-cache",
+              prepend: true,
+            })}
+          >
+            {select}
+          </CacheProvider>
+          {isOpen && enableSearch && <div className="w-full h-5" />}
+        </InputContainer>
+      </div>
     )
   }
 )
