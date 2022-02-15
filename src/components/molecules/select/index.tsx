@@ -242,54 +242,6 @@ const SSelect = React.forwardRef(
       }
     }
 
-    const select = (
-      <GetSelect
-        isCreatable={isCreatable}
-        searchBackend={filterOptions}
-        options={
-          hasSelectAll && isMultiSelect
-            ? [{ value: "all", label: "Select All" }, ...options]
-            : options
-        }
-        handleClose={() => setIsOpen(false)}
-        ref={selectRef}
-        value={value}
-        isMulti={isMultiSelect}
-        openMenuOnFocus={true}
-        isSearchable={enableSearch}
-        menuIsOpen={isOpen}
-        isClearable={clearSelected}
-        onChange={onClickOption}
-        closeMenuOnScroll={(e) => {
-          if (isOpen && e.target?.contains(containerRef.current)) {
-            setIsOpen(!isOpen)
-          }
-        }}
-        closeMenuOnSelect={!isMultiSelect}
-        styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
-        hideSelectedOptions={false}
-        menuPortalTarget={portalRef?.current?.lastChild || document.body}
-        menuPlacement="auto"
-        backspaceRemovesValue={false}
-        classNamePrefix="react-select"
-        placeholder={placeholder}
-        className="react-select-container"
-        onCreateOption={handleOnCreateOption}
-        components={{
-          DropdownIndicator: () => null,
-          IndicatorSeparator: () => null,
-          MultiValueRemove: () => null,
-          Placeholder,
-          MultiValueLabel,
-          Option,
-          Input,
-          Menu,
-          SingleValue,
-          ClearIndicator: ClearIndicatorFunc(setIsOpen),
-        }}
-      />
-    )
-
     return (
       <div ref={containerRef}>
         <InputContainer
@@ -312,7 +264,55 @@ const SSelect = React.forwardRef(
               prepend: true,
             })}
           >
-            {select}
+            {
+              <GetSelect
+                isCreatable={isCreatable}
+                searchBackend={filterOptions}
+                options={
+                  hasSelectAll && isMultiSelect
+                    ? [{ value: "all", label: "Select All" }, ...options]
+                    : options
+                }
+                handleClose={() => setIsOpen(false)}
+                ref={selectRef}
+                value={value}
+                isMulti={isMultiSelect}
+                openMenuOnFocus={true}
+                isSearchable={enableSearch}
+                menuIsOpen={isOpen}
+                isClearable={clearSelected}
+                onChange={onClickOption}
+                closeMenuOnScroll={(e) => {
+                  if (isOpen && e.target?.contains(containerRef.current)) {
+                    setIsOpen(!isOpen)
+                  }
+                }}
+                closeMenuOnSelect={!isMultiSelect}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
+                hideSelectedOptions={false}
+                menuPortalTarget={
+                  portalRef?.current?.lastChild || document.body
+                }
+                menuPlacement="auto"
+                backspaceRemovesValue={false}
+                classNamePrefix="react-select"
+                placeholder={placeholder}
+                className="react-select-container"
+                onCreateOption={handleOnCreateOption}
+                components={{
+                  DropdownIndicator: () => null,
+                  IndicatorSeparator: () => null,
+                  MultiValueRemove: () => null,
+                  Placeholder,
+                  MultiValueLabel,
+                  Option,
+                  Input,
+                  Menu,
+                  SingleValue,
+                  ClearIndicator: ClearIndicatorFunc(setIsOpen),
+                }}
+              />
+            }
           </CacheProvider>
           {isOpen && enableSearch && <div className="w-full h-5" />}
         </InputContainer>
