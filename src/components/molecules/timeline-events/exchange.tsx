@@ -2,7 +2,7 @@ import {
   useAdminCancelReturn,
   useAdminCancelSwap,
   useAdminOrder,
-  useAdminReceiveSwap,
+  useAdminReceiveReturn,
   useAdminStore,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
@@ -13,6 +13,7 @@ import useNotification from "../../../hooks/use-notification"
 import CopyToClipboard from "../../atoms/copy-to-clipboard"
 import Button from "../../fundamentals/button"
 import CancelIcon from "../../fundamentals/icons/cancel-icon"
+import { getErrorMessage } from "../../../utils/error-messages"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 import DeletePrompt from "../../organisms/delete-prompt"
 import { ActionType } from "../actionables"
@@ -61,7 +62,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const [showCreateFulfillment, setShowCreateFulfillment] = useState(false)
   const cancelExchange = useAdminCancelSwap(event.orderId)
   const cancelReturn = useAdminCancelReturn(event.returnId)
-  const receiveReturn = useAdminReceiveSwap(event.returnId)
+  const receiveReturn = useAdminReceiveReturn(event.returnId)
   const [differenceCardId, setDifferenceCardId] = useState<string | undefined>(
     undefined
   )
@@ -114,12 +115,18 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   }
 
   const handleReceiveReturn = async (items) => {
-    receiveReturn.mutate({
-      swap_id: event.id,
-      items,
-    })
-
-    setShowReceiveReturn(false)
+    receiveReturn.mutate(
+      { items },
+      {
+        onSuccess: () => {
+          setShowReceiveReturn(false)
+          refetch()
+        },
+        onError: (err) => {
+          toaster(getErrorMessage(err), "error")
+        },
+      }
+    )
   }
 
   const returnItems = getReturnItems(event)
