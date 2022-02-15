@@ -11,6 +11,7 @@ import Button from "../components/button"
 import { ReactComponent as Graphic } from "../assets/login-graphic.svg"
 import Medusa from "../services/api"
 import useMedusa from "../hooks/use-medusa"
+import MedusaIcon from "../components/fundamentals/icons/medusa-icon"
 
 const InvitePage = ({ location }) => {
   const parsed = qs.parse(location.search.substring(1))
@@ -32,7 +33,7 @@ const InvitePage = ({ location }) => {
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
 
-  const acceptInvite = async event => {
+  const acceptInvite = async (event) => {
     event.preventDefault()
 
     if (password === repeatPassword) {
@@ -44,7 +45,7 @@ const InvitePage = ({ location }) => {
         .then(() => {
           navigate("/login")
         })
-        .catch(error => {})
+        .catch((error) => {})
     }
   }
 
@@ -59,13 +60,6 @@ const InvitePage = ({ location }) => {
         sx={{ position: "relative" }}
       >
         <Flex
-          alignItems="center"
-          justifyContent="center"
-          sx={{ position: "absolute", top: "80px", width: "100%" }}
-        >
-          <Graphic />
-        </Flex>
-        <Flex
           backgroundColor="#fefefe"
           width={5 / 12}
           sx={{ zIndex: 9999 }}
@@ -76,7 +70,10 @@ const InvitePage = ({ location }) => {
           height="400px"
           onSubmit={acceptInvite}
         >
-          <Box width={1} variant={"loginCard"} p={4} justifyContent="center">
+          <Box width={1} p={4} justifyContent="center">
+            <div className="w-full flex justify-center mb-8">
+              <MedusaIcon />
+            </div>
             {!token ? (
               <Flex flexDirection="column" alignItems="center">
                 <Text mb={2} fontWeight="bold" fontSize={4}>
@@ -103,7 +100,7 @@ const InvitePage = ({ location }) => {
                       backgroundColor: "#f0f0f0",
                     }}
                     disabled={true}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     boldLabel={true}
                   />
                   <Flex width={1} justifyContent="space-between">
@@ -114,7 +111,7 @@ const InvitePage = ({ location }) => {
                       label="First name"
                       boldLabel={true}
                       value={firstName}
-                      onChange={e => setFirstName(e.target.value)}
+                      onChange={(e) => setFirstName(e.target.value)}
                     />
                     <InputField
                       mb={3}
@@ -122,7 +119,7 @@ const InvitePage = ({ location }) => {
                       label="Last name"
                       boldLabel={true}
                       value={lastName}
-                      onChange={e => setLastName(e.target.value)}
+                      onChange={(e) => setLastName(e.target.value)}
                     />
                   </Flex>
                   <InputField
@@ -132,7 +129,7 @@ const InvitePage = ({ location }) => {
                     label="Password"
                     boldLabel={true}
                     value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <InputField
                     mb={3}
@@ -141,7 +138,7 @@ const InvitePage = ({ location }) => {
                     label="Repeat password"
                     boldLabel={true}
                     value={repeatPassword}
-                    onChange={e => setRepeatPassword(e.target.value)}
+                    onChange={(e) => setRepeatPassword(e.target.value)}
                   />
                   <Button type="submit" variant={"cta"} mt={4} width={1 / 4}>
                     Login
