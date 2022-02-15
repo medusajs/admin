@@ -1,6 +1,7 @@
 import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
@@ -176,7 +177,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
                       size="small"
                     >
                       <CurrencyInput.AmountInput
-                        label="amount"
+                        label="Amount"
                         step={0.01}
                         amount={p.amount}
                         onChange={(value) => handlePriceChange(index, value)}
@@ -230,58 +231,30 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               />
             </div>
 
-            <div className="flex mt-6 gap-x-large">
-              <div
-                className="cursor-pointer flex items-center"
-                onClick={(e) => {
-                  setValue("manage_inventory", !getValues("manage_inventory"), {
-                    shouldDirty: true,
-                  })
-                }}
-              >
-                <div
-                  className={`w-5 h-5 mr-3 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-                    getValues("manage_inventory") && "bg-violet-60"
-                  }`}
-                >
-                  <span className="self-center">
-                    {getValues("manage_inventory") && <CheckIcon size={16} />}
-                  </span>
-                </div>
-                <input
-                  className="hidden"
-                  type="checkbox"
-                  ref={register}
+            <div className="flex items-center mt-6 gap-x-large">
+              <div className="flex item-center gap-x-1.5">
+                <Checkbox
                   name="manage_inventory"
-                />
-                <span className="mr-1">Manage Inventory</span>
-                <InfoTooltip content={"Manage inventory for variant"} />
-              </div>
-              <div
-                className="cursor-pointer flex items-center"
-                onClick={(e) => {
-                  setValue("allow_backorder", !getValues("allow_backorder"), {
-                    shouldDirty: true,
-                  })
-                }}
-              >
-                <div
-                  className={`w-5 h-5 mr-3 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-                    getValues("allow_backorder") && "bg-violet-60"
-                  }`}
-                >
-                  <span className="self-center">
-                    {getValues("allow_backorder") && <CheckIcon size={16} />}
-                  </span>
-                </div>
-                <input
-                  type="checkbox"
-                  className="hidden"
+                  label="Manage Inventory"
                   ref={register}
-                  name="allow_backorder"
                 />
-                <span className="mr-1">Allow backorders</span>
-                <InfoTooltip content={"Allow backorders for variant"} />
+                <InfoTooltip
+                  content={
+                    "When checked Medusa will regulate the inventory when orders and returns are made."
+                  }
+                />
+              </div>
+              <div className="flex item-center gap-x-1.5">
+                <Checkbox
+                  name="allow_backorder"
+                  ref={register}
+                  label="Allow backorders"
+                />
+                <InfoTooltip
+                  content={
+                    "When checked the product will be available for purchase despite the product being sold out."
+                  }
+                />
               </div>
             </div>
           </div>
