@@ -47,6 +47,7 @@
     "lodash": "^4.17.21",
     "medusa-react": "^0.1.4-alpha.9",
     "moment": "^2.27.0",
+    "process": "^0.11.10",
     "prop-types": "^15.7.2",
     "query-string": "^6.13.1",
     "react": "^16.12.0",

@@ -1,4 +1,4 @@
-exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
+exports.onCreateWebpackConfig = ({ stage, loaders, actions, plugins }) => {
   if (stage === "build-html") {
     actions.setWebpackConfig({
       module: {
@@ -15,6 +15,12 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
       },
     })
   }
+  if (stage === "build-javascript" || stage === "develop") {
+    actions.setWebpackConfig({
+      plugins: [plugins.provide({ process: "process/browser" })],
+    })
+  }
+
   actions.setWebpackConfig({
     resolve: {
       fallback: {
