@@ -337,12 +337,12 @@ export default {
     },
 
     addProducts(id, payload) {
-      const path = `/admin/collections/${id}/products`
+      const path = `/admin/collections/${id}/products/batch`
       return medusaRequest("POST", path, payload)
     },
 
     removeProducts(id, payload) {
-      const path = `/admin/collections/${id}/products`
+      const path = `/admin/collections/${id}/products/batch`
       return medusaRequest("DELETE", path, payload)
     },
   },

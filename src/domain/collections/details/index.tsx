@@ -18,8 +18,9 @@ import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { MetadataField } from "../../../components/organisms/metadata"
 import CollectionModal from "../../../components/templates/collection-modal"
 import ViewProductsTable from "../../../components/templates/collection-product-table/view-products-table"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
@@ -29,7 +30,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showAddProducts, setShowAddProducts] = useState(false)
-  const toaster = useToaster()
+  const notification = useNotification()
   const [updates, setUpdates] = useState(0)
 
   const handleDelete = () => {
@@ -86,9 +87,11 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
         })
       }
 
+      setShowAddProducts(false)
+      notification("Success", "Updated products in collection", "success")
       refetch()
     } catch (error) {
-      console.log(error)
+      notification("Error", getErrorMessage(error), "error")
     }
   }
 
