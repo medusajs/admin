@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import Select, {
   ClearIndicatorProps,
   components,
@@ -147,7 +147,6 @@ const ClearIndicatorFunc = (setIsOpen) => ({
 }
 
 const Option = ({ className, ...props }: OptionProps) => {
-  console.log(props)
   return (
     <components.Option
       {...props}
@@ -210,12 +209,12 @@ const SSelect = React.forwardRef(
 
     const [isOpen, setIsOpen] = useState(false)
 
-    const selectRef = useRef(null)
+    let selectRef = useRef(null)
 
     const onClick = () => {
       if (!isOpen) {
         setIsOpen(true)
-        selectRef.current?.focus()
+        selectRef?.current?.focus()
       }
     }
 
@@ -242,6 +241,54 @@ const SSelect = React.forwardRef(
       }
     }
 
+    const select = (
+      <GetSelect
+        isCreatable={isCreatable}
+        searchBackend={filterOptions}
+        options={
+          hasSelectAll && isMultiSelect
+            ? [{ value: "all", label: "Select All" }, ...options]
+            : options
+        }
+        handleClose={() => setIsOpen(false)}
+        ref={selectRef}
+        value={value}
+        isMulti={isMultiSelect}
+        openMenuOnFocus={true}
+        isSearchable={enableSearch}
+        menuIsOpen={isOpen}
+        isClearable={clearSelected}
+        onChange={onClickOption}
+        closeMenuOnScroll={(e) => {
+          if (isOpen) {
+            setIsOpen(!isOpen)
+          }
+        }}
+        closeMenuOnSelect={!isMultiSelect}
+        styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
+        hideSelectedOptions={false}
+        menuPortalTarget={portalRef?.current?.lastChild || document.body}
+        menuPlacement="auto"
+        backspaceRemovesValue={false}
+        classNamePrefix="react-select"
+        placeholder={placeholder}
+        className="react-select-container"
+        onCreateOption={handleOnCreateOption}
+        components={{
+          DropdownIndicator: () => null,
+          IndicatorSeparator: () => null,
+          MultiValueRemove: () => null,
+          Placeholder,
+          MultiValueLabel,
+          Option,
+          Input,
+          Menu,
+          SingleValue,
+          ClearIndicator: ClearIndicatorFunc(setIsOpen),
+        }}
+      />
+    )
+
     return (
       <InputContainer
         key={name}
@@ -252,7 +299,7 @@ const SSelect = React.forwardRef(
         {isOpen && enableSearch ? (
           <></>
         ) : (
-          <div className="w-full flex text-grey-50 pr-0.5 justify-between">
+          <div className="w-full flex text-grey-50 pr-0.5 justify-between pointer-events-none cursor-pointer">
             <InputHeader {...{ label, required }} />
             <ArrowDownIcon size={16} />
           </div>
@@ -263,45 +310,7 @@ const SSelect = React.forwardRef(
             prepend: true,
           })}
         >
-          <GetSelect
-            isCreatable={isCreatable}
-            searchBackend={filterOptions}
-            options={
-              hasSelectAll && isMultiSelect
-                ? [{ value: "all", label: "Select All" }, ...options]
-                : options
-            }
-            handleClose={() => setIsOpen(false)}
-            ref={selectRef}
-            value={value}
-            isMulti={isMultiSelect}
-            isSearchable={enableSearch}
-            menuIsOpen={isOpen}
-            isClearable={clearSelected}
-            onChange={onClickOption}
-            closeMenuOnSelect={!isMultiSelect}
-            styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
-            hideSelectedOptions={false}
-            menuPortalTarget={portalRef?.current?.lastChild || document.body}
-            menuPlacement="auto"
-            backspaceRemovesValue={false}
-            classNamePrefix="react-select"
-            placeholder={placeholder}
-            className="react-select-container"
-            onCreateOption={handleOnCreateOption}
-            components={{
-              DropdownIndicator: () => null,
-              IndicatorSeparator: () => null,
-              MultiValueRemove: () => null,
-              Placeholder,
-              MultiValueLabel,
-              Option,
-              Input,
-              Menu,
-              SingleValue,
-              ClearIndicator: ClearIndicatorFunc(setIsOpen),
-            }}
-          />
+          {select}
         </CacheProvider>
         {isOpen && enableSearch && <div className="w-full h-5" />}
       </InputContainer>
@@ -309,35 +318,38 @@ const SSelect = React.forwardRef(
   }
 )
 
-const GetSelect = ({
-  isCreatable,
-  searchBackend,
-  onCreateOption,
-  handleClose,
-  ...props
-}) => {
-  if (isCreatable) {
-    return searchBackend ? (
-      <AsyncCreatableSelect
-        defaultOptions={true}
-        // onChange={onChangeCreate}
-        onCreateOption={onCreateOption}
-        loadOptions={searchBackend}
-        {...props}
-      />
-    ) : (
-      <CreatableSelect {...props} onCreateOption={onCreateOption} />
-    )
-  } else if (searchBackend) {
+const GetSelect = React.forwardRef(
+  (
+    { isCreatable, searchBackend, onCreateOption, handleClose, ...props },
+    ref
+  ) => {
+    if (isCreatable) {
+      return searchBackend ? (
+        <AsyncCreatableSelect
+          ref={ref}
+          defaultOptions={true}
+          // onChange={onChangeCreate}
+          onCreateOption={onCreateOption}
+          loadOptions={searchBackend}
+          {...props}
+        />
+      ) : (
+        <CreatableSelect {...props} ref={ref} onCreateOption={onCreateOption} />
+      )
+    } else if (searchBackend) {
+      return (
+        <AsyncSelect
+          ref={ref}
+          defaultOptions={true}
+          loadOptions={searchBackend}
+          {...props}
+        />
+      )
+    }
     return (
-      <AsyncSelect
-        defaultOptions={true}
-        loadOptions={searchBackend}
-        {...props}
-      />
+      <Select ref={ref} closeMenuOnScroll={(e) => console.log(e)} {...props} />
     )
   }
-  return <Select {...props} />
-}
+)
 
 export default SSelect
