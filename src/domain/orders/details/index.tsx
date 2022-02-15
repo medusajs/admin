@@ -22,6 +22,7 @@ import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
+import MailIcon from "../../../components/fundamentals/icons/mail-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
@@ -32,6 +33,7 @@ import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
+import EmailModal from "./email-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
 import MarkShippedModal from "./mark-shipped"
 import OrderLine from "./order-line"
@@ -110,6 +112,10 @@ const OrderDetails = ({ id }) => {
     address: Address
     type: "billing" | "shipping"
   }>(null)
+
+  const [emailModal, setEmailModal] = useState<null | {
+    email: string
+  }>()
 
   const [showFulfillment, setShowFulfillment] = useState(false)
   const [showRefund, setShowRefund] = useState(false)
@@ -195,7 +201,7 @@ const OrderDetails = ({ id }) => {
   }
 
   const handleUpdateAddress = async ({ data, type }) => {
-    const { email, ...rest } = data
+    const { ...rest } = data
 
     const updateObj = {}
 
@@ -209,13 +215,21 @@ const OrderDetails = ({ id }) => {
       }
     }
 
-    if (email) {
-      updateObj["email"] = email
-    }
-
     return updateOrder.mutate(updateObj, {
       onSuccess: () => {
         notification("Success", "Successfully updated address", "success")
+        setAddressModal(null)
+      },
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
+    })
+  }
+
+  const handleUpdateEmail = async ({ email }) => {
+    const updateObj = email ? { email } : {}
+
+    return updateOrder.mutate(updateObj, {
+      onSuccess: () => {
+        notification("Success", "Successfully updated email address", "success")
         setAddressModal(null)
       },
       onError: (err) => notification("Error", getErrorMessage(err), "error"),
@@ -252,6 +266,18 @@ const OrderDetails = ({ id }) => {
             type: "billing",
           })
         }
+      },
+    })
+  }
+
+  if (order?.email) {
+    customerActionables.push({
+      label: "Edit Email Address",
+      icon: <MailIcon size={"20"} />,
+      onClick: () => {
+        setEmailModal({
+          email: order?.email,
+        })
       },
     })
   }
@@ -574,8 +600,14 @@ const OrderDetails = ({ id }) => {
           handleSave={(obj) => handleUpdateAddress(obj)}
           address={addressModal.address}
           type={addressModal.type}
-          email={order?.email}
           allowedCountries={region?.countries}
+        />
+      )}
+      {emailModal && (
+        <EmailModal
+          handleClose={() => setEmailModal(null)}
+          handleSave={(obj) => handleUpdateEmail(obj)}
+          email={emailModal.email}
         />
       )}
       {showFulfillment && order && (
