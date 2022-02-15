@@ -1,3 +1,4 @@
+import { Return, Swap } from "@medusajs/medusa"
 import {
   useAdminNotes,
   useAdminNotifications,
@@ -25,6 +26,7 @@ export interface TimelineEvent {
     | "exchange_fulfilled"
     | "notification"
     | "claim"
+    | "refund"
 }
 
 interface CancelableEvent {
@@ -53,7 +55,7 @@ interface ReturnItem extends OrderItem {
 }
 
 interface FulfillmentEvent extends TimelineEvent {
-  isExchangeFulfillment?: boolean
+  sourceType: "claim" | "exchange" | undefined
 }
 
 export interface ItemsFulfilledEvent extends FulfillmentEvent {
@@ -62,6 +64,13 @@ export interface ItemsFulfilledEvent extends FulfillmentEvent {
 
 export interface ItemsShippedEvent extends FulfillmentEvent {
   items: OrderItem[]
+}
+
+export interface RefundEvent extends TimelineEvent {
+  amount: number
+  reason: string
+  currencyCode: string
+  note?: string
 }
 
 enum ReturnStatus {
@@ -75,6 +84,8 @@ export interface ReturnEvent extends TimelineEvent {
   items: ReturnItem[]
   status: ReturnStatus
   currentStatus?: ReturnStatus
+  raw: Return
+  refunded?: boolean
 }
 
 export interface NoteEvent extends TimelineEvent {
@@ -90,6 +101,7 @@ export interface ExchangeEvent extends TimelineEvent, CancelableEvent {
   returnItems: ReturnItem[]
   newItems: OrderItem[]
   exchangeCartId?: string
+  raw: Swap
 }
 
 export interface ClaimEvent extends TimelineEvent, CancelableEvent {
@@ -180,6 +192,18 @@ export const useBuildTimelime = (orderId: string) => {
       }
     }
 
+    for (const event of order.refunds) {
+      events.push({
+        amount: event.amount,
+        currencyCode: order.currency_code,
+        id: event.id,
+        note: event.note,
+        reason: event.reason,
+        time: event.created_at,
+        type: "refund",
+      } as RefundEvent)
+    }
+
     for (const event of order.fulfillments) {
       events.push({
         id: event.id,
@@ -212,6 +236,8 @@ export const useBuildTimelime = (orderId: string) => {
         type: "return",
         noNotification: event.no_notification,
         orderId: order.id,
+        raw: (event as unknown) as Return,
+        refunded: getWasRefundClaim(event.claim_order_id, order),
       } as ReturnEvent)
 
       if (event.status !== "requested") {
@@ -246,6 +272,7 @@ export const useBuildTimelime = (orderId: string) => {
           event.payment_status !== "captured" ? event.cart_id : undefined,
         canceledAt: event.canceled_at,
         orderId: event.order_id,
+        raw: (event as unknown) as Swap,
       } as ExchangeEvent)
 
       if (
@@ -259,7 +286,7 @@ export const useBuildTimelime = (orderId: string) => {
           items: event.additional_items.map((i) => getSwapItem(i)),
           noNotification: event.no_notification,
           orderId: order.id,
-          isExchangeFulfillment: true,
+          sourceType: "exchange",
         } as ItemsFulfilledEvent)
 
         if (event.fulfillments[0].shipped_at) {
@@ -270,7 +297,7 @@ export const useBuildTimelime = (orderId: string) => {
             items: event.additional_items.map((i) => getSwapItem(i)),
             noNotification: event.no_notification,
             orderId: order.id,
-            isExchangeFulfillment: true,
+            sourceType: "exchange",
           } as ItemsShippedEvent)
         }
       }
@@ -303,6 +330,32 @@ export const useBuildTimelime = (orderId: string) => {
           order,
         } as ClaimEvent)
 
+        if (
+          claim.fulfillment_status === "fulfilled" ||
+          claim.fulfillment_status === "shipped"
+        ) {
+          events.push({
+            id: claim.id,
+            time: claim.fulfillments[0].created_at,
+            type: "fulfilled",
+            items: claim.additional_items.map((i) => getSwapItem(i)),
+            noNotification: claim.no_notification,
+            orderId: order.id,
+            sourceType: "claim",
+          } as ItemsFulfilledEvent)
+
+          if (claim.fulfillments[0].shipped_at) {
+            events.push({
+              id: claim.id,
+              time: claim.fulfillments[0].shipped_at,
+              type: "shipped",
+              items: claim.additional_items.map((i) => getSwapItem(i)),
+              noNotification: claim.no_notification,
+              orderId: order.id,
+              sourceType: "claim",
+            } as ItemsShippedEvent)
+          }
+        }
         if (claim.canceled_at) {
           events.push({
             id: `${claim.id}-created`,
@@ -425,4 +478,14 @@ function getSwapItem(item) {
     thumbnail: item.thumbnail,
     variant: { title: item.variant?.title },
   }
+}
+
+function getWasRefundClaim(claimId, order) {
+  const claim = order.claims.find((c) => c.id === claimId)
+
+  if (!claim) {
+    return false
+  }
+
+  return claim.type === "refund"
 }

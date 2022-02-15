@@ -41,7 +41,10 @@ const Content: React.FC = ({ children }) => {
     maxHeight: height - 64,
   }
   return (
-    <Dialog.Content style={style} className="bg-grey-0 min-w-modal rounded">
+    <Dialog.Content
+      style={style}
+      className="bg-grey-0 min-w-modal rounded overflow-x-hidden"
+    >
       {children}
     </Dialog.Content>
   )
