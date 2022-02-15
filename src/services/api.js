@@ -336,9 +336,14 @@ export default {
       return medusaRequest("GET", path)
     },
 
-    updateProducts(id, payload) {
+    addProducts(id, payload) {
       const path = `/admin/collections/${id}/products`
       return medusaRequest("POST", path, payload)
+    },
+
+    removeProducts(id, payload) {
+      const path = `/admin/collections/${id}/products`
+      return medusaRequest("DELETE", path, payload)
     },
   },
 

@@ -20,7 +20,6 @@ import CollectionModal from "../../../components/templates/collection-modal"
 import ViewProductsTable from "../../../components/templates/collection-product-table/view-products-table"
 import useToaster from "../../../hooks/use-toaster"
 import Medusa from "../../../services/api"
-import { getErrorMessage } from "../../../utils/error-messages"
 
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
@@ -74,19 +73,23 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
     addedIds: string[],
     removedIds: string[]
   ) => {
-    await Medusa.collections
-      .updateProducts(collection?.id, {
-        addProductIds: addedIds,
-        removeProductIds: removedIds,
-      })
-      .then(() => {
-        refetch()
-        setShowAddProducts(false)
-        toaster("Products added to collection", "success")
-      })
-      .catch((err) => {
-        toaster(getErrorMessage(err), "error")
-      })
+    try {
+      if (addedIds.length > 0) {
+        await Medusa.collections.addProducts(collection?.id, {
+          product_ids: addedIds,
+        })
+      }
+
+      if (removedIds.length > 0) {
+        await Medusa.collections.removeProducts(collection?.id, {
+          product_ids: removedIds,
+        })
+      }
+
+      refetch()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   useEffect(() => {
