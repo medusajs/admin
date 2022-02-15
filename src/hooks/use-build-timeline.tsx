@@ -313,7 +313,7 @@ export const useBuildTimelime = (orderId: string) => {
             title: i.title,
             thumbnail: i.thumbnail,
             variant: {
-              title: i.variant.title,
+              title: i.variant?.title,
             },
           })),
           fulfillmentStatus: claim.fulfillment_status,
@@ -365,7 +365,7 @@ export const useBuildTimelime = (orderId: string) => {
               title: i.title,
               thumbnail: i.thumbnail,
               variant: {
-                title: i.variant.title,
+                title: i.variant?.title,
               },
             })),
             fulfillmentStatus: claim.fulfillment_status,
@@ -466,7 +466,7 @@ function getClaimItem(claimItem) {
     quantity: claimItem.quantity,
     thumbnail: claimItem.item.thumbnail,
     variant: {
-      title: claimItem.item.variant.title,
+      title: claimItem.item.variant?.title,
     },
   }
 }
@@ -476,7 +476,7 @@ function getSwapItem(item) {
     title: item.title,
     quantity: item.quantity,
     thumbnail: item.thumbnail,
-    variant: { title: item.variant.title },
+    variant: { title: item.variant?.title },
   }
 }
 

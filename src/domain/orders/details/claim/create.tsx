@@ -159,22 +159,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
     })
   }, [shippingMethod, showCustomPrice])
 
-  // useEffect(() => {
-  //  const items = toReturn.map(t => order.items.find(i => i.id === t))
-  //  const returnTotal =
-  //    items.reduce((acc, next) => {
-  //      return acc + (next.refundable / next.quantity) * quantities[next.id]
-  //    }, 0) - (shippingPrice || 0)
-
-  //  const newItemsTotal = itemsToAdd.reduce((acc, next) => {
-  //    const price = extractPrice(next.prices, order)
-  //    const lineTotal = price * 100 * next.quantity
-  //    return acc + lineTotal
-  //  }, 0)
-
-  //  setToPay(newItemsTotal - returnTotal)
-  // }, [toReturn, quantities, shippingPrice, itemsToAdd])
-
   const onSubmit = () => {
     const claim_items = Object.entries(toReturn).map(([key, val]) => {
       val.reason = val.reason?.value
@@ -276,14 +260,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
     }
   }
 
-  // const handleUpdateShippingPrice = e => {
-  //   const element = e.target
-  //   const value = element.value
-  //   if (value >= 0) {
-  //     setShippingPrice(parseFloat(value) * 100)
-  //   }
-  // }
-
   const handleProductSelect = (variants) => {
     setItemsToAdd((itemsToAdd) => [
       ...itemsToAdd,
@@ -313,7 +289,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
           </div>
           <div className="mt-4">
             <h3 className="inter-base-semibold">
-              Shipping Return{" "}
+              Shipping Return
               {returnShippingMethod && (
                 <span className="text-grey-40 inter-base-regular">
                   ({returnShippingMethod.region.name})
@@ -348,7 +324,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
             {returnShippingMethod && (
               <RMAShippingPrice
                 useCustomShippingPrice={showCustomPrice.return}
-                shippingPrice={customOptionPrice.return || undefined}
+                shippingPrice={customOptionPrice.return || null}
                 currencyCode={returnShippingMethod.region.currency_code}
                 updateShippingPrice={(value) =>
                   setCustomOptionPrice({

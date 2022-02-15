@@ -134,10 +134,6 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
                   type="text"
                   placeholder={"Tracking number..."}
                   name={`tracking_numbers[${index}].value`}
-                  // TODO: Should we have an invalid state for the input fields?
-                  // invalid={
-                  //   errors.tracking_numbers && errors.tracking_numbers[index]
-                  // }
                   ref={register({
                     required: "Must be filled",
                   })}
