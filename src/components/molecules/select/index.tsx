@@ -73,7 +73,9 @@ const MultiValueLabel = ({ ...props }: MultiValueProps) => {
 const Menu = ({ className, ...props }: MenuProps) => {
   return (
     <components.Menu
-      className={clsx({ "-mt-1 z-60": !props.selectProps.isSearchable })}
+      className={clsx({
+        "-mt-1 z-60": !props.selectProps.isSearchable,
+      })}
       {...props}
     >
       {props.children}
@@ -199,7 +201,6 @@ const SSelect = React.forwardRef(
       isCreatable,
       filterOptions,
       placeholder = "Search...",
-      labelledBy = "label",
       options,
       onCreateOption,
     }: MultiSelectProps,
@@ -282,8 +283,14 @@ const SSelect = React.forwardRef(
                 menuIsOpen={isOpen}
                 isClearable={clearSelected}
                 onChange={onClickOption}
+                menuShouldScrollIntoView={false}
                 closeMenuOnScroll={(e) => {
-                  if (isOpen && e.target?.contains(containerRef.current)) {
+                  e.stopImmediatePropagation()
+                  if (
+                    isOpen &&
+                    e.target?.contains(containerRef.current) &&
+                    e.target !== document
+                  ) {
                     setIsOpen(!isOpen)
                   }
                 }}
