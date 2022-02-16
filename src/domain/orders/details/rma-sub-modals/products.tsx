@@ -86,8 +86,6 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
     offset,
   })
 
-  console.log(variants)
-
   useEffect(() => {
     if (typeof count !== "undefined") {
       setNumPages(Math.ceil(count / PAGE_SIZE))
@@ -127,9 +125,9 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
         accessor: "status",
         Cell: ({ row: { original } }) => (
           <StatusIndicator
-            title={`${original.product?.status
+            title={`${original.product.status
               .charAt(0)
-              .toUpperCase()}${original.product?.status.slice(1)}`}
+              .toUpperCase()}${original.product.status.slice(1)}`}
             variant={getProductStatusVariant(original.product.status)}
           />
         ),
