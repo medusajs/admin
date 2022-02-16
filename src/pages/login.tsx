@@ -1,5 +1,5 @@
 import { navigate } from "gatsby"
-import { useAdminLogin } from "medusa-react"
+import { useAdminLogin, useAdminSendResetPasswordToken } from "medusa-react"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../components/fundamentals/button"
@@ -7,16 +7,39 @@ import MedusaIcon from "../components/fundamentals/icons/medusa-icon"
 import LoginLayout from "../components/login-layout"
 import SigninInput from "../components/molecules/input-signin"
 import SEO from "../components/seo"
+import useNotification from "../hooks/use-notification"
+import { getErrorMessage } from "../utils/error-messages"
 
 const LoginPage = () => {
   const login = useAdminLogin()
-  const { handleSubmit, register } = useForm()
+  const sendEmail = useAdminSendResetPasswordToken()
+  const { handleSubmit, register, reset } = useForm()
   const [resetPassword, setResetPassword] = useState(false)
   const [isInvalidLogin, setIsInvalidLogin] = useState(false)
 
+  const notification = useNotification()
+
   const handleLogin = (data) => {
     if (resetPassword) {
-      // TODO: To be implemented
+      if (!data.reset_email) {
+        return
+      }
+
+      sendEmail.mutate(
+        {
+          email: data.reset_email,
+        },
+        {
+          onSuccess: () => {
+            notification("Success", "Reset password email sent", "success")
+            setResetPassword(false)
+          },
+          onError: (error) => {
+            notification("Error", getErrorMessage(error), "error")
+            reset()
+          },
+        }
+      )
     } else {
       login.mutate(
         {
@@ -53,7 +76,11 @@ const LoginPage = () => {
                 <span className="inter-base-regular text-grey-50">
                   Enter email below to get a password reset token
                 </span>
-                <SigninInput placeholder="Email..." />
+                <SigninInput
+                  placeholder="Email..."
+                  name="reset_email"
+                  ref={register()}
+                />
                 <button className="text-grey-0 w-[320px] h-[48px] border rounded-rounded mt-4 bg-violet-50 inter-base-regular py-3 px-4">
                   Reset
                 </button>
