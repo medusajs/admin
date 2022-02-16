@@ -103,7 +103,7 @@ const Input = (props: InputProps) => {
     !props.selectProps.menuIsOpen ||
     !props.selectProps.isSearchable
   ) {
-    return <components.Input {...props} />
+    return <components.Input {...props} className="pointer-events-none" />
   }
 
   return (
@@ -208,16 +208,15 @@ const SSelect = React.forwardRef(
   ) => {
     const { portalRef } = useContext(ModalContext)
 
-    const [isOpen, setIsOpen] = useState(false)
+    const [isFocussed, setIsFocussed] = useState(false)
+    const [scrollBlocked, setScrollBlocked] = useState(true)
 
     let selectRef = useRef(null)
     let containerRef = useRef(null)
 
     const onClick = () => {
-      if (!isOpen) {
-        setIsOpen(true)
-        selectRef?.current?.focus()
-      }
+      setIsFocussed(true)
+      selectRef?.current?.focus()
     }
 
     const onClickOption = (val) => {
@@ -231,7 +230,8 @@ const SSelect = React.forwardRef(
       } else {
         onChange(val)
         if (!isMultiSelect) {
-          setIsOpen(false)
+          selectRef?.current?.blur()
+          setIsFocussed(false)
         }
       }
     }
@@ -239,19 +239,35 @@ const SSelect = React.forwardRef(
     const handleOnCreateOption = (val) => {
       if (onCreateOption) {
         onCreateOption(val)
-        setIsOpen(false)
+        setIsFocussed(false)
+        selectRef?.current?.blur()
       }
     }
+
+    useEffect(() => {
+      const delayDebounceFn = setTimeout(() => {
+        if (isFocussed) {
+          setScrollBlocked(false)
+        }
+      }, 50)
+
+      return () => clearTimeout(delayDebounceFn)
+    }, [isFocussed])
 
     return (
       <div ref={containerRef}>
         <InputContainer
           key={name}
-          onFocusLost={() => setIsOpen(false)}
+          onFocusLost={() => {
+            setIsFocussed(false)
+            selectRef.current?.blur()
+          }}
           onClick={onClick}
-          className={clsx(className, { "bg-white rounded-t-rounded": isOpen })}
+          className={clsx(className, {
+            "bg-white rounded-t-rounded": isFocussed,
+          })}
         >
-          {isOpen && enableSearch ? (
+          {isFocussed && enableSearch ? (
             <></>
           ) : (
             <div className="w-full flex text-grey-50 pr-0.5 justify-between pointer-events-none cursor-pointer">
@@ -274,24 +290,27 @@ const SSelect = React.forwardRef(
                     ? [{ value: "all", label: "Select All" }, ...options]
                     : options
                 }
-                handleClose={() => setIsOpen(false)}
                 ref={selectRef}
                 value={value}
                 isMulti={isMultiSelect}
                 openMenuOnFocus={true}
                 isSearchable={enableSearch}
-                menuIsOpen={isOpen}
                 isClearable={clearSelected}
                 onChange={onClickOption}
-                menuShouldScrollIntoView={false}
+                onMenuOpen={() => {
+                  setIsFocussed(true)
+                }}
+                onMenuClose={() => {
+                  setScrollBlocked(true)
+                  setIsFocussed(false)
+                }}
                 closeMenuOnScroll={(e) => {
-                  e.stopImmediatePropagation()
                   if (
-                    isOpen &&
+                    !scrollBlocked &&
                     e.target?.contains(containerRef.current) &&
                     e.target !== document
                   ) {
-                    setIsOpen(!isOpen)
+                    selectRef.current?.blur()
                   }
                 }}
                 closeMenuOnSelect={!isMultiSelect}
@@ -316,12 +335,12 @@ const SSelect = React.forwardRef(
                   Input,
                   Menu,
                   SingleValue,
-                  ClearIndicator: ClearIndicatorFunc(setIsOpen),
+                  ClearIndicator: ClearIndicatorFunc(false),
                 }}
               />
             }
           </CacheProvider>
-          {isOpen && enableSearch && <div className="w-full h-5" />}
+          {isFocussed && enableSearch && <div className="w-full h-5" />}
         </InputContainer>
       </div>
     )
@@ -338,7 +357,6 @@ const GetSelect = React.forwardRef(
         <AsyncCreatableSelect
           ref={ref}
           defaultOptions={true}
-          // onChange={onChangeCreate}
           onCreateOption={onCreateOption}
           loadOptions={searchBackend}
           {...props}
