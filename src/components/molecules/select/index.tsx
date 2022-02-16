@@ -209,6 +209,13 @@ const SSelect = React.forwardRef(
     const [isFocussed, setIsFocussed] = useState(false)
     const [scrollBlocked, setScrollBlocked] = useState(true)
 
+    useEffect(() => {
+      window.addEventListener("resize", () => {
+        setIsFocussed(false)
+        selectRef?.current?.blur()
+      })
+    }, [])
+
     let selectRef = useRef(null)
     let containerRef = useRef(null)
 
