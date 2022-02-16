@@ -1,7 +1,7 @@
 import { navigate } from "gatsby"
 import { useAdminResetPassword } from "medusa-react"
 import qs from "qs"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { decodeToken } from "react-jwt"
 import Button from "../components/fundamentals/button"
@@ -30,13 +30,10 @@ const ResetPasswordPage = ({ location }) => {
   }
 
   const [passwordMismatch, setPasswordMismatch] = useState(false)
+  const [ready, setReady] = useState(false)
   const email = token?.email || parsed?.email || ""
 
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = useForm<formValues>({
+  const { register, handleSubmit, formState } = useForm<formValues>({
     defaultValues: {
       password: "",
       repeat_password: "",
@@ -71,6 +68,17 @@ const ResetPasswordPage = ({ location }) => {
     )
   }
 
+  useEffect(() => {
+    if (
+      formState.dirtyFields.password &&
+      formState.dirtyFields.repeat_password
+    ) {
+      setReady(true)
+    } else {
+      setReady(false)
+    }
+  }, [formState])
+
   return (
     <LoginLayout>
       <SEO title="Create Account" />
@@ -83,10 +91,10 @@ const ResetPasswordPage = ({ location }) => {
             <MedusaIcon />
             {!token ? (
               <div className="h-full flex flex-col gap-y-2 text-center items-center justify-center">
-                <span className="inter-large-semibold text-rose-50">
+                <span className="inter-large-semibold text-grey-90">
                   You reset link is invalid
                 </span>
-                <span className="inter-base-regular">
+                <span className="inter-base-regular text-grey-50 mt-2">
                   Please try resetting your password again
                 </span>
               </div>
@@ -95,8 +103,8 @@ const ResetPasswordPage = ({ location }) => {
                 <span className="inter-2xlarge-semibold mt-4 text-grey-90">
                   Reset your password
                 </span>
-                <span className="inter-base-regular text-grey-50">
-                  Reset your password below
+                <span className="inter-base-regular text-grey-50 mt-2">
+                  Choose a new password below
                 </span>
                 <SigninInput
                   placeholder="Email"
@@ -126,10 +134,17 @@ const ResetPasswordPage = ({ location }) => {
                   size="large"
                   type="submit"
                   className="w-full mt-base"
-                  loading={isSubmitting}
+                  loading={formState.isSubmitting}
+                  disabled={!ready}
                 >
-                  Reset password
+                  Continue
                 </Button>
+                <span
+                  className="inter-small-regular text-grey-50 mt-8 cursor-pointer"
+                  onClick={() => navigate("/login")}
+                >
+                  Go to sign in
+                </span>
               </>
             )}
           </form>
