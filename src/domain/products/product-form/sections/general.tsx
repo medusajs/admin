@@ -122,7 +122,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             control={control}
           />
         </div>
-        <div className="flex item-center gap-x-1.5 mb-xlarge">
+        <div className="flex item-center gap-x-1.5">
           <Checkbox name="discountable" ref={register} label="Discountable" />
           <InfoTooltip
             content={
@@ -134,7 +134,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           <RadioGroup.Root
             value={viewType}
             onValueChange={setViewType}
-            className="flex items-center gap-4"
+            className="flex items-center gap-4 mt-xlarge"
           >
             <RadioGroup.SimpleItem
               label="Simple product"

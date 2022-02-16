@@ -27,7 +27,7 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
           <Variants isEdit={isEdit} product={product} />
         </div>
       )}
-      {!isVariantsView && (
+      {!isVariantsView && !isEdit && (
         <div className="mt-large">
           <Prices
             currencyCodes={currencyCodes}
