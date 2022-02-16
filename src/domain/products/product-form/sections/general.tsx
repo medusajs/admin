@@ -1,7 +1,6 @@
 import {
   useAdminCollections,
   useAdminDeleteProduct,
-  useAdminProduct,
   useAdminProductTypes,
   useAdminUpdateProduct,
 } from "medusa-react"
