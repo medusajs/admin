@@ -17,11 +17,29 @@ const defaultProduct = {
   thumbnail: "",
 }
 
+const ProductFormContext = React.createContext<{
+  productOptions: any[]
+  setProductOptions: (vars: any[]) => void
+  variants: any[]
+  setVariants: (vars: any[]) => void
+  images: any[]
+  setImages: (images: any[]) => void
+  appendImage: (image: any) => void
+  removeImage: (image: any) => void
+  setViewType: (value: PRODUCT_VIEW) => void
+  viewType: PRODUCT_VIEW
+  isVariantsView: boolean
+  onSubmit: (values: any) => void
+} | null>(null)
+
 export const ProductFormProvider = ({
   product = defaultProduct,
   onSubmit,
   children,
 }) => {
+  const [viewType, setViewType] = React.useState<PRODUCT_VIEW>(
+    product.variants?.length > 0 ? VARIANTS_VIEW : SINGLE_PRODUCT_VIEW
+  )
   const [images, setImages] = React.useState<any[]>([])
   const [variants, setVariants] = React.useState<any[]>([])
   const [productOptions, setProductOptions] = React.useState<any[]>([])
@@ -35,10 +53,6 @@ export const ProductFormProvider = ({
     }
     setImages([...images])
   }
-
-  const [viewType, setViewType] = React.useState<PRODUCT_VIEW>(
-    product.variants?.length > 1 ? VARIANTS_VIEW : SINGLE_PRODUCT_VIEW
-  )
 
   const methods = useForm()
 
@@ -73,7 +87,7 @@ export const ProductFormProvider = ({
   }, [product])
 
   const handleSubmit = (values) => {
-    onSubmit({ ...values, images, variants, options: productOptions })
+    onSubmit({ ...values, images, variants, options: productOptions }, viewType)
   }
 
   return (
@@ -99,21 +113,6 @@ export const ProductFormProvider = ({
     </FormProvider>
   )
 }
-
-const ProductFormContext = React.createContext<{
-  productOptions: any[]
-  setProductOptions: (vars: any[]) => void
-  variants: any[]
-  setVariants: (vars: any[]) => void
-  images: any[]
-  setImages: (images: any[]) => void
-  appendImage: (image: any) => void
-  removeImage: (image: any) => void
-  setViewType: (value: PRODUCT_VIEW) => void
-  viewType: PRODUCT_VIEW
-  isVariantsView: boolean
-  onSubmit: (values: any) => void
-} | null>(null)
 
 export const useProductForm = () => {
   const context = React.useContext(ProductFormContext)
