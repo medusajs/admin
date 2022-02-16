@@ -83,7 +83,7 @@ const ResetPasswordPage = ({ location }) => {
     <LoginLayout>
       <SEO title="Reset Password" />
       <div className="flex h-full w-full items-center justify-center">
-        <div className="flex min-h-[600px] bg-grey-0 rounded-rounded justify-center">
+        <div className="flex min-h-[540px] bg-grey-0 rounded-rounded justify-center">
           <form
             className="flex flex-col py-12 w-full px-[120px] items-center"
             onSubmit={handleSubmit(handleAcceptInvite)}
@@ -103,8 +103,8 @@ const ResetPasswordPage = ({ location }) => {
                 <span className="inter-2xlarge-semibold mt-4 text-grey-90">
                   Reset your password
                 </span>
-                <span className="inter-base-regular text-grey-50 mt-2">
-                  Choose a new password below
+                <span className="inter-base-regular text-grey-50 mt-2 mb-xlarge">
+                  Choose a new password below 👇🏼
                 </span>
                 <SigninInput
                   placeholder="Email"
@@ -117,34 +117,31 @@ const ResetPasswordPage = ({ location }) => {
                   type={"password"}
                   name="password"
                   ref={register({ required: true })}
+                  autoComplete="new-password"
                 />
                 <SigninInput
-                  placeholder="Repeat password"
+                  placeholder="Confirm password"
                   type={"password"}
                   name="repeat_password"
                   ref={register({ required: true })}
+                  autoComplete="new-password"
+                  className="mb-0"
                 />
                 {passwordMismatch && (
-                  <span className="text-rose-50 w-full mt-2 inter-small-regular">
-                    These passwords do not match
+                  <span className="text-rose-50 w-full mt-xsmall inter-small-regular">
+                    The two passwords are not the same
                   </span>
                 )}
                 <Button
                   variant="primary"
                   size="large"
                   type="submit"
-                  className="w-full mt-base"
+                  className="w-full mt-base rounded-rounded"
                   loading={formState.isSubmitting}
                   disabled={!ready}
                 >
-                  Continue
+                  Reset Password
                 </Button>
-                <span
-                  className="inter-small-regular text-grey-50 mt-8 cursor-pointer"
-                  onClick={() => navigate("/login")}
-                >
-                  Go to sign in
-                </span>
               </>
             )}
           </form>

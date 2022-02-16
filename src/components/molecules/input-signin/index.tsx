@@ -9,6 +9,7 @@ import React, {
 } from "react"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
 import EyeOffIcon from "../../fundamentals/icons/eye-off-icon"
+import LockIcon from "../../fundamentals/icons/lock-icon"
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   key?: string
@@ -51,23 +52,28 @@ const SigninInput = React.forwardRef(
     return (
       <div
         className={clsx(
-          "w-[320px] h-[48px] mt-4 border rounded-rounded overflow-hidden",
+          "w-[320px] h-[48px] mb-xsmall last:mb-0 border rounded-rounded overflow-hidden",
           "bg-grey-5 inter-base-regular placeholder:text-grey-40",
           "focus-within:shadow-input focus-within:border-violet-60",
           "flex items-center",
           {
-            "opacity-50 pointer-events-none focus-within:shadow-none focus-within:border-none":
+            "pointer-events-none focus-within:shadow-none focus-within:border-none text-grey-40":
               props.readOnly,
           },
           className
         )}
       >
+        {props.readOnly && (
+          <LockIcon size={16} className="text-grey-40 ml-base" />
+        )}
         <input
           className={clsx(
-            "outline-none outline-0 remove-number-spinner leading-base bg-transparent w-full py-3 px-4"
+            "outline-none outline-0 remove-number-spinner leading-base bg-transparent w-full py-3 px-4",
+            {
+              "pl-xsmall": props.readOnly,
+            }
           )}
           ref={inputRef}
-          autoComplete="off"
           name={name}
           key={key || name}
           placeholder={placeholder || "Placeholder"}
@@ -80,7 +86,7 @@ const SigninInput = React.forwardRef(
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="text-grey-40 px-4"
+            className="text-grey-40 px-4 focus:outline-none focus:text-violet-60"
           >
             {showPassword ? <EyeIcon /> : <EyeOffIcon />}
           </button>

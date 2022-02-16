@@ -1,11 +1,14 @@
-import { navigate } from "gatsby"
+import ConfettiGenerator from "confetti-js"
+import { Link, navigate } from "gatsby"
 import { useAdminAcceptInvite } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { decodeToken } from "react-jwt"
 import Button from "../components/fundamentals/button"
+import LongArrowRightIcon from "../components/fundamentals/icons/long-arrow-right-icon"
 import MedusaIcon from "../components/fundamentals/icons/medusa-icon"
+import MedusaVice from "../components/fundamentals/icons/medusa-vice"
 import LoginLayout from "../components/login-layout"
 import SigninInput from "../components/molecules/input-signin"
 import SEO from "../components/seo"
@@ -21,6 +24,7 @@ type formValues = {
 
 const InvitePage = ({ location }) => {
   const parsed = qs.parse(location.search.substring(1))
+  const [signUp, setSignUp] = useState(false)
 
   let token: Object | null = null
   if (parsed?.token) {
@@ -33,6 +37,29 @@ const InvitePage = ({ location }) => {
 
   const [passwordMismatch, setPasswordMismatch] = useState(false)
   const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    const confettiSettings = {
+      target: "confetti-canvas",
+      start_from_edge: true,
+      size: 3,
+      clock: 25,
+      colors: [
+        [251, 146, 60],
+        [167, 139, 250],
+        [251, 146, 60],
+        [96, 165, 250],
+        [45, 212, 191],
+        [250, 204, 21],
+        [232, 121, 249],
+      ],
+      max: 26,
+    }
+    const confetti = new ConfettiGenerator(confettiSettings)
+    confetti.render()
+
+    return () => confetti.clear()
+  }, [])
 
   const { register, handleSubmit, formState } = useForm<formValues>({
     defaultValues: {
@@ -88,78 +115,116 @@ const InvitePage = ({ location }) => {
   }, [formState])
 
   return (
-    <LoginLayout>
-      <SEO title="Create Account" />
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="flex min-h-[600px] bg-grey-0 rounded-rounded justify-center">
-          <form
-            className="flex flex-col py-12 w-full px-[120px] items-center"
-            onSubmit={handleSubmit(handleAcceptInvite)}
-          >
-            <MedusaIcon />
-            {!token ? (
-              <div className="h-full flex flex-col gap-y-2 text-center items-center justify-center">
-                <span className="inter-large-semibold text-grey-90">
-                  You signup link is invalid
-                </span>
-                <span className="inter-base-regular mt-2 text-grey-50">
-                  Contact your administrator to obtain a valid signup link
-                </span>
-              </div>
-            ) : (
-              <>
-                <span className="inter-2xlarge-semibold mt-4 text-grey-90">
-                  Welcome to the team!
-                </span>
-                <span className="inter-base-regular text-grey-50 mt-2">
-                  It's great to see you 👋🏼
-                </span>
-                <span className="inter-base-regular text-grey-50">
-                  Create your account below
-                </span>
-                <SigninInput
-                  placeholder="First name"
-                  name="first_name"
-                  ref={register({ required: true })}
-                />
-                <SigninInput
-                  placeholder="Last name"
-                  name="last_name"
-                  ref={register({ required: true })}
-                />
-                <SigninInput
-                  placeholder="Password"
-                  type={"password"}
-                  name="password"
-                  ref={register({ required: true })}
-                />
-                <SigninInput
-                  placeholder="Repeat password"
-                  type={"password"}
-                  name="repeat_password"
-                  ref={register({ required: true })}
-                />
-                {passwordMismatch && (
-                  <span className="text-rose-50 w-full mt-2 inter-small-regular">
-                    These passwords do not match
-                  </span>
+    <>
+      {signUp ? (
+        <LoginLayout>
+          <SEO title="Create Account" />
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="flex min-h-[600px] bg-grey-0 rounded-rounded justify-center">
+              <form
+                className="flex flex-col py-12 w-full px-[120px] items-center"
+                onSubmit={handleSubmit(handleAcceptInvite)}
+              >
+                <MedusaIcon />
+                {!token ? (
+                  <div className="h-full flex flex-col gap-y-2 text-center items-center justify-center">
+                    <span className="inter-large-semibold text-grey-90">
+                      You signup link is invalid
+                    </span>
+                    <span className="inter-base-regular mt-2 text-grey-50">
+                      Contact your administrator to obtain a valid signup link
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <span className="inter-2xlarge-semibold mt-4 text-grey-90">
+                      Welcome to the team!
+                    </span>
+                    <span className="inter-base-regular text-grey-50 mt-2 mb-large">
+                      Create your account below👇🏼
+                    </span>
+                    <SigninInput
+                      placeholder="First name"
+                      name="first_name"
+                      ref={register({ required: true })}
+                      autoComplete="given-name"
+                    />
+                    <SigninInput
+                      placeholder="Last name"
+                      name="last_name"
+                      ref={register({ required: true })}
+                      autoComplete="family-name"
+                    />
+                    <SigninInput
+                      placeholder="Password"
+                      type={"password"}
+                      name="password"
+                      ref={register({ required: true })}
+                      autoComplete="new-password"
+                    />
+                    <SigninInput
+                      placeholder="Repeat password"
+                      type={"password"}
+                      name="repeat_password"
+                      ref={register({ required: true })}
+                      autoComplete="new-password"
+                    />
+                    {passwordMismatch && (
+                      <span className="text-rose-50 w-full mt-2 inter-small-regular">
+                        The two passwords are not the same
+                      </span>
+                    )}
+                    <Button
+                      variant="primary"
+                      size="large"
+                      type="submit"
+                      className="w-full mt-base"
+                      loading={formState.isSubmitting}
+                      disabled={!ready}
+                    >
+                      Create account
+                    </Button>
+                    <Link
+                      to="/login"
+                      className="inter-small-regular text-grey-50 mt-large"
+                    >
+                      Already signed up? Log in
+                    </Link>
+                  </>
                 )}
-                <Button
-                  variant="primary"
-                  size="large"
-                  type="submit"
-                  className="w-full mt-base"
-                  loading={formState.isSubmitting}
-                  disabled={!ready}
-                >
-                  Create account
-                </Button>
-              </>
-            )}
-          </form>
+              </form>
+            </div>
+          </div>
+        </LoginLayout>
+      ) : (
+        <div className="bg-grey-90 h-screen w-full overflow-hidden">
+          <div className="z-10 flex-grow flex flex-col items-center justify-center h-full absolute inset-0 max-w-[1080px] mx-auto">
+            <MedusaVice className="mb-3xlarge" />
+            <div className="flex flex-col items-center max-w-3xl text-center">
+              <h1 className="inter-3xlarge-semibold text-grey-0 mb-base">
+                You have been invited to join the team
+              </h1>
+              <p className="inter-xlarge-regular text-grey-50">
+                You can now join the Medusa Store team. Sign up below and get
+                started with your Medusa Admin account right away.
+              </p>
+            </div>
+            <div className="mt-4xlarge">
+              <Button
+                size="large"
+                variant="primary"
+                className="w-[280px]"
+                onClick={() => setSignUp(true)}
+              >
+                Sign up
+                <LongArrowRightIcon size={20} className="pt-1" />
+              </Button>
+            </div>
+          </div>
+          <canvas id="confetti-canvas" />
         </div>
-      </div>
-    </LoginLayout>
+      )}
+    </>
   )
 }
 
