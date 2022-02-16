@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
@@ -30,9 +29,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
       : undefined
   )
 
-  const { setValue, getValues, register, reset, watch, handleSubmit } = useForm(
-    variant
-  )
+  const { setValue, register, reset, watch, handleSubmit } = useForm(variant)
 
   useEffect(() => {
     reset({
