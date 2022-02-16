@@ -15,6 +15,7 @@ import Modal from "../../components/molecules/modal"
 import Textarea from "../../components/molecules/textarea"
 import CurrencyInput from "../../components/organisms/currency-input"
 import useToaster from "../../hooks/use-toaster"
+import Medusa from "../../services/api"
 import { ProductStatus } from "../../types/shared"
 import { getErrorMessage } from "../../utils/error-messages"
 
@@ -29,10 +30,13 @@ type Denomination = {
 
 const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
   const [uploading, setUploading] = useState(false)
+  const [thumbnail, setThumbnail] = useState()
+
   const { register, setValue, unregister, handleSubmit } = useForm()
   const { store } = useAdminStore()
   const { refetch } = useAdminProducts()
   const giftCard = useAdminCreateProduct()
+
   const [denominations, setDenominations] = useState<Denomination[]>([])
   const toaster = useToaster()
 
@@ -69,8 +73,10 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
 
   const handleFileUpload = async (files) => {
     setUploading(true)
-    // TODO upload files
-    await new Promise((r) => setTimeout(r, 2000))
+    const file = files[0]
+    const { data } = await Medusa.uploads.create([file])
+    const thumb = data.uploads[0].url
+    setThumbnail(thumb)
     setUploading(false)
   }
 
@@ -90,6 +96,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
         title: data.name,
         description: data.description,
         discountable: false,
+        thumbnail: thumbnail || undefined,
         options: [{ title: "Denominations" }],
         variants: data.denominations.map((d, i) => ({
           title: `${i + 1}`,

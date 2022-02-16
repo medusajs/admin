@@ -1,3 +1,4 @@
+import { uniqBy } from "lodash"
 import {
   useAdminProduct,
   useAdminProductTypes,
@@ -7,6 +8,7 @@ import {
 import { ProductVariant } from "medusa-react/dist/types"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import FileUploadField from "../../../components/atoms/file-upload-field"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../../components/fundamentals/icons/unpublish-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
@@ -17,9 +19,13 @@ import TagInput from "../../../components/molecules/tag-input"
 import BodyCard from "../../../components/organisms/body-card"
 import DetailsCollapsible from "../../../components/organisms/details-collapsible"
 import EditDenominationsModal from "../../../components/organisms/edit-denominations-modal"
+import RadioGroup from "../../../components/organisms/radio-group"
+import DraggableTable from "../../../components/templates/draggable-table"
 import useToaster from "../../../hooks/use-toaster"
+import Medusa from "../../../services/api"
 import { getErrorMessage } from "../../../utils/error-messages"
 import DenominationTable from "./denomination-table"
+import useGiftCardImageColumns from "./use-gift-card-image-columns"
 
 type ManageGiftCardProps = {
   path: string
@@ -39,9 +45,12 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   const [editDenom, setEditDenom] = useState<null | ProductVariant>(null)
   const updateGiftCardVariant = useAdminUpdateVariant(id)
 
+  const [thumbnail, setThumbnail] = useState<string>()
+  const [localImages, setLocalImages] = useState<any[]>([])
+
   const toaster = useToaster()
 
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, reset, setValue } = useForm()
 
   const [type, setType] = useState<{ label: string; value: string } | null>(
     giftCard?.type
@@ -55,6 +64,7 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
   register("title")
   register("subtitle")
   register("description")
+  register("thumbnail")
 
   const submit = (data) => {
     const update = { ...data }
@@ -104,10 +114,54 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
     )
   }
 
+  const appendImage = async (image) => {
+    const { data } = await Medusa.uploads.create([image])
+    const newImages = data.uploads.map(({ url }) => url)
+    updateGiftCard({
+      images: [...newImages, ...localImages.map(({ url }) => url)],
+    })
+  }
+
+  const removeImage = (image) => {
+    const idx = localImages.findIndex((img) => img.id === image.id)
+    if (idx !== -1) {
+      localImages.splice(idx, 1)
+    }
+
+    const updateReq: Record<string, unknown> = {
+      // pull out urls from all images
+      images: localImages.map(({ url }) => url),
+    }
+
+    // check if we should remove as thumbnail as well
+    if (image.url === giftCard?.thumbnail) {
+      updateReq.thumbnail = null
+    }
+
+    updateGiftCard({ ...updateReq })
+    setLocalImages([...localImages])
+  }
+
   useEffect(() => {
     if (!isSuccess) {
       return
     }
+
+    const allImages = [...giftCard?.images]
+
+    if (giftCard?.thumbnail) {
+      const thumbnailExists = giftCard.images.find(
+        (i) => i.url === giftCard.thumbnail
+      )
+
+      // if thumbnail is not present in images, we add it
+      if (!thumbnailExists) {
+        allImages.push({ url: giftCard?.thumbnail })
+      }
+      setThumbnail(giftCard?.thumbnail || undefined)
+    }
+
+    setLocalImages(uniqBy(allImages, "url"))
 
     reset({
       ...giftCard,
@@ -119,6 +173,8 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
       setType({ value: giftCard.type.value, label: giftCard.type.value })
     }
   }, [giftCard])
+
+  const [columns] = useGiftCardImageColumns()
 
   const StatusComponent = () => {
     switch (giftCard?.status) {
@@ -260,7 +316,39 @@ const ManageGiftCard: React.FC<ManageGiftCardProps> = ({
           subtitle="Manage your Gift Card images"
           className={"h-auto w-full"}
         >
-          {/* TODO: Add image components */}
+          <div className="mt-base">
+            <RadioGroup.Root
+              value={thumbnail}
+              // defaultValue={entities[0].image}
+              onValueChange={(value) => {
+                setThumbnail(value)
+                setValue("thumbnail", value)
+              }}
+            >
+              <DraggableTable
+                onDelete={removeImage}
+                columns={columns}
+                entities={localImages}
+                setEntities={setLocalImages}
+              />
+            </RadioGroup.Root>
+          </div>
+          <div className="mt-2xlarge">
+            <FileUploadField
+              onFileChosen={(files) => {
+                const file = files[0]
+                const url = URL.createObjectURL(file)
+                setLocalImages([
+                  ...localImages,
+                  { url, name: file.name, size: file.size },
+                ])
+                appendImage(file)
+              }}
+              placeholder="1200 x 1600 (3:4) recommended, up to 10MB each"
+              filetypes={["png"]}
+              className="py-large"
+            />
+          </div>
         </BodyCard>
       </form>
       {editDenom && (
