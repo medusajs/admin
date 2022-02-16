@@ -5,6 +5,7 @@ import { usePagination, useRowSelect, useTable } from "react-table"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import StatusIndicator from "../../../../components/fundamentals/status-indicator"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
@@ -85,6 +86,8 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
     offset,
   })
 
+  console.log(variants)
+
   useEffect(() => {
     if (typeof count !== "undefined") {
       setNumPages(Math.ceil(count / PAGE_SIZE))
@@ -106,7 +109,9 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
                     className="h-full object-cover rounded-soft"
                   />
                 ) : (
-                  <></>
+                  <div className="flex items-center justify-center w-full h-full rounded-soft bg-grey-10">
+                    <ImagePlaceholder size={16} />
+                  </div>
                 )}
               </div>
               <div className="flex flex-col">
@@ -122,9 +127,9 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
         accessor: "status",
         Cell: ({ row: { original } }) => (
           <StatusIndicator
-            title={`${original.product.status
+            title={`${original.product?.status
               .charAt(0)
-              .toUpperCase()}${original.product.status.slice(1)}`}
+              .toUpperCase()}${original.product?.status.slice(1)}`}
             variant={getProductStatusVariant(original.product.status)}
           />
         ),
@@ -142,7 +147,6 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   const {
     getTableProps,
     getTableBodyProps,
-    headerGroups,
     rows,
     prepareRow,
     canPreviousPage,
