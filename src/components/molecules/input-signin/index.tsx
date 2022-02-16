@@ -51,7 +51,7 @@ const SigninInput = React.forwardRef(
     return (
       <div
         className={clsx(
-          "w-[320px] h-[48px] py-3 px-4 mt-4 border rounded-rounded",
+          "w-[320px] h-[48px] mt-4 border rounded-rounded overflow-hidden",
           "bg-grey-5 inter-base-regular placeholder:text-grey-40",
           "focus-within:shadow-input focus-within:border-violet-60",
           "flex items-center",
@@ -64,7 +64,7 @@ const SigninInput = React.forwardRef(
       >
         <input
           className={clsx(
-            "outline-none outline-0 remove-number-spinner leading-base bg-transparent w-full"
+            "outline-none outline-0 remove-number-spinner leading-base bg-transparent w-full py-3 px-4"
           )}
           ref={inputRef}
           autoComplete="off"
@@ -80,7 +80,7 @@ const SigninInput = React.forwardRef(
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="text-grey-40"
+            className="text-grey-40 px-4"
           >
             {showPassword ? <EyeIcon /> : <EyeOffIcon />}
           </button>

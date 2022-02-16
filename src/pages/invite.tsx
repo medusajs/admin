@@ -1,7 +1,7 @@
 import { navigate } from "gatsby"
 import { useAdminAcceptInvite } from "medusa-react"
 import qs from "qs"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { decodeToken } from "react-jwt"
 import Button from "../components/fundamentals/button"
@@ -13,7 +13,6 @@ import useNotification from "../hooks/use-notification"
 import { getErrorMessage } from "../utils/error-messages"
 
 type formValues = {
-  email: string
   password: string
   repeat_password: string
   first_name: string
@@ -33,12 +32,9 @@ const InvitePage = ({ location }) => {
   }
 
   const [passwordMismatch, setPasswordMismatch] = useState(false)
+  const [ready, setReady] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = useForm<formValues>({
+  const { register, handleSubmit, formState } = useForm<formValues>({
     defaultValues: {
       first_name: "",
       last_name: "",
@@ -46,8 +42,8 @@ const InvitePage = ({ location }) => {
       repeat_password: "",
     },
   })
-  const accept = useAdminAcceptInvite()
 
+  const accept = useAdminAcceptInvite()
   const notification = useNotification()
 
   const handleAcceptInvite = (data: formValues) => {
@@ -78,6 +74,19 @@ const InvitePage = ({ location }) => {
     )
   }
 
+  useEffect(() => {
+    if (
+      formState.dirtyFields.password &&
+      formState.dirtyFields.repeat_password &&
+      formState.dirtyFields.first_name &&
+      formState.dirtyFields.last_name
+    ) {
+      setReady(true)
+    } else {
+      setReady(false)
+    }
+  }, [formState])
+
   return (
     <LoginLayout>
       <SEO title="Create Account" />
@@ -90,10 +99,10 @@ const InvitePage = ({ location }) => {
             <MedusaIcon />
             {!token ? (
               <div className="h-full flex flex-col gap-y-2 text-center items-center justify-center">
-                <span className="inter-large-semibold text-rose-50">
+                <span className="inter-large-semibold text-grey-90">
                   You signup link is invalid
                 </span>
-                <span className="inter-base-regular">
+                <span className="inter-base-regular mt-2 text-grey-50">
                   Contact your administrator to obtain a valid signup link
                 </span>
               </div>
@@ -140,7 +149,8 @@ const InvitePage = ({ location }) => {
                   size="large"
                   type="submit"
                   className="w-full mt-base"
-                  loading={isSubmitting}
+                  loading={formState.isSubmitting}
+                  disabled={!ready}
                 >
                   Create account
                 </Button>

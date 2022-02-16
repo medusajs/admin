@@ -81,7 +81,7 @@ const ResetPasswordPage = ({ location }) => {
 
   return (
     <LoginLayout>
-      <SEO title="Create Account" />
+      <SEO title="Reset Password" />
       <div className="flex h-full w-full items-center justify-center">
         <div className="flex min-h-[600px] bg-grey-0 rounded-rounded justify-center">
           <form
