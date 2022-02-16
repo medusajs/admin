@@ -73,7 +73,7 @@ const ReturnMenu = ({ order, onDismiss, toaster }) => {
     const items = Object.entries(toReturn).map(([key, value]) => {
       const toSet = {
         reason_id: value.reason?.value.id,
-        ...value
+        ...value,
       }
       delete toSet.reason
       const clean = removeNullish(toSet)
@@ -165,7 +165,7 @@ const ReturnMenu = ({ order, onDismiss, toaster }) => {
               <Select
                 label="Shipping Method"
                 className="mt-2"
-                overrideStrings={{ search: "Add a shipping method" }}
+                placeholder="Add a shipping method"
                 value={shippingMethod}
                 onChange={handleShippingSelected}
                 options={shippingOptions.map((o) => ({

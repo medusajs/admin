@@ -327,7 +327,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 clearSelected
                 label="Shipping Method"
                 className="mt-2"
-                overrideStrings={{ search: "Add a shipping method" }}
+                placeholder="Add a shipping method"
                 value={
                   returnShippingMethod
                     ? {
@@ -531,7 +531,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, toaster }) => {
                 <Select
                   label="Shipping Method"
                   className="mt-2"
-                  overrideStrings={{ search: "Add a shipping method" }}
+                  placeholder="Add a shipping method"
                   value={
                     shippingMethod
                       ? {

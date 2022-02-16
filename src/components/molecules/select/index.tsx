@@ -42,7 +42,6 @@ type MultiSelectProps = {
   hasSelectAll?: boolean
   isLoading?: boolean
   shouldToggleOnHover?: boolean
-  overrideStrings?: object
   onChange: (values: any[] | any) => void
   disabled?: boolean
   enableSearch?: boolean
@@ -196,7 +195,6 @@ const SSelect = React.forwardRef(
       isMultiSelect,
       hasSelectAll,
       enableSearch = false,
-      overrideStrings,
       clearSelected = false,
       isCreatable,
       filterOptions,
