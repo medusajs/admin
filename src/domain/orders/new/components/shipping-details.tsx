@@ -45,7 +45,7 @@ const ShippingDetails = ({
   }, [shipping])
 
   // "region",
-  const debouncedFetch = (options, filter) => {
+  const debouncedFetch = (filter) => {
     const prepared = qs.stringify(
       {
         q: filter,
