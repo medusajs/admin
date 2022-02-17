@@ -11,10 +11,16 @@ const IndeterminateCheckbox = React.forwardRef(
       resolvedRef.current.indeterminate = indeterminate
     }, [resolvedRef, indeterminate])
 
+    const handleClick = () => {
+      if (resolvedRef.current) {
+        resolvedRef.current.click()
+      }
+    }
+
     return (
       <div className="items-center h-full flex">
         <div
-          onClick={() => resolvedRef.current?.click()}
+          onClick={handleClick}
           className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border cursor-pointer rounded-base ${
             checked && "bg-violet-60"
           }`}
@@ -26,6 +32,7 @@ const IndeterminateCheckbox = React.forwardRef(
         <input
           type="checkbox"
           className={clsx("hidden", className)}
+          checked={checked}
           ref={resolvedRef}
           {...rest}
         />
