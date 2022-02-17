@@ -90,6 +90,10 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
   useEffect(() => {
     setSelectedProducts((selectedProducts) =>
       [
+        ...selectedProducts.filter(
+          (sv) =>
+            Object.keys(selectedRowIds).findIndex((id) => id === sv.id) > -1
+        ),
         ...(products?.filter(
           (p) =>
             selectedProducts.findIndex((sv) => sv.id === p.id) < 0 &&
@@ -156,52 +160,50 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
           <h3 className="inter-xlarge-semibold">Add Products</h3>
         </Modal.Header>
         <Modal.Content>
-          <div className="h-[650px]">
-            <div className="w-full h-full flex flex-col justify-between overflow-y-auto">
-              <Table
-                enableSearch
-                handleSearch={handleSearch}
-                searchPlaceholder="Search Products"
-                {...getTableProps()}
-                className="h-full"
-              >
-                {isLoading || !products ? (
-                  <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
-                    <Spinner size="large" variant="secondary" />
-                  </div>
-                ) : (
-                  <Table.Body {...getTableBodyProps()}>
-                    {rows.map((row) => {
-                      prepareRow(row)
-                      return (
-                        <Table.Row
-                          color={"inherit"}
-                          {...row.getRowProps()}
-                          className="px-base"
-                        >
-                          {row.cells.map((cell, index) => {
-                            return cell.render("Cell", { index })
-                          })}
-                        </Table.Row>
-                      )
-                    })}
-                  </Table.Body>
-                )}
-              </Table>
-              <TablePagination
-                count={count!}
-                limit={PAGE_SIZE}
-                offset={offset}
-                pageSize={offset + rows.length}
-                title="Products"
-                currentPage={pageIndex + 1}
-                pageCount={pageCount}
-                nextPage={handleNext}
-                prevPage={handlePrev}
-                hasNext={canNextPage}
-                hasPrev={canPreviousPage}
-              />
-            </div>
+          <div className="w-full flex flex-col justify-between h-[650px]">
+            <Table
+              enableSearch
+              handleSearch={handleSearch}
+              searchPlaceholder="Search Products"
+              {...getTableProps()}
+              className="flex-grow"
+            >
+              {isLoading || !products ? (
+                <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
+                  <Spinner size="large" variant="secondary" />
+                </div>
+              ) : (
+                <Table.Body {...getTableBodyProps()}>
+                  {rows.map((row) => {
+                    prepareRow(row)
+                    return (
+                      <Table.Row
+                        color={"inherit"}
+                        {...row.getRowProps()}
+                        className="px-base"
+                      >
+                        {row.cells.map((cell, index) => {
+                          return cell.render("Cell", { index })
+                        })}
+                      </Table.Row>
+                    )
+                  })}
+                </Table.Body>
+              )}
+            </Table>
+            <TablePagination
+              count={count!}
+              limit={PAGE_SIZE}
+              offset={offset}
+              pageSize={offset + rows.length}
+              title="Products"
+              currentPage={pageIndex + 1}
+              pageCount={pageCount}
+              nextPage={handleNext}
+              prevPage={handlePrev}
+              hasNext={canNextPage}
+              hasPrev={canPreviousPage}
+            />
           </div>
         </Modal.Content>
         <Modal.Footer>
