@@ -76,7 +76,6 @@ export const ProductFormProvider = ({
     }
 
     if (product?.options) {
-      console.log({ options: product.options })
       const options = product?.options?.map((po) => ({
         name: po.title,
         values: po.values ? po.values.map((v) => v.value) : [],

@@ -9,6 +9,13 @@ import VariantGrid from "../../../../components/variant-grid"
 import { getCombinations } from "../../../../utils/get-combinations"
 import NewOption from "../../details/variants/option-edit"
 import { useProductForm } from "../form/product-form-context"
+import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
+import VariantEditor from "../../details/variants/variant-editor"
+import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
+import { useAdminCreateVariant } from "medusa-react"
+import useNotification from "../../../../hooks/use-notification"
+import { getErrorMessage } from "../../../../utils/error-messages"
+import { buildOptionsMap } from "../utils"
 
 const Variants = ({ isEdit, product }) => {
   const {
@@ -18,7 +25,10 @@ const Variants = ({ isEdit, product }) => {
     productOptions,
     setProductOptions,
   } = useProductForm()
+  const [showAddVariantModal, setShowAddVariantModal] = useState(false)
   const [showAddOption, setShowAddOption] = useState(false)
+  const notification = useNotification()
+  const createVariant = useAdminCreateVariant(product?.id)
 
   useEffect(() => {
     if (isEdit) {
@@ -84,6 +94,18 @@ const Variants = ({ isEdit, product }) => {
     setProductOptions(newOptions)
   }
 
+  const handleAddVariant = (data) => {
+    createVariant.mutate(data, {
+      onSuccess: () => {
+        notification("Success", "Successfully added a variant", "success")
+        setShowAddVariantModal(false)
+      },
+      onError: (err) => {
+        notification("Error", getErrorMessage(err), "error")
+      },
+    })
+  }
+
   return (
     <BodyCard
       title="Variants"
@@ -92,9 +114,14 @@ const Variants = ({ isEdit, product }) => {
       actionables={
         isEdit && [
           {
+            label: "Add variant",
+            onClick: () => setShowAddVariantModal(true),
+            icon: <PlusIcon size={20} />,
+          },
+          {
             label: "Edit options",
             onClick: () => setShowAddOption(true),
-            icon: null,
+            icon: <EditIcon size={20} />,
           },
         ]
       }
@@ -161,6 +188,14 @@ const Variants = ({ isEdit, product }) => {
           productId={product.id}
           options={product.options}
           onDismiss={() => setShowAddOption(false)}
+        />
+      )}
+      {showAddVariantModal && (
+        <VariantEditor
+          onCancel={() => setShowAddVariantModal(false)}
+          onSubmit={handleAddVariant}
+          title="Add variant"
+          optionsMap={buildOptionsMap(product)}
         />
       )}
     </BodyCard>
