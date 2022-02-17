@@ -1,6 +1,7 @@
 import { useAdminDeleteVariant, useAdminUpdateVariant } from "medusa-react"
 import React, { useState } from "react"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
+import { buildOptionsMap } from "../../domain/products/product-form/utils"
 import useImperativeDialog from "../../hooks/use-imperative-dialog"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
@@ -11,7 +12,12 @@ import Table from "../molecules/table"
 import { useGridColumns } from "./use-grid-columns"
 
 const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
-  const [selectedVariant, setSelectedVariant] = useState(null)
+  const [selectedVariant, setSelectedVariant] = useState<{
+    prices: any[]
+    origin_country: string
+    options: any[]
+    [k: string]: any
+  } | null>(null)
 
   const updateVariant = useAdminUpdateVariant(product?.id)
   const deleteVariant = useAdminDeleteVariant(product?.id)
@@ -127,6 +133,8 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
           variant={selectedVariant}
           onCancel={() => setSelectedVariant(null)}
           onSubmit={handleUpdateVariant}
+          optionsMap={buildOptionsMap(product, selectedVariant)}
+          title="Edit variant"
         />
       )}
     </>

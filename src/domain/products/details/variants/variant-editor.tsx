@@ -1,6 +1,6 @@
 import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFieldArray, useForm } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
@@ -14,33 +14,53 @@ import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string
 import { countries as countryData } from "../../../../utils/countries"
 import { removeNullish } from "../../../../utils/remove-nullish"
 
-const VariantEditor = ({ variant, onSubmit, onCancel }) => {
+const defaultVariant = {
+  prices: [] as any,
+  origin_country: "",
+  options: [] as any,
+}
+
+const VariantEditor = ({
+  variant = defaultVariant,
+  onSubmit,
+  onCancel,
+  title,
+  optionsMap,
+}) => {
   const countryOptions = countryData.map((c) => ({
     label: c.name,
     value: c.alpha2.toLowerCase(),
   }))
 
   const { store, isLoading } = useAdminStore()
-  const [currencyOptions, setCurrencyOptions] = useState([])
-  const [prices, setPrices] = useState(variant.prices)
-  const [selectedCountry, setSelectedCountry] = useState(
-    variant.origin_country
+  const [currencyOptions, setCurrencyOptions] = useState<
+    {
+      value: any
+      label: string
+    }[]
+  >([])
+  const [prices, setPrices] = useState(variant?.prices)
+  const [selectedCountry, setSelectedCountry] = useState(() => {
+    const defaultCountry = variant.origin_country
       ? countryOptions.find((cd) => cd.label === variant.origin_country)
-      : undefined
-  )
+      : null
+    return defaultCountry || null
+  })
 
-  const { setValue, register, reset, watch, handleSubmit } = useForm(variant)
+  const { control, register, reset, watch, handleSubmit } = useForm({
+    defaultValues: variant,
+  })
+
+  const { fields } = useFieldArray({
+    control,
+    name: "options",
+    keyName: "indexId",
+  })
 
   useEffect(() => {
     reset({
       ...variant,
-    })
-
-    variant.options.forEach((option, index) => {
-      register(`options.${index}.option_id`)
-      setValue(`options.${index}.option_id`, option.option_id)
-      register(`options.${index}.value`)
-      setValue(`options.${index}.value`, option.value)
+      options: Object.values(optionsMap),
     })
   }, [variant])
 
@@ -106,6 +126,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
       region_id,
       amount: Math.round(amount),
     }))
+    data.options = data.options.map((option) => ({ ...option }))
 
     data.origin_country = selectedCountry?.label
     data.inventory_quantity = parseInt(data.inventory_quantity)
@@ -121,7 +142,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
 
   watch(["manage_inventory", "allow_backorder"])
 
-  const variantTitle = variant.options
+  const variantTitle = variant?.options
     .map((opt) => opt?.value || "")
     .join(" / ")
 
@@ -130,10 +151,12 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
       <Modal.Body>
         <Modal.Header handleClose={onCancel}>
           <h2 className="inter-xlarge-semibold">
-            Edit Variant{" "}
-            <span className="text-grey-50 inter-xlarge-regular">
-              ({variantTitle})
-            </span>
+            {title}{" "}
+            {variantTitle && (
+              <span className="text-grey-50 inter-xlarge-regular">
+                ({variantTitle})
+              </span>
+            )}
           </h2>
         </Modal.Header>
         <Modal.Content>
@@ -145,8 +168,24 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               {"General"}
             </label>
 
-            <div className="grid grid-cols-1 ">
+            <div className="grid grid-cols-1 gap-y-small">
               <Input label="Title" name="title" ref={register} />
+              {fields.map((field, index) => (
+                <div key={field.indexId}>
+                  <Input
+                    ref={register({ required: true })}
+                    name={`options[${index}].value`}
+                    label={field.title}
+                    defaultValue={field.value}
+                  />
+                  <input
+                    ref={register()}
+                    type="hidden"
+                    name={`options[${index}].option_id`}
+                    defaultValue={field.option_id}
+                  />
+                </div>
+              ))}
             </div>
           </div>
           <div className="mb-8">
@@ -215,7 +254,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               <Input
                 label="Inventory quantity"
                 name="inventory_quantity"
-                placeholder="Inventory quantity"
+                placeholder="100"
                 type="number"
                 ref={register}
               />
