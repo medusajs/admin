@@ -1,55 +1,34 @@
-import React, { forwardRef, useEffect, useRef } from "react"
+import clsx from "clsx"
+import React from "react"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 
-interface Props {
-  indeterminate?: boolean
-  name: string
-}
+const IndeterminateCheckbox = React.forwardRef(
+  ({ indeterminate, className, checked, ...rest }, ref) => {
+    const defaultRef = React.useRef()
+    const resolvedRef = ref || defaultRef
 
-const useCombinedRefs = (...refs): React.MutableRefObject<any> => {
-  const targetRef = React.useRef()
-
-  React.useEffect(() => {
-    refs.forEach((ref) => {
-      if (!ref) {
-        return
-      }
-
-      if (typeof ref === "function") {
-        ref(targetRef.current)
-      } else {
-        ref.current = targetRef.current
-      }
-    })
-  }, [refs])
-
-  return targetRef
-}
-
-const IndeterminateCheckbox = forwardRef<HTMLInputElement, Props>(
-  ({ indeterminate, ...rest }, ref: React.Ref<HTMLInputElement>) => {
-    const defaultRef = useRef(null)
-    const combinedRef = useCombinedRefs(ref, defaultRef)
-
-    useEffect(() => {
-      if (combinedRef?.current) {
-        combinedRef.current.indeterminate = indeterminate ?? false
-      }
-    }, [combinedRef, indeterminate])
+    React.useEffect(() => {
+      resolvedRef.current.indeterminate = indeterminate
+    }, [resolvedRef, indeterminate])
 
     return (
       <div className="items-center h-full flex">
         <div
-          onClick={() => combinedRef.current?.click()}
+          onClick={() => resolvedRef.current?.click()}
           className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border cursor-pointer rounded-base ${
-            combinedRef.current?.checked && "bg-violet-60"
+            checked && "bg-violet-60"
           }`}
         >
           <span className="self-center">
-            {combinedRef.current?.checked && <CheckIcon size={16} />}
+            {checked && <CheckIcon size={16} />}
           </span>
         </div>
-        <input type="checkbox" className="hidden" ref={combinedRef} {...rest} />
+        <input
+          type="checkbox"
+          className={clsx("hidden", className)}
+          ref={resolvedRef}
+          {...rest}
+        />
       </div>
     )
   }

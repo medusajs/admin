@@ -12,11 +12,11 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import ViewRaw from "../../../components/molecules/view-raw"
-import AddProductModal from "../../../components/organisms/add-product-modal"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { MetadataField } from "../../../components/organisms/metadata"
 import CollectionModal from "../../../components/templates/collection-modal"
+import AddProductsTable from "../../../components/templates/collection-product-table/add-product-table"
 import ViewProductsTable from "../../../components/templates/collection-product-table/view-products-table"
 import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
@@ -198,10 +198,10 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
         />
       )}
       {showAddProducts && (
-        <AddProductModal
-          handleClose={() => setShowAddProducts(false)}
+        <AddProductsTable
+          onClose={() => setShowAddProducts(false)}
           onSubmit={handleAddProducts}
-          collectionProducts={collection?.products ?? []}
+          existingRelations={collection?.products ?? []}
         />
       )}
     </>
