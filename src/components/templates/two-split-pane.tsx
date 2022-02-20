@@ -4,9 +4,14 @@ import { useComputedHeight } from "../../hooks/use-computed-height"
 
 type TwoSplitPaneProps = {
   className?: string
+  threeCols?: boolean
 }
 
-const TwoSplitPane: React.FC<TwoSplitPaneProps> = ({ className, children }) => {
+const TwoSplitPane: React.FC<TwoSplitPaneProps> = ({
+  threeCols,
+  className,
+  children,
+}) => {
   const childrenCount = Children.count(children)
   const { ref, height } = useComputedHeight(32)
 
@@ -22,16 +27,21 @@ const TwoSplitPane: React.FC<TwoSplitPaneProps> = ({ className, children }) => {
 
   return (
     <div
-      className={clsx(
-        "grid gap-large grid-cols-1 medium:grid-cols-2",
-        className
-      )}
+      className={clsx("grid gap-large grid-cols-1", className, {
+        "medium:grid-cols-2": !threeCols,
+        "medium:grid-cols-3": threeCols,
+      })}
       style={heightClass}
       ref={ref}
     >
       {Children.map(children, (child, i) => {
         return (
-          <div className="w-full h-full" key={i}>
+          <div
+            className={clsx("w-full h-full", {
+              "col-span-2": threeCols && i === 1,
+            })}
+            key={i}
+          >
             {child}
           </div>
         )
