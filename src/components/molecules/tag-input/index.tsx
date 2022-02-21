@@ -1,9 +1,9 @@
 import clsx from "clsx"
 import React, { useRef, useState } from "react"
+import Tooltip from "../../atoms/tooltip"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
-import Tooltip from "../../atoms/tooltip"
 
 const ENTER_KEY = 13
 const TAB_KEY = 9
@@ -132,7 +132,12 @@ const TagInput: React.FC<TagInputProps> = ({
   }
 
   const handleBlur = (e) => {
+    const value = inputRef?.current?.value
     setHighlighted(-1)
+
+    if (value) {
+      handleAddValue(value)
+    }
   }
 
   const handleOnContainerFocus = () => {
@@ -169,13 +174,13 @@ const TagInput: React.FC<TagInputProps> = ({
         side={"top"}
         content={`${inputRef?.current?.value} is not a valid tag`}
       >
-        <div className="w-full flex mt-1 ml-0 flex-wrap">
+        <div className="w-full gap-x-2 gap-y-1 flex mt-1 ml-0 flex-wrap">
           {values.map((v, index) => (
             <div
               key={index}
               className={clsx(
                 "items-center justify-center whitespace-nowrap w-max bg-grey-90 rounded",
-                "px-2 mb-1 mr-2 leading-6",
+                "px-2 leading-6",
                 {
                   ["bg-grey-70"]: index === highlighted,
                 }

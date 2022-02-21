@@ -1,12 +1,13 @@
 import { useAdminCancelClaim } from "medusa-react"
 import React, { useState } from "react"
+import CreateFulfillmentModal from "../../../../domain/orders/details/create-fulfillment"
 import { ClaimEvent } from "../../../../hooks/use-build-timeline"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 import AlertIcon from "../../../fundamentals/icons/alert-icon"
 import CancelIcon from "../../../fundamentals/icons/cancel-icon"
 import CheckCircleIcon from "../../../fundamentals/icons/check-circle-icon"
-import TrashIcon from "../../../fundamentals/icons/trash-icon"
 import ListIcon from "../../../fundamentals/icons/list-icon"
+import TrashIcon from "../../../fundamentals/icons/trash-icon"
 import DeletePrompt from "../../../organisms/delete-prompt"
 import { ActionType } from "../../actionables"
 import { FulfillmentStatus, RefundStatus } from "../../order-status"
@@ -17,26 +18,32 @@ import ClaimDetails from "./details"
 
 type ClaimProps = {
   event: ClaimEvent
+  refetch: () => void
 }
 
-const Claim: React.FC<ClaimProps> = ({ event }) => {
+const Claim: React.FC<ClaimProps> = ({ event, refetch }) => {
   const cancelClaim = useAdminCancelClaim(event.id)
   const [showDetails, setShowDetails] = useState(false)
   const [showCancel, setShowCancel] = useState(false)
+  const [showFulfillment, setShowFulfillment] = useState(false)
 
   const handleCancel = () => {
     cancelClaim.mutate("") // error on hook endpoint is /admin/orders/claim_01FTRG93AK830MS285CB20CBJW/claims//cancel
   }
 
-  const handleFulfill = () => {
-    console.log("TODO")
+  const handleCloseFulfillmentModal = () => {
+    setShowFulfillment(false)
+    refetch() // We need to refetch the order to get the latest update
   }
 
   const claimItems = ClaimItems(event)
   const claimStatus = ClaimStatus(event)
   const refundOrReplacement = ClaimRefundOrReplacement(event)
-  const actions = ClaimActions(event, handleCancel, handleFulfill, () =>
-    setShowDetails(true)
+  const actions = ClaimActions(
+    event,
+    () => setShowCancel(true),
+    () => setShowFulfillment(true),
+    () => setShowDetails(true)
   )
 
   const args = {
@@ -74,6 +81,13 @@ const Claim: React.FC<ClaimProps> = ({ event }) => {
           onDismiss={() => setShowDetails(false)}
           claim={event.claim}
           order={event.order}
+        />
+      )}
+      {showFulfillment && (
+        <CreateFulfillmentModal
+          handleCancel={handleCloseFulfillmentModal}
+          orderId={event.orderId}
+          orderToFulfill={event.claim}
         />
       )}
     </>

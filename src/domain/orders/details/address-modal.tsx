@@ -10,20 +10,18 @@ type AddressModalProps = {
   handleSave: ({ data, type }) => Promise<void>
   allowedCountries: string[]
   address?: object
-  email?: string
   type: "shipping" | "billing"
 }
 
 const AddressModal: React.FC<AddressModalProps> = ({
   address,
-  email,
   allowedCountries = [],
   handleClose,
   handleSave,
   type,
 }) => {
   const { register, handleSubmit, setValue } = useForm({
-    defaultValues: { ...address, email },
+    defaultValues: { ...address },
   })
 
   register("country_code")
@@ -46,8 +44,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
   }
 
   const submit = (data) => {
-    // Note: Data will contain email as well, which is not a part of addresses
-    // Therefore, you will need to handle this in parent handleSave method
     return handleSave({ data, type })
   }
 
@@ -77,12 +73,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
               />
             </div>
             <div className="flex mt-4 space-x-4">
-              <Input
-                label="Email"
-                name="email"
-                ref={register}
-                placeholder="Email"
-              />
               <Input
                 label="Phone"
                 name="phone"
