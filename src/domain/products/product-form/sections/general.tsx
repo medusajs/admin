@@ -95,7 +95,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             control={control}
             label="Collection"
             name="collection"
-            overrideStrings={{ selectSomeItems: "Select collection..." }}
+            placeholder="Select collection..."
             options={collectionOptions}
           />
           <Controller
@@ -103,7 +103,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             control={control}
             label="Type"
             name="type"
-            overrideStrings={{ selectSomeItems: "Select type..." }}
+            placeholder="Select type..."
             options={typeOptions}
           />
           <Controller
