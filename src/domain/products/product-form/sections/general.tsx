@@ -121,7 +121,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             control={control}
           />
         </div>
-        <div className="flex item-center gap-x-1.5">
+        <div className="flex item-center gap-x-1.5 mb-xlarge">
           <Checkbox name="discountable" ref={register} label="Discountable" />
           <InfoTooltip
             content={
