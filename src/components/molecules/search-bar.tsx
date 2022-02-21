@@ -20,6 +20,7 @@ const SearchBar: React.FC = () => {
 
   useHotkeys("cmd+k", toggleSearch, {}, [])
   useHotkeys("ctrl+k", toggleSearch, {}, [])
+  useHotkeys("/", toggleSearch, {}, [])
 
   React.useEffect(() => {
     return globalHistory.listen(({ action }) => {
