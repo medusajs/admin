@@ -2,41 +2,76 @@ import {
   useAdminRegion,
   useAdminUpdateRegion,
   useAdminTaxRates,
+  useAdminDeleteTaxRate,
 } from "medusa-react"
 import clsx from "clsx"
 import React, { useEffect, useState } from "react"
 import { useTable } from "react-table"
 import Spinner from "../../../components/atoms/spinner"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import Table from "../../../components/molecules/table"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import useNotification from "../../../hooks/use-notification"
 import useTaxRateColumns from "./use-tax-rate-columns"
+import NewTaxRate from "./new"
+import EditTaxRate from "./edit"
+import { RegionTaxForm } from "./region-form"
 import { getErrorMessage } from "../../../utils/error-messages"
+
+enum TaxRateType {
+  REGION = "region",
+  RATE = "rate",
+}
+
+type PaginationProps = {
+  limit: number
+  offset: number
+}
 
 type TaxRate = {
   id: string
   name?: string
   rate: number | null
   code: string | null
-  type: "region" | "rate"
+  type: TaxRateType
 }
+
+const DEFAULT_PAGESIZE = 10
 
 const TaxDetails = ({ id, onDelete, handleSelect }) => {
   if (!id) {
     return null
   }
 
+  const [pagination, setPagination] = useState<PaginationProps>({
+    limit: DEFAULT_PAGESIZE,
+    offset: 0,
+  })
+  const [showNew, setShowNew] = useState<boolean>(false)
+  const [deleteRate, setDeleteRate] = useState<TaxRate | null>(null)
+  const [editRate, setEditRate] = useState<TaxRate | null>(null)
   const [tableEntries, setTableEntries] = useState<TaxRate[]>([])
   const notification = useNotification()
 
+  const deleteTaxRate = useAdminDeleteTaxRate(deleteRate?.id)
+
   const { tax_rates, isLoading: taxRatesLoading } = useAdminTaxRates({
     region_id: id,
+    ...pagination,
   })
+
+  const handleDelete = async () => {
+    if (!deleteRate || deleteRate.type !== TaxRateType.RATE) {
+      return Promise.resolve()
+    }
+
+    return deleteTaxRate.mutateAsync()
+  }
+
   const { region, isLoading: regionIsLoading } = useAdminRegion(id)
-  const updateRegion = useAdminUpdateRegion(id)
 
   const [showDanger, setShowDanger] = useState(false)
 
@@ -47,10 +82,8 @@ const TaxDetails = ({ id, onDelete, handleSelect }) => {
         name: "Default",
         code: region.tax_code ?? null,
         rate: region.tax_rate ?? null,
-        type: "region",
+        type: TaxRateType.REGION,
       }
-
-      console.log(tax_rates, region)
 
       setTableEntries([
         regionDefaultRate,
@@ -60,7 +93,7 @@ const TaxDetails = ({ id, onDelete, handleSelect }) => {
             name: tr.name,
             code: tr.code,
             rate: tr.rate,
-            type: "rate",
+            type: TaxRateType.RATE,
           }
         }),
       ])
@@ -89,7 +122,7 @@ const TaxDetails = ({ id, onDelete, handleSelect }) => {
         actionables={[
           {
             label: "New Tax Rate",
-            onClick: console.log,
+            onClick: () => setShowNew(true),
             icon: <PlusIcon />,
           },
         ]}
@@ -117,7 +150,7 @@ const TaxDetails = ({ id, onDelete, handleSelect }) => {
             </div>
           ) : (
             <Table.Body {...getTableBodyProps()}>
-              {rows.map((row, rowIndex) => {
+              {rows.map((row) => {
                 prepareRow(row)
                 return (
                   <Table.Row
@@ -126,8 +159,14 @@ const TaxDetails = ({ id, onDelete, handleSelect }) => {
                     actions={[
                       {
                         label: "Edit",
-                        onClick: (e) => console.log(row.original),
+                        onClick: () => setEditRate(row.original),
                         icon: <EditIcon size={20} />,
+                      },
+                      {
+                        label: "Delete Tax Rate",
+                        variant: "danger",
+                        onClick: () => setDeleteRate(row.original),
+                        icon: <TrashIcon size={20} />,
                       },
                     ]}
                     {...row.getRowProps()}
@@ -142,14 +181,31 @@ const TaxDetails = ({ id, onDelete, handleSelect }) => {
             </Table.Body>
           )}
         </Table>
+        <h3 className="inter-large-semibold mt-2xlarge mb-base">
+          Tax Calculation Settings
+        </h3>
+        <div className="flex flex-1">
+          {!regionIsLoading && <RegionTaxForm region={region} />}
+        </div>
       </BodyCard>
-      {showDanger && (
+      {showNew && (
+        <NewTaxRate regionId={id} onDismiss={() => setShowNew(false)} />
+      )}
+      {editRate && (
+        <EditTaxRate
+          regionId={id}
+          taxRate={editRate}
+          taxRateId={editRate.id}
+          onDismiss={() => setEditRate(null)}
+        />
+      )}
+      {deleteRate && (
         <DeletePrompt
-          handleClose={() => setShowDanger(!showDanger)}
-          text="Are you sure you want to delete this region from your Medusa Store?"
-          heading="Delete region"
+          handleClose={() => setDeleteRate(null)}
+          text="Are you sure you want to delete this tax rate?"
+          heading="Delete Ttax rate"
           onDelete={handleDelete}
-          successText="Successfully deleted region"
+          successText="Successfully deleted tax rate"
           confirmText="Yes, delete"
         />
       )}
