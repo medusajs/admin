@@ -72,7 +72,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const [paymentFormatWarning, setPaymentFormatWarning] = useState<
     string | undefined
   >(undefined)
-  const [payable, setPayable] = useState(false)
+  const [payable, setPayable] = useState(true)
   const { store } = useAdminStore()
   const { order } = useAdminOrder(event.orderId)
 
@@ -87,8 +87,6 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
       setPayable(false)
       return
     }
-
-    setPayable(true)
 
     if (store.payment_link_template?.indexOf("{cart_id}") === -1) {
       setPaymentFormatWarning(
