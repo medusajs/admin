@@ -107,7 +107,7 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
                 {columns.map((col, j) => {
                   return (
                     <Table.Cell key={j}>
-                      {edit ? (
+                      {edit || col.readOnly ? (
                         <div className="px-2 py-4 truncate">
                           {getDisplayValue(variant, col)}
                         </div>
