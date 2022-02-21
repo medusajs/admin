@@ -124,7 +124,7 @@ const NewRegion = ({ onDone, onClick }) => {
           <Modal.Content>
             <div>
               <p className="inter-base-semibold mb-base">General</p>
-              <div className="grid grid-cols-1 medium:grid-cols-2 gap-y-xsmall gap-x-base">
+              <div className="grid grid-cols-1 medium:grid-cols-2 gap-y-xsmall gap-x-base max-w-xl">
                 <Input
                   name="name"
                   label="Name"
