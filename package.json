@@ -11,7 +11,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
-    "@medusajs/medusa": "1.1.64-dev-1645444029044",
+    "@medusajs/medusa": "^1.1.65-tax-api.48",
     "@medusajs/medusa-js": "^1.0.13-tax-api.48",
     "@popperjs/core": "^2.10.2",
     "@radix-ui/react-avatar": "^0.1.3",
