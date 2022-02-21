@@ -23,9 +23,6 @@ import Tooltip from "../../atoms/tooltip"
 const getTotal = (...lists) =>
   lists.reduce((total, list = []) => total + list.length, 0)
 
-const mergeArrays = (...arrs) =>
-  arrs.reduce((global, arr) => global.concat(arr || []), [])
-
 const SearchModal = ({ handleClose }) => {
   const [q, setQ] = React.useState("")
   const query = useDebounce(q, 500)
@@ -37,17 +34,6 @@ const SearchModal = ({ handleClose }) => {
   const { orders, isFetching: isFetchingOrders } = useAdminOrders(
     {
       q: query,
-      limit: 5,
-      offset: 0,
-    },
-    { enabled: !!query, keepPreviousData: true }
-  )
-  const {
-    orders: directHitsOrders,
-    isFetching: isFetchingDirectHits,
-  } = useAdminOrders(
-    {
-      display_id: query,
       limit: 5,
       offset: 0,
     },
@@ -74,16 +60,9 @@ const SearchModal = ({ handleClose }) => {
     isFetchingDiscounts ||
     isFetchingCustomers ||
     isFetchingProducts ||
-    isFetchingOrders ||
-    isFetchingDirectHits
+    isFetchingOrders
 
-  const totalLength = getTotal(
-    directHitsOrders,
-    products,
-    discounts,
-    customers,
-    orders
-  )
+  const totalLength = getTotal(products, discounts, customers, orders)
 
   const {
     getInputProps,
@@ -93,8 +72,6 @@ const SearchModal = ({ handleClose }) => {
   } = useKeyboardNavigationList({
     length: totalLength,
   })
-
-  const allOrders = mergeArrays(orders, directHitsOrders)
 
   return (
     <RadixDialog.Root open onOpenChange={handleClose}>
@@ -142,7 +119,7 @@ const SearchModal = ({ handleClose }) => {
                     <>
                       <div>
                         <OrderResults
-                          orders={allOrders}
+                          orders={orders}
                           offset={0}
                           getLIProps={getLIProps}
                           selected={selected}
@@ -152,7 +129,7 @@ const SearchModal = ({ handleClose }) => {
                       <div className="mt-xlarge">
                         <CustomerResults
                           customers={customers}
-                          offset={allOrders.length}
+                          offset={orders?.length || 0}
                           getLIProps={getLIProps}
                           selected={selected}
                         />
