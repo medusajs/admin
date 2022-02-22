@@ -4,6 +4,8 @@ import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Table from "../../../components/molecules/table"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import useNotification from "../../../hooks/use-notification"
+import { getErrorMessage } from "../../../utils/error-messages"
 import { stringDisplayPrice } from "../../../utils/prices"
 
 type DenominationTableProps = {
@@ -20,7 +22,7 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
   setEditDenom,
 }) => {
   const [selectedDenom, setSelectedDenom] = useState<string | null>(null)
-
+  const notification = useNotification()
   const deleteDenomination = useAdminDeleteVariant(giftCardId)
 
   const getDenominationPrices = (denomination) => {
@@ -37,13 +39,18 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
       return 0
     }
 
-    return denomination.prices
-      .filter((p) => p.currency_code !== defaultCurrency) // without default
-      .sort(sortHelper) // sort by currency code
-      .map((p) =>
-        stringDisplayPrice({ currencyCode: p.currency_code, amount: p.amount })
-      ) // get formatted price
-      .join(", ") // concatenate to single comma separated string
+    return (
+      denomination.prices
+        .filter((p) => p.currency_code !== defaultCurrency) // without default
+        .sort(sortHelper) // sort by currency code
+        .map((p) =>
+          stringDisplayPrice({
+            currencyCode: p.currency_code,
+            amount: p.amount,
+          })
+        ) // get formatted price
+        .join(", ") || "-" // concatenate to single comma separated string or a dash if no prices
+    )
   }
 
   const getDenominationRow = (denomination, index) => {
@@ -86,7 +93,14 @@ const DenominationTable: React.FC<DenominationTableProps> = ({
   }
 
   const handleDeleteDenomination = async () => {
-    deleteDenomination.mutateAsync(selectedDenom!)
+    deleteDenomination.mutateAsync(selectedDenom!, {
+      onSuccess: () => {
+        notification("Success", "Denomination deleted successfully", "success")
+      },
+      onError: (err) => {
+        notification("Error", getErrorMessage(err), "error")
+      },
+    })
   }
 
   return (

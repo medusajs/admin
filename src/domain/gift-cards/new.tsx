@@ -59,6 +59,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
         />
       </CurrencyInput>
     )
+    register(name, { required: true })
     setDenominations([...denominations, { name, component }])
   }
 

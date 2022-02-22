@@ -1,0 +1,75 @@
+import { useAdminStore, useAdminUpdateVariant } from "medusa-react"
+import { ProductVariant } from "medusa-react/dist/types"
+import React, { useState } from "react"
+import BodyCard from "../../../../../components/organisms/body-card"
+import EditDenominationsModal from "../../../../../components/organisms/edit-denominations-modal"
+import useNotification from "../../../../../hooks/use-notification"
+import { getErrorMessage } from "../../../../../utils/error-messages"
+import DenominationTable from "../../denomination-table"
+
+const Denominations = ({ giftCard }) => {
+  const { store } = useAdminStore()
+  const updateGiftCardVariant = useAdminUpdateVariant(giftCard.id)
+  const [editDenom, setEditDenom] = useState<null | ProductVariant>(null)
+
+  const notification = useNotification()
+
+  const submitDenomations = (denoms) => {
+    updateGiftCardVariant.mutate(
+      {
+        variant_id: editDenom!.id,
+        prices: denoms.map(({ amount, currency_code }) => ({
+          amount,
+          currency_code,
+        })),
+        title: editDenom!.title,
+        inventory_quantity: editDenom!.inventory_quantity,
+        options: editDenom!.options.map((opt) => ({
+          option_id: opt.option_id,
+          value: opt.value,
+        })),
+      },
+      {
+        onSuccess: () => {
+          notification(
+            "Success",
+            "Successfully updated denominations",
+            "success"
+          )
+          setEditDenom(null)
+        },
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
+      }
+    )
+  }
+  return (
+    <>
+      <BodyCard
+        title="Denominations"
+        subtitle="Manage your denominations"
+        className={"h-auto w-full"}
+      >
+        <DenominationTable
+          giftCardId={giftCard.id || ""}
+          denominations={giftCard.variants || []}
+          defaultCurrency={store?.default_currency_code || ""}
+          setEditDenom={setEditDenom}
+        />
+      </BodyCard>
+      {editDenom && (
+        <EditDenominationsModal
+          currencyCodes={store?.currencies.map((c) => c.code)}
+          onSubmit={submitDenomations}
+          defaultDenominations={editDenom.prices.map((p) => ({
+            amount: p.amount,
+            currency_code: p.currency_code,
+            id: p.id,
+          }))}
+          handleClose={() => setEditDenom(null)}
+        />
+      )}
+    </>
+  )
+}
+
+export default Denominations
