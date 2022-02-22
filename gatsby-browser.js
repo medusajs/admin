@@ -1,6 +1,5 @@
 import { MedusaProvider } from "medusa-react"
 import React from "react"
-import { Toaster } from "react-hot-toast"
 import "./src/assets/styles/emoji-picker.css"
 import "./src/assets/styles/global.css"
 import { LayeredModalProvider } from "./src/components/molecules/modal/layered-modal"
@@ -24,17 +23,7 @@ export const wrapPageElement = ({ element }) => {
           <InterfaceProvider>
             <SteppedProvider>
               <LayeredModalProvider>
-                <Provider>
-                  <Toaster
-                    containerStyle={{
-                      top: 74,
-                      left: 24,
-                      bottom: 24,
-                      right: 24,
-                    }}
-                  />
-                  {element}
-                </Provider>
+                <Provider>{element}</Provider>
               </LayeredModalProvider>
             </SteppedProvider>
           </InterfaceProvider>
