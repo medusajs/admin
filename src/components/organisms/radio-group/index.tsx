@@ -21,12 +21,13 @@ const Item = ({
   sublabel,
   description,
   checked,
+  className,
   ...rest
 }: RadioGroupItemProps) => {
   return (
     <label
       className={clsx(
-        "rounded-base border border-grey-20 p-base flex items-start mb-xsmall last:mb-0 gap-base cursor-pointer"
+        "rounded-base border border-grey-20 p-base flex items-start mb-xsmall gap-base cursor-pointer", className
       )}
       htmlFor={rest.value}
     >
@@ -47,10 +48,10 @@ const Item = ({
       </RadioGroupPrimitive.Item>
       <div className="truncate">
         <div className="flex items-center">
-          <p className="inter-base-semibold truncate">
+          <p className="inter-small-semibold truncate">
             {label}{" "}
             {sublabel ? (
-              <span className="inter-base-regular">{sublabel}</span>
+              <span className="inter-small-regular">{sublabel}</span>
             ) : null}
           </p>
         </div>
