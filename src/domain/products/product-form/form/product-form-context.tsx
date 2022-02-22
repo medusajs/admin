@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
+import FileTextIcon from "../../../../components/fundamentals/icons/file-text-icon"
 import PublishIcon from "../../../../components/fundamentals/icons/publish-icon"
 import useDetectChange, {
   NotificationAction,
@@ -97,7 +98,7 @@ export const ProductFormProvider = ({
         onClick: async () => {
           await onCreateDraft({ ...methods.getValues(), images })
         },
-        icon: <PublishIcon />,
+        icon: <FileTextIcon />,
       } as NotificationAction,
     ]
   }
