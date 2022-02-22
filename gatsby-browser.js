@@ -22,17 +22,19 @@ export const wrapPageElement = ({ element }) => {
       <CacheProvider>
         <AccountProvider>
           <InterfaceProvider>
-            <Toaster
-              containerStyle={{
-                top: 74,
-                left: 24,
-                bottom: 24,
-                right: 24,
-              }}
-            />
             <SteppedProvider>
               <LayeredModalProvider>
-                <Provider>{element}</Provider>
+                <Provider>
+                  <Toaster
+                    containerStyle={{
+                      top: 74,
+                      left: 24,
+                      bottom: 24,
+                      right: 24,
+                    }}
+                  />
+                  {element}
+                </Provider>
               </LayeredModalProvider>
             </SteppedProvider>
           </InterfaceProvider>
