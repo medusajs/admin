@@ -1,35 +1,17 @@
-import {
-  useAdminRegion,
-  useAdminUpdateRegion,
-  useAdminTaxRates,
-  useAdminDeleteTaxRate,
-} from "medusa-react"
+import { useAdminRegion, useAdminTaxRates } from "medusa-react"
 import clsx from "clsx"
 import React, { useEffect, useState } from "react"
 import { useTable } from "react-table"
 import Spinner from "../../../components/atoms/spinner"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import Table from "../../../components/molecules/table"
 import BodyCard from "../../../components/organisms/body-card"
-import DeletePrompt from "../../../components/organisms/delete-prompt"
-import useNotification from "../../../hooks/use-notification"
 import useTaxRateColumns from "./use-tax-rate-columns"
 import NewTaxRate from "./new"
 import EditTaxRate from "./edit"
+import { TaxRateRow } from "./tax-rate-row"
 import { RegionTaxForm } from "./region-form"
-import { getErrorMessage } from "../../../utils/error-messages"
-
-enum TaxRateType {
-  REGION = "region",
-  RATE = "rate",
-}
-
-type PaginationProps = {
-  limit: number
-  offset: number
-}
+import { TaxRateType, PaginationProps } from "../../../types/shared"
 
 type TaxRate = {
   id: string
@@ -41,7 +23,7 @@ type TaxRate = {
 
 const DEFAULT_PAGESIZE = 10
 
-const TaxDetails = ({ id, onDelete, handleSelect }) => {
+const TaxDetails = ({ id }) => {
   if (!id) {
     return null
   }
@@ -51,29 +33,15 @@ const TaxDetails = ({ id, onDelete, handleSelect }) => {
     offset: 0,
   })
   const [showNew, setShowNew] = useState<boolean>(false)
-  const [deleteRate, setDeleteRate] = useState<TaxRate | null>(null)
   const [editRate, setEditRate] = useState<TaxRate | null>(null)
   const [tableEntries, setTableEntries] = useState<TaxRate[]>([])
-  const notification = useNotification()
-
-  const deleteTaxRate = useAdminDeleteTaxRate(deleteRate?.id)
 
   const { tax_rates, isLoading: taxRatesLoading } = useAdminTaxRates({
     region_id: id,
     ...pagination,
   })
 
-  const handleDelete = async () => {
-    if (!deleteRate || deleteRate.type !== TaxRateType.RATE) {
-      return Promise.resolve()
-    }
-
-    return deleteTaxRate.mutateAsync()
-  }
-
   const { region, isLoading: regionIsLoading } = useAdminRegion(id)
-
-  const [showDanger, setShowDanger] = useState(false)
 
   useEffect(() => {
     if (!taxRatesLoading && !regionIsLoading && region && tax_rates) {
@@ -153,29 +121,11 @@ const TaxDetails = ({ id, onDelete, handleSelect }) => {
               {rows.map((row) => {
                 prepareRow(row)
                 return (
-                  <Table.Row
-                    color={"inherit"}
-                    forceDropdown
-                    actions={[
-                      {
-                        label: "Edit",
-                        onClick: () => setEditRate(row.original),
-                        icon: <EditIcon size={20} />,
-                      },
-                      {
-                        label: "Delete Tax Rate",
-                        variant: "danger",
-                        onClick: () => setDeleteRate(row.original),
-                        icon: <TrashIcon size={20} />,
-                      },
-                    ]}
-                    {...row.getRowProps()}
-                    className="group"
-                  >
-                    {row.cells.map((cell, index) => {
-                      return cell.render("Cell", { index })
-                    })}
-                  </Table.Row>
+                  <TaxRateRow
+                    key={row.original.id}
+                    onEdit={setEditRate}
+                    row={row}
+                  />
                 )
               })}
             </Table.Body>
@@ -197,16 +147,6 @@ const TaxDetails = ({ id, onDelete, handleSelect }) => {
           taxRate={editRate}
           taxRateId={editRate.id}
           onDismiss={() => setEditRate(null)}
-        />
-      )}
-      {deleteRate && (
-        <DeletePrompt
-          handleClose={() => setDeleteRate(null)}
-          text="Are you sure you want to delete this tax rate?"
-          heading="Delete Ttax rate"
-          onDelete={handleDelete}
-          successText="Successfully deleted tax rate"
-          confirmText="Yes, delete"
         />
       )}
     </>

@@ -10,11 +10,7 @@ import {
 } from "react-table"
 import Table, { TablePagination } from "../../../components/molecules/table"
 import Spinner from "../../../components/atoms/spinner"
-
-type PaginationProps = {
-  limit: number
-  offset: number
-}
+import { PaginationProps } from "../../../types/shared"
 
 type SelectableTableProps = {
   showSearch?: boolean
