@@ -102,9 +102,7 @@ export const ProductFormProvider = ({
     ]
   }
 
-  const isDirty = !!Object.keys(methods.formState.dirtyFields).length
-  console.log(methods.formState.isDirty, methods.formState.isSubmitted)
-  // isDirty from useForm is behaving more like touched and is therfore not working as expected
+  const isDirty = !!Object.keys(methods.formState.dirtyFields).length // isDirty from useForm is behaving more like touched and is therfore not working as expected
 
   useDetectChange({
     isDirty: isDirty,
