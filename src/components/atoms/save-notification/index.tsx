@@ -3,9 +3,13 @@ import type { Toast } from "react-hot-toast"
 import { toast as global } from "react-hot-toast"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 import ToasterContainer from "../toaster-container"
-import ErrorState from "./error-state"
-import SavingState from "./saving-state"
-import SuccessState from "./success-state"
+import MultiActionButton from "./multi-action-button"
+
+export type ButtonAction = {
+  label: string
+  icon?: any
+  onClick: () => Promise<void>
+}
 
 type SaveNotificationProps = {
   toast: Toast
@@ -14,7 +18,7 @@ type SaveNotificationProps = {
   message?: string
   confirmText?: string
   cancelText?: string
-  onSave: () => Promise<void>
+  onSave: ButtonAction[] | (() => Promise<void>)
   reset: () => void
 }
 
@@ -37,26 +41,6 @@ const SaveNotification: React.FC<SaveNotificationProps> = ({
     onDismiss()
   }
 
-  const handleSave = () => {
-    global.custom((t) => <SavingState toast={t} />, {
-      id: toast.id,
-    })
-
-    onSave()
-      .then(() => {
-        global.custom((t) => <SuccessState toast={t} onDismiss={onDismiss} />, {
-          id: toast.id,
-          duration: 5000,
-        })
-      })
-      .catch((_err) => {
-        global.custom((t) => <ErrorState toast={t} onDismiss={onDismiss} />, {
-          id: toast.id,
-          duration: 5000,
-        })
-      })
-  }
-
   return (
     <ToasterContainer visible={toast.visible} className="py-0 px-0 w-[448px]">
       <div className="py-base pl-base">{getIcon(icon)}</div>
@@ -65,12 +49,12 @@ const SaveNotification: React.FC<SaveNotificationProps> = ({
         <span className="inter-small-regular text-grey-50">{message}</span>
       </div>
       <div className="flex flex-col inter-small-semibold border-l border-grey-20 h-full">
-        <button
-          onClick={handleSave}
-          className="inter-small-semibold flex items-center justify-center h-1/2 border-b border-grey-20 px-base text-violet-60"
-        >
-          {confirmText}
-        </button>
+        <MultiActionButton
+          originalId={toast.id}
+          label={confirmText}
+          className="inter-small-semibold flex items-center justify-center h-1/2 border-b border-grey-20 px-base text-violet-60 inter-small-semibold"
+          onClick={onSave}
+        />
         <button
           className="inter-small-semibold flex items-center justify-center h-1/2 px-base"
           onClick={onDiscard}

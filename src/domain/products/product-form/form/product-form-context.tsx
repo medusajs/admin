@@ -1,6 +1,10 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
-import useDetectChange from "../../../../hooks/use-detect-change"
+import PublishIcon from "../../../../components/fundamentals/icons/publish-icon"
+import useDetectChange, {
+  NotificationAction,
+} from "../../../../hooks/use-detect-change"
+import { useFormActions } from "./use-form-actions"
 
 export const VARIANTS_VIEW = "variants"
 
@@ -15,6 +19,7 @@ const defaultProduct = {
   tags: [],
   type: null,
   collection: null,
+  id: "",
   thumbnail: "",
   title: "",
   handle: "",
@@ -37,6 +42,7 @@ const defaultProduct = {
 export const ProductFormProvider = ({
   product = defaultProduct,
   onSubmit,
+  isEdit = false,
   children,
 }) => {
   const [images, setImages] = React.useState<any[]>([])
@@ -64,7 +70,7 @@ export const ProductFormProvider = ({
     setImages(product.images)
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     handleReset()
   }, [product])
 
@@ -78,11 +84,40 @@ export const ProductFormProvider = ({
     handleSubmit({ ...values })
   }
 
+  const { onCreateAndPublish, onCreateDraft, onUpdate } = useFormActions(
+    product.id
+  )
+
+  let notificationAction: NotificationAction[] | (() => Promise<void>)
+
+  if (isEdit) {
+    notificationAction = async () => {
+      await onUpdate(methods.getValues())
+    }
+  } else {
+    notificationAction = [
+      {
+        icon: <PublishIcon />,
+        label: "Save and publish",
+        onClick: async () => {
+          await onCreateAndPublish(methods.getValues())
+        },
+      } as NotificationAction,
+      {
+        label: "Save as draft",
+        onClick: async () => {
+          await onCreateDraft(methods.getValues())
+        },
+        icon: <PublishIcon />,
+      } as NotificationAction,
+    ]
+  }
+
   useDetectChange({
     isDirty: methods.formState.isDirty,
     reset: handleReset,
     options: {
-      fn: handleSubmission,
+      fn: notificationAction,
       title: "You have unsaved changes",
       message: "Do you want to save your changes?",
     },

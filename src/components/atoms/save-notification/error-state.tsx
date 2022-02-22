@@ -1,5 +1,6 @@
-import React, { useEffect } from "react"
+import React from "react"
 import type { Toast } from "react-hot-toast"
+import { toast as global } from "react-hot-toast"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 import ToasterContainer from "../toaster-container"
@@ -8,24 +9,16 @@ type SavingStateProps = {
   toast: Toast
   title?: string
   message?: string
-  onDismiss: () => void
 }
 
 const ErrorState: React.FC<SavingStateProps> = ({
   toast,
   title = "Error",
   message = "An error occured while trying to save your changes. Please try again.",
-  onDismiss,
 }) => {
-  useEffect(() => {
-    const life = setTimeout(() => {
-      onDismiss()
-    }, 2000)
-
-    return () => {
-      clearTimeout(life)
-    }
-  }, [toast])
+  const onDismiss = () => {
+    global.dismiss(toast.id)
+  }
 
   return (
     <ToasterContainer visible={toast.visible} className="w-[448px]">

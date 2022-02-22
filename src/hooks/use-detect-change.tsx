@@ -2,8 +2,14 @@ import React, { ReactNode, useEffect } from "react"
 import { toast } from "react-hot-toast"
 import SaveNotification from "../components/atoms/save-notification"
 
+export type NotificationAction = {
+  label: string
+  icon?: any
+  onClick: () => Promise<void>
+}
+
 type Options = {
-  fn: () => Promise<void>
+  fn: NotificationAction[] | (() => Promise<void>)
   title: string
   message: string
   icon?: ReactNode

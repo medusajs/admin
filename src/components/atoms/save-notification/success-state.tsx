@@ -1,5 +1,6 @@
-import React, { useEffect } from "react"
+import React from "react"
 import type { Toast } from "react-hot-toast"
+import { toast as global } from "react-hot-toast"
 import CheckCircleIcon from "../../fundamentals/icons/check-circle-icon"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import ToasterContainer from "../toaster-container"
@@ -8,24 +9,16 @@ type SavingStateProps = {
   toast: Toast
   title?: string
   message?: string
-  onDismiss: () => void
 }
 
 const SuccessState: React.FC<SavingStateProps> = ({
   toast,
   title = "Success",
   message = "Your changes have been saved.",
-  onDismiss,
 }) => {
-  useEffect(() => {
-    const life = setTimeout(() => {
-      onDismiss()
-    }, 2000)
-
-    return () => {
-      clearTimeout(life)
-    }
-  }, [toast])
+  const onDismiss = () => {
+    global.dismiss(toast.id)
+  }
 
   return (
     <ToasterContainer visible={toast.visible} className="w-[448px]">
