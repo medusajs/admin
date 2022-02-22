@@ -2,16 +2,13 @@ import { useAdminUpdateTaxRate, useAdminUpdateRegion } from "medusa-react"
 import React, { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
-import Actionables from "../../../components/molecules/actionables"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import EditIcon from "../../../components/fundamentals/icons/edit-icon"
-import Input from "../../../components/molecules/input"
-import Badge from "../../../components/fundamentals/badge"
 import Modal from "../../../components/molecules/modal"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import TaxRuleSelector from "./tax-rule-selector"
 import { EditTaxRateDetails } from "./edit-tax-rate-details"
+import { TaxRuleItem } from "./tax-rule-item"
 
 const EditTaxRate = ({ modalContext, regionId, taxRate, onDismiss }) => {
   const updateTaxRate = useAdminUpdateTaxRate(taxRate.id)
@@ -87,7 +84,10 @@ const EditTaxRate = ({ modalContext, regionId, taxRate, onDismiss }) => {
             rules.shipping_options.length > 0) && (
             <div className="flex flex-col gap-base">
               {rules.products.length > 0 && (
-                <Rule
+                <TaxRuleItem
+                  onDelete={() =>
+                    handleOverridesSelected({ type: "products", items: [] })
+                  }
                   onEdit={() => {
                     modalContext.push(
                       SelectOverridesScreen(
@@ -109,7 +109,13 @@ const EditTaxRate = ({ modalContext, regionId, taxRate, onDismiss }) => {
                 />
               )}
               {rules.product_types.length > 0 && (
-                <Rule
+                <TaxRuleItem
+                  onDelete={() =>
+                    handleOverridesSelected({
+                      type: "product_types",
+                      items: [],
+                    })
+                  }
                   onEdit={() => {
                     modalContext.push(
                       SelectOverridesScreen(
@@ -131,7 +137,13 @@ const EditTaxRate = ({ modalContext, regionId, taxRate, onDismiss }) => {
                 />
               )}
               {rules.shipping_options.length > 0 && (
-                <Rule
+                <TaxRuleItem
+                  onDelete={() =>
+                    handleOverridesSelected({
+                      type: "shipping_options",
+                      items: [],
+                    })
+                  }
                   onEdit={() => {
                     modalContext.push(
                       SelectOverridesScreen(
@@ -203,37 +215,6 @@ const EditTaxRate = ({ modalContext, regionId, taxRate, onDismiss }) => {
         </div>
       </Modal.Footer>
     </form>
-  )
-}
-
-const Rule = ({ onEdit, index, name, description }) => {
-  return (
-    <div className="p-base border rounded-rounded flex gap-base items-center">
-      <div>
-        <Badge
-          className="inter-base-semibold flex justify-center items-center w-[40px] h-[40px]"
-          variant="default"
-        >
-          §{index}
-        </Badge>
-      </div>
-      <div className="flex-1">
-        <div className="inter-small-semibold">{name}</div>
-        <div className="inter-small-regular text-grey-50">{description}</div>
-      </div>
-      <div>
-        <Actionables
-          forceDropdown
-          actions={[
-            {
-              label: "Edit",
-              onClick: () => onEdit(),
-              icon: <EditIcon size={20} />,
-            },
-          ]}
-        />
-      </div>
-    </div>
   )
 }
 

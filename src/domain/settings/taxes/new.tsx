@@ -14,10 +14,17 @@ import LayeredModal, {
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import TaxRuleSelector from "./tax-rule-selector"
+import { TaxRuleItem } from "./tax-rule-item"
 
 const NewTaxRate = ({ regionId, onDismiss }) => {
   const createTaxRate = useAdminCreateTaxRate()
-  const { register, setValue, handleSubmit, watch } = useForm()
+  const { register, setValue, handleSubmit, watch } = useForm({
+    defaultValues: {
+      products: [],
+      product_types: [],
+      shipping_options: [],
+    },
+  })
   const notification = useNotification()
 
   const layeredModalContext = useContext(LayeredModalContext)
@@ -104,12 +111,15 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
             </div>
             <div>
               <p className="inter-base-semibold mb-base">Overrides</p>
-              {(rules.product_types ||
-                rules.products ||
-                rules.shipping_options) && (
+              {(rules.product_types.length > 0 ||
+                rules.products.length > 0 ||
+                rules.shipping_options.length > 0) && (
                 <div className="flex flex-col gap-base">
-                  {rules.products && (
-                    <Rule
+                  {rules.products.length > 0 && (
+                    <TaxRuleItem
+                      onDelete={() =>
+                        handleOverridesSelected({ type: "products", items: [] })
+                      }
                       onEdit={() => {
                         layeredModalContext.push(
                           SelectOverridesScreen(
@@ -130,8 +140,14 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
                       } product${rules.products.length > 1 ? "s" : ""}`}
                     />
                   )}
-                  {rules.product_types && (
-                    <Rule
+                  {rules.product_types.length > 0 && (
+                    <TaxRuleItem
+                      onDelete={() =>
+                        handleOverridesSelected({
+                          type: "product_types",
+                          items: [],
+                        })
+                      }
                       onEdit={() => {
                         layeredModalContext.push(
                           SelectOverridesScreen(
@@ -154,8 +170,14 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
                       }`}
                     />
                   )}
-                  {rules.shipping_options && (
-                    <Rule
+                  {rules.shipping_options.length > 0 && (
+                    <TaxRuleItem
+                      onDelete={() =>
+                        handleOverridesSelected({
+                          type: "shipping_options",
+                          items: [],
+                        })
+                      }
                       onEdit={() => {
                         layeredModalContext.push(
                           SelectOverridesScreen(
@@ -181,9 +203,9 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
                 </div>
               )}
               {!(
-                rules.product_types &&
-                rules.products &&
-                rules.shipping_options
+                rules.product_types.length > 0 &&
+                rules.products.length > 0 &&
+                rules.shipping_options.length > 0
               ) && (
                 <Button
                   type="button"
@@ -229,37 +251,6 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
         </Modal.Body>
       </form>
     </LayeredModal>
-  )
-}
-
-const Rule = ({ onEdit, index, name, description }) => {
-  return (
-    <div className="p-base border rounded-rounded flex gap-base items-center">
-      <div>
-        <Badge
-          className="inter-base-semibold flex justify-center items-center w-[40px] h-[40px]"
-          variant="default"
-        >
-          §{index}
-        </Badge>
-      </div>
-      <div className="flex-1">
-        <div className="inter-small-semibold">{name}</div>
-        <div className="inter-small-regular text-grey-50">{description}</div>
-      </div>
-      <div>
-        <Actionables
-          forceDropdown
-          actions={[
-            {
-              label: "Edit",
-              onClick: () => onEdit(),
-              icon: <EditIcon size={20} />,
-            },
-          ]}
-        />
-      </div>
-    </div>
   )
 }
 
