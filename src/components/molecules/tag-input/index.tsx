@@ -1,9 +1,9 @@
 import clsx from "clsx"
 import React, { useRef, useState } from "react"
+import Tooltip from "../../atoms/tooltip"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
-import Tooltip from "../../atoms/tooltip"
 
 const ENTER_KEY = 13
 const TAB_KEY = 9
@@ -132,7 +132,12 @@ const TagInput: React.FC<TagInputProps> = ({
   }
 
   const handleBlur = (e) => {
+    const value = inputRef?.current?.value
     setHighlighted(-1)
+
+    if (value) {
+      handleAddValue(value)
+    }
   }
 
   const handleOnContainerFocus = () => {

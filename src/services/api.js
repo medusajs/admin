@@ -1,6 +1,4 @@
 import medusaRequest, { multipartRequest } from "./request"
-import qs from "query-string"
-import _ from "lodash"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -337,6 +335,16 @@ export default {
       const path = `/admin/collections`
       return medusaRequest("GET", path)
     },
+
+    addProducts(id, payload) {
+      const path = `/admin/collections/${id}/products/batch`
+      return medusaRequest("POST", path, payload)
+    },
+
+    removeProducts(id, payload) {
+      const path = `/admin/collections/${id}/products/batch`
+      return medusaRequest("DELETE", path, payload)
+    },
   },
 
   orders: {
@@ -669,6 +677,58 @@ export default {
         .join("&")
       const path = `/admin/draft-orders${params && `?${params}`}`
       return medusaRequest("GET", path)
+    },
+  },
+  invites: {
+    create(data) {
+      const path = `/admin/invites`
+      return medusaRequest("POST", path, data)
+    },
+    resend(inviteId) {
+      const path = `/admin/invites/${inviteId}/resend`
+      return medusaRequest("POST", path)
+    },
+    delete(inviteId) {
+      const path = `/admin/invites/${inviteId}`
+      return medusaRequest("DELETE", path)
+    },
+    list() {
+      const path = `/admin/invites`
+      return medusaRequest("GET", path)
+    },
+    accept(data) {
+      const path = `/admin/invites/accept`
+      return medusaRequest("POST", path, data)
+    },
+  },
+  users: {
+    resetPasswordToken(data) {
+      const path = `/admin/users/password-token`
+      return medusaRequest("POST", path, data)
+    },
+    resetPassword(data) {
+      const path = `/admin/users/reset-password`
+      return medusaRequest("POST", path, data)
+    },
+
+    list() {
+      const path = `/admin/users`
+      return medusaRequest("GET", path)
+    },
+
+    retrieve(userId) {
+      const path = `/admin/users/${userId}`
+      return medusaRequest("GET", path)
+    },
+
+    update(userId, data) {
+      const path = `/admin/users/${userId}`
+      return medusaRequest("POST", path, data)
+    },
+
+    delete(userId) {
+      const path = `/admin/users/${userId}`
+      return medusaRequest("DELETE", path)
     },
   },
   invites: {
