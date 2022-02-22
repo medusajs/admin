@@ -1,3 +1,4 @@
+import { RouteComponentProps } from "@reach/router"
 import { useAdminProduct } from "medusa-react"
 import React from "react"
 import Spinner from "../../../components/atoms/spinner"
@@ -7,16 +8,15 @@ import { GiftCardFormProvider } from "./gift-card-form/form/gift-card-form-conte
 import { giftCardToFormValuesMapper } from "./gift-card-form/form/mappers"
 
 type ManageGiftCardProps = {
-  path: string
-  id: string
-  updateGiftCard: (data) => void
-  deleteGiftCard: () => void
-}
+  id?: string
+} & RouteComponentProps
 
 const ManageGiftCard: React.FC<ManageGiftCardProps> = ({ id }) => {
-  const { product: giftCard, isLoading, isError } = useAdminProduct(id)
+  const { product: giftCard, isLoading, isError } = useAdminProduct(id!, {
+    enabled: id !== undefined,
+  })
 
-  if (isLoading) {
+  if (isLoading || id === undefined) {
     return (
       <div className="w-full pt-2xlarge flex items-center justify-center">
         <Spinner size={"large"} variant={"secondary"} />

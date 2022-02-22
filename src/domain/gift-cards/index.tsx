@@ -40,17 +40,6 @@ const GiftCard = () => {
     )
   }
 
-  const updateGC = (data) => {
-    updateGiftCard.mutate(
-      { ...data },
-      {
-        onSuccess: () =>
-          notification("Success", "Successfully updated Gift Card", "success"),
-        onError: (err) => notification("Error", getErrorMessage(err), "error"),
-      }
-    )
-  }
-
   const deleteGC = () => {
     deleteGiftCard.mutate(undefined, {
       onSuccess: () => {
@@ -63,20 +52,13 @@ const GiftCard = () => {
     <Router>
       <Overview
         path="/"
-        giftCard={giftCards?.[0]}
+        giftCard={giftCard}
         onDelete={() => deleteGC()}
         onUpdate={() => updateGCStatus()}
         isLoading={isLoading}
       />
       <GiftCardDetails path=":id" />
-      {giftCard && (
-        <ManageGiftCard
-          path="manage"
-          id={giftCard.id}
-          updateGiftCard={updateGC}
-          deleteGiftCard={deleteGC}
-        />
-      )}
+      <ManageGiftCard path="manage" id={giftCard?.id} />
     </Router>
   )
 }
