@@ -167,7 +167,7 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
               <Select
                 label="Shipping Method"
                 className="mt-2"
-                overrideStrings={{ search: "Add a shipping method" }}
+                placeholder="Add a shipping method"
                 value={shippingMethod}
                 onChange={handleShippingSelected}
                 options={shippingOptions.map((o) => ({
