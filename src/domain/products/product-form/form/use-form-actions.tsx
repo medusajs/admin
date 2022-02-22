@@ -12,6 +12,7 @@ export const useFormActions = (id: string) => {
   const updateProduct = useAdminUpdateProduct(id)
 
   const onCreate = async (data) => {
+    console.log(data)
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
@@ -49,6 +50,7 @@ export const useFormActions = (id: string) => {
 
     let uploadedImgs = []
     if (images.length > 0) {
+      console.log("found images")
       uploadedImgs = await Medusa.uploads.create(images).then(({ data }) => {
         const uploaded = data.uploads.map(({ url }) => url)
         return uploaded

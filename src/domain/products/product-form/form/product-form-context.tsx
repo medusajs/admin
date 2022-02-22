@@ -41,7 +41,6 @@ const defaultProduct = {
 
 export const ProductFormProvider = ({
   product = defaultProduct,
-  onSubmit,
   isEdit = false,
   children,
 }) => {
@@ -72,17 +71,7 @@ export const ProductFormProvider = ({
 
   useEffect(() => {
     handleReset()
-  }, [product])
-
-  const handleSubmit = (values) => {
-    onSubmit({ ...values, images })
-  }
-
-  const handleSubmission = async () => {
-    const { getValues } = methods
-    const values = getValues()
-    handleSubmit({ ...values })
-  }
+  }, [])
 
   const { onCreateAndPublish, onCreateDraft, onUpdate } = useFormActions(
     product.id
@@ -92,7 +81,7 @@ export const ProductFormProvider = ({
 
   if (isEdit) {
     notificationAction = async () => {
-      await onUpdate(methods.getValues())
+      await onUpdate({ ...methods.getValues(), images })
     }
   } else {
     notificationAction = [
@@ -100,21 +89,25 @@ export const ProductFormProvider = ({
         icon: <PublishIcon />,
         label: "Save and publish",
         onClick: async () => {
-          await onCreateAndPublish(methods.getValues())
+          await onCreateAndPublish({ ...methods.getValues(), images })
         },
       } as NotificationAction,
       {
         label: "Save as draft",
         onClick: async () => {
-          await onCreateDraft(methods.getValues())
+          await onCreateDraft({ ...methods.getValues(), images })
         },
         icon: <PublishIcon />,
       } as NotificationAction,
     ]
   }
 
+  const isDirty = !!Object.keys(methods.formState.dirtyFields).length
+  console.log(methods.formState.isDirty, methods.formState.isSubmitted)
+  // isDirty from useForm is behaving more like touched and is therfore not working as expected
+
   useDetectChange({
-    isDirty: methods.formState.isDirty,
+    isDirty: isDirty,
     reset: handleReset,
     options: {
       fn: notificationAction,
@@ -134,7 +127,6 @@ export const ProductFormProvider = ({
           setViewType,
           viewType,
           isVariantsView: viewType === VARIANTS_VIEW,
-          onSubmit: handleSubmit,
         }}
       >
         {children}
@@ -151,7 +143,6 @@ const ProductFormContext = React.createContext<{
   setViewType: (value: PRODUCT_VIEW) => void
   viewType: PRODUCT_VIEW
   isVariantsView: boolean
-  onSubmit: (values: any) => void
 } | null>(null)
 
 export const useProductForm = () => {
