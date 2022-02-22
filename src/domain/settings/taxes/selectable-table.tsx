@@ -9,6 +9,7 @@ import {
   useTable,
 } from "react-table"
 import Table, { TablePagination } from "../../../components/molecules/table"
+import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
 import Spinner from "../../../components/atoms/spinner"
 import { PaginationProps } from "../../../types/shared"
 
@@ -189,35 +190,3 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({
     </div>
   )
 }
-
-const IndeterminateCheckbox = React.forwardRef(
-  ({ indeterminate, className, checked, ...rest }, ref) => {
-    const defaultRef = React.useRef()
-    const resolvedRef = ref || defaultRef
-
-    React.useEffect(() => {
-      resolvedRef.current.indeterminate = indeterminate
-    }, [resolvedRef, indeterminate])
-
-    return (
-      <div className="items-center h-full flex">
-        <div
-          onClick={() => resolvedRef.current?.click()}
-          className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border cursor-pointer rounded-base ${
-            checked && "bg-violet-60"
-          }`}
-        >
-          <span className="self-center">
-            {checked && <CheckIcon size={16} />}
-          </span>
-        </div>
-        <input
-          type="checkbox"
-          className={clsx("hidden", className)}
-          ref={resolvedRef}
-          {...rest}
-        />
-      </div>
-    )
-  }
-)
