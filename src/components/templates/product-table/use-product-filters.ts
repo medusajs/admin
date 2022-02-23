@@ -408,6 +408,8 @@ export const useProductFilters = (
     const clean = omit(repObj, ["limit", "offset"])
     const repString = qs.stringify(clean, { skipNulls: true })
 
+    console.log({ repObj, clean, repString })
+
     const storedString = localStorage.getItem("products::filters")
 
     let existing: null | object = null
@@ -424,8 +426,15 @@ export const useProductFilters = (
       newFilters[tabName] = repString
       localStorage.setItem("products::filters", JSON.stringify(newFilters))
     }
+    console.log({ existing })
 
     setTabs((prev) => {
+      const duplicate = prev.findIndex(
+        (prev) => prev.label?.toLowerCase() === tabName.toLowerCase()
+      )
+      if (duplicate !== -1) {
+        prev.splice(duplicate, 1)
+      }
       return [
         ...prev,
         {
