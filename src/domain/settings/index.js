@@ -2,6 +2,7 @@ import { Router } from "@reach/router"
 import React from "react"
 import SettingsCard from "../../components/atoms/settings-card"
 import CoinsIcon from "../../components/fundamentals/icons/coins-icon"
+import TaxesIcon from "../../components/fundamentals/icons/taxes-icon"
 import CrosshairIcon from "../../components/fundamentals/icons/crosshair-icon"
 import DollarSignIcon from "../../components/fundamentals/icons/dollar-sign-icon"
 import HappyIcon from "../../components/fundamentals/icons/happy-icon"
@@ -17,6 +18,7 @@ import PersonalInformation from "./personal-information"
 import Regions from "./regions"
 import RegionDetails from "./regions/details"
 import NewRegion from "./regions/new"
+import Taxes from "./taxes"
 import ReturnReasons from "./return-reasons"
 import ShippingProfileDetail from "./shipping-profiles/details"
 import NewShippingProfile from "./shipping-profiles/new"
@@ -74,6 +76,12 @@ const SettingsIndex = () => {
         icon={<MailIcon />}
         externalLink={"mailto: hello@medusajs.com"}
       />
+      <SettingsCard
+        heading={"Tax Settings"}
+        description={"Manage taxes across regions and products"}
+        icon={<TaxesIcon />}
+        to={`/a/settings/taxes`}
+      />
     </SettingsOverview>
   )
 }
@@ -95,6 +103,8 @@ const Settings = () => (
     <Regions path="regions" />
     <RegionDetails path="regions/:id" />
     <NewRegion path="regions/new" />
+
+    <Taxes path="taxes" />
 
     <Users path="team" />
 

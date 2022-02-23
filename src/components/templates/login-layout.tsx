@@ -1,18 +1,6 @@
-import { graphql, useStaticQuery } from "gatsby"
-import PropTypes from "prop-types"
 import React from "react"
 
-const Layout = ({ children }) => {
-  const data = useStaticQuery(graphql`
-    {
-      site {
-        siteMetadata {
-          title
-        }
-      }
-    }
-  `)
-
+const LoginLayout = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="grid grid-cols-1 grid-rows-1 min-h-screen">
@@ -38,8 +26,4 @@ const Layout = ({ children }) => {
   )
 }
 
-Layout.propTypes = {
-  children: PropTypes.node.isRequired,
-}
-
-export default Layout
+export default LoginLayout
