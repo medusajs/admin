@@ -71,7 +71,7 @@ const DiscountSettings: React.FC<DiscountSettingsProps> = ({
     >
       <ConnectForm>
         {({ register }) => (
-          <div className="max-w-xl flex flex-col gap-y-xlarge mt-large">
+          <div className="max-w-xl flex flex-col gap-y-xlarge">
             <Section
               title="Limit the number of redemptions?"
               description="Limit applies across all customers, not per customer."

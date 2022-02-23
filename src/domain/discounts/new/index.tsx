@@ -6,11 +6,8 @@ import {
   useAdminRegions,
 } from "medusa-react"
 import React, { useEffect, useMemo, useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
-import Button from "../../../components/fundamentals/button"
+import { useForm } from "react-hook-form"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
-import DiscountGeneral from "../../../components/templates/discount-general"
-import DiscountSettings from "../../../components/templates/discount-settings"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import {
@@ -19,6 +16,8 @@ import {
 } from "../../../utils/extract-options"
 import { hydrateDiscount } from "../../../utils/hydrate-discount"
 import { getNativeSymbol, persistedPrice } from "../../../utils/prices"
+import DiscountForm from "../discount-form"
+import { DiscountFormProvider } from "../discount-form/form/discount-form-context"
 import { DiscountFormType } from "../types"
 
 type NewProps = RouteComponentProps & PageProps
@@ -185,7 +184,7 @@ const New: React.FC<NewProps> = ({ location }) => {
         previousBreadcrumb="Discount"
         previousRoute="/a/discounts"
       />
-      <FormProvider {...methods}>
+      {/* <FormProvider {...methods}>
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="flex flex-col gap-y-large">
             <DiscountGeneral
@@ -248,7 +247,10 @@ const New: React.FC<NewProps> = ({ location }) => {
             </div>
           </div>
         </form>
-      </FormProvider>
+      </FormProvider> */}
+      <DiscountFormProvider>
+        <DiscountForm />
+      </DiscountFormProvider>
     </div>
   )
 }

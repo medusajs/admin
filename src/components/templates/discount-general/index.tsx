@@ -100,7 +100,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
         ) : undefined
       }
     >
-      <div className="mt-large">
+      <div>
         <ConnectForm>
           {({ register }) => (
             <div>

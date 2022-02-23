@@ -1,3 +1,4 @@
+import React from "react"
 import { extractProductOptions, extractRegionOptions } from "./extract-options"
 import { displayAmount } from "./prices"
 
@@ -87,7 +88,9 @@ export const hydrateDiscount = ({
   },
   isEdit = false,
 }: HydrationProps): void => {
-  if (!discount) return
+  if (!discount) {
+    return
+  }
 
   setValue("code", isEdit ? discount.code : `${discount.code}_COPY`)
   setValue("usage_limit", discount.usage_limit)
