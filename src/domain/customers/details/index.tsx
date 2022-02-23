@@ -2,6 +2,7 @@ import { RouteComponentProps } from "@reach/router"
 import { useAdminCustomer } from "medusa-react"
 import moment from "moment"
 import React, { useState } from "react"
+import ReactJson from "react-json-view"
 import Avatar from "../../../components/atoms/avatar"
 import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
@@ -113,6 +114,20 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
             <CustomerOrdersTable customerId={customer.id} />
           </div>
         )}
+      </BodyCard>
+      <BodyCard
+        className={"w-full mb-4 min-h-0 h-auto mt-large"}
+        title="Raw Customer"
+      >
+        <div className="flex flex-col min-h-[100px] mt-4 bg-grey-5 px-3 py-2 h-full rounded-rounded">
+          <span className="inter-base-semibold">
+            Data{" "}
+            <span className="text-grey-50 inter-base-regular">(1 item)</span>
+          </span>
+          <div className="flex flex-grow items-center mt-4">
+            <ReactJson name={false} collapsed={true} src={customer} />
+          </div>
+        </div>
       </BodyCard>
       {showEdit && (
         <EditCustomerModal
