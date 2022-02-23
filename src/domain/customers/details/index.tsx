@@ -10,6 +10,7 @@ import StatusDot from "../../../components/fundamentals/status-indicator"
 import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
+import RawJSON from "../../../components/organisms/raw-json"
 import CustomerOrdersTable from "../../../components/templates/customer-orders-table"
 import EditCustomerModal from "./edit"
 
