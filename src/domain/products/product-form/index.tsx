@@ -1,5 +1,6 @@
 import { useAdminStore } from "medusa-react"
 import * as React from "react"
+import RawJSON from "../../../components/organisms/raw-json"
 import { useProductForm } from "./form/product-form-context"
 import General from "./sections/general"
 import Images from "./sections/images"
@@ -41,6 +42,9 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
       </div>
       <div className="mt-large">
         <StockAndInventory />
+      </div>
+      <div className="mt-large">
+        <RawJSON data={product} title="Raw product" />
       </div>
     </>
   )

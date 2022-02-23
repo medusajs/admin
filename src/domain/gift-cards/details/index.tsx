@@ -15,6 +15,7 @@ import UnpublishIcon from "../../../components/fundamentals/icons/unpublish-icon
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import StatusSelector from "../../../components/molecules/status-selector"
 import BodyCard from "../../../components/organisms/body-card"
+import RawJSON from "../../../components/organisms/raw-json"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
@@ -84,58 +85,65 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
           <Spinner size={"large"} variant={"secondary"} />
         </div>
       ) : (
-        <BodyCard
-          className={"h-auto min-h-0 w-full"}
-          title={`${gift_card?.code}`}
-          subtitle={`Gift Card id: ${gift_card?.id}`}
-          status={
-            <StatusSelector
-              isDraft={!!gift_card?.is_disabled}
-              activeState={"Active"}
-              draftState={"Disable"}
-              onChange={() =>
-                handleUpdate({ is_disabled: !gift_card?.is_disabled })
-              }
-            />
-          }
-          actionables={actions}
-        >
-          <div className="flex justify-between">
-            <div className="flex mt-6 space-x-6 divide-x">
-              <div className="flex flex-col">
-                <div className="inter-smaller-regular text-grey-50 mb-1">
-                  Original amount
+        <>
+          <BodyCard
+            className={"h-auto min-h-0 w-full"}
+            title={`${gift_card?.code}`}
+            subtitle={`Gift Card id: ${gift_card?.id}`}
+            status={
+              <StatusSelector
+                isDraft={!!gift_card?.is_disabled}
+                activeState={"Active"}
+                draftState={"Disable"}
+                onChange={() =>
+                  handleUpdate({ is_disabled: !gift_card?.is_disabled })
+                }
+              />
+            }
+            actionables={actions}
+          >
+            <div className="flex justify-between">
+              <div className="flex mt-6 space-x-6 divide-x">
+                <div className="flex flex-col">
+                  <div className="inter-smaller-regular text-grey-50 mb-1">
+                    Original amount
+                  </div>
+                  <div>
+                    {formatAmountWithSymbol({
+                      amount: gift_card?.value,
+                      currency: gift_card?.region.currency_code,
+                    })}
+                  </div>
                 </div>
-                <div>
-                  {formatAmountWithSymbol({
-                    amount: gift_card?.value,
-                    currency: gift_card?.region.currency_code,
-                  })}
+                <div className="flex flex-col pl-6">
+                  <div className="inter-smaller-regular text-grey-50 mb-1">
+                    Balance
+                  </div>
+                  <div>
+                    {formatAmountWithSymbol({
+                      amount: gift_card?.balance,
+                      currency: gift_card?.region.currency_code,
+                    })}
+                  </div>
+                </div>
+                <div className="flex flex-col pl-6">
+                  <div className="inter-smaller-regular text-grey-50 mb-1">
+                    Created
+                  </div>
+                  <div>
+                    {moment(gift_card?.created_at).format("DD MMM YYYY")}
+                  </div>
                 </div>
               </div>
-              <div className="flex flex-col pl-6">
-                <div className="inter-smaller-regular text-grey-50 mb-1">
-                  Balance
-                </div>
-                <div>
-                  {formatAmountWithSymbol({
-                    amount: gift_card?.balance,
-                    currency: gift_card?.region.currency_code,
-                  })}
-                </div>
-              </div>
-              <div className="flex flex-col pl-6">
-                <div className="inter-smaller-regular text-grey-50 mb-1">
-                  Created
-                </div>
-                <div>{moment(gift_card?.created_at).format("DD MMM YYYY")}</div>
+              <div className="flex items-end">
+                <Badge variant="default">{gift_card?.region?.name}</Badge>
               </div>
             </div>
-            <div className="flex items-end">
-              <Badge variant="default">{gift_card?.region?.name}</Badge>
-            </div>
+          </BodyCard>
+          <div className="mt-large">
+            <RawJSON data={gift_card} title="Raw gift card" />
           </div>
-        </BodyCard>
+        </>
       )}
       {showUpdateBalance && (
         <UpdateBalanceModal
