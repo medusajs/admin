@@ -4,10 +4,22 @@ import ReactJson from "react-json-view"
 import BodyCard from "../body-card"
 
 type RawJSONProps = {
+  /**
+   * JSON data to render
+   */
   data?: object
+  /**
+   * Body card title.
+   */
   title: string
 }
 
+/**
+ * Renders a (collapsed) JSON tree section.
+ *
+ * @param {Object} props - React props
+ * @return {Object} - React element
+ */
 function RawJSON(props: RawJSONProps) {
   const { title, data } = props
 
