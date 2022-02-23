@@ -6,10 +6,9 @@ import { useForm } from "react-hook-form"
 import { decodeToken } from "react-jwt"
 import Button from "../components/fundamentals/button"
 import MedusaIcon from "../components/fundamentals/icons/medusa-icon"
-import LoginLayout from "../components/login-layout"
 import SigninInput from "../components/molecules/input-signin"
 import SEO from "../components/seo"
-import useNotification from "../hooks/use-notification"
+import LoginLayout from "../components/templates/login-layout"
 import { getErrorMessage } from "../utils/error-messages"
 
 type formValues = {
@@ -30,6 +29,7 @@ const ResetPasswordPage = ({ location }) => {
   }
 
   const [passwordMismatch, setPasswordMismatch] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [ready, setReady] = useState(false)
   const email = token?.email || parsed?.email || ""
 
@@ -41,10 +41,9 @@ const ResetPasswordPage = ({ location }) => {
   })
   const reset = useAdminResetPassword()
 
-  const notification = useNotification()
-
   const handleAcceptInvite = (data: formValues) => {
     setPasswordMismatch(false)
+    setError(null)
 
     if (data.password !== data.repeat_password) {
       setPasswordMismatch(true)
@@ -62,7 +61,7 @@ const ResetPasswordPage = ({ location }) => {
           navigate("/login")
         },
         onError: (err) => {
-          notification("Error", getErrorMessage(err), "error")
+          setError(getErrorMessage(err))
         },
       }
     )
@@ -127,6 +126,11 @@ const ResetPasswordPage = ({ location }) => {
                   autoComplete="new-password"
                   className="mb-0"
                 />
+                {error && (
+                  <span className="text-rose-50 w-full mt-xsmall inter-small-regular">
+                    The two passwords are not the same
+                  </span>
+                )}
                 {passwordMismatch && (
                   <span className="text-rose-50 w-full mt-xsmall inter-small-regular">
                     The two passwords are not the same
