@@ -6,7 +6,6 @@ import {
 } from "medusa-react"
 import moment from "moment"
 import React, { useState } from "react"
-import ReactJson from "react-json-view"
 import Spinner from "../../../components/atoms/spinner"
 import Badge from "../../../components/fundamentals/badge"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
@@ -16,6 +15,7 @@ import UnpublishIcon from "../../../components/fundamentals/icons/unpublish-icon
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import StatusSelector from "../../../components/molecules/status-selector"
 import BodyCard from "../../../components/organisms/body-card"
+import RawJSON from "../../../components/organisms/raw-json"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
@@ -140,22 +140,9 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
               </div>
             </div>
           </BodyCard>
-          <BodyCard
-            className={"w-full mb-4 min-h-0 h-auto mt-large"}
-            title="Raw Gift Card"
-          >
-            <div className="flex flex-col min-h-[100px] mt-4 bg-grey-5 px-3 py-2 h-full rounded-rounded">
-              <span className="inter-base-semibold">
-                Data{" "}
-                <span className="text-grey-50 inter-base-regular">
-                  (1 item)
-                </span>
-              </span>
-              <div className="flex flex-grow items-center mt-4">
-                <ReactJson name={false} collapsed={true} src={gift_card} />
-              </div>
-            </div>
-          </BodyCard>
+          <div className="mt-large">
+            <RawJSON data={gift_card} title="Raw gift card" />
+          </div>
         </>
       )}
       {showUpdateBalance && (
