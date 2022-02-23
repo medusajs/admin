@@ -1,9 +1,11 @@
 import { useAdminProducts } from "medusa-react"
 import React from "react"
 import { Controller } from "react-hook-form"
+import Checkbox from "../../../../components/atoms/checkbox"
 import DatePicker from "../../../../components/atoms/date-picker/date-picker"
 import TimePicker from "../../../../components/atoms/date-picker/time-picker"
 import AvailabilityDuration from "../../../../components/molecules/availability-duration"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import InputField from "../../../../components/molecules/input"
 import Section from "../../../../components/molecules/section"
 import Select from "../../../../components/molecules/select"
@@ -24,6 +26,8 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
     appliesToAll,
     setAppliesToAll,
     isDynamic,
+    hasExpiryDate,
+    setHasExpiryDate,
   } = useDiscountForm()
 
   const { products } = useAdminProducts()
@@ -180,19 +184,12 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
             />
           </div>
         </Section>
-        {/* <div>
+        <div>
           <div className="flex items-center mb-2xsmall">
             <Checkbox
               label="Discount has an expiry date?"
               checked={hasExpiryDate}
-              onChange={() => {
-                if (expiryDate) {
-                  setExpiryDate(undefined)
-                } else {
-                  setExpiryDate(new Date())
-                }
-                setHasExpiryDate(!hasExpiryDate)
-              }}
+              onChange={() => setHasExpiryDate(!hasExpiryDate)}
             />
             <div className="flex items-center ml-1.5">
               <InfoTooltip
@@ -202,26 +199,36 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
               />
             </div>
           </div>
-          {expiryDate && (
+          {hasExpiryDate && (
             <>
               <p className="inter-small-regular text-grey-50 mb-base">
                 Schedule the discount to deactivate in the future.
               </p>
               <div className="flex items-center gap-xsmall">
-                <DatePicker
-                  label="Expiry date"
-                  date={expiryDate}
-                  onSubmitDate={setExpiryDate}
-                />
-                <TimePicker
-                  label="Expiry time"
-                  date={expiryDate}
-                  onSubmitDate={setExpiryDate}
+                <Controller
+                  name="ends_at"
+                  control={control}
+                  render={({ onChange, value }) => {
+                    return (
+                      <>
+                        <DatePicker
+                          label="Expiry date"
+                          date={value}
+                          onSubmitDate={onChange}
+                        />
+                        <TimePicker
+                          label="Expiry time"
+                          date={value}
+                          onSubmitDate={onChange}
+                        />
+                      </>
+                    )
+                  }}
                 />
               </div>
             </>
           )}
-        </div> */}
+        </div>
         {isDynamic && (
           <Controller
             name="valid_duration"

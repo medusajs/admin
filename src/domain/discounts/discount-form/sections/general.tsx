@@ -23,6 +23,7 @@ import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { getNativeSymbol } from "../../../../utils/prices"
 import { useDiscountForm } from "../form/discount-form-context"
+import { discountToFormValuesMapper } from "../form/mappers"
 
 const General = ({ discount, isEdit = false }) => {
   const [showPrompt, setShowPrompt] = useState(false)
@@ -50,7 +51,10 @@ const General = ({ discount, isEdit = false }) => {
 
     navigate(`/a/discounts/new`, {
       state: {
-        discount: discount,
+        discount: discountToFormValuesMapper({
+          code: discount.code + "_COPY",
+          ...discount,
+        } as any),
       },
     })
   }
@@ -82,7 +86,6 @@ const General = ({ discount, isEdit = false }) => {
   }
 
   useEffect(() => {
-    console.log(regions, type)
     if (type === "fixed" && regions) {
       let id: string
 
@@ -178,7 +181,6 @@ const General = ({ discount, isEdit = false }) => {
                   Array.isArray(value) ? value.length > 0 : !!value,
               }}
               render={({ onChange, value }) => {
-                console.log(value)
                 return (
                   <Select
                     value={value}
@@ -237,7 +239,7 @@ const General = ({ discount, isEdit = false }) => {
                   <RadioGroup.SimpleItem
                     value="fixed"
                     label="Fixed amount discount"
-                    disabled={regions && regions.length > 1}
+                    disabled={!!regions && regions.length > 1}
                   />
                   {regions && regions.length > 1 && (
                     <div className="flex items-center">

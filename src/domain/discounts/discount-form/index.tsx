@@ -14,10 +14,10 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   return (
     <div>
       <div>
-        <General discount={discount} />
+        <General discount={discount} isEdit={isEdit} />
       </div>
       <div className="mt-xlarge">
-        <Settings />
+        <Settings isEdit={isEdit} />
       </div>
     </div>
   )
