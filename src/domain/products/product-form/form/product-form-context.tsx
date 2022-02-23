@@ -14,10 +14,11 @@ export const SINGLE_PRODUCT_VIEW = "single"
 type PRODUCT_VIEW = typeof VARIANTS_VIEW | typeof SINGLE_PRODUCT_VIEW
 
 const defaultProduct = {
-  variants: [],
+  variants: [] as any[],
   images: [],
   prices: [],
   tags: [],
+  options: [],
   type: null,
   collection: null,
   id: "",
@@ -40,12 +41,31 @@ const defaultProduct = {
   material: "",
 }
 
+const ProductFormContext = React.createContext<{
+  productOptions: any[]
+  setProductOptions: (vars: any[]) => void
+  variants: any[]
+  setVariants: (vars: any[]) => void
+  images: any[]
+  setImages: (images: any[]) => void
+  appendImage: (image: any) => void
+  removeImage: (image: any) => void
+  setViewType: (value: PRODUCT_VIEW) => void
+  viewType: PRODUCT_VIEW
+  isVariantsView: boolean
+} | null>(null)
+
 export const ProductFormProvider = ({
   product = defaultProduct,
   isEdit = false,
   children,
 }) => {
+  const [viewType, setViewType] = React.useState<PRODUCT_VIEW>(
+    product.variants?.length > 0 ? VARIANTS_VIEW : SINGLE_PRODUCT_VIEW
+  )
   const [images, setImages] = React.useState<any[]>([])
+  const [variants, setVariants] = React.useState<any[]>([])
+  const [productOptions, setProductOptions] = React.useState<any[]>([])
 
   const appendImage = (image) => setImages([...images, image])
 
@@ -57,10 +77,6 @@ export const ProductFormProvider = ({
     setImages([...images])
   }
 
-  const [viewType, setViewType] = React.useState<PRODUCT_VIEW>(
-    product.variants?.length > 1 ? VARIANTS_VIEW : SINGLE_PRODUCT_VIEW
-  )
-
   const methods = useForm()
 
   const handleReset = () => {
@@ -68,6 +84,28 @@ export const ProductFormProvider = ({
       ...product,
     })
     setImages(product.images)
+    setProductOptions(product.options)
+
+    if (product?.variants) {
+      const variants = product?.variants?.map((v) => ({
+        ...v,
+        options: v.options.map((o) => ({
+          ...o,
+          title: product.options.find((po) => po.id === o.option_id)?.title,
+        })),
+      }))
+
+      setVariants(variants)
+    }
+
+    if (product?.options) {
+      const options = product?.options?.map((po) => ({
+        name: po.title,
+        values: po.values ? po.values.map((v) => v.value) : [],
+      }))
+
+      setProductOptions(options)
+    }
   }
 
   useEffect(() => {
@@ -75,14 +113,20 @@ export const ProductFormProvider = ({
   }, [])
 
   const { onCreateAndPublish, onCreateDraft, onUpdate } = useFormActions(
-    product.id
+    product.id,
+    viewType
   )
 
   let notificationAction: NotificationAction[] | (() => Promise<void>)
 
   if (isEdit) {
     notificationAction = async () => {
-      await onUpdate({ ...methods.getValues(), images })
+      await onUpdate({
+        ...methods.getValues(),
+        images,
+        variants,
+        options: productOptions,
+      })
     }
   } else {
     notificationAction = [
@@ -90,13 +134,23 @@ export const ProductFormProvider = ({
         icon: <PublishIcon />,
         label: "Save and publish",
         onClick: async () => {
-          await onCreateAndPublish({ ...methods.getValues(), images })
+          await onCreateAndPublish({
+            ...methods.getValues(),
+            images,
+            variants,
+            options: productOptions,
+          })
         },
       } as NotificationAction,
       {
         label: "Save as draft",
         onClick: async () => {
-          await onCreateDraft({ ...methods.getValues(), images })
+          await onCreateDraft({
+            ...methods.getValues(),
+            images,
+            variants,
+            options: productOptions,
+          })
         },
         icon: <FileTextIcon />,
       } as NotificationAction,
@@ -119,6 +173,10 @@ export const ProductFormProvider = ({
     <FormProvider {...methods}>
       <ProductFormContext.Provider
         value={{
+          productOptions,
+          setProductOptions,
+          variants,
+          setVariants,
           images,
           setImages,
           appendImage,
@@ -133,16 +191,6 @@ export const ProductFormProvider = ({
     </FormProvider>
   )
 }
-
-const ProductFormContext = React.createContext<{
-  images: any[]
-  setImages: (images: any[]) => void
-  appendImage: (image: any) => void
-  removeImage: (image: any) => void
-  setViewType: (value: PRODUCT_VIEW) => void
-  viewType: PRODUCT_VIEW
-  isVariantsView: boolean
-} | null>(null)
 
 export const useProductForm = () => {
   const context = React.useContext(ProductFormContext)

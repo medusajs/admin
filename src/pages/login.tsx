@@ -1,10 +1,10 @@
 import clsx from "clsx"
 import React, { useState } from "react"
 import MedusaIcon from "../components/fundamentals/icons/medusa-icon"
-import LoginLayout from "../components/login-layout"
 import LoginCard from "../components/organisms/login-card"
 import ResetTokenCard from "../components/organisms/reset-token-card"
 import SEO from "../components/seo"
+import LoginLayout from "../components/templates/login-layout"
 
 const LoginPage = () => {
   const [resetPassword, setResetPassword] = useState(false)

@@ -16,14 +16,14 @@ import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 import InputContainer from "../../fundamentals/input-container"
-import InputHeader from "../../fundamentals/input-header"
+import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
 import clsx from "clsx"
 import SearchIcon from "../../fundamentals/icons/search-icon"
 import { CacheProvider } from "@emotion/react"
 import createCache from "@emotion/cache"
 import { ModalContext } from "../modal"
 
-type MultiSelectProps = {
+type MultiSelectProps = InputHeaderProps & {
   // component props
   label: string
   required?: boolean
@@ -33,7 +33,7 @@ type MultiSelectProps = {
   placeholder?: string
   isMultiSelect?: boolean
   labelledBy?: string
-  options: { label: string; value: string; disabled?: boolean }[]
+  options: { label: string; value: string | null; disabled?: boolean }[]
   value:
     | { label: string; value: string }[]
     | { label: string; value: string }
@@ -194,6 +194,8 @@ const SSelect = React.forwardRef(
       className,
       isMultiSelect,
       hasSelectAll,
+      tooltipContent,
+      tooltip,
       enableSearch = false,
       clearSelected = false,
       isCreatable,
@@ -276,7 +278,7 @@ const SSelect = React.forwardRef(
             <></>
           ) : (
             <div className="w-full flex text-grey-50 pr-0.5 justify-between pointer-events-none cursor-pointer">
-              <InputHeader {...{ label, required }} />
+              <InputHeader {...{ label, required, tooltip, tooltipContent }} />
               <ArrowDownIcon size={16} />
             </div>
           )}

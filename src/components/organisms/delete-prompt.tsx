@@ -11,7 +11,7 @@ type DeletePromptProps = {
   cancelText?: string
   confirmText?: string
   handleClose: () => void
-  onDelete: () => Promise<void>
+  onDelete: () => Promise<unknown>
 }
 
 const DeletePrompt: React.FC<DeletePromptProps> = ({

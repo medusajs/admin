@@ -29,11 +29,11 @@ import {
 
 const General = ({ showViewOptions = true, isEdit = false, product }) => {
   const { register, control, setViewType, viewType } = useProductForm()
-  const { types } = useAdminProductTypes()
+  const { product_types } = useAdminProductTypes()
   const { collections } = useAdminCollections()
 
   const typeOptions =
-    types?.map((tag) => ({ label: tag.value, value: tag.id })) || []
+    product_types?.map((tag) => ({ label: tag.value, value: tag.id })) || []
   const collectionOptions =
     collections?.map((collection) => ({
       label: collection.title,
@@ -70,7 +70,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             label="Handle"
             name="handle"
             placeholder="/bathrobe"
-            ref={register({ required: true })}
+            ref={register()}
           />
         </div>
         <label
@@ -95,7 +95,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             control={control}
             label="Collection"
             name="collection"
-            overrideStrings={{ selectSomeItems: "Select collection..." }}
+            placeholder="Select collection..."
             options={collectionOptions}
           />
           <Controller
@@ -103,7 +103,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             control={control}
             label="Type"
             name="type"
-            overrideStrings={{ selectSomeItems: "Select type..." }}
+            placeholder="Select type..."
             options={typeOptions}
           />
           <Controller
@@ -133,7 +133,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           <RadioGroup.Root
             value={viewType}
             onValueChange={setViewType}
-            className="flex items-center gap-4"
+            className="flex items-center gap-4 mt-xlarge"
           >
             <RadioGroup.SimpleItem
               label="Simple product"
