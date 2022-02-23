@@ -17,23 +17,22 @@ const NewProductPage = () => {
   const notification = useNotification()
   const createProduct = useAdminCreateProduct()
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, viewType) => {
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
-
-    if (images.length) {
-      const uploadedImgs = await Medusa.uploads
-        .create(images)
-        .then(({ data }) => {
-          const uploaded = data.uploads.map(({ url }) => url)
-          return uploaded
-        })
-
-      data.images = consolidateImages(data.images, uploadedImgs)
+    const uploadedImgs = await Medusa.uploads
+      .create(images)
+      .then(({ data }) => {
+        const uploaded = data.uploads.map(({ url }) => url)
+        return uploaded
+      })
+    const newData = {
+      ...data,
+      images: consolidateImages(data.images, uploadedImgs),
     }
 
-    createProduct.mutate(formValuesToCreateProductMapper(data), {
+    createProduct.mutate(formValuesToCreateProductMapper(newData, viewType), {
       onSuccess: ({ product }) => {
         notification("Success", "Product created successfully", "success")
         navigate(`/a/products/${product.id}`)
