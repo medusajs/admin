@@ -1,3 +1,5 @@
+import { isString, trim } from "lodash"
+
 export const productToFormValuesMapper = (product) => {
   let thumbnail = product?.images.length
     ? product.images.findIndex((img) => img.url)
@@ -26,7 +28,8 @@ export const productToFormValuesMapper = (product) => {
   }
 }
 
-export const formValuesToCreateProductMapper = (values) => {
+export const formValuesToCreateProductMapper = (formValues) => {
+  const values = trimAll(formValues)
   return {
     title: values.title,
     handle: values.handle,
@@ -70,9 +73,10 @@ export const formValuesToCreateProductMapper = (values) => {
   }
 }
 
-export const formValuesToUpdateProductMapper = (values) => {
+export const formValuesToUpdateProductMapper = (formValues) => {
+  const values = trimAll(formValues)
   return {
-    title: values.title,
+    title: trim(values.title),
     handle: values.handle,
     status: values.status || "published",
     description: values.description,
@@ -110,3 +114,11 @@ export const formValuesToUpdateProductMapper = (values) => {
     discountable: values.discountable,
   }
 }
+
+const trimAll = (obj) =>
+  Object.entries(obj).reduce((obj, [key, value]) => {
+    if (isString(value)) {
+      obj[key] = trim(value)
+    }
+    return obj
+  }, obj)
