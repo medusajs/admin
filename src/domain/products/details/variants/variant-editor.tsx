@@ -1,8 +1,8 @@
 import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFieldArray, useForm } from "react-hook-form"
+import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import InfoTooltip from "../../../../components/molecules/info-tooltip"
@@ -14,35 +14,53 @@ import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string
 import { countries as countryData } from "../../../../utils/countries"
 import { removeNullish } from "../../../../utils/remove-nullish"
 
-const VariantEditor = ({ variant, onSubmit, onCancel }) => {
+const defaultVariant = {
+  prices: [] as any,
+  origin_country: "",
+  options: [] as any,
+}
+
+const VariantEditor = ({
+  variant = defaultVariant,
+  onSubmit,
+  onCancel,
+  title,
+  optionsMap,
+}) => {
   const countryOptions = countryData.map((c) => ({
     label: c.name,
     value: c.alpha2.toLowerCase(),
   }))
 
   const { store, isLoading } = useAdminStore()
-  const [currencyOptions, setCurrencyOptions] = useState([])
-  const [prices, setPrices] = useState(variant.prices)
-  const [selectedCountry, setSelectedCountry] = useState(
-    variant.origin_country
+  const [currencyOptions, setCurrencyOptions] = useState<
+    {
+      value: any
+      label: string
+    }[]
+  >([])
+  const [prices, setPrices] = useState(variant?.prices)
+  const [selectedCountry, setSelectedCountry] = useState(() => {
+    const defaultCountry = variant.origin_country
       ? countryOptions.find((cd) => cd.label === variant.origin_country)
-      : undefined
-  )
+      : null
+    return defaultCountry || null
+  })
 
-  const { setValue, getValues, register, reset, watch, handleSubmit } = useForm(
-    variant
-  )
+  const { control, register, reset, watch, handleSubmit } = useForm({
+    defaultValues: variant,
+  })
+
+  const { fields } = useFieldArray({
+    control,
+    name: "options",
+    keyName: "indexId",
+  })
 
   useEffect(() => {
     reset({
       ...variant,
-    })
-
-    variant.options.forEach((option, index) => {
-      register(`options.${index}.option_id`)
-      setValue(`options.${index}.option_id`, option.option_id)
-      register(`options.${index}.value`)
-      setValue(`options.${index}.value`, option.value)
+      options: Object.values(optionsMap),
     })
   }, [variant])
 
@@ -108,9 +126,14 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
       region_id,
       amount: Math.round(amount),
     }))
+    data.options = data.options.map((option) => ({ ...option }))
 
     data.origin_country = selectedCountry?.label
     data.inventory_quantity = parseInt(data.inventory_quantity)
+    data.weight = data?.weight ? parseInt(data.weight, 10) : undefined
+    data.height = data?.height ? parseInt(data.height, 10) : undefined
+    data.width = data?.width ? parseInt(data.width, 10) : undefined
+    data.length = data?.length ? parseInt(data.length, 10) : undefined
 
     data.prices = data.prices.map((p) => removeNullish(p))
     const cleaned = convertEmptyStringToNull(data)
@@ -119,7 +142,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
 
   watch(["manage_inventory", "allow_backorder"])
 
-  const variantTitle = variant.options
+  const variantTitle = variant?.options
     .map((opt) => opt?.value || "")
     .join(" / ")
 
@@ -128,10 +151,12 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
       <Modal.Body>
         <Modal.Header handleClose={onCancel}>
           <h2 className="inter-xlarge-semibold">
-            Edit Variant{" "}
-            <span className="text-grey-50 inter-xlarge-regular">
-              ({variantTitle})
-            </span>
+            {title}{" "}
+            {variantTitle && (
+              <span className="text-grey-50 inter-xlarge-regular">
+                ({variantTitle})
+              </span>
+            )}
           </h2>
         </Modal.Header>
         <Modal.Content>
@@ -143,8 +168,24 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               {"General"}
             </label>
 
-            <div className="grid grid-cols-1 ">
+            <div className="grid grid-cols-1 gap-y-small">
               <Input label="Title" name="title" ref={register} />
+              {fields.map((field, index) => (
+                <div key={field.indexId}>
+                  <Input
+                    ref={register({ required: true })}
+                    name={`options[${index}].value`}
+                    label={field.title}
+                    defaultValue={field.value}
+                  />
+                  <input
+                    ref={register()}
+                    type="hidden"
+                    name={`options[${index}].option_id`}
+                    defaultValue={field.option_id}
+                  />
+                </div>
+              ))}
             </div>
           </div>
           <div className="mb-8">
@@ -172,7 +213,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
                       size="small"
                     >
                       <CurrencyInput.AmountInput
-                        label="amount"
+                        label="Amount"
                         step={0.01}
                         amount={p.amount}
                         onChange={(value) => handlePriceChange(index, value)}
@@ -213,7 +254,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               <Input
                 label="Inventory quantity"
                 name="inventory_quantity"
-                placeholder="Inventory quantity"
+                placeholder="100"
                 type="number"
                 ref={register}
               />
@@ -226,58 +267,30 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               />
             </div>
 
-            <div className="flex mt-6 gap-x-large">
-              <div
-                className="cursor-pointer flex items-center"
-                onClick={(e) => {
-                  setValue("manage_inventory", !getValues("manage_inventory"), {
-                    shouldDirty: true,
-                  })
-                }}
-              >
-                <div
-                  className={`w-5 h-5 mr-3 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-                    getValues("manage_inventory") && "bg-violet-60"
-                  }`}
-                >
-                  <span className="self-center">
-                    {getValues("manage_inventory") && <CheckIcon size={16} />}
-                  </span>
-                </div>
-                <input
-                  className="hidden"
-                  type="checkbox"
-                  ref={register}
+            <div className="flex items-center mt-6 gap-x-large">
+              <div className="flex item-center gap-x-1.5">
+                <Checkbox
                   name="manage_inventory"
-                />
-                <span className="mr-1">Manage Inventory</span>
-                <InfoTooltip content={"Manage inventory for variant"} />
-              </div>
-              <div
-                className="cursor-pointer flex items-center"
-                onClick={(e) => {
-                  setValue("allow_backorder", !getValues("allow_backorder"), {
-                    shouldDirty: true,
-                  })
-                }}
-              >
-                <div
-                  className={`w-5 h-5 mr-3 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-                    getValues("allow_backorder") && "bg-violet-60"
-                  }`}
-                >
-                  <span className="self-center">
-                    {getValues("allow_backorder") && <CheckIcon size={16} />}
-                  </span>
-                </div>
-                <input
-                  type="checkbox"
-                  className="hidden"
+                  label="Manage Inventory"
                   ref={register}
-                  name="allow_backorder"
                 />
-                <span className="mr-1">Allow backorders</span>
-                <InfoTooltip content={"Allow backorders for variant"} />
+                <InfoTooltip
+                  content={
+                    "When checked Medusa will regulate the inventory when orders and returns are made."
+                  }
+                />
+              </div>
+              <div className="flex item-center gap-x-1.5">
+                <Checkbox
+                  name="allow_backorder"
+                  ref={register}
+                  label="Allow backorders"
+                />
+                <InfoTooltip
+                  content={
+                    "When checked the product will be available for purchase despite the product being sold out."
+                  }
+                />
               </div>
             </div>
           </div>

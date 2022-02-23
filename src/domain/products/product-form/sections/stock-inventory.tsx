@@ -40,6 +40,12 @@ const StockAndInventory = () => {
                 placeholder="100"
                 ref={register}
               />
+              <Input
+                label="Material"
+                name="material"
+                ref={register}
+                placeholder="Wool..."
+              />
             </div>
           </>
         )}
@@ -121,16 +127,11 @@ const StockAndInventory = () => {
               placeholder="100..."
             />
             <Input
+              className="col-span-2"
               ref={register}
               label="Country of origin"
               name="origin_country"
               placeholder="Denmark..."
-            />
-            <Input
-              label="Material"
-              name="material"
-              ref={register}
-              placeholder="Wool..."
             />
           </div>
         </div>
