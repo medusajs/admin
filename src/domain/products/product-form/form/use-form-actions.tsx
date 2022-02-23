@@ -7,7 +7,7 @@ import {
   formValuesToUpdateProductMapper,
 } from "./mappers"
 
-export const useFormActions = (id: string) => {
+export const useFormActions = (id: string, viewType: string) => {
   const createProduct = useAdminCreateProduct()
   const updateProduct = useAdminUpdateProduct(id)
 
@@ -28,11 +28,14 @@ export const useFormActions = (id: string) => {
       data.images = consolidateImages(data.images, uploadedImgs)
     }
 
-    return createProduct.mutateAsync(formValuesToCreateProductMapper(data), {
-      onSuccess: ({ product }) => {
-        navigate(`/a/products/${product.id}`)
-      },
-    })
+    return createProduct.mutateAsync(
+      formValuesToCreateProductMapper(data, viewType),
+      {
+        onSuccess: ({ product }) => {
+          navigate(`/a/products/${product.id}`)
+        },
+      }
+    )
   }
 
   const onCreateAndPublish = async (data) => {
