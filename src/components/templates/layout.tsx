@@ -1,10 +1,19 @@
 import React from "react"
+import { Toaster } from "react-hot-toast"
 import Sidebar from "../organisms/sidebar"
 import Topbar from "../organisms/topbar"
 
 const Layout: React.FC = ({ children }) => {
   return (
     <div className="flex w-full h-screen inter-base-regular text-grey-90">
+      <Toaster
+        containerStyle={{
+          top: 74,
+          left: 24,
+          bottom: 24,
+          right: 24,
+        }}
+      />
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Topbar />
