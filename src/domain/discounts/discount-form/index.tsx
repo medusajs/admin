@@ -1,5 +1,6 @@
 import * as React from "react"
 import General from "./sections/general"
+import Settings from "./sections/settings"
 
 type DiscountFormProps = {
   discount?: any
@@ -14,6 +15,9 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     <div>
       <div>
         <General discount={discount} />
+      </div>
+      <div className="mt-xlarge">
+        <Settings />
       </div>
     </div>
   )

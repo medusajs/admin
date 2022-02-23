@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import useDetectChange from "../../../../hooks/use-detect-change"
+import { Option } from "../../../../types/shared"
 
 const defaultDiscount = {
   code: "",
@@ -8,9 +9,11 @@ const defaultDiscount = {
     type: "percentage",
     value: "",
     description: "",
+    allocation: "total",
   },
   is_dynamic: false,
-  regions: [],
+  regions: null,
+  starts_at: new Date(),
 }
 
 export const DiscountFormProvider = ({
@@ -25,10 +28,9 @@ export const DiscountFormProvider = ({
   const methods = useForm({ defaultValues: discount })
 
   const type = methods.watch("rule.type") as string | undefined
-  const regions = methods.watch("regions") as any[] | undefined
-  const products = methods.watch("rule.valid_for") as
-    | { label: string; value: string }[]
-    | undefined
+  const isDynamic = methods.watch("is_dynamic") as boolean
+  const regions = methods.watch("regions") as Option[] | null
+  const products = methods.watch("rule.valid_for") as Option[] | undefined
 
   useEffect(() => {
     if (products?.length && appliesToAll) {
@@ -37,7 +39,7 @@ export const DiscountFormProvider = ({
   }, [products, appliesToAll])
 
   useEffect(() => {
-    if (type === "fixed") {
+    if (isEdit) {
       setRegionsDisabled(true)
     } else {
       setRegionsDisabled(false)
@@ -48,27 +50,41 @@ export const DiscountFormProvider = ({
     } else {
       setIsFreeShipping(false)
     }
-  }, [type])
+  }, [type, isEdit])
 
   useEffect(() => {
     if (isFreeShipping) {
       methods.setValue("rule.type", "free_shipping")
+      methods.setValue("rule.allocation", undefined)
     }
   }, [isFreeShipping])
 
   const handleReset = () => {
     methods.reset({
       ...discount,
+      starts_at: new Date(),
     })
   }
 
+  const print = async (values) => {
+    console.log(values)
+    console.log(methods.formState.isSubmitSuccessful)
+  }
+
   const isDirty = !!Object.keys(methods.formState.dirtyFields).length // isDirty from useForm is behaving more like touched and is therfore not working as expected
+
+  const onError = (errors, e) => {
+    console.log(errors, e)
+    // errors.regions.ref.focus()
+    console.log(document.getElementById("regionsSelector"))
+    document.getElementById("regionsSelector")?.focus()
+  }
 
   useDetectChange({
     isDirty: isDirty,
     reset: handleReset,
     options: {
-      fn: [],
+      fn: methods.handleSubmit(print, onError),
       title: "You have unsaved changes",
       message: "Do you want to save your changes?",
     },
@@ -82,8 +98,10 @@ export const DiscountFormProvider = ({
           regions,
           regionsDisabled,
           appliesToAll,
+          setAppliesToAll,
           isFreeShipping,
           setIsFreeShipping,
+          isDynamic,
         }}
       >
         {children}
@@ -94,8 +112,10 @@ export const DiscountFormProvider = ({
 
 const DiscountFormContext = React.createContext<{
   type?: string
+  isDynamic: boolean
   regionsDisabled: boolean
   appliesToAll: boolean
+  setAppliesToAll: (value: boolean) => void
   regions?: any[]
   isFreeShipping: boolean
   setIsFreeShipping: (value: boolean) => void

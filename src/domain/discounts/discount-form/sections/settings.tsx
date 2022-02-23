@@ -1,11 +1,9 @@
 import { useAdminProducts } from "medusa-react"
 import React from "react"
 import { Controller } from "react-hook-form"
-import Checkbox from "../../../../components/atoms/checkbox"
 import DatePicker from "../../../../components/atoms/date-picker/date-picker"
 import TimePicker from "../../../../components/atoms/date-picker/time-picker"
 import AvailabilityDuration from "../../../../components/molecules/availability-duration"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import InputField from "../../../../components/molecules/input"
 import Section from "../../../../components/molecules/section"
 import Select from "../../../../components/molecules/select"
@@ -14,7 +12,7 @@ import RadioGroup from "../../../../components/organisms/radio-group"
 import { useDiscountForm } from "../form/discount-form-context"
 
 type SettingsProps = {
-  isEdit: boolean
+  isEdit?: boolean
 }
 
 const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
@@ -24,6 +22,8 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
     register,
     control,
     appliesToAll,
+    setAppliesToAll,
+    isDynamic,
   } = useDiscountForm()
 
   const { products } = useAdminProducts()
@@ -81,26 +81,30 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
           description="Select whether the discount should be applied to the cart total or on a per item basis."
           tooltip="Select whether the discount applies to the cart total or to individual items."
         >
-          <RadioGroup.Root
-            className="flex items-center"
-            value={
-              isFreeShipping ? undefined : allocationItem ? "item" : "total"
-            }
-            onValueChange={(value) => {
-              setAllocationItem(value === "item")
+          <Controller
+            name="rule.allocation"
+            control={control}
+            render={({ value, onChange }) => {
+              return (
+                <RadioGroup.Root
+                  className="flex items-center"
+                  value={value}
+                  onValueChange={onChange}
+                >
+                  <RadioGroup.SimpleItem
+                    value="total"
+                    label="Total"
+                    disabled={isFreeShipping || isEdit}
+                  />
+                  <RadioGroup.SimpleItem
+                    value="item"
+                    label="Item"
+                    disabled={isFreeShipping || isEdit}
+                  />
+                </RadioGroup.Root>
+              )
             }}
-          >
-            <RadioGroup.SimpleItem
-              value="total"
-              label="Total"
-              disabled={isFreeShipping || isEdit}
-            />
-            <RadioGroup.SimpleItem
-              value="item"
-              label="Item"
-              disabled={isFreeShipping || isEdit}
-            />
-          </RadioGroup.Root>
+          />
         </Section>
         <Section
           title="Discount applies to specific products?"
@@ -154,19 +158,29 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
           tooltip="If you want to schedule the discount to activate in the future, you can set a start date here, otherwise the discount will be active immediately."
         >
           <div className="flex items-center gap-xsmall">
-            <DatePicker
-              date={startDate}
-              label="Start date"
-              onSubmitDate={setStartDate}
-            />
-            <TimePicker
-              label="Start time"
-              date={startDate}
-              onSubmitDate={setStartDate}
+            <Controller
+              name="starts_at"
+              control={control}
+              render={({ value, onChange }) => {
+                return (
+                  <>
+                    <DatePicker
+                      date={value}
+                      label="Start date"
+                      onSubmitDate={onChange}
+                    />
+                    <TimePicker
+                      label="Start time"
+                      date={value}
+                      onSubmitDate={onChange}
+                    />
+                  </>
+                )
+              }}
             />
           </div>
         </Section>
-        <div>
+        {/* <div>
           <div className="flex items-center mb-2xsmall">
             <Checkbox
               label="Discount has an expiry date?"
@@ -207,11 +221,14 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
               </div>
             </>
           )}
-        </div>
+        </div> */}
         {isDynamic && (
-          <AvailabilityDuration
-            value={availabilityDuration}
-            onChange={setAvailabilityDuration}
+          <Controller
+            name="valid_duration"
+            control={control}
+            render={({ value, onChange }) => {
+              return <AvailabilityDuration value={value} onChange={onChange} />
+            }}
           />
         )}
       </div>

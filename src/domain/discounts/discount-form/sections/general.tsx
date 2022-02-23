@@ -5,7 +5,7 @@ import {
   useAdminRegions,
   useAdminUpdateDiscount,
 } from "medusa-react"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Controller } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import DuplicateIcon from "../../../../components/fundamentals/icons/duplicate-icon"
@@ -21,10 +21,14 @@ import DeletePrompt from "../../../../components/organisms/delete-prompt"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import { getNativeSymbol } from "../../../../utils/prices"
 import { useDiscountForm } from "../form/discount-form-context"
 
 const General = ({ discount, isEdit = false }) => {
   const [showPrompt, setShowPrompt] = useState(false)
+  const [nativeSymbol, setNativeSymbol] = useState<string | undefined>(
+    undefined
+  )
 
   const { regions: opts } = useAdminRegions()
   const deleteDiscount = useAdminDeleteDiscount(discount?.id)
@@ -76,6 +80,25 @@ const General = ({ discount, isEdit = false }) => {
       }
     )
   }
+
+  useEffect(() => {
+    console.log(regions, type)
+    if (type === "fixed" && regions) {
+      let id: string
+
+      if (Array.isArray(regions)) {
+        id = regions[0].value
+      } else {
+        id = ((regions as unknown) as { label: string; value: string }).value // if you change from fixed to percentage, unselect and select a region, and then change back to fixed it is possible to make useForm set regions to an object instead of an array
+      }
+
+      const reg = opts?.find((r) => r.id === id)
+
+      if (reg) {
+        setNativeSymbol(getNativeSymbol(reg.currency_code))
+      }
+    }
+  }, [type, opts, regions])
 
   const regionOptions = opts?.map((r) => ({ value: r.id, label: r.name })) || []
 
@@ -149,18 +172,24 @@ const General = ({ discount, isEdit = false }) => {
             <Controller
               name="regions"
               control={control}
-              rules={{ required: true }}
+              rules={{
+                required: true,
+                validate: (value) =>
+                  Array.isArray(value) ? value.length > 0 : !!value,
+              }}
               render={({ onChange, value }) => {
+                console.log(value)
                 return (
                   <Select
-                    value={value || null}
+                    value={value}
                     onChange={onChange}
                     label="Choose valid regions"
-                    isMultiSelect
+                    isMultiSelect={type !== "fixed"}
+                    hasSelectAll={type !== "fixed"}
                     enableSearch
                     required
-                    hasSelectAll
                     options={regionOptions}
+                    id="regionsSelector"
                     className={clsx({
                       ["opacity-50 pointer-events-none select-none"]: regionsDisabled,
                     })}
@@ -175,7 +204,7 @@ const General = ({ discount, isEdit = false }) => {
               required
               type="number"
               placeholder="10"
-              prefix={type === "percentage" ? "%" : "$"}
+              prefix={type === "percentage" ? "%" : nativeSymbol}
               name="rule.value"
               ref={register({ required: !isFreeShipping })}
               className={clsx({
@@ -189,6 +218,7 @@ const General = ({ discount, isEdit = false }) => {
           <Controller
             name="rule.type"
             control={control}
+            rules={{ required: true }}
             render={({ onChange, value }) => {
               return (
                 <RadioGroup.Root
