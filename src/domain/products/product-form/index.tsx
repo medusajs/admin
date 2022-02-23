@@ -20,7 +20,7 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
   return (
     <>
       <div>
-        <General isEdit product={product} showViewOptions={!isEdit} />
+        <General isEdit={isEdit} product={product} showViewOptions={!isEdit} />
       </div>
       {(isVariantsView || isEdit) && (
         <div className="mt-large">

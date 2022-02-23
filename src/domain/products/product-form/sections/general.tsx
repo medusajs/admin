@@ -29,11 +29,11 @@ import Checkbox from "../../../../components/atoms/checkbox"
 
 const General = ({ showViewOptions = true, isEdit = false, product }) => {
   const { register, control, setViewType, viewType } = useProductForm()
-  const { types } = useAdminProductTypes()
+  const { product_types } = useAdminProductTypes()
   const { collections } = useAdminCollections()
 
   const typeOptions =
-    types?.map((tag) => ({ label: tag.value, value: tag.id })) || []
+    product_types?.map((tag) => ({ label: tag.value, value: tag.id })) || []
   const collectionOptions =
     collections?.map((collection) => ({
       label: collection.title,
