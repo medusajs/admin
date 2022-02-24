@@ -1,5 +1,5 @@
-import React from "react"
-import { Controller, useFieldArray } from "react-hook-form"
+import * as React from "react"
+import { Controller } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
@@ -7,44 +7,28 @@ import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import BodyCard from "../../../../components/organisms/body-card"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { useProductForm } from "../form/product-form-context"
+import usePricesFieldArray from "../form/usePricesFieldArray"
 
 const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
-  const { register, control, watch } = useProductForm()
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "prices",
-    keyName: "indexId",
-  })
-  const watchedFields = watch("prices", fields)
-  const selectedCurrencies = watchedFields.map(
-    (field) => field.price.currency_code
+  const { register, control } = useProductForm()
+  const {
+    fields,
+    appendPrice,
+    deletePrice,
+    availableCurrencies,
+  } = usePricesFieldArray(
+    currencyCodes,
+    {
+      control,
+      name: "prices",
+      keyName: "indexId",
+    },
+    {
+      defaultAmount,
+      defaultCurrencyCode,
+    }
   )
-  const availableCurrencies = currencyCodes?.filter(
-    (currency) => !selectedCurrencies.includes(currency)
-  )
 
-  const controlledFields = fields.map((field, index) => {
-    return {
-      ...field,
-      ...watchedFields[index],
-    }
-  })
-
-  const appendPrice = () => {
-    let newCurrency = availableCurrencies[0]
-    if (!selectedCurrencies.includes(defaultCurrencyCode)) {
-      newCurrency = defaultCurrencyCode
-    }
-    append({
-      price: { currency_code: newCurrency, amount: defaultAmount },
-    })
-  }
-
-  const deletePrice = (index) => {
-    return () => {
-      remove(index)
-    }
-  }
   return (
     <BodyCard
       title="Pricing"
@@ -60,7 +44,7 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
           />
         </div>
         <div className="max-w-[630px]">
-          {controlledFields.map((field, index) => {
+          {fields.map((field, index) => {
             return (
               <div
                 key={field.indexId}
