@@ -2,9 +2,11 @@ import React, { useEffect } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import FileTextIcon from "../../../../components/fundamentals/icons/file-text-icon"
 import PublishIcon from "../../../../components/fundamentals/icons/publish-icon"
-import useDetectChange, {
-  NotificationAction,
-} from "../../../../hooks/use-detect-change"
+import {
+  MultiSubmitFunction,
+  SaveNotificationProvider,
+  SubmitFunction,
+} from "../../../../components/organisms/save-notifications/notification-provider"
 import { useFormActions } from "./use-form-actions"
 
 export const VARIANTS_VIEW = "variants"
@@ -117,7 +119,6 @@ export const ProductFormProvider = ({
   const { onCreateAndPublish, onCreateDraft, onUpdate } = useFormActions(
     product.id,
     viewType,
-    methods.handleSubmit,
     {
       images,
       variants,
@@ -125,43 +126,22 @@ export const ProductFormProvider = ({
     }
   )
 
-  const submitWrapper = async (values) => {
-    const data = { ...values, images, variants, options: productOptions }
-    return await onUpdate(data)
-  }
-
-  let notificationAction: NotificationAction[] | (() => Promise<void>)
-
-  const onError = (errors, e) => console.log(errors, e)
+  let notificationAction: SubmitFunction | MultiSubmitFunction
 
   if (isEdit) {
-    notificationAction = methods.handleSubmit(submitWrapper, onError)
+    notificationAction = onUpdate
   } else {
     notificationAction = [
       {
         icon: <PublishIcon />,
         label: "Save and publish",
-        onClick: async () => {
-          await onCreateAndPublish({
-            ...methods.getValues(),
-            images,
-            variants,
-            options: productOptions,
-          })
-        },
-      } as NotificationAction,
+        onSubmit: onCreateAndPublish,
+      },
       {
         label: "Save as draft",
-        onClick: async () => {
-          await onCreateDraft({
-            ...methods.getValues(),
-            images,
-            variants,
-            options: productOptions,
-          })
-        },
         icon: <FileTextIcon />,
-      } as NotificationAction,
+        onSubmit: onCreateDraft,
+      },
     ]
   }
 
@@ -181,17 +161,6 @@ export const ProductFormProvider = ({
     setDirtyState(false)
   }, [isDirty, JSON.stringify(images)])
 
-  useDetectChange({
-    isDirty: dirtyState,
-    reset: handleReset,
-    handleSubmit: methods.handleSubmit,
-    options: {
-      fn: notificationAction,
-      title: "You have unsaved changes",
-      message: "Do you want to save your changes?",
-    },
-  })
-
   return (
     <FormProvider {...methods}>
       <ProductFormContext.Provider
@@ -209,7 +178,14 @@ export const ProductFormProvider = ({
           isVariantsView: viewType === VARIANTS_VIEW,
         }}
       >
-        {children}
+        <SaveNotificationProvider
+          values={{
+            onReset: handleReset,
+            onSubmit: notificationAction,
+          }}
+        >
+          {children}
+        </SaveNotificationProvider>
       </ProductFormContext.Provider>
     </FormProvider>
   )

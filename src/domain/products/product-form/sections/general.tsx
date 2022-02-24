@@ -63,7 +63,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="title"
             placeholder="Jacket, Sunglasses..."
             required
-            ref={register({ required: true, minLength: 1 })}
+            ref={register({ required: "Name is required", minLength: 1 })}
           />
           <Input
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
@@ -71,7 +71,10 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="handle"
             required={isEdit}
             placeholder="/bathrobe"
-            ref={register({ required: isEdit, minLength: isEdit ? 1 : 0 })}
+            ref={register({
+              required: isEdit ? "Handle is required" : false,
+              minLength: isEdit ? 1 : 0,
+            })}
           />
         </div>
         <label
