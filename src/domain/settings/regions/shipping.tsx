@@ -4,10 +4,10 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import { Box, Flex } from "rebass"
+import Spinner from "../../../components/atoms/spinner"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import Actionables from "../../../components/molecules/actionables"
 import ShippingOption from "../../../components/molecules/shipping-option"
-import Spinner from "../../../components/spinner"
 import EditShipping from "./edit-shipping"
 import NewShipping from "./new-shipping"
 
