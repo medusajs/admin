@@ -120,7 +120,6 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
         >
           {!readOnly ? (
             <Select
-              enableSearch
               label="Currency"
               value={value}
               onChange={onCurrencyChange}
