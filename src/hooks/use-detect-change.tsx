@@ -4,7 +4,7 @@ import SaveNotification from "../components/atoms/save-notification"
 
 export type NotificationAction = {
   label: string
-  icon?: any
+  icon: any
   onClick: () => Promise<void>
 }
 
@@ -13,17 +13,21 @@ type Options = {
   title: string
   message: string
   icon?: ReactNode
-  confirmText?: string
-  cancelText?: string
 }
 
 type UseDetectChangeProps = {
   isDirty: boolean
   reset: () => void
+  handleSubmit: any
   options: Options
 }
 
-const useDetectChange = ({ isDirty, reset, options }: UseDetectChangeProps) => {
+const useDetectChange = ({
+  isDirty,
+  reset,
+  handleSubmit,
+  options,
+}: UseDetectChangeProps) => {
   useEffect(() => {
     const { fn, title, message, icon } = options
 
@@ -49,9 +53,7 @@ const useDetectChange = ({ isDirty, reset, options }: UseDetectChangeProps) => {
 
     if (isDirty) {
       showToaster()
-    }
-
-    return () => {
+    } else {
       toast.dismiss("form-change")
     }
   }, [isDirty, options])

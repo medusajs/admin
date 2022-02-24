@@ -7,7 +7,12 @@ import {
   formValuesToUpdateProductMapper,
 } from "./mappers"
 
-export const useFormActions = (id: string, viewType: string) => {
+export const useFormActions = (
+  id: string,
+  viewType: string,
+  handleSubmit: any,
+  data: object = {}
+) => {
   const createProduct = useAdminCreateProduct()
   const updateProduct = useAdminUpdateProduct(id)
 

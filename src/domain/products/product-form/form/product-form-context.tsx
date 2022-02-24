@@ -78,7 +78,9 @@ export const ProductFormProvider = ({
     setImages([...images])
   }
 
-  const methods = useForm()
+  const methods = useForm({
+    defaultValues: product,
+  })
 
   const handleReset = () => {
     methods.reset({
@@ -110,11 +112,17 @@ export const ProductFormProvider = ({
 
   useEffect(() => {
     handleReset()
-  }, [])
+  }, [product])
 
   const { onCreateAndPublish, onCreateDraft, onUpdate } = useFormActions(
     product.id,
-    viewType
+    viewType,
+    methods.handleSubmit,
+    {
+      images,
+      variants,
+      options: productOptions,
+    }
   )
 
   const submitWrapper = async (values) => {
@@ -124,8 +132,10 @@ export const ProductFormProvider = ({
 
   let notificationAction: NotificationAction[] | (() => Promise<void>)
 
+  const onError = (errors, e) => console.log(errors, e)
+
   if (isEdit) {
-    notificationAction = methods.handleSubmit(submitWrapper)
+    notificationAction = methods.handleSubmit(submitWrapper, onError)
   } else {
     notificationAction = [
       {
@@ -174,6 +184,7 @@ export const ProductFormProvider = ({
   useDetectChange({
     isDirty: dirtyState,
     reset: handleReset,
+    handleSubmit: methods.handleSubmit,
     options: {
       fn: notificationAction,
       title: "You have unsaved changes",

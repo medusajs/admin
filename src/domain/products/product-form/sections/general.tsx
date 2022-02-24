@@ -63,14 +63,15 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="title"
             placeholder="Jacket, Sunglasses..."
             required
-            ref={register({ required: true })}
+            ref={register({ required: true, minLength: 1 })}
           />
           <Input
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
             label="Handle"
             name="handle"
+            required={isEdit}
             placeholder="/bathrobe"
-            ref={register()}
+            ref={register({ required: isEdit, minLength: isEdit ? 1 : 0 })}
           />
         </div>
         <label
@@ -91,20 +92,36 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             ref={register}
           />
           <Controller
-            as={Select}
-            control={control}
-            label="Collection"
             name="collection"
-            placeholder="Select collection..."
-            options={collectionOptions}
+            control={control}
+            render={({ onChange, value }) => {
+              return (
+                <Select
+                  label="Collection"
+                  name="collection"
+                  placeholder="Select collection..."
+                  options={collectionOptions}
+                  onChange={onChange}
+                  value={value}
+                />
+              )
+            }}
           />
           <Controller
-            as={Select}
-            control={control}
-            label="Type"
             name="type"
-            placeholder="Select type..."
-            options={typeOptions}
+            control={control}
+            render={({ onChange, value }) => {
+              return (
+                <Select
+                  label="Type"
+                  name="type"
+                  placeholder="Select type..."
+                  options={typeOptions}
+                  onChange={onChange}
+                  value={value}
+                />
+              )
+            }}
           />
           <Controller
             name="tags"

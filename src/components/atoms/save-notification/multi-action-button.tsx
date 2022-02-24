@@ -2,6 +2,7 @@ import * as Dropdown from "@radix-ui/react-dropdown-menu"
 import React, { ButtonHTMLAttributes } from "react"
 import { toast as global } from "react-hot-toast"
 import { ButtonAction } from "."
+import { getErrorMessage } from "../../../utils/error-messages"
 import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
 import ErrorState from "./error-state"
 import SavingState from "./saving-state"
@@ -25,21 +26,32 @@ const MultiActionButton: React.FC<MultiActionButtonProps> = ({
       id: originalId,
     })
 
-    console.log(action)
+    try {
+      action()
+    } catch (e) {
+      global.dismiss(originalId)
+      global.custom(
+        (t) => <ErrorState toast={t} message={getErrorMessage(e)} />,
+        {
+          duration: 3000,
+          position: "bottom-right",
+        }
+      )
+    }
 
     action()
       .then(() => {
+        global.dismiss(originalId)
         global.custom((t) => <SuccessState toast={t} />, {
           duration: 3000,
           position: "bottom-right",
-          id: originalId,
         })
       })
       .catch((_err) => {
+        global.dismiss(originalId)
         global.custom((t) => <ErrorState toast={t} />, {
           duration: 3000,
           position: "bottom-right",
-          id: originalId,
         })
       })
   }
