@@ -2,7 +2,6 @@ import {
   useAdminCancelReturn,
   useAdminCancelSwap,
   useAdminOrder,
-  useAdminReceiveReturn,
   useAdminStore,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
@@ -65,7 +64,6 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const [showCreateFulfillment, setShowCreateFulfillment] = useState(false)
   const cancelExchange = useAdminCancelSwap(event.orderId)
   const cancelReturn = useAdminCancelReturn(event.returnId)
-  const receiveReturn = useAdminReceiveReturn(event.returnId)
   const [differenceCardId, setDifferenceCardId] = useState<string | undefined>(
     undefined
   )
@@ -88,13 +86,13 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
       return
     }
 
-    if (store.payment_link_template?.indexOf("{cart_id}") === -1) {
+    if (store.swap_link_template?.indexOf("{cart_id}") === -1) {
       setPaymentFormatWarning(
         "Store payment link does not have the default format, as it does not contain '{cart_id}'. Either update the payment link to include '{cart_id}' or update this method to reflect the format of your payment link."
       )
     }
 
-    if (!store.payment_link_template) {
+    if (!store.swap_link_template) {
       setPaymentFormatWarning(
         "No payment link has been set for this store. Please update store settings."
       )
@@ -102,13 +100,10 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
 
     if (event.exchangeCartId) {
       setDifferenceCardId(
-        store.payment_link_template?.replace(
-          /\{cart_id\}/,
-          event.exchangeCartId
-        )
+        store.swap_link_template?.replace(/\{cart_id\}/, event.exchangeCartId)
       )
     }
-  }, [store?.payment_link_template, event.exchangeCartId, event.paymentStatus])
+  }, [store?.swap_link_template, event.exchangeCartId, event.paymentStatus])
 
   const paymentLink = getPaymentLink(
     payable,

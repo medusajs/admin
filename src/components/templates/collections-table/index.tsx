@@ -138,7 +138,7 @@ const CollectionsTable: React.FC = () => {
         offset={offset}
         pageSize={offset + rows.length}
         title="Collections"
-        currentPage={pageIndex}
+        currentPage={pageIndex + 1}
         pageCount={pageCount}
         nextPage={handleNext}
         prevPage={handlePrev}
