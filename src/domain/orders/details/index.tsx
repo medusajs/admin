@@ -22,6 +22,7 @@ import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
+import MailIcon from "../../../components/fundamentals/icons/mail-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
@@ -32,6 +33,7 @@ import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
+import EmailModal from "./email-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
 import MarkShippedModal from "./mark-shipped"
 import OrderLine from "./order-line"
@@ -46,6 +48,7 @@ import {
   PaymentDetails,
   PaymentStatusComponent,
 } from "./templates"
+import RawJSON from "../../../components/organisms/raw-json"
 
 type OrderDetailFulfillment = {
   title: string
@@ -109,6 +112,10 @@ const OrderDetails = ({ id }) => {
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
     type: "billing" | "shipping"
+  }>(null)
+
+  const [emailModal, setEmailModal] = useState<null | {
+    email: string
   }>(null)
 
   const [showFulfillment, setShowFulfillment] = useState(false)
@@ -195,28 +202,38 @@ const OrderDetails = ({ id }) => {
   }
 
   const handleUpdateAddress = async ({ data, type }) => {
-    const { email, ...rest } = data
-
     const updateObj = {}
 
     if (type === "shipping") {
       updateObj["shipping_address"] = {
-        ...rest,
+        ...data,
       }
     } else {
       updateObj["billing_address"] = {
-        ...rest,
+        ...data,
       }
-    }
-
-    if (email) {
-      updateObj["email"] = email
     }
 
     return updateOrder.mutate(updateObj, {
       onSuccess: () => {
         notification("Success", "Successfully updated address", "success")
         setAddressModal(null)
+      },
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
+    })
+  }
+
+  const handleUpdateEmail = async ({ email }) => {
+    const updateObj = email ? { email } : {}
+
+    return updateOrder.mutate(updateObj, {
+      onSuccess: () => {
+        notification(
+          "Success",
+          "Successfully updated the email address",
+          "success"
+        )
+        setEmailModal(null)
       },
       onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
@@ -252,6 +269,18 @@ const OrderDetails = ({ id }) => {
             type: "billing",
           })
         }
+      },
+    })
+  }
+
+  if (order?.email) {
+    customerActionables.push({
+      label: "Edit Email Address",
+      icon: <MailIcon size={"20"} />,
+      onClick: () => {
+        setEmailModal({
+          email: order?.email,
+        })
       },
     })
   }
@@ -548,22 +577,9 @@ const OrderDetails = ({ id }) => {
                 </div>
               </div>
             </BodyCard>
-            <BodyCard
-              className={"w-full mb-4 min-h-0 h-auto"}
-              title="Raw Order"
-            >
-              <div className="flex flex-col min-h-[100px] mt-4 bg-grey-5 px-3 py-2 h-full rounded-rounded">
-                <span className="inter-base-semibold">
-                  Data{" "}
-                  <span className="text-grey-50 inter-base-regular">
-                    (1 item)
-                  </span>
-                </span>
-                <div className="flex flex-grow items-center mt-4">
-                  <ReactJson name={false} collapsed={true} src={order} />
-                </div>
-              </div>
-            </BodyCard>
+            <div className="mt-large">
+              <RawJSON data={order} title="Raw order" />
+            </div>
           </div>
           <Timeline orderId={order.id} />
         </div>
@@ -574,8 +590,14 @@ const OrderDetails = ({ id }) => {
           handleSave={(obj) => handleUpdateAddress(obj)}
           address={addressModal.address}
           type={addressModal.type}
-          email={order?.email}
           allowedCountries={region?.countries}
+        />
+      )}
+      {emailModal && (
+        <EmailModal
+          handleClose={() => setEmailModal(null)}
+          handleSave={(obj) => handleUpdateEmail(obj)}
+          email={emailModal.email}
         />
       )}
       {showFulfillment && order && (

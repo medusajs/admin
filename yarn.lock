@@ -2127,82 +2127,21 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@^1.0.11-alpha.9+59bb4132":
-  version "1.0.11-alpha.9"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.11-alpha.9.tgz#28020af761be039a3b15885a57744c1b69f58818"
-  integrity sha512-liqkM5KOTsjZRIs9LFuOhbL66PHAs2ukvN1Qdn3f2Hpx6YLs2+OiW2Wt6DFn+i/R9rKi8jy83YH0irK+sKsVNg==
+"@medusajs/medusa-js@^1.0.13-tax-api.48", "@medusajs/medusa-js@^1.0.13-tax-api.48+b11fd4f3":
+  version "1.0.13-tax-api.48"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.13-tax-api.48.tgz#5b139b277c4d8f447e9cbb2b37d4743d48d210a7"
+  integrity sha512-9k/rQbqgy0xGrjWsSKIRFBhs/9Donu5giGTOc6JrvEB/addy5IYeEdrW+Y0Pbfwcl+6icJ++jfJ5UBQp/YvynQ==
   dependencies:
-    "@medusajs/medusa" "^1.1.63-alpha.9+59bb4132"
+    "@medusajs/medusa" "^1.1.65-tax-api.48+b11fd4f3"
     axios "^0.24.0"
     form-data "^4.0.0"
     qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa-js@^1.0.12":
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.12.tgz#7874fefb4e65ae4fbe9e0e73bf386d02a6297c8b"
-  integrity sha512-g3uFtTUFrso+0Kopp8rIzgdAVpJLo9hiBbZ2xeTdojVrex7VB9zUPc6tBa5TQmPQysI/QlPfdFM+dALGRdCDRA==
-  dependencies:
-    "@medusajs/medusa" "^1.1.64"
-    axios "^0.24.0"
-    form-data "^4.0.0"
-    qs "^6.10.3"
-    retry-axios "^2.6.0"
-
-"@medusajs/medusa@^1.1.63-alpha.9+59bb4132":
-  version "1.1.63-alpha.9"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.63-alpha.9.tgz#a0d511b8c1b94b86216964b233020af6f593ecc0"
-  integrity sha512-8JofT2ID4EZvouzkOzBV0M8o5Xdp8jmmvwAzsebd2KtpdZ7vzn/+O/s+OMh3FZv75/g54z6+Fudx3nQd+MQiNw==
-  dependencies:
-    "@hapi/joi" "^16.1.8"
-    "@medusajs/medusa-cli" "^1.1.27"
-    "@types/lodash" "^4.14.168"
-    awilix "^4.2.3"
-    body-parser "^1.19.0"
-    bull "^3.12.1"
-    chokidar "^3.4.2"
-    class-transformer "^0.5.1"
-    class-validator "^0.13.1"
-    connect-redis "^5.0.0"
-    cookie-parser "^1.4.4"
-    core-js "^3.6.5"
-    cors "^2.8.5"
-    cross-spawn "^7.0.3"
-    dotenv "^8.2.0"
-    express "^4.17.1"
-    express-session "^1.17.1"
-    fs-exists-cached "^1.0.0"
-    glob "^7.1.6"
-    ioredis "^4.17.3"
-    ioredis-mock "^5.6.0"
-    iso8601-duration "^1.3.0"
-    joi "^17.3.0"
-    joi-objectid "^3.0.1"
-    jsonwebtoken "^8.5.1"
-    medusa-core-utils "^1.1.31"
-    medusa-test-utils "^1.1.37"
-    morgan "^1.9.1"
-    multer "^1.4.2"
-    passport "^0.4.0"
-    passport-http-bearer "^1.0.1"
-    passport-jwt "^4.0.0"
-    passport-local "^1.0.0"
-    pg "^8.5.1"
-    randomatic "^3.1.1"
-    redis "^3.0.2"
-    reflect-metadata "^0.1.13"
-    request-ip "^2.1.3"
-    resolve-cwd "^3.0.0"
-    scrypt-kdf "^2.0.1"
-    sqlite3 "^5.0.2"
-    ulid "^2.3.0"
-    uuid "^8.3.1"
-    winston "^3.2.1"
-
-"@medusajs/medusa@^1.1.64":
-  version "1.1.64"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.64.tgz#236f04fad06dafed4fd0f3aed4d06307acc07a5b"
-  integrity sha512-u2TTNygrIUt90PvTCqzlMEYCKTVffTLp9n/Ix+VXHW/DIhauPk74izyNGAgU9oLYWw/H0JLEu3O+6Jv18AKSTA==
+"@medusajs/medusa@^1.1.65-tax-api.48", "@medusajs/medusa@^1.1.65-tax-api.48+b11fd4f3":
+  version "1.1.65-tax-api.48"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.65-tax-api.48.tgz#a479a7fa59a071de170dc42a60f2a8ba0adebb3f"
+  integrity sha512-7tHk8h8t0PwFc+146E5THMvJz1RaQATHq3o+Ca6zcYajijf40d1ZOQbneX6HBvDAxlY3TFzTPEFacp/YPZ2KpA==
   dependencies:
     "@hapi/joi" "^16.1.8"
     "@medusajs/medusa-cli" "^1.1.27"
@@ -4267,6 +4206,13 @@
   version "7.7.9"
   resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-7.7.9.tgz#ea82875775fc6ee71a28408dcc039396ae067c92"
   integrity sha512-ejP/J20Zlj9VmuLh73YgYkW2xOSFTW39G43rPH93M4mYWdMmqv66lCCr+axZpkdtlNLGjvMG2CwzT4S6abaeGQ==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-transition-group@^4.4.0":
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/@types%2freact-transition-group/-/react-transition-group-4.4.4.tgz#acd4cceaa2be6b757db61ed7b432e103242d163e"
+  integrity sha512-7gAPz7anVK5xzbeQW9wFBDg7G++aPLAFY0QaSMOou9rJZpbuI58WAuJrgu+qR92l61grlnCUe7AFX8KGahAgug==
   dependencies:
     "@types/react" "*"
 
@@ -6647,6 +6593,11 @@ concat-stream@^1.5.0, concat-stream@^1.5.2:
     inherits "^2.0.3"
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
+
+confetti-js@^0.0.18:
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/confetti-js/-/confetti-js-0.0.18.tgz#1ecdc74f78cd65e6a549becb94315f2a21900022"
+  integrity sha512-0B7pYmZGBZuBkN32ydjWRpJLfRUT9KZYkQKkC4SGrAsUq0XE2DLY5foCWBXMXXVg7sFKs3qIb+qsDx1eFTeSvA==
 
 configstore@5.0.1, configstore@^5.0.1:
   version "5.0.1"
@@ -12156,13 +12107,13 @@ medusa-core-utils@^1.1.31:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
-medusa-react@^0.1.4-alpha.9:
-  version "0.1.4-alpha.9"
-  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.1.4-alpha.9.tgz#350d0741b6921a8d48a885844783827a64f26b03"
-  integrity sha512-M+RhNbY8RIylL7QdNcXpJhg704GkiDo/AwAaBChI1s1kNGNPka48yJJ8lbbiiMaOCwVKf7ZbjG0pv1PVtTVGzg==
+medusa-react@^0.1.6-tax-api.48:
+  version "0.1.6-tax-api.48"
+  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.1.6-tax-api.48.tgz#97755c454b5e3108f028c1b3a17d6123fbe4fedd"
+  integrity sha512-a6S22Mmo+CWBpMYHq3vEwVNsAZRMejCWAGR05lAQT86vnmPK//r9KBlRnTyh96aIIA5CUdievLMCYeHplnok1g==
   dependencies:
-    "@medusajs/medusa" "^1.1.63-alpha.9+59bb4132"
-    "@medusajs/medusa-js" "^1.0.11-alpha.9+59bb4132"
+    "@medusajs/medusa" "^1.1.65-tax-api.48+b11fd4f3"
+    "@medusajs/medusa-js" "^1.0.13-tax-api.48+b11fd4f3"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
@@ -14326,7 +14277,7 @@ prompts@^2.4.0, prompts@^2.4.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.0.0, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.0.0, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -14465,10 +14416,20 @@ qs@~6.5.2:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.3.tgz#3aeeffc91967ef6e35c0e488ef46fb296ab76aad"
   integrity sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==
 
-query-string@^6.13.1, query-string@^6.13.8, query-string@^6.14.1:
+query-string@^6.13.8, query-string@^6.14.1:
   version "6.14.1"
   resolved "https://registry.yarnpkg.com/query-string/-/query-string-6.14.1.tgz#7ac2dca46da7f309449ba0f86b1fd28255b0c86a"
   integrity sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw==
+  dependencies:
+    decode-uri-component "^0.2.0"
+    filter-obj "^1.1.0"
+    split-on-first "^1.0.0"
+    strict-uri-encode "^2.0.0"
+
+query-string@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-7.1.1.tgz#754620669db978625a90f635f12617c271a088e1"
+  integrity sha512-MplouLRDHBZSG9z7fpuAAcI7aAYjDLhtsiVZsevsfaHWDS2IDdORKbSd1kWUA+V4zyva/HZoSfpwnYMMQDhb0w==
   dependencies:
     decode-uri-component "^0.2.0"
     filter-obj "^1.1.0"
@@ -14768,13 +14729,6 @@ react-hotkeys-hook@^2.4.0:
   dependencies:
     hotkeys-js "3.8.1"
 
-react-input-autosize@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-3.0.0.tgz#6b5898c790d4478d69420b55441fcc31d5c50a85"
-  integrity sha512-nL9uS7jEs/zu8sqwFE5MAPx6pPkNAriACQ2rGLlqmKr2sPGtN7TXTyDdQt4lbNXVx7Uzadb40x8qotIuru6Rhg==
-  dependencies:
-    prop-types "^15.5.8"
-
 react-inspector@^5.1.0:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-5.1.1.tgz#58476c78fde05d5055646ed8ec02030af42953c8"
@@ -14803,6 +14757,11 @@ react-json-view@^1.19.1:
     react-base16-styling "^0.6.0"
     react-lifecycles-compat "^3.0.4"
     react-textarea-autosize "^8.3.2"
+
+react-jwt@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/react-jwt/-/react-jwt-1.1.4.tgz#84faf0cc63c2943fe28a8901a79e30868d4b21d9"
+  integrity sha512-k9S7d/wosvT5/lHLfF3QS3YloCRNUuNDGSTRG5RsJmFAfWQtV/det/euDhZgSZ3BAzPYxImQl98AssYc2rkenw==
 
 react-lifecycles-compat@^3.0.4:
   version "3.0.4"
@@ -14902,17 +14861,17 @@ react-router@6.2.1, react-router@^6.0.0:
   dependencies:
     history "^5.2.0"
 
-react-select@^4.1.0:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/react-select/-/react-select-4.3.1.tgz#389fc07c9bc7cf7d3c377b7a05ea18cd7399cb81"
-  integrity sha512-HBBd0dYwkF5aZk1zP81Wx5UsLIIT2lSvAY2JiJo199LjoLHoivjn9//KsmvQMEFGNhe58xyuOITjfxKCcGc62Q==
+react-select@^5.2.2:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/react-select/-/react-select-5.2.2.tgz#3d5edf0a60f1276fd5f29f9f90a305f0a25a5189"
+  integrity sha512-miGS2rT1XbFNjduMZT+V73xbJEeMzVkJOz727F6MeAr2hKE0uUSA8Ff7vD44H32x2PD3SRB6OXTY/L+fTV3z9w==
   dependencies:
     "@babel/runtime" "^7.12.0"
     "@emotion/cache" "^11.4.0"
     "@emotion/react" "^11.1.1"
+    "@types/react-transition-group" "^4.4.0"
     memoize-one "^5.0.0"
     prop-types "^15.6.0"
-    react-input-autosize "^3.0.0"
     react-transition-group "^4.3.0"
 
 react-side-effect@^2.1.0:

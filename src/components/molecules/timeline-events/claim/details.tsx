@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useContext } from "react"
 import clsx from "clsx"
-
+import React, { useContext } from "react"
+import Button from "../../../../components/fundamentals/button"
 import InputField from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
-import Button from "../../../../components/fundamentals/button"
-import Table from "../../../../components/molecules/table"
-
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
+import Table from "../../../../components/molecules/table"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 
 const reasonOptions = {
@@ -62,7 +60,6 @@ const ClaimDetails = ({ claim, order, onDismiss }) => {
                                 <span className="text-grey-90">
                                   {item.title}
                                 </span>{" "}
-                                test
                               </span>
                               <span>{item?.variant?.title || ""}</span>
                             </div>

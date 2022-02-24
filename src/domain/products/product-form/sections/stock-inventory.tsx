@@ -4,9 +4,17 @@ import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import Input from "../../../../components/molecules/input"
 import BodyCard from "../../../../components/organisms/body-card"
 import { useProductForm } from "../form/product-form-context"
+import { countries as countryData } from "../../../../utils/countries"
+import { Controller } from "react-hook-form"
+import Select from "../../../../components/molecules/select"
 
 const StockAndInventory = () => {
-  const { isVariantsView, register } = useProductForm()
+  const { isVariantsView, register, control } = useProductForm()
+  const countryOptions = countryData.map((c) => ({
+    label: c.name,
+    value: c.alpha2.toLowerCase(),
+  }))
+
   return (
     <BodyCard
       title="Stock & Inventory"
@@ -39,6 +47,12 @@ const StockAndInventory = () => {
                 type="number"
                 placeholder="100"
                 ref={register}
+              />
+              <Input
+                label="Material"
+                name="material"
+                ref={register}
+                placeholder="Wool..."
               />
             </div>
           </>
@@ -83,6 +97,7 @@ const StockAndInventory = () => {
               label="Height"
               name="height"
               ref={register}
+              min={0}
               placeholder="100..."
             />
             <Input
@@ -91,6 +106,7 @@ const StockAndInventory = () => {
               name="width"
               ref={register}
               placeholder="100..."
+              min={0}
             />
             <Input
               type="number"
@@ -98,6 +114,7 @@ const StockAndInventory = () => {
               name="length"
               ref={register}
               placeholder="100..."
+              min={0}
             />
             <Input
               type="number"
@@ -105,6 +122,7 @@ const StockAndInventory = () => {
               name="weight"
               ref={register}
               placeholder="100..."
+              min={0}
             />
           </div>
           <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-4 mb-large">
@@ -120,17 +138,14 @@ const StockAndInventory = () => {
               ref={register}
               placeholder="100..."
             />
-            <Input
-              ref={register}
+            <Controller
+              control={control}
+              as={Select}
+              enableSearch
               label="Country of origin"
               name="origin_country"
-              placeholder="Denmark..."
-            />
-            <Input
-              label="Material"
-              name="material"
-              ref={register}
-              placeholder="Wool..."
+              placeholder="Select a country"
+              options={countryOptions}
             />
           </div>
         </div>

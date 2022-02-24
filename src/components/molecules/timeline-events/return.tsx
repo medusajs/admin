@@ -1,7 +1,10 @@
 import clsx from "clsx"
-import { useAdminCancelReturn } from "medusa-react"
+import { useAdminCancelReturn, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
+import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
 import { ReturnEvent } from "../../../hooks/use-build-timeline"
+import useNotification from "../../../hooks/use-notification"
+import Medusa from "../../../services/api"
 import Button from "../../fundamentals/button"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
 import CancelIcon from "../../fundamentals/icons/cancel-icon"
@@ -20,7 +23,12 @@ type ReturnRequestedProps = {
 
 const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
   const [showCancel, setShowCancel] = useState(false)
+  const [showReceive, setShowReceive] = useState(false)
   const cancelReturn = useAdminCancelReturn(event.id)
+
+  const { order } = useAdminOrder(event.orderId)
+
+  const notification = useNotification()
 
   const handleCancel = () => {
     cancelReturn.mutate(undefined, {
@@ -30,11 +38,12 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
     })
   }
 
-  const handleReceive = () => {
-    // TODO
+  const handleReceive = async (id, payload) => {
+    await Medusa.orders.receiveReturn(id, payload) // TODO: replace with hook from medusa-react
+    refetch()
   }
 
-  const args = buildReturn(event, handleCancel, handleReceive)
+  const args = buildReturn(event, handleCancel, () => setShowReceive(true))
 
   return (
     <>
@@ -47,6 +56,19 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
           confirmText="Yes, cancel"
           successText="Canceled return"
           text="Are you sure you want to cancel this return?"
+        />
+      )}
+      {showReceive && (
+        <ReceiveMenu
+          onDismiss={() => setShowReceive(false)}
+          notification={notification}
+          onReceiveReturn={handleReceive}
+          order={order}
+          returnRequest={event.raw}
+          isSwapOrClaim={
+            event.raw.claim_order_id !== null || event.raw.swap_id !== null
+          }
+          refunded={event.refunded}
         />
       )}
     </>
