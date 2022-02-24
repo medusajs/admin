@@ -113,9 +113,9 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
       <div className={clsx("flex items-center gap-x-2xsmall", className)}>
         <div
           className={clsx(
-            { "max-w-[144px]": size === "medium" },
-            { "max-w-[120px]": size === "small" },
-            { "max-w-full": size === "full" }
+            { "basis-[140px] max-w-[144px]": size === "medium" },
+            { "basis-[120px] max-w-[120px]": size === "small" },
+            { "basis-full max-w-full": size === "full" }
           )}
         >
           {!readOnly ? (

@@ -74,12 +74,14 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
                     ref={register()}
                     defaultValue={field.price}
                     render={({ onChange, value }) => {
+                      const codes = [
+                        value?.currency_code,
+                        ...availableCurrencies,
+                      ]
+                      codes.sort()
                       return (
                         <CurrencyInput
-                          currencyCodes={[
-                            value?.currency_code,
-                            ...availableCurrencies,
-                          ]}
+                          currencyCodes={codes}
                           currentCurrency={value?.currency_code}
                           size="medium"
                           readOnly={index === 0}
