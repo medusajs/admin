@@ -66,6 +66,7 @@ export const ProductFormProvider = ({
   const [images, setImages] = React.useState<any[]>([])
   const [variants, setVariants] = React.useState<any[]>([])
   const [productOptions, setProductOptions] = React.useState<any[]>([])
+  const [dirtyState, setDirtyState] = React.useState(false)
 
   const appendImage = (image) => setImages([...images, image])
 
@@ -84,7 +85,6 @@ export const ProductFormProvider = ({
       ...product,
     })
     setImages(product.images)
-    setProductOptions(product.options)
 
     if (product?.variants) {
       const variants = product?.variants?.map((v) => ({
@@ -117,17 +117,15 @@ export const ProductFormProvider = ({
     viewType
   )
 
+  const submitWrapper = async (values) => {
+    const data = { ...values, images, variants, options: productOptions }
+    return await onUpdate(data)
+  }
+
   let notificationAction: NotificationAction[] | (() => Promise<void>)
 
   if (isEdit) {
-    notificationAction = async () => {
-      await onUpdate({
-        ...methods.getValues(),
-        images,
-        variants,
-        options: productOptions,
-      })
-    }
+    notificationAction = methods.handleSubmit(submitWrapper)
   } else {
     notificationAction = [
       {
@@ -159,8 +157,22 @@ export const ProductFormProvider = ({
 
   const isDirty = !!Object.keys(methods.formState.dirtyFields).length // isDirty from useForm is behaving more like touched and is therfore not working as expected
 
+  useEffect(() => {
+    if (isDirty) {
+      setDirtyState(true)
+      return
+    }
+
+    if (JSON.stringify(images) !== JSON.stringify(product.images)) {
+      setDirtyState(true)
+      return
+    }
+
+    setDirtyState(false)
+  }, [isDirty, JSON.stringify(images)])
+
   useDetectChange({
-    isDirty: isDirty,
+    isDirty: dirtyState,
     reset: handleReset,
     options: {
       fn: notificationAction,

@@ -18,7 +18,7 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
   const currencyCodes = store?.currencies.map((currency) => currency.code)
 
   return (
-    <>
+    <div className="pb-xlarge">
       <div>
         <General isEdit={isEdit} product={product} showViewOptions={!isEdit} />
       </div>
@@ -42,7 +42,7 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
       <div className="mt-large">
         <StockAndInventory />
       </div>
-    </>
+    </div>
   )
 }
 

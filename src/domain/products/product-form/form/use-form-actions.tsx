@@ -12,7 +12,6 @@ export const useFormActions = (id: string, viewType: string) => {
   const updateProduct = useAdminUpdateProduct(id)
 
   const onCreate = async (data) => {
-    console.log(data)
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
@@ -47,6 +46,7 @@ export const useFormActions = (id: string, viewType: string) => {
   }
 
   const onUpdate = async (data) => {
+    console.log(data)
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)

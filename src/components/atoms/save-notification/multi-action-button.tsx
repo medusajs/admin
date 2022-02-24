@@ -25,17 +25,21 @@ const MultiActionButton: React.FC<MultiActionButtonProps> = ({
       id: originalId,
     })
 
+    console.log(action)
+
     action()
       .then(() => {
         global.custom((t) => <SuccessState toast={t} />, {
           duration: 3000,
           position: "bottom-right",
+          id: originalId,
         })
       })
       .catch((_err) => {
         global.custom((t) => <ErrorState toast={t} />, {
           duration: 3000,
           position: "bottom-right",
+          id: originalId,
         })
       })
   }
