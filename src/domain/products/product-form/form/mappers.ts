@@ -1,4 +1,3 @@
-import { isString, trim } from "lodash"
 import { SINGLE_PRODUCT_VIEW } from "./product-form-context"
 
 export const productToFormValuesMapper = (product) => {
@@ -30,8 +29,7 @@ export const productToFormValuesMapper = (product) => {
   }
 }
 
-export const formValuesToCreateProductMapper = (formValues, viewType) => {
-  const values = trimAll(formValues)
+export const formValuesToCreateProductMapper = (values, viewType) => {
   // Simple product
   if (viewType === SINGLE_PRODUCT_VIEW) {
     values.variants = [
@@ -93,10 +91,9 @@ export const formValuesToCreateProductMapper = (formValues, viewType) => {
   }
 }
 
-export const formValuesToUpdateProductMapper = (formValues) => {
-  const values = trimAll(formValues)
+export const formValuesToUpdateProductMapper = (values) => {
   return {
-    title: trim(values.title),
+    title: values.title,
     handle: values.handle,
     status: values.status || "published",
     description: values.description,
@@ -119,11 +116,3 @@ export const formValuesToUpdateProductMapper = (formValues) => {
     discountable: values.discountable,
   }
 }
-
-const trimAll = (obj) =>
-  Object.entries(obj).reduce((obj, [key, value]) => {
-    if (isString(value)) {
-      obj[key] = trim(value)
-    }
-    return obj
-  }, obj)
