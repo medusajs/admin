@@ -76,7 +76,10 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
                     render={({ onChange, value }) => {
                       return (
                         <CurrencyInput
-                          currencyCodes={currencyCodes}
+                          currencyCodes={[
+                            value?.currency_code,
+                            ...availableCurrencies,
+                          ]}
                           currentCurrency={value?.currency_code}
                           size="medium"
                           readOnly={index === 0}
