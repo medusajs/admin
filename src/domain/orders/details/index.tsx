@@ -48,6 +48,7 @@ import {
   PaymentDetails,
   PaymentStatusComponent,
 } from "./templates"
+import RawJSON from "../../../components/organisms/raw-json"
 
 type OrderDetailFulfillment = {
   title: string
@@ -576,22 +577,9 @@ const OrderDetails = ({ id }) => {
                 </div>
               </div>
             </BodyCard>
-            <BodyCard
-              className={"w-full mb-4 min-h-0 h-auto"}
-              title="Raw Order"
-            >
-              <div className="flex flex-col min-h-[100px] mt-4 bg-grey-5 px-3 py-2 h-full rounded-rounded">
-                <span className="inter-base-semibold">
-                  Data{" "}
-                  <span className="text-grey-50 inter-base-regular">
-                    (1 item)
-                  </span>
-                </span>
-                <div className="flex flex-grow items-center mt-4">
-                  <ReactJson name={false} collapsed={true} src={order} />
-                </div>
-              </div>
-            </BodyCard>
+            <div className="mt-large">
+              <RawJSON data={order} title="Raw order" />
+            </div>
           </div>
           <Timeline orderId={order.id} />
         </div>

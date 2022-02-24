@@ -48,6 +48,12 @@ const StockAndInventory = () => {
                 placeholder="100"
                 ref={register}
               />
+              <Input
+                label="Material"
+                name="material"
+                ref={register}
+                placeholder="Wool..."
+              />
             </div>
           </>
         )}
@@ -140,12 +146,6 @@ const StockAndInventory = () => {
               name="origin_country"
               placeholder="Select a country"
               options={countryOptions}
-            />
-            <Input
-              label="Material"
-              name="material"
-              ref={register}
-              placeholder="Wool..."
             />
           </div>
         </div>
