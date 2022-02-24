@@ -99,14 +99,14 @@ const NewOption = ({ productId, options, onDismiss }) => {
     <Modal handleClose={onDismiss} isLargeModal={false}>
       <form onSubmit={onSubmit}>
         <Modal.Body>
-          <Modal.Header>
+          <Modal.Header handleClose={onDismiss}>
             <h2>Add Option</h2>
           </Modal.Header>
-          <Modal.Content flexDirection="column">
+          <Modal.Content>
             {toSave.map(
               (o, index) =>
                 !o.isRemoved && (
-                  <div className="flex gap-y-2" key={o.id}>
+                  <div className="mb-2" key={o.id}>
                     <Input
                       deletable
                       label="Title"
