@@ -12,7 +12,7 @@ const StockAndInventory = () => {
   const { isVariantsView, register, control } = useProductForm()
   const countryOptions = countryData.map((c) => ({
     label: c.name,
-    value: c.alpha2.toLowerCase(),
+    value: c.name,
   }))
 
   return (
