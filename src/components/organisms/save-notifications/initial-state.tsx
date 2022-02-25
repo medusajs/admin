@@ -1,13 +1,10 @@
 import React, { ReactNode } from "react"
 import type { Toast } from "react-hot-toast"
 import { toast as global } from "react-hot-toast"
+import ToasterContainer from "../../atoms/toaster-container"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
-import {
-  MultiHandler,
-  SaveHandler,
-} from "../../organisms/save-notifications/notification-provider"
-import ToasterContainer from "../toaster-container"
 import MultiActionButton from "./multi-action-button"
+import { MultiHandler, SaveHandler } from "./notification-provider"
 
 type SaveNotificationProps = {
   toast: Toast
@@ -24,7 +21,7 @@ type SaveNotificationProps = {
   reset: () => void
 }
 
-const SaveNotification: React.FC<SaveNotificationProps> = ({
+const InitialState: React.FC<SaveNotificationProps> = ({
   toast,
   icon,
   title = "Unsaved changes",
@@ -81,4 +78,4 @@ function getIcon(icon?: any) {
   }
 }
 
-export default SaveNotification
+export default InitialState

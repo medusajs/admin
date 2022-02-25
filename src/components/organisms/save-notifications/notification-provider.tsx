@@ -8,10 +8,10 @@ import {
 } from "react-hook-form"
 import toast from "react-hot-toast"
 import { getErrorMessage } from "../../../utils/error-messages"
-import SaveNotification from "../../atoms/save-notification"
-import ErrorState from "../../atoms/save-notification/error-state"
-import SavingState from "../../atoms/save-notification/saving-state"
-import SuccessState from "../../atoms/save-notification/success-state"
+import ErrorState from "./error-state"
+import InitialState from "./initial-state"
+import SavingState from "./saving-state"
+import SuccessState from "./success-state"
 
 export type SubmitFunction = (values: FieldValues) => Promise<void>
 
@@ -32,9 +32,10 @@ export type MultiHandler = {
 }
 
 type ProviderProps = {
-  values: {
+  options: {
     onReset: () => void
     onSubmit: SubmitFunction | MultiSubmitFunction
+    additionalDirtyStates?: { [k: string]: boolean }
   }
   children?: ReactNode
 }
@@ -42,12 +43,12 @@ type ProviderProps = {
 const TOASTER_ID = "DIRTY_STATE_TOASTER"
 
 export const SaveNotificationProvider = ({
-  values,
+  options,
   children,
 }: ProviderProps) => {
   const [block, setBlock] = useState(true)
   const { formState, handleSubmit } = useFormContext()
-  const { onReset, onSubmit } = values
+  const { onReset, onSubmit, additionalDirtyStates } = options
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -129,10 +130,14 @@ export const SaveNotificationProvider = ({
   }
 
   useEffect(() => {
-    if (isDirty && !block) {
+    const otherDirtyState = additionalDirtyStates
+      ? Object.values(additionalDirtyStates).some((v) => v)
+      : false
+
+    if ((isDirty && !block) || (otherDirtyState && !block)) {
       toast.custom(
         (t) => (
-          <SaveNotification toast={t} reset={onReset} onSave={wrapOnSubmit()} />
+          <InitialState toast={t} reset={onReset} onSave={wrapOnSubmit()} />
         ),
         {
           position: "bottom-right",
@@ -140,12 +145,14 @@ export const SaveNotificationProvider = ({
           id: TOASTER_ID,
         }
       )
-    } else {
-      toast.dismiss(TOASTER_ID)
+
+      return
     }
 
+    toast.dismiss(TOASTER_ID)
+
     return () => toast.dismiss(TOASTER_ID)
-  }, [isDirty, block])
+  }, [isDirty, block, additionalDirtyStates])
 
   return <>{children}</>
 }

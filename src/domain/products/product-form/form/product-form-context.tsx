@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import FileTextIcon from "../../../../components/fundamentals/icons/file-text-icon"
 import PublishIcon from "../../../../components/fundamentals/icons/publish-icon"
@@ -23,6 +23,7 @@ const defaultProduct = {
   options: [],
   type: null,
   collection: null,
+  status: "",
   id: "",
   thumbnail: "",
   title: "",
@@ -119,6 +120,7 @@ export const ProductFormProvider = ({
     product.id,
     viewType,
     {
+      status: product.status, // needed for update as updating a product without passing a status will set the status to published. TODO fix this in core
       images,
       variants,
       options: productOptions,
@@ -144,21 +146,16 @@ export const ProductFormProvider = ({
     ]
   }
 
-  // const isDirty = !!Object.keys(methods.formState.dirtyFields).length // isDirty from useForm is behaving more like touched and is therfore not working as expected
+  const [imgDirtyState, setImgDirtyState] = useState(false)
 
-  // useEffect(() => {
-  //   if (isDirty) {
-  //     setDirtyState(true)
-  //     return
-  //   }
+  useEffect(() => {
+    if (JSON.stringify(images) !== JSON.stringify(product.images)) {
+      setImgDirtyState(true)
+      return
+    }
 
-  //   if (JSON.stringify(images) !== JSON.stringify(product.images)) {
-  //     setDirtyState(true)
-  //     return
-  //   }
-
-  //   setDirtyState(false)
-  // }, [isDirty, JSON.stringify(images)])
+    setImgDirtyState(false)
+  }, [JSON.stringify(images)])
 
   return (
     <FormProvider {...methods}>
@@ -178,9 +175,12 @@ export const ProductFormProvider = ({
         }}
       >
         <SaveNotificationProvider
-          values={{
+          options={{
             onReset: handleReset,
             onSubmit: notificationAction,
+            additionalDirtyStates: {
+              images: imgDirtyState,
+            },
           }}
         >
           {children}

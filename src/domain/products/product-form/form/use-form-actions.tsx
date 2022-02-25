@@ -11,6 +11,7 @@ export const useFormActions = (
   id: string,
   viewType: string,
   data: {
+    status?: string
     images: any[]
     variants: any[]
     options: any[]
