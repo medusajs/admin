@@ -426,6 +426,12 @@ export const useProductFilters = (
     }
 
     setTabs((prev) => {
+      const duplicate = prev.findIndex(
+        (prev) => prev.label?.toLowerCase() === tabName.toLowerCase()
+      )
+      if (duplicate !== -1) {
+        prev.splice(duplicate, 1)
+      }
       return [
         ...prev,
         {
