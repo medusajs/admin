@@ -58,7 +58,11 @@ export const SaveNotificationProvider = ({
     return () => clearTimeout(timeout)
   }, [])
 
-  const isDirty = !!Object.keys(formState.dirtyFields).length
+  const otherDirtyState = additionalDirtyStates
+    ? Object.values(additionalDirtyStates).some((v) => v)
+    : false
+
+  const isDirty = !!Object.keys(formState.dirtyFields).length || otherDirtyState
 
   const handleError: SubmitErrorHandler<FieldValues> = (errors) => {
     const { title, list } = getFormErrors(errors)
@@ -76,6 +80,7 @@ export const SaveNotificationProvider = ({
     return (values: FieldValues) => {
       toast.custom((t) => <SavingState toast={t} />, {
         id: TOASTER_ID,
+        position: "bottom-right",
       })
 
       fn(values)
@@ -130,11 +135,7 @@ export const SaveNotificationProvider = ({
   }
 
   useEffect(() => {
-    const otherDirtyState = additionalDirtyStates
-      ? Object.values(additionalDirtyStates).some((v) => v)
-      : false
-
-    if ((isDirty && !block) || (otherDirtyState && !block)) {
+    if (isDirty && !block) {
       toast.custom(
         (t) => (
           <InitialState toast={t} reset={onReset} onSave={wrapOnSubmit()} />
@@ -145,14 +146,12 @@ export const SaveNotificationProvider = ({
           id: TOASTER_ID,
         }
       )
-
-      return
+    } else {
+      toast.dismiss(TOASTER_ID)
     }
 
-    toast.dismiss(TOASTER_ID)
-
     return () => toast.dismiss(TOASTER_ID)
-  }, [isDirty, block, additionalDirtyStates])
+  }, [isDirty, block])
 
   return <>{children}</>
 }
