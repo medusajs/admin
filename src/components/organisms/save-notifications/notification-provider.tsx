@@ -7,12 +7,14 @@ import {
   useFormContext,
 } from "react-hook-form"
 import toast from "react-hot-toast"
+import { getErrorMessage } from "../../../utils/error-messages"
 import SaveNotification from "../../atoms/save-notification"
 import ErrorState from "../../atoms/save-notification/error-state"
 import SavingState from "../../atoms/save-notification/saving-state"
 import SuccessState from "../../atoms/save-notification/success-state"
 
 export type SubmitFunction = (values: FieldValues) => Promise<void>
+
 export type MultiSubmitFunction = {
   label: string
   icon?: any
@@ -58,11 +60,14 @@ export const SaveNotificationProvider = ({
   const isDirty = !!Object.keys(formState.dirtyFields).length
 
   const handleError: SubmitErrorHandler<FieldValues> = (errors) => {
-    const msgs = getFormErrors(errors)
-    console.error(msgs)
-    toast.error(msgs.join(", "), {
-      duration: 3000,
+    const { title, list } = getFormErrors(errors)
+    toast.custom((t) => <ErrorState toast={t} message={list} title={title} />, {
       position: "top-right",
+      duration: 3000,
+      ariaProps: {
+        role: "alert",
+        "aria-live": "polite",
+      },
     })
   }
 
@@ -77,15 +82,32 @@ export const SaveNotificationProvider = ({
           toast.dismiss(TOASTER_ID)
           toast.custom((t) => <SuccessState toast={t} />, {
             duration: 3000,
-            position: "bottom-right",
+            position: "top-right",
+            ariaProps: {
+              role: "status",
+              "aria-live": "polite",
+            },
           })
         })
-        .catch(() => {
+        .catch((err) => {
           toast.dismiss(TOASTER_ID)
-          toast.custom((t) => <ErrorState toast={t} />, {
-            duration: 3000,
-            position: "bottom-right",
-          })
+          toast.custom(
+            (t) => (
+              <ErrorState
+                toast={t}
+                title="There was an error with your submission"
+                message={getErrorMessage(err)}
+              />
+            ),
+            {
+              duration: 3000,
+              position: "top-right",
+              ariaProps: {
+                role: "status",
+                "aria-live": "polite",
+              },
+            }
+          )
         })
     }
   }
@@ -129,11 +151,29 @@ export const SaveNotificationProvider = ({
 }
 
 function getFormErrors(errors: DeepMap<FieldValues, FieldError>) {
-  return Object.values(errors).reduce((acc, { message }) => {
-    if (message) {
-      acc.push(message)
-    }
+  const messages: string[] = Object.values(errors).reduce(
+    (acc, { message }) => {
+      if (message) {
+        acc.push(message)
+      }
 
-    return acc
-  }, [])
+      return acc
+    },
+    []
+  )
+
+  const list = (
+    <ul className="list-disc list-inside">
+      {messages.map((m) => (
+        <li>{m}</li>
+      ))}
+    </ul>
+  )
+
+  const title =
+    messages.length > 1
+      ? `There were ${messages.length} errors with your submission`
+      : "There was an error with your submission"
+
+  return { title, list }
 }

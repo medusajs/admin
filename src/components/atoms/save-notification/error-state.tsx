@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ReactNode } from "react"
 import type { Toast } from "react-hot-toast"
 import { toast as global } from "react-hot-toast"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
@@ -8,7 +8,7 @@ import ToasterContainer from "../toaster-container"
 type SavingStateProps = {
   toast: Toast
   title?: string
-  message?: string
+  message?: string | ReactNode
 }
 
 const ErrorState: React.FC<SavingStateProps> = ({

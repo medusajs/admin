@@ -68,7 +68,6 @@ export const ProductFormProvider = ({
   const [images, setImages] = React.useState<any[]>([])
   const [variants, setVariants] = React.useState<any[]>([])
   const [productOptions, setProductOptions] = React.useState<any[]>([])
-  const [dirtyState, setDirtyState] = React.useState(false)
 
   const appendImage = (image) => setImages([...images, image])
 
@@ -145,21 +144,21 @@ export const ProductFormProvider = ({
     ]
   }
 
-  const isDirty = !!Object.keys(methods.formState.dirtyFields).length // isDirty from useForm is behaving more like touched and is therfore not working as expected
+  // const isDirty = !!Object.keys(methods.formState.dirtyFields).length // isDirty from useForm is behaving more like touched and is therfore not working as expected
 
-  useEffect(() => {
-    if (isDirty) {
-      setDirtyState(true)
-      return
-    }
+  // useEffect(() => {
+  //   if (isDirty) {
+  //     setDirtyState(true)
+  //     return
+  //   }
 
-    if (JSON.stringify(images) !== JSON.stringify(product.images)) {
-      setDirtyState(true)
-      return
-    }
+  //   if (JSON.stringify(images) !== JSON.stringify(product.images)) {
+  //     setDirtyState(true)
+  //     return
+  //   }
 
-    setDirtyState(false)
-  }, [isDirty, JSON.stringify(images)])
+  //   setDirtyState(false)
+  // }, [isDirty, JSON.stringify(images)])
 
   return (
     <FormProvider {...methods}>
