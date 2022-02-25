@@ -10,9 +10,8 @@
   },
   "dependencies": {
     "@emotion/core": "^10.0.28",
-    "@emotion/styled": "^10.0.27",
-    "@medusajs/medusa": "^1.2.1",
-    "@medusajs/medusa-js": "^1.1.1",
+    "@medusajs/medusa": "^1.1.65-tax-api.48",
+    "@medusajs/medusa-js": "^1.0.13-tax-api.48",
     "@popperjs/core": "^2.10.2",
     "@radix-ui/react-accordion": "^0.1.6",
     "@radix-ui/react-avatar": "^0.1.3",
@@ -25,7 +24,6 @@
     "@radix-ui/react-select": "^0.1.1",
     "@radix-ui/react-switch": "^0.1.5",
     "@radix-ui/react-tooltip": "^0.1.6",
-    "@rebass/forms": "^4.0.6",
     "@svgr/webpack": "^5.4.0",
     "@tailwindcss/line-clamp": "^0.3.1",
     "axios": "^0.24.0",
@@ -76,7 +74,6 @@
     "react-table": "^7.7.0",
     "react-toast-notifications": "^2.4.0",
     "react-tooltip": "^4.2.10",
-    "rebass": "^4.0.7",
     "stream-browserify": "^3.0.0",
     "uuid": "^8.3.2"
   },
