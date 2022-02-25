@@ -35,7 +35,7 @@ const Variants = ({ product }) => {
       ]}
     >
       <div className="mt-large">
-        <div className="mt-large mb-small"></div>
+        <div className="mb-small"></div>
         {product?.variants && (
           <VariantGrid edit product={product} variants={variants} />
         )}

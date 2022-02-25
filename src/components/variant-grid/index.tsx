@@ -1,7 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { useAdminDeleteVariant, useAdminUpdateVariant } from "medusa-react"
 import React, { useState } from "react"
-import { Box } from "rebass"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
@@ -10,8 +9,6 @@ import EditIcon from "../fundamentals/icons/edit-icon"
 import MoreHorizontalIcon from "../fundamentals/icons/more-horizontal-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
 import DeletePrompt from "../organisms/delete-prompt"
-import { TableHead, TableHeaderCell } from "../table"
-import { StyledTable, Td, Wrapper } from "./elements"
 
 const getColumns = (product, edit) => {
   const defaultFields = [
@@ -117,40 +114,36 @@ const VariantGrid = ({ product, variants, edit }) => {
   }
 
   return (
-    <Wrapper>
-      <StyledTable as="table">
-        <TableHead>
-          <tr>
-            {columns.map((c) => (
-              <TableHeaderCell head={c.headCol} key={c.field}>
-                {c.header}
-              </TableHeaderCell>
-            ))}
-            <TableHeaderCell width="100px" />
-          </tr>
-        </TableHead>
+    <div>
+      <table className="w-full border-collapse table-fixed">
+        <tr className="border-b border-t border-grey-20">
+          {columns.map((c) => (
+            <th
+              key={c.field}
+              className="text-left py-4 inter-small-semibold text-grey-50"
+            >
+              {c.header}
+            </th>
+          ))}
+          <th className="w-[100px]" />
+        </tr>
         <tbody>
           {variants.map((v, row) => (
-            <tr key={row}>
+            <tr
+              key={row}
+              className="inter-small-regular border-t border-b border-grey-20 text-grey-90"
+            >
               {columns.map((c, col) => (
-                <Td
+                <td
                   key={`${row}-${col}`}
                   data-col={col}
                   data-row={row}
-                  head={c.headCol}
+                  className="relative min-w-[50px] text-left py-4"
                 >
                   {getDisplayValue(v, c)}
-                </Td>
+                </td>
               ))}
-              <Box
-                as="td"
-                sx={{
-                  padding: "4px",
-                  borderBottom: "1px solid rgba(0,0,0,0.2)",
-                  backgroundColor: "white",
-                  textAlign: "right",
-                }}
-              >
+              <td className="p-1 border-b border-grey-20">
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger asChild>
                     <div className="flex min-h-[40px] items-center justify-end cursor-pointer">
@@ -185,11 +178,11 @@ const VariantGrid = ({ product, variants, edit }) => {
                     </DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
-              </Box>
+              </td>
             </tr>
           ))}
         </tbody>
-      </StyledTable>
+      </table>
       {selectedVariant && (
         <VariantEditor
           variant={selectedVariant}
@@ -204,7 +197,7 @@ const VariantGrid = ({ product, variants, edit }) => {
           successText="Successfully deleted variant"
         />
       )}
-    </Wrapper>
+    </div>
   )
 }
 

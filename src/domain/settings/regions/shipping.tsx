@@ -3,7 +3,6 @@ import {
   useAdminShippingOptions,
 } from "medusa-react"
 import React, { useState } from "react"
-import { Box, Flex } from "rebass"
 import Spinner from "../../../components/atoms/spinner"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import Actionables from "../../../components/molecules/actionables"
@@ -64,16 +63,11 @@ const Shipping = ({ region }) => {
         </div>
         <div className="flex flex-col">
           {!shipping_options ? (
-            <Flex
-              flexDirection="column"
-              alignItems="center"
-              height="100vh"
-              mt="auto"
-            >
-              <Box height="75px" width="75px" mt="50%">
-                <Spinner dark />
-              </Box>
-            </Flex>
+            <div className="flex flex-col items-center h-screen mt-auto">
+              <div className="h-[75px] w-[75px] mt-[50%]">
+                <Spinner />
+              </div>
+            </div>
           ) : (
             shipping_options
               .filter((o) => o.is_return === false && o.region_id === region.id)
@@ -98,16 +92,11 @@ const Shipping = ({ region }) => {
         </div>
         <div className="flex flex-col">
           {loadingOptions ? (
-            <Flex
-              flexDirection="column"
-              alignItems="center"
-              height="100vh"
-              mt="auto"
-            >
-              <Box height="75px" width="75px" mt="50%">
-                <Spinner dark />
-              </Box>
-            </Flex>
+            <div className="flex flex-col items-center h-screen mt-auto">
+              <div className="h-[75px] w-[75px] mt-[50%]">
+                <Spinner />
+              </div>
+            </div>
           ) : shipping_options ? (
             shipping_options
               .filter((o) => o.is_return && o.region_id === region.id)
