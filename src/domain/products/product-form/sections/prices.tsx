@@ -32,17 +32,11 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
   return (
     <BodyCard
       title="Pricing"
-      subtitle="To start selling, all you need is a name, price, and image"
+      subtitle="Give products a price for each of the currencies that you sell in"
     >
       <div className="mt-base">
-        <div className="flex items-center mb-base">
-          <h6 className="inter-base-semibold text-grey-90 mr-1.5">Prices</h6>
-          <InfoTooltip
-            content={
-              "Give products a price for each of the currencies that you sell in."
-            }
-          />
-        </div>
+        <h6 className="inter-base-semibold text-grey-90 mr-1.5">Prices</h6>
+
         <div className="max-w-[630px]">
           {fields.map((field, index) => {
             return (
