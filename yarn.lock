@@ -2091,10 +2091,10 @@
   resolved "https://registry.yarnpkg.com/@mdx-js/util/-/util-1.6.22.tgz#219dfd89ae5b97a8801f015323ffa4b62f45718b"
   integrity sha512-H1rQc1ZOHANWBvPcW+JpGwr+juXSxM8Q8YCkm3GhZd8REu1fHR3z99CErO1p9pkcfcxZnMdIZdIsXkOHY0NilA==
 
-"@medusajs/medusa-cli@^1.1.27":
-  version "1.1.27"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa-cli/-/medusa-cli-1.1.27.tgz#68d2702043a288447f012975580aedee6a76b71b"
-  integrity sha512-qwYxniKCe5Ixhp+mq9PydlkRy6vpWp53ArOd+C3ZrN2k7Qv1Bdf6clt8MR1oLh6Z95++cmmnE5IJ1x1fnmNMYA==
+"@medusajs/medusa-cli@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-cli/-/medusa-cli-1.2.1.tgz#5b32791e663cc96d593c3eb0f121f985f86f36f7"
+  integrity sha512-aMy8ObeCxiEhIBe/lcT5ArM0hnHI6qM2JxosMhYTo8lg8lcJhuKWvxbGr4MuPS0f/+Ysu7vkDh+tYKiuyyGGyw==
   dependencies:
     "@babel/polyfill" "^7.8.7"
     "@babel/runtime" "^7.9.6"
@@ -2127,24 +2127,24 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@^1.0.13-tax-api.48", "@medusajs/medusa-js@^1.0.13-tax-api.48+b11fd4f3":
-  version "1.0.13-tax-api.48"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.0.13-tax-api.48.tgz#5b139b277c4d8f447e9cbb2b37d4743d48d210a7"
-  integrity sha512-9k/rQbqgy0xGrjWsSKIRFBhs/9Donu5giGTOc6JrvEB/addy5IYeEdrW+Y0Pbfwcl+6icJ++jfJ5UBQp/YvynQ==
+"@medusajs/medusa-js@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.1.1.tgz#01cbd915eeb4048f6e9175ef5864dc110d71bb79"
+  integrity sha512-ET5NPPSaWHqAMgXXSKAt+Bm7U7oPcdJYk/7YIuvvo6V/CO4PQJisE+xdqcHKf/h7OnYsfQ6UxITmzfT2uuE0Hw==
   dependencies:
-    "@medusajs/medusa" "^1.1.65-tax-api.48+b11fd4f3"
+    "@medusajs/medusa" "^1.2.1"
     axios "^0.24.0"
     form-data "^4.0.0"
     qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa@^1.1.65-tax-api.48", "@medusajs/medusa@^1.1.65-tax-api.48+b11fd4f3":
-  version "1.1.65-tax-api.48"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.1.65-tax-api.48.tgz#a479a7fa59a071de170dc42a60f2a8ba0adebb3f"
-  integrity sha512-7tHk8h8t0PwFc+146E5THMvJz1RaQATHq3o+Ca6zcYajijf40d1ZOQbneX6HBvDAxlY3TFzTPEFacp/YPZ2KpA==
+"@medusajs/medusa@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.2.1.tgz#52cadb7a5f5c532885f2c0198402e6c2f608c458"
+  integrity sha512-ouiy7g6u0kMOsIZMs4TCvhgZrb3UgIiJHxqiL4Rt+E+E5W8ULg/B8Plg4pXne+nKhfu+N/ECZnY+MyQ2wCFbig==
   dependencies:
     "@hapi/joi" "^16.1.8"
-    "@medusajs/medusa-cli" "^1.1.27"
+    "@medusajs/medusa-cli" "^1.2.1"
     "@types/lodash" "^4.14.168"
     awilix "^4.2.3"
     body-parser "^1.19.0"
@@ -12107,13 +12107,13 @@ medusa-core-utils@^1.1.31:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
-medusa-react@^0.1.6-tax-api.48:
-  version "0.1.6-tax-api.48"
-  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.1.6-tax-api.48.tgz#97755c454b5e3108f028c1b3a17d6123fbe4fedd"
-  integrity sha512-a6S22Mmo+CWBpMYHq3vEwVNsAZRMejCWAGR05lAQT86vnmPK//r9KBlRnTyh96aIIA5CUdievLMCYeHplnok1g==
+medusa-react@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.2.1.tgz#3bf360b9049e5bc0eb6f3ec6ac8e9a3353455e0c"
+  integrity sha512-XtjASzF7md9S8ZRqkAdw3poYt3xejl6jj7Uxs1HGdlx+eljrycGDhfC3Hf0z/Sc62WBlBbXzVAD//1O6PasgzQ==
   dependencies:
-    "@medusajs/medusa" "^1.1.65-tax-api.48+b11fd4f3"
-    "@medusajs/medusa-js" "^1.0.13-tax-api.48+b11fd4f3"
+    "@medusajs/medusa" "^1.2.1"
+    "@medusajs/medusa-js" "^1.1.1"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
