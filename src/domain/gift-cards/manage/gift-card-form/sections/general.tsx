@@ -5,14 +5,16 @@ import {
 } from "medusa-react"
 import React from "react"
 import { Controller } from "react-hook-form"
+import Checkbox from "../../../../../components/atoms/checkbox"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../../../../components/fundamentals/icons/unpublish-icon"
+import Collapsible from "../../../../../components/molecules/collapsible"
+import InfoTooltip from "../../../../../components/molecules/info-tooltip"
 import Input from "../../../../../components/molecules/input"
 import Select from "../../../../../components/molecules/select"
 import StatusSelector from "../../../../../components/molecules/status-selector"
 import TagInput from "../../../../../components/molecules/tag-input"
 import BodyCard from "../../../../../components/organisms/body-card"
-import DetailsCollapsible from "../../../../../components/organisms/details-collapsible"
 import useNotification from "../../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../../utils/error-messages"
 import { useGiftCardForm } from "../form/gift-card-form-context"
@@ -91,7 +93,7 @@ const General = ({ giftCard }) => {
         },
       ]}
     >
-      <div className="flex flex-col space-y-6">
+      <div className="flex flex-col gap-y-base">
         <div className="flex space-x-8">
           <div className="flex flex-col w-1/2 space-y-4">
             <Input
@@ -118,7 +120,7 @@ const General = ({ giftCard }) => {
             ref={register}
           />
         </div>
-        <DetailsCollapsible triggerProps={{ className: "ml-2" }}>
+        <Collapsible>
           <div className="flex space-x-8 pb-4">
             <div className="flex flex-col w-1/2 space-y-4">
               <Input
@@ -160,7 +162,15 @@ const General = ({ giftCard }) => {
               control={control}
             />
           </div>
-        </DetailsCollapsible>
+          <div className="flex item-center gap-x-1.5">
+            <Checkbox name="discountable" ref={register} label="Discountable" />
+            <InfoTooltip
+              content={
+                "When unchecked discounts will not be applied to this product"
+              }
+            />
+          </div>
+        </Collapsible>
       </div>
     </BodyCard>
   )
