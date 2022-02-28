@@ -1,9 +1,9 @@
 import React from "react"
 import type { Toast } from "react-hot-toast"
 import { toast as global } from "react-hot-toast"
+import ToasterContainer from "../../atoms/toaster-container"
+import CheckCircleIcon from "../../fundamentals/icons/check-circle-icon"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
-import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
-import ToasterContainer from "../toaster-container"
 
 type SavingStateProps = {
   toast: Toast
@@ -11,19 +11,19 @@ type SavingStateProps = {
   message?: string
 }
 
-const ErrorState: React.FC<SavingStateProps> = ({
+const SuccessState: React.FC<SavingStateProps> = ({
   toast,
-  title = "Error",
-  message = "An error occured while trying to save your changes. Please try again.",
+  title = "Success",
+  message = "Your changes have been saved.",
 }) => {
   const onDismiss = () => {
     global.dismiss(toast.id)
   }
 
   return (
-    <ToasterContainer visible={toast.visible} className="w-[448px]">
+    <ToasterContainer visible={toast.visible}>
       <div>
-        <XCircleIcon size={20} className="text-rose-40" />
+        <CheckCircleIcon size={20} className="text-emerald-40" />
       </div>
       <div className="flex flex-col ml-small mr-base gap-y-2xsmall flex-grow">
         <span className="inter-small-semibold">{title}</span>
@@ -39,4 +39,4 @@ const ErrorState: React.FC<SavingStateProps> = ({
   )
 }
 
-export default ErrorState
+export default SuccessState

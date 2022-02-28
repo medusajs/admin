@@ -1,4 +1,3 @@
-import clsx from "clsx"
 import React from "react"
 
 type ToasterContainerProps = {
@@ -13,16 +12,9 @@ const ToasterContainer: React.FC<ToasterContainerProps> = ({
 }) => {
   return (
     <div
-      className={clsx(
-        "flex items-start bg-grey-0 p-base border border-grey-20 rounded-rounded shadow-toaster mb-xsmall last:mb-0",
-        {
-          "animate-enter": visible,
-        },
-        {
-          "animate-leave": !visible,
-        },
-        className
-      )}
+      className={`${
+        visible ? "animate-enter" : "animate-leave"
+      } flex items-start bg-grey-0 p-base border border-grey-20 rounded-rounded shadow-toaster mb-xsmall last:mb-0 ${className}`}
       {...rest}
     >
       {children}
