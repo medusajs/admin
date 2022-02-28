@@ -54,8 +54,6 @@ const VariantEditor = ({
     keyName: "indexId",
   })
 
-  console.log({ prices })
-
   const { fields } = useFieldArray({
     control,
     name: "options",
