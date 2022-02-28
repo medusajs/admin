@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import { SaveNotificationProvider } from "../../../../../components/organisms/save-notifications/notification-provider"
 import { useUpdateGiftCard } from "./use-form-actions"
@@ -49,6 +49,17 @@ export const GiftCardFormProvider = ({
     images,
   })
 
+  const [imgDirtyState, setImgDirtyState] = useState(false)
+
+  useEffect(() => {
+    if (JSON.stringify(images) !== JSON.stringify(giftCard.images)) {
+      setImgDirtyState(true)
+      return
+    }
+
+    setImgDirtyState(false)
+  }, [JSON.stringify(images)])
+
   return (
     <FormProvider {...methods}>
       <GiftCardFormContext.Provider
@@ -63,6 +74,9 @@ export const GiftCardFormProvider = ({
           options={{
             onReset: handleReset,
             onSubmit: onUpdate,
+            additionalDirtyStates: {
+              images: imgDirtyState,
+            },
           }}
         >
           {children}
