@@ -122,9 +122,7 @@ const Input = (props: InputProps) => {
   )
 }
 
-const ClearIndicatorFunc = (setIsOpen) => ({
-  ...props
-}: ClearIndicatorProps) => {
+const ClearIndicator = ({ ...props }: ClearIndicatorProps) => {
   if (props.selectProps.menuIsOpen && props.selectProps.isMulti) {
     return <></>
   }
@@ -136,9 +134,6 @@ const ClearIndicatorFunc = (setIsOpen) => ({
   return (
     <div
       onMouseDown={(e) => {
-        if (setIsOpen) {
-          setIsOpen(true)
-        }
         restInnerProps.onMouseDown(e)
       }}
       ref={ref}
@@ -223,9 +218,11 @@ const SSelect = React.forwardRef(
     const selectRef = useRef(null)
     const containerRef = useRef(null)
 
-    const onClick = () => {
-      setIsFocussed(true)
-      selectRef?.current?.focus()
+    const onClick = (e) => {
+      if (!isFocussed) {
+        setIsFocussed(true)
+        selectRef?.current?.focus()
+      }
     }
 
     const onClickOption = (val, ...args) => {
@@ -302,7 +299,7 @@ const SSelect = React.forwardRef(
                 ref={selectRef}
                 value={value}
                 isMulti={isMultiSelect}
-                openMenuOnFocus={true}
+                openMenuOnFocus={isMultiSelect}
                 isSearchable={enableSearch}
                 isClearable={clearSelected}
                 onChange={onClickOption}
@@ -319,10 +316,11 @@ const SSelect = React.forwardRef(
                     e.target?.contains(containerRef.current) &&
                     e.target !== document
                   ) {
-                    selectRef.current?.blur()
+                    return true
                   }
                 }}
                 closeMenuOnSelect={!isMultiSelect}
+                blurInputOnSelect={!isMultiSelect}
                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
                 hideSelectedOptions={false}
                 menuPortalTarget={
@@ -344,7 +342,7 @@ const SSelect = React.forwardRef(
                   Input,
                   Menu,
                   SingleValue,
-                  ClearIndicator: ClearIndicatorFunc(false),
+                  ClearIndicator,
                 }}
               />
             }
