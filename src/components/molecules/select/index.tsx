@@ -136,7 +136,9 @@ const ClearIndicatorFunc = (setIsOpen) => ({
   return (
     <div
       onMouseDown={(e) => {
-        setIsOpen(true)
+        if (setIsOpen) {
+          setIsOpen(true)
+        }
         restInnerProps.onMouseDown(e)
       }}
       ref={ref}
@@ -218,18 +220,18 @@ const SSelect = React.forwardRef(
       })
     }, [])
 
-    let selectRef = useRef(null)
-    let containerRef = useRef(null)
+    const selectRef = useRef(null)
+    const containerRef = useRef(null)
 
     const onClick = () => {
       setIsFocussed(true)
       selectRef?.current?.focus()
     }
 
-    const onClickOption = (val) => {
+    const onClickOption = (val, ...args) => {
       if (
-        val.length &&
-        val.find((option) => option.value === "all") &&
+        val?.length &&
+        val?.find((option) => option.value === "all") &&
         hasSelectAll &&
         isMultiSelect
       ) {
@@ -381,9 +383,7 @@ const GetSelect = React.forwardRef(
         />
       )
     }
-    return (
-      <Select ref={ref} closeMenuOnScroll={(e) => console.log(e)} {...props} />
-    )
+    return <Select ref={ref} {...props} />
   }
 )
 

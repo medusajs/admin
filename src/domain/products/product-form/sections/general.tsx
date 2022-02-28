@@ -101,6 +101,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="collection"
             placeholder="Select collection..."
             options={collectionOptions}
+            clearSelected
           />
           <Controller
             as={Select}
@@ -109,6 +110,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="type"
             placeholder="Select type..."
             options={typeOptions}
+            clearSelected
           />
           <Controller
             name="tags"
