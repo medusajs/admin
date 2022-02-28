@@ -13,6 +13,7 @@ import Spinner from "../../../components/atoms/spinner"
 import Button from "../../../components/fundamentals/button"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import RawJSON from "../../../components/organisms/raw-json"
 import DiscountGeneral from "../../../components/templates/discount-general"
 import DiscountSettings from "../../../components/templates/discount-settings"
 import useNotification from "../../../hooks/use-notification"
@@ -256,6 +257,9 @@ const Edit: React.FC<EditProps> = ({ id }) => {
               isDynamic={isDynamic}
               isEdit={true}
             />
+
+            <RawJSON data={discount} title="Raw discount" />
+
             <div className="w-full flex items-center justify-end gap-x-xsmall">
               <Button
                 variant="secondary"

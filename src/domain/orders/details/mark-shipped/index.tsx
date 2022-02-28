@@ -60,7 +60,9 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
   const notification = useNotification()
 
   const markShipped = () => {
-    const [type] = orderToShip.id.split("_")
+    const resourceId =
+      fulfillment.claim_order_id || fulfillment.swap_id || fulfillment.order_id
+    const [type] = resourceId.split("_")
 
     const tracking_numbers = trackingNumbers.map(({ value }) => value)
 
@@ -78,7 +80,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
         action = markSwapShipped
         requestObj = {
           fulfillment_id: fulfillment.id,
-          swap_id: orderToShip.id,
+          swap_id: resourceId,
           tracking_numbers,
           no_notification: noNotis,
         }
@@ -89,9 +91,8 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
         action = markClaimShipped
         requestObj = {
           fulfillment_id: fulfillment.id,
-          claim_id: orderToShip.id,
+          claim_id: resourceId,
           tracking_numbers,
-          no_notification: noNotis,
         }
         successText = "Successfully marked claim as shipped"
         break
@@ -134,10 +135,6 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
                   type="text"
                   placeholder={"Tracking number..."}
                   name={`tracking_numbers[${index}].value`}
-                  // TODO: Should we have an invalid state for the input fields?
-                  // invalid={
-                  //   errors.tracking_numbers && errors.tracking_numbers[index]
-                  // }
                   ref={register({
                     required: "Must be filled",
                   })}

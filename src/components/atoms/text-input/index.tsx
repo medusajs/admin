@@ -1,16 +1,18 @@
+import clsx from "clsx"
 import React from "react"
 
 type TextInputProps = React.InputHTMLAttributes<HTMLInputElement>
 
 const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
-  (props, ref) => (
-    <div>
-      <input
-        ref={ref}
-        className="placeholder:inter-base-regular placeholder-grey-40 focus:outline-none"
-        {...props}
-      />
-    </div>
+  ({ className, ...props }, ref) => (
+    <input
+      ref={ref}
+      className={clsx(
+        "placeholder:inter-base-regular placeholder-grey-40 focus:outline-none",
+        className
+      )}
+      {...props}
+    />
   )
 )
 

@@ -9,6 +9,7 @@ import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
 import TableSearch from "./table-search"
 
 type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
+  forceDropdown?: boolean
   actions?: ActionType[]
   linkTo?: string
 }
@@ -29,6 +30,7 @@ type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
 
 type TableCellProps = React.HTMLAttributes<HTMLTableCellElement> & {
   linkTo?: string
+  name?: string
 }
 
 type SortingHeadCellProps = {
@@ -241,13 +243,23 @@ Table.Cell = React.forwardRef(
 )
 
 Table.Row = React.forwardRef(
-  ({ className, actions, children, linkTo, ...props }: TableRowProps, ref) => (
+  (
+    {
+      className,
+      actions,
+      children,
+      linkTo,
+      forceDropdown,
+      ...props
+    }: TableRowProps,
+    ref
+  ) => (
     <tr
       ref={ref}
       className={clsx(
-        "inter-small-regular border-t border-b border-grey-20 text-grey-90 hover:bg-grey-5",
+        "inter-small-regular border-t border-b border-grey-20 text-grey-90",
         className,
-        { "cursor-pointer": linkTo !== undefined }
+        { "cursor-pointer hover:bg-grey-5": linkTo !== undefined }
       )}
       {...props}
       {...(linkTo && {
@@ -259,7 +271,7 @@ Table.Row = React.forwardRef(
       {children}
       {actions && (
         <Table.Cell onClick={(e) => e.stopPropagation()} className="w-[32px]">
-          <Actionables actions={actions} />
+          <Actionables forceDropdown={forceDropdown} actions={actions} />
         </Table.Cell>
       )}
     </tr>

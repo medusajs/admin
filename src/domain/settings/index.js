@@ -7,6 +7,7 @@ import DollarSignIcon from "../../components/fundamentals/icons/dollar-sign-icon
 import HappyIcon from "../../components/fundamentals/icons/happy-icon"
 import MailIcon from "../../components/fundamentals/icons/mail-icon"
 import MapPinIcon from "../../components/fundamentals/icons/map-pin-icon"
+import TaxesIcon from "../../components/fundamentals/icons/taxes-icon"
 import TruckIcon from "../../components/fundamentals/icons/truck-icon"
 import UsersIcon from "../../components/fundamentals/icons/users-icon"
 import SettingsOverview from "../../components/templates/settings-overview"
@@ -20,6 +21,7 @@ import NewRegion from "./regions/new"
 import ReturnReasons from "./return-reasons"
 import ShippingProfileDetail from "./shipping-profiles/details"
 import NewShippingProfile from "./shipping-profiles/new"
+import Taxes from "./taxes"
 import Users from "./users"
 
 const SettingsIndex = () => {
@@ -74,6 +76,12 @@ const SettingsIndex = () => {
         icon={<MailIcon />}
         externalLink={"mailto: hello@medusajs.com"}
       />
+      <SettingsCard
+        heading={"Tax Settings"}
+        description={"Manage taxes across regions and products"}
+        icon={<TaxesIcon />}
+        to={`/a/settings/taxes`}
+      />
     </SettingsOverview>
   )
 }
@@ -95,6 +103,8 @@ const Settings = () => (
     <Regions path="regions" />
     <RegionDetails path="regions/:id" />
     <NewRegion path="regions/new" />
+
+    <Taxes path="taxes" />
 
     <Users path="team" />
 

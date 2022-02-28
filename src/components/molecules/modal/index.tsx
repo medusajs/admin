@@ -1,8 +1,17 @@
-import React from "react"
-import CrossIcon from "../../fundamentals/icons/cross-icon"
-import clsx from "clsx"
 import * as Dialog from "@radix-ui/react-dialog"
+import * as Portal from "@radix-ui/react-portal"
+import clsx from "clsx"
+import React from "react"
 import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
+import CrossIcon from "../../fundamentals/icons/cross-icon"
+
+type ModalState = {
+  portalRef: any
+}
+
+export const ModalContext = React.createContext<ModalState>({
+  portalRef: undefined,
+})
 
 export type ModalProps = {
   isLargeModal?: boolean
@@ -41,7 +50,10 @@ const Content: React.FC = ({ children }) => {
     maxHeight: height - 64,
   }
   return (
-    <Dialog.Content style={style} className="bg-grey-0 min-w-modal rounded">
+    <Dialog.Content
+      style={style}
+      className="bg-grey-0 min-w-modal rounded overflow-x-hidden"
+    >
       {children}
     </Dialog.Content>
   )
@@ -59,13 +71,16 @@ const Modal: ModalType = ({
   isLargeModal = true,
   children,
 }) => {
+  const portalRef = React.useRef(null)
   return (
     <Dialog.Root open={open} onOpenChange={handleClose}>
-      <Dialog.Portal>
-        <Overlay>
-          <Content>{addProp(children, { isLargeModal })}</Content>
-        </Overlay>
-      </Dialog.Portal>
+      <Portal.UnstablePortal ref={portalRef}>
+        <ModalContext.Provider value={{ portalRef }}>
+          <Overlay>
+            <Content>{addProp(children, { isLargeModal })}</Content>
+          </Overlay>
+        </ModalContext.Provider>
+      </Portal.UnstablePortal>
     </Dialog.Root>
   )
 }

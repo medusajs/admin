@@ -69,13 +69,13 @@ const ProductDetail = ({ id }) => {
         isLoading={isLoading}
         onChange={(vs) => setVariants(vs)}
         onSubmit={handleVariantsSubmit}
-        toaster={toaster}
+        toaster={notification}
       />
       <Images
         product={product}
         isLoading={isLoading}
         refresh={refresh}
-        toaster={toaster}
+        toaster={notification}
       />
       <InventoryManager product={product} onSubmit={handleDetailsSubmit} />
       <MetadataForm parent={product} onSubmit={handleDetailsSubmit} />

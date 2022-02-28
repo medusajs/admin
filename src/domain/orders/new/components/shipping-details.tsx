@@ -1,13 +1,12 @@
-import React, { useContext, useEffect, useState } from "react"
 import qs from "query-string"
-import Medusa from "../../../../services/api"
+import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import AddressForm from "../../../../components/templates/address-form"
-
+import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
-import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
+import AddressForm from "../../../../components/templates/address-form"
+import Medusa from "../../../../services/api"
 
 const ShippingDetails = ({
   customerAddresses,
@@ -45,7 +44,7 @@ const ShippingDetails = ({
   }, [shipping])
 
   // "region",
-  const debouncedFetch = (options, filter) => {
+  const debouncedFetch = (filter) => {
     const prepared = qs.stringify(
       {
         q: filter,

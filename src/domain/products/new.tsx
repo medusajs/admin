@@ -17,7 +17,7 @@ const NewProductPage = () => {
   const notification = useNotification()
   const createProduct = useAdminCreateProduct()
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, viewType) => {
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
@@ -32,7 +32,7 @@ const NewProductPage = () => {
       images: consolidateImages(data.images, uploadedImgs),
     }
 
-    createProduct.mutate(formValuesToCreateProductMapper(newData), {
+    createProduct.mutate(formValuesToCreateProductMapper(newData, viewType), {
       onSuccess: ({ product }) => {
         notification("Success", "Product created successfully", "success")
         navigate(`/a/products/${product.id}`)
@@ -46,7 +46,7 @@ const NewProductPage = () => {
   return (
     <ProductFormProvider onSubmit={onSubmit}>
       <ProductForm />
-      <div className="mt-base flex justify-end items-center gap-x-2">
+      <div className="mt-base pb-xlarge flex justify-end items-center gap-x-2">
         <Button
           variant="secondary"
           size="small"
