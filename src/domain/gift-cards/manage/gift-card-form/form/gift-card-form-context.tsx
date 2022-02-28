@@ -1,13 +1,7 @@
 import React, { useEffect } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
-import useDetectChange from "../../../../../hooks/use-detect-change"
+import { SaveNotificationProvider } from "../../../../../components/organisms/save-notifications/notification-provider"
 import { useUpdateGiftCard } from "./use-form-actions"
-
-export const VARIANTS_VIEW = "variants"
-
-export const SINGLE_PRODUCT_VIEW = "single"
-
-type PRODUCT_VIEW = typeof VARIANTS_VIEW | typeof SINGLE_PRODUCT_VIEW
 
 const defaultProduct = {
   variants: [],
@@ -49,24 +43,10 @@ export const GiftCardFormProvider = ({
 
   useEffect(() => {
     handleReset()
-  }, [])
+  }, [giftCard])
 
-  const { onUpdate } = useUpdateGiftCard(giftCard.id)
-
-  const notificationAction = async () => {
-    await onUpdate({ ...methods.getValues(), images })
-  }
-
-  const isDirty = !!Object.keys(methods.formState.dirtyFields).length // isDirty from useForm is behaving more like touched and is therfore not working as expected
-
-  useDetectChange({
-    isDirty: isDirty,
-    reset: handleReset,
-    options: {
-      fn: notificationAction,
-      title: "You have unsaved changes",
-      message: "Do you want to save your changes?",
-    },
+  const { onUpdate } = useUpdateGiftCard(giftCard.id, {
+    images,
   })
 
   return (
@@ -79,7 +59,14 @@ export const GiftCardFormProvider = ({
           removeImage,
         }}
       >
-        {children}
+        <SaveNotificationProvider
+          options={{
+            onReset: handleReset,
+            onSubmit: onUpdate,
+          }}
+        >
+          {children}
+        </SaveNotificationProvider>
       </GiftCardFormContext.Provider>
     </FormProvider>
   )

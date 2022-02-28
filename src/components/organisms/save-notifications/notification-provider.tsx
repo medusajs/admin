@@ -77,6 +77,7 @@ export const SaveNotificationProvider = ({
   }
 
   const handleValid = (fn: SubmitFunction) => {
+    console.log("handleValid")
     return (values: FieldValues) => {
       toast.custom((t) => <SavingState toast={t} />, {
         id: TOASTER_ID,
@@ -96,6 +97,7 @@ export const SaveNotificationProvider = ({
           })
         })
         .catch((err) => {
+          console.log(err)
           toast.dismiss(TOASTER_ID)
           toast.custom(
             (t) => (

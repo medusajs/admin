@@ -1,5 +1,5 @@
 export const formValuesToUpdateGiftCardMapper = (values) => {
-  return {
+  const payload = {
     title: values.title,
     handle: values.handle,
     subtitle: values.subtitle,
@@ -7,28 +7,21 @@ export const formValuesToUpdateGiftCardMapper = (values) => {
     thumbnail: values?.images?.length
       ? values.images[values.thumbnail]
       : undefined,
-
-    type: values?.type
-      ? { id: values.type.value, value: values.type.label }
-      : undefined,
-    images: values?.images || [],
-    tags: values?.tags ? values.tags.map((tag) => ({ value: tag })) : [],
-    // variants: [
-    //   {
-    //     title: values?.title,
-    //     allow_backorder: values.allow_backorders,
-    //     manage_inventory: values.manage_inventory,
-    //     sku: values?.sku || null,
-    //     ean: values?.ean || null,
-    //     inventory_quantity: values?.inventory_quantity
-    //       ? parseInt(values?.inventory_quantity, 10)
-    //       : undefined,
-    //     options: [{ value: "Default Variant" }],
-    //     prices: values?.prices ? values.prices.map((p) => p.price) : [],
-    //     material: values.material,
-    //   },
-    // ],
   }
+
+  if (values.images) {
+    payload["images"] = values.images
+  }
+
+  if (values.type) {
+    payload["type"] = { id: values.type.value, value: values.type.label }
+  }
+
+  if (values.tags) {
+    payload["tags"] = values.tags.map((tag) => ({ value: tag }))
+  }
+
+  return payload
 }
 
 export const giftCardToFormValuesMapper = (giftCard) => {

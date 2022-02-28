@@ -3,13 +3,19 @@ import Medusa from "../../../../../services/api"
 import { consolidateImages } from "../../../../../utils/consolidate-images"
 import { formValuesToUpdateGiftCardMapper } from "./mappers"
 
-export const useUpdateGiftCard = (id: string) => {
+export const useUpdateGiftCard = (
+  id: string,
+  data: {
+    images: any[]
+  }
+) => {
   const updateGiftCard = useAdminUpdateProduct(id)
 
-  const onUpdate = async (data) => {
-    const images = data.images
-      .filter((img) => img.url.startsWith("blob"))
-      .map((img) => img.nativeFile)
+  const onUpdate = async (values) => {
+    const images =
+      data.images
+        ?.filter((img) => img.url.startsWith("blob"))
+        .map((img) => img.nativeFile) || []
 
     let uploadedImgs = []
     if (images.length > 0) {
@@ -20,11 +26,11 @@ export const useUpdateGiftCard = (id: string) => {
     }
 
     const newData = {
-      ...data,
+      ...values,
       images: consolidateImages(data.images, uploadedImgs),
     }
 
-    return updateGiftCard.mutateAsync(formValuesToUpdateGiftCardMapper(newData))
+    await updateGiftCard.mutateAsync(formValuesToUpdateGiftCardMapper(newData))
   }
 
   return {
