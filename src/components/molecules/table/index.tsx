@@ -243,7 +243,17 @@ Table.Cell = React.forwardRef(
 )
 
 Table.Row = React.forwardRef(
-  ({ className, actions, children, linkTo, forceDropdown, ...props }: TableRowProps, ref) => (
+  (
+    {
+      className,
+      actions,
+      children,
+      linkTo,
+      forceDropdown,
+      ...props
+    }: TableRowProps,
+    ref
+  ) => (
     <tr
       ref={ref}
       className={clsx(

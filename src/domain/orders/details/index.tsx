@@ -26,6 +26,7 @@ import MailIcon from "../../../components/fundamentals/icons/mail-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
+import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
@@ -33,8 +34,8 @@ import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
-import EmailModal from "./email-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
+import EmailModal from "./email-modal"
 import MarkShippedModal from "./mark-shipped"
 import OrderLine from "./order-line"
 import CreateRefundModal from "./refund"
@@ -48,7 +49,6 @@ import {
   PaymentDetails,
   PaymentStatusComponent,
 } from "./templates"
-import RawJSON from "../../../components/organisms/raw-json"
 
 type OrderDetailFulfillment = {
   title: string

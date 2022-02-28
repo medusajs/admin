@@ -60,7 +60,8 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
   const notification = useNotification()
 
   const markShipped = () => {
-    const resourceId = fulfillment.claim_order_id || fulfillment.swap_id || fulfillment.order_id
+    const resourceId =
+      fulfillment.claim_order_id || fulfillment.swap_id || fulfillment.order_id
     const [type] = resourceId.split("_")
 
     const tracking_numbers = trackingNumbers.map(({ value }) => value)

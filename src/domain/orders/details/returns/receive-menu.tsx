@@ -1,5 +1,5 @@
-import React, { useMemo, useEffect, useState } from "react"
 import { LineItem, ReturnItem } from "@medusajs/medusa"
+import React, { useEffect, useMemo, useState } from "react"
 import Button from "../../../../components/fundamentals/button"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import Modal from "../../../../components/molecules/modal"
@@ -36,20 +36,22 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   const [quantities, setQuantities] = useState({})
 
   const allItems: LineItem[] = useMemo(() => {
-    return order.items.map((i: LineItem) => {
-      const found = returnRequest.items.find(
-        (ri: ReturnItem) => ri.item_id === i.id
-      )
+    return order.items
+      .map((i: LineItem) => {
+        const found = returnRequest.items.find(
+          (ri: ReturnItem) => ri.item_id === i.id
+        )
 
-      if (found) {
-        return {
-          ...i,
-          quantity: found.quantity,
+        if (found) {
+          return {
+            ...i,
+            quantity: found.quantity,
+          }
+        } else {
+          return null
         }
-      } else {
-        return null
-      }
-    }).filter(Boolean)
+      })
+      .filter(Boolean)
   }, [order])
 
   useEffect(() => {
@@ -81,7 +83,9 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
 
     const total =
       items.reduce((acc, next) => {
-        return acc + ((next.refundable || 0) / next.quantity) * quantities[next.id]
+        return (
+          acc + ((next.refundable || 0) / next.quantity) * quantities[next.id]
+        )
       }, 0) -
       ((returnRequest.shipping_method &&
         returnRequest.shipping_method.price * (1 + order.tax_rate / 100)) ||
