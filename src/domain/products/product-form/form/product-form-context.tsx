@@ -1,10 +1,12 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import FileTextIcon from "../../../../components/fundamentals/icons/file-text-icon"
 import PublishIcon from "../../../../components/fundamentals/icons/publish-icon"
-import useDetectChange, {
-  NotificationAction,
-} from "../../../../hooks/use-detect-change"
+import {
+  MultiSubmitFunction,
+  SaveNotificationProvider,
+  SubmitFunction,
+} from "../../../../components/organisms/save-notifications/notification-provider"
 import { useFormActions } from "./use-form-actions"
 
 export const VARIANTS_VIEW = "variants"
@@ -21,6 +23,7 @@ const defaultProduct = {
   options: [],
   type: null,
   collection: null,
+  status: "",
   id: "",
   thumbnail: "",
   title: "",
@@ -77,14 +80,15 @@ export const ProductFormProvider = ({
     setImages([...images])
   }
 
-  const methods = useForm()
+  const methods = useForm({
+    defaultValues: product,
+  })
 
   const handleReset = () => {
     methods.reset({
       ...product,
     })
     setImages(product.images)
-    setProductOptions(product.options)
 
     if (product?.variants) {
       const variants = product?.variants?.map((v) => ({
@@ -110,64 +114,48 @@ export const ProductFormProvider = ({
 
   useEffect(() => {
     handleReset()
-  }, [])
+  }, [product])
 
   const { onCreateAndPublish, onCreateDraft, onUpdate } = useFormActions(
     product.id,
-    viewType
+    viewType,
+    {
+      status: product.status, // needed for update as updating a product without passing a status will set the status to published. TODO fix this in core
+      images,
+      variants,
+      options: productOptions,
+    }
   )
 
-  let notificationAction: NotificationAction[] | (() => Promise<void>)
+  let notificationAction: SubmitFunction | MultiSubmitFunction
 
   if (isEdit) {
-    notificationAction = async () => {
-      await onUpdate({
-        ...methods.getValues(),
-        images,
-        variants,
-        options: productOptions,
-      })
-    }
+    notificationAction = onUpdate
   } else {
     notificationAction = [
       {
         icon: <PublishIcon />,
         label: "Save and publish",
-        onClick: async () => {
-          await onCreateAndPublish({
-            ...methods.getValues(),
-            images,
-            variants,
-            options: productOptions,
-          })
-        },
-      } as NotificationAction,
+        onSubmit: onCreateAndPublish,
+      },
       {
         label: "Save as draft",
-        onClick: async () => {
-          await onCreateDraft({
-            ...methods.getValues(),
-            images,
-            variants,
-            options: productOptions,
-          })
-        },
         icon: <FileTextIcon />,
-      } as NotificationAction,
+        onSubmit: onCreateDraft,
+      },
     ]
   }
 
-  const isDirty = !!Object.keys(methods.formState.dirtyFields).length // isDirty from useForm is behaving more like touched and is therfore not working as expected
+  const [imgDirtyState, setImgDirtyState] = useState(false)
 
-  useDetectChange({
-    isDirty: isDirty,
-    reset: handleReset,
-    options: {
-      fn: notificationAction,
-      title: "You have unsaved changes",
-      message: "Do you want to save your changes?",
-    },
-  })
+  useEffect(() => {
+    if (JSON.stringify(images) !== JSON.stringify(product.images)) {
+      setImgDirtyState(true)
+      return
+    }
+
+    setImgDirtyState(false)
+  }, [JSON.stringify(images)])
 
   return (
     <FormProvider {...methods}>
@@ -186,7 +174,17 @@ export const ProductFormProvider = ({
           isVariantsView: viewType === VARIANTS_VIEW,
         }}
       >
-        {children}
+        <SaveNotificationProvider
+          options={{
+            onReset: handleReset,
+            onSubmit: notificationAction,
+            additionalDirtyStates: {
+              images: imgDirtyState,
+            },
+          }}
+        >
+          {children}
+        </SaveNotificationProvider>
       </ProductFormContext.Provider>
     </FormProvider>
   )

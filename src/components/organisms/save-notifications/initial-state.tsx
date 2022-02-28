@@ -1,15 +1,10 @@
 import React, { ReactNode } from "react"
 import type { Toast } from "react-hot-toast"
 import { toast as global } from "react-hot-toast"
+import ToasterContainer from "../../atoms/toaster-container"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
-import ToasterContainer from "../toaster-container"
 import MultiActionButton from "./multi-action-button"
-
-export type ButtonAction = {
-  label: string
-  icon?: any
-  onClick: () => Promise<void>
-}
+import { MultiHandler, SaveHandler } from "./notification-provider"
 
 type SaveNotificationProps = {
   toast: Toast
@@ -18,15 +13,19 @@ type SaveNotificationProps = {
   message?: string
   confirmText?: string
   cancelText?: string
-  onSave: ButtonAction[] | (() => Promise<void>)
+  onSave:
+    | MultiHandler[]
+    | {
+        onSubmit: SaveHandler
+      }
   reset: () => void
 }
 
-const SaveNotification: React.FC<SaveNotificationProps> = ({
+const InitialState: React.FC<SaveNotificationProps> = ({
   toast,
   icon,
   title = "Unsaved changes",
-  message = "You have unsaved changes. Do you want to save and publish or discard them?",
+  message = "Do you want to save your changes?",
   confirmText = "Save",
   cancelText = "Discard",
   onSave,
@@ -53,7 +52,7 @@ const SaveNotification: React.FC<SaveNotificationProps> = ({
           originalId={toast.id}
           label={confirmText}
           className="inter-small-semibold flex items-center justify-center h-1/2 border-b border-grey-20 px-base text-violet-60 inter-small-semibold"
-          onClick={onSave}
+          handler={onSave}
         />
         <button
           className="inter-small-semibold flex items-center justify-center h-1/2 px-base"
@@ -79,4 +78,4 @@ function getIcon(icon?: any) {
   }
 }
 
-export default SaveNotification
+export default InitialState

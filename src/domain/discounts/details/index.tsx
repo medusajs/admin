@@ -3,6 +3,7 @@ import { useAdminDeleteDiscount, useAdminDiscount } from "medusa-react"
 import React, { useState } from "react"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import RawJSON from "../../../components/organisms/raw-json"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import DiscountForm from "../discount-form"
@@ -56,6 +57,7 @@ const Edit: React.FC<EditProps> = ({ id }) => {
           isEdit
         >
           <DiscountForm discount={discount} isEdit />
+          <RawJSON data={discount} title="Raw discount" />
         </DiscountFormProvider>
       )}
     </div>

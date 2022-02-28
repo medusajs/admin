@@ -7,12 +7,20 @@ import {
   formValuesToUpdateProductMapper,
 } from "./mappers"
 
-export const useFormActions = (id: string, viewType: string) => {
+export const useFormActions = (
+  id: string,
+  viewType: string,
+  data: {
+    status?: string
+    images: any[]
+    variants: any[]
+    options: any[]
+  }
+) => {
   const createProduct = useAdminCreateProduct()
   const updateProduct = useAdminUpdateProduct(id)
 
-  const onCreate = async (data) => {
-    console.log(data)
+  const onCreate = async (values) => {
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
@@ -28,8 +36,8 @@ export const useFormActions = (id: string, viewType: string) => {
       data.images = consolidateImages(data.images, uploadedImgs)
     }
 
-    return createProduct.mutateAsync(
-      formValuesToCreateProductMapper(data, viewType),
+    createProduct.mutateAsync(
+      formValuesToCreateProductMapper({ ...values, ...data }, viewType),
       {
         onSuccess: ({ product }) => {
           navigate(`/a/products/${product.id}`)
@@ -38,22 +46,21 @@ export const useFormActions = (id: string, viewType: string) => {
     )
   }
 
-  const onCreateAndPublish = async (data) => {
-    return onCreate({ ...data, status: "published" })
+  const onCreateAndPublish = async (values) => {
+    onCreate({ ...values, status: "published" })
   }
 
-  const onCreateDraft = async (data) => {
-    return onCreate({ ...data, status: "draft" })
+  const onCreateDraft = async (values) => {
+    onCreate({ ...values, status: "draft" })
   }
 
-  const onUpdate = async (data) => {
+  const onUpdate = async (values) => {
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
 
     let uploadedImgs = []
     if (images.length > 0) {
-      console.log("found images")
       uploadedImgs = await Medusa.uploads.create(images).then(({ data }) => {
         const uploaded = data.uploads.map(({ url }) => url)
         return uploaded
@@ -61,11 +68,12 @@ export const useFormActions = (id: string, viewType: string) => {
     }
 
     const newData = {
+      ...values,
       ...data,
       images: consolidateImages(data.images, uploadedImgs),
     }
 
-    return updateProduct.mutateAsync(formValuesToUpdateProductMapper(newData))
+    updateProduct.mutateAsync(formValuesToUpdateProductMapper(newData))
   }
 
   return {
