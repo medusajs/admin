@@ -1,6 +1,5 @@
 import React from "react"
 import { useForm } from "react-hook-form"
-
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
@@ -28,7 +27,9 @@ const EmailModal: React.FC<EmailModalProps> = ({
     <Modal handleClose={handleClose}>
       <Modal.Body>
         <Modal.Header handleClose={handleClose}>
-          <span className="inter-xlarge-semibold">Email Address</span>
+          <span className="inter-xlarge-semibold">
+            Email Address and this as well
+          </span>
         </Modal.Header>
         <Modal.Content>
           <div className="space-y-4">
