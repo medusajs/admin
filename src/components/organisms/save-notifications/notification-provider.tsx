@@ -13,12 +13,12 @@ import InitialState from "./initial-state"
 import SavingState from "./saving-state"
 import SuccessState from "./success-state"
 
-export type SubmitFunction = (values: FieldValues) => Promise<void>
+export type SubmitFunction<T extends FieldValues> = (values: T) => Promise<void>
 
-export type MultiSubmitFunction = {
+export type MultiSubmitFunction<T extends FieldValues> = {
   label: string
   icon?: any
-  onSubmit: SubmitFunction
+  onSubmit: SubmitFunction<T>
 }[]
 
 export type SaveHandler = (
@@ -31,10 +31,10 @@ export type MultiHandler = {
   onSubmit: SaveHandler
 }
 
-type ProviderProps = {
+type ProviderProps<T extends FieldValues> = {
   options: {
     onReset: () => void
-    onSubmit: SubmitFunction | MultiSubmitFunction
+    onSubmit: SubmitFunction<T> | MultiSubmitFunction<T>
     additionalDirtyStates?: { [k: string]: boolean }
   }
   children?: ReactNode
@@ -42,10 +42,10 @@ type ProviderProps = {
 
 const TOASTER_ID = "DIRTY_STATE_TOASTER"
 
-export const SaveNotificationProvider = ({
+export const SaveNotificationProvider = <T extends FieldValues>({
   options,
   children,
-}: ProviderProps) => {
+}: ProviderProps<T>) => {
   const [block, setBlock] = useState(true)
   const { formState, handleSubmit } = useFormContext()
   const { onReset, onSubmit, additionalDirtyStates } = options
@@ -64,8 +64,13 @@ export const SaveNotificationProvider = ({
 
   const isDirty = !!Object.keys(formState.dirtyFields).length || otherDirtyState
 
-  const handleError: SubmitErrorHandler<FieldValues> = (errors) => {
-    const { title, list } = getFormErrors(errors)
+  const handleError: SubmitErrorHandler<T> = (errors) => {
+    const { title, list, refs } = getFormErrors(errors)
+
+    if (refs?.[0] && refs[0].focus) {
+      refs[0].focus()
+    }
+
     toast.custom((t) => <ErrorState toast={t} message={list} title={title} />, {
       position: "top-right",
       duration: 3000,
@@ -76,14 +81,14 @@ export const SaveNotificationProvider = ({
     })
   }
 
-  const handleValid = (fn: SubmitFunction) => {
+  const handleValid = <T extends FieldValues>(fn: SubmitFunction<T>) => {
     return (values: FieldValues) => {
       toast.custom((t) => <SavingState toast={t} />, {
         id: TOASTER_ID,
         position: "bottom-right",
       })
 
-      fn(values)
+      fn(values as T)
         .then(() => {
           toast.dismiss(TOASTER_ID)
           toast.custom((t) => <SuccessState toast={t} />, {
@@ -168,6 +173,14 @@ function getFormErrors(errors: DeepMap<FieldValues, FieldError>) {
     []
   )
 
+  const refs = Object.values(errors).reduce((acc, { ref }) => {
+    if (ref) {
+      acc.push(ref)
+    }
+
+    return acc
+  }, [])
+
   const list = (
     <ul className="list-disc list-inside">
       {messages.map((m) => (
@@ -181,5 +194,5 @@ function getFormErrors(errors: DeepMap<FieldValues, FieldError>) {
       ? `There were ${messages.length} errors with your submission`
       : "There was an error with your submission"
 
-  return { title, list }
+  return { title, list, refs }
 }

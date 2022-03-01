@@ -6,12 +6,12 @@ import {
   formValuesToUpdateDiscountMapper,
 } from "./mappers"
 
-export const useFormActions = (id: string) => {
+export const useFormActions = (id: string, data: any) => {
   const updateDiscount = useAdminUpdateDiscount(id)
   const createDiscount = useAdminCreateDiscount()
 
   const onSaveAsInactive = async (values: DiscountFormValues) => {
-    createDiscount.mutate(
+    await createDiscount.mutateAsync(
       {
         ...formValuesToCreateDiscountMapper(values),
         is_disabled: true,
@@ -25,7 +25,7 @@ export const useFormActions = (id: string) => {
   }
 
   const onSaveAsActive = async (values: DiscountFormValues) => {
-    createDiscount.mutate(
+    await createDiscount.mutateAsync(
       {
         ...formValuesToCreateDiscountMapper(values),
         is_disabled: false,
@@ -39,8 +39,12 @@ export const useFormActions = (id: string) => {
   }
 
   const onUpdate = async (values: DiscountFormValues) => {
-    updateDiscount.mutate({
-      ...formValuesToUpdateDiscountMapper(values),
+    await updateDiscount.mutateAsync({
+      ...formValuesToUpdateDiscountMapper({
+        id,
+        ...data,
+        ...values,
+      }),
     })
   }
 

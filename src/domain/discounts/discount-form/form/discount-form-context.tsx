@@ -2,25 +2,26 @@ import React, { useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import FileTextIcon from "../../../../components/fundamentals/icons/file-text-icon"
 import PublishIcon from "../../../../components/fundamentals/icons/publish-icon"
-import useDetectChange, {
-  NotificationAction,
-} from "../../../../hooks/use-detect-change"
+import {
+  MultiSubmitFunction,
+  SaveNotificationProvider,
+  SubmitFunction,
+} from "../../../../components/organisms/save-notifications/notification-provider"
 import { Option } from "../../../../types/shared"
 import { DiscountFormValues } from "./mappers"
 import { useFormActions } from "./use-form-actions"
 
 const defaultDiscount: DiscountFormValues = {
   code: "",
-  rule: {
-    type: "percentage",
-    value: undefined,
-    description: "",
-    allocation: "total",
-    valid_for: null,
-  },
+  type: "percentage",
+  value: undefined,
+  description: "",
+  allocation: "total",
+  valid_for: null,
   is_dynamic: false,
   regions: null,
   starts_at: new Date(),
+  ends_at: null,
 }
 
 type DiscountFormProviderProps = {
@@ -45,26 +46,27 @@ export const DiscountFormProvider = ({
   const [prevExpiryDate, setPrevExpiryDate] = useState<Date | undefined>(
     undefined
   )
+  const [startsAt, setStartsAt] = useState(discount.starts_at)
+  const [endsAt, setEndsAt] = useState(discount.ends_at)
 
   const methods = useForm({ defaultValues: discount })
 
-  const type = methods.watch("rule.type") as string | undefined
+  const type = methods.watch("type") as string | undefined
   const isDynamic = methods.watch("is_dynamic") as boolean
   const regions = methods.watch("regions") as Option[] | null
-  const products = methods.watch("rule.valid_for") as Option[] | undefined
-  const endsAt = methods.watch("ends_at") as Date | undefined
-  const allocation = methods.watch("rule.allocation") as string | undefined
+  const products = methods.watch("valid_for") as Option[] | undefined
+  const allocation = methods.watch("allocation") as string | undefined
 
   useEffect(() => {
     if (hasExpiryDate && !endsAt) {
       const value = prevExpiryDate
         ? prevExpiryDate
         : new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
-      methods.setValue("ends_at", value)
+      setEndsAt(value)
     }
 
-    if (hasExpiryDate && endsAt) {
-      methods.setValue("ends_at", undefined)
+    if (!hasExpiryDate && endsAt) {
+      setEndsAt(null)
     }
   }, [hasExpiryDate])
 
@@ -97,16 +99,13 @@ export const DiscountFormProvider = ({
   const handleSelectFreeShipping = () => {
     setPrevType(type)
     setPrevAllocation(allocation)
-    methods.setValue("rule.type", "free_shipping")
-    methods.setValue("rule.allocation", undefined)
+    methods.setValue("type", "free_shipping")
+    methods.setValue("allocation", undefined)
   }
 
   const handleUnselectFreeShipping = () => {
-    methods.setValue(
-      "rule.allocation",
-      prevAllocation ? prevAllocation : "total"
-    ) // reset to previous value
-    methods.setValue("rule.type", prevType ? prevType : "percentage") // reset to previous value
+    methods.setValue("allocation", prevAllocation ? prevAllocation : "total") // reset to previous value
+    methods.setValue("type", prevType ? prevType : "percentage") // reset to previous value
 
     if (prevType === "fixed" && regions) {
       let newReg: Option | undefined = undefined
@@ -133,62 +132,80 @@ export const DiscountFormProvider = ({
   const handleReset = () => {
     setHasExpiryDate(discount.ends_at ? true : false)
     setAppliesToAll(discount.rule?.valid_for?.length ? false : true)
+    setStartsAt(discount.starts_at)
+    setEndsAt(discount.ends_at)
     methods.reset({
       ...discount,
-      rule: {
-        ...discount.rule,
-        valid_for: null,
-      },
-      starts_at: new Date(),
+      valid_for: null,
     })
   }
 
-  const isDirty = !!Object.keys(methods.formState.dirtyFields).length // isDirty from useForm is behaving more like touched and is therefore not working as expected
-
-  const onError = (errors) => {
-    if (Object.keys(errors).includes("regions")) {
-      document.getElementsByName("regions")?.[0]?.focus()
-    }
-  }
+  useEffect(() => {
+    handleReset()
+  }, [discount])
 
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
-    discount.id!
+    discount.id!,
+    {
+      ...discount,
+      starts_at: startsAt,
+      ends_at: endsAt,
+    }
   )
 
-  let notificationAction: NotificationAction[] | (() => Promise<void>)
+  let notificationAction:
+    | SubmitFunction<DiscountFormValues>
+    | MultiSubmitFunction<DiscountFormValues>
 
   if (isEdit) {
-    notificationAction = async () => {
-      await onUpdate({ ...methods.getValues() })
-    }
+    notificationAction = onUpdate
   } else {
     notificationAction = [
       {
         icon: <PublishIcon />,
-        label: "Save and activate",
-        onClick: async () => {
-          await onSaveAsActive({ ...methods.getValues() })
-        },
-      } as NotificationAction,
+        label: "Save as active",
+        onSubmit: onSaveAsActive,
+      },
       {
         label: "Save as inactive",
-        onClick: async () => {
-          await onSaveAsInactive({ ...methods.getValues() })
-        },
         icon: <FileTextIcon />,
-      } as NotificationAction,
+        onSubmit: onSaveAsInactive,
+      },
     ]
   }
 
-  useDetectChange({
-    isDirty: isDirty,
-    reset: handleReset,
-    options: {
-      fn: notificationAction,
-      title: "You have unsaved changes",
-      message: "Do you want to save your changes?",
-    },
+  const [datesChanged, setDatesChanged] = useState({
+    startsAt: false,
+    endsAt: false,
   })
+
+  useEffect(() => {
+    if (startsAt.getTime() !== discount.starts_at.getTime()) {
+      setDatesChanged({
+        ...datesChanged,
+        startsAt: true,
+      })
+    } else {
+      setDatesChanged({
+        ...datesChanged,
+        startsAt: false,
+      })
+    }
+  }, [startsAt])
+
+  useEffect(() => {
+    if (endsAt?.getTime() !== discount.ends_at?.getTime()) {
+      setDatesChanged({
+        ...datesChanged,
+        endsAt: true,
+      })
+    } else {
+      setDatesChanged({
+        ...datesChanged,
+        endsAt: false,
+      })
+    }
+  }, [endsAt])
 
   return (
     <FormProvider {...methods}>
@@ -204,9 +221,24 @@ export const DiscountFormProvider = ({
           isDynamic,
           hasExpiryDate,
           setHasExpiryDate,
+          startsAt,
+          setStartsAt,
+          endsAt,
+          setEndsAt,
         }}
       >
-        {children}
+        <SaveNotificationProvider
+          options={{
+            onReset: handleReset,
+            onSubmit: notificationAction,
+            additionalDirtyStates: {
+              startsAt: datesChanged.startsAt,
+              endsAt: datesChanged.endsAt,
+            },
+          }}
+        >
+          {children}
+        </SaveNotificationProvider>
       </DiscountFormContext.Provider>
     </FormProvider>
   )
@@ -223,6 +255,10 @@ const DiscountFormContext = React.createContext<{
   setIsFreeShipping: (value: boolean) => void
   hasExpiryDate: boolean
   setHasExpiryDate: (value: boolean) => void
+  startsAt: Date
+  setStartsAt: (value: Date) => void
+  endsAt: Date | null
+  setEndsAt: (value: Date | null) => void
 } | null>(null)
 
 export const useDiscountForm = () => {

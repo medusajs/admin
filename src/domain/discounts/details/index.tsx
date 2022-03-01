@@ -57,9 +57,11 @@ const Edit: React.FC<EditProps> = ({ id }) => {
           isEdit
         >
           <DiscountForm discount={discount} isEdit />
-          <RawJSON data={discount} title="Raw discount" />
         </DiscountFormProvider>
       )}
+      <div className="mt-xlarge">
+        <RawJSON data={discount} title="Raw discount" />
+      </div>
     </div>
   )
 }

@@ -28,6 +28,10 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
     isDynamic,
     hasExpiryDate,
     setHasExpiryDate,
+    startsAt,
+    setStartsAt,
+    endsAt,
+    setEndsAt,
   } = useDiscountForm()
 
   const { products } = useAdminProducts()
@@ -86,7 +90,7 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
           tooltip="Select whether the discount applies to the cart total or to individual items."
         >
           <Controller
-            name="rule.allocation"
+            name="allocation"
             control={control}
             render={({ value, onChange }) => {
               return (
@@ -137,7 +141,7 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
             <div className="mt-large">
               <Controller
                 control={control}
-                name="rule.valid_for"
+                name="valid_for"
                 render={({ onChange, value }) => {
                   return (
                     <Select
@@ -162,25 +166,15 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
           tooltip="If you want to schedule the discount to activate in the future, you can set a start date here, otherwise the discount will be active immediately."
         >
           <div className="flex items-center gap-xsmall">
-            <Controller
-              name="starts_at"
-              control={control}
-              render={({ value, onChange }) => {
-                return (
-                  <>
-                    <DatePicker
-                      date={value}
-                      label="Start date"
-                      onSubmitDate={onChange}
-                    />
-                    <TimePicker
-                      label="Start time"
-                      date={value}
-                      onSubmitDate={onChange}
-                    />
-                  </>
-                )
-              }}
+            <DatePicker
+              date={startsAt}
+              label="Start date"
+              onSubmitDate={setStartsAt}
+            />
+            <TimePicker
+              label="Start time"
+              date={startsAt}
+              onSubmitDate={setStartsAt}
             />
           </div>
         </Section>
@@ -200,33 +194,23 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
             </div>
           </div>
           {hasExpiryDate && (
-            <>
+            <div>
               <p className="inter-small-regular text-grey-50 mb-base">
                 Schedule the discount to deactivate in the future.
               </p>
               <div className="flex items-center gap-xsmall">
-                <Controller
-                  name="ends_at"
-                  control={control}
-                  render={({ onChange, value }) => {
-                    return (
-                      <>
-                        <DatePicker
-                          label="Expiry date"
-                          date={value}
-                          onSubmitDate={onChange}
-                        />
-                        <TimePicker
-                          label="Expiry time"
-                          date={value}
-                          onSubmitDate={onChange}
-                        />
-                      </>
-                    )
-                  }}
+                <DatePicker
+                  label="Expiry date"
+                  date={endsAt ?? new Date()}
+                  onSubmitDate={setEndsAt}
+                />
+                <TimePicker
+                  label="Expiry time"
+                  date={endsAt ?? new Date()}
+                  onSubmitDate={setEndsAt}
                 />
               </div>
-            </>
+            </div>
           )}
         </div>
         {isDynamic && (

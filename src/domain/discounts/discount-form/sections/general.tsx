@@ -17,19 +17,24 @@ import Select from "../../../../components/molecules/select"
 import StatusSelector from "../../../../components/molecules/status-selector"
 import Textarea from "../../../../components/molecules/textarea"
 import BodyCard from "../../../../components/organisms/body-card"
+import CurrencyInput from "../../../../components/organisms/currency-input"
 import DeletePrompt from "../../../../components/organisms/delete-prompt"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
-import { getNativeSymbol } from "../../../../utils/prices"
 import { useDiscountForm } from "../form/discount-form-context"
 import { discountToFormValuesMapper } from "../form/mappers"
 
 const General = ({ discount, isEdit = false }) => {
+  const initialCurrency = discount?.regions?.[0].currency_code || undefined
+
   const [showPrompt, setShowPrompt] = useState(false)
   const [nativeSymbol, setNativeSymbol] = useState<string | undefined>(
     undefined
   )
+  const [fixedRegionCurrency, setFixedRegionCurrency] = useState<
+    string | undefined
+  >(initialCurrency)
 
   const { regions: opts } = useAdminRegions()
   const deleteDiscount = useAdminDeleteDiscount(discount?.id)
@@ -89,7 +94,7 @@ const General = ({ discount, isEdit = false }) => {
     if (type === "fixed" && regions) {
       let id: string
 
-      if (Array.isArray(regions)) {
+      if (Array.isArray(regions) && regions.length) {
         id = regions[0].value
       } else {
         id = ((regions as unknown) as { label: string; value: string }).value // if you change from fixed to percentage, unselect and select a region, and then change back to fixed it is possible to make useForm set regions to an object instead of an array
@@ -98,7 +103,7 @@ const General = ({ discount, isEdit = false }) => {
       const reg = opts?.find((r) => r.id === id)
 
       if (reg) {
-        setNativeSymbol(getNativeSymbol(reg.currency_code))
+        setFixedRegionCurrency(reg.currency_code)
       }
     }
   }, [type, opts, regions])
@@ -161,22 +166,22 @@ const General = ({ discount, isEdit = false }) => {
               placeholder="SUMMERSALE10"
               required
               name="code"
-              ref={register({ required: true })}
+              ref={register({ required: "Code is required" })}
             />
             <Textarea
               label="Description"
-              name="rule.description"
+              name="description"
               required
               className="row-span-3"
               placeholder="Summer Sale 2022"
               rows={8}
-              ref={register({ required: true })}
+              ref={register({ required: "Description is required" })}
             />
             <Controller
               name="regions"
               control={control}
               rules={{
-                required: true,
+                required: "Atleast one region is required",
                 validate: (value) =>
                   Array.isArray(value) ? value.length > 0 : !!value,
               }}
@@ -200,25 +205,54 @@ const General = ({ discount, isEdit = false }) => {
                 )
               }}
             />
-            <InputField
-              label="Amount"
-              min={0}
-              required
-              type="number"
-              placeholder="10"
-              prefix={type === "percentage" ? "%" : nativeSymbol}
-              name="rule.value"
-              ref={register({ required: !isFreeShipping })}
-              className={clsx({
-                ["opacity-50 pointer-events-none select-none"]:
-                  isFreeShipping || isEdit,
-              })}
-              tabIndex={isFreeShipping || isEdit ? -1 : 0}
-              disabled={isFreeShipping || isEdit}
-            />
+            {type === "fixed" ? (
+              <CurrencyInput
+                size="small"
+                currentCurrency={fixedRegionCurrency}
+                readOnly
+                hideCurrency
+              >
+                <Controller
+                  name="value"
+                  control={control}
+                  rules={{
+                    required: "Value is required",
+                    valueAsNumber: true,
+                    min: 1,
+                  }}
+                  render={({ value, onChange }) => {
+                    return (
+                      <CurrencyInput.AmountInput
+                        label={"Amount"}
+                        amount={value}
+                        onChange={onChange}
+                      />
+                    )
+                  }}
+                />
+              </CurrencyInput>
+            ) : (
+              <InputField
+                label="Amount"
+                min={0}
+                required
+                type="number"
+                placeholder="10"
+                prefix={"%"}
+                name="rule.value"
+                ref={register({
+                  required: isFreeShipping ? false : "Amount is required",
+                })}
+                className={clsx({
+                  ["opacity-50 pointer-events-none select-none"]:
+                    isFreeShipping || isEdit,
+                })}
+                tabIndex={isFreeShipping || isEdit ? -1 : 0}
+              />
+            )}
           </div>
           <Controller
-            name="rule.type"
+            name="type"
             control={control}
             rules={{ required: true }}
             render={({ onChange, value }) => {
@@ -239,7 +273,6 @@ const General = ({ discount, isEdit = false }) => {
                   <RadioGroup.SimpleItem
                     value="fixed"
                     label="Fixed amount discount"
-                    disabled={!!regions && regions.length > 1}
                   />
                   {regions && regions.length > 1 && (
                     <div className="flex items-center">
