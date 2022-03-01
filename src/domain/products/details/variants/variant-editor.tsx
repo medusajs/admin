@@ -56,7 +56,7 @@ const VariantEditor = ({
     }))
   )
 
-  const { control, register, reset, watch, handleSubmit } = useForm({
+  const { control, register, reset, watch, handleSubmit, setValue } = useForm({
     defaultValues: variant,
   })
 
