@@ -113,14 +113,13 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
       <div className={clsx("flex items-center gap-x-2xsmall", className)}>
         <div
           className={clsx(
-            { "w-[144px]": size === "medium" },
-            { "w-[120px]": size === "small" },
-            { "w-full": size === "full" }
+            { "basis-[140px] max-w-[144px]": size === "medium" },
+            { "basis-[120px] max-w-[120px]": size === "small" },
+            { "basis-full max-w-full": size === "full" }
           )}
         >
           {!readOnly ? (
             <Select
-              enableSearch
               label="Currency"
               value={value}
               onChange={onCurrencyChange}
@@ -137,7 +136,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
             />
           )}
         </div>
-        {children && <div className="w-full">{children}</div>}
+        {children && <div className="flex-1">{children}</div>}
       </div>
     </CurrencyContext.Provider>
   )

@@ -63,7 +63,11 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="title"
             placeholder="Jacket, Sunglasses..."
             required
-            ref={register({ required: true })}
+            ref={register({
+              required: true,
+              minLength: 1,
+              pattern: /(.|\s)*\S(.|\s)*/,
+            })}
           />
           <Input
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
@@ -97,6 +101,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="collection"
             placeholder="Select collection..."
             options={collectionOptions}
+            clearSelected
           />
           <Controller
             as={Select}
@@ -105,6 +110,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="type"
             placeholder="Select type..."
             options={typeOptions}
+            clearSelected
           />
           <Controller
             name="tags"

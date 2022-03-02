@@ -1,4 +1,8 @@
-import { useAdminDeleteVariant, useAdminUpdateVariant } from "medusa-react"
+import {
+  useAdminDeleteVariant,
+  useAdminUpdateVariant,
+  useAdminCreateVariant,
+} from "medusa-react"
 import React, { useState } from "react"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
 import { buildOptionsMap } from "../../domain/products/product-form/utils"
@@ -7,11 +11,13 @@ import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
+import DuplicateIcon from "../fundamentals/icons/duplicate-icon"
 import GridInput from "../molecules/grid-input"
 import Table from "../molecules/table"
 import { useGridColumns } from "./use-grid-columns"
 
 const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
+  const [isDuplicate, setIsDuplicate] = useState(false)
   const [selectedVariant, setSelectedVariant] = useState<{
     prices: any[]
     origin_country: string
@@ -19,6 +25,7 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
     [k: string]: any
   } | null>(null)
 
+  const createVariant = useAdminCreateVariant(product?.id)
   const updateVariant = useAdminUpdateVariant(product?.id)
   const deleteVariant = useAdminDeleteVariant(product?.id)
 
@@ -68,12 +75,35 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
     }
   }
 
+  const handleDuplicateVariant = async (variant) => {
+    createVariant.mutate(
+      { ...variant },
+      {
+        onSuccess: () => {
+          notification("Success", "Successfully created variant", "success")
+          setSelectedVariant(null)
+        },
+        onError: (err) => {
+          notification("Error", getErrorMessage(err), "error")
+        },
+      }
+    )
+  }
+
   const editVariantActions = (variant) => {
     return [
       {
         label: "Edit",
         icon: <EditIcon size={20} />,
         onClick: () => setSelectedVariant(variant),
+      },
+      {
+        label: "Duplicate",
+        icon: <DuplicateIcon size={20} />,
+        onClick: () => {
+          setSelectedVariant(variant)
+          setIsDuplicate(true)
+        },
       },
       {
         label: "Delete",
@@ -132,7 +162,7 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
         <VariantEditor
           variant={selectedVariant}
           onCancel={() => setSelectedVariant(null)}
-          onSubmit={handleUpdateVariant}
+          onSubmit={isDuplicate ? handleDuplicateVariant : handleUpdateVariant}
           optionsMap={buildOptionsMap(product, selectedVariant)}
           title="Edit variant"
         />

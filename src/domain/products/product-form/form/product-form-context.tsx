@@ -1,5 +1,6 @@
 import React from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
+import { trimValues } from "../../../../utils/trim-values"
 
 export const VARIANTS_VIEW = "variants"
 
@@ -87,7 +88,10 @@ export const ProductFormProvider = ({
   }, [product])
 
   const handleSubmit = (values) => {
-    onSubmit({ ...values, images, variants, options: productOptions }, viewType)
+    onSubmit(
+      { ...trimValues(values), images, variants, options: productOptions },
+      viewType
+    )
   }
 
   return (
