@@ -1,6 +1,6 @@
 import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
@@ -12,7 +12,7 @@ import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
-import { removeNullish } from "../../../../utils/remove-nullish"
+import usePricesFieldArray from "../../product-form/form/usePricesFieldArray"
 
 const defaultVariant = {
   prices: [] as any,
@@ -32,14 +32,7 @@ const VariantEditor = ({
     value: c.alpha2.toLowerCase(),
   }))
 
-  const { store, isLoading } = useAdminStore()
-  const [currencyOptions, setCurrencyOptions] = useState<
-    {
-      value: any
-      label: string
-    }[]
-  >([])
-  const [prices, setPrices] = useState(variant?.prices)
+  const { store } = useAdminStore()
   const [selectedCountry, setSelectedCountry] = useState(() => {
     const defaultCountry = variant.origin_country
       ? countryOptions.find((cd) => cd.label === variant.origin_country)
@@ -49,6 +42,16 @@ const VariantEditor = ({
 
   const { control, register, reset, watch, handleSubmit } = useForm({
     defaultValues: variant,
+  })
+  const {
+    fields: prices,
+    appendPrice,
+    deletePrice,
+    availableCurrencies,
+  } = usePricesFieldArray(store?.currencies.map((c) => c.code) || [], {
+    control,
+    name: "prices",
+    keyName: "indexId",
   })
 
   const { fields } = useFieldArray({
@@ -61,69 +64,15 @@ const VariantEditor = ({
     reset({
       ...variant,
       options: Object.values(optionsMap),
+      prices: variant?.prices.map((p) => ({
+        price: { ...p },
+      })),
     })
-  }, [variant])
-
-  const getCurrencyOptions = () => {
-    return ((store && store.currencies) || [])
-      .map((v) => ({
-        value: v.code.toUpperCase(),
-        label: v.code.toUpperCase(),
-      }))
-      .filter(
-        (o) => !prices.find((p) => !p.edit && p.currency_code === o.value)
-      )
-  }
-
-  useEffect(() => {
-    setCurrencyOptions(getCurrencyOptions())
-  }, [store, isLoading, variant.prices])
-
-  const handleCurrencySelected = (index, currency) => {
-    const newPrices = [...prices]
-    newPrices[index] = {
-      ...newPrices[index],
-      currency_code: currency.toLowerCase(),
-    }
-
-    setPrices(newPrices)
-  }
-
-  const handlePriceChange = (index, value) => {
-    const newPrices = [...prices]
-    newPrices[index] = {
-      ...newPrices[index],
-      amount: value,
-    }
-
-    setPrices(newPrices)
-  }
-
-  const removePrice = (index) => {
-    const newPrices = [...prices]
-    newPrices.splice(index, 1)
-    setPrices(newPrices)
-  }
-
-  const addPrice = () => {
-    const newPrices = [
-      ...prices,
-      {
-        edit: true,
-        region: "",
-        currency_code: currencyOptions[0].value,
-        amount: "",
-        sale_amount: "",
-      },
-    ]
-
-    setPrices(newPrices)
-  }
+  }, [variant, store])
 
   const handleSave = (data) => {
-    data.prices = prices.map(({ currency_code, region_id, amount }) => ({
+    data.prices = data.prices.map(({ price: { currency_code, amount } }) => ({
       currency_code,
-      region_id,
       amount: Math.round(amount),
     }))
     data.options = data.options.map((option) => ({ ...option }))
@@ -135,7 +84,6 @@ const VariantEditor = ({
     data.width = data?.width ? parseInt(data.width, 10) : undefined
     data.length = data?.length ? parseInt(data.length, 10) : undefined
 
-    data.prices = data.prices.map((p) => removeNullish(p))
     const cleaned = convertEmptyStringToNull(data)
     onSubmit(cleaned)
   }
@@ -198,50 +146,64 @@ const VariantEditor = ({
             </label>
 
             <div className="grid grid-cols-1 gap-y-xsmall">
-              {prices.map((p, index) => (
-                <div
-                  className="flex items-center"
-                  key={`${p.currency_code}${index}`}
-                >
+              {prices.map((field, index) => (
+                <div className="flex items-center" key={field.indexId}>
                   <div className="w-full">
-                    <CurrencyInput
-                      currencyCodes={currencyOptions.map((co) => co.value)}
-                      currentCurrency={p.currency_code.toUpperCase()}
-                      onChange={(currency) =>
-                        handleCurrencySelected(index, currency)
-                      }
-                      size="small"
-                    >
-                      <CurrencyInput.AmountInput
-                        label="Amount"
-                        step={0.01}
-                        amount={p.amount}
-                        onChange={(value) => handlePriceChange(index, value)}
-                      />
-                    </CurrencyInput>
+                    <Controller
+                      control={control}
+                      key={field.indexId}
+                      name={`prices[${index}].price`}
+                      ref={register()}
+                      defaultValue={field.price}
+                      render={({ onChange, value }) => {
+                        let codes = availableCurrencies
+                        if (value?.currency_code) {
+                          codes = [value?.currency_code, ...availableCurrencies]
+                        }
+                        codes.sort()
+                        return (
+                          <CurrencyInput
+                            currencyCodes={codes}
+                            currentCurrency={value?.currency_code}
+                            size="medium"
+                            readOnly={index === 0}
+                            onChange={(code) =>
+                              onChange({ ...value, currency_code: code })
+                            }
+                          >
+                            <CurrencyInput.AmountInput
+                              label="Amount"
+                              onChange={(amount) =>
+                                onChange({ ...value, amount })
+                              }
+                              amount={value?.amount}
+                            />
+                          </CurrencyInput>
+                        )
+                      }}
+                    />
                   </div>
 
                   <Button
                     variant="ghost"
                     size="small"
                     className="ml-8 w-8 h-8 mr-2.5 text-grey-40 hover:text-grey-80 transition-colors"
-                    onClick={() => removePrice(index)}
+                    onClick={deletePrice(index)}
                   >
                     <TrashIcon />
                   </Button>
                 </div>
               ))}
             </div>
-            {currencyOptions.length !== prices.length && (
-              <Button
-                className="mt-4"
-                onClick={addPrice}
-                size="small"
-                variant="ghost"
-              >
-                <PlusIcon size={20} /> Add a price
-              </Button>
-            )}
+            <Button
+              className="mt-4"
+              onClick={appendPrice}
+              size="small"
+              variant="ghost"
+              disabled={availableCurrencies?.length === 0}
+            >
+              <PlusIcon size={20} /> Add a price
+            </Button>
           </div>
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
