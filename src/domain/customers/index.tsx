@@ -4,7 +4,7 @@ import { RouteComponentProps, Router } from "@reach/router"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
 import CustomerTable from "../../components/templates/customer-table"
-import { CustomerGroupTable } from "./groups"
+import CustomerGroupTable from "../../components/templates/customer-group-table"
 import Details from "./details"
 
 enum CustomerTabs {
@@ -13,9 +13,7 @@ enum CustomerTabs {
 }
 
 const CustomerIndex: React.FC<RouteComponentProps> = () => {
-  const [activeView, setActiveView] = React.useState<CustomerTabs>(
-    CustomerTabs.people
-  )
+  const [activeView, setActiveView] = React.useState(CustomerTabs.people)
 
   const isGroupsView = activeView === CustomerTabs.groups
 
