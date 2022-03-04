@@ -115,7 +115,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
           className={clsx(
             { "basis-[140px] max-w-[144px]": size === "medium" },
             { "basis-[120px] max-w-[120px]": size === "small" },
-            { "basis-full max-w-full": size === "full" }
+            { "flex-1": size === "full" }
           )}
         >
           {!readOnly ? (

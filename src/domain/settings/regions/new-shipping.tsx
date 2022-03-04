@@ -180,7 +180,11 @@ const NewShipping = ({
                 placeholder="New Shipping Option"
                 className="flex-grow"
               />
-              <CurrencyInput currentCurrency={region.currency_code} readOnly>
+              <CurrencyInput
+                currentCurrency={region.currency_code}
+                readOnly
+                size="small"
+              >
                 <CurrencyInput.AmountInput
                   label="Price"
                   onChange={(v) => handleAmountChange("amount", v)}
@@ -239,6 +243,7 @@ const NewShipping = ({
                   <CurrencyInput
                     currentCurrency={region.currency_code}
                     readOnly
+                    size="medium"
                   >
                     <CurrencyInput.AmountInput
                       label="Price"
@@ -254,6 +259,7 @@ const NewShipping = ({
                   <CurrencyInput
                     currentCurrency={region.currency_code}
                     readOnly
+                    size="medium"
                   >
                     <CurrencyInput.AmountInput
                       label="Price"
