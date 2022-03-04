@@ -6,6 +6,7 @@ import TableViewHeader from "../../components/organisms/custom-table-header"
 import CustomerTable from "../../components/templates/customer-table"
 import CustomerGroupTable from "../../components/templates/customer-group-table"
 import Details from "./details"
+import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 
 enum CustomerTabs {
   people = "People",
@@ -17,10 +18,23 @@ const CustomerIndex: React.FC<RouteComponentProps> = () => {
 
   const isGroupsView = activeView === CustomerTabs.groups
 
+  const newGroupAction = {
+    label: "New group",
+    onClick: () => {},
+    icon: (
+      <span className="text-grey-90">
+        <PlusIcon size={20} />
+      </span>
+    ),
+  }
+
+  const actionables = isGroupsView ? [newGroupAction] : undefined
+
   return (
     <div className="flex flex-col grow h-full">
       <div className="w-full flex flex-col grow">
         <BodyCard
+          actionables={actionables}
           customHeader={
             <TableViewHeader
               activeView={activeView}
