@@ -243,7 +243,7 @@ const NewShipping = ({
                   <CurrencyInput
                     currentCurrency={region.currency_code}
                     readOnly
-                    size="medium"
+                    size="small"
                   >
                     <CurrencyInput.AmountInput
                       label="Price"
@@ -259,7 +259,7 @@ const NewShipping = ({
                   <CurrencyInput
                     currentCurrency={region.currency_code}
                     readOnly
-                    size="medium"
+                    size="small"
                   >
                     <CurrencyInput.AmountInput
                       label="Price"
