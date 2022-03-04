@@ -38,6 +38,8 @@ function parseQuery(
         filterParams.query = filters[k]
       }
     })
+
+  return filterParams
 }
 
 function parseCustomerGroupFilters(
@@ -46,25 +48,35 @@ function parseCustomerGroupFilters(
 ) {
   existing = checkExisting(existing)
 
-  parseQuery(existing)
+  const queryObject = parseQuery(existing)
+
+  return { queryObject }
 }
 
 function CustomerGroupTable() {
-  const {} = parseCustomerGroupFilters(location.search, defaultQueryProps)
+  const {
+    reset,
+    paginate,
+    setQuery,
+    queryObject,
+    representationObject,
+  } = parseCustomerGroupFilters(location.search, defaultQueryProps)
 
-  // const offs = parseInt(queryObject?.offset) || 0
-  // const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
+  const offs = parseInt(queryObject?.offset) || 0
+  const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
   const { customer_groups, isLoading, count } = useAdminCustomerGroups()
-  console.log({ customer_groups })
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
       <Table>
         <Table.Head>
           <Table.HeadRow>
-            <Table.HeadCell className="w-[100px]">Header 1</Table.HeadCell>
-            <Table.HeadCell className="w-[100px]">Header 2</Table.HeadCell>
+            <Table.HeadCell>Title</Table.HeadCell>
+            <Table.HeadCell>Description</Table.HeadCell>
+            <Table.HeadCell>Members</Table.HeadCell>
+            <Table.HeadCell>Total sales</Table.HeadCell>
+            <Table.HeadCell>Total revenue</Table.HeadCell>
           </Table.HeadRow>
         </Table.Head>
       </Table>
