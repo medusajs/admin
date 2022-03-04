@@ -7,10 +7,18 @@ import CustomerTable from "../../components/templates/customer-table"
 import { CustomerGroupTable } from "./groups"
 import Details from "./details"
 
-const CustomerIndex: React.FC<RouteComponentProps> = () => {
-  const [activeView, setActiveView] = React.useState("customers")
+enum CustomerTabs {
+  people = "People",
+  groups = "Groups",
+}
 
-  const isGroupsView = activeView === "customers"
+const CustomerIndex: React.FC<RouteComponentProps> = () => {
+  const [activeView, setActiveView] = React.useState<CustomerTabs>(
+    CustomerTabs.people
+  )
+
+  const isGroupsView = activeView === CustomerTabs.groups
+
   return (
     <div className="flex flex-col grow h-full">
       <div className="w-full flex flex-col grow">
@@ -19,11 +27,11 @@ const CustomerIndex: React.FC<RouteComponentProps> = () => {
             <TableViewHeader
               activeView={activeView}
               setActiveView={setActiveView}
-              views={["customers", "groups"]}
+              views={[CustomerTabs.people, CustomerTabs.groups]}
             />
           }
         >
-          {isGroupsView ? <CustomerTable /> : <CustomerGroupTable />}
+          {isGroupsView ? <CustomerGroupTable /> : <CustomerTable />}
         </BodyCard>
       </div>
     </div>

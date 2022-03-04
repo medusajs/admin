@@ -2,10 +2,10 @@ import clsx from "clsx"
 import { capitalize } from "lodash"
 import React from "react"
 
-type TableViewHeaderProps = {
+type TableViewHeaderProps<T = any> = {
   views: string[]
-  activeView?: string
-  setActiveView?: (view: string) => void
+  activeView?: T
+  setActiveView?: (view: T) => void
 }
 
 const TableViewHeader: React.FC<TableViewHeaderProps> = ({
