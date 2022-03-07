@@ -75,6 +75,7 @@ const Metadata: React.FC<AddMetadataProps> = ({
             variant="secondary"
             size="small"
             type="button"
+            className="w-full"
             onClick={addKeyPair}
           >
             <PlusIcon size={20} />

@@ -1,18 +1,23 @@
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
+import { useAdminCreateCustomerGroup } from "medusa-react"
 
 import Modal from "../../../components/molecules/modal"
 import Input from "../../../components/molecules/input"
 import Button from "../../../components/fundamentals/button"
 import Metadata, { MetadataField } from "../../../components/organisms/metadata"
+import { getErrorMessage } from "../../../utils/error-messages"
+import useNotification from "../../../hooks/use-notification"
 
 type P = {
   handleClose: () => void
-  handleSave: (data: { data: { name: string } }) => void
 }
 
 function AddCustomerGroupModal(props: P) {
-  const { handleClose, handleSave } = props
+  const { handleClose } = props
+
+  const notification = useNotification()
+  const { mutate } = useAdminCreateCustomerGroup()
 
   const [metadata, setMetadata] = useState<MetadataField[]>([])
 
@@ -23,7 +28,17 @@ function AddCustomerGroupModal(props: P) {
 
     metadata.forEach((m) => (meta[m.key] = m.value))
     data.metadata = meta
-    return handleSave({ data })
+    mutate(data, {
+      onSuccess: () => {
+        notification(
+          "Success",
+          "Successfully created the customer group",
+          "success"
+        )
+        handleClose()
+      },
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
+    })
   }
 
   return (
@@ -31,7 +46,7 @@ function AddCustomerGroupModal(props: P) {
       <Modal.Body>
         <Modal.Header handleClose={handleClose}>
           <span className="inter-xlarge-semibold">
-            Create New Customer Group
+            Create a New Customer Group
           </span>
         </Modal.Header>
         <Modal.Content>
@@ -63,12 +78,12 @@ function AddCustomerGroupModal(props: P) {
               Cancel
             </Button>
             <Button
-              size="large"
+              size="medium"
               className="w-32 text-small justify-center"
               variant="primary"
               onClick={handleSubmit(submit)}
             >
-              Save
+              Publish Group
             </Button>
           </div>
         </Modal.Footer>
