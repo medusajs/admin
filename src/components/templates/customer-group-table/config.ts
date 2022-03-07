@@ -4,7 +4,7 @@ export const CUSTOMER_GROUPS_TABLE_COLUMNS = [
     accessor: "name",
   },
   {
-    Header: "Description",
-    accessor: "description",
+    Header: "Members",
+    accessor: (r) => r.customers?.length,
   },
 ]

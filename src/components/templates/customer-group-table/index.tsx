@@ -71,7 +71,7 @@ function CustomerGroupTable() {
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const { customer_groups, isLoading, count } = useAdminCustomerGroups()
+  const { customer_groups, isLoading, count } = useAdminCustomerGroups({})
 
   const {
     getTableProps,
