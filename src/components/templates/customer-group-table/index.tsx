@@ -79,6 +79,9 @@ function CustomerGroupTable() {
             <Table.HeadCell>Total revenue</Table.HeadCell>
           </Table.HeadRow>
         </Table.Head>
+        {customer_groups?.map((g) => (
+          <div>{g.name}</div>
+        ))}
       </Table>
     </div>
   )
