@@ -1,8 +1,14 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { useAdminCustomerGroups } from "medusa-react"
+import { usePagination, useTable } from "react-table"
+import { navigate } from "gatsby"
 import qs from "qs"
 
 import Table from "../../molecules/table"
+import EditIcon from "../../fundamentals/icons/edit-icon"
+import DetailsIcon from "../../fundamentals/details-icon"
+
+import { CUSTOMER_GROUPS_TABLE_COLUMNS } from "./config"
 import * as I from "./interface"
 
 const DEFAULT_PAGE_SIZE = 15
@@ -67,21 +73,78 @@ function CustomerGroupTable() {
 
   const { customer_groups, isLoading, count } = useAdminCustomerGroups()
 
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    canPreviousPage,
+    canNextPage,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    state: { pageIndex },
+  } = useTable(
+    {
+      columns: CUSTOMER_GROUPS_TABLE_COLUMNS,
+      data: customer_groups || [],
+      // manualPagination: true,
+      // initialState: {
+      //   pageSize: lim,
+      //   pageIndex: offs / lim,
+      // },
+      // pageCount: numPages,
+      autoResetPage: false,
+    }
+    // usePagination
+  )
+
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
-      <Table>
+      <Table {...getTableProps()}>
         <Table.Head>
-          <Table.HeadRow>
-            <Table.HeadCell>Title</Table.HeadCell>
-            <Table.HeadCell>Description</Table.HeadCell>
-            <Table.HeadCell>Members</Table.HeadCell>
-            <Table.HeadCell>Total sales</Table.HeadCell>
-            <Table.HeadCell>Total revenue</Table.HeadCell>
-          </Table.HeadRow>
+          {headerGroups?.map((headerGroup) => (
+            <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((col) => (
+                <Table.HeadCell className="w-[100px]" {...col.getHeaderProps()}>
+                  {col.render("Header")}
+                </Table.HeadCell>
+              ))}
+            </Table.HeadRow>
+          ))}
         </Table.Head>
-        {customer_groups?.map((g) => (
-          <div>{g.name}</div>
-        ))}
+        <Table.Body {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row)
+            return (
+              <Table.Row
+                color={"inherit"}
+                actions={[
+                  {
+                    label: "Edit",
+                    onClick: () => navigate(row.original.id),
+                    icon: <EditIcon size={20} />,
+                  },
+                  {
+                    label: "Details",
+                    onClick: () => navigate(row.original.id),
+                    icon: <DetailsIcon size={20} />,
+                  },
+                ]}
+                linkTo={row.original.id}
+                {...row.getRowProps()}
+              >
+                {row.cells.map((cell, index) => (
+                  <Table.Cell {...cell.getCellProps()}>
+                    {cell.render("Cell", { index })}
+                  </Table.Cell>
+                ))}
+              </Table.Row>
+            )
+          })}
+        </Table.Body>
       </Table>
     </div>
   )

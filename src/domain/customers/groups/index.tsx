@@ -6,8 +6,9 @@ import CustomerGroupTable from "../../../components/templates/customer-group-tab
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import AddCustomerGroupModal from "./add-customer-group-modal"
 import CustomersPageTableHeader from "../header"
+import Details from "./details"
 
-const Index: React.FC<RouteComponentProps> = () => {
+function Index(_: RouteComponentProps) {
   const [showModal, setShowModal] = useState(false)
 
   const actions = [
@@ -22,6 +23,8 @@ const Index: React.FC<RouteComponentProps> = () => {
     },
   ]
 
+  const handleClose = () => setShowModal(false)
+
   return (
     <div className="flex flex-col grow h-full">
       <div className="w-full flex flex-col grow">
@@ -32,18 +35,16 @@ const Index: React.FC<RouteComponentProps> = () => {
           <CustomerGroupTable />
         </BodyCard>
       </div>
-      {showModal && (
-        <AddCustomerGroupModal handleClose={() => setShowModal(false)} />
-      )}
+      {showModal && <AddCustomerGroupModal handleClose={handleClose} />}
     </div>
   )
 }
 
-const CustomerGroups: React.FC<RouteComponentProps> = () => {
+function CustomerGroups(_: RouteComponentProps) {
   return (
     <Router basepath="/a/customers/groups">
       <Index path="/" />
-      {/*<Details path=":id" />*/}
+      <Details path=":id" />
     </Router>
   )
 }
