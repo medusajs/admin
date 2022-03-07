@@ -1,21 +1,28 @@
-import React from "react"
+import React, { useState } from "react"
+import { useForm } from "react-hook-form"
 
 import Modal from "../../../components/molecules/modal"
 import Input from "../../../components/molecules/input"
 import Button from "../../../components/fundamentals/button"
-import { useForm } from "react-hook-form"
+import Metadata, { MetadataField } from "../../../components/organisms/metadata"
 
 type P = {
   handleClose: () => void
   handleSave: (data: { data: { name: string } }) => void
 }
 
-function AddCustomerGroupModal(p: P) {
-  const { handleClose, handleSave } = p
+function AddCustomerGroupModal(props: P) {
+  const { handleClose, handleSave } = props
+
+  const [metadata, setMetadata] = useState<MetadataField[]>([])
 
   const { register, handleSubmit } = useForm()
 
   const submit = (data) => {
+    const meta = {}
+
+    metadata.forEach((m) => (meta[m.key] = m.value))
+    data.metadata = meta
     return handleSave({ data })
   }
 
@@ -40,9 +47,9 @@ function AddCustomerGroupModal(p: P) {
               />
             </div>
           </div>
-          <div className="space-y-4 mt-8">
-            <span className="inter-base-semibold">Metadata</span>
-            <div className="flex space-x-4">...</div>
+
+          <div className="mt-8">
+            <Metadata metadata={metadata} setMetadata={setMetadata} />
           </div>
         </Modal.Content>
         <Modal.Footer>
