@@ -1,20 +1,64 @@
-import React from "react"
+import React, { useState } from "react"
 import { CustomerGroup } from "@medusajs/medusa"
-import { useAdminCustomerGroup } from "medusa-react"
+import {
+  useAdminAddCustomersToCustomerGroup,
+  useAdminCustomerGroup,
+  useAdminRemoveCustomersFromCustomerGroup,
+} from "medusa-react"
+import xor from "lodash/xor"
 
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import EditCustomersTable from "../../../components/templates/customer-group-table/edit-customers-table"
+import { difference } from "lodash"
 
-type CustomerGroupCustomersListProps = { groupId: string }
+type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
+  const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(
+    props.group.id
+  )
+  const { mutate: removecustomers } = useAdminRemoveCustomersFromCustomerGroup(
+    props.group.id
+  )
+
+  const [showCustomersModal, setShowCustomersModal] = useState(false)
+  const [selectedCustomerIds, setSelectedCustomerIds] = useState(
+    props.group.customers.map((c) => c.id)
+  )
+
+  const toggleCustomer = (customerId: string) => {
+    if (selectedCustomerIds.includes(customerId))
+      setSelectedCustomerIds(
+        selectedCustomerIds.filter((i) => i !== customerId)
+      )
+    else setSelectedCustomerIds([...selectedCustomerIds, customerId])
+  }
+
+  const calculateDiff = () => {
+    const initial = props.group.customers.map((c) => c.id)
+    return {
+      toAdd: difference(selectedCustomerIds, initial),
+      toRemove: difference(initial, selectedCustomerIds),
+    }
+  }
+
+  const handleSubmit = () => {
+    const { toAdd, toRemove } = calculateDiff()
+
+    if (toAdd.length)
+      addCustomers({ customer_ids: toAdd.map((i) => ({ id: i })) })
+    if (toRemove.length)
+      removecustomers({ customer_ids: toRemove.map((i) => ({ id: i })) })
+  }
+
   const actions = [
     {
-      label: "Add customer",
-      // onClick: () => setShowModal(true),
+      label: "Edit customers",
+      onClick: () => setShowCustomersModal(true),
       icon: (
         <span className="text-grey-90">
           <PlusIcon size={20} />
@@ -27,7 +71,16 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
       title="Customers"
       actionables={actions}
       className="min-h-0 w-full my-4 min-h-[756px]"
-    ></BodyCard>
+    >
+      {showCustomersModal && (
+        <EditCustomersTable
+          selectedCustomerIds={selectedCustomerIds}
+          toggleCustomer={toggleCustomer}
+          handleSubmit={handleSubmit}
+          onClose={() => setShowCustomersModal(false)}
+        />
+      )}
+    </BodyCard>
   )
 }
 
@@ -67,7 +120,9 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
 type CustomerGroupDetailsProps = { id: string }
 
 function CustomerGroupDetails(p: CustomerGroupDetailsProps) {
-  const { customer_group } = useAdminCustomerGroup(p.id)
+  const { customer_group } = useAdminCustomerGroup(p.id, {
+    expand: "customers",
+  })
 
   if (!customer_group) return null
 
@@ -79,7 +134,7 @@ function CustomerGroupDetails(p: CustomerGroupDetailsProps) {
         previousRoute="/a/customers/groups"
       />
       <CustomerGroupDetailsHeader customerGroup={customer_group} />
-      <CustomerGroupCustomersList groupId={customer_group.id} />
+      <CustomerGroupCustomersList group={customer_group} />
     </div>
   )
 }
