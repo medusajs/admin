@@ -7,6 +7,7 @@ import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
 import { Cell, usePagination, useTable } from "react-table"
 import Table, { TablePagination } from "../../molecules/table"
 import { Customer } from "@medusajs/medusa"
+import Checkbox from "../../atoms/checkbox"
 
 const DEFAULT_PAGE_SIZE = 15
 
@@ -105,12 +106,24 @@ function EditCustomersTable(props: EditCustomersTableProps) {
               <Table.Head>
                 {headerGroups?.map((headerGroup) => (
                   <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map((col) => (
+                    {headerGroup.headers.map((col, index) => (
                       <Table.HeadCell
-                        className="w-[100px]"
+                        className={index ? "w-[100px]" : "w-[60px]"}
                         {...col.getHeaderProps()}
                       >
-                        {col.render("Header")}
+                        {!index ? (
+                          <Checkbox
+                            className="justify-center"
+                            // checked={checked}
+                            // onChange={toggleChecked}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              e.preventDefault()
+                            }}
+                          />
+                        ) : (
+                          col.render("Header")
+                        )}
                       </Table.HeadCell>
                     ))}
                   </Table.HeadRow>

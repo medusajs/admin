@@ -23,7 +23,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(
     props.group.id
   )
-  const { mutate: removecustomers } = useAdminRemoveCustomersFromCustomerGroup(
+  const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
     props.group.id
   )
 
@@ -54,7 +54,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     if (toAdd.length)
       addCustomers({ customer_ids: toAdd.map((i) => ({ id: i })) })
     if (toRemove.length)
-      removecustomers({ customer_ids: toRemove.map((i) => ({ id: i })) })
+      removeCustomers({ customer_ids: toRemove.map((i) => ({ id: i })) })
   }
 
   const actions = [

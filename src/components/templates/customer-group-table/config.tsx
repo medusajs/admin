@@ -34,6 +34,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS = [
     Cell: ({ row, checked, toggleChecked }) => {
       return (
         <Checkbox
+          className="justify-center"
           checked={checked}
           onChange={toggleChecked}
           onClick={(e) => {
