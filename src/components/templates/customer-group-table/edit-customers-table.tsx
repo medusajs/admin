@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react"
+import { useAdminCustomers } from "medusa-react"
+import { Cell, usePagination, useTable } from "react-table"
+import { Customer } from "@medusajs/medusa"
+
+import Checkbox from "../../atoms/checkbox"
 import Modal from "../../molecules/modal"
 import Button from "../../fundamentals/button"
-import { useCustomerFilters } from "../customer-table/use-customer-filters"
-import { useAdminCustomers } from "medusa-react"
-import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
-import { Cell, usePagination, useTable } from "react-table"
 import Table, { TablePagination } from "../../molecules/table"
-import { Customer } from "@medusajs/medusa"
-import Checkbox from "../../atoms/checkbox"
+import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
+import { useCustomerFilters } from "../customer-table/use-customer-filters"
 
 const DEFAULT_PAGE_SIZE = 15
 
@@ -136,7 +137,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
                   return (
                     <Table.Row
                       color={"inherit"}
-                      linkTo={row.original.id}
+                      linkTo={`/a/customers/${row.original.id}`}
                       {...row.getRowProps()}
                     >
                       {row.cells.map((cell, index) => {

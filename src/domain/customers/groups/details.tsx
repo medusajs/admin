@@ -1,4 +1,6 @@
 import React, { useState } from "react"
+import { difference } from "lodash"
+import { navigate } from "gatsby"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
   useAdminAddCustomersToCustomerGroup,
@@ -6,7 +8,6 @@ import {
   useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
 } from "medusa-react"
-import xor from "lodash/xor"
 
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
@@ -14,8 +15,7 @@ import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditCustomersTable from "../../../components/templates/customer-group-table/edit-customers-table"
-import { difference } from "lodash"
-import { navigate } from "gatsby"
+import CustomersListTable from "../../../components/templates/customer-group-table/customers-list-table"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
@@ -55,6 +55,8 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
       addCustomers({ customer_ids: toAdd.map((i) => ({ id: i })) })
     if (toRemove.length)
       removeCustomers({ customer_ids: toRemove.map((i) => ({ id: i })) })
+
+    setShowCustomersModal(false)
   }
 
   const actions = [
@@ -82,6 +84,8 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
           onClose={() => setShowCustomersModal(false)}
         />
       )}
+
+      <CustomersListTable customers={props.group.customers} />
     </BodyCard>
   )
 }

@@ -72,3 +72,36 @@ export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS = [
     accessor: "col-2",
   },
 ]
+
+export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS = [
+  {
+    Header: "Name",
+    accessor: "customer",
+    Cell: ({ row }) => (
+      <CustomerAvatarItem customer={row.original} color={getColor(row.index)} />
+    ),
+  },
+  {
+    Header: "Email",
+    accessor: "email",
+  },
+  {
+    accessor: "Groups",
+    Header: () => <div className="text-right">Groups</div>,
+    Cell: ({ cell: { value } }) => (
+      <div className="text-right">{value?.length || 0}</div>
+    ),
+  },
+  {
+    accessor: "orders",
+    Header: () => <div className="text-right">Orders</div>,
+    Cell: ({ cell: { value } }) => {
+      console.log(value)
+      return <div className="text-right">{value?.length || 0}</div>
+    },
+  },
+  {
+    Header: "",
+    accessor: "col-2",
+  },
+]
