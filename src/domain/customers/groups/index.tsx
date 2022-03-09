@@ -4,7 +4,7 @@ import { RouteComponentProps, Router } from "@reach/router"
 import BodyCard from "../../../components/organisms/body-card"
 import CustomerGroupTable from "../../../components/templates/customer-group-table"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import AddCustomerGroupModal from "./add-customer-group-modal"
+import CustomerGroupModal from "./customer-group-modal"
 import CustomersPageTableHeader from "../header"
 import Details from "./details"
 
@@ -35,7 +35,7 @@ function Index(_: RouteComponentProps) {
           <CustomerGroupTable />
         </BodyCard>
       </div>
-      {showModal && <AddCustomerGroupModal handleClose={handleClose} />}
+      {showModal && <CustomerGroupModal handleClose={handleClose} />}
     </div>
   )
 }

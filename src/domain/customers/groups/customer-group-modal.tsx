@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useAdminCreateCustomerGroup } from "medusa-react"
+import { CustomerGroup } from "@medusajs/medusa"
 
 import Modal from "../../../components/molecules/modal"
 import Input from "../../../components/molecules/input"
@@ -11,23 +12,39 @@ import useNotification from "../../../hooks/use-notification"
 
 type P = {
   handleClose: () => void
+  initialData?: CustomerGroup
+  handleSave?: (data: CustomerGroup) => void
 }
 
-function AddCustomerGroupModal(props: P) {
+function CustomerGroupModal(props: P) {
   const { handleClose } = props
 
   const notification = useNotification()
   const { mutate } = useAdminCreateCustomerGroup()
 
-  const [metadata, setMetadata] = useState<MetadataField[]>([])
+  const [metadata, setMetadata] = useState<MetadataField[]>(
+    props.initialData
+      ? Object.keys(props.initialData.metadata).map((k) => ({
+          key: k,
+          value: props.initialData.metadata[k],
+        }))
+      : []
+  )
 
-  const { register, handleSubmit } = useForm()
+  const { register, handleSubmit } = useForm({
+    defaultValues: props.initialData,
+  })
 
   const submit = (data) => {
     const meta = {}
 
     metadata.forEach((m) => (meta[m.key] = m.value))
     data.metadata = meta
+
+    if (props.handleSave) {
+      props.handleSave(data)
+      return
+    }
     mutate(data, {
       onSuccess: () => {
         notification(
@@ -46,7 +63,7 @@ function AddCustomerGroupModal(props: P) {
       <Modal.Body>
         <Modal.Header handleClose={handleClose}>
           <span className="inter-xlarge-semibold">
-            Create a New Customer Group
+            {props.initialData ? "Edit" : "Create a New"} Customer Group
           </span>
         </Modal.Header>
         <Modal.Content>
@@ -83,7 +100,7 @@ function AddCustomerGroupModal(props: P) {
               variant="primary"
               onClick={handleSubmit(submit)}
             >
-              Publish Group
+              {props.initialData ? "Edit" : "Publish"} Group
             </Button>
           </div>
         </Modal.Footer>
@@ -92,4 +109,4 @@ function AddCustomerGroupModal(props: P) {
   )
 }
 
-export default AddCustomerGroupModal
+export default CustomerGroupModal

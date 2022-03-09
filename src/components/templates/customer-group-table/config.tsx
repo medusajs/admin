@@ -96,7 +96,6 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS = [
     accessor: "orders",
     Header: () => <div className="text-right">Orders</div>,
     Cell: ({ cell: { value } }) => {
-      console.log(value)
       return <div className="text-right">{value?.length || 0}</div>
     },
   },

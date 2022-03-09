@@ -7,6 +7,7 @@ import {
   useAdminCustomerGroup,
   useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
+  useAdminUpdateCustomerGroup,
 } from "medusa-react"
 
 import Breadcrumb from "../../../components/molecules/breadcrumb"
@@ -16,15 +17,18 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditCustomersTable from "../../../components/templates/customer-group-table/edit-customers-table"
 import CustomersListTable from "../../../components/templates/customer-group-table/customers-list-table"
+import CustomerGroupModal from "./customer-group-modal"
+import { getErrorMessage } from "../../../utils/error-messages"
+import useNotification from "../../../hooks/use-notification"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
-  const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(
-    props.group.id
-  )
+  const groupId = props.group.id
+
+  const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
-    props.group.id
+    groupId
   )
 
   const [showCustomersModal, setShowCustomersModal] = useState(false)
@@ -70,6 +74,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
       ),
     },
   ]
+
   return (
     <BodyCard
       title="Customers"
@@ -95,17 +100,40 @@ type CustomerGroupDetailsHeaderProps = {
 }
 
 function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
-  const { mutate } = useAdminDeleteCustomerGroup(props.customerGroup.id)
+  const notification = useNotification()
+  const [showModal, setShowModal] = useState(false)
+
+  const { mutate: updateGroup } = useAdminUpdateCustomerGroup(
+    props.customerGroup.id
+  )
+  const { mutate: deleteGroup } = useAdminDeleteCustomerGroup(
+    props.customerGroup.id
+  )
+
+  const handleSave = (data) => {
+    updateGroup(data, {
+      onSuccess: () => {
+        notification(
+          "Success",
+          "Successfully created the customer group",
+          "success"
+        )
+        setShowModal(false)
+      },
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
+    })
+  }
 
   const actions = [
     {
       label: "Edit",
+      onClick: () => setShowModal(true),
       icon: <EditIcon size={20} />,
     },
     {
       label: "Delete",
       onClick: () => {
-        mutate()
+        deleteGroup()
         navigate("/a/customers/groups")
       }, // TODO: confirmation
       variant: "danger",
@@ -123,6 +151,14 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
         <span className="text-xs text-gray-500 block pb-1">Size</span>
         <span className="text-xs text-gray-900 block">Max of 200 people</span>
       </div>
+
+      {showModal && (
+        <CustomerGroupModal
+          handleClose={() => setShowModal(false)}
+          handleSave={handleSave}
+          initialData={props.customerGroup}
+        />
+      )}
     </BodyCard>
   )
 }
