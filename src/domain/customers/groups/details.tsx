@@ -3,6 +3,7 @@ import { CustomerGroup } from "@medusajs/medusa"
 import {
   useAdminAddCustomersToCustomerGroup,
   useAdminCustomerGroup,
+  useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
 } from "medusa-react"
 import xor from "lodash/xor"
@@ -14,6 +15,7 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditCustomersTable from "../../../components/templates/customer-group-table/edit-customers-table"
 import { difference } from "lodash"
+import { navigate } from "gatsby"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
@@ -89,15 +91,19 @@ type CustomerGroupDetailsHeaderProps = {
 }
 
 function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
+  const { mutate } = useAdminDeleteCustomerGroup(props.customerGroup.id)
+
   const actions = [
     {
       label: "Edit",
-      // onClick: () => setShowEdit(true),
       icon: <EditIcon size={20} />,
     },
     {
       label: "Delete",
-      // onClick: () => console.log("TODO: delete customer"),
+      onClick: () => {
+        mutate()
+        navigate("/a/customers/groups")
+      }, // TODO: confirmation
       variant: "danger",
       icon: <TrashIcon size={20} />,
     },
