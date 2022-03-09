@@ -1,14 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { useAdminCustomers } from "medusa-react"
-import { Cell, usePagination, useTable } from "react-table"
-import { Customer } from "@medusajs/medusa"
+import { Cell, usePagination, useRowSelect, useTable } from "react-table"
 
-import Checkbox from "../../atoms/checkbox"
 import Modal from "../../molecules/modal"
 import Button from "../../fundamentals/button"
 import Table, { TablePagination } from "../../molecules/table"
 import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
 import { useCustomerFilters } from "../customer-table/use-customer-filters"
+import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 
 const DEFAULT_PAGE_SIZE = 15
 
@@ -20,11 +19,16 @@ type EditCustomersTableProps = {
   onClose: () => void
   handleSubmit: () => void
   selectedCustomerIds: string[]
-  toggleCustomer: (customerId: string) => void
+  setSelectedCustomerIds: (customerIds: string[]) => void
 }
 
 function EditCustomersTable(props: EditCustomersTableProps) {
-  const { toggleCustomer, selectedCustomerIds, handleSubmit, onClose } = props
+  const {
+    setSelectedCustomerIds,
+    selectedCustomerIds,
+    handleSubmit,
+    onClose,
+  } = props
 
   const {
     reset,
@@ -37,7 +41,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const { customers: customersRes, isLoading, count } = useAdminCustomers({
+  const { customers = [], count } = useAdminCustomers({
     ...queryObject,
   })
 
@@ -51,11 +55,6 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     }
   }, [count])
 
-  const customers = useMemo(() => [...(customersRes || [])], [
-    customersRes,
-    selectedCustomerIds,
-  ])
-
   const {
     getTableProps,
     getTableBodyProps,
@@ -68,32 +67,53 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     gotoPage,
     nextPage,
     previousPage,
-    // Get the state from the instance
-    state: { pageIndex },
+    state: { pageIndex, selectedRowIds },
   } = useTable(
     {
       columns: CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS,
-      data: customers || [],
+      data: customers,
       manualPagination: true,
       initialState: {
         pageSize: lim,
         pageIndex: offs / lim,
+        selectedRowIds: selectedCustomerIds.reduce((prev, id) => {
+          prev[id] = true
+          return prev
+        }, {}),
       },
       pageCount: numPages,
+      autoResetSelectedRows: false,
       autoResetPage: false,
+      getRowId: (row) => row.id,
     },
-    usePagination
+    usePagination,
+    useRowSelect,
+    (hooks) => {
+      hooks.visibleColumns.push((columns) => [
+        {
+          id: "selection",
+          Header: ({ getToggleAllPageRowsSelectedProps }) => (
+            <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+          ),
+          Cell: ({ row }) => {
+            return (
+              <Table.Cell
+                onClick={(e) => e.stopPropagation()}
+                className="w-[100px]"
+              >
+                <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              </Table.Cell>
+            )
+          },
+        },
+        ...columns,
+      ])
+    }
   )
 
-  const getRowCheckboxProps = (cell: Cell<Customer>) => {
-    const customerId = cell.row.original.id
-    const checked = selectedCustomerIds.includes(customerId)
-
-    return {
-      checked,
-      toggleChecked: () => toggleCustomer(customerId),
-    }
-  }
+  useEffect(() => {
+    setSelectedCustomerIds(Object.keys(selectedRowIds))
+  }, [selectedRowIds])
 
   return (
     <Modal handleClose={onClose}>
@@ -109,22 +129,10 @@ function EditCustomersTable(props: EditCustomersTableProps) {
                   <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map((col, index) => (
                       <Table.HeadCell
-                        className={index ? "w-[100px]" : "w-[60px]"}
+                        className="w-[100px]"
                         {...col.getHeaderProps()}
                       >
-                        {!index ? (
-                          <Checkbox
-                            className="justify-center"
-                            // checked={checked}
-                            // onChange={toggleChecked}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              e.preventDefault()
-                            }}
-                          />
-                        ) : (
-                          col.render("Header")
-                        )}
+                        {col.render("Header")}
                       </Table.HeadCell>
                     ))}
                   </Table.HeadRow>
@@ -141,10 +149,9 @@ function EditCustomersTable(props: EditCustomersTableProps) {
                       {...row.getRowProps()}
                     >
                       {row.cells.map((cell, index) => {
-                        const additionalProps = getRowCheckboxProps(cell)
                         return (
                           <Table.Cell {...cell.getCellProps()}>
-                            {cell.render("Cell", { index, ...additionalProps })}
+                            {cell.render("Cell", { index })}
                           </Table.Cell>
                         )
                       })}

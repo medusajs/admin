@@ -36,14 +36,6 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     props.group.customers.map((c) => c.id)
   )
 
-  const toggleCustomer = (customerId: string) => {
-    if (selectedCustomerIds.includes(customerId))
-      setSelectedCustomerIds(
-        selectedCustomerIds.filter((i) => i !== customerId)
-      )
-    else setSelectedCustomerIds([...selectedCustomerIds, customerId])
-  }
-
   const calculateDiff = () => {
     const initial = props.group.customers.map((c) => c.id)
     return {
@@ -84,7 +76,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
       {showCustomersModal && (
         <EditCustomersTable
           selectedCustomerIds={selectedCustomerIds}
-          toggleCustomer={toggleCustomer}
+          setSelectedCustomerIds={setSelectedCustomerIds}
           handleSubmit={handleSubmit}
           onClose={() => setShowCustomersModal(false)}
         />

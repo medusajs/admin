@@ -29,23 +29,6 @@ export const CUSTOMER_GROUPS_TABLE_COLUMNS = [
 
 export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS = [
   {
-    Header: "",
-    id: "included",
-    Cell: ({ row, checked, toggleChecked }) => {
-      return (
-        <Checkbox
-          className="justify-center"
-          checked={checked}
-          onChange={toggleChecked}
-          onClick={(e) => {
-            e.stopPropagation()
-            e.preventDefault()
-          }}
-        />
-      )
-    },
-  },
-  {
     Header: "Name",
     accessor: "customer",
     Cell: ({ row }) => (
