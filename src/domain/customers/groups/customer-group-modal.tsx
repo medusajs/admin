@@ -24,7 +24,7 @@ function CustomerGroupModal(props: P) {
 
   const [metadata, setMetadata] = useState<MetadataField[]>(
     props.initialData
-      ? Object.keys(props.initialData.metadata).map((k) => ({
+      ? Object.keys(props.initialData.metadata || {}).map((k) => ({
           key: k,
           value: props.initialData.metadata[k],
         }))
