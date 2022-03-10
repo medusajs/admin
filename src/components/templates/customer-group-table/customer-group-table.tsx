@@ -16,6 +16,7 @@ import DetailsIcon from "../../fundamentals/details-icon"
 import { CUSTOMER_GROUPS_TABLE_COLUMNS } from "./config"
 import { CustomerGroup } from "@medusajs/medusa"
 import useQueryFilters from "../../../hooks/use-query-filters"
+import useSetSearchParams from "../../../hooks/use-set-search-params"
 
 const DEFAULT_PAGE_SIZE = 2
 
@@ -100,6 +101,8 @@ function CustomerGroupTable() {
     ...queryObject,
     expand: "customers",
   })
+
+  useSetSearchParams(queryObject)
 
   const {
     getTableProps,
