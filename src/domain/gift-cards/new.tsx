@@ -101,7 +101,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
         description: data.description,
         discountable: false,
         options: [{ title: "Denominations" }],
-        variants: data.denominations.map((d, i) => ({
+        variants: data.denominations.filter(Boolean).map((d, i) => ({
           title: `${i + 1}`,
           inventory_quantity: 0,
           manage_inventory: false,
