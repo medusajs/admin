@@ -91,7 +91,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS = [
       </div>
     ),
     Cell: ({ cell: { value } }) => (
-      <div className="text-right">{value?.length || 0}</div>
+      <div className="text-right pr-1">{value?.length || 0}</div>
     ),
   },
   {
@@ -102,7 +102,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS = [
       </div>
     ),
     Cell: ({ cell: { value } }) => {
-      return <div className="text-right">{value?.length || 0}</div>
+      return <div className="text-right pr-1">{value?.length || 0}</div>
     },
   },
   {

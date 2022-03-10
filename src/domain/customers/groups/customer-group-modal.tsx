@@ -100,7 +100,7 @@ function CustomerGroupModal(props: P) {
               variant="primary"
               onClick={handleSubmit(submit)}
             >
-              {props.initialData ? "Edit" : "Publish"} Group
+              <span>{props.initialData ? "Edit" : "Publish"} Group</span>
             </Button>
           </div>
         </Modal.Footer>
