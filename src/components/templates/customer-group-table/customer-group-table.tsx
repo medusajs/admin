@@ -1,5 +1,6 @@
 import React from "react"
 import { useAdminCustomerGroups } from "medusa-react"
+import { CustomerGroup } from "@medusajs/medusa"
 import {
   HeaderGroup,
   Row,
@@ -14,7 +15,6 @@ import EditIcon from "../../fundamentals/icons/edit-icon"
 import DetailsIcon from "../../fundamentals/details-icon"
 
 import { CUSTOMER_GROUPS_TABLE_COLUMNS } from "./config"
-import { CustomerGroup } from "@medusajs/medusa"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import useSetSearchParams from "../../../hooks/use-set-search-params"
 
@@ -26,6 +26,14 @@ const defaultQueryProps = {
 
 type HeaderCellProps = {
   col: HeaderGroup<CustomerGroup>
+}
+
+function CustomerGroupsPlaceholder() {
+  return (
+    <div className="h-full flex center justify-center items-center min-h-[756px]">
+      <span className="text-xs text-gray-400">No customer groups yet</span>
+    </div>
+  )
 }
 
 function CustomerGroupTableHeaderCell(props: HeaderCellProps) {
@@ -97,7 +105,7 @@ function CustomerGroupTable() {
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const { customer_groups, count } = useAdminCustomerGroups({
+  const { customer_groups, isLoading, count } = useAdminCustomerGroups({
     ...queryObject,
     expand: "customers",
   })
@@ -133,6 +141,23 @@ function CustomerGroupTable() {
     useSortBy,
     usePagination
   )
+
+  // const handleNext = () => {
+  //   if (canNextPage) {
+  //     paginate(1)
+  //     nextPage()
+  //   }
+  // }
+  //
+  // const handlePrev = () => {
+  //   if (canPreviousPage) {
+  //     paginate(-1)
+  //     previousPage()
+  //   }
+  // }
+
+  if (!isLoading && !customer_groups?.length)
+    return <CustomerGroupsPlaceholder />
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
