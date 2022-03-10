@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { RouteComponentProps, Router } from "@reach/router"
 
 import BodyCard from "../../../components/organisms/body-card"
-import CustomerGroupTable from "../../../components/templates/customer-group-table"
+import CustomerGroupTable from "../../../components/templates/customer-group-table/customer-group-table"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import CustomerGroupModal from "./customer-group-modal"
 import CustomersPageTableHeader from "../header"
