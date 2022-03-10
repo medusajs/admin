@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { difference } from "lodash"
 import { navigate } from "gatsby"
 import { CustomerGroup } from "@medusajs/medusa"
@@ -35,6 +35,10 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const [selectedCustomerIds, setSelectedCustomerIds] = useState(
     props.group.customers.map((c) => c.id)
   )
+
+  useEffect(() => {
+    setSelectedCustomerIds(props.group.customers.map((c) => c.id))
+  }, [props.group])
 
   const calculateDiff = () => {
     const initial = props.group.customers.map((c) => c.id)
@@ -82,7 +86,10 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
         />
       )}
 
-      <CustomersListTable customers={props.group.customers} />
+      <CustomersListTable
+        groupId={props.group.id}
+        customers={props.group.customers}
+      />
     </BodyCard>
   )
 }

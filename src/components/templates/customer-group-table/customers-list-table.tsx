@@ -3,8 +3,13 @@ import { useTable } from "react-table"
 import Table from "../../molecules/table"
 
 import { CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS } from "./config"
+import { navigate } from "gatsby"
+import DetailsIcon from "../../fundamentals/details-icon"
+import MailIcon from "../../fundamentals/icons/mail-icon"
+import TrashIcon from "../../fundamentals/icons/trash-icon"
+import { useAdminRemoveCustomersFromCustomerGroup } from "medusa-react"
 
-function CustomersListTable({ customers }) {
+function CustomersListTable({ customers, groupId }) {
   const {
     getTableProps,
     getTableBodyProps,
@@ -15,6 +20,10 @@ function CustomersListTable({ customers }) {
     columns: CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS,
     data: customers || [],
   })
+
+  const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
+    groupId
+  )
 
   return (
     <Table {...getTableProps()}>
@@ -39,6 +48,27 @@ function CustomersListTable({ customers }) {
           return (
             <Table.Row
               color={"inherit"}
+              actions={[
+                {
+                  label: "Details",
+                  onClick: () => navigate(`/a/customers/${row.original.id}`),
+                  icon: <DetailsIcon size={20} />,
+                },
+                {
+                  label: "Send an email",
+                  onClick: () => window.open(`mailto:${row.original.email}`),
+                  icon: <MailIcon size={20} />,
+                },
+                {
+                  label: "Delete from the group",
+                  variant: "danger",
+                  onClick: () =>
+                    removeCustomers({
+                      customer_ids: [{ id: row.original.id }],
+                    }),
+                  icon: <TrashIcon size={20} />,
+                },
+              ]}
               linkTo={`/a/customers/${row.original.id}`}
               {...row.getRowProps()}
             >

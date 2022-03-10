@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useAdminCustomers } from "medusa-react"
-import { Cell, usePagination, useRowSelect, useTable } from "react-table"
+import { usePagination, useRowSelect, useTable } from "react-table"
 
 import Modal from "../../molecules/modal"
 import Button from "../../fundamentals/button"
