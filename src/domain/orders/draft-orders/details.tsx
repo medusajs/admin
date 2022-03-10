@@ -1,4 +1,5 @@
 import { Address } from "@medusajs/medusa"
+import moment from "moment"
 import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
@@ -140,8 +141,8 @@ const DraftOrderDetails = ({ id }) => {
           <div className="flex flex-col w-full h-full">
             <BodyCard
               className={"w-full mb-4 min-h-[200px]"}
-              title="Order #2414"
-              subtitle="29 January 2022, 23:01"
+              title={`Order #${draft_order.display_id}`}
+              subtitle={moment(draft_order.created_at).format("D MMMM YYYY hh:mm a")}
               status={<OrderStatusComponent />}
               customActionable={
                 draft_order?.status === "completed" && (
