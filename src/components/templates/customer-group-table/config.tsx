@@ -2,7 +2,7 @@ import React from "react"
 
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import { getColor } from "../../../utils/color"
-import Checkbox from "../../atoms/checkbox"
+import SortingIcon from "../../fundamentals/icons/sorting-icon"
 
 export const CUSTOMER_GROUPS_TABLE_COLUMNS = [
   {
@@ -10,19 +10,34 @@ export const CUSTOMER_GROUPS_TABLE_COLUMNS = [
     accessor: "name",
   },
   {
-    Header: "Members",
+    Header: () => (
+      <div className="flex items-center gap-1">
+        Members <SortingIcon size={16} />
+      </div>
+    ),
+    id: "members",
     accessor: (r) => r.customers?.length,
   },
+  // {
+  //   Header: "Status",
+  //   accessor: "status",
+  // },
   {
-    Header: "Status",
-    accessor: "status",
-  },
-  {
-    Header: "Total sales",
+    Header: () => (
+      <div className="flex items-center gap-1">
+        Total sales <SortingIcon size={16} />
+      </div>
+    ),
+    id: "totalSales",
     accessor: "sales",
   },
   {
-    Header: "Total revenue",
+    Header: () => (
+      <div className="flex items-center gap-1">
+        Total revenue <SortingIcon size={16} />
+      </div>
+    ),
+    id: "totalRevenue",
     accessor: "revenue",
   },
 ]
@@ -69,15 +84,23 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS = [
     accessor: "email",
   },
   {
-    accessor: "Groups",
-    Header: () => <div className="text-right">Groups</div>,
+    accessor: "groups",
+    Header: () => (
+      <div className="flex items-center gap-1 justify-end">
+        Groups <SortingIcon size={16} />
+      </div>
+    ),
     Cell: ({ cell: { value } }) => (
       <div className="text-right">{value?.length || 0}</div>
     ),
   },
   {
     accessor: "orders",
-    Header: () => <div className="text-right">Orders</div>,
+    Header: () => (
+      <div className="flex items-center gap-1 justify-end">
+        Orders <SortingIcon size={16} />
+      </div>
+    ),
     Cell: ({ cell: { value } }) => {
       return <div className="text-right">{value?.length || 0}</div>
     },

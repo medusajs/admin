@@ -1,6 +1,6 @@
-import React, { useMemo } from "react"
+import React from "react"
 import { useAdminCustomerGroups } from "medusa-react"
-import { usePagination, useTable } from "react-table"
+import { usePagination, useSortBy, useTable } from "react-table"
 import { navigate } from "gatsby"
 import qs from "qs"
 
@@ -99,8 +99,9 @@ function CustomerGroupTable() {
       // },
       // pageCount: numPages,
       autoResetPage: false,
-    }
+    },
     // usePagination
+    useSortBy
   )
 
   return (
@@ -110,7 +111,10 @@ function CustomerGroupTable() {
           {headerGroups?.map((headerGroup) => (
             <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((col) => (
-                <Table.HeadCell className="w-[100px]" {...col.getHeaderProps()}>
+                <Table.HeadCell
+                  className="w-[100px]"
+                  {...col.getHeaderProps(col.getSortByToggleProps())}
+                >
                   {col.render("Header")}
                 </Table.HeadCell>
               ))}

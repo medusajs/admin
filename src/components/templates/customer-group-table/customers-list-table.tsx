@@ -1,5 +1,5 @@
 import React from "react"
-import { useTable } from "react-table"
+import { useSortBy, useTable } from "react-table"
 import Table from "../../molecules/table"
 
 import { CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS } from "./config"
@@ -16,10 +16,13 @@ function CustomersListTable({ customers, groupId }) {
     headerGroups,
     rows,
     prepareRow,
-  } = useTable({
-    columns: CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS,
-    data: customers || [],
-  })
+  } = useTable(
+    {
+      columns: CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS,
+      data: customers || [],
+    },
+    useSortBy
+  )
 
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
     groupId
@@ -33,7 +36,7 @@ function CustomersListTable({ customers, groupId }) {
             {headerGroup.headers.map((col, index) => (
               <Table.HeadCell
                 className={index ? "w-[100px]" : "w-[60px]"}
-                {...col.getHeaderProps()}
+                {...col.getHeaderProps(col.getSortByToggleProps())}
               >
                 {col.render("Header")}
               </Table.HeadCell>

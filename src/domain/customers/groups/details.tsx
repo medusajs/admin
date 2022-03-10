@@ -23,6 +23,16 @@ import useNotification from "../../../hooks/use-notification"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
+function CustomersListPlaceholder() {
+  return (
+    <div className="h-full flex center justify-center items-center min-h-[756px]">
+      <span className="text-xs text-gray-400">
+        No customers in this group yet
+      </span>
+    </div>
+  )
+}
+
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
 
@@ -35,6 +45,8 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const [selectedCustomerIds, setSelectedCustomerIds] = useState(
     props.group.customers.map((c) => c.id)
   )
+
+  const showPlaceholder = !props.group.customers.length
 
   useEffect(() => {
     setSelectedCustomerIds(props.group.customers.map((c) => c.id))
@@ -86,10 +98,14 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
         />
       )}
 
-      <CustomersListTable
-        groupId={props.group.id}
-        customers={props.group.customers}
-      />
+      {showPlaceholder ? (
+        <CustomersListPlaceholder />
+      ) : (
+        <CustomersListTable
+          groupId={props.group.id}
+          customers={props.group.customers}
+        />
+      )}
     </BodyCard>
   )
 }
@@ -114,7 +130,7 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
       onSuccess: () => {
         notification(
           "Success",
-          "Successfully created the customer group",
+          "Successfully updated the customer group",
           "success"
         )
         setShowModal(false)
