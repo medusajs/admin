@@ -45,6 +45,20 @@ function EditCustomersTable(props: EditCustomersTableProps) {
 
   const [numPages, setNumPages] = useState(0)
 
+  const handleNext = () => {
+    if (!canNextPage) return
+
+    paginate(1)
+    nextPage()
+  }
+
+  const handlePrev = () => {
+    if (!canPreviousPage) return
+
+    paginate(-1)
+    previousPage()
+  }
+
   useEffect(() => {
     if (typeof count !== "undefined") {
       const controlledPageCount = Math.ceil(count / lim)
@@ -170,8 +184,8 @@ function EditCustomersTable(props: EditCustomersTableProps) {
               title="Customers"
               currentPage={pageIndex + 1}
               pageCount={pageCount}
-              // nextPage={handleNext}
-              // prevPage={handlePrev}
+              nextPage={handleNext}
+              prevPage={handlePrev}
               hasNext={canNextPage}
               hasPrev={canPreviousPage}
             />
