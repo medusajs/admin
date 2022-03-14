@@ -57,11 +57,11 @@ function CustomersListTable({ customers, groupId }) {
                   onClick: () => navigate(`/a/customers/${row.original.id}`),
                   icon: <DetailsIcon size={20} />,
                 },
-                {
-                  label: "Send an email",
-                  onClick: () => window.open(`mailto:${row.original.email}`),
-                  icon: <MailIcon size={20} />,
-                },
+                // {
+                //   label: "Send an email",
+                //   onClick: () => window.open(`mailto:${row.original.email}`),
+                //   icon: <MailIcon size={20} />,
+                // },
                 {
                   label: "Delete from the group",
                   variant: "danger",

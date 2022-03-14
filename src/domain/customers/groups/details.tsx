@@ -162,11 +162,6 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
       actionables={actions}
       className="min-h-0 w-full"
     >
-      <div className="border-l border-gray-200 pl-4">
-        <span className="text-xs text-gray-500 block pb-1">Size</span>
-        <span className="text-xs text-gray-900 block">Max of 200 people</span>
-      </div>
-
       {showModal && (
         <CustomerGroupModal
           handleClose={() => setShowModal(false)}

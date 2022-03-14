@@ -18,28 +18,6 @@ export const CUSTOMER_GROUPS_TABLE_COLUMNS = [
     id: "members",
     accessor: (r) => r.customers?.length,
   },
-  // {
-  //   Header: "Status",
-  //   accessor: "status",
-  // },
-  {
-    Header: () => (
-      <div className="flex items-center gap-1">
-        Total sales <SortingIcon size={16} />
-      </div>
-    ),
-    id: "totalSales",
-    accessor: "sales",
-  },
-  {
-    Header: () => (
-      <div className="flex items-center gap-1">
-        Total revenue <SortingIcon size={16} />
-      </div>
-    ),
-    id: "totalRevenue",
-    accessor: "revenue",
-  },
 ]
 
 export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS = [
@@ -93,17 +71,6 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS = [
     Cell: ({ cell: { value } }) => (
       <div className="text-right pr-1">{value?.length || 0}</div>
     ),
-  },
-  {
-    accessor: "orders",
-    Header: () => (
-      <div className="flex items-center gap-1 justify-end">
-        Orders <SortingIcon size={16} />
-      </div>
-    ),
-    Cell: ({ cell: { value } }) => {
-      return <div className="text-right pr-1">{value?.length || 0}</div>
-    },
   },
   {
     Header: "",
