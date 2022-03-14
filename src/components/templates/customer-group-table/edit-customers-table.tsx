@@ -6,8 +6,8 @@ import Modal from "../../molecules/modal"
 import Button from "../../fundamentals/button"
 import Table, { TablePagination } from "../../molecules/table"
 import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
-import { useCustomerFilters } from "../customer-table/use-customer-filters"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
+import useQueryFilters from "../../../hooks/use-query-filters"
 
 const DEFAULT_PAGE_SIZE = 15
 
@@ -33,19 +33,15 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   const {
     reset,
     paginate,
-    setQuery: setFreeText,
+    setQuery,
     queryObject,
     representationObject,
-  } = useCustomerFilters(location.search, defaultQueryProps)
+  } = useQueryFilters(defaultQueryProps) // TOOO: override search string
 
-  const [query, setQuery] = useState(queryObject.query)
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const { customers = [], count } = useAdminCustomers({
-    ...queryObject,
-    q: query,
-  })
+  const { customers = [], count } = useAdminCustomers(queryObject)
 
   const [numPages, setNumPages] = useState(0)
 
@@ -124,7 +120,12 @@ function EditCustomersTable(props: EditCustomersTableProps) {
         </Modal.Header>
         <Modal.Content>
           <div className="w-full flex flex-col justify-between h-[650px]">
-            <Table enableSearch handleSearch={setQuery} {...getTableProps()}>
+            <Table
+              enableSearch
+              handleSearch={setQuery}
+              searchValue={queryObject.q}
+              {...getTableProps()}
+            >
               <Table.Head>
                 {headerGroups?.map((headerGroup) => (
                   <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
