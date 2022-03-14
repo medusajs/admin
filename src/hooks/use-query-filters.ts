@@ -46,12 +46,15 @@ const DEFAULT_ALLOWED_PARAMS = ["q", "offset", "limit"]
 /******************** HELPERS ********************/
 /*************************************************/
 
-function getRepresentationObject(state: FilterState) {
-  const toQuery: any = {}
+function buildQueryObject(
+  state: FilterState,
+  toQuery: Record<string, string | number> = {}
+) {
   for (const [key, value] of Object.entries(state)) {
     if (key === "q") {
-      if (value && typeof value === "string") {
-        toQuery["q"] = value
+      if (typeof value === "string") {
+        if (value) toQuery["q"] = value
+        else delete toQuery["q"]
       }
     } else if (key === "offset" || key === "limit") {
       toQuery[key] = value
@@ -61,19 +64,12 @@ function getRepresentationObject(state: FilterState) {
   return toQuery
 }
 
-function getQueryObject<T>(state: FilterState & T) {
-  const toQuery: any = { ...state.additionalFilters }
-  for (const [key, value] of Object.entries(state)) {
-    if (key === "q") {
-      if (value && typeof value === "string") {
-        toQuery["q"] = value
-      }
-    } else if (key === "offset" || key === "limit") {
-      toQuery[key] = value
-    }
-  }
+function getRepresentationObject(state: FilterState) {
+  return buildQueryObject(state)
+}
 
-  return toQuery
+function getQueryObject<T>(state: FilterState & T) {
+  return buildQueryObject(state, { ...state.additionalFilters })
 }
 
 function parseQueryString(
@@ -121,7 +117,8 @@ function reducer(state: FilterState, action: FilterAction): FilterState {
     return { ...state, q: action?.payload?.q }
 
   if (action.type === FilterActionType.SET_QUERY)
-    return { ...state, q: action.payload }
+    // if the query term has changed reset offset to 0 zero also
+    return { ...state, q: action.payload, offset: 0 }
 
   if (action.type === FilterActionType.SET_OFFSET)
     return { ...state, offset: action.payload }

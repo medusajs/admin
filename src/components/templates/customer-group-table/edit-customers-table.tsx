@@ -38,14 +38,15 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     representationObject,
   } = useCustomerFilters(location.search, defaultQueryProps)
 
+  const [query, setQuery] = useState(queryObject.query)
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
   const { customers = [], count } = useAdminCustomers({
     ...queryObject,
+    q: query,
   })
 
-  const [query, setQuery] = useState(queryObject.query)
   const [numPages, setNumPages] = useState(0)
 
   useEffect(() => {

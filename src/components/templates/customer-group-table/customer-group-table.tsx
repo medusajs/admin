@@ -149,6 +149,7 @@ function CustomerGroupTable() {
     previousPage()
   }
 
+  // TODO: fix - on delete: the first (i.e. last) letter is not removed
   const handleSearch = (text: string) => {
     setQuery(text)
 
