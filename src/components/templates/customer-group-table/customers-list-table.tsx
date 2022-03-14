@@ -9,7 +9,7 @@ import DetailsIcon from "../../fundamentals/details-icon"
 import MailIcon from "../../fundamentals/icons/mail-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 
-function CustomersListTable({ customers, groupId }) {
+function CustomersListTable({ customers, groupId, setQuery, query }) {
   const {
     getTableProps,
     getTableBodyProps,
@@ -29,7 +29,12 @@ function CustomersListTable({ customers, groupId }) {
   )
 
   return (
-    <Table {...getTableProps()}>
+    <Table
+      enableSearch
+      handleSearch={setQuery}
+      searchValue={query}
+      {...getTableProps()}
+    >
       <Table.Head>
         {headerGroups?.map((headerGroup) => (
           <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>

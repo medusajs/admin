@@ -4,7 +4,6 @@ import { navigate } from "gatsby"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
   useAdminAddCustomersToCustomerGroup,
-  useAdminCustomer,
   useAdminCustomerGroup,
   useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
@@ -40,6 +39,8 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
 
   const { invalidateQueries } = useQueryClient()
+
+  const [query, setQuery] = useState("")
 
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
@@ -110,6 +111,8 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
         <CustomersListPlaceholder />
       ) : (
         <CustomersListTable
+          query={query}
+          setQuery={setQuery}
           groupId={props.group.id}
           customers={props.group.customers}
         />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useAdminCustomers } from "medusa-react"
+import { useAdminCustomerGroups, useAdminCustomers } from "medusa-react"
 import { usePagination, useRowSelect, useTable } from "react-table"
 
 import Modal from "../../molecules/modal"
@@ -38,10 +38,17 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     representationObject,
   } = useQueryFilters(defaultQueryProps) // TOOO: override search string
 
+  const [activeGroupId, setActiveGroupId] = useState()
+  const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
+
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
   const { customers = [], count } = useAdminCustomers(queryObject)
+
+  const data = activeGroupId
+    ? customers?.filter((c) => c.groups.some((g) => g.id === activeGroupId))
+    : customers
 
   const [numPages, setNumPages] = useState(0)
 
@@ -82,7 +89,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   } = useTable(
     {
       columns: CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS,
-      data: customers,
+      data: data,
       manualPagination: true,
       initialState: {
         pageSize: lim,
@@ -126,6 +133,23 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     setSelectedCustomerIds(Object.keys(selectedRowIds))
   }, [selectedRowIds])
 
+  const filteringOptions = [
+    {
+      title: "Groups",
+      options: [
+        {
+          title: "All",
+          onClick: () => setActiveGroupId(null),
+        },
+        ...(customer_groups || []).map((g) => ({
+          title: g.name,
+          count: g.customers.length,
+          onClick: () => setActiveGroupId(g.id),
+        })),
+      ],
+    },
+  ]
+
   return (
     <Modal handleClose={onClose}>
       <Modal.Body>
@@ -135,6 +159,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
         <Modal.Content>
           <div className="w-full flex flex-col justify-between h-[650px]">
             <Table
+              filteringOptions={filteringOptions}
               enableSearch
               handleSearch={setQuery}
               searchValue={queryObject.q}
