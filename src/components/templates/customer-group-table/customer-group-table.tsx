@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { useAdminCustomerGroups } from "medusa-react"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
@@ -135,6 +135,8 @@ function CustomerGroupTable() {
     usePagination
   )
 
+  // ********* HANDLERS *********
+
   const handleNext = () => {
     if (canNextPage) {
       paginate(1)
@@ -149,6 +151,15 @@ function CustomerGroupTable() {
     }
   }
 
+  const handleSearch = (text: string) => {
+    setQuery(text)
+
+    if (!text) reset()
+    else gotoPage(0)
+  }
+
+  // ********* RENDER *********
+
   if (!isLoading && !customer_groups?.length && !queryObject.q)
     return <CustomerGroupsPlaceholder />
 
@@ -156,7 +167,7 @@ function CustomerGroupTable() {
     <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
       <Table
         enableSearch
-        handleSearch={setQuery}
+        handleSearch={handleSearch}
         searchValue={queryObject.q}
         {...getTableProps()}
       >
