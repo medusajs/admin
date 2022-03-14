@@ -35,7 +35,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
     viewType,
     setValue,
   } = useProductForm()
-  const { product_types } = useAdminProductTypes()
+  const { product_types } = useAdminProductTypes(undefined, { cacheTime: 0 })
   const { collections } = useAdminCollections()
 
   const typeOptions =
@@ -47,16 +47,15 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
     })) || []
 
   const setNewType = (value: string) => {
-    console.log(value)
-    const newOpt = {
+    const newType = {
       label: value,
       value,
     }
 
-    typeOptions.push(newOpt)
-    setValue("type", newOpt)
+    typeOptions.push(newType)
+    setValue("type", newType)
 
-    return newOpt
+    return newType
   }
 
   return (
