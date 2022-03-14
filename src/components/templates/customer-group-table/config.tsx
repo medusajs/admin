@@ -1,10 +1,12 @@
 import React from "react"
+import { Customer, CustomerGroup } from "@medusajs/medusa"
+import { Column } from "react-table"
 
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import { getColor } from "../../../utils/color"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
 
-export const CUSTOMER_GROUPS_TABLE_COLUMNS = [
+export const CUSTOMER_GROUPS_TABLE_COLUMNS: Column<CustomerGroup>[] = [
   {
     Header: "Title",
     accessor: "name",
@@ -20,7 +22,7 @@ export const CUSTOMER_GROUPS_TABLE_COLUMNS = [
   },
 ]
 
-export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS = [
+export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS: Column<Customer>[] = [
   {
     Header: "Name",
     accessor: "customer",
@@ -33,10 +35,6 @@ export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS = [
     accessor: "email",
   },
   {
-    Header: "",
-    accessor: "col",
-  },
-  {
     accessor: "segments",
     Header: () => <div className="text-right">Segments</div>,
     Cell: ({ cell: { value } }) => (
@@ -45,11 +43,13 @@ export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS = [
   },
   {
     Header: "",
-    accessor: "col-2",
+    id: "settings-col",
   },
 ]
 
-export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS = [
+export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS: Column<
+  Customer
+>[] = [
   {
     Header: "Name",
     accessor: "customer",
@@ -74,6 +74,6 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS = [
   },
   {
     Header: "",
-    accessor: "col-2",
+    id: "settings-col",
   },
 ]

@@ -134,21 +134,17 @@ function reducer(state: FilterState, action: FilterAction): FilterState {
 /**
  * Hook helper for parsing query string.
  *
- * @param existing
  * @param defaultFilters
  */
 function useQueryFilters<T>(
-  existing?: string,
   defaultFilters: (DefaultFilters & T) | null = null
 ) {
-  if (existing?.[0] === "?") existing = existing.substring(1)
+  const searchString = location.search.substring(1)
 
-  const initial = useMemo(() => parseQueryString(existing, defaultFilters), [
-    existing,
-    defaultFilters,
-  ])
-
-  const [state, dispatch] = useReducer(reducer, initial)
+  const [state, dispatch] = useReducer(
+    reducer,
+    parseQueryString(searchString, defaultFilters)
+  )
 
   const setDefaultFilters = (filters: DefaultFilters | null) => {
     dispatch({ type: FilterActionType.SET_DEFAULTS, payload: filters })

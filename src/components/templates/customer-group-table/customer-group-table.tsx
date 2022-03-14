@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { useAdminCustomerGroups } from "medusa-react"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
@@ -38,10 +38,7 @@ function CustomerGroupsPlaceholder() {
 
 function CustomerGroupTableHeaderCell(props: HeaderCellProps) {
   return (
-    <Table.HeadCell
-      className="w-[100px]"
-      {...props.col.getHeaderProps(props.col.getSortByToggleProps())}
-    >
+    <Table.HeadCell className="w-[100px]" {...props.col.getHeaderProps()}>
       {props.col.render("Header")}
     </Table.HeadCell>
   )
@@ -100,17 +97,13 @@ function CustomerGroupTable() {
     setQuery,
     queryObject,
     representationObject,
-  } = useQueryFilters(location.search, defaultQueryProps)
+  } = useQueryFilters(defaultQueryProps)
 
-  const offs = parseInt(queryObject?.offset) || 0
-  const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
+  const { customer_groups, isLoading, count = 0 } = useAdminCustomerGroups(
+    queryObject
+  )
 
-  const { customer_groups, isLoading, count } = useAdminCustomerGroups({
-    ...queryObject,
-    expand: "customers",
-  })
-
-  useSetSearchParams(queryObject)
+  useSetSearchParams(representationObject)
 
   const {
     getTableProps,
@@ -132,36 +125,41 @@ function CustomerGroupTable() {
       data: customer_groups || [],
       manualPagination: true,
       initialState: {
-        pageSize: lim,
-        pageIndex: offs / lim,
+        pageSize: queryObject.limit,
+        pageIndex: queryObject.offset / queryObject.limit,
       },
-      pageCount: Math.ceil(count / lim),
+      pageCount: Math.ceil(count / queryObject.limit),
       autoResetPage: false,
     },
-    useSortBy,
+    // useSortBy,
     usePagination
   )
 
-  // const handleNext = () => {
-  //   if (canNextPage) {
-  //     paginate(1)
-  //     nextPage()
-  //   }
-  // }
-  //
-  // const handlePrev = () => {
-  //   if (canPreviousPage) {
-  //     paginate(-1)
-  //     previousPage()
-  //   }
-  // }
+  const handleNext = () => {
+    if (canNextPage) {
+      paginate(1)
+      nextPage()
+    }
+  }
 
-  if (!isLoading && !customer_groups?.length)
+  const handlePrev = () => {
+    if (canPreviousPage) {
+      paginate(-1)
+      previousPage()
+    }
+  }
+
+  if (!isLoading && !customer_groups?.length && !queryObject.q)
     return <CustomerGroupsPlaceholder />
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
-      <Table {...getTableProps()}>
+      <Table
+        enableSearch
+        handleSearch={setQuery}
+        searchValue={queryObject.q}
+        {...getTableProps()}
+      >
         <Table.Head>
           {headerGroups?.map((headerGroup) => (
             <CustomerGroupTableHeaderRow headerGroup={headerGroup} />
@@ -184,8 +182,8 @@ function CustomerGroupTable() {
         title="Customers"
         currentPage={pageIndex + 1}
         pageCount={pageCount}
-        // nextPage={handleNext}
-        // prevPage={handlePrev}
+        nextPage={handleNext}
+        prevPage={handlePrev}
         hasNext={canNextPage}
         hasPrev={canPreviousPage}
       />
