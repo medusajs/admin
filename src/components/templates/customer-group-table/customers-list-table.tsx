@@ -1,13 +1,13 @@
 import React from "react"
 import { useSortBy, useTable } from "react-table"
-import Table from "../../molecules/table"
+import { useAdminRemoveCustomersFromCustomerGroup } from "medusa-react"
+import { navigate } from "gatsby"
 
 import { CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS } from "./config"
-import { navigate } from "gatsby"
+import Table from "../../molecules/table"
 import DetailsIcon from "../../fundamentals/details-icon"
 import MailIcon from "../../fundamentals/icons/mail-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
-import { useAdminRemoveCustomersFromCustomerGroup } from "medusa-react"
 
 function CustomersListTable({ customers, groupId }) {
   const {

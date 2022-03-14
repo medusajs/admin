@@ -5,6 +5,7 @@ import { Column } from "react-table"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import { getColor } from "../../../utils/color"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
+import CustomersAssociatedGroups from "../../molecules/customers-associated-groups"
 
 export const CUSTOMER_GROUPS_TABLE_COLUMNS: Column<CustomerGroup>[] = [
   {
@@ -35,15 +36,9 @@ export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS: Column<Customer>[] = [
     accessor: "email",
   },
   {
-    accessor: "segments",
-    Header: () => <div className="text-right">Segments</div>,
-    Cell: ({ cell: { value } }) => (
-      <div className="text-right">{value?.groups?.length || 0}</div>
-    ),
-  },
-  {
-    Header: "",
-    id: "settings-col",
+    accessor: "groups",
+    Header: () => <div className="text-left">Segments</div>,
+    Cell: ({ cell: { value } }) => <CustomersAssociatedGroups groups={value} />,
   },
 ]
 
@@ -54,7 +49,12 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS: Column<
     Header: "Name",
     accessor: "customer",
     Cell: ({ row }) => (
-      <CustomerAvatarItem customer={row.original} color={getColor(row.index)} />
+      <div className="text-right">
+        <CustomerAvatarItem
+          customer={row.original}
+          color={getColor(row.index)}
+        />
+      </div>
     ),
   },
   {
@@ -68,9 +68,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS: Column<
         Groups <SortingIcon size={16} />
       </div>
     ),
-    Cell: ({ cell: { value } }) => (
-      <div className="text-right pr-1">{value?.length || 0}</div>
-    ),
+    Cell: ({ cell: { value } }) => <CustomersAssociatedGroups groups={value} />,
   },
   {
     Header: "",

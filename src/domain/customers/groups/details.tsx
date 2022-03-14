@@ -4,6 +4,7 @@ import { navigate } from "gatsby"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
   useAdminAddCustomersToCustomerGroup,
+  useAdminCustomer,
   useAdminCustomerGroup,
   useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
@@ -20,6 +21,8 @@ import CustomersListTable from "../../../components/templates/customer-group-tab
 import CustomerGroupModal from "./customer-group-modal"
 import { getErrorMessage } from "../../../utils/error-messages"
 import useNotification from "../../../hooks/use-notification"
+import { useQueryClient } from "react-query"
+import { adminCustomerKeys } from "medusa-react/src/hooks/admin/customers/queries"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
@@ -35,6 +38,8 @@ function CustomersListPlaceholder() {
 
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
+
+  const { invalidateQueries } = useQueryClient()
 
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
@@ -67,6 +72,9 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
       addCustomers({ customer_ids: toAdd.map((i) => ({ id: i })) })
     if (toRemove.length)
       removeCustomers({ customer_ids: toRemove.map((i) => ({ id: i })) })
+
+    // TODO: invalidate customers on gorups change
+    // invalidateQueries(adminCustomerKeys.list())
 
     setShowCustomersModal(false)
   }

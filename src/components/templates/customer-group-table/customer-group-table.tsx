@@ -18,8 +18,6 @@ import { CUSTOMER_GROUPS_TABLE_COLUMNS } from "./config"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import useSetSearchParams from "../../../hooks/use-set-search-params"
 
-const DEFAULT_PAGE_SIZE = 2
-
 const defaultQueryProps = {
   expand: "customers",
 }
@@ -138,17 +136,17 @@ function CustomerGroupTable() {
   // ********* HANDLERS *********
 
   const handleNext = () => {
-    if (canNextPage) {
-      paginate(1)
-      nextPage()
-    }
+    if (!canNextPage) return
+
+    paginate(1)
+    nextPage()
   }
 
   const handlePrev = () => {
-    if (canPreviousPage) {
-      paginate(-1)
-      previousPage()
-    }
+    if (!canPreviousPage) return
+
+    paginate(-1)
+    previousPage()
   }
 
   const handleSearch = (text: string) => {
