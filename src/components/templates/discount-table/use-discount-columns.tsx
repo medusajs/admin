@@ -22,7 +22,7 @@ const getDiscountStatus = (discount) => {
       return <StatusDot title="Active" variant="success" />
     }
   }
-  return <StatusDot title="Draft" variant="default" />
+  return <StatusDot title="Disabled" variant="default" />
 }
 
 const getCurrencySymbol = (discount) => {
