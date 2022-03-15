@@ -12,7 +12,7 @@ import useQueryFilters from "../../../hooks/use-query-filters"
 const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {
-  expand: "groups",
+  additionalFilters: { expand: "groups" },
 }
 
 type EditCustomersTableProps = {
@@ -36,7 +36,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     setQuery,
     queryObject,
     representationObject,
-  } = useQueryFilters(defaultQueryProps) // TOOO: override search string
+  } = useQueryFilters(defaultQueryProps)
 
   const [activeGroupId, setActiveGroupId] = useState()
   const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })

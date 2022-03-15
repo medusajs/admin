@@ -22,7 +22,8 @@ import useQueryFilters from "../../../hooks/use-query-filters"
 import useSetSearchParams from "../../../hooks/use-set-search-params"
 
 const defaultQueryProps = {
-  expand: "customers",
+  additionalFilters: { expand: "customers" },
+  limit: 12,
 }
 
 /**

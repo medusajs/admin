@@ -5,7 +5,7 @@ import { useMemo, useReducer } from "react"
 /******************** TYPES ********************/
 /***********************************************/
 
-type DefaultFilters = {
+interface AdditionalFilters {
   expand?: string
   fields?: string
 }
@@ -14,7 +14,7 @@ interface FilterState {
   q?: string | null
   limit: number
   offset: number
-  additionalFilters: DefaultFilters | null
+  additionalFilters: AdditionalFilters | null
 }
 
 enum Direction {
@@ -37,15 +37,23 @@ type FilterAction =
   | { type: FilterActionType.SET_OFFSET; payload: number }
   | {
       type: FilterActionType.SET_DEFAULTS
-      payload: DefaultFilters | null
+      payload: AdditionalFilters | null
     }
 
 const DEFAULT_ALLOWED_PARAMS = ["q", "offset", "limit"]
+const ADMIN_DEFAULT_PARAMS: Partial<FilterState> = {
+  limit: 15,
+  offset: 0,
+}
 
 /*************************************************/
 /******************** HELPERS ********************/
 /*************************************************/
 
+/**
+ * Transform and merge state values with provided `toQuery` object and
+ * return an object containing params.
+ */
 function buildQueryObject(
   state: FilterState,
   toQuery: Record<string, string | number> = {}
@@ -64,25 +72,33 @@ function buildQueryObject(
   return toQuery
 }
 
+/**
+ * Get params from state (transformed) without additional params included.
+ */
 function getRepresentationObject(state: FilterState) {
   return buildQueryObject(state)
 }
 
-function getQueryObject<T>(state: FilterState & T) {
+/**
+ * Get transformed params from state along with additional params.
+ */
+function getQueryObject(state: FilterState) {
   return buildQueryObject(state, { ...state.additionalFilters })
 }
 
-function parseQueryString(
-  queryString?: string,
-  additional: DefaultFilters | null = null
+/**
+ * Transform query string into object representation.
+ */
+function parseQueryString<T>(
+  queryString: string,
+  defaults: Partial<FilterState>
 ): FilterState {
-  const defaultVal: FilterState = {
-    offset: 0,
-    limit: 15,
-    additionalFilters: additional,
-  }
+  const representation = {
+    ...ADMIN_DEFAULT_PARAMS,
+    ...defaults,
+  } as FilterState
 
-  if (!queryString) return defaultVal
+  if (!queryString) return representation
 
   const filters = qs.parse(queryString)
 
@@ -93,16 +109,16 @@ function parseQueryString(
       switch (key) {
         case "offset":
         case "limit":
-          defaultVal[key] = parseInt(value)
+          representation[key] = parseInt(value)
           break
         case "q":
-          defaultVal.q = value
+          representation.q = value
           break
       }
     }
   }
 
-  return defaultVal
+  return representation
 }
 
 /**********************************************************/
@@ -129,13 +145,9 @@ function reducer(state: FilterState, action: FilterAction): FilterState {
 }
 
 /**
- * Hook helper for parsing query string.
- *
- * @param defaultFilters
+ * Hook returns parsed search params.
  */
-function useQueryFilters<T>(
-  defaultFilters: (DefaultFilters & T) | null = null
-) {
+function useQueryFilters(defaultFilters: Partial<FilterState>) {
   const searchString = location.search.substring(1)
 
   const [state, dispatch] = useReducer(
@@ -143,7 +155,7 @@ function useQueryFilters<T>(
     parseQueryString(searchString, defaultFilters)
   )
 
-  const setDefaultFilters = (filters: DefaultFilters | null) => {
+  const setDefaultFilters = (filters: AdditionalFilters | null) => {
     dispatch({ type: FilterActionType.SET_DEFAULTS, payload: filters })
   }
 

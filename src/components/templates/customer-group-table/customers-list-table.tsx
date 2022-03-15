@@ -1,6 +1,7 @@
 import React from "react"
-import { useSortBy, useTable } from "react-table"
+import { HeaderGroup, Row, useSortBy, useTable } from "react-table"
 import { useAdminRemoveCustomersFromCustomerGroup } from "medusa-react"
+import { Customer } from "@medusajs/medusa"
 import { navigate } from "gatsby"
 
 import { CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS } from "./config"
@@ -9,74 +10,100 @@ import DetailsIcon from "../../fundamentals/details-icon"
 import MailIcon from "../../fundamentals/icons/mail-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 
-function CustomersListTable({ customers, groupId, setQuery, query }) {
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable(
-    {
-      columns: CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS,
-      data: customers || [],
-    },
-    useSortBy
+type CustomersListTableProps = {
+  customers: Customer[]
+  groupId: string
+  query: string
+  setQuery: (q: string) => void
+}
+
+type CustomersListTableHeaderRowProps = {
+  headerGroup: HeaderGroup<Customer>
+}
+
+function CustomersListTableHeaderRow(props: CustomersListTableHeaderRowProps) {
+  const { headerGroup } = props
+
+  return (
+    <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+      {props.headerGroup.headers.map((col, index) => {
+        const { render, getHeaderProps, getSortByToggleProps } = col
+        const className = index ? "w-[100px]" : "w-[60px]"
+
+        return (
+          <Table.HeadCell
+            className={className}
+            {...getHeaderProps(getSortByToggleProps())}
+          >
+            {render("Header")}
+          </Table.HeadCell>
+        )
+      })}
+    </Table.HeadRow>
   )
+}
+
+/**
+ * Render a list of customers that belong to a customer group.
+ */
+function CustomersListTable(props: CustomersListTableProps) {
+  const { customers, groupId, setQuery, query } = props
+
+  const tableConfig = {
+    columns: CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS,
+    data: customers || [],
+  }
+
+  const table = useTable(tableConfig, useSortBy)
 
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
     groupId
   )
+
+  const getActions = (row: Row<Customer>) => {
+    return [
+      {
+        label: "Details",
+        onClick: () => navigate(`/a/customers/${row.original.id}`),
+        icon: <DetailsIcon size={20} />,
+      },
+      // {
+      //   label: "Send an email",
+      //   onClick: () => window.open(`mailto:${row.original.email}`),
+      //   icon: <MailIcon size={20} />,
+      // },
+      {
+        label: "Delete from the group",
+        variant: "danger",
+        onClick: () =>
+          removeCustomers({
+            customer_ids: [{ id: row.original.id }],
+          }),
+        icon: <TrashIcon size={20} />,
+      },
+    ]
+  }
 
   return (
     <Table
       enableSearch
       handleSearch={setQuery}
       searchValue={query}
-      {...getTableProps()}
+      {...table.getTableProps()}
     >
       <Table.Head>
-        {headerGroups?.map((headerGroup) => (
-          <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((col, index) => (
-              <Table.HeadCell
-                className={index ? "w-[100px]" : "w-[60px]"}
-                {...col.getHeaderProps(col.getSortByToggleProps())}
-              >
-                {col.render("Header")}
-              </Table.HeadCell>
-            ))}
-          </Table.HeadRow>
+        {table.headerGroups?.map((headerGroup) => (
+          <CustomersListTableHeaderRow headerGroup={headerGroup} />
         ))}
       </Table.Head>
 
-      <Table.Body {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row)
+      <Table.Body {...table.getTableBodyProps()}>
+        {table.rows.map((row) => {
+          table.prepareRow(row)
           return (
             <Table.Row
               color={"inherit"}
-              actions={[
-                {
-                  label: "Details",
-                  onClick: () => navigate(`/a/customers/${row.original.id}`),
-                  icon: <DetailsIcon size={20} />,
-                },
-                // {
-                //   label: "Send an email",
-                //   onClick: () => window.open(`mailto:${row.original.email}`),
-                //   icon: <MailIcon size={20} />,
-                // },
-                {
-                  label: "Delete from the group",
-                  variant: "danger",
-                  onClick: () =>
-                    removeCustomers({
-                      customer_ids: [{ id: row.original.id }],
-                    }),
-                  icon: <TrashIcon size={20} />,
-                },
-              ]}
+              actions={getActions(row)}
               linkTo={`/a/customers/${row.original.id}`}
               {...row.getRowProps()}
             >
