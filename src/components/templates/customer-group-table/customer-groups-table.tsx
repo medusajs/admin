@@ -4,7 +4,10 @@ import { CustomerGroup } from "@medusajs/medusa"
 import {
   HeaderGroup,
   Row,
+  TableInstance,
+  TableOptions,
   usePagination,
+  UsePaginationOptions,
   useSortBy,
   useTable,
 } from "react-table"
@@ -22,10 +25,9 @@ const defaultQueryProps = {
   expand: "customers",
 }
 
-type HeaderCellProps = {
-  col: HeaderGroup<CustomerGroup>
-}
-
+/**
+ * Customer groups empty state.
+ */
 function CustomerGroupsPlaceholder() {
   return (
     <div className="h-full flex center justify-center items-center min-h-[756px]">
@@ -34,7 +36,18 @@ function CustomerGroupsPlaceholder() {
   )
 }
 
-function CustomerGroupTableHeaderCell(props: HeaderCellProps) {
+/**********************************************/
+/*************** TABLE ELEMENTS ***************/
+/**********************************************/
+
+type HeaderCellProps = {
+  col: HeaderGroup<CustomerGroup>
+}
+
+/**
+ * Renders react-table cell for the customer groups table.
+ */
+function CustomerGroupsTableHeaderCell(props: HeaderCellProps) {
   return (
     <Table.HeadCell className="w-[100px]" {...props.col.getHeaderProps()}>
       {props.col.render("Header")}
@@ -46,17 +59,23 @@ type HeaderRowProps = {
   headerGroup: HeaderGroup<CustomerGroup>
 }
 
-function CustomerGroupTableHeaderRow(props: HeaderRowProps) {
+/**
+ * Renders react-table header row for the customer groups table.
+ */
+function CustomerGroupsTableHeaderRow(props: HeaderRowProps) {
   return (
     <Table.HeadRow {...props.headerGroup.getHeaderGroupProps()}>
       {props.headerGroup.headers.map((col) => (
-        <CustomerGroupTableHeaderCell col={col} />
+        <CustomerGroupsTableHeaderCell col={col} />
       ))}
     </Table.HeadRow>
   )
 }
 
-function CustomerGroupTableRow(props: { row: Row<CustomerGroup> }) {
+/**
+ * Render react-table row for the customer groups table.
+ */
+function CustomerGroupsTableRow(props: { row: Row<CustomerGroup> }) {
   const { row } = props
 
   const actions = [
@@ -88,7 +107,14 @@ function CustomerGroupTableRow(props: { row: Row<CustomerGroup> }) {
   )
 }
 
-function CustomerGroupTable() {
+/***********************************************/
+/*************** TABLE CONTAINER ***************/
+/***********************************************/
+
+/**
+ * A container component for rendering customer groups table.
+ */
+function CustomerGroupsTable() {
   const {
     reset,
     paginate,
@@ -103,50 +129,38 @@ function CustomerGroupTable() {
 
   useSetSearchParams(representationObject)
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    // Pagination
-    canPreviousPage,
-    canNextPage,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    state: { pageIndex },
-  } = useTable(
-    {
-      columns: CUSTOMER_GROUPS_TABLE_COLUMNS,
-      data: customer_groups || [],
-      manualPagination: true,
-      initialState: {
-        pageSize: queryObject.limit,
-        pageIndex: queryObject.offset / queryObject.limit,
-      },
-      pageCount: Math.ceil(count / queryObject.limit),
-      autoResetPage: false,
+  const tableConfig: TableOptions<UsePaginationOptions<CustomerGroup>> = {
+    columns: CUSTOMER_GROUPS_TABLE_COLUMNS,
+    data: customer_groups || [],
+    manualPagination: true,
+    initialState: {
+      pageSize: queryObject.limit,
+      pageIndex: queryObject.offset / queryObject.limit,
     },
-    // useSortBy,
+    pageCount: Math.ceil(count / queryObject.limit),
+    autoResetPage: false,
+  }
+
+  // TODO: fix `useSortBy` - this hook causes infinite renders (missing memo somewhere?)
+  const table: TableInstance<CustomerGroup> = useTable(
+    tableConfig,
     usePagination
   )
 
   // ********* HANDLERS *********
 
   const handleNext = () => {
-    if (!canNextPage) return
+    if (!table.canNextPage) return
 
     paginate(1)
-    nextPage()
+    table.nextPage()
   }
 
   const handlePrev = () => {
-    if (!canPreviousPage) return
+    if (!table.canPreviousPage) return
 
     paginate(-1)
-    previousPage()
+    table.previousPage()
   }
 
   // TODO: fix - on delete: the first (i.e. last) letter is not removed
@@ -154,7 +168,7 @@ function CustomerGroupTable() {
     setQuery(text)
 
     if (!text) reset()
-    else gotoPage(0)
+    else table.gotoPage(0)
   }
 
   // ********* RENDER *********
@@ -168,18 +182,18 @@ function CustomerGroupTable() {
         enableSearch
         handleSearch={handleSearch}
         searchValue={queryObject.q}
-        {...getTableProps()}
+        {...table.getTableProps()}
       >
         <Table.Head>
-          {headerGroups?.map((headerGroup) => (
-            <CustomerGroupTableHeaderRow headerGroup={headerGroup} />
+          {table.headerGroups?.map((headerGroup) => (
+            <CustomerGroupsTableHeaderRow headerGroup={headerGroup} />
           ))}
         </Table.Head>
 
-        <Table.Body {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row)
-            return <CustomerGroupTableRow row={row} />
+        <Table.Body {...table.getTableBodyProps()}>
+          {table.rows.map((row) => {
+            table.prepareRow(row)
+            return <CustomerGroupsTableRow row={row} />
           })}
         </Table.Body>
       </Table>
@@ -188,17 +202,17 @@ function CustomerGroupTable() {
         count={count!}
         limit={queryObject.limit}
         offset={queryObject.offset}
-        pageSize={queryObject.offset + rows.length}
+        pageSize={queryObject.offset + table.rows.length}
         title="Customers"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
+        currentPage={table.state.pageIndex + 1}
+        pageCount={table.pageCount}
         nextPage={handleNext}
         prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
+        hasNext={table.canNextPage}
+        hasPrev={table.canPreviousPage}
       />
     </div>
   )
 }
 
-export default CustomerGroupTable
+export default CustomerGroupsTable

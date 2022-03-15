@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { RouteComponentProps, Router } from "@reach/router"
 
 import BodyCard from "../../../components/organisms/body-card"
-import CustomerGroupTable from "../../../components/templates/customer-group-table/customer-group-table"
+import CustomerGroupsTable from "../../../components/templates/customer-group-table/customer-groups-table"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import CustomerGroupModal from "./customer-group-modal"
 import CustomersPageTableHeader from "../header"
@@ -32,7 +32,7 @@ function Index(_: RouteComponentProps) {
           actionables={actions}
           customHeader={<CustomersPageTableHeader activeView="groups" />}
         >
-          <CustomerGroupTable />
+          <CustomerGroupsTable />
         </BodyCard>
       </div>
       {showModal && <CustomerGroupModal handleClose={handleClose} />}
