@@ -23,7 +23,8 @@ import useSetSearchParams from "../../../hooks/use-set-search-params"
 
 const defaultQueryProps = {
   additionalFilters: { expand: "customers" },
-  limit: 12,
+  limit: 15,
+  offset: 0,
 }
 
 /**
@@ -67,7 +68,7 @@ function CustomerGroupsTableHeaderRow(props: HeaderRowProps) {
   return (
     <Table.HeadRow {...props.headerGroup.getHeaderGroupProps()}>
       {props.headerGroup.headers.map((col) => (
-        <CustomerGroupsTableHeaderCell col={col} />
+        <CustomerGroupsTableHeaderCell key={col.id} col={col} />
       ))}
     </Table.HeadRow>
   )
@@ -185,20 +186,26 @@ function CustomerGroupsTable() {
         searchValue={queryObject.q}
         {...table.getTableProps()}
       >
+        {/*HEAD*/}
         <Table.Head>
           {table.headerGroups?.map((headerGroup) => (
-            <CustomerGroupsTableHeaderRow headerGroup={headerGroup} />
+            <CustomerGroupsTableHeaderRow
+              key={headerGroup.id}
+              headerGroup={headerGroup}
+            />
           ))}
         </Table.Head>
 
+        {/*BODY*/}
         <Table.Body {...table.getTableBodyProps()}>
           {table.rows.map((row) => {
             table.prepareRow(row)
-            return <CustomerGroupsTableRow row={row} />
+            return <CustomerGroupsTableRow key={row.id} row={row} />
           })}
         </Table.Body>
       </Table>
 
+      {/*PAGINATION*/}
       <TablePagination
         count={count!}
         limit={queryObject.limit}

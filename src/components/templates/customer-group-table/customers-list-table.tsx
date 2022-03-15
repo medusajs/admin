@@ -21,6 +21,9 @@ type CustomersListTableHeaderRowProps = {
   headerGroup: HeaderGroup<Customer>
 }
 
+/**
+ * Renders customer group customers list header row.
+ */
 function CustomersListTableHeaderRow(props: CustomersListTableHeaderRowProps) {
   const { headerGroup } = props
 
@@ -43,6 +46,52 @@ function CustomersListTableHeaderRow(props: CustomersListTableHeaderRowProps) {
   )
 }
 
+interface CustomersListTableRowProps {
+  row: Row<Customer>
+  removeCustomers: Function
+}
+
+function CustomersListTableRow(props: CustomersListTableRowProps) {
+  const { row, removeCustomers } = props
+
+  const actions = [
+    {
+      label: "Details",
+      onClick: () => navigate(`/a/customers/${row.original.id}`),
+      icon: <DetailsIcon size={20} />,
+    },
+    // {
+    //   label: "Send an email",
+    //   onClick: () => window.open(`mailto:${row.original.email}`),
+    //   icon: <MailIcon size={20} />,
+    // },
+    {
+      label: "Delete from the group",
+      variant: "danger",
+      onClick: () =>
+        removeCustomers({
+          customer_ids: [{ id: row.original.id }],
+        }),
+      icon: <TrashIcon size={20} />,
+    },
+  ]
+
+  return (
+    <Table.Row
+      color={"inherit"}
+      actions={actions}
+      linkTo={`/a/customers/${props.row.original.id}`}
+      {...props.row.getRowProps()}
+    >
+      {props.row.cells.map((cell, index) => (
+        <Table.Cell {...cell.getCellProps()}>
+          {cell.render("Cell", { index })}
+        </Table.Cell>
+      ))}
+    </Table.Row>
+  )
+}
+
 /**
  * Render a list of customers that belong to a customer group.
  */
@@ -59,30 +108,6 @@ function CustomersListTable(props: CustomersListTableProps) {
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
     groupId
   )
-
-  const getActions = (row: Row<Customer>) => {
-    return [
-      {
-        label: "Details",
-        onClick: () => navigate(`/a/customers/${row.original.id}`),
-        icon: <DetailsIcon size={20} />,
-      },
-      // {
-      //   label: "Send an email",
-      //   onClick: () => window.open(`mailto:${row.original.email}`),
-      //   icon: <MailIcon size={20} />,
-      // },
-      {
-        label: "Delete from the group",
-        variant: "danger",
-        onClick: () =>
-          removeCustomers({
-            customer_ids: [{ id: row.original.id }],
-          }),
-        icon: <TrashIcon size={20} />,
-      },
-    ]
-  }
 
   return (
     <Table
@@ -101,18 +126,10 @@ function CustomersListTable(props: CustomersListTableProps) {
         {table.rows.map((row) => {
           table.prepareRow(row)
           return (
-            <Table.Row
-              color={"inherit"}
-              actions={getActions(row)}
-              linkTo={`/a/customers/${row.original.id}`}
-              {...row.getRowProps()}
-            >
-              {row.cells.map((cell, index) => (
-                <Table.Cell {...cell.getCellProps()}>
-                  {cell.render("Cell", { index })}
-                </Table.Cell>
-              ))}
-            </Table.Row>
+            <CustomersListTableRow
+              row={row}
+              removeCustomers={removeCustomers}
+            />
           )
         })}
       </Table.Body>
