@@ -8,6 +8,9 @@ import CustomerGroupModal from "./customer-group-modal"
 import CustomersPageTableHeader from "../header"
 import Details from "./details"
 
+/**
+ * Customer groups index page
+ */
 function Index(_: RouteComponentProps) {
   const [showModal, setShowModal] = useState(false)
 
@@ -40,6 +43,9 @@ function Index(_: RouteComponentProps) {
   )
 }
 
+/**
+ * Customer groups routes
+ */
 function CustomerGroups(_: RouteComponentProps) {
   return (
     <Router basepath="/a/customers/groups">

@@ -30,21 +30,12 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     onClose,
   } = props
 
-  const {
-    reset,
-    paginate,
-    setQuery,
-    queryObject,
-    representationObject,
-  } = useQueryFilters(defaultQueryProps)
+  const { paginate, setQuery, queryObject } = useQueryFilters(defaultQueryProps)
 
   const [activeGroupId, setActiveGroupId] = useState()
   const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
 
-  const offs = parseInt(queryObject?.offset) || 0
-  const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
-
-  const { customers = [], count } = useAdminCustomers(queryObject)
+  const { customers = [], count = 0 } = useAdminCustomers(queryObject)
 
   const data = activeGroupId
     ? customers?.filter((c) => c.groups.some((g) => g.id === activeGroupId))
@@ -53,85 +44,69 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   const [numPages, setNumPages] = useState(0)
 
   const handleNext = () => {
-    if (!canNextPage) return
+    if (!table.canNextPage) return
 
     paginate(1)
-    nextPage()
+    table.nextPage()
   }
 
   const handlePrev = () => {
-    if (!canPreviousPage) return
+    if (!table.canPreviousPage) return
 
     paginate(-1)
-    previousPage()
+    table.previousPage()
   }
 
   useEffect(() => {
     if (typeof count !== "undefined") {
-      const controlledPageCount = Math.ceil(count / lim)
+      const controlledPageCount = Math.ceil(count / queryObject.limit)
       setNumPages(controlledPageCount)
     }
   }, [count])
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    canPreviousPage,
-    canNextPage,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    state: { pageIndex, selectedRowIds },
-  } = useTable(
-    {
-      columns: CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS,
-      data: data,
-      manualPagination: true,
-      initialState: {
-        pageSize: lim,
-        pageIndex: offs / lim,
-        selectedRowIds: selectedCustomerIds.reduce((prev, id) => {
-          prev[id] = true
-          return prev
-        }, {}),
-      },
-      pageCount: numPages,
-      autoResetSelectedRows: false,
-      autoResetPage: false,
-      getRowId: (row) => row.id,
+  const tableConfig = {
+    columns: CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS,
+    data: data,
+    manualPagination: true,
+    initialState: {
+      pageSize: queryObject.limit,
+      pageIndex: queryObject.offset / queryObject.limit,
+      selectedRowIds: selectedCustomerIds.reduce((prev, id) => {
+        prev[id] = true
+        return prev
+      }, {}),
     },
-    usePagination,
-    useRowSelect,
-    (hooks) => {
-      hooks.visibleColumns.push((columns) => [
-        {
-          id: "selection",
-          Header: ({ getToggleAllPageRowsSelectedProps }) => (
-            <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
-          ),
-          Cell: ({ row }) => {
-            return (
-              <Table.Cell
-                onClick={(e) => e.stopPropagation()}
-                className="w-[100px]"
-              >
-                <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-              </Table.Cell>
-            )
-          },
+    pageCount: numPages,
+    autoResetSelectedRows: false,
+    autoResetPage: false,
+    getRowId: (row) => row.id,
+  }
+
+  const table = useTable(tableConfig, usePagination, useRowSelect, (hooks) => {
+    hooks.visibleColumns.push((columns) => [
+      {
+        id: "selection",
+        Header: ({ getToggleAllPageRowsSelectedProps }) => (
+          <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+        ),
+        Cell: ({ row }) => {
+          return (
+            <Table.Cell
+              onClick={(e) => e.stopPropagation()}
+              className="w-[100px]"
+            >
+              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+            </Table.Cell>
+          )
         },
-        ...columns,
-      ])
-    }
-  )
+      },
+      ...columns,
+    ])
+  })
 
   useEffect(() => {
-    setSelectedCustomerIds(Object.keys(selectedRowIds))
-  }, [selectedRowIds])
+    setSelectedCustomerIds(Object.keys(table.state.selectedRowIds))
+  }, [table.state.selectedRowIds])
 
   const filteringOptions = [
     {
@@ -163,10 +138,10 @@ function EditCustomersTable(props: EditCustomersTableProps) {
               enableSearch
               handleSearch={setQuery}
               searchValue={queryObject.q}
-              {...getTableProps()}
+              {...table.getTableProps()}
             >
               <Table.Head>
-                {headerGroups?.map((headerGroup) => (
+                {table.headerGroups?.map((headerGroup) => (
                   <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map((col, index) => (
                       <Table.HeadCell
@@ -180,9 +155,9 @@ function EditCustomersTable(props: EditCustomersTableProps) {
                 ))}
               </Table.Head>
 
-              <Table.Body {...getTableBodyProps()}>
-                {rows.map((row) => {
-                  prepareRow(row)
+              <Table.Body {...table.getTableBodyProps()}>
+                {table.rows.map((row) => {
+                  table.prepareRow(row)
                   return (
                     <Table.Row
                       color={"inherit"}
@@ -201,21 +176,23 @@ function EditCustomersTable(props: EditCustomersTableProps) {
                 })}
               </Table.Body>
             </Table>
+
             <TablePagination
               count={count!}
               limit={queryObject.limit}
               offset={queryObject.offset}
-              pageSize={queryObject.offset + rows.length}
+              pageSize={queryObject.offset + table.rows.length}
               title="Customers"
-              currentPage={pageIndex + 1}
-              pageCount={pageCount}
+              currentPage={table.state.pageIndex + 1}
+              pageCount={table.pageCount}
               nextPage={handleNext}
               prevPage={handlePrev}
-              hasNext={canNextPage}
-              hasPrev={canPreviousPage}
+              hasNext={table.anNextPage}
+              hasPrev={table.canPreviousPage}
             />
           </div>
         </Modal.Content>
+
         <Modal.Footer>
           <div className="flex items-center justify-end gap-x-xsmall w-full">
             <Button

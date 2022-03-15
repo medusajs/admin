@@ -21,10 +21,12 @@ import CustomerGroupModal from "./customer-group-modal"
 import { getErrorMessage } from "../../../utils/error-messages"
 import useNotification from "../../../hooks/use-notification"
 import { useQueryClient } from "react-query"
-import { adminCustomerKeys } from "medusa-react/src/hooks/admin/customers/queries"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
+/**
+ * Placeholder for the customer groups list.
+ */
 function CustomersListPlaceholder() {
   return (
     <div className="h-full flex center justify-center items-center min-h-[756px]">
@@ -35,6 +37,9 @@ function CustomersListPlaceholder() {
   )
 }
 
+/**
+ * Customer groups list container.
+ */
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
 
@@ -125,6 +130,9 @@ type CustomerGroupDetailsHeaderProps = {
   customerGroup: CustomerGroup
 }
 
+/**
+ * Customers groups details page header.
+ */
 function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
   const notification = useNotification()
   const [showModal, setShowModal] = useState(false)
@@ -186,6 +194,9 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
 
 type CustomerGroupDetailsProps = { id: string }
 
+/**
+ * Customer groups details page
+ */
 function CustomerGroupDetails(p: CustomerGroupDetailsProps) {
   const { customer_group } = useAdminCustomerGroup(p.id, {
     expand: "customers",

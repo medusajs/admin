@@ -7,7 +7,10 @@ type P = {
   activeView: "customers" | "groups"
 }
 
-const CustomersPageTableHeader = (props: P) => {
+/**
+ * Shared header component for "customers" and "customer groups" page
+ */
+function CustomersPageTableHeader(props: P) {
   return (
     <TableViewHeader
       setActiveView={(v) => {
