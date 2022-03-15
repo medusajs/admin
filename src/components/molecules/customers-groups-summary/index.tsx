@@ -3,21 +3,29 @@ import { sortBy } from "lodash"
 
 import { CustomerGroup } from "@medusajs/medusa"
 
-type CustomerGroupsOfCustomerProps = {
+/**
+ * Customers Associated Groups props
+ */
+interface P {
   groups: CustomerGroup[]
 }
 
-function CustomersAssociatedGroups(props: CustomerGroupsOfCustomerProps) {
+/**
+ * Render a summary of groups to which the customer belongs
+ */
+function CustomersGroupsSummary(props: P) {
   const groups = sortBy(props.groups, "name")
   if (!groups.length) return null
 
   const left = groups.length - 1
+  const leadName = groups[0].name
+
   return (
     <div className="text-small">
-      <span>{groups[0].name}</span>
+      <span>{leadName}</span>
       {left && <span className="text-grey-40"> + {left} more</span>}
     </div>
   )
 }
 
-export default CustomersAssociatedGroups
+export default CustomersGroupsSummary

@@ -5,7 +5,7 @@ import { Column } from "react-table"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import { getColor } from "../../../utils/color"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
-import CustomersAssociatedGroups from "../../molecules/customers-associated-groups"
+import CustomersGroupsSummary from "../../molecules/customers-groups-summary"
 
 export const CUSTOMER_GROUPS_TABLE_COLUMNS: Column<CustomerGroup>[] = [
   {
@@ -38,7 +38,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS: Column<Customer>[] = [
   {
     accessor: "groups",
     Header: () => <div className="text-left">Segments</div>,
-    Cell: ({ cell: { value } }) => <CustomersAssociatedGroups groups={value} />,
+    Cell: ({ cell: { value } }) => <CustomersGroupsSummary groups={value} />,
   },
 ]
 
@@ -68,7 +68,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS: Column<
         Groups <SortingIcon size={16} />
       </div>
     ),
-    Cell: ({ cell: { value } }) => <CustomersAssociatedGroups groups={value} />,
+    Cell: ({ cell: { value } }) => <CustomersGroupsSummary groups={value} />,
   },
   {
     Header: "",
