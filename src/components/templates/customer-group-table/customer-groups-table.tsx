@@ -155,6 +155,7 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
   // TODO: fix `useSortBy` - this hook causes infinite renders (missing memo somewhere?)
   const table: TableInstance<CustomerGroup> = useTable(
     tableConfig,
+    // useSortBy,
     usePagination
   )
 

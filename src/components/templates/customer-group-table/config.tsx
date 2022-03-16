@@ -49,12 +49,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS: Column<
     Header: "Name",
     accessor: "customer",
     Cell: ({ row }) => (
-      <div className="text-right">
-        <CustomerAvatarItem
-          customer={row.original}
-          color={getColor(row.index)}
-        />
-      </div>
+      <CustomerAvatarItem customer={row.original} color={getColor(row.index)} />
     ),
   },
   {
