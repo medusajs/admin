@@ -180,6 +180,7 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
       title={props.customerGroup.name}
       actionables={actions}
       className="min-h-0 w-full"
+      subtitle={" "}
     >
       {showModal && (
         <CustomerGroupModal

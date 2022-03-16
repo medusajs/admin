@@ -128,6 +128,7 @@ function CustomersListTable(props: CustomersListTableProps) {
           return (
             <CustomersListTableRow
               row={row}
+              key={row.id}
               removeCustomers={removeCustomers}
             />
           )

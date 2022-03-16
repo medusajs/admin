@@ -27,6 +27,7 @@ function Index(_: RouteComponentProps) {
   ]
 
   const handleClose = () => setShowModal(false)
+  const openModal = () => setShowModal(true)
 
   return (
     <div className="flex flex-col grow h-full">
@@ -35,7 +36,10 @@ function Index(_: RouteComponentProps) {
           actionables={actions}
           customHeader={<CustomersPageTableHeader activeView="groups" />}
         >
-          <CustomerGroupsTable />
+          <CustomerGroupsTable
+            openModal={openModal}
+            handleClose={handleClose}
+          />
         </BodyCard>
       </div>
       {showModal && <CustomerGroupModal handleClose={handleClose} />}

@@ -74,16 +74,20 @@ function CustomerGroupsTableHeaderRow(props: HeaderRowProps) {
   )
 }
 
+type CustomerGroupsTableRowProps = CustomerGroupsTableProps & {
+  row: Row<CustomerGroup>
+}
+
 /**
  * Render react-table row for the customer groups table.
  */
-function CustomerGroupsTableRow(props: { row: Row<CustomerGroup> }) {
+function CustomerGroupsTableRow(props: CustomerGroupsTableRowProps) {
   const { row } = props
 
   const actions = [
     {
       label: "Edit",
-      onClick: () => navigate(row.original.id),
+      onClick: () => props.openModal(),
       icon: <EditIcon size={20} />,
     },
     {
@@ -113,10 +117,15 @@ function CustomerGroupsTableRow(props: { row: Row<CustomerGroup> }) {
 /*************** TABLE CONTAINER ***************/
 /***********************************************/
 
+type CustomerGroupsTableProps = {
+  openModal: () => void
+  handleClose: () => void
+}
+
 /**
  * A container component for rendering customer groups table.
  */
-function CustomerGroupsTable() {
+function CustomerGroupsTable(props: CustomerGroupsTableProps) {
   const {
     reset,
     paginate,
@@ -196,7 +205,7 @@ function CustomerGroupsTable() {
         <Table.Body {...table.getTableBodyProps()}>
           {table.rows.map((row) => {
             table.prepareRow(row)
-            return <CustomerGroupsTableRow key={row.id} row={row} />
+            return <CustomerGroupsTableRow key={row.id} row={row} {...props} />
           })}
         </Table.Body>
       </Table>
