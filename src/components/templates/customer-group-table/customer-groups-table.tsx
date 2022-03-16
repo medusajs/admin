@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import { useAdminCustomerGroups } from "medusa-react"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
@@ -20,6 +20,9 @@ import DetailsIcon from "../../fundamentals/details-icon"
 import { CUSTOMER_GROUPS_TABLE_COLUMNS } from "./config"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import useSetSearchParams from "../../../hooks/use-set-search-params"
+import CustomerGroupContext, {
+  CustomerGroupContextContainer,
+} from "../../../domain/customers/groups/context/customer-group-context"
 
 const defaultQueryProps = {
   additionalFilters: { expand: "customers" },
@@ -74,7 +77,7 @@ function CustomerGroupsTableHeaderRow(props: HeaderRowProps) {
   )
 }
 
-type CustomerGroupsTableRowProps = CustomerGroupsTableProps & {
+type CustomerGroupsTableRowProps = {
   row: Row<CustomerGroup>
 }
 
@@ -83,11 +86,12 @@ type CustomerGroupsTableRowProps = CustomerGroupsTableProps & {
  */
 function CustomerGroupsTableRow(props: CustomerGroupsTableRowProps) {
   const { row } = props
+  const { showModal } = useContext(CustomerGroupContext)
 
   const actions = [
     {
       label: "Edit",
-      onClick: () => props.openModal(),
+      onClick: showModal,
       icon: <EditIcon size={20} />,
     },
     {
@@ -117,15 +121,10 @@ function CustomerGroupsTableRow(props: CustomerGroupsTableRowProps) {
 /*************** TABLE CONTAINER ***************/
 /***********************************************/
 
-type CustomerGroupsTableProps = {
-  openModal: () => void
-  handleClose: () => void
-}
-
 /**
  * A container component for rendering customer groups table.
  */
-function CustomerGroupsTable(props: CustomerGroupsTableProps) {
+function CustomerGroupsTable() {
   const {
     reset,
     paginate,
@@ -206,7 +205,11 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
         <Table.Body {...table.getTableBodyProps()}>
           {table.rows.map((row) => {
             table.prepareRow(row)
-            return <CustomerGroupsTableRow key={row.id} row={row} {...props} />
+            return (
+              <CustomerGroupContextContainer key={row.id} group={row.original}>
+                <CustomerGroupsTableRow row={row} />
+              </CustomerGroupContextContainer>
+            )
           })}
         </Table.Body>
       </Table>

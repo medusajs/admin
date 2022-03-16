@@ -1,23 +1,25 @@
-import React, { useState } from "react"
+import React, { useContext } from "react"
 import { RouteComponentProps, Router } from "@reach/router"
 
 import BodyCard from "../../../components/organisms/body-card"
-import CustomerGroupsTable from "../../../components/templates/customer-group-table/customer-groups-table"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import CustomerGroupModal from "./customer-group-modal"
 import CustomersPageTableHeader from "../header"
 import Details from "./details"
+import CustomerGroupContext, {
+  CustomerGroupContextContainer,
+} from "./context/customer-group-context"
+import CustomerGroupsTable from "../../../components/templates/customer-group-table/customer-groups-table"
 
 /**
  * Customer groups index page
  */
 function Index(_: RouteComponentProps) {
-  const [showModal, setShowModal] = useState(false)
+  const { showModal } = useContext(CustomerGroupContext)
 
   const actions = [
     {
       label: "New group",
-      onClick: () => setShowModal(true),
+      onClick: showModal,
       icon: (
         <span className="text-grey-90">
           <PlusIcon size={20} />
@@ -26,9 +28,6 @@ function Index(_: RouteComponentProps) {
     },
   ]
 
-  const handleClose = () => setShowModal(false)
-  const openModal = () => setShowModal(true)
-
   return (
     <div className="flex flex-col grow h-full">
       <div className="w-full flex flex-col grow">
@@ -36,13 +35,9 @@ function Index(_: RouteComponentProps) {
           actionables={actions}
           customHeader={<CustomersPageTableHeader activeView="groups" />}
         >
-          <CustomerGroupsTable
-            openModal={openModal}
-            handleClose={handleClose}
-          />
+          <CustomerGroupsTable />
         </BodyCard>
       </div>
-      {showModal && <CustomerGroupModal handleClose={handleClose} />}
     </div>
   )
 }
@@ -52,10 +47,12 @@ function Index(_: RouteComponentProps) {
  */
 function CustomerGroups(_: RouteComponentProps) {
   return (
-    <Router basepath="/a/customers/groups">
-      <Index path="/" />
-      <Details path=":id" />
-    </Router>
+    <CustomerGroupContextContainer>
+      <Router basepath="/a/customers/groups">
+        <Index path="/" />
+        <Details path=":id" />
+      </Router>
+    </CustomerGroupContextContainer>
   )
 }
 

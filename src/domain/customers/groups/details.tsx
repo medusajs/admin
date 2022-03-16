@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { difference } from "lodash"
 import { navigate } from "gatsby"
 import { CustomerGroup } from "@medusajs/medusa"
@@ -17,10 +17,10 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditCustomersTable from "../../../components/templates/customer-group-table/edit-customers-table"
 import CustomersListTable from "../../../components/templates/customer-group-table/customers-list-table"
-import CustomerGroupModal from "./customer-group-modal"
-import { getErrorMessage } from "../../../utils/error-messages"
-import useNotification from "../../../hooks/use-notification"
 import { useQueryClient } from "react-query"
+import CustomerGroupContext, {
+  CustomerGroupContextContainer,
+} from "./context/customer-group-context"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
@@ -134,34 +134,15 @@ type CustomerGroupDetailsHeaderProps = {
  * Customers groups details page header.
  */
 function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
-  const notification = useNotification()
-  const [showModal, setShowModal] = useState(false)
-
-  const { mutate: updateGroup } = useAdminUpdateCustomerGroup(
-    props.customerGroup.id
-  )
+  const { showModal } = useContext(CustomerGroupContext)
   const { mutate: deleteGroup } = useAdminDeleteCustomerGroup(
     props.customerGroup.id
   )
 
-  const handleSave = (data) => {
-    updateGroup(data, {
-      onSuccess: () => {
-        notification(
-          "Success",
-          "Successfully updated the customer group",
-          "success"
-        )
-        setShowModal(false)
-      },
-      onError: (err) => notification("Error", getErrorMessage(err), "error"),
-    })
-  }
-
   const actions = [
     {
       label: "Edit",
-      onClick: () => setShowModal(true),
+      onClick: showModal,
       icon: <EditIcon size={20} />,
     },
     {
@@ -181,15 +162,7 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
       actionables={actions}
       className="min-h-0 w-full"
       subtitle={" "}
-    >
-      {showModal && (
-        <CustomerGroupModal
-          handleClose={() => setShowModal(false)}
-          handleSave={handleSave}
-          initialData={props.customerGroup}
-        />
-      )}
-    </BodyCard>
+    />
   )
 }
 
@@ -206,15 +179,17 @@ function CustomerGroupDetails(p: CustomerGroupDetailsProps) {
   if (!customer_group) return null
 
   return (
-    <div className="-mt-4 pb-4">
-      <Breadcrumb
-        currentPage={customer_group ? customer_group.name : "Customer Group"}
-        previousBreadcrumb="Groups"
-        previousRoute="/a/customers/groups"
-      />
-      <CustomerGroupDetailsHeader customerGroup={customer_group} />
-      <CustomerGroupCustomersList group={customer_group} />
-    </div>
+    <CustomerGroupContextContainer group={customer_group}>
+      <div className="-mt-4 pb-4">
+        <Breadcrumb
+          currentPage={customer_group ? customer_group.name : "Customer Group"}
+          previousBreadcrumb="Groups"
+          previousRoute="/a/customers/groups"
+        />
+        <CustomerGroupDetailsHeader customerGroup={customer_group} />
+        <CustomerGroupCustomersList group={customer_group} />
+      </div>
+    </CustomerGroupContextContainer>
   )
 }
 
