@@ -7,6 +7,10 @@ function useSetSearchParams(queryObject: Record<string, string | number>) {
   useEffect(() => {
     const url = new URL(window.location.href)
 
+    for (let k of url.searchParams.keys()) {
+      if (!(k in queryObject)) url.searchParams.delete(k)
+    }
+
     for (let k in queryObject) {
       url.searchParams.set(k, queryObject[k].toString())
     }

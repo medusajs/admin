@@ -165,7 +165,6 @@ function CustomerGroupsTable() {
     table.previousPage()
   }
 
-  // TODO: fix - on delete: the first (i.e. last) letter is not removed
   const handleSearch = (text: string) => {
     setQuery(text)
 
@@ -188,11 +187,8 @@ function CustomerGroupsTable() {
       >
         {/*HEAD*/}
         <Table.Head>
-          {table.headerGroups?.map((headerGroup) => (
-            <CustomerGroupsTableHeaderRow
-              key={headerGroup.id}
-              headerGroup={headerGroup}
-            />
+          {table.headerGroups?.map((headerGroup, ind) => (
+            <CustomerGroupsTableHeaderRow key={ind} headerGroup={headerGroup} />
           ))}
         </Table.Head>
 
