@@ -1,10 +1,11 @@
-import React from "react"
+import clsx from "clsx"
+import React, { useEffect, useState } from "react"
 import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 type FocusModalProps = {
-  handleClose: () => void
-  onSubmit: (e: any) => void
+  handleClose: (e) => void
+  onSubmit: (e) => void
   cancelText?: string
   submitText?: string
 }
@@ -16,11 +17,29 @@ const FocusModal: React.FC<FocusModalProps> = ({
   cancelText = "Cancel",
   submitText = "Save changes",
 }) => {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
+
+  const decorateReturn = (method) => (e) => {
+    setIsVisible(false)
+    setTimeout(() => {
+      method(e)
+    }, 75)
+  }
+
   return (
-    <div className="absolute inset-0 bg-grey-0 z-50 flex flex-col items-center">
+    <div
+      className={clsx(
+        "absolute transition-all duration-75 inset-0 bg-grey-0 z-50 flex flex-col items-center",
+        { "scale-95 opacity-0": !isVisible, "scale-100 opacity-100": isVisible }
+      )}
+    >
       <FocusModalHeader
-        handleClose={handleClose}
-        onSubmit={onSubmit}
+        handleClose={decorateReturn(handleClose)}
+        onSubmit={decorateReturn(onSubmit)}
         cancelText={cancelText}
         submitText={submitText}
       />
