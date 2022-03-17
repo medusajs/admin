@@ -1,61 +1,42 @@
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
-import { useAdminCreateCustomerGroup } from "medusa-react"
 import { CustomerGroup } from "@medusajs/medusa"
 
 import Modal from "../../../components/molecules/modal"
 import Input from "../../../components/molecules/input"
 import Button from "../../../components/fundamentals/button"
 import Metadata, { MetadataField } from "../../../components/organisms/metadata"
-import { getErrorMessage } from "../../../utils/error-messages"
-import useNotification from "../../../hooks/use-notification"
 
 type P = {
   handleClose: () => void
   initialData?: CustomerGroup
-  handleSave?: (data: CustomerGroup) => void
+  handleSubmit: (data: CustomerGroup) => void
 }
 
 function CustomerGroupModal(props: P) {
-  const { handleClose } = props
+  const { initialData, handleSubmit, handleClose } = props
 
-  const notification = useNotification()
-  const { mutate } = useAdminCreateCustomerGroup()
+  const isEdit = !!initialData
 
   const [metadata, setMetadata] = useState<MetadataField[]>(
-    props.initialData
-      ? Object.keys(props.initialData.metadata || {}).map((k) => ({
+    isEdit
+      ? Object.keys(initialData.metadata || {}).map((k) => ({
           key: k,
-          value: props.initialData.metadata[k],
+          value: initialData.metadata[k],
         }))
       : []
   )
 
-  const { register, handleSubmit } = useForm({
-    defaultValues: props.initialData,
+  const { register, handleSubmit: handleFromSubmit } = useForm({
+    defaultValues: initialData,
   })
 
-  const submit = (data) => {
+  const onSubmit = (data) => {
     const meta = {}
-
     metadata.forEach((m) => (meta[m.key] = m.value))
     data.metadata = meta
 
-    if (props.handleSave) {
-      props.handleSave(data)
-      return
-    }
-    mutate(data, {
-      onSuccess: () => {
-        notification(
-          "Success",
-          "Successfully created the customer group",
-          "success"
-        )
-        handleClose()
-      },
-      onError: (err) => notification("Error", getErrorMessage(err), "error"),
-    })
+    handleSubmit(data)
   }
 
   return (
@@ -66,6 +47,7 @@ function CustomerGroupModal(props: P) {
             {props.initialData ? "Edit" : "Create a New"} Customer Group
           </span>
         </Modal.Header>
+
         <Modal.Content>
           <div className="space-y-4">
             <span className="inter-base-semibold">Details</span>
@@ -84,6 +66,7 @@ function CustomerGroupModal(props: P) {
             <Metadata metadata={metadata} setMetadata={setMetadata} />
           </div>
         </Modal.Content>
+
         <Modal.Footer>
           <div className="flex w-full h-8 justify-end">
             <Button
@@ -98,7 +81,7 @@ function CustomerGroupModal(props: P) {
               size="medium"
               className="w-32 text-small justify-center"
               variant="primary"
-              onClick={handleSubmit(submit)}
+              onClick={handleFromSubmit(onSubmit)}
             >
               <span>{props.initialData ? "Edit" : "Publish"} Group</span>
             </Button>
