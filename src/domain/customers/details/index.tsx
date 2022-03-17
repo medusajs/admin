@@ -26,7 +26,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
   const { customer, isLoading } = useAdminCustomer(id, {})
   const [showEdit, setShowEdit] = useState(false)
   const notification = useNotification()
-  const { mutate } = useImpersonateCustomer({
+  const { mutate: impersonate } = useImpersonateCustomer({
     onSuccess: ({ data: { redirect_url } }) => navigate(redirect_url),
     onError: () => {
       notification("Error", "Failed to impersonate customer", "error")
@@ -49,7 +49,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
     },
     {
       label: "Impersonate",
-      onClick: () => mutate(customer?.id || ""),
+      onClick: () => impersonate(customer?.id || ""),
       icon: <DetailsIcon size={20} />,
     },
     {
