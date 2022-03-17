@@ -12,7 +12,7 @@ if (process.env.GATSBY_STOREFRONT_API_URL) {
 const client = axios.create({ baseURL })
 
 export interface UseMutationCallbackOptions<TData> {
-  onError?: () => void
+  onError?: (err: any) => void
   onSuccess?: (data: TData) => void
 }
 
@@ -32,7 +32,7 @@ export const useImpersonateCustomer = ({
     {
       onError: (err) => {
         if (onError) {
-          onError()
+          onError(err)
         }
       },
       onSuccess: (data) => {
