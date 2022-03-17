@@ -2,7 +2,7 @@ import { RouteComponentProps } from "@reach/router"
 import { navigate } from "gatsby"
 import { useAdminCustomer } from "medusa-react"
 import moment from "moment"
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import Avatar from "../../../components/atoms/avatar"
 import Spinner from "../../../components/atoms/spinner"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
@@ -14,8 +14,8 @@ import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import CustomerOrdersTable from "../../../components/templates/customer-orders-table"
-import { AccountContext } from "../../../context/account"
-import { impersonateCustomer } from "../../../services/nibll-api"
+import useNotification from "../../../hooks/use-notification"
+import { useImpersonateCustomer } from "../../../services/nibll-api"
 import EditCustomerModal from "./edit"
 
 type CustomerDetailProps = {
@@ -25,7 +25,13 @@ type CustomerDetailProps = {
 const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
   const { customer, isLoading } = useAdminCustomer(id, {})
   const [showEdit, setShowEdit] = useState(false)
-  const { api_token } = useContext(AccountContext)
+  const notification = useNotification()
+  const { mutate } = useImpersonateCustomer({
+    onSuccess: ({ data: { redirect_url } }) => navigate(redirect_url),
+    onError: () => {
+      notification("Error", "Failed to impersonate customer", "error")
+    },
+  })
 
   const customerName = () => {
     if (customer?.first_name && customer?.last_name) {
@@ -33,17 +39,6 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
     } else {
       return customer?.email
     }
-  }
-
-  const impersonate = async () => {
-    const { redirect_url } = await impersonateCustomer(
-      customer?.id || "",
-      api_token
-    )
-
-    navigate(redirect_url)
-
-    return
   }
 
   const actions = [
@@ -54,7 +49,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
     },
     {
       label: "Impersonate",
-      onClick: () => impersonate(),
+      onClick: () => mutate(customer?.id || ""),
       icon: <DetailsIcon size={20} />,
     },
     {
