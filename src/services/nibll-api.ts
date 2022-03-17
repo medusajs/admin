@@ -43,17 +43,3 @@ export const useImpersonateCustomer = ({
     }
   )
 }
-
-export const impersonateCustomer = async (
-  customer_id: string,
-  api_key: string
-): Promise<{ redirect_url: string }> => {
-  const {
-    data: { redirect_url },
-  } = await client.post<{ redirect_url: string }>(
-    `/user/impersonate/${customer_id}`,
-    {},
-    { headers: { Authorization: `Bearer ${api_key}` } }
-  )
-  return { redirect_url }
-}
