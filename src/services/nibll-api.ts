@@ -30,16 +30,8 @@ export const useImpersonateCustomer = ({
         { headers: { Authorization: `Bearer ${api_token}` } }
       ),
     {
-      onError: (err) => {
-        if (onError) {
-          onError(err)
-        }
-      },
-      onSuccess: (data) => {
-        if (onSuccess) {
-          onSuccess(data)
-        }
-      },
+      onError,
+      onSuccess,
     }
   )
 }
