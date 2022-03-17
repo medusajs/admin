@@ -9,8 +9,6 @@ import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import useQueryFilters from "../../../hooks/use-query-filters"
 
-const DEFAULT_PAGE_SIZE = 15
-
 const defaultQueryProps = {
   additionalFilters: { expand: "groups" },
 }

@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { useAdminCustomerGroups } from "medusa-react"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
@@ -137,17 +137,26 @@ function CustomerGroupsTable() {
     queryObject
   )
 
+  // !!! HACK - `pageCount` can't be set directly as a computed value due to react table circular reference bug.
+  const [pageCount, setPageCount] = useState(
+    Math.ceil(count / queryObject.limit)
+  )
+
+  useEffect(() => {
+    setPageCount(Math.ceil(count / queryObject.limit))
+  }, [count])
+
   useSetSearchParams(representationObject)
 
   const tableConfig: TableOptions<UsePaginationOptions<CustomerGroup>> = {
     columns: CUSTOMER_GROUPS_TABLE_COLUMNS,
     data: customer_groups || [],
-    manualPagination: true,
     initialState: {
       pageSize: queryObject.limit,
       pageIndex: queryObject.offset / queryObject.limit,
     },
-    pageCount: Math.ceil(count / queryObject.limit),
+    pageCount,
+    manualPagination: true,
     autoResetPage: false,
   }
 
