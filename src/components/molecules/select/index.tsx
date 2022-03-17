@@ -1,3 +1,6 @@
+import createCache from "@emotion/cache"
+import { CacheProvider } from "@emotion/react"
+import clsx from "clsx"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import Select, {
   ClearIndicatorProps,
@@ -10,17 +13,14 @@ import Select, {
   SingleValueProps,
 } from "react-select"
 import AsyncSelect from "react-select/async"
-import CreatableSelect from "react-select/creatable"
 import AsyncCreatableSelect from "react-select/async-creatable"
+import CreatableSelect from "react-select/creatable"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import CheckIcon from "../../fundamentals/icons/check-icon"
+import SearchIcon from "../../fundamentals/icons/search-icon"
 import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
-import clsx from "clsx"
-import SearchIcon from "../../fundamentals/icons/search-icon"
-import { CacheProvider } from "@emotion/react"
-import createCache from "@emotion/cache"
 import { ModalContext } from "../modal"
 
 type MultiSelectProps = InputHeaderProps & {
@@ -107,7 +107,7 @@ const Input = (props: InputProps) => {
 
   return (
     <div className="w-full flex items-center h-full space-between">
-      <div className="w-full flex w-full items-center">
+      <div className="w-full flex items-center">
         <span className="text-grey-40 mr-2">
           <SearchIcon size={20} />
         </span>
@@ -365,11 +365,17 @@ const GetSelect = React.forwardRef(
           ref={ref}
           defaultOptions={true}
           onCreateOption={onCreateOption}
+          isSearchable
           loadOptions={searchBackend}
           {...props}
         />
       ) : (
-        <CreatableSelect {...props} ref={ref} onCreateOption={onCreateOption} />
+        <CreatableSelect
+          {...props}
+          isSearchable
+          ref={ref}
+          onCreateOption={onCreateOption}
+        />
       )
     } else if (searchBackend) {
       return (
