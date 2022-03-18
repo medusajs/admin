@@ -27,14 +27,17 @@ const FocusModal: React.FC<FocusModalProps> = ({
     setIsVisible(false)
     setTimeout(() => {
       method(e)
-    }, 75)
+    }, 100)
   }
 
   return (
     <div
       className={clsx(
-        "absolute transition-all duration-75 inset-0 bg-grey-0 z-50 flex flex-col items-center",
-        { "scale-95 opacity-0": !isVisible, "scale-100 opacity-100": isVisible }
+        "absolute transition-all duration-100 inset-0 bg-grey-0 z-50 flex flex-col items-center",
+        {
+          "scale-[0.98] opacity-0": !isVisible,
+          "scale-100 opacity-100": isVisible,
+        }
       )}
     >
       <FocusModalHeader
