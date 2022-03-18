@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React, { useEffect, useState } from "react"
+import { useDebounce } from "../../../hooks/use-debounce"
 import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 
@@ -23,7 +24,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
     setIsVisible(true)
   }, [])
 
-  const decorateReturn = (method) => (e) => {
+  const debounceInvocation = (method) => (e) => {
     setIsVisible(false)
     setTimeout(() => {
       method(e)
@@ -41,8 +42,8 @@ const FocusModal: React.FC<FocusModalProps> = ({
       )}
     >
       <FocusModalHeader
-        handleClose={decorateReturn(handleClose)}
-        onSubmit={decorateReturn(onSubmit)}
+        handleClose={debounceInvocation(handleClose)}
+        onSubmit={debounceInvocation(onSubmit)}
         cancelText={cancelText}
         submitText={submitText}
       />
