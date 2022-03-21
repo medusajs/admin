@@ -68,7 +68,6 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       return
     }
 
-    console.log(fulfillment_providers)
     setFulfillmentOptions(
       fulfillment_providers.map((c) => fulfillmentProvidersMapper(c.id))
     )
