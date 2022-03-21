@@ -1,8 +1,9 @@
 import React from "react"
 import { HeaderGroup, Row, useSortBy, useTable } from "react-table"
-import { useAdminRemoveCustomersFromCustomerGroup } from "medusa-react"
-import { Customer } from "@medusajs/medusa"
+import { UseMutateFunction } from "react-query"
 import { navigate } from "gatsby"
+
+import { Customer } from "@medusajs/medusa"
 
 import { CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS } from "./config"
 import Table from "../../molecules/table"
@@ -12,6 +13,7 @@ import TrashIcon from "../../fundamentals/icons/trash-icon"
 
 type CustomersListTableProps = {
   customers: Customer[]
+  removeCustomers: UseMutateFunction<any, Error, any, unknown>
   groupId: string
   query: string
   setQuery: (q: string) => void
@@ -96,7 +98,7 @@ function CustomersListTableRow(props: CustomersListTableRowProps) {
  * Render a list of customers that belong to a customer group.
  */
 function CustomersListTable(props: CustomersListTableProps) {
-  const { customers, groupId, setQuery, query } = props
+  const { customers, removeCustomers, setQuery, query } = props
 
   const tableConfig = {
     columns: CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS,
@@ -104,10 +106,6 @@ function CustomersListTable(props: CustomersListTableProps) {
   }
 
   const table = useTable(tableConfig, useSortBy)
-
-  const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
-    groupId
-  )
 
   return (
     <Table

@@ -5,6 +5,7 @@ import { CustomerGroup } from "@medusajs/medusa"
 import {
   useAdminAddCustomersToCustomerGroup,
   useAdminCustomerGroup,
+  useAdminCustomerGroupCustomers,
   useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
   useAdminUpdateCustomerGroup,
@@ -43,10 +44,9 @@ function CustomersListPlaceholder() {
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
 
-  const { invalidateQueries } = useQueryClient()
-
   const [query, setQuery] = useState("")
 
+  const { customers = [] } = useAdminCustomerGroupCustomers(groupId)
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
     groupId
@@ -54,17 +54,17 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
 
   const [showCustomersModal, setShowCustomersModal] = useState(false)
   const [selectedCustomerIds, setSelectedCustomerIds] = useState(
-    props.group.customers.map((c) => c.id)
+    customers.map((c) => c.id)
   )
 
-  const showPlaceholder = !props.group.customers.length
+  const showPlaceholder = !customers.length
 
   useEffect(() => {
-    setSelectedCustomerIds(props.group.customers.map((c) => c.id))
-  }, [props.group])
+    setSelectedCustomerIds(customers.map((c) => c.id))
+  }, [props.group, customers])
 
   const calculateDiff = () => {
-    const initial = props.group.customers.map((c) => c.id)
+    const initial = customers.map((c) => c.id)
     return {
       toAdd: difference(selectedCustomerIds, initial),
       toRemove: difference(initial, selectedCustomerIds),
@@ -117,9 +117,10 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
       ) : (
         <CustomersListTable
           query={query}
+          customers={customers}
+          removeCustomers={removeCustomers}
           setQuery={setQuery}
           groupId={props.group.id}
-          customers={props.group.customers}
         />
       )}
     </BodyCard>
@@ -172,9 +173,7 @@ type CustomerGroupDetailsProps = { id: string }
  * Customer groups details page
  */
 function CustomerGroupDetails(p: CustomerGroupDetailsProps) {
-  const { customer_group } = useAdminCustomerGroup(p.id, {
-    expand: "customers",
-  })
+  const { customer_group } = useAdminCustomerGroup(p.id)
 
   if (!customer_group) return null
 

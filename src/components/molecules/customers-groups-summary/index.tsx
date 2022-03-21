@@ -23,7 +23,7 @@ function CustomersGroupsSummary(props: P) {
   return (
     <div className="text-small">
       <span>{leadName}</span>
-      {left && <span className="text-grey-40"> + {left} more</span>}
+      {!!left && <span className="text-grey-40"> + {left} more</span>}
     </div>
   )
 }
