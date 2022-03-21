@@ -54,7 +54,10 @@ type HeaderCellProps = {
  */
 function CustomerGroupsTableHeaderCell(props: HeaderCellProps) {
   return (
-    <Table.HeadCell className="w-[100px]" {...props.col.getHeaderProps()}>
+    <Table.HeadCell
+      className="w-[100px]"
+      {...props.col.getHeaderProps(props.col.getSortByToggleProps())}
+    >
       {props.col.render("Header")}
     </Table.HeadCell>
   )
@@ -143,8 +146,8 @@ function CustomerGroupsTable() {
   )
 
   useEffect(() => {
-    setPageCount(Math.ceil(count / queryObject.limit))
-  }, [count])
+    if (!isLoading) setPageCount(Math.ceil(count / queryObject.limit))
+  }, [isLoading, count])
 
   useSetSearchParams(representationObject)
 
@@ -160,10 +163,9 @@ function CustomerGroupsTable() {
     autoResetPage: false,
   }
 
-  // TODO: fix `useSortBy` - this hook causes infinite renders (missing memo somewhere?)
   const table: TableInstance<CustomerGroup> = useTable(
     tableConfig,
-    // useSortBy,
+    useSortBy,
     usePagination
   )
 

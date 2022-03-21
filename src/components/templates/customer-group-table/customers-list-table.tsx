@@ -15,7 +15,7 @@ type CustomersListTableProps = {
   customers: Customer[]
   removeCustomers: UseMutateFunction<any, Error, any, unknown>
   groupId: string
-  query: string
+  query?: string
   setQuery: (q: string) => void
 }
 
@@ -115,8 +115,8 @@ function CustomersListTable(props: CustomersListTableProps) {
       {...table.getTableProps()}
     >
       <Table.Head>
-        {table.headerGroups?.map((headerGroup) => (
-          <CustomersListTableHeaderRow headerGroup={headerGroup} />
+        {table.headerGroups?.map((headerGroup, index) => (
+          <CustomersListTableHeaderRow key={index} headerGroup={headerGroup} />
         ))}
       </Table.Head>
 

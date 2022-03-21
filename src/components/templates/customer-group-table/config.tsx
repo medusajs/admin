@@ -59,7 +59,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS: Column<
   {
     accessor: "groups",
     Header: () => (
-      <div className="flex items-center gap-1 justify-end">
+      <div className="flex items-center gap-1 justify-start">
         Groups <SortingIcon size={16} />
       </div>
     ),

@@ -8,7 +8,6 @@ import {
   useAdminCustomerGroupCustomers,
   useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
-  useAdminUpdateCustomerGroup,
 } from "medusa-react"
 
 import Breadcrumb from "../../../components/molecules/breadcrumb"
@@ -18,12 +17,18 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditCustomersTable from "../../../components/templates/customer-group-table/edit-customers-table"
 import CustomersListTable from "../../../components/templates/customer-group-table/customers-list-table"
-import { useQueryClient } from "react-query"
 import CustomerGroupContext, {
   CustomerGroupContextContainer,
 } from "./context/customer-group-context"
+import useQueryFilters from "../../../hooks/use-query-filters"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
+
+const defaultQueryProps = {
+  additionalFilters: { expand: "groups" },
+  limit: 15,
+  offset: 0,
+}
 
 /**
  * Placeholder for the customer groups list.
@@ -44,9 +49,15 @@ function CustomersListPlaceholder() {
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
 
-  const [query, setQuery] = useState("")
+  const { q, reset, paginate, setQuery, queryObject } = useQueryFilters(
+    defaultQueryProps
+  )
 
-  const { customers = [] } = useAdminCustomerGroupCustomers(groupId)
+  const { customers = [], isLoading } = useAdminCustomerGroupCustomers(
+    groupId,
+    queryObject
+  )
+
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
     groupId
@@ -57,11 +68,11 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     customers.map((c) => c.id)
   )
 
-  const showPlaceholder = !customers.length
+  const showPlaceholder = !isLoading && !customers.length && !q
 
   useEffect(() => {
-    setSelectedCustomerIds(customers.map((c) => c.id))
-  }, [props.group, customers])
+    if (!isLoading) setSelectedCustomerIds(customers.map((c) => c.id))
+  }, [isLoading, customers])
 
   const calculateDiff = () => {
     const initial = customers.map((c) => c.id)
@@ -78,9 +89,6 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
       addCustomers({ customer_ids: toAdd.map((i) => ({ id: i })) })
     if (toRemove.length)
       removeCustomers({ customer_ids: toRemove.map((i) => ({ id: i })) })
-
-    // TODO: invalidate customers on gorups change
-    // invalidateQueries(adminCustomerKeys.list())
 
     setShowCustomersModal(false)
   }
@@ -116,7 +124,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
         <CustomersListPlaceholder />
       ) : (
         <CustomersListTable
-          query={query}
+          query={q}
           customers={customers}
           removeCustomers={removeCustomers}
           setQuery={setQuery}
