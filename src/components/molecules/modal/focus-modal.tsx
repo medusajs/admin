@@ -3,14 +3,57 @@ import React from "react"
 import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 
-type FocusModalProps = {
+type FocusModalElementProps = {
+  className?: string
+}
+
+type FocusModalProps = React.FC<FocusModalElementProps> & {
+  Header: React.FC<FocusModalElementProps>
+  Main: React.FC<FocusModalElementProps>
+  BasicFocusModal: React.FC<BasicFocusModalProps>
+}
+
+type BasicFocusModalProps = {
   handleClose: (e) => void
   onSubmit: (e) => void
   cancelText?: string
   submitText?: string
 }
 
-const FocusModal: React.FC<FocusModalProps> = ({
+const FocusModal: FocusModalProps = ({ className, children }) => (
+  <div
+    className={clsx(
+      "absolute inset-0 bg-grey-0 z-50 flex flex-col items-center",
+      className
+    )}
+  >
+    {children}
+  </div>
+)
+
+FocusModal.Header = ({ children, className }) => (
+  <div
+    className={clsx(
+      "w-full border-b py-4 border-b-grey-20 flex justify-center",
+      className
+    )}
+  >
+    {children}
+  </div>
+)
+
+FocusModal.Main = ({ children, className }) => (
+  <div
+    className={clsx(
+      "medium:w-7/12 large:w-6/12 small:w-4/5 w-full px-8 overflow-y-auto h-full",
+      className
+    )}
+  >
+    {children}
+  </div>
+)
+
+FocusModal.BasicFocusModal = ({
   handleClose,
   onSubmit,
   children,
@@ -18,32 +61,26 @@ const FocusModal: React.FC<FocusModalProps> = ({
   submitText = "Save changes",
 }) => {
   return (
-    <div
-      className={clsx(
-        "absolute inset-0 bg-grey-0 z-50 flex flex-col items-center"
-      )}
-    >
-      <FocusModalHeader
+    <FocusModal>
+      <BasicFocusModalHeader
         handleClose={handleClose}
         onSubmit={onSubmit}
         cancelText={cancelText}
         submitText={submitText}
       />
-      <div className="medium:w-7/12 large:w-6/12 small:w-4/5 w-full px-8 overflow-y-auto h-full">
-        {children}
-      </div>
-    </div>
+      <FocusModal.Main>{children}</FocusModal.Main>
+    </FocusModal>
   )
 }
 
-const FocusModalHeader: React.FC<FocusModalProps> = ({
+const BasicFocusModalHeader: React.FC<BasicFocusModalProps> = ({
   handleClose,
   onSubmit,
   cancelText,
   submitText,
 }) => {
   return (
-    <div className="w-full border-b py-4 border-b-grey-20 flex justify-center">
+    <FocusModal.Header>
       <div className="medium:w-8/12 w-full px-8 flex justify-between">
         <Button
           size="small"
@@ -72,7 +109,7 @@ const FocusModalHeader: React.FC<FocusModalProps> = ({
           </Button>
         </div>
       </div>
-    </div>
+    </FocusModal.Header>
   )
 }
 
