@@ -2,7 +2,7 @@ import { Product } from "@medusajs/medusa"
 import React from "react"
 import DollarSignIcon from "../../fundamentals/icons/dollar-sign-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
-import { CollabsibleTree } from "../../molecules/collabsible-tree"
+import { CollapsibleTree } from "../../molecules/collapsible-tree"
 
 type LeafProps = {
   id: string
@@ -23,8 +23,8 @@ type ProductVariantTreeProps = {
 
 const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({ product }) => {
   return (
-    <CollabsibleTree>
-      <CollabsibleTree.Parent
+    <CollapsibleTree>
+      <CollapsibleTree.Parent
         actions={[
           {
             label: "Edit",
@@ -43,32 +43,36 @@ const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({ product }) => {
           <img src={product.thumbnail} className="w-4 h-5 rounded-base" />
         </div>
         <span className="inter-small-semibold">{product.title}</span>
-      </CollabsibleTree.Parent>
-      {product.variants.map((variant) => 
-        <ProductVariantLeaf key={variant.id} {...variant} />
-      )}
-    </CollabsibleTree>
+      </CollapsibleTree.Parent>
+      <CollapsibleTree.Content>
+        {product.variants.map((variant) => (
+          <CollapsibleTree.Leaf
+            actions={[
+              {
+                label: "Edit",
+                onClick: () => console.log(`Edit prices for ${variant.id}`), // temp - should open edit prices overrides modal with only this variant selected
+                icon: <DollarSignIcon />,
+              },
+              {
+                label: "Delete",
+                onClick: () => console.log(`Remove prices for ${variant.id}`), // temp - should delete money amounts in PriceList for this variant
+                icon: <TrashIcon />,
+                variant: "danger",
+              },
+            ]}
+          >
+            <ProductVariantLeaf key={variant.id} {...variant} />
+          </CollapsibleTree.Leaf>
+        ))}
+      </CollapsibleTree.Content>
+    </CollapsibleTree>
   )
 }
 
-const ProductVariantLeaf = ({ id, sku, title, prices = [] }: LeafProps) => {
+const ProductVariantLeaf = ({ sku, title, prices = [] }: LeafProps) => {
   return (
-    <CollabsibleTree.Leaf
-      actions={[
-        {
-          label: "Edit",
-          onClick: () => console.log(`Edit prices for ${id}`), // temp - should open edit prices overrides modal with only this variant selected
-          icon: <DollarSignIcon />,
-        },
-        {
-          label: "Delete",
-          onClick: () => console.log(`Remove prices for ${id}`), // temp - should delete money amounts in PriceList for this variant
-          icon: <TrashIcon />,
-          variant: "danger",
-        },
-      ]}
-    >
-      <div>
+    <>
+      <div className="truncate">
         <span>{title}</span>
         {sku && <span className="text-grey-50 ml-xsmall">(SKU: {sku})</span>}
       </div>
@@ -84,8 +88,8 @@ const ProductVariantLeaf = ({ id, sku, title, prices = [] }: LeafProps) => {
             </span>
           )}
         </div>
-      </div>
-    </CollabsibleTree.Leaf>
+      </div>{" "}
+    </>
   )
 }
 

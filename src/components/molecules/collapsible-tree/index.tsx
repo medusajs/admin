@@ -7,80 +7,94 @@ import PlusIcon from "../../fundamentals/icons/plus-icon"
 import Button from "../../fundamentals/button"
 import Actionables, { ActionType } from "../actionables"
 
-type CollabsibleTreeProps = {
-  className?: string
-  children: React.ReactNode[]
+/* ---------------------------- CollapsibleTree ------------------------------------ */
+
+type CollapsibleTreeType = React.FC & {
+  Parent: React.FC<CollapsibleTreeParentProps>
+  Leaf: React.FC<CollapsibleTreeLeafProps>
+  Content: React.FC<CollapsibleTreeContentProps>
 }
 
-type CollabsibleTreeParentProps = {
-  actions?: ActionType[]
-  open?: boolean
-  setOpen?: (v: boolean) => void
-  className?: string
-  children: React.ReactNode[]
-  __TYPE?: string
+type TCollapsibleTreeContext = {
+  open: boolean
+  handleOpen: () => void
+  handleClose: () => void
+  toggle: () => void
 }
 
-type CollabsibleTreeLeafProps = {
-  actions?: ActionType[]
-  className?: string
-  children: React.ReactNode[]
-  __TYPE?: string
-}
+const CollapsibleTreeContext = React.createContext<TCollapsibleTreeContext | null>(
+  null
+)
 
-
-type CollabsibleTreeType = React.FC<CollabsibleTreeProps> & {
-  Parent: React.FC<CollabsibleTreeParentProps>
-  Leaf: React.FC<CollabsibleTreeLeafProps>
-}
-
-export const CollabsibleTree: CollabsibleTreeType = ({
-  children,
-  className
-}) => {
+export const CollapsibleTree: CollapsibleTreeType = ({ children }) => {
   const [open, setOpen] = React.useState(false)
 
-  const trigger = React.Children.toArray(children).find((child) => {
-    if (typeof child === "object" && "props" in child) {
-      return child.props.__TYPE === "CollabsibleTreeParent"
-    }
-    return false
-  })
-
-  const leaves = React.Children.toArray(children).filter((child) => {
-    if (typeof child === "object" && "props" in child) {
-      return child.props.__TYPE === "CollabsibleTreeLeaf"
-    }
-    return false
-  })
-
-  if (!React.isValidElement(trigger)) {
-    throw Error("CollabsibleTree must have a CollabsibleTree.Parent child")
-  }
-
   return (
-    <div className={className}>
-      {React.cloneElement(trigger, { open, setOpen })}
-      <div
-        className={clsx("pl-5 mt-xsmall", {
+    <CollapsibleTreeContext.Provider
+      value={{
+        open,
+        handleOpen: () => setOpen(true),
+        handleClose: () => setOpen(false),
+        toggle: () => setOpen((open) => !open),
+      }}
+    >
+      {children}
+    </CollapsibleTreeContext.Provider>
+  )
+}
+
+CollapsibleTreeContext.displayName = "CollapsibleTreeContext"
+
+const useCollapsibleTree = () => {
+  const context = React.useContext(CollapsibleTreeContext)
+  if (!context) {
+    throw new Error("useCollapsibleTree must be a child of CollapsibleTree")
+  }
+  return context
+}
+
+/* ---------------------------- CollapsibleTreeContent ------------------------------------ */
+
+type CollapsibleTreeContentProps = React.HTMLAttributes<HTMLDivElement>
+
+const CollapsibleTreeContent: React.FC<CollapsibleTreeContentProps> = ({
+  children,
+  className,
+  ...props
+}) => {
+  const { open } = useCollapsibleTree()
+  return (
+    <div
+      className={clsx(
+        "pl-5 mt-xsmall",
+        {
           hidden: !open,
           "animate-fade-in-top": open,
-        })}
-      >
-        {leaves}
-      </div>
+        },
+        className
+      )}
+      {...props}
+    >
+      {children}
     </div>
   )
 }
 
+CollapsibleTree.Content = CollapsibleTreeContent
 
-const CollabsibleTreeParent: React.FC<CollabsibleTreeParentProps> = ({
+/* ---------------------------- CollapsibleTreeParent ------------------------------------ */
+
+type CollapsibleTreeParentProps = {
+  actions?: ActionType[]
+  className?: string
+}
+
+const CollapsibleTreeParent: React.FC<CollapsibleTreeParentProps> = ({
   actions,
   className,
   children,
-  open,
-  setOpen
 }) => {
+  const { open, toggle } = useCollapsibleTree()
   return (
     <div>
       <Container className={className}>
@@ -93,7 +107,7 @@ const CollabsibleTreeParent: React.FC<CollabsibleTreeParentProps> = ({
               variant="ghost"
               size="small"
               className="p-[6px] text-grey-50"
-              onClick={() => setOpen && setOpen(!open)}
+              onClick={toggle}
             >
               {open ? <MinusIcon size={20} /> : <PlusIcon size={20} />}
             </Button>
@@ -104,12 +118,19 @@ const CollabsibleTreeParent: React.FC<CollabsibleTreeParentProps> = ({
   )
 }
 
-CollabsibleTree.Parent = CollabsibleTreeParent
+CollapsibleTree.Parent = CollapsibleTreeParent
 
-const CollabsibleTreeLeaf: React.FC<CollabsibleTreeLeafProps> = ({
+/* ---------------------------- CollapsibleTreeLeaf ------------------------------------ */
+
+type CollapsibleTreeLeafProps = {
+  actions?: ActionType[]
+  className?: string
+}
+
+const CollapsibleTreeLeaf: React.FC<CollapsibleTreeLeafProps> = ({
   className,
   children,
-  actions
+  actions,
 }) => {
   return (
     <div
@@ -131,7 +152,7 @@ const CollabsibleTreeLeaf: React.FC<CollabsibleTreeLeafProps> = ({
   )
 }
 
-CollabsibleTree.Leaf = CollabsibleTreeLeaf
+CollapsibleTree.Leaf = CollapsibleTreeLeaf
 
 const Container: React.FC<{ className?: string }> = ({
   children,
@@ -155,12 +176,4 @@ const Trigger = () => {
       <MoreHorizontalIcon size={20} />
     </Button>
   )
-}
-
-CollabsibleTreeParent.defaultProps = {
-  __TYPE: "CollabsibleTreeParent",
-}
-
-CollabsibleTreeLeaf.defaultProps = {
-  __TYPE: "CollabsibleTreeLeaf",
 }
