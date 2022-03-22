@@ -1,6 +1,5 @@
 import clsx from "clsx"
-import React, { useEffect, useState } from "react"
-import { useDebounce } from "../../../hooks/use-debounce"
+import React from "react"
 import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 
@@ -18,32 +17,15 @@ const FocusModal: React.FC<FocusModalProps> = ({
   cancelText = "Cancel",
   submitText = "Save changes",
 }) => {
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
-
-  const debounceInvocation = (method) => (e) => {
-    setIsVisible(false)
-    setTimeout(() => {
-      method(e)
-    }, 100)
-  }
-
   return (
     <div
       className={clsx(
-        "absolute transition-all duration-100 inset-0 bg-grey-0 z-50 flex flex-col items-center",
-        {
-          "scale-[0.98] opacity-0": !isVisible,
-          "scale-100 opacity-100": isVisible,
-        }
+        "absolute inset-0 bg-grey-0 z-50 flex flex-col items-center"
       )}
     >
       <FocusModalHeader
-        handleClose={debounceInvocation(handleClose)}
-        onSubmit={debounceInvocation(onSubmit)}
+        handleClose={handleClose}
+        onSubmit={onSubmit}
         cancelText={cancelText}
         submitText={submitText}
       />
