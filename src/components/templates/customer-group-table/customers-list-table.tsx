@@ -1,12 +1,18 @@
 import React from "react"
-import { HeaderGroup, Row, useSortBy, useTable } from "react-table"
+import {
+  HeaderGroup,
+  Row,
+  usePagination,
+  useSortBy,
+  useTable,
+} from "react-table"
 import { UseMutateFunction } from "react-query"
 import { navigate } from "gatsby"
 
 import { Customer } from "@medusajs/medusa"
 
 import { CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS } from "./config"
-import Table from "../../molecules/table"
+import Table, { TablePagination } from "../../molecules/table"
 import DetailsIcon from "../../fundamentals/details-icon"
 import MailIcon from "../../fundamentals/icons/mail-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
@@ -17,6 +23,8 @@ type CustomersListTableProps = {
   groupId: string
   query?: string
   setQuery: (q: string) => void
+  queryObject: Record<string, any>
+  count: number
 }
 
 type CustomersListTableHeaderRowProps = {
@@ -98,41 +106,90 @@ function CustomersListTableRow(props: CustomersListTableRowProps) {
  * Render a list of customers that belong to a customer group.
  */
 function CustomersListTable(props: CustomersListTableProps) {
-  const { customers, removeCustomers, setQuery, query } = props
+  const {
+    customers,
+    removeCustomers,
+    setQuery,
+    paginate,
+    query,
+    queryObject,
+    count,
+  } = props
 
   const tableConfig = {
     columns: CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS,
     data: customers || [],
+    initialState: {
+      pageSize: queryObject.limit,
+      pageIndex: queryObject.offset / queryObject.limit,
+    },
+    pageCount: Math.ceil(count / queryObject.limit),
+    manualPagination: true,
+    autoResetPage: false,
   }
 
-  const table = useTable(tableConfig, useSortBy)
+  const table = useTable(tableConfig, useSortBy, usePagination)
+
+  // ********* HANDLERS *********
+
+  const handleNext = () => {
+    if (!table.canNextPage) return
+
+    paginate(1)
+    table.nextPage()
+  }
+
+  const handlePrev = () => {
+    if (!table.canPreviousPage) return
+
+    paginate(-1)
+    table.previousPage()
+  }
 
   return (
-    <Table
-      enableSearch
-      handleSearch={setQuery}
-      searchValue={query}
-      {...table.getTableProps()}
-    >
-      <Table.Head>
-        {table.headerGroups?.map((headerGroup, index) => (
-          <CustomersListTableHeaderRow key={index} headerGroup={headerGroup} />
-        ))}
-      </Table.Head>
-
-      <Table.Body {...table.getTableBodyProps()}>
-        {table.rows.map((row) => {
-          table.prepareRow(row)
-          return (
-            <CustomersListTableRow
-              row={row}
-              key={row.id}
-              removeCustomers={removeCustomers}
+    <>
+      <Table
+        enableSearch
+        handleSearch={setQuery}
+        searchValue={query}
+        {...table.getTableProps()}
+      >
+        <Table.Head>
+          {table.headerGroups?.map((headerGroup, index) => (
+            <CustomersListTableHeaderRow
+              key={index}
+              headerGroup={headerGroup}
             />
-          )
-        })}
-      </Table.Body>
-    </Table>
+          ))}
+        </Table.Head>
+
+        <Table.Body {...table.getTableBodyProps()}>
+          {table.rows.map((row) => {
+            table.prepareRow(row)
+            return (
+              <CustomersListTableRow
+                row={row}
+                key={row.id}
+                removeCustomers={removeCustomers}
+              />
+            )
+          })}
+        </Table.Body>
+      </Table>
+      <TablePagination
+        count={count!}
+        limit={queryObject.limit}
+        offset={queryObject.offset}
+        pageSize={queryObject.offset + table.rows.length}
+        title="Customers"
+        currentPage={table.state.pageIndex + 1}
+        pageCount={table.pageCount}
+        nextPage={handleNext}
+        prevPage={handlePrev}
+        hasNext={table.canNextPage}
+        hasPrev={table.canPreviousPage}
+      />
+    </>
   )
 }
 

@@ -21,12 +21,13 @@ import CustomerGroupContext, {
   CustomerGroupContextContainer,
 } from "./context/customer-group-context"
 import useQueryFilters from "../../../hooks/use-query-filters"
+import useSetSearchParams from "../../../hooks/use-set-search-params"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
 const defaultQueryProps = {
   additionalFilters: { expand: "groups" },
-  limit: 15,
+  limit: 2,
   offset: 0,
 }
 
@@ -49,11 +50,18 @@ function CustomersListPlaceholder() {
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
 
-  const { q, reset, paginate, setQuery, queryObject } = useQueryFilters(
-    defaultQueryProps
-  )
+  const {
+    q,
+    reset,
+    paginate,
+    setQuery,
+    queryObject,
+    representationObject,
+  } = useQueryFilters(defaultQueryProps)
 
-  const { customers = [], isLoading } = useAdminCustomerGroupCustomers(
+  useSetSearchParams(representationObject)
+
+  const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
     groupId,
     queryObject
   )
@@ -125,10 +133,13 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
       ) : (
         <CustomersListTable
           query={q}
-          customers={customers}
-          removeCustomers={removeCustomers}
+          count={count || 0}
+          paginate={paginate}
           setQuery={setQuery}
+          customers={customers}
           groupId={props.group.id}
+          queryObject={queryObject}
+          removeCustomers={removeCustomers}
         />
       )}
     </BodyCard>
