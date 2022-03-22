@@ -53,7 +53,6 @@ const Block = ({ children }) => (
     {children}
   </div>
 )
-// const Template = (args) => <FocusModal {...args} />
 
 export const Standard = Template.bind({})
 Standard.args = {
