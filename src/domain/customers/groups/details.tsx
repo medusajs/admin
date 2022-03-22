@@ -6,6 +6,7 @@ import {
   useAdminAddCustomersToCustomerGroup,
   useAdminCustomerGroup,
   useAdminCustomerGroupCustomers,
+  useAdminCustomerGroups,
   useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
 } from "medusa-react"
@@ -70,6 +71,30 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
     groupId
   )
+
+  const [activeGroupId, setActiveGroupId] = useState()
+  const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
+
+  const filteringOptions = [
+    {
+      title: "Groups",
+      options: [
+        {
+          title: "All",
+          onClick: () => setActiveGroupId(null),
+        },
+        ...(customer_groups || []).map((g) => ({
+          title: g.name,
+          count: g.customers.length,
+          onClick: () => setActiveGroupId(g.id),
+        })),
+      ],
+    },
+  ]
+
+  const data = activeGroupId
+    ? customers?.filter((c) => c.groups.some((g) => g.id === activeGroupId))
+    : customers
 
   const [showCustomersModal, setShowCustomersModal] = useState(false)
   const [selectedCustomerIds, setSelectedCustomerIds] = useState(
@@ -136,7 +161,8 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
           count={count || 0}
           paginate={paginate}
           setQuery={setQuery}
-          customers={customers}
+          customers={data}
+          filteringOptions={filteringOptions}
           groupId={props.group.id}
           queryObject={queryObject}
           removeCustomers={removeCustomers}

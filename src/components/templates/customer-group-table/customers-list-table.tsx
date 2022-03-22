@@ -25,6 +25,8 @@ type CustomersListTableProps = {
   setQuery: (q: string) => void
   queryObject: Record<string, any>
   count: number
+  paginate: (d: -1 | 1) => void
+  filteringOptions: any[]
 }
 
 type CustomersListTableHeaderRowProps = {
@@ -111,14 +113,15 @@ function CustomersListTable(props: CustomersListTableProps) {
     removeCustomers,
     setQuery,
     paginate,
+    filteringOptions,
     query,
     queryObject,
     count,
   } = props
 
   const tableConfig = {
+    data: customers,
     columns: CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS,
-    data: customers || [],
     initialState: {
       pageSize: queryObject.limit,
       pageIndex: queryObject.offset / queryObject.limit,
@@ -152,6 +155,7 @@ function CustomersListTable(props: CustomersListTableProps) {
         enableSearch
         handleSearch={setQuery}
         searchValue={query}
+        filteringOptions={filteringOptions}
         {...table.getTableProps()}
       >
         <Table.Head>
