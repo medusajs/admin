@@ -15,6 +15,7 @@ import DraftOrders from "../domain/orders/draft-orders"
 import Returns from "../domain/orders/returns"
 import Swaps from "../domain/orders/swaps"
 import Products from "../domain/products"
+import Pricing from "../domain/pricing"
 import Settings from "../domain/settings"
 
 const IndexPage = () => {
@@ -34,6 +35,7 @@ const IndexPage = () => {
         <PrivateRoute path="swaps" component={Swaps} />
         <PrivateRoute path="discounts/*" component={Discounts} />
         <PrivateRoute path="customers/*" component={Customers} />
+        <PrivateRoute path="pricing/*" component={Pricing} />
         <PrivateRoute path="settings/*" component={Settings} />
       </Router>
     </Layout>
