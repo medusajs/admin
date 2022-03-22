@@ -127,29 +127,16 @@ function CustomerGroupsTableRow(props: CustomerGroupsTableRowProps) {
 /**
  * A container component for rendering customer groups table.
  */
-function CustomerGroupsTable() {
+function CustomerGroupsTable(props) {
   const {
+    customer_groups,
+    queryObject,
+    count,
+    isLoading,
     reset,
     paginate,
     setQuery,
-    queryObject,
-    representationObject,
-  } = useQueryFilters(defaultQueryProps)
-
-  const { customer_groups, isLoading, count = 0 } = useAdminCustomerGroups(
-    queryObject
-  )
-
-  // !!! HACK - `pageCount` can't be set directly as a computed value due to react table circular reference bug.
-  const [pageCount, setPageCount] = useState(
-    Math.ceil(count / queryObject.limit)
-  )
-
-  useEffect(() => {
-    if (!isLoading) setPageCount(Math.ceil(count / queryObject.limit))
-  }, [isLoading, count])
-
-  useSetSearchParams(representationObject)
+  } = props
 
   const tableConfig: TableOptions<UsePaginationOptions<CustomerGroup>> = {
     columns: CUSTOMER_GROUPS_TABLE_COLUMNS,
@@ -158,7 +145,7 @@ function CustomerGroupsTable() {
       pageSize: queryObject.limit,
       pageIndex: queryObject.offset / queryObject.limit,
     },
-    pageCount,
+    pageCount: Math.ceil(count / queryObject.limit),
     manualPagination: true,
     autoResetPage: false,
   }
@@ -243,4 +230,23 @@ function CustomerGroupsTable() {
   )
 }
 
-export default CustomerGroupsTable
+function CustomerGroupsTableContainer() {
+  const params = useQueryFilters(defaultQueryProps)
+
+  const { customer_groups = [], isLoading, count = 0 } = useAdminCustomerGroups(
+    params.queryObject
+  )
+
+  useSetSearchParams(params.representationObject)
+
+  return (
+    <CustomerGroupsTable
+      count={count}
+      isLoading={isLoading}
+      customer_groups={customer_groups}
+      {...params}
+    />
+  )
+}
+
+export default CustomerGroupsTableContainer
