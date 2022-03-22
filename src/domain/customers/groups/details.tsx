@@ -23,12 +23,13 @@ import CustomerGroupContext, {
 } from "./context/customer-group-context"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import useSetSearchParams from "../../../hooks/use-set-search-params"
+import DeletePrompt from "../../../components/organisms/delete-prompt"
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
 const defaultQueryProps = {
   additionalFilters: { expand: "groups" },
-  limit: 2,
+  limit: 15,
   offset: 0,
 }
 
@@ -60,7 +61,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     representationObject,
   } = useQueryFilters(defaultQueryProps)
 
-  useSetSearchParams(representationObject)
+  // useSetSearchParams(representationObject)
 
   const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
     groupId,
@@ -181,6 +182,7 @@ type CustomerGroupDetailsHeaderProps = {
  */
 function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
   const { showModal } = useContext(CustomerGroupContext)
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const { mutate: deleteGroup } = useAdminDeleteCustomerGroup(
     props.customerGroup.id
   )
@@ -194,21 +196,39 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
     {
       label: "Delete",
       onClick: () => {
-        deleteGroup()
-        navigate("/a/customers/groups")
-      }, // TODO: confirmation
+        setShowDeleteConfirmation(true)
+      },
       variant: "danger",
       icon: <TrashIcon size={20} />,
     },
   ]
 
+  const onDeleteConfirmed = async () => {
+    deleteGroup()
+    navigate("/a/customers/groups")
+  }
+
+  const handleConfirmDialogClose = () => setShowDeleteConfirmation(false)
+
   return (
-    <BodyCard
-      title={props.customerGroup.name}
-      actionables={actions}
-      className="min-h-0 w-full"
-      subtitle={" "}
-    />
+    <>
+      <BodyCard
+        title={props.customerGroup.name}
+        actionables={actions}
+        className="min-h-0 w-full"
+        subtitle={" "}
+      />
+      {showDeleteConfirmation && (
+        <DeletePrompt
+          onDelete={onDeleteConfirmed}
+          handleClose={handleConfirmDialogClose}
+          confirmText="Yes, delete"
+          heading="Delete the group"
+          successText="Group deleted"
+          text="Are you sure you want to delete this customer group?"
+        />
+      )}
+    </>
   )
 }
 

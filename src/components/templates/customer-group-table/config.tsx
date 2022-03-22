@@ -9,7 +9,11 @@ import CustomersGroupsSummary from "../../molecules/customers-groups-summary"
 
 export const CUSTOMER_GROUPS_TABLE_COLUMNS: Column<CustomerGroup>[] = [
   {
-    Header: "Title",
+    Header: () => (
+      <div className="flex items-center gap-1">
+        Title <SortingIcon size={16} />
+      </div>
+    ),
     accessor: "name",
   },
   {
@@ -25,14 +29,22 @@ export const CUSTOMER_GROUPS_TABLE_COLUMNS: Column<CustomerGroup>[] = [
 
 export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS: Column<Customer>[] = [
   {
-    Header: "Name",
+    Header: () => (
+      <div className="flex items-center gap-1">
+        Name <SortingIcon size={16} />
+      </div>
+    ),
     accessor: "customer",
     Cell: ({ row }) => (
       <CustomerAvatarItem customer={row.original} color={getColor(row.index)} />
     ),
   },
   {
-    Header: "Email",
+    Header: () => (
+      <div className="flex items-center gap-1">
+        Email <SortingIcon size={16} />
+      </div>
+    ),
     accessor: "email",
   },
   {
@@ -46,23 +58,28 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS: Column<
   Customer
 >[] = [
   {
-    Header: "Name",
+    Header: () => (
+      <div className="flex items-center gap-1">
+        Name <SortingIcon size={16} />
+      </div>
+    ),
     accessor: "customer",
     Cell: ({ row }) => (
       <CustomerAvatarItem customer={row.original} color={getColor(row.index)} />
     ),
   },
   {
-    Header: "Email",
+    Header: () => (
+      <div className="flex items-center gap-1">
+        Email <SortingIcon size={16} />
+      </div>
+    ),
     accessor: "email",
   },
   {
     accessor: "groups",
-    Header: () => (
-      <div className="flex items-center gap-1 justify-start">
-        Groups <SortingIcon size={16} />
-      </div>
-    ),
+    disableSortBy: true,
+    Header: "Groups",
     Cell: ({ cell: { value } }) => <CustomersGroupsSummary groups={value} />,
   },
   {

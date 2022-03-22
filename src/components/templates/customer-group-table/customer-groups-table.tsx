@@ -237,7 +237,7 @@ function CustomerGroupsTableContainer() {
     params.queryObject
   )
 
-  // useSetSearchParams(params.representationObject)
+  useSetSearchParams(params.representationObject)
 
   return (
     <CustomerGroupsTable
