@@ -11,7 +11,6 @@ import useQueryFilters from "../../../hooks/use-query-filters"
 
 const defaultQueryProps = {
   additionalFilters: { expand: "groups" },
-  limit: 2,
 }
 
 type EditCustomersTableProps = {
@@ -67,27 +66,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     getRowId: (row) => row.id,
   }
 
-  const table = useTable(tableConfig, usePagination, useRowSelect, (hooks) => {
-    hooks.visibleColumns.push((columns) => [
-      {
-        id: "selection",
-        Header: ({ getToggleAllPageRowsSelectedProps }) => (
-          <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
-        ),
-        Cell: ({ row }) => {
-          return (
-            <Table.Cell
-              onClick={(e) => e.stopPropagation()}
-              className="w-[100px]"
-            >
-              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-            </Table.Cell>
-          )
-        },
-      },
-      ...columns,
-    ])
-  })
+  const table = useTable(tableConfig, usePagination, useRowSelect)
 
   useEffect(() => {
     setSelectedCustomerIds(Object.keys(table.state.selectedRowIds))

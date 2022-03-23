@@ -29,7 +29,7 @@ import DeletePrompt from "../../../components/organisms/delete-prompt"
  */
 const defaultQueryProps = {
   additionalFilters: { expand: "groups" },
-  limit: 2,
+  limit: 15,
   offset: 0,
 }
 
