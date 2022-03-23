@@ -66,10 +66,3 @@ FullScreenFade.args = {
     </FocusModal>
   ),
 }
-
-// export const Overflow = Template.bind({})
-// Overflow.args = {
-//   children: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-//     <span className="inter-base-regular">{i}</span>
-//   )),
-// }

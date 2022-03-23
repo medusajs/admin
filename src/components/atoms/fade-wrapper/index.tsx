@@ -7,12 +7,14 @@ type FadeProps = {
   start?: string
   transitionClass?: string
   end?: string
+  classname?: string
 }
 
 const Fade: React.FC<FadeProps> = ({
   isVisible,
   start,
   end,
+  classname,
   children,
   isFullScreen = false,
 }) => {
@@ -33,7 +35,9 @@ const Fade: React.FC<FadeProps> = ({
   }
 
   return (
-    <div className={clsx("transition-all duration-100 z-50", classes)}>
+    <div
+      className={clsx("transition-all duration-100 z-50", classes, classname)}
+    >
       {show ? children : null}
     </div>
   )
