@@ -11,6 +11,7 @@ import useQueryFilters from "../../../hooks/use-query-filters"
 
 const defaultQueryProps = {
   additionalFilters: { expand: "groups" },
+  limit: 2,
 }
 
 type EditCustomersTableProps = {
@@ -41,20 +42,6 @@ function EditCustomersTable(props: EditCustomersTableProps) {
 
   const [numPages, setNumPages] = useState(0)
 
-  const handleNext = () => {
-    if (!table.canNextPage) return
-
-    paginate(1)
-    table.nextPage()
-  }
-
-  const handlePrev = () => {
-    if (!table.canPreviousPage) return
-
-    paginate(-1)
-    table.previousPage()
-  }
-
   useEffect(() => {
     if (typeof count !== "undefined") {
       const controlledPageCount = Math.ceil(count / queryObject.limit)
@@ -65,7 +52,6 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   const tableConfig = {
     columns: CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS,
     data: data,
-    manualPagination: true,
     initialState: {
       pageSize: queryObject.limit,
       pageIndex: queryObject.offset / queryObject.limit,
@@ -76,6 +62,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     },
     pageCount: numPages,
     autoResetSelectedRows: false,
+    manualPagination: true,
     autoResetPage: false,
     getRowId: (row) => row.id,
   }
@@ -123,6 +110,26 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     },
   ]
 
+  const handleNext = () => {
+    if (!table.canNextPage) return
+
+    paginate(1)
+    table.nextPage()
+  }
+
+  const handlePrev = () => {
+    if (!table.canPreviousPage) return
+
+    paginate(-1)
+    table.previousPage()
+  }
+
+  const handleSearch = (text: string) => {
+    setQuery(text)
+
+    if (text) table.gotoPage(0)
+  }
+
   return (
     <Modal handleClose={onClose}>
       <Modal.Body>
@@ -134,7 +141,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
             <Table
               filteringOptions={filteringOptions}
               enableSearch
-              handleSearch={setQuery}
+              handleSearch={handleSearch}
               searchValue={queryObject.q}
               {...table.getTableProps()}
             >
@@ -185,7 +192,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
               pageCount={table.pageCount}
               nextPage={handleNext}
               prevPage={handlePrev}
-              hasNext={table.anNextPage}
+              hasNext={table.canNextPage}
               hasPrev={table.canPreviousPage}
             />
           </div>
