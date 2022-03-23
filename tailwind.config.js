@@ -260,6 +260,16 @@ module.exports = {
             transform: "translateX(0)",
           },
         },
+        "fade-in-top": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(-10px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
         enter: {
           "0%": { transform: "scale(0.9)", opacity: 0 },
           "100%": { transform: "scale(1)", opacity: 1 },
@@ -282,6 +292,7 @@ module.exports = {
         ring: "ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
         "fade-in-right":
           "fade-in-right 0.3s cubic-bezier(0.5, 0, 0.5, 1) forwards",
+        "fade-in-top": "fade-in-top 0.2s cubic-bezier(0.5, 0, 0.5, 1) forwards",
         enter: "enter 200ms ease-out",
         "slide-in": "slide-in 1.2s cubic-bezier(.41,.73,.51,1.02)",
         leave: "leave 150ms ease-in forwards",
