@@ -54,13 +54,23 @@ type CustomerGroupCustomersListProps = { group: CustomerGroup }
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
 
+  // an id of a group that is currently active in the table filters
+  const [activeGroupId, setActiveGroupId] = useState()
+  // toggle to show/hide "edit customers" modal
+  const [showCustomersModal, setShowCustomersModal] = useState(false)
+
   const { q, paginate, setQuery, queryObject } = useQueryFilters(
     defaultQueryProps
   )
 
+  // TODO: revisit groups since current logic in the API layer will return customers for `activeGroupId`
+  // but also for the `groupId`
   const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
     groupId,
-    queryObject
+    {
+      ...queryObject,
+      groups: activeGroupId ? [activeGroupId] : null,
+    }
   )
 
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
@@ -89,10 +99,6 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     },
   ]
 
-  // an id of a group that is currently active in the table filters
-  const [activeGroupId, setActiveGroupId] = useState()
-  // toggle to show/hide "edit customers" modal
-  const [showCustomersModal, setShowCustomersModal] = useState(false)
   // list of currently selected customers of a group
   const [selectedCustomerIds, setSelectedCustomerIds] = useState(
     customers.map((c) => c.id)
@@ -101,10 +107,6 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   useEffect(() => {
     if (!isLoading) setSelectedCustomerIds(customers.map((c) => c.id))
   }, [isLoading, customers])
-
-  const data = activeGroupId
-    ? customers?.filter((c) => c.groups.some((g) => g.id === activeGroupId))
-    : customers
 
   const showPlaceholder = !isLoading && !customers.length && !q
 
@@ -168,7 +170,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
           count={count || 0}
           paginate={paginate}
           setQuery={setQuery}
-          customers={data}
+          customers={customers}
           filteringOptions={filteringOptions}
           groupId={props.group.id}
           queryObject={queryObject}
@@ -189,6 +191,7 @@ type CustomerGroupDetailsHeaderProps = {
 function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
   const { showModal } = useContext(CustomerGroupContext)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+
   const { mutate: deleteGroup } = useAdminDeleteCustomerGroup(
     props.customerGroup.id
   )

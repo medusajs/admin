@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react"
+import { Customer } from "@medusajs/medusa"
 import { useAdminCustomerGroups, useAdminCustomers } from "medusa-react"
-import { usePagination, useRowSelect, useTable } from "react-table"
+import {
+  HeaderGroup,
+  Row,
+  usePagination,
+  useRowSelect,
+  useTable,
+} from "react-table"
 
 import Modal from "../../molecules/modal"
 import Button from "../../fundamentals/button"
@@ -9,8 +16,46 @@ import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import useQueryFilters from "../../../hooks/use-query-filters"
 
+/**
+ * Default filtering config for querying customers endpoint.
+ */
 const defaultQueryProps = {
   additionalFilters: { expand: "groups" },
+  limit: 15,
+}
+
+type EditCustomersTableHeaderRowProps = { headerGroup: HeaderGroup<Customer> }
+
+function EditCustomersTableHeaderRow(props: EditCustomersTableHeaderRowProps) {
+  const { headerGroup } = props
+
+  return (
+    <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+      {headerGroup.headers.map((col, index) => (
+        <Table.HeadCell className="w-[100px]" {...col.getHeaderProps()}>
+          {col.render("Header")}
+        </Table.HeadCell>
+      ))}
+    </Table.HeadRow>
+  )
+}
+
+type EditCustomersTableRowProps = { row: Row<Customer> }
+
+function EditCustomersTableRow(props: EditCustomersTableRowProps) {
+  return (
+    <Table.Row
+      color={"inherit"}
+      linkTo={`/a/customers/${props.row.original.id}`}
+      {...props.row.getRowProps()}
+    >
+      {props.row.cells.map((cell, index) => (
+        <Table.Cell {...cell.getCellProps()}>
+          {cell.render("Cell", { index })}
+        </Table.Cell>
+      ))}
+    </Table.Row>
+  )
 }
 
 type EditCustomersTableProps = {
@@ -30,16 +75,14 @@ function EditCustomersTable(props: EditCustomersTableProps) {
 
   const { paginate, setQuery, queryObject } = useQueryFilters(defaultQueryProps)
 
-  const [activeGroupId, setActiveGroupId] = useState()
-  const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
-
-  const { customers = [], count = 0 } = useAdminCustomers(queryObject)
-
-  const data = activeGroupId
-    ? customers?.filter((c) => c.groups.some((g) => g.id === activeGroupId))
-    : customers
-
   const [numPages, setNumPages] = useState(0)
+  const [activeGroupId, setActiveGroupId] = useState()
+
+  const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
+  const { customers = [], count = 0 } = useAdminCustomers({
+    ...queryObject,
+    groups: activeGroupId ? [activeGroupId] : null,
+  })
 
   useEffect(() => {
     if (typeof count !== "undefined") {
@@ -50,7 +93,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
 
   const tableConfig = {
     columns: CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS,
-    data: data,
+    data: customers,
     initialState: {
       pageSize: queryObject.limit,
       pageIndex: queryObject.offset / queryObject.limit,
@@ -115,6 +158,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
         <Modal.Header handleClose={onClose}>
           <h3 className="inter-xlarge-semibold">Edit Customers</h3>
         </Modal.Header>
+
         <Modal.Content>
           <div className="w-full flex flex-col justify-between h-[650px]">
             <Table
@@ -126,37 +170,14 @@ function EditCustomersTable(props: EditCustomersTableProps) {
             >
               <Table.Head>
                 {table.headerGroups?.map((headerGroup) => (
-                  <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map((col, index) => (
-                      <Table.HeadCell
-                        className="w-[100px]"
-                        {...col.getHeaderProps()}
-                      >
-                        {col.render("Header")}
-                      </Table.HeadCell>
-                    ))}
-                  </Table.HeadRow>
+                  <EditCustomersTableHeaderRow headerGroup={headerGroup} />
                 ))}
               </Table.Head>
 
               <Table.Body {...table.getTableBodyProps()}>
                 {table.rows.map((row) => {
                   table.prepareRow(row)
-                  return (
-                    <Table.Row
-                      color={"inherit"}
-                      linkTo={`/a/customers/${row.original.id}`}
-                      {...row.getRowProps()}
-                    >
-                      {row.cells.map((cell, index) => {
-                        return (
-                          <Table.Cell {...cell.getCellProps()}>
-                            {cell.render("Cell", { index })}
-                          </Table.Cell>
-                        )
-                      })}
-                    </Table.Row>
-                  )
+                  return <EditCustomersTableRow row={row} />
                 })}
               </Table.Body>
             </Table>

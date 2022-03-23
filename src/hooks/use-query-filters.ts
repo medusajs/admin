@@ -25,7 +25,7 @@ enum Direction {
 enum FilterActionType {
   SET_QUERY = "setQuery",
   SET_FILTERS = "setFilters",
-  RESET = "reset",
+  // RESET = "reset",
   SET_OFFSET = "setOffset",
   SET_DEFAULTS = "setDefaults",
 }
@@ -33,7 +33,7 @@ enum FilterActionType {
 type FilterAction =
   | { type: FilterActionType.SET_QUERY; payload: string | null }
   | { type: FilterActionType.SET_FILTERS; payload: FilterState }
-  | { type: FilterActionType.RESET; payload: FilterState }
+  // | { type: FilterActionType.RESET; payload: FilterState }
   | { type: FilterActionType.SET_OFFSET; payload: number }
   | {
       type: FilterActionType.SET_DEFAULTS
@@ -129,8 +129,7 @@ function parseQueryString<T>(
  * State reducer for the filters hook.
  */
 function reducer(state: FilterState, action: FilterAction): FilterState {
-  if (action.type === FilterActionType.SET_FILTERS)
-    return { ...state, q: action?.payload?.q }
+  if (action.type === FilterActionType.SET_FILTERS) return { ...action.payload }
 
   if (action.type === FilterActionType.SET_QUERY)
     // if the query term has changed reset offset to 0 also
@@ -139,7 +138,7 @@ function reducer(state: FilterState, action: FilterAction): FilterState {
   if (action.type === FilterActionType.SET_OFFSET)
     return { ...state, offset: action.payload }
 
-  if (action.type === FilterActionType.RESET) return action.payload
+  // if (action.type === FilterActionType.RESET) return action.payload
 
   return state
 }

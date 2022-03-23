@@ -22,6 +22,10 @@ type CustomerGroupContextContainer = PropsWithChildren<{
   group?: CustomerGroup
 }>
 
+/**
+ * A context provider which sets a display mode for `CustomerGroupModal` (create/edit)
+ * and provide form data inside the context.
+ */
 export function CustomerGroupContextContainer(
   props: CustomerGroupContextContainer
 ) {

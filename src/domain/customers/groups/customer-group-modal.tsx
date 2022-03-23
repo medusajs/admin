@@ -7,13 +7,16 @@ import Input from "../../../components/molecules/input"
 import Button from "../../../components/fundamentals/button"
 import Metadata, { MetadataField } from "../../../components/organisms/metadata"
 
-type P = {
+type CustomerGroupModalProps = {
   handleClose: () => void
   initialData?: CustomerGroup
   handleSubmit: (data: CustomerGroup) => void
 }
 
-function CustomerGroupModal(props: P) {
+/**
+ * A modal for crating/editing customer groups.
+ */
+function CustomerGroupModal(props: CustomerGroupModalProps) {
   const { initialData, handleSubmit, handleClose } = props
 
   const isEdit = !!initialData
