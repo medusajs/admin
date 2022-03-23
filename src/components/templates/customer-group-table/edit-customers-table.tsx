@@ -26,6 +26,9 @@ const defaultQueryProps = {
 
 type EditCustomersTableHeaderRowProps = { headerGroup: HeaderGroup<Customer> }
 
+/**
+ * Edit customers table header row.
+ */
 function EditCustomersTableHeaderRow(props: EditCustomersTableHeaderRowProps) {
   const { headerGroup } = props
 
@@ -42,6 +45,9 @@ function EditCustomersTableHeaderRow(props: EditCustomersTableHeaderRowProps) {
 
 type EditCustomersTableRowProps = { row: Row<Customer> }
 
+/**
+ * Edit customers table row.
+ */
 function EditCustomersTableRow(props: EditCustomersTableRowProps) {
   return (
     <Table.Row
@@ -65,6 +71,9 @@ type EditCustomersTableProps = {
   setSelectedCustomerIds: (customerIds: string[]) => void
 }
 
+/**
+ * Container for the "edit customers" table.
+ */
 function EditCustomersTable(props: EditCustomersTableProps) {
   const {
     setSelectedCustomerIds,
@@ -73,7 +82,13 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     onClose,
   } = props
 
-  const { paginate, setQuery, queryObject } = useQueryFilters(defaultQueryProps)
+  const {
+    paginate,
+    setQuery,
+    setFilters,
+    filters,
+    queryObject,
+  } = useQueryFilters(defaultQueryProps)
 
   const [numPages, setNumPages] = useState(0)
   const [activeGroupId, setActiveGroupId] = useState()
@@ -114,6 +129,11 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   useEffect(() => {
     setSelectedCustomerIds(Object.keys(table.state.selectedRowIds))
   }, [table.state.selectedRowIds])
+
+  useEffect(() => {
+    setFilters("offset", 0)
+    table.gotoPage(0)
+  }, [activeGroupId])
 
   const filteringOptions = [
     {

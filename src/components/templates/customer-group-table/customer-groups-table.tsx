@@ -210,7 +210,7 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
 
       {/*PAGINATION*/}
       <TablePagination
-        count={count!}
+        count={count}
         limit={queryObject.limit}
         offset={queryObject.offset}
         pageSize={queryObject.offset + table.rows.length}

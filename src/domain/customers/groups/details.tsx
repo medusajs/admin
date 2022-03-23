@@ -59,12 +59,11 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   // toggle to show/hide "edit customers" modal
   const [showCustomersModal, setShowCustomersModal] = useState(false)
 
-  const { q, paginate, setQuery, queryObject } = useQueryFilters(
+  const { q, queryObject, paginate, setQuery } = useQueryFilters(
     defaultQueryProps
   )
 
-  // TODO: revisit groups since current logic in the API layer will return customers for `activeGroupId`
-  // but also for the `groupId`
+  // TODO revisit: current logic in the API layer will return customers for `activeGroupId` but also for the `groupId`
   const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
     groupId,
     {
