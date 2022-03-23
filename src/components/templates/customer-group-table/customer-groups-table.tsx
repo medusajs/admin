@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext } from "react"
 import { useAdminCustomerGroups } from "medusa-react"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
@@ -24,6 +24,9 @@ import CustomerGroupContext, {
   CustomerGroupContextContainer,
 } from "../../../domain/customers/groups/context/customer-group-context"
 
+/**
+ * Default filtering config for querying customer groups endpoint.
+ */
 const defaultQueryProps = {
   additionalFilters: { expand: "customers" },
   limit: 15,
@@ -121,18 +124,22 @@ function CustomerGroupsTableRow(props: CustomerGroupsTableRowProps) {
 }
 
 /***********************************************/
-/*************** TABLE CONTAINER ***************/
+/************** TABLE CONTAINERS ***************/
 /***********************************************/
 
+type CustomerGroupsTableProps = ReturnType<typeof useQueryFilters> & {
+  customerGroups: CustomerGroup[]
+  count: number
+}
+
 /**
- * A container component for rendering customer groups table.
+ * Root component of the customer groups table.
  */
-function CustomerGroupsTable(props) {
+function CustomerGroupsTable(props: CustomerGroupsTableProps) {
   const {
-    customer_groups,
+    customerGroups,
     queryObject,
     count,
-    isLoading,
     reset,
     paginate,
     setQuery,
@@ -140,7 +147,7 @@ function CustomerGroupsTable(props) {
 
   const tableConfig: TableOptions<UsePaginationOptions<CustomerGroup>> = {
     columns: CUSTOMER_GROUPS_TABLE_COLUMNS,
-    data: customer_groups || [],
+    data: customerGroups || [],
     initialState: {
       pageSize: queryObject.limit,
       pageIndex: queryObject.offset / queryObject.limit,
@@ -180,9 +187,6 @@ function CustomerGroupsTable(props) {
   }
 
   // ********* RENDER *********
-
-  if (!isLoading && !customer_groups?.length && !queryObject.q)
-    return <CustomerGroupsPlaceholder />
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
@@ -230,6 +234,10 @@ function CustomerGroupsTable(props) {
   )
 }
 
+/**
+ * A container component for the customers group table.
+ * Handles data fetching and query params persistence.
+ */
 function CustomerGroupsTableContainer() {
   const params = useQueryFilters(defaultQueryProps)
 
@@ -239,11 +247,15 @@ function CustomerGroupsTableContainer() {
 
   useSetSearchParams(params.representationObject)
 
+  const showPlaceholder =
+    !isLoading && !customer_groups?.length && !params.queryObject.q
+
+  if (showPlaceholder) return <CustomerGroupsPlaceholder />
+
   return (
     <CustomerGroupsTable
       count={count}
-      isLoading={isLoading}
-      customer_groups={customer_groups}
+      customerGroups={customer_groups}
       {...params}
     />
   )
