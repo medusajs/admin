@@ -1,45 +1,62 @@
+import { useParams } from "@reach/router"
+import { navigate } from "gatsby"
 import {
   useAdminCollections,
   useAdminDeleteProduct,
-  useAdminProduct,
   useAdminProductTypes,
   useAdminUpdateProduct,
 } from "medusa-react"
 import React from "react"
 import { Controller } from "react-hook-form"
+import Checkbox from "../../../../components/atoms/checkbox"
+import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import InfoTooltip from "../../../../components/molecules/info-tooltip"
 import Input from "../../../../components/molecules/input"
 import Select from "../../../../components/molecules/select"
+import StatusSelector from "../../../../components/molecules/status-selector"
 import TagInput from "../../../../components/molecules/tag-input"
 import Textarea from "../../../../components/molecules/textarea"
 import BodyCard from "../../../../components/organisms/body-card"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
+import useNotification from "../../../../hooks/use-notification"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import {
   SINGLE_PRODUCT_VIEW,
   useProductForm,
   VARIANTS_VIEW,
 } from "../form/product-form-context"
-import { useParams } from "@reach/router"
-import useNotification from "../../../../hooks/use-notification"
-import { navigate } from "gatsby"
-import { getErrorMessage } from "../../../../utils/error-messages"
-import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import StatusSelector from "../../../../components/molecules/status-selector"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
-import Checkbox from "../../../../components/atoms/checkbox"
 
 const General = ({ showViewOptions = true, isEdit = false, product }) => {
-  const { register, control, setViewType, viewType } = useProductForm()
-  const { types } = useAdminProductTypes()
+  const {
+    register,
+    control,
+    setViewType,
+    viewType,
+    setValue,
+  } = useProductForm()
+  const { product_types } = useAdminProductTypes(undefined, { cacheTime: 0 })
   const { collections } = useAdminCollections()
 
   const typeOptions =
-    types?.map((tag) => ({ label: tag.value, value: tag.id })) || []
+    product_types?.map((tag) => ({ label: tag.value, value: tag.id })) || []
   const collectionOptions =
     collections?.map((collection) => ({
       label: collection.title,
       value: collection.id,
     })) || []
+
+  const setNewType = (value: string) => {
+    const newType = {
+      label: value,
+      value,
+    }
+
+    typeOptions.push(newType)
+    setValue("type", newType)
+
+    return newType
+  }
 
   return (
     <GeneralBodyCard
@@ -64,14 +81,18 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="title"
             placeholder="Jacket, Sunglasses..."
             required
-            ref={register({ required: true })}
+            ref={register({
+              required: true,
+              minLength: 1,
+              pattern: /(.|\s)*\S(.|\s)*/,
+            })}
           />
           <Input
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
             label="Handle"
             name="handle"
             placeholder="/bathrobe"
-            ref={register({ required: true })}
+            ref={register()}
           />
         </div>
         <label
@@ -96,16 +117,29 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             control={control}
             label="Collection"
             name="collection"
-            overrideStrings={{ selectSomeItems: "Select collection..." }}
+            placeholder="Select collection..."
             options={collectionOptions}
+            clearSelected
           />
           <Controller
-            as={Select}
             control={control}
-            label="Type"
             name="type"
-            overrideStrings={{ selectSomeItems: "Select type..." }}
-            options={typeOptions}
+            render={({ value, onChange }) => {
+              return (
+                <Select
+                  label="Type"
+                  placeholder="Select type..."
+                  options={typeOptions}
+                  onChange={onChange}
+                  value={value}
+                  isCreatable
+                  onCreateOption={(value) => {
+                    return setNewType(value)
+                  }}
+                  clearSelected
+                />
+              )
+            }}
           />
           <Controller
             name="tags"
@@ -134,7 +168,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           <RadioGroup.Root
             value={viewType}
             onValueChange={setViewType}
-            className="flex items-center gap-4"
+            className="flex items-center gap-4 mt-xlarge"
           >
             <RadioGroup.SimpleItem
               label="Simple product"

@@ -107,7 +107,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
         <Breadcrumb
           currentPage="Edit Collection"
           previousBreadcrumb="Collections"
-          previousRoute="/a/collections"
+          previousRoute="/a/products?view=collections"
         />
         <div className="rounded-rounded py-large px-xlarge border border-grey-20 bg-grey-0 mb-large">
           {isLoading || !collection ? (

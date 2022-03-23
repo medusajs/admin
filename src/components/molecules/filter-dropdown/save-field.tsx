@@ -1,8 +1,7 @@
-import React, { ReactNode, useState } from "react"
-import * as RadixPopover from "@radix-ui/react-popover"
-
+import React from "react"
 import Button from "../../fundamentals/button"
 import InputField from "../input"
+import { trim } from "lodash"
 
 type SaveFilterItemProps = {
   saveFilter: () => void
@@ -16,7 +15,11 @@ const SaveFilterItem: React.FC<SaveFilterItemProps> = ({
   name,
 }) => {
   const onSave = () => {
-    saveFilter()
+    const trimmedName = trim(name)
+    if (trimmedName !== "") {
+      saveFilter()
+      setName("")
+    }
   }
 
   return (

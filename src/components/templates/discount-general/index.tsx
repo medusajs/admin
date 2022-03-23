@@ -90,7 +90,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
           <StatusSelector
             isDraft={isDisabled}
             activeState="Active"
-            draftState="Draft"
+            draftState="Disable"
             onChange={() => {
               if (onStatusChange) {
                 onStatusChange()
