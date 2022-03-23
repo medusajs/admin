@@ -182,8 +182,7 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
   const handleSearch = (text: string) => {
     setQuery(text)
 
-    if (!text) reset()
-    else table.gotoPage(0)
+    if (text) table.gotoPage(0)
   }
 
   // ********* RENDER *********

@@ -25,8 +25,9 @@ import useQueryFilters from "../../../hooks/use-query-filters"
 import useSetSearchParams from "../../../hooks/use-set-search-params"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 
-type CustomerGroupCustomersListProps = { group: CustomerGroup }
-
+/**
+ * Default filtering config for querying customer group customers list endpoint.
+ */
 const defaultQueryProps = {
   additionalFilters: { expand: "groups" },
   limit: 15,
@@ -46,22 +47,17 @@ function CustomersListPlaceholder() {
   )
 }
 
+type CustomerGroupCustomersListProps = { group: CustomerGroup }
+
 /**
  * Customer groups list container.
  */
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
 
-  const {
-    q,
-    reset,
-    paginate,
-    setQuery,
-    queryObject,
-    representationObject,
-  } = useQueryFilters(defaultQueryProps)
-
-  // useSetSearchParams(representationObject)
+  const { q, paginate, setQuery, queryObject } = useQueryFilters(
+    defaultQueryProps
+  )
 
   const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
     groupId,
@@ -73,8 +69,9 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     groupId
   )
 
-  const [activeGroupId, setActiveGroupId] = useState()
   const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
+
+  // useSetSearchParams(representationObject)
 
   const filteringOptions = [
     {
@@ -93,14 +90,15 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     },
   ]
 
-  const data = activeGroupId
-    ? customers?.filter((c) => c.groups.some((g) => g.id === activeGroupId))
-    : customers
-
+  const [activeGroupId, setActiveGroupId] = useState()
   const [showCustomersModal, setShowCustomersModal] = useState(false)
   const [selectedCustomerIds, setSelectedCustomerIds] = useState(
     customers.map((c) => c.id)
   )
+
+  const data = activeGroupId
+    ? customers?.filter((c) => c.groups.some((g) => g.id === activeGroupId))
+    : customers
 
   const showPlaceholder = !isLoading && !customers.length && !q
 

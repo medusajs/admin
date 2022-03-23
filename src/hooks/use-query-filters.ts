@@ -133,7 +133,7 @@ function reducer(state: FilterState, action: FilterAction): FilterState {
     return { ...state, q: action?.payload?.q }
 
   if (action.type === FilterActionType.SET_QUERY)
-    // if the query term has changed reset offset to 0 zero also
+    // if the query term has changed reset offset to 0 also
     return { ...state, q: action.payload, offset: 0 }
 
   if (action.type === FilterActionType.SET_OFFSET)
@@ -155,6 +155,8 @@ function useQueryFilters(defaultFilters: Partial<FilterState>) {
     parseQueryString(searchString, defaultFilters)
   )
 
+  /********** API METHODS **********/
+
   const setDefaultFilters = (filters: AdditionalFilters | null) => {
     dispatch({ type: FilterActionType.SET_DEFAULTS, payload: filters })
   }
@@ -170,16 +172,6 @@ function useQueryFilters(defaultFilters: Partial<FilterState>) {
     }
   }
 
-  const reset = () =>
-    dispatch({
-      type: FilterActionType.SET_FILTERS,
-      payload: {
-        ...state,
-        offset: 0,
-        q: null,
-      },
-    })
-
   const setFilters = (filters: FilterState) =>
     dispatch({ type: FilterActionType.SET_FILTERS, payload: filters })
 
@@ -193,6 +185,8 @@ function useQueryFilters(defaultFilters: Partial<FilterState>) {
     const obj = getRepresentationObject(state)
     return qs.stringify(obj, { skipNulls: true })
   }
+
+  /********** VALUES **********/
 
   const queryObject = useMemo(() => getQueryObject(state), [state])
   const representationObject = useMemo(() => getRepresentationObject(state), [
@@ -215,7 +209,6 @@ function useQueryFilters(defaultFilters: Partial<FilterState>) {
     setQuery,
     setFilters,
     setDefaultFilters,
-    reset,
   }
 }
 

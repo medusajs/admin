@@ -17,6 +17,15 @@ import DetailsIcon from "../../fundamentals/details-icon"
 import MailIcon from "../../fundamentals/icons/mail-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 
+type CustomersListTableHeaderRowProps = {
+  headerGroup: HeaderGroup<Customer>
+}
+
+interface CustomersListTableRowProps {
+  row: Row<Customer>
+  removeCustomers: Function
+}
+
 type CustomersListTableProps = {
   customers: Customer[]
   removeCustomers: UseMutateFunction<any, Error, any, unknown>
@@ -27,10 +36,6 @@ type CustomersListTableProps = {
   count: number
   paginate: (d: -1 | 1) => void
   filteringOptions: any[]
-}
-
-type CustomersListTableHeaderRowProps = {
-  headerGroup: HeaderGroup<Customer>
 }
 
 /**
@@ -63,6 +68,9 @@ interface CustomersListTableRowProps {
   removeCustomers: Function
 }
 
+/**
+ * Renders customer group customers list table row.
+ */
 function CustomersListTableRow(props: CustomersListTableRowProps) {
   const { row, removeCustomers } = props
 
@@ -180,6 +188,7 @@ function CustomersListTable(props: CustomersListTableProps) {
           })}
         </Table.Body>
       </Table>
+
       <TablePagination
         count={count!}
         limit={queryObject.limit}
