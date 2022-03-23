@@ -16,6 +16,12 @@ import Table, { TablePagination } from "../../molecules/table"
 import DetailsIcon from "../../fundamentals/details-icon"
 import MailIcon from "../../fundamentals/icons/mail-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
+import useQueryFilters from "../../../hooks/use-query-filters"
+import { FilteringOptionProps } from "../../molecules/table/filtering-option"
+
+/************************************/
+/*************** TYPES **************/
+/************************************/
 
 type CustomersListTableHeaderRowProps = {
   headerGroup: HeaderGroup<Customer>
@@ -26,17 +32,17 @@ interface CustomersListTableRowProps {
   removeCustomers: Function
 }
 
-type CustomersListTableProps = {
-  customers: Customer[]
-  removeCustomers: UseMutateFunction<any, Error, any, unknown>
-  groupId: string
-  query?: string
-  setQuery: (q: string) => void
-  queryObject: Record<string, any>
+type CustomersListTableProps = ReturnType<typeof useQueryFilters> & {
   count: number
-  paginate: (d: -1 | 1) => void
-  filteringOptions: any[]
+  groupId: string
+  customers: Customer[]
+  filteringOptions: FilteringOptionProps[]
+  removeCustomers: UseMutateFunction<any, Error, any, unknown>
 }
+
+/***********************************************/
+/*************** TABLE COMPONENTS **************/
+/***********************************************/
 
 /**
  * Renders customer group customers list header row.
@@ -157,11 +163,17 @@ function CustomersListTable(props: CustomersListTableProps) {
     table.previousPage()
   }
 
+  const handleSearch = (text: string) => {
+    setQuery(text)
+
+    if (text) table.gotoPage(0)
+  }
+
   return (
     <>
       <Table
         enableSearch
-        handleSearch={setQuery}
+        handleSearch={handleSearch}
         searchValue={query}
         filteringOptions={filteringOptions}
         {...table.getTableProps()}

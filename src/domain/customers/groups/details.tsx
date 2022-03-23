@@ -22,7 +22,6 @@ import CustomerGroupContext, {
   CustomerGroupContextContainer,
 } from "./context/customer-group-context"
 import useQueryFilters from "../../../hooks/use-query-filters"
-import useSetSearchParams from "../../../hooks/use-set-search-params"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 
 /**
@@ -30,7 +29,7 @@ import DeletePrompt from "../../../components/organisms/delete-prompt"
  */
 const defaultQueryProps = {
   additionalFilters: { expand: "groups" },
-  limit: 15,
+  limit: 2,
   offset: 0,
 }
 
@@ -90,40 +89,24 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     },
   ]
 
+  // an id of a group that is currently active in the table filters
   const [activeGroupId, setActiveGroupId] = useState()
+  // toggle to show/hide "edit customers" modal
   const [showCustomersModal, setShowCustomersModal] = useState(false)
+  // list of currently selected customers of a group
   const [selectedCustomerIds, setSelectedCustomerIds] = useState(
     customers.map((c) => c.id)
   )
+
+  useEffect(() => {
+    if (!isLoading) setSelectedCustomerIds(customers.map((c) => c.id))
+  }, [isLoading, customers])
 
   const data = activeGroupId
     ? customers?.filter((c) => c.groups.some((g) => g.id === activeGroupId))
     : customers
 
   const showPlaceholder = !isLoading && !customers.length && !q
-
-  useEffect(() => {
-    if (!isLoading) setSelectedCustomerIds(customers.map((c) => c.id))
-  }, [isLoading, customers])
-
-  const calculateDiff = () => {
-    const initial = customers.map((c) => c.id)
-    return {
-      toAdd: difference(selectedCustomerIds, initial),
-      toRemove: difference(initial, selectedCustomerIds),
-    }
-  }
-
-  const handleSubmit = () => {
-    const { toAdd, toRemove } = calculateDiff()
-
-    if (toAdd.length)
-      addCustomers({ customer_ids: toAdd.map((i) => ({ id: i })) })
-    if (toRemove.length)
-      removeCustomers({ customer_ids: toRemove.map((i) => ({ id: i })) })
-
-    setShowCustomersModal(false)
-  }
 
   const actions = [
     {
@@ -136,6 +119,31 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
       ),
     },
   ]
+
+  /**
+   * Calculate which customers need to be added/removed.
+   */
+  const calculateDiff = () => {
+    const initialIds = customers.map((c) => c.id)
+    return {
+      toAdd: difference(selectedCustomerIds, initialIds),
+      toRemove: difference(initialIds, selectedCustomerIds),
+    }
+  }
+
+  /**
+   * Handle "edit customers" modal form submit.
+   */
+  const handleSubmit = () => {
+    const { toAdd, toRemove } = calculateDiff()
+
+    if (toAdd.length)
+      addCustomers({ customer_ids: toAdd.map((i) => ({ id: i })) })
+    if (toRemove.length)
+      removeCustomers({ customer_ids: toRemove.map((i) => ({ id: i })) })
+
+    setShowCustomersModal(false)
+  }
 
   return (
     <BodyCard

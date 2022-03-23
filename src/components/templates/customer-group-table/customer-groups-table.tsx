@@ -136,14 +136,7 @@ type CustomerGroupsTableProps = ReturnType<typeof useQueryFilters> & {
  * Root component of the customer groups table.
  */
 function CustomerGroupsTable(props: CustomerGroupsTableProps) {
-  const {
-    customerGroups,
-    queryObject,
-    count,
-    reset,
-    paginate,
-    setQuery,
-  } = props
+  const { customerGroups, queryObject, count, paginate, setQuery } = props
 
   const tableConfig: TableOptions<UsePaginationOptions<CustomerGroup>> = {
     columns: CUSTOMER_GROUPS_TABLE_COLUMNS,
