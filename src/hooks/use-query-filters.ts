@@ -2,9 +2,9 @@ import qs from "qs"
 import { useMemo, useReducer } from "react"
 import set from "lodash/set"
 
-/***********************************************/
-/******************** TYPES ********************/
-/***********************************************/
+/* ********************************************* */
+/* ******************* TYPES ******************* */
+/* ********************************************* */
 
 interface AdditionalFilters {
   expand?: string
@@ -45,11 +45,11 @@ const ADMIN_DEFAULT_PARAMS: Partial<FilterState> = {
   offset: 0,
 }
 
-/*************************************************/
-/******************** HELPERS ********************/
-/*************************************************/
+/* *********************************************** */
+/* ******************* HELPERS ******************* */
+/* *********************************************** */
 
-/**
+/*
  * Transform and merge state values with provided `toQuery` object and
  * return an object containing params.
  */
@@ -60,8 +60,11 @@ function buildQueryObject(
   for (const [key, value] of Object.entries(state)) {
     if (key === "q") {
       if (typeof value === "string") {
-        if (value) toQuery["q"] = value
-        else delete toQuery["q"]
+        if (value) {
+          toQuery["q"] = value
+        } else {
+          delete toQuery["q"]
+        }
       }
     } else if (key === "offset" || key === "limit") {
       toQuery[key] = value
@@ -71,21 +74,21 @@ function buildQueryObject(
   return toQuery
 }
 
-/**
+/*
  * Get params from state (transformed) without additional params included.
  */
 function getRepresentationObject(state: FilterState) {
   return buildQueryObject(state)
 }
 
-/**
+/*
  * Get transformed params from state along with additional params.
  */
 function getQueryObject(state: FilterState) {
   return buildQueryObject(state, { ...state.additionalFilters })
 }
 
-/**
+/*
  * Transform query string into object representation.
  */
 function parseQueryString<T>(
@@ -97,12 +100,16 @@ function parseQueryString<T>(
     ...defaults,
   } as FilterState
 
-  if (!queryString) return representation
+  if (!queryString) {
+    return representation
+  }
 
   const filters = qs.parse(queryString)
 
   for (const [key, value] of Object.entries(filters)) {
-    if (typeof value !== "string") continue
+    if (typeof value !== "string") {
+      continue
+    }
 
     if (DEFAULT_ALLOWED_PARAMS.includes(key)) {
       switch (key) {
@@ -120,9 +127,9 @@ function parseQueryString<T>(
   return representation
 }
 
-/**********************************************************/
-/******************** USE FILTERS HOOK ********************/
-/**********************************************************/
+/** ********************************************************/
+/** ****************** USE FILTERS HOOK ********************/
+/** ********************************************************/
 
 /**
  * State reducer for the filters hook.
@@ -136,17 +143,19 @@ function reducer(state: FilterState, action: FilterAction): FilterState {
     return nextState
   }
 
-  if (action.type === FilterActionType.SET_QUERY)
+  if (action.type === FilterActionType.SET_QUERY) {
     // if the query term has changed reset offset to 0 also
     return { ...state, q: action.payload, offset: 0 }
+  }
 
-  if (action.type === FilterActionType.SET_OFFSET)
+  if (action.type === FilterActionType.SET_OFFSET) {
     return { ...state, offset: action.payload }
+  }
 
   return state
 }
 
-/**
+/*
  * Hook returns parsed search params.
  */
 function useQueryFilters(defaultFilters: Partial<FilterState>) {
@@ -157,7 +166,7 @@ function useQueryFilters(defaultFilters: Partial<FilterState>) {
     parseQueryString(searchString, defaultFilters)
   )
 
-  /********** API METHODS **********/
+  /* ********* API METHODS ********* */
 
   const setDefaultFilters = (filters: AdditionalFilters | null) => {
     dispatch({ type: FilterActionType.SET_DEFAULTS, payload: filters })
@@ -188,7 +197,7 @@ function useQueryFilters(defaultFilters: Partial<FilterState>) {
     return qs.stringify(obj, { skipNulls: true })
   }
 
-  /********** VALUES **********/
+  /* ********* VALUES ********* */
 
   const queryObject = useMemo(() => getQueryObject(state), [state])
   const representationObject = useMemo(() => getRepresentationObject(state), [

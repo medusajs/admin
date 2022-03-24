@@ -33,7 +33,7 @@ const defaultQueryProps = {
   offset: 0,
 }
 
-/**
+/*
  * Customer groups empty state.
  */
 function CustomerGroupsPlaceholder() {
@@ -44,15 +44,15 @@ function CustomerGroupsPlaceholder() {
   )
 }
 
-/**********************************************/
-/*************** TABLE ELEMENTS ***************/
-/**********************************************/
+/* ******************************************** */
+/* ************** TABLE ELEMENTS ************** */
+/* ******************************************** */
 
 type HeaderCellProps = {
   col: HeaderGroup<CustomerGroup>
 }
 
-/**
+/*
  * Renders react-table cell for the customer groups table.
  */
 function CustomerGroupsTableHeaderCell(props: HeaderCellProps) {
@@ -70,7 +70,7 @@ type HeaderRowProps = {
   headerGroup: HeaderGroup<CustomerGroup>
 }
 
-/**
+/*
  * Renders react-table header row for the customer groups table.
  */
 function CustomerGroupsTableHeaderRow(props: HeaderRowProps) {
@@ -87,7 +87,7 @@ type CustomerGroupsTableRowProps = {
   row: Row<CustomerGroup>
 }
 
-/**
+/*
  * Render react-table row for the customer groups table.
  */
 function CustomerGroupsTableRow(props: CustomerGroupsTableRowProps) {
@@ -123,9 +123,9 @@ function CustomerGroupsTableRow(props: CustomerGroupsTableRowProps) {
   )
 }
 
-/***********************************************/
-/************** TABLE CONTAINERS ***************/
-/***********************************************/
+/* ******************************************** */
+/* ************* TABLE CONTAINERS ************* */
+/* ******************************************** */
 
 type CustomerGroupsTableProps = ReturnType<typeof useQueryFilters> & {
   customerGroups: CustomerGroup[]
@@ -159,14 +159,18 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
   // ********* HANDLERS *********
 
   const handleNext = () => {
-    if (!table.canNextPage) return
+    if (!table.canNextPage) {
+      return
+    }
 
     paginate(1)
     table.nextPage()
   }
 
   const handlePrev = () => {
-    if (!table.canPreviousPage) return
+    if (!table.canPreviousPage) {
+      return
+    }
 
     paginate(-1)
     table.previousPage()
@@ -175,7 +179,9 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
   const handleSearch = (text: string) => {
     setQuery(text)
 
-    if (text) table.gotoPage(0)
+    if (text) {
+      table.gotoPage(0)
+    }
   }
 
   // ********* RENDER *********
@@ -188,14 +194,14 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
         searchValue={queryObject.q}
         {...table.getTableProps()}
       >
-        {/*HEAD*/}
+        {/* HEAD */}
         <Table.Head>
           {table.headerGroups?.map((headerGroup, ind) => (
             <CustomerGroupsTableHeaderRow key={ind} headerGroup={headerGroup} />
           ))}
         </Table.Head>
 
-        {/*BODY*/}
+        {/* BODY */}
         <Table.Body {...table.getTableBodyProps()}>
           {table.rows.map((row) => {
             table.prepareRow(row)
@@ -208,7 +214,7 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
         </Table.Body>
       </Table>
 
-      {/*PAGINATION*/}
+      {/* PAGINATION */}
       <TablePagination
         count={count}
         limit={queryObject.limit}
@@ -226,28 +232,33 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
   )
 }
 
-/**
+/*
  * A container component for the customers group table.
  * Handles data fetching and query params persistence.
  */
 function CustomerGroupsTableContainer() {
   const params = useQueryFilters(defaultQueryProps)
 
-  const { customer_groups = [], isLoading, count = 0 } = useAdminCustomerGroups(
+  const { customer_groups, isLoading, count = 0 } = useAdminCustomerGroups(
     params.queryObject
   )
 
   useSetSearchParams(params.representationObject)
 
-  const showPlaceholder =
-    !isLoading && !customer_groups?.length && !params.queryObject.q
+  const showPlaceholder = !customer_groups?.length && !params.queryObject.q
 
-  if (showPlaceholder) return <CustomerGroupsPlaceholder />
+  if (showPlaceholder) {
+    if (!isLoading) {
+      return <CustomerGroupsPlaceholder />
+    } else {
+      return null
+    }
+  }
 
   return (
     <CustomerGroupsTable
       count={count}
-      customerGroups={customer_groups}
+      customerGroups={customer_groups || []}
       {...params}
     />
   )
