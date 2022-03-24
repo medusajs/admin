@@ -58,7 +58,7 @@ const getDiscountAmount = (discount) => {
   }
 }
 
-export const useDiscountTableColumns = () => {
+export const usePriceListTableColumns = () => {
   const columns = useMemo(
     () => [
       {
@@ -96,13 +96,17 @@ export const useDiscountTableColumns = () => {
         ),
       },
       {
-        Header: () => <div className="text-right">Groups</div>,
-        accessor: "usage_count",
+        Header: () => <div className="">Groups</div>,
+        accessor: "rule.value",
         Cell: ({ cell: { value }, index }) => (
-          <Table.Cell className="text-right" key={index}>
+          <Table.Cell className="" key={index}>
             {value}
           </Table.Cell>
         ),
+      },
+      {
+        Header: "",
+        accessor: "col",
       },
     ],
     []

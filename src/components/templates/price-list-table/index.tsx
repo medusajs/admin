@@ -3,16 +3,61 @@ import { isEmpty } from "lodash"
 import { useAdminDiscounts } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
-import { usePagination, useTable } from "react-table"
+import { usePagination, useTable, useRowSelect } from "react-table"
 import Spinner from "../../atoms/spinner"
+import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
+import TrashIcon from "../../fundamentals/icons/trash-icon"
+import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import Table, { TablePagination } from "../../molecules/table"
 import DiscountFilters from "../discount-filter-dropdown"
-import { useDiscountTableColumns } from "./use-discount-columns"
-import { useDiscountFilters } from "./use-discount-filters"
+import { usePriceListTableColumns } from "./use-price-list-columns"
+import { useDiscountFilters } from "./use-price-list-filters"
 
 const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {}
+
+const IndeterminateCheckbox = React.forwardRef(
+  ({ indeterminate, ...rest }, ref) => {
+    const defaultRef = React.useRef()
+    const resolvedRef = ref || defaultRef
+
+    React.useEffect(() => {
+      resolvedRef.current.indeterminate = indeterminate
+    }, [resolvedRef, indeterminate])
+
+    return (
+      <>
+        <input type="checkbox" ref={resolvedRef} {...rest} />
+      </>
+    )
+  }
+)
+
+const cus = (hooks) => {
+  console.log("hooks", hooks)
+  hooks.visibleColumns.push((columns) => [
+    // Let's make a column for selection
+    {
+      id: "selection",
+      // The header can use the table's getToggleAllRowsSelectedProps method
+      // to render a checkbox
+      Header: ({ getToggleAllRowsSelectedProps }) => (
+        <div>
+          <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+        </div>
+      ),
+      // The cell can use the individual row's getToggleRowSelectedProps method
+      // to the render a checkbox
+      Cell: ({ row }) => (
+        <div>
+          <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+        </div>
+      ),
+    },
+    ...columns,
+  ])
+}
 
 const PriceListTable: React.FC = () => {
   const {
@@ -50,7 +95,7 @@ const PriceListTable: React.FC = () => {
     }
   }, [count, queryObject.limit])
 
-  const [columns] = useDiscountTableColumns()
+  const [columns] = usePriceListTableColumns()
 
   const {
     getTableProps,
@@ -65,7 +110,7 @@ const PriceListTable: React.FC = () => {
     nextPage,
     previousPage,
     // Get the state from the instance
-    state: { pageIndex },
+    state: { pageIndex, selectedRowIds },
   } = useTable(
     {
       columns,
@@ -78,7 +123,9 @@ const PriceListTable: React.FC = () => {
       pageCount: numPages,
       autoResetPage: false,
     },
-    usePagination
+    usePagination,
+    useRowSelect,
+    cus
   )
 
   // Debounced search
@@ -182,6 +229,25 @@ const PriceListTable: React.FC = () => {
                   linkTo={row.original.id}
                   {...row.getRowProps()}
                   className="group"
+                  actions={[
+                    {
+                      label: "Unpublish",
+                      onClick: () => {},
+                      icon: <UnpublishIcon size={20} />,
+                    },
+                    {
+                      label: "Duplicate",
+                      onClick: () => {},
+                      icon: <DuplicateIcon size={20} />,
+                    },
+                    {
+                      label: "Delete",
+                      onClick: () => {},
+                      icon: <TrashIcon size={20} />,
+                      variant: "danger",
+                    },
+                  ]}
+                  linkTo={row.original.id}
                 >
                   {row.cells.map((cell, index) => {
                     return cell.render("Cell", { index })
