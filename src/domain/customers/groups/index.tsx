@@ -10,7 +10,7 @@ import CustomerGroupContext, {
 } from "./context/customer-group-context"
 import CustomerGroupsTable from "../../../components/templates/customer-group-table/customer-groups-table"
 
-/**
+/*
  * Customer groups index page
  */
 function Index(_: RouteComponentProps) {
@@ -42,7 +42,7 @@ function Index(_: RouteComponentProps) {
   )
 }
 
-/**
+/*
  * Customer groups routes
  */
 function CustomerGroups(_: RouteComponentProps) {

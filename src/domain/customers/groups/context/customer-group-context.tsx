@@ -18,16 +18,16 @@ type CustomerGroupContextT = {
 
 const CustomerGroupContext = createContext<CustomerGroupContextT>()
 
-type CustomerGroupContextContainer = PropsWithChildren<{
+type CustomerGroupContextContainerT = PropsWithChildren<{
   group?: CustomerGroup
 }>
 
-/**
+/*
  * A context provider which sets a display mode for `CustomerGroupModal` (create/edit)
  * and provide form data inside the context.
  */
 export function CustomerGroupContextContainer(
-  props: CustomerGroupContextContainer
+  props: CustomerGroupContextContainerT
 ) {
   const notification = useNotification()
 

@@ -132,7 +132,7 @@ type CustomerGroupsTableProps = ReturnType<typeof useQueryFilters> & {
   count: number
 }
 
-/**
+/*
  * Root component of the customer groups table.
  */
 function CustomerGroupsTable(props: CustomerGroupsTableProps) {

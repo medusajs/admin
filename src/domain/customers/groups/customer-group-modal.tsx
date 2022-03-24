@@ -13,7 +13,7 @@ type CustomerGroupModalProps = {
   handleSubmit: (data: CustomerGroup) => void
 }
 
-/**
+/*
  * A modal for crating/editing customer groups.
  */
 function CustomerGroupModal(props: CustomerGroupModalProps) {

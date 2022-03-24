@@ -26,7 +26,7 @@ const defaultQueryProps = {
 
 type EditCustomersTableHeaderRowProps = { headerGroup: HeaderGroup<Customer> }
 
-/**
+/*
  * Edit customers table header row.
  */
 function EditCustomersTableHeaderRow(props: EditCustomersTableHeaderRowProps) {
@@ -45,7 +45,7 @@ function EditCustomersTableHeaderRow(props: EditCustomersTableHeaderRowProps) {
 
 type EditCustomersTableRowProps = { row: Row<Customer> }
 
-/**
+/*
  * Edit customers table row.
  */
 function EditCustomersTableRow(props: EditCustomersTableRowProps) {
@@ -71,7 +71,7 @@ type EditCustomersTableProps = {
   setSelectedCustomerIds: (customerIds: string[]) => void
 }
 
-/**
+/*
  * Container for the "edit customers" table.
  */
 function EditCustomersTable(props: EditCustomersTableProps) {

@@ -7,7 +7,7 @@ type P = {
   activeView: "customers" | "groups"
 }
 
-/**
+/*
  * Shared header component for "customers" and "customer groups" page
  */
 function CustomersPageTableHeader(props: P) {

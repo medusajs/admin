@@ -19,9 +19,9 @@ import TrashIcon from "../../fundamentals/icons/trash-icon"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
 
-/************************************/
-/*************** TYPES **************/
-/************************************/
+/* ********************************** */
+/* ************** TYPES ************* */
+/* ********************************** */
 
 type CustomersListTableHeaderRowProps = {
   headerGroup: HeaderGroup<Customer>
@@ -40,11 +40,11 @@ type CustomersListTableProps = ReturnType<typeof useQueryFilters> & {
   removeCustomers: UseMutateFunction<any, Error, any, unknown>
 }
 
-/***********************************************/
-/*************** TABLE COMPONENTS **************/
-/***********************************************/
+/* ********************************************* */
+/* ************** TABLE COMPONENTS ************* */
+/* ********************************************* */
 
-/**
+/*
  * Renders customer group customers list header row.
  */
 function CustomersListTableHeaderRow(props: CustomersListTableHeaderRowProps) {
@@ -74,7 +74,7 @@ interface CustomersListTableRowProps {
   removeCustomers: Function
 }
 
-/**
+/*
  * Renders customer group customers list table row.
  */
 function CustomersListTableRow(props: CustomersListTableRowProps) {
@@ -118,7 +118,7 @@ function CustomersListTableRow(props: CustomersListTableRowProps) {
   )
 }
 
-/**
+/*
  * Render a list of customers that belong to a customer group.
  */
 function CustomersListTable(props: CustomersListTableProps) {
@@ -150,14 +150,18 @@ function CustomersListTable(props: CustomersListTableProps) {
   // ********* HANDLERS *********
 
   const handleNext = () => {
-    if (!table.canNextPage) return
+    if (!table.canNextPage) {
+      return
+    }
 
     paginate(1)
     table.nextPage()
   }
 
   const handlePrev = () => {
-    if (!table.canPreviousPage) return
+    if (!table.canPreviousPage) {
+      return
+    }
 
     paginate(-1)
     table.previousPage()
@@ -166,7 +170,9 @@ function CustomersListTable(props: CustomersListTableProps) {
   const handleSearch = (text: string) => {
     setQuery(text)
 
-    if (text) table.gotoPage(0)
+    if (text) {
+      table.gotoPage(0)
+    }
   }
 
   return (

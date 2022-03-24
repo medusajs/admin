@@ -33,7 +33,7 @@ const defaultQueryProps = {
   offset: 0,
 }
 
-/**
+/*
  * Placeholder for the customer groups list.
  */
 function CustomersListPlaceholder() {
@@ -48,7 +48,7 @@ function CustomersListPlaceholder() {
 
 type CustomerGroupCustomersListProps = { group: CustomerGroup }
 
-/**
+/*
  * Customer groups list container.
  */
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
@@ -104,7 +104,9 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   )
 
   useEffect(() => {
-    if (!isLoading) setSelectedCustomerIds(customers.map((c) => c.id))
+    if (!isLoading) {
+      setSelectedCustomerIds(customers.map((c) => c.id))
+    }
   }, [isLoading, customers])
 
   const showPlaceholder = !isLoading && !customers.length && !q
@@ -121,7 +123,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     },
   ]
 
-  /**
+  /*
    * Calculate which customers need to be added/removed.
    */
   const calculateDiff = () => {
@@ -138,10 +140,12 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const handleSubmit = () => {
     const { toAdd, toRemove } = calculateDiff()
 
-    if (toAdd.length)
+    if (toAdd.length) {
       addCustomers({ customer_ids: toAdd.map((i) => ({ id: i })) })
-    if (toRemove.length)
+    }
+    if (toRemove.length) {
       removeCustomers({ customer_ids: toRemove.map((i) => ({ id: i })) })
+    }
 
     setShowCustomersModal(false)
   }
@@ -184,7 +188,7 @@ type CustomerGroupDetailsHeaderProps = {
   customerGroup: CustomerGroup
 }
 
-/**
+/*
  * Customers groups details page header.
  */
 function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
@@ -242,13 +246,15 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
 
 type CustomerGroupDetailsProps = { id: string }
 
-/**
+/*
  * Customer groups details page
  */
 function CustomerGroupDetails(p: CustomerGroupDetailsProps) {
   const { customer_group } = useAdminCustomerGroup(p.id)
 
-  if (!customer_group) return null
+  if (!customer_group) {
+    return null
+  }
 
   return (
     <CustomerGroupContextContainer group={customer_group}>
