@@ -83,9 +83,7 @@ export const usePriceListTableColumns = () => {
         Header: <div className="w-[60px]" />,
         id: "currency",
         Cell: ({ row: { original }, index }) => (
-          <Table.Cell className="px-2 text-grey-40" key={index}>
-            {getCurrencySymbol(original)}
-          </Table.Cell>
+          <Table.Cell className="px-2 text-grey-40" key={index}></Table.Cell>
         ),
       },
       {

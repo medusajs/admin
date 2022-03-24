@@ -3,7 +3,7 @@ import qs from "qs"
 import { useMemo, useReducer, useState } from "react"
 import { relativeDateFormatToTimestamp } from "../../../utils/time"
 
-type DiscountDateFilter = null | {
+type DateFilter = null | {
   gt?: string
   lt?: string
 }
@@ -23,25 +23,18 @@ interface DiscountFilterState {
   }
   date: {
     open: boolean
-    filter: null | DiscountDateFilter
+    filter: null | DateFilter
   }
   limit: number
   offset: number
   additionalFilters: DiscountDefaultFilters | null
 }
 
-const allowedFilters = [
-  "status",
-  "is_dynamic",
-  "q",
-  "created_at",
-  "offset",
-  "limit",
-]
+const allowedFilters = ["status", "type", "q", "created_at", "offset", "limit"]
 
 const DefaultTabs = {}
 
-const formatDateFilter = (filter: DiscountDateFilter) => {
+const formatDateFilter = (filter: DateFilter) => {
   if (filter === null) {
     return filter
   }

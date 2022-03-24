@@ -13,6 +13,8 @@ import DiscountFilters from "../discount-filter-dropdown"
 import { usePriceListTableColumns } from "./use-price-list-columns"
 import { useDiscountFilters } from "./use-price-list-filters"
 
+import Medusa from "../../../services/api"
+
 const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {}
@@ -59,6 +61,13 @@ const cus = (hooks) => {
   ])
 }
 
+type priceListRes = {
+  price_lists: any[]
+  imit: number
+  offset: number
+  count: number
+}
+
 const PriceListTable: React.FC = () => {
   const {
     removeTab,
@@ -75,13 +84,30 @@ const PriceListTable: React.FC = () => {
     representationObject,
   } = useDiscountFilters(location.search, defaultQueryProps)
 
+  const [priceLists, setPriceLists] = useState([])
+  const [count, setCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const { discounts, isLoading, count } = useAdminDiscounts({
-    is_dynamic: false,
-    ...queryObject,
-  })
+  // TODO: integrate with medusa-react once pr has been merged
+  // const { discounts, isLoading, count } = useAdminDiscounts({
+  //   is_dynamic: false,
+  //   ...queryObject,
+  // })
+
+  const fetchUsers = async () => {
+    Medusa.priceLists.retrieve().then(({ data }) => {
+      setCount(data.count)
+      setPriceLists(data.price_lists)
+      setIsLoading(false)
+      console.log(data)
+    })
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
 
   const [query, setQuery] = useState("")
   const [numPages, setNumPages] = useState(0)
@@ -114,7 +140,7 @@ const PriceListTable: React.FC = () => {
   } = useTable(
     {
       columns,
-      data: discounts || [],
+      data: priceLists || [],
       manualPagination: true,
       initialState: {
         pageSize: lim,
@@ -213,7 +239,7 @@ const PriceListTable: React.FC = () => {
             </Table.HeadRow>
           ))}
         </Table.Head>
-        {isLoading || !discounts ? (
+        {isLoading || !priceLists ? (
           <div className="flex w-full h-full absolute items-center justify-center mt-10">
             <div className="">
               <Spinner size={"large"} variant={"secondary"} />

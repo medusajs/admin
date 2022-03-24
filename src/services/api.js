@@ -13,6 +13,12 @@ const buildQueryFromObject = (search, prefix = "") =>
     .join("&")
 
 export default {
+  priceLists: {
+    retrieve() {
+      const path = `/admin/price-lists/`
+      return medusaRequest("GET", path)
+    },
+  },
   returnReasons: {
     retrieve(id) {
       const path = `/admin/return-reasons/${id}`
