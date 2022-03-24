@@ -6,6 +6,7 @@ module.exports = {
       transitionProperty: {
         width: "width margin",
         height: "height",
+        bg: "background-color",
         display: "display opacity",
       },
       colors: {
