@@ -5,6 +5,12 @@ export default function (provider) {
         label: "Stripe",
         value: "stripe",
       }
+    case "razorpay":
+        return {
+          label: "Razorpay",
+          value: "razorpay",
+        }
+      
     case "mobilepay-adyen":
       return {
         label: "MobilePay via Adyen",
