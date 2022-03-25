@@ -7,6 +7,7 @@ import {
   useAdminCustomerGroup,
   useAdminCustomerGroupCustomers,
   useAdminCustomerGroups,
+  useAdminCustomers,
   useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
 } from "medusa-react"
@@ -63,14 +64,10 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     defaultQueryProps
   )
 
-  // TODO revisit: current logic in the API layer will return customers for `activeGroupId` but also for the `groupId`
-  const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
-    groupId,
-    {
-      ...queryObject,
-      groups: activeGroupId ? [activeGroupId] : null,
-    }
-  )
+  const { customers = [], isLoading, count } = useAdminCustomers({
+    ...queryObject,
+    groups: activeGroupId ? [groupId, activeGroupId] : [groupId],
+  })
 
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
@@ -78,8 +75,6 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   )
 
   const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
-
-  // useSetSearchParams(representationObject)
 
   const filteringOptions = [
     {
