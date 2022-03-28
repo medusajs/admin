@@ -71,7 +71,9 @@ const BodyCard: React.FC<BodyCardProps> = ({
             {subtitle}
           </h3>
         )}
-        <div className="flex flex-col grow my-large">{children}</div>
+        {children && (
+          <div className="flex flex-col grow my-large">{children}</div>
+        )}
       </div>
       {events && events.length > 0 ? (
         <div className="pb-large pt-base px-xlarge border-t border-grey-20">

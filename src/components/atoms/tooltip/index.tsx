@@ -9,7 +9,7 @@ type TooltipProps = RadixTooltip.TooltipContentProps &
   > & {
     content: React.ReactNode
     side?: "bottom" | "left" | "top" | "right"
-    onClick: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
+    onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
   }
 
 const Tooltip = ({

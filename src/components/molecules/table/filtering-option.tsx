@@ -51,6 +51,7 @@ const FilteringOptions: React.FC<FilteringOptionProps> = ({
         >
           {options.map((opt, idx) => (
             <DropdownMenu.DropdownMenuItem
+              key={`${idx}-${opt.title}`}
               onSelect={() => {
                 opt.onClick()
                 setSelected(opt.title)
