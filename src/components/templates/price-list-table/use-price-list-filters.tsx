@@ -8,29 +8,33 @@ type DateFilter = null | {
   lt?: string
 }
 
-type DiscountFilterAction =
+type PriceListFilterAction =
   | { type: "setQuery"; payload: string | null }
-  | { type: "setFilters"; payload: DiscountFilterState }
-  | { type: "reset"; payload: DiscountFilterState }
+  | { type: "setFilters"; payload: PriceListFilterState }
+  | { type: "reset"; payload: PriceListFilterState }
   | { type: "setOffset"; payload: number }
-  | { type: "setDefaults"; payload: DiscountDefaultFilters | null }
+  | { type: "setDefaults"; payload: PriceListDefaultFilters | null }
 
-interface DiscountFilterState {
+interface PriceListFilterState {
   query?: string | null
-  isDynamic: {
+  name: {
     open: boolean
     filter: null | string[]
   }
-  date: {
+  status: {
     open: boolean
-    filter: null | DateFilter
+    filter: null | string[] | string
+  }
+  customer_groups: {
+    open: boolean
+    filter: null | string[] | string
   }
   limit: number
   offset: number
-  additionalFilters: DiscountDefaultFilters | null
+  additionalFilters: PriceListDefaultFilters | null
 }
 
-const allowedFilters = ["status", "type", "q", "created_at", "offset", "limit"]
+const allowedFilters = ["name", "customer_groups", "status", "offset", "limit"]
 
 const DefaultTabs = {}
 
@@ -52,16 +56,17 @@ const formatDateFilter = (filter: DateFilter) => {
 }
 
 const reducer = (
-  state: DiscountFilterState,
-  action: DiscountFilterAction
-): DiscountFilterState => {
+  state: PriceListFilterState,
+  action: PriceListFilterAction
+): PriceListFilterState => {
   switch (action.type) {
     case "setFilters": {
       return {
         ...state,
         query: action?.payload?.query,
-        isDynamic: action.payload.isDynamic,
-        date: action.payload.date,
+        name: action.payload.name,
+        status: action.payload.status,
+        customer_groups: action.payload.customer_groups,
       }
     }
     case "setQuery": {
@@ -85,7 +90,7 @@ const reducer = (
   }
 }
 
-type DiscountDefaultFilters = {
+type PriceListDefaultFilters = {
   expand?: string
   fields?: string
 }
@@ -102,9 +107,9 @@ const eqSet = (as: Set<string>, bs: Set<string>) => {
   return true
 }
 
-export const useDiscountFilters = (
+export const usePriceListFilters = (
   existing?: string,
-  defaultFilters: DiscountDefaultFilters | null = null
+  defaultFilters: PriceListDefaultFilters | null = null
 ) => {
   if (existing && existing[0] === "?") {
     existing = existing.substring(1)
@@ -116,7 +121,7 @@ export const useDiscountFilters = (
   ])
 
   const initialTabs = useMemo(() => {
-    const storageString = localStorage.getItem("discounts::filters")
+    const storageString = localStorage.getItem("priceLists::filters")
     if (storageString) {
       const savedTabs = JSON.parse(storageString)
 
@@ -138,7 +143,7 @@ export const useDiscountFilters = (
   const [state, dispatch] = useReducer(reducer, initial)
   const [tabs, setTabs] = useState(initialTabs)
 
-  const setDefaultFilters = (filters: DiscountDefaultFilters | null) => {
+  const setDefaultFilters = (filters: PriceListDefaultFilters | null) => {
     dispatch({ type: "setDefaults", payload: filters })
   }
 
@@ -159,20 +164,24 @@ export const useDiscountFilters = (
       payload: {
         ...state,
         offset: 0,
-        date: {
+        name: {
           open: false,
           filter: null,
         },
-        isDynamic: {
+        status: {
           open: false,
-          filter: ["normal"],
+          filter: null,
+        },
+        customer_groups: {
+          open: false,
+          filter: null,
         },
         query: null,
       },
     })
   }
 
-  const setFilters = (filters: DiscountFilterState) => {
+  const setFilters = (filters: PriceListFilterState) => {
     dispatch({ type: "setFilters", payload: filters })
   }
 
@@ -191,20 +200,7 @@ export const useDiscountFilters = (
         toQuery[key] = value
       } else if (value.open) {
         if (key === "date") {
-          toQuery[stateFilterMap[key]] = formatDateFilter(
-            value.filter as DiscountDateFilter
-          )
-        } else if (key === "isDynamic") {
-          const types = value.filter
-          if (types && types.includes("normal") && types.includes("dynamic")) {
-            // noop
-          } else if (types.includes("normal")) {
-            toQuery[stateFilterMap[key]] = false
-          } else if (types.includes("dynamic")) {
-            toQuery[stateFilterMap[key]] = true
-          } else {
-            toQuery[stateFilterMap[key]] = false
-          }
+          toQuery[stateFilterMap[key]] = formatDateFilter(value.filter)
         } else {
           toQuery[stateFilterMap[key]] = value.filter
         }
@@ -219,7 +215,7 @@ export const useDiscountFilters = (
     return qs.stringify(obj, { skipNulls: true })
   }
 
-  const getRepresentationObject = (fromObject?: DiscountFilterState) => {
+  const getRepresentationObject = (fromObject?: PriceListFilterState) => {
     const objToUse = fromObject ?? state
 
     const toQuery: any = {}
@@ -227,17 +223,6 @@ export const useDiscountFilters = (
       if (key === "query") {
         if (value && typeof value === "string") {
           toQuery["q"] = value
-        }
-      } else if (key === "isDynamic") {
-        const types = value.filter
-        if (types && types.includes("normal") && types.includes("dynamic")) {
-          toQuery[stateFilterMap[key]] = "all"
-        } else if (types.includes("normal")) {
-          toQuery[stateFilterMap[key]] = false
-        } else if (types.includes("dynamic")) {
-          toQuery[stateFilterMap[key]] = true
-        } else {
-          toQuery[stateFilterMap[key]] = false
         }
       } else if (key === "offset" || key === "limit") {
         toQuery[key] = value
@@ -320,13 +305,17 @@ export const useDiscountFilters = (
     if (tabToUse) {
       const toSubmit = {
         ...state,
-        date: {
+        name: {
           open: false,
           filter: null,
         },
-        isDynamic: {
+        status: {
           open: false,
-          filter: ["normal"],
+          filter: null,
+        },
+        customer_groups: {
+          open: false,
+          filter: null,
         },
       }
 
@@ -340,12 +329,12 @@ export const useDiscountFilters = (
     }
   }
 
-  const saveTab = (tabName: string, filters: DiscountFilterState) => {
+  const saveTab = (tabName: string, filters: PriceListFilterState) => {
     const repObj = getRepresentationObject({ ...filters })
     const clean = omit(repObj, ["limit", "offset"])
     const repString = qs.stringify(clean, { skipNulls: true })
 
-    const storedString = localStorage.getItem("discounts::filters")
+    const storedString = localStorage.getItem("priceLists::filters")
 
     let existing: null | object = null
 
@@ -355,11 +344,11 @@ export const useDiscountFilters = (
 
     if (existing) {
       existing[tabName] = repString
-      localStorage.setItem("discounts::filters", JSON.stringify(existing))
+      localStorage.setItem("priceLists::filters", JSON.stringify(existing))
     } else {
       const newFilters = {}
       newFilters[tabName] = repString
-      localStorage.setItem("discounts::filters", JSON.stringify(newFilters))
+      localStorage.setItem("priceLists::filters", JSON.stringify(newFilters))
     }
 
     setTabs((prev) => {
@@ -378,7 +367,7 @@ export const useDiscountFilters = (
   }
 
   const removeTab = (tabValue: string) => {
-    const storedString = localStorage.getItem("discounts::filters")
+    const storedString = localStorage.getItem("priceLists::filters")
 
     let existing: null | object = null
 
@@ -388,7 +377,7 @@ export const useDiscountFilters = (
 
     if (existing) {
       delete existing[tabValue]
-      localStorage.setItem("discounts::filters", JSON.stringify(existing))
+      localStorage.setItem("priceLists::filters", JSON.stringify(existing))
     }
 
     setTabs((prev) => {
@@ -421,27 +410,33 @@ export const useDiscountFilters = (
 }
 
 const filterStateMap = {
-  is_dynamic: "isDynamic",
-  created_at: "date",
+  name: "name",
+  status: "status",
+  customer_groups: "customer_groups",
 }
 
 const stateFilterMap = {
-  isDynamic: "is_dynamic",
-  date: "created_at",
+  name: "name",
+  status: "status",
+  customer_groups: "customer_groups",
 }
 
 const parseQueryString = (
   queryString?: string,
-  additionals: DiscountDefaultFilters | null = null
-): DiscountFilterState => {
-  const defaultVal: DiscountFilterState = {
-    date: {
+  additionals: PriceListDefaultFilters | null = null
+): PriceListFilterState => {
+  const defaultVal: PriceListFilterState = {
+    name: {
       open: false,
       filter: null,
     },
-    isDynamic: {
+    status: {
       open: false,
-      filter: ["normal"],
+      filter: null,
+    },
+    customer_groups: {
+      open: false,
+      filter: null,
     },
     offset: 0,
     limit: 15,
@@ -453,37 +448,9 @@ const parseQueryString = (
     for (const [key, value] of Object.entries(filters)) {
       if (allowedFilters.includes(key)) {
         switch (key) {
-          case "is_dynamic": {
-            if (typeof value === "string") {
-              if (value === "true") {
-                defaultVal.isDynamic = {
-                  open: true,
-                  filter: ["dynamic"],
-                }
-              } else if (value === "false") {
-                defaultVal.isDynamic = {
-                  open: true,
-                  filter: ["normal"],
-                }
-              } else if (value === "all") {
-                defaultVal.isDynamic = {
-                  open: true,
-                  filter: ["normal", "dynamic"],
-                }
-              }
-            }
-            break
-          }
           case "offset": {
             if (typeof value === "string") {
               defaultVal.offset = parseInt(value)
-            }
-            break
-          }
-          case "created_at": {
-            defaultVal.date = {
-              open: true,
-              filter: value,
             }
             break
           }
@@ -496,6 +463,24 @@ const parseQueryString = (
           case "q": {
             if (typeof value === "string") {
               defaultVal.query = value
+            }
+            break
+          }
+          case "status": {
+            if (typeof value === "string") {
+              defaultVal.status = {
+                open: true,
+                filter: value,
+              }
+            }
+            break
+          }
+          case "customer_groups": {
+            if (Array.isArray(value)) {
+              defaultVal.customer_groups = {
+                open: true,
+                filter: value,
+              }
             }
             break
           }

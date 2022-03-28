@@ -1,72 +1,58 @@
 import clsx from "clsx"
 import { isEmpty } from "lodash"
-import { useAdminDiscounts } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
-import { usePagination, useTable, useRowSelect } from "react-table"
+import { toast, ToastOptions } from "react-hot-toast"
+import { usePagination, useRowSelect, useTable } from "react-table"
 import Spinner from "../../atoms/spinner"
+import BackspaceIcon from "../../fundamentals/icons/backspace-icon"
 import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import Table, { TablePagination } from "../../molecules/table"
-import DiscountFilters from "../discount-filter-dropdown"
+import { HotKey, TableToasterContainer } from "../../molecules/table-toaster"
+import PriceListsFilter from "./price-list-filters"
 import { usePriceListTableColumns } from "./use-price-list-columns"
-import { useDiscountFilters } from "./use-price-list-filters"
+import { usePriceListFilters } from "./use-price-list-filters"
 
-import Medusa from "../../../services/api"
+const priceLists = [
+  {
+    name: "VIP Customers",
+    description: "Attractive prices for our frequent and loyal buyers",
+    status: "draft",
+    customer_groups: [
+      { title: "Medusa Community Club" },
+      { title: "FRIENDS" },
+      { title: "Morocco" },
+    ],
+  },
+  {
+    name: "Business2Business",
+    description: "Special prices for our B2B Customers",
+    status: "active",
+    customer_groups: [
+      { title: "B2B partners" },
+      { title: "FRIENDS" },
+      { title: "Morocco" },
+    ],
+  },
+  {
+    name: "Black Friday",
+    description: "Adjustment of prices for black friday 2022",
+    status: "scheduled",
+    customer_groups: [{ title: "all customers" }],
+  },
+  {
+    name: "Christmas 2022",
+    description: "Celebratory prices for the holidays",
+    status: "expired",
+    customer_groups: [{ title: "all customers" }, { title: "friends" }],
+  },
+]
 
 const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {}
-
-const IndeterminateCheckbox = React.forwardRef(
-  ({ indeterminate, ...rest }, ref) => {
-    const defaultRef = React.useRef()
-    const resolvedRef = ref || defaultRef
-
-    React.useEffect(() => {
-      resolvedRef.current.indeterminate = indeterminate
-    }, [resolvedRef, indeterminate])
-
-    return (
-      <>
-        <input type="checkbox" ref={resolvedRef} {...rest} />
-      </>
-    )
-  }
-)
-
-const cus = (hooks) => {
-  console.log("hooks", hooks)
-  hooks.visibleColumns.push((columns) => [
-    // Let's make a column for selection
-    {
-      id: "selection",
-      // The header can use the table's getToggleAllRowsSelectedProps method
-      // to render a checkbox
-      Header: ({ getToggleAllRowsSelectedProps }) => (
-        <div>
-          <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-        </div>
-      ),
-      // The cell can use the individual row's getToggleRowSelectedProps method
-      // to the render a checkbox
-      Cell: ({ row }) => (
-        <div>
-          <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-        </div>
-      ),
-    },
-    ...columns,
-  ])
-}
-
-type priceListRes = {
-  price_lists: any[]
-  imit: number
-  offset: number
-  count: number
-}
 
 const PriceListTable: React.FC = () => {
   const {
@@ -82,11 +68,9 @@ const PriceListTable: React.FC = () => {
     setQuery: setFreeText,
     queryObject,
     representationObject,
-  } = useDiscountFilters(location.search, defaultQueryProps)
-
-  const [priceLists, setPriceLists] = useState([])
-  const [count, setCount] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
+  } = usePriceListFilters(location.search, defaultQueryProps)
+  const [count, setCount] = useState(priceLists.length)
+  const [isLoading, setIsLoading] = useState(false)
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
@@ -96,18 +80,18 @@ const PriceListTable: React.FC = () => {
   //   ...queryObject,
   // })
 
-  const fetchUsers = async () => {
-    Medusa.priceLists.retrieve().then(({ data }) => {
-      setCount(data.count)
-      setPriceLists(data.price_lists)
-      setIsLoading(false)
-      console.log(data)
-    })
-  }
+  // const fetchUsers = async () => {
+  //   Medusa.priceLists.retrieve().then(({ data }) => {
+  //     setCount(data.count)
+  //     setPriceLists(data.price_lists)
+  //     setIsLoading(false)
+  //     console.log(data)
+  //   })
+  // }
 
-  useEffect(() => {
-    fetchUsers()
-  }, [])
+  // useEffect(() => {
+  //   fetchUsers()
+  // }, [])
 
   const [query, setQuery] = useState("")
   const [numPages, setNumPages] = useState(0)
@@ -135,6 +119,7 @@ const PriceListTable: React.FC = () => {
     gotoPage,
     nextPage,
     previousPage,
+    selectedFlatRows,
     // Get the state from the instance
     state: { pageIndex, selectedRowIds },
   } = useTable(
@@ -150,8 +135,7 @@ const PriceListTable: React.FC = () => {
       autoResetPage: false,
     },
     usePagination,
-    useRowSelect,
-    cus
+    useRowSelect
   )
 
   // Debounced search
@@ -185,7 +169,7 @@ const PriceListTable: React.FC = () => {
 
   const updateUrlFromFilter = (obj = {}) => {
     const stringified = qs.stringify(obj)
-    window.history.replaceState(`/a/discounts`, "", `${`?${stringified}`}`)
+    window.history.replaceState(`/a/pricing`, "", `${`?${stringified}`}`)
   }
 
   const refreshWithFilters = () => {
@@ -207,11 +191,13 @@ const PriceListTable: React.FC = () => {
     refreshWithFilters()
   }, [representationObject])
 
+  console.log({ selectedRowIds, selectedFlatRows })
+
   return (
     <div className="w-full overflow-y-auto flex flex-col justify-between min-h-[300px] h-full ">
       <Table
         filteringOptions={
-          <DiscountFilters
+          <PriceListsFilter
             filters={filters}
             submitFilters={setFilters}
             clearFilters={clearFilters}
@@ -289,7 +275,7 @@ const PriceListTable: React.FC = () => {
         limit={queryObject.limit}
         offset={queryObject.offset}
         pageSize={queryObject.offset + rows.length}
-        title="Discounts"
+        title="Price Lists"
         currentPage={pageIndex + 1}
         pageCount={pageCount}
         nextPage={handleNext}
@@ -297,8 +283,55 @@ const PriceListTable: React.FC = () => {
         hasNext={canNextPage}
         hasPrev={canPreviousPage}
       />
+      <Toaster
+        visible={selectedFlatRows.length}
+        duration={Infinity}
+        position="bottom-center"
+        id="price-list-batch-actions"
+      >
+        <TableToasterContainer>
+          <span className="inter-small-semibold text-grey-40 pr-5">
+            {selectedFlatRows.length} entries selected:{" "}
+          </span>
+          <div className="pr-base">
+            <HotKey
+              label="Unpublish"
+              hotKey="U"
+              icon="U"
+              onAction={() => console.log("clicked")}
+            />
+          </div>
+          <div className="pr-base">
+            <HotKey
+              label="Delete"
+              hotKey="backspace"
+              icon={<BackspaceIcon />}
+              onAction={() => console.log("clicked")}
+            />
+          </div>
+        </TableToasterContainer>
+      </Toaster>
     </div>
   )
+}
+
+type ToasterProps = {
+  visible: boolean
+  children: React.ReactElement
+} & ToastOptions
+
+const Toaster = ({ visible, children, ...options }: ToasterProps) => {
+  useEffect(() => {
+    if (visible) {
+      toast.custom((t) => React.cloneElement(children, { toast: t }), {
+        ...options,
+      })
+    } else {
+      toast.dismiss(options.id)
+    }
+  }, [visible, children])
+
+  return null
 }
 
 export default PriceListTable
