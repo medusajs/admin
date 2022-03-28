@@ -389,6 +389,10 @@
   }
 }
 
+.h-accordion {
+  height: var(--radix-accordion-content-height);
+}
+
 /* Classes to remove number spinners from inputs of type number */
 /* Chrome, Safari, Edge, Opera */
 .remove-number-spinner::-webkit-outer-spin-button,
