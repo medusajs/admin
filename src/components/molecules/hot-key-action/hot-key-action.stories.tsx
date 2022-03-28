@@ -9,7 +9,9 @@ export default {
 } as ComponentMeta<typeof HotKeyAction>
 
 const Template: ComponentStory<typeof HotKeyAction> = (args) => (
-  <HotKeyAction {...args} />
+  <div className="flex bg-grey-80 p-base">
+    <HotKeyAction {...args} />
+  </div>
 )
 
 export const Default = Template.bind({})
