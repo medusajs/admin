@@ -34,7 +34,7 @@ const Item: React.FC<AccordionItemProps> = ({
   return (
     <AccordionPrimitive.Item
       {...props}
-      className="border-b border-grey-20 transition-all pb-5 radix-state-open:pb-5xlarge mb-5 last:mb-0 group"
+      className="border-b border-grey-20 transition-padding pb-5 radix-state-open:pb-5xlarge mb-5 last:mb-0 group"
     >
       <AccordionPrimitive.Header>
         <AccordionPrimitive.Trigger className="flex items-center justify-between w-full">
@@ -48,15 +48,17 @@ const Item: React.FC<AccordionItemProps> = ({
           <MorphingTrigger />
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
-      <AccordionPrimitive.Content
-        forceMount
-        className="transition-all duration-300 h-accordion group-radix-state-closed:h-0 overflow-hidden"
-      >
-        <div className="text-grey-50 inter-base-regular transition-all duration-300 opacity-100 group-radix-state-closed:opacity-0">
-          {description && <p>{description}</p>}
-          <div className="mt-large">{children}</div>
-        </div>
-      </AccordionPrimitive.Content>
+      <div className="group-radix-state-closed:h-0 group-radix-state-closed:opacity-0 group-radix-state-open:h-radix-accordion group-radix-state-open:opacity-100 transition-all duration-300 ease-accordion overflow-hidden">
+        <AccordionPrimitive.Content
+          forceMount
+          className="overflow-hidden radix-state-open:animate-accordion-open radix-state-closed:animate-accordion-close"
+        >
+          <div className="text-grey-50 inter-base-regular">
+            {description && <p>{description}</p>}
+            <div className="mt-large">{children}</div>
+          </div>
+        </AccordionPrimitive.Content>
+      </div>
     </AccordionPrimitive.Item>
   )
 }
