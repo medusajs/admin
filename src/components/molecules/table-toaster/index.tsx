@@ -27,7 +27,7 @@ export const TableToasterContainer = ({
   )
 }
 
-export const HotKey = ({ label, hotKey, icon, onAction }) => {
+export const HotKeyAction = ({ label, hotKey, icon, onAction }) => {
   useHotkeys(hotKey, onAction, {})
   return (
     <div className="flex items-center gap-2">
