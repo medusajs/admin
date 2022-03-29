@@ -43,12 +43,7 @@ FocusModal.Header = ({ children, className }) => (
 )
 
 FocusModal.Main = ({ children, className }) => (
-  <div
-    className={clsx(
-      "medium:w-7/12 large:w-6/12 small:w-4/5 w-full px-8 overflow-y-auto h-full",
-      className
-    )}
-  >
+  <div className={clsx("w-full px-8 overflow-y-auto h-full", className)}>
     {children}
   </div>
 )
