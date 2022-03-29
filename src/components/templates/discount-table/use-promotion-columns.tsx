@@ -164,11 +164,13 @@ export const usePromotionTableColumns = () => {
       {
         Header: () => <div className="text-right">Redemptions</div>,
         accessor: "usage_count",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell className="text-right" key={index}>
-            {value ? value : "-"}
-          </Table.Cell>
-        ),
+        Cell: ({ row: { original }, index }) => {
+          return (
+            <Table.Cell className="text-right" key={index}>
+              {original?.usage_limit > 0 ? original.usage_count : "-"}
+            </Table.Cell>
+          )
+        },
       },
     ],
     []
