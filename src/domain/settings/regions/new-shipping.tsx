@@ -273,11 +273,11 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
             )}
           </Modal.Content>
           <Modal.Footer>
-            <div className="flex justify-end w-full">
+            <div className="flex justify-end w-full gap-x-xsmall">
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="small"
-                className="justify-center w-[130px]"
+                className="justify-center w-eventButton"
                 onClick={onClick}
               >
                 Cancel
@@ -286,7 +286,7 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
                 type="submit"
                 variant="primary"
                 size="small"
-                className="justify-center w-[130px]"
+                className="justify-center w-eventButton"
               >
                 Save
               </Button>

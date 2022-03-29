@@ -184,6 +184,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       fulfillment_providers: region.fulfillment_providers.map((f) => f.id),
       countries: [], // As countries can't belong to more than one region at the same time we can just pass an empty array
       name: `${region.name} Copy`,
+      tax_rate: region.tax_rate,
     }
 
     createRegion.mutate(payload, {
