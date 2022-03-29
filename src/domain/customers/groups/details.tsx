@@ -6,8 +6,6 @@ import {
   useAdminAddCustomersToCustomerGroup,
   useAdminCustomerGroup,
   useAdminCustomerGroupCustomers,
-  useAdminCustomerGroups,
-  useAdminCustomers,
   useAdminDeleteCustomerGroup,
   useAdminRemoveCustomersFromCustomerGroup,
 } from "medusa-react"
@@ -55,8 +53,6 @@ type CustomerGroupCustomersListProps = { group: CustomerGroup }
 function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const groupId = props.group.id
 
-  // an id of a group that is currently active in the table filters
-  const [activeGroupId, setActiveGroupId] = useState()
   // toggle to show/hide "edit customers" modal
   const [showCustomersModal, setShowCustomersModal] = useState(false)
 
@@ -64,34 +60,15 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     defaultQueryProps
   )
 
-  const { customers = [], isLoading, count } = useAdminCustomers({
-    ...queryObject,
-    groups: activeGroupId ? [groupId, activeGroupId] : [groupId],
-  })
+  const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
+    groupId,
+    queryObject
+  )
 
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
   const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
     groupId
   )
-
-  const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
-
-  const filteringOptions = [
-    {
-      title: "Groups",
-      options: [
-        {
-          title: "All",
-          onClick: () => setActiveGroupId(null),
-        },
-        ...(customer_groups || []).map((g) => ({
-          title: g.name,
-          count: g.customers.length,
-          onClick: () => setActiveGroupId(g.id),
-        })),
-      ],
-    },
-  ]
 
   // list of currently selected customers of a group
   const [selectedCustomerIds, setSelectedCustomerIds] = useState(
@@ -169,7 +146,6 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
           paginate={paginate}
           setQuery={setQuery}
           customers={customers}
-          filteringOptions={filteringOptions}
           groupId={props.group.id}
           queryObject={queryObject}
           removeCustomers={removeCustomers}
