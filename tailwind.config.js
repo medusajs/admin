@@ -8,6 +8,8 @@ module.exports = {
         height: "height",
         bg: "background-color",
         display: "display opacity",
+        visibility: "visibility",
+        padding: "padding-top padding-right padding-bottom padding-left",
       },
       colors: {
         grey: {
@@ -289,18 +291,22 @@ module.exports = {
         },
         "accordion-slide-up": {
           "0%": {
-            height: "100px",
+            height: "var(--radix-accordion-content-height)",
+            opacity: "1",
           },
           "100%": {
             height: "0",
+            opacity: "0",
           },
         },
         "accordion-slide-down": {
           "0%": {
             height: "0",
+            opacity: "0",
           },
           "100%": {
-            height: "100px",
+            height: "var(--radix-accordion-content-height)",
+            opacity: "1",
           },
         },
         enter: {

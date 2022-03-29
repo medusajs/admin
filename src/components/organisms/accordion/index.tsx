@@ -1,88 +1,15 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
+import clsx from "clsx"
 import React from "react"
 import Button from "../../fundamentals/button"
 import InfoTooltip from "../../molecules/info-tooltip"
-
-// type AccordionItemProps = {
-//   title: string
-//   description?: string
-//   required?: boolean
-//   tooltip?: string
-// }
-
-// type AccordionProps = {
-//   /**
-//    * If true collapsed items will not be unmounted
-//    */
-//   keepMounted?: boolean
-// }
-
-// const Accordion: React.FC<AccordionProps> & {
-//   Item: React.FC<AccordionItemProps>
-// } = ({ children }) => {
-//   return (
-//     <div>
-//       {Children.map(children, (child, index) => (
-//         <div
-//           key={index}
-//           className="border-b border-grey-20 last:border-none pb-5xlarge mb-5 last:mb-0"
-//         >
-//           {child}
-//         </div>
-//       ))}
-//     </div>
-//   )
-// }
-
-// const Item: React.FC<AccordionItemProps> = ({
-//   title,
-//   description,
-//   required = false,
-//   tooltip,
-//   children,
-// }) => {
-//   const [open, setOpen] = useState(false)
-//   return (
-// <div>
-//   <div className="flex items-center justify-between">
-//     <div className="flex items-center gap-x-2xsmall">
-//       <span className="inter-large-semibold">
-//         {title}
-//         {required && <span className="text-rose-50">*</span>}
-//       </span>
-//       {tooltip && <InfoTooltip content={tooltip} />}
-//     </div>
-//     <Button
-//       variant="ghost"
-//       size="small"
-//       className="p-[6px]"
-//       onClick={() => setOpen(!open)}
-//     >
-//       {open ? <MinusIcon size={20} /> : <PlusIcon size={20} />}
-//     </Button>
-//   </div>
-//   <div className="text-grey-50 inter-base-regular">
-//     {description && <p>{description}</p>}
-//     <div
-//       className={clsx({
-//         "animate-fade-out-top": !open,
-//         "animate-fade-in-top": open,
-//       })}
-//     >
-//       {children}
-//     </div>
-//   </div>
-// </div>
-//   )
-// }
-
-// Accordion.Item = Item
 
 type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
   title: string
   description?: string
   required?: boolean
   tooltip?: string
+  forceMountContent?: true
 }
 
 const Accordion: React.FC<
@@ -104,12 +31,13 @@ const Item: React.FC<AccordionItemProps> = ({
   required,
   tooltip,
   children,
+  forceMountContent = undefined,
   ...props
 }) => {
   return (
     <AccordionPrimitive.Item
       {...props}
-      className="border-b border-grey-20 transition- pb-5 radix-state-open:pb-5xlarge mb-5 last:mb-0 group"
+      className="border-b border-grey-20 transition-padding pb-5 radix-state-open:pb-5xlarge mb-5 last:mb-0 group"
     >
       <AccordionPrimitive.Header>
         <AccordionPrimitive.Trigger className="flex items-center justify-between w-full">
@@ -123,8 +51,13 @@ const Item: React.FC<AccordionItemProps> = ({
           <MorphingTrigger />
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
-      <AccordionPrimitive.Content forceMount>
-        <div className="text-grey-50 inter-base-regular transition-all duration-300 h-radix-accordion opacity-100 group-radix-state-closed:h-0 overflow-hidden group-radix-state-closed:opacity-0">
+      <AccordionPrimitive.Content
+        forceMount={forceMountContent}
+        className={clsx(
+          "overflow-hidden radix-state-open:animate-accordion-open radix-state-closed:animate-accordion-close"
+        )}
+      >
+        <div className="text-grey-50 inter-base-regular group-radix-state-closed:animate-accordion-close">
           {description && <p>{description}</p>}
           <div className="mt-large">{children}</div>
         </div>
