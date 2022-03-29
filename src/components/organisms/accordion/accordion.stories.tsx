@@ -46,6 +46,7 @@ const Template: ComponentStory<typeof Accordion> = (args) => (
         </div>
       </Accordion.Item>
       <Accordion.Item
+        forceMountContent
         title="Metadata"
         description="The price overrides apply from the time you hit the publish button and forever if left untouched."
         tooltip="You could add some useful information here."

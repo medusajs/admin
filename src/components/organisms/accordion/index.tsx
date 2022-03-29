@@ -9,7 +9,7 @@ type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
   description?: string
   required?: boolean
   tooltip?: string
-  forceMountContent: true | undefined
+  forceMountContent?: true
 }
 
 const Accordion: React.FC<
