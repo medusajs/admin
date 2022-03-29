@@ -1,4 +1,5 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
+import clsx from "clsx"
 import React from "react"
 import Button from "../../fundamentals/button"
 import InfoTooltip from "../../molecules/info-tooltip"
@@ -8,6 +9,7 @@ type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
   description?: string
   required?: boolean
   tooltip?: string
+  forceMountContent: true | undefined
 }
 
 const Accordion: React.FC<
@@ -29,6 +31,7 @@ const Item: React.FC<AccordionItemProps> = ({
   required,
   tooltip,
   children,
+  forceMountContent = undefined,
   ...props
 }) => {
   return (
@@ -48,17 +51,17 @@ const Item: React.FC<AccordionItemProps> = ({
           <MorphingTrigger />
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
-      <div className="group-radix-state-closed:h-0 group-radix-state-closed:opacity-0 group-radix-state-open:h-radix-accordion group-radix-state-open:opacity-100 transition-all duration-300 ease-accordion overflow-hidden">
-        <AccordionPrimitive.Content
-          forceMount
-          className="overflow-hidden radix-state-open:animate-accordion-open radix-state-closed:animate-accordion-close"
-        >
-          <div className="text-grey-50 inter-base-regular">
-            {description && <p>{description}</p>}
-            <div className="mt-large">{children}</div>
-          </div>
-        </AccordionPrimitive.Content>
-      </div>
+      <AccordionPrimitive.Content
+        forceMount={forceMountContent}
+        className={clsx(
+          "overflow-hidden radix-state-open:animate-accordion-open radix-state-closed:animate-accordion-close"
+        )}
+      >
+        <div className="text-grey-50 inter-base-regular group-radix-state-closed:animate-accordion-close">
+          {description && <p>{description}</p>}
+          <div className="mt-large">{children}</div>
+        </div>
+      </AccordionPrimitive.Content>
     </AccordionPrimitive.Item>
   )
 }

@@ -10,10 +10,6 @@ module.exports = {
         display: "display opacity",
         visibility: "visibility",
         padding: "padding-top padding-right padding-bottom padding-left",
-        accordion: "height, opacity",
-      },
-      transitionTimingFunction: {
-        accordion: "cubic-bezier(0.87, 0, 0.13, 1)",
       },
       colors: {
         grey: {
