@@ -19,7 +19,7 @@ import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 import TruckIcon from "../../fundamentals/icons/truck-icon"
 import DeletePrompt from "../../organisms/delete-prompt"
 import { ActionType } from "../actionables"
-import InfoTooltip from "../info-tooltip"
+import IconTooltip from "../icon-tooltip"
 import { FulfillmentStatus, PaymentStatus, ReturnStatus } from "../order-status"
 import EventActionables from "./event-actionables"
 import EventContainer, { EventIconColor } from "./event-container"
@@ -302,7 +302,7 @@ function getPaymentLink(
   return payable ? (
     <div className="inter-small-regular text-grey-50 flex flex-col gap-y-xsmall">
       <div className="flex items-center gap-x-xsmall">
-        {paymentFormatWarning && <InfoTooltip content={paymentFormatWarning} />}
+        {paymentFormatWarning && <IconTooltip content={paymentFormatWarning} />}
         <span>Payment link:</span>
       </div>
       {differenceCardId && (

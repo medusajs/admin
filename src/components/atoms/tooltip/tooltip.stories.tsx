@@ -1,10 +1,10 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react"
+import clsx from "clsx"
 import React from "react"
 import Tooltip from "."
-import clsx from "clsx"
 
 export default {
-  title: "Molecules/Tooltip",
+  title: "Atoms/Tooltip",
   component: Tooltip,
   argTypes: {
     triggerPosition: {
