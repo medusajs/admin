@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 import Button from "../../fundamentals/button"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
-import InfoTooltip from "../../molecules/info-tooltip"
+import IconTooltip from "../../molecules/icon-tooltip"
 import Modal from "../../molecules/modal"
 import CurrencyInput from "../../organisms/currency-input"
 
@@ -95,7 +95,7 @@ const EditDenominationsModal = ({
               <label className="inter-base-semibold text-grey-90 mr-1.5">
                 Prices
               </label>
-              <InfoTooltip content={"Helpful denominations"} />
+              <IconTooltip content={"Helpful denominations"} />
             </div>
             {denominations.map((field, index) => {
               return (

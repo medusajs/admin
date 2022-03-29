@@ -2,7 +2,7 @@ import moment from "moment"
 import React, { useEffect, useState } from "react"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import StatusIndicator from "../../fundamentals/status-indicator"
-import InfoTooltip from "../../molecules/info-tooltip"
+import IconTooltip from "../../molecules/icon-tooltip"
 import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
 
@@ -122,7 +122,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
           ) : (
             <div className="flex items-center space-x-2">
               <span>N / A</span>
-              <InfoTooltip content={"Region has been deleted"} />
+              <IconTooltip content={"Region has been deleted"} />
             </div>
           )}
         </Table.Cell>
@@ -136,7 +136,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
             ) : (
               <div className="flex items-center space-x-2">
                 <span>N / A</span>
-                <InfoTooltip content={"Region has been deleted"} />
+                <IconTooltip content={"Region has been deleted"} />
               </div>
             )
           ) : (

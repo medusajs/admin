@@ -1,7 +1,7 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import React from "react"
 import Button from "../../fundamentals/button"
-import InfoTooltip from "../../molecules/info-tooltip"
+import IconTooltip from "../../molecules/icon-tooltip"
 
 // type AccordionItemProps = {
 //   title: string
@@ -118,7 +118,7 @@ const Item: React.FC<AccordionItemProps> = ({
               {title}
               {required && <span className="text-rose-50">*</span>}
             </span>
-            {tooltip && <InfoTooltip content={tooltip} />}
+            {tooltip && <IconTooltip content={tooltip} />}
           </div>
           <MorphingTrigger />
         </AccordionPrimitive.Trigger>

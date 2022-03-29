@@ -2,7 +2,7 @@ import * as RadixTooltip from "@radix-ui/react-tooltip"
 import clsx from "clsx"
 import React from "react"
 
-type TooltipProps = RadixTooltip.TooltipContentProps &
+export type TooltipProps = RadixTooltip.TooltipContentProps &
   Pick<
     RadixTooltip.TooltipProps,
     "open" | "defaultOpen" | "onOpenChange" | "delayDuration"

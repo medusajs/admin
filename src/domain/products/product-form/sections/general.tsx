@@ -10,7 +10,7 @@ import React from "react"
 import { Controller } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import Select from "../../../../components/molecules/select"
 import StatusSelector from "../../../../components/molecules/status-selector"
@@ -158,7 +158,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
         </div>
         <div className="flex item-center gap-x-1.5 mb-xlarge">
           <Checkbox name="discountable" ref={register} label="Discountable" />
-          <InfoTooltip
+          <IconTooltip
             content={
               "When unchecked discounts will not be applied to this product"
             }

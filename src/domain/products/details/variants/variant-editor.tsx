@@ -5,7 +5,7 @@ import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import Select from "../../../../components/molecules/select"
@@ -142,7 +142,7 @@ const VariantEditor = ({
               className="inter-base-semibold mb-4 flex items-center gap-xsmall"
             >
               {"Prices"}
-              <InfoTooltip content={"Variant prices"} />
+              <IconTooltip content={"Variant prices"} />
             </label>
 
             <div className="grid grid-cols-1 gap-y-xsmall">
@@ -208,7 +208,7 @@ const VariantEditor = ({
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
               {"Stock & Inventory"}
-              <InfoTooltip content={"Stock and inventory information"} />
+              <IconTooltip content={"Stock and inventory information"} />
             </label>
             <div className="w-full mt-4 grid medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input label="SKU" name="sku" placeholder="SKU" ref={register} />
@@ -236,7 +236,7 @@ const VariantEditor = ({
                   label="Manage Inventory"
                   ref={register}
                 />
-                <InfoTooltip
+                <IconTooltip
                   content={
                     "When checked Medusa will regulate the inventory when orders and returns are made."
                   }
@@ -248,7 +248,7 @@ const VariantEditor = ({
                   ref={register}
                   label="Allow backorders"
                 />
-                <InfoTooltip
+                <IconTooltip
                   content={
                     "When checked the product will be available for purchase despite the product being sold out."
                   }
@@ -259,7 +259,7 @@ const VariantEditor = ({
 
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
-              Dimensions <InfoTooltip content={"Variant dimensions"} />
+              Dimensions <IconTooltip content={"Variant dimensions"} />
             </label>
             <div className="w-full mt-4 grid medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input
@@ -290,7 +290,7 @@ const VariantEditor = ({
           </div>
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
-              Customs <InfoTooltip content={"Variant customs information"} />
+              Customs <IconTooltip content={"Variant customs information"} />
             </label>
             <div className="w-full grid mt-4 medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input
