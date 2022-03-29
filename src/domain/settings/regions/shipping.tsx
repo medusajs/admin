@@ -1,25 +1,21 @@
-import {
-  useAdminRegionFulfillmentOptions,
-  useAdminShippingOptions,
-} from "medusa-react"
+import { Region, ShippingOption as Option } from "@medusajs/medusa"
+import { useAdminShippingOptions } from "medusa-react"
 import React, { useState } from "react"
-import { Box, Flex } from "rebass"
+import Spinner from "../../../components/atoms/spinner"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import Actionables from "../../../components/molecules/actionables"
 import ShippingOption from "../../../components/molecules/shipping-option"
-import Spinner from "../../../components/spinner"
 import EditShipping from "./edit-shipping"
 import NewShipping from "./new-shipping"
 
-const Shipping = ({ region }) => {
-  const [editOption, setEditOption] = useState(null)
+type ShippingProps = {
+  region: Region
+}
+
+const Shipping: React.FC<ShippingProps> = ({ region }) => {
+  const [editOption, setEditOption] = useState<Option | null>(null)
   const [showAddOption, setAddOption] = useState(false)
   const [showAddReturnOption, setAddReturnOption] = useState(false)
-
-  const {
-    fulfillment_options,
-    isLoading: loadingFulfillment,
-  } = useAdminRegionFulfillmentOptions(region.id)
 
   const {
     shipping_options,
@@ -43,8 +39,8 @@ const Shipping = ({ region }) => {
     },
   ]
 
-  const outbound = []
-  const inbound = []
+  const outbound: Option[] = []
+  const inbound: Option[] = []
   if (shipping_options) {
     for (const o of shipping_options) {
       if (o.is_return) {
@@ -64,16 +60,11 @@ const Shipping = ({ region }) => {
         </div>
         <div className="flex flex-col">
           {!shipping_options ? (
-            <Flex
-              flexDirection="column"
-              alignItems="center"
-              height="100vh"
-              mt="auto"
-            >
-              <Box height="75px" width="75px" mt="50%">
-                <Spinner dark />
-              </Box>
-            </Flex>
+            <div className="flex items-center justify-center h-screen">
+              <div className="m-auto">
+                <Spinner variant="secondary" />
+              </div>
+            </div>
           ) : (
             shipping_options
               .filter((o) => o.is_return === false && o.region_id === region.id)
@@ -98,16 +89,11 @@ const Shipping = ({ region }) => {
         </div>
         <div className="flex flex-col">
           {loadingOptions ? (
-            <Flex
-              flexDirection="column"
-              alignItems="center"
-              height="100vh"
-              mt="auto"
-            >
-              <Box height="75px" width="75px" mt="50%">
-                <Spinner dark />
-              </Box>
-            </Flex>
+            <div className="flex items-center justify-center h-screen">
+              <div className="m-auto">
+                <Spinner variant="secondary" />
+              </div>
+            </div>
           ) : shipping_options ? (
             shipping_options
               .filter((o) => o.is_return && o.region_id === region.id)
@@ -133,7 +119,7 @@ const Shipping = ({ region }) => {
           region={region}
         />
       )}
-      {(showAddOption || showAddReturnOption || loadingFulfillment) && (
+      {(showAddOption || showAddReturnOption) && (
         <NewShipping
           isReturn={showAddReturnOption}
           onClick={() =>
@@ -143,7 +129,6 @@ const Shipping = ({ region }) => {
           }
           onCreated={refetch}
           region={region}
-          fulfillmentOptions={fulfillment_options}
         />
       )}
     </>

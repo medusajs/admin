@@ -5,7 +5,7 @@ import PublishIcon from "../../../../components/fundamentals/icons/publish-icon"
 import {
   MultiSubmitFunction,
   SaveNotificationProvider,
-  SubmitFunction,
+  SubmitFunction
 } from "../../../../components/organisms/save-notifications/notification-provider"
 import { useFormActions } from "./use-form-actions"
 

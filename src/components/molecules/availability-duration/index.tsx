@@ -1,7 +1,7 @@
 import { parse } from "iso8601-duration"
 import React, { useEffect, useState } from "react"
 import Checkbox from "../../atoms/checkbox"
-import InfoTooltip from "../info-tooltip"
+import IconTooltip from "../icon-tooltip"
 import InputField from "../input"
 
 type AvailabilityDurationProps = {
@@ -48,7 +48,7 @@ const AvailabilityDuration: React.FC<AvailabilityDurationProps> = ({
           className="mr-1.5"
           onChange={(e) => setHasValidDuration(e.target.checked)}
         />
-        <InfoTooltip content={"Duration"} />
+        <IconTooltip content={"Duration"} />
       </div>
       {hasValidDuration && (
         <div className="grid grid-cols-3 grid-rows-2 gap-x-xsmall gap-y-base mt-xlarge">

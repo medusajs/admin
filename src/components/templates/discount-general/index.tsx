@@ -4,7 +4,7 @@ import Checkbox from "../../atoms/checkbox"
 import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import { ActionType } from "../../molecules/actionables"
-import InfoTooltip from "../../molecules/info-tooltip"
+import IconTooltip from "../../molecules/icon-tooltip"
 import InputField from "../../molecules/input"
 import ConnectForm from "../../molecules/nested-form"
 import Select from "../../molecules/select"
@@ -90,7 +90,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
           <StatusSelector
             isDraft={isDisabled}
             activeState="Active"
-            draftState="Draft"
+            draftState="Disable"
             onChange={() => {
               if (onStatusChange) {
                 onStatusChange()
@@ -179,7 +179,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                 />
                 {selectedRegions.length > 1 && (
                   <div className="flex items-center">
-                    <InfoTooltip
+                    <IconTooltip
                       content={
                         "Fixed value discounts are not available for multi regional discounts"
                       }
@@ -198,7 +198,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                     ["opacity-50 pointer-events-none select-none"]: isEdit,
                   })}
                 />
-                <InfoTooltip
+                <IconTooltip
                   content={
                     "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
                   }

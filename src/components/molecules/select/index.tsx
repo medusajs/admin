@@ -1,3 +1,6 @@
+import createCache from "@emotion/cache"
+import { CacheProvider } from "@emotion/react"
+import clsx from "clsx"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import Select, {
   ClearIndicatorProps,
@@ -10,17 +13,14 @@ import Select, {
   SingleValueProps,
 } from "react-select"
 import AsyncSelect from "react-select/async"
-import CreatableSelect from "react-select/creatable"
 import AsyncCreatableSelect from "react-select/async-creatable"
+import CreatableSelect from "react-select/creatable"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import CheckIcon from "../../fundamentals/icons/check-icon"
+import SearchIcon from "../../fundamentals/icons/search-icon"
 import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
-import clsx from "clsx"
-import SearchIcon from "../../fundamentals/icons/search-icon"
-import { CacheProvider } from "@emotion/react"
-import createCache from "@emotion/cache"
 import { ModalContext } from "../modal"
 
 type MultiSelectProps = InputHeaderProps & {
@@ -107,7 +107,7 @@ const Input = (props: InputProps) => {
 
   return (
     <div className="w-full flex items-center h-full space-between">
-      <div className="w-full flex w-full items-center">
+      <div className="w-full flex items-center">
         <span className="text-grey-40 mr-2">
           <SearchIcon size={20} />
         </span>
@@ -122,9 +122,7 @@ const Input = (props: InputProps) => {
   )
 }
 
-const ClearIndicatorFunc = (setIsOpen) => ({
-  ...props
-}: ClearIndicatorProps) => {
+const ClearIndicator = ({ ...props }: ClearIndicatorProps) => {
   if (props.selectProps.menuIsOpen && props.selectProps.isMulti) {
     return <></>
   }
@@ -136,7 +134,6 @@ const ClearIndicatorFunc = (setIsOpen) => ({
   return (
     <div
       onMouseDown={(e) => {
-        setIsOpen(true)
         restInnerProps.onMouseDown(e)
       }}
       ref={ref}
@@ -218,18 +215,20 @@ const SSelect = React.forwardRef(
       })
     }, [])
 
-    let selectRef = useRef(null)
-    let containerRef = useRef(null)
+    const selectRef = useRef(null)
+    const containerRef = useRef(null)
 
-    const onClick = () => {
-      setIsFocussed(true)
-      selectRef?.current?.focus()
+    const onClick = (e) => {
+      if (!isFocussed) {
+        setIsFocussed(true)
+        selectRef?.current?.focus()
+      }
     }
 
-    const onClickOption = (val) => {
+    const onClickOption = (val, ...args) => {
       if (
-        val.length &&
-        val.find((option) => option.value === "all") &&
+        val?.length &&
+        val?.find((option) => option.value === "all") &&
         hasSelectAll &&
         isMultiSelect
       ) {
@@ -300,7 +299,7 @@ const SSelect = React.forwardRef(
                 ref={selectRef}
                 value={value}
                 isMulti={isMultiSelect}
-                openMenuOnFocus={true}
+                openMenuOnFocus={isMultiSelect}
                 isSearchable={enableSearch}
                 isClearable={clearSelected}
                 onChange={onClickOption}
@@ -317,10 +316,11 @@ const SSelect = React.forwardRef(
                     e.target?.contains(containerRef.current) &&
                     e.target !== document
                   ) {
-                    selectRef.current?.blur()
+                    return true
                   }
                 }}
                 closeMenuOnSelect={!isMultiSelect}
+                blurInputOnSelect={!isMultiSelect}
                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
                 hideSelectedOptions={false}
                 menuPortalTarget={
@@ -342,7 +342,7 @@ const SSelect = React.forwardRef(
                   Input,
                   Menu,
                   SingleValue,
-                  ClearIndicator: ClearIndicatorFunc(false),
+                  ClearIndicator,
                 }}
               />
             }
@@ -365,11 +365,17 @@ const GetSelect = React.forwardRef(
           ref={ref}
           defaultOptions={true}
           onCreateOption={onCreateOption}
+          isSearchable
           loadOptions={searchBackend}
           {...props}
         />
       ) : (
-        <CreatableSelect {...props} ref={ref} onCreateOption={onCreateOption} />
+        <CreatableSelect
+          {...props}
+          isSearchable
+          ref={ref}
+          onCreateOption={onCreateOption}
+        />
       )
     } else if (searchBackend) {
       return (
@@ -381,9 +387,7 @@ const GetSelect = React.forwardRef(
         />
       )
     }
-    return (
-      <Select ref={ref} closeMenuOnScroll={(e) => console.log(e)} {...props} />
-    )
+    return <Select ref={ref} {...props} />
   }
 )
 

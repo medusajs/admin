@@ -195,11 +195,11 @@ const NewRegion = ({ onDone, onClick }) => {
             </div>
           </Modal.Content>
           <Modal.Footer>
-            <div className="flex items-center justify-end w-full">
+            <div className="flex items-center justify-end w-full gap-x-xsmall">
               <Button
                 type="button"
                 onClick={onClick}
-                variant="ghost"
+                variant="secondary"
                 size="small"
                 className="w-eventButton justify-center"
               >

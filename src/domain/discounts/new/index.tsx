@@ -1,3 +1,4 @@
+import { Discount } from "@medusajs/medusa"
 import { RouteComponentProps } from "@reach/router"
 import { navigate, PageProps } from "gatsby"
 import {
@@ -21,7 +22,10 @@ import { hydrateDiscount } from "../../../utils/hydrate-discount"
 import { getNativeSymbol, persistedPrice } from "../../../utils/prices"
 import { DiscountFormType } from "../types"
 
-type NewProps = RouteComponentProps & PageProps
+type NewProps = RouteComponentProps<{
+  location: { state: { discount?: Discount } }
+}> &
+  PageProps
 
 const New: React.FC<NewProps> = ({ location }) => {
   const { regions } = useAdminRegions()
@@ -112,7 +116,7 @@ const New: React.FC<NewProps> = ({ location }) => {
           : discountType === "fixed"
           ? getPersistedPrice(parseFloat(data.rule.value))
           : parseFloat(data.rule.value),
-        type: discountType,
+        type: isFreeShipping ? "free_shipping" : discountType,
         allocation: allocationItem ? "item" : "total",
         valid_for: appliesToAll
           ? undefined

@@ -10,7 +10,7 @@ import React from "react"
 import { Controller } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import Select from "../../../../components/molecules/select"
 import StatusSelector from "../../../../components/molecules/status-selector"
@@ -28,8 +28,14 @@ import {
 } from "../form/product-form-context"
 
 const General = ({ showViewOptions = true, isEdit = false, product }) => {
-  const { register, control, setViewType, viewType } = useProductForm()
-  const { product_types } = useAdminProductTypes()
+  const {
+    register,
+    control,
+    setViewType,
+    viewType,
+    setValue,
+  } = useProductForm()
+  const { product_types } = useAdminProductTypes(undefined, { cacheTime: 0 })
   const { collections } = useAdminCollections()
 
   const typeOptions =
@@ -39,6 +45,18 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
       label: collection.title,
       value: collection.id,
     })) || []
+
+  const setNewType = (value: string) => {
+    const newType = {
+      label: value,
+      value,
+    }
+
+    typeOptions.push(newType)
+    setValue("type", newType)
+
+    return newType
+  }
 
   return (
     <GeneralBodyCard
@@ -63,7 +81,11 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             name="title"
             placeholder="Jacket, Sunglasses..."
             required
-            ref={register({ required: "Name is required", minLength: 1 })}
+            ref={register({
+              required: true,
+              minLength: 1,
+              pattern: /(.|\s)*\S(.|\s)*/,
+            })}
           />
           <Input
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
@@ -122,6 +144,11 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
                   options={typeOptions}
                   onChange={onChange}
                   value={value}
+                  isCreatable
+                  onCreateOption={(value) => {
+                    return setNewType(value)
+                  }}
+                  clearSelected
                 />
               )
             }}
@@ -143,7 +170,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
         </div>
         <div className="flex item-center gap-x-1.5 mb-xlarge">
           <Checkbox name="discountable" ref={register} label="Discountable" />
-          <InfoTooltip
+          <IconTooltip
             content={
               "When unchecked discounts will not be applied to this product"
             }

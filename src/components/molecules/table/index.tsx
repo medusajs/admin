@@ -243,7 +243,17 @@ Table.Cell = React.forwardRef(
 )
 
 Table.Row = React.forwardRef(
-  ({ className, actions, children, linkTo, forceDropdown, ...props }: TableRowProps, ref) => (
+  (
+    {
+      className,
+      actions,
+      children,
+      linkTo,
+      forceDropdown,
+      ...props
+    }: TableRowProps,
+    ref
+  ) => (
     <tr
       ref={ref}
       className={clsx(
@@ -281,6 +291,9 @@ export const TablePagination = ({
   hasNext,
   hasPrev,
 }: TablePaginationProps) => {
+  const soothedOffset = count > 0 ? offset + 1 : 0
+  const soothedPageCount = Math.max(1, pageCount)
+
   return (
     <div
       className={clsx(
@@ -288,11 +301,9 @@ export const TablePagination = ({
         className
       )}
     >
-      <div>{`${
-        count > 0 ? offset + 1 : 0
-      } - ${pageSize} of ${count} ${title}`}</div>
+      <div>{`${soothedOffset} - ${pageSize} of ${count} ${title}`}</div>
       <div className="flex space-x-4">
-        <div>{`${currentPage} of ${pageCount}`}</div>
+        <div>{`${currentPage} of ${soothedPageCount}`}</div>
         <div className="flex space-x-4 items-center">
           <div
             className={clsx(

@@ -208,7 +208,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                     <CurrencyInput.AmountInput
                       amount={shippingOption.amount}
                       label="Price"
-                      onChange={handleAmountChange}
+                      onChange={(amount) => handleAmountChange(amount)}
                     />
                   </CurrencyInput>
                 </div>
@@ -240,7 +240,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                             shippingOption.requirements?.min_subtotal?.amount
                           }
                           label="Min. subtotal"
-                          onChange={handleMinChange}
+                          onChange={(amount) => handleMinChange(amount)}
                         />
                       </CurrencyInput>
                       <CurrencyInput
@@ -253,7 +253,7 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                             shippingOption.requirements?.max_subtotal?.amount
                           }
                           label="Max. subtotal"
-                          onChange={handleMaxChange}
+                          onChange={(amount) => handleMaxChange(amount)}
                         />
                       </CurrencyInput>
                     </div>
@@ -274,15 +274,15 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
                 </div>
               </Modal.Content>
               <Modal.Footer>
-                <div className="flex items-center justify-end w-full">
+                <div className="flex items-center justify-end w-full gap-x-xsmall">
                   <Button
                     type="button"
                     onClick={onClick}
-                    variant="ghost"
+                    variant="secondary"
                     size="small"
                     className="w-eventButton justify-center"
                   >
-                    Cancel Changes
+                    Cancel changes
                   </Button>
                   <Button
                     type="submit"
