@@ -136,31 +136,6 @@ const DiscountTable: React.FC = () => {
     setQuery("")
   }
 
-  const getRowActions = (discount: any) => {
-    return [
-      {
-        label: "Edit",
-        onClick: () => navigate(`/a/discounts/${discount.id}`),
-      },
-      {
-        label: discount.is_disabled ? "Publish" : "Unpublish",
-        icon: discount.is_disabled ? <PublishIcon /> : <UnpublishIcon />,
-        onClick: () => setTab(discount.id),
-      },
-      {
-        label: "Duplicate",
-        icon: <DuplicateIcon />,
-        onClick: () => setTab(discount.id),
-      },
-      {
-        label: "Delete",
-        icon: <TrashIcon />,
-        variant: "danger",
-        onClick: () => removeTab(discount.id),
-      },
-    ]
-  }
-
   useEffect(() => {
     refreshWithFilters()
   }, [representationObject])
@@ -182,6 +157,7 @@ const DiscountTable: React.FC = () => {
         }
         enableSearch
         handleSearch={setQuery}
+        searchPlaceholder="Search by code or description..."
         searchValue={query}
         {...getTableProps()}
         className={clsx({ ["relative"]: isLoading })}

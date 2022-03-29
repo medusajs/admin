@@ -39,6 +39,10 @@ const useCopyPromotion = () => {
       description: promotion.rule.description,
     }
 
+    if (promotion.rule.allocation) {
+      copy.rule.allocation = promotion.rule.allocation
+    }
+
     if (promotion.rule.conditions) {
       copy.rule.conditions = promotion.rule.conditions.map((cond) => ({
         operator: cond.operator,
@@ -50,10 +54,6 @@ const useCopyPromotion = () => {
           customer_groups: cond.customer_groups,
         }),
       }))
-    }
-
-    if (promotion.rule.allocation) {
-      copy.rule.allocation = promotion.rule.allocation
     }
 
     await createPromotion.mutate(copy, {

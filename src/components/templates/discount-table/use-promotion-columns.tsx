@@ -93,7 +93,7 @@ export const usePromotionTableColumns = () => {
         Cell: ({ cell: { value }, index }) => (
           <Table.Cell key={index}>
             <div className="overflow-hidden">
-              <Badge variant="default">
+              <Badge className="rounded-rounded" variant="default">
                 <span className="inter-small-regular">{value}</span>
               </Badge>
             </div>
