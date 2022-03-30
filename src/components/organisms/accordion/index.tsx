@@ -57,8 +57,8 @@ const Item: React.FC<AccordionItemProps> = ({
           "overflow-hidden radix-state-open:animate-accordion-open radix-state-closed:animate-accordion-close"
         )}
       >
-        <div className="text-grey-50 inter-base-regular group-radix-state-closed:animate-accordion-close">
-          {description && <p>{description}</p>}
+        <div className="inter-base-regular group-radix-state-closed:animate-accordion-close">
+          {description && <p className="text-grey-50 ">{description}</p>}
           <div className="mt-large">{children}</div>
         </div>
       </AccordionPrimitive.Content>
