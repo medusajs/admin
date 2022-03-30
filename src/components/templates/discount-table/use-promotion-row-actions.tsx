@@ -10,14 +10,26 @@ import TrashIcon from "../../fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
 import useCopyPromotion from "./use-copy-promotion"
+import { useQueryClient } from "react-query"
+import { adminDiscountKeys } from "medusa-react"
 
 const usePromotionActions = (promotion) => {
+  const queryClient = useQueryClient()
+
+  const updatePromotion = useAdminUpdateDiscount(promotion.id, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([
+        adminDiscountKeys.lists(),
+        adminDiscountKeys.detail(promotion.id),
+      ])
+    },
+  })
+
   const notification = useNotification()
   const dialog = useImperativeDialog()
 
   const copyPromotion = useCopyPromotion()
 
-  const updatePromotion = useAdminUpdateDiscount(promotion.id)
   const deletePromotion = useAdminDeleteDiscount(promotion?.id)
 
   const handleDelete = async () => {
