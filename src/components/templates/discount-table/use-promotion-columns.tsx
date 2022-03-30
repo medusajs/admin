@@ -56,11 +56,7 @@ const getCurrencySymbol = (promotion) => {
     if (!promotion.regions?.length) {
       return ""
     }
-    return (
-      <div className="text-grey-50">
-        {promotion.regions[0].currency_code.toUpperCase()}
-      </div>
-    )
+    return promotion.regions[0].currency_code.toUpperCase()
   }
   return ""
 }
@@ -167,7 +163,9 @@ export const usePromotionTableColumns = () => {
         Cell: ({ row: { original }, index }) => {
           return (
             <Table.Cell className="text-right" key={index}>
-              {original?.usage_limit > 0 ? original.usage_count : "-"}
+              {original.usage_limit > 0
+                ? getUsageCount(original.usage_count)
+                : "-"}
             </Table.Cell>
           )
         },
@@ -177,6 +175,17 @@ export const usePromotionTableColumns = () => {
   )
 
   return [columns]
+}
+
+const getUsageCount = (usageCount: number) => {
+  switch (true) {
+    case usageCount > 9999999:
+      return `${Math.floor(usageCount / 1000000)}m`
+    case usageCount > 9999:
+      return `${Math.floor(usageCount / 1000)}k`
+    default:
+      return usageCount
+  }
 }
 
 const getNumberOfConditions = (condition) => {
