@@ -4,6 +4,7 @@ import { navigate } from "gatsby"
 import { useAdminUpdateDiscount } from "medusa-react"
 import { useAdminDeleteDiscount, useAdminDiscount } from "medusa-react"
 import React, { useState } from "react"
+import Fade from "../../../components/atoms/fade-wrapper"
 import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
@@ -26,6 +27,7 @@ type EditProps = {
 } & RouteComponentProps
 
 const Edit: React.FC<EditProps> = ({ id }) => {
+  const [isOpen, setIsOpen] = useState(false)
   const { discount, isLoading } = useAdminDiscount(id)
   const [showDelete, setShowDelete] = useState(false)
   const deleteDiscount = useAdminDeleteDiscount(id)
@@ -68,6 +70,7 @@ const Edit: React.FC<EditProps> = ({ id }) => {
         <HeadingBodyCard
           promotion={discount}
           id={id}
+          setIsOpen={setIsOpen}
           title={discount.code}
           subtitle={discount.rule.description}
         >
@@ -91,16 +94,24 @@ const Edit: React.FC<EditProps> = ({ id }) => {
             </div>
           </div>
         </HeadingBodyCard>
-        // <DiscountFormProvider
-        //   discount={discountToFormValuesMapper(discount as any)} // suppressing type mismatch
-        //   isEdit
-        // >
-        //   <DiscountForm discount={discount} isEdit />
-        // </DiscountFormProvider>
       )}
       <div className="mt-xlarge">
         <RawJSON data={discount} title="Raw discount" />
       </div>
+      {!isLoading && discount && (
+        <DiscountFormProvider
+          discount={discountToFormValuesMapper(discount as any)} // suppressing type mismatch
+          isEdit
+        >
+          <Fade isVisible={isOpen} isFullScreen={true}>
+            <DiscountForm
+              closeForm={() => setIsOpen(false)}
+              discount={discount}
+              isEdit
+            />
+          </Fade>
+        </DiscountFormProvider>
+      )}
     </div>
   )
 }
@@ -115,10 +126,8 @@ const getPromotionDescription = (discount: Discount) => {
               currency: discount.regions[0].currency_code,
               amount: discount.rule.value,
             })}
-            {/* <span className="text-grey-50">kr.</span>
-            {discount.rule.value} */}
           </h2>
-          <span className="inter-base-regular text-grey-50">
+          <span className="inter-base-regular text-grey-50 ml-1">
             {discount.regions[0].currency_code.toUpperCase()}
           </span>
         </div>
@@ -141,7 +150,7 @@ const getPromotionDescription = (discount: Discount) => {
   }
 }
 
-const HeadingBodyCard = ({ id, promotion, ...props }) => {
+const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
   const dialog = useImperativeDialog()
   const notification = useNotification()
   const updatePromotion = useAdminUpdateDiscount(id)
@@ -188,8 +197,8 @@ const HeadingBodyCard = ({ id, promotion, ...props }) => {
 
   const actionables = [
     {
-      label: "Delete Product",
-      onClick: onDelete,
+      label: "Edit Product",
+      onClick: () => setIsOpen(true),
       icon: <EditIcon />,
     },
     {
