@@ -1,13 +1,17 @@
 import * as React from "react"
 import { useFormContext } from "react-hook-form"
+
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
+import Accordion from "../../../components/organisms/accordion"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { useDiscountForm } from "./form/discount-form-context"
 import { useFormActions } from "./form/use-form-actions"
+import Conditions from "./sections/conditions"
 import General from "./sections/general"
+import PromotionType from "./sections/promotion-type"
 import Settings from "./sections/settings"
 
 type DiscountFormProps = {
@@ -100,13 +104,50 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
       </FocusModal.Header>
       <FocusModal.Main>
         <div className="flex justify-center">
-          <div className="medium:w-7/12 large:w-6/12 small:w-4/5 w-full">
-            <div>
-              <General discount={discount} isEdit={isEdit} />
-            </div>
-            <div className="mt-xlarge">
-              <Settings isEdit={isEdit} />
-            </div>
+          <div className="medium:w-7/12 large:w-6/12 small:w-4/5 w-full pt-16">
+            <h1 className="inter-xlarge-semibold">
+              {isEdit ? "Edit promotion" : "Create new promotion"}
+            </h1>
+            <Accordion
+              className="pt-7 text-grey-90"
+              defaultValue={["promotion-type"]}
+              type="multiple"
+            >
+              <Accordion.Item
+                forceMountContent
+                title="Promotion type"
+                required
+                tooltip="Select a promotion type"
+                value="promotion-type"
+              >
+                <PromotionType promotion={discount} isEdit={isEdit} />
+              </Accordion.Item>
+              <Accordion.Item
+                title="General"
+                required
+                value="general"
+                forceMountContent
+              >
+                <General discount={discount} isEdit={isEdit} />
+              </Accordion.Item>
+              <Accordion.Item
+                forceMountContent
+                title="Configuration"
+                value="configuration"
+                description="Promotion code applies from you hit the publish button and forever if left untouched."
+              >
+                <Settings isEdit={isEdit} />
+              </Accordion.Item>
+              <Accordion.Item
+                forceMountContent
+                title="Conditions"
+                description="Promotion code apply to all products if left untouched."
+                value="conditions"
+                tooltip="Add conditions to your Promotion"
+              >
+                <Conditions />
+              </Accordion.Item>
+            </Accordion>
           </div>
         </div>
       </FocusModal.Main>
