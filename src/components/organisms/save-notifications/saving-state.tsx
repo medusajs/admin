@@ -1,7 +1,7 @@
 import React from "react"
 import type { Toast } from "react-hot-toast"
-import Spinner from "../spinner"
-import ToasterContainer from "../toaster-container"
+import Spinner from "../../atoms/spinner"
+import ToasterContainer from "../../atoms/toaster-container"
 
 type SavingStateProps = {
   toast: Toast

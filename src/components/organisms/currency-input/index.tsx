@@ -17,6 +17,7 @@ type CurrencyInputProps = {
   currentCurrency?: string
   size?: "small" | "medium" | "full"
   readOnly?: boolean
+  hideCurrency?: boolean
   onChange?: (currencyCode: string) => void
   className?: React.HTMLAttributes<HTMLDivElement>["className"]
 }
@@ -55,6 +56,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
   currencyCodes,
   size = "full",
   readOnly = false,
+  hideCurrency = false,
   onChange,
   children,
   className,
@@ -111,31 +113,34 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
       }}
     >
       <div className={clsx("flex items-center gap-x-2xsmall", className)}>
-        <div
-          className={clsx(
-            { "basis-[140px] max-w-[144px]": size === "medium" },
-            { "basis-[120px] max-w-[120px]": size === "small" },
-            { "flex-1": size === "full" }
-          )}
-        >
-          {!readOnly ? (
-            <Select
-              label="Currency"
-              value={value}
-              onChange={onCurrencyChange}
-              options={options}
-              disabled={readOnly}
-            />
-          ) : (
-            <Input
-              label="Currency"
-              value={value?.label}
-              readOnly
-              className="pointer-events-none"
-              tabIndex={-1}
-            />
-          )}
-        </div>
+        {!hideCurrency && (
+          <div
+            className={clsx(
+              { "w-[144px]": size === "medium" },
+              { "w-[120px]": size === "small" },
+              { "flex-1": size === "full" }
+            )}
+          >
+            {!readOnly ? (
+              <Select
+                enableSearch
+                label="Currency"
+                value={value}
+                onChange={onCurrencyChange}
+                options={options}
+                disabled={readOnly}
+              />
+            ) : (
+              <Input
+                label="Currency"
+                value={value?.label}
+                readOnly
+                className="pointer-events-none"
+                tabIndex={-1}
+              />
+            )}
+          </div>
+        )}
         {children && <div className="flex-1">{children}</div>}
       </div>
     </CurrencyContext.Provider>

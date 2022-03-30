@@ -48,6 +48,7 @@ type MultiSelectProps = InputHeaderProps & {
   isCreatable?: boolean
   clearSelected?: boolean
   onCreateOption?: (value: string) => { value: string; label: string }
+  id?: string
 }
 
 const MultiValueLabel = ({ ...props }: MultiValueProps) => {
@@ -200,6 +201,7 @@ const SSelect = React.forwardRef(
       placeholder = "Search...",
       options,
       onCreateOption,
+      id,
     }: MultiSelectProps,
     ref
   ) => {
@@ -268,7 +270,13 @@ const SSelect = React.forwardRef(
             setIsFocussed(false)
             selectRef.current?.blur()
           }}
+          id={id}
           onClick={onClick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              onClick()
+            }
+          }}
           className={clsx(className, {
             "bg-white rounded-t-rounded": isFocussed,
           })}
