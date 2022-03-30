@@ -13,7 +13,6 @@ import WarningCircle from "../../fundamentals/icons/warning-circle"
 
 /**
  * "Add manually" component.
- * @constructor
  */
 function AddManuallyButton() {
   return (
