@@ -8,10 +8,10 @@ export const productToFormValuesMapper = (product) => {
   return {
     ...product,
     collection: product?.collection
-      ? { id: product.collection.id, label: product.collection.title }
+      ? { value: product.collection.id, label: product.collection.title }
       : null,
     type: product?.type
-      ? { id: product.type.id, label: product.type.value }
+      ? { value: product.type.id, label: product.type.value }
       : null,
     tags: product?.tags ? product.tags.map((t) => t.value) : [],
     images: product?.images?.length
@@ -20,6 +20,12 @@ export const productToFormValuesMapper = (product) => {
       ? [{ url: product?.thumbnail }]
       : [],
     thumbnail,
+    origin_country: product?.origin_country
+      ? {
+          value: product.origin_country,
+          label: product.origin_country,
+        }
+      : null,
     variants: product.variants,
     prices: product?.variants.length
       ? product.variants[0].prices.map((price) => ({
@@ -83,7 +89,7 @@ export const formValuesToCreateProductMapper = (values, viewType) => {
     length: values?.length ? parseInt(values.length, 10) : undefined,
     weight: values?.weight ? parseInt(values.weight, 10) : undefined,
     height: values?.height ? parseInt(values.height, 10) : undefined,
-    origin_country: values.origin_country,
+    origin_country: values.origin_country?.value,
     mid_code: values.mid_code,
     hs_code: values.hs_code,
     is_giftcard: false,
@@ -110,7 +116,7 @@ export const formValuesToUpdateProductMapper = (values) => {
     length: values?.length ? parseInt(values.length, 10) : undefined,
     weight: values?.weight ? parseInt(values.weight, 10) : undefined,
     height: values?.height ? parseInt(values.height, 10) : undefined,
-    origin_country: values.origin_country,
+    origin_country: values.origin_country?.value,
     mid_code: values.mid_code,
     hs_code: values.hs_code,
     discountable: values.discountable,

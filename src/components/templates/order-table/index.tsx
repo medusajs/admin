@@ -175,7 +175,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
           </div>
         ) : (
           <Table.Body {...getTableBodyProps()}>
-            {rows.map((row, rowIndex) => {
+            {rows.map((row) => {
               prepareRow(row)
               return (
                 <Table.Row

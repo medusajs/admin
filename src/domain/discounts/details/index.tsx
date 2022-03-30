@@ -1,6 +1,7 @@
 import { RouteComponentProps } from "@reach/router"
 import { useAdminDeleteDiscount, useAdminDiscount } from "medusa-react"
 import React, { useState } from "react"
+import Spinner from "../../../components/atoms/spinner"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import RawJSON from "../../../components/organisms/raw-json"
@@ -50,7 +51,9 @@ const Edit: React.FC<EditProps> = ({ id }) => {
         previousRoute="/a/discounts"
       />
       {isLoading || !discount ? (
-        <p>loading</p>
+        <div className="h-full flex items-center justify-center">
+          <Spinner variant="secondary" />
+        </div>
       ) : (
         <DiscountFormProvider
           discount={discountToFormValuesMapper(discount as any)} // suppressing type mismatch

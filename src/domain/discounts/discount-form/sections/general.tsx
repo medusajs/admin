@@ -11,7 +11,7 @@ import Checkbox from "../../../../components/atoms/checkbox"
 import DuplicateIcon from "../../../../components/fundamentals/icons/duplicate-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import { ActionType } from "../../../../components/molecules/actionables"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../components/molecules/input"
 import Select from "../../../../components/molecules/select"
 import StatusSelector from "../../../../components/molecules/status-selector"
@@ -29,9 +29,6 @@ const General = ({ discount, isEdit = false }) => {
   const initialCurrency = discount?.regions?.[0].currency_code || undefined
 
   const [showPrompt, setShowPrompt] = useState(false)
-  const [nativeSymbol, setNativeSymbol] = useState<string | undefined>(
-    undefined
-  )
   const [fixedRegionCurrency, setFixedRegionCurrency] = useState<
     string | undefined
   >(initialCurrency)
@@ -213,11 +210,10 @@ const General = ({ discount, isEdit = false }) => {
                 hideCurrency
               >
                 <Controller
-                  name="value"
+                  name="rule.value"
                   control={control}
                   rules={{
-                    required: "Value is required",
-                    valueAsNumber: true,
+                    required: "Amount is required",
                     min: 1,
                   }}
                   render={({ value, onChange }) => {
@@ -276,7 +272,7 @@ const General = ({ discount, isEdit = false }) => {
                   />
                   {regions && regions.length > 1 && (
                     <div className="flex items-center">
-                      <InfoTooltip
+                      <IconTooltip
                         content={
                           "Fixed value discounts are not available for multi regional discounts"
                         }
@@ -306,7 +302,7 @@ const General = ({ discount, isEdit = false }) => {
                 )
               }}
             />
-            <InfoTooltip
+            <IconTooltip
               content={
                 "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
               }

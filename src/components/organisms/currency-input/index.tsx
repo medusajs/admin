@@ -118,7 +118,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
             className={clsx(
               { "w-[144px]": size === "medium" },
               { "w-[120px]": size === "small" },
-              { "w-full": size === "full" }
+              { "flex-1": size === "full" }
             )}
           >
             {!readOnly ? (
@@ -141,7 +141,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
             )}
           </div>
         )}
-        {children && <div className="w-full">{children}</div>}
+        {children && <div className="flex-1">{children}</div>}
       </div>
     </CurrencyContext.Provider>
   )

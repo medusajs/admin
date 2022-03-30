@@ -1,12 +1,20 @@
 import React from "react"
+import { Controller } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
+import Select from "../../../../components/molecules/select"
 import BodyCard from "../../../../components/organisms/body-card"
+import { countries as countryData } from "../../../../utils/countries"
 import { useProductForm } from "../form/product-form-context"
 
 const StockAndInventory = () => {
-  const { isVariantsView, register } = useProductForm()
+  const { isVariantsView, register, control } = useProductForm()
+  const countryOptions = countryData.map((c) => ({
+    label: c.name,
+    value: c.name,
+  }))
+
   return (
     <BodyCard
       title="Stock & Inventory"
@@ -57,7 +65,7 @@ const StockAndInventory = () => {
                 label="Manage Inventory"
                 ref={register}
               />
-              <InfoTooltip
+              <IconTooltip
                 content={
                   "When checked Medusa will regulate the inventory when orders and returns are made."
                 }
@@ -69,7 +77,7 @@ const StockAndInventory = () => {
                 ref={register}
                 label="Allow backorders"
               />
-              <InfoTooltip
+              <IconTooltip
                 content={
                   "When checked the product will be available for purchase despite the product being sold out."
                 }
@@ -89,6 +97,7 @@ const StockAndInventory = () => {
               label="Height"
               name="height"
               ref={register}
+              min={0}
               placeholder="100..."
             />
             <Input
@@ -97,6 +106,7 @@ const StockAndInventory = () => {
               name="width"
               ref={register}
               placeholder="100..."
+              min={0}
             />
             <Input
               type="number"
@@ -104,6 +114,7 @@ const StockAndInventory = () => {
               name="length"
               ref={register}
               placeholder="100..."
+              min={0}
             />
             <Input
               type="number"
@@ -111,6 +122,7 @@ const StockAndInventory = () => {
               name="weight"
               ref={register}
               placeholder="100..."
+              min={0}
             />
           </div>
           <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-4 mb-large">
@@ -126,12 +138,14 @@ const StockAndInventory = () => {
               ref={register}
               placeholder="100..."
             />
-            <Input
-              className="col-span-2"
-              ref={register}
+            <Controller
+              control={control}
+              as={Select}
+              enableSearch
               label="Country of origin"
               name="origin_country"
-              placeholder="Denmark..."
+              placeholder="Select a country"
+              options={countryOptions}
             />
           </div>
         </div>

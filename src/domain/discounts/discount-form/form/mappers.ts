@@ -26,12 +26,15 @@ export interface DiscountFormValues extends FieldValues {
 export const discountToFormValuesMapper = (
   discount: Discount
 ): DiscountFormValues => {
+  console.log(discount)
   return {
     id: discount.id,
     code: discount.code,
     rule_id: discount.rule.id,
     type: discount.rule.type,
-    value: discount.rule.value,
+    rule: {
+      value: discount.rule.value,
+    },
     allocation: discount.rule.allocation,
     description: discount.rule.description,
     valid_for: discount.rule.valid_for.length
@@ -51,13 +54,12 @@ export const discountToFormValuesMapper = (
 export const formValuesToCreateDiscountMapper = (
   values: DiscountFormValues
 ): Omit<AdminPostDiscountsReq, "is_disabled"> => {
-  console.log(values)
   return {
     code: values.code!,
     rule: {
       allocation: values.allocation,
       type: values.type,
-      value: parseInt((values.value! as unknown) as string, 10),
+      value: parseInt((values.rule.value! as unknown) as string, 10),
       description: values.description,
       valid_for: values.valid_for?.map((p) => p.value),
     },
@@ -79,7 +81,7 @@ export const formValuesToUpdateDiscountMapper = (
       allocation: values.allocation,
       id: values.rule_id!,
       type: values.type,
-      value: parseInt((values.value as unknown) as string, 10),
+      value: parseInt((values.rule.value as unknown) as string, 10),
       description: values.description,
       valid_for: values.valid_for?.map((p) => p.value) as any,
     },

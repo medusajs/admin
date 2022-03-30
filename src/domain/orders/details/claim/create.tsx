@@ -4,7 +4,7 @@ import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
@@ -615,7 +615,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
               />
               <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                 Send notifications
-                <InfoTooltip content="Notify customer of created return" />
+                <IconTooltip content="Notify customer of created return" />
               </span>
             </div>
             <div className="flex gap-x-xsmall">

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../fundamentals/button"
-import InfoTooltip from "../../molecules/info-tooltip"
+import IconTooltip from "../../molecules/icon-tooltip"
 import InputField from "../../molecules/input"
 import Modal from "../../molecules/modal"
 import Metadata, { MetadataField } from "../../organisms/metadata"
@@ -81,7 +81,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
                   name="handle"
                   prefix="/"
                   tooltip={
-                    <InfoTooltip content="URL Slug for the product. Will be auto generated if left blank." />
+                    <IconTooltip content="URL Slug for the product. Will be auto generated if left blank." />
                   }
                   ref={register}
                 />

@@ -2,14 +2,14 @@ import * as RadixTooltip from "@radix-ui/react-tooltip"
 import clsx from "clsx"
 import React from "react"
 
-type TooltipProps = RadixTooltip.TooltipContentProps &
+export type TooltipProps = RadixTooltip.TooltipContentProps &
   Pick<
     RadixTooltip.TooltipProps,
     "open" | "defaultOpen" | "onOpenChange" | "delayDuration"
   > & {
     content: React.ReactNode
     side?: "bottom" | "left" | "top" | "right"
-    onClick: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
+    onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
   }
 
 const Tooltip = ({

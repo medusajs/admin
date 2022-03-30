@@ -1,6 +1,7 @@
 import { navigate } from "gatsby"
 import { useAdminCreateProduct, useAdminUpdateProduct } from "medusa-react"
 import Medusa from "../../../../services/api"
+import { trimValues } from "../../../../utils/trim-values"
 import { consolidateImages } from "../utils"
 import {
   formValuesToCreateProductMapper,
@@ -37,7 +38,7 @@ export const useFormActions = (
     }
 
     createProduct.mutateAsync(
-      formValuesToCreateProductMapper({ ...values, ...data }, viewType),
+      formValuesToCreateProductMapper({ ...data, ...values }, viewType),
       {
         onSuccess: ({ product }) => {
           navigate(`/a/products/${product.id}`)
@@ -47,11 +48,11 @@ export const useFormActions = (
   }
 
   const onCreateAndPublish = async (values) => {
-    onCreate({ ...values, status: "published" })
+    onCreate({ ...trimValues(values), status: "published" })
   }
 
   const onCreateDraft = async (values) => {
-    onCreate({ ...values, status: "draft" })
+    onCreate({ ...trimValues(values), status: "draft" })
   }
 
   const onUpdate = async (values) => {
@@ -68,7 +69,7 @@ export const useFormActions = (
     }
 
     const newData = {
-      ...values,
+      ...trimValues(values),
       ...data,
       images: consolidateImages(data.images, uploadedImgs),
     }

@@ -5,7 +5,7 @@ import Checkbox from "../../../../components/atoms/checkbox"
 import DatePicker from "../../../../components/atoms/date-picker/date-picker"
 import TimePicker from "../../../../components/atoms/date-picker/time-picker"
 import AvailabilityDuration from "../../../../components/molecules/availability-duration"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../components/molecules/input"
 import Section from "../../../../components/molecules/section"
 import Select from "../../../../components/molecules/select"
@@ -186,7 +186,7 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
               onChange={() => setHasExpiryDate(!hasExpiryDate)}
             />
             <div className="flex items-center ml-1.5">
-              <InfoTooltip
+              <IconTooltip
                 content={
                   "If you want to schedule the discount to deactivate in the future, you can set an expiry date here."
                 }
