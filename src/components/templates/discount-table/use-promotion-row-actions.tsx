@@ -22,8 +22,8 @@ const usePromotionActions = (promotion) => {
 
   const handleDelete = async () => {
     const shouldDelete = await dialog({
-      heading: "Delete Product",
-      text: "Are you sure you want to delete this product?",
+      heading: "Delete Promotion",
+      text: "Are you sure you want to delete this Promotion?",
     })
 
     if (shouldDelete) {

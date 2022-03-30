@@ -198,7 +198,7 @@ const getNumberOfConditions = (condition) => {
       return condition.product_collections.length
     case "product_tags":
       return condition.product_tags.length
-    case "custosmer_group":
+    case "customer_group":
       return condition.customer_groups.length
     default:
       return null
