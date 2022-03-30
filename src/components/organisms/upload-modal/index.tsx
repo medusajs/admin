@@ -11,6 +11,10 @@ import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 import CheckCircleIcon from "../../fundamentals/icons/check-circle-icon"
 import WarningCircle from "../../fundamentals/icons/warning-circle"
 
+/**
+ * "Add manually" component.
+ * @constructor
+ */
 function AddManuallyButton() {
   return (
     <div
@@ -33,6 +37,9 @@ type FileSummaryProps = {
   progress?: number
 }
 
+/**
+ * Render an upload file summary (& upload progress).
+ */
 function FileSummary(props: FileSummaryProps) {
   const { action, name, progress, size } = props
 
@@ -68,6 +75,9 @@ type UploadSummaryProps = {
   rejections: number
 }
 
+/**
+ * Render a batch update request summary.
+ */
 function UploadSummary(props: UploadSummaryProps) {
   const { products, updates, rejections } = props
   return (
@@ -92,6 +102,9 @@ type DropAreaProps = {
   onDrop: (d: DataTransferItem) => void
 }
 
+/**
+ * Component handles an CSV file drop.
+ */
 function DropArea(props: DropAreaProps) {
   const [isDragOver, setIsDragOver] = useState(false)
 
@@ -148,6 +161,9 @@ type UploadModalProps = {
   onUploadComplete: () => void
 }
 
+/**
+ * Upload prices modal.
+ */
 function UploadModal(props: UploadModalProps) {
   const { onUploadComplete } = props
   const [progress, setProgress] = useState<number>(20)
@@ -155,6 +171,11 @@ function UploadModal(props: UploadModalProps) {
 
   const file = uploadFile?.getAsFile()
   const { name, size } = file || {}
+
+  const onDrop = (f) => {
+    setUploadFile(f)
+    onUploadComplete()
+  }
 
   const removeFile = () => {
     setUploadFile(undefined)
@@ -170,9 +191,11 @@ function UploadModal(props: UploadModalProps) {
               Import price list
             </span>
           </div>
+
           <div className="text-grey-90 text-base inter-large-semibold mb-1">
             Import price list
           </div>
+
           <p className="text-grey-50 mb-4 text-base">
             You can add to or "update" a price list. A new import will update
             products with the same SKU. New products will be implemented as
@@ -186,7 +209,7 @@ function UploadModal(props: UploadModalProps) {
           )}
 
           {!uploadFile ? (
-            <DropArea onDrop={setUploadFile} />
+            <DropArea onDrop={onDrop} />
           ) : (
             <FileSummary
               size={size!}
@@ -244,6 +267,7 @@ function UploadModal(props: UploadModalProps) {
               >
                 Override existing list
               </Button>
+
               <Button
                 size="small"
                 disabled={!file}

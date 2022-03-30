@@ -13,6 +13,4 @@ const Template: ComponentStory<typeof UploadModal> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {
-  control: {},
-}
+Default.args = {}
