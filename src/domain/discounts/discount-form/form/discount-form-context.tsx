@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
-import FileTextIcon from "../../../../components/fundamentals/icons/file-text-icon"
-import PublishIcon from "../../../../components/fundamentals/icons/publish-icon"
-import {
-  MultiSubmitFunction,
-  SaveNotificationProvider,
-  SubmitFunction,
-} from "../../../../components/organisms/save-notifications/notification-provider"
 import { Option } from "../../../../types/shared"
 import { DiscountFormValues } from "./mappers"
-import { useFormActions } from "./use-form-actions"
 
 const defaultDiscount: DiscountFormValues = {
   code: "",
@@ -39,7 +31,10 @@ export const DiscountFormProvider = ({
   const [appliesToAll, setAppliesToAll] = useState(true)
   const [isFreeShipping, setIsFreeShipping] = useState(false)
   const [hasExpiryDate, setHasExpiryDate] = useState(false)
+  const [hasStartDate, setHasStartDate] = useState(false)
   const [prevType, setPrevType] = useState<string | undefined>(undefined)
+  const [prevUsageLimit, setPrevUsageLimit] = useState<string>("")
+  const [prevValidDuration, setPrevValidDuration] = useState<string>("")
   const [prevAllocation, setPrevAllocation] = useState<string | undefined>(
     undefined
   )
@@ -48,15 +43,26 @@ export const DiscountFormProvider = ({
   )
   const [startsAt, setStartsAt] = useState(discount.starts_at)
   const [endsAt, setEndsAt] = useState(discount.ends_at)
-  const [allocation, setAllocation] = useState(discount.allocation)
 
   const methods = useForm({ defaultValues: discount })
 
+  methods.register({
+    name: "allocation",
+    value: discount?.allocation || "total",
+  })
+
+  const setAllocation = (value) => {
+    methods.setValue("allocation", value)
+    setPrevAllocation(value)
+  }
+
   const type = methods.watch("type") as string | undefined
   const isDynamic = methods.watch("is_dynamic") as boolean
+  const allocation = methods.watch("allocation") as string
   const regions = methods.watch("regions") as Option[] | null
   const products = methods.watch("valid_for") as Option[] | undefined
-  // const allocation = methods.watch("allocation") as string | undefined
+  const usageLimit = methods.watch("usage_limit") as string
+  const validDuration = methods.watch("valid_duration") as string
 
   useEffect(() => {
     if (hasExpiryDate && !endsAt) {
@@ -120,6 +126,42 @@ export const DiscountFormProvider = ({
     }
   }
 
+  const handleConfigurationChanged = (values) => {
+    if (values.indexOf("ends_at") > -1 && !hasExpiryDate) {
+      setHasExpiryDate(true)
+    } else if (values.indexOf("ends_at") === -1 && hasExpiryDate) {
+      setHasExpiryDate(false)
+    }
+
+    if (values.indexOf("starts_at") === -1 && hasStartDate) {
+      setHasStartDate(false)
+    } else if (values.indexOf("starts_at") > -1 && !hasStartDate) {
+      setHasStartDate(true)
+    }
+
+    // usage_limit
+    if (values.indexOf("usage_limit") === -1 && usageLimit !== "") {
+      setPrevUsageLimit(usageLimit)
+      // debounce the setValue call to not flash an empty field when collapsing the accordion
+      setTimeout(() => {
+        methods.setValue("usage_limit", "")
+      }, 300)
+    } else if (values.indexOf("usage_limit") > -1 && usageLimit === "") {
+      methods.setValue("usage_limit", prevUsageLimit)
+    }
+
+    // valid duration
+    if (values.indexOf("valid_duration") === -1 && validDuration !== "") {
+      setPrevValidDuration(validDuration)
+      // debounce the setValue call to not flash an empty field when collapsing the accordion
+      setTimeout(() => {
+        methods.setValue("valid_duration", "")
+      }, 300)
+    } else if (values.indexOf("valid_duration") > -1 && validDuration === "") {
+      methods.setValue("valid_duration", prevValidDuration)
+    }
+  }
+
   useEffect(() => {
     if (isFreeShipping) {
       handleSelectFreeShipping()
@@ -144,36 +186,6 @@ export const DiscountFormProvider = ({
   useEffect(() => {
     handleReset()
   }, [discount])
-
-  // const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
-  //   discount.id!,
-  //   {
-  //     ...discount,
-  //     starts_at: startsAt,
-  //     ends_at: endsAt,
-  //   }
-  // )
-
-  // let notificationAction:
-  //   | SubmitFunction<DiscountFormValues>
-  //   | MultiSubmitFunction<DiscountFormValues>
-
-  // if (isEdit) {
-  //   notificationAction = onUpdate
-  // } else {
-  //   notificationAction = [
-  //     {
-  //       icon: <PublishIcon />,
-  //       label: "Save as active",
-  //       onSubmit: onSaveAsActive,
-  //     },
-  //     {
-  //       label: "Save as inactive",
-  //       icon: <FileTextIcon />,
-  //       onSubmit: onSaveAsInactive,
-  //     },
-  //   ]
-  // }
 
   const [datesChanged, setDatesChanged] = useState({
     startsAt: false,
@@ -214,6 +226,7 @@ export const DiscountFormProvider = ({
         value={{
           type,
           regions,
+          setAllocation,
           regionsDisabled,
           appliesToAll,
           setAppliesToAll,
@@ -222,24 +235,16 @@ export const DiscountFormProvider = ({
           isDynamic,
           hasExpiryDate,
           setHasExpiryDate,
+          hasStartDate,
+          setHasStartDate,
           startsAt,
           setStartsAt,
           endsAt,
           setEndsAt,
+          handleConfigurationChanged,
         }}
       >
-        {/* <SaveNotificationProvider
-          options={{
-            onReset: handleReset,
-            onSubmit: notificationAction,
-            additionalDirtyStates: {
-              startsAt: datesChanged.startsAt,
-              endsAt: datesChanged.endsAt,
-            },
-          }}
-        > */}
         {children}
-        {/* </SaveNotificationProvider> */}
       </DiscountFormContext.Provider>
     </FormProvider>
   )
@@ -248,6 +253,7 @@ export const DiscountFormProvider = ({
 const DiscountFormContext = React.createContext<{
   type?: string
   isDynamic: boolean
+  setAllocation: (value: string) => void
   regionsDisabled: boolean
   appliesToAll: boolean
   setAppliesToAll: (value: boolean) => void
@@ -256,10 +262,13 @@ const DiscountFormContext = React.createContext<{
   setIsFreeShipping: (value: boolean) => void
   hasExpiryDate: boolean
   setHasExpiryDate: (value: boolean) => void
-  startsAt: Date
-  setStartsAt: (value: Date) => void
   endsAt: Date | null
   setEndsAt: (value: Date | null) => void
+  startsAt: Date
+  hasStartDate: boolean
+  setStartsAt: (value: Date) => void
+  setHasStartDate: (value: boolean) => void
+  handleConfigurationChanged: (values: string[]) => void
 } | null>(null)
 
 export const useDiscountForm = () => {

@@ -14,6 +14,7 @@ export const useFormActions = (id: string, data: any) => {
     await createDiscount.mutateAsync(
       {
         ...formValuesToCreateDiscountMapper(values),
+        ...data,
         is_disabled: true,
       },
       {
@@ -28,6 +29,7 @@ export const useFormActions = (id: string, data: any) => {
     await createDiscount.mutateAsync(
       {
         ...formValuesToCreateDiscountMapper(values),
+        ...data,
         is_disabled: false,
       },
       {
