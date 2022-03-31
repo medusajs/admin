@@ -213,6 +213,7 @@ const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
     <BodyCard
       actionables={actionables}
       forceDropdown
+      className="min-h-[200px]"
       status={
         <StatusSelector
           isDraft={promotion?.is_disabled}
