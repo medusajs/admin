@@ -92,6 +92,8 @@ export const formValuesToUpdateDiscountMapper = (
     regions: values.regions?.map((r) => r.value),
     starts_at: values.starts_at,
     usage_limit: parseInt((values.usage_limit as unknown) as string, 10),
-    valid_duration: values.valid_duration,
+    valid_duration: values.valid_duration?.length
+      ? values.valid_duration
+      : undefined,
   }
 }

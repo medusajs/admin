@@ -12,7 +12,7 @@ import { useFormActions } from "./form/use-form-actions"
 import Conditions from "./sections/conditions"
 import General from "./sections/general"
 import PromotionType from "./sections/promotion-type"
-import Settings from "./sections/settings"
+import Configuration from "./sections/configuration"
 
 type DiscountFormProps = {
   discount?: any
@@ -32,8 +32,8 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     discount?.id,
     {
       ...discount,
-      starts_at: hasStartDate ? startsAt : undefined,
-      ends_at: hasExpiryDate ? endsAt : undefined,
+      starts_at: hasStartDate ? startsAt : null,
+      ends_at: hasExpiryDate ? endsAt : null,
     }
   )
 
@@ -138,7 +138,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="configuration"
                 description="Promotion code applies from you hit the publish button and forever if left untouched."
               >
-                <Settings promotion={discount} isEdit={isEdit} />
+                <Configuration promotion={discount} isEdit={isEdit} />
               </Accordion.Item>
               <Accordion.Item
                 forceMountContent

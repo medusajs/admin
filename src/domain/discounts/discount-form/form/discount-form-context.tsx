@@ -90,7 +90,7 @@ export const DiscountFormProvider = ({
   }, [products, appliesToAll])
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && discount.type === "fixed") {
       setRegionsDisabled(true)
     } else {
       setRegionsDisabled(false)

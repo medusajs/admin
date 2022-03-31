@@ -133,10 +133,6 @@ const General = ({ discount, isEdit = false }) => {
                   ref={register({
                     required: isFreeShipping ? false : "Amount is required",
                   })}
-                  className={clsx("flex-1", {
-                    ["opacity-50 pointer-events-none select-none"]:
-                      isFreeShipping || isEdit,
-                  })}
                   tabIndex={isFreeShipping || isEdit ? -1 : 0}
                 />
               </div>
