@@ -307,8 +307,8 @@ module.exports = {
             opacity: "0",
           },
           "100%": {
-            "max-height": "none",
             "min-height": "var(--radix-accordion-content-height)",
+            "max-height": "none",
             opacity: "1",
           },
         },
