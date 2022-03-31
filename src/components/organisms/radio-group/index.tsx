@@ -27,7 +27,8 @@ const Item = ({
   return (
     <label
       className={clsx(
-        "rounded-base border border-grey-20 p-base flex items-start mb-xsmall gap-base cursor-pointer", className
+        "rounded-base border border-grey-20 p-base flex items-start mb-xsmall gap-base cursor-pointer",
+        className
       )}
       htmlFor={rest.value}
     >
