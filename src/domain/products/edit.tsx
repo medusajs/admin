@@ -25,8 +25,10 @@ const EditProductPage = ({ id }) => {
   const notification = useNotification()
   const { product, isLoading } = useAdminProduct(id)
   const updateProduct = useAdminUpdateProduct(id)
+  const [submitting, setSubmitting] = useState(false)
 
   const onSubmit = async (data) => {
+    setSubmitting(true)
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
@@ -46,9 +48,11 @@ const EditProductPage = ({ id }) => {
 
     updateProduct.mutate(formValuesToUpdateProductMapper(newData), {
       onSuccess: () => {
+        setSubmitting(false)
         notification("Success", "Product updated successfully", "success")
       },
       onError: (error) => {
+        setSubmitting(false)
         notification("Error", getErrorMessage(error), "error")
       },
     })
@@ -64,7 +68,7 @@ const EditProductPage = ({ id }) => {
       onSubmit={onSubmit}
     >
       <ProductForm product={product} isEdit />
-      <UpdateNotification />
+      <UpdateNotification isLoading={submitting} />
     </ProductFormProvider>
   )
 }
@@ -109,7 +113,7 @@ const UpdateNotification = ({ isLoading = false }) => {
       id={TOAST_ID}
       position="bottom-right"
     >
-      <FormToasterContainer isLoading={formState.isSubmitting}>
+      <FormToasterContainer isLoading={isLoading}>
         <FormToasterContainer.Actions>
           <FormToasterContainer.ActionButton
             onClick={handleSubmit(onUpdate, handleFormError)}

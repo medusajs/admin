@@ -141,12 +141,19 @@ const StockAndInventory = () => {
             />
             <Controller
               control={control}
-              as={Select}
-              enableSearch
-              label="Country of origin"
               name="origin_country"
-              placeholder="Select a country"
-              options={countryOptions}
+              render={({ onChange, value }) => {
+                return (
+                  <Select
+                    enableSearch
+                    label="Country of origin"
+                    placeholder="Select a country"
+                    options={countryOptions}
+                    value={value}
+                    onChange={onChange}
+                  />
+                )
+              }}
             />
           </div>
         </div>
