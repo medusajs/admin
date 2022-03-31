@@ -10,6 +10,8 @@ type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
   required?: boolean
   tooltip?: string
   forceMountContent?: true
+  headingSize?: "small" | "medium" | "large"
+  customTrigger?: React.ReactNode
 }
 
 const Accordion: React.FC<
@@ -31,24 +33,36 @@ const Item: React.FC<AccordionItemProps> = ({
   required,
   tooltip,
   children,
+  className,
+  headingSize = "large",
+  customTrigger = undefined,
   forceMountContent = undefined,
   ...props
 }) => {
+  const headerClass = clsx({
+    "inter-small-semibold": headingSize === "small",
+    "inter-base-semibold": headingSize === "medium",
+    "inter-large-semibold": headingSize === "large",
+  })
+
   return (
     <AccordionPrimitive.Item
       {...props}
-      className="border-b border-grey-20 transition-padding pb-5 radix-state-open:pb-5xlarge mb-5 last:mb-0 group"
+      className={clsx(
+        "border-b border-grey-20 transition-padding pb-5 radix-state-open:pb-5xlarge mb-5 last:mb-0 group",
+        className
+      )}
     >
       <AccordionPrimitive.Header>
         <AccordionPrimitive.Trigger className="flex items-center justify-between w-full">
           <div className="flex items-center gap-x-2xsmall">
-            <span className="inter-large-semibold">
+            <span className={headerClass}>
               {title}
               {required && <span className="text-rose-50">*</span>}
             </span>
             {tooltip && <IconTooltip content={tooltip} />}
           </div>
-          <MorphingTrigger />
+          {customTrigger || <MorphingTrigger />}
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
       <AccordionPrimitive.Content
