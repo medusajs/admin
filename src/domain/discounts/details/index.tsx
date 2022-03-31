@@ -6,6 +6,7 @@ import { useAdminDeleteDiscount, useAdminDiscount } from "medusa-react"
 import React, { useState } from "react"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Spinner from "../../../components/atoms/spinner"
+import Badge from "../../../components/fundamentals/badge"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import StatusIndicator from "../../../components/fundamentals/status-indicator"
@@ -215,12 +216,23 @@ const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
       forceDropdown
       className="min-h-[200px]"
       status={
-        <StatusSelector
-          isDraft={promotion?.is_disabled}
-          activeState="Published"
-          draftState="Draft"
-          onChange={onStatusChange}
-        />
+        <div className="flex items-center gap-x-2xsmall">
+          {promotion.is_dynamic && (
+            <span>
+              <Badge variant="default">
+                <span className="text-grey-90 inter-small-regular">
+                  {"Template discount"}
+                </span>
+              </Badge>
+            </span>
+          )}
+          <StatusSelector
+            isDraft={promotion?.is_disabled}
+            activeState="Published"
+            draftState="Draft"
+            onChange={onStatusChange}
+          />
+        </div>
       }
       {...props}
     />
