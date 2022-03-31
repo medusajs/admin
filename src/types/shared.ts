@@ -24,3 +24,9 @@ export type PaginationProps = {
   limit: number
   offset: number
 }
+
+export type FormSubmissionResults = {
+  success: boolean
+  message: string
+  action?: (() => void) | (() => unknown) | (() => Promise<unknown>)
+}

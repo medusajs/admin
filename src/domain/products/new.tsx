@@ -1,10 +1,15 @@
 import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
-import * as React from "react"
-import Button, { ButtonProps } from "../../components/fundamentals/button"
+import React, { useEffect, useState } from "react"
+import { FieldValues } from "react-hook-form"
+import toast from "react-hot-toast"
+import Toaster from "../../components/declarative-toaster"
+import FormToasterContainer from "../../components/molecules/form-toaster"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
 import { getErrorMessage } from "../../utils/error-messages"
+import { checkForDirtyState } from "../../utils/form-helpers"
+import { handleFormError } from "../../utils/handle-form-error"
 import ProductForm from "./product-form"
 import { formValuesToCreateProductMapper } from "./product-form/form/mappers"
 import {
@@ -13,11 +18,16 @@ import {
 } from "./product-form/form/product-form-context"
 import { consolidateImages } from "./product-form/utils"
 
+const TOAST_ID = "new-product-dirty"
+
 const NewProductPage = () => {
   const notification = useNotification()
   const createProduct = useAdminCreateProduct()
+  const [isLoading, setIsLoading] = useState(false)
 
   const onSubmit = async (data, viewType) => {
+    setIsLoading(true)
+
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
@@ -34,10 +44,12 @@ const NewProductPage = () => {
 
     createProduct.mutate(formValuesToCreateProductMapper(newData, viewType), {
       onSuccess: ({ product }) => {
-        notification("Success", "Product created successfully", "success")
+        setIsLoading(false)
+        notification("Success", "Product was succesfully created", "success")
         navigate(`/a/products/${product.id}`)
       },
       onError: (error) => {
+        setIsLoading(false)
         notification("Error", getErrorMessage(error), "error")
       },
     })
@@ -46,60 +58,75 @@ const NewProductPage = () => {
   return (
     <ProductFormProvider onSubmit={onSubmit}>
       <ProductForm />
-      <div className="mt-base pb-xlarge flex justify-end items-center gap-x-2">
-        <Button
-          variant="secondary"
-          size="small"
-          type="button"
-          onClick={() => navigate(-1)}
-        >
-          Cancel
-        </Button>
-        <SaveAsDraftButton
-          loading={createProduct.isLoading}
-          variant="secondary"
-          size="small"
-          type="button"
-        >
-          Save as draft
-        </SaveAsDraftButton>
-        <PublishButton
-          loading={createProduct.isLoading}
-          variant="primary"
-          size="medium"
-          type="button"
-        >
-          Publish Product
-        </PublishButton>
-      </div>
+      <SaveNotification isLoading={isLoading} />
     </ProductFormProvider>
   )
 }
 
-const SaveAsDraftButton = ({ children, ...props }: ButtonProps) => {
-  const { onSubmit, handleSubmit } = useProductForm()
+const SaveNotification = ({ isLoading = false }) => {
+  const {
+    formState,
+    onSubmit,
+    handleSubmit,
+    resetForm,
+    additionalDirtyState,
+  } = useProductForm()
+  const [visible, setVisible] = useState(false)
 
-  const onSaveDraft = (values) => {
+  const onPublish = (values: FieldValues) => {
+    onSubmit({ ...values, status: "published" })
+  }
+
+  const onSaveDraft = (values: FieldValues) => {
     onSubmit({ ...values, status: "draft" })
   }
 
-  return (
-    <Button {...props} onClick={handleSubmit(onSaveDraft)}>
-      {children}
-    </Button>
+  const isDirty = checkForDirtyState(
+    formState.dirtyFields,
+    additionalDirtyState
   )
-}
 
-const PublishButton = ({ children, ...props }: ButtonProps) => {
-  const { onSubmit, handleSubmit } = useProductForm()
+  useEffect(() => {
+    if (isDirty) {
+      setVisible(true)
+    } else {
+      setVisible(false)
+    }
 
-  const onPublish = (values) => {
-    onSubmit({ ...values, status: "published" })
-  }
+    return () => {
+      toast.dismiss(TOAST_ID)
+    }
+  }, [isDirty])
+
   return (
-    <Button {...props} onClick={handleSubmit(onPublish)}>
-      {children}
-    </Button>
+    <Toaster
+      visible={visible}
+      duration={Infinity}
+      id={TOAST_ID}
+      position="bottom-right"
+    >
+      <FormToasterContainer isLoading={isLoading}>
+        <FormToasterContainer.Actions>
+          <FormToasterContainer.MultiActionButton
+            actions={[
+              {
+                label: "Save and publish",
+                onClick: handleSubmit(onPublish, handleFormError),
+              },
+              {
+                label: "Save as draft",
+                onClick: handleSubmit(onSaveDraft, handleFormError),
+              },
+            ]}
+          >
+            Save
+          </FormToasterContainer.MultiActionButton>
+          <FormToasterContainer.DiscardButton onClick={resetForm}>
+            Discard
+          </FormToasterContainer.DiscardButton>
+        </FormToasterContainer.Actions>
+      </FormToasterContainer>
+    </Toaster>
   )
 }
 

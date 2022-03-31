@@ -1,11 +1,15 @@
-import { navigate } from "gatsby"
 import { useAdminProduct, useAdminUpdateProduct } from "medusa-react"
-import React from "react"
+import React, { useEffect, useState } from "react"
+import { FieldValues } from "react-hook-form"
+import toast from "react-hot-toast"
 import Spinner from "../../components/atoms/spinner"
-import Button, { ButtonProps } from "../../components/fundamentals/button"
+import Toaster from "../../components/declarative-toaster"
+import FormToasterContainer from "../../components/molecules/form-toaster"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
 import { getErrorMessage } from "../../utils/error-messages"
+import { checkForDirtyState } from "../../utils/form-helpers"
+import { handleFormError } from "../../utils/handle-form-error"
 import ProductForm from "./product-form"
 import {
   formValuesToUpdateProductMapper,
@@ -60,39 +64,64 @@ const EditProductPage = ({ id }) => {
       onSubmit={onSubmit}
     >
       <ProductForm product={product} isEdit />
-      <div className="mt-base pb-xlarge flex justify-end items-center gap-x-2">
-        <Button
-          variant="secondary"
-          size="small"
-          type="button"
-          onClick={() => navigate(-1)}
-        >
-          Cancel
-        </Button>
-        <SaveButton
-          loading={updateProduct.isLoading}
-          variant="primary"
-          size="medium"
-          type="button"
-        >
-          Save
-        </SaveButton>
-      </div>
+      <UpdateNotification />
     </ProductFormProvider>
   )
 }
 
-const SaveButton = ({ children, ...props }: ButtonProps) => {
-  const { onSubmit, handleSubmit } = useProductForm()
+const TOAST_ID = "edit-product-dirty"
 
-  const onSave = (values) => {
+const UpdateNotification = ({ isLoading = false }) => {
+  const {
+    formState,
+    onSubmit,
+    handleSubmit,
+    resetForm,
+    additionalDirtyState,
+  } = useProductForm()
+  const [visible, setVisible] = useState(false)
+
+  const onUpdate = (values: FieldValues) => {
     onSubmit({ ...values })
   }
 
+  const isDirty = checkForDirtyState(
+    formState.dirtyFields,
+    additionalDirtyState
+  )
+
+  useEffect(() => {
+    if (isDirty) {
+      setVisible(true)
+    } else {
+      setVisible(false)
+    }
+
+    return () => {
+      toast.dismiss(TOAST_ID)
+    }
+  }, [isDirty])
+
   return (
-    <Button {...props} onClick={handleSubmit(onSave)}>
-      {children}
-    </Button>
+    <Toaster
+      visible={visible}
+      duration={Infinity}
+      id={TOAST_ID}
+      position="bottom-right"
+    >
+      <FormToasterContainer isLoading={formState.isSubmitting}>
+        <FormToasterContainer.Actions>
+          <FormToasterContainer.ActionButton
+            onClick={handleSubmit(onUpdate, handleFormError)}
+          >
+            Save
+          </FormToasterContainer.ActionButton>
+          <FormToasterContainer.DiscardButton onClick={resetForm}>
+            Discard
+          </FormToasterContainer.DiscardButton>
+        </FormToasterContainer.Actions>
+      </FormToasterContainer>
+    </Toaster>
   )
 }
 
