@@ -27,13 +27,13 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
 }) => {
   const notification = useNotification()
   const { handleSubmit } = useFormContext()
-  const { startsAt, endsAt } = useDiscountForm()
+  const { startsAt, endsAt, hasStartDate, hasExpiryDate } = useDiscountForm()
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
     discount?.id,
     {
       ...discount,
-      starts_at: startsAt,
-      ends_at: endsAt,
+      starts_at: hasStartDate ? startsAt : undefined,
+      ends_at: hasExpiryDate ? endsAt : undefined,
     }
   )
 
