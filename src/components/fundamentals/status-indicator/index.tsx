@@ -14,7 +14,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
 }) => {
   const dotClass = clsx({
     "bg-teal-50": variant === "success",
-    "bg-rose-50": variant === "danger",
+    "bg-rose-40": variant === "danger",
     "bg-yellow-50": variant === "warning",
     "bg-violet-60": variant === "primary",
     "bg-emerald-40": variant === "active",
