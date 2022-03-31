@@ -62,7 +62,9 @@ const General = ({ discount, isEdit = false }) => {
           return (
             <Select
               value={value}
-              onChange={onChange}
+              onChange={(value) => {
+                onChange(type === "fixed" ? [value] : value)
+              }}
               label="Choose valid regions"
               isMultiSelect={type !== "fixed"}
               hasSelectAll={type !== "fixed"}
