@@ -164,8 +164,8 @@ const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
     if (shouldDelete) {
       deletePromotion.mutate(undefined, {
         onSuccess: () => {
-          notification("Success", "Product deleted successfully", "success")
-          navigate("/a/products/")
+          notification("Success", "Promotion deleted successfully", "success")
+          navigate("/a/discounts/")
         },
         onError: (err) => {
           notification("Ooops", getErrorMessage(err), "error")
@@ -197,12 +197,12 @@ const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
 
   const actionables = [
     {
-      label: "Edit Product",
+      label: "Edit Promotion",
       onClick: () => setIsOpen(true),
       icon: <EditIcon />,
     },
     {
-      label: "Delete Product",
+      label: "Delete Promotion",
       onClick: onDelete,
       variant: "danger" as const,
       icon: <TrashIcon />,
