@@ -48,6 +48,7 @@ export const DiscountFormProvider = ({
   )
   const [startsAt, setStartsAt] = useState(discount.starts_at)
   const [endsAt, setEndsAt] = useState(discount.ends_at)
+  const [allocation, setAllocation] = useState(discount.allocation)
 
   const methods = useForm({ defaultValues: discount })
 
@@ -55,7 +56,7 @@ export const DiscountFormProvider = ({
   const isDynamic = methods.watch("is_dynamic") as boolean
   const regions = methods.watch("regions") as Option[] | null
   const products = methods.watch("valid_for") as Option[] | undefined
-  const allocation = methods.watch("allocation") as string | undefined
+  // const allocation = methods.watch("allocation") as string | undefined
 
   useEffect(() => {
     if (hasExpiryDate && !endsAt) {
@@ -144,35 +145,35 @@ export const DiscountFormProvider = ({
     handleReset()
   }, [discount])
 
-  const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
-    discount.id!,
-    {
-      ...discount,
-      starts_at: startsAt,
-      ends_at: endsAt,
-    }
-  )
+  // const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
+  //   discount.id!,
+  //   {
+  //     ...discount,
+  //     starts_at: startsAt,
+  //     ends_at: endsAt,
+  //   }
+  // )
 
-  let notificationAction:
-    | SubmitFunction<DiscountFormValues>
-    | MultiSubmitFunction<DiscountFormValues>
+  // let notificationAction:
+  //   | SubmitFunction<DiscountFormValues>
+  //   | MultiSubmitFunction<DiscountFormValues>
 
-  if (isEdit) {
-    notificationAction = onUpdate
-  } else {
-    notificationAction = [
-      {
-        icon: <PublishIcon />,
-        label: "Save as active",
-        onSubmit: onSaveAsActive,
-      },
-      {
-        label: "Save as inactive",
-        icon: <FileTextIcon />,
-        onSubmit: onSaveAsInactive,
-      },
-    ]
-  }
+  // if (isEdit) {
+  //   notificationAction = onUpdate
+  // } else {
+  //   notificationAction = [
+  //     {
+  //       icon: <PublishIcon />,
+  //       label: "Save as active",
+  //       onSubmit: onSaveAsActive,
+  //     },
+  //     {
+  //       label: "Save as inactive",
+  //       icon: <FileTextIcon />,
+  //       onSubmit: onSaveAsInactive,
+  //     },
+  //   ]
+  // }
 
   const [datesChanged, setDatesChanged] = useState({
     startsAt: false,
@@ -227,7 +228,7 @@ export const DiscountFormProvider = ({
           setEndsAt,
         }}
       >
-        <SaveNotificationProvider
+        {/* <SaveNotificationProvider
           options={{
             onReset: handleReset,
             onSubmit: notificationAction,
@@ -236,9 +237,9 @@ export const DiscountFormProvider = ({
               endsAt: datesChanged.endsAt,
             },
           }}
-        >
-          {children}
-        </SaveNotificationProvider>
+        > */}
+        {children}
+        {/* </SaveNotificationProvider> */}
       </DiscountFormContext.Provider>
     </FormProvider>
   )

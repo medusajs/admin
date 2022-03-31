@@ -39,6 +39,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
 
   const submitGhost = async (data) => {
     if (!isEdit) {
+      console.log(data)
       onSaveAsInactive(data)
         .then(() => {
           if (closeForm) {
@@ -66,6 +67,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         closeForm()
       }
     } catch (error) {
+      console.log(error)
       notification("Error", getErrorMessage(error), "error")
     }
   }
@@ -136,7 +138,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="configuration"
                 description="Promotion code applies from you hit the publish button and forever if left untouched."
               >
-                <Settings isEdit={isEdit} />
+                <Settings promotion={discount} isEdit={isEdit} />
               </Accordion.Item>
               <Accordion.Item
                 forceMountContent
