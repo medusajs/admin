@@ -49,7 +49,7 @@ const General = ({ discount, isEdit = false }) => {
   const regionOptions = opts?.map((r) => ({ value: r.id, label: r.name })) || []
 
   return (
-    <div>
+    <div className="pt-5">
       <Controller
         name="regions"
         control={control}
@@ -141,6 +141,14 @@ const General = ({ discount, isEdit = false }) => {
             )}
           </>
         )}
+      </div>
+
+      <div className="text-grey-50 inter-small-regular flex flex-col mb-6">
+        <span>
+          The code your customers will enter during checkout. This will appear
+          on your customer’s invoice.
+        </span>
+        <span>Uppercase letters and numbers only.</span>
       </div>
       <Textarea
         label="Description"
