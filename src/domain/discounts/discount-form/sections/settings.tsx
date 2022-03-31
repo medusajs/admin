@@ -1,3 +1,4 @@
+import { Discount } from "@medusajs/medusa"
 import clsx from "clsx"
 import React, { useEffect, useRef, useState } from "react"
 import { Controller } from "react-hook-form"
@@ -15,9 +16,28 @@ import { useDiscountForm } from "../form/discount-form-context"
 
 type SettingsProps = {
   isEdit?: boolean
+  promotion?: Discount
 }
 
-const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
+const getActiveTabs = (promotion: Discount) => {
+  const activeTabs: string[] = []
+
+  if (promotion.usage_limit !== null) {
+    activeTabs.push("usage_limit")
+  }
+
+  if (promotion.starts_at !== null) {
+    activeTabs.push("starts_at")
+  }
+
+  if (promotion.ends_at !== null) {
+    activeTabs.push("ends_at")
+  }
+
+  return activeTabs
+}
+
+const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
   const {
     isFreeShipping,
     setIsFreeShipping,
@@ -32,9 +52,11 @@ const Settings: React.FC<SettingsProps> = ({ isEdit = false }) => {
     setEndsAt,
   } = useDiscountForm()
 
-  const [openItems, setOpenItems] = React.useState<string[]>([
-    ...(hasExpiryDate ? ["ends_at"] : []),
-  ])
+  const [openItems, setOpenItems] = React.useState<string[]>(
+    isEdit && promotion
+      ? getActiveTabs(promotion)
+      : [...(hasExpiryDate ? ["ends_at"] : [])]
+  )
 
   const marginTransition =
     "transition-[margin] duration-300 ease-[cubic-bezier(0.87, 0, 0.13, 1) forwards]"
