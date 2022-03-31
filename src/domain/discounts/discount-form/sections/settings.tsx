@@ -34,22 +34,24 @@ const getActiveTabs = (promotion: Discount) => {
     activeTabs.push("ends_at")
   }
 
+  if (promotion.valid_duration !== null) {
+    activeTabs.push("valid_duration")
+  }
+
   return activeTabs
 }
 
 const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
   const {
-    isFreeShipping,
-    setIsFreeShipping,
     register,
     control,
     isDynamic,
     hasExpiryDate,
-    setHasExpiryDate,
     startsAt,
     setStartsAt,
     endsAt,
     setEndsAt,
+    handleConfigurationChanged,
   } = useDiscountForm()
 
   const [openItems, setOpenItems] = React.useState<string[]>(
@@ -73,11 +75,8 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
         type="multiple"
         value={openItems || []}
         onValueChange={(values) => {
-          if (values.indexOf("ends_at") > -1 && !hasExpiryDate) {
-            setHasExpiryDate(true)
-          } else if (values.indexOf("ends_at") === -1 && hasExpiryDate) {
-            setHasExpiryDate(false)
-          }
+          handleConfigurationChanged(values)
+
           setOpenItems(values)
         }}
       >
