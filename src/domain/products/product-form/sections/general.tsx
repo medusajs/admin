@@ -91,8 +91,12 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
             label="Handle"
             name="handle"
+            required={isEdit}
             placeholder="/bathrobe"
-            ref={register()}
+            ref={register({
+              required: isEdit ? "Handle is required" : false,
+              minLength: isEdit ? 1 : 0,
+            })}
           />
         </div>
         <label
@@ -113,21 +117,29 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             ref={register}
           />
           <Controller
-            as={Select}
-            control={control}
-            label="Collection"
             name="collection"
-            placeholder="Select collection..."
-            options={collectionOptions}
-            clearSelected
+            control={control}
+            render={({ onChange, value }) => {
+              return (
+                <Select
+                  label="Collection"
+                  name="collection"
+                  placeholder="Select collection..."
+                  options={collectionOptions}
+                  onChange={onChange}
+                  value={value}
+                />
+              )
+            }}
           />
           <Controller
-            control={control}
             name="type"
-            render={({ value, onChange }) => {
+            control={control}
+            render={({ onChange, value }) => {
               return (
                 <Select
                   label="Type"
+                  name="type"
                   placeholder="Select type..."
                   options={typeOptions}
                   onChange={onChange}

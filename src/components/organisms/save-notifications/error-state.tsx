@@ -1,36 +1,29 @@
-import React, { useEffect } from "react"
+import React, { ReactNode } from "react"
 import type { Toast } from "react-hot-toast"
-import CheckCircleIcon from "../../fundamentals/icons/check-circle-icon"
+import { toast as global } from "react-hot-toast"
+import ToasterContainer from "../../atoms/toaster-container"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
-import ToasterContainer from "../toaster-container"
+import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 
 type SavingStateProps = {
   toast: Toast
   title?: string
-  message?: string
-  onDismiss: () => void
+  message?: string | ReactNode
 }
 
-const SuccessState: React.FC<SavingStateProps> = ({
+const ErrorState: React.FC<SavingStateProps> = ({
   toast,
-  title = "Success",
-  message = "Your changes have been saved.",
-  onDismiss,
+  title = "Error",
+  message = "An error occured while trying to save your changes. Please try again.",
 }) => {
-  useEffect(() => {
-    const life = setTimeout(() => {
-      onDismiss()
-    }, 2000)
-
-    return () => {
-      clearTimeout(life)
-    }
-  }, [toast])
+  const onDismiss = () => {
+    global.dismiss(toast.id)
+  }
 
   return (
-    <ToasterContainer visible={toast.visible} className="w-[448px]">
+    <ToasterContainer visible={toast.visible}>
       <div>
-        <CheckCircleIcon size={20} className="text-emerald-40" />
+        <XCircleIcon size={20} className="text-rose-40" />
       </div>
       <div className="flex flex-col ml-small mr-base gap-y-2xsmall flex-grow">
         <span className="inter-small-semibold">{title}</span>
@@ -46,4 +39,4 @@ const SuccessState: React.FC<SavingStateProps> = ({
   )
 }
 
-export default SuccessState
+export default ErrorState
