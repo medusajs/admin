@@ -119,8 +119,8 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
       <Table>
         <Table.Head>
           <Table.HeadRow>
-            {columns.map((col, i) => (
-              <Table.HeadCell key={i} className="w-[100px] px-2 py-4">
+            {columns.map((col) => (
+              <Table.HeadCell className="w-[100px] px-2 py-4">
                 {col.header}
               </Table.HeadCell>
             ))}
