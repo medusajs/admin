@@ -31,7 +31,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     discount?.id,
     {
       ...discount,
-      starts_at: hasStartDate ? startsAt : null,
+      ...(hasStartDate ? { starts_at: startsAt } : {}),
       ends_at: hasExpiryDate ? endsAt : null,
     }
   )
