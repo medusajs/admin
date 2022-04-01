@@ -161,7 +161,7 @@
   }
 
   .radio-outer-ring > span.indicator[data-state="checked"] {
-    @apply rounded-circle shadow-[#7C3AED] shadow-[0_0_0_2px];
+    @apply rounded-circle shadow-violet-60 shadow-[0_0_0_2px];
   }
 }
 
