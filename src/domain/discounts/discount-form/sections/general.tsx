@@ -18,7 +18,6 @@ const General = ({ discount, isEdit = false }) => {
   >(initialCurrency)
 
   const { regions: opts } = useAdminRegions()
-
   const {
     register,
     control,

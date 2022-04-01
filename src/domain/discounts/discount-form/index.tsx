@@ -1,6 +1,5 @@
 import * as React from "react"
 import { useFormContext } from "react-hook-form"
-
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
