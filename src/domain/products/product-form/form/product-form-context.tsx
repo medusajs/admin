@@ -1,13 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
-import FileTextIcon from "../../../../components/fundamentals/icons/file-text-icon"
-import PublishIcon from "../../../../components/fundamentals/icons/publish-icon"
-import {
-  MultiSubmitFunction,
-  SaveNotificationProvider,
-  SubmitFunction
-} from "../../../../components/organisms/save-notifications/notification-provider"
-import { useFormActions } from "./use-form-actions"
+import { trimValues } from "../../../../utils/trim-values"
 
 export const VARIANTS_VIEW = "variants"
 
@@ -19,29 +12,11 @@ const defaultProduct = {
   variants: [] as any[],
   images: [],
   prices: [],
-  tags: [],
   options: [],
   type: null,
   collection: null,
-  status: "",
-  id: "",
   thumbnail: "",
-  title: "",
-  handle: "",
-  description: "",
-  sku: "",
-  ean: "",
-  inventory_quantity: "",
-  manage_inventory: false,
-  allow_backorder: false,
-  weight: "",
-  height: "",
-  width: "",
-  length: "",
-  mid_code: "",
-  hs_code: "",
-  origin_country: "",
-  material: "",
+  titel: "",
 }
 
 const ProductFormContext = React.createContext<{
@@ -56,11 +31,12 @@ const ProductFormContext = React.createContext<{
   setViewType: (value: PRODUCT_VIEW) => void
   viewType: PRODUCT_VIEW
   isVariantsView: boolean
+  onSubmit: (values: any) => void
 } | null>(null)
 
 export const ProductFormProvider = ({
   product = defaultProduct,
-  isEdit = false,
+  onSubmit,
   children,
 }) => {
   const [viewType, setViewType] = React.useState<PRODUCT_VIEW>(
@@ -80,15 +56,14 @@ export const ProductFormProvider = ({
     setImages([...images])
   }
 
-  const methods = useForm({
-    defaultValues: product,
-  })
+  const methods = useForm()
 
-  const handleReset = () => {
+  React.useEffect(() => {
     methods.reset({
       ...product,
     })
     setImages(product.images)
+    setProductOptions(product.options)
 
     if (product?.variants) {
       const variants = product?.variants?.map((v) => ({
@@ -110,52 +85,14 @@ export const ProductFormProvider = ({
 
       setProductOptions(options)
     }
-  }
-
-  useEffect(() => {
-    handleReset()
   }, [product])
 
-  const { onCreateAndPublish, onCreateDraft, onUpdate } = useFormActions(
-    product.id,
-    viewType,
-    {
-      status: product.status, // needed for update as updating a product without passing a status will set the status to published. TODO fix this in core
-      images,
-      variants,
-      options: productOptions,
-    }
-  )
-
-  let notificationAction: SubmitFunction | MultiSubmitFunction
-
-  if (isEdit) {
-    notificationAction = onUpdate
-  } else {
-    notificationAction = [
-      {
-        icon: <PublishIcon />,
-        label: "Save and publish",
-        onSubmit: onCreateAndPublish,
-      },
-      {
-        label: "Save as draft",
-        icon: <FileTextIcon />,
-        onSubmit: onCreateDraft,
-      },
-    ]
+  const handleSubmit = (values) => {
+    onSubmit(
+      { ...trimValues(values), images, variants, options: productOptions },
+      viewType
+    )
   }
-
-  const [imgDirtyState, setImgDirtyState] = useState(false)
-
-  useEffect(() => {
-    if (JSON.stringify(images) !== JSON.stringify(product.images)) {
-      setImgDirtyState(true)
-      return
-    }
-
-    setImgDirtyState(false)
-  }, [JSON.stringify(images)])
 
   return (
     <FormProvider {...methods}>
@@ -172,19 +109,10 @@ export const ProductFormProvider = ({
           setViewType,
           viewType,
           isVariantsView: viewType === VARIANTS_VIEW,
+          onSubmit: handleSubmit,
         }}
       >
-        <SaveNotificationProvider
-          options={{
-            onReset: handleReset,
-            onSubmit: notificationAction,
-            additionalDirtyStates: {
-              images: imgDirtyState,
-            },
-          }}
-        >
-          {children}
-        </SaveNotificationProvider>
+        {children}
       </ProductFormContext.Provider>
     </FormProvider>
   )
