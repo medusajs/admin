@@ -1,4 +1,8 @@
-import { Discount } from "@medusajs/medusa"
+import {
+  Discount,
+  DiscountCondition,
+  DiscountConditionType,
+} from "@medusajs/medusa"
 import moment from "moment"
 import React, { ReactNode } from "react"
 import ClockIcon from "../../../components/fundamentals/icons/clock-icon"
@@ -157,7 +161,91 @@ const getSettings = (promotion: Discount, openWithItems) => {
     })
   }
 
+  if (promotion.rule.conditions?.length) {
+    conditions.push(
+      ...promotion.rule.conditions.map((condition, i) =>
+        getConditionSettings(condition, openWithItems)
+      )
+    )
+  }
+
   return conditions
 }
+
+const getConditionSettings = (condition: DiscountCondition, openWithItems) => {
+  switch (condition.type) {
+    case DiscountConditionType.PRODUCTS:
+      return {
+        title: "Products",
+        description: "test",
+        actions: [
+          {
+            label: "Edit",
+            icon: <EditIcon size={20} />,
+            onClick: () => openWithItems(["conditions"]),
+          },
+        ],
+      }
+    case DiscountConditionType.PRODUCT_TYPES:
+      return {
+        title: "Type",
+        description: "test",
+        actions: [
+          {
+            label: "Edit",
+            icon: <EditIcon size={20} />,
+            onClick: () => openWithItems(["conditions"]),
+          },
+        ],
+      }
+    case DiscountConditionType.PRODUCT_COLLECTIONS:
+      return {
+        title: "Collection",
+        description: "test",
+        actions: [
+          {
+            label: "Edit",
+            icon: <EditIcon size={20} />,
+            onClick: () => openWithItems(["conditions"]),
+          },
+        ],
+      }
+    case DiscountConditionType.PRODUCT_TAGS:
+      return {
+        title: "Tag",
+        description: "test",
+        actions: [
+          {
+            label: "Edit",
+            icon: <EditIcon size={20} />,
+            onClick: () => openWithItems(["conditions"]),
+          },
+        ],
+      }
+    case DiscountConditionType.CUSTOMER_GROUPS:
+      return {
+        title: "Customer group",
+        description: "test",
+        actions: [
+          {
+            label: "Edit",
+            icon: <EditIcon size={20} />,
+            onClick: () => openWithItems(["conditions"]),
+          },
+        ],
+      }
+  }
+}
+
+// const getConditionsSettings = (
+//   conditions: DiscountCondition[],
+//   openWithItems
+// ) => {
+//   conditions.map((condition) => {
+
+//     return {title: getConditionSettingsTitle(condition.type), description: <CommonDescription text={condition.} />, actions: [
+//   }))
+//   return []
+// }
 
 export default PromotionSettings
