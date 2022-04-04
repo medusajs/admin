@@ -11,10 +11,12 @@ import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 import CheckCircleIcon from "../../fundamentals/icons/check-circle-icon"
 import WarningCircle from "../../fundamentals/icons/warning-circle"
 
+type AddManuallyButtonProps = { text: string }
+
 /**
  * "Add manually" component.
  */
-function AddManuallyButton() {
+function AddManuallyButton(props: AddManuallyButtonProps) {
   return (
     <div
       className="flex justify-center items-center gap-2
@@ -24,7 +26,7 @@ function AddManuallyButton() {
       role="button"
     >
       <PlusIcon size={18} />
-      <span>Add Products Manually</span>
+      <span>{props.text}</span>
     </div>
   )
 }
@@ -98,6 +100,7 @@ function UploadSummary(props: UploadSummaryProps) {
 }
 
 type DropAreaProps = {
+  fileTitle: string
   onUpload: (d: DataTransferItem) => void
 }
 
@@ -138,11 +141,11 @@ function DropArea(props: DropAreaProps) {
       )}
     >
       <span className="text-grey-50 text-small">
-        Drop your price list file here, or
+        Drop your {props.fileTitle} file here, or
         <a className="text-violet-60">
           <label className="cursor-pointer" htmlFor="upload-form-file">
             {" "}
-            click to browse
+            click to browse.
           </label>
           <input
             type="file"
@@ -155,13 +158,18 @@ function DropArea(props: DropAreaProps) {
         </a>
       </span>
       <span className="text-grey-40 text-small">
-        Only .csv files up to 5MB are supported
+        Only .csv files are supported.
       </span>
     </div>
   )
 }
 
 type UploadModalProps = {
+  fileTitle: string
+  actionButtonText: string
+  description1Text: string
+  description2Title: string
+  description2Text: string
   onUploadComplete: () => void
 }
 
@@ -169,7 +177,14 @@ type UploadModalProps = {
  * Upload prices modal.
  */
 function UploadModal(props: UploadModalProps) {
-  const { onUploadComplete } = props
+  const {
+    actionButtonText,
+    description1Text,
+    description2Text,
+    description2Title,
+    fileTitle,
+    onUploadComplete,
+  } = props
   // TODO: remove hardcoded progress
   const [progress, setProgress] = useState<number>(20)
   const [uploadFile, setUploadFile] = useState<File>()
@@ -192,22 +207,18 @@ function UploadModal(props: UploadModalProps) {
         <Modal.Content>
           <div className="flex flex-col">
             <span className="text-2xl text-grey-90 inter-large-semibold py-4">
-              Import price list
+              Import {fileTitle}
             </span>
           </div>
 
           <div className="text-grey-90 text-base inter-large-semibold mb-1">
-            Import price list
+            Import {fileTitle}
           </div>
 
-          <p className="text-grey-50 mb-4 text-base">
-            You can add to or "update" a price list. A new import will update
-            products with the same SKU. New products will be implemented as
-            Drafts. Updated products will keep their current status.
-          </p>
+          <p className="text-grey-50 mb-4 text-base">{description1Text}</p>
 
           {!uploadFile ? (
-            <AddManuallyButton />
+            <AddManuallyButton text={actionButtonText} />
           ) : (
             <UploadSummary products={20} updates={1} rejections={4} />
           )}
@@ -228,15 +239,10 @@ function UploadModal(props: UploadModalProps) {
           )}
 
           <div className="text-grey-90 text-base inter-large-semibold mt-8">
-            Unsure about how to arrange your list?
+            {description2Title}
           </div>
 
-          <p className="text-grey-50 mb-2 text-base">
-            We have created a template file for you. Type in your own
-            information and experience how much time and frustration this
-            functionality can save you. Feel free to reach out if you have any
-            questions.
-          </p>
+          <p className="text-grey-50 mb-2 text-base">{description2Text}</p>
 
           <FileSummary
             name="medusa-template-product-list.csv"
