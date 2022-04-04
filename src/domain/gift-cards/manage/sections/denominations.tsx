@@ -5,6 +5,7 @@ import {
   useAdminUpdateVariant,
 } from "medusa-react"
 import React, { useState } from "react"
+import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../../../components/organisms/body-card"
 import EditDenominationsModal from "../../../../components/organisms/edit-denominations-modal"
 import useNotification from "../../../../hooks/use-notification"
@@ -76,6 +77,13 @@ const Denominations: React.FC<DenominationsProps> = ({ giftCard }) => {
         title="Denominations"
         subtitle="Manage your denominations"
         className={"h-auto w-full"}
+        actionables={[
+          {
+            label: "Add Denomination",
+            onClick: () => {},
+            icon: <PlusIcon size={20} />,
+          },
+        ]}
       >
         <DenominationTable
           giftCardId={giftCard.id}

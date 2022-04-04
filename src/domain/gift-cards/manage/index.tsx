@@ -1,3 +1,4 @@
+import { RouteComponentProps } from "@reach/router"
 import { useAdminProducts } from "medusa-react"
 import React from "react"
 import Spinner from "../../../components/atoms/spinner"
@@ -7,7 +8,7 @@ import Denominations from "./sections/denominations"
 import Images from "./sections/images"
 import Information from "./sections/information"
 
-const ManageGiftCard: React.FC<RoRouteComponentPropsuter> = () => {
+const ManageGiftCard: React.FC<RouteComponentProps> = () => {
   const { products } = useAdminProducts({
     is_giftcard: "true",
   })
@@ -16,7 +17,7 @@ const ManageGiftCard: React.FC<RoRouteComponentPropsuter> = () => {
 
   if (!giftCard) {
     return (
-      <div>
+      <div className="w-full h-screen flex items-center justify-center">
         <Spinner variant="secondary" size="large" />
       </div>
     )

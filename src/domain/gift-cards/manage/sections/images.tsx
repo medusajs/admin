@@ -63,7 +63,7 @@ const Images = () => {
   } = useGiftCardForm()
 
   return (
-    <BodyCard title="Images" subtitle="Add up to 10 images to your product">
+    <BodyCard title="Images" subtitle="Add up to 10 images to your Gift Card">
       <div className="mt-base">
         <Controller
           name="thumbnail"
