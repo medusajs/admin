@@ -19,7 +19,7 @@ import { useLocation } from "@reach/router"
 const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {
-  expand: "customer_groups",
+  expand: "customer_groups,prices",
 }
 
 const PriceListTable: React.FC = () => {

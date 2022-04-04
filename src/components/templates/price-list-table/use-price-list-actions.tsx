@@ -9,10 +9,12 @@ import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import { ActionType } from "../../molecules/actionables"
 import { isActive } from "./utils"
 import PublishIcon from "../../fundamentals/icons/publish-icon"
+import useCopyPriceList from "./use-copy-price-list"
 
 const usePriceListActions = (priceList) => {
   const dialog = useImperativeDialog()
   const notification = useNotification()
+  const copyPriceList = useCopyPriceList()
   const updatePrice = useAdminUpdatePriceList(priceList?.id)
   const deletePrice = useAdminDeletePriceList(priceList?.id)
 
@@ -66,7 +68,7 @@ const usePriceListActions = (priceList) => {
     },
     {
       label: "Duplicate",
-      onClick: () => {},
+      onClick: () => copyPriceList(priceList),
       icon: <DuplicateIcon size={20} />,
     },
     {
