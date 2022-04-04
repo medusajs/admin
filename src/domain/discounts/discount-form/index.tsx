@@ -26,9 +26,6 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   closeForm,
   isEdit = false,
 }) => {
-  const { pathname } = useLocation()
-  console.log(closeForm)
-  const isNewDiscountForm = pathname.endsWith("/discounts/new")
   const notification = useNotification()
   const { handleSubmit } = useFormContext()
   const { startsAt, endsAt, hasStartDate, hasExpiryDate } = useDiscountForm()
