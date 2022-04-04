@@ -83,15 +83,15 @@ function UploadSummary(props: UploadSummaryProps) {
     <div className="flex gap-6">
       <div className="flex items-center text-small text-grey-90">
         <CheckCircleIcon color="#9CA3AF" className="mr-2" />
-        <span className="font-semibold"> {products} </span> products
+        <span className="font-semibold"> {products}&nbsp;</span> products
       </div>
       <div className="flex items-center text-small text-grey-90">
         <WarningCircle fill="#9CA3AF" className="mr-2" />
-        <span className="font-semibold">&nbsp; {updates} </span> updates
+        <span className="font-semibold">{updates}&nbsp;</span> updates
       </div>
       <div className="flex items-center text-small text-grey-90">
         <XCircleIcon color="#9CA3AF" className="mr-2" />
-        <span className="font-semibold">&nbsp; {rejections} </span> rejections
+        <span className="font-semibold">{rejections}&nbsp;</span> rejections
       </div>
     </div>
   )
@@ -170,6 +170,7 @@ type UploadModalProps = {
  */
 function UploadModal(props: UploadModalProps) {
   const { onUploadComplete } = props
+  // TODO: remove hardcoded progress
   const [progress, setProgress] = useState<number>(20)
   const [uploadFile, setUploadFile] = useState<File>()
 
