@@ -18,17 +18,16 @@ import { navigate } from "gatsby"
 type DiscountFormProps = {
   discount?: any
   isEdit?: boolean
+  additionalOpen?: string[]
   closeForm?: () => void
 }
 
 const DiscountForm: React.FC<DiscountFormProps> = ({
   discount,
   closeForm,
+  additionalOpen = [],
   isEdit = false,
 }) => {
-  const { pathname } = useLocation()
-  console.log(closeForm)
-  const isNewDiscountForm = pathname.endsWith("/discounts/new")
   const notification = useNotification()
   const { handleSubmit } = useFormContext()
   const { startsAt, endsAt, hasStartDate, hasExpiryDate } = useDiscountForm()
@@ -116,7 +115,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
             </h1>
             <Accordion
               className="pt-7 text-grey-90"
-              defaultValue={["promotion-type"]}
+              defaultValue={["promotion-type", ...additionalOpen]}
               type="multiple"
             >
               <Accordion.Item
