@@ -27,13 +27,9 @@ const IndeterminateCheckbox = React.forwardRef(
 export const useSelectionColumn = () => {
   return {
     id: "selection",
-    // The header can use the table's getToggleAllRowsSelectedProps method
-    // to render a checkbox
     Header: ({ getToggleAllRowsSelectedProps }) => (
       <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
     ),
-    // The cell can use the individual row's getToggleRowSelectedProps method
-    // to the render a checkbox
     Cell: ({ row }) => (
       <Table.Cell className="text-center">
         <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
