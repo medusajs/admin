@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useLocation } from "@reach/router"
 import { useFormContext } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
@@ -12,6 +13,7 @@ import Conditions from "./sections/conditions"
 import General from "./sections/general"
 import PromotionType from "./sections/promotion-type"
 import Configuration from "./sections/configuration"
+import { navigate } from "gatsby"
 
 type DiscountFormProps = {
   discount?: any
@@ -24,6 +26,9 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   closeForm,
   isEdit = false,
 }) => {
+  const { pathname } = useLocation()
+  console.log(closeForm)
+  const isNewDiscountForm = pathname.endsWith("/discounts/new")
   const notification = useNotification()
   const { handleSubmit } = useFormContext()
   const { startsAt, endsAt, hasStartDate, hasExpiryDate } = useDiscountForm()
@@ -36,21 +41,25 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     }
   )
 
+  const closeFormModal = () => {
+    if (closeForm) {
+      closeForm()
+    } else {
+      navigate("/a/discounts")
+    }
+  }
+
   const submitGhost = async (data) => {
     if (!isEdit) {
       onSaveAsInactive(data)
         .then(() => {
-          if (closeForm) {
-            closeForm()
-          }
+          closeFormModal()
         })
         .catch((error) => {
           notification("Error", getErrorMessage(error), "error")
         })
     } else {
-      if (closeForm) {
-        closeForm()
-      }
+      closeFormModal()
     }
   }
 
@@ -61,9 +70,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
       } else {
         await onSaveAsActive(data)
       }
-      if (closeForm) {
-        closeForm()
-      }
+      closeFormModal()
     } catch (error) {
       notification("Error", getErrorMessage(error), "error")
     }
