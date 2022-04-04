@@ -38,7 +38,6 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
 
   const submitGhost = async (data) => {
     if (!isEdit) {
-      console.log(data)
       onSaveAsInactive(data)
         .then(() => {
           if (closeForm) {
@@ -66,7 +65,6 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         closeForm()
       }
     } catch (error) {
-      console.log(error)
       notification("Error", getErrorMessage(error), "error")
     }
   }

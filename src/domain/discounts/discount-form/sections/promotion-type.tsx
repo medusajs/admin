@@ -1,7 +1,6 @@
 import clsx from "clsx"
 import React from "react"
 import { Controller } from "react-hook-form"
-import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import { useDiscountForm } from "../form/discount-form-context"
 
@@ -49,15 +48,6 @@ const PromotionType = ({ promotion, isEdit = false }) => {
               label="Free shipping"
               description={"Override delivery amount"}
             />
-            {/* {regions && regions.length > 1 && (
-                <div className="flex items-center">
-                  <IconTooltip
-                    content={
-                      "Fixed value discounts are not available for multi regional discounts"
-                    }
-                  />
-                </div>
-              )} */}
           </RadioGroup.Root>
         )
       }}

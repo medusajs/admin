@@ -17,7 +17,7 @@ const DiscountIndex = () => {
   const actionables = [
     {
       label: "Add Promotion",
-      onClick: () => navigate(`/a/discounts/new`),
+      onClick: () => setIsOpen(true),
       icon: <PlusIcon size={20} />,
     },
   ]

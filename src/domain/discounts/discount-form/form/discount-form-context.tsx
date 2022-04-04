@@ -36,7 +36,7 @@ export const DiscountFormProvider = ({
   const [prevUsageLimit, setPrevUsageLimit] = useState<string>("")
   const [prevValidDuration, setPrevValidDuration] = useState<string>("")
   const [prevAllocation, setPrevAllocation] = useState<string | undefined>(
-    undefined
+    "total"
   )
   const [prevExpiryDate, setPrevExpiryDate] = useState<Date | undefined>(
     undefined
@@ -44,7 +44,7 @@ export const DiscountFormProvider = ({
   const [startsAt, setStartsAt] = useState(discount.starts_at)
   const [endsAt, setEndsAt] = useState(discount.ends_at)
 
-  const methods = useForm({ defaultValues: discount })
+  const methods = useForm({ defaultValues: discount, reValidateMode: "onBlur" })
 
   methods.register({
     name: "allocation",
@@ -107,7 +107,7 @@ export const DiscountFormProvider = ({
     setPrevType(type)
     setPrevAllocation(allocation)
     methods.setValue("type", "free_shipping")
-    methods.setValue("allocation", undefined)
+    methods.setValue("allocation", "total")
   }
 
   const handleUnselectFreeShipping = () => {

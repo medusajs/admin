@@ -54,12 +54,16 @@ export const discountToFormValuesMapper = (
 export const formValuesToCreateDiscountMapper = (
   values: DiscountFormValues
 ): Omit<AdminPostDiscountsReq, "is_disabled"> => {
+  console.log(values)
   return {
     code: values.code!,
     rule: {
       allocation: values.allocation,
       type: values.type,
-      value: parseInt((values.rule.value! as unknown) as string, 10),
+      value:
+        values.type !== "free_shipping"
+          ? parseInt((values.rule.value! as unknown) as string, 10)
+          : 0,
       description: values.description,
       valid_for: values.valid_for?.map((p) => p.value),
     },
