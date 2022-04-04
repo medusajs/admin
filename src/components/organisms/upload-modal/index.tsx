@@ -98,7 +98,7 @@ function UploadSummary(props: UploadSummaryProps) {
 }
 
 type DropAreaProps = {
-  onDrop: (d: DataTransferItem) => void
+  onUpload: (d: DataTransferItem) => void
 }
 
 /**
@@ -113,8 +113,12 @@ function DropArea(props: DropAreaProps) {
     setIsDragOver(false)
 
     if (e.dataTransfer.items?.length) {
-      props.onDrop(e.dataTransfer.items[0])
+      props.onUpload(e.dataTransfer.items[0].getAsFile())
     }
+  }
+
+  const handleFileSelect = (e) => {
+    props.onUpload(e.target.files[0])
   }
 
   const onDragOver = (event) => {
@@ -146,6 +150,7 @@ function DropArea(props: DropAreaProps) {
             className="hidden"
             // multiple
             accept="text/csv"
+            onChange={handleFileSelect}
           />
         </a>
       </span>
@@ -166,12 +171,11 @@ type UploadModalProps = {
 function UploadModal(props: UploadModalProps) {
   const { onUploadComplete } = props
   const [progress, setProgress] = useState<number>(20)
-  const [uploadFile, setUploadFile] = useState<DataTransferItem>()
+  const [uploadFile, setUploadFile] = useState<File>()
 
-  const file = uploadFile?.getAsFile()
-  const { name, size } = file || {}
+  const { name, size } = uploadFile || {}
 
-  const onDrop = (f) => {
+  const onUpload = (f) => {
     setUploadFile(f)
     onUploadComplete()
   }
@@ -208,7 +212,7 @@ function UploadModal(props: UploadModalProps) {
           )}
 
           {!uploadFile ? (
-            <DropArea onDrop={onDrop} />
+            <DropArea onUpload={onUpload} />
           ) : (
             <FileSummary
               size={size!}
@@ -259,7 +263,7 @@ function UploadModal(props: UploadModalProps) {
             <div className="flex gap-2">
               <Button
                 size="small"
-                disabled={!file}
+                disabled={!uploadFile}
                 variant="secondary"
                 className="text-small text-rose-50"
                 onClick={console.log}
@@ -269,7 +273,7 @@ function UploadModal(props: UploadModalProps) {
 
               <Button
                 size="small"
-                disabled={!file}
+                disabled={!uploadFile}
                 variant="primary"
                 className="text-small"
                 onClick={console.log}
