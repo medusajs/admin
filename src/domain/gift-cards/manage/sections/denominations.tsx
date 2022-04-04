@@ -6,6 +6,7 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
+import AddDenominationModal from "../../../../components/organisms/add-denomination-modal"
 import BodyCard from "../../../../components/organisms/body-card"
 import EditDenominationsModal from "../../../../components/organisms/edit-denominations-modal"
 import useNotification from "../../../../hooks/use-notification"
@@ -21,11 +22,17 @@ const Denominations: React.FC<DenominationsProps> = ({ giftCard }) => {
     ProductVariant,
     "beforeInsert"
   > | null>(null)
+  const [addDenom, setAddDenom] = useState(false)
 
   const { store } = useAdminStore()
   const updateGiftCardVariant = useAdminUpdateVariant(giftCard.id)
   const deleteGiftCardVariant = useAdminDeleteVariant(giftCard.id)
   const notification = useNotification()
+
+  const currencyCodes =
+    store?.currencies
+      .filter((currency) => currency.code !== store.default_currency_code)
+      .map((currency) => currency.code) || []
 
   const submitDenomations = (denoms) => {
     if (!denoms.length) {
@@ -80,7 +87,7 @@ const Denominations: React.FC<DenominationsProps> = ({ giftCard }) => {
         actionables={[
           {
             label: "Add Denomination",
-            onClick: () => {},
+            onClick: () => setAddDenom(true),
             icon: <PlusIcon size={20} />,
           },
         ]}
@@ -102,6 +109,14 @@ const Denominations: React.FC<DenominationsProps> = ({ giftCard }) => {
             id: p.id,
           }))}
           handleClose={() => setEditDenom(null)}
+        />
+      )}
+      {addDenom && (
+        <AddDenominationModal
+          giftCard={giftCard}
+          handleClose={() => setAddDenom(false)}
+          storeCurrency={store?.default_currency_code!}
+          currencyCodes={currencyCodes}
         />
       )}
     </>
