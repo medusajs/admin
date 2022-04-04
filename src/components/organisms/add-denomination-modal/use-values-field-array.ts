@@ -1,11 +1,11 @@
 import { useFieldArray, UseFieldArrayOptions, useWatch } from "react-hook-form"
 
-type UsePricesFieldArrayOptions = {
+type UseValuesFieldArrayOptions = {
   defaultAmount: number
   defaultCurrencyCode: string
 }
 
-type PriceFormValue = {
+type ValuesFormValue = {
   price: {
     currency_code: string
     amount: number
@@ -15,13 +15,13 @@ type PriceFormValue = {
 export const useValuesFieldArray = <TKeyName extends string = "id">(
   currencyCodes: string[],
   { control, name, keyName }: UseFieldArrayOptions<TKeyName>,
-  options: UsePricesFieldArrayOptions = {
+  options: UseValuesFieldArrayOptions = {
     defaultAmount: 1000,
     defaultCurrencyCode: "usd",
   }
 ) => {
   const { defaultAmount } = options
-  const { fields, append, remove } = useFieldArray<PriceFormValue, TKeyName>({
+  const { fields, append, remove } = useFieldArray<ValuesFormValue, TKeyName>({
     control,
     name,
     keyName,
@@ -49,7 +49,10 @@ export const useValuesFieldArray = <TKeyName extends string = "id">(
   const appendPrice = () => {
     const newCurrency = availableCurrencies[0]
     append({
-      price: { currency_code: newCurrency, amount: defaultAmount },
+      price: {
+        currency_code: newCurrency,
+        amount: defaultAmount,
+      },
     })
   }
 
