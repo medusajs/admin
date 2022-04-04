@@ -14,6 +14,9 @@ import General from "./sections/general"
 import PromotionType from "./sections/promotion-type"
 import Configuration from "./sections/configuration"
 import { navigate } from "gatsby"
+import { useState } from "react"
+import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import AddConditionsModal from "./add-conditions-modal"
 
 type DiscountFormProps = {
   discount?: any
@@ -26,9 +29,18 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   closeForm,
   isEdit = false,
 }) => {
+  const [showAddConditionsModal, setShowConditionsModal] = useState(false)
+
   const notification = useNotification()
   const { handleSubmit } = useFormContext()
-  const { startsAt, endsAt, hasStartDate, hasExpiryDate } = useDiscountForm()
+  const {
+    startsAt,
+    endsAt,
+    hasStartDate,
+    hasExpiryDate,
+    conditionType,
+    setConditionType,
+  } = useDiscountForm()
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
     discount?.id,
     {
@@ -153,6 +165,24 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
             </Accordion>
           </div>
         </div>
+        <div
+          onClick={() => setShowConditionsModal(true)}
+          className=" medium:w-7/12 large:w-6/12 small:w-4/5 w-full m-auto mt-4 flex justify-center items-center gap-2
+        font-semibold
+        text-small
+        rounded-xl border border-1 p-2"
+          role="button"
+        >
+          <PlusIcon size={18} />
+          <span>Add Condition</span>
+        </div>
+        {showAddConditionsModal && (
+          <AddConditionsModal
+            value={conditionType}
+            setValue={setConditionType}
+            close={() => setShowConditionsModal(false)}
+          />
+        )}
       </FocusModal.Main>
     </FocusModal>
   )
