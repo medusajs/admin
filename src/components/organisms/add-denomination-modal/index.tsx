@@ -25,7 +25,15 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
   currencyCodes,
   handleClose,
 }) => {
-  const { watch, handleSubmit, control } = useForm()
+  const { watch, handleSubmit, control } = useForm<{
+    default_price: number
+    prices: {
+      price: {
+        amount: number
+        currency_code: string
+      }
+    }[]
+  }>()
   const notification = useNotification()
   const createVariant = useAdminCreateVariant(giftCard.id)
 
@@ -51,8 +59,6 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
   )
 
   const onSubmit = async (data: any) => {
-    console.log(data)
-
     const prices = [
       {
         amount: data.default_price,
