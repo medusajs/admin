@@ -48,7 +48,6 @@ type MultiSelectProps = InputHeaderProps & {
   isCreatable?: boolean
   clearSelected?: boolean
   onCreateOption?: (value: string) => { value: string; label: string }
-  id?: string
 }
 
 const MultiValueLabel = ({ ...props }: MultiValueProps) => {
@@ -145,6 +144,47 @@ const ClearIndicator = ({ ...props }: ClearIndicatorProps) => {
   )
 }
 
+const CheckboxAdornment = ({ isSelected }) => {
+  return (
+    <div
+      className={clsx(
+        `w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base`,
+        {
+          "bg-violet-60": isSelected,
+        }
+      )}
+    >
+      <span className="self-center">
+        {isSelected && <CheckIcon size={16} />}
+      </span>
+    </div>
+  )
+}
+
+const RadioAdornment = ({ isSelected }) => {
+  return (
+    <div
+      className={clsx(
+        "radio-outer-ring outline-0",
+        "shrink-0 w-[20px] h-[20px] rounded-circle",
+        {
+          "shadow-[0_0_0_1px] shadow-[#D1D5DB]": !isSelected,
+          "shadow-[0_0_0_2px] shadow-violet-60": isSelected,
+        }
+      )}
+    >
+      {isSelected && (
+        <div
+          className={clsx(
+            "group flex items-center justify-center w-full h-full relative",
+            "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
+          )}
+        />
+      )}
+    </div>
+  )
+}
+
 const Option = ({ className, ...props }: OptionProps) => {
   return (
     <components.Option
@@ -157,15 +197,11 @@ const Option = ({ className, ...props }: OptionProps) => {
         <div className="items-center h-full flex">
           {props.data?.value !== "all" && props.data?.label !== "Select All" ? (
             <>
-              <div
-                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-                  props.isSelected && "bg-violet-60"
-                }`}
-              >
-                <span className="self-center">
-                  {props.isSelected && <CheckIcon size={16} />}
-                </span>
-              </div>
+              {props.isMulti ? (
+                <CheckboxAdornment {...props} />
+              ) : (
+                <RadioAdornment {...props} />
+              )}
               <span className="ml-3 text-grey-90 inter-base-regular">
                 {props.data.label}
               </span>
@@ -201,7 +237,6 @@ const SSelect = React.forwardRef(
       placeholder = "Search...",
       options,
       onCreateOption,
-      id,
     }: MultiSelectProps,
     ref
   ) => {
@@ -270,13 +305,7 @@ const SSelect = React.forwardRef(
             setIsFocussed(false)
             selectRef.current?.blur()
           }}
-          id={id}
           onClick={onClick}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              onClick()
-            }
-          }}
           className={clsx(className, {
             "bg-white rounded-t-rounded": isFocussed,
           })}

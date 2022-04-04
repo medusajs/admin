@@ -106,10 +106,10 @@ export const formValuesToUpdateProductMapper = (values) => {
     thumbnail: values?.images?.length
       ? values.images[values.thumbnail]
       : undefined,
-    collection_id: values?.collection ? values.collection.value : undefined,
+    collection_id: values?.collection ? values.collection.value : null,
     type: values?.type
       ? { id: values.type.value, value: values.type.label }
-      : undefined,
+      : null,
     images: values?.images || [],
     tags: values?.tags ? values.tags.map((tag) => ({ value: tag })) : [],
     width: values?.width ? parseInt(values.width, 10) : undefined,
