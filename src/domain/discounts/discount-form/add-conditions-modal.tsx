@@ -9,6 +9,7 @@ import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
 import TaxRuleSelector from "../../settings/taxes/tax-rule-selector"
+import { ProductConditionSelector } from "./condition-tables/products"
 
 type AddConditionsModalProps = {
   value?: string
@@ -84,6 +85,19 @@ function AddConditionsModal(props: AddConditionsModalProps) {
               <RadioGroup.SimpleItem
                 {...t}
                 className="rounded-lg border border-1 p-4 mb-2 w-full"
+                onClick={() =>
+                  layeredModalContext.push({
+                    title: "Condition type",
+                    onBack: () => layeredModalContext.pop(),
+                    view: (
+                      <ProductConditionSelector
+                        items={[]}
+                        onClose={() => close()}
+                        saveCondition={console.log}
+                      />
+                    ),
+                  })
+                }
                 label={<span className="font-semibold">{t.label}</span>}
                 description={
                   <span className="text-grey-50 float-right">
