@@ -1,9 +1,10 @@
-import React from "react"
+import React, { useRef } from "react"
 
 import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import RadioGroup from "../../../components/organisms/radio-group"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
+import { useDiscountForm } from "./form/discount-form-context"
 
 type AddConditionsModalProps = {
   value?: string
@@ -40,14 +41,25 @@ const Items = [
 ]
 
 function AddConditionsModal(props: AddConditionsModalProps) {
-  const { close, value, setValue } = props
+  const { close } = props
 
-  const handleSubmit = () => {}
+  const { register, conditionType, setConditionType } = useDiscountForm()
+
+  const { current: initialSetting } = useRef(conditionType)
+
+  const onSave = () => {
+    close()
+  }
+
+  const onClose = () => {
+    setConditionType(initialSetting)
+    close()
+  }
 
   return (
-    <Modal handleClose={close}>
+    <Modal handleClose={onClose}>
       <Modal.Body className="h-[calc(100vh-134px)] flex flex-col">
-        <Modal.Header handleClose={close}>
+        <Modal.Header handleClose={onClose}>
           <span className="inter-xlarge-semibold">Add Conditions</span>
           <span className="font-semibold text-grey-90 mt-6 flex items-center gap-1">
             Choose a condition type <IconTooltip content="TODO add text?" />
@@ -55,7 +67,12 @@ function AddConditionsModal(props: AddConditionsModalProps) {
         </Modal.Header>
 
         <Modal.Content className="flex-1">
-          <RadioGroup.Root value={value} onValueChange={setValue}>
+          <RadioGroup.Root
+            name="condition_type"
+            value={conditionType}
+            onValueChange={setConditionType}
+            ref={register("condition_type")}
+          >
             {Items.map((t) => (
               <RadioGroup.SimpleItem
                 {...t}
@@ -77,16 +94,16 @@ function AddConditionsModal(props: AddConditionsModalProps) {
               variant="ghost"
               className="mr-2 w-32 text-small justify-center"
               size="large"
-              onClick={close}
+              onClick={onClose}
             >
               Cancel
             </Button>
             <Button
               size="large"
-              disabled={!value}
+              disabled={!conditionType}
               className="w-32 text-small justify-center"
               variant="primary"
-              onClick={handleSubmit}
+              onClick={onSave}
             >
               Save
             </Button>

@@ -41,6 +41,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     conditionType,
     setConditionType,
   } = useDiscountForm()
+
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
     discount?.id,
     {
