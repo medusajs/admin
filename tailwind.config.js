@@ -202,6 +202,7 @@ module.exports = {
       minHeight: {
         topbar: "56px",
         content: "calc(100vh - 56px)",
+        "radix-accodion": "var(--radix-accordion-content-height)",
       },
       maxHeight: {
         topbar: "56px",
@@ -301,11 +302,13 @@ module.exports = {
         },
         "accordion-slide-down": {
           "0%": {
-            height: "0",
+            "min-height": "0",
+            "max-height": "0",
             opacity: "0",
           },
           "100%": {
-            height: "var(--radix-accordion-content-height)",
+            "min-height": "var(--radix-accordion-content-height)",
+            "max-height": "none",
             opacity: "1",
           },
         },

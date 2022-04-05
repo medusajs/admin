@@ -1,15 +1,18 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import clsx from "clsx"
-import React from "react"
+import React, { useEffect } from "react"
 import Button from "../../fundamentals/button"
 import IconTooltip from "../../molecules/icon-tooltip"
 
 type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
   title: string
+  subtitle?: string
   description?: string
   required?: boolean
   tooltip?: string
   forceMountContent?: true
+  headingSize?: "small" | "medium" | "large"
+  customTrigger?: React.ReactNode
 }
 
 const Accordion: React.FC<
@@ -27,39 +30,66 @@ const Accordion: React.FC<
 
 const Item: React.FC<AccordionItemProps> = ({
   title,
+  subtitle,
   description,
   required,
   tooltip,
   children,
+  className,
+  headingSize = "large",
+  customTrigger = undefined,
   forceMountContent = undefined,
   ...props
 }) => {
+  const headerClass = clsx({
+    "inter-small-semibold": headingSize === "small",
+    "inter-base-semibold": headingSize === "medium",
+    "inter-large-semibold": headingSize === "large",
+  })
+
+  const paddingClasses = clsx({
+    "pb-0 mb-6 ": headingSize === "medium",
+    "pb-5 radix-state-open:pb-5xlarge mb-5 ": headingSize === "large",
+  })
+
   return (
     <AccordionPrimitive.Item
       {...props}
-      className="border-b border-grey-20 transition-padding pb-5 radix-state-open:pb-5xlarge mb-5 last:mb-0 group"
+      className={clsx(
+        "border-b border-grey-20 last:mb-0 group",
+        { "opacity-30": props.disabled },
+        paddingClasses,
+        className
+      )}
     >
       <AccordionPrimitive.Header>
-        <AccordionPrimitive.Trigger className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-x-2xsmall">
-            <span className="inter-large-semibold">
-              {title}
-              {required && <span className="text-rose-50">*</span>}
-            </span>
-            {tooltip && <IconTooltip content={tooltip} />}
+        <AccordionPrimitive.Trigger className="flex flex-col w-full">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-x-2xsmall">
+              <span className={headerClass}>
+                {title}
+                {required && <span className="text-rose-50">*</span>}
+              </span>
+              {tooltip && <IconTooltip content={tooltip} />}
+            </div>
+            {customTrigger || <MorphingTrigger />}
           </div>
-          <MorphingTrigger />
+          {subtitle && (
+            <span className="inter-small-regular text-grey-50 mt-1">
+              {subtitle}
+            </span>
+          )}
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
       <AccordionPrimitive.Content
         forceMount={forceMountContent}
         className={clsx(
-          "overflow-hidden radix-state-open:animate-accordion-open radix-state-closed:animate-accordion-close"
+          "overflow-hidden radix-state-closed:animate-accordion-close radix-state-open:animate-accordion-open"
         )}
       >
-        <div className="text-grey-50 inter-base-regular group-radix-state-closed:animate-accordion-close">
-          {description && <p>{description}</p>}
-          <div className="mt-large">{children}</div>
+        <div className="inter-base-regular group-radix-state-closed:animate-accordion-close">
+          {description && <p className="text-grey-50 ">{description}</p>}
+          <div>{children}</div>
         </div>
       </AccordionPrimitive.Content>
     </AccordionPrimitive.Item>
