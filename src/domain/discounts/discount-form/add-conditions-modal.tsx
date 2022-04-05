@@ -54,7 +54,7 @@ function AddConditionsModal(props: AddConditionsModalProps) {
     layeredModalContext.push({
       title: "Condition type",
       onBack: () => layeredModalContext.pop(),
-      view: <h3>Condition type selection TODO</h3>,
+      view: <h3 className="p-8">{conditionType} selection TODO</h3>,
     })
   }
 
@@ -64,11 +64,7 @@ function AddConditionsModal(props: AddConditionsModalProps) {
   }
 
   return (
-    <LayeredModal
-      isLargeModal
-      context={layeredModalContext}
-      handleClose={onClose}
-    >
+    <LayeredModal context={layeredModalContext} handleClose={onClose}>
       <Modal.Body className="h-[calc(100vh-134px)] flex flex-col">
         <Modal.Header handleClose={onClose}>
           <span className="inter-xlarge-semibold">Add Conditions</span>
