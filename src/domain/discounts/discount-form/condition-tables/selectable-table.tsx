@@ -1,20 +1,20 @@
-import React, { useMemo, useEffect } from "react"
 import {
-  Product,
-  ProductType,
-  ProductVariant,
   CustomerGroup,
+  Product,
+  ProductCollection,
   ProductTag,
+  ProductType,
 } from "@medusajs/medusa"
+import React, { useEffect, useMemo } from "react"
 import {
   ColumnInstance,
   usePagination,
   useRowSelect,
   useTable,
 } from "react-table"
-import Table, { TablePagination } from "../../../../components/molecules/table"
-import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import Spinner from "../../../../components/atoms/spinner"
+import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
+import Table, { TablePagination } from "../../../../components/molecules/table"
 import { PaginationProps } from "../../../../types/shared"
 
 type SelectableTableProps = {
@@ -27,7 +27,7 @@ type SelectableTableProps = {
   data?:
     | Product[]
     | ProductType[]
-    | ProductVariant[]
+    | ProductCollection[]
     | ProductTag[]
     | CustomerGroup[]
   selectedIds?: string[]

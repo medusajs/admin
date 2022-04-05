@@ -1,5 +1,5 @@
-import { ProductVariant } from "@medusajs/medusa"
-import { useAdminVariants } from "medusa-react"
+import { Product } from "@medusajs/medusa"
+import { useAdminProducts } from "medusa-react"
 import React, { useContext, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
@@ -38,7 +38,7 @@ const ProductConditionSelector = ({ onClose }) => {
     offset: 0,
   })
 
-  const { isLoading, count, variants } = useAdminVariants({
+  const { isLoading, count, products } = useAdminProducts({
     ...pagination,
     q: debouncedSearchTerm,
   })
@@ -48,13 +48,13 @@ const ProductConditionSelector = ({ onClose }) => {
   const [items, setItems] = useState(conditions.products || [])
 
   const changed = (values: string[]) => {
-    const selectedVariants =
-      variants?.filter((variant) => values.includes(variant.id)) || []
+    const selectedProducts =
+      products?.filter((product) => values.includes(product.id)) || []
 
     setItems(
-      selectedVariants.map((variant) => ({
-        id: variant.id,
-        title: variant.title,
+      selectedProducts.map((product) => ({
+        id: product.id,
+        title: product.title,
       }))
     )
   }
@@ -69,9 +69,9 @@ const ProductConditionSelector = ({ onClose }) => {
           return (
             <div className="flex items-center">
               <div className="h-[40px] w-[30px] my-1.5 flex items-center mr-4">
-                {original.product.thumbnail ? (
+                {original.thumbnail ? (
                   <img
-                    src={original.product.thumbnail}
+                    src={original.thumbnail}
                     className="h-full object-cover rounded-soft"
                   />
                 ) : (
@@ -81,7 +81,7 @@ const ProductConditionSelector = ({ onClose }) => {
                 )}
               </div>
               <div className="flex flex-col">
-                <span>{original.product.title}</span>
+                <span>{original.title}</span>
                 {original.title}
               </div>
             </div>
@@ -93,10 +93,10 @@ const ProductConditionSelector = ({ onClose }) => {
         accessor: "status",
         Cell: ({ row: { original } }) => (
           <StatusIndicator
-            title={`${original.product.status
+            title={`${original.status
               .charAt(0)
-              .toUpperCase()}${original.product.status.slice(1)}`}
-            variant={getProductStatusVariant(original.product.status)}
+              .toUpperCase()}${original.status.slice(1)}`}
+            variant={getProductStatusVariant(original.status)}
           />
         ),
       },
@@ -125,7 +125,7 @@ const ProductConditionSelector = ({ onClose }) => {
             pagination={pagination}
             onPaginationChange={setPagination}
             selectedIds={conditions.products?.map((c) => c.id)}
-            data={variants as ProductVariant[]}
+            data={products as Product[]}
             columns={columns}
             isLoading={isLoading}
             onChange={changed}
