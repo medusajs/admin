@@ -108,7 +108,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         </div>
       </FocusModal.Header>
       <FocusModal.Main>
-        <div className="flex justify-center">
+        <div className="flex justify-center pb-[25%]">
           <div className="medium:w-7/12 large:w-6/12 small:w-4/5 w-full pt-16">
             <h1 className="inter-xlarge-semibold">
               {isEdit ? "Edit promotion" : "Create new promotion"}

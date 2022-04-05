@@ -99,7 +99,7 @@ const Edit: React.FC<EditProps> = ({ id }) => {
               </div>
             </div>
           </HeadingBodyCard>
-          <div className="mt-4 h-full">
+          <div className="mt-4 w-full">
             <PromotionSettings
               promotion={discount}
               openWithItems={openWithItems}
