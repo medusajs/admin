@@ -24,7 +24,8 @@ const getProductStatusVariant = (status) => {
   }
 }
 
-export const ProductConditionSelector = ({ items, saveCondition, onClose }) => {
+// TODO: remove items and save conditions and use "useDiscountForm" when implemented
+const ProductConditionSelector = ({ items, saveCondition, onClose }) => {
   const PAGE_SIZE = 12
   const [query, setQuery] = useState("")
   const debouncedSearchTerm = useDebounce(query, 500)
@@ -156,3 +157,5 @@ export const ProductConditionSelector = ({ items, saveCondition, onClose }) => {
     </>
   )
 }
+
+export default ProductConditionSelector

@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react"
-
+import React, { useContext } from "react"
 import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import RadioGroup from "../../../components/organisms/radio-group"
@@ -8,42 +7,13 @@ import { useDiscountForm } from "./form/discount-form-context"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
-import TaxRuleSelector from "../../settings/taxes/tax-rule-selector"
-import { ProductConditionSelector } from "./condition-tables/products"
+import useConditionModalItems from "./use-condition-modal-items"
 
 type AddConditionsModalProps = {
   value?: string
   setValue: (v: string) => void
   close: () => void
 }
-
-const Items = [
-  {
-    label: "Product",
-    value: "products",
-    description: "Only for specific products",
-  },
-  {
-    label: "Customer group",
-    value: "customer_groups",
-    description: "Only for specific customer groups",
-  },
-  {
-    label: "Tag",
-    value: "tags",
-    description: "Only for specific tags",
-  },
-  {
-    label: "Collection",
-    value: "collections",
-    description: "Only for specific product collections",
-  },
-  {
-    label: "Type",
-    value: "types",
-    description: "Only for specific product types",
-  },
-]
 
 function AddConditionsModal(props: AddConditionsModalProps) {
   const { close } = props
@@ -64,6 +34,8 @@ function AddConditionsModal(props: AddConditionsModalProps) {
     close()
   }
 
+  const it = useConditionModalItems(close)
+
   return (
     <LayeredModal context={layeredModalContext} handleClose={onClose}>
       <Modal.Body className="h-[calc(100vh-134px)] flex flex-col">
@@ -81,23 +53,11 @@ function AddConditionsModal(props: AddConditionsModalProps) {
             onValueChange={setConditionType}
             ref={register("condition_type")}
           >
-            {Items.map((t) => (
+            {it.map((t) => (
               <RadioGroup.SimpleItem
                 {...t}
                 className="rounded-lg border border-1 p-4 mb-2 w-full"
-                onClick={() =>
-                  layeredModalContext.push({
-                    title: "Condition type",
-                    onBack: () => layeredModalContext.pop(),
-                    view: (
-                      <ProductConditionSelector
-                        items={[]}
-                        onClose={() => close()}
-                        saveCondition={console.log}
-                      />
-                    ),
-                  })
-                }
+                onClick={t.onClick}
                 label={<span className="font-semibold">{t.label}</span>}
                 description={
                   <span className="text-grey-50 float-right">
