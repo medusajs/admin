@@ -1,10 +1,14 @@
-import React, { useRef } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 
 import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import RadioGroup from "../../../components/organisms/radio-group"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
 import { useDiscountForm } from "./form/discount-form-context"
+import LayeredModal, {
+  LayeredModalContext,
+} from "../../../components/molecules/modal/layered-modal"
+import TaxRuleSelector from "../../settings/taxes/tax-rule-selector"
 
 type AddConditionsModalProps = {
   value?: string
@@ -42,22 +46,29 @@ const Items = [
 
 function AddConditionsModal(props: AddConditionsModalProps) {
   const { close } = props
+  const layeredModalContext = useContext(LayeredModalContext)
 
   const { register, conditionType, setConditionType } = useDiscountForm()
 
-  const { current: initialSetting } = useRef(conditionType)
-
-  const onSave = () => {
-    close()
+  const onNext = () => {
+    layeredModalContext.push({
+      title: "Condition type",
+      onBack: () => layeredModalContext.pop(),
+      view: <h3>Condition type selection TODO</h3>,
+    })
   }
 
   const onClose = () => {
-    setConditionType(initialSetting)
+    setConditionType(undefined)
     close()
   }
 
   return (
-    <Modal handleClose={onClose}>
+    <LayeredModal
+      isLargeModal
+      context={layeredModalContext}
+      handleClose={onClose}
+    >
       <Modal.Body className="h-[calc(100vh-134px)] flex flex-col">
         <Modal.Header handleClose={onClose}>
           <span className="inter-xlarge-semibold">Add Conditions</span>
@@ -103,14 +114,14 @@ function AddConditionsModal(props: AddConditionsModalProps) {
               disabled={!conditionType}
               className="w-32 text-small justify-center"
               variant="primary"
-              onClick={onSave}
+              onClick={onNext}
             >
-              Save
+              Next
             </Button>
           </div>
         </Modal.Footer>
       </Modal.Body>
-    </Modal>
+    </LayeredModal>
   )
 }
 
