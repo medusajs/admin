@@ -75,27 +75,7 @@ const DisplaySettingsDateDescription = ({ date }: { date: Date }) => (
 )
 
 const CommonDescription = ({ text }) => (
-  <span className="text-grey-50 inter-small-regular">
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-    {text}
-  </span>
+  <span className="text-grey-50 inter-small-regular">{text}</span>
 )
 
 const getSettings = (promotion: Discount, openWithItems) => {
