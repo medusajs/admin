@@ -22,6 +22,37 @@ type DiscountFormProviderProps = {
   children?: React.ReactNode
 }
 
+type Condition = {
+  id: string
+  title: string
+}
+
+type PromotionConditionRecord = {
+  products: Condition[] | null
+  product_collections: Condition[] | null
+  product_types: Condition[] | null
+  product_tags: Condition[] | null
+  customer_groups: Condition[] | null
+}
+
+type UpdateConditionProps = {
+  type:
+    | "products"
+    | "product_collections"
+    | "product_types"
+    | "product_tags"
+    | "customer_group"
+  update: Condition[]
+}
+
+const defaultConditionRecord: PromotionConditionRecord = {
+  products: null,
+  product_collections: null,
+  product_types: null,
+  product_tags: null,
+  customer_groups: null,
+}
+
 export const DiscountFormProvider = ({
   discount = defaultDiscount,
   isEdit = false,
@@ -43,6 +74,21 @@ export const DiscountFormProvider = ({
   )
   const [startsAt, setStartsAt] = useState(discount.starts_at)
   const [endsAt, setEndsAt] = useState(discount.ends_at)
+
+  const [conditions, setConditions] = useState<PromotionConditionRecord>(
+    defaultConditionRecord
+  )
+
+  const updateCondition = ({ type, update }: UpdateConditionProps) => {
+    setConditions((prevConditions) => ({
+      ...prevConditions,
+      [type]: update,
+    }))
+  }
+
+  useEffect(() => {
+    console.log(conditions)
+  }, [conditions])
 
   const methods = useForm({ defaultValues: discount, reValidateMode: "onBlur" })
 
@@ -247,6 +293,8 @@ export const DiscountFormProvider = ({
           endsAt,
           setEndsAt,
           handleConfigurationChanged,
+          conditions,
+          updateCondition,
         }}
       >
         {children}
@@ -276,6 +324,8 @@ const DiscountFormContext = React.createContext<{
   setStartsAt: (value: Date) => void
   setHasStartDate: (value: boolean) => void
   handleConfigurationChanged: (values: string[]) => void
+  conditions: PromotionConditionRecord
+  updateCondition: ({ type, update }: UpdateConditionProps) => void
 } | null>(null)
 
 export const useDiscountForm = () => {

@@ -1,14 +1,15 @@
-import React, { useContext, useMemo, useState } from "react"
+import { ProductVariant } from "@medusajs/medusa"
 import { useAdminVariants } from "medusa-react"
-import { SelectableTable } from "./selectable-table"
-import Modal from "../../../../components/molecules/modal"
+import React, { useContext, useMemo, useState } from "react"
+import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import StatusIndicator from "../../../../components/fundamentals/status-indicator"
-import Spinner from "../../../../components/atoms/spinner"
-import { ProductVariant } from "@medusajs/medusa"
-import { useDebounce } from "../../../../hooks/use-debounce"
+import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
+import { useDebounce } from "../../../../hooks/use-debounce"
+import { useDiscountForm } from "../form/discount-form-context"
+import { SelectableTable } from "./selectable-table"
 
 const getProductStatusVariant = (status) => {
   switch (status) {
@@ -25,7 +26,7 @@ const getProductStatusVariant = (status) => {
 }
 
 // TODO: remove items and save conditions and use "useDiscountForm" when implemented
-const ProductConditionSelector = ({ items, saveCondition, onClose }) => {
+const ProductConditionSelector = ({ onClose }) => {
   const PAGE_SIZE = 12
   const [query, setQuery] = useState("")
   const debouncedSearchTerm = useDebounce(query, 500)
@@ -42,8 +43,20 @@ const ProductConditionSelector = ({ items, saveCondition, onClose }) => {
     q: debouncedSearchTerm,
   })
 
-  const changed = (values) => {
-    console.log(values)
+  const { updateCondition, conditions } = useDiscountForm()
+
+  const [items, setItems] = useState(conditions.products || [])
+
+  const changed = (values: string[]) => {
+    const selectedVariants =
+      variants?.filter((variant) => values.includes(variant.id)) || []
+
+    setItems(
+      selectedVariants.map((variant) => ({
+        id: variant.id,
+        title: variant.title,
+      }))
+    )
   }
 
   const columns = useMemo(() => {
@@ -111,7 +124,7 @@ const ProductConditionSelector = ({ items, saveCondition, onClose }) => {
             totalCount={count}
             pagination={pagination}
             onPaginationChange={setPagination}
-            selectedIds={items}
+            selectedIds={conditions.products?.map((c) => c.id)}
             data={variants as ProductVariant[]}
             columns={columns}
             isLoading={isLoading}
@@ -135,7 +148,7 @@ const ProductConditionSelector = ({ items, saveCondition, onClose }) => {
             variant="primary"
             size="small"
             onClick={(e) => {
-              saveCondition(items)
+              updateCondition({ type: "products", update: items })
               pop()
             }}
           >
@@ -145,7 +158,7 @@ const ProductConditionSelector = ({ items, saveCondition, onClose }) => {
             variant="primary"
             size="small"
             onClick={(e) => {
-              saveCondition(items)
+              updateCondition({ type: "products", update: items })
               onClose()
               reset()
             }}

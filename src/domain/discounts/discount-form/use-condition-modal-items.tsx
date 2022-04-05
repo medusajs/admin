@@ -1,5 +1,4 @@
-import React from "react"
-import { useContext } from "react"
+import React, { useContext } from "react"
 import { LayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import ProductConditionSelector from "./condition-tables/products"
 
@@ -20,13 +19,7 @@ const useConditionModalItems = (close: () => void) => {
         layeredModalContext.push({
           title: "Product",
           onBack: () => layeredModalContext.pop(),
-          view: (
-            <ProductConditionSelector
-              items={[]}
-              onClose={() => close()}
-              saveCondition={console.log}
-            />
-          ),
+          view: <ProductConditionSelector onClose={() => close()} />,
         }),
     },
     {
