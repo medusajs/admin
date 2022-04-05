@@ -46,14 +46,15 @@ function AddConditionsModal(props: AddConditionsModalProps) {
 
   return (
     <Modal handleClose={close}>
-      <Modal.Body className="h-[1016px] max-h-screen">
+      <Modal.Body className="h-[calc(100vh-134px)] flex flex-col">
         <Modal.Header handleClose={close}>
           <span className="inter-xlarge-semibold">Add Conditions</span>
           <span className="font-semibold text-grey-90 mt-6 flex items-center gap-1">
             Choose a condition type <IconTooltip content="TODO add text?" />
           </span>
         </Modal.Header>
-        <Modal.Content>
+
+        <Modal.Content className="flex-1">
           <RadioGroup.Root value={value} onValueChange={setValue}>
             {Items.map((t) => (
               <RadioGroup.SimpleItem
@@ -69,6 +70,7 @@ function AddConditionsModal(props: AddConditionsModalProps) {
             ))}
           </RadioGroup.Root>
         </Modal.Content>
+
         <Modal.Footer>
           <div className="flex w-full h-8 justify-end">
             <Button
