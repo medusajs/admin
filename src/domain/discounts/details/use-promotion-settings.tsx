@@ -162,7 +162,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
           variant: "danger",
           onClick: async () =>
             await updateDiscount.mutateAsync(
-              { ends_at: undefined },
+              { ends_at: null },
               {
                 onSuccess: () => {
                   notification(
@@ -198,7 +198,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
           variant: "danger",
           onClick: async () =>
             await updateDiscount.mutateAsync(
-              { usage_limit: undefined },
+              { usage_limit: null },
               {
                 onSuccess: () => {
                   notification(
@@ -238,7 +238,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
           variant: "danger",
           onClick: async () =>
             await updateDiscount.mutateAsync(
-              { valid_duration: undefined },
+              { valid_duration: null },
               {
                 onSuccess: () => {
                   notification(
