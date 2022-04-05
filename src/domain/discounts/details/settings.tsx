@@ -1,8 +1,4 @@
-import {
-  Discount,
-  DiscountCondition,
-  DiscountConditionType,
-} from "@medusajs/medusa"
+import { Discount } from "@medusajs/medusa"
 import moment from "moment"
 import React, { ReactNode } from "react"
 import ClockIcon from "../../../components/fundamentals/icons/clock-icon"
@@ -79,7 +75,27 @@ const DisplaySettingsDateDescription = ({ date }: { date: Date }) => (
 )
 
 const CommonDescription = ({ text }) => (
-  <span className="text-grey-50 inter-small-regular truncate">{text}</span>
+  <span className="text-grey-50 inter-small-regular">
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+    {text}
+  </span>
 )
 
 const getSettings = (promotion: Discount, openWithItems) => {
@@ -162,19 +178,18 @@ const getSettings = (promotion: Discount, openWithItems) => {
   }
 
   if (promotion.rule.conditions?.length) {
-    conditions.push(
-      ...promotion.rule.conditions.map((condition, i) =>
-        getConditionSettings(condition, openWithItems)
-      )
-    )
+    const displaySettings = promotion.rule.conditions
+      .map((condition, i) => getConditionSettings(condition, openWithItems))
+      .filter((s) => s !== null)
+    conditions.push(...(displaySettings as displaySetting[]))
   }
 
   return conditions
 }
 
-const getConditionSettings = (condition: DiscountCondition, openWithItems) => {
+const getConditionSettings = (condition: any, openWithItems) => {
   switch (condition.type) {
-    case DiscountConditionType.PRODUCTS:
+    case "products":
       return {
         title: "Products",
         description: "test",
@@ -186,7 +201,7 @@ const getConditionSettings = (condition: DiscountCondition, openWithItems) => {
           },
         ],
       }
-    case DiscountConditionType.PRODUCT_TYPES:
+    case "product_types":
       return {
         title: "Type",
         description: "test",
@@ -198,7 +213,7 @@ const getConditionSettings = (condition: DiscountCondition, openWithItems) => {
           },
         ],
       }
-    case DiscountConditionType.PRODUCT_COLLECTIONS:
+    case "product_collections":
       return {
         title: "Collection",
         description: "test",
@@ -210,7 +225,7 @@ const getConditionSettings = (condition: DiscountCondition, openWithItems) => {
           },
         ],
       }
-    case DiscountConditionType.PRODUCT_TAGS:
+    case "product_tags":
       return {
         title: "Tag",
         description: "test",
@@ -222,7 +237,7 @@ const getConditionSettings = (condition: DiscountCondition, openWithItems) => {
           },
         ],
       }
-    case DiscountConditionType.CUSTOMER_GROUPS:
+    case "customer_groups":
       return {
         title: "Customer group",
         description: "test",
@@ -235,17 +250,7 @@ const getConditionSettings = (condition: DiscountCondition, openWithItems) => {
         ],
       }
   }
+  return null
 }
-
-// const getConditionsSettings = (
-//   conditions: DiscountCondition[],
-//   openWithItems
-// ) => {
-//   conditions.map((condition) => {
-
-//     return {title: getConditionSettingsTitle(condition.type), description: <CommonDescription text={condition.} />, actions: [
-//   }))
-//   return []
-// }
 
 export default PromotionSettings
