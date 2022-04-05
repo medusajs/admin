@@ -102,7 +102,7 @@ const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
       >
         <RadioGroupPrimitive.Indicator
           className={clsx(
-            "flex items-center justify-center w-full h-full relative",
+            "flex items-center justify-center w-full h-full relative indicator",
             "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
           )}
         />
