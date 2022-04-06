@@ -13,7 +13,6 @@ import Modal from "../../molecules/modal"
 import Button from "../../fundamentals/button"
 import Table, { TablePagination } from "../../molecules/table"
 import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
-import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import useQueryFilters from "../../../hooks/use-query-filters"
 
 /**
@@ -82,13 +81,9 @@ function EditCustomersTable(props: EditCustomersTableProps) {
     onClose,
   } = props
 
-  const {
-    paginate,
-    setQuery,
-    setFilters,
-    filters,
-    queryObject,
-  } = useQueryFilters(defaultQueryProps)
+  const { paginate, setQuery, setFilters, queryObject } = useQueryFilters(
+    defaultQueryProps
+  )
 
   const [numPages, setNumPages] = useState(0)
   const [activeGroupId, setActiveGroupId] = useState()

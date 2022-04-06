@@ -8,6 +8,7 @@ import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
 import ChevronRightIcon from "../../../components/fundamentals/icons/chevron-right-icon"
+import SelectTagsTable from "./condition-tables/tags"
 
 type AddConditionsModalProps = {
   value?: string
@@ -58,9 +59,9 @@ function ConditionTypeItem(props: ConditionItem) {
   const onClick = () => {
     setConditionType(value)
     layeredModalContext.push({
-      title: "Condition type",
+      title: `Choose ${value}`,
       onBack: () => layeredModalContext.pop(),
-      view: <h3 className="p-8">{value} selection TODO</h3>,
+      view: <SelectTagsTable />,
     })
   }
 
