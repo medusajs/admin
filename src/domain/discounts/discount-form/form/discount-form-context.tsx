@@ -27,7 +27,7 @@ type Condition = {
   title: string
 }
 
-type PromotionConditionRecord = {
+export type PromotionConditionRecord = {
   products: Condition[] | null
   product_collections: Condition[] | null
   product_types: Condition[] | null

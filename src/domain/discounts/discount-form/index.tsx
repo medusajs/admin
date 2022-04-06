@@ -1,21 +1,20 @@
+import { navigate } from "gatsby"
 import * as React from "react"
 import { useFormContext } from "react-hook-form"
-import { navigate } from "gatsby"
-
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
+import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../components/organisms/accordion"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
+import AddConditionsModal from "./add-conditions-modal"
 import { useDiscountForm } from "./form/discount-form-context"
 import { useFormActions } from "./form/use-form-actions"
 import Conditions from "./sections/conditions"
+import Configuration from "./sections/configuration"
 import General from "./sections/general"
 import PromotionType from "./sections/promotion-type"
-import Configuration from "./sections/configuration"
-import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import AddConditionsModal from "./add-conditions-modal"
 
 type DiscountFormProps = {
   discount?: any
@@ -39,6 +38,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     hasExpiryDate,
     conditionType,
     setConditionType,
+    conditions,
   } = useDiscountForm()
 
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
@@ -77,7 +77,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
       if (isEdit) {
         await onUpdate(data)
       } else {
-        await onSaveAsActive(data)
+        await onSaveAsActive({ ...data, conditions })
       }
       closeFormModal()
     } catch (error) {

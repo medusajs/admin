@@ -26,10 +26,11 @@ export const useFormActions = (id: string, data: any) => {
   }
 
   const onSaveAsActive = async (values: DiscountFormValues) => {
+    const { conditions, ...rest } = data
     await createDiscount.mutateAsync(
       {
-        ...formValuesToCreateDiscountMapper(values),
-        ...data,
+        ...formValuesToCreateDiscountMapper({ ...values, conditions }),
+        ...rest,
         is_disabled: false,
       },
       {

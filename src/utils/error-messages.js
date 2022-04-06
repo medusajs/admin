@@ -1,6 +1,11 @@
-export const getErrorMessage = error => {
+export const getErrorMessage = (error) => {
+  console.log(error)
   let msg = error?.response?.data?.message
-  if (msg[0].message) msg = msg[0].message
-  if (!msg) msg = "Something went wrong, Please try again."
+  if (msg[0].message) {
+    msg = msg[0].message
+  }
+  if (!msg) {
+    msg = "Something went wrong, Please try again."
+  }
   return msg
 }

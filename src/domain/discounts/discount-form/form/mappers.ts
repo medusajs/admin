@@ -1,10 +1,13 @@
 import {
+  AdminCreateCondition,
   AdminPostDiscountsDiscountReq,
   AdminPostDiscountsReq,
   Discount,
+  DiscountConditionOperator,
 } from "@medusajs/medusa"
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../types/shared"
+import { PromotionConditionRecord } from "./discount-form-context"
 
 export interface DiscountFormValues extends FieldValues {
   id?: string
@@ -14,7 +17,6 @@ export interface DiscountFormValues extends FieldValues {
   value?: number
   allocation: string
   description: string
-  valid_for: Option[] | null
   starts_at: Date
   ends_at: Date | null
   usage_limit?: string
@@ -26,7 +28,6 @@ export interface DiscountFormValues extends FieldValues {
 export const discountToFormValuesMapper = (
   discount: Discount
 ): DiscountFormValues => {
-  console.log(discount)
   return {
     id: discount.id,
     code: discount.code,
@@ -37,9 +38,6 @@ export const discountToFormValuesMapper = (
     },
     allocation: discount.rule.allocation,
     description: discount.rule.description,
-    valid_for: discount.rule.valid_for.length
-      ? discount.rule.valid_for.map((v) => ({ label: v.title, value: v.id }))
-      : null,
     starts_at: new Date(discount.starts_at),
     ends_at: discount.ends_at ? new Date(discount.ends_at) : null,
     is_dynamic: discount.is_dynamic,
@@ -54,7 +52,6 @@ export const discountToFormValuesMapper = (
 export const formValuesToCreateDiscountMapper = (
   values: DiscountFormValues
 ): Omit<AdminPostDiscountsReq, "is_disabled"> => {
-  console.log(values)
   return {
     code: values.code!,
     rule: {
@@ -65,7 +62,7 @@ export const formValuesToCreateDiscountMapper = (
           ? parseInt((values.rule.value! as unknown) as string, 10)
           : 0,
       description: values.description,
-      valid_for: values.valid_for?.map((p) => p.value),
+      conditions: mapCreateConditions(values.conditions),
     },
     is_dynamic: values.is_dynamic,
     ends_at: values.ends_at ?? undefined,
@@ -90,7 +87,6 @@ export const formValuesToUpdateDiscountMapper = (
       type: values.type,
       value: parseInt((values.rule.value as unknown) as string, 10),
       description: values.description,
-      valid_for: values.valid_for?.map((p) => p.value) as any,
     },
     ends_at: values.ends_at ?? undefined,
     regions: values.regions?.map((r) => r.value),
@@ -100,4 +96,21 @@ export const formValuesToUpdateDiscountMapper = (
       ? values.valid_duration
       : undefined,
   }
+}
+
+const mapCreateConditions = (
+  record: PromotionConditionRecord
+): AdminCreateCondition[] => {
+  const conditions: AdminCreateCondition[] = []
+
+  for (const [key, value] of Object.entries(record)) {
+    if (value) {
+      conditions.push({
+        operator: DiscountConditionOperator.IN,
+        [key]: value.map((v) => v.id),
+      })
+    }
+  }
+
+  return conditions
 }
