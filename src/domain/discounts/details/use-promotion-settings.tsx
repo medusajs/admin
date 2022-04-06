@@ -117,13 +117,6 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
         icon: <EditIcon size={20} />,
         onClick: () => openWithItems(["general"]),
       },
-      {
-        label: "Delete setting",
-        icon: <TrashIcon size={20} />,
-        variant: "danger",
-        disabled: true,
-        onClick: () => {},
-      },
     ],
   })
 
@@ -135,13 +128,6 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
         label: "Edit",
         icon: <EditIcon size={20} />,
         onClick: () => openWithItems(["configuration"]),
-      },
-      {
-        label: "Delete setting",
-        icon: <TrashIcon size={20} />,
-        variant: "danger",
-        disabled: true,
-        onClick: () => {},
       },
     ],
   })
@@ -201,11 +187,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
               { usage_limit: null },
               {
                 onSuccess: () => {
-                  notification(
-                    "Success",
-                    "Discount end date removed",
-                    "success"
-                  )
+                  notification("Success", "Redemption limit removed", "success")
                 },
                 onError: (error) => {
                   notification("Error", getErrorMessage(error), "error")
@@ -243,7 +225,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
                 onSuccess: () => {
                   notification(
                     "Success",
-                    "Discount end date removed",
+                    "Discount duration removed",
                     "success"
                   )
                 },
@@ -307,7 +289,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
                       onSuccess: () => {
                         notification(
                           "Success",
-                          "Discount end date removed",
+                          "Discount condition removed",
                           "success"
                         )
                       },
@@ -327,7 +309,5 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
 
   return conditions
 }
-
-removeNullish({})
 
 export default usePromotionSettings
