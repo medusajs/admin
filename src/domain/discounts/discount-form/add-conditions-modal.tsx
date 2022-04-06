@@ -70,7 +70,7 @@ function ConditionTypeItem(props: ConditionItem) {
       value={conditionType}
       onClick={onClick}
       ref={register("condition_type")}
-      className="rounded-lg border border-1 p-4 mb-2 cursor-pointer hover:text-violet-60 transition-all w-full flex items-center justify-between"
+      className="rounded-lg border border-1 p-4 mb-2 cursor-pointer hover:bg-grey-5 transition-all w-full flex items-center justify-between"
     >
       <div>
         <div className="font-semibold ">{label}</div>
