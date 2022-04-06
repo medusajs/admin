@@ -3,6 +3,7 @@ import NumberedItem from "../../../../components/molecules/numbered-item"
 import { useDiscountForm } from "../form/discount-form-context"
 import useConditionActions from "./useConditionActions"
 
+const MAX_TITLE_LENGTH = 38
 const Conditions = () => {
   const { conditions } = useDiscountForm()
 
@@ -32,7 +33,9 @@ const Conditions = () => {
 const ConditionSetting = ({ titles }) => {
   const titleStrings = titles.reduce(
     (acc, cur) =>
-      acc[1] + cur.length > 38 ? acc : [[...acc[0], cur], acc[1] + cur.length],
+      acc[1] + cur.length > MAX_TITLE_LENGTH
+        ? acc
+        : [[...acc[0], cur], acc[1] + cur.length],
     [[], 0]
   )
   const description = titleStrings[0].join(", ")
