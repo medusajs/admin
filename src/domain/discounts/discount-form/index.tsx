@@ -161,28 +161,29 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 tooltip="Add conditions to your Promotion"
               >
                 <Conditions />
+
+                <div
+                  onClick={() => setShowConditionsModal(true)}
+                  className="mb-[25%] medium:w-7/12 large:w-6/12 small:w-4/5 w-full m-auto mt-4 flex justify-center items-center gap-2
+                    font-semibold
+                    text-small
+                    rounded-xl border border-1 p-2"
+                  role="button"
+                >
+                  <PlusIcon size={18} />
+                  <span>Add Condition</span>
+                </div>
+                {showAddConditionsModal && (
+                  <AddConditionsModal
+                    value={conditionType}
+                    setValue={setConditionType}
+                    close={() => setShowConditionsModal(false)}
+                  />
+                )}
               </Accordion.Item>
             </Accordion>
           </div>
         </div>
-        <div
-          onClick={() => setShowConditionsModal(true)}
-          className="mb-[25%] medium:w-7/12 large:w-6/12 small:w-4/5 w-full m-auto mt-4 flex justify-center items-center gap-2
-        font-semibold
-        text-small
-        rounded-xl border border-1 p-2"
-          role="button"
-        >
-          <PlusIcon size={18} />
-          <span>Add Condition</span>
-        </div>
-        {showAddConditionsModal && (
-          <AddConditionsModal
-            value={conditionType}
-            setValue={setConditionType}
-            close={() => setShowConditionsModal(false)}
-          />
-        )}
       </FocusModal.Main>
     </FocusModal>
   )

@@ -1,14 +1,13 @@
-import React, { useContext, useEffect, useRef } from "react"
+import React, { useContext } from "react"
 
 import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
-import RadioGroup from "../../../components/organisms/radio-group"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
 import { useDiscountForm } from "./form/discount-form-context"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
-import TaxRuleSelector from "../../settings/taxes/tax-rule-selector"
+import ChevronRightIcon from "../../../components/fundamentals/icons/chevron-right-icon"
 
 type AddConditionsModalProps = {
   value?: string
@@ -16,7 +15,13 @@ type AddConditionsModalProps = {
   close: () => void
 }
 
-const Items = [
+type ConditionItem = {
+  label: string
+  value: "products" | "customer_groups" | "tags" | "collections" | "types"
+  description: string
+}
+
+const Items: ConditionItem[] = [
   {
     label: "Product",
     value: "products",
@@ -44,19 +49,43 @@ const Items = [
   },
 ]
 
+function ConditionTypeItem(props: ConditionItem) {
+  const { label, description, value } = props
+
+  const layeredModalContext = useContext(LayeredModalContext)
+  const { register, conditionType, setConditionType } = useDiscountForm()
+
+  const onClick = () => {
+    setConditionType(value)
+    layeredModalContext.push({
+      title: "Condition type",
+      onBack: () => layeredModalContext.pop(),
+      view: <h3 className="p-8">{value} selection TODO</h3>,
+    })
+  }
+
+  return (
+    <div
+      name="condition_type"
+      value={conditionType}
+      onClick={onClick}
+      ref={register("condition_type")}
+      className="rounded-lg border border-1 p-4 mb-2 cursor-pointer hover:text-violet-60 transition-all w-full flex items-center justify-between"
+    >
+      <div>
+        <div className="font-semibold ">{label}</div>
+        <div className="text-grey-50 float-right">{description}</div>
+      </div>
+      <ChevronRightIcon width={16} height={32} className="text-grey-50" />
+    </div>
+  )
+}
+
 function AddConditionsModal(props: AddConditionsModalProps) {
   const { close } = props
   const layeredModalContext = useContext(LayeredModalContext)
 
-  const { register, conditionType, setConditionType } = useDiscountForm()
-
-  const onNext = () => {
-    layeredModalContext.push({
-      title: "Condition type",
-      onBack: () => layeredModalContext.pop(),
-      view: <h3 className="p-8">{conditionType} selection TODO</h3>,
-    })
-  }
+  const { setConditionType } = useDiscountForm()
 
   const onClose = () => {
     setConditionType(undefined)
@@ -74,25 +103,9 @@ function AddConditionsModal(props: AddConditionsModalProps) {
         </Modal.Header>
 
         <Modal.Content className="flex-1">
-          <RadioGroup.Root
-            name="condition_type"
-            value={conditionType}
-            onValueChange={setConditionType}
-            ref={register("condition_type")}
-          >
-            {Items.map((t) => (
-              <RadioGroup.SimpleItem
-                {...t}
-                className="rounded-lg border border-1 p-4 mb-2 w-full"
-                label={<span className="font-semibold">{t.label}</span>}
-                description={
-                  <span className="text-grey-50 float-right">
-                    {t.description}
-                  </span>
-                }
-              />
-            ))}
-          </RadioGroup.Root>
+          {Items.map((t) => (
+            <ConditionTypeItem key={t.value} {...t} />
+          ))}
         </Modal.Content>
 
         <Modal.Footer>
@@ -106,13 +119,12 @@ function AddConditionsModal(props: AddConditionsModalProps) {
               Cancel
             </Button>
             <Button
+              disabled
               size="large"
-              disabled={!conditionType}
               className="w-32 text-small justify-center"
               variant="primary"
-              onClick={onNext}
             >
-              Next
+              Save
             </Button>
           </div>
         </Modal.Footer>
