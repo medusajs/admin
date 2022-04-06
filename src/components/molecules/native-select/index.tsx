@@ -13,6 +13,8 @@ type NativeSelectProps = {
   triggerProps?: RadixSelect.SelectTriggerProps
 } & RadixSelect.SelectProps
 
+const ICON_SIZE = 16
+
 const NativeSelect: NativeSelectType = ({
   children,
   triggerProps,
@@ -26,16 +28,16 @@ const NativeSelect: NativeSelectType = ({
       >
         <RadixSelect.Value />
         <RadixSelect.Icon>
-          <ChevronDownIcon size={16} />
+          <ChevronDownIcon size={ICON_SIZE} />
         </RadixSelect.Icon>
       </RadixSelect.SelectTrigger>
       <RadixSelect.Content className="rounded-rounded scrollbar-hide border px-2 py-2 border-grey-20 bg-grey-0 w-full flex shadow-dropdown">
         <RadixSelect.ScrollUpButton className="h-[25px] flex items-center justify-center bg-gradient-to-b from-transparent to-grey-0">
-          <ChevronUpIcon size={16} />
+          <ChevronUpIcon size={ICON_SIZE} />
         </RadixSelect.ScrollUpButton>
         <RadixSelect.Viewport className="p-2">{children}</RadixSelect.Viewport>
         <RadixSelect.ScrollDownButton className="h-[25px] flex items-center justify-center bg-gradient-to-b from-transparent to-grey-0">
-          <ChevronDownIcon size={16} />
+          <ChevronDownIcon size={ICON_SIZE} />
         </RadixSelect.ScrollDownButton>
       </RadixSelect.Content>
     </RadixSelect.Root>
@@ -52,7 +54,7 @@ const Item: React.FC<ItemProps> = ({ children, ...props }) => (
     {...props}
   >
     <RadixSelect.ItemIndicator className="bold-active-item absolute left-2.5 flex items-center justify-center pr-2.5">
-      <CheckIcon size={16} />
+      <CheckIcon size={ICON_SIZE} />
     </RadixSelect.ItemIndicator>
     <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
   </RadixSelect.Item>
