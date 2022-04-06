@@ -6,7 +6,7 @@ import Actionables, {
 import Badge from "../../../components/fundamentals/badge"
 
 type NumberedItemProps = {
-  actions: ActionType[]
+  actions?: ActionType[]
   index: number
   title: string
   description: React.ReactNode | string
@@ -40,9 +40,11 @@ const NumberedItem: React.FC<NumberedItemProps> = ({
           )}
         </div>
       </div>
-      <div>
-        <Actionables forceDropdown actions={actions} />
-      </div>
+      {actions && (
+        <div>
+          <Actionables forceDropdown actions={actions} />
+        </div>
+      )}
     </div>
   )
 }
