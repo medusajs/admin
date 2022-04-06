@@ -118,7 +118,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         </div>
       </FocusModal.Header>
       <FocusModal.Main>
-        <div className="flex justify-center">
+        <div className="flex justify-center mb-[25%]">
           <div className="medium:w-7/12 large:w-6/12 small:w-4/5 w-full pt-16">
             <h1 className="inter-xlarge-semibold">
               {isEdit ? "Edit promotion" : "Create new promotion"}
@@ -162,17 +162,15 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
               >
                 <Conditions />
 
-                <div
+                <Button
+                  size="small"
+                  variant="ghost"
                   onClick={() => setShowConditionsModal(true)}
-                  className="mb-[25%] medium:w-7/12 large:w-6/12 small:w-4/5 w-full m-auto mt-4 flex justify-center items-center gap-2
-                    font-semibold
-                    text-small
-                    rounded-xl border border-1 p-2"
-                  role="button"
+                  className="mt-4 p-2 w-full rounded-rounded border"
                 >
                   <PlusIcon size={18} />
                   <span>Add Condition</span>
-                </div>
+                </Button>
                 {showAddConditionsModal && (
                   <AddConditionsModal
                     value={conditionType}
