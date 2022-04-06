@@ -1,5 +1,3 @@
-import moment from "moment"
-
 export const range = (start, end) => {
   const range: number[] = []
   for (let i = start; i <= end; i++) {
@@ -8,7 +6,10 @@ export const range = (start, end) => {
   return range
 }
 
-export const years = range(1990, moment().year())
+export const years = range(
+  new Date().getFullYear() - 20,
+  new Date().getFullYear() + 20
+)
 
 export const months = [
   "January",
