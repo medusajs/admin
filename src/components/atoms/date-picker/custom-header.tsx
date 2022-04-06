@@ -8,14 +8,15 @@ const CustomHeader = ({
   changeYear,
   changeMonth,
 }: ReactDatePickerCustomHeaderProps) => {
-  const month = date.toLocaleString("default", { month: "long" })
+  const month = date.getMonth()
+  const monthName = monthNames[month]
 
   const year = date.getFullYear()
   return (
     <div className="flex w-full gap-4 items-center">
       <div className="flex flex-1 items-center justify-end gap-3">
         <NativeSelect
-          defaultValue={month}
+          defaultValue={monthName}
           onValueChange={(v) => changeMonth(monthNames.indexOf(v))}
         >
           {monthNames.map((month) => (
