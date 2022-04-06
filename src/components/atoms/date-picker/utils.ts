@@ -6,12 +6,10 @@ export const range = (start, end) => {
   return range
 }
 
-export const years = range(
-  new Date().getFullYear() - 20,
-  new Date().getFullYear() + 20
-)
+export const getYearRange = (step = 20) =>
+  range(new Date().getFullYear() - step, new Date().getFullYear() + step)
 
-export const months = [
+export const monthNames = [
   "January",
   "February",
   "March",
