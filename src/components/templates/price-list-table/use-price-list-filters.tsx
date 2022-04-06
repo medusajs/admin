@@ -1,6 +1,7 @@
 import { omit } from "lodash"
 import qs from "qs"
 import { useMemo, useReducer, useState } from "react"
+import { setsEqual } from "../../../utils/equals-set"
 import { relativeDateFormatToTimestamp } from "../../../utils/time"
 
 type DateFilter = null | {
@@ -93,18 +94,6 @@ const reducer = (
 type PriceListDefaultFilters = {
   expand?: string
   fields?: string
-}
-
-const eqSet = (as: Set<string>, bs: Set<string>) => {
-  if (as.size !== bs.size) {
-    return false
-  }
-  for (const a of as) {
-    if (!bs.has(a)) {
-      return false
-    }
-  }
-  return true
 }
 
 export const usePriceListFilters = (
@@ -266,7 +255,7 @@ export const usePriceListFilters = (
           if (Array.isArray(value)) {
             match =
               Array.isArray(clean[filter]) &&
-              eqSet(new Set(clean[filter]), new Set(value))
+              setsEqual(new Set(clean[filter]), new Set(value))
           } else {
             match = clean[filter] === value
           }
