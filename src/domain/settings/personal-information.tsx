@@ -10,7 +10,7 @@ import BodyCard from "../../components/organisms/body-card"
 import FileUploadModal from "../../components/organisms/file-upload-modal"
 import TwoSplitPane from "../../components/templates/two-split-pane"
 import { AccountContext } from "../../context/account"
-import useMedusa from "../../hooks/use-medusa"
+import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 
 const PersonalInformation = () => {
@@ -18,9 +18,7 @@ const PersonalInformation = () => {
   const [isLoadingProfilePicture, setIsLoadingProfilePicture] = useState(false)
   const { register, setValue, handleSubmit } = useForm()
   const { handleUpdateUser, ...user } = useContext(AccountContext)
-  const { update, toaster, isLoading, ...test } = useMedusa("users", {
-    id: user.id,
-  })
+  const notification = useNotification()
 
   register("first_name")
   register("last_name")
@@ -28,10 +26,10 @@ const PersonalInformation = () => {
   const submit = (data) => {
     handleUpdateUser(user.id, data)
       .then(() => {
-        toaster("Successfully updated user", "success")
+        notification("Success", "Successfully updated user", "success")
       })
       .catch((err) => {
-        toaster(getErrorMessage(err), "error")
+        notification("Error", getErrorMessage(err), "error")
       })
   }
 

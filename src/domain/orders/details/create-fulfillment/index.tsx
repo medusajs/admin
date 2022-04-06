@@ -14,12 +14,12 @@ import {
 import React, { useState } from "react"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import Metadata, {
   MetadataField,
 } from "../../../../components/organisms/metadata"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import CreateFulfillmentItemsTable from "./item-table"
 
@@ -52,7 +52,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
   const createSwapFulfillment = useAdminFulfillSwap(orderId)
   const createClaimFulfillment = useAdminFulfillClaim(orderId)
 
-  const toaster = useToaster()
+  const notification = useNotification()
 
   const createFulfillment = () => {
     const [type] = orderToFulfill.id.split("_")
@@ -82,6 +82,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
         action = createSwapFulfillment
         successText = "Successfully fulfilled swap"
         requestObj = {
+          swap_id: orderToFulfill.id,
           metadata: preparedMetadata,
           no_notification: noNotis,
         } as AdminPostOrdersOrderSwapsSwapFulfillmentsReq
@@ -91,6 +92,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
         action = createClaimFulfillment
         successText = "Successfully fulfilled claim"
         requestObj = {
+          claim_id: orderToFulfill.id,
           metadata: preparedMetadata,
           no_notification: noNotis,
         } as AdminPostOrdersOrderClaimsClaimFulfillmentsReq
@@ -109,10 +111,10 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
 
     action.mutate(requestObj, {
       onSuccess: () => {
-        toaster(successText, "success")
+        notification("Success", successText, "success")
         handleCancel()
       },
-      onError: (err) => toaster(getErrorMessage(err), "error"),
+      onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
 
@@ -161,7 +163,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
               />
               <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                 Send notifications
-                <InfoTooltip content="" />
+                <IconTooltip content="" />
               </span>
             </div>
             <div className="flex">

@@ -159,7 +159,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   }
 
   return (
-    <div className="w-full h-full overflow-y-scroll">
+    <div className="w-full h-full overflow-y-auto">
       <>
         <Table
           filteringOptions={

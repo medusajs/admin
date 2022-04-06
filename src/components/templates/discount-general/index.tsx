@@ -4,7 +4,7 @@ import Checkbox from "../../atoms/checkbox"
 import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import { ActionType } from "../../molecules/actionables"
-import InfoTooltip from "../../molecules/info-tooltip"
+import IconTooltip from "../../molecules/icon-tooltip"
 import InputField from "../../molecules/input"
 import ConnectForm from "../../molecules/nested-form"
 import Select from "../../molecules/select"
@@ -59,7 +59,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
 }) => {
   const editActions: ActionType[] = [
     {
-      label: "Dublicate",
+      label: "Duplicate",
       onClick: () => {
         if (onDuplicate) {
           onDuplicate()
@@ -90,7 +90,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
           <StatusSelector
             isDraft={isDisabled}
             activeState="Active"
-            draftState="Draft"
+            draftState="Disable"
             onChange={() => {
               if (onStatusChange) {
                 onStatusChange()
@@ -111,52 +111,52 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                 The code your customers will enter during checkout. Uppercase
                 letters and numbers only.
               </p>
-              <div className="flex gap-x-xlarge mt-base w-full">
-                <div className="flex flex-col w-1/2 gap-y-base">
-                  <InputField
-                    label="Code"
-                    placeholder="SUMMERSALE10"
-                    required
-                    name="code"
-                    ref={register({ required: true })}
-                  />
-                  <Select
-                    label="Choose valid regions"
-                    options={regionOptions}
-                    isMultiSelect
-                    enableSearch
-                    value={selectedRegions}
-                    onChange={setSelectedRegions}
-                    required
-                    hasSelectAll
-                    className={clsx({
-                      ["opacity-50 pointer-events-none select-none"]: regionIsDisabled,
-                    })}
-                    disabled={regionIsDisabled}
-                  />
-                  <InputField
-                    label="Amount"
-                    required
-                    type="number"
-                    placeholder="10"
-                    prefix={discountType === "percentage" ? "%" : nativeSymbol}
-                    name="rule.value"
-                    ref={register({ required: !isFreeShipping })}
-                    className={clsx({
-                      ["opacity-50 pointer-events-none select-none"]:
-                        isFreeShipping || isEdit,
-                    })}
-                    tabIndex={isFreeShipping || isEdit ? -1 : 0}
-                    disabled={isFreeShipping || isEdit}
-                  />
-                </div>
+              <div className="grid gap-x-xlarge gap-y-base mt-base grid-rows-3 grid-cols-2">
+                <InputField
+                  label="Code"
+                  placeholder="SUMMERSALE10"
+                  required
+                  name="code"
+                  ref={register({ required: true })}
+                />
                 <Textarea
                   label="Description"
                   required
-                  className="w-1/2"
+                  className="row-span-3"
                   placeholder="Summer Sale 2022"
                   name="rule.description"
+                  rows={8}
                   ref={register({ required: true })}
+                />
+                <Select
+                  label="Choose valid regions"
+                  options={regionOptions}
+                  isMultiSelect
+                  enableSearch
+                  value={selectedRegions}
+                  onChange={setSelectedRegions}
+                  required
+                  hasSelectAll
+                  className={clsx({
+                    ["opacity-50 pointer-events-none select-none"]: regionIsDisabled,
+                  })}
+                  disabled={regionIsDisabled}
+                />
+                <InputField
+                  label="Amount"
+                  min={0}
+                  required
+                  type="number"
+                  placeholder="10"
+                  prefix={discountType === "percentage" ? "%" : nativeSymbol}
+                  name="rule.value"
+                  ref={register({ required: !isFreeShipping })}
+                  className={clsx({
+                    ["opacity-50 pointer-events-none select-none"]:
+                      isFreeShipping || isEdit,
+                  })}
+                  tabIndex={isFreeShipping || isEdit ? -1 : 0}
+                  disabled={isFreeShipping || isEdit}
                 />
               </div>
               <RadioGroup.Root
@@ -179,7 +179,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                 />
                 {selectedRegions.length > 1 && (
                   <div className="flex items-center">
-                    <InfoTooltip
+                    <IconTooltip
                       content={
                         "Fixed value discounts are not available for multi regional discounts"
                       }
@@ -198,7 +198,7 @@ const DiscountGeneral: React.FC<DiscountGeneralProps> = ({
                     ["opacity-50 pointer-events-none select-none"]: isEdit,
                   })}
                 />
-                <InfoTooltip
+                <IconTooltip
                   content={
                     "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
                   }

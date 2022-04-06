@@ -21,12 +21,14 @@ const Item = ({
   sublabel,
   description,
   checked,
+  className,
   ...rest
 }: RadioGroupItemProps) => {
   return (
     <label
       className={clsx(
-        "rounded-base border border-grey-20 p-base flex items-start mb-xsmall last:mb-0 gap-base cursor-pointer"
+        "rounded-base relative border border-grey-20 p-base flex items-start mb-xsmall gap-base cursor-pointer",
+        className
       )}
       htmlFor={rest.value}
     >
@@ -40,17 +42,25 @@ const Item = ({
       >
         <RadioGroupPrimitive.Indicator
           className={clsx(
-            "flex items-center justify-center w-full h-full relative",
+            "indicator flex items-center justify-center w-full h-full relative",
             "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
+          )}
+        />
+        {/* Outline indicator: purely stylistical */}
+        <RadioGroupPrimitive.Indicator
+          //  we want to hide this indicator from screen readers because the previous one is enough
+          aria-hidden="true"
+          className={clsx(
+            "absolute inset-0 shadow-violet-60 shadow-[0_0_0_2px] rounded-base"
           )}
         />
       </RadioGroupPrimitive.Item>
       <div className="truncate">
         <div className="flex items-center">
-          <p className="inter-base-semibold truncate">
+          <p className="inter-small-semibold truncate">
             {label}{" "}
             {sublabel ? (
-              <span className="inter-base-regular">{sublabel}</span>
+              <span className="inter-small-regular">{sublabel}</span>
             ) : null}
           </p>
         </div>

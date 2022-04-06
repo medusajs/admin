@@ -1,28 +1,25 @@
-import React, { useRef, useState } from "react"
-import { Text, Flex, Box } from "rebass"
 import moment from "moment"
-
+import React, { useRef, useState } from "react"
+import { Box, Flex, Text } from "rebass"
 import Button from "../../../../components/button"
-import { Input } from "@rebass/forms"
 import Dropdown from "../../../../components/dropdown"
 import TextArea from "../../../../components/textarea"
-
 import Medusa from "../../../../services/api"
 
-export default ({ event, onUpdateNotes, toaster }) => {
+export default ({ event, onUpdateNotes, notification }) => {
   const fontColor = event.isLatest ? "medusa" : "inactive"
   const [note, setNote] = useState(event?.raw?.value)
   const [edit, setEdit] = useState(false)
 
   const noteRef = useRef()
 
-  const reload = async updateMessage => {
+  const reload = async (updateMessage) => {
     Medusa.notes
       .listByResource(event.raw.resource_id)
-      .then(response => {
+      .then((response) => {
         onUpdateNotes(response.data.notes)
       })
-      .then(() => toaster(updateMessage, "success"))
+      .then(() => notification("Success", updateMessage, "success"))
   }
 
   const handleDelete = () => {
@@ -94,7 +91,7 @@ export default ({ event, onUpdateNotes, toaster }) => {
                     type="text"
                     name="note"
                     value={note}
-                    onChange={e => setNote(e.target.value)}
+                    onChange={(e) => setNote(e.target.value)}
                   />
                   <Flex>
                     <Button

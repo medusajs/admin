@@ -12,10 +12,12 @@ import useViewProductColumns from "./use-view-product-columns"
 
 type ViewProductsTableProps = {
   collectionId: string
+  refetchCollection: () => void
 }
 
 const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
   collectionId,
+  refetchCollection,
 }) => {
   const limit = 10
   const [query, setQuery] = useState("")
@@ -36,7 +38,7 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
 
   useEffect(() => {
     refetch() // Ensure we get the latest data
-  }, [])
+  }, [collectionId])
 
   const handleRemoveProduct = () => {
     if (idToDelete) {
@@ -46,6 +48,7 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
         })
         .then(() => {
           refetch()
+          refetchCollection()
         })
     }
   }
@@ -134,23 +137,23 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
 
   return (
     <>
-      <div className="w-full h-full flex flex-col justify-between overflow-y-scroll">
-        {!products?.length ? (
-          <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
-            {isLoading ? (
-              <Spinner size="large" variant="secondary" />
-            ) : (
-              "No products yet"
-            )}
-          </div>
-        ) : (
-          <Table
-            enableSearch
-            handleSearch={handleSearch}
-            searchPlaceholder="Search Products"
-            {...getTableProps()}
-            className="h-full"
-          >
+      <div className="w-full h-full flex flex-col justify-between overflow-y-auto">
+        <Table
+          enableSearch
+          handleSearch={handleSearch}
+          searchPlaceholder="Search Products"
+          {...getTableProps()}
+          className="h-full"
+        >
+          {!products?.length ? (
+            <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
+              {isLoading ? (
+                <Spinner size="large" variant="secondary" />
+              ) : (
+                "No products yet"
+              )}
+            </div>
+          ) : (
             <Table.Body {...getTableBodyProps()}>
               {rows.map((row) => {
                 prepareRow(row)
@@ -167,8 +170,8 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
                 )
               })}
             </Table.Body>
-          </Table>
-        )}
+          )}
+        </Table>
         <TablePagination
           count={count!}
           limit={limit}

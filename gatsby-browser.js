@@ -1,6 +1,5 @@
 import { MedusaProvider } from "medusa-react"
 import React from "react"
-import { ToastProvider } from "react-toast-notifications"
 import "./src/assets/styles/emoji-picker.css"
 import "./src/assets/styles/global.css"
 import { LayeredModalProvider } from "./src/components/molecules/modal/layered-modal"
@@ -22,13 +21,11 @@ export const wrapPageElement = ({ element }) => {
       <CacheProvider>
         <AccountProvider>
           <InterfaceProvider>
-            <ToastProvider autoDismiss={true} placement="bottom-left">
-              <SteppedProvider>
-                <LayeredModalProvider>
-                  <Provider>{element}</Provider>
-                </LayeredModalProvider>
-              </SteppedProvider>
-            </ToastProvider>
+            <SteppedProvider>
+              <LayeredModalProvider>
+                <Provider>{element}</Provider>
+              </LayeredModalProvider>
+            </SteppedProvider>
           </InterfaceProvider>
         </AccountProvider>
       </CacheProvider>

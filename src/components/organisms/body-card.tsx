@@ -42,10 +42,10 @@ const BodyCard: React.FC<BodyCardProps> = ({
       {...rest}
     >
       {isScrolled && (
-        <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-transparent h-xlarge z-10" />
+        <div className="absolute rounded-t-rounded top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-[rgba(255,255,255,0)] h-xlarge z-10" />
       )}
       <div
-        className="pt-medium px-xlarge flex flex-col grow overflow-y-scroll"
+        className="pt-medium px-xlarge flex flex-col grow overflow-y-auto"
         onScroll={scrollListener}
       >
         <div className="flex items-center justify-between mt-6 h-xlarge">
@@ -71,7 +71,9 @@ const BodyCard: React.FC<BodyCardProps> = ({
             {subtitle}
           </h3>
         )}
-        <div className="flex flex-col grow my-large">{children}</div>
+        {children && (
+          <div className="flex flex-col grow my-large">{children}</div>
+        )}
       </div>
       {events && events.length > 0 ? (
         <div className="pb-large pt-base px-xlarge border-t border-grey-20">

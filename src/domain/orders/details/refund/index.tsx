@@ -1,15 +1,15 @@
 import { useAdminRefundPayment } from "medusa-react"
 import React, { useMemo, useState } from "react"
-import { useForm, Controller } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import AlertIcon from "../../../../components/fundamentals/icons/alert-icon"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import Select from "../../../../components/molecules/select"
 import TextArea from "../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import useToaster from "../../../../hooks/use-toaster"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 const RefundMenu = ({ order, onDismiss }) => {
@@ -17,7 +17,7 @@ const RefundMenu = ({ order, onDismiss }) => {
 
   const [noNotification, setNoNotification] = useState(order.no_notification)
 
-  const toaster = useToaster()
+  const notification = useNotification()
   const createRefund = useAdminRefundPayment(order.id)
 
   const refundable = useMemo(() => {
@@ -43,11 +43,11 @@ const RefundMenu = ({ order, onDismiss }) => {
       },
       {
         onSuccess: () => {
-          toaster("Successfully refunded order", "success")
+          notification("Success", "Successfully refunded order", "success")
           onDismiss()
         },
         onError: (error) => {
-          toaster(getErrorMessage(error), "error")
+          notification("Error", getErrorMessage(error), "error")
         },
       }
     )
@@ -145,7 +145,7 @@ const RefundMenu = ({ order, onDismiss }) => {
                 />
                 <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                   Send notifications
-                  <InfoTooltip content="Notify customer of created return" />
+                  <IconTooltip content="Notify customer of created return" />
                 </span>
               </div>
               <div className="flex gap-x-xsmall">

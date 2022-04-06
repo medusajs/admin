@@ -1,5 +1,6 @@
 import {
   useAdminCreateShippingOption,
+  useAdminRegionFulfillmentOptions,
   useAdminShippingProfiles,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
@@ -10,30 +11,25 @@ import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import Select from "../../../components/molecules/select"
 import CurrencyInput from "../../../components/organisms/currency-input"
-import useToaster from "../../../hooks/use-toaster"
+import useNotification from "../../../hooks/use-notification"
 import { Option } from "../../../types/shared"
 import { getErrorMessage } from "../../../utils/error-messages"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 
-const NewShipping = ({
-  isReturn,
-  fulfillmentOptions,
-  region,
-  onCreated,
-  onClick,
-}) => {
+const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
   const { register, setValue, handleSubmit } = useForm()
   const {
     shipping_profiles,
     isLoading: isProfilesLoading,
   } = useAdminShippingProfiles()
+  const { fulfillment_options } = useAdminRegionFulfillmentOptions(region.id)
   const [adminOnly, setAdminOnly] = useState(false)
   const [options, setOptions] = useState([])
   const [selectedOption, setSelectedOption] = useState(null)
   const [profileOptions, setProfileOptions] = useState<Option[]>([])
   const [selectedProfile, setSelectedProfile] = useState(null)
   const createShippingOption = useAdminCreateShippingOption()
-  const toaster = useToaster()
+  const notification = useNotification()
 
   useEffect(() => {
     register("amount", { required: true })
@@ -52,7 +48,7 @@ const NewShipping = ({
     profile_id: { value: string; label: string }
     amount: number
   }) => {
-    const fOptions = fulfillmentOptions.map((provider) => {
+    const fOptions = fulfillment_options?.map((provider) => {
       const filtered = provider.options.filter(
         (o) => !!o.is_return === !!isReturn
       )
@@ -66,7 +62,7 @@ const NewShipping = ({
     const [providerIndex, optionIndex] = data.fulfillment_option.value.split(
       "."
     )
-    const { provider_id, options } = fOptions[providerIndex]
+    const { provider_id, options } = fOptions?.[providerIndex] || {}
 
     let reqs = []
     if (data.requirements) {
@@ -95,27 +91,31 @@ const NewShipping = ({
 
     createShippingOption.mutate(payload, {
       onSuccess: () => {
-        toaster("Successfully created shipping option", "success")
+        notification(
+          "Success",
+          "Successfully created shipping option",
+          "success"
+        )
         if (onCreated) {
           onCreated()
         }
         onClick()
       },
       onError: (error) => {
-        toaster(getErrorMessage(error), "error")
+        notification("Error", getErrorMessage(error), "error")
       },
     })
   }
 
   useEffect(() => {
-    const opts = fulfillmentOptions.reduce((acc, provider, p) => {
+    const opts = (fulfillment_options || []).reduce((acc, provider, p) => {
       const filtered = provider.options.filter(
         (o) => !!o.is_return === !!isReturn
       )
 
       return acc.concat(
         filtered.map((option, o) => ({
-          label: `${option.id} via ${
+          label: `${option.name || option.id} via ${
             fulfillmentProvidersMapper(provider.provider_id).label
           }`,
           value: `${p}.${o}`,
@@ -126,7 +126,7 @@ const NewShipping = ({
     setOptions(opts)
 
     register({ name: "fulfillment_option" }, { required: true })
-  }, [fulfillmentOptions])
+  }, [fulfillment_options])
 
   useEffect(() => {
     const opts = !shipping_profiles
@@ -176,7 +176,11 @@ const NewShipping = ({
                 placeholder="New Shipping Option"
                 className="flex-grow"
               />
-              <CurrencyInput currentCurrency={region.currency_code} readOnly>
+              <CurrencyInput
+                currentCurrency={region.currency_code}
+                readOnly
+                size="small"
+              >
                 <CurrencyInput.AmountInput
                   label="Price"
                   onChange={(v) => handleAmountChange("amount", v)}
@@ -235,6 +239,7 @@ const NewShipping = ({
                   <CurrencyInput
                     currentCurrency={region.currency_code}
                     readOnly
+                    size="small"
                   >
                     <CurrencyInput.AmountInput
                       label="Price"
@@ -250,6 +255,7 @@ const NewShipping = ({
                   <CurrencyInput
                     currentCurrency={region.currency_code}
                     readOnly
+                    size="small"
                   >
                     <CurrencyInput.AmountInput
                       label="Price"
@@ -267,11 +273,11 @@ const NewShipping = ({
             )}
           </Modal.Content>
           <Modal.Footer>
-            <div className="flex justify-end w-full">
+            <div className="flex justify-end w-full gap-x-xsmall">
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="small"
-                className="justify-center w-[130px]"
+                className="justify-center w-eventButton"
                 onClick={onClick}
               >
                 Cancel
@@ -280,7 +286,7 @@ const NewShipping = ({
                 type="submit"
                 variant="primary"
                 size="small"
-                className="justify-center w-[130px]"
+                className="justify-center w-eventButton"
               >
                 Save
               </Button>

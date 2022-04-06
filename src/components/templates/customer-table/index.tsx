@@ -27,7 +27,7 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
     representationObject,
   } = useCustomerFilters(location.search, defaultQueryProps)
 
-  const offs = parseInt(queryObject?.offset) || 0
+  const offs = parseInt(queryObject.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
   const { customers, isLoading, count } = useAdminCustomers({
@@ -126,7 +126,7 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
   }, [representationObject])
 
   return (
-    <div className="w-full h-full overflow-y-scroll flex flex-col justify-between">
+    <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
       <Table enableSearch handleSearch={setQuery} {...getTableProps()}>
         <Table.Head>
           {headerGroups?.map((headerGroup) => (

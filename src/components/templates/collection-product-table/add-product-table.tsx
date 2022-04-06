@@ -3,32 +3,37 @@ import React, { useEffect, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
 import Spinner from "../../atoms/spinner"
+import Button from "../../fundamentals/button"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
+import Modal from "../../molecules/modal"
 import Table, { TablePagination } from "../../molecules/table"
 import useCollectionProductColumns from "./use-collection-product-columns"
 
 type AddProductsTableProps = {
-  addedProducts: any[]
-  setProducts: (products: any) => void
+  existingRelations: any[]
+  onSubmit: (selectedIds: string[], removedIds: string[]) => void
+  onClose: () => void
 }
 
 const AddProductsTable: React.FC<AddProductsTableProps> = ({
-  addedProducts,
-  setProducts,
+  existingRelations,
+  onSubmit,
+  onClose,
 }) => {
-  const limit = 10
+  const PAGE_SIZE = 10
   const [query, setQuery] = useState("")
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
 
   const [selectedProducts, setSelectedProducts] = useState<any[]>([])
+  const [removedProducts, setRemovedProducts] = useState<any[]>([])
 
   const debouncedSearchTerm = useDebounce(query, 500)
 
   const { isLoading, count, products } = useAdminProducts({
     q: debouncedSearchTerm,
-    limit: limit,
+    limit: PAGE_SIZE,
     offset,
   })
 
@@ -52,8 +57,8 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
       manualPagination: true,
       initialState: {
         pageIndex: currentPage,
-        pageSize: limit,
-        selectedRowIds: addedProducts.reduce((prev, { id }) => {
+        pageSize: PAGE_SIZE,
+        selectedRowIds: existingRelations.reduce((prev, { id }) => {
           prev[id] = true
           return prev
         }, {}),
@@ -83,22 +88,31 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
   )
 
   useEffect(() => {
-    setSelectedProducts((selectedProducts) => [
-      ...selectedProducts.filter(
-        (sv) => Object.keys(selectedRowIds).findIndex((id) => id === sv.id) > -1
+    setSelectedProducts((selectedProducts) =>
+      [
+        ...selectedProducts.filter(
+          (sv) =>
+            Object.keys(selectedRowIds).findIndex((id) => id === sv.id) > -1
+        ),
+        ...(products?.filter(
+          (p) =>
+            selectedProducts.findIndex((sv) => sv.id === p.id) < 0 &&
+            Object.keys(selectedRowIds).findIndex((id) => id === p.id) > -1
+        ) || []),
+      ].filter((p) => existingRelations.findIndex((ap) => ap.id === p.id) < 0)
+    )
+
+    setRemovedProducts([
+      ...existingRelations.filter(
+        (ap) => Object.keys(selectedRowIds).findIndex((id) => id === ap.id) < 0
       ),
-      ...(products?.filter(
-        (p) =>
-          selectedProducts.findIndex((sv) => sv.id === p.id) < 0 &&
-          Object.keys(selectedRowIds).findIndex((id) => id === p.id) > -1
-      ) || []),
     ])
   }, [selectedRowIds])
 
   useEffect(() => {
-    const controlledPageCount = Math.ceil(count! / limit)
+    const controlledPageCount = Math.ceil(count! / PAGE_SIZE)
     setNumPages(controlledPageCount)
-  }, [products, count, limit])
+  }, [products, count, PAGE_SIZE])
 
   const handleNext = () => {
     if (canNextPage) {
@@ -121,56 +135,100 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
     setQuery(q)
   }
 
+  const [disabled, setDisabled] = useState(true)
+
   useEffect(() => {
-    setProducts(selectedProducts)
-  }, [selectedProducts])
+    if (selectedProducts.length > 0 || removedProducts.length > 0) {
+      setDisabled(false)
+      return
+    }
+
+    setDisabled(true)
+  }, [selectedProducts, removedProducts])
+
+  const handleSubmit = () => {
+    onSubmit(
+      selectedProducts.map((p) => p.id),
+      removedProducts.map((p) => p.id)
+    )
+  }
 
   return (
-    <div className="w-full h-full flex flex-col justify-between overflow-y-scroll">
-      {isLoading || !products ? (
-        <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
-          <Spinner size="large" variant="secondary" />
-        </div>
-      ) : (
-        <Table
-          enableSearch
-          handleSearch={handleSearch}
-          searchPlaceholder="Search Products"
-          {...getTableProps()}
-          className="h-full"
-        >
-          <Table.Body {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row)
-              return (
-                <Table.Row
-                  color={"inherit"}
-                  {...row.getRowProps()}
-                  className="px-base"
-                >
-                  {row.cells.map((cell, index) => {
-                    return cell.render("Cell", { index })
+    <Modal handleClose={onClose}>
+      <Modal.Body>
+        <Modal.Header handleClose={onClose}>
+          <h3 className="inter-xlarge-semibold">Add Products</h3>
+        </Modal.Header>
+        <Modal.Content>
+          <div className="w-full flex flex-col justify-between h-[650px]">
+            <Table
+              enableSearch
+              handleSearch={handleSearch}
+              searchPlaceholder="Search Products"
+              {...getTableProps()}
+              className="flex-grow"
+            >
+              {isLoading || !products ? (
+                <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
+                  <Spinner size="large" variant="secondary" />
+                </div>
+              ) : (
+                <Table.Body {...getTableBodyProps()}>
+                  {rows.map((row) => {
+                    prepareRow(row)
+                    return (
+                      <Table.Row
+                        color={"inherit"}
+                        {...row.getRowProps()}
+                        className="px-base"
+                      >
+                        {row.cells.map((cell, index) => {
+                          return cell.render("Cell", { index })
+                        })}
+                      </Table.Row>
+                    )
                   })}
-                </Table.Row>
-              )
-            })}
-          </Table.Body>
-        </Table>
-      )}
-      <TablePagination
-        count={count!}
-        limit={limit}
-        offset={offset}
-        pageSize={offset + rows.length}
-        title="Products"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
-    </div>
+                </Table.Body>
+              )}
+            </Table>
+            <TablePagination
+              count={count!}
+              limit={PAGE_SIZE}
+              offset={offset}
+              pageSize={offset + rows.length}
+              title="Products"
+              currentPage={pageIndex + 1}
+              pageCount={pageCount}
+              nextPage={handleNext}
+              prevPage={handlePrev}
+              hasNext={canNextPage}
+              hasPrev={canPreviousPage}
+            />
+          </div>
+        </Modal.Content>
+        <Modal.Footer>
+          <div className="flex items-center justify-end gap-x-xsmall w-full">
+            <Button
+              variant="ghost"
+              size="small"
+              className="w-eventButton"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              size="small"
+              className="w-eventButton"
+              onClick={handleSubmit}
+              disabled={disabled}
+            >
+              Save
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal.Body>
+    </Modal>
   )
 }
 

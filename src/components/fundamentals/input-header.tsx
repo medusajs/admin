@@ -1,5 +1,5 @@
 import React from "react"
-import InfoTooltip from "../molecules/info-tooltip"
+import IconTooltip from "../molecules/icon-tooltip"
 
 export type InputHeaderProps = {
   label?: string
@@ -20,7 +20,7 @@ const InputHeader: React.FC<InputHeaderProps> = ({
       {required && <div className="text-rose-50 "> *</div>}
       {tooltip || tooltipContent ? (
         <div className="flex ml-1.5">
-          {tooltip || <InfoTooltip content={tooltipContent} />}
+          {tooltip || <IconTooltip content={tooltipContent} />}
         </div>
       ) : null}
     </div>

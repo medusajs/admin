@@ -14,3 +14,13 @@ export type DateFilter = null | {
   gt?: string
   lt?: string
 }
+
+export enum TaxRateType {
+  REGION = "region",
+  RATE = "rate",
+}
+
+export type PaginationProps = {
+  limit: number
+  offset: number
+}

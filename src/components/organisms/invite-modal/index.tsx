@@ -1,9 +1,9 @@
 import React, { useState } from "react"
-import Modal from "../../molecules/modal"
-import Button from "../../fundamentals/button"
+import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
-import useMedusa from "../../../hooks/use-medusa"
+import Button from "../../fundamentals/button"
 import InputField from "../../molecules/input"
+import Modal from "../../molecules/modal"
 
 type InviteModalProps = {
   handleClose: () => void
@@ -13,9 +13,9 @@ const InviteModal: React.FC<InviteModalProps> = ({ handleClose }) => {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState("member")
-  const { toaster } = useMedusa("collections")
+  const notification = useNotification()
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault()
 
     setIsLoading(true)
@@ -27,14 +27,14 @@ const InviteModal: React.FC<InviteModalProps> = ({ handleClose }) => {
 
     Medusa.invites
       .create(values)
-      .then(res => {
+      .then((_res) => {
         setIsLoading(false)
         handleClose()
-        toaster("user(s) invited", "success")
+        notification("Success", "user(s) invited", "success")
       })
-      .catch(error => {
+      .catch((_error) => {
         setIsLoading(false)
-        toaster("Could not add user(s)", "error")
+        notification("Error", "Could not add user(s)", "error")
         handleClose()
       })
   }
@@ -50,7 +50,7 @@ const InviteModal: React.FC<InviteModalProps> = ({ handleClose }) => {
             label="Email"
             placeholder="lebron@james.com"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </Modal.Content>
         <Modal.Footer>

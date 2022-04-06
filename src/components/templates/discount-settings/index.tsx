@@ -3,7 +3,7 @@ import Checkbox from "../../atoms/checkbox"
 import DatePicker from "../../atoms/date-picker/date-picker"
 import TimePicker from "../../atoms/date-picker/time-picker"
 import AvailabilityDuration from "../../molecules/availability-duration"
-import InfoTooltip from "../../molecules/info-tooltip"
+import IconTooltip from "../../molecules/icon-tooltip"
 import InputField from "../../molecules/input"
 import ConnectForm from "../../molecules/nested-form"
 import Section from "../../molecules/section"
@@ -83,6 +83,7 @@ const DiscountSettings: React.FC<DiscountSettingsProps> = ({
                 label="Number of redemptions"
                 type="number"
                 placeholder="5"
+                min={1}
               />
             </Section>
             <Section
@@ -206,7 +207,7 @@ const DiscountSettings: React.FC<DiscountSettingsProps> = ({
                   }}
                 />
                 <div className="flex items-center ml-1.5">
-                  <InfoTooltip
+                  <IconTooltip
                     content={
                       "If you want to schedule the discount to deactivate in the future, you can set an expiry date here."
                     }

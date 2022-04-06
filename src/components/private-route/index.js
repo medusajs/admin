@@ -11,10 +11,10 @@ const PrivateRoute = ({ component: Component, location, ...rest }) => {
   } else if (!loading) {
     account
       .session()
-      .then(data => {
+      .then((data) => {
         setLoading(false)
       })
-      .catch(err => {
+      .catch((err) => {
         navigate("/login")
       })
   }
