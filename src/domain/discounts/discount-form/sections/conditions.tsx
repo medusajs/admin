@@ -3,8 +3,9 @@ import { useDiscountForm } from "../form/discount-form-context"
 
 const Conditions = () => {
   const { conditions } = useDiscountForm()
+  console.log(conditions)
   return (
-    <div>
+    <div className="bg-violet-40">
       {Object.keys(conditions).map((key) => {
         return (
           conditions[key] && (
