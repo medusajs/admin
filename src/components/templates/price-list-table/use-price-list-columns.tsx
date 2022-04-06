@@ -1,16 +1,20 @@
+import { PriceList } from "@medusajs/medusa"
 import { isArray } from "lodash"
 import React, { useMemo } from "react"
+import { Column } from "react-table"
+import Actionables from "../../molecules/actionables"
 import Table from "../../molecules/table"
+import usePriceListActions from "./use-price-list-actions"
 import { formatPriceListGroups, getPriceListStatus } from "./utils"
 
 export const usePriceListTableColumns = () => {
-  const columns = useMemo(
+  const columns = useMemo<Column<PriceList>[]>(
     () => [
       {
         Header: <Table.HeadCell>Name</Table.HeadCell>,
         accessor: "name",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>
+        Cell: ({ cell: { value } }) => (
+          <Table.Cell>
             <span className="inter-small-regular">{value}</span>
           </Table.Cell>
         ),
@@ -18,27 +22,25 @@ export const usePriceListTableColumns = () => {
       {
         Header: "Description",
         accessor: "description",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{value}</Table.Cell>
-        ),
+        Cell: ({ cell: { value } }) => <Table.Cell>{value}</Table.Cell>,
       },
       {
         Header: "Status",
         accessor: "status",
-        Cell: ({ row: { original }, index }) => (
-          <Table.Cell key={index}>{getPriceListStatus(original)}</Table.Cell>
+        Cell: ({ row: { original } }) => (
+          <Table.Cell>{getPriceListStatus(original)}</Table.Cell>
         ),
       },
       {
         Header: () => <div className="">Groups</div>,
         accessor: "customer_groups",
-        Cell: ({ cell: { value }, index }) => {
+        Cell: ({ cell: { value } }) => {
           const groups: string[] = isArray(value)
             ? value.map((v) => v.name)
             : []
           const [group, other] = formatPriceListGroups(groups)
           return (
-            <Table.Cell className="" key={index}>
+            <Table.Cell>
               {group}
               {other && <span className="text-grey-40"> + {other} more</span>}
             </Table.Cell>
@@ -46,12 +48,24 @@ export const usePriceListTableColumns = () => {
         },
       },
       {
-        Header: "",
-        accessor: "col",
+        accessor: "created_at",
+        Cell: ({ row: { original: priceList } }) => {
+          const { getActions } = usePriceListActions(priceList)
+          return (
+            <Table.Cell
+              onClick={(e) => e.stopPropagation()}
+              className="w-full flex justify-end"
+            >
+              <div className="justify-end">
+                <Actionables forceDropdown actions={getActions()} />
+              </div>
+            </Table.Cell>
+          )
+        },
       },
     ],
     []
   )
 
-  return [columns]
+  return [columns] as const
 }
