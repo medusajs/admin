@@ -20,12 +20,14 @@ import AddConditionsModal from "./add-conditions-modal"
 type DiscountFormProps = {
   discount?: any
   isEdit?: boolean
+  additionalOpen?: string[]
   closeForm?: () => void
 }
 
 const DiscountForm: React.FC<DiscountFormProps> = ({
   discount,
   closeForm,
+  additionalOpen = [],
   isEdit = false,
 }) => {
   const [showAddConditionsModal, setShowConditionsModal] = React.useState(false)
@@ -125,7 +127,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
             </h1>
             <Accordion
               className="pt-7 text-grey-90"
-              defaultValue={["promotion-type"]}
+              defaultValue={["promotion-type", ...additionalOpen]}
               type="multiple"
             >
               <Accordion.Item
