@@ -1,12 +1,12 @@
-import { Router } from "@reach/router"
+import { Router, RouteComponentProps } from "@reach/router"
 import { navigate } from "gatsby"
 import React from "react"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
-import PriceListTable from "../../components/templates/price-list-table"
+import PricingTable from "./pricing-table"
 
-const PricingIndex = () => {
+const PricingIndex: React.FC<RouteComponentProps> = () => {
   const actionables = [
     {
       label: "Add price list",
@@ -22,7 +22,7 @@ const PricingIndex = () => {
           actionables={actionables}
           customHeader={<TableViewHeader views={["Price lists"]} />}
         >
-          <PriceListTable />
+          <PricingTable />
         </BodyCard>
       </div>
     </div>
