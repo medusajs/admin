@@ -30,13 +30,19 @@ const Conditions = () => {
 }
 
 const ConditionSetting = ({ titles }) => {
-  const description = `${titles[0]}, ${titles[1]}`
+  const titleStrings = titles.reduce(
+    (acc, cur) =>
+      acc[1] + cur.length > 38 ? acc : [[...acc[0], cur], acc[1] + cur.length],
+    [[], 0]
+  )
+  const description = titleStrings[0].join(", ")
 
   return (
     <span className="text-grey-50 inter-small-regular">
       {description}
       <span className="text-grey-40">
-        {titles.length - 2 > 0 && ` + ${titles.length - 2} more`}
+        {titles.length - titleStrings[0].length > 0 &&
+          ` + ${titles.length - 2} more`}
       </span>
     </span>
   )
