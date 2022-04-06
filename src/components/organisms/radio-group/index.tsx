@@ -11,6 +11,7 @@ type RadioGroupItemProps = {
 
 type RadioGroupSimpleItemProps = {
   label?: string
+  description?: string
 } & RadioGroupPrimitive.RadioGroupItemProps &
   React.RefAttributes<HTMLButtonElement>
 
@@ -76,13 +77,19 @@ const Item = ({
 
 const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
   label,
+  description,
+  className,
   ...rest
 }) => {
   return (
     <label
-      className={clsx("flex items-center mr-large last:mr-0", {
-        ["opacity-50 select-none pointer-events-none"]: rest.disabled,
-      })}
+      className={clsx(
+        "flex items-center mr-large last:mr-0",
+        {
+          ["opacity-50 select-none pointer-events-none"]: rest.disabled,
+        },
+        className
+      )}
       htmlFor={rest.value}
     >
       <RadioGroupPrimitive.Item
@@ -95,16 +102,19 @@ const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
       >
         <RadioGroupPrimitive.Indicator
           className={clsx(
-            "flex items-center justify-center w-full h-full relative",
+            "flex items-center justify-center w-full h-full relative indicator",
             "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
           )}
         />
       </RadioGroupPrimitive.Item>
-      {label && (
+      <div className="ml-small inter-base-regular cursor-pointer w-full">
         <span className="ml-small inter-base-regular cursor-pointer">
-          {label}
+          {label && label}
         </span>
-      )}
+        <span className="ml-small inter-base-regular cursor-pointer">
+          {description && description}
+        </span>
+      </div>
     </label>
   )
 }
