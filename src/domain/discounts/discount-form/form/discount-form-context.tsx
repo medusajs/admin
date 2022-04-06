@@ -42,7 +42,7 @@ type UpdateConditionProps = {
     | "product_types"
     | "product_tags"
     | "customer_group"
-  update: Condition[]
+  update: Condition[] | null
 }
 
 const defaultConditionRecord: PromotionConditionRecord = {

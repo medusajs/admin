@@ -48,6 +48,8 @@ const ProductConditionSelector = ({ onClose }) => {
   const [items, setItems] = useState(conditions.products || [])
 
   const changed = (values: string[]) => {
+    console.log(values)
+
     const selectedProducts =
       products?.filter((product) => values.includes(product.id)) || []
 
@@ -65,7 +67,6 @@ const ProductConditionSelector = ({ onClose }) => {
         Header: "Name",
         accessor: "title",
         Cell: ({ row: { original } }) => {
-          console.log(original)
           return (
             <div className="flex items-center">
               <div className="h-[40px] w-[30px] my-1.5 flex items-center mr-4">
@@ -124,7 +125,7 @@ const ProductConditionSelector = ({ onClose }) => {
             totalCount={count}
             pagination={pagination}
             onPaginationChange={setPagination}
-            selectedIds={conditions.products?.map((c) => c.id)}
+            selectedIds={items?.map((c) => c.id)}
             data={products as Product[]}
             columns={columns}
             isLoading={isLoading}
