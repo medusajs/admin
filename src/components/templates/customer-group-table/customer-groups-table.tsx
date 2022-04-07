@@ -1,28 +1,25 @@
-import React, { useContext } from "react"
-import { useAdminCustomerGroups } from "medusa-react"
 import { CustomerGroup } from "@medusajs/medusa"
+import { navigate } from "gatsby"
+import { useAdminCustomerGroups } from "medusa-react"
+import React, { useContext } from "react"
 import {
   HeaderGroup,
   Row,
   TableInstance,
   TableOptions,
   usePagination,
-  UsePaginationOptions,
   useSortBy,
   useTable,
 } from "react-table"
-import { navigate } from "gatsby"
-
-import Table, { TablePagination } from "../../molecules/table"
-import EditIcon from "../../fundamentals/icons/edit-icon"
-import DetailsIcon from "../../fundamentals/details-icon"
-
-import { CUSTOMER_GROUPS_TABLE_COLUMNS } from "./config"
-import useQueryFilters from "../../../hooks/use-query-filters"
-import useSetSearchParams from "../../../hooks/use-set-search-params"
 import CustomerGroupContext, {
   CustomerGroupContextContainer,
 } from "../../../domain/customers/groups/context/customer-group-context"
+import useQueryFilters from "../../../hooks/use-query-filters"
+import useSetSearchParams from "../../../hooks/use-set-search-params"
+import DetailsIcon from "../../fundamentals/details-icon"
+import EditIcon from "../../fundamentals/icons/edit-icon"
+import Table, { TablePagination } from "../../molecules/table"
+import { CUSTOMER_GROUPS_TABLE_COLUMNS } from "./config"
 
 /**
  * Default filtering config for querying customer groups endpoint.
@@ -138,7 +135,7 @@ type CustomerGroupsTableProps = ReturnType<typeof useQueryFilters> & {
 function CustomerGroupsTable(props: CustomerGroupsTableProps) {
   const { customerGroups, queryObject, count, paginate, setQuery } = props
 
-  const tableConfig: TableOptions<UsePaginationOptions<CustomerGroup>> = {
+  const tableConfig: TableOptions<CustomerGroup> = {
     columns: CUSTOMER_GROUPS_TABLE_COLUMNS,
     data: customerGroups || [],
     initialState: {
