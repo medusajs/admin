@@ -1,6 +1,7 @@
+import { Product } from "@medusajs/medusa"
 import { useAdminProducts } from "medusa-react"
 import React, { useContext, useMemo, useState } from "react"
-import { Row } from "react-table"
+import { Column, Row } from "react-table"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
@@ -26,7 +27,7 @@ const getProductStatusVariant = (status) => {
   }
 }
 
-const ProductRow = ({ row }: { row: Row }) => {
+const ProductRow = ({ row }: { row: Row<Product> }) => {
   return (
     <Table.Row {...row.getRowProps()}>
       {row.cells.map((cell) => {
@@ -68,7 +69,7 @@ const ProductConditionSelector = ({ onClose }) => {
     )
   }
 
-  const columns = useMemo(() => {
+  const columns = useMemo<Column<Product>[]>(() => {
     return [
       {
         Header: "Name",
