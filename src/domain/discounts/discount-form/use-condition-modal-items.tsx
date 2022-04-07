@@ -1,6 +1,7 @@
 import React, { useContext } from "react"
 import { LayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import { DiscountConditionType } from "../types"
+import CollectionConditionSelector from "./condition-tables/collections"
 import ProductConditionSelector from "./condition-tables/products"
 
 export type ConditionItem = {
@@ -41,7 +42,12 @@ const useConditionModalItems = (close: () => void) => {
       label: "Collection",
       value: DiscountConditionType.PRODUCT_COLLECTIONS,
       description: "Only for specific product collections",
-      onClick: () => console.log("clicked"),
+      onClick: () =>
+        layeredModalContext.push({
+          title: "Product",
+          onBack: () => layeredModalContext.pop(),
+          view: <CollectionConditionSelector onClose={() => close()} />,
+        }),
     },
     {
       label: "Type",
