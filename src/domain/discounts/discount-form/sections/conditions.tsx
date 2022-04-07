@@ -45,6 +45,7 @@ const getTitle = (type: DiscountConditionType) => {
 }
 
 const getDescription = (type: DiscountConditionType) => {
+  console.log(type)
   switch (type) {
     case DiscountConditionType.PRODUCTS:
       return "This promotion applies to selected products"
