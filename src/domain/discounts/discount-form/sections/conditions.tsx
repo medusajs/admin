@@ -18,7 +18,8 @@ const Conditions: React.FC = () => {
           conditions[key] && (
             <NumberedItem
               index={i + 1}
-              title={getTitle(key as DiscountConditionType)}
+              title={getTitle(conditions[key].type)}
+              description={getDescription(conditions[key].type)}
               actions={getActions(key)}
             />
           )
@@ -40,6 +41,21 @@ const getTitle = (type: DiscountConditionType) => {
       return "Customer groups"
     case DiscountConditionType.PRODUCT_TYPES:
       return "Product types"
+  }
+}
+
+const getDescription = (type: DiscountConditionType) => {
+  switch (type) {
+    case DiscountConditionType.PRODUCTS:
+      return "This promotion applies to selected products"
+    case DiscountConditionType.PRODUCT_COLLECTIONS:
+      return "This promotion applies to selected product collections"
+    case DiscountConditionType.PRODUCT_TAGS:
+      return "This promotion applies to selected product tags"
+    case DiscountConditionType.CUSTOMER_GROUPS:
+      return "This promotion applies to selected customer groups"
+    case DiscountConditionType.PRODUCT_TYPES:
+      return "This promotion applies to selected product types"
   }
 }
 

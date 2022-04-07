@@ -90,7 +90,6 @@ const ProductConditionSelector = ({ onClose }) => {
               </div>
               <div className="flex flex-col">
                 <span>{original.title}</span>
-                {original.title}
               </div>
             </div>
           )
@@ -109,10 +108,10 @@ const ProductConditionSelector = ({ onClose }) => {
         ),
       },
       {
-        Header: <div className="text-right">In Stock</div>,
-        accessor: "inventory_quantity",
+        Header: <div className="text-right">Variants</div>,
+        accessor: "variants",
         Cell: ({ row: { original } }) => (
-          <div className="text-right">{original.inventory_quantity}</div>
+          <div className="text-right">{original.variants.length}</div>
         ),
       },
     ]
