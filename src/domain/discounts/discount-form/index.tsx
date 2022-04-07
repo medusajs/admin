@@ -43,12 +43,15 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     conditions,
   } = useDiscountForm()
 
+  React.useEffect(() => console.log(conditions), [conditions])
+
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
     discount?.id,
     {
       ...discount,
       ...(hasStartDate ? { starts_at: startsAt } : {}),
       ends_at: hasExpiryDate ? endsAt : null,
+      conditions,
     }
   )
 
@@ -79,7 +82,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
       if (isEdit) {
         await onUpdate(data)
       } else {
-        await onSaveAsActive({ ...data, conditions })
+        await onSaveAsActive(data)
       }
       closeFormModal()
     } catch (error) {

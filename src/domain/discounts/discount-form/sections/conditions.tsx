@@ -18,8 +18,8 @@ const Conditions: React.FC = () => {
           conditions[key] && (
             <NumberedItem
               index={i + 1}
-              title={getTitle(conditions[key].type)}
-              description={getDescription(conditions[key].type)}
+              title={getTitle(key as DiscountConditionType)}
+              description={getDescription(key as DiscountConditionType)}
               actions={getActions(key)}
             />
           )
