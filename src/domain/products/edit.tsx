@@ -23,7 +23,9 @@ import { consolidateImages } from "./product-form/utils"
 
 const EditProductPage = ({ id }) => {
   const notification = useNotification()
-  const { product, isLoading } = useAdminProduct(id)
+  const { product, isLoading } = useAdminProduct(id, {
+    keepPreviousData: true,
+  })
   const updateProduct = useAdminUpdateProduct(id)
   const [submitting, setSubmitting] = useState(false)
 
@@ -95,11 +97,7 @@ const UpdateNotification = ({ isLoading = false }) => {
   )
 
   useEffect(() => {
-    if (isDirty) {
-      setVisible(true)
-    } else {
-      setVisible(false)
-    }
+    setVisible(isDirty)
 
     return () => {
       toast.dismiss(TOAST_ID)

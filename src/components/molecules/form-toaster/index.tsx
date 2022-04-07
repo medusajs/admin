@@ -1,6 +1,6 @@
 import * as Dropdown from "@radix-ui/react-dropdown-menu"
 import clsx from "clsx"
-import React, { Children, HTMLAttributes } from "react"
+import React, { Children, HTMLAttributes, useMemo } from "react"
 import { Toast } from "react-hot-toast"
 import Spinner from "../../atoms/spinner"
 import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
@@ -26,7 +26,7 @@ const FormToasterContainer: React.FC<FormToasterContainerProps> & {
   ActionButton: React.FC<HTMLAttributes<HTMLButtonElement>>
   MultiActionButton: React.FC<MultiActionButtonProps>
 } = ({ children, toast, isLoading = false }) => {
-  const content = () => {
+  const content = useMemo(() => {
     if (isLoading) {
       return (
         <div className="flex items-center p-base gap-x-base">
@@ -53,7 +53,7 @@ const FormToasterContainer: React.FC<FormToasterContainerProps> & {
         </>
       )
     }
-  }
+  }, [isLoading])
 
   return (
     <div
@@ -64,7 +64,7 @@ const FormToasterContainer: React.FC<FormToasterContainerProps> & {
       {...toast?.ariaProps}
     >
       <div className="flex items-center rounded-rounded bg-grey-90 h-[72px] w-[344px] text-grey-0 justify-between">
-        {content()}
+        {content}
       </div>
     </div>
   )
