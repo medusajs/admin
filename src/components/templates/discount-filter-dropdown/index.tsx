@@ -17,7 +17,7 @@ const dateFilters = [
   "is equal to",
 ]
 
-const DiscountFilters = ({
+const PromotionFilters = ({
   tabs,
   activeTab,
   onTabClick,
@@ -138,4 +138,4 @@ const DiscountFilters = ({
   )
 }
 
-export default DiscountFilters
+export default PromotionFilters
