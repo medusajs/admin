@@ -1,15 +1,14 @@
 import React from "react"
-
+import Badge from "../../../components/fundamentals/badge"
 import Actionables, {
   ActionType,
 } from "../../../components/molecules/actionables"
-import Badge from "../../../components/fundamentals/badge"
 
 type NumberedItemProps = {
   actions?: ActionType[]
   index: number
   title: string
-  description: React.ReactNode | string
+  description?: React.ReactNode | string
 }
 
 const NumberedItem: React.FC<NumberedItemProps> = ({
@@ -29,15 +28,16 @@ const NumberedItem: React.FC<NumberedItemProps> = ({
             §{index}
           </Badge>
         </div>
-        <div className="truncate">
+        <div className="truncate flex flex-col justify-center">
           <div className="inter-small-semibold">{title}</div>
-          {typeof description === "string" ? (
-            <div className="inter-small-regular text-grey-50">
-              {description}
-            </div>
-          ) : (
-            description
-          )}
+          {description &&
+            (typeof description === "string" ? (
+              <div className="inter-small-regular text-grey-50">
+                {description}
+              </div>
+            ) : (
+              description
+            ))}
         </div>
       </div>
       {actions && (

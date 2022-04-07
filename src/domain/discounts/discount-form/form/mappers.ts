@@ -1,13 +1,14 @@
+/* eslint-disable no-unused-vars */
 import {
   AdminCreateCondition,
   AdminPostDiscountsDiscountReq,
   AdminPostDiscountsReq,
   Discount,
-  DiscountConditionOperator,
+  DiscountCondition,
 } from "@medusajs/medusa"
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../types/shared"
-import { PromotionConditionRecord } from "./discount-form-context"
+import { DiscountConditionRecord } from "../../types"
 
 export interface DiscountFormValues extends FieldValues {
   id?: string
@@ -25,6 +26,46 @@ export interface DiscountFormValues extends FieldValues {
   regions: Option[] | null
 }
 
+export enum DiscountConditionType {
+  PRODUCTS = "products",
+  PRODUCT_TYPES = "product_types",
+  PRODUCT_COLLECTIONS = "product_collections",
+  PRODUCT_TAGS = "product_tags",
+  CUSTOMER_GROUPS = "customer_groups",
+}
+
+const mapConditionsToFormValues = (conditions: DiscountCondition[]) => {
+  const record: DiscountConditionRecord = {
+    customer_groups: null,
+    product_collections: null,
+    product_tags: null,
+    product_types: null,
+    products: null,
+  }
+
+  for (const condition of conditions) {
+    switch (condition.type) {
+      case DiscountConditionType.PRODUCTS:
+        record.products = condition.id
+        break
+      case DiscountConditionType.PRODUCT_TYPES:
+        record.product_types = condition.id
+        break
+      case DiscountConditionType.PRODUCT_COLLECTIONS:
+        record.product_collections = condition.id
+        break
+      case DiscountConditionType.PRODUCT_TAGS:
+        record.product_tags = condition.id
+        break
+      case DiscountConditionType.CUSTOMER_GROUPS:
+        record.customer_groups = condition.id
+        break
+    }
+  }
+
+  return record
+}
+
 export const discountToFormValuesMapper = (
   discount: Discount
 ): DiscountFormValues => {
@@ -35,6 +76,7 @@ export const discountToFormValuesMapper = (
     type: discount.rule.type,
     rule: {
       value: discount.rule.value,
+      conditions: mapConditionsToFormValues(discount.rule.conditions),
     },
     allocation: discount.rule.allocation,
     description: discount.rule.description,
@@ -96,6 +138,12 @@ export const formValuesToUpdateDiscountMapper = (
       ? values.valid_duration
       : undefined,
   }
+}
+
+// As the enum is not exported properly in core, we need to make a local version of it
+enum DiscountConditionOperator {
+  IN = "in",
+  NOT_IN = "not_in",
 }
 
 const mapCreateConditions = (

@@ -1,19 +1,22 @@
 import React, { useContext } from "react"
 import { LayeredModalContext } from "../../../components/molecules/modal/layered-modal"
+import { DiscountConditionType } from "../types"
 import ProductConditionSelector from "./condition-tables/products"
 
-// <ProductConditionSelector
-//               items={[]}
-//               onClose={() => close()}
-//               saveCondition={console.log} />,
+export type ConditionItem = {
+  label: string
+  value: DiscountConditionType
+  description: string
+  onClick: () => void
+}
 
 const useConditionModalItems = (close: () => void) => {
   const layeredModalContext = useContext(LayeredModalContext)
 
-  const items = [
+  const items: ConditionItem[] = [
     {
       label: "Product",
-      value: "products",
+      value: DiscountConditionType.PRODUCTS,
       description: "Only for specific products",
       onClick: () =>
         layeredModalContext.push({
@@ -24,25 +27,25 @@ const useConditionModalItems = (close: () => void) => {
     },
     {
       label: "Customer group",
-      value: "customer_groups",
+      value: DiscountConditionType.CUSTOMER_GROUPS,
       description: "Only for specific customer groups",
       onClick: () => console.log("clicked"),
     },
     {
       label: "Tag",
-      value: "tags",
+      value: DiscountConditionType.PRODUCT_TAGS,
       description: "Only for specific tags",
       onClick: () => console.log("clicked"),
     },
     {
       label: "Collection",
-      value: "collections",
+      value: DiscountConditionType.PRODUCT_COLLECTIONS,
       description: "Only for specific product collections",
       onClick: () => console.log("clicked"),
     },
     {
       label: "Type",
-      value: "types",
+      value: DiscountConditionType.PRODUCT_TYPES,
       description: "Only for specific product types",
       onClick: () => console.log("clicked"),
     },

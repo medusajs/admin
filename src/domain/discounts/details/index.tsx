@@ -1,8 +1,11 @@
 import { Discount } from "@medusajs/medusa"
 import { RouteComponentProps } from "@reach/router"
 import { navigate } from "gatsby"
-import { useAdminUpdateDiscount } from "medusa-react"
-import { useAdminDeleteDiscount, useAdminDiscount } from "medusa-react"
+import {
+  useAdminDeleteDiscount,
+  useAdminDiscount,
+  useAdminUpdateDiscount,
+} from "medusa-react"
 import React, { useState } from "react"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Spinner from "../../../components/atoms/spinner"
@@ -22,15 +25,20 @@ import DiscountForm from "../discount-form"
 import { DiscountFormProvider } from "../discount-form/form/discount-form-context"
 import { discountToFormValuesMapper } from "../discount-form/form/mappers"
 
-type EditProps = {
-  id: string
-} & RouteComponentProps
-
-const Edit: React.FC<EditProps> = ({ id }) => {
+const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const { discount, isLoading } = useAdminDiscount(id)
+  const { discount, isLoading } = useAdminDiscount(
+    id!,
+    {
+      expand:
+        "rule,rule.conditions,rule.conditions.products,rule.conditions.product_types",
+    },
+    {
+      enabled: !!id,
+    }
+  )
   const [showDelete, setShowDelete] = useState(false)
-  const deleteDiscount = useAdminDeleteDiscount(id)
+  const deleteDiscount = useAdminDeleteDiscount(id!)
   const notification = useNotification()
 
   const handleDelete = () => {
@@ -100,7 +108,7 @@ const Edit: React.FC<EditProps> = ({ id }) => {
       </div>
       {!isLoading && discount && (
         <DiscountFormProvider
-          discount={discountToFormValuesMapper(discount as any)} // suppressing type mismatch
+          discount={discountToFormValuesMapper(discount as Discount)}
           isEdit
         >
           <Fade isVisible={isOpen} isFullScreen={true}>

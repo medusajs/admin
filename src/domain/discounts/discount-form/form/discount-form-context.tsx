@@ -76,7 +76,7 @@ export const DiscountFormProvider = ({
   const [endsAt, setEndsAt] = useState(discount.ends_at)
 
   const [conditions, setConditions] = useState<PromotionConditionRecord>(
-    defaultConditionRecord
+    discount.rule?.conditions || defaultConditionRecord
   )
 
   const updateCondition = ({ type, update }: UpdateConditionProps) => {
@@ -85,10 +85,6 @@ export const DiscountFormProvider = ({
       [type]: update,
     }))
   }
-
-  useEffect(() => {
-    console.log(conditions)
-  }, [conditions])
 
   const methods = useForm({ defaultValues: discount, reValidateMode: "onBlur" })
 
@@ -102,7 +98,8 @@ export const DiscountFormProvider = ({
     setPrevAllocation(value)
   }
 
-  const setConditionType = (value) => methods.setValue("condition_type", value)
+  const setConditionType = (value: string | undefined) =>
+    methods.setValue("condition_type", value)
 
   const type = methods.watch("type") as string | undefined
   const conditionType = methods.watch("condition_type")
@@ -306,7 +303,7 @@ export const DiscountFormProvider = ({
 const DiscountFormContext = React.createContext<{
   type?: string
   conditionType?: string
-  setConditionType: (value: string) => void
+  setConditionType: (value: string | undefined) => void
   isDynamic: boolean
   setAllocation: (value: string) => void
   regionsDisabled: boolean

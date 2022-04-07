@@ -1,13 +1,15 @@
 import React, { useContext } from "react"
-import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
-import RadioGroup from "../../../components/organisms/radio-group"
+import ChevronRightIcon from "../../../components/fundamentals/icons/chevron-right-icon"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
-import { useDiscountForm } from "./form/discount-form-context"
+import Modal from "../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
-import useConditionModalItems from "./use-condition-modal-items"
+import { useDiscountForm } from "./form/discount-form-context"
+import useConditionModalItems, {
+  ConditionItem,
+} from "./use-condition-modal-items"
 
 type AddConditionsModalProps = {
   value?: string
@@ -19,22 +21,14 @@ function AddConditionsModal(props: AddConditionsModalProps) {
   const { close } = props
   const layeredModalContext = useContext(LayeredModalContext)
 
-  const { register, conditionType, setConditionType } = useDiscountForm()
-
-  const onNext = () => {
-    layeredModalContext.push({
-      title: "Condition type",
-      onBack: () => layeredModalContext.pop(),
-      view: <h3 className="p-8">{conditionType} selection TODO</h3>,
-    })
-  }
+  const { setConditionType } = useDiscountForm()
 
   const onClose = () => {
     setConditionType(undefined)
     close()
   }
 
-  const it = useConditionModalItems(close)
+  const items = useConditionModalItems(close)
 
   return (
     <LayeredModal context={layeredModalContext} handleClose={onClose}>
@@ -47,26 +41,9 @@ function AddConditionsModal(props: AddConditionsModalProps) {
         </Modal.Header>
 
         <Modal.Content className="flex-1">
-          <RadioGroup.Root
-            name="condition_type"
-            value={conditionType}
-            onValueChange={setConditionType}
-            ref={register("condition_type")}
-          >
-            {it.map((t) => (
-              <RadioGroup.SimpleItem
-                {...t}
-                className="rounded-lg border border-1 p-4 mb-2 w-full"
-                onClick={t.onClick}
-                label={<span className="font-semibold">{t.label}</span>}
-                description={
-                  <span className="text-grey-50 float-right">
-                    {t.description}
-                  </span>
-                }
-              />
-            ))}
-          </RadioGroup.Root>
+          {items.map((t) => (
+            <ConditionTypeItem key={t.value} {...t} />
+          ))}
         </Modal.Content>
 
         <Modal.Footer>
@@ -80,18 +57,34 @@ function AddConditionsModal(props: AddConditionsModalProps) {
               Cancel
             </Button>
             <Button
+              disabled
               size="large"
-              disabled={!conditionType}
               className="w-32 text-small justify-center"
               variant="primary"
-              onClick={onNext}
             >
-              Next
+              Save
             </Button>
           </div>
         </Modal.Footer>
       </Modal.Body>
     </LayeredModal>
+  )
+}
+
+const ConditionTypeItem: React.FC<ConditionItem> = (props) => {
+  const { label, description, onClick } = props
+
+  return (
+    <button
+      onClick={onClick}
+      className="rounded-lg border border-1 p-4 mb-2 cursor-pointer hover:bg-grey-5 transition-all w-full flex items-center justify-between"
+    >
+      <div className="flex flex-col items-start">
+        <div className="font-semibold ">{label}</div>
+        <div className="text-grey-50">{description}</div>
+      </div>
+      <ChevronRightIcon width={16} height={32} className="text-grey-50" />
+    </button>
   )
 }
 

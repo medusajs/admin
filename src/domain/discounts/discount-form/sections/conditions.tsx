@@ -1,10 +1,10 @@
 import React from "react"
 import NumberedItem from "../../../../components/molecules/numbered-item"
 import { useDiscountForm } from "../form/discount-form-context"
-import useConditionActions from "./useConditionActions"
+import { DiscountConditionType } from "../form/mappers"
+import useConditionActions from "./use-condition-actions"
 
-const MAX_TITLE_LENGTH = 38
-const Conditions = () => {
+const Conditions: React.FC = () => {
   const { conditions } = useDiscountForm()
 
   const { getActions } = useConditionActions()
@@ -17,11 +17,6 @@ const Conditions = () => {
               index={i + 1}
               title={getTitle(key)}
               actions={getActions(key)}
-              description={
-                <ConditionSetting
-                  titles={conditions[key].map((c) => c.title)}
-                />
-              }
             />
           )
         )
@@ -30,33 +25,18 @@ const Conditions = () => {
   )
 }
 
-const ConditionSetting = ({ titles }) => {
-  const titleStrings = titles.reduce(
-    (acc, cur) =>
-      acc[1] + cur.length > MAX_TITLE_LENGTH
-        ? acc
-        : [[...acc[0], cur], acc[1] + cur.length],
-    [[], 0]
-  )
-  const description = titleStrings[0].join(", ")
-
-  return (
-    <span className="text-grey-50 inter-small-regular">
-      {description}
-      <span className="text-grey-40">
-        {titles.length - titleStrings[0].length > 0 &&
-          ` + ${titles.length - 2} more`}
-      </span>
-    </span>
-  )
-}
-
-const getTitle = (type) => {
+const getTitle = (type: DiscountConditionType) => {
   switch (type) {
-    case "products":
+    case DiscountConditionType.PRODUCTS:
       return "Products"
-    default:
-      return "title"
+    case DiscountConditionType.PRODUCT_COLLECTIONS:
+      return "Product collections"
+    case DiscountConditionType.PRODUCT_TAGS:
+      return "Product tags"
+    case DiscountConditionType.CUSTOMER_GROUPS:
+      return "Customer groups"
+    case DiscountConditionType.PRODUCT_TYPES:
+      return "Product types"
   }
 }
 

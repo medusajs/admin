@@ -1,5 +1,4 @@
-import { Router } from "@reach/router"
-import { navigate } from "gatsby"
+import { RouteComponentProps, Router } from "@reach/router"
 import React, { useState } from "react"
 import Fade from "../../components/atoms/fade-wrapper"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
@@ -11,7 +10,7 @@ import DiscountForm from "./discount-form"
 import { DiscountFormProvider } from "./discount-form/form/discount-form-context"
 import New from "./new"
 
-const DiscountIndex = () => {
+const DiscountIndex: React.FC<RouteComponentProps> = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const actionables = [
