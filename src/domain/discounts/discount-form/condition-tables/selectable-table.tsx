@@ -74,7 +74,6 @@ export const SelectableTable = <T extends object>({
   )
 
   useEffect(() => {
-    console.log({ selectedRowIDs: table.state.selectedRowIds })
     onChange(Object.keys(table.state.selectedRowIds))
   }, [table.state.selectedRowIds])
 

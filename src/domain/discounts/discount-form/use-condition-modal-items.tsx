@@ -2,6 +2,7 @@ import React, { useContext } from "react"
 import { LayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import { DiscountConditionType } from "../types"
 import ProductConditionSelector from "./condition-tables/products"
+import TagConditionSelector from "./condition-tables/tags"
 
 export type ConditionItem = {
   label: string
@@ -35,7 +36,12 @@ const useConditionModalItems = (close: () => void) => {
       label: "Tag",
       value: DiscountConditionType.PRODUCT_TAGS,
       description: "Only for specific tags",
-      onClick: () => console.log("clicked"),
+      onClick: () =>
+        layeredModalContext.push({
+          title: "Customer groups",
+          onBack: () => layeredModalContext.pop(),
+          view: <TagConditionSelector onClose={close} />,
+        }),
     },
     {
       label: "Collection",
