@@ -24,6 +24,7 @@ import { formatAmountWithSymbol } from "../../../utils/prices"
 import DiscountForm from "../discount-form"
 import { DiscountFormProvider } from "../discount-form/form/discount-form-context"
 import { discountToFormValuesMapper } from "../discount-form/form/mappers"
+import PromotionSettings from "./settings"
 
 const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -40,6 +41,12 @@ const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
   const [showDelete, setShowDelete] = useState(false)
   const deleteDiscount = useAdminDeleteDiscount(id!)
   const notification = useNotification()
+  const [openItems, setOpenItems] = useState<string[]>([])
+
+  const openWithItems = (items: string[]) => {
+    setOpenItems(items)
+    setIsOpen(true)
+  }
 
   const handleDelete = () => {
     deleteDiscount.mutate(undefined, {
@@ -75,33 +82,38 @@ const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
           <Spinner variant="secondary" />
         </div>
       ) : (
-        <HeadingBodyCard
-          promotion={discount}
-          id={id}
-          setIsOpen={setIsOpen}
-          title={discount.code}
-          subtitle={discount.rule.description}
-        >
-          <div className="flex">
-            <div className="border-l border-grey-20 pl-6">
-              {getPromotionDescription(discount)}
-              {/* <h2 className="inter-xlarge-regular text-grey-90">
-                {discount.usage_count}
-              </h2> */}
-              <span className="inter-small-regular text-grey-50">
-                {"Discount Amount"}
-              </span>
+        <>
+          <HeadingBodyCard
+            promotion={discount}
+            id={id}
+            setIsOpen={setIsOpen}
+            title={discount.code}
+            subtitle={discount.rule.description}
+          >
+            <div className="flex">
+              <div className="border-l border-grey-20 pl-6">
+                {getPromotionDescription(discount)}
+                <span className="inter-small-regular text-grey-50">
+                  {"Discount Amount"}
+                </span>
+              </div>
+              <div className="border-l border-grey-20 pl-6 ml-12">
+                <h2 className="inter-xlarge-regular text-grey-90">
+                  {discount.usage_count.toLocaleString("en-US")}
+                </h2>
+                <span className="inter-small-regular text-grey-50">
+                  {"Total Redemptions"}
+                </span>
+              </div>
             </div>
-            <div className="border-l border-grey-20 pl-6 ml-12">
-              <h2 className="inter-xlarge-regular text-grey-90">
-                {discount.usage_count.toLocaleString("en-US")}
-              </h2>
-              <span className="inter-small-regular text-grey-50">
-                {"Total Redemptions"}
-              </span>
-            </div>
+          </HeadingBodyCard>
+          <div className="mt-4 w-full">
+            <PromotionSettings
+              promotion={discount}
+              openWithItems={openWithItems}
+            />
           </div>
-        </HeadingBodyCard>
+        </>
       )}
       <div className="mt-xlarge">
         <RawJSON data={discount} title="Raw discount" />
@@ -113,7 +125,11 @@ const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
         >
           <Fade isVisible={isOpen} isFullScreen={true}>
             <DiscountForm
-              closeForm={() => setIsOpen(false)}
+              additionalOpen={openItems}
+              closeForm={() => {
+                setOpenItems([])
+                setIsOpen(false)
+              }}
               discount={discount}
               isEdit
             />
