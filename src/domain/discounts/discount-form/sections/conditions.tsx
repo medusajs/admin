@@ -1,5 +1,6 @@
 import React from "react"
 import NumberedItem from "../../../../components/molecules/numbered-item"
+import { removeNullish } from "../../../../utils/remove-nullish"
 import { useDiscountForm } from "../form/discount-form-context"
 import { DiscountConditionType } from "../form/mappers"
 import useConditionActions from "./use-condition-actions"
@@ -7,15 +8,17 @@ import useConditionActions from "./use-condition-actions"
 const Conditions: React.FC = () => {
   const { conditions } = useDiscountForm()
 
+  const cleanConditions = removeNullish(conditions)
+
   const { getActions } = useConditionActions()
   return (
     <div className="pt-6 flex flex-col gap-y-small">
-      {Object.keys(conditions).map((key, i) => {
+      {Object.keys(cleanConditions).map((key, i) => {
         return (
           conditions[key] && (
             <NumberedItem
               index={i + 1}
-              title={getTitle(key)}
+              title={getTitle(key as DiscountConditionType)}
               actions={getActions(key)}
             />
           )

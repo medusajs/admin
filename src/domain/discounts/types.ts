@@ -28,3 +28,8 @@ export enum DiscountConditionOperator {
   IN = "in",
   NOT_IN = "not_in",
 }
+
+export type CreateConditionProps = {
+  type: DiscountConditionType
+  ids: string[]
+}
