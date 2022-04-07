@@ -1,8 +1,6 @@
 import { navigate } from "gatsby"
 import * as React from "react"
 import { useFormContext } from "react-hook-form"
-import { navigate } from "gatsby"
-
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
