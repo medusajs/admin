@@ -1,10 +1,3 @@
-import {
-  CustomerGroup,
-  Product,
-  ProductCollection,
-  ProductTag,
-  ProductType,
-} from "@medusajs/medusa"
 import { debounce } from "lodash"
 import React, { useEffect } from "react"
 import {
@@ -23,7 +16,7 @@ import Table, {
 } from "../../../../components/molecules/table"
 import useQueryFilters from "../../../../hooks/use-query-filters"
 
-type SelectableTableProps = {
+type SelectableTableProps<T extends object> = {
   resourceName?: string
   label?: string
   isLoading?: boolean
@@ -31,22 +24,17 @@ type SelectableTableProps = {
   options: Omit<TableProps, "filteringOptions"> & {
     filters?: Pick<TableProps, "filteringOptions">
   }
-  data?:
-    | Product[]
-    | ProductType[]
-    | ProductCollection[]
-    | ProductTag[]
-    | CustomerGroup[]
+  data?: T[]
   selectedIds?: string[]
-  columns: Column[]
+  columns: Column<T>[]
   onChange: (items: string[]) => void
-  renderRow: (props: { row: Row }) => React.ReactElement
+  renderRow: (props: { row: Row<T> }) => React.ReactElement
   renderHeaderGroup?: (props: {
-    headerGroup: HeaderGroup
+    headerGroup: HeaderGroup<T>
   }) => React.ReactElement
 } & ReturnType<typeof useQueryFilters>
 
-export const SelectableTable: React.FC<SelectableTableProps> = ({
+export const SelectableTable = <T extends object>({
   label,
   resourceName = "",
   selectedIds = [],
@@ -61,8 +49,8 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({
   setQuery,
   queryObject,
   paginate,
-}) => {
-  const table = useTable(
+}: SelectableTableProps<T>) => {
+  const table = useTable<T>(
     {
       columns,
       data: data || [],
@@ -73,7 +61,7 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({
         selectedRowIds: selectedIds.reduce((prev, id) => {
           prev[id] = true
           return prev
-        }, {}),
+        }, {} as Record<string, boolean>),
       },
       pageCount: Math.ceil(totalCount / queryObject.limit),
       autoResetSelectedRows: false,
