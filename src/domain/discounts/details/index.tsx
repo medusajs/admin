@@ -28,16 +28,9 @@ import PromotionSettings from "./settings"
 
 const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const { discount, isLoading } = useAdminDiscount(
-    id!,
-    {
-      expand:
-        "rule,rule.conditions,rule.conditions.products,rule.conditions.product_types",
-    },
-    {
-      enabled: !!id,
-    }
-  )
+  const { discount, isLoading } = useAdminDiscount(id!, undefined, {
+    enabled: !!id,
+  })
   const [showDelete, setShowDelete] = useState(false)
   const deleteDiscount = useAdminDeleteDiscount(id!)
   const notification = useNotification()

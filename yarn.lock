@@ -2091,10 +2091,10 @@
   resolved "https://registry.yarnpkg.com/@mdx-js/util/-/util-1.6.22.tgz#219dfd89ae5b97a8801f015323ffa4b62f45718b"
   integrity sha512-H1rQc1ZOHANWBvPcW+JpGwr+juXSxM8Q8YCkm3GhZd8REu1fHR3z99CErO1p9pkcfcxZnMdIZdIsXkOHY0NilA==
 
-"@medusajs/medusa-cli@1.2.1-dev-1649321860463":
-  version "1.2.1-dev-1649321860463"
-  resolved "http://localhost:4873/@medusajs%2fmedusa-cli/-/medusa-cli-1.2.1-dev-1649321860463.tgz#a9592c819fb50c5fcadf10f41aba5b201c51d2a6"
-  integrity sha512-7J3HpTtUnsOGQqIFUjO6DEm1xCiij5lxTYKznbtSyEqpmNjeYMgWaEdDhuMrz780gDrto6WZG9HU0m3xGDOOuw==
+"@medusajs/medusa-cli@1.2.1-dev-1649336224598":
+  version "1.2.1-dev-1649336224598"
+  resolved "http://localhost:4873/@medusajs%2fmedusa-cli/-/medusa-cli-1.2.1-dev-1649336224598.tgz#a4f5dcc4a3dbdf673011f31ca127ed5748567c31"
+  integrity sha512-bP6lM5pSORz9D3Kp4MfVVNPp8qaMVxz7oz9dxxj7g9NZc1toCIcV6CU3AtDI7wljJAtF7DMxTV+oxzrmLUIedg==
   dependencies:
     "@babel/polyfill" "^7.8.7"
     "@babel/runtime" "^7.9.6"
@@ -2112,8 +2112,8 @@
     is-valid-path "^0.1.1"
     joi-objectid "^3.0.1"
     meant "^1.0.1"
-    medusa-core-utils "1.1.31-dev-1649321860463"
-    medusa-telemetry "0.0.11-dev-1649321860463"
+    medusa-core-utils "1.1.31-dev-1649336224598"
+    medusa-telemetry "0.0.11-dev-1649336224598"
     netrc-parser "^3.1.6"
     open "^8.0.6"
     ora "^5.4.1"
@@ -2127,24 +2127,24 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@1.1.1-dev-1649321860463":
-  version "1.1.1-dev-1649321860463"
-  resolved "http://localhost:4873/@medusajs%2fmedusa-js/-/medusa-js-1.1.1-dev-1649321860463.tgz#f0c28b776ae58a678ae6a1716a7abc4cc834cf06"
-  integrity sha512-q22wJHqKTQnujKLniba9M+fjpRsVZnifEraGwFABPjX8JY3ATGN3W1CKbs4dpd6Ud5Jjt1G0S7ZH6UXG46fo+Q==
+"@medusajs/medusa-js@1.1.1-dev-1649336224598":
+  version "1.1.1-dev-1649336224598"
+  resolved "http://localhost:4873/@medusajs%2fmedusa-js/-/medusa-js-1.1.1-dev-1649336224598.tgz#ca9419470ed54eca0534792deebfff5b10b2b81f"
+  integrity sha512-Zm/QsrOH7DFVpXA8tqKhkenTQ0WQMew9dc9I4UjdRZ1yj6MIRbaJHX6DZJ2vEz3mdzFgjRJL43VQaq63v/x/1A==
   dependencies:
-    "@medusajs/medusa" "1.2.1-dev-1649321860463"
+    "@medusajs/medusa" "1.2.1-dev-1649336224598"
     axios "^0.24.0"
     form-data "^4.0.0"
     qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa@1.2.1-dev-1649321860463":
-  version "1.2.1-dev-1649321860463"
-  resolved "http://localhost:4873/@medusajs%2fmedusa/-/medusa-1.2.1-dev-1649321860463.tgz#febe3a9bc3071254bb6282d15416b924314063f1"
-  integrity sha512-HrfUYO6zwSqrrb9X8zqm5rhNEEjuggghtgbMNRmES9ijBOOUakB1hLRBvfu5Y96/JD1MIL4wu/094Sx6bWg2EQ==
+"@medusajs/medusa@1.2.1-dev-1649336224598":
+  version "1.2.1-dev-1649336224598"
+  resolved "http://localhost:4873/@medusajs%2fmedusa/-/medusa-1.2.1-dev-1649336224598.tgz#38ae463883e5bc6d3fb50c20e432475a87a14715"
+  integrity sha512-1MNbX9rI9f+WltN63VjszjwEbgMqJrK3UKgHgQx3kx543NbYXAOegnf/jbbPoMwEr2/jCNUigABjaP2sLGkdJg==
   dependencies:
     "@hapi/joi" "^16.1.8"
-    "@medusajs/medusa-cli" "1.2.1-dev-1649321860463"
+    "@medusajs/medusa-cli" "1.2.1-dev-1649336224598"
     "@types/lodash" "^4.14.168"
     awilix "^4.2.3"
     body-parser "^1.19.0"
@@ -2168,8 +2168,8 @@
     joi "^17.3.0"
     joi-objectid "^3.0.1"
     jsonwebtoken "^8.5.1"
-    medusa-core-utils "1.1.31-dev-1649321860463"
-    medusa-test-utils "1.1.37-dev-1649321860463"
+    medusa-core-utils "1.1.31-dev-1649336224598"
+    medusa-test-utils "1.1.37-dev-1649336224598"
     morgan "^1.9.1"
     multer "^1.4.2"
     passport "^0.4.0"
@@ -12297,29 +12297,29 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
   integrity sha1-hxDXrwqmJvj/+hzgAWhUUmMlV0g=
 
-medusa-core-utils@1.1.31-dev-1649321860463:
-  version "1.1.31-dev-1649321860463"
-  resolved "http://localhost:4873/medusa-core-utils/-/medusa-core-utils-1.1.31-dev-1649321860463.tgz#90856f890255a2cc0df4786a8eec871ca3f45cc2"
-  integrity sha512-VhcL7gcuhH/Wog2bxtZdwqCEpv5bb3N0PNJc8bbI7IkrdR9ELgqeouG1wdUZT0DO/SK78PXc9t6j3yBf9PLIzg==
+medusa-core-utils@1.1.31-dev-1649336224598:
+  version "1.1.31-dev-1649336224598"
+  resolved "http://localhost:4873/medusa-core-utils/-/medusa-core-utils-1.1.31-dev-1649336224598.tgz#4479477b427b3f4d290583db1035a121b1586b0c"
+  integrity sha512-CnM0ch9qqZN3KjYc7WjM7KeRhFJxq7IYPRJ5JnOTHeoWulh5RcDR9oSYPILllBKh8Ie4jqlNg0ZCgtW0g2AdXA==
   dependencies:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
-medusa-react@0.2.1-dev-1649321860463:
-  version "0.2.1-dev-1649321860463"
-  resolved "http://localhost:4873/medusa-react/-/medusa-react-0.2.1-dev-1649321860463.tgz#20274342d8b141fc3cefc5b4b4bf6a96c94e2721"
-  integrity sha512-wNsfM+K9ehRFZreZqtF6b7pTMQ7ZqvGDthX4rilrrup0EXJGtVbde1N7gC8kOdLIpm+tJ49dsjh8mh3BYMSc+A==
+medusa-react@0.2.1-dev-1649336224598:
+  version "0.2.1-dev-1649336224598"
+  resolved "http://localhost:4873/medusa-react/-/medusa-react-0.2.1-dev-1649336224598.tgz#85f8208e54f0ae6e9b0cbdd54839383725a8fe6f"
+  integrity sha512-G01CXasIRgyfdGJsI8g7I0utsDDnmoL/HATWq+RdstYOLNCSf04FhFlaLf/wg+ZSO6U4/Nal6hSeQC/I7hVKCw==
   dependencies:
-    "@medusajs/medusa" "1.2.1-dev-1649321860463"
-    "@medusajs/medusa-js" "1.1.1-dev-1649321860463"
+    "@medusajs/medusa" "1.2.1-dev-1649336224598"
+    "@medusajs/medusa-js" "1.1.1-dev-1649336224598"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
 
-medusa-telemetry@0.0.11-dev-1649321860463:
-  version "0.0.11-dev-1649321860463"
-  resolved "http://localhost:4873/medusa-telemetry/-/medusa-telemetry-0.0.11-dev-1649321860463.tgz#b5ab8094728f4e55e873bc3cf4fdc4a75a62824c"
-  integrity sha512-h6StnzazF2ikSp0UICItsi8cRFfDPE1ORhNJQ95ozn29SMv8HJuAJrgt3LQj4ix3GJ5cQT/piLFOFTbzXR3Nlw==
+medusa-telemetry@0.0.11-dev-1649336224598:
+  version "0.0.11-dev-1649336224598"
+  resolved "http://localhost:4873/medusa-telemetry/-/medusa-telemetry-0.0.11-dev-1649336224598.tgz#e2eabeb3d7290f042828b0e7c4e3f044f5d1dc09"
+  integrity sha512-6zormMgg/SMhy8vf2Ps7NZQHdtGf51mngdmyk3Q6NwSS5tqlbAEA4XYKk8UoZFwyu+ovSbEwu2HEBQ+IQEIRRw==
   dependencies:
     axios "^0.21.1"
     axios-retry "^3.1.9"
@@ -12331,13 +12331,13 @@ medusa-telemetry@0.0.11-dev-1649321860463:
     remove-trailing-slash "^0.1.1"
     uuid "^8.3.2"
 
-medusa-test-utils@1.1.37-dev-1649321860463:
-  version "1.1.37-dev-1649321860463"
-  resolved "http://localhost:4873/medusa-test-utils/-/medusa-test-utils-1.1.37-dev-1649321860463.tgz#0df51c7bc236771ce9e7a036c7010efc185c0915"
-  integrity sha512-foA/D/6w/J8ZSbqtJbgc7vOWW4YAatuaWqEgXYCC8foYCPjh/n22MM3qGFMDlTfJMpkrtzgcO0+kqNbOqDeQ/Q==
+medusa-test-utils@1.1.37-dev-1649336224598:
+  version "1.1.37-dev-1649336224598"
+  resolved "http://localhost:4873/medusa-test-utils/-/medusa-test-utils-1.1.37-dev-1649336224598.tgz#35577d6fb56ab6802749f0d47f7641ea273d24e6"
+  integrity sha512-iOZECmxCU/eiKwrvtfDZRPHrCvhYXVRCPfuT58MKASxaEhgmikBlKePlqb+9bXS4axJPGmbKNFZU3MZUMrFigg==
   dependencies:
     "@babel/plugin-transform-classes" "^7.9.5"
-    medusa-core-utils "1.1.31-dev-1649321860463"
+    medusa-core-utils "1.1.31-dev-1649336224598"
     randomatic "^3.1.1"
 
 mem@^8.1.1:

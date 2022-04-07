@@ -76,7 +76,7 @@ export const discountToFormValuesMapper = (
     type: discount.rule.type,
     rule: {
       value: discount.rule.value,
-      conditions: mapConditionsToFormValues(discount.rule.conditions),
+      conditions: discount.rule.conditions,
     },
     allocation: discount.rule.allocation,
     description: discount.rule.description,

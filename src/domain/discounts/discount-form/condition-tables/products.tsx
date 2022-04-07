@@ -48,8 +48,6 @@ const ProductConditionSelector = ({ onClose }) => {
   const [items, setItems] = useState(conditions.products || [])
 
   const changed = (values: string[]) => {
-    console.log(values)
-
     const selectedProducts =
       products?.filter((product) => values.includes(product.id)) || []
 
