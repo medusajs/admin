@@ -108,7 +108,7 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
 
   const updateUrlFromFilter = (obj = {}) => {
     const stringified = qs.stringify(obj)
-    window.history.replaceState(`/a/discounts`, "", `${`?${stringified}`}`)
+    window.history.replaceState(`/a/promotions`, "", `${`?${stringified}`}`)
   }
 
   const refreshWithFilters = () => {

@@ -33,7 +33,7 @@ const IndexPage = () => {
         <PrivateRoute path="draft-orders/*" component={DraftOrders} />
         <PrivateRoute path="returns" component={Returns} />
         <PrivateRoute path="swaps" component={Swaps} />
-        <PrivateRoute path="discounts/*" component={Promotions} />
+        <PrivateRoute path="promotions/*" component={Promotions} />
         <PrivateRoute path="customers/*" component={Customers} />
         <PrivateRoute path="pricing/*" component={Pricing} />
         <PrivateRoute path="settings/*" component={Settings} />

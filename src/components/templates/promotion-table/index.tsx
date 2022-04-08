@@ -113,7 +113,7 @@ const PromotionsTable: React.FC = () => {
 
   const updateUrlFromFilter = (obj = {}) => {
     const stringified = qs.stringify(obj)
-    window.history.replaceState(`/a/discounts`, "", `${`?${stringified}`}`)
+    window.history.replaceState(`/a/promotions`, "", `${`?${stringified}`}`)
   }
 
   const refreshWithFilters = () => {

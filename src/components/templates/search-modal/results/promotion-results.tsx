@@ -31,7 +31,7 @@ const PromotionResults = ({
               )}
             >
               <Link
-                to={`/a/discounts/${promotion.id}`}
+                to={`/a/promotions/${promotion.id}`}
                 className="py-1.5 flex items-center rounded-rounded justify-between"
               >
                 <div className="flex items-center gap-x-3">

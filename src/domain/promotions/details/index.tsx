@@ -67,7 +67,7 @@ const Edit: React.FC<EditProps> = ({ id }) => {
       <Breadcrumb
         currentPage="Add Promotion"
         previousBreadcrumb="Promotion"
-        previousRoute="/a/discounts"
+        previousRoute="/a/promotions"
       />
       {isLoading || !promotion ? (
         <div className="h-full flex items-center justify-center">
@@ -181,7 +181,7 @@ const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
       deletePromotion.mutate(undefined, {
         onSuccess: () => {
           notification("Success", "Promotion deleted successfully", "success")
-          navigate("/a/discounts/")
+          navigate("/a/promotions/")
         },
         onError: (err) => {
           notification("Ooops", getErrorMessage(err), "error")

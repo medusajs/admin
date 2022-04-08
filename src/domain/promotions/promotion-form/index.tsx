@@ -56,7 +56,7 @@ const PromotionForm: React.FC<PromotionFormProps> = ({
     if (closeForm) {
       closeForm()
     } else {
-      navigate("/a/discounts")
+      navigate("/a/promotions")
     }
   }
 
