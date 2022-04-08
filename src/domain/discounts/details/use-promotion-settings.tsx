@@ -98,7 +98,7 @@ const getConditionSettings = (condition: any, openWithItems) => {
 }
 
 const usePromotionSettings = (promotion: Discount, openWithItems) => {
-  const updateDiscount = useAdminUpdateDiscount(promotion.id)
+  const updatePromotion = useAdminUpdateDiscount(promotion.id)
 
   const notification = useNotification()
 
@@ -147,13 +147,13 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
           icon: <TrashIcon size={20} />,
           variant: "danger",
           onClick: async () =>
-            await updateDiscount.mutateAsync(
+            await updatePromotion.mutateAsync(
               { ends_at: null },
               {
                 onSuccess: () => {
                   notification(
                     "Success",
-                    "Discount end date removed",
+                    "Promotion end date removed",
                     "success"
                   )
                 },
@@ -183,7 +183,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
           icon: <TrashIcon size={20} />,
           variant: "danger",
           onClick: async () =>
-            await updateDiscount.mutateAsync(
+            await updatePromotion.mutateAsync(
               { usage_limit: null },
               {
                 onSuccess: () => {
@@ -219,13 +219,13 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
           icon: <TrashIcon size={20} />,
           variant: "danger",
           onClick: async () =>
-            await updateDiscount.mutateAsync(
+            await updatePromotion.mutateAsync(
               { valid_duration: null },
               {
                 onSuccess: () => {
                   notification(
                     "Success",
-                    "Discount duration removed",
+                    "Promotion duration removed",
                     "success"
                   )
                 },
@@ -253,7 +253,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
                 icon: <TrashIcon size={20} />,
                 variant: "danger",
                 onClick: async () =>
-                  await updateDiscount.mutateAsync(
+                  await updatePromotion.mutateAsync(
                     {
                       rule: {
                         ...promotion.rule,
@@ -289,7 +289,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
                       onSuccess: () => {
                         notification(
                           "Success",
-                          "Discount condition removed",
+                          "Promotion condition removed",
                           "success"
                         )
                       },
