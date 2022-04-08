@@ -1,7 +1,7 @@
 import { ProductTag } from "@medusajs/medusa"
 import { useAdminProductTags } from "medusa-react"
 import React, { useContext, useState } from "react"
-import { Column, Row } from "react-table"
+import { Column, HeaderGroup, Row } from "react-table"
 
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
@@ -44,6 +44,22 @@ const TagRow = ({ row }: { row: Row<ProductTag> }) => {
         )
       })}
     </Table.Row>
+  )
+}
+
+const TagHeader = ({
+  headerGroup,
+}: {
+  headerGroup: HeaderGroup<ProductTag>
+}) => {
+  return (
+    <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+      {headerGroup.headers.map((col) => (
+        <Table.HeadCell {...col.getHeaderProps()}>
+          {col.render("Header")}
+        </Table.HeadCell>
+      ))}
+    </Table.HeadRow>
   )
 }
 
@@ -93,6 +109,7 @@ const TagConditionSelector = ({ onClose }) => {
             isLoading={isLoading}
             onChange={changed}
             renderRow={TagRow}
+            renderHeaderGroup={TagHeader}
             {...params}
           />
         )}
