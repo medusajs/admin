@@ -19,7 +19,7 @@ const PromotionResults = ({
   selected,
 }: PromotionResultsProps) => {
   return promotions.length > 0 ? (
-    <SectionCollapsible title={"Discounts"} length={promotions?.length || 0}>
+    <SectionCollapsible title={"Promotions"} length={promotions?.length || 0}>
       <div className="mt-large">
         <div className="flex flex-col">
           {promotions?.map((promotion, index) => (
