@@ -38,7 +38,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific tags",
       onClick: () =>
         layeredModalContext.push({
-          title: "Customer groups",
+          title: "Product tags",
           onBack: () => layeredModalContext.pop(),
           view: <TagConditionSelector onClose={close} />,
         }),
