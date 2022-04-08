@@ -8,7 +8,7 @@ import Switch from "../../../../components/atoms/switch"
 import AvailabilityDuration from "../../../../components/molecules/availability-duration"
 import InputField from "../../../../components/molecules/input"
 import Accordion from "../../../../components/organisms/accordion"
-import { useDiscountForm } from "../form/discount-form-context"
+import { useDiscountForm } from "../form/promotion-form-context"
 
 type SettingsProps = {
   isEdit?: boolean

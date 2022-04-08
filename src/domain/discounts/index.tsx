@@ -1,17 +1,16 @@
 import { Router } from "@reach/router"
-import { navigate } from "gatsby"
 import React, { useState } from "react"
 import Fade from "../../components/atoms/fade-wrapper"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
-import DiscountTable from "../../components/templates/discount-table"
+import PromotionsTable from "../../components/templates/promotion-table"
 import Details from "./details"
-import DiscountForm from "./discount-form"
-import { DiscountFormProvider } from "./discount-form/form/discount-form-context"
+import PromotionForm from "./promotion-form"
+import { PromotionFormProvider } from "./promotion-form/form/promotion-form-context"
 import New from "./new"
 
-const DiscountIndex = () => {
+const PromotionIndex = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const actionables = [
@@ -29,26 +28,26 @@ const DiscountIndex = () => {
           actionables={actionables}
           customHeader={<TableViewHeader views={["promotions"]} />}
         >
-          <DiscountTable />
+          <PromotionsTable />
         </BodyCard>
       </div>
-      <DiscountFormProvider>
+      <PromotionFormProvider>
         <Fade isVisible={isOpen} isFullScreen={true}>
-          <DiscountForm closeForm={() => setIsOpen(false)} />
+          <PromotionForm closeForm={() => setIsOpen(false)} />
         </Fade>
-      </DiscountFormProvider>
+      </PromotionFormProvider>
     </div>
   )
 }
 
-const Discounts = () => {
+const Promotions = () => {
   return (
     <Router>
-      <DiscountIndex path="/" />
+      <PromotionIndex path="/" />
       <Details path=":id" />
       <New path="new" />
     </Router>
   )
 }
 
-export default Discounts
+export default Promotions

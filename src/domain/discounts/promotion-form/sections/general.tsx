@@ -8,7 +8,7 @@ import InputField from "../../../../components/molecules/input"
 import Select from "../../../../components/molecules/select"
 import Textarea from "../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import { useDiscountForm } from "../form/discount-form-context"
+import { useDiscountForm } from "../form/promotion-form-context"
 
 const General = ({ discount, isEdit = false }) => {
   const initialCurrency = discount?.regions?.[0].currency_code || undefined

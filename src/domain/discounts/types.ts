@@ -1,4 +1,4 @@
-export type DiscountFormType = {
+export type PromotionFormType = {
   code: string
   usage_limit: string
   rule: {

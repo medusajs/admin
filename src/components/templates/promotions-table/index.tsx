@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
-import DiscountFilters from "../discount-filter-dropdown"
+import PromotionFilters from "../promotion-filter-dropdown"
 import { usePromotionTableColumns } from "./use-promotion-columns"
 import { usePromotionFilters } from "./use-promotion-filters"
 import usePromotionActions from "./use-promotion-row-actions"
@@ -15,7 +15,7 @@ const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {}
 
-const DiscountTable: React.FC = () => {
+const PromotionsTable: React.FC = () => {
   const {
     removeTab,
     setTab,
@@ -34,7 +34,7 @@ const DiscountTable: React.FC = () => {
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const { discounts, isLoading, count } = useAdminDiscounts({
+  const { discounts: promotions, isLoading, count } = useAdminDiscounts({
     is_dynamic: false,
     ...queryObject,
   })
@@ -70,7 +70,7 @@ const DiscountTable: React.FC = () => {
   } = useTable(
     {
       columns,
-      data: discounts || [],
+      data: promotions || [],
       manualPagination: true,
       initialState: {
         pageSize: lim,
@@ -139,7 +139,7 @@ const DiscountTable: React.FC = () => {
     <div className="w-full overflow-y-auto flex flex-col justify-between min-h-[300px] h-full ">
       <Table
         filteringOptions={
-          <DiscountFilters
+          <PromotionFilters
             filters={filters}
             submitFilters={setFilters}
             clearFilters={clearFilters}
@@ -168,7 +168,7 @@ const DiscountTable: React.FC = () => {
             </Table.HeadRow>
           ))}
         </Table.Head>
-        {isLoading || !discounts ? (
+        {isLoading || !promotions ? (
           <div className="flex w-full h-full absolute items-center justify-center mt-10">
             <div className="">
               <Spinner size={"large"} variant={"secondary"} />
@@ -188,7 +188,7 @@ const DiscountTable: React.FC = () => {
         limit={queryObject.limit}
         offset={queryObject.offset}
         pageSize={queryObject.offset + rows.length}
-        title="Discounts"
+        title="Promotions"
         currentPage={pageIndex + 1}
         pageCount={pageCount}
         nextPage={handleNext}
@@ -220,4 +220,4 @@ const PromotionRow = ({ row }) => {
   )
 }
 
-export default DiscountTable
+export default PromotionsTable

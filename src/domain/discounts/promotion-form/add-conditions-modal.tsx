@@ -3,7 +3,7 @@ import React, { useContext } from "react"
 import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
-import { useDiscountForm } from "./form/discount-form-context"
+import { useDiscountForm } from "./form/promotion-form-context"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import { Option } from "../../../../types/shared"
-import { DiscountFormValues } from "./mappers"
+import { PromotionFormValues } from "./mappers"
 
-const defaultDiscount: DiscountFormValues = {
+const defaultDiscount: PromotionFormValues = {
   code: "",
   type: "percentage",
   value: undefined,
@@ -16,17 +16,17 @@ const defaultDiscount: DiscountFormValues = {
   ends_at: null,
 }
 
-type DiscountFormProviderProps = {
-  discount?: DiscountFormValues
+type PromotionFormProviderProps = {
+  promotion?: PromotionFormValues
   isEdit?: boolean
   children?: React.ReactNode
 }
 
-export const DiscountFormProvider = ({
-  discount = defaultDiscount,
+export const PromotionFormProvider = ({
+  promotion: discount = defaultDiscount,
   isEdit = false,
   children,
-}: DiscountFormProviderProps) => {
+}: PromotionFormProviderProps) => {
   const [regionsDisabled, setRegionsDisabled] = useState(false)
   const [appliesToAll, setAppliesToAll] = useState(true)
   const [isFreeShipping, setIsFreeShipping] = useState(false)

@@ -8,7 +8,7 @@ import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../components/organisms/accordion"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
-import { useDiscountForm } from "./form/discount-form-context"
+import { useDiscountForm } from "./form/promotion-form-context"
 import { useFormActions } from "./form/use-form-actions"
 import Conditions from "./sections/conditions"
 import General from "./sections/general"
@@ -18,14 +18,14 @@ import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import AddConditionsModal from "./add-conditions-modal"
 
 type DiscountFormProps = {
-  discount?: any
+  promotion?: any
   isEdit?: boolean
   additionalOpen?: string[]
   closeForm?: () => void
 }
 
 const DiscountForm: React.FC<DiscountFormProps> = ({
-  discount,
+  promotion: discount,
   closeForm,
   additionalOpen = [],
   isEdit = false,

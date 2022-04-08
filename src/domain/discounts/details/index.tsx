@@ -1,4 +1,3 @@
-import { Discount } from "@medusajs/medusa"
 import { RouteComponentProps } from "@reach/router"
 import { navigate } from "gatsby"
 import { useAdminUpdateDiscount } from "medusa-react"
@@ -18,10 +17,11 @@ import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
-import DiscountForm from "../discount-form"
-import { DiscountFormProvider } from "../discount-form/form/discount-form-context"
-import { discountToFormValuesMapper } from "../discount-form/form/mappers"
+import PromotionForm from "../promotion-form"
+import { PromotionFormProvider } from "../promotion-form/form/promotion-form-context"
+import { promotionToFormValuesMapper } from "../promotion-form/form/mappers"
 import PromotionSettings from "./settings"
+import { Discount } from "@medusajs/medusa"
 
 type EditProps = {
   id: string
@@ -29,9 +29,9 @@ type EditProps = {
 
 const Edit: React.FC<EditProps> = ({ id }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const { discount, isLoading } = useAdminDiscount(id)
+  const { discount: promotion, isLoading } = useAdminDiscount(id)
   const [showDelete, setShowDelete] = useState(false)
-  const deleteDiscount = useAdminDeleteDiscount(id)
+  const deletePromotion = useAdminDeleteDiscount(id)
   const notification = useNotification()
   const [openItems, setOpenItems] = useState<string[]>([])
 
@@ -41,9 +41,9 @@ const Edit: React.FC<EditProps> = ({ id }) => {
   }
 
   const handleDelete = () => {
-    deleteDiscount.mutate(undefined, {
+    deletePromotion.mutate(undefined, {
       onSuccess: () => {
-        notification("Success", "Discount deleted", "success")
+        notification("Success", "Promotion deleted", "success")
       },
       onError: (error) => {
         notification("Error", getErrorMessage(error), "error")
@@ -57,41 +57,41 @@ const Edit: React.FC<EditProps> = ({ id }) => {
         <DeletePrompt
           handleClose={() => setShowDelete(!showDelete)}
           onDelete={async () => handleDelete()}
-          successText="Discount deleted"
+          successText="Promotion deleted"
           confirmText="Yes, delete"
-          text="Are you sure you want to delete this discount?"
-          heading="Delete discount"
+          text="Are you sure you want to delete this promotion?"
+          heading="Delete promotion"
         />
       )}
 
       <Breadcrumb
-        currentPage="Add Discount"
-        previousBreadcrumb="Discount"
+        currentPage="Add Promotion"
+        previousBreadcrumb="Promotion"
         previousRoute="/a/discounts"
       />
-      {isLoading || !discount ? (
+      {isLoading || !promotion ? (
         <div className="h-full flex items-center justify-center">
           <Spinner variant="secondary" />
         </div>
       ) : (
         <>
           <HeadingBodyCard
-            promotion={discount}
+            promotion={promotion}
             id={id}
             setIsOpen={setIsOpen}
-            title={discount.code}
-            subtitle={discount.rule.description}
+            title={promotion.code}
+            subtitle={promotion.rule.description}
           >
             <div className="flex">
               <div className="border-l border-grey-20 pl-6">
-                {getPromotionDescription(discount)}
+                {getPromotionDescription(promotion)}
                 <span className="inter-small-regular text-grey-50">
-                  {"Discount Amount"}
+                  {"Promotion Amount"}
                 </span>
               </div>
               <div className="border-l border-grey-20 pl-6 ml-12">
                 <h2 className="inter-xlarge-regular text-grey-90">
-                  {discount.usage_count.toLocaleString("en-US")}
+                  {promotion.usage_count.toLocaleString("en-US")}
                 </h2>
                 <span className="inter-small-regular text-grey-50">
                   {"Total Redemptions"}
@@ -101,50 +101,50 @@ const Edit: React.FC<EditProps> = ({ id }) => {
           </HeadingBodyCard>
           <div className="mt-4 w-full">
             <PromotionSettings
-              promotion={discount}
+              promotion={promotion}
               openWithItems={openWithItems}
             />
           </div>
         </>
       )}
       <div className="mt-xlarge">
-        <RawJSON data={discount} title="Raw discount" />
+        <RawJSON data={promotion} title="Raw promotion" />
       </div>
-      {!isLoading && discount && (
-        <DiscountFormProvider
-          discount={discountToFormValuesMapper(discount as any)} // suppressing type mismatch
+      {!isLoading && promotion && (
+        <PromotionFormProvider
+          promotion={promotionToFormValuesMapper(promotion as any)} // suppressing type mismatch
           isEdit
         >
           <Fade isVisible={isOpen} isFullScreen={true}>
-            <DiscountForm
+            <PromotionForm
               additionalOpen={openItems}
               closeForm={() => {
                 setOpenItems([])
                 setIsOpen(false)
               }}
-              discount={discount}
+              promotion={promotion}
               isEdit
             />
           </Fade>
-        </DiscountFormProvider>
+        </PromotionFormProvider>
       )}
     </div>
   )
 }
 
-const getPromotionDescription = (discount: Discount) => {
-  switch (discount.rule.type) {
+const getPromotionDescription = (promotion: Discount) => {
+  switch (promotion.rule.type) {
     case "fixed":
       return (
         <div className="flex items-baseline">
           <h2 className="inter-xlarge-regular">
             {formatAmountWithSymbol({
-              currency: discount.regions[0].currency_code,
-              amount: discount.rule.value,
+              currency: promotion.regions[0].currency_code,
+              amount: promotion.rule.value,
             })}
           </h2>
           <span className="inter-base-regular text-grey-50 ml-1">
-            {discount.regions[0].currency_code.toUpperCase()}
+            {promotion.regions[0].currency_code.toUpperCase()}
           </span>
         </div>
       )
@@ -152,7 +152,7 @@ const getPromotionDescription = (discount: Discount) => {
       return (
         <div className="flex items-baseline">
           <h2 className="inter-xlarge-regular text-grey-90">
-            {discount.rule.value}
+            {promotion.rule.value}
           </h2>
           <span className="inter-base-regular text-grey-50 ml-1">%</span>
         </div>
@@ -162,7 +162,7 @@ const getPromotionDescription = (discount: Discount) => {
         <h2 className="inter-xlarge-regular text-grey-90">{`FREE SHIPPING`}</h2>
       )
     default:
-      return "Unknown discount type"
+      return "Unknown promotion type"
   }
 }
 
@@ -236,7 +236,7 @@ const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
             <span>
               <Badge variant="default">
                 <span className="text-grey-90 inter-small-regular">
-                  {"Template discount"}
+                  {"Template promotion"}
                 </span>
               </Badge>
             </span>

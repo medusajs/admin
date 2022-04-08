@@ -1,9 +1,9 @@
 import clsx from "clsx"
 import React, { useEffect, useState } from "react"
-import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
-import FilterDropdownItem from "../../../components/molecules/filter-dropdown/item"
-import SaveFilterItem from "../../../components/molecules/filter-dropdown/save-field"
-import TabFilter from "../../../components/molecules/filter-tab"
+import FilterDropdownContainer from "../../molecules/filter-dropdown/container"
+import FilterDropdownItem from "../../molecules/filter-dropdown/item"
+import SaveFilterItem from "../../molecules/filter-dropdown/save-field"
+import TabFilter from "../../molecules/filter-tab"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 
 const dynamicFilters = ["normal", "dynamic"]

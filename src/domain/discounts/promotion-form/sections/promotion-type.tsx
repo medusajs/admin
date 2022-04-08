@@ -2,7 +2,7 @@ import clsx from "clsx"
 import React from "react"
 import { Controller } from "react-hook-form"
 import RadioGroup from "../../../../components/organisms/radio-group"
-import { useDiscountForm } from "../form/discount-form-context"
+import { useDiscountForm } from "../form/promotion-form-context"
 
 const PromotionType = ({ promotion, isEdit = false }) => {
   const { control, isFreeShipping, setIsFreeShipping } = useDiscountForm()

@@ -6,7 +6,7 @@ import {
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../types/shared"
 
-export interface DiscountFormValues extends FieldValues {
+export interface PromotionFormValues extends FieldValues {
   id?: string
   code?: string
   rule_id?: string
@@ -23,36 +23,35 @@ export interface DiscountFormValues extends FieldValues {
   regions: Option[] | null
 }
 
-export const discountToFormValuesMapper = (
-  discount: Discount
-): DiscountFormValues => {
-  console.log(discount)
+export const promotionToFormValuesMapper = (
+  promotion: Discount
+): PromotionFormValues => {
   return {
-    id: discount.id,
-    code: discount.code,
-    rule_id: discount.rule.id,
-    type: discount.rule.type,
+    id: promotion.id,
+    code: promotion.code,
+    rule_id: promotion.rule.id,
+    type: promotion.rule.type,
     rule: {
-      value: discount.rule.value,
+      value: promotion.rule.value,
     },
-    allocation: discount.rule.allocation,
-    description: discount.rule.description,
-    valid_for: discount.rule.valid_for.length
-      ? discount.rule.valid_for.map((v) => ({ label: v.title, value: v.id }))
+    allocation: promotion.rule.allocation,
+    description: promotion.rule.description,
+    valid_for: promotion.rule.valid_for.length
+      ? promotion.rule.valid_for.map((v) => ({ label: v.title, value: v.id }))
       : null,
-    starts_at: new Date(discount.starts_at),
-    ends_at: discount.ends_at ? new Date(discount.ends_at) : null,
-    is_dynamic: discount.is_dynamic,
-    usage_limit: `${discount.usage_limit}`,
-    valid_duration: discount.valid_duration,
-    regions: discount.regions
-      ? discount.regions.map((r) => ({ label: r.name, value: r.id }))
+    starts_at: new Date(promotion.starts_at),
+    ends_at: promotion.ends_at ? new Date(promotion.ends_at) : null,
+    is_dynamic: promotion.is_dynamic,
+    usage_limit: `${promotion.usage_limit}`,
+    valid_duration: promotion.valid_duration,
+    regions: promotion.regions
+      ? promotion.regions.map((r) => ({ label: r.name, value: r.id }))
       : null,
   }
 }
 
-export const formValuesToCreateDiscountMapper = (
-  values: DiscountFormValues
+export const formValuesToCreatePromotionMapper = (
+  values: PromotionFormValues
 ): Omit<AdminPostDiscountsReq, "is_disabled"> => {
   console.log(values)
   return {
@@ -79,8 +78,8 @@ export const formValuesToCreateDiscountMapper = (
   }
 }
 
-export const formValuesToUpdateDiscountMapper = (
-  values: DiscountFormValues
+export const formValuesToUpdatePromotionMapper = (
+  values: PromotionFormValues
 ): AdminPostDiscountsDiscountReq => {
   return {
     code: values.code,
