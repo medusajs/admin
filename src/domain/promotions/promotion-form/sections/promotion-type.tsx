@@ -2,10 +2,10 @@ import clsx from "clsx"
 import React from "react"
 import { Controller } from "react-hook-form"
 import RadioGroup from "../../../../components/organisms/radio-group"
-import { useDiscountForm } from "../form/promotion-form-context"
+import { usePromotionForm } from "../form/promotion-form-context"
 
-const PromotionType = ({ promotion, isEdit = false }) => {
-  const { control, isFreeShipping, setIsFreeShipping } = useDiscountForm()
+const PromotionType = ({ isEdit = false }) => {
+  const { control, isFreeShipping, setIsFreeShipping } = usePromotionForm()
 
   return (
     <Controller
@@ -34,13 +34,13 @@ const PromotionType = ({ promotion, isEdit = false }) => {
               value="percentage"
               className="flex-1"
               label="Percentage"
-              description={"Discount applied in %"}
+              description={"Promotion applied in %"}
             />
             <RadioGroup.Item
               value="fixed"
               className="flex-1"
               label="Fixed amount"
-              description={"Discount in whole numbers"}
+              description={"Promotion in whole numbers"}
             />
             <RadioGroup.Item
               value="free_shipping"

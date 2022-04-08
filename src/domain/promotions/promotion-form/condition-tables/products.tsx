@@ -8,7 +8,7 @@ import StatusIndicator from "../../../../components/fundamentals/status-indicato
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import { useDebounce } from "../../../../hooks/use-debounce"
-import { useDiscountForm } from "../form/promotion-form-context"
+import { usePromotionForm } from "../form/promotion-form-context"
 import { SelectableTable } from "./selectable-table"
 
 const getProductStatusVariant = (status) => {
@@ -43,7 +43,7 @@ const ProductConditionSelector = ({ onClose }) => {
     q: debouncedSearchTerm,
   })
 
-  const { updateCondition, conditions } = useDiscountForm()
+  const { updateCondition, conditions } = usePromotionForm()
 
   const [items, setItems] = useState(conditions.products || [])
 

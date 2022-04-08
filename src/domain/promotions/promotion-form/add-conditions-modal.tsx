@@ -3,7 +3,7 @@ import React, { useContext } from "react"
 import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
-import { useDiscountForm } from "./form/promotion-form-context"
+import { usePromotionForm } from "./form/promotion-form-context"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
@@ -53,7 +53,7 @@ function ConditionTypeItem(props: ConditionItem) {
   const { label, description, value } = props
 
   const layeredModalContext = useContext(LayeredModalContext)
-  const { register, conditionType, setConditionType } = useDiscountForm()
+  const { register, conditionType, setConditionType } = usePromotionForm()
 
   const onClick = () => {
     setConditionType(value)
@@ -85,7 +85,7 @@ function AddConditionsModal(props: AddConditionsModalProps) {
   const { close } = props
   const layeredModalContext = useContext(LayeredModalContext)
 
-  const { setConditionType } = useDiscountForm()
+  const { setConditionType } = usePromotionForm()
 
   const onClose = () => {
     setConditionType(undefined)

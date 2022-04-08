@@ -8,7 +8,7 @@ import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../components/organisms/accordion"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
-import { useDiscountForm } from "./form/promotion-form-context"
+import { usePromotionForm } from "./form/promotion-form-context"
 import { useFormActions } from "./form/use-form-actions"
 import Conditions from "./sections/conditions"
 import General from "./sections/general"
@@ -17,15 +17,15 @@ import Configuration from "./sections/configuration"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import AddConditionsModal from "./add-conditions-modal"
 
-type DiscountFormProps = {
+type PromotionFormProps = {
   promotion?: any
   isEdit?: boolean
   additionalOpen?: string[]
   closeForm?: () => void
 }
 
-const DiscountForm: React.FC<DiscountFormProps> = ({
-  promotion: discount,
+const PromotionForm: React.FC<PromotionFormProps> = ({
+  promotion,
   closeForm,
   additionalOpen = [],
   isEdit = false,
@@ -41,12 +41,12 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     hasExpiryDate,
     conditionType,
     setConditionType,
-  } = useDiscountForm()
+  } = usePromotionForm()
 
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
-    discount?.id,
+    promotion?.id,
     {
-      ...discount,
+      ...promotion,
       ...(hasStartDate ? { starts_at: startsAt } : {}),
       ends_at: hasExpiryDate ? endsAt : null,
     }
@@ -137,7 +137,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 tooltip="Select a promotion type"
                 value="promotion-type"
               >
-                <PromotionType promotion={discount} isEdit={isEdit} />
+                <PromotionType isEdit={isEdit} />
               </Accordion.Item>
               <Accordion.Item
                 title="General"
@@ -145,7 +145,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="general"
                 forceMountContent
               >
-                <General discount={discount} isEdit={isEdit} />
+                <General promotion={promotion} isEdit={isEdit} />
               </Accordion.Item>
               <Accordion.Item
                 forceMountContent
@@ -153,7 +153,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="configuration"
                 description="Promotion code applies from you hit the publish button and forever if left untouched."
               >
-                <Configuration promotion={discount} isEdit={isEdit} />
+                <Configuration promotion={promotion} isEdit={isEdit} />
               </Accordion.Item>
               <Accordion.Item
                 forceMountContent
@@ -189,4 +189,4 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   )
 }
 
-export default DiscountForm
+export default PromotionForm

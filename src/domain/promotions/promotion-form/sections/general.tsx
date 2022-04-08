@@ -8,10 +8,10 @@ import InputField from "../../../../components/molecules/input"
 import Select from "../../../../components/molecules/select"
 import Textarea from "../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import { useDiscountForm } from "../form/promotion-form-context"
+import { usePromotionForm } from "../form/promotion-form-context"
 
-const General = ({ discount, isEdit = false }) => {
-  const initialCurrency = discount?.regions?.[0].currency_code || undefined
+const General = ({ promotion, isEdit = false }) => {
+  const initialCurrency = promotion?.regions?.[0].currency_code || undefined
 
   const [fixedRegionCurrency, setFixedRegionCurrency] = useState<
     string | undefined
@@ -25,7 +25,7 @@ const General = ({ discount, isEdit = false }) => {
     regions,
     regionsDisabled,
     isFreeShipping,
-  } = useDiscountForm()
+  } = usePromotionForm()
 
   useEffect(() => {
     if (type === "fixed" && regions) {
@@ -168,7 +168,7 @@ const General = ({ discount, isEdit = false }) => {
               render={({ onChange, value }) => {
                 return (
                   <Checkbox
-                    label="This is a template discount"
+                    label="This is a template promotion"
                     name="is_dynamic"
                     id="is_dynamic"
                     checked={value}
@@ -183,7 +183,7 @@ const General = ({ discount, isEdit = false }) => {
             />
             <IconTooltip
               content={
-                "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
+                "Template promotions allow you to define a set of rules that can be used across a group of promotions. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
               }
             />
           </div>

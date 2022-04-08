@@ -7,7 +7,7 @@ import SEO from "../components/seo"
 import Layout from "../components/templates/layout"
 import Collections from "../domain/collections"
 import Customers from "../domain/customers"
-import Discounts from "../domain/discounts"
+import Promotions from "../domain/promotions"
 import GiftCards from "../domain/gift-cards"
 import Oauth from "../domain/oauth"
 import Orders from "../domain/orders"
@@ -33,7 +33,7 @@ const IndexPage = () => {
         <PrivateRoute path="draft-orders/*" component={DraftOrders} />
         <PrivateRoute path="returns" component={Returns} />
         <PrivateRoute path="swaps" component={Swaps} />
-        <PrivateRoute path="discounts/*" component={Discounts} />
+        <PrivateRoute path="discounts/*" component={Promotions} />
         <PrivateRoute path="customers/*" component={Customers} />
         <PrivateRoute path="pricing/*" component={Pricing} />
         <PrivateRoute path="settings/*" component={Settings} />

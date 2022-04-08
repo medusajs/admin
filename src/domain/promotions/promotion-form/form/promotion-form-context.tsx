@@ -3,7 +3,7 @@ import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import { Option } from "../../../../types/shared"
 import { PromotionFormValues } from "./mappers"
 
-const defaultDiscount: PromotionFormValues = {
+const defaultPromotion: PromotionFormValues = {
   code: "",
   type: "percentage",
   value: undefined,
@@ -23,7 +23,7 @@ type PromotionFormProviderProps = {
 }
 
 export const PromotionFormProvider = ({
-  promotion: discount = defaultDiscount,
+  promotion = defaultPromotion,
   isEdit = false,
   children,
 }: PromotionFormProviderProps) => {
@@ -41,14 +41,17 @@ export const PromotionFormProvider = ({
   const [prevExpiryDate, setPrevExpiryDate] = useState<Date | undefined>(
     undefined
   )
-  const [startsAt, setStartsAt] = useState(discount.starts_at)
-  const [endsAt, setEndsAt] = useState(discount.ends_at)
+  const [startsAt, setStartsAt] = useState(promotion.starts_at)
+  const [endsAt, setEndsAt] = useState(promotion.ends_at)
 
-  const methods = useForm({ defaultValues: discount, reValidateMode: "onBlur" })
+  const methods = useForm({
+    defaultValues: promotion,
+    reValidateMode: "onBlur",
+  })
 
   methods.register({
     name: "allocation",
-    value: discount?.allocation || "total",
+    value: promotion?.allocation || "total",
   })
 
   const setAllocation = (value) => {
@@ -93,7 +96,7 @@ export const PromotionFormProvider = ({
   }, [products, appliesToAll])
 
   useEffect(() => {
-    if (isEdit && discount.type === "fixed") {
+    if (isEdit && promotion.type === "fixed") {
       setRegionsDisabled(true)
     } else {
       setRegionsDisabled(false)
@@ -176,19 +179,19 @@ export const PromotionFormProvider = ({
   }, [isFreeShipping])
 
   const handleReset = () => {
-    setHasExpiryDate(discount.ends_at ? true : false)
-    setAppliesToAll(discount.rule?.valid_for?.length ? false : true)
-    setStartsAt(discount.starts_at)
-    setEndsAt(discount.ends_at)
+    setHasExpiryDate(promotion.ends_at ? true : false)
+    setAppliesToAll(promotion.rule?.valid_for?.length ? false : true)
+    setStartsAt(promotion.starts_at)
+    setEndsAt(promotion.ends_at)
     methods.reset({
-      ...discount,
+      ...promotion,
       valid_for: null,
     })
   }
 
   useEffect(() => {
     handleReset()
-  }, [discount])
+  }, [promotion])
 
   const [datesChanged, setDatesChanged] = useState({
     startsAt: false,
@@ -196,7 +199,7 @@ export const PromotionFormProvider = ({
   })
 
   useEffect(() => {
-    if (startsAt.getTime() !== discount.starts_at.getTime()) {
+    if (startsAt.getTime() !== promotion.starts_at.getTime()) {
       setDatesChanged({
         ...datesChanged,
         startsAt: true,
@@ -210,7 +213,7 @@ export const PromotionFormProvider = ({
   }, [startsAt])
 
   useEffect(() => {
-    if (endsAt?.getTime() !== discount.ends_at?.getTime()) {
+    if (endsAt?.getTime() !== promotion.ends_at?.getTime()) {
       setDatesChanged({
         ...datesChanged,
         endsAt: true,
@@ -225,7 +228,7 @@ export const PromotionFormProvider = ({
 
   return (
     <FormProvider {...methods}>
-      <DiscountFormContext.Provider
+      <PromotionFormContext.Provider
         value={{
           type,
           conditionType,
@@ -250,12 +253,12 @@ export const PromotionFormProvider = ({
         }}
       >
         {children}
-      </DiscountFormContext.Provider>
+      </PromotionFormContext.Provider>
     </FormProvider>
   )
 }
 
-const DiscountFormContext = React.createContext<{
+const PromotionFormContext = React.createContext<{
   type?: string
   conditionType?: string
   setConditionType: (value: string) => void
@@ -278,8 +281,8 @@ const DiscountFormContext = React.createContext<{
   handleConfigurationChanged: (values: string[]) => void
 } | null>(null)
 
-export const useDiscountForm = () => {
-  const context = React.useContext(DiscountFormContext)
+export const usePromotionForm = () => {
+  const context = React.useContext(PromotionFormContext)
   const form = useFormContext()
   if (!context) {
     throw new Error("useDiscountForm must be a child of DiscountFormContext")

@@ -8,7 +8,7 @@ import Switch from "../../../../components/atoms/switch"
 import AvailabilityDuration from "../../../../components/molecules/availability-duration"
 import InputField from "../../../../components/molecules/input"
 import Accordion from "../../../../components/organisms/accordion"
-import { useDiscountForm } from "../form/promotion-form-context"
+import { usePromotionForm } from "../form/promotion-form-context"
 
 type SettingsProps = {
   isEdit?: boolean
@@ -48,7 +48,7 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
     endsAt,
     setEndsAt,
     handleConfigurationChanged,
-  } = useDiscountForm()
+  } = usePromotionForm()
 
   const [openItems, setOpenItems] = React.useState<string[]>(
     isEdit && promotion
@@ -83,8 +83,8 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
               forceMountContent
               className="border-b-0"
               title="Start date"
-              subtitle="Schedule the discount to activate in the future."
-              tooltip="If you want to schedule the discount to activate in the future, you can set a start date here, otherwise the discount will be active immediately."
+              subtitle="Schedule the promotion to activate in the future."
+              tooltip="If you want to schedule the promotion to activate in the future, you can set a start date here, otherwise the promotion will be active immediately."
               value="starts_at"
               customTrigger={
                 <Switch checked={openItems.indexOf("starts_at") > -1} />
@@ -115,9 +115,9 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
               headingSize="medium"
               forceMountContent
               className="border-b-0"
-              title="Discount has an expiry date?"
-              subtitle="Schedule the discount to deactivate in the future."
-              tooltip="If you want to schedule the discount to deactivate in the future, you can set an expiry date here."
+              title="Promotion has an expiry date?"
+              subtitle="Schedule the promotion to deactivate in the future."
+              tooltip="If you want to schedule the promotion to deactivate in the future, you can set an expiry date here."
               value="ends_at"
               customTrigger={
                 <Switch checked={openItems.indexOf("ends_at") > -1} />
@@ -150,7 +150,7 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
               className="border-b-0"
               title="Limit the number of redemptions?"
               subtitle="Limit applies across all customers, not per customer."
-              tooltip="If you wish to limit the amount of times a customer can redeem this discount, you can set a limit here."
+              tooltip="If you wish to limit the amount of times a customer can redeem this promotion, you can set a limit here."
               value="usage_limit"
               customTrigger={
                 <Switch checked={openItems.indexOf("usage_limit") > -1} />
@@ -179,7 +179,7 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
                 forceMountContent
                 title="Availability duration?"
                 className="border-b-0"
-                subtitle="Set the duration of the discount."
+                subtitle="Set the duration of the promotion."
                 tooltip="Select a promotion type"
                 value="valid_duration"
                 customTrigger={
