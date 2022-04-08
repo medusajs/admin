@@ -37,10 +37,17 @@ const EditProductPage = ({ id }) => {
 
     let uploadedImgs = []
     if (images.length > 0) {
-      uploadedImgs = await Medusa.uploads.create(images).then(({ data }) => {
-        const uploaded = data.uploads.map(({ url }) => url)
-        return uploaded
-      })
+      uploadedImgs = await Medusa.uploads
+        .create(images)
+        .then(({ data }) => {
+          const uploaded = data.uploads.map(({ url }) => url)
+          return uploaded
+        })
+        .catch((err) => {
+          setSubmitting(false)
+          notification("Error uploading images", getErrorMessage(err), "error")
+          return
+        })
     }
 
     const newData = {
@@ -86,10 +93,16 @@ const UpdateNotification = ({ isLoading = false }) => {
     additionalDirtyState,
   } = useProductForm()
   const [visible, setVisible] = useState(false)
+  const [blocking, setBlocking] = useState(true)
 
   const onUpdate = (values: FieldValues) => {
     onSubmit({ ...values })
   }
+
+  useEffect(() => {
+    const timeout = setTimeout(setBlocking, 300, false)
+    return () => clearTimeout(timeout)
+  }, [])
 
   const isDirty = checkForDirtyState(
     formState.dirtyFields,
@@ -97,7 +110,9 @@ const UpdateNotification = ({ isLoading = false }) => {
   )
 
   useEffect(() => {
-    setVisible(isDirty)
+    if (!blocking) {
+      setVisible(isDirty)
+    }
 
     return () => {
       toast.dismiss(TOAST_ID)
