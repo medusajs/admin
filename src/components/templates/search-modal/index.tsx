@@ -11,7 +11,7 @@ import Input from "../../atoms/text-input"
 import SearchIcon from "../../fundamentals/icons/search-icon"
 import * as RadixDialog from "@radix-ui/react-dialog"
 import CustomerResults from "./results/customer-results"
-import DiscountResults from "./results/discount-results"
+import PromotionResults from "./results/promotion-results"
 import KeyboardShortcuts from "./keyboard-shortcuts"
 import ProductResults from "./results/product-results"
 import useKeyboardNavigationList from "./use-keyboard-navigation-list"
@@ -47,7 +47,10 @@ const SearchModal = ({ handleClose }) => {
     },
     { enabled: !!query, keepPreviousData: true, retry: 0 }
   )
-  const { discounts, isFetching: isFetchingDiscounts } = useAdminDiscounts(
+  const {
+    discounts: promotions,
+    isFetching: isFetchingPromotions,
+  } = useAdminDiscounts(
     { q: query, limit: 5, offset: 0 },
     { enabled: !!query, keepPreviousData: true }
   )
@@ -57,12 +60,12 @@ const SearchModal = ({ handleClose }) => {
   )
 
   const isFetching =
-    isFetchingDiscounts ||
+    isFetchingPromotions ||
     isFetchingCustomers ||
     isFetchingProducts ||
     isFetchingOrders
 
-  const totalLength = getTotal(products, discounts, customers, orders)
+  const totalLength = getTotal(products, promotions, customers, orders)
 
   const {
     getInputProps,
@@ -136,8 +139,8 @@ const SearchModal = ({ handleClose }) => {
                       </div>
 
                       <div className="mt-xlarge">
-                        <DiscountResults
-                          discounts={discounts}
+                        <PromotionResults
+                          promotions={promotions}
                           offset={customers?.length || 0}
                           getLIProps={getLIProps}
                           selected={selected}
@@ -147,7 +150,7 @@ const SearchModal = ({ handleClose }) => {
                       <div className="mt-xlarge">
                         <ProductResults
                           products={products}
-                          offset={getTotal(customers, discounts)}
+                          offset={getTotal(customers, promotions)}
                           getLIProps={getLIProps}
                           selected={selected}
                         />

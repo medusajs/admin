@@ -5,24 +5,24 @@ import SectionCollapsible from "../section-collapsible"
 import { useAdminDiscounts } from "medusa-react"
 import useKeyboardNavigationList from "../use-keyboard-navigation-list"
 
-type DiscountResultsProps = {
-  discounts: ReturnType<typeof useAdminDiscounts>["discounts"]
+type PromotionResultsProps = {
+  promotions: ReturnType<typeof useAdminDiscounts>["discounts"]
   getLIProps: ReturnType<typeof useKeyboardNavigationList>["getLIProps"]
   offset: number
   selected: number
 }
 
-const DiscountResults = ({
-  discounts = [],
+const PromotionResults = ({
+  promotions = [],
   getLIProps,
   offset,
   selected,
-}: DiscountResultsProps) => {
-  return discounts.length > 0 ? (
-    <SectionCollapsible title={"Discounts"} length={discounts?.length || 0}>
+}: PromotionResultsProps) => {
+  return promotions.length > 0 ? (
+    <SectionCollapsible title={"Discounts"} length={promotions?.length || 0}>
       <div className="mt-large">
         <div className="flex flex-col">
-          {discounts?.map((discount, index) => (
+          {promotions?.map((promotion, index) => (
             <li
               {...getLIProps({ index: offset + index })}
               className={clsx(
@@ -31,15 +31,17 @@ const DiscountResults = ({
               )}
             >
               <Link
-                to={`/a/discounts/${discount.id}`}
+                to={`/a/discounts/${promotion.id}`}
                 className="py-1.5 flex items-center rounded-rounded justify-between"
               >
                 <div className="flex items-center gap-x-3">
                   <div className="py-0.5 px-2 bg-grey-10 rounded-rounded">
-                    <span className="inter-small-regular">{discount.code}</span>
+                    <span className="inter-small-regular">
+                      {promotion.code}
+                    </span>
                   </div>
                   <p className="inter-small-regular text-grey-90">
-                    {discount.rule.description}
+                    {promotion.rule.description}
                   </p>
                 </div>
                 <span
@@ -61,4 +63,4 @@ const DiscountResults = ({
   ) : null
 }
 
-export default DiscountResults
+export default PromotionResults
