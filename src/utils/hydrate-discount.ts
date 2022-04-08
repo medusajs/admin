@@ -1,7 +1,7 @@
 import { extractProductOptions, extractRegionOptions } from "./extract-options"
 import { displayAmount } from "./prices"
 
-type DiscountState = {
+type PromotionState = {
   code: string
   usage_limit: number
   rule: {
@@ -57,18 +57,18 @@ type HydrationActions = {
   setIsDynamic: (value: React.SetStateAction<boolean>) => void
   setIsFreeShipping: (value: React.SetStateAction<boolean>) => void
   setIsDisabled?: (value: React.SetStateAction<boolean>) => void
-  setDiscountType: (value: React.SetStateAction<string>) => void
+  setPromotionType: (value: React.SetStateAction<string>) => void
   setRegionsDisabled?: (value: React.SetStateAction<boolean>) => void
 }
 
 type HydrationProps = {
-  discount?: DiscountState
+  promotion?: PromotionState
   actions: HydrationActions
   isEdit?: boolean
 }
 
-export const hydrateDiscount = ({
-  discount,
+export const hydratePromotion = ({
+  promotion: promotion,
   actions: {
     setValue,
     setAllocationItem,
@@ -80,65 +80,67 @@ export const hydrateDiscount = ({
     setSelectedProducts,
     setIsDynamic,
     setIsFreeShipping,
-    setDiscountType,
+    setPromotionType,
     setRegionsDisabled,
     setSelectedRegions,
     setIsDisabled,
   },
   isEdit = false,
 }: HydrationProps): void => {
-  if (!discount) return
+  if (!promotion) {
+    return
+  }
 
-  setValue("code", isEdit ? discount.code : `${discount.code}_COPY`)
-  setValue("usage_limit", discount.usage_limit)
-  setValue("rule.description", discount.rule.description)
-  setAllocationItem(discount.rule.allocation === "item")
-  setStartDate(discount.starts_at)
+  setValue("code", isEdit ? promotion.code : `${promotion.code}_COPY`)
+  setValue("usage_limit", promotion.usage_limit)
+  setValue("rule.description", promotion.rule.description)
+  setAllocationItem(promotion.rule.allocation === "item")
+  setStartDate(promotion.starts_at)
 
-  if (discount.rule.type === "fixed") {
+  if (promotion.rule.type === "fixed") {
     const displayPrice = displayAmount(
-      discount.regions[0].currency_code,
-      discount.rule.value
+      promotion.regions[0].currency_code,
+      promotion.rule.value
     )
     setValue("rule.value", displayPrice)
   } else {
-    setValue("rule.value", discount.rule.value)
+    setValue("rule.value", promotion.rule.value)
   }
 
   if (setIsDisabled) {
-    setIsDisabled(discount.is_disabled)
+    setIsDisabled(promotion.is_disabled)
   }
 
-  if (discount.ends_at) {
+  if (promotion.ends_at) {
     setHasExpiryDate(true)
-    setExpiryDate(discount.ends_at)
+    setExpiryDate(promotion.ends_at)
   }
 
-  if (discount.valid_duration) {
-    setAvailabilityDuration(discount.valid_duration)
+  if (promotion.valid_duration) {
+    setAvailabilityDuration(promotion.valid_duration)
   }
 
-  if (discount.rule.valid_for.length > 0) {
+  if (promotion.rule.valid_for.length > 0) {
     setAppliesToAll(false)
-    setSelectedProducts(extractProductOptions(discount.rule.valid_for))
+    setSelectedProducts(extractProductOptions(promotion.rule.valid_for))
   } else {
     setAppliesToAll(true)
   }
 
-  if (discount.regions.length) {
-    setSelectedRegions(extractRegionOptions(discount.regions))
+  if (promotion.regions.length) {
+    setSelectedRegions(extractRegionOptions(promotion.regions))
   }
 
-  if (discount.is_dynamic) {
+  if (promotion.is_dynamic) {
     setIsDynamic(true)
   }
 
-  if (discount.rule.type === "free_shipping") {
+  if (promotion.rule.type === "free_shipping") {
     setIsFreeShipping(true)
-  } else if (discount.rule.type === "percentage") {
-    setDiscountType("percentage")
+  } else if (promotion.rule.type === "percentage") {
+    setPromotionType("percentage")
   } else {
-    setDiscountType("fixed")
+    setPromotionType("fixed")
 
     if (isEdit && setRegionsDisabled) {
       setRegionsDisabled(true)

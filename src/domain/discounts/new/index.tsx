@@ -2,17 +2,17 @@ import { Discount } from "@medusajs/medusa"
 import { RouteComponentProps } from "@reach/router"
 import { PageProps } from "gatsby"
 import React from "react"
-import DiscountForm from "../promotion-form"
+import PromotionForm from "../promotion-form"
 import { PromotionFormProvider } from "../promotion-form/form/promotion-form-context"
 import { promotionToFormValuesMapper } from "../promotion-form/form/mappers"
 
 type NewProps = RouteComponentProps<{
-  location: { state: { discount?: Discount } }
+  location: { state: { promotion?: Discount } }
 }> &
   PageProps
 
 const New: React.FC<NewProps> = ({ location }) => {
-  const toDuplicate = location.state?.discount
+  const toDuplicate = location.state?.promotion
 
   return (
     <div className="pb-xlarge">
@@ -21,7 +21,7 @@ const New: React.FC<NewProps> = ({ location }) => {
           toDuplicate ? promotionToFormValuesMapper(toDuplicate) : undefined
         }
       >
-        <DiscountForm promotion={toDuplicate} />
+        <PromotionForm promotion={toDuplicate} />
       </PromotionFormProvider>
     </div>
   )

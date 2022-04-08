@@ -31,6 +31,7 @@ const defaultFormValues = {
   customerId: "",
   customer: null,
   shippingOption: null,
+  discount: null,
   requireShipping: true,
   total: 0,
 }
@@ -57,7 +58,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const {
     shipping,
     billing,
-    discount,
+    discount: promotion,
     email,
     customerId,
     region,
@@ -216,8 +217,8 @@ const NewOrder = ({ onDismiss, refresh }) => {
       }
     }
 
-    if (discount && discount.code) {
-      draftOrder.discounts = [{ code: discount.code }]
+    if (promotion && promotion.code) {
+      draftOrder.discounts = [{ code: promotion.code }]
     }
 
     const option = {

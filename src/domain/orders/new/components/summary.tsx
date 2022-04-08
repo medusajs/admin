@@ -16,8 +16,8 @@ import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 
 const Summary = ({ items, showCustomPrice, customOptionPrice, form }) => {
-  const [showAddDiscount, setShowAddDiscount] = useState(false)
-  const [checkingDiscount, setCheckingDiscount] = useState(false)
+  const [showAddPromotion, setShowAddPromotion] = useState(false)
+  const [checkingPromotion, setCheckingPromotion] = useState(false)
   const [discError, setDiscError] = useState(false)
   const [code, setCode] = useState()
 
@@ -26,7 +26,7 @@ const Summary = ({ items, showCustomPrice, customOptionPrice, form }) => {
     billing,
     email,
     region,
-    discount,
+    discount: promotion,
     requireShipping,
     shippingOption,
   } = form.watch([
@@ -39,11 +39,11 @@ const Summary = ({ items, showCustomPrice, customOptionPrice, form }) => {
     "shippingOption",
   ])
 
-  const handleAddDiscount = async () => {
-    setCheckingDiscount(true)
+  const handleAddPromotion = async () => {
+    setCheckingPromotion(true)
 
     try {
-      const { data } = await Medusa.discounts.retrieveByCode(code)
+      const { data } = await Medusa.promotions.retrieveByCode(code)
       // if no discount is found
       if (!data.discount) {
         setDiscError(true)
@@ -56,17 +56,17 @@ const Summary = ({ items, showCustomPrice, customOptionPrice, form }) => {
       }
 
       setCode("")
-      setShowAddDiscount(false)
+      setShowAddPromotion(false)
       form.setValue("discount", data.discount)
     } catch (error) {
       setDiscError(true)
     }
-    setCheckingDiscount(false)
+    setCheckingPromotion(false)
   }
 
-  const onDiscountRemove = () => {
+  const onPromotionRemove = () => {
     form.setValue("discount", {})
-    setShowAddDiscount(false)
+    setShowAddPromotion(false)
     setCode("")
   }
 
@@ -121,20 +121,20 @@ const Summary = ({ items, showCustomPrice, customOptionPrice, form }) => {
             )
           })}
         </Table>
-        {!showAddDiscount && !discount?.rule && (
+        {!showAddPromotion && !promotion?.rule && (
           <div className="w-full flex justify-end">
             <Button
               variant="ghost"
               size="small"
               className="border border-grey-20 inter-small-semibold"
-              onClick={() => setShowAddDiscount(true)}
+              onClick={() => setShowAddPromotion(true)}
             >
               <PlusIcon size={20} />
-              Add Discount
+              Add Promotion
             </Button>
           </div>
         )}
-        {showAddDiscount && !discount?.rule && (
+        {showAddPromotion && !promotion?.rule && (
           <>
             <div className="flex w-full items-center gap-x-base">
               <Input
@@ -151,7 +151,7 @@ const Summary = ({ items, showCustomPrice, customOptionPrice, form }) => {
                 variant="ghost"
                 className="text-grey-40 w-8 h-8"
                 size="small"
-                onClick={() => setShowAddDiscount(false)}
+                onClick={() => setShowAddPromotion(false)}
               >
                 <CrossIcon size={20} />
               </Button>
@@ -162,26 +162,26 @@ const Summary = ({ items, showCustomPrice, customOptionPrice, form }) => {
                 variant="ghost"
                 size="small"
                 disabled={!code}
-                loading={checkingDiscount}
-                onClick={() => handleAddDiscount()}
+                loading={checkingPromotion}
+                onClick={() => handleAddPromotion()}
               >
                 <PlusIcon size={20} />
-                Add Discount
+                Add Promotion
               </Button>
             </div>
           </>
         )}
-        {discount?.rule && (
+        {promotion?.rule && (
           <div className="flex flex-col w-full border-b border-t border-grey-20 pt-4 mt-4 last:border-b-0 inter-small-regular ">
             <div className="flex w-full justify-between inter-base-semibold mb-4">
               <span>
-                Discount
+                Promotion
                 <span className="inter-base-regular text-grey-50 ml-0.5">
-                  (Code: {discount.code})
+                  (Code: {promotion.code})
                 </span>
               </span>
               <span
-                onClick={() => onDiscountRemove()}
+                onClick={() => onPromotionRemove()}
                 className="inter-small-semibold text-violet-60 cursor-pointer"
               >
                 <CrossIcon size={20} />
@@ -190,28 +190,28 @@ const Summary = ({ items, showCustomPrice, customOptionPrice, form }) => {
             <div className="flex w-full">
               <div
                 className={clsx("flex flex-col border-grey-20 pr-6", {
-                  "border-r": discount.rule.type !== "free_shipping",
+                  "border-r": promotion.rule.type !== "free_shipping",
                 })}
               >
                 <span className="text-grey-50">Type</span>
                 <span>
-                  {discount.rule.type !== "free_shipping"
-                    ? `${discount.rule.type
+                  {promotion.rule.type !== "free_shipping"
+                    ? `${promotion.rule.type
                         .charAt(0)
-                        .toUpperCase()}${discount.rule.type.slice(1)}`
+                        .toUpperCase()}${promotion.rule.type.slice(1)}`
                     : "Free Shipping"}
                 </span>
               </div>
-              {discount.rule.type !== "free_shipping" && (
+              {promotion.rule.type !== "free_shipping" && (
                 <div className="pl-6 flex flex-col">
                   <span className="text-grey-50">Value</span>
                   <span>
-                    {discount.rule.type === "fixed"
+                    {promotion.rule.type === "fixed"
                       ? `${displayAmount(
                           region.currency_code,
-                          discount.rule.value
+                          promotion.rule.value
                         )} ${region.currency_code.toUpperCase()}`
-                      : `${discount.rule.value} %`}
+                      : `${promotion.rule.value} %`}
                   </span>
                 </div>
               )}

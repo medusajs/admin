@@ -364,15 +364,15 @@ const OrderDetails = ({ id }) => {
                   totalAmount={order?.subtotal}
                   totalTitle={"Subtotal"}
                 />
-                {order?.discounts?.map((discount, index) => (
+                {order?.discounts?.map((promotion, index) => (
                   <DisplayTotal
                     currency={order?.currency_code}
                     totalAmount={-1 * order?.discount_total}
                     totalTitle={
                       <div className="flex inter-small-regular text-grey-90 items-center">
-                        Discount:{" "}
+                        Promotion:{" "}
                         <Badge className="ml-3" variant="default">
-                          {discount.code}
+                          {promotion.code}
                         </Badge>
                       </div>
                     }

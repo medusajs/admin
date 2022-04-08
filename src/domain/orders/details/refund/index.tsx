@@ -25,7 +25,7 @@ const RefundMenu = ({ order, onDismiss }) => {
   }, [order])
 
   const reasonOptions = [
-    { label: "Discount", value: "discount" },
+    { label: "Promotion", value: "discount" },
     { label: "Other", value: "other" },
   ]
 
@@ -101,7 +101,7 @@ const RefundMenu = ({ order, onDismiss }) => {
               <Controller
                 name="reason"
                 control={control}
-                defaultValue={{ label: "Discount", value: "discount" }}
+                defaultValue={{ label: "Promotion", value: "discount" }}
                 rules={{ required: true }}
                 render={(props) => (
                   <Select
@@ -115,7 +115,7 @@ const RefundMenu = ({ order, onDismiss }) => {
               <TextArea
                 name="note"
                 label="Note"
-                placeholder="Discount for loyal customer"
+                placeholder="Promotion for loyal customer"
                 ref={register}
               />
             </div>

@@ -45,7 +45,7 @@ const PaymentBreakdown = ({ swap, order, cart }) => {
           </Text>
           {cart.discount_total > 0 && (
             <Text pt={1} color="gray">
-              Discount
+              Promotion
             </Text>
           )}
           {cart.gift_card_total > 0 && (
@@ -135,7 +135,7 @@ const PaymentInformation = ({
   const paymentStatusColors = decideBadgeColor(event.raw.payment_status)
 
   const actions = useMemo(() => {
-    let actions = []
+    const actions = []
     if (
       event.raw.payment_status !== "captured" &&
       event.raw.payment_status !== "difference_refunded" &&
@@ -168,7 +168,7 @@ const PaymentInformation = ({
             {swap?.payment_status}
           </Badge>
         </Flex>
-        {actions.map(action => (
+        {actions.map((action) => (
           <Dropdown
             key={action.label}
             topPlacement={5}

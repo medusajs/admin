@@ -142,7 +142,9 @@ const DraftOrderDetails = ({ id }) => {
             <BodyCard
               className={"w-full mb-4 min-h-[200px]"}
               title={`Order #${draft_order.display_id}`}
-              subtitle={moment(draft_order.created_at).format("D MMMM YYYY hh:mm a")}
+              subtitle={moment(draft_order.created_at).format(
+                "D MMMM YYYY hh:mm a"
+              )}
               status={<OrderStatusComponent />}
               customActionable={
                 draft_order?.status === "completed" && (
@@ -273,15 +275,15 @@ const DraftOrderDetails = ({ id }) => {
                   totalAmount={draft_order?.cart?.subtotal}
                   totalTitle={"Subtotal"}
                 />
-                {cart?.discounts?.map((discount, index) => (
+                {cart?.discounts?.map((promotion, index) => (
                   <div
                     key={index}
                     className="flex justify-between mt-4 items-center"
                   >
                     <div className="flex inter-small-regular text-grey-90 items-center">
-                      Discount:{" "}
+                      Promotion:{" "}
                       <Badge className="ml-3" variant="default">
-                        {discount.code}
+                        {promotion.code}
                       </Badge>
                     </div>
                     <div className="inter-small-regular text-grey-90">

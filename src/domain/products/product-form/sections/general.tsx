@@ -160,7 +160,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           <Checkbox name="discountable" ref={register} label="Discountable" />
           <IconTooltip
             content={
-              "When unchecked discounts will not be applied to this product"
+              "When unchecked promotions will not be applied to this product"
             }
           />
         </div>
