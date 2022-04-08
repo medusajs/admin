@@ -285,7 +285,7 @@ export const usePromotionForm = () => {
   const context = React.useContext(PromotionFormContext)
   const form = useFormContext()
   if (!context) {
-    throw new Error("useDiscountForm must be a child of DiscountFormContext")
+    throw new Error("usePromotionForm must be a child of PromotionFormContext")
   }
   return { ...form, ...context }
 }
