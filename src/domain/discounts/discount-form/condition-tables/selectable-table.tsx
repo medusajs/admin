@@ -154,17 +154,16 @@ const useSelectionColumn = (hooks) => {
   hooks.visibleColumns.push((columns) => [
     {
       id: "selection",
-      maxWidth: 30,
       Header: ({ getToggleAllRowsSelectedProps }) => {
         return (
-          <div className="w-[30px]">
+          <div>
             <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
           </div>
         )
       },
       Cell: ({ row }) => {
         return (
-          <div className="w-[30px]">
+          <div>
             <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
           </div>
         )

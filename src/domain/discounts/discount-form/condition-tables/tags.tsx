@@ -31,7 +31,31 @@ const Columns: Column<ProductTag>[] = [
       )
     },
   },
+  {
+    Header: () => <div className="text-right">Products</div>,
+    accessor: "products",
+    // TODO: for now
+    Cell: ({ row: { original } }) => {
+      return <div className="text-right text-grey-30">n/a</div>
+    },
+  },
 ]
+
+const TagHeader = ({
+  headerGroup,
+}: {
+  headerGroup: HeaderGroup<ProductTag>
+}) => {
+  return (
+    <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+      {headerGroup.headers.map((col) => (
+        <Table.HeadCell {...col.getHeaderProps()} className="w-[20px]">
+          {col.render("Header")}
+        </Table.HeadCell>
+      ))}
+    </Table.HeadRow>
+  )
+}
 
 const TagRow = ({ row }: { row: Row<ProductTag> }) => {
   return (
@@ -44,22 +68,6 @@ const TagRow = ({ row }: { row: Row<ProductTag> }) => {
         )
       })}
     </Table.Row>
-  )
-}
-
-const TagHeader = ({
-  headerGroup,
-}: {
-  headerGroup: HeaderGroup<ProductTag>
-}) => {
-  return (
-    <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-      {headerGroup.headers.map((col) => (
-        <Table.HeadCell {...col.getHeaderProps()}>
-          {col.render("Header")}
-        </Table.HeadCell>
-      ))}
-    </Table.HeadRow>
   )
 }
 
