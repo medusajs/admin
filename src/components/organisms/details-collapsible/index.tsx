@@ -37,7 +37,10 @@ const DetailsCollapsible = ({
           <div className="ml-1">{label}</div>
         </div>
       </RadixCollapsible.Trigger>
-      <RadixCollapsible.Content {...contentProps}>
+      <RadixCollapsible.Content
+        {...contentProps}
+        className={clsx({ hidden: contentProps?.forceMount && !open })}
+      >
         {children}
       </RadixCollapsible.Content>
     </RadixCollapsible.Root>
