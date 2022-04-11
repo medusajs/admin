@@ -9,6 +9,9 @@ import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 type FormToasterContainerProps = {
   toast?: Toast
   isLoading?: boolean
+  loadingMessage?: string
+  unsavedChangesMessage?: string
+  icon?: React.ReactNode
 }
 
 type MultiActionButtonProps = {
@@ -25,7 +28,14 @@ const FormToasterContainer: React.FC<FormToasterContainerProps> & {
   DiscardButton: React.FC<HTMLAttributes<HTMLButtonElement>>
   ActionButton: React.FC<HTMLAttributes<HTMLButtonElement>>
   MultiActionButton: React.FC<MultiActionButtonProps>
-} = ({ children, toast, isLoading = false }) => {
+} = ({
+  children,
+  toast,
+  isLoading = false,
+  loadingMessage = "Hang on, this may take a few moments...",
+  unsavedChangesMessage = "You have unsaved changes",
+  icon = <RefreshIcon size="20" />,
+}) => {
   const content = useMemo(() => {
     if (isLoading) {
       return (
@@ -33,21 +43,15 @@ const FormToasterContainer: React.FC<FormToasterContainerProps> & {
           <span>
             <Spinner />
           </span>
-          <span className="inter-small-regular">
-            Hang on, this may take a few moments...
-          </span>
+          <span className="inter-small-regular">{loadingMessage}</span>
         </div>
       )
     } else {
       return (
         <>
           <div className="flex items-center p-base gap-x-base">
-            <span>
-              <RefreshIcon size="20" />
-            </span>
-            <span className="inter-small-regular">
-              You have unsaved changes
-            </span>
+            <span>{icon}</span>
+            <span className="inter-small-regular">{unsavedChangesMessage}</span>
           </div>
           {children}
         </>

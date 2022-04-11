@@ -67,26 +67,23 @@ export const ProductFormProvider = ({
   const [productOptions, setProductOptions] = React.useState<any[]>([])
   const [hasImagesChanged, setHasImagesChanged] = React.useState(false)
 
-  const appendImage = (image) => setImages([...images, image])
+  const appendImage = (image) => {
+    setHasImagesChanged(true)
+    setImages([...images, image])
+  }
 
   const removeImage = (image) => {
+    setHasImagesChanged(true)
     const tmp = images.filter((img) => img.url !== image.url)
     setImages(tmp)
   }
   const methods = useForm()
 
-  React.useEffect(() => {
-    if (JSON.stringify(product.images) !== JSON.stringify(images)) {
-      setHasImagesChanged(true)
-    } else {
-      setHasImagesChanged(false)
-    }
-  }, [JSON.stringify(images)])
-
   const resetForm = () => {
     methods.reset({
       ...product,
     })
+    setHasImagesChanged(false)
     setImages(product.images)
     setProductOptions(product.options)
 
