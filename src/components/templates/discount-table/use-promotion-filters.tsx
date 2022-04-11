@@ -3,19 +3,19 @@ import qs from "qs"
 import { useMemo, useReducer, useState } from "react"
 import { relativeDateFormatToTimestamp } from "../../../utils/time"
 
-type DiscountDateFilter = null | {
+type PromotionDateFilter = null | {
   gt?: string
   lt?: string
 }
 
-type DiscountFilterAction =
+type PromotionFilterAction =
   | { type: "setQuery"; payload: string | null }
-  | { type: "setFilters"; payload: DiscountFilterState }
-  | { type: "reset"; payload: DiscountFilterState }
+  | { type: "setFilters"; payload: PromotionFilterState }
+  | { type: "reset"; payload: PromotionFilterState }
   | { type: "setOffset"; payload: number }
-  | { type: "setDefaults"; payload: DiscountDefaultFilters | null }
+  | { type: "setDefaults"; payload: PromotionDefaultFilters | null }
 
-interface DiscountFilterState {
+interface PromotionFilterState {
   query?: string | null
   isDynamic: {
     open: boolean
@@ -23,11 +23,11 @@ interface DiscountFilterState {
   }
   date: {
     open: boolean
-    filter: null | DiscountDateFilter
+    filter: null | PromotionDateFilter
   }
   limit: number
   offset: number
-  additionalFilters: DiscountDefaultFilters | null
+  additionalFilters: PromotionDefaultFilters | null
 }
 
 const allowedFilters = [
@@ -41,7 +41,7 @@ const allowedFilters = [
 
 const DefaultTabs = {}
 
-const formatDateFilter = (filter: DiscountDateFilter) => {
+const formatDateFilter = (filter: PromotionDateFilter) => {
   if (filter === null) {
     return filter
   }
@@ -59,9 +59,9 @@ const formatDateFilter = (filter: DiscountDateFilter) => {
 }
 
 const reducer = (
-  state: DiscountFilterState,
-  action: DiscountFilterAction
-): DiscountFilterState => {
+  state: PromotionFilterState,
+  action: PromotionFilterAction
+): PromotionFilterState => {
   switch (action.type) {
     case "setFilters": {
       return {
@@ -92,7 +92,7 @@ const reducer = (
   }
 }
 
-type DiscountDefaultFilters = {
+type PromotionDefaultFilters = {
   expand?: string
   fields?: string
 }
@@ -109,9 +109,9 @@ const eqSet = (as: Set<string>, bs: Set<string>) => {
   return true
 }
 
-export const useDiscountFilters = (
+export const usePromotionFilters = (
   existing?: string,
-  defaultFilters: DiscountDefaultFilters | null = null
+  defaultFilters: PromotionDefaultFilters | null = null
 ) => {
   if (existing && existing[0] === "?") {
     existing = existing.substring(1)
@@ -123,7 +123,7 @@ export const useDiscountFilters = (
   ])
 
   const initialTabs = useMemo(() => {
-    const storageString = localStorage.getItem("discounts::filters")
+    const storageString = localStorage.getItem("promotions::filters")
     if (storageString) {
       const savedTabs = JSON.parse(storageString)
 
@@ -145,7 +145,7 @@ export const useDiscountFilters = (
   const [state, dispatch] = useReducer(reducer, initial)
   const [tabs, setTabs] = useState(initialTabs)
 
-  const setDefaultFilters = (filters: DiscountDefaultFilters | null) => {
+  const setDefaultFilters = (filters: PromotionDefaultFilters | null) => {
     dispatch({ type: "setDefaults", payload: filters })
   }
 
@@ -179,7 +179,7 @@ export const useDiscountFilters = (
     })
   }
 
-  const setFilters = (filters: DiscountFilterState) => {
+  const setFilters = (filters: PromotionFilterState) => {
     dispatch({ type: "setFilters", payload: filters })
   }
 
@@ -199,7 +199,7 @@ export const useDiscountFilters = (
       } else if (value.open) {
         if (key === "date") {
           toQuery[stateFilterMap[key]] = formatDateFilter(
-            value.filter as DiscountDateFilter
+            value.filter as PromotionDateFilter
           )
         } else if (key === "isDynamic") {
           const types = value.filter
@@ -226,7 +226,7 @@ export const useDiscountFilters = (
     return qs.stringify(obj, { skipNulls: true })
   }
 
-  const getRepresentationObject = (fromObject?: DiscountFilterState) => {
+  const getRepresentationObject = (fromObject?: PromotionFilterState) => {
     const objToUse = fromObject ?? state
 
     const toQuery: any = {}
@@ -347,12 +347,12 @@ export const useDiscountFilters = (
     }
   }
 
-  const saveTab = (tabName: string, filters: DiscountFilterState) => {
+  const saveTab = (tabName: string, filters: PromotionFilterState) => {
     const repObj = getRepresentationObject({ ...filters })
     const clean = omit(repObj, ["limit", "offset"])
     const repString = qs.stringify(clean, { skipNulls: true })
 
-    const storedString = localStorage.getItem("discounts::filters")
+    const storedString = localStorage.getItem("promotions::filters")
 
     let existing: null | object = null
 
@@ -362,11 +362,11 @@ export const useDiscountFilters = (
 
     if (existing) {
       existing[tabName] = repString
-      localStorage.setItem("discounts::filters", JSON.stringify(existing))
+      localStorage.setItem("promotions::filters", JSON.stringify(existing))
     } else {
       const newFilters = {}
       newFilters[tabName] = repString
-      localStorage.setItem("discounts::filters", JSON.stringify(newFilters))
+      localStorage.setItem("promotions::filters", JSON.stringify(newFilters))
     }
 
     setTabs((prev) => {
@@ -385,7 +385,7 @@ export const useDiscountFilters = (
   }
 
   const removeTab = (tabValue: string) => {
-    const storedString = localStorage.getItem("discounts::filters")
+    const storedString = localStorage.getItem("promotions::filters")
 
     let existing: null | object = null
 
@@ -395,7 +395,7 @@ export const useDiscountFilters = (
 
     if (existing) {
       delete existing[tabValue]
-      localStorage.setItem("discounts::filters", JSON.stringify(existing))
+      localStorage.setItem("promotions::filters", JSON.stringify(existing))
     }
 
     setTabs((prev) => {
@@ -439,9 +439,9 @@ const stateFilterMap = {
 
 const parseQueryString = (
   queryString?: string,
-  additionals: DiscountDefaultFilters | null = null
-): DiscountFilterState => {
-  const defaultVal: DiscountFilterState = {
+  additionals: PromotionDefaultFilters | null = null
+): PromotionFilterState => {
+  const defaultVal: PromotionFilterState = {
     date: {
       open: false,
       filter: null,

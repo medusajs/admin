@@ -1,14 +1,20 @@
 import clsx from "clsx"
+import { navigate } from "gatsby"
 import { isEmpty } from "lodash"
 import { useAdminDiscounts } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import Spinner from "../../atoms/spinner"
+import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
+import PublishIcon from "../../fundamentals/icons/publish-icon"
+import TrashIcon from "../../fundamentals/icons/trash-icon"
+import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import Table, { TablePagination } from "../../molecules/table"
 import DiscountFilters from "../discount-filter-dropdown"
-import { useDiscountTableColumns } from "./use-discount-columns"
-import { useDiscountFilters } from "./use-discount-filters"
+import { usePromotionTableColumns } from "./use-promotion-columns"
+import { usePromotionFilters } from "./use-promotion-filters"
+import usePromotionActions from "./use-promotion-row-actions"
 
 const DEFAULT_PAGE_SIZE = 15
 
@@ -28,7 +34,7 @@ const DiscountTable: React.FC = () => {
     setQuery: setFreeText,
     queryObject,
     representationObject,
-  } = useDiscountFilters(location.search, defaultQueryProps)
+  } = usePromotionFilters(location.search, defaultQueryProps)
 
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
@@ -50,7 +56,7 @@ const DiscountTable: React.FC = () => {
     }
   }, [count, queryObject.limit])
 
-  const [columns] = useDiscountTableColumns()
+  const [columns] = usePromotionTableColumns()
 
   const {
     getTableProps,
@@ -151,6 +157,7 @@ const DiscountTable: React.FC = () => {
         }
         enableSearch
         handleSearch={setQuery}
+        searchPlaceholder="Search by code or description..."
         searchValue={query}
         {...getTableProps()}
         className={clsx({ ["relative"]: isLoading })}
@@ -176,18 +183,7 @@ const DiscountTable: React.FC = () => {
           <Table.Body {...getTableBodyProps()}>
             {rows.map((row, rowIndex) => {
               prepareRow(row)
-              return (
-                <Table.Row
-                  color={"inherit"}
-                  linkTo={row.original.id}
-                  {...row.getRowProps()}
-                  className="group"
-                >
-                  {row.cells.map((cell, index) => {
-                    return cell.render("Cell", { index })
-                  })}
-                </Table.Row>
-              )
+              return <PromotionRow row={row} />
             })}
           </Table.Body>
         )}
@@ -206,6 +202,26 @@ const DiscountTable: React.FC = () => {
         hasPrev={canPreviousPage}
       />
     </div>
+  )
+}
+
+const PromotionRow = ({ row }) => {
+  const promotion = row.original
+
+  const { getRowActions } = usePromotionActions(promotion)
+
+  return (
+    <Table.Row
+      color={"inherit"}
+      linkTo={row.original.id}
+      {...row.getRowProps()}
+      actions={getRowActions()}
+      className="group"
+    >
+      {row.cells.map((cell, index) => {
+        return cell.render("Cell", { index })
+      })}
+    </Table.Row>
   )
 }
 

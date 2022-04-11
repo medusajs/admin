@@ -36,7 +36,16 @@ function CustomerGroupModal(props: CustomerGroupModalProps) {
 
   const onSubmit = (data) => {
     const meta = {}
+    const initial = props.initialData?.metadata || {}
+
     metadata.forEach((m) => (meta[m.key] = m.value))
+
+    for (const m in initial) {
+      if (!(m in meta)) {
+        meta[m] = null
+      }
+    }
+
     data.metadata = meta
 
     handleSubmit(data)

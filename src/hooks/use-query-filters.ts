@@ -12,7 +12,7 @@ interface AdditionalFilters {
 }
 
 interface FilterState {
-  q?: string | null
+  q?: string
   limit: number
   offset: number
   additionalFilters: AdditionalFilters | null
@@ -31,7 +31,7 @@ enum FilterActionType {
 }
 
 type FilterAction =
-  | { type: FilterActionType.SET_QUERY; payload: string | null }
+  | { type: FilterActionType.SET_QUERY; payload: string | undefined }
   | { type: FilterActionType.SET_FILTERS; payload: any; path: string }
   | { type: FilterActionType.SET_OFFSET; payload: number }
   | {
@@ -45,6 +45,10 @@ const ADMIN_DEFAULT_PARAMS: Partial<FilterState> = {
   offset: 0,
 }
 
+type QueryObject = Partial<Pick<FilterState, "q">> &
+  Pick<FilterState, "limit" | "offset"> &
+  Record<string, string>
+
 /* *********************************************** */
 /* ******************* HELPERS ******************* */
 /* *********************************************** */
@@ -53,10 +57,8 @@ const ADMIN_DEFAULT_PARAMS: Partial<FilterState> = {
  * Transform and merge state values with provided `toQuery` object and
  * return an object containing params.
  */
-function buildQueryObject(
-  state: FilterState,
-  toQuery: Record<string, string | number> = {}
-) {
+function buildQueryObject(state: FilterState, toQuery: QueryObject) {
+  toQuery = toQuery || {}
   for (const [key, value] of Object.entries(state)) {
     if (key === "q") {
       if (typeof value === "string") {
@@ -158,7 +160,7 @@ function reducer(state: FilterState, action: FilterAction): FilterState {
 /*
  * Hook returns parsed search params.
  */
-function useQueryFilters(defaultFilters: Partial<FilterState>) {
+const useQueryFilters = (defaultFilters: Partial<FilterState>) => {
   const searchString = location.search.substring(1)
 
   const [state, dispatch] = useReducer(
@@ -186,7 +188,7 @@ function useQueryFilters(defaultFilters: Partial<FilterState>) {
   const setFilters = (path: string, value: any) =>
     dispatch({ type: FilterActionType.SET_FILTERS, path, payload: value })
 
-  const setQuery = (queryString: string | null) =>
+  const setQuery = (queryString: string | undefined) =>
     dispatch({ type: FilterActionType.SET_QUERY, payload: queryString })
 
   const getQueryString = () =>
@@ -220,7 +222,7 @@ function useQueryFilters(defaultFilters: Partial<FilterState>) {
     setQuery,
     setFilters,
     setDefaultFilters,
-  }
+  } as const
 }
 
 export default useQueryFilters
