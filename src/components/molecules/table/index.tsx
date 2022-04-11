@@ -39,7 +39,7 @@ type SortingHeadCellProps = {
   setSortDirection: (string) => void
 } & React.HTMLAttributes<HTMLTableCellElement>
 
-type TableProps = {
+export type TableProps = {
   filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
   immediateSearchFocus?: boolean
