@@ -7,6 +7,7 @@ import Toaster from "../../components/declarative-toaster"
 import FormToasterContainer from "../../components/molecules/form-toaster"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
+import { consolidateImages } from "../../utils/consolidate-images"
 import { getErrorMessage } from "../../utils/error-messages"
 import { checkForDirtyState } from "../../utils/form-helpers"
 import { handleFormError } from "../../utils/handle-form-error"
@@ -16,7 +17,6 @@ import {
   ProductFormProvider,
   useProductForm,
 } from "./product-form/form/product-form-context"
-import { consolidateImages } from "./product-form/utils"
 
 const TOAST_ID = "new-product-dirty"
 
@@ -31,12 +31,21 @@ const NewProductPage = () => {
     const images = data.images
       .filter((img) => img.url.startsWith("blob"))
       .map((img) => img.nativeFile)
-    const uploadedImgs = await Medusa.uploads
-      .create(images)
-      .then(({ data }) => {
-        const uploaded = data.uploads.map(({ url }) => url)
-        return uploaded
-      })
+
+    let uploadedImgs = []
+    if (images.length > 0) {
+      uploadedImgs = await Medusa.uploads
+        .create(images)
+        .then(({ data }) => {
+          const uploaded = data.uploads.map(({ url }) => url)
+          return uploaded
+        })
+        .catch((err) => {
+          setIsLoading(false)
+          notification("Error uploading images", getErrorMessage(err), "error")
+          return
+        })
+    }
     const newData = {
       ...data,
       images: consolidateImages(data.images, uploadedImgs),

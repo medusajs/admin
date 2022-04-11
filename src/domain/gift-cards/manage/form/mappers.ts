@@ -1,8 +1,8 @@
 export const formValuesToUpdateGiftCardMapper = (values) => {
   const payload = {
     ...values,
-    thumbnail: values?.images?.length
-      ? values.images[values.thumbnail].url
+    thumbnail: values.images?.length
+      ? values.images[values.thumbnail]
       : undefined,
   }
 
@@ -22,8 +22,8 @@ export const formValuesToUpdateGiftCardMapper = (values) => {
 }
 
 export const giftCardToFormValuesMapper = (giftCard) => {
-  let thumbnail = giftCard?.images.length
-    ? giftCard.images.findIndex((img) => img.url)
+  let thumbnail = giftCard?.images?.length
+    ? giftCard.images.findIndex((img) => img.url === giftCard.thumbnail)
     : 0
   thumbnail = thumbnail === -1 ? 0 : thumbnail
   return {

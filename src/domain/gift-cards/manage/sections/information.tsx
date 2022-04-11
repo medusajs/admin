@@ -130,7 +130,12 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
             ref={register}
           />
         </div>
-        <DetailsCollapsible triggerProps={{ className: "ml-2" }}>
+        <DetailsCollapsible
+          triggerProps={{ className: "ml-2" }}
+          contentProps={{
+            forceMount: true,
+          }}
+        >
           <div className="flex space-x-8 pb-4">
             <div className="flex flex-col w-1/2 space-y-4">
               <Input

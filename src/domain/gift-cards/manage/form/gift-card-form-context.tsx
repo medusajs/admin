@@ -21,25 +21,31 @@ export const GiftCardFormProvider = ({
   children,
 }) => {
   const [images, setImages] = React.useState<any[]>([])
+  const [hasImagesChanged, setHasImagesChanged] = React.useState(false)
 
-  const appendImage = (image) => setImages([...images, image])
+  const appendImage = (image) => {
+    setHasImagesChanged(true)
+    setImages([...images, image])
+  }
 
   const removeImage = (image) => {
+    setHasImagesChanged(true)
     const tmp = images.filter((img) => img.url !== image.url)
     setImages(tmp)
   }
 
   const methods = useForm()
 
-  const handleReset = () => {
+  const resetForm = () => {
     methods.reset({
       ...giftCard,
     })
+    setHasImagesChanged(false)
     setImages(giftCard.images)
   }
 
   useEffect(() => {
-    handleReset()
+    resetForm()
   }, [giftCard])
 
   const handleSubmit = (values) => {
@@ -57,7 +63,11 @@ export const GiftCardFormProvider = ({
           setImages,
           appendImage,
           removeImage,
-          handleSubmit,
+          onSubmit: handleSubmit,
+          resetForm,
+          additionalDirtyState: {
+            images: hasImagesChanged,
+          },
         }}
       >
         {children}
@@ -71,7 +81,9 @@ const GiftCardFormContext = React.createContext<{
   setImages: (images: any[]) => void
   appendImage: (image: any) => void
   removeImage: (image: any) => void
-  handleSubmit: (values: any) => void
+  onSubmit: (values: any) => void
+  resetForm: () => void
+  additionalDirtyState: Record<string, boolean>
 } | null>(null)
 
 export const useGiftCardForm = () => {

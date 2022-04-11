@@ -73,7 +73,6 @@ const Images = () => {
               <RadioGroup.Root
                 value={value}
                 onValueChange={(value) => {
-                  console.log(value)
                   onChange(value)
                 }}
               >
