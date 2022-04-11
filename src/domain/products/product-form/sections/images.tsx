@@ -1,4 +1,5 @@
-import React, { useEffect } from "react"
+import React from "react"
+import { Controller } from "react-hook-form"
 import FileUploadField from "../../../../components/atoms/file-upload-field"
 import BodyCard from "../../../../components/organisms/body-card"
 import RadioGroup from "../../../../components/organisms/radio-group"
@@ -54,37 +55,37 @@ const columns = [
 
 const Images = () => {
   const {
-    register,
-    setValue,
     images,
     setImages,
     appendImage,
     removeImage,
-    watch,
+    control,
   } = useProductForm()
-
-  const thumbnail = watch("thumbnail", 0)
-
-  useEffect(() => {
-    register({ name: "thumbnail", type: "custom" })
-  }, [register])
 
   return (
     <BodyCard title="Images" subtitle="Add up to 10 images to your product">
       <div className="mt-base">
-        <RadioGroup.Root
-          value={thumbnail}
-          onValueChange={(value) => {
-            setValue("thumbnail", value)
+        <Controller
+          name="thumbnail"
+          control={control}
+          render={({ value, onChange }) => {
+            return (
+              <RadioGroup.Root
+                value={value}
+                onValueChange={(value) => {
+                  onChange(value)
+                }}
+              >
+                <DraggableTable
+                  onDelete={removeImage}
+                  columns={columns}
+                  entities={images}
+                  setEntities={setImages}
+                />
+              </RadioGroup.Root>
+            )
           }}
-        >
-          <DraggableTable
-            onDelete={removeImage}
-            columns={columns}
-            entities={images}
-            setEntities={setImages}
-          />
-        </RadioGroup.Root>
+        />
       </div>
       <div className="mt-2xlarge">
         <FileUploadField
