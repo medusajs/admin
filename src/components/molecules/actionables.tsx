@@ -8,6 +8,7 @@ export type ActionType = {
   label: string
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
   variant?: "normal" | "danger"
+  disabled?: boolean
   icon?: React.ReactNode
 }
 
@@ -56,6 +57,8 @@ const Actionables: React.FC<ActionablesProps> = ({
                     size="small"
                     className={clsx("w-full justify-start", {
                       "text-rose-50": action?.variant === "danger",
+                      "opacity-50 select-none pointer-events-none":
+                        action?.disabled,
                     })}
                     onClick={action?.onClick}
                   >

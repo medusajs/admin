@@ -2,9 +2,10 @@ import { SINGLE_PRODUCT_VIEW } from "./product-form-context"
 
 export const productToFormValuesMapper = (product) => {
   let thumbnail = product?.images.length
-    ? product.images.findIndex((img) => img.url)
+    ? product.images.findIndex((img) => img.url === product.thumbnail)
     : 0
   thumbnail = thumbnail === -1 ? 0 : thumbnail
+
   return {
     ...product,
     collection: product?.collection
@@ -76,7 +77,7 @@ export const formValuesToCreateProductMapper = (values, viewType) => {
     description: values.description,
     thumbnail: values?.images?.length
       ? values.images[values.thumbnail]
-      : values.thumbnail,
+      : undefined,
     collection_id: values?.collection ? values.collection.value : undefined,
     type: values?.type
       ? { id: values.type.value, value: values.type.label }
@@ -103,7 +104,7 @@ export const formValuesToUpdateProductMapper = (values) => {
     handle: values.handle,
     status: values.status || "published",
     description: values.description,
-    thumbnail: values?.images?.length
+    thumbnail: values.images.length
       ? values.images[values.thumbnail]
       : undefined,
     collection_id: values?.collection ? values.collection.value : null,
