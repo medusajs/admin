@@ -56,7 +56,10 @@ export const DiscountFormProvider = ({
     setPrevAllocation(value)
   }
 
+  const setConditionType = (value) => methods.setValue("condition_type", value)
+
   const type = methods.watch("type") as string | undefined
+  const conditionType = methods.watch("condition_type")
   const isDynamic = methods.watch("is_dynamic") as boolean
   const allocation = methods.watch("allocation") as string
   const regions = methods.watch("regions") as Option[] | null
@@ -225,6 +228,8 @@ export const DiscountFormProvider = ({
       <DiscountFormContext.Provider
         value={{
           type,
+          conditionType,
+          setConditionType,
           regions,
           setAllocation,
           regionsDisabled,
@@ -252,6 +257,8 @@ export const DiscountFormProvider = ({
 
 const DiscountFormContext = React.createContext<{
   type?: string
+  conditionType?: string
+  setConditionType: (value: string) => void
   isDynamic: boolean
   setAllocation: (value: string) => void
   regionsDisabled: boolean

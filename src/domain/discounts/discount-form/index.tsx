@@ -1,6 +1,7 @@
 import * as React from "react"
-import { useLocation } from "@reach/router"
 import { useFormContext } from "react-hook-form"
+import { navigate } from "gatsby"
+
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
@@ -13,22 +14,35 @@ import Conditions from "./sections/conditions"
 import General from "./sections/general"
 import PromotionType from "./sections/promotion-type"
 import Configuration from "./sections/configuration"
-import { navigate } from "gatsby"
+import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import AddConditionsModal from "./add-conditions-modal"
 
 type DiscountFormProps = {
   discount?: any
   isEdit?: boolean
+  additionalOpen?: string[]
   closeForm?: () => void
 }
 
 const DiscountForm: React.FC<DiscountFormProps> = ({
   discount,
   closeForm,
+  additionalOpen = [],
   isEdit = false,
 }) => {
+  const [showAddConditionsModal, setShowConditionsModal] = React.useState(false)
+
   const notification = useNotification()
   const { handleSubmit } = useFormContext()
-  const { startsAt, endsAt, hasStartDate, hasExpiryDate } = useDiscountForm()
+  const {
+    startsAt,
+    endsAt,
+    hasStartDate,
+    hasExpiryDate,
+    conditionType,
+    setConditionType,
+  } = useDiscountForm()
+
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
     discount?.id,
     {
@@ -106,14 +120,14 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         </div>
       </FocusModal.Header>
       <FocusModal.Main>
-        <div className="flex justify-center pb-[25%]">
+        <div className="flex justify-center mb-[25%]">
           <div className="medium:w-7/12 large:w-6/12 small:w-4/5 w-full pt-16">
             <h1 className="inter-xlarge-semibold">
               {isEdit ? "Edit promotion" : "Create new promotion"}
             </h1>
             <Accordion
               className="pt-7 text-grey-90"
-              defaultValue={["promotion-type"]}
+              defaultValue={["promotion-type", ...additionalOpen]}
               type="multiple"
             >
               <Accordion.Item
@@ -149,6 +163,23 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 tooltip="Add conditions to your Promotion"
               >
                 <Conditions />
+
+                <Button
+                  size="small"
+                  variant="ghost"
+                  onClick={() => setShowConditionsModal(true)}
+                  className="mt-4 p-2 w-full rounded-rounded border"
+                >
+                  <PlusIcon size={18} />
+                  <span>Add Condition</span>
+                </Button>
+                {showAddConditionsModal && (
+                  <AddConditionsModal
+                    value={conditionType}
+                    setValue={setConditionType}
+                    close={() => setShowConditionsModal(false)}
+                  />
+                )}
               </Accordion.Item>
             </Accordion>
           </div>
