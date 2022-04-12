@@ -66,7 +66,6 @@ const defaultQueryProps = {
   offset: 0,
 }
 
-// TODO: remove items and save conditions and use "useDiscountForm" when implemented
 const ProductConditionSelector = ({ onClose }) => {
   const params = useQueryFilters(defaultQueryProps)
   const { pop, reset } = useContext(LayeredModalContext)
@@ -74,7 +73,6 @@ const ProductConditionSelector = ({ onClose }) => {
   const [items, setItems] = useState(conditions.products?.items || [])
 
   const { isLoading, count, products } = useAdminProducts(params.queryObject, {
-    // avoid UI flickering by keeping previous data
     keepPreviousData: true,
   })
 
