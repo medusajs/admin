@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 interface PriceProps {
   amount: number
   variant_id: string
@@ -21,10 +23,16 @@ interface CurrencyPriceProps extends PriceProps {
 type CreatePriceProps = RegionPriceProps | CurrencyPriceProps
 
 export type CreatePriceListFormValues = {
-  name: string
+  name: string | null
   description: string | null
-  start_date: Date | null
-  end_date: Date | null
+  starts_at: Date | null
+  ends_at: Date | null
   customer_groups: string[] | null
-  prices: CreatePriceProps[]
+  prices: CreatePriceProps[] | null
+}
+
+export enum ConfigurationField {
+  STARTS_AT = "starts_at",
+  ENDS_AT = "ends_at",
+  CUSTOMER_GROUPS = "customer_groups",
 }

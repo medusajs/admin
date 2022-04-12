@@ -52,8 +52,6 @@ const Item: React.FC<AccordionItemProps> = ({
     "pb-5 radix-state-open:pb-5xlarge mb-5 ": headingSize === "large",
   })
 
-  console.log(subtitle)
-
   return (
     <AccordionPrimitive.Item
       {...props}
