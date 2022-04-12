@@ -5,15 +5,24 @@ import PlusIcon from "../../fundamentals/icons/plus-icon"
 import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import Checkbox from "../../atoms/checkbox"
+import { sortBy } from "lodash"
 
-type Field = { id: string; title: string }
+type Field = { id: string; label: React.ReactNode; short: string }
 
-function Chip(props: Field) {
-  const { title } = props
+type ChipProps = Field & {
+  remove: (id: string) => void
+}
+
+function Chip(props: ChipProps) {
+  const { remove, short } = props
   return (
     <div className="rounded rounded-lg h-[32px] flex gap-1 items-center px-3 text-small text-grey-70 border border-gray-70">
-      {title}
-      <CrossIcon className="text-grey-40" size={13} />
+      {short}
+      <CrossIcon
+        className="text-grey-40 cursor-pointer"
+        onClick={remove}
+        size={13}
+      />
     </div>
   )
 }
@@ -71,9 +80,10 @@ function FieldsMenu(props: FieldsMenuProps) {
         {fields.map((f) => (
           <DropdownMenu.Item key={f.id}>
             <Checkbox
+              className="px-[6px] h-[32px] hover:bg-grey-10 rounded text-small"
               checked={selectedFields.includes(f.id)}
               onChange={() => toggleCheck(f.id)}
-              label={f.title}
+              label={f.label}
             />
           </DropdownMenu.Item>
         ))}
@@ -99,18 +109,25 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
     }
   }
 
+  const removeSelected = (id: string) => {
+    setSelectedFields(selectedFields.filter((f) => f !== id))
+  }
+
+  const _selected = [...selectedFields]
+  _selected.sort()
+
   return (
-    <div className="flex">
+    <div className="flex gap-1">
       <div className="flex gap-1">
         {fields
           .filter((f) => selectedFields.includes(f.id))
           .map((f) => (
-            <Chip key={f.id} {...f} />
+            <Chip key={f.id} {...f} remove={() => removeSelected(f.id)} />
           ))}
       </div>
 
       <FieldsMenu
-        fields={fields}
+        fields={sortBy(fields, "id")}
         onClick={console.log}
         toggleCheck={toggleCheck}
         selectedFields={selectedFields}

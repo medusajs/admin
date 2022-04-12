@@ -12,8 +12,32 @@ const Template = (args) => <TableFieldsFilters {...args} />
 export const Default = Template.bind({})
 Default.args = {
   fields: [
-    { id: "p-usd", title: "Price USD" },
-    { id: "p-dkk", title: "Price DKK" },
-    { id: "p-hrk", title: "Price HRK" },
+    {
+      id: "p-usd",
+      short: "Price USD",
+      label: (
+        <span className="text-small text-grey-50">
+          <span className="font-semibold text-grey-90">USD</span> (USA)
+        </span>
+      ),
+    },
+    {
+      id: "p-dkk",
+      short: "Price DKK",
+      label: (
+        <span className="text-small text-grey-50">
+          <span className="font-semibold text-grey-90">DKK</span> (Denmark)
+        </span>
+      ),
+    },
+    {
+      id: "p-hrk",
+      short: "Price HRK",
+      label: (
+        <span className="text-small text-grey-50">
+          <span className="font-semibold text-grey-90">HRK</span> (Coratia)
+        </span>
+      ),
+    },
   ],
 }
