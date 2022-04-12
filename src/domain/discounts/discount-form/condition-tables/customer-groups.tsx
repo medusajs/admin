@@ -56,8 +56,6 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
   )
 
   const changed = (values: string[]) => {
-    console.log(values)
-
     const selectedCustomerGroups =
       customer_groups?.filter((cg) => values.includes(cg.id)) || []
 
