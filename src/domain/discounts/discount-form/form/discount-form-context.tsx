@@ -67,7 +67,6 @@ export const DiscountFormProvider = ({
   )
 
   const updateCondition = ({ type, update }: UpdateConditionProps) => {
-    console.log("updateCondition", type, update)
     setConditions((prevConditions) => ({
       ...prevConditions,
       [type]: {
