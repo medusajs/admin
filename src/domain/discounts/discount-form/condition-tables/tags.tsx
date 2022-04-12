@@ -2,6 +2,7 @@ import { ProductTag } from "@medusajs/medusa"
 import { useAdminProductTags } from "medusa-react"
 import React, { useContext, useState } from "react"
 import { Column, HeaderGroup, Row } from "react-table"
+import { omit } from "lodash"
 
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
@@ -79,7 +80,8 @@ const TagConditionSelector = ({ onClose }) => {
   const [items, setItems] = useState(conditions.product_tags || [])
 
   const { isLoading, count, product_tags } = useAdminProductTags(
-    params.queryObject,
+    // TODO: omit for now since BD return 400 if "q" is present
+    omit(params.queryObject, ["q"]),
     {
       keepPreviousData: true,
     }
