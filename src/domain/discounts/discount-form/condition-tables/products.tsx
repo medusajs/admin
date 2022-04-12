@@ -1,13 +1,15 @@
 import { Product } from "@medusajs/medusa"
 import { useAdminProducts } from "medusa-react"
 import React, { useContext, useMemo, useState } from "react"
+import { Column, Row } from "react-table"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import StatusIndicator from "../../../../components/fundamentals/status-indicator"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
-import { useDebounce } from "../../../../hooks/use-debounce"
+import Table from "../../../../components/molecules/table"
+import useQueryFilters from "../../../../hooks/use-query-filters"
 import { useDiscountForm } from "../form/discount-form-context"
 import { SelectableTable } from "./selectable-table"
 
@@ -25,27 +27,35 @@ const getProductStatusVariant = (status) => {
   }
 }
 
+const ProductRow = ({ row }: { row: Row<Product> }) => {
+  return (
+    <Table.Row {...row.getRowProps()}>
+      {row.cells.map((cell) => {
+        return (
+          <Table.Cell {...cell.getCellProps()}>
+            {cell.render("Cell")}
+          </Table.Cell>
+        )
+      })}
+    </Table.Row>
+  )
+}
+const defaultQueryProps = {
+  limit: 12,
+  offset: 0,
+}
+
 // TODO: remove items and save conditions and use "useDiscountForm" when implemented
 const ProductConditionSelector = ({ onClose }) => {
-  const PAGE_SIZE = 12
-  const [query, setQuery] = useState("")
-  const debouncedSearchTerm = useDebounce(query, 500)
-
+  const params = useQueryFilters(defaultQueryProps)
   const { pop, reset } = useContext(LayeredModalContext)
-
-  const [pagination, setPagination] = useState({
-    limit: PAGE_SIZE,
-    offset: 0,
-  })
-
-  const { isLoading, count, products } = useAdminProducts({
-    ...pagination,
-    q: debouncedSearchTerm,
-  })
-
   const { updateCondition, conditions } = useDiscountForm()
-
   const [items, setItems] = useState(conditions.products || [])
+
+  const { isLoading, count, products } = useAdminProducts(params.queryObject, {
+    // avoid UI flickering by keeping previous data
+    keepPreviousData: true,
+  })
 
   const changed = (values: string[]) => {
     console.log(values)
@@ -61,7 +71,7 @@ const ProductConditionSelector = ({ onClose }) => {
     )
   }
 
-  const columns = useMemo(() => {
+  const columns = useMemo<Column<Product>[]>(() => {
     return [
       {
         Header: "Name",
@@ -101,13 +111,6 @@ const ProductConditionSelector = ({ onClose }) => {
           />
         ),
       },
-      {
-        Header: <div className="text-right">In Stock</div>,
-        accessor: "inventory_quantity",
-        Cell: ({ row: { original } }) => (
-          <div className="text-right">{original.inventory_quantity}</div>
-        ),
-      },
     ]
   }, [])
 
@@ -118,18 +121,20 @@ const ProductConditionSelector = ({ onClose }) => {
           <Spinner />
         ) : (
           <SelectableTable
-            showSearch={true}
-            onSearch={setQuery}
-            label="Select Products"
-            objectName="Products"
-            totalCount={count}
-            pagination={pagination}
-            onPaginationChange={setPagination}
+            options={{
+              enableSearch: true,
+              immediateSearchFocus: true,
+              searchPlaceholder: "Search products...",
+            }}
+            resourceName="Products"
+            totalCount={count || 0}
             selectedIds={items?.map((c) => c.id)}
-            data={products as Product[]}
+            data={products}
             columns={columns}
             isLoading={isLoading}
             onChange={changed}
+            renderRow={ProductRow}
+            {...params}
           />
         )}
       </Modal.Content>
