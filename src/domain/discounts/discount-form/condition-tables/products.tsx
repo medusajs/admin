@@ -76,6 +76,11 @@ const ProductConditionSelector = ({ onClose }) => {
     keepPreviousData: true,
   })
 
+  const { isLoading, count, products } = useAdminProducts(params.queryObject, {
+    // avoid UI flickering by keeping previous data
+    keepPreviousData: true,
+  })
+
   const changed = (values: string[]) => {
     const selectedProducts =
       products?.filter((product) => values.includes(product.id)) || []
