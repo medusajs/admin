@@ -8,7 +8,7 @@ import {
 } from "@medusajs/medusa"
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../types/shared"
-import { DiscountConditionRecord } from "../../types"
+import { DiscountConditionOperator, DiscountConditionRecord } from "../../types"
 
 export interface DiscountFormValues extends FieldValues {
   id?: string
@@ -46,19 +46,34 @@ const mapConditionsToFormValues = (conditions: DiscountCondition[]) => {
   for (const condition of conditions) {
     switch (condition.type) {
       case DiscountConditionType.PRODUCTS:
-        record.products = condition.id
+        record.products = {
+          id: condition.id,
+          items: [] as string[],
+        }
         break
       case DiscountConditionType.PRODUCT_TYPES:
-        record.product_types = condition.id
+        record.product_types = {
+          id: condition.id,
+          items: [] as string[],
+        }
         break
       case DiscountConditionType.PRODUCT_COLLECTIONS:
-        record.product_collections = condition.id
+        record.product_collections = {
+          id: condition.id,
+          items: [] as string[],
+        }
         break
       case DiscountConditionType.PRODUCT_TAGS:
-        record.product_tags = condition.id
+        record.product_tags = {
+          id: condition.id,
+          items: [] as string[],
+        }
         break
       case DiscountConditionType.CUSTOMER_GROUPS:
-        record.customer_groups = condition.id
+        record.customer_groups = {
+          id: condition.id,
+          items: [] as string[],
+        }
         break
     }
   }
@@ -140,14 +155,8 @@ export const formValuesToUpdateDiscountMapper = (
   }
 }
 
-// As the enum is not exported properly in core, we need to make a local version of it
-enum DiscountConditionOperator {
-  IN = "in",
-  NOT_IN = "not_in",
-}
-
 const mapCreateConditions = (
-  record: PromotionConditionRecord
+  record: DiscountConditionRecord
 ): AdminCreateCondition[] => {
   const conditions: AdminCreateCondition[] = []
 
@@ -155,7 +164,7 @@ const mapCreateConditions = (
     if (value) {
       conditions.push({
         operator: DiscountConditionOperator.IN,
-        [key]: value.map((v) => v.id),
+        [key]: value.items,
       })
     }
   }

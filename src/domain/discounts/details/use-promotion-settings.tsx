@@ -1,15 +1,15 @@
-import React, { ReactNode } from "react"
+import { Discount } from "@medusajs/medusa"
+import { useAdminUpdateDiscount } from "medusa-react"
 import moment from "moment"
+import { parse } from "postcss"
+import React, { ReactNode } from "react"
 import ClockIcon from "../../../components/fundamentals/icons/clock-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
-import { Discount } from "@medusajs/medusa"
-import { parse } from "postcss"
-import { removeNullish } from "../../../utils/remove-nullish"
-import { ActionType } from "../../../components/molecules/actionables"
-import { useAdminUpdateDiscount } from "medusa-react"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
+import { ActionType } from "../../../components/molecules/actionables"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
+import { removeNullish } from "../../../utils/remove-nullish"
 
 type displaySetting = {
   title: string
@@ -36,7 +36,7 @@ const getConditionSettings = (condition: any, openWithItems) => {
     case "products":
       return {
         title: "Products",
-        description: "test",
+        description: "This promotion only applies to specific products",
         actions: [
           {
             label: "Edit",
@@ -48,7 +48,7 @@ const getConditionSettings = (condition: any, openWithItems) => {
     case "product_types":
       return {
         title: "Type",
-        description: "test",
+        description: "This promotion only applies to specific product types",
         actions: [
           {
             label: "Edit",
@@ -60,7 +60,7 @@ const getConditionSettings = (condition: any, openWithItems) => {
     case "product_collections":
       return {
         title: "Collection",
-        description: "test",
+        description: "This promotion only applies to specific collections",
         actions: [
           {
             label: "Edit",
@@ -72,7 +72,7 @@ const getConditionSettings = (condition: any, openWithItems) => {
     case "product_tags":
       return {
         title: "Tag",
-        description: "test",
+        description: "This promotion only applies to specific tags",
         actions: [
           {
             label: "Edit",
@@ -84,7 +84,7 @@ const getConditionSettings = (condition: any, openWithItems) => {
     case "customer_groups":
       return {
         title: "Customer group",
-        description: "test",
+        description: "This promotion only applies to specific customer groups",
         actions: [
           {
             label: "Edit",
@@ -148,7 +148,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
           variant: "danger",
           onClick: async () =>
             await updateDiscount.mutateAsync(
-              { ends_at: null },
+              { ends_at: undefined },
               {
                 onSuccess: () => {
                   notification(

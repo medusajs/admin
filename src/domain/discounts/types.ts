@@ -16,15 +16,25 @@ export enum DiscountConditionType {
   CUSTOMER_GROUPS = "customer_groups",
 }
 
+type ConditionPayload = {
+  id?: string
+  items?: string[]
+}
+
 export type DiscountConditionRecord = {
-  products: string | null
-  product_types: string | null
-  product_collections: string | null
-  product_tags: string | null
-  customer_groups: string | null
+  products: ConditionPayload | null
+  product_types: ConditionPayload | null
+  product_collections: ConditionPayload | null
+  product_tags: ConditionPayload | null
+  customer_groups: ConditionPayload | null
 }
 
 export enum DiscountConditionOperator {
   IN = "in",
   NOT_IN = "not_in",
+}
+
+export type CreateConditionProps = {
+  type: DiscountConditionType
+  ids: string[]
 }
