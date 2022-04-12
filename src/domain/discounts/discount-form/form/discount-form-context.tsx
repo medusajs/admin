@@ -29,7 +29,7 @@ type UpdateConditionProps = {
     | "product_collections"
     | "product_types"
     | "product_tags"
-    | "customer_group"
+    | "customer_groups"
   update: string[] | null
 }
 

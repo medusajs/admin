@@ -22,15 +22,15 @@ import { formatAmountWithSymbol } from "../../../utils/prices"
 import EditGiftCardModal from "./edit-gift-card-modal"
 import UpdateBalanceModal from "./update-balance-modal"
 
-type GiftCardDetailsProps = {
-  id: string
-} & RouteComponentProps
-
-const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({ id }) => {
-  const { gift_card, isLoading } = useAdminGiftCard(id)
+const GiftCardDetails: React.FC<RouteComponentProps<{ id: string }>> = ({
+  id,
+}) => {
+  const { gift_card, isLoading } = useAdminGiftCard(id!, {
+    enabled: !!id,
+  })
   const { regions } = useAdminRegions()
 
-  const updateGiftCard = useAdminUpdateGiftCard(gift_card?.id)
+  const updateGiftCard = useAdminUpdateGiftCard(gift_card?.id!)
 
   const notification = useNotification()
 

@@ -1,6 +1,7 @@
 import React, { useContext } from "react"
 import { LayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import { DiscountConditionType } from "../types"
+import CustomerGroupConditionSelector from "./condition-tables/customer-groups"
 import ProductConditionSelector from "./condition-tables/products"
 import TypeConditionSelector from "./condition-tables/types"
 
@@ -30,7 +31,12 @@ const useConditionModalItems = (close: () => void) => {
       label: "Customer group",
       value: DiscountConditionType.CUSTOMER_GROUPS,
       description: "Only for specific customer groups",
-      onClick: () => console.log("clicked"),
+      onClick: () =>
+        layeredModalContext.push({
+          title: "Customer groups",
+          onBack: () => layeredModalContext.pop(),
+          view: <CustomerGroupConditionSelector onClose={close} />,
+        }),
     },
     {
       label: "Tag",
