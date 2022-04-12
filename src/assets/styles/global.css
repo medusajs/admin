@@ -391,6 +391,10 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-grey-40;
   }
+
+  .accordion-margin-transition {
+    @apply transition-[margin] duration-300
+  }
 }
 
 /* Classes to remove number spinners from inputs of type number */
