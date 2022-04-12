@@ -1,3 +1,9 @@
+import {
+  CustomerGroup,
+  Product,
+  ProductCollection,
+  ProductTag,
+} from "@medusajs/medusa"
 import { debounce } from "lodash"
 import React, { useEffect } from "react"
 import {
@@ -6,6 +12,7 @@ import {
   Row,
   usePagination,
   useRowSelect,
+  useSortBy,
   useTable,
 } from "react-table"
 import Spinner from "../../../../components/atoms/spinner"
@@ -34,7 +41,9 @@ type SelectableTableProps<T extends object> = {
   }) => React.ReactElement
 } & ReturnType<typeof useQueryFilters>
 
-export const SelectableTable = <T extends object>({
+export const SelectableTable = <
+  T extends Product | CustomerGroup | ProductCollection | ProductTag
+>({
   label,
   resourceName = "",
   selectedIds = [],
@@ -68,6 +77,7 @@ export const SelectableTable = <T extends object>({
       autoResetPage: false,
       getRowId: (row: any) => row.id,
     },
+    useSortBy,
     usePagination,
     useRowSelect,
     useSelectionColumn
@@ -156,14 +166,14 @@ const useSelectionColumn = (hooks) => {
       id: "selection",
       Header: ({ getToggleAllRowsSelectedProps }) => {
         return (
-          <div>
+          <div className="flex justify-center">
             <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
           </div>
         )
       },
       Cell: ({ row }) => {
         return (
-          <div>
+          <div className="flex justify-center">
             <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
           </div>
         )

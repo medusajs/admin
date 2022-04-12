@@ -1,9 +1,10 @@
 import { Product } from "@medusajs/medusa"
 import { useAdminProducts } from "medusa-react"
 import React, { useContext, useMemo, useState } from "react"
-import { Column, Row } from "react-table"
+import { Column, HeaderGroup, Row } from "react-table"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
+import SortingIcon from "../../../../components/fundamentals/icons/sorting-icon"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import StatusIndicator from "../../../../components/fundamentals/status-indicator"
 import Modal from "../../../../components/molecules/modal"
@@ -40,17 +41,40 @@ const ProductRow = ({ row }: { row: Row<Product> }) => {
     </Table.Row>
   )
 }
+
+const ProductsHeader = ({
+  headerGroup,
+}: {
+  headerGroup: HeaderGroup<Product>
+}) => {
+  return (
+    <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+      {headerGroup.headers.map((col) => (
+        <Table.HeadCell
+          className="w-[100px]"
+          {...col.getHeaderProps(col.getSortByToggleProps())}
+        >
+          {col.render("Header")}
+        </Table.HeadCell>
+      ))}
+    </Table.HeadRow>
+  )
+}
+
 const defaultQueryProps = {
   limit: 12,
   offset: 0,
 }
 
-// TODO: remove items and save conditions and use "useDiscountForm" when implemented
 const ProductConditionSelector = ({ onClose }) => {
   const params = useQueryFilters(defaultQueryProps)
   const { pop, reset } = useContext(LayeredModalContext)
   const { updateCondition, conditions } = useDiscountForm()
-  const [items, setItems] = useState(conditions.products || [])
+  const [items, setItems] = useState(conditions.products?.items || [])
+
+  const { isLoading, count, products } = useAdminProducts(params.queryObject, {
+    keepPreviousData: true,
+  })
 
   const { isLoading, count, products } = useAdminProducts(params.queryObject, {
     // avoid UI flickering by keeping previous data
@@ -58,23 +82,20 @@ const ProductConditionSelector = ({ onClose }) => {
   })
 
   const changed = (values: string[]) => {
-    console.log(values)
-
     const selectedProducts =
       products?.filter((product) => values.includes(product.id)) || []
 
-    setItems(
-      selectedProducts.map((product) => ({
-        id: product.id,
-        title: product.title,
-      }))
-    )
+    setItems(selectedProducts.map((product) => product.id))
   }
 
   const columns = useMemo<Column<Product>[]>(() => {
     return [
       {
-        Header: "Name",
+        Header: () => (
+          <div className="flex items-center gap-1 min-w-[443px]">
+            Title <SortingIcon size={16} />
+          </div>
+        ),
         accessor: "title",
         Cell: ({ row: { original } }) => {
           return (
@@ -93,14 +114,17 @@ const ProductConditionSelector = ({ onClose }) => {
               </div>
               <div className="flex flex-col">
                 <span>{original.title}</span>
-                {original.title}
               </div>
             </div>
           )
         },
       },
       {
-        Header: "Status",
+        Header: () => (
+          <div className="flex items-center gap-1">
+            Status <SortingIcon size={16} />
+          </div>
+        ),
         accessor: "status",
         Cell: ({ row: { original } }) => (
           <StatusIndicator
@@ -110,6 +134,18 @@ const ProductConditionSelector = ({ onClose }) => {
             variant={getProductStatusVariant(original.status)}
           />
         ),
+      },
+      {
+        Header: () => (
+          <div className="flex justify-end items-center gap-1">
+            Variants <SortingIcon size={16} />
+          </div>
+        ),
+        id: "variants",
+        accessor: (row) => row.variants.length,
+        Cell: ({ cell: { value } }) => {
+          return <div className="text-right">{value}</div>
+        },
       },
     ]
   }, [])
@@ -128,12 +164,13 @@ const ProductConditionSelector = ({ onClose }) => {
             }}
             resourceName="Products"
             totalCount={count || 0}
-            selectedIds={items?.map((c) => c.id)}
+            selectedIds={items?.map((c) => c)}
             data={products}
             columns={columns}
             isLoading={isLoading}
             onChange={changed}
             renderRow={ProductRow}
+            renderHeaderGroup={ProductsHeader}
             {...params}
           />
         )}

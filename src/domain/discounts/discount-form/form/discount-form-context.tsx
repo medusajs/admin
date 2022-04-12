@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import { Option } from "../../../../types/shared"
+import { DiscountConditionRecord } from "../../types"
 import { DiscountFormValues } from "./mappers"
 
 const defaultDiscount: DiscountFormValues = {
@@ -22,35 +23,22 @@ type DiscountFormProviderProps = {
   children?: React.ReactNode
 }
 
-type Condition = {
-  id: string
-  title: string
-}
-
-export type PromotionConditionRecord = {
-  products: Condition[] | null
-  product_collections: Condition[] | null
-  product_types: Condition[] | null
-  product_tags: Condition[] | null
-  customer_groups: Condition[] | null
-}
-
 type UpdateConditionProps = {
   type:
     | "products"
     | "product_collections"
     | "product_types"
     | "product_tags"
-    | "customer_group"
-  update: Condition[] | null
+    | "customer_groups"
+  update: string[] | null
 }
 
-const defaultConditionRecord: PromotionConditionRecord = {
+const defaultConditions: DiscountConditionRecord = {
   products: null,
   product_collections: null,
-  product_types: null,
   product_tags: null,
   customer_groups: null,
+  product_types: null,
 }
 
 export const DiscountFormProvider = ({
@@ -59,7 +47,6 @@ export const DiscountFormProvider = ({
   children,
 }: DiscountFormProviderProps) => {
   const [regionsDisabled, setRegionsDisabled] = useState(false)
-  const [appliesToAll, setAppliesToAll] = useState(true)
   const [isFreeShipping, setIsFreeShipping] = useState(false)
   const [hasExpiryDate, setHasExpiryDate] = useState(false)
   const [hasStartDate, setHasStartDate] = useState(false)
@@ -75,14 +62,17 @@ export const DiscountFormProvider = ({
   const [startsAt, setStartsAt] = useState(discount.starts_at)
   const [endsAt, setEndsAt] = useState(discount.ends_at)
 
-  const [conditions, setConditions] = useState<PromotionConditionRecord>(
-    discount.rule?.conditions || defaultConditionRecord
+  const [conditions, setConditions] = useState<DiscountConditionRecord>(
+    discount.rule?.conditions || defaultConditions
   )
 
   const updateCondition = ({ type, update }: UpdateConditionProps) => {
     setConditions((prevConditions) => ({
       ...prevConditions,
-      [type]: update,
+      [type]: {
+        ...prevConditions[type],
+        items: update,
+      },
     }))
   }
 
@@ -106,7 +96,6 @@ export const DiscountFormProvider = ({
   const isDynamic = methods.watch("is_dynamic") as boolean
   const allocation = methods.watch("allocation") as string
   const regions = methods.watch("regions") as Option[] | null
-  const products = methods.watch("valid_for") as Option[] | undefined
   const usageLimit = methods.watch("usage_limit") as string
   const validDuration = methods.watch("valid_duration") as string
 
@@ -128,12 +117,6 @@ export const DiscountFormProvider = ({
       setPrevExpiryDate(endsAt)
     }
   }, [endsAt])
-
-  useEffect(() => {
-    if (products?.length && appliesToAll) {
-      setAppliesToAll(false)
-    }
-  }, [products, appliesToAll])
 
   useEffect(() => {
     if (isEdit && discount.type === "fixed") {
@@ -220,7 +203,6 @@ export const DiscountFormProvider = ({
 
   const handleReset = () => {
     setHasExpiryDate(discount.ends_at ? true : false)
-    setAppliesToAll(discount.rule?.valid_for?.length ? false : true)
     setStartsAt(discount.starts_at)
     setEndsAt(discount.ends_at)
     methods.reset({
@@ -276,8 +258,6 @@ export const DiscountFormProvider = ({
           regions,
           setAllocation,
           regionsDisabled,
-          appliesToAll,
-          setAppliesToAll,
           isFreeShipping,
           setIsFreeShipping,
           isDynamic,
@@ -307,8 +287,6 @@ const DiscountFormContext = React.createContext<{
   isDynamic: boolean
   setAllocation: (value: string) => void
   regionsDisabled: boolean
-  appliesToAll: boolean
-  setAppliesToAll: (value: boolean) => void
   regions: any[] | null
   isFreeShipping: boolean
   setIsFreeShipping: (value: boolean) => void
@@ -321,7 +299,7 @@ const DiscountFormContext = React.createContext<{
   setStartsAt: (value: Date) => void
   setHasStartDate: (value: boolean) => void
   handleConfigurationChanged: (values: string[]) => void
-  conditions: PromotionConditionRecord
+  conditions: DiscountConditionRecord
   updateCondition: ({ type, update }: UpdateConditionProps) => void
 } | null>(null)
 
