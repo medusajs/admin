@@ -26,6 +26,7 @@ const Configuration = () => {
         value="starts_at"
         customTrigger={<Switch checked={openItems.indexOf("starts_at") > -1} />}
       >
+          {({ open }) => }
         <div
           className={clsx(
             "flex items-center gap-xsmall accordion-margin-transition mt-4",
