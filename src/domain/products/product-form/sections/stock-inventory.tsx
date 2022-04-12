@@ -6,6 +6,7 @@ import Input from "../../../../components/molecules/input"
 import Select from "../../../../components/molecules/select"
 import BodyCard from "../../../../components/organisms/body-card"
 import { countries as countryData } from "../../../../utils/countries"
+import { numberOrNull } from "../../../../utils/form-helpers"
 import { useProductForm } from "../form/product-form-context"
 
 const StockAndInventory = () => {
@@ -46,7 +47,7 @@ const StockAndInventory = () => {
                 name="inventory_quantity"
                 type="number"
                 placeholder="100"
-                ref={register}
+                ref={register({ setValueAs: numberOrNull })}
               />
               <Input
                 label="Material"
@@ -96,7 +97,7 @@ const StockAndInventory = () => {
               type="number"
               label="Height"
               name="height"
-              ref={register}
+              ref={register({ setValueAs: numberOrNull })}
               min={0}
               placeholder="100..."
             />
@@ -104,7 +105,7 @@ const StockAndInventory = () => {
               type="number"
               label="Width"
               name="width"
-              ref={register}
+              ref={register({ setValueAs: numberOrNull })}
               placeholder="100..."
               min={0}
             />
@@ -112,7 +113,7 @@ const StockAndInventory = () => {
               type="number"
               label="Length"
               name="length"
-              ref={register}
+              ref={register({ setValueAs: numberOrNull })}
               placeholder="100..."
               min={0}
             />
@@ -120,7 +121,7 @@ const StockAndInventory = () => {
               type="number"
               label="Weight"
               name="weight"
-              ref={register}
+              ref={register({ setValueAs: numberOrNull })}
               placeholder="100..."
               min={0}
             />
@@ -140,12 +141,19 @@ const StockAndInventory = () => {
             />
             <Controller
               control={control}
-              as={Select}
-              enableSearch
-              label="Country of origin"
               name="origin_country"
-              placeholder="Select a country"
-              options={countryOptions}
+              render={({ onChange, value }) => {
+                return (
+                  <Select
+                    enableSearch
+                    label="Country of origin"
+                    placeholder="Select a country"
+                    options={countryOptions}
+                    value={value}
+                    onChange={onChange}
+                  />
+                )
+              }}
             />
           </div>
         </div>

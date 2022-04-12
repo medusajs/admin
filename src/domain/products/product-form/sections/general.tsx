@@ -82,7 +82,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             placeholder="Jacket, Sunglasses..."
             required
             ref={register({
-              required: true,
+              required: "Name is required",
               minLength: 1,
               pattern: /(.|\s)*\S(.|\s)*/,
             })}
@@ -91,7 +91,8 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
             label="Handle"
             name="handle"
-            placeholder="/bathrobe"
+            placeholder="bathrobe"
+            prefix="/"
             ref={register()}
           />
         </div>

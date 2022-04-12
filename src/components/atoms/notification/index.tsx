@@ -30,9 +30,9 @@ const Notification: React.FC<NotificationProps> = ({
   return (
     <ToasterContainer visible={toast.visible} className="w-[380px]">
       <div>{getIcon(type)}</div>
-      <div className="flex flex-col ml-small mr-base gap-y-2xsmall flex-grow">
+      <div className="flex flex-col ml-small mr-base gap-y-2xsmall flex-grow text-white">
         <span className="inter-small-semibold">{title}</span>
-        <span className="inter-small-regular text-grey-50">{message}</span>
+        <span className="inter-small-regular text-grey-20">{message}</span>
       </div>
       <div>
         <button onClick={onDismiss}>

@@ -4,7 +4,7 @@ import FileUploadField from "../../../../components/atoms/file-upload-field"
 import BodyCard from "../../../../components/organisms/body-card"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import DraggableTable from "../../../../components/templates/draggable-table"
-import { useProductForm } from "../form/product-form-context"
+import { useGiftCardForm } from "../form/gift-card-form-context"
 
 const columns = [
   {
@@ -60,10 +60,10 @@ const Images = () => {
     appendImage,
     removeImage,
     control,
-  } = useProductForm()
+  } = useGiftCardForm()
 
   return (
-    <BodyCard title="Images" subtitle="Add up to 10 images to your product">
+    <BodyCard title="Images" subtitle="Add up to 10 images to your Gift Card">
       <div className="mt-base">
         <Controller
           name="thumbnail"
