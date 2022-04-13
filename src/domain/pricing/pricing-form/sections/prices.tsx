@@ -10,7 +10,7 @@ const Prices = () => {
       required
       value="prices"
       title="Prices"
-      subtitle="You will be able to override the prices for the products you add here"
+      description="You will be able to override the prices for the products you add here"
       tooltip="Define the price overrides for the price list"
     >
       <div className="mt-5">

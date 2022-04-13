@@ -28,7 +28,7 @@ const FormHeader = (props: PriceListFormProps) => {
   }
 
   const createPriceList = useAdminCreatePriceList()
-  const updatePriceList = useAdminUpdatePriceList(props?.id!)
+  const updatePriceList = useAdminUpdatePriceList(props.id!)
 
   const onPublish = (values: PriceListFormValues) => {
     createPriceList.mutate(

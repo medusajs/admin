@@ -14,7 +14,7 @@ const Type = () => {
       required
       value="type"
       title="Price list type"
-      subtitle="Select the type of the price list"
+      description="Select the type of the price list"
       tooltip="Define whether the price list is a price override or a sale price list. Sales are used to define sale prices e.g. a Black Friday sale. An override is useful for defining e.g. B2B prices."
     >
       <Controller
@@ -32,13 +32,13 @@ const Type = () => {
                 value={PriceListType.SALE}
                 className="flex-1"
                 label="Sale"
-                description="Price list contains sale prices"
+                description="Use this if you are creating prices for a sale."
               />
               <RadioGroup.Item
                 value={PriceListType.OVERRIDE}
                 className="flex-1"
                 label="Override"
-                description="Price list contains price overrides"
+                description="Use this to override prices. Unlike with sale prices this will not communicate to the customer that the price is part of a sale."
               />
             </RadioGroup.Root>
           )

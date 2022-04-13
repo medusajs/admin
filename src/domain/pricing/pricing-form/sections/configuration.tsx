@@ -50,7 +50,7 @@ const Configuration: React.FC<ConfigurationProps> = () => {
       title="Configuration"
       tooltip="Optional configuration for the price list"
       value="configuration"
-      subtitle="The price overrides apply from the time you hit the publish button and forever if left untouched."
+      description="The price overrides apply from the time you hit the publish button and forever if left untouched."
     >
       <Accordion
         type="multiple"
