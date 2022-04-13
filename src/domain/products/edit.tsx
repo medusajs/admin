@@ -7,6 +7,7 @@ import Toaster from "../../components/declarative-toaster"
 import FormToasterContainer from "../../components/molecules/form-toaster"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
+import { consolidateImages } from "../../utils/consolidate-images"
 import { getErrorMessage } from "../../utils/error-messages"
 import { checkForDirtyState } from "../../utils/form-helpers"
 import { handleFormError } from "../../utils/handle-form-error"
@@ -19,7 +20,6 @@ import {
   ProductFormProvider,
   useProductForm,
 } from "./product-form/form/product-form-context"
-import { consolidateImages } from "./product-form/utils"
 
 const EditProductPage = ({ id }) => {
   const notification = useNotification()
