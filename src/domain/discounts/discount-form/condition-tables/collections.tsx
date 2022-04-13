@@ -1,5 +1,5 @@
-import { ProductType } from "@medusajs/medusa"
-import { useAdminProductTypes } from "medusa-react"
+import { ProductCollection } from "@medusajs/medusa"
+import { useAdminCollections } from "medusa-react"
 import React, { useContext, useMemo, useState } from "react"
 import { Column, HeaderGroup, Row } from "react-table"
 import Spinner from "../../../../components/atoms/spinner"
@@ -12,7 +12,7 @@ import useQueryFilters from "../../../../hooks/use-query-filters"
 import { useDiscountForm } from "../form/discount-form-context"
 import { SelectableTable } from "./selectable-table"
 
-const TypeRow = ({ row }: { row: Row<ProductType> }) => {
+const CollectionRow = ({ row }: { row: Row<ProductCollection> }) => {
   return (
     <Table.Row {...row.getRowProps()}>
       {row.cells.map((cell) => {
@@ -26,10 +26,10 @@ const TypeRow = ({ row }: { row: Row<ProductType> }) => {
   )
 }
 
-const TypesHeader = ({
+const CollectionsHeader = ({
   headerGroup,
 }: {
-  headerGroup: HeaderGroup<ProductType>
+  headerGroup: HeaderGroup<ProductCollection>
 }) => {
   return (
     <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
@@ -50,14 +50,15 @@ const defaultQueryProps = {
   offset: 0,
 }
 
-// TODO: remove items and save conditions and use "useDiscountForm" when implemented
-const TypeConditionSelector = ({ onClose }) => {
+const CollectionConditionSelector = ({ onClose }) => {
   const params = useQueryFilters(defaultQueryProps)
   const { pop, reset } = useContext(LayeredModalContext)
   const { updateCondition, conditions } = useDiscountForm()
-  const [items, setItems] = useState(conditions.products?.items || [])
+  const [items, setItems] = useState(
+    conditions.product_collections?.items || []
+  )
 
-  const { isLoading, count, product_types } = useAdminProductTypes(
+  const { isLoading, count, collections } = useAdminCollections(
     params.queryObject,
     {
       // avoid UI flickering by keeping previous data
@@ -66,23 +67,36 @@ const TypeConditionSelector = ({ onClose }) => {
   )
 
   const changed = (values: string[]) => {
-    const selectedTypes =
-      product_types?.filter((type) => values.includes(type.id)) || []
+    const selectedProducts =
+      collections?.filter((collections) => values.includes(collections.id)) ||
+      []
 
-    setItems(selectedTypes.map((type) => type.id))
+    setItems(selectedProducts.map((product) => product.id))
   }
 
-  const columns = useMemo<Column<ProductType>[]>(() => {
+  const columns = useMemo<Column<ProductCollection>[]>(() => {
     return [
       {
         Header: () => (
-          <div className="flex items-center gap-1 min-w-[626px]">
+          <div className="flex items-center gap-1 min-w-[546px]">
             Title <SortingIcon size={16} />
           </div>
         ),
-        accessor: "value",
+        accessor: "title",
         Cell: ({ row: { original } }) => {
-          return <span>{original.value}</span>
+          return <span>{original.title}</span>
+        },
+      },
+      {
+        Header: () => (
+          <div className="flex justify-end items-center gap-1">
+            Products <SortingIcon size={16} />
+          </div>
+        ),
+        id: "products",
+        accessor: (row) => row.products.length,
+        Cell: ({ cell: { value } }) => {
+          return <div className="text-right">{value}</div>
         },
       },
     ]
@@ -96,19 +110,19 @@ const TypeConditionSelector = ({ onClose }) => {
         ) : (
           <SelectableTable
             options={{
-              // enableSearch: true, TODO: enable search
+              enableSearch: true,
               immediateSearchFocus: true,
-              // searchPlaceholder: "Search by title...",
+              searchPlaceholder: "Search by title...",
             }}
-            resourceName="Products"
+            resourceName="Collections"
             totalCount={count || 0}
             selectedIds={items?.map((c) => c)}
-            data={product_types}
+            data={collections}
             columns={columns}
             isLoading={isLoading}
             onChange={changed}
-            renderRow={TypeRow}
-            renderHeaderGroup={TypesHeader}
+            renderRow={CollectionRow}
+            renderHeaderGroup={CollectionsHeader}
             {...params}
           />
         )}
@@ -129,7 +143,7 @@ const TypeConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={(e) => {
-              updateCondition({ type: "product_types", update: items })
+              updateCondition({ type: "product_collections", update: items })
               pop()
             }}
           >
@@ -139,7 +153,7 @@ const TypeConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={(e) => {
-              updateCondition({ type: "product_types", update: items })
+              updateCondition({ type: "product_collections", update: items })
               onClose()
               reset()
             }}
@@ -152,4 +166,4 @@ const TypeConditionSelector = ({ onClose }) => {
   )
 }
 
-export default TypeConditionSelector
+export default CollectionConditionSelector

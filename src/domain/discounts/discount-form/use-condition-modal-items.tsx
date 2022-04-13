@@ -1,10 +1,11 @@
 import React, { useContext } from "react"
 import { LayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import { DiscountConditionType } from "../types"
+import CollectionConditionSelector from "./condition-tables/collections"
 import CustomerGroupConditionSelector from "./condition-tables/customer-groups"
 import ProductConditionSelector from "./condition-tables/products"
-import TypeConditionSelector from "./condition-tables/types"
 import TagConditionSelector from "./condition-tables/tags"
+import TypeConditionSelector from "./condition-tables/types"
 
 export type ConditionItem = {
   label: string
@@ -23,7 +24,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific products",
       onClick: () =>
         layeredModalContext.push({
-          title: "Product",
+          title: "Choose products",
           onBack: () => layeredModalContext.pop(),
           view: <ProductConditionSelector onClose={() => close()} />,
         }),
@@ -34,7 +35,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific customer groups",
       onClick: () =>
         layeredModalContext.push({
-          title: "Customer groups",
+          title: "Choose groups",
           onBack: () => layeredModalContext.pop(),
           view: <CustomerGroupConditionSelector onClose={close} />,
         }),
@@ -45,7 +46,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific tags",
       onClick: () =>
         layeredModalContext.push({
-          title: "Product tags",
+          title: "Choose tags",
           onBack: () => layeredModalContext.pop(),
           view: <TagConditionSelector onClose={close} />,
         }),
@@ -54,7 +55,12 @@ const useConditionModalItems = (close: () => void) => {
       label: "Collection",
       value: DiscountConditionType.PRODUCT_COLLECTIONS,
       description: "Only for specific product collections",
-      onClick: () => console.log("clicked"),
+      onClick: () =>
+        layeredModalContext.push({
+          title: "Choose collections",
+          onBack: () => layeredModalContext.pop(),
+          view: <CollectionConditionSelector onClose={() => close()} />,
+        }),
     },
     {
       label: "Type",
@@ -62,7 +68,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific product types",
       onClick: () =>
         layeredModalContext.push({
-          title: "Types",
+          title: "Choose types",
           onBack: () => layeredModalContext.pop(),
           view: <TypeConditionSelector onClose={() => close()} />,
         }),

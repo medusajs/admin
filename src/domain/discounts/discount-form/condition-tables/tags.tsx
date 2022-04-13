@@ -1,11 +1,11 @@
 import { ProductTag } from "@medusajs/medusa"
+import { omit } from "lodash"
 import { useAdminProductTags } from "medusa-react"
 import React, { useContext, useState } from "react"
 import { Column, HeaderGroup, Row } from "react-table"
-import { omit } from "lodash"
-
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
+import SortingIcon from "../../../../components/fundamentals/icons/sorting-icon"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import Table from "../../../../components/molecules/table"
@@ -20,11 +20,15 @@ const defaultQueryProps = {
 
 const Columns: Column<ProductTag>[] = [
   {
-    Header: "Name",
+    Header: () => (
+      <div className="flex items-center gap-1">
+        Name <SortingIcon size={16} />
+      </div>
+    ),
     accessor: "value",
     Cell: ({ row: { original } }) => {
       return (
-        <div>
+        <div className="w-[220px]">
           <span className="bg-grey-10 px-2 py-0.5 rounded-rounded">
             #{original.value}
           </span>
@@ -33,7 +37,11 @@ const Columns: Column<ProductTag>[] = [
     },
   },
   {
-    Header: () => <div className="text-right">Products</div>,
+    Header: () => (
+      <div className="flex items-center gap-1 justify-end">
+        Products <SortingIcon size={16} />
+      </div>
+    ),
     accessor: "products",
     // TODO: for now
     Cell: ({ row: { original } }) => {
@@ -50,7 +58,10 @@ const TagHeader = ({
   return (
     <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
       {headerGroup.headers.map((col) => (
-        <Table.HeadCell {...col.getHeaderProps()} className="w-[20px]">
+        <Table.HeadCell
+          {...col.getHeaderProps(col.getSortByToggleProps())}
+          className="w-[20px]"
+        >
           {col.render("Header")}
         </Table.HeadCell>
       ))}
