@@ -132,7 +132,7 @@ function FieldsMenu(props: FieldsMenuProps) {
         <Button
           onClick={onTriggerClick}
           variant="secondary"
-          className="rounded rounded-lg h-[32px] px-3 text-small font-semibold text-grey-90"
+          className="rounded-lg h-[32px] px-3 text-small font-semibold text-grey-90"
         >
           <span className="flex whitespace-nowrap items-center gap-1">
             Add fields <PlusIcon size={14} />
