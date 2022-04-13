@@ -186,7 +186,7 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
 
       <div className="flex gap-1 overflow-x-auto no-scrollbar::-webkit-scrollbar">
         {visibleFields.map((f) => (
-          <Chip key={f.id} {...f} remove={() => removeSelected(f.id)} />
+          <Chip key={f!.id} remove={() => removeSelected(f!.id)} {...f!} />
         ))}
       </div>
 
