@@ -86,12 +86,12 @@ const Item: React.FC<AccordionItemProps> = ({
       <AccordionPrimitive.Content
         forceMount={forceMountContent}
         className={clsx(
-          "overflow-hidden radix-state-closed:animate-accordion-close radix-state-open:animate-accordion-open"
+          "overflow-hidden radix-state-closed:animate-accordion-close radix-state-open:animate-accordion-open px-px"
         )}
       >
         <div className="inter-base-regular group-radix-state-closed:animate-accordion-close">
           {description && <p className="text-grey-50 ">{description}</p>}
-          <div>{children}</div>
+          <div className="w-full bogus">{children}</div>
         </div>
       </AccordionPrimitive.Content>
     </AccordionPrimitive.Item>

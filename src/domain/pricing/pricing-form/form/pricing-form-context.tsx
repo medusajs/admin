@@ -1,34 +1,38 @@
-import React, { useEffect, useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
-import { trimValues } from "../../../../utils/trim-values"
-import { ConfigurationField, CreatePriceListFormValues } from "../types"
+import React, { useState } from "react"
+import {
+  FormProvider,
+  useForm,
+  useFormContext,
+  useWatch,
+} from "react-hook-form"
+import { weekFromNow } from "../../../../utils/date-utils"
+import {
+  ConfigurationField,
+  PriceListFormValues,
+  PriceListType,
+} from "../types"
 
-const defaultState: CreatePriceListFormValues = {
+const defaultState: PriceListFormValues = {
   customer_groups: null,
   name: null,
   description: null,
   ends_at: null,
   starts_at: null,
   prices: null,
+  type: PriceListType.SALE,
 }
 
-const CreatePriceListFormContext = React.createContext<{
+const PriceListFormContext = React.createContext<{
   configFields: Record<ConfigurationField, unknown>
-  handleConfigurationSwitch: (
-    switchState: boolean,
-    field: ConfigurationField
-  ) => void
-  onSubmit: (values: CreatePriceListFormValues) => void
+  handleConfigurationSwitch: (values: string[]) => void
 } | null>(null)
 
 type FormProviderProps = {
-  priceList?: CreatePriceListFormValues
-  onSubmit: (values: CreatePriceListFormValues) => void
+  priceList?: PriceListFormValues
 }
 
-export const CreatePriceListFormProvider: React.FC<FormProviderProps> = ({
+export const PriceListFormProvider: React.FC<FormProviderProps> = ({
   priceList = defaultState,
-  onSubmit,
   children,
 }) => {
   const [configFields, setConfigFields] = useState<
@@ -38,35 +42,28 @@ export const CreatePriceListFormProvider: React.FC<FormProviderProps> = ({
     ends_at: priceList.ends_at,
     starts_at: priceList.starts_at,
   })
-  const methods = useForm<CreatePriceListFormValues>({
+  const methods = useForm<PriceListFormValues>({
     defaultValues: priceList,
   })
 
-  const handleSubmit = (values: CreatePriceListFormValues) => {
-    onSubmit(trimValues<CreatePriceListFormValues>(values))
-  }
-
-  const currentStartsAt = methods.watch("starts_at", priceList.starts_at)
-  const currentEndsAt = methods.watch("ends_at", priceList.ends_at)
-  const currentCustomerGroups = methods.watch(
-    "customer_groups",
-    priceList.customer_groups
-  )
-  const currentName = methods.watch("name", priceList.name)
-
-  useEffect(() => {
-    console.log("currentStartsAt", currentStartsAt)
-    console.log("currentEndsAt", currentEndsAt)
-    console.log("currentCustomerGroups", currentCustomerGroups)
-    console.log("currentName", currentName)
-  }, [currentStartsAt, currentEndsAt, currentCustomerGroups, currentName])
+  const currentStartsAt = useWatch({
+    name: "starts_at",
+    control: methods.control,
+  })
+  const currentEndsAt = useWatch({
+    name: "ends_at",
+    control: methods.control,
+  })
+  const currentCustomerGroups = useWatch({
+    name: "customer_groups",
+    control: methods.control,
+  })
 
   const disableConfiguration = (configField: ConfigurationField) => {
     let configToSave: unknown | null = null
 
     switch (configField) {
       case ConfigurationField.CUSTOMER_GROUPS:
-        console.log("customer groups", currentCustomerGroups)
         configToSave = currentCustomerGroups
         break
       case ConfigurationField.STARTS_AT:
@@ -83,58 +80,60 @@ export const CreatePriceListFormProvider: React.FC<FormProviderProps> = ({
       [configField]: configToSave,
     })
 
-    methods.setValue(configField, null)
+    // use timeout to avoid flashing default value
+    setTimeout(() => methods.setValue(configField, null), 300)
   }
 
   const enableConfiguration = (configField: ConfigurationField) => {
+    // we get the configuration field value from the state, so that if the user re-enables the field we can populate it with the previous value
     if (configFields[configField]) {
       methods.setValue(configField, configFields[configField])
     } else {
+      // if the configuration field value is null, we set a default value
       switch (configField) {
         case ConfigurationField.STARTS_AT:
           methods.setValue(configField, new Date())
           break
         case ConfigurationField.ENDS_AT:
-          methods.setValue(configField, new Date())
+          methods.setValue(configField, weekFromNow())
           break
         case ConfigurationField.CUSTOMER_GROUPS:
+          methods.setValue(configField, [])
           break
       }
     }
   }
 
-  const handleConfigurationSwitch = (
-    switchState: boolean,
-    configField: ConfigurationField
-  ) => {
-    if (switchState) {
-      enableConfiguration(configField)
-    } else {
-      disableConfiguration(configField)
+  const handleConfigurationSwitch = (values: string[]) => {
+    for (const key of Object.keys(configFields)) {
+      if (values.includes(key)) {
+        enableConfiguration(key as ConfigurationField)
+      } else {
+        disableConfiguration(key as ConfigurationField)
+      }
     }
   }
 
   return (
     <FormProvider {...methods}>
-      <CreatePriceListFormContext.Provider
+      <PriceListFormContext.Provider
         value={{
           configFields,
           handleConfigurationSwitch,
-          onSubmit: handleSubmit,
         }}
       >
         {children}
-      </CreatePriceListFormContext.Provider>
+      </PriceListFormContext.Provider>
     </FormProvider>
   )
 }
 
-export const useCreatePriceListForm = () => {
-  const context = React.useContext(CreatePriceListFormContext)
-  const form = useForm<CreatePriceListFormValues>()
+export const usePriceListForm = () => {
+  const context = React.useContext(PriceListFormContext)
+  const form = useFormContext()
   if (context === null) {
     throw new Error(
-      "useCreatePriceListForm must be used within a CreatePriceListFormProvider"
+      "usePriceListForm must be used within a PriceListFormProvider"
     )
   }
   return { ...form, ...context }

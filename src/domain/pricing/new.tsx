@@ -1,13 +1,14 @@
 import { RouteComponentProps } from "@reach/router"
 import React from "react"
-import CreatePriceListForm from "./pricing-form"
-import { CreatePriceListFormProvider } from "./pricing-form/form/pricing-form-context"
+import PriceListForm from "./pricing-form"
+import { PriceListFormProvider } from "./pricing-form/form/pricing-form-context"
+import { ViewType } from "./pricing-form/types"
 
 const New: React.FC<RouteComponentProps> = () => {
   return (
-    <CreatePriceListFormProvider onSubmit={(v) => console.log(v)}>
-      <CreatePriceListForm />
-    </CreatePriceListFormProvider>
+    <PriceListFormProvider>
+      <PriceListForm viewType={ViewType.CREATE} />
+    </PriceListFormProvider>
   )
 }
 
