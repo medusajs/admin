@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  ReactChild,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import React, { useEffect, useRef, useState } from "react"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { sortBy } from "lodash"
 
@@ -155,7 +149,11 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
   _selected.sort()
 
   return (
-    <div className="flex gap-1">
+    <div className="flex items-center gap-1">
+      <span className="text-small font-semibold text-gray-500">
+        Currently editing these fields:
+      </span>
+
       <div className="flex gap-1">
         {fields
           .filter((f) => selectedFields.includes(f.id))
