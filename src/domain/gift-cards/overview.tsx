@@ -1,6 +1,12 @@
 import { RouteComponentProps } from "@reach/router"
 import { navigate } from "gatsby"
-import { useAdminGiftCards, useAdminStore } from "medusa-react"
+import {
+  useAdminDeleteProduct,
+  useAdminGiftCards,
+  useAdminProducts,
+  useAdminStore,
+  useAdminUpdateProduct,
+} from "medusa-react"
 import React, { useMemo, useState } from "react"
 import PageDescription from "../../components/atoms/page-description"
 import Spinner from "../../components/atoms/spinner"
@@ -10,27 +16,52 @@ import BodyCard from "../../components/organisms/body-card"
 import DeletePrompt from "../../components/organisms/delete-prompt"
 import GiftCardBanner from "../../components/organisms/gift-card-banner"
 import GiftCardTable from "../../components/templates/gift-card-table"
+import useNotification from "../../hooks/use-notification"
+import { ProductStatus } from "../../types/shared"
+import { getErrorMessage } from "../../utils/error-messages"
 import CustomGiftcard from "./custom-giftcard"
 import NewGiftCard from "./new"
 
-type OverviewProps = {
-  giftCard: any
-  onDelete: () => void
-  onUpdate: () => void
-  isLoading: boolean
-} & RouteComponentProps
-
-const Overview: React.FC<OverviewProps> = ({
-  giftCard,
-  onDelete,
-  onUpdate,
-  isLoading,
-}) => {
+const Overview: React.FC<RouteComponentProps> = () => {
+  const { products, isLoading } = useAdminProducts({
+    is_giftcard: "true",
+  })
   const { store } = useAdminStore()
   const { gift_cards: giftCards } = useAdminGiftCards()
   const [showCreate, setShowCreate] = useState(false)
   const [showCreateCustom, setShowCreateCustom] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
+
+  const giftCard = products?.[0]
+
+  const notification = useNotification()
+  const updateGiftCard = useAdminUpdateProduct(giftCard?.id!)
+  const deleteGiftCard = useAdminDeleteProduct(giftCard?.id!)
+
+  const onUpdate = () => {
+    let status: ProductStatus = ProductStatus.PUBLISHED
+    if (giftCard?.status === "published") {
+      status = ProductStatus.DRAFT
+    }
+
+    updateGiftCard.mutate(
+      // @ts-ignore
+      { status },
+      {
+        onSuccess: () =>
+          notification("Success", "Successfully updated Gift Card", "success"),
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
+      }
+    )
+  }
+
+  const onDelete = () => {
+    deleteGiftCard.mutate(undefined, {
+      onSuccess: () => {
+        navigate("/a/gift-cards")
+      },
+    })
+  }
 
   const actionables = [
     {

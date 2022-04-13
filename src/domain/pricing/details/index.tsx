@@ -7,7 +7,7 @@ import RawJSON from "../../../components/organisms/raw-json"
 import Header from "./sections/header"
 import Prices from "./sections/prices"
 
-type PricingDetailsProps = RouteComponentProps & { id: string }
+type PricingDetailsProps = RouteComponentProps & { id?: string }
 
 const PricingDetails = ({ id }: PricingDetailsProps) => {
   const { price_list, isLoading } = useAdminPriceList(id)

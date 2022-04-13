@@ -1,7 +1,7 @@
 import { SINGLE_PRODUCT_VIEW } from "./product-form-context"
 
 export const productToFormValuesMapper = (product) => {
-  let thumbnail = product?.images.length
+  let thumbnail = product?.images?.length
     ? product.images.findIndex((img) => img.url === product.thumbnail)
     : 0
   thumbnail = thumbnail === -1 ? 0 : thumbnail

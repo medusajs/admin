@@ -28,7 +28,7 @@ const Item = ({
   return (
     <label
       className={clsx(
-        "rounded-base relative border border-grey-20 p-base flex items-start mb-xsmall gap-base cursor-pointer",
+        "rounded-rounded relative border border-grey-20 p-base flex items-start mb-xsmall gap-base cursor-pointer",
         className
       )}
       htmlFor={rest.value}
@@ -52,13 +52,13 @@ const Item = ({
           //  we want to hide this indicator from screen readers because the previous one is enough
           aria-hidden="true"
           className={clsx(
-            "absolute inset-0 shadow-violet-60 shadow-[0_0_0_2px] rounded-base"
+            "absolute inset-0 shadow-violet-60 shadow-[0_0_0_2px] rounded-rounded"
           )}
         />
       </RadioGroupPrimitive.Item>
       <div className="truncate">
         <div className="flex items-center">
-          <p className="inter-small-semibold truncate">
+          <p className="inter-base-semibold truncate">
             {label}{" "}
             {sublabel ? (
               <span className="inter-small-regular">{sublabel}</span>

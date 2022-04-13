@@ -29,6 +29,7 @@ type MultiSelectProps = InputHeaderProps & {
   required?: boolean
   name?: string
   className?: string
+  fullWidth?: boolean
   // Multiselect props
   placeholder?: string
   isMultiSelect?: boolean
@@ -222,6 +223,7 @@ const SSelect = React.forwardRef(
     {
       label,
       name,
+      fullWidth = false,
       required,
       value,
       onChange,
@@ -298,7 +300,12 @@ const SSelect = React.forwardRef(
     }, [isFocussed])
 
     return (
-      <div ref={containerRef}>
+      <div
+        ref={containerRef}
+        className={clsx({
+          "w-full": fullWidth,
+        })}
+      >
         <InputContainer
           key={name}
           onFocusLost={() => {
