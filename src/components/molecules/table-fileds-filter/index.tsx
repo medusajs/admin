@@ -1,11 +1,17 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, {
+  FunctionComponent,
+  ReactChild,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { sortBy } from "lodash"
 
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import Checkbox from "../../atoms/checkbox"
-import { sortBy } from "lodash"
 
 /**
  * TODO:
@@ -16,7 +22,11 @@ import { sortBy } from "lodash"
  * 4. Overflow
  */
 
-type Field = { id: string; label: React.ReactNode; short: string }
+type Field = {
+  id: string
+  label: React.ReactChild | ((args: { isSelected: boolean }) => void)
+  short: string
+}
 
 type ChipProps = Field & {
   remove: () => void
@@ -50,9 +60,9 @@ type FieldsMenuProps = {
 function FieldsMenu(props: FieldsMenuProps) {
   const { fields, onBlur, selectedFields } = props
 
+  const contentRef = useRef()
   const [open, setOpen] = useState(false)
   const [currentlySelected, setCurrentlySelected] = useState<string[]>([])
-  const contentRef = useRef()
 
   const onTriggerClick = () => {
     setOpen(true)
@@ -106,16 +116,23 @@ function FieldsMenu(props: FieldsMenuProps) {
         ref={contentRef}
         className="w-[240px] bg-white shadow rounded-xl p-2"
       >
-        {fields.map((f) => (
-          <DropdownMenu.Item key={f.id}>
-            <Checkbox
-              className="px-[6px] h-[32px] hover:bg-grey-10 rounded text-small"
-              checked={currentlySelected.includes(f.id)}
-              onChange={() => toggleCheck(f.id)}
-              label={f.label}
-            />
-          </DropdownMenu.Item>
-        ))}
+        {fields.map((f) => {
+          const isSelected = currentlySelected.includes(f.id)
+          return (
+            <DropdownMenu.Item key={f.id}>
+              <Checkbox
+                checked={isSelected}
+                className="px-[6px] h-[32px] hover:bg-grey-10 rounded text-small"
+                onChange={() => toggleCheck(f.id)}
+                label={
+                  typeof f.label === "function"
+                    ? f.label({ isSelected })
+                    : f.label
+                }
+              />
+            </DropdownMenu.Item>
+          )
+        })}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   )
