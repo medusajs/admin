@@ -91,7 +91,7 @@ const Item: React.FC<AccordionItemProps> = ({
       >
         <div className="inter-base-regular group-radix-state-closed:animate-accordion-close">
           {description && <p className="text-grey-50 ">{description}</p>}
-          <div className="w-full bogus">{children}</div>
+          <div className="w-full">{children}</div>
         </div>
       </AccordionPrimitive.Content>
     </AccordionPrimitive.Item>

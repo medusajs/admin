@@ -393,7 +393,7 @@
   }
 
   .accordion-margin-transition {
-    @apply transition-[margin] duration-300
+    @apply transition-[margin] duration-300 ease-[cubic-bezier(0.87,0,0.13,1)]
   }
 }
 
