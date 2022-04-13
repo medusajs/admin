@@ -19,6 +19,7 @@ export const mapFormValuesToCreatePriceList = (
     ends_at: values.ends_at || undefined,
     starts_at: values.starts_at || undefined,
     prices: [
+      // TODO: Replace when addding prices has been added
       {
         amount: 2500,
         currency_code: "usd",
