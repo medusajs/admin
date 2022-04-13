@@ -71,12 +71,12 @@ const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({ product }) => {
 
 const ProductVariantLeaf = ({ sku, title, prices = [] }: LeafProps) => {
   return (
-    <>
+    <div className="flex flex-1">
       <div className="truncate">
         <span>{title}</span>
         {sku && <span className="text-grey-50 ml-xsmall">(SKU: {sku})</span>}
       </div>
-      <div className="flex items-center text-grey-50">
+      <div className="flex items-center text-grey-50 flex-1 justify-end">
         <div className="text-grey-50 mr-xsmall">
           {prices.length ? (
             <span>{`${prices.length} price${
@@ -88,8 +88,8 @@ const ProductVariantLeaf = ({ sku, title, prices = [] }: LeafProps) => {
             </span>
           )}
         </div>
-      </div>{" "}
-    </>
+      </div>
+    </div>
   )
 }
 
