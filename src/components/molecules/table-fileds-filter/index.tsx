@@ -84,7 +84,7 @@ function FieldMenuItem(props: FieldMenuItemProps) {
 function FieldsMenu(props: FieldsMenuProps) {
   const { fields, onBlur, selectedFields } = props
 
-  const contentRef = useRef()
+  const contentRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
   // local copy of selected filters which is synced with the container list on blur
   const [currentlySelected, setCurrentlySelected] = useState<string[]>([])
