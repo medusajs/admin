@@ -30,6 +30,12 @@ type FieldsMenuProps = {
   selectedFields: string[]
 }
 
+type FieldMenuItemProps = {
+  field: Field
+  checked: boolean
+  onChange: () => void
+}
+
 /******************** COMPONENTS ********************/
 
 /**
@@ -50,13 +56,37 @@ function Chip(props: ChipProps) {
 }
 
 /**
- * A dropdown menu for selecting currently active table fields.
+ * `FieldMenu` item component.
+ */
+function FieldMenuItem(props: FieldMenuItemProps) {
+  const { checked, field, onChange } = props
+  return (
+    <DropdownMenu.Item>
+      <Checkbox
+        checked={checked}
+        className="px-[6px] h-[32px] hover:bg-grey-10 rounded text-small"
+        onChange={onChange}
+        label={
+          typeof field.label === "function"
+            ? field.label({ isSelected: props.checked })
+            : field.label
+        }
+      />
+    </DropdownMenu.Item>
+  )
+}
+
+/******************** CONTAINERS ********************/
+
+/**
+ * The dropdown menu for selecting currently active table fields.
  */
 function FieldsMenu(props: FieldsMenuProps) {
   const { fields, onBlur, selectedFields } = props
 
   const contentRef = useRef()
   const [open, setOpen] = useState(false)
+  // local copy of selected filters which is synced with the container list on blur
   const [currentlySelected, setCurrentlySelected] = useState<string[]>([])
 
   const onTriggerClick = () => {
@@ -83,6 +113,7 @@ function FieldsMenu(props: FieldsMenuProps) {
     }
   }, [open])
 
+  // close dropdown "manually" on click outside the menu
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!contentRef.current?.contains(event.target)) {
@@ -113,28 +144,22 @@ function FieldsMenu(props: FieldsMenuProps) {
         ref={contentRef}
         className="w-[240px] bg-white shadow rounded-xl p-2"
       >
-        {fields.map((f) => {
-          const isSelected = currentlySelected.includes(f.id)
-          return (
-            <DropdownMenu.Item key={f.id}>
-              <Checkbox
-                checked={isSelected}
-                className="px-[6px] h-[32px] hover:bg-grey-10 rounded text-small"
-                onChange={() => toggleCheck(f.id)}
-                label={
-                  typeof f.label === "function"
-                    ? f.label({ isSelected })
-                    : f.label
-                }
-              />
-            </DropdownMenu.Item>
-          )
-        })}
+        {fields.map((f) => (
+          <FieldMenuItem
+            key={f.id}
+            field={f}
+            onChange={() => toggleCheck(f.id)}
+            checked={currentlySelected.includes(f.id)}
+          />
+        ))}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   )
 }
 
+/**
+ * Table fields filter root container.
+ */
 function TableFieldsFilters(props: TableFieldsFilterProps) {
   const { fields, onChange } = props
 
@@ -149,7 +174,9 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
   }
 
   const _selected = [...selectedFields]
-  _selected.sort()
+  _selected.sort((a, b) => a.localeCompare(b))
+
+  const visibleFields = _selected.map((id) => fields.find((f) => f.id === id))
 
   return (
     <div className="flex items-center gap-2">
@@ -158,17 +185,15 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
       </span>
 
       <div className="flex gap-1 overflow-x-auto no-scrollbar::-webkit-scrollbar">
-        {fields
-          .filter((f) => selectedFields.includes(f.id))
-          .map((f) => (
-            <Chip key={f.id} {...f} remove={() => removeSelected(f.id)} />
-          ))}
+        {visibleFields.map((f) => (
+          <Chip key={f.id} {...f} remove={() => removeSelected(f.id)} />
+        ))}
       </div>
 
       <FieldsMenu
         fields={sortBy(fields, "id")}
         onBlur={setSelectedFields}
-        selectedFields={selectedFields}
+        selectedFields={_selected}
       />
     </div>
   )

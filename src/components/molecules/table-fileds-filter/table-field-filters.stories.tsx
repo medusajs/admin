@@ -13,6 +13,7 @@ const Template = (args) => <TableFieldsFilters {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
+  onChange: console.log,
   fields: [
     {
       id: "p-usd",
