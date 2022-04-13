@@ -15,12 +15,9 @@ import {
   useSortBy,
   useTable,
 } from "react-table"
-import Spinner from "../../../components/atoms/spinner"
-import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
-import Table, {
-  TablePagination,
-  TableProps,
-} from "../../../components/molecules/table"
+import Spinner from "../../atoms/spinner"
+import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
+import Table, { TablePagination, TableProps } from "../../molecules/table"
 import useQueryFilters from "../../../hooks/use-query-filters"
 
 type SelectableTableProps<T extends object> = {
