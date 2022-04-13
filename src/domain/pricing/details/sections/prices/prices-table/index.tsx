@@ -6,7 +6,7 @@ import CancelIcon from "../../../../../../components/fundamentals/icons/cancel-i
 import EditIcon from "../../../../../../components/fundamentals/icons/edit-icon"
 import Table from "../../../../../../components/molecules/table"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
-import { SelectableTable } from "../../../selectable-table"
+import { SelectableTable } from "../../../../../../components/templates/selectable-table"
 import usePricesColumns from "./use-columns"
 
 const DEFAULT_PAGE_SIZE = 9

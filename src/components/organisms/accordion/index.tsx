@@ -1,6 +1,6 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import clsx from "clsx"
-import React, { useEffect } from "react"
+import React from "react"
 import Button from "../../fundamentals/button"
 import IconTooltip from "../../molecules/icon-tooltip"
 
@@ -63,33 +63,35 @@ const Item: React.FC<AccordionItemProps> = ({
       )}
     >
       <AccordionPrimitive.Header>
-        <AccordionPrimitive.Trigger className="flex flex-col w-full">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-x-2xsmall">
-              <span className={headerClass}>
-                {title}
-                {required && <span className="text-rose-50">*</span>}
-              </span>
-              {tooltip && <IconTooltip content={tooltip} />}
+        <AccordionPrimitive.Trigger className="w-full" asChild>
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-x-2xsmall">
+                <span className={headerClass}>
+                  {title}
+                  {required && <span className="text-rose-50">*</span>}
+                </span>
+                {tooltip && <IconTooltip content={tooltip} />}
+              </div>
+              {customTrigger || <MorphingTrigger />}
             </div>
-            {customTrigger || <MorphingTrigger />}
+            {subtitle && (
+              <span className="inter-small-regular text-grey-50 mt-1">
+                {subtitle}
+              </span>
+            )}
           </div>
-          {subtitle && (
-            <span className="inter-small-regular text-grey-50 mt-1">
-              {subtitle}
-            </span>
-          )}
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
       <AccordionPrimitive.Content
         forceMount={forceMountContent}
         className={clsx(
-          "overflow-hidden radix-state-closed:animate-accordion-close radix-state-open:animate-accordion-open"
+          "overflow-hidden radix-state-closed:animate-accordion-close radix-state-open:animate-accordion-open px-px"
         )}
       >
         <div className="inter-base-regular group-radix-state-closed:animate-accordion-close">
           {description && <p className="text-grey-50 ">{description}</p>}
-          <div>{children}</div>
+          <div className="w-full">{children}</div>
         </div>
       </AccordionPrimitive.Content>
     </AccordionPrimitive.Item>
