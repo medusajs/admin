@@ -3,6 +3,7 @@ import {
   Product,
   ProductCollection,
   ProductTag,
+  ProductType,
 } from "@medusajs/medusa"
 import { debounce } from "lodash"
 import React, { useEffect } from "react"
@@ -42,7 +43,12 @@ type SelectableTableProps<T extends object> = {
 } & ReturnType<typeof useQueryFilters>
 
 export const SelectableTable = <
-  T extends Product | CustomerGroup | ProductCollection | ProductTag
+  T extends
+    | Product
+    | CustomerGroup
+    | ProductCollection
+    | ProductTag
+    | ProductType
 >({
   label,
   resourceName = "",

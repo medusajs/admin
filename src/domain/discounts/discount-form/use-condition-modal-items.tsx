@@ -4,6 +4,8 @@ import { DiscountConditionType } from "../types"
 import CollectionConditionSelector from "./condition-tables/collections"
 import CustomerGroupConditionSelector from "./condition-tables/customer-groups"
 import ProductConditionSelector from "./condition-tables/products"
+import TypeConditionSelector from "./condition-tables/types"
+import TagConditionSelector from "./condition-tables/tags"
 
 export type ConditionItem = {
   label: string
@@ -42,7 +44,12 @@ const useConditionModalItems = (close: () => void) => {
       label: "Tag",
       value: DiscountConditionType.PRODUCT_TAGS,
       description: "Only for specific tags",
-      onClick: () => console.log("clicked"),
+      onClick: () =>
+        layeredModalContext.push({
+          title: "Product tags",
+          onBack: () => layeredModalContext.pop(),
+          view: <TagConditionSelector onClose={close} />,
+        }),
     },
     {
       label: "Collection",
@@ -59,7 +66,12 @@ const useConditionModalItems = (close: () => void) => {
       label: "Type",
       value: DiscountConditionType.PRODUCT_TYPES,
       description: "Only for specific product types",
-      onClick: () => console.log("clicked"),
+      onClick: () =>
+        layeredModalContext.push({
+          title: "Types",
+          onBack: () => layeredModalContext.pop(),
+          view: <TypeConditionSelector onClose={() => close()} />,
+        }),
     },
   ]
 
