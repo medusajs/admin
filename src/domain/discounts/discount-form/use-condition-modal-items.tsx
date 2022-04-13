@@ -3,6 +3,7 @@ import { LayeredModalContext } from "../../../components/molecules/modal/layered
 import { DiscountConditionType } from "../types"
 import CustomerGroupConditionSelector from "./condition-tables/customer-groups"
 import ProductConditionSelector from "./condition-tables/products"
+import TypeConditionSelector from "./condition-tables/types"
 import TagConditionSelector from "./condition-tables/tags"
 
 export type ConditionItem = {
@@ -59,7 +60,12 @@ const useConditionModalItems = (close: () => void) => {
       label: "Type",
       value: DiscountConditionType.PRODUCT_TYPES,
       description: "Only for specific product types",
-      onClick: () => console.log("clicked"),
+      onClick: () =>
+        layeredModalContext.push({
+          title: "Types",
+          onBack: () => layeredModalContext.pop(),
+          view: <TypeConditionSelector onClose={() => close()} />,
+        }),
     },
   ]
 
