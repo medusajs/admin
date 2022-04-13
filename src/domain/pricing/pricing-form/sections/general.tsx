@@ -11,7 +11,7 @@ const General = () => {
       forceMountContent
       required
       title="General"
-      tooltip="General information for the price list. A name is required."
+      tooltip="General information for the price list."
       value="general"
     >
       <div className="flex flex-col gap-y-small mt-5">
