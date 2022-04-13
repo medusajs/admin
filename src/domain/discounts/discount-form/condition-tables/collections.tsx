@@ -50,7 +50,6 @@ const defaultQueryProps = {
   offset: 0,
 }
 
-// TODO: remove items and save conditions and use "useDiscountForm" when implemented
 const CollectionConditionSelector = ({ onClose }) => {
   const params = useQueryFilters(defaultQueryProps)
   const { pop, reset } = useContext(LayeredModalContext)
@@ -79,7 +78,7 @@ const CollectionConditionSelector = ({ onClose }) => {
     return [
       {
         Header: () => (
-          <div className="flex items-center gap-1 min-w-[443px]">
+          <div className="flex items-center gap-1 min-w-[546px]">
             Title <SortingIcon size={16} />
           </div>
         ),
@@ -91,10 +90,10 @@ const CollectionConditionSelector = ({ onClose }) => {
       {
         Header: () => (
           <div className="flex justify-end items-center gap-1">
-            Variants <SortingIcon size={16} />
+            Products <SortingIcon size={16} />
           </div>
         ),
-        id: "variants",
+        id: "products",
         accessor: (row) => row.products.length,
         Cell: ({ cell: { value } }) => {
           return <div className="text-right">{value}</div>
@@ -113,7 +112,7 @@ const CollectionConditionSelector = ({ onClose }) => {
             options={{
               enableSearch: true,
               immediateSearchFocus: true,
-              searchPlaceholder: "Search products...",
+              searchPlaceholder: "Search by title...",
             }}
             resourceName="Collections"
             totalCount={count || 0}

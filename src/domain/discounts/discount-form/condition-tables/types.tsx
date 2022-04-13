@@ -96,9 +96,9 @@ const TypeConditionSelector = ({ onClose }) => {
         ) : (
           <SelectableTable
             options={{
-              enableSearch: true,
+              // enableSearch: true, TODO: enable search
               immediateSearchFocus: true,
-              searchPlaceholder: "Search products...",
+              // searchPlaceholder: "Search by title...",
             }}
             resourceName="Products"
             totalCount={count || 0}

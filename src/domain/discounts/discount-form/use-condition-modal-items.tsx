@@ -24,7 +24,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific products",
       onClick: () =>
         layeredModalContext.push({
-          title: "Products",
+          title: "Choose products",
           onBack: () => layeredModalContext.pop(),
           view: <ProductConditionSelector onClose={() => close()} />,
         }),
@@ -35,7 +35,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific customer groups",
       onClick: () =>
         layeredModalContext.push({
-          title: "Customer groups",
+          title: "Choose groups",
           onBack: () => layeredModalContext.pop(),
           view: <CustomerGroupConditionSelector onClose={close} />,
         }),
@@ -46,7 +46,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific tags",
       onClick: () =>
         layeredModalContext.push({
-          title: "Product tags",
+          title: "Choose tags",
           onBack: () => layeredModalContext.pop(),
           view: <TagConditionSelector onClose={close} />,
         }),
@@ -57,7 +57,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific product collections",
       onClick: () =>
         layeredModalContext.push({
-          title: "Collections",
+          title: "Choose collections",
           onBack: () => layeredModalContext.pop(),
           view: <CollectionConditionSelector onClose={() => close()} />,
         }),
@@ -68,7 +68,7 @@ const useConditionModalItems = (close: () => void) => {
       description: "Only for specific product types",
       onClick: () =>
         layeredModalContext.push({
-          title: "Product types",
+          title: "Choose types",
           onBack: () => layeredModalContext.pop(),
           view: <TypeConditionSelector onClose={() => close()} />,
         }),
