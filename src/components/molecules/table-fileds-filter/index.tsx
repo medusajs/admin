@@ -7,10 +7,19 @@ import CrossIcon from "../../fundamentals/icons/cross-icon"
 import Checkbox from "../../atoms/checkbox"
 import { sortBy } from "lodash"
 
+/**
+ * TODO:
+ *
+ * 1. Change selected on blur
+ * 2. Description text
+ * 3. Label component with active prop
+ * 4. Overflow
+ */
+
 type Field = { id: string; label: React.ReactNode; short: string }
 
 type ChipProps = Field & {
-  remove: (id: string) => void
+  remove: () => void
 }
 
 function Chip(props: ChipProps) {
@@ -33,21 +42,41 @@ type TableFieldsFilterProps = {
 }
 
 type FieldsMenuProps = {
-  onClick: () => void
-  toggleCheck: (id: string) => void
   fields: Field[]
+  onBlur: (ids: string[]) => void
   selectedFields: string[]
 }
 
 function FieldsMenu(props: FieldsMenuProps) {
-  const { fields, onClick, toggleCheck, selectedFields } = props
+  const { fields, onBlur, selectedFields } = props
+
   const [open, setOpen] = useState(false)
+  const [currentlySelected, setCurrentlySelected] = useState<string[]>([])
   const contentRef = useRef()
 
   const onTriggerClick = () => {
     setOpen(true)
-    onClick()
   }
+
+  const toggleCheck = (id: string) => {
+    if (currentlySelected.includes(id)) {
+      setCurrentlySelected(currentlySelected.filter((f) => f !== id))
+    } else {
+      setCurrentlySelected([...currentlySelected, id])
+    }
+  }
+
+  useEffect(() => {
+    if (open) {
+      setCurrentlySelected(selectedFields)
+    }
+  }, [open, selectedFields])
+
+  useEffect(() => {
+    if (!open) {
+      onBlur(currentlySelected)
+    }
+  }, [open])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -81,7 +110,7 @@ function FieldsMenu(props: FieldsMenuProps) {
           <DropdownMenu.Item key={f.id}>
             <Checkbox
               className="px-[6px] h-[32px] hover:bg-grey-10 rounded text-small"
-              checked={selectedFields.includes(f.id)}
+              checked={currentlySelected.includes(f.id)}
               onChange={() => toggleCheck(f.id)}
               label={f.label}
             />
@@ -100,14 +129,6 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
   useEffect(() => {
     onChange(selectedFields)
   }, [selectedFields])
-
-  const toggleCheck = (id: string) => {
-    if (selectedFields.includes(id)) {
-      setSelectedFields(selectedFields.filter((f) => f !== id))
-    } else {
-      setSelectedFields([...selectedFields, id])
-    }
-  }
 
   const removeSelected = (id: string) => {
     setSelectedFields(selectedFields.filter((f) => f !== id))
@@ -128,8 +149,7 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
 
       <FieldsMenu
         fields={sortBy(fields, "id")}
-        onClick={console.log}
-        toggleCheck={toggleCheck}
+        onBlur={setSelectedFields}
         selectedFields={selectedFields}
       />
     </div>
