@@ -7,37 +7,16 @@ import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import Checkbox from "../../atoms/checkbox"
 
-/**
- * TODO:
- *
- * 1. Change selected on blur
- * 2. Description text
- * 3. Label component with active prop
- * 4. Overflow
- */
+/******************** TYPES ********************/
 
 type Field = {
   id: string
-  label: React.ReactChild | ((args: { isSelected: boolean }) => void)
   short: string
+  label: React.ReactChild | ((args: { isSelected: boolean }) => void)
 }
 
 type ChipProps = Field & {
   remove: () => void
-}
-
-function Chip(props: ChipProps) {
-  const { remove, short } = props
-  return (
-    <div className="rounded rounded-lg h-[32px] flex gap-1 items-center px-3 text-small text-grey-70 border border-gray-70">
-      {short}
-      <CrossIcon
-        className="text-grey-40 cursor-pointer"
-        onClick={remove}
-        size={13}
-      />
-    </div>
-  )
 }
 
 type TableFieldsFilterProps = {
@@ -51,6 +30,28 @@ type FieldsMenuProps = {
   selectedFields: string[]
 }
 
+/******************** COMPONENTS ********************/
+
+/**
+ * Table field chip component.
+ */
+function Chip(props: ChipProps) {
+  const { remove, short } = props
+  return (
+    <div className="rounded rounded-lg h-[32px] flex gap-1 shrink-0 items-center px-3 text-small text-grey-70 border border-gray-70">
+      {short}
+      <CrossIcon
+        className="text-grey-40 cursor-pointer"
+        onClick={remove}
+        size={13}
+      />
+    </div>
+  )
+}
+
+/**
+ * A dropdown menu for selecting currently active table fields.
+ */
 function FieldsMenu(props: FieldsMenuProps) {
   const { fields, onBlur, selectedFields } = props
 
@@ -102,7 +103,9 @@ function FieldsMenu(props: FieldsMenuProps) {
           variant="secondary"
           className="rounded rounded-lg h-[32px] px-3 text-small font-semibold text-grey-90"
         >
-          Add fields <PlusIcon size={14} />
+          <span className="flex whitespace-nowrap items-center gap-1">
+            Add fields <PlusIcon size={14} />
+          </span>
         </Button>
       </DropdownMenu.Trigger>
 
@@ -149,12 +152,12 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
   _selected.sort()
 
   return (
-    <div className="flex items-center gap-1">
-      <span className="text-small font-semibold text-gray-500">
+    <div className="flex items-center gap-2">
+      <span className="text-small font-semibold text-gray-500 whitespace-nowrap">
         Currently editing these fields:
       </span>
 
-      <div className="flex gap-1">
+      <div className="flex gap-1 overflow-x-auto no-scrollbar::-webkit-scrollbar">
         {fields
           .filter((f) => selectedFields.includes(f.id))
           .map((f) => (
