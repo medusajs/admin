@@ -43,8 +43,6 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     conditions,
   } = useDiscountForm()
 
-  React.useEffect(() => console.log(conditions), [conditions])
-
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
     discount?.id,
     {
