@@ -4,7 +4,7 @@ import {
   ProductCollection,
   ProductTag,
 } from "@medusajs/medusa"
-import { debounce } from "lodash"
+import _, { debounce, difference } from "lodash"
 import React, { useEffect } from "react"
 import {
   Column,
@@ -81,8 +81,8 @@ export const SelectableTable = <
   )
 
   useEffect(() => {
-    console.log({ selectedRowIDs: table.state.selectedRowIds })
-    onChange(Object.keys(table.state.selectedRowIds))
+    const ids = Object.keys(table.state.selectedRowIds)
+    onChange(ids)
   }, [table.state.selectedRowIds])
 
   const handleNext = () => {
@@ -115,7 +115,7 @@ export const SelectableTable = <
 
   return (
     <div>
-      <div className="inter-base-semibold my-large">{label}</div>
+      {label && <div className="inter-base-semibold my-large">{label}</div>}
       <Table
         {...options}
         {...table.getTableProps()}

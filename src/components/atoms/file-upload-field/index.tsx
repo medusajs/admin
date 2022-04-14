@@ -7,6 +7,7 @@ type FileUploadFieldProps = {
   errorMessage?: string
   placeholder?: string
   className?: string
+  text?: string
 }
 
 const FileUploadField: React.FC<FileUploadFieldProps> = ({
@@ -15,6 +16,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
   placeholder,
   errorMessage,
   className,
+  text = "Drop your images here, or",
 }) => {
   const inputRef = useRef(null)
   const [fileUploadError, setFileUploadError] = useState(false)
@@ -68,8 +70,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
     >
       <div className="flex flex-col items-center">
         <p>
-          Drop your images here, or{" "}
-          <span className="text-violet-60">click to browse</span>
+          {text} <span className="text-violet-60">click to browse</span>
         </p>
         {placeholder}
       </div>

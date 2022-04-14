@@ -101,7 +101,9 @@ const CollapsibleTreeParent: React.FC<CollapsibleTreeParentProps> = ({
         <div className="flex items-center justify-between">
           <div className="gap-x-small flex items-center">{children}</div>
           <div className="flex items-center gap-x-xsmall">
-            <Actionables customTrigger={Trigger()} actions={actions} />
+            {actions && (
+              <Actionables customTrigger={Trigger()} actions={actions} />
+            )}
             <div className="h-5 w-px rounded-circle bg-grey-20" />
             <Button
               variant="ghost"
@@ -146,7 +148,13 @@ const CollapsibleTreeLeaf: React.FC<CollapsibleTreeLeafProps> = ({
       <div className="w-[13px] h-px border-t border-grey-20 border-dashed mr-xsmall" />
       <Container className="w-full flex items-center justify-between inter-small-regular">
         {children}
-        {actions && <Actionables customTrigger={Trigger()} actions={actions} />}
+        {actions && (
+          <Actionables
+            forceDropdown
+            customTrigger={Trigger()}
+            actions={actions}
+          />
+        )}
       </Container>
     </div>
   )

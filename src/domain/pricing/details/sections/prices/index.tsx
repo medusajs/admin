@@ -1,8 +1,10 @@
 import * as React from "react"
+import Fade from "../../../../../components/atoms/fade-wrapper"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import UploadIcon from "../../../../../components/fundamentals/icons/upload-icon"
 import BodyCard from "../../../../../components/organisms/body-card"
 import UploadModal from "../../../../../components/organisms/upload-modal"
+import EditPrices from "./edit-prices"
 import PricesTable from "./prices-table/"
 
 const Prices = ({ id }) => {
@@ -23,14 +25,11 @@ const Prices = ({ id }) => {
     },
   ]
   return (
-    <BodyCard
-      title="Prices"
-      actionables={actionables}
-      forceDropdown
-      className="min-h-[200px]"
-    >
+    <BodyCard title="Prices" actionables={actionables} forceDropdown>
       <PricesTable id={id} />
-      {showEdit && <>{/* TODO: Edit prices focus modal */}</>}
+      <Fade isVisible={showEdit} isFullScreen={true}>
+        <EditPrices close={() => setShowEdit(false)} id={id} />{" "}
+      </Fade>
       {showUpload && (
         <UploadModal
           onClose={() => setShowUpload(false)}

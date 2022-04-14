@@ -1,15 +1,37 @@
+import { Product } from "@medusajs/medusa"
+import { debounce } from "lodash"
 import { useAdminPriceListProducts } from "medusa-react"
 import * as React from "react"
 import Tooltip from "../../../../../components/atoms/tooltip"
 import Button from "../../../../../components/fundamentals/button"
+import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import InfoIcon from "../../../../../components/fundamentals/icons/info-icon"
-import SearchIcon from "../../../../../components/fundamentals/icons/search-icon"
-import InputField from "../../../../../components/molecules/input"
+import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import FocusModal from "../../../../../components/molecules/modal/focus-modal"
-import ProductVariantTree from "../../../../../components/organisms/product-variant-tree"
+import useQueryFilters from "../../../../../hooks/use-query-filters"
+import { Prices } from "../../../pricing-form/sections/prices"
+import { merge } from "./utils"
+
+const defaultQueryFilters = {
+  limit: 50,
+  offset: 0,
+}
 
 const EditPrices = ({ close, id }) => {
-  const { products = [], isLoading, count = 0 } = useAdminPriceListProducts(id)
+  const params = useQueryFilters(defaultQueryFilters)
+  const [selectedProducts, setSelectedProducts] = React.useState<Product[]>([])
+  const { products = [], isLoading } = useAdminPriceListProducts(
+    id,
+    params.queryObject
+  )
+  const handleSearch = (query: string) => {
+    params.setQuery(query)
+  }
+
+  const debouncedSearch = React.useMemo(() => debounce(handleSearch, 300), [])
+
+  const mergedProducts = merge(products, selectedProducts)
+
   return (
     <FocusModal>
       <FocusModal.Header>
@@ -50,14 +72,14 @@ const EditPrices = ({ close, id }) => {
                 here
               </span>
             </div>
-            <div className="mt-6">
-              <SearchBar />
-              <div className="mt-2">
-                {products.map((product) => (
-                  <ProductVariantTree product={product} />
-                ))}
-              </div>
-            </div>
+            <Prices
+              products={mergedProducts}
+              setProducts={setSelectedProducts}
+              isLoading={isLoading}
+              onSearch={debouncedSearch}
+              onFileChosen={close}
+              getVariantActions={VariantActions}
+            />
           </div>
         </div>
       </FocusModal.Main>
@@ -65,15 +87,24 @@ const EditPrices = ({ close, id }) => {
   )
 }
 
-const SearchBar = () => {
-  return (
-    <>
-      <InputField
-        placeholder="Search by name or SKU..."
-        startAdornment={<SearchIcon />}
-      />
-    </>
-  )
+const VariantActions = (product: Product) => {
+  return [
+    {
+      label: "Edit prices",
+      icon: <EditIcon size={20} />,
+      onClick: () => {
+        // open grid ui
+      },
+    },
+    {
+      label: "Remove from list",
+      icon: <TrashIcon size={20} />,
+      onClick: () => {
+        // missing core support
+      },
+      variant: "danger" as const,
+    },
+  ]
 }
 
 export default EditPrices
