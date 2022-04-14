@@ -36,14 +36,16 @@ const BodyCard: React.FC<BodyCardProps> = ({
   return (
     <div
       className={clsx(
-        "rounded-rounded border bg-grey-0 border-grey-20 h-full overflow-hidden flex flex-col min-h-[350px] w-full relative",
+        "rounded-rounded border bg-grey-0 border-grey-20 h-full overflow-hidden flex flex-col min-h-[350px] w-full",
         className
       )}
       {...rest}
     >
-      {isScrolled && (
-        <div className="absolute rounded-t-rounded top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-[rgba(255,255,255,0)] h-xlarge z-10" />
-      )}
+      <div className="relative">
+        {isScrolled && (
+          <div className="absolute rounded-t-rounded top-0 left-0 right-0 bg-gradient-to-b from-grey-0 to-[rgba(255,255,255,0)] h-xlarge z-10" />
+        )}
+      </div>
       <div
         className="pt-medium px-xlarge flex flex-col grow overflow-y-auto"
         onScroll={scrollListener}

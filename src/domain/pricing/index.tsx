@@ -4,6 +4,7 @@ import React from "react"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
+import PricingDetails from "./details"
 import New from "./new"
 import PricingTable from "./pricing-table"
 
@@ -34,6 +35,7 @@ const Pricing = () => {
   return (
     <Router>
       <PricingIndex path="/" />
+      <PricingDetails path="/:id" />
       <New path="/new" />
     </Router>
   )
