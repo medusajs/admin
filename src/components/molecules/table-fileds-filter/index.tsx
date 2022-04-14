@@ -44,7 +44,7 @@ type FieldMenuItemProps = {
 function Chip(props: ChipProps) {
   const { remove, short } = props
   return (
-    <div className="rounded rounded-lg h-[32px] flex gap-1 shrink-0 items-center px-3 text-small text-grey-70 border border-gray-70">
+    <div className="rounded-lg h-[32px] inline-flex gap-1 shrink-0 items-center text-small text-grey-70 border border-gray-70 px-3 mr-1 last:mr-2">
       {short}
       <CrossIcon
         className="text-grey-40 cursor-pointer"
@@ -64,7 +64,7 @@ function FieldMenuItem(props: FieldMenuItemProps) {
     <DropdownMenu.Item>
       <Checkbox
         checked={checked}
-        className="px-[6px] h-[32px] hover:bg-grey-10 rounded text-small"
+        className="px-[6px] mx-2 h-[32px] hover:bg-grey-10 rounded text-small"
         onChange={onChange}
         label={
           typeof field.label === "function"
@@ -132,7 +132,7 @@ function FieldsMenu(props: FieldsMenuProps) {
         <Button
           onClick={onTriggerClick}
           variant="secondary"
-          className="rounded-lg h-[32px] px-3 text-small font-semibold text-grey-90"
+          className="rounded-lg h-[32px] px-3 text-small font-semibold text-grey-90 inline-flex"
         >
           <span className="flex whitespace-nowrap items-center gap-1">
             Add fields <PlusIcon size={14} />
@@ -179,23 +179,21 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
   const visibleFields = _selected.map((id) => fields.find((f) => f.id === id))
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-small font-semibold text-gray-500 whitespace-nowrap">
+    <>
+      <span className="text-small font-semibold whitespace-nowrap text-gray-500 mr-2">
         Currently editing these fields:
       </span>
 
-      <div className="flex gap-1 overflow-x-auto no-scrollbar::-webkit-scrollbar">
-        {visibleFields.map((f) => (
-          <Chip key={f!.id} remove={() => removeSelected(f!.id)} {...f!} />
-        ))}
-      </div>
+      {visibleFields.map((f) => (
+        <Chip key={f!.id} remove={() => removeSelected(f!.id)} {...f!} />
+      ))}
 
       <FieldsMenu
         fields={sortBy(fields, "id")}
         onBlur={setSelectedFields}
         selectedFields={_selected}
       />
-    </div>
+    </>
   )
 }
 
