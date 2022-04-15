@@ -11,7 +11,6 @@ type PriceInputProps = {
 /**
  * TODOs:
  *
- * 1. variable currency symbol length
  * 2. formatted input (comma separators)
  */
 
@@ -20,10 +19,7 @@ function PriceInput(props: PriceInputProps) {
 
   const { code, symbol } = currency
 
-  const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "usd",
-  })
+  const rightOffset = 24 + symbol.length * 4
 
   return (
     <div className="w-[314px] relative">
@@ -38,10 +34,11 @@ function PriceInput(props: PriceInputProps) {
         onChange={(e) => {
           onChange(Number(e.target.value))
         }}
+        style={{ paddingRight: rightOffset }}
         className="
         focus:bg-white focus:border-violet-6
         w-full h-[40px]
-        py-[10px] pr-7 p-12
+        py-[10px] pl-12
         text-gray-90
         bg-grey-5
         text-right
