@@ -9,16 +9,10 @@ export default {
   component: PriceInput,
 } as ComponentMeta<typeof PriceInput>
 
-const Renderer = (args) => {
-  const [amount, setAmount] = useState()
-  console.log(amount)
-
-  return <PriceInput amount={amount} onChange={setAmount} {...args} />
-}
-
-const Template = (args) => <Renderer {...args} />
+const Template = (args) => <PriceInput {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
   currency: currencies.DKK,
+  // amount: 1234567,
 }
