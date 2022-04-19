@@ -31,7 +31,7 @@ type SelectableTableProps<T extends object> = {
   data?: T[]
   selectedIds?: string[]
   columns: Column<T>[]
-  onChange: (items: string[]) => void
+  onChange?: (items: string[]) => void
   renderRow: (props: { row: Row<T> }) => React.ReactElement
   renderHeaderGroup?: (props: {
     headerGroup: HeaderGroup<T>
@@ -82,7 +82,9 @@ export const SelectableTable = <
 
   useEffect(() => {
     console.log({ selectedRowIDs: table.state.selectedRowIds })
-    onChange(Object.keys(table.state.selectedRowIds))
+    if (onChange) {
+      onChange(Object.keys(table.state.selectedRowIds))
+    }
   }, [table.state.selectedRowIds])
 
   const handleNext = () => {
@@ -165,14 +167,20 @@ const useSelectionColumn = (hooks) => {
       Header: ({ getToggleAllRowsSelectedProps }) => {
         return (
           <div className="flex justify-center">
-            <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+            <IndeterminateCheckbox
+              {...getToggleAllRowsSelectedProps()}
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         )
       },
       Cell: ({ row }) => {
         return (
           <div className="flex justify-center">
-            <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+            <IndeterminateCheckbox
+              {...row.getToggleRowSelectedProps()}
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         )
       },

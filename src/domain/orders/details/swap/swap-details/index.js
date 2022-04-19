@@ -2,11 +2,11 @@ import React, { useEffect } from "react"
 import { Box, Button, Flex } from "rebass"
 import Modal from "../../../../../components/modal"
 import useMedusa from "../../../../../hooks/use-medusa"
-import useModal from "../../../../../hooks/use-modal"
 import NewItemsInformation from "./new-items"
 import PaymentInformation from "./payment-information"
 import ReturnOrderInformation from "./return-items"
 import { ReactComponent as CloseIcon } from "../../../../../assets/svg/cross.svg"
+import useToggleState from "../../../../../hooks/use-toggle-state"
 
 const SwapDetails = ({
   event,
@@ -17,7 +17,7 @@ const SwapDetails = ({
   onFulfillSwap,
   onProcessPayment,
 }) => {
-  const { isOpen, handleClose, handleOpen } = useModal()
+  const { state: isOpen, open, close } = useToggleState()
   const { swap, refresh } = useMedusa("swaps", { id: swapId })
   useEffect(() => {
     if (order) {
@@ -27,11 +27,11 @@ const SwapDetails = ({
 
   return (
     <>
-      <Button onClick={handleOpen} variant="primary">
+      <Button onClick={open} variant="primary">
         Swap details
       </Button>
       {isOpen && (
-        <Modal onClick={handleClose}>
+        <Modal onClick={close}>
           <Modal.Body>
             <Modal.Header
               justifyContent="space-between"
@@ -43,7 +43,7 @@ const SwapDetails = ({
               Swap Details
               <CloseIcon
                 style={{ cursor: "pointer" }}
-                onClick={handleClose}
+                onClick={close}
                 width={12}
                 height={12}
               />

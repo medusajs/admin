@@ -101,7 +101,9 @@ const CollapsibleTreeParent: React.FC<CollapsibleTreeParentProps> = ({
         <div className="flex items-center justify-between">
           <div className="gap-x-small flex items-center">{children}</div>
           <div className="flex items-center gap-x-xsmall">
-            <Actionables customTrigger={Trigger()} actions={actions} />
+            {actions && (
+              <Actionables customTrigger={Trigger()} actions={actions} />
+            )}
             <div className="h-5 w-px rounded-circle bg-grey-20" />
             <Button
               variant="ghost"
