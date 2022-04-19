@@ -78,7 +78,7 @@ const EditPrices = ({ close, id }) => {
               isLoading={isLoading}
               onSearch={debouncedSearch}
               onFileChosen={close}
-              getVariantActions={VariantActions}
+              getVariantActions={VariantActions(id)}
             />
           </div>
         </div>

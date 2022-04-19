@@ -5,7 +5,7 @@ import UploadIcon from "../../../../../components/fundamentals/icons/upload-icon
 import BodyCard from "../../../../../components/organisms/body-card"
 import UploadModal from "../../../../../components/organisms/upload-modal"
 import EditPrices from "./edit-prices"
-import PricesTable from "./prices-table/"
+import PricesTable from "./prices-table"
 
 const Prices = ({ id }) => {
   const [showEdit, setShowEdit] = React.useState(false)
