@@ -17,14 +17,14 @@ type PriceInputProps = {
  */
 function PriceInput(props: PriceInputProps) {
   const { amount, currency, onAmountChange } = props
-  const { code, symbol, decimal_digits } = currency
+  const { code, symbol_native, decimal_digits } = currency
 
   const [isDirty, setIsDirty] = useState(false)
 
   /********** COMPUTED **********/
 
   const step = 10 ** -decimal_digits
-  const rightOffset = 24 + symbol.length * 4
+  const rightOffset = 24 + symbol_native.length * 4
   const placeholder = `0.${"0".repeat(decimal_digits)}`
 
   const value = isDirty
@@ -81,7 +81,9 @@ function PriceInput(props: PriceInputProps) {
       />
 
       <div className="absolute flex items-center h-full top-0 right-3">
-        <span className="text-small text-grey-40 mt-[1px]">{symbol}</span>
+        <span className="text-small text-grey-40 mt-[1px]">
+          {symbol_native}
+        </span>
       </div>
     </div>
   )
