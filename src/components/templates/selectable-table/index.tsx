@@ -4,7 +4,7 @@ import {
   ProductCollection,
   ProductTag,
 } from "@medusajs/medusa"
-import _, { debounce, difference } from "lodash"
+import { debounce } from "lodash"
 import React, { useEffect } from "react"
 import {
   Column,
