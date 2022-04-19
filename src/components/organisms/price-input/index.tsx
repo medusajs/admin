@@ -2,18 +2,26 @@ import React, { useState } from "react"
 
 import { CurrencyType } from "../../../utils/currencies"
 
+/**
+ * `PriceInput` interface
+ */
 type PriceInputProps = {
   amount: number
   currency: CurrencyType
-  onChange: (amount: number) => void
+  onAmountChange: (amount?: number) => void
 }
 
+/**
+ * A controlled input component that renders the formatted amount
+ * and the currency of the provided price.
+ */
 function PriceInput(props: PriceInputProps) {
-  const { currency } = props
+  const { amount, currency, onAmountChange } = props
   const { code, symbol, decimal_digits } = currency
 
-  const [amount, setAmount] = useState<number>()
   const [isDirty, setIsDirty] = useState(false)
+
+  /********** COMPUTED **********/
 
   const step = 10 ** -decimal_digits
   const rightOffset = 24 + symbol.length * 4
@@ -26,14 +34,18 @@ function PriceInput(props: PriceInputProps) {
         maximumFractionDigits: decimal_digits,
       })
 
+  /********** HANDLERS **********/
+
   const onFocus = () => setIsDirty(true)
+
   const onBlur = () => setIsDirty(false)
 
   const onChange = (e) => {
-    if (e.target.value === "") setAmount(undefined)
+    // empty or invalid! input case
+    if (e.target.value === "") onAmountChange(undefined)
     else {
       const a = Number(Number(e.target.value).toFixed(decimal_digits))
-      setAmount(a)
+      onAmountChange(a)
     }
   }
 
@@ -48,12 +60,12 @@ function PriceInput(props: PriceInputProps) {
         lang="en"
         step={step}
         inputMode="decimal"
-        type={isDirty ? "number" : "text"}
         placeholder={placeholder}
+        type={isDirty ? "number" : "text"}
+        value={value}
         onBlur={onBlur}
         onFocus={onFocus}
         onChange={onChange}
-        value={value}
         style={{ paddingRight: rightOffset }}
         className="
             focus:bg-white focus:border-violet-6
