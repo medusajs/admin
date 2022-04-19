@@ -6,7 +6,7 @@ import Configuration from "./sections/configuration"
 import General from "./sections/general"
 import Prices from "./sections/prices"
 import Type from "./sections/type"
-import { PriceListFormProps } from "./types"
+import { PriceListFormProps, ViewType } from "./types"
 
 const PriceListForm = (props: PriceListFormProps) => {
   return (
@@ -24,7 +24,10 @@ const PriceListForm = (props: PriceListFormProps) => {
               <Type />
               <General />
               <Configuration />
-              <Prices />
+              <Prices
+                isEdit={props.viewType !== ViewType.CREATE}
+                id={props.id}
+              />
             </Accordion>
           </div>
         </div>

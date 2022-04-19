@@ -1,4 +1,5 @@
 import { Product } from "@medusajs/medusa"
+import { useAdminPriceListProducts } from "medusa-react"
 import * as React from "react"
 import FileUploadField from "../../../../components/atoms/file-upload-field"
 import Button from "../../../../components/fundamentals/button"
@@ -11,9 +12,30 @@ import InputField from "../../../../components/molecules/input"
 import Accordion from "../../../../components/organisms/accordion"
 import ProductVariantTree from "../../../../components/organisms/product-variant-tree"
 import AddProductsModal from "../../add-products-modal"
+import { merge } from "../../details/sections/prices-details/utils"
 
-const PricesSection = () => {
-  const [products, setProducts] = React.useState<Product[]>([])
+type PricesSectionProps = {
+  isEdit?: boolean
+  id?: string
+}
+
+const defaultQueryFilters = {
+  limit: 50,
+  offset: 0,
+}
+
+const PricesSection = ({ isEdit = false, id }: PricesSectionProps) => {
+  const { products = [], isLoading } = useAdminPriceListProducts(
+    id!,
+    defaultQueryFilters,
+    {
+      enabled: isEdit,
+    }
+  )
+
+  const [selectedProducts, setSelectedProducts] = React.useState<Product[]>([])
+  const mergedProducts = merge(products, selectedProducts)
+
   return (
     <Accordion.Item
       forceMountContent
@@ -24,8 +46,9 @@ const PricesSection = () => {
       tooltip="Define the price overrides for the price list"
     >
       <Prices
-        products={products}
-        setProducts={setProducts}
+        products={mergedProducts}
+        isLoading={isLoading}
+        setProducts={setSelectedProducts}
         onFileChosen={console.log}
         getVariantActions={VariantActions}
       />
