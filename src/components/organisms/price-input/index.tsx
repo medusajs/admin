@@ -10,20 +10,32 @@ type PriceInputProps = {
 
 function PriceInput(props: PriceInputProps) {
   const { currency } = props
-  const [amount, setAmount] = useState(0)
-
-  const [isDirty, setIsDirty] = useState(false)
   const { code, symbol, decimal_digits } = currency
 
-  const step = 10 ** -decimal_digits
-  const placeholder = `0.${"0".repeat(decimal_digits)}`
-  const rightOffset = 24 + symbol.length * 4
+  const [amount, setAmount] = useState<number>()
+  const [isDirty, setIsDirty] = useState(false)
 
-  console.log({ amount })
+  const step = 10 ** -decimal_digits
+  const rightOffset = 24 + symbol.length * 4
+  const placeholder = `0.${"0".repeat(decimal_digits)}`
 
   const value = isDirty
     ? amount
-    : amount?.toLocaleString("en-US", { minimumFractionDigits: 2 })
+    : amount?.toLocaleString("en-US", {
+        minimumFractionDigits: decimal_digits,
+        maximumFractionDigits: decimal_digits,
+      })
+
+  const onFocus = () => setIsDirty(true)
+  const onBlur = () => setIsDirty(false)
+
+  const onChange = (e) => {
+    if (e.target.value === "") setAmount(undefined)
+    else {
+      const a = Number(Number(e.target.value).toFixed(decimal_digits))
+      setAmount(a)
+    }
+  }
 
   return (
     <div className="w-[314px] relative">
@@ -36,26 +48,24 @@ function PriceInput(props: PriceInputProps) {
         lang="en"
         step={step}
         inputMode="decimal"
-        type={"number"}
+        type={isDirty ? "number" : "text"}
         placeholder={placeholder}
-        onFocus={() => setIsDirty(true)}
-        onBlur={() => setIsDirty(false)}
-        onChange={(e) => {
-          setAmount(Number(e.target.value))
-        }}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        onChange={onChange}
         value={value}
         style={{ paddingRight: rightOffset }}
         className="
-        focus:bg-white focus:border-violet-6
-        w-full h-[40px]
-        py-[10px] pl-12
-        text-gray-90
-        bg-grey-5
-        text-right
-        text-small
-        border border-solid border-grey-20
-        rounded-lg
-      "
+            focus:bg-white focus:border-violet-6
+            border border-solid border-grey-20
+            w-full h-[40px]
+            py-[10px] pl-12
+            rounded-lg
+            bg-grey-5
+            text-gray-90
+            text-right
+            text-small
+          "
       />
 
       <div className="absolute flex items-center h-full top-0 right-3">
