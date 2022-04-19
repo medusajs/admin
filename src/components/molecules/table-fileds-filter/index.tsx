@@ -179,7 +179,7 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
   const visibleFields = _selected.map((id) => fields.find((f) => f.id === id))
 
   return (
-    <>
+    <div className="flex-wrap flex items-center gap-y-2">
       <span className="text-small font-semibold whitespace-nowrap text-gray-500 mr-2">
         Currently editing these fields:
       </span>
@@ -193,7 +193,7 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
         onBlur={setSelectedFields}
         selectedFields={_selected}
       />
-    </>
+    </div>
   )
 }
 
