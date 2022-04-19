@@ -19,5 +19,5 @@ const Template = (args) => <C {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  currency: currencies.USD,
+  currency: currencies.BHD,
 }
