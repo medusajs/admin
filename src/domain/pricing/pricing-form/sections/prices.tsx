@@ -14,7 +14,6 @@ import AddProductsModal from "../../add-products-modal"
 
 const PricesSection = () => {
   const [products, setProducts] = React.useState<Product[]>([])
-  console.log({ products })
   return (
     <Accordion.Item
       forceMountContent
