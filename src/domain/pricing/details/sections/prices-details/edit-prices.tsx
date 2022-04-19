@@ -9,7 +9,7 @@ import InfoIcon from "../../../../../components/fundamentals/icons/info-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import FocusModal from "../../../../../components/molecules/modal/focus-modal"
 import useQueryFilters from "../../../../../hooks/use-query-filters"
-import { Prices } from "../../../pricing-form/sections/prices"
+import ProductPrices from "../../../pricing-form/sections/product-prices"
 import { merge } from "./utils"
 
 const defaultQueryFilters = {
@@ -72,7 +72,7 @@ const EditPrices = ({ close, id }) => {
                 here
               </span>
             </div>
-            <Prices
+            <ProductPrices
               products={mergedProducts}
               setProducts={setSelectedProducts}
               isLoading={isLoading}

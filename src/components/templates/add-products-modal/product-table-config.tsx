@@ -1,9 +1,9 @@
 import * as React from "react"
 import { Product } from "@medusajs/medusa"
 import { Column, HeaderGroup, Row } from "react-table"
-import Table from "../../../components/molecules/table"
-import ImagePlaceholderIcon from "../../../components/fundamentals/icons/image-placeholder-icon"
-import { decideStatus } from "../../../components/templates/collection-product-table/utils"
+import Table from "../../molecules/table"
+import ImagePlaceholderIcon from "../../fundamentals/icons/image-placeholder-icon"
+import { decideStatus } from "../collection-product-table/utils"
 import clsx from "clsx"
 
 export const columns: Column<Product>[] = [
