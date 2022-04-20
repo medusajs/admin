@@ -6,7 +6,7 @@ import Modal from "../../molecules/modal"
 import { SelectableTable } from "../selectable-table"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import { columns, ProductHeader, ProductRow } from "./product-table-config"
-import { refreshItems } from "./utils"
+import { mapIdsToItems } from "./utils"
 
 const defaultQueryProps = {
   limit: 12,
@@ -24,6 +24,8 @@ const AddProductsModal = ({
   initialSelection,
   onSave,
 }: AddProductsModalProps) => {
+  /* ************* Data ************  */
+
   const params = useQueryFilters(defaultQueryProps)
   const { products, isLoading, count = 0 } = useAdminProducts(
     params.queryObject,
@@ -31,12 +33,24 @@ const AddProductsModal = ({
       keepPreviousData: true,
     }
   )
-  const [ids, setIds] = React.useState(initialSelection.map((prod) => prod.id))
+
+  /* ************* State ************  */
+
+  const [selectedIds, setSelectedIds] = React.useState(
+    initialSelection.map((prod) => prod.id)
+  )
+  /* selectedItems hold the selected products across different pages */
   const [selectedItems, setSelectedItems] = React.useState(initialSelection)
 
   React.useEffect(() => {
-    setSelectedItems(refreshItems(selectedItems, ids, products))
-  }, [ids, products])
+    /**
+     * Every time we select an id is selected, we should update the selectedItems
+     * ... to include the selected products across different pages/query objects
+     */
+    setSelectedItems(mapIdsToItems(selectedItems, selectedIds, products))
+  }, [selectedIds, products])
+
+  /* ************* Handlers ************  */
 
   const handleSave = () => {
     onSave(selectedItems)
@@ -56,8 +70,8 @@ const AddProductsModal = ({
               data={products || []}
               renderRow={ProductRow}
               renderHeaderGroup={ProductHeader}
-              onChange={(ids) => setIds(ids)}
-              selectedIds={ids}
+              onChange={(ids) => setSelectedIds(ids)}
+              selectedIds={selectedIds}
               isLoading={isLoading}
               resourceName="products"
               totalCount={count}
