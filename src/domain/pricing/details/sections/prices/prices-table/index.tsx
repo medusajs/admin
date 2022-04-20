@@ -48,13 +48,17 @@ const ProductRow = ({ row }: { row: Row<Product> }) => {
     {
       label: "Edit prices",
       icon: <EditIcon size={20} />,
-      onClick: () => {},
+      onClick: () => {
+        // open grid ui
+      },
     },
     {
       label: "Remove product",
       icon: <CancelIcon size={20} />,
       variant: "danger" as const,
-      onClick: () => {},
+      onClick: () => {
+        // missing core support
+      },
     },
   ]
   return (
