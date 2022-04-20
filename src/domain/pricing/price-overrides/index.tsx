@@ -214,14 +214,16 @@ const EditPriceOverrides = ({
               <Controller
                 control={control}
                 name={`prices[${idx}]`}
+                key={price.id}
                 render={(field) => {
                   return (
                     <PriceAmount
-                      key={price.id}
                       value={field.value}
                       onChange={(amount) => {
-                        console.log(amount)
-                        field.onChange({ ...field.value, amount: amount })
+                        field.onChange({
+                          ...field.value,
+                          amount,
+                        })
                       }}
                     />
                   )
@@ -268,17 +270,19 @@ const PriceAmount = ({ value, onChange }) => {
               {value.currency?.name}
             </span>
           </div>
-          <Button
-            variant="secondary"
-            size="small"
-            className="rounded-rounded h-[32px]"
-            onClick={toggle}
-          >
-            <div className="flex items-center gap-2">
-              {showRegions ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
-              <span>Show regions</span>
-            </div>
-          </Button>
+          {value.region?.countries ? (
+            <Button
+              variant="secondary"
+              size="small"
+              className="rounded-rounded h-[32px]"
+              onClick={toggle}
+            >
+              <div className="flex items-center gap-2">
+                {showRegions ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
+                <span>Show regions</span>
+              </div>
+            </Button>
+          ) : null}
         </div>
         <div className="basis-[220px]">
           <PriceInput
