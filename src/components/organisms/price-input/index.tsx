@@ -21,15 +21,16 @@ function PriceInput(props: PriceInputProps) {
   const { amount, currency, onAmountChange } = props
   const { code, symbol_native, decimal_digits } = currency
 
-  /********** COMPUTED **********/
+  /** ******** COMPUTED **********/
 
   const step = 10 ** -decimal_digits
   const rightOffset = 24 + symbol_native.length * 4
   const placeholder = `0.${"0".repeat(decimal_digits)}`
 
-  /********** HANDLERS **********/
+  /** ******** HANDLERS **********/
 
   const onChange: CurrencyInputProps["onValueChange"] = (value) => {
+    console.log("in on change", value)
     onAmountChange(value)
   }
 

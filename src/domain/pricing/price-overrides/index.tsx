@@ -1,4 +1,4 @@
-import { MoneyAmount, PriceList, Product } from "@medusajs/medusa"
+import { MoneyAmount, Product } from "@medusajs/medusa"
 import React, { useContext } from "react"
 import { Controller, useForm } from "react-hook-form"
 import Checkbox from "../../../components/atoms/checkbox"
@@ -11,9 +11,10 @@ import Modal from "../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
+import PriceInput from "../../../components/organisms/price-input"
 import RadioGroup from "../../../components/organisms/radio-group"
 import useToggleState from "../../../hooks/use-toggle-state"
-import { CurrencyType } from "../../../utils/currencies"
+import { currencies } from "../../../utils/currencies"
 
 type PricesOverridesModalProps = {
   product: Product
@@ -151,6 +152,7 @@ const EditPriceOverrides = ({
   const { handleSubmit, control } = useForm({
     defaultValues: {
       variants: [],
+      prices,
     },
   })
 
@@ -208,8 +210,23 @@ const EditPriceOverrides = ({
         <div className="pt-8">
           <h6 className="inter-base-semibold">Prices</h6>
           <div className="pt-4">
-            {prices.map((price) => (
-              <PriceAmount key={price.id} price={price} />
+            {prices.map((price, idx) => (
+              <Controller
+                control={control}
+                name={`prices[${idx}]`}
+                render={(field) => {
+                  return (
+                    <PriceAmount
+                      key={price.id}
+                      value={field.value}
+                      onChange={(amount) => {
+                        console.log(amount)
+                        field.onChange({ ...field.value, amount: amount })
+                      }}
+                    />
+                  )
+                }}
+              />
             ))}
           </div>
         </div>
@@ -238,16 +255,17 @@ const EditPriceOverrides = ({
   )
 }
 
-const PriceAmount = ({ price }) => {
+const PriceAmount = ({ value, onChange }) => {
   const { state: showRegions, toggle } = useToggleState()
+  console.log({ value })
   return (
     <div className="flex flex-col gap-3 py-3 first:border-t border-grey-20 border-solid border-b last:border-b-0">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="inter-base-semibold">
-            <span className="mr-2 uppercase">{price.currency_code}</span>
+            <span className="mr-2 uppercase">{value.currency_code}</span>
             <span className="inter-base-regular text-grey-50 capitalize">
-              {price.currency?.name}
+              {value.currency?.name}
             </span>
           </div>
           <Button
@@ -264,19 +282,16 @@ const PriceAmount = ({ price }) => {
         </div>
         <div className="basis-[220px]">
           <PriceInput
-            amount={price.amount}
-            currency={{
-              ...price.currency,
-              decimal_digits: 2,
-              symbol: "$",
-            }}
+            amount={value.amount}
+            onAmountChange={onChange}
+            currency={currencies[value.currency_code.toUpperCase()]}
           />
         </div>
       </div>
 
       {showRegions && (
         <ul>
-          {price.region?.countries.map((country) => (
+          {value.region?.countries.map((country) => (
             <li key={country.id} className="flex items-center justify-between">
               <div>
                 <p className="inter-base-regular text-grey-50">
@@ -298,69 +313,6 @@ const PriceAmount = ({ price }) => {
           ))}
         </ul>
       )}
-    </div>
-  )
-}
-
-type PriceInputProps = {
-  amount: number
-  currency: CurrencyType
-  onChange: (amount: number) => void
-}
-
-function PriceInput(props: PriceInputProps) {
-  const { currency } = props
-  const [amount, setAmount] = React.useState(0)
-
-  const [isDirty, setIsDirty] = React.useState(false)
-  const { code, symbol, decimal_digits } = currency
-
-  const step = 10 ** -decimal_digits
-  const placeholder = `0.${"0".repeat(decimal_digits)}`
-  const rightOffset = 24 + symbol.length * 4
-
-  console.log({ amount })
-
-  const value = isDirty
-    ? amount
-    : amount?.toLocaleString("en-US", { minimumFractionDigits: 2 })
-
-  return (
-    <div className="relative">
-      <div className="absolute flex items-center h-full top-0 left-3">
-        <span className="text-small text-grey-40 mt-[1px]">{code}</span>
-      </div>
-
-      <input
-        min="0"
-        lang="en"
-        step={step}
-        inputMode="decimal"
-        type={"number"}
-        placeholder={placeholder}
-        onFocus={() => setIsDirty(true)}
-        onBlur={() => setIsDirty(false)}
-        onChange={(e) => {
-          setAmount(Number(e.target.value))
-        }}
-        value={value}
-        style={{ paddingRight: rightOffset }}
-        className="
-        focus:bg-white focus:border-violet-6
-        w-full h-[40px]
-        py-[10px] pl-12
-        text-gray-90
-        bg-grey-5
-        text-right
-        text-small
-        border border-solid border-grey-20
-        rounded-lg
-      "
-      />
-
-      <div className="absolute flex items-center h-full top-0 right-3">
-        <span className="text-small text-grey-40 mt-[1px]">{symbol}</span>
-      </div>
     </div>
   )
 }
