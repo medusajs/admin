@@ -10,7 +10,7 @@ import Prices from "./sections/prices"
 type PricingDetailsProps = RouteComponentProps & { id?: string }
 
 const PricingDetails = ({ id }: PricingDetailsProps) => {
-  const { price_list, isLoading } = useAdminPriceList(id)
+  const { price_list, isLoading } = useAdminPriceList(id!)
 
   return (
     <div className="pb-xlarge">

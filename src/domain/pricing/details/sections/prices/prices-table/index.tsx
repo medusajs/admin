@@ -15,7 +15,12 @@ const defaultQueryProps = {
   limit: DEFAULT_PAGE_SIZE,
 }
 
-const PricesTable = ({ id, selectProduct }) => {
+type PricesTableProps = {
+  id: string
+  selectProduct: (product: Product) => void
+}
+
+const PricesTable = ({ id, selectProduct }: PricesTableProps) => {
   const params = useQueryFilters(defaultQueryProps)
   const { products, isLoading, count = 0 } = useAdminPriceListProducts(
     id,

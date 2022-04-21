@@ -5,11 +5,11 @@ import UploadIcon from "../../../../../components/fundamentals/icons/upload-icon
 import BodyCard from "../../../../../components/organisms/body-card"
 import UploadModal from "../../../../../components/organisms/upload-modal"
 import useToggleState from "../../../../../hooks/use-toggle-state"
-import PricesOverridesModal from "../../../price-overrides"
+import EditPricesOverridesModal from "./edit-prices-overrides"
 import PricesTable from "./prices-table/"
 
 const Prices = ({ id }) => {
-  const { state: showEdit, open: openEdit, close: closeEdit } = useToggleState()
+  const { state: showEdit, open: openEdit } = useToggleState()
   const [showUpload, openUpload, closeUpload] = useToggleState()
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(
     null
@@ -47,7 +47,7 @@ const Prices = ({ id }) => {
         />
       )}
       {selectedProduct && (
-        <PricesOverridesModal
+        <EditPricesOverridesModal
           product={selectedProduct}
           close={() => setSelectedProduct(null)}
         />

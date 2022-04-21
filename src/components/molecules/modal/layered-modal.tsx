@@ -155,4 +155,14 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
   )
 }
 
+export const useLayeredModal = () => {
+  const context = useContext(LayeredModalContext)
+  if (context === null) {
+    throw new Error(
+      "useLayeredModal must be used within a LayeredModalProvider"
+    )
+  }
+  return context
+}
+
 export default LayeredModal

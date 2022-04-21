@@ -7,11 +7,10 @@ import { CurrencyType } from "../../../utils/currencies"
 /**
  * `PriceInput` interface
  */
-type PriceInputProps = {
-  /* When consuming the component, we'll most likely be getting amount as numbers */
-  amount: number
+export type PriceInputProps = {
+  amount?: string
   currency: CurrencyType
-  onAmountChange: (amount?: number) => void
+  onAmountChange: (amount?: string) => void
 }
 
 /**
@@ -19,20 +18,8 @@ type PriceInputProps = {
  * and the currency of the provided price.
  */
 function PriceInput(props: PriceInputProps) {
-  /* State used to keep track of the input value as a string */
-  const [rawValue, setRawValue] = React.useState<string | undefined>(
-    `${props.amount || 0}`
-  )
   const { amount, currency, onAmountChange } = props
   const { code, symbol_native, decimal_digits } = currency
-
-  // as we'll be receiving amount including the decimal digits, we'll need to display them accordingly
-  // e.g: variant X has a price of 19.99 usd: server returns { amount: 1999 } which will need to be converted to 19.99
-
-  React.useEffect(() => {
-    const value = amount / 10 ** decimal_digits
-    setRawValue(`${value}`)
-  }, [amount])
 
   /** ******** COMPUTED **********/
 
@@ -43,15 +30,7 @@ function PriceInput(props: PriceInputProps) {
   /** ******** HANDLERS **********/
 
   const onChange: CurrencyInputProps["onValueChange"] = (value) => {
-    if (value) {
-      const numericalValue = Math.round(
-        parseFloat(value) * 10 ** decimal_digits
-      )
-      onAmountChange(numericalValue)
-    } else {
-      onAmountChange(0)
-    }
-    setRawValue(value)
+    onAmountChange(value)
   }
 
   return (
@@ -62,16 +41,11 @@ function PriceInput(props: PriceInputProps) {
 
       <AmountField
         step={step}
-        value={rawValue}
+        value={amount}
         onValueChange={onChange}
         allowNegativeValue={false}
         placeholder={placeholder}
         decimalScale={decimal_digits}
-        // Passing this prop makes the onChange handler run after an onBlur event..
-        // ..which is not easy to handle when consuming the component..
-        // ..because the expectation when passing an onChange handler would be to either get 5000 all the way through or 50.00..
-        // ..(assuming decimal_digits == 2)
-        // fixedDecimalLength={decimal_digits}
         style={{ paddingRight: rightOffset }}
         className="focus:bg-white focus:border-violet-6
             border border-solid border-grey-20
