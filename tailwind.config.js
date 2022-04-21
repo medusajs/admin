@@ -253,6 +253,7 @@ module.exports = {
         input: "0px 0px 0px 4px #8B5CF61A",
         searchModal: "0px 2px 64px 16px rgba(17, 24, 39, 0.08)",
         toaster: "0px 2px 16px rgba(17, 24, 39, 0.08)",
+        "select-menu": "0px 8px 16px rgba(0, 0, 0, 0.08);",
       },
       keyframes: {
         ring: {
