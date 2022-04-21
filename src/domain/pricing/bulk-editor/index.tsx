@@ -163,22 +163,43 @@ type ProductSectionProps = {
   currencyFields: string[]
 }
 
+let lastTarget
+
 function ProductSection(props: ProductSectionProps) {
   const { currencyFields, product, isFirst, isShiftDown } = props
+
   const [activeFields, setActiveFields] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
-  const onPriceInputFocus = (variantId: string, currency: string) => {
-    setActiveFields({ ...activeFields, [`${variantId}-${currency}`]: true })
+  const onPriceInputFocus = (
+    variantId: string,
+    currency: string,
+    ev: FocusEvent
+  ) => {
+    if (isShiftDown) {
+      if (activeFields[`${variantId}-${currency}`]) {
+        const tmp = activeFields[`${variantId}-${currency}`]
+        delete tmp[`${variantId}-${currency}`]
+
+        // TODO do this on click
+        lastTarget?.focus()
+        lastTarget = ev.target
+        // ev.target.blur()
+        setActiveFields(tmp)
+      } else {
+        setActiveFields({ ...activeFields, [`${variantId}-${currency}`]: true })
+      }
+    } else {
+      setCurrentEditAmount(undefined)
+      setActiveFields({ [`${variantId}-${currency}`]: true })
+    }
   }
 
-  console.log(isShiftDown)
-
   const onPriceInputBlur = (variantId: string, currency: string) => {
-    // const tmp = { ...activeFields }
-    // delete tmp[`${variantId}-${currency}`]
-    //
-    // setActiveFields(tmp)
+    if (!isShiftDown) {
+      setActiveFields({})
+      setCurrentEditAmount(undefined)
+    }
   }
 
   const onAmountChange = (
@@ -223,7 +244,11 @@ type ProductVariantRowProps = {
 
   currentEditAmount: number
   onAmountChange: (variantId: string, currency: string, amount: string) => void
-  onPriceInputFocus: (variantId: string, currency: string) => void
+  onPriceInputFocus: (
+    variantId: string,
+    currency: string,
+    ev: FocusEvent
+  ) => void
   onPriceInputBlur: (variantId: string, currency: string) => void
 }
 
@@ -247,20 +272,18 @@ function ProductVariantRow(props: ProductVariantRowProps) {
         const current = variant.prices.find(
           (p) => p.currency_code === c.toLowerCase()
         )
+        const amount = isActive(variant.id, c)
+          ? currentEditAmount
+          : current?.amount
 
         return (
-          <div key={c} className="min-w-[314px]" onKeyPress={console.log}>
+          <div key={c} className="min-w-[314px]">
             <PriceInput
-              hasVirtualFocus={isActive(variant.id, c)}
-              amount={
-                isActive(variant.id, c) ? currentEditAmount : current?.amount
-              }
-              onFocus={(e) => {
-                e.persist()
-                onPriceInputFocus(variant.id, c)
-              }}
-              onBlur={() => onPriceInputBlur(variant.id, c)}
+              amount={amount}
               currency={currencies[c]}
+              hasVirtualFocus={isActive(variant.id, c)}
+              onFocus={(ev) => onPriceInputFocus(variant.id, c, ev)}
+              onBlur={() => onPriceInputBlur(variant.id, c)}
               onAmountChange={(a) => onAmountChange(variant.id, c, a)}
             />
           </div>
