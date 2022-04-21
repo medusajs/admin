@@ -146,9 +146,17 @@ const ControlledCheckbox = ({
             {...field}
             checked={field.value.some((value) => value === id)}
             onChange={(e) => {
+              // copy field value
               const valueCopy = [...(field.value || [])]
+
+              // update checkbox value
               valueCopy[index] = e.target.checked ? id : null
-              field.onChange(valueCopy.filter(Boolean))
+
+              // remove nulls from field value
+              const cleanedValue = valueCopy.filter(Boolean)
+
+              // update field value
+              field.onChange(cleanedValue)
             }}
           />
         )

@@ -7,6 +7,19 @@ type StateType = [boolean, () => void, () => void, () => void] & {
   toggle: () => void
 }
 
+/**
+ *
+ * @param initialState - boolean
+ * @returns An array like object with `state`, `open`, `close`, and `toggle` properties
+ *  to allow both object and array destructuring
+ *
+ * ```
+ *  const [showModal, openModal, closeModal, toggleModal] = useToggleState()
+ *  // or
+ *  const { state, open, close, toggle } = useToggleState()
+ * ```
+ */
+
 const useToggleState = (initialState = false) => {
   const [state, setState] = React.useState<boolean>(initialState)
 
