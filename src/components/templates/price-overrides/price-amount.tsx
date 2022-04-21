@@ -8,7 +8,7 @@ import MedusaPriceInput from "../../organisms/medusa-price-input"
 
 const PriceAmount = ({ value, onChange }) => {
   const { state: showRegions, toggle } = useToggleState()
-  console.log({ value })
+
   return (
     <div className="flex flex-col gap-3 py-3 first:border-t border-grey-20 border-solid border-b last:border-b-0">
       <div className="flex items-center justify-between">
@@ -42,6 +42,7 @@ const PriceAmount = ({ value, onChange }) => {
         </div>
       </div>
 
+      {/* missing core support */}
       {/* {showRegions && (
         <ul>
           {value.region?.countries.map((country) => (

@@ -10,17 +10,17 @@ type StateType = [boolean, () => void, () => void, () => void] & {
 const useToggleState = (initialState = false) => {
   const [state, setState] = React.useState<boolean>(initialState)
 
-  const close = React.useCallback(() => {
+  const close = () => {
     setState(false)
-  }, [state])
+  }
 
-  const open = React.useCallback(() => {
+  const open = () => {
     setState(true)
-  }, [state])
+  }
 
-  const toggle = React.useCallback(() => {
+  const toggle = () => {
     setState((state) => !state)
-  }, [state])
+  }
 
   const p = [state, open, close, toggle] as StateType
   p.state = state
