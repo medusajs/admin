@@ -22,24 +22,26 @@ const Header = ({ priceList }) => {
   const [isOpen, setIsOpen] = React.useState(false)
   return (
     <HeadingBodyCard priceList={priceList} setIsOpen={setIsOpen}>
-      <div className="flex">
+      <div className="flex gap-12">
+        {priceList.customer_groups.length ? (
+          <div className="border-l border-grey-20 pl-6">
+            <span className="inter-base-regular text-grey-50">
+              Customer groups
+            </span>
+            <p className="inter-base-regular text-grey-90">
+              <PriceListCustomerGroupsFormatter
+                groups={priceList.customer_groups}
+              />
+            </p>
+          </div>
+        ) : null}
         <div className="border-l border-grey-20 pl-6">
-          <span className="inter-base-regular text-grey-50">
-            Customer groups
-          </span>
-          <p className="inter-base-regular text-grey-90">
-            <PriceListCustomerGroupsFormatter
-              groups={priceList.customer_groups}
-            />
-          </p>
-        </div>
-        <div className="border-l border-grey-20 pl-6 ml-12">
           <span className="inter-base-regular text-grey-50">Last edited</span>
           <p className="inter-base-regular text-grey-90">
             {moment(priceList.updated_at).format("ddd, D MMM YYYY")}
           </p>
         </div>
-        <div className="border-l border-grey-20 pl-6 ml-12">
+        <div className="border-l border-grey-20 pl-6">
           <span className="inter-base-regular text-grey-50">
             Price overrides
           </span>
