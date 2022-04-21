@@ -1,16 +1,21 @@
-import React from "react"
+import React, { FocusEventHandler } from "react"
 import AmountField from "react-currency-input-field"
 import { CurrencyInputProps } from "react-currency-input-field"
 
 import { CurrencyType } from "../../../utils/currencies"
+import clsx from "clsx"
 
 /**
  * `PriceInput` interface
  */
-export type PriceInputProps = {
-  amount?: string
+type PriceInputProps = {
+  amount: string
   currency: CurrencyType
+  hasVirtualFocus?: boolean
   onAmountChange: (amount?: string) => void
+
+  onFocus?: FocusEventHandler<HTMLInputElement>
+  onBlur?: FocusEventHandler<HTMLInputElement>
 }
 
 /**
@@ -18,16 +23,16 @@ export type PriceInputProps = {
  * and the currency of the provided price.
  */
 function PriceInput(props: PriceInputProps) {
-  const { amount, currency, onAmountChange } = props
+  const { amount, currency, hasVirtualFocus, onAmountChange } = props
   const { code, symbol_native, decimal_digits } = currency
 
-  /** ******** COMPUTED **********/
+  /********** COMPUTED **********/
 
   const step = 10 ** -decimal_digits
   const rightOffset = 24 + symbol_native.length * 4
   const placeholder = `0.${"0".repeat(decimal_digits)}`
 
-  /** ******** HANDLERS **********/
+  /********** HANDLERS **********/
 
   const onChange: CurrencyInputProps["onValueChange"] = (value) => {
     onAmountChange(value)
@@ -46,16 +51,25 @@ function PriceInput(props: PriceInputProps) {
         allowNegativeValue={false}
         placeholder={placeholder}
         decimalScale={decimal_digits}
+        onFocus={props.onFocus}
+        onBlur={props.onBlur}
+        // fixedDecimalLength={decimal_digits}
         style={{ paddingRight: rightOffset }}
-        className="focus:bg-white focus:border-violet-6
-            border border-solid border-grey-20
+        className={clsx(
+          `focus:bg-white focus:border-violet-60
+            border border-solid 
             w-full h-[40px]
             py-[10px] pl-12
             rounded-lg
             bg-grey-5
             text-gray-90
             text-right
-            text-small"
+            text-small`,
+          {
+            "bg-white border-violet-60": hasVirtualFocus,
+            "border-grey-20": !hasVirtualFocus,
+          }
+        )}
       />
 
       <div className="absolute flex items-center h-full top-0 right-3">

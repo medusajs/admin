@@ -142,7 +142,7 @@ function FieldsMenu(props: FieldsMenuProps) {
 
       <DropdownMenu.Content
         ref={contentRef}
-        className="w-[240px] bg-white shadow rounded-xl p-2"
+        className="w-[240px] h-[400px] overflow-x-scroll bg-white shadow rounded-xl p-2"
       >
         {fields.map((f) => (
           <FieldMenuItem

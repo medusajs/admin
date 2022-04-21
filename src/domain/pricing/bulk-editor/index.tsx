@@ -11,6 +11,9 @@ import NativeSelect from "../../../components/molecules/native-select"
 import TableFieldsFilters from "../../../components/molecules/table-fileds-filter"
 import TableSearch from "../../../components/molecules/table/table-search"
 import { currencies, CurrencyType } from "../../../utils/currencies"
+import PriceInput from "../../../components/organisms/price-input"
+import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
+import { string } from "prop-types"
 
 function generateField(currency: CurrencyType) {
   return {
@@ -65,18 +68,25 @@ function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
   )
 }
 
-function Tile(props) {
+type TileProps = {
+  className?: string
+  children: React.ReactNode
+}
+
+function Tile(props: TileProps) {
   return (
     <div
-      className="
+      className={`
         border border-solid border-grey-20
         h-[40px]
+        min-w-[314px]
         rounded-lg
         bg-grey-5
         text-gray-90
         text-small
-        w-[314px]
-      "
+        flex items-center
+        pl-3
+        ${props.className || ""}`}
     >
       {props.children}
     </div>
@@ -85,33 +95,50 @@ function Tile(props) {
 
 type ProductSectionHeaderProps = {
   product: Product
+  isFirst: boolean
   currencyFields: string[]
 }
 
 function ProductSectionHeader(props: ProductSectionHeaderProps) {
-  const { currencyFields, product } = props
+  const { currencyFields, product, isFirst } = props
   return (
     <>
-      <div className="flex mb-2 gap-2">
-        <div className="min-w-[314px]">
-          <span className="text-small font-semibold text-grey-50">
-            Product title:
-          </span>
-        </div>
-        <div className="min-w-[314px]">
-          <span className="text-small font-semibold text-grey-50">SKU</span>
-        </div>
-        {currencyFields.map((c) => (
+      {isFirst && (
+        <div className="flex mb-2 gap-2">
           <div className="min-w-[314px]">
-            <span className="text-small font-semibold text-grey-50">{c}</span>
+            <span className="text-small font-semibold text-grey-50">
+              Product title:
+            </span>
           </div>
-        ))}
-      </div>
+          <div className="min-w-[314px]">
+            <span className="text-small font-semibold text-grey-50">SKU</span>
+          </div>
+          {currencyFields.map((c) => (
+            <div className="min-w-[314px]">
+              <span className="text-small font-semibold text-grey-50">{c}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="flex mb-2 gap-2">
         <div className="min-w-[314px]">
-          <span className="text-small font-semibold text-grey-50">
-            <Tile>{product.title}</Tile>
-          </span>
+          <Tile>
+            <div className="flex items-center">
+              <div className="h-[40px] w-[30px] flex items-center">
+                {product.thumbnail ? (
+                  <img
+                    src={product.thumbnail}
+                    className="w-[18px] h-[24px] object-cover rounded-soft"
+                  />
+                ) : (
+                  <div className="flex items-center w-[18px] h-[24px] rounded-soft bg-grey-10">
+                    <ImagePlaceholder size={18} />
+                  </div>
+                )}
+              </div>
+              <span className="text-small text-gray-90 ">{product.title}</span>
+            </div>
+          </Tile>
         </div>
         <div className="min-w-[314px]">
           <span className="text-small font-semibold text-grey-50">
@@ -132,18 +159,53 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
 
 type ProductSectionProps = {
   product: Product
+  isFirst: boolean
   currencyFields: string[]
 }
 
 function ProductSection(props: ProductSectionProps) {
-  const { currencyFields, product } = props
+  const { currencyFields, product, isFirst } = props
+  const [activeFields, setActiveFields] = useState({})
+  const [currentEditAmount, setCurrentEditAmount] = useState<string>()
+
+  const onPriceInputFocus = (variantId: string, currency: string) => {
+    setActiveFields({ ...activeFields, [`${variantId}-${currency}`]: true })
+  }
+
+  const onPriceInputBlur = (variantId: string, currency: string) => {
+    // const tmp = { ...activeFields }
+    // delete tmp[`${variantId}-${currency}`]
+    //
+    // setActiveFields(tmp)
+  }
+
+  const onAmountChange = (
+    variantId: string,
+    currency: string,
+    amount: string
+  ) => {
+    setCurrentEditAmount(amount)
+  }
+
+  const isActive = (variantId: string, currency: string) =>
+    activeFields[`${variantId}-${currency}`]
+
   return (
-    <div className="medium:w-8/12 w-full px-8 m-auto">
-      <ProductSectionHeader product={product} currencyFields={currencyFields} />
+    <div className="medium:w-8/12 w-full px-8 m-auto mb-4">
+      <ProductSectionHeader
+        isFirst={isFirst}
+        product={product}
+        currencyFields={currencyFields}
+      />
       {product.variants.map((v) => (
-        <ProductVariantsSection
+        <ProductVariantRow
           key={v.id}
           variant={v}
+          isActive={isActive}
+          onPriceInputFocus={onPriceInputFocus}
+          onPriceInputBlur={onPriceInputBlur}
+          onAmountChange={onAmountChange}
+          currentEditAmount={currentEditAmount}
           currencyFields={currencyFields}
         />
       ))}
@@ -151,16 +213,54 @@ function ProductSection(props: ProductSectionProps) {
   )
 }
 
-type ProductVariantsSectionProps = {
+type ProductVariantRowProps = {
   variant: ProductVariant
   currencyFields: string[]
+
+  isActive: (variantId: string, currency: string) => boolean
+
+  currentEditAmount: number
+  onAmountChange: (variantId: string, currency: string, amount: string) => void
+  onPriceInputFocus: (variantId: string, currency: string) => void
+  onPriceInputBlur: (variantId: string, currency: string) => void
 }
 
-function ProductVariantsSection(props: ProductVariantsSectionProps) {
-  const { variant } = props
+function ProductVariantRow(props: ProductVariantRowProps) {
+  const {
+    currentEditAmount,
+    currencyFields,
+    variant,
+    onPriceInputBlur,
+    onPriceInputFocus,
+    onAmountChange,
+    isActive,
+  } = props
+
   return (
     <div className="flex gap-2 mb-2">
       <Tile>{variant.title}</Tile>
+      <Tile>{variant.sku}</Tile>
+
+      {currencyFields.map((c) => {
+        const current = variant.prices.find(
+          (p) => p.currency_code === c.toLowerCase()
+        )
+
+        return (
+          <div key={c} className="min-w-[314px]">
+            <PriceInput
+              hasVirtualFocus={isActive(variant.id, c)}
+              amount={
+                isActive(variant.id, c) ? currentEditAmount : current?.amount
+              }
+              onFocus={() => onPriceInputFocus(variant.id, c)}
+              onBlur={() => onPriceInputBlur(variant.id, c)}
+              currency={currencies[c]}
+              onAmountChange={(a) => onAmountChange(variant.id, c, a)}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -215,11 +315,12 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         <FocusModal.Main>
           <PriceListBulkEditorHeader setCurrencyFields={setCurrencyFields} />
 
-          {products.map((p) => (
+          {products.map((p, ind) => (
             <ProductSection
               key={p.id}
               product={p}
-              currencyFields={currencyFields}
+              isFirst={!ind}
+              currencyFields={currencyFields.sort()}
             />
           ))}
         </FocusModal.Main>
