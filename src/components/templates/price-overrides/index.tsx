@@ -1,7 +1,7 @@
 import { MoneyAmount, ProductVariant } from "@medusajs/medusa"
 import React from "react"
-import { Controller, useForm } from "react-hook-form"
-import Checkbox from "../../atoms/checkbox"
+import { Control, Controller, useForm } from "react-hook-form"
+import Checkbox, { CheckboxProps } from "../../atoms/checkbox"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
 import RadioGroup from "../../organisms/radio-group"
@@ -59,25 +59,12 @@ const PriceOverrides = ({
                 id={variant.id}
                 className="py-2.5 px-3 border border-grey-20 rounded-rounded"
               >
-                <Controller
+                <ControlledCheckbox
                   control={control}
-                  name={`variants[${idx}]`}
-                  render={(field) => {
-                    return (
-                      <Checkbox
-                        className="shrink-0 inter-small-regular"
-                        label={`${variant.title} (SKU: ${variant.sku})`}
-                        {...field}
-                        name="variants"
-                        checked={field.value === variant.id}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.checked ? variant.id : undefined
-                          )
-                        }
-                      />
-                    )
-                  }}
+                  name="variants"
+                  label={`${variant.title} (SKU: ${variant.sku})`}
+                  id={variant.id}
+                  index={idx}
                 />
               </div>
             ))}
@@ -130,6 +117,43 @@ const PriceOverrides = ({
         </div>
       </Modal.Footer>
     </>
+  )
+}
+
+type ControlledCheckboxProps = {
+  control: Control
+  name: string
+  id: string
+  index: number
+} & CheckboxProps
+
+const ControlledCheckbox = ({
+  control,
+  name,
+  id,
+  index,
+  ...props
+}: ControlledCheckboxProps) => {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={(field) => {
+        return (
+          <Checkbox
+            className="shrink-0 inter-small-regular"
+            {...props}
+            {...field}
+            checked={field.value.some((value) => value === id)}
+            onChange={(e) => {
+              const valueCopy = [...(field.value || [])]
+              valueCopy[index] = e.target.checked ? id : null
+              field.onChange(valueCopy.filter(Boolean))
+            }}
+          />
+        )
+      }}
+    />
   )
 }
 
