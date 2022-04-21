@@ -35,12 +35,12 @@ const useToggleState = (initialState = false) => {
     setState((state) => !state)
   }
 
-  const p = [state, open, close, toggle] as StateType
-  p.state = state
-  p.open = open
-  p.close = close
-  p.toggle = toggle
-  return p
+  const hookData = [state, open, close, toggle] as StateType
+  hookData.state = state
+  hookData.open = open
+  hookData.close = close
+  hookData.toggle = toggle
+  return hookData
 }
 
 export default useToggleState
