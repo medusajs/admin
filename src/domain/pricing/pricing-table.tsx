@@ -24,7 +24,10 @@ const PricingTable = () => {
   const [columns] = usePriceListTableColumns()
 
   const { price_lists, isLoading, count = 0 } = useAdminPriceLists(
-    params.queryObject
+    params.queryObject,
+    {
+      keepPreviousData: true,
+    }
   )
 
   useSetSearchParams(params.representationObject)
