@@ -180,7 +180,7 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
               <RMAShippingPrice
                 useCustomShippingPrice={useCustomShippingPrice}
                 shippingPrice={shippingPrice}
-                currency_code={order.currency_code}
+                currencyCode={order.currency_code}
                 updateShippingPrice={handleUpdateShippingPrice}
                 setUseCustomShippingPrice={setUseCustomShippingPrice}
               />
