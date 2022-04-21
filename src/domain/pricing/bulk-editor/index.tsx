@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import clsx from "clsx"
 
 import { Product, ProductVariant } from "@medusajs/medusa"
@@ -13,7 +13,6 @@ import TableSearch from "../../../components/molecules/table/table-search"
 import { currencies, CurrencyType } from "../../../utils/currencies"
 import PriceInput from "../../../components/organisms/price-input"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
-import { string } from "prop-types"
 
 function generateField(currency: CurrencyType) {
   return {
@@ -160,17 +159,20 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
 type ProductSectionProps = {
   product: Product
   isFirst: boolean
+  isShiftDown: boolean
   currencyFields: string[]
 }
 
 function ProductSection(props: ProductSectionProps) {
-  const { currencyFields, product, isFirst } = props
+  const { currencyFields, product, isFirst, isShiftDown } = props
   const [activeFields, setActiveFields] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
   const onPriceInputFocus = (variantId: string, currency: string) => {
     setActiveFields({ ...activeFields, [`${variantId}-${currency}`]: true })
   }
+
+  console.log(isShiftDown)
 
   const onPriceInputBlur = (variantId: string, currency: string) => {
     // const tmp = { ...activeFields }
@@ -247,13 +249,16 @@ function ProductVariantRow(props: ProductVariantRowProps) {
         )
 
         return (
-          <div key={c} className="min-w-[314px]">
+          <div key={c} className="min-w-[314px]" onKeyPress={console.log}>
             <PriceInput
               hasVirtualFocus={isActive(variant.id, c)}
               amount={
                 isActive(variant.id, c) ? currentEditAmount : current?.amount
               }
-              onFocus={() => onPriceInputFocus(variant.id, c)}
+              onFocus={(e) => {
+                e.persist()
+                onPriceInputFocus(variant.id, c)
+              }}
               onBlur={() => onPriceInputBlur(variant.id, c)}
               currency={currencies[c]}
               onAmountChange={(a) => onAmountChange(variant.id, c, a)}
@@ -271,7 +276,21 @@ type PriceListBulkEditorProps = {
 
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   const { products } = props
+  const [isShiftDown, setIsShiftDown] = useState(false)
   const [currencyFields, setCurrencyFields] = useState<string[]>([])
+
+  useEffect(() => {
+    const onKeyDown = (e) => setIsShiftDown(e.shiftKey)
+    const onKeyUp = (e) => setIsShiftDown(e.shiftKey)
+
+    window.addEventListener("keydown", onKeyDown)
+    window.addEventListener("keyup", onKeyUp)
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown)
+      window.removeEventListener("keyup", onKeyUp)
+    }
+  }, [])
 
   return (
     <Fade isVisible isFullScreen={true}>
@@ -320,6 +339,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
               key={p.id}
               product={p}
               isFirst={!ind}
+              isShiftDown={isShiftDown}
               currencyFields={currencyFields.sort()}
             />
           ))}
