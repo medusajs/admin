@@ -27,7 +27,9 @@ export const columns: Column<Product>[] = [
         <div className="flex flex-col">
           <span>
             {original.title}{" "}
-            <span className="text-grey-50">({original.subtitle})</span>
+            {original.subtitle && (
+              <span className="text-grey-50">({original.subtitle})</span>
+            )}
           </span>
         </div>
       </div>
