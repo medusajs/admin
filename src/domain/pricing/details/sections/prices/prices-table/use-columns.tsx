@@ -35,7 +35,15 @@ const usePricesColumns = () => {
           <Table.HeadCell className="w-[400px]">Collection</Table.HeadCell>
         ),
         accessor: "collection",
-        Cell: ({ cell: { value } }) => <Table.Cell>{value.title}</Table.Cell>,
+        Cell: ({ cell: { value } }) => (
+          <Table.Cell>
+            {value?.title ? (
+              value.title
+            ) : (
+              <span className="text-grey-40">No collection</span>
+            )}
+          </Table.Cell>
+        ),
       },
       {
         Header: "Variants",
