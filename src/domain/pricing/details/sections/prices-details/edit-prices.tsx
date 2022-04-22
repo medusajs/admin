@@ -20,7 +20,7 @@ const defaultQueryFilters = {
 const EditPrices = ({ close, id }) => {
   const params = useQueryFilters(defaultQueryFilters)
   const [selectedProducts, setSelectedProducts] = React.useState<Product[]>([])
-  const { products = [], isLoading } = useAdminPriceListProducts(
+  const { products, isLoading } = useAdminPriceListProducts(
     id,
     params.queryObject
   )
@@ -28,9 +28,11 @@ const EditPrices = ({ close, id }) => {
     params.setQuery(query)
   }
 
-  const debouncedSearch = React.useMemo(() => debounce(handleSearch, 300), [])
+  React.useEffect(() => {
+    setSelectedProducts((state) => merge(products, state))
+  }, [products, merge])
 
-  const mergedProducts = merge(products, selectedProducts)
+  const debouncedSearch = React.useMemo(() => debounce(handleSearch, 300), [])
 
   return (
     <FocusModal>
@@ -73,7 +75,7 @@ const EditPrices = ({ close, id }) => {
               </span>
             </div>
             <ProductPrices
-              products={mergedProducts}
+              products={selectedProducts}
               setProducts={setSelectedProducts}
               isLoading={isLoading}
               onSearch={debouncedSearch}
