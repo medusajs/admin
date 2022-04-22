@@ -19,11 +19,11 @@ function generateField(currency: CurrencyType) {
     id: currency.code,
     short: `Price: ${currency.code}`,
     label: ({ isSelected }) => (
-      <span className="text-small text-grey-50">
+      <span title={currency.name} className="text-small text-grey-50 truncate">
         <span className={clsx("text-grey-90", { "font-semibold": isSelected })}>
-          Price:{" "}
+          {currency.code}:{" "}
         </span>
-        {currency.code}
+        {currency.name}
       </span>
     ),
   }
@@ -163,8 +163,6 @@ type ProductSectionProps = {
   currencyFields: string[]
 }
 
-let lastTarget
-
 function ProductSection(props: ProductSectionProps) {
   const { currencyFields, product, isFirst, isShiftDown } = props
 
@@ -181,9 +179,6 @@ function ProductSection(props: ProductSectionProps) {
         const tmp = activeFields[`${variantId}-${currency}`]
         delete tmp[`${variantId}-${currency}`]
 
-        // TODO do this on click
-        lastTarget?.focus()
-        lastTarget = ev.target
         // ev.target.blur()
         setActiveFields(tmp)
       } else {
@@ -265,7 +260,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
 
   return (
     <div className="flex gap-2 mb-2">
-      <Tile>{variant.title}</Tile>
+      <Tile className="pl-[42px]">{variant.title}</Tile>
       <Tile>{variant.sku}</Tile>
 
       {currencyFields.map((c) => {
