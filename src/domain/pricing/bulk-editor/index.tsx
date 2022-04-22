@@ -167,13 +167,10 @@ function ProductSection(props: ProductSectionProps) {
   const { currencyFields, product, isFirst, isShiftDown } = props
 
   const [activeFields, setActiveFields] = useState({})
+  const [priceChanges, setPriceChanges] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
-  const onPriceInputFocus = (
-    variantId: string,
-    currency: string,
-    ev: FocusEvent
-  ) => {
+  const onPriceInputFocus = (variantId: string, currency: string) => {
     if (isShiftDown) {
       if (activeFields[`${variantId}-${currency}`]) {
         const tmp = activeFields[`${variantId}-${currency}`]
@@ -197,16 +194,29 @@ function ProductSection(props: ProductSectionProps) {
     }
   }
 
+  const onPriceInputClick = (variantId: string, currency: string) => {
+    console.log("Click", isActive(variantId, currency))
+  }
+
   const onAmountChange = (
     variantId: string,
     currency: string,
     amount: string
   ) => {
+    const tmp = { ...priceChanges }
+
+    // for each input that is currently edited set the amount
+    Object.keys(activeFields).forEach((k) => (tmp[k] = amount))
+
+    setPriceChanges(tmp)
     setCurrentEditAmount(amount)
   }
 
   const isActive = (variantId: string, currency: string) =>
     activeFields[`${variantId}-${currency}`]
+
+  const getPriceChange = (variantId: string, currency: string) =>
+    priceChanges[`${variantId}-${currency}`]
 
   return (
     <div className="medium:w-8/12 w-full px-8 m-auto mb-4">
@@ -220,11 +230,14 @@ function ProductSection(props: ProductSectionProps) {
           key={v.id}
           variant={v}
           isActive={isActive}
-          onPriceInputFocus={onPriceInputFocus}
-          onPriceInputBlur={onPriceInputBlur}
-          onAmountChange={onAmountChange}
-          currentEditAmount={currentEditAmount}
+          getPriceChange={getPriceChange}
           currencyFields={currencyFields}
+          currentEditAmount={currentEditAmount}
+          // HANDLERS
+          onAmountChange={onAmountChange}
+          onPriceInputBlur={onPriceInputBlur}
+          onPriceInputFocus={onPriceInputFocus}
+          onPriceInputClick={onPriceInputClick}
         />
       ))}
     </div>
@@ -236,15 +249,13 @@ type ProductVariantRowProps = {
   currencyFields: string[]
 
   isActive: (variantId: string, currency: string) => boolean
+  getPriceChange: (variantId: string, currency: string) => boolean
 
-  currentEditAmount: number
+  currentEditAmount?: string
   onAmountChange: (variantId: string, currency: string, amount: string) => void
-  onPriceInputFocus: (
-    variantId: string,
-    currency: string,
-    ev: FocusEvent
-  ) => void
+  onPriceInputFocus: (variantId: string, currency: string) => void
   onPriceInputBlur: (variantId: string, currency: string) => void
+  onPriceInputClick: (variantId: string, currency: string) => void
 }
 
 function ProductVariantRow(props: ProductVariantRowProps) {
@@ -254,7 +265,9 @@ function ProductVariantRow(props: ProductVariantRowProps) {
     variant,
     onPriceInputBlur,
     onPriceInputFocus,
+    onPriceInputClick,
     onAmountChange,
+    getPriceChange,
     isActive,
   } = props
 
@@ -267,9 +280,10 @@ function ProductVariantRow(props: ProductVariantRowProps) {
         const current = variant.prices.find(
           (p) => p.currency_code === c.toLowerCase()
         )
+
         const amount = isActive(variant.id, c)
           ? currentEditAmount
-          : current?.amount
+          : getPriceChange(variant.id, c) || current?.amount
 
         return (
           <div key={c} className="min-w-[314px]">
@@ -277,7 +291,11 @@ function ProductVariantRow(props: ProductVariantRowProps) {
               amount={amount}
               currency={currencies[c]}
               hasVirtualFocus={isActive(variant.id, c)}
-              onFocus={(ev) => onPriceInputFocus(variant.id, c, ev)}
+              onFocus={() => onPriceInputFocus(variant.id, c)}
+              // onMouseDown={(e) => {
+              //   if (isActive(variant.id, c)) e.target.blur()
+              //   onPriceInputClick(variant.id, c)
+              // }}
               onBlur={() => onPriceInputBlur(variant.id, c)}
               onAmountChange={(a) => onAmountChange(variant.id, c, a)}
             />

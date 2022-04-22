@@ -1,4 +1,4 @@
-import React, { FocusEventHandler } from "react"
+import React, { FocusEventHandler, MouseEventHandler } from "react"
 import AmountField from "react-currency-input-field"
 import { CurrencyInputProps } from "react-currency-input-field"
 
@@ -16,6 +16,7 @@ type PriceInputProps = {
 
   onFocus?: FocusEventHandler<HTMLInputElement>
   onBlur?: FocusEventHandler<HTMLInputElement>
+  onMouseDown?: MouseEventHandler<HTMLInputElement>
 }
 
 /**
@@ -53,6 +54,7 @@ function PriceInput(props: PriceInputProps) {
         decimalScale={decimal_digits}
         onFocus={props.onFocus}
         onBlur={props.onBlur}
+        onMouseDown={props.onMouseDown}
         // fixedDecimalLength={decimal_digits}
         style={{ paddingRight: rightOffset }}
         className={clsx(
