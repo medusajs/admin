@@ -2,6 +2,7 @@ import { navigate } from "gatsby"
 import { useAdminDeletePriceList } from "medusa-react"
 import moment from "moment"
 import * as React from "react"
+import Fade from "../../../../components/atoms/fade-wrapper"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import BodyCard from "../../../../components/organisms/body-card"
@@ -12,6 +13,10 @@ import {
 import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import PriceListForm from "../../pricing-form"
+import { mapPriceListToFormValues } from "../../pricing-form/form/mappers"
+import { PriceListFormProvider } from "../../pricing-form/form/pricing-form-context"
+import { ViewType } from "../../pricing-form/types"
 
 const Header = ({ priceList }) => {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -45,12 +50,13 @@ const Header = ({ priceList }) => {
           </p>
         </div>
       </div>
-      {/* 
-        TODO: Price list edit form 
-        <Fade isVisible={isOpen} isFullScreen={true}>
-          <PriceListEditForm />
-        </Fade> 
-      */}
+      {isOpen && (
+        <PriceListFormProvider priceList={mapPriceListToFormValues(priceList)}>
+          <Fade isVisible={isOpen} isFullScreen={true}>
+            <PriceListForm id={priceList.id} viewType={ViewType.EDIT_DETAILS} />
+          </Fade>
+        </PriceListFormProvider>
+      )}
     </HeadingBodyCard>
   )
 }

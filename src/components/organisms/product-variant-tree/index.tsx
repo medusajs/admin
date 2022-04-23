@@ -1,7 +1,6 @@
 import { Product } from "@medusajs/medusa"
 import React from "react"
-import DollarSignIcon from "../../fundamentals/icons/dollar-sign-icon"
-import TrashIcon from "../../fundamentals/icons/trash-icon"
+import { ActionType } from "../../molecules/actionables"
 import { CollapsibleTree } from "../../molecules/collapsible-tree"
 
 type LeafProps = {
@@ -19,26 +18,18 @@ type ProductVariantTreeProps = {
   product: Pick<Product, "title" | "id" | "thumbnail"> & {
     variants: LeafProps[]
   }
+  productActions?: ActionType[]
+  variantActions?: ActionType[]
 }
 
-const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({ product }) => {
+const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({
+  product,
+  productActions,
+  variantActions,
+}) => {
   return (
     <CollapsibleTree>
-      <CollapsibleTree.Parent
-        actions={[
-          {
-            label: "Edit",
-            onClick: () => console.log("Edit prices"), // temp - should open edit prices overrides modal with "Apply on all variants" checked
-            icon: <DollarSignIcon />,
-          },
-          {
-            label: "Delete",
-            onClick: () => console.log("Remove prices for variant"), // temp - should delete all money amounts for variants from product in price list
-            icon: <TrashIcon />,
-            variant: "danger",
-          },
-        ]}
-      >
+      <CollapsibleTree.Parent actions={productActions}>
         <div>
           <img src={product.thumbnail} className="w-4 h-5 rounded-base" />
         </div>
@@ -46,22 +37,8 @@ const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({ product }) => {
       </CollapsibleTree.Parent>
       <CollapsibleTree.Content>
         {product.variants.map((variant) => (
-          <CollapsibleTree.Leaf
-            actions={[
-              {
-                label: "Edit",
-                onClick: () => console.log(`Edit prices for ${variant.id}`), // temp - should open edit prices overrides modal with only this variant selected
-                icon: <DollarSignIcon />,
-              },
-              {
-                label: "Delete",
-                onClick: () => console.log(`Remove prices for ${variant.id}`), // temp - should delete money amounts in PriceList for this variant
-                icon: <TrashIcon />,
-                variant: "danger",
-              },
-            ]}
-          >
-            <ProductVariantLeaf key={variant.id} {...variant} />
+          <CollapsibleTree.Leaf key={variant.id} actions={variantActions}>
+            <ProductVariantLeaf {...variant} />
           </CollapsibleTree.Leaf>
         ))}
       </CollapsibleTree.Content>
@@ -71,12 +48,12 @@ const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({ product }) => {
 
 const ProductVariantLeaf = ({ sku, title, prices = [] }: LeafProps) => {
   return (
-    <>
+    <div className="flex flex-1">
       <div className="truncate">
         <span>{title}</span>
         {sku && <span className="text-grey-50 ml-xsmall">(SKU: {sku})</span>}
       </div>
-      <div className="flex items-center text-grey-50">
+      <div className="flex items-center text-grey-50 flex-1 justify-end">
         <div className="text-grey-50 mr-xsmall">
           {prices.length ? (
             <span>{`${prices.length} price${
@@ -88,8 +65,8 @@ const ProductVariantLeaf = ({ sku, title, prices = [] }: LeafProps) => {
             </span>
           )}
         </div>
-      </div>{" "}
-    </>
+      </div>
+    </div>
   )
 }
 
