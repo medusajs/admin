@@ -1,3 +1,4 @@
+import { LineItem } from "@medusajs/medusa"
 import clsx from "clsx"
 import React, { useContext } from "react"
 import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
@@ -105,16 +106,38 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     }
   }
 
+  const travFind = (
+    cols: {
+      id: string
+      canceled_at: Date | null
+      additional_items: LineItem[]
+    }[],
+    colId: string,
+    lineId: string
+  ) => {
+    return (
+      cols.filter((col) => {
+        if (
+          col.additional_items.map((i) => i.id).includes(lineId) &&
+          col.canceled_at &&
+          col.id === colId
+        ) {
+          return true
+        }
+
+        return false
+      }).length > 0
+    )
+  }
+
   const isLineItemCanceled = (item) => {
-    const { swap_id, claim_order_id } = item
-    const travFind = (col, id) =>
-      col.filter((f) => f.id == id && f.canceled_at).length > 0
+    const { swap_id, claim_order_id, id } = item
 
     if (swap_id) {
-      return travFind(order.swaps, swap_id)
+      return travFind(order.swaps, id, swap_id)
     }
     if (claim_order_id) {
-      return travFind(order.claims, claim_order_id)
+      return travFind(order.claims, id, claim_order_id)
     }
     return false
   }

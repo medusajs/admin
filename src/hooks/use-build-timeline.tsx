@@ -378,6 +378,8 @@ export const useBuildTimelime = (orderId: string) => {
             claimType: claim.type,
             isCanceled: true,
             orderId: order.id,
+            claim,
+            order,
           } as ClaimEvent)
         }
       }

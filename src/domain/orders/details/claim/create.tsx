@@ -88,7 +88,9 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
 
   useEffect(() => {
     if (order) {
-      setAllItems(filterItems(order, true))
+      const items = filterItems(order, true)
+      console.log(items)
+      setAllItems(items)
     }
   }, [order])
 
