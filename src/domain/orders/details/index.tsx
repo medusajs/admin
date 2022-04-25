@@ -13,6 +13,7 @@ import React, { useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import ReactJson from "react-json-view"
 import Avatar from "../../../components/atoms/avatar"
+import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import Spinner from "../../../components/atoms/spinner"
 import Tooltip from "../../../components/atoms/tooltip"
 import Badge from "../../../components/fundamentals/badge"
@@ -26,6 +27,7 @@ import MailIcon from "../../../components/fundamentals/icons/mail-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
+import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
@@ -33,8 +35,8 @@ import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
-import EmailModal from "./email-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
+import EmailModal from "./email-modal"
 import MarkShippedModal from "./mark-shipped"
 import OrderLine from "./order-line"
 import CreateRefundModal from "./refund"
@@ -48,7 +50,6 @@ import {
   PaymentDetails,
   PaymentStatusComponent,
 } from "./templates"
-import RawJSON from "../../../components/organisms/raw-json"
 
 type OrderDetailFulfillment = {
   title: string
@@ -135,12 +136,12 @@ const OrderDetails = ({ id }) => {
 
   const notification = useNotification()
 
-  const [, handleCopy] = useClipboard(order?.display_id, {
+  const [, handleCopy] = useClipboard(`${order?.display_id!}`, {
     successDuration: 5500,
     onCopied: () => notification("Success", "Order ID copied", "success"),
   })
 
-  const [, handleCopyEmail] = useClipboard(order?.email, {
+  const [, handleCopyEmail] = useClipboard(order?.email!, {
     successDuration: 5500,
     onCopied: () => notification("Success", "Email copied", "success"),
   })
@@ -254,7 +255,7 @@ const OrderDetails = ({ id }) => {
     {
       label: "Go to Customer",
       icon: <DetailsIcon size={"20"} />,
-      onClick: () => navigate(`/a/customers/${order.customer.id}`),
+      onClick: () => navigate(`/a/customers/${order?.customer.id}`),
     },
   ]
 
@@ -366,6 +367,7 @@ const OrderDetails = ({ id }) => {
                 />
                 {order?.discounts?.map((discount, index) => (
                   <DisplayTotal
+                    key={index}
                     currency={order?.currency_code}
                     totalAmount={-1 * order?.discount_total}
                     totalTitle={
@@ -374,6 +376,28 @@ const OrderDetails = ({ id }) => {
                         <Badge className="ml-3" variant="default">
                           {discount.code}
                         </Badge>
+                      </div>
+                    }
+                  />
+                ))}
+                {order?.gift_cards?.map((giftCard, index) => (
+                  <DisplayTotal
+                    key={index}
+                    currency={order?.currency_code}
+                    totalAmount={-1 * order?.gift_card_total}
+                    totalTitle={
+                      <div className="flex inter-small-regular text-grey-90 items-center">
+                        Gift card:{" "}
+                        <Badge className="ml-3" variant="default">
+                          {giftCard.code}
+                        </Badge>
+                        <div className="ml-2">
+                          <CopyToClipboard
+                            value={giftCard.code}
+                            showValue={false}
+                            iconSize={16}
+                          />
+                        </div>
                       </div>
                     }
                   />
