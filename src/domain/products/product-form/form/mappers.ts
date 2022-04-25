@@ -99,7 +99,6 @@ export const formValuesToCreateProductMapper = (values, viewType) => {
 }
 
 export const formValuesToUpdateProductMapper = (values) => {
-  console.log(values)
   return {
     title: values.title,
     handle: values.handle,
