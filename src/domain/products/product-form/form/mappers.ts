@@ -102,7 +102,7 @@ export const formValuesToUpdateProductMapper = (values) => {
   return {
     title: values.title,
     handle: values.handle,
-    status: values.status || "published",
+    status: values.status,
     description: values.description,
     thumbnail: values.images.length
       ? values.images[values.thumbnail]
