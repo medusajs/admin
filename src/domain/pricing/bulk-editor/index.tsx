@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import clsx from "clsx"
 
 import { useAdminRegions, useAdminStore } from "medusa-react"
@@ -100,10 +100,12 @@ type ProductSectionHeaderProps = {
   product: Product
   isFirst: boolean
   activeRegions: Region[]
+  onHeaderClick: (regionId: string) => void
 }
 
 function ProductSectionHeader(props: ProductSectionHeaderProps) {
-  const { activeRegions, product, isFirst } = props
+  const { activeRegions, product, isFirst, onHeaderClick } = props
+
   return (
     <>
       {isFirst && (
@@ -150,8 +152,11 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
             <Tile>-</Tile>
           </span>
         </div>
-        {activeRegions.map(() => (
-          <div className="min-w-[314px]">
+        {activeRegions.map((r) => (
+          <div
+            onClick={() => onHeaderClick(r.id)}
+            className="min-w-[314px] cursor-pointer"
+          >
             <span className="text-small font-semibold text-grey-50">
               <Tile>-</Tile>
             </span>
@@ -179,23 +184,38 @@ function ProductSection(props: ProductSectionProps) {
   const [priceChanges, setPriceChanges] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
+  // const matrix = useMemo(() => {
+  //   return [product.variants.map((v) => v.id), activeRegions.map((r) => r.id)]
+  // }, [activeRegions, product.variants])
+  //
+  // const onKeyDown = () => {}
+  //
+  // useEffect(() => {
+  //   return () => window.removeEventListener("keydown", onKeyDown)
+  // }, [onKeyDown])
+
+  const toggleActive = (cellKey: string) => {
+    if (activeFields[cellKey]) {
+      const tmp = activeFields[cellKey]
+      delete tmp[cellKey]
+
+      setActiveFields(tmp)
+    } else {
+      setActiveFields({ ...activeFields, [cellKey]: true })
+    }
+  }
+
   const onPriceInputFocus = (variantId: string, regionId: string) => {
     const cellKey = getPriceKey(variantId, regionId)
 
     if (isShiftDown) {
-      if (activeFields[cellKey]) {
-        const tmp = activeFields[cellKey]
-        delete tmp[cellKey]
-
-        // ev.target.blur()
-        setActiveFields(tmp)
-      } else {
-        setActiveFields({ ...activeFields, [cellKey]: true })
-      }
+      toggleActive(cellKey)
     } else {
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
     }
+
+    // TODO: register keydown handlers
   }
 
   const onPriceInputBlur = (variantId: string, regionId: string) => {
@@ -203,9 +223,14 @@ function ProductSection(props: ProductSectionProps) {
       setActiveFields({})
       setCurrentEditAmount(undefined)
     }
+
+    // TODO: remove keydown handlers
   }
 
-  const onPriceInputClick = (variantId: string, regionId: string) => {}
+  const onPriceInputClick = (variantId: string, regionId: string) => {
+    const cellKey = getPriceKey(variantId, regionId)
+    toggleActive(cellKey)
+  }
 
   const onAmountChange = (
     variantId: string,
@@ -221,18 +246,31 @@ function ProductSection(props: ProductSectionProps) {
     setCurrentEditAmount(amount)
   }
 
-  const isActive = (variantId: string, currency: string) =>
-    activeFields[`${variantId}-${currency}`]
+  const onHeaderClick = (regionId: string) => {
+    document
+      .getElementById(getPriceKey(product.variants[0].id, regionId))
+      ?.focus()
 
-  const getPriceChange = (variantId: string, currency: string) =>
-    priceChanges[`${variantId}-${currency}`]
+    setCurrentEditAmount(undefined)
+
+    const tmp = {}
+    product.variants.forEach((v) => (tmp[getPriceKey(v.id, regionId)] = true))
+    setActiveFields(tmp)
+  }
+
+  const isActive = (variantId: string, regionId: string) =>
+    activeFields[getPriceKey(variantId, regionId)]
+
+  const getPriceChange = (variantId: string, regionId: string) =>
+    priceChanges[getPriceKey(variantId, regionId)]
 
   return (
-    <div className="medium:w-8/12 w-full px-8 m-auto mb-4">
+    <div className="px-8 mb-4">
       <ProductSectionHeader
         isFirst={isFirst}
         product={product}
         activeRegions={activeRegions}
+        onHeaderClick={onHeaderClick}
       />
       {product.variants.map((v) => (
         <ProductVariantRow
@@ -300,12 +338,16 @@ function ProductVariantRow(props: ProductVariantRowProps) {
               currency={currencies[r.currency_code.toUpperCase()]}
               hasVirtualFocus={isActive(variant.id, r.id)}
               onFocus={() => onPriceInputFocus(variant.id, r.id)}
-              // onMouseDown={(e) => {
-              //   if (isActive(variant.id, c)) e.target.blur()
-              //   onPriceInputClick(variant.id, c)
-              // }}
+              onMouseDown={(e) => {
+                if (e.shiftKey) {
+                  e.preventDefault()
+                  if (isActive(variant.id, r.id)) e.target.blur()
+                }
+                onPriceInputClick(variant.id, r.id)
+              }}
               onBlur={() => onPriceInputBlur(variant.id, r.id)}
               onAmountChange={(a) => onAmountChange(variant.id, r.id, a)}
+              id={getPriceKey(variant.id, r.id)}
             />
           </div>
         )
@@ -381,20 +423,22 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         <FocusModal.Main>
           <PriceListBulkEditorHeader setRegions={setActiveRegions} />
 
-          {regions &&
-            products.map((p, ind) => (
-              <ProductSection
-                key={p.id}
-                product={p}
-                isFirst={!ind}
-                isShiftDown={isShiftDown}
-                activeRegions={
-                  activeRegions
-                    .map((r) => regions?.find((a) => a.id === r))
-                    .filter((i) => !!i) as Region[]
-                }
-              />
-            ))}
+          <div className="medium:w-8/12 w-full flex flex-col justify-start mx-auto overflow-x-auto-TODO">
+            {regions &&
+              products.map((p, ind) => (
+                <ProductSection
+                  key={p.id}
+                  product={p}
+                  isFirst={!ind}
+                  isShiftDown={isShiftDown}
+                  activeRegions={
+                    activeRegions
+                      .map((r) => regions?.find((a) => a.id === r))
+                      .filter((i) => !!i) as Region[]
+                  }
+                />
+              ))}
+          </div>
         </FocusModal.Main>
       </FocusModal>
     </Fade>

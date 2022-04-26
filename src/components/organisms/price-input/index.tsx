@@ -24,7 +24,7 @@ type PriceInputProps = {
  * and the currency of the provided price.
  */
 function PriceInput(props: PriceInputProps) {
-  const { amount, currency, hasVirtualFocus, onAmountChange } = props
+  const { amount, currency, hasVirtualFocus, onAmountChange, ...rest } = props
   const { code, symbol_native, decimal_digits } = currency
 
   /********** COMPUTED **********/
@@ -72,6 +72,7 @@ function PriceInput(props: PriceInputProps) {
             "border-grey-20": !hasVirtualFocus,
           }
         )}
+        {...rest}
       />
 
       <div className="absolute flex items-center h-full top-0 right-3">
