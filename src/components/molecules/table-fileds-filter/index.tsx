@@ -142,7 +142,7 @@ function FieldsMenu(props: FieldsMenuProps) {
 
       <DropdownMenu.Content
         ref={contentRef}
-        className="w-[240px] h-[400px] overflow-x-scroll bg-white shadow rounded-xl p-2"
+        className="w-[240px] max-h-[400px] overflow-x-scroll bg-white shadow rounded-xl p-2"
       >
         {fields.map((f) => (
           <FieldMenuItem
@@ -173,10 +173,9 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
     setSelectedFields(selectedFields.filter((f) => f !== id))
   }
 
-  const _selected = [...selectedFields]
-  _selected.sort((a, b) => a.localeCompare(b))
-
-  const visibleFields = _selected.map((id) => fields.find((f) => f.id === id))
+  const visibleFields = selectedFields.map((id) =>
+    fields.find((f) => f.id === id)
+  )
 
   return (
     <div className="flex-wrap flex items-center gap-y-2">
@@ -189,9 +188,9 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
       ))}
 
       <FieldsMenu
-        fields={sortBy(fields, "id")}
+        fields={fields}
         onBlur={setSelectedFields}
-        selectedFields={_selected}
+        selectedFields={selectedFields}
       />
     </div>
   )

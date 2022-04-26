@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import clsx from "clsx"
 
-import { Product, ProductVariant } from "@medusajs/medusa"
+import { useAdminRegions, useAdminStore } from "medusa-react"
+import { Currency, Product, ProductVariant, Region } from "@medusajs/medusa"
 
 import Fade from "../../../components/atoms/fade-wrapper"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
@@ -10,30 +11,38 @@ import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import NativeSelect from "../../../components/molecules/native-select"
 import TableFieldsFilters from "../../../components/molecules/table-fileds-filter"
 import TableSearch from "../../../components/molecules/table/table-search"
-import { currencies, CurrencyType } from "../../../utils/currencies"
+import { currencies } from "../../../utils/currencies"
 import PriceInput from "../../../components/organisms/price-input"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 
-function generateField(currency: CurrencyType) {
+function generateField(region: Region) {
   return {
-    id: currency.code,
-    short: `Price: ${currency.code}`,
+    id: region.id,
+    short: `Price: ${region.currency_code.toUpperCase()} (${region.name}) `,
     label: ({ isSelected }) => (
-      <span title={currency.name} className="text-small text-grey-50 truncate">
+      <span className="text-small text-grey-50 truncate">
         <span className={clsx("text-grey-90", { "font-semibold": isSelected })}>
-          {currency.code}:{" "}
+          {region.currency_code.toUpperCase()}:{" "}
         </span>
-        {currency.name}
+        ({region.name})
       </span>
     ),
   }
 }
+
 type PriceListBulkEditorHeaderProps = {
-  setCurrencyFields: (a: string[]) => void
+  setRegions: (a: string[]) => void
 }
 
 function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
-  const { setCurrencyFields } = props
+  const { setRegions } = props
+
+  const { regions } = useAdminRegions()
+
+  const fields = (regions || [])
+    .sort((a, b) => a.currency_code.localeCompare(b.currency_code))
+    .map((r) => generateField(r))
+
   return (
     <div className="flex justify-center my-[30px]">
       <div className="medium:w-8/12 w-full px-8 flex justify-between">
@@ -50,12 +59,7 @@ function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
           </div>
 
           <div className="ml-8">
-            <TableFieldsFilters
-              fields={Object.keys(currencies).map((k) =>
-                generateField(currencies[k])
-              )}
-              onChange={setCurrencyFields}
-            />
+            <TableFieldsFilters fields={fields} onChange={setRegions} />
           </div>
         </div>
 
@@ -95,11 +99,11 @@ function Tile(props: TileProps) {
 type ProductSectionHeaderProps = {
   product: Product
   isFirst: boolean
-  currencyFields: string[]
+  activeRegions: Region[]
 }
 
 function ProductSectionHeader(props: ProductSectionHeaderProps) {
-  const { currencyFields, product, isFirst } = props
+  const { activeRegions, product, isFirst } = props
   return (
     <>
       {isFirst && (
@@ -112,9 +116,11 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
           <div className="min-w-[314px]">
             <span className="text-small font-semibold text-grey-50">SKU</span>
           </div>
-          {currencyFields.map((c) => (
+          {activeRegions.map((r) => (
             <div className="min-w-[314px]">
-              <span className="text-small font-semibold text-grey-50">{c}</span>
+              <span className="text-small font-semibold text-grey-50">
+                {r.currency_code.toUpperCase()} ({r.name})
+              </span>
             </div>
           ))}
         </div>
@@ -144,7 +150,7 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
             <Tile>-</Tile>
           </span>
         </div>
-        {currencyFields.map((c) => (
+        {activeRegions.map(() => (
           <div className="min-w-[314px]">
             <span className="text-small font-semibold text-grey-50">
               <Tile>-</Tile>
@@ -156,47 +162,50 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
   )
 }
 
+const getPriceKey = (variantId: string, regionId: string) =>
+  `${variantId}-${regionId}`
+
 type ProductSectionProps = {
   product: Product
   isFirst: boolean
   isShiftDown: boolean
-  currencyFields: string[]
+  activeRegions: Region[]
 }
 
 function ProductSection(props: ProductSectionProps) {
-  const { currencyFields, product, isFirst, isShiftDown } = props
+  const { activeRegions, product, isFirst, isShiftDown } = props
 
   const [activeFields, setActiveFields] = useState({})
   const [priceChanges, setPriceChanges] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
-  const onPriceInputFocus = (variantId: string, currency: string) => {
+  const onPriceInputFocus = (variantId: string, regionId: string) => {
+    const cellKey = getPriceKey(variantId, regionId)
+
     if (isShiftDown) {
-      if (activeFields[`${variantId}-${currency}`]) {
-        const tmp = activeFields[`${variantId}-${currency}`]
-        delete tmp[`${variantId}-${currency}`]
+      if (activeFields[cellKey]) {
+        const tmp = activeFields[cellKey]
+        delete tmp[cellKey]
 
         // ev.target.blur()
         setActiveFields(tmp)
       } else {
-        setActiveFields({ ...activeFields, [`${variantId}-${currency}`]: true })
+        setActiveFields({ ...activeFields, [cellKey]: true })
       }
     } else {
       setCurrentEditAmount(undefined)
-      setActiveFields({ [`${variantId}-${currency}`]: true })
+      setActiveFields({ [cellKey]: true })
     }
   }
 
-  const onPriceInputBlur = (variantId: string, currency: string) => {
+  const onPriceInputBlur = (variantId: string, regionId: string) => {
     if (!isShiftDown) {
       setActiveFields({})
       setCurrentEditAmount(undefined)
     }
   }
 
-  const onPriceInputClick = (variantId: string, currency: string) => {
-    console.log("Click", isActive(variantId, currency))
-  }
+  const onPriceInputClick = (variantId: string, regionId: string) => {}
 
   const onAmountChange = (
     variantId: string,
@@ -223,7 +232,7 @@ function ProductSection(props: ProductSectionProps) {
       <ProductSectionHeader
         isFirst={isFirst}
         product={product}
-        currencyFields={currencyFields}
+        activeRegions={activeRegions}
       />
       {product.variants.map((v) => (
         <ProductVariantRow
@@ -231,7 +240,7 @@ function ProductSection(props: ProductSectionProps) {
           variant={v}
           isActive={isActive}
           getPriceChange={getPriceChange}
-          currencyFields={currencyFields}
+          activeRegions={activeRegions}
           currentEditAmount={currentEditAmount}
           // HANDLERS
           onAmountChange={onAmountChange}
@@ -246,7 +255,7 @@ function ProductSection(props: ProductSectionProps) {
 
 type ProductVariantRowProps = {
   variant: ProductVariant
-  currencyFields: string[]
+  activeRegions: Region[]
 
   isActive: (variantId: string, currency: string) => boolean
   getPriceChange: (variantId: string, currency: string) => boolean
@@ -261,7 +270,7 @@ type ProductVariantRowProps = {
 function ProductVariantRow(props: ProductVariantRowProps) {
   const {
     currentEditAmount,
-    currencyFields,
+    activeRegions,
     variant,
     onPriceInputBlur,
     onPriceInputFocus,
@@ -276,28 +285,27 @@ function ProductVariantRow(props: ProductVariantRowProps) {
       <Tile className="pl-[42px]">{variant.title}</Tile>
       <Tile>{variant.sku}</Tile>
 
-      {currencyFields.map((c) => {
-        const current = variant.prices.find(
-          (p) => p.currency_code === c.toLowerCase()
-        )
+      {activeRegions.map((r) => {
+        // TODO: filter prices by the current price list id
+        const current = variant.prices.find((p) => p.region_id === r.id)
 
-        const amount = isActive(variant.id, c)
+        const amount = isActive(variant.id, r.id)
           ? currentEditAmount
-          : getPriceChange(variant.id, c) || current?.amount
+          : getPriceChange(variant.id, r.id) || current?.amount
 
         return (
-          <div key={c} className="min-w-[314px]">
+          <div key={r.id} className="min-w-[314px]">
             <PriceInput
               amount={amount}
-              currency={currencies[c]}
-              hasVirtualFocus={isActive(variant.id, c)}
-              onFocus={() => onPriceInputFocus(variant.id, c)}
+              currency={currencies[r.currency_code.toUpperCase()]}
+              hasVirtualFocus={isActive(variant.id, r.id)}
+              onFocus={() => onPriceInputFocus(variant.id, r.id)}
               // onMouseDown={(e) => {
               //   if (isActive(variant.id, c)) e.target.blur()
               //   onPriceInputClick(variant.id, c)
               // }}
-              onBlur={() => onPriceInputBlur(variant.id, c)}
-              onAmountChange={(a) => onAmountChange(variant.id, c, a)}
+              onBlur={() => onPriceInputBlur(variant.id, r.id)}
+              onAmountChange={(a) => onAmountChange(variant.id, r.id, a)}
             />
           </div>
         )
@@ -312,8 +320,11 @@ type PriceListBulkEditorProps = {
 
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   const { products } = props
+
   const [isShiftDown, setIsShiftDown] = useState(false)
-  const [currencyFields, setCurrencyFields] = useState<string[]>([])
+  const [activeRegions, setActiveRegions] = useState<string[]>([])
+
+  const { regions } = useAdminRegions()
 
   useEffect(() => {
     const onKeyDown = (e) => setIsShiftDown(e.shiftKey)
@@ -368,17 +379,22 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         </FocusModal.Header>
 
         <FocusModal.Main>
-          <PriceListBulkEditorHeader setCurrencyFields={setCurrencyFields} />
+          <PriceListBulkEditorHeader setRegions={setActiveRegions} />
 
-          {products.map((p, ind) => (
-            <ProductSection
-              key={p.id}
-              product={p}
-              isFirst={!ind}
-              isShiftDown={isShiftDown}
-              currencyFields={currencyFields.sort()}
-            />
-          ))}
+          {regions &&
+            products.map((p, ind) => (
+              <ProductSection
+                key={p.id}
+                product={p}
+                isFirst={!ind}
+                isShiftDown={isShiftDown}
+                activeRegions={
+                  activeRegions
+                    .map((r) => regions?.find((a) => a.id === r))
+                    .filter((i) => !!i) as Region[]
+                }
+              />
+            ))}
         </FocusModal.Main>
       </FocusModal>
     </Fade>
