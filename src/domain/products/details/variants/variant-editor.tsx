@@ -48,11 +48,19 @@ const VariantEditor = ({
     appendPrice,
     deletePrice,
     availableCurrencies,
-  } = usePricesFieldArray(store?.currencies.map((c) => c.code) || [], {
-    control,
-    name: "prices",
-    keyName: "indexId",
-  })
+  } = usePricesFieldArray(
+    store?.currencies.map((c) => c.code) || [],
+    {
+      control,
+      name: "prices",
+      keyName: "indexId",
+    },
+    {
+      defaultAmount: 1000,
+      defaultCurrencyCode:
+        store?.default_currency.code || store?.currencies[0].code || "usd",
+    }
+  )
 
   const { fields } = useFieldArray({
     control,
