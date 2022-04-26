@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import clsx from "clsx"
 
-import { useAdminRegions, useAdminStore } from "medusa-react"
-import { Currency, Product, ProductVariant, Region } from "@medusajs/medusa"
+import { useAdminRegions } from "medusa-react"
+import { Product, ProductVariant, Region } from "@medusajs/medusa"
 
 import Fade from "../../../components/atoms/fade-wrapper"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
