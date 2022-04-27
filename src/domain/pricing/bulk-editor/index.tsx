@@ -173,12 +173,11 @@ const getPriceKey = (variantId: string, regionId: string) =>
 type ProductSectionProps = {
   product: Product
   isFirst: boolean
-  isShiftDown: boolean
   activeRegions: Region[]
 }
 
 function ProductSection(props: ProductSectionProps) {
-  const { activeRegions, product, isFirst, isShiftDown } = props
+  const { activeRegions, product, isFirst } = props
 
   const [activeFields, setActiveFields] = useState({})
   const [priceChanges, setPriceChanges] = useState({})
@@ -195,9 +194,8 @@ function ProductSection(props: ProductSectionProps) {
   // }, [onKeyDown])
 
   const toggleActive = (cellKey: string) => {
-    console.log(activeFields)
     if (activeFields[cellKey]) {
-      const tmp = activeFields[cellKey]
+      const tmp = activeFields
       delete tmp[cellKey]
 
       setActiveFields(tmp)
@@ -221,11 +219,13 @@ function ProductSection(props: ProductSectionProps) {
   ) => {
     const cellKey = getPriceKey(variantId, regionId)
 
-    if (isShiftDown) {
-      e.preventDefault()
+    if (e.shiftKey) {
+      e.preventDefault() // do not focus
+
+      const active = isActive(variantId, regionId)
       toggleActive(cellKey)
 
-      if (isActive(variantId, regionId)) e.target.blur()
+      if (active) e.target.blur()
       else e.target.focus()
     } else {
       setCurrentEditAmount(undefined)
@@ -235,10 +235,11 @@ function ProductSection(props: ProductSectionProps) {
 
   const onAmountChange = (
     variantId: string,
-    currency: string,
+    regionId: string,
     amount: string
   ) => {
     const tmp = { ...priceChanges }
+    console.log("Setting amount")
 
     // for each input that is currently edited set the amount
     Object.keys(activeFields).forEach((k) => (tmp[k] = amount))
@@ -322,7 +323,9 @@ function ProductVariantRow(props: ProductVariantRowProps) {
 
         const amount = isActive(variant.id, r.id)
           ? currentEditAmount
-          : getPriceChange(variant.id, r.id) || current?.amount
+          : typeof getPriceChange(variant.id, r.id) === "number"
+          ? getPriceChange(variant.id, r.id)
+          : current?.amount
 
         return (
           <div key={r.id} className="min-w-[314px]">
@@ -348,23 +351,9 @@ type PriceListBulkEditorProps = {
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   const { products } = props
 
-  const [isShiftDown, setIsShiftDown] = useState(false)
   const [activeRegions, setActiveRegions] = useState<string[]>([])
 
   const { regions } = useAdminRegions()
-
-  useEffect(() => {
-    const onKeyDown = (e) => setIsShiftDown(e.shiftKey)
-    const onKeyUp = (e) => setIsShiftDown(e.shiftKey)
-
-    window.addEventListener("keydown", onKeyDown)
-    window.addEventListener("keyup", onKeyUp)
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown)
-      window.removeEventListener("keyup", onKeyUp)
-    }
-  }, [])
 
   return (
     <Fade isVisible isFullScreen={true}>
@@ -415,7 +404,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
                   key={p.id}
                   product={p}
                   isFirst={!ind}
-                  isShiftDown={isShiftDown}
                   activeRegions={
                     activeRegions
                       .map((r) => regions?.find((a) => a.id === r))
