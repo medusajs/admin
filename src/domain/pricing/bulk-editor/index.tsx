@@ -183,6 +183,8 @@ function ProductSection(props: ProductSectionProps) {
   const [priceChanges, setPriceChanges] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
+  // TODO: unset active on tab click
+
   // const matrix = useMemo(() => {
   //   return [product.variants.map((v) => v.id), activeRegions.map((r) => r.id)]
   // }, [activeRegions, product.variants])
@@ -265,8 +267,6 @@ function ProductSection(props: ProductSectionProps) {
     product.variants.forEach((v) => (tmp[getPriceKey(v.id, regionId)] = true))
     setActiveFields(tmp)
   }
-
-  console.log(activeFields)
 
   return (
     <div className="px-8 mb-4">
