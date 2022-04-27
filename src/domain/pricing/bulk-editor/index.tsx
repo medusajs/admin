@@ -43,7 +43,6 @@ function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
     .sort((a, b) => a.currency_code.localeCompare(b.currency_code))
     .map((r) => generateField(r))
 
-  console.log({ fields })
   return (
     <div className="flex justify-center my-[30px]">
       <div className="medium:w-8/12 w-full px-8 flex justify-between">
@@ -196,6 +195,7 @@ function ProductSection(props: ProductSectionProps) {
   // }, [onKeyDown])
 
   const toggleActive = (cellKey: string) => {
+    console.log(activeFields)
     if (activeFields[cellKey]) {
       const tmp = activeFields[cellKey]
       delete tmp[cellKey]
@@ -206,31 +206,31 @@ function ProductSection(props: ProductSectionProps) {
     }
   }
 
-  const onPriceInputFocus = (variantId: string, regionId: string) => {
+  const isActive = (variantId: string, regionId: string) =>
+    activeFields[getPriceKey(variantId, regionId)]
+
+  const getPriceChange = (variantId: string, regionId: string) =>
+    priceChanges[getPriceKey(variantId, regionId)]
+
+  /* ********** HANDLERS ********** */
+
+  const onPriceInputClick = (
+    e: React.MouseEvent<HTMLInputElement>,
+    variantId: string,
+    regionId: string
+  ) => {
     const cellKey = getPriceKey(variantId, regionId)
 
     if (isShiftDown) {
+      e.preventDefault()
       toggleActive(cellKey)
+
+      if (isActive(variantId, regionId)) e.target.blur()
+      else e.target.focus()
     } else {
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
     }
-
-    // TODO: register keydown handlers
-  }
-
-  const onPriceInputBlur = (variantId: string, regionId: string) => {
-    if (!isShiftDown) {
-      setActiveFields({})
-      setCurrentEditAmount(undefined)
-    }
-
-    // TODO: remove keydown handlers
-  }
-
-  const onPriceInputClick = (variantId: string, regionId: string) => {
-    const cellKey = getPriceKey(variantId, regionId)
-    toggleActive(cellKey)
   }
 
   const onAmountChange = (
@@ -259,12 +259,6 @@ function ProductSection(props: ProductSectionProps) {
     setActiveFields(tmp)
   }
 
-  const isActive = (variantId: string, regionId: string) =>
-    activeFields[getPriceKey(variantId, regionId)]
-
-  const getPriceChange = (variantId: string, regionId: string) =>
-    priceChanges[getPriceKey(variantId, regionId)]
-
   return (
     <div className="px-8 mb-4">
       <ProductSectionHeader
@@ -283,8 +277,6 @@ function ProductSection(props: ProductSectionProps) {
           currentEditAmount={currentEditAmount}
           // HANDLERS
           onAmountChange={onAmountChange}
-          onPriceInputBlur={onPriceInputBlur}
-          onPriceInputFocus={onPriceInputFocus}
           onPriceInputClick={onPriceInputClick}
         />
       ))}
@@ -301,9 +293,11 @@ type ProductVariantRowProps = {
 
   currentEditAmount?: string
   onAmountChange: (variantId: string, currency: string, amount: string) => void
-  onPriceInputFocus: (variantId: string, currency: string) => void
-  onPriceInputBlur: (variantId: string, currency: string) => void
-  onPriceInputClick: (variantId: string, currency: string) => void
+  onPriceInputClick: (
+    e: React.MouseEvent<HTMLInputElement>,
+    variantId: string,
+    currency: string
+  ) => void
 }
 
 function ProductVariantRow(props: ProductVariantRowProps) {
@@ -311,8 +305,6 @@ function ProductVariantRow(props: ProductVariantRowProps) {
     currentEditAmount,
     activeRegions,
     variant,
-    onPriceInputBlur,
-    onPriceInputFocus,
     onPriceInputClick,
     onAmountChange,
     getPriceChange,
@@ -338,15 +330,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
               amount={amount}
               currency={currencies[r.currency_code.toUpperCase()]}
               hasVirtualFocus={isActive(variant.id, r.id)}
-              onFocus={() => onPriceInputFocus(variant.id, r.id)}
-              onMouseDown={(e) => {
-                if (e.shiftKey) {
-                  e.preventDefault()
-                  if (isActive(variant.id, r.id)) e.target.blur()
-                }
-                onPriceInputClick(variant.id, r.id)
-              }}
-              onBlur={() => onPriceInputBlur(variant.id, r.id)}
+              onMouseDown={(e) => onPriceInputClick(e, variant.id, r.id)}
               onAmountChange={(a) => onAmountChange(variant.id, r.id, a)}
               id={getPriceKey(variant.id, r.id)}
             />
