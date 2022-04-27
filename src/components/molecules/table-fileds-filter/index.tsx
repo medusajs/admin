@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import { sortBy } from "lodash"
 
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import Button from "../../fundamentals/button"

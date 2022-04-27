@@ -43,6 +43,7 @@ function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
     .sort((a, b) => a.currency_code.localeCompare(b.currency_code))
     .map((r) => generateField(r))
 
+  console.log({ fields })
   return (
     <div className="flex justify-center my-[30px]">
       <div className="medium:w-8/12 w-full px-8 flex justify-between">
@@ -434,7 +435,10 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
                   activeRegions={
                     activeRegions
                       .map((r) => regions?.find((a) => a.id === r))
-                      .filter((i) => !!i) as Region[]
+                      .filter((i) => !!i)
+                      .sort((a, b) =>
+                        a.currency_code.localeCompare(b.currency_code)
+                      ) as Region[]
                   }
                 />
               ))}
