@@ -101,7 +101,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
           return (
             <div className="flex items-center">
               <div className="h-[40px] w-[30px] my-1.5 flex items-center mr-4">
-                {original.product.thumbnail ? (
+                {original?.product?.thumbnail ? (
                   <img
                     src={original.product.thumbnail}
                     className="h-full object-cover rounded-soft"
@@ -113,7 +113,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
                 )}
               </div>
               <div className="flex flex-col">
-                <span>{original.product.title}</span>
+                <span>{original?.product?.title || " - "}</span>
                 {original.title}
               </div>
             </div>
@@ -125,9 +125,11 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
         accessor: "status",
         Cell: ({ row: { original } }) => (
           <StatusIndicator
-            title={`${original.product.status
-              .charAt(0)
-              .toUpperCase()}${original.product.status.slice(1)}`}
+            title={
+              `${original?.product?.status
+                .charAt(0)
+                .toUpperCase()}${original.product.status.slice(1)}` || ""
+            }
             variant={getProductStatusVariant(original.product.status)}
           />
         ),
