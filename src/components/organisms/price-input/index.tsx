@@ -58,15 +58,16 @@ function PriceInput(props: PriceInputProps) {
         // fixedDecimalLength={decimal_digits}
         style={{ paddingRight: rightOffset }}
         className={clsx(
-          `focus:bg-white focus:border-violet-60
-            border border-solid 
-            w-full h-[40px]
-            py-[10px] pl-12
-            rounded-lg
-            bg-grey-5
-            text-gray-90
-            text-right
-            text-small`,
+          `focus-visible:outline-none 
+           focus-visible:bg-white focus-visible:border-violet-60
+           border border-solid 
+           w-full h-[40px]
+           py-[10px] pl-12
+           rounded-lg
+           bg-grey-5
+           text-gray-90
+           text-right
+           text-small`,
           {
             "bg-white border-violet-60": hasVirtualFocus,
             "border-grey-20": !hasVirtualFocus,

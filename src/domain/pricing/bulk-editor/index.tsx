@@ -195,7 +195,7 @@ function ProductSection(props: ProductSectionProps) {
 
   const toggleActive = (cellKey: string) => {
     if (activeFields[cellKey]) {
-      const tmp = activeFields
+      const tmp = { ...activeFields }
       delete tmp[cellKey]
 
       setActiveFields(tmp)
@@ -225,8 +225,15 @@ function ProductSection(props: ProductSectionProps) {
       const active = isActive(variantId, regionId)
       toggleActive(cellKey)
 
-      if (active) e.target.blur()
-      else e.target.focus()
+      if (active) {
+        const wasFocused = e.target === document.activeElement
+        e.target.blur()
+
+        if (wasFocused) {
+          const id = Object.keys(activeFields).filter((k) => k !== cellKey)[0]
+          document.getElementById(id)?.focus()
+        }
+      } else e.target.focus()
     } else {
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
@@ -239,13 +246,12 @@ function ProductSection(props: ProductSectionProps) {
     amount: string
   ) => {
     const tmp = { ...priceChanges }
-    console.log("Setting amount")
 
     // for each input that is currently edited set the amount
     Object.keys(activeFields).forEach((k) => (tmp[k] = amount))
 
     setPriceChanges(tmp)
-    setCurrentEditAmount(amount)
+    setCurrentEditAmount(amount) // TODO: this is set on blur
   }
 
   const onHeaderClick = (regionId: string) => {
@@ -259,6 +265,8 @@ function ProductSection(props: ProductSectionProps) {
     product.variants.forEach((v) => (tmp[getPriceKey(v.id, regionId)] = true))
     setActiveFields(tmp)
   }
+
+  console.log(activeFields)
 
   return (
     <div className="px-8 mb-4">
@@ -290,7 +298,7 @@ type ProductVariantRowProps = {
   activeRegions: Region[]
 
   isActive: (variantId: string, currency: string) => boolean
-  getPriceChange: (variantId: string, currency: string) => boolean
+  getPriceChange: (variantId: string, currency: string) => string
 
   currentEditAmount?: string
   onAmountChange: (variantId: string, currency: string, amount: string) => void
@@ -319,13 +327,14 @@ function ProductVariantRow(props: ProductVariantRowProps) {
 
       {activeRegions.map((r) => {
         // TODO: filter prices by the current price list id
-        const current = variant.prices.find((p) => p.region_id === r.id)
+        // const current = variant.prices.find((p) => p.region_id === r.id)
+        const current = variant.prices.find(
+          (p) => p.currency_code === r.currency_code
+        )
 
         const amount = isActive(variant.id, r.id)
           ? currentEditAmount
-          : typeof getPriceChange(variant.id, r.id) === "number"
-          ? getPriceChange(variant.id, r.id)
-          : current?.amount
+          : getPriceChange(variant.id, r.id) || current?.amount // saved as a string
 
         return (
           <div key={r.id} className="min-w-[314px]">
@@ -335,6 +344,10 @@ function ProductVariantRow(props: ProductVariantRowProps) {
               hasVirtualFocus={isActive(variant.id, r.id)}
               onMouseDown={(e) => onPriceInputClick(e, variant.id, r.id)}
               onAmountChange={(a) => onAmountChange(variant.id, r.id, a)}
+              onBlur={
+                /* prevent `onAmountChange` call from the library */
+                (e) => e.preventDefault()
+              }
               id={getPriceKey(variant.id, r.id)}
             />
           </div>
