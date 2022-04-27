@@ -57,6 +57,7 @@ function PriceInput(props: PriceInputProps) {
         onMouseDown={props.onMouseDown}
         // fixedDecimalLength={decimal_digits}
         style={{ paddingRight: rightOffset }}
+        {...rest}
         className={clsx(
           `focus-visible:outline-none 
            focus-visible:bg-white focus-visible:border-violet-60
@@ -68,12 +69,13 @@ function PriceInput(props: PriceInputProps) {
            text-gray-90
            text-right
            text-small`,
+
           {
             "bg-white border-violet-60": hasVirtualFocus,
             "border-grey-20": !hasVirtualFocus,
-          }
+          },
+          props.className || ""
         )}
-        {...rest}
       />
 
       <div className="absolute flex items-center h-full top-0 right-3">

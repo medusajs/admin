@@ -195,6 +195,23 @@ function ProductSection(props: ProductSectionProps) {
   //   return () => window.removeEventListener("keydown", onKeyDown)
   // }, [onKeyDown])
 
+  useEffect(() => {
+    const handler = (e) => {
+      // TODO: extract to a handler
+      const isPriceInputClicked = e.target.classList.contains("js-bt-input")
+      // TODO: check whether the input is from the same product section or from another
+
+      if (!isPriceInputClicked) {
+        // artificial blur event
+        setCurrentEditAmount(undefined)
+        setActiveFields({})
+      }
+    }
+
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [])
+
   const toggleActive = (cellKey: string) => {
     if (activeFields[cellKey]) {
       const tmp = { ...activeFields }
@@ -349,6 +366,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
                 (e) => e.preventDefault()
               }
               id={getPriceKey(variant.id, r.id)}
+              className="js-bt-input"
             />
           </div>
         )
