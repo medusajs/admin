@@ -128,9 +128,9 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
             title={
               `${original?.product?.status
                 .charAt(0)
-                .toUpperCase()}${original.product.status.slice(1)}` || ""
+                .toUpperCase()}${original?.product?.status?.slice(1)}` || ""
             }
-            variant={getProductStatusVariant(original.product.status)}
+            variant={getProductStatusVariant(original?.product?.status || "")}
           />
         ),
       },
@@ -159,7 +159,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   } = useTable(
     {
       columns,
-      data: variants || [],
+      data: variants?.filter((v) => v?.product?.id) || [],
       manualPagination: true,
       initialState: {
         pageIndex: currentPage,
