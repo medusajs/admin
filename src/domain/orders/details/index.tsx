@@ -13,6 +13,7 @@ import React, { useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import ReactJson from "react-json-view"
 import Avatar from "../../../components/atoms/avatar"
+import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import Spinner from "../../../components/atoms/spinner"
 import Tooltip from "../../../components/atoms/tooltip"
 import Badge from "../../../components/fundamentals/badge"
@@ -135,12 +136,12 @@ const OrderDetails = ({ id }) => {
 
   const notification = useNotification()
 
-  const [, handleCopy] = useClipboard(order?.display_id, {
+  const [, handleCopy] = useClipboard(`${order?.display_id!}`, {
     successDuration: 5500,
     onCopied: () => notification("Success", "Order ID copied", "success"),
   })
 
-  const [, handleCopyEmail] = useClipboard(order?.email, {
+  const [, handleCopyEmail] = useClipboard(order?.email!, {
     successDuration: 5500,
     onCopied: () => notification("Success", "Email copied", "success"),
   })
@@ -254,7 +255,7 @@ const OrderDetails = ({ id }) => {
     {
       label: "Go to Customer",
       icon: <DetailsIcon size={"20"} />,
-      onClick: () => navigate(`/a/customers/${order.customer.id}`),
+      onClick: () => navigate(`/a/customers/${order?.customer.id}`),
     },
   ]
 
@@ -366,6 +367,7 @@ const OrderDetails = ({ id }) => {
                 />
                 {order?.discounts?.map((discount, index) => (
                   <DisplayTotal
+                    key={index}
                     currency={order?.currency_code}
                     totalAmount={-1 * order?.discount_total}
                     totalTitle={
@@ -374,6 +376,28 @@ const OrderDetails = ({ id }) => {
                         <Badge className="ml-3" variant="default">
                           {discount.code}
                         </Badge>
+                      </div>
+                    }
+                  />
+                ))}
+                {order?.gift_cards?.map((giftCard, index) => (
+                  <DisplayTotal
+                    key={index}
+                    currency={order?.currency_code}
+                    totalAmount={-1 * order?.gift_card_total}
+                    totalTitle={
+                      <div className="flex inter-small-regular text-grey-90 items-center">
+                        Gift card:{" "}
+                        <Badge className="ml-3" variant="default">
+                          {giftCard.code}
+                        </Badge>
+                        <div className="ml-2">
+                          <CopyToClipboard
+                            value={giftCard.code}
+                            showValue={false}
+                            iconSize={16}
+                          />
+                        </div>
                       </div>
                     }
                   />

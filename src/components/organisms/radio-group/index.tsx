@@ -11,6 +11,7 @@ type RadioGroupItemProps = {
 
 type RadioGroupSimpleItemProps = {
   label?: string
+  description?: string
 } & RadioGroupPrimitive.RadioGroupItemProps &
   React.RefAttributes<HTMLButtonElement>
 
@@ -27,7 +28,7 @@ const Item = ({
   return (
     <label
       className={clsx(
-        "rounded-base border border-grey-20 p-base flex items-start mb-xsmall gap-base cursor-pointer",
+        "rounded-base relative border border-grey-20 p-base flex items-start mb-xsmall gap-base cursor-pointer",
         className
       )}
       htmlFor={rest.value}
@@ -42,8 +43,16 @@ const Item = ({
       >
         <RadioGroupPrimitive.Indicator
           className={clsx(
-            "flex items-center justify-center w-full h-full relative",
+            "indicator flex items-center justify-center w-full h-full relative",
             "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
+          )}
+        />
+        {/* Outline indicator: purely stylistical */}
+        <RadioGroupPrimitive.Indicator
+          //  we want to hide this indicator from screen readers because the previous one is enough
+          aria-hidden="true"
+          className={clsx(
+            "absolute inset-0 shadow-violet-60 shadow-[0_0_0_2px] rounded-base"
           )}
         />
       </RadioGroupPrimitive.Item>
@@ -68,13 +77,19 @@ const Item = ({
 
 const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
   label,
+  description,
+  className,
   ...rest
 }) => {
   return (
     <label
-      className={clsx("flex items-center mr-large last:mr-0", {
-        ["opacity-50 select-none pointer-events-none"]: rest.disabled,
-      })}
+      className={clsx(
+        "flex items-center mr-large last:mr-0",
+        {
+          ["opacity-50 select-none pointer-events-none"]: rest.disabled,
+        },
+        className
+      )}
       htmlFor={rest.value}
     >
       <RadioGroupPrimitive.Item
@@ -87,16 +102,19 @@ const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
       >
         <RadioGroupPrimitive.Indicator
           className={clsx(
-            "flex items-center justify-center w-full h-full relative",
+            "flex items-center justify-center w-full h-full relative indicator",
             "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
           )}
         />
       </RadioGroupPrimitive.Item>
-      {label && (
+      <div className="ml-small inter-base-regular cursor-pointer w-full">
         <span className="ml-small inter-base-regular cursor-pointer">
-          {label}
+          {label && label}
         </span>
-      )}
+        <span className="ml-small inter-base-regular cursor-pointer">
+          {description && description}
+        </span>
+      </div>
     </label>
   )
 }

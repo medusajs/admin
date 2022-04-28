@@ -4,7 +4,7 @@ import Button from "../../../../components/fundamentals/button"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import TagInput from "../../../../components/molecules/tag-input"
 import BodyCard from "../../../../components/organisms/body-card"
@@ -171,7 +171,7 @@ const Variants = ({ isEdit, product }) => {
             <div className="flex justify-center mb-base flex-col space-y-2">
               <div className="flex space-x-2">
                 <h6 className="inter-base-semibold text-grey-90">Variants</h6>
-                <InfoTooltip content="Add product options to create variants" />
+                <IconTooltip content="Add product options to create variants" />
               </div>
             </div>
           </>

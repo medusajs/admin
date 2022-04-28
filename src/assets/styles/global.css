@@ -160,8 +160,12 @@
     @apply font-mono text-xsmall leading-xsmall font-bold;
   }
 
-  .radio-outer-ring > span[data-state="checked"] {
-    @apply rounded-circle shadow-[#7C3AED] shadow-[0_0_0_2px];
+  .radio-outer-ring > span.indicator[data-state="checked"] {
+    @apply rounded-circle shadow-violet-60 shadow-[0_0_0_2px];
+  }
+
+  .bold-active-item + span {
+    @apply inter-base-semibold;
   }
 }
 
@@ -369,6 +373,12 @@
 
   .hidden-actions[data-state="open"] {
     opacity: 1;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 
   ::-webkit-scrollbar {

@@ -66,6 +66,7 @@ const CollectionsTable: React.FC = () => {
 
   const handleNext = () => {
     if (canNextPage) {
+      setOffset(offset + limit)
       nextPage()
     }
   }
@@ -77,6 +78,7 @@ const CollectionsTable: React.FC = () => {
 
   const handlePrev = () => {
     if (canPreviousPage) {
+      setOffset(offset - limit)
       previousPage()
     }
   }

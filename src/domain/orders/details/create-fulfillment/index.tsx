@@ -14,7 +14,7 @@ import {
 import React, { useState } from "react"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import Metadata, {
   MetadataField,
@@ -163,7 +163,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
               />
               <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                 Send notifications
-                <InfoTooltip content="" />
+                <IconTooltip content="" />
               </span>
             </div>
             <div className="flex">

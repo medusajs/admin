@@ -107,7 +107,7 @@ const Input = (props: InputProps) => {
 
   return (
     <div className="w-full flex items-center h-full space-between">
-      <div className="w-full flex w-full items-center">
+      <div className="w-full flex items-center">
         <span className="text-grey-40 mr-2">
           <SearchIcon size={20} />
         </span>
@@ -122,9 +122,7 @@ const Input = (props: InputProps) => {
   )
 }
 
-const ClearIndicatorFunc = (setIsOpen) => ({
-  ...props
-}: ClearIndicatorProps) => {
+const ClearIndicator = ({ ...props }: ClearIndicatorProps) => {
   if (props.selectProps.menuIsOpen && props.selectProps.isMulti) {
     return <></>
   }
@@ -136,13 +134,53 @@ const ClearIndicatorFunc = (setIsOpen) => ({
   return (
     <div
       onMouseDown={(e) => {
-        setIsOpen(true)
         restInnerProps.onMouseDown(e)
       }}
       ref={ref}
       className="hover:bg-grey-10 text-grey-40 rounded cursor-pointer"
     >
       <XCircleIcon size={20} />
+    </div>
+  )
+}
+
+const CheckboxAdornment = ({ isSelected }) => {
+  return (
+    <div
+      className={clsx(
+        `w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base`,
+        {
+          "bg-violet-60": isSelected,
+        }
+      )}
+    >
+      <span className="self-center">
+        {isSelected && <CheckIcon size={16} />}
+      </span>
+    </div>
+  )
+}
+
+const RadioAdornment = ({ isSelected }) => {
+  return (
+    <div
+      className={clsx(
+        "radio-outer-ring outline-0",
+        "shrink-0 w-[20px] h-[20px] rounded-circle",
+        {
+          "shadow-[0_0_0_1px] shadow-[#D1D5DB]": !isSelected,
+          "shadow-[0_0_0_2px] shadow-violet-60": isSelected,
+        }
+      )}
+    >
+      {isSelected && (
+        <div
+          className={clsx(
+            "group flex items-center justify-center w-full h-full relative",
+            "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
+          )}
+        />
+      )}
     </div>
   )
 }
@@ -159,15 +197,11 @@ const Option = ({ className, ...props }: OptionProps) => {
         <div className="items-center h-full flex">
           {props.data?.value !== "all" && props.data?.label !== "Select All" ? (
             <>
-              <div
-                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-                  props.isSelected && "bg-violet-60"
-                }`}
-              >
-                <span className="self-center">
-                  {props.isSelected && <CheckIcon size={16} />}
-                </span>
-              </div>
+              {props.isMulti ? (
+                <CheckboxAdornment {...props} />
+              ) : (
+                <RadioAdornment {...props} />
+              )}
               <span className="ml-3 text-grey-90 inter-base-regular">
                 {props.data.label}
               </span>
@@ -221,15 +255,17 @@ const SSelect = React.forwardRef(
     const selectRef = useRef(null)
     const containerRef = useRef(null)
 
-    const onClick = () => {
-      setIsFocussed(true)
-      selectRef?.current?.focus()
+    const onClick = (e) => {
+      if (!isFocussed) {
+        setIsFocussed(true)
+        selectRef?.current?.focus()
+      }
     }
 
-    const onClickOption = (val) => {
+    const onClickOption = (val, ...args) => {
       if (
-        val.length &&
-        val.find((option) => option.value === "all") &&
+        val?.length &&
+        val?.find((option) => option.value === "all") &&
         hasSelectAll &&
         isMultiSelect
       ) {
@@ -300,7 +336,7 @@ const SSelect = React.forwardRef(
                 ref={selectRef}
                 value={value}
                 isMulti={isMultiSelect}
-                openMenuOnFocus={true}
+                openMenuOnFocus={isMultiSelect}
                 isSearchable={enableSearch}
                 isClearable={clearSelected}
                 onChange={onClickOption}
@@ -317,10 +353,11 @@ const SSelect = React.forwardRef(
                     e.target?.contains(containerRef.current) &&
                     e.target !== document
                   ) {
-                    selectRef.current?.blur()
+                    return true
                   }
                 }}
                 closeMenuOnSelect={!isMultiSelect}
+                blurInputOnSelect={!isMultiSelect}
                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
                 hideSelectedOptions={false}
                 menuPortalTarget={
@@ -342,7 +379,7 @@ const SSelect = React.forwardRef(
                   Input,
                   Menu,
                   SingleValue,
-                  ClearIndicator: ClearIndicatorFunc(false),
+                  ClearIndicator,
                 }}
               />
             }
@@ -365,11 +402,17 @@ const GetSelect = React.forwardRef(
           ref={ref}
           defaultOptions={true}
           onCreateOption={onCreateOption}
+          isSearchable
           loadOptions={searchBackend}
           {...props}
         />
       ) : (
-        <CreatableSelect {...props} ref={ref} onCreateOption={onCreateOption} />
+        <CreatableSelect
+          {...props}
+          isSearchable
+          ref={ref}
+          onCreateOption={onCreateOption}
+        />
       )
     } else if (searchBackend) {
       return (
@@ -381,9 +424,7 @@ const GetSelect = React.forwardRef(
         />
       )
     }
-    return (
-      <Select ref={ref} closeMenuOnScroll={(e) => console.log(e)} {...props} />
-    )
+    return <Select ref={ref} {...props} />
   }
 )
 

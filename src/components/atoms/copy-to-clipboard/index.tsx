@@ -9,6 +9,8 @@ type CopyToClipboardProps = {
   value: string
   displayValue?: string
   successDuration?: number
+  showValue?: boolean
+  iconSize?: number
   onCopy?: () => void
 }
 
@@ -16,6 +18,8 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
   value,
   displayValue,
   successDuration = 3000,
+  showValue = true,
+  iconSize = 20,
   onCopy = () => {},
 }) => {
   const [isCopied, handleCopy] = useClipboard(value, {
@@ -40,11 +44,13 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
         })}
         onClick={handleCopy}
       >
-        <ClipboardCopyIcon size={20} />
+        <ClipboardCopyIcon size={iconSize} />
       </Button>
-      <span className="w-full truncate">
-        {displayValue ? displayValue : value}
-      </span>
+      {showValue && (
+        <span className="w-full truncate">
+          {displayValue ? displayValue : value}
+        </span>
+      )}
     </div>
   )
 }

@@ -2,9 +2,7 @@ import {
   useAdminCreateRegion,
   useAdminDeleteRegion,
   useAdminRegion,
-  useAdminRegionFulfillmentOptions,
   useAdminStore,
-  useAdminStorePaymentProviders,
   useAdminUpdateRegion,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
@@ -38,11 +36,10 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   const notification = useNotification()
 
   const { store, isLoading: storeIsLoading } = useAdminStore()
+  const { fulfillment_providers, payment_providers } = store
   const createRegion = useAdminCreateRegion()
   const deleteRegion = useAdminDeleteRegion(id)
   const { region, isLoading: regionIsLoading } = useAdminRegion(id)
-  const { payment_providers } = useAdminStorePaymentProviders()
-  const { fulfillment_options } = useAdminRegionFulfillmentOptions(id)
   const updateRegion = useAdminUpdateRegion(id)
 
   const [showDanger, setShowDanger] = useState(false)
@@ -67,13 +64,14 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   }, [payment_providers])
 
   useEffect(() => {
-    if (!fulfillment_options) {
+    if (!fulfillment_providers) {
       return
     }
+
     setFulfillmentOptions(
-      fulfillment_options.map((c) => fulfillmentProvidersMapper(c.provider_id))
+      fulfillment_providers.map((c) => fulfillmentProvidersMapper(c.id))
     )
-  }, [fulfillment_options])
+  }, [fulfillment_providers])
 
   useEffect(() => {
     if (!region) {
@@ -186,6 +184,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       fulfillment_providers: region.fulfillment_providers.map((f) => f.id),
       countries: [], // As countries can't belong to more than one region at the same time we can just pass an empty array
       name: `${region.name} Copy`,
+      tax_rate: region.tax_rate,
     }
 
     createRegion.mutate(payload, {
@@ -299,7 +298,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
             )}
           </div>
         </form>
-        {region && fulfillment_options && (
+        {region && fulfillmentOptions && (
           <div className="mt-2xlarge">
             <Shipping region={region} />
           </div>

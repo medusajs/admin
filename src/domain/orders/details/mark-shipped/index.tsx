@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import useNotification from "../../../../hooks/use-notification"
@@ -178,7 +178,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
               />
               <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                 Send notifications
-                <InfoTooltip content="" />
+                <IconTooltip content="" />
               </span>
             </div>
             <div className="flex">

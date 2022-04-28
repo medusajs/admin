@@ -1,5 +1,6 @@
 import React from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
+import { trimValues } from "../../../../utils/trim-values"
 
 export const VARIANTS_VIEW = "variants"
 
@@ -8,14 +9,32 @@ export const SINGLE_PRODUCT_VIEW = "single"
 type PRODUCT_VIEW = typeof VARIANTS_VIEW | typeof SINGLE_PRODUCT_VIEW
 
 const defaultProduct = {
-  variants: [] as any[],
+  variants: [],
   images: [],
   prices: [],
+  tags: [],
   options: [],
   type: null,
   collection: null,
-  thumbnail: "",
-  titel: "",
+  id: "",
+  thumbnail: 0,
+  title: "",
+  handle: "",
+  description: "",
+  sku: "",
+  ean: "",
+  inventory_quantity: null,
+  manage_inventory: false,
+  allow_backorder: false,
+  weight: null,
+  height: null,
+  width: null,
+  length: null,
+  mid_code: null,
+  hs_code: null,
+  origin_country: null,
+  material: "",
+  discountable: false,
 }
 
 const ProductFormContext = React.createContext<{
@@ -31,6 +50,8 @@ const ProductFormContext = React.createContext<{
   viewType: PRODUCT_VIEW
   isVariantsView: boolean
   onSubmit: (values: any) => void
+  resetForm: () => void
+  additionalDirtyState: Record<string, boolean>
 } | null>(null)
 
 export const ProductFormProvider = ({
@@ -44,23 +65,25 @@ export const ProductFormProvider = ({
   const [images, setImages] = React.useState<any[]>([])
   const [variants, setVariants] = React.useState<any[]>([])
   const [productOptions, setProductOptions] = React.useState<any[]>([])
+  const [hasImagesChanged, setHasImagesChanged] = React.useState(false)
 
-  const appendImage = (image) => setImages([...images, image])
-
-  const removeImage = (image) => {
-    const idx = images.findIndex((img) => img.image === image.image)
-    if (idx !== -1) {
-      images.splice(idx, 1)
-    }
-    setImages([...images])
+  const appendImage = (image) => {
+    setHasImagesChanged(true)
+    setImages([...images, image])
   }
 
+  const removeImage = (image) => {
+    setHasImagesChanged(true)
+    const tmp = images.filter((img) => img.url !== image.url)
+    setImages(tmp)
+  }
   const methods = useForm()
 
-  React.useEffect(() => {
+  const resetForm = () => {
     methods.reset({
       ...product,
     })
+    setHasImagesChanged(false)
     setImages(product.images)
     setProductOptions(product.options)
 
@@ -84,10 +107,17 @@ export const ProductFormProvider = ({
 
       setProductOptions(options)
     }
+  }
+
+  React.useEffect(() => {
+    resetForm()
   }, [product])
 
   const handleSubmit = (values) => {
-    onSubmit({ ...values, images, variants, options: productOptions }, viewType)
+    onSubmit(
+      { ...trimValues(values), images, variants, options: productOptions },
+      viewType
+    )
   }
 
   return (
@@ -106,6 +136,10 @@ export const ProductFormProvider = ({
           viewType,
           isVariantsView: viewType === VARIANTS_VIEW,
           onSubmit: handleSubmit,
+          resetForm,
+          additionalDirtyState: {
+            images: hasImagesChanged,
+          },
         }}
       >
         {children}
