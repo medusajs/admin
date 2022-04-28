@@ -8,6 +8,7 @@ export const defaultAccountContext = {
   first_name: "",
   last_name: "",
   email: "",
+  api_token: "",
 }
 
 export const AccountContext = React.createContext(defaultAccountContext)
@@ -22,6 +23,7 @@ const reducer = (state, action) => {
         email: action.payload.email,
         first_name: action.payload?.first_name,
         last_name: action.payload?.last_name,
+        api_token: action.payload?.api_token,
       }
     case "updateUser":
       return {
@@ -38,6 +40,7 @@ const reducer = (state, action) => {
         email: action.payload.email,
         first_name: action.payload?.first_name,
         last_name: action.payload?.last_name,
+        api_token: action.payload?.api_token,
       }
     default:
       return state
