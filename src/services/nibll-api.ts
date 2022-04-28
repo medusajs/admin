@@ -3,7 +3,7 @@ import { useContext } from "react"
 import { useMutation } from "react-query"
 import { AccountContext } from "../context/account"
 
-let baseURL = "http://localhost:3333/api"
+let baseURL = "http://localhost:3333"
 
 if (process.env.GATSBY_STOREFRONT_API_URL) {
   baseURL = process.env.GATSBY_STOREFRONT_API_URL
@@ -25,7 +25,7 @@ export const useImpersonateCustomer = ({
   return useMutation(
     (customer_id: string) =>
       client.post<{ redirect_url: string }>(
-        `/user/impersonate/${customer_id}`,
+        `/api/user/impersonate/${customer_id}`,
         {},
         { headers: { Authorization: `Bearer ${api_token}` } }
       ),
