@@ -7,6 +7,7 @@ import CurrencyInput from "../../../../components/organisms/currency-input"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
+import RMASelectReturnProductTable from "../../../../components/organisms/rma-select-receive-product-table"
 
 type ReceiveMenuProps = {
   order: any
@@ -36,20 +37,22 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   const [quantities, setQuantities] = useState({})
 
   const allItems: LineItem[] = useMemo(() => {
-    return order.items.map((i: LineItem) => {
-      const found = returnRequest.items.find(
-        (ri: ReturnItem) => ri.item_id === i.id
-      )
+    return order.items
+      .map((i: LineItem) => {
+        const found = returnRequest.items.find(
+          (ri: ReturnItem) => ri.item_id === i.id
+        )
 
-      if (found) {
-        return {
-          ...i,
-          quantity: found.quantity,
+        if (found) {
+          return {
+            ...i,
+            quantity: found.quantity,
+          }
+        } else {
+          return null
         }
-      } else {
-        return null
-      }
-    }).filter(Boolean)
+      })
+      .filter(Boolean)
   }, [order])
 
   useEffect(() => {
@@ -72,16 +75,20 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
 
   useEffect(() => {
     if (!Object.entries(toReturn).length) {
+      setRefundAmount(0)
       return
     }
 
-    const items = Object.keys(toReturn).map((t) =>
-      allItems.find((i) => i.id === t)
-    )
+    const items = Object.keys(toReturn).map((t) => ({
+      ...allItems.find((i) => i.id === t),
+      quantity: toReturn[t].quantity,
+    }))
 
     const total =
       items.reduce((acc, next) => {
-        return acc + ((next.refundable || 0) / next.quantity) * quantities[next.id]
+        return typeof next === "undefined"
+          ? acc
+          : acc + next.quantity * (next?.unit_price || 0)
       }, 0) -
       ((returnRequest.shipping_method &&
         returnRequest.shipping_method.price * (1 + order.tax_rate / 100)) ||
@@ -95,7 +102,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   const onSubmit = () => {
     const items = Object.keys(toReturn).map((k) => ({
       item_id: k,
-      quantity: quantities[k],
+      quantity: toReturn[k].quantity,
     }))
 
     if (returnRequest.is_swap && onReceiveSwap) {
@@ -144,12 +151,11 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
         </Modal.Header>
         <Modal.Content>
           <h3 className="inter-base-semibold">Items to receive</h3>
-          <RMASelectProductTable
+          <RMASelectReturnProductTable
             order={order}
             allItems={allItems}
             toReturn={toReturn}
             setToReturn={(items) => setToReturn(items)}
-            isSwapOrClaim={isSwapOrClaim}
           />
 
           {!returnRequest.is_swap && (
