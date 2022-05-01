@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import clsx from "clsx"
 
 import { useAdminRegions } from "medusa-react"
@@ -183,17 +183,13 @@ function ProductSection(props: ProductSectionProps) {
   const [priceChanges, setPriceChanges] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
+  const { current: anchor } = useRef({ v: undefined, r: undefined })
+
   // TODO: unset active on tab click
 
-  // const matrix = useMemo(() => {
-  //   return [product.variants.map((v) => v.id), activeRegions.map((r) => r.id)]
-  // }, [activeRegions, product.variants])
-  //
-  // const onKeyDown = () => {}
-  //
-  // useEffect(() => {
-  //   return () => window.removeEventListener("keydown", onKeyDown)
-  // }, [onKeyDown])
+  const matrix = useMemo(() => {
+    return [product.variants.map((v) => v.id), activeRegions.map((r) => r.id)]
+  }, [activeRegions, product.variants])
 
   useEffect(() => {
     const handler = (e) => {
@@ -212,14 +208,22 @@ function ProductSection(props: ProductSectionProps) {
     return () => document.removeEventListener("mousedown", handler)
   }, [])
 
+  const activateField = (cellKey: string) => {
+    setActiveFields({ ...activeFields, [cellKey]: true })
+  }
+
+  const deactivateField = (cellKey: string) => {
+    const tmp = { ...activeFields }
+    delete tmp[cellKey]
+
+    setActiveFields(tmp)
+  }
+
   const toggleActive = (cellKey: string) => {
     if (activeFields[cellKey]) {
-      const tmp = { ...activeFields }
-      delete tmp[cellKey]
-
-      setActiveFields(tmp)
+      deactivateField(cellKey)
     } else {
-      setActiveFields({ ...activeFields, [cellKey]: true })
+      activateField(cellKey)
     }
   }
 
@@ -256,6 +260,94 @@ function ProductSection(props: ProductSectionProps) {
     } else {
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
+    }
+  }
+
+  const onKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    variantId: string,
+    regionId: string
+  ) => {
+    if (e.key === "Tab") {
+      e.preventDefault()
+    }
+
+    if (!e.shiftKey) {
+      return
+    }
+
+    const isArrowUp = e.key === "ArrowUp"
+    const isArrowDown = e.key === "ArrowDown"
+    const isArrowRight = e.key === "ArrowRight"
+    const isArrowLeft = e.key === "ArrowLeft"
+
+    e.preventDefault()
+
+    if (!isArrowUp && !isArrowDown && !isArrowRight && !isArrowLeft) {
+      // if only shift is pressed set this as an anchor
+      anchor.v = matrix[0].indexOf(variantId)
+      anchor.r = matrix[1].indexOf(regionId)
+      return
+    }
+
+    if (isArrowUp) {
+      const currentV = matrix[0].indexOf(variantId)
+
+      const next = matrix[0][currentV - 1]
+      const cellKey = getPriceKey(next, regionId)
+
+      if (currentV <= anchor.v) {
+        activateField(cellKey)
+        document.getElementById(cellKey)?.focus()
+      } else {
+        deactivateField(getPriceKey(variantId, regionId))
+        document.getElementById(cellKey)?.focus()
+      }
+    }
+
+    if (isArrowDown) {
+      const currentV = matrix[0].indexOf(variantId)
+
+      const next = matrix[0][currentV + 1]
+      const cellKey = getPriceKey(next, regionId)
+
+      if (currentV >= anchor.v) {
+        activateField(cellKey)
+        document.getElementById(cellKey)?.focus()
+      } else {
+        deactivateField(getPriceKey(variantId, regionId))
+        document.getElementById(cellKey)?.focus()
+      }
+    }
+
+    if (isArrowLeft) {
+      const currentR = matrix[1].indexOf(regionId)
+
+      const next = matrix[1][currentR - 1]
+      const cellKey = getPriceKey(variantId, next)
+
+      if (currentR <= anchor.r) {
+        activateField(cellKey)
+        document.getElementById(cellKey)?.focus()
+      } else {
+        deactivateField(getPriceKey(variantId, regionId))
+        document.getElementById(cellKey)?.focus()
+      }
+    }
+
+    if (isArrowRight) {
+      const currentR = matrix[1].indexOf(regionId)
+
+      const next = matrix[1][currentR + 1]
+      const cellKey = getPriceKey(variantId, next)
+
+      if (currentR >= anchor.r) {
+        activateField(cellKey)
+        document.getElementById(cellKey)?.focus()
+      } else {
+        deactivateField(getPriceKey(variantId, regionId))
+        document.getElementById(cellKey)?.focus()
+      }
     }
   }
 
@@ -299,6 +391,7 @@ function ProductSection(props: ProductSectionProps) {
           variant={v}
           isActive={isActive}
           getPriceChange={getPriceChange}
+          onKeyDown={onKeyDown}
           activeRegions={activeRegions}
           currentEditAmount={currentEditAmount}
           // HANDLERS
@@ -314,15 +407,20 @@ type ProductVariantRowProps = {
   variant: ProductVariant
   activeRegions: Region[]
 
-  isActive: (variantId: string, currency: string) => boolean
-  getPriceChange: (variantId: string, currency: string) => string
+  isActive: (variantId: string, regionId: string) => boolean
+  getPriceChange: (variantId: string, regionId: string) => string
 
   currentEditAmount?: string
-  onAmountChange: (variantId: string, currency: string, amount: string) => void
+  onAmountChange: (variantId: string, regionId: string, amount: string) => void
+  onKeyDown: (
+    e: React.MouseEvent<HTMLInputElement>,
+    variantId: string,
+    regionId: string
+  ) => void
   onPriceInputClick: (
     e: React.MouseEvent<HTMLInputElement>,
     variantId: string,
-    currency: string
+    regionId: string
   ) => void
 }
 
@@ -331,6 +429,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
     currentEditAmount,
     activeRegions,
     variant,
+    onKeyDown,
     onPriceInputClick,
     onAmountChange,
     getPriceChange,
@@ -361,6 +460,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
               hasVirtualFocus={isActive(variant.id, r.id)}
               onMouseDown={(e) => onPriceInputClick(e, variant.id, r.id)}
               onAmountChange={(a) => onAmountChange(variant.id, r.id, a)}
+              onKeyDown={(e) => onKeyDown(e, variant.id, r.id)}
               onBlur={
                 /* prevent `onAmountChange` call from the library */
                 (e) => e.preventDefault()

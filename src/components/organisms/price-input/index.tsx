@@ -1,4 +1,8 @@
-import React, { FocusEventHandler, MouseEventHandler } from "react"
+import React, {
+  FocusEventHandler,
+  KeyboardEventHandler,
+  MouseEventHandler,
+} from "react"
 import AmountField from "react-currency-input-field"
 import { CurrencyInputProps } from "react-currency-input-field"
 
@@ -16,6 +20,7 @@ type PriceInputProps = {
 
   onFocus?: FocusEventHandler<HTMLInputElement>
   onBlur?: FocusEventHandler<HTMLInputElement>
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>
   onMouseDown?: MouseEventHandler<HTMLInputElement>
 }
 
@@ -29,7 +34,7 @@ function PriceInput(props: PriceInputProps) {
 
   /********** COMPUTED **********/
 
-  const step = 10 ** -decimal_digits
+  // const step = 10 ** -decimal_digits
   const rightOffset = 24 + symbol_native.length * 4
   const placeholder = `0.${"0".repeat(decimal_digits)}`
 
@@ -46,7 +51,7 @@ function PriceInput(props: PriceInputProps) {
       </div>
 
       <AmountField
-        step={step}
+        // step={undefined}
         value={amount}
         onValueChange={onChange}
         allowNegativeValue={false}
@@ -54,6 +59,7 @@ function PriceInput(props: PriceInputProps) {
         decimalScale={decimal_digits}
         onFocus={props.onFocus}
         onBlur={props.onBlur}
+        onKeyDown={props.onKeyDown}
         onMouseDown={props.onMouseDown}
         // fixedDecimalLength={decimal_digits}
         style={{ paddingRight: rightOffset }}
