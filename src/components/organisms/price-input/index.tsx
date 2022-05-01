@@ -63,6 +63,7 @@ function PriceInput(props: PriceInputProps) {
         onMouseDown={props.onMouseDown}
         // fixedDecimalLength={decimal_digits}
         style={{ paddingRight: rightOffset }}
+        autoComplete={false}
         {...rest}
         className={clsx(
           `focus-visible:outline-none 

@@ -183,7 +183,18 @@ function ProductSection(props: ProductSectionProps) {
   const [priceChanges, setPriceChanges] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
-  const { current: anchor } = useRef({ v: undefined, r: undefined })
+  const { current } = useRef({
+    anchorV: undefined,
+    anchorR: undefined,
+    // row/col min-max
+    minV: undefined,
+    maxV: undefined,
+    minR: undefined,
+    maxR: undefined,
+    // last
+    lastV: undefined,
+    lastR: undefined,
+  })
 
   // TODO: unset active on tab click
 
@@ -283,72 +294,63 @@ function ProductSection(props: ProductSectionProps) {
 
     e.preventDefault()
 
+    const [variants, regions] = matrix
+
+    const currentV = variants.indexOf(variantId)
+    const currentR = regions.indexOf(regionId)
+
     if (!isArrowUp && !isArrowDown && !isArrowRight && !isArrowLeft) {
-      // if only shift is pressed set this as an anchor
-      anchor.v = matrix[0].indexOf(variantId)
-      anchor.r = matrix[1].indexOf(regionId)
+      // if only "Shift" is pressed set this as the current anchor
+      current.anchorV = currentV
+      current.anchorR = currentR
+
+      current.lastR = currentR
+      current.lastV = currentV
+
+      current.minV = currentV
+      current.maxV = currentV
+
+      current.minR = currentR
+      current.maxR = currentR
+
       return
     }
 
+    console.log(current)
+
     if (isArrowUp) {
-      const currentV = matrix[0].indexOf(variantId)
+      current.lastV = Math.max(current.lastV - 1, 0)
 
-      const next = matrix[0][currentV - 1]
-      const cellKey = getPriceKey(next, regionId)
-
-      if (currentV <= anchor.v) {
-        activateField(cellKey)
-        document.getElementById(cellKey)?.focus()
+      if (current.anchorV >= current.lastV) {
+        current.minV = Math.min(current.minV, current.lastV)
       } else {
-        deactivateField(getPriceKey(variantId, regionId))
-        document.getElementById(cellKey)?.focus()
+        current.maxV = Math.max(current.maxV, current.lastV)
       }
     }
 
     if (isArrowDown) {
-      const currentV = matrix[0].indexOf(variantId)
+      current.lastV = Math.min(current.lastV + 1, variants.length)
 
-      const next = matrix[0][currentV + 1]
-      const cellKey = getPriceKey(next, regionId)
-
-      if (currentV >= anchor.v) {
-        activateField(cellKey)
-        document.getElementById(cellKey)?.focus()
+      if (current.anchorV <= current.lastV) {
+        current.maxV = Math.min(current.maxV, current.lastV)
       } else {
-        deactivateField(getPriceKey(variantId, regionId))
-        document.getElementById(cellKey)?.focus()
+        current.minV = Math.max(current.minV, current.lastV)
       }
     }
 
-    if (isArrowLeft) {
-      const currentR = matrix[1].indexOf(regionId)
+    console.log(current)
 
-      const next = matrix[1][currentR - 1]
-      const cellKey = getPriceKey(variantId, next)
+    const a = {}
 
-      if (currentR <= anchor.r) {
-        activateField(cellKey)
-        document.getElementById(cellKey)?.focus()
-      } else {
-        deactivateField(getPriceKey(variantId, regionId))
-        document.getElementById(cellKey)?.focus()
+    for (let i = current.minV; i <= current.maxV; i++) {
+      const v = variants[i]
+      for (let j = current.minR; j <= current.maxR; j++) {
+        const r = regions[j]
+        a[getPriceKey(v, r)] = true
       }
     }
 
-    if (isArrowRight) {
-      const currentR = matrix[1].indexOf(regionId)
-
-      const next = matrix[1][currentR + 1]
-      const cellKey = getPriceKey(variantId, next)
-
-      if (currentR >= anchor.r) {
-        activateField(cellKey)
-        document.getElementById(cellKey)?.focus()
-      } else {
-        deactivateField(getPriceKey(variantId, regionId))
-        document.getElementById(cellKey)?.focus()
-      }
-    }
+    setActiveFields(a)
   }
 
   const onAmountChange = (
