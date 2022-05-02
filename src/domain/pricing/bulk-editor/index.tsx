@@ -170,6 +170,19 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
 const getPriceKey = (variantId: string, regionId: string) =>
   `${variantId}-${regionId}`
 
+type CellPointers = {
+  anchorV: number
+  anchorR: number
+  // row/col min-max
+  minV: number
+  maxV: number
+  minR: number
+  maxR: number
+  // last
+  lastV: number
+  lastR: number
+}
+
 type ProductSectionProps = {
   product: Product
   isFirst: boolean
@@ -183,18 +196,7 @@ function ProductSection(props: ProductSectionProps) {
   const [priceChanges, setPriceChanges] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
-  const { current } = useRef({
-    anchorV: undefined,
-    anchorR: undefined,
-    // row/col min-max
-    minV: undefined,
-    maxV: undefined,
-    minR: undefined,
-    maxR: undefined,
-    // last
-    lastV: undefined,
-    lastR: undefined,
-  })
+  const { current: pointers } = useRef<CellPointers>({} as CellPointers)
 
   // TODO: unset active on tab click
 
@@ -267,7 +269,9 @@ function ProductSection(props: ProductSectionProps) {
           const id = Object.keys(activeFields).filter((k) => k !== cellKey)[0]
           document.getElementById(id)?.focus()
         }
-      } else e.target.focus()
+      } else {
+        e.target.focus()
+      }
     } else {
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
@@ -301,17 +305,17 @@ function ProductSection(props: ProductSectionProps) {
 
     if (!isArrowUp && !isArrowDown && !isArrowRight && !isArrowLeft) {
       // if only "Shift" is pressed set this as the current anchor
-      current.anchorV = currentV
-      current.anchorR = currentR
+      pointers.anchorV = currentV
+      pointers.anchorR = currentR
 
-      current.lastR = currentR
-      current.lastV = currentV
+      pointers.lastR = currentR
+      pointers.lastV = currentV
 
-      current.minV = currentV
-      current.maxV = currentV
+      pointers.minV = currentV
+      pointers.maxV = currentV
 
-      current.minR = currentR
-      current.maxR = currentR
+      pointers.minR = currentR
+      pointers.maxR = currentR
 
       // TODO: if "Shift" key is not pressed implement cell navigation
 
@@ -319,50 +323,50 @@ function ProductSection(props: ProductSectionProps) {
     }
 
     if (isArrowUp) {
-      current.lastV = Math.max(current.lastV - 1, 0)
+      pointers.lastV = Math.max(pointers.lastV - 1, 0)
 
-      if (current.anchorV > current.lastV) {
-        current.minV = Math.min(current.minV, current.lastV)
+      if (pointers.anchorV > pointers.lastV) {
+        pointers.minV = Math.min(pointers.minV, pointers.lastV)
       } else {
-        current.maxV = current.lastV
+        pointers.maxV = pointers.lastV
       }
     }
 
     if (isArrowDown) {
-      current.lastV = Math.min(current.lastV + 1, variants.length)
+      pointers.lastV = Math.min(pointers.lastV + 1, variants.length)
 
-      if (current.anchorV < current.lastV) {
-        current.maxV = Math.max(current.maxV, current.lastV)
+      if (pointers.anchorV < pointers.lastV) {
+        pointers.maxV = Math.max(pointers.maxV, pointers.lastV)
       } else {
-        current.minV = current.lastV
+        pointers.minV = pointers.lastV
       }
     }
 
     if (isArrowLeft) {
-      current.lastR = Math.max(current.lastR - 1, 0)
+      pointers.lastR = Math.max(pointers.lastR - 1, 0)
 
-      if (current.anchorR > current.lastR) {
-        current.minR = Math.min(current.minR, current.lastR)
+      if (pointers.anchorR > pointers.lastR) {
+        pointers.minR = Math.min(pointers.minR, pointers.lastR)
       } else {
-        current.maxR = current.lastR
+        pointers.maxR = pointers.lastR
       }
     }
 
     if (isArrowRight) {
-      current.lastR = Math.min(current.lastR + 1, regions.length)
+      pointers.lastR = Math.min(pointers.lastR + 1, regions.length)
 
-      if (current.anchorR < current.lastR) {
-        current.maxR = Math.max(current.maxR, current.lastR)
+      if (pointers.anchorR < pointers.lastR) {
+        pointers.maxR = Math.max(pointers.maxR, pointers.lastR)
       } else {
-        current.minR = current.lastR
+        pointers.minR = pointers.lastR
       }
     }
 
     const a = {}
 
-    for (let i = current.minV; i <= current.maxV; i++) {
+    for (let i = pointers.minV; i <= pointers.maxV; i++) {
       const v = variants[i]
-      for (let j = current.minR; j <= current.maxR; j++) {
+      for (let j = pointers.minR; j <= pointers.maxR; j++) {
         const r = regions[j]
         a[getPriceKey(v, r)] = true
       }
