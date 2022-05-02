@@ -313,32 +313,50 @@ function ProductSection(props: ProductSectionProps) {
       current.minR = currentR
       current.maxR = currentR
 
+      // TODO: if "Shift" key is not pressed implement cell navigation
+
       return
     }
-
-    console.log(current)
 
     if (isArrowUp) {
       current.lastV = Math.max(current.lastV - 1, 0)
 
-      if (current.anchorV >= current.lastV) {
+      if (current.anchorV > current.lastV) {
         current.minV = Math.min(current.minV, current.lastV)
       } else {
-        current.maxV = Math.max(current.maxV, current.lastV)
+        current.maxV = current.lastV
       }
     }
 
     if (isArrowDown) {
       current.lastV = Math.min(current.lastV + 1, variants.length)
 
-      if (current.anchorV <= current.lastV) {
-        current.maxV = Math.min(current.maxV, current.lastV)
+      if (current.anchorV < current.lastV) {
+        current.maxV = Math.max(current.maxV, current.lastV)
       } else {
-        current.minV = Math.max(current.minV, current.lastV)
+        current.minV = current.lastV
       }
     }
 
-    console.log(current)
+    if (isArrowLeft) {
+      current.lastR = Math.max(current.lastR - 1, 0)
+
+      if (current.anchorR > current.lastR) {
+        current.minR = Math.min(current.minR, current.lastR)
+      } else {
+        current.maxR = current.lastR
+      }
+    }
+
+    if (isArrowRight) {
+      current.lastR = Math.min(current.lastR + 1, regions.length)
+
+      if (current.anchorR < current.lastR) {
+        current.maxR = Math.max(current.maxR, current.lastR)
+      } else {
+        current.minR = current.lastR
+      }
+    }
 
     const a = {}
 
