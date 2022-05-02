@@ -2,6 +2,8 @@ import clsx from "clsx"
 import React from "react"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import CheckIcon from "../../fundamentals/icons/check-icon"
+import MinusIcon from "../../fundamentals/icons/minus-icon"
+import PlusIcon from "../../fundamentals/icons/plus-icon"
 import Table from "../../molecules/table"
 
 type RMASelectProductTableProps = {
@@ -19,6 +21,26 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
   imagesOnReturns = false,
   setToReturn,
 }) => {
+  const handleQuantity = (change, item) => {
+    if (
+      (item.quantity - item.returned_quantity === toReturn[item.id].quantity &&
+        change > 0) ||
+      (toReturn[item.id].quantity === 1 && change < 0)
+    ) {
+      return
+    }
+
+    const newReturns = {
+      ...toReturn,
+      [item.id]: {
+        ...toReturn[item.id],
+        quantity: (toReturn[item.id]?.quantity || 0) + change,
+      },
+    }
+
+    setToReturn(newReturns)
+  }
+
   const handleReturnToggle = (item) => {
     const id = item.id
 
@@ -112,8 +134,33 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
                   </div>
                 </div>
               </Table.Cell>
-              <Table.Cell className="text-right w-32 pr-8">
+              {/* <Table.Cell className="text-right w-32 pr-8">
                 <span className="text-grey-40">{item.quantity}</span>
+              </Table.Cell> */}
+              <Table.Cell className="text-right w-32 pr-8">
+                {item.id in toReturn ? (
+                  <div className="flex w-full text-right justify-end text-grey-50 ">
+                    <span
+                      onClick={() => handleQuantity(-1, item)}
+                      className="w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 mr-2"
+                    >
+                      <MinusIcon size={16} />
+                    </span>
+                    <span>{toReturn[item.id].quantity || ""}</span>
+                    <span
+                      onClick={() => handleQuantity(1, item)}
+                      className={clsx(
+                        "w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 ml-2"
+                      )}
+                    >
+                      <PlusIcon size={16} />
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-grey-40">
+                    {item.quantity - item.returned_quantity}
+                  </span>
+                )}
               </Table.Cell>
               <Table.Cell className="text-right">
                 {formatAmountWithSymbol({
