@@ -27,7 +27,8 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
   const [showEdit, setShowEdit] = useState(false)
   const notification = useNotification()
   const { mutate: impersonate } = useImpersonateCustomer({
-    onSuccess: ({ data: { redirect_url } }) => navigate(redirect_url),
+    onSuccess: ({ data: { redirect_url } }) =>
+      window.open(redirect_url, "_blank"),
     onError: () => {
       notification("Error", "Failed to impersonate customer", "error")
     },
