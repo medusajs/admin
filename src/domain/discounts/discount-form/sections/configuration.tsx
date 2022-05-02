@@ -180,7 +180,7 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
                 title="Availability duration?"
                 className="border-b-0"
                 subtitle="Set the duration of the discount."
-                tooltip="Select a promotion type"
+                tooltip="Select a discount type"
                 value="valid_duration"
                 customTrigger={
                   <Switch checked={openItems.indexOf("valid_duration") > -1} />

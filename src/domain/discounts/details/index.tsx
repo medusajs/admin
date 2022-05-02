@@ -174,13 +174,13 @@ const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
 
   const onDelete = async () => {
     const shouldDelete = await dialog({
-      heading: "Delete Promotion",
-      text: "Are you sure you want to delete this promotion?",
+      heading: "Delete Discount",
+      text: "Are you sure you want to delete this discount?",
     })
     if (shouldDelete) {
       deletePromotion.mutate(undefined, {
         onSuccess: () => {
-          notification("Success", "Promotion deleted successfully", "success")
+          notification("Success", "Discount deleted successfully", "success")
           navigate("/a/discounts/")
         },
         onError: (err) => {
@@ -200,7 +200,7 @@ const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
           const pastTense = !promotion.is_disabled ? "published" : "drafted"
           notification(
             "Success",
-            `Promotion ${pastTense} successfully`,
+            `Discount ${pastTense} successfully`,
             "success"
           )
         },
@@ -213,12 +213,12 @@ const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
 
   const actionables = [
     {
-      label: "Edit Promotion",
+      label: "Edit Discount",
       onClick: () => setIsOpen(true),
       icon: <EditIcon />,
     },
     {
-      label: "Delete Promotion",
+      label: "Delete Discount",
       onClick: onDelete,
       variant: "danger" as const,
       icon: <TrashIcon />,
