@@ -15,6 +15,9 @@ import { currencies } from "../../../utils/currencies"
 import PriceInput from "../../../components/organisms/price-input"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 
+const getPriceKey = (variantId: string, regionId: string) =>
+  `${variantId}-${regionId}`
+
 function generateField(region: Region) {
   return {
     id: region.id,
@@ -167,9 +170,6 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
   )
 }
 
-const getPriceKey = (variantId: string, regionId: string) =>
-  `${variantId}-${regionId}`
-
 type CellPointers = {
   anchorV: number
   anchorR: number
@@ -198,20 +198,20 @@ function ProductSection(props: ProductSectionProps) {
 
   const { current: pointers } = useRef<CellPointers>({} as CellPointers)
 
-  // TODO: unset active on tab click
-
+  /**
+   * A struct for mapping between table cell indexes and variant/regions ids.
+   */
   const matrix = useMemo(() => {
     return [product.variants.map((v) => v.id), activeRegions.map((r) => r.id)]
   }, [activeRegions, product.variants])
 
   useEffect(() => {
     const handler = (e) => {
-      // TODO: extract to a handler
       const isPriceInputClicked = e.target.classList.contains("js-bt-input")
       // TODO: check whether the input is from the same product section or from another
 
+      // artificial blur event
       if (!isPriceInputClicked) {
-        // artificial blur event
         setCurrentEditAmount(undefined)
         setActiveFields({})
       }
@@ -220,6 +220,8 @@ function ProductSection(props: ProductSectionProps) {
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
   }, [])
+
+  /* ********** HELPERS ********** */
 
   const activateField = (cellKey: string) => {
     setActiveFields({ ...activeFields, [cellKey]: true })
@@ -240,6 +242,23 @@ function ProductSection(props: ProductSectionProps) {
     }
   }
 
+  const setActiveCellsFromPointers = () => {
+    const next = {}
+    const [variants, regions] = matrix
+
+    for (let i = pointers.minV; i <= pointers.maxV; i++) {
+      const v = variants[i]
+      for (let j = pointers.minR; j <= pointers.maxR; j++) {
+        const r = regions[j]
+        next[getPriceKey(v, r)] = true
+      }
+    }
+
+    setActiveFields(next)
+  }
+
+  /* ********** SELECTORS ********** */
+
   const isActive = (variantId: string, regionId: string) =>
     activeFields[getPriceKey(variantId, regionId)]
 
@@ -248,6 +267,10 @@ function ProductSection(props: ProductSectionProps) {
 
   /* ********** HANDLERS ********** */
 
+  /*
+   * A handler that implement logic for mouse click multi select.
+   * Responsible for triggering focus/blur events on an input filed.
+   */
   const onPriceInputClick = (
     e: React.MouseEvent<HTMLInputElement>,
     variantId: string,
@@ -278,6 +301,9 @@ function ProductSection(props: ProductSectionProps) {
     }
   }
 
+  /*
+   * A handler that implement logic for arrow keys multi select.
+   */
   const onKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
     variantId: string,
@@ -296,14 +322,12 @@ function ProductSection(props: ProductSectionProps) {
     const isArrowRight = e.key === "ArrowRight"
     const isArrowLeft = e.key === "ArrowLeft"
 
-    e.preventDefault()
-
     const [variants, regions] = matrix
 
-    const currentV = variants.indexOf(variantId)
-    const currentR = regions.indexOf(regionId)
-
     if (!isArrowUp && !isArrowDown && !isArrowRight && !isArrowLeft) {
+      const currentV = variants.indexOf(variantId)
+      const currentR = regions.indexOf(regionId)
+
       // if only "Shift" is pressed set this as the current anchor
       pointers.anchorV = currentV
       pointers.anchorR = currentR
@@ -321,6 +345,8 @@ function ProductSection(props: ProductSectionProps) {
 
       return
     }
+
+    e.preventDefault()
 
     if (isArrowUp) {
       pointers.lastV = Math.max(pointers.lastV - 1, 0)
@@ -362,17 +388,7 @@ function ProductSection(props: ProductSectionProps) {
       }
     }
 
-    const a = {}
-
-    for (let i = pointers.minV; i <= pointers.maxV; i++) {
-      const v = variants[i]
-      for (let j = pointers.minR; j <= pointers.maxR; j++) {
-        const r = regions[j]
-        a[getPriceKey(v, r)] = true
-      }
-    }
-
-    setActiveFields(a)
+    setActiveCellsFromPointers()
   }
 
   const onAmountChange = (
