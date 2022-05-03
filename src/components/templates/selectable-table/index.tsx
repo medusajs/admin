@@ -116,7 +116,7 @@ export const SelectableTable = <
 
   return (
     <div>
-      <div className="inter-base-semibold my-large">{label}</div>
+      {label && <div className="inter-base-semibold my-large">{label}</div>}
       <Table
         {...options}
         {...table.getTableProps()}

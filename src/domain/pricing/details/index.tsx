@@ -5,7 +5,7 @@ import LoadingContainer from "../../../components/loading-container"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import RawJSON from "../../../components/organisms/raw-json"
 import Header from "./sections/header"
-import Prices from "./sections/prices"
+import PricesDetails from "./sections/prices-details"
 
 type PricingDetailsProps = RouteComponentProps & { id?: string }
 
@@ -23,7 +23,7 @@ const PricingDetails = ({ id }: PricingDetailsProps) => {
       <LoadingContainer isLoading={isLoading || !price_list}>
         <Header priceList={price_list} />
         <div className="mt-4 w-full">
-          <Prices id={price_list?.id} />
+          <PricesDetails id={price_list?.id} />
         </div>
         <div className="mt-xlarge">
           <RawJSON data={price_list} title="Raw price list" />

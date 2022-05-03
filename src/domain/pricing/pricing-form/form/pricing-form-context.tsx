@@ -13,7 +13,7 @@ import {
 } from "../types"
 
 const defaultState: PriceListFormValues = {
-  customer_groups: null,
+  customer_groups: [],
   name: null,
   description: null,
   ends_at: null,

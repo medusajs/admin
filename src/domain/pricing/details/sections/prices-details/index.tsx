@@ -1,15 +1,17 @@
 import { Product } from "@medusajs/medusa"
 import * as React from "react"
+import Fade from "../../../../../components/atoms/fade-wrapper"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import UploadIcon from "../../../../../components/fundamentals/icons/upload-icon"
 import BodyCard from "../../../../../components/organisms/body-card"
 import UploadModal from "../../../../../components/organisms/upload-modal"
 import useToggleState from "../../../../../hooks/use-toggle-state"
+import EditPrices from "./edit-prices"
 import EditPricesOverridesModal from "./edit-prices-overrides"
-import PricesTable from "./prices-table/"
+import PricesTable from "./prices-table"
 
 const Prices = ({ id }) => {
-  const { state: showEdit, open: openEdit } = useToggleState()
+  const { state: showEdit, open: openEdit, close: closeEdit } = useToggleState()
   const [showUpload, openUpload, closeUpload] = useToggleState()
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(
     null
@@ -27,14 +29,11 @@ const Prices = ({ id }) => {
     },
   ]
   return (
-    <BodyCard
-      title="Prices"
-      actionables={actionables}
-      forceDropdown
-      className="min-h-[200px]"
-    >
+    <BodyCard title="Prices" actionables={actionables} forceDropdown>
       <PricesTable id={id} selectProduct={setSelectedProduct} />
-      {showEdit && <>{/* TODO: Edit prices focus modal */}</>}
+      <Fade isVisible={showEdit} isFullScreen={true}>
+        <EditPrices close={closeEdit} id={id} />{" "}
+      </Fade>
       {showUpload && (
         <UploadModal
           onClose={closeUpload}

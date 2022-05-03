@@ -137,18 +137,24 @@ const CollapsibleTreeLeaf: React.FC<CollapsibleTreeLeafProps> = ({
   return (
     <div
       className={clsx(
-        "group flex items-center relative pb-xsmall last:pb-0",
+        "col-tree flex items-center relative pb-xsmall last:pb-0",
         className
       )}
     >
       <div className="absolute top-0 left-0 bottom-0">
         <div className="border-l border-dashed border-grey-20 h-1/2 w-px" />
-        <div className="h-1/2 border-l border-dashed border-grey-20 w-px group-last:border-none"></div>
+        <div className="h-1/2 border-l border-dashed border-grey-20 w-px bottom-half-dash" />
       </div>
       <div className="w-[13px] h-px border-t border-grey-20 border-dashed mr-xsmall" />
       <Container className="w-full flex items-center justify-between inter-small-regular">
         {children}
-        {actions && <Actionables customTrigger={Trigger()} actions={actions} />}
+        {actions && (
+          <Actionables
+            forceDropdown
+            customTrigger={Trigger()}
+            actions={actions}
+          />
+        )}
       </Container>
     </div>
   )
