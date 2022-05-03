@@ -14,6 +14,12 @@ import TableSearch from "../../../components/molecules/table/table-search"
 import { currencies } from "../../../utils/currencies"
 import PriceInput from "../../../components/organisms/price-input"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
+import PointerIcon from "../../../components/fundamentals/icons/pointer-icon"
+import ArrowRightIcon from "../../../components/fundamentals/icons/arrow-right-icon"
+import ArrowLeftIcon from "../../../components/fundamentals/icons/arrow-left-icon"
+import ArrowUpIcon from "../../../components/fundamentals/icons/arrow-up-icon"
+import ArrowDownIcon from "../../../components/fundamentals/icons/arrow-down-icon"
+import ShiftIcon from "../../../components/fundamentals/icons/shift-icon"
 
 const getPriceKey = (variantId: string, regionId: string) =>
   `${variantId}-${regionId}`
@@ -189,6 +195,8 @@ type ProductSectionProps = {
   activeRegions: Region[]
 }
 
+let skip = false
+
 function ProductSection(props: ProductSectionProps) {
   const { activeRegions, product, isFirst } = props
 
@@ -289,6 +297,7 @@ function ProductSection(props: ProductSectionProps) {
         e.target.blur()
 
         if (wasFocused) {
+          // find another active cell to focus
           const id = Object.keys(activeFields).filter((k) => k !== cellKey)[0]
           document.getElementById(id)?.focus()
         }
@@ -296,6 +305,7 @@ function ProductSection(props: ProductSectionProps) {
         e.target.focus()
       }
     } else {
+      skip = true
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
     }
@@ -396,13 +406,19 @@ function ProductSection(props: ProductSectionProps) {
     regionId: string,
     amount: string
   ) => {
+    // skip this callback in case `onAmount` is called on price input blur
+    if (skip) {
+      skip = false
+      return
+    }
+
     const tmp = { ...priceChanges }
 
     // for each input that is currently edited set the amount
     Object.keys(activeFields).forEach((k) => (tmp[k] = amount))
 
     setPriceChanges(tmp)
-    setCurrentEditAmount(amount) // TODO: this is set on blur
+    setCurrentEditAmount(amount)
   }
 
   const onHeaderClick = (regionId: string) => {
@@ -515,6 +531,35 @@ function ProductVariantRow(props: ProductVariantRowProps) {
   )
 }
 
+function Footer() {
+  return (
+    <div className="fixed bottom-0 w-full flex justify-center p-5">
+      <div className="flex flex-row gap-2 items-center text-small text-gray-400">
+        <PointerIcon />
+        <span>or</span>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowLeftIcon size={14} />
+        </div>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowUpIcon size={14} />
+        </div>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowRightIcon size={14} />
+        </div>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowDownIcon size={14} />
+        </div>
+        <span>to switch between cells.</span>
+        <span>Hold</span>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ShiftIcon size={14} />
+        </div>
+        <span>to select multiple cells.</span>
+      </div>
+    </div>
+  )
+}
+
 type PriceListBulkEditorProps = {
   products: Product[]
 }
@@ -568,7 +613,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         <FocusModal.Main>
           <PriceListBulkEditorHeader setRegions={setActiveRegions} />
 
-          <div className="medium:w-8/12 w-full flex flex-col justify-start mx-auto overflow-x-auto-TODO">
+          <div className="medium:w-8/12 w-full flex flex-col justify-start mx-auto mb-7 overflow-x-auto-TODO">
             {regions &&
               products.map((p, ind) => (
                 <ProductSection
@@ -586,6 +631,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
                 />
               ))}
           </div>
+          <Footer />
         </FocusModal.Main>
       </FocusModal>
     </Fade>
