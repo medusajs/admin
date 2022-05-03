@@ -354,9 +354,25 @@ function ProductSection(props: ProductSectionProps) {
       return
     }
 
-    if (!e.shiftKey) {
-      console.log("TODO: navigation")
+    if (e.metaKey) {
+      if (pointers.anchorV) {
+        return
+      }
 
+      let v = variantId
+      let r = regionId
+
+      if (isArrowUp) v = variants[variants.indexOf(variantId) - 1]
+      if (isArrowDown) v = variants[variants.indexOf(variantId) + 1]
+      if (isArrowLeft) r = regions[regions.indexOf(regionId) - 1]
+      if (isArrowRight) r = regions[regions.indexOf(regionId) + 1]
+
+      document.getElementById(getPriceKey(variantId, regionId))?.click()
+
+      return
+    }
+
+    if (!e.shiftKey) {
       return
     }
 
