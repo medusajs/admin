@@ -5,8 +5,8 @@ import { HeaderGroup, Row } from "react-table"
 import CancelIcon from "../../../../../../components/fundamentals/icons/cancel-icon"
 import EditIcon from "../../../../../../components/fundamentals/icons/edit-icon"
 import Table from "../../../../../../components/molecules/table"
-import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import { SelectableTable } from "../../../../../../components/templates/selectable-table"
+import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import usePricesColumns from "./use-columns"
 
 const DEFAULT_PAGE_SIZE = 9
@@ -15,7 +15,12 @@ const defaultQueryProps = {
   limit: DEFAULT_PAGE_SIZE,
 }
 
-const PricesTable = ({ id }) => {
+type PricesTableProps = {
+  id: string
+  selectProduct: (product: Product) => void
+}
+
+const PricesTable = ({ id, selectProduct }: PricesTableProps) => {
   const params = useQueryFilters(defaultQueryProps)
   const { products, isLoading, count = 0 } = useAdminPriceListProducts(
     id,
@@ -28,10 +33,44 @@ const PricesTable = ({ id }) => {
       <SelectableTable
         columns={columns}
         data={products || []}
-        renderRow={ProductRow}
+        renderRow={({ row }: { row: Row<Product> }) => {
+          const handleSelect = () => {
+            selectProduct(row.original)
+          }
+
+          const actions = [
+            {
+              label: "Edit prices",
+              icon: <EditIcon size={20} />,
+              onClick: handleSelect,
+            },
+            {
+              label: "Remove product",
+              icon: <CancelIcon size={20} />,
+              variant: "danger" as const,
+              onClick: () => {},
+            },
+          ]
+
+          return (
+            <Table.Row
+              {...row.getRowProps()}
+              actions={actions}
+              onClick={handleSelect}
+              className="hover:bg-grey-5 hover:cursor-pointer"
+            >
+              {row.cells.map((cell) => {
+                return (
+                  <Table.Cell {...cell.getCellProps()}>
+                    {cell.render("Cell")}
+                  </Table.Cell>
+                )
+              })}
+            </Table.Row>
+          )
+        }}
         renderHeaderGroup={ProductHeader}
         isLoading={isLoading}
-        onChange={() => {}}
         totalCount={count}
         options={{
           enableSearch: false,
@@ -40,33 +79,6 @@ const PricesTable = ({ id }) => {
         {...params}
       />
     </div>
-  )
-}
-
-const ProductRow = ({ row }: { row: Row<Product> }) => {
-  const actions = [
-    {
-      label: "Edit prices",
-      icon: <EditIcon size={20} />,
-      onClick: () => {},
-    },
-    {
-      label: "Remove product",
-      icon: <CancelIcon size={20} />,
-      variant: "danger" as const,
-      onClick: () => {},
-    },
-  ]
-  return (
-    <Table.Row {...row.getRowProps()} actions={actions}>
-      {row.cells.map((cell) => {
-        return (
-          <Table.Cell {...cell.getCellProps()}>
-            {cell.render("Cell")}
-          </Table.Cell>
-        )
-      })}
-    </Table.Row>
   )
 }
 

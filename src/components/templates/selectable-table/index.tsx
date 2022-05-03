@@ -15,10 +15,10 @@ import {
   useSortBy,
   useTable,
 } from "react-table"
+import useQueryFilters from "../../../hooks/use-query-filters"
 import Spinner from "../../atoms/spinner"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import Table, { TablePagination, TableProps } from "../../molecules/table"
-import useQueryFilters from "../../../hooks/use-query-filters"
 
 type SelectableTableProps<T extends object> = {
   resourceName?: string
@@ -31,7 +31,7 @@ type SelectableTableProps<T extends object> = {
   data?: T[]
   selectedIds?: string[]
   columns: Column<T>[]
-  onChange: (items: string[]) => void
+  onChange?: (items: string[]) => void
   renderRow: (props: { row: Row<T> }) => React.ReactElement
   renderHeaderGroup?: (props: {
     headerGroup: HeaderGroup<T>
@@ -81,8 +81,9 @@ export const SelectableTable = <
   )
 
   useEffect(() => {
-    const ids = Object.keys(table.state.selectedRowIds)
-    onChange(ids)
+    if (onChange) {
+      onChange(Object.keys(table.state.selectedRowIds))
+    }
   }, [table.state.selectedRowIds])
 
   const handleNext = () => {
@@ -165,14 +166,20 @@ const useSelectionColumn = (hooks) => {
       Header: ({ getToggleAllRowsSelectedProps }) => {
         return (
           <div className="flex justify-center">
-            <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+            <IndeterminateCheckbox
+              {...getToggleAllRowsSelectedProps()}
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         )
       },
       Cell: ({ row }) => {
         return (
           <div className="flex justify-center">
-            <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+            <IndeterminateCheckbox
+              {...row.getToggleRowSelectedProps()}
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         )
       },

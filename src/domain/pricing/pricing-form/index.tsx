@@ -24,10 +24,12 @@ const PriceListForm = (props: PriceListFormProps) => {
               <Type />
               <General />
               <Configuration />
-              <Prices
-                isEdit={props.viewType !== ViewType.CREATE}
-                id={props.id}
-              />
+              {props.viewType !== ViewType.EDIT_DETAILS && (
+                <Prices
+                  isEdit={props.viewType !== ViewType.CREATE}
+                  id={props.id}
+                />
+              )}
             </Accordion>
           </div>
         </div>
