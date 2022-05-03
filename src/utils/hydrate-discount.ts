@@ -1,4 +1,4 @@
-import { extractProductOptions, extractRegionOptions } from "./extract-options"
+import { extractRegionOptions } from "./extract-options"
 import { displayAmount } from "./prices"
 
 type DiscountState = {
@@ -118,12 +118,7 @@ export const hydrateDiscount = ({
     setAvailabilityDuration(discount.valid_duration)
   }
 
-  if (discount.rule.valid_for.length > 0) {
-    setAppliesToAll(false)
-    setSelectedProducts(extractProductOptions(discount.rule.valid_for))
-  } else {
-    setAppliesToAll(true)
-  }
+  setAppliesToAll(true)
 
   if (discount.regions.length) {
     setSelectedRegions(extractRegionOptions(discount.regions))

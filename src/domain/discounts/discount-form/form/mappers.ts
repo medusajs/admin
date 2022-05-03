@@ -37,9 +37,7 @@ export const discountToFormValuesMapper = (
     },
     allocation: discount.rule.allocation,
     description: discount.rule.description,
-    valid_for: discount.rule.valid_for.length
-      ? discount.rule.valid_for.map((v) => ({ label: v.title, value: v.id }))
-      : null,
+    valid_for: null,
     starts_at: new Date(discount.starts_at),
     ends_at: discount.ends_at ? new Date(discount.ends_at) : null,
     is_dynamic: discount.is_dynamic,
@@ -65,7 +63,6 @@ export const formValuesToCreateDiscountMapper = (
           ? parseInt((values.rule.value! as unknown) as string, 10)
           : 0,
       description: values.description,
-      valid_for: values.valid_for?.map((p) => p.value),
     },
     is_dynamic: values.is_dynamic,
     ends_at: values.ends_at ?? undefined,
@@ -90,7 +87,6 @@ export const formValuesToUpdateDiscountMapper = (
       type: values.type,
       value: parseInt((values.rule.value as unknown) as string, 10),
       description: values.description,
-      valid_for: values.valid_for?.map((p) => p.value) as any,
     },
     ends_at: values.ends_at ?? undefined,
     regions: values.regions?.map((r) => r.value),
