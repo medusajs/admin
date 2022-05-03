@@ -323,10 +323,6 @@ function ProductSection(props: ProductSectionProps) {
       e.preventDefault()
     }
 
-    if (!e.shiftKey) {
-      return
-    }
-
     const isArrowUp = e.key === "ArrowUp"
     const isArrowDown = e.key === "ArrowDown"
     const isArrowRight = e.key === "ArrowRight"
@@ -335,23 +331,31 @@ function ProductSection(props: ProductSectionProps) {
     const [variants, regions] = matrix
 
     if (!isArrowUp && !isArrowDown && !isArrowRight && !isArrowLeft) {
-      const currentV = variants.indexOf(variantId)
-      const currentR = regions.indexOf(regionId)
+      if (e.shiftKey) {
+        const currentV = variants.indexOf(variantId)
+        const currentR = regions.indexOf(regionId)
 
-      // if only "Shift" is pressed set this as the current anchor
-      pointers.anchorV = currentV
-      pointers.anchorR = currentR
+        // if only "Shift" is pressed set this as the current anchor
+        pointers.anchorV = currentV
+        pointers.anchorR = currentR
 
-      pointers.lastR = currentR
-      pointers.lastV = currentV
+        pointers.lastR = currentR
+        pointers.lastV = currentV
 
-      pointers.minV = currentV
-      pointers.maxV = currentV
+        pointers.minV = currentV
+        pointers.maxV = currentV
 
-      pointers.minR = currentR
-      pointers.maxR = currentR
+        pointers.minR = currentR
+        pointers.maxR = currentR
 
-      // TODO: if "Shift" key is not pressed implement cell navigation
+        // TODO: if "Shift" key is not pressed implement cell navigation
+      }
+
+      return
+    }
+
+    if (!e.shiftKey) {
+      console.log("TODO: navigation")
 
       return
     }
@@ -369,7 +373,7 @@ function ProductSection(props: ProductSectionProps) {
     }
 
     if (isArrowDown) {
-      pointers.lastV = Math.min(pointers.lastV + 1, variants.length)
+      pointers.lastV = Math.min(pointers.lastV + 1, variants.length - 1)
 
       if (pointers.anchorV < pointers.lastV) {
         pointers.maxV = Math.max(pointers.maxV, pointers.lastV)
@@ -389,7 +393,7 @@ function ProductSection(props: ProductSectionProps) {
     }
 
     if (isArrowRight) {
-      pointers.lastR = Math.min(pointers.lastR + 1, regions.length)
+      pointers.lastR = Math.min(pointers.lastR + 1, regions.length - 1)
 
       if (pointers.anchorR < pointers.lastR) {
         pointers.maxR = Math.max(pointers.maxR, pointers.lastR)
@@ -533,9 +537,11 @@ function ProductVariantRow(props: ProductVariantRowProps) {
 
 function Footer() {
   return (
-    <div className="fixed bottom-0 w-full flex justify-center p-5">
+    <div className="fixed bottom-0 left-0 w-full flex justify-center p-5">
       <div className="flex flex-row gap-2 items-center text-small text-gray-400">
-        <PointerIcon />
+        <div className="rounded-base bg-grey-10 p-1">
+          <PointerIcon />
+        </div>
         <span>or</span>
         <div className="rounded-base bg-grey-10 p-1">
           <ArrowLeftIcon size={14} />
