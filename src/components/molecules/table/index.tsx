@@ -28,7 +28,7 @@ type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
   hasPrev: boolean
 }
 
-type TableCellProps = React.HTMLAttributes<HTMLTableCellElement> & {
+type TableCellProps = React.TdHTMLAttributes<HTMLTableCellElement> & {
   linkTo?: string
   name?: string
 }
@@ -55,7 +55,7 @@ type TableElement<T> = React.ForwardRefExoticComponent<T> &
 type TableType = {
   Head: TableElement<React.HTMLAttributes<HTMLTableElement>>
   HeadRow: TableElement<React.HTMLAttributes<HTMLTableRowElement>>
-  HeadCell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
+  HeadCell: TableElement<React.ThHTMLAttributes<HTMLTableCellElement>>
   SortingHeadCell: TableElement<SortingHeadCellProps>
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
@@ -158,7 +158,7 @@ Table.HeadCell = React.forwardRef(
       className,
       children,
       ...props
-    }: React.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number },
+    }: React.ThHTMLAttributes<HTMLTableCellElement> & { colSpan?: number },
     ref
   ) => (
     <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>

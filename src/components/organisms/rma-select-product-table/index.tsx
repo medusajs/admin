@@ -1,3 +1,4 @@
+import { Order } from "@medusajs/medusa"
 import clsx from "clsx"
 import React, { useContext } from "react"
 import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
@@ -11,7 +12,7 @@ import { LayeredModalContext } from "../../molecules/modal/layered-modal"
 import Table from "../../molecules/table"
 
 type RMASelectProductTableProps = {
-  order: any
+  order: Order
   allItems: any[]
   toReturn: any
   setToReturn: (items: any) => void
@@ -30,6 +31,8 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   isSwapOrClaim = false,
 }) => {
   const { push, pop } = useContext(LayeredModalContext)
+
+  console.log(allItems, toReturn)
 
   const handleQuantity = (change, item) => {
     if (
@@ -207,7 +210,8 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                 <Table.Cell className="text-right">
                   {formatAmountWithSymbol({
                     currency: order.currency_code,
-                    amount: item.refundable,
+                    amount:
+                      (item.refundable / item.shipped_quantity) * item.quantity,
                   })}
                 </Table.Cell>
                 <Table.Cell className="text-right text-grey-40 pr-1">
@@ -217,7 +221,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
               {checked && (
                 <Table.Row className="last:border-b-0 hover:bg-grey-0">
                   <Table.Cell></Table.Cell>
-                  <Table.Cell colspan={2}>
+                  <Table.Cell colSpan={2}>
                     <div className="max-w-[470px] truncate">
                       {toReturn[item.id]?.reason && (
                         <span className="inter-small-regular text-grey-40">
@@ -243,7 +247,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                     </div>
                   </Table.Cell>
                   {!isSwapOrClaim && (
-                    <Table.Cell colspan={2}>
+                    <Table.Cell colSpan={2}>
                       <div className="flex w-full justify-end mb-small">
                         <Button
                           onClick={() =>
