@@ -15,10 +15,10 @@ import {
   useSortBy,
   useTable,
 } from "react-table"
+import useQueryFilters from "../../../hooks/use-query-filters"
 import Spinner from "../../atoms/spinner"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import Table, { TablePagination, TableProps } from "../../molecules/table"
-import useQueryFilters from "../../../hooks/use-query-filters"
 
 type SelectableTableProps<T extends object> = {
   resourceName?: string
@@ -81,7 +81,6 @@ export const SelectableTable = <
   )
 
   useEffect(() => {
-    console.log({ selectedRowIDs: table.state.selectedRowIds })
     if (onChange) {
       onChange(Object.keys(table.state.selectedRowIds))
     }

@@ -5,8 +5,8 @@ import { HeaderGroup, Row } from "react-table"
 import CancelIcon from "../../../../../../components/fundamentals/icons/cancel-icon"
 import EditIcon from "../../../../../../components/fundamentals/icons/edit-icon"
 import Table from "../../../../../../components/molecules/table"
-import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import { SelectableTable } from "../../../../../../components/templates/selectable-table"
+import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import usePricesColumns from "./use-columns"
 
 const DEFAULT_PAGE_SIZE = 9
@@ -34,11 +34,15 @@ const PricesTable = ({ id, selectProduct }: PricesTableProps) => {
         columns={columns}
         data={products || []}
         renderRow={({ row }: { row: Row<Product> }) => {
+          const handleSelect = () => {
+            selectProduct(row.original)
+          }
+
           const actions = [
             {
               label: "Edit prices",
               icon: <EditIcon size={20} />,
-              onClick: () => {},
+              onClick: handleSelect,
             },
             {
               label: "Remove product",
@@ -48,15 +52,11 @@ const PricesTable = ({ id, selectProduct }: PricesTableProps) => {
             },
           ]
 
-          const handleRowClick = () => {
-            selectProduct(row.original)
-          }
-
           return (
             <Table.Row
               {...row.getRowProps()}
               actions={actions}
-              onClick={handleRowClick}
+              onClick={handleSelect}
               className="hover:bg-grey-5 hover:cursor-pointer"
             >
               {row.cells.map((cell) => {
