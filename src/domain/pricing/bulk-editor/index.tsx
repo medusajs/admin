@@ -286,6 +286,23 @@ function ProductSection(props: ProductSectionProps) {
   ) => {
     const cellKey = getPriceKey(variantId, regionId)
 
+    // TODO: force formatting on cell blur
+
+    // const tmp = { ...priceChanges }
+    // const c =
+    //   currencies[
+    //     props.activeRegions
+    //       .find((r) => r.id === regionId)
+    //       .currency_code.toUpperCase()
+    //   ]
+    //
+    // const formatted = (
+    //   Math.round(parseFloat(currentEditAmount) * 10 ** c.decimal_digits) /
+    //   10 ** c.decimal_digits
+    // ).toFixed(c.decimal_digits)
+    //
+    // Object.keys(activeFields).forEach((k) => (tmp[k] = formatted))
+
     if (e.shiftKey) {
       e.preventDefault() // do not focus
 
@@ -418,6 +435,7 @@ function ProductSection(props: ProductSectionProps) {
     // skip this callback in case `onAmount` is called on price input blur
     if (skip) {
       skip = false
+
       return
     }
 
