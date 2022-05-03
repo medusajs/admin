@@ -95,7 +95,11 @@ const Variants = ({ isEdit, product }) => {
   }
 
   const handleAddVariant = (data) => {
-    createVariant.mutate(data, {
+    const newVariant = {
+      ...data,
+      inventory_quantity: data.inventory_quantity || 0,
+    }
+    createVariant.mutate(newVariant, {
       onSuccess: () => {
         notification("Success", "Successfully added a variant", "success")
         setShowAddVariantModal(false)
