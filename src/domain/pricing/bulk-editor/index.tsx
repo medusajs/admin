@@ -323,6 +323,18 @@ function ProductSection(props: ProductSectionProps) {
       e.preventDefault()
     }
 
+    if (e.key === "Enter") {
+      skip = true
+      e.target?.blur()
+      setCurrentEditAmount(undefined)
+      setActiveFields({})
+      return
+    }
+
+    if (!e.shiftKey) {
+      return
+    }
+
     const isArrowUp = e.key === "ArrowUp"
     const isArrowDown = e.key === "ArrowDown"
     const isArrowRight = e.key === "ArrowRight"
@@ -330,49 +342,26 @@ function ProductSection(props: ProductSectionProps) {
 
     const [variants, regions] = matrix
 
+    // only shift is pressed without any arrow keys (set the current PriceInput cell as the anchor)
     if (!isArrowUp && !isArrowDown && !isArrowRight && !isArrowLeft) {
-      if (e.shiftKey) {
-        const currentV = variants.indexOf(variantId)
-        const currentR = regions.indexOf(regionId)
+      const currentV = variants.indexOf(variantId)
+      const currentR = regions.indexOf(regionId)
 
-        // if only "Shift" is pressed set this as the current anchor
-        pointers.anchorV = currentV
-        pointers.anchorR = currentR
+      // if only "Shift" is pressed set this as the current anchor
+      pointers.anchorV = currentV
+      pointers.anchorR = currentR
 
-        pointers.lastR = currentR
-        pointers.lastV = currentV
+      pointers.lastR = currentR
+      pointers.lastV = currentV
 
-        pointers.minV = currentV
-        pointers.maxV = currentV
+      pointers.minV = currentV
+      pointers.maxV = currentV
 
-        pointers.minR = currentR
-        pointers.maxR = currentR
+      pointers.minR = currentR
+      pointers.maxR = currentR
 
-        // TODO: if "Shift" key is not pressed implement cell navigation
-      }
+      // TODO: if "Shift" key is not pressed implement cell navigation
 
-      return
-    }
-
-    if (e.metaKey) {
-      if (pointers.anchorV) {
-        return
-      }
-
-      let v = variantId
-      let r = regionId
-
-      if (isArrowUp) v = variants[variants.indexOf(variantId) - 1]
-      if (isArrowDown) v = variants[variants.indexOf(variantId) + 1]
-      if (isArrowLeft) r = regions[regions.indexOf(regionId) - 1]
-      if (isArrowRight) r = regions[regions.indexOf(regionId) + 1]
-
-      document.getElementById(getPriceKey(variantId, regionId))?.click()
-
-      return
-    }
-
-    if (!e.shiftKey) {
       return
     }
 
