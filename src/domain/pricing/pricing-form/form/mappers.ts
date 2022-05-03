@@ -48,7 +48,7 @@ export const mapFormValuesToCreatePriceList = (
       {
         amount: 2500,
         currency_code: "usd",
-        variant_id: "variant_01FY6FS47101G8MKK7PDVHPWZ0", // Replace this with a variant_id from your DB for testing purposes
+        variant_id: "variant_01FVW8P3RV037TZEF6QPH17ZN7", // Replace this with a variant_id from your DB for testing purposes
       },
     ],
   }
