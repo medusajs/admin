@@ -77,8 +77,8 @@ storiesOf("Molecules/AsyncSelect", module).add("Createable", () => {
         value={value}
         isClearable={true}
         onCreateOption={addNewOption}
-        isCreateAble={true}
-        isSearchAble={true}
+        isCreateable={true}
+        isSearchable={true}
         loadOptions={loadOptions}
       />
       <span className="inter-base-regular">
@@ -105,7 +105,7 @@ storiesOf("Molecules/AsyncSelect", module).add("Non-createable", () => {
         onChange={(newValue) => setValue(newValue as SelectOption | undefined)}
         value={value}
         isClearable={true}
-        isSearchAble={true}
+        isSearchable={true}
         loadOptions={loadOptions}
       />
       <span className="inter-base-regular">
@@ -131,7 +131,7 @@ storiesOf("Molecules/AsyncSelect", module).add("Non-searchable", () => {
         label="Option"
         onChange={(newValue) => setValue(newValue as SelectOption | undefined)}
         value={value}
-        isSearchAble={false}
+        isSearchable={false}
         isClearable={true}
         loadOptions={loadOptions}
       />
@@ -160,7 +160,7 @@ storiesOf("Molecules/AsyncSelect", module).add("Disabled", () => {
         label="Option"
         onChange={(newValue) => setValue(newValue as SelectOption | undefined)}
         value={value}
-        isSearchAble={false}
+        isSearchable={false}
         isClearable={true}
         loadOptions={loadOptions}
       />
@@ -196,7 +196,7 @@ storiesOf("Molecules/AsyncSelect", module).add(
             setValue(newValue as SelectOption | undefined)
           }
           value={value}
-          isSearchAble={true}
+          isSearchable={true}
           isClearable={true}
           loadOptions={loadOptions}
         />
@@ -228,7 +228,7 @@ storiesOf("Molecules/AsyncSelect", module).add("With Tooltip", () => {
         required={true}
         onChange={(newValue) => setValue(newValue as SelectOption | undefined)}
         value={value}
-        isSearchAble={true}
+        isSearchable={true}
         isClearable={true}
         loadOptions={loadOptions}
       />

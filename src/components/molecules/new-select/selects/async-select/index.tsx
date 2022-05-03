@@ -23,9 +23,9 @@ import { AsyncPaginateCreatable } from "./async-paginate-createable"
 const AsyncSelect = ({
   value,
   isClearable,
-  isCreateAble,
+  isCreateable,
   isDisabled,
-  isSearchAble,
+  isSearchable,
   isMulti,
   hasSelectAll,
   menuPortalTarget,
@@ -35,7 +35,7 @@ const AsyncSelect = ({
   loadOptions,
   ...contextProps
 }: AsyncSelectProps) => {
-  const Component = SelectComponent(isCreateAble)
+  const Component = SelectComponent(isCreateable)
 
   return (
     <SelectProvider context={contextProps}>
@@ -43,7 +43,7 @@ const AsyncSelect = ({
         value={value}
         isClearable={isClearable}
         isDisabled={isDisabled}
-        isSearchable={isSearchAble}
+        isSearchable={isSearchable}
         isMulti={isMulti}
         closeMenuOnSelect={!isMulti}
         hideSelectedOptions={false}

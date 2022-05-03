@@ -64,7 +64,7 @@ const RadioAdornment = ({ isSelected }) => {
         "radio-outer-ring outline-0",
         "shrink-0 min-w-[20px] h-5 rounded-circle",
         {
-          "shadow-[0_0_0_1px] shadow-[#D1D5DB]": !isSelected,
+          "shadow-[0_0_0_1px] shadow-grey-30": !isSelected,
           "shadow-[0_0_0_2px] shadow-violet-60": isSelected,
         }
       )}

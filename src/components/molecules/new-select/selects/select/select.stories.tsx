@@ -40,8 +40,8 @@ storiesOf("Molecules/Select", module).add("Createable", () => {
         options={options}
         isClearable={true}
         onCreateOption={addNewOption}
-        isCreateAble={true}
-        isSearchAble={true}
+        isCreateable={true}
+        isSearchable={true}
       />
       <span className="inter-base-regular">
         Current value:{" "}
@@ -68,7 +68,7 @@ storiesOf("Molecules/Select", module).add("Non-Createable", () => {
         value={value}
         options={options}
         isClearable={true}
-        isSearchAble={true}
+        isSearchable={true}
       />
       <span className="inter-base-regular">
         Current value:{" "}
@@ -95,7 +95,7 @@ storiesOf("Molecules/Select", module).add("Non-Searchable", () => {
         value={value}
         options={options}
         isClearable={true}
-        isSearchAble={false}
+        isSearchable={false}
       />
       <span className="inter-base-regular">
         Current value:{" "}
@@ -124,7 +124,7 @@ storiesOf("Molecules/Select", module).add("Multiselect", () => {
         value={value}
         options={options}
         isClearable={true}
-        isSearchAble={false}
+        isSearchable={false}
         isMulti={true}
         hasSelectAll={true}
       />

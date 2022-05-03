@@ -11,7 +11,7 @@ interface BaseProps {
   value?: SelectOption | SelectOption[]
   isDisabled?: boolean
   isClearable?: boolean
-  isSearchAble?: boolean
+  isSearchable?: boolean
   onChange: (newValue: unknown, actionMeta: ActionMeta<unknown>) => void
   menuPortalTarget?: HTMLElement | null
   placeholder?: string
@@ -35,11 +35,11 @@ type MultiProps =
 // if it's not createable then the onCreate prop should be undefined
 type CreateAbleProps =
   | ({
-      isCreateAble: true
+      isCreateable: true
       onCreateOption: (value: string) => void
     } & MultiProps)
   | ({
-      isCreateAble?: false
+      isCreateable?: false
       onCreateOption?: never
     } & MultiProps)
 

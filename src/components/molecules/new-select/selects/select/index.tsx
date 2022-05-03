@@ -22,9 +22,9 @@ const Select = ({
   value,
   options,
   isClearable,
-  isCreateAble,
+  isCreateable,
   isDisabled,
-  isSearchAble,
+  isSearchable,
   isMulti,
   menuPortalTarget,
   placeholder = "Select...",
@@ -32,7 +32,7 @@ const Select = ({
   onCreateOption,
   ...contextProps
 }: SelectProps) => {
-  const Component = SelectComponent(isCreateAble)
+  const Component = SelectComponent(isCreateable)
 
   return (
     <SelectProvider context={contextProps}>
@@ -41,7 +41,7 @@ const Select = ({
         options={options}
         isClearable={isClearable}
         isDisabled={isDisabled}
-        isSearchable={isSearchAble}
+        isSearchable={isSearchable}
         isMulti={isMulti}
         closeMenuOnSelect={!isMulti}
         hideSelectedOptions={false}
