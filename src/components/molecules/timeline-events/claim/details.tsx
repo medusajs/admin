@@ -82,7 +82,7 @@ const ClaimDetails = ({ claim, order, onDismiss }) => {
                         </Table.Cell>
                       </Table.Row>
                       <Table.Row className="last:border-b-0 hover:bg-grey-0">
-                        <Table.Cell colspan={2}>
+                        <Table.Cell colSpan={2}>
                           <div className="max-w-[470px] truncate">
                             {claimItem.reason && (
                               <span className="inter-small-regular text-grey-40">
@@ -104,7 +104,7 @@ const ClaimDetails = ({ claim, order, onDismiss }) => {
                             )}
                           </div>
                         </Table.Cell>
-                        <Table.Cell colspan={2}>
+                        <Table.Cell colSpan={2}>
                           <div className="flex w-full justify-end">
                             <Button
                               onClick={() =>
