@@ -5,8 +5,15 @@ import {
   useAdminPriceListProducts,
   useAdminPriceLists,
   useAdminRegions,
+  useAdminUpdatePriceList,
 } from "medusa-react"
-import { PriceList, Product, ProductVariant, Region } from "@medusajs/medusa"
+import {
+  MoneyAmount,
+  PriceList,
+  Product,
+  ProductVariant,
+  Region,
+} from "@medusajs/medusa"
 
 import Fade from "../../../components/atoms/fade-wrapper"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
@@ -204,15 +211,22 @@ type ProductSectionProps = {
   product: Product
   isFirst: boolean
   activeRegions: Region[]
+  priceChanges: Record<string, string>
+  setPriceChanges: (changes: Record<string, string>) => void
 }
 
 let skip = false
 
 function ProductSection(props: ProductSectionProps) {
-  const { activeRegions, product, isFirst } = props
+  const {
+    activeRegions,
+    product,
+    isFirst,
+    priceChanges,
+    setPriceChanges,
+  } = props
 
   const [activeFields, setActiveFields] = useState({})
-  const [priceChanges, setPriceChanges] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
 
   const { current: pointers } = useRef<CellPointers>({} as CellPointers)
@@ -223,6 +237,10 @@ function ProductSection(props: ProductSectionProps) {
   const matrix = useMemo(() => {
     return [product.variants.map((v) => v.id), activeRegions.map((r) => r.id)]
   }, [activeRegions, product.variants])
+
+  useEffect(() => {
+    // TODO: when a region is removed unset `priceChanges` related to that region
+  }, [activeRegions])
 
   useEffect(() => {
     const handler = (e) => {
@@ -455,6 +473,8 @@ function ProductSection(props: ProductSectionProps) {
     // for each input that is currently edited set the amount
     Object.keys(activeFields).forEach((k) => (tmp[k] = amount))
 
+    // TODO: investigate first digit keypress is not registered i.e `onAmountChange` is not called
+
     setPriceChanges(tmp)
     setCurrentEditAmount(amount)
   }
@@ -608,15 +628,17 @@ type PriceListBulkEditorProps = {
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   const { priceList, closeForm } = props
 
+  const [priceChanges, setPriceChanges] = useState({})
   const [currentPriceListId, setCurrentPriceListId] = useState(priceList.id)
 
   const [activeRegions, setActiveRegions] = useState<string[]>([])
 
   console.log(priceList)
 
-  // TODO: should filter variants from products that are related to the price list
-  const { products } = useAdminPriceListProducts(currentPriceListId)
   const { regions } = useAdminRegions()
+  // TODO: should filter variants from products that are related to the price list
+  const updatePriceList = useAdminUpdatePriceList(currentPriceListId)
+  const { products, isFetching } = useAdminPriceListProducts(currentPriceListId)
 
   const onPriceListSelect = (priceListId: string) => {
     // TODO: check for changes
@@ -628,9 +650,47 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     closeForm()
   }
 
+  const onSave = () => {
+    let prices: MoneyAmount[] = []
+    Object.entries(priceChanges).map(([k, amount]) => {
+      const [variantId, regionId] = k.split("-")
+
+      // find the product variant
+      const variant = products
+        ?.find((p) => p.variants.find((v) => v.id === variantId))
+        ?.variants.find((v) => v.id === variantId)
+
+      // find MA record
+      const ma = variant!.prices.find((p) => p.region_id === regionId)
+
+      if (ma) {
+        // update existing money amount
+        const p = { ...ma }
+        p.amount = Math.round(
+          parseFloat(amount) *
+            10 ** currencies[ma.currency_code.toUpperCase()].decimal_digits
+        )
+        prices.push(p)
+      } else {
+        // create new ma
+        prices.push({
+          variant_id: variantId,
+          region_id: regionId,
+          currency_code: regions?.find((r) => r.id === regionId)!.currency_code,
+          amount: Math.round(
+            parseFloat(amount) *
+              10 ** currencies[ma.currency_code.toUpperCase()].decimal_digits
+          ),
+        })
+      }
+
+      // updatePriceList.mutate({ prices })
+    })
+  }
+
   console.log(products)
 
-  if (!products) return null
+  if (isFetching) return null
 
   return (
     <Fade isVisible isFullScreen={true}>
@@ -659,12 +719,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
               >
                 Discard
               </Button>
-              <Button
-                size="small"
-                // variant="primary"
-                // onClick={handleSubmit(submitCTA)}
-                className="rounded-rounded"
-              >
+              <Button size="small" onClick={onSave} className="rounded-rounded">
                 Save
               </Button>
             </div>
@@ -684,6 +739,8 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
                 <ProductSection
                   key={p.id}
                   product={p}
+                  priceChanges={priceChanges}
+                  setPriceChanges={setPriceChanges}
                   isFirst={!ind}
                   activeRegions={
                     activeRegions
