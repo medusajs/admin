@@ -12,6 +12,7 @@ import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
+import { focusByName } from "../../../../utils/focus-by-name"
 import usePricesFieldArray from "../../product-form/form/usePricesFieldArray"
 
 const defaultVariant = {
@@ -80,11 +81,7 @@ const VariantEditor = ({
 
   const handleSave = (data) => {
     if (!data.prices) {
-      const element = document.getElementById("add-price")
-      if (element) {
-        element.focus()
-      }
-
+      focusByName("add-price")
       return
     }
 
@@ -223,7 +220,7 @@ const VariantEditor = ({
               onClick={appendPrice}
               size="small"
               variant="ghost"
-              id="add-price"
+              name="add-price"
               disabled={availableCurrencies?.length === 0}
             >
               <PlusIcon size={20} /> Add a price
