@@ -628,7 +628,7 @@ type PriceListBulkEditorProps = {
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   const { priceList, closeForm } = props
 
-  const [priceChanges, setPriceChanges] = useState({})
+  const [priceChanges, setPriceChanges] = useState<Record<string, string>>({})
   const [currentPriceListId, setCurrentPriceListId] = useState(priceList.id)
 
   const [activeRegions, setActiveRegions] = useState<string[]>([])
@@ -651,7 +651,8 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   }
 
   const onSave = () => {
-    let prices: MoneyAmount[] = []
+    const prices: Partial<MoneyAmount>[] = []
+
     Object.entries(priceChanges).map(([k, amount]) => {
       const [variantId, regionId] = k.split("-")
 
@@ -660,31 +661,45 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         ?.find((p) => p.variants.find((v) => v.id === variantId))
         ?.variants.find((v) => v.id === variantId)
 
-      // find MA record
-      const ma = variant!.prices.find((p) => p.region_id === regionId)
+      // find MA record that matches variant id and region id
+      const moneyAmount = variant!.prices.find((p) => p.region_id === regionId)
 
-      if (ma) {
+      // UPDATE an existing MA record
+      if (moneyAmount) {
         // update existing money amount
-        const p = { ...ma }
-        p.amount = Math.round(
+        const toUpdate: Partial<MoneyAmount> = { ...moneyAmount }
+
+        let prepareAmount = Math.round(
           parseFloat(amount) *
-            10 ** currencies[ma.currency_code.toUpperCase()].decimal_digits
+            10 **
+              currencies[moneyAmount.currency_code.toUpperCase()].decimal_digits
         )
-        prices.push(p)
-      } else {
-        // create new ma
+
+        if (isNaN(prepareAmount)) {
+          return
+        }
+
+        toUpdate.amount = prepareAmount
+
+        prices.push(toUpdate)
+      }
+      // CREATE a new MA record
+      else {
         prices.push({
           variant_id: variantId,
           region_id: regionId,
-          currency_code: regions?.find((r) => r.id === regionId)!.currency_code,
+          currency_code: regions?.find((r) => r.id === regionId)!
+            .currency_code!,
           amount: Math.round(
             parseFloat(amount) *
-              10 ** currencies[ma.currency_code.toUpperCase()].decimal_digits
+              10 **
+                currencies[moneyAmount.currency_code.toUpperCase()]
+                  .decimal_digits
           ),
         })
       }
 
-      // updatePriceList.mutate({ prices })
+      updatePriceList.mutate({ prices })
     })
   }
 
