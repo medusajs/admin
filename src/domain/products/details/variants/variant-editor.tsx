@@ -43,13 +43,13 @@ const VariantEditor = ({
   })
 
   const [metadata, setMetadata] = useState(
-    Object.keys(variant.metadata).map((key) => ({
+    Object.keys(variant.metadata || {}).map((key) => ({
       key,
       value: variant.metadata[key],
     }))
   )
 
-  const { control, register, reset, watch, handleSubmit, setValue } = useForm({
+  const { control, register, reset, watch, handleSubmit } = useForm({
     defaultValues: variant,
   })
   const {
@@ -94,7 +94,7 @@ const VariantEditor = ({
     }))
     data.options = data.options.map((option) => ({ ...option }))
 
-    const emptyMetadata = Object.keys(variant.metadata).reduce(
+    const emptyMetadata = Object.keys(variant.metadata || {}).reduce(
       (acc, key) => ({ ...acc, [key]: null }),
       {}
     )
