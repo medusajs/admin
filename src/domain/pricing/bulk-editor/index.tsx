@@ -669,37 +669,44 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         // update existing money amount
         const toUpdate: Partial<MoneyAmount> = { ...moneyAmount }
 
-        let prepareAmount = Math.round(
+        let preparedAmount = Math.round(
           parseFloat(amount) *
             10 **
               currencies[moneyAmount.currency_code.toUpperCase()].decimal_digits
         )
 
-        if (isNaN(prepareAmount)) {
+        if (isNaN(preparedAmount)) {
           return
         }
 
-        toUpdate.amount = prepareAmount
+        toUpdate.amount = preparedAmount
 
         prices.push(toUpdate)
       }
       // CREATE a new MA record
       else {
+        const curr = regions?.find((r) => r.id === regionId)!.currency!
+
+        const preparedAmount = Math.round(
+          parseFloat(amount) *
+            10 ** currencies[curr.code.toUpperCase()].decimal_digits
+        )
+
+        if (isNaN(preparedAmount)) {
+          return
+        }
+
         prices.push({
           variant_id: variantId,
           region_id: regionId,
-          currency_code: regions?.find((r) => r.id === regionId)!
-            .currency_code!,
-          amount: Math.round(
-            parseFloat(amount) *
-              10 **
-                currencies[moneyAmount.currency_code.toUpperCase()]
-                  .decimal_digits
-          ),
+          currency_code: curr.code,
+          amount: preparedAmount,
         })
       }
 
-      updatePriceList.mutate({ prices })
+      console.log({ prices })
+
+      // updatePriceList.mutate({ prices })
     })
   }
 
