@@ -64,7 +64,12 @@ const Header = ({ priceList }) => {
           </Fade>
         </PriceListFormProvider>
       )}
-      {showBulkEditor && <BulkEditor priceList={priceList} />}
+      {showBulkEditor && (
+        <BulkEditor
+          priceList={priceList}
+          closeForm={() => setShowBulkEditor(false)}
+        />
+      )}
     </HeadingBodyCard>
   )
 }

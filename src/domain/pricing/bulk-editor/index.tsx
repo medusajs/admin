@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import clsx from "clsx"
 
-import { useAdminRegions } from "medusa-react"
+import {
+  useAdminPriceListProducts,
+  useAdminPriceLists,
+  useAdminRegions,
+} from "medusa-react"
 import { PriceList, Product, ProductVariant, Region } from "@medusajs/medusa"
 
 import Fade from "../../../components/atoms/fade-wrapper"
@@ -41,12 +45,15 @@ function generateField(region: Region) {
 
 type PriceListBulkEditorHeaderProps = {
   setRegions: (a: string[]) => void
+  currentPriceListId: string
+  onPriceListSelect: (priceListId: string) => void
 }
 
 function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
-  const { setRegions } = props
+  const { currentPriceListId, onPriceListSelect, setRegions } = props
 
   const { regions } = useAdminRegions()
+  const { price_lists } = useAdminPriceLists()
 
   const fields = (regions || [])
     .sort((a, b) => a.currency_code.localeCompare(b.currency_code))
@@ -61,9 +68,13 @@ function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
               Price list:
             </span>
 
-            <NativeSelect defaultValue="TODO 1">
-              <NativeSelect.Item value="TODO 1">TODO 1</NativeSelect.Item>
-              <NativeSelect.Item value="TODO 2">TODO 2</NativeSelect.Item>
+            <NativeSelect
+              value={currentPriceListId}
+              onValueChange={onPriceListSelect}
+            >
+              {price_lists?.map((pl) => (
+                <NativeSelect.Item value={pl.id}>{pl.name}</NativeSelect.Item>
+              ))}
             </NativeSelect>
           </div>
 
@@ -591,14 +602,35 @@ function Footer() {
 
 type PriceListBulkEditorProps = {
   priceList: PriceList
+  closeForm: () => void
 }
 
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
-  const { products } = props
+  const { priceList, closeForm } = props
+
+  const [currentPriceListId, setCurrentPriceListId] = useState(priceList.id)
 
   const [activeRegions, setActiveRegions] = useState<string[]>([])
 
+  console.log(priceList)
+
+  // TODO: should filter variants from products that are related to the price list
+  const { products } = useAdminPriceListProducts(currentPriceListId)
   const { regions } = useAdminRegions()
+
+  const onPriceListSelect = (priceListId: string) => {
+    // TODO: check for changes
+    setCurrentPriceListId(priceListId)
+  }
+
+  const onClose = () => {
+    // TODO: check for changes
+    closeForm()
+  }
+
+  console.log(products)
+
+  if (!products) return null
 
   return (
     <Fade isVisible isFullScreen={true}>
@@ -609,7 +641,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
               <Button
                 size="small"
                 variant="ghost"
-                // onClick={closeForm}
+                onClick={onClose}
                 className="border rounded-rounded w-8 h-8"
               >
                 <CrossIcon size={20} />
@@ -620,10 +652,10 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
             </div>
             <div className="gap-x-small flex">
               <Button
-                // onClick={handleSubmit(submitGhost)}
                 size="small"
                 variant="ghost"
                 className="border rounded-rounded"
+                onClick={closeForm}
               >
                 Discard
               </Button>
@@ -640,7 +672,11 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         </FocusModal.Header>
 
         <FocusModal.Main>
-          <PriceListBulkEditorHeader setRegions={setActiveRegions} />
+          <PriceListBulkEditorHeader
+            setRegions={setActiveRegions}
+            onPriceListSelect={onPriceListSelect}
+            currentPriceListId={currentPriceListId}
+          />
 
           <div className="medium:w-8/12 w-full flex flex-col justify-start mx-auto mb-7 overflow-x-auto-TODO">
             {regions &&
