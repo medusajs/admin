@@ -17,11 +17,18 @@ import PriceListForm from "../../pricing-form"
 import { mapPriceListToFormValues } from "../../pricing-form/form/mappers"
 import { PriceListFormProvider } from "../../pricing-form/form/pricing-form-context"
 import { ViewType } from "../../pricing-form/types"
+import BulkEditor from "../../bulk-editor"
 
 const Header = ({ priceList }) => {
   const [isOpen, setIsOpen] = React.useState(false)
+  const [showBulkEditor, setShowBulkEditor] = React.useState(false)
+
   return (
-    <HeadingBodyCard priceList={priceList} setIsOpen={setIsOpen}>
+    <HeadingBodyCard
+      priceList={priceList}
+      setIsOpen={setIsOpen}
+      showBulkEditor={() => setShowBulkEditor(true)}
+    >
       <div className="flex gap-12">
         {priceList.customer_groups.length ? (
           <div className="border-l border-grey-20 pl-6">
@@ -57,6 +64,7 @@ const Header = ({ priceList }) => {
           </Fade>
         </PriceListFormProvider>
       )}
+      {showBulkEditor && <BulkEditor priceList={priceList} />}
     </HeadingBodyCard>
   )
 }
@@ -71,7 +79,12 @@ const PriceListCustomerGroupsFormatter = ({ groups }) => {
   )
 }
 
-const HeadingBodyCard = ({ priceList, setIsOpen, ...props }) => {
+const HeadingBodyCard = ({
+  priceList,
+  setIsOpen,
+  showBulkEditor,
+  ...props
+}) => {
   const dialog = useImperativeDialog()
   const notification = useNotification()
   const deletePriceList = useAdminDeletePriceList(priceList?.id)
@@ -101,6 +114,12 @@ const HeadingBodyCard = ({ priceList, setIsOpen, ...props }) => {
       icon: <EditIcon size={20} />,
     },
     {
+      label: "Bulk edit prices",
+      onClick: () => showBulkEditor(),
+      icon: <EditIcon size={20} />,
+    },
+
+    {
       label: "Delete price list",
       onClick: onDelete,
       variant: "danger" as const,
@@ -109,19 +128,21 @@ const HeadingBodyCard = ({ priceList, setIsOpen, ...props }) => {
   ]
 
   return (
-    <BodyCard
-      actionables={actionables}
-      forceDropdown
-      className="min-h-[200px]"
-      status={
-        <div className="flex items-center gap-x-2xsmall">
-          {getPriceListStatus(priceList)}
-        </div>
-      }
-      title={priceList.name}
-      subtitle={priceList.description}
-      {...props}
-    />
+    <>
+      <BodyCard
+        actionables={actionables}
+        forceDropdown
+        className="min-h-[200px]"
+        status={
+          <div className="flex items-center gap-x-2xsmall">
+            {getPriceListStatus(priceList)}
+          </div>
+        }
+        title={priceList.name}
+        subtitle={priceList.description}
+        {...props}
+      />
+    </>
   )
 }
 

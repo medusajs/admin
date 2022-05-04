@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 import clsx from "clsx"
 
 import { useAdminRegions } from "medusa-react"
-import { Product, ProductVariant, Region } from "@medusajs/medusa"
+import { PriceList, Product, ProductVariant, Region } from "@medusajs/medusa"
 
 import Fade from "../../../components/atoms/fade-wrapper"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
@@ -590,7 +590,7 @@ function Footer() {
 }
 
 type PriceListBulkEditorProps = {
-  products: Product[]
+  priceList: PriceList
 }
 
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
