@@ -20,7 +20,10 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import DiscountForm from "../discount-form"
 import { DiscountFormProvider } from "../discount-form/form/discount-form-context"
-import { discountToFormValuesMapper } from "../discount-form/form/mappers"
+import {
+  discountToFormValuesMapper,
+  ExtendedDiscount,
+} from "../discount-form/form/mappers"
 import PromotionSettings from "./settings"
 
 type EditProps = {
@@ -29,7 +32,9 @@ type EditProps = {
 
 const Edit: React.FC<EditProps> = ({ id }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const { discount, isLoading } = useAdminDiscount(id)
+  const adminDiscountResp = useAdminDiscount(id)
+  const { isLoading } = adminDiscountResp
+  const discount = adminDiscountResp.discount as ExtendedDiscount
   const [showDelete, setShowDelete] = useState(false)
   const deleteDiscount = useAdminDeleteDiscount(id)
   const notification = useNotification()
@@ -82,7 +87,7 @@ const Edit: React.FC<EditProps> = ({ id }) => {
             title={discount.code}
             subtitle={discount.rule.description}
           >
-            <div className="flex">
+            <div className="flex flex-wrap">
               <div className="border-l border-grey-20 pl-6">
                 {getPromotionDescription(discount)}
                 <span className="inter-small-regular text-grey-50">
@@ -97,6 +102,11 @@ const Edit: React.FC<EditProps> = ({ id }) => {
                   {"Total Redemptions"}
                 </span>
               </div>
+              {discount.is_recurring && (
+                <p className="mt-4 w-full">
+                  This is a <b>recurring</b> promotion.
+                </p>
+              )}
             </div>
           </HeadingBodyCard>
           <div className="mt-4 w-full">
