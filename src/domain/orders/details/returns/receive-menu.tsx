@@ -32,7 +32,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   const [refundAmount, setRefundAmount] = useState(0)
   const [toReturn, setToReturn] = useState({})
 
-  const allItems: (LineItem | null)[] = useMemo(() => {
+  const allItems: LineItem[] = useMemo(() => {
     return order.items
       .map((i: LineItem) => {
         const found = returnRequest.items.find(
@@ -48,7 +48,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
           return null
         }
       })
-      .filter(Boolean)
+      .filter(Boolean) as LineItem[]
   }, [order])
 
   useEffect(() => {

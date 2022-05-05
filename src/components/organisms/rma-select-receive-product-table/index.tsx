@@ -132,9 +132,6 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
                   </div>
                 </div>
               </Table.Cell>
-              {/* <Table.Cell className="text-right w-32 pr-8">
-                <span className="text-grey-40">{item.quantity}</span>
-              </Table.Cell> */}
               <Table.Cell className="text-right w-32 pr-8">
                 {item.id in toReturn ? (
                   <div className="flex w-full text-right justify-end text-grey-50 ">
@@ -155,9 +152,7 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
                     </span>
                   </div>
                 ) : (
-                  <span className="text-grey-40">
-                    {item.quantity - item.returned_quantity}
-                  </span>
+                  <span className="text-grey-40">{item.quantity}</span>
                 )}
               </Table.Cell>
               <Table.Cell className="text-right">

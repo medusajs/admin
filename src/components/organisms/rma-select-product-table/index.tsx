@@ -217,7 +217,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
               {checked && !isSwapOrClaim && (
                 <Table.Row className="last:border-b-0 hover:bg-grey-0">
                   <Table.Cell></Table.Cell>
-                  <Table.Cell colspan={2}>
+                  <Table.Cell colSpan={2}>
                     <div className="max-w-[470px] truncate">
                       {toReturn[item.id]?.reason && (
                         <span className="inter-small-regular text-grey-40">
@@ -242,7 +242,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                       )}
                     </div>
                   </Table.Cell>
-                  <Table.Cell colspan={2}>
+                  <Table.Cell colSpan={2}>
                     <div className="flex w-full justify-end mb-small">
                       <Button
                         onClick={() =>
