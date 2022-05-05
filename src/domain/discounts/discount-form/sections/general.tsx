@@ -203,6 +203,12 @@ const General = ({ discount, isEdit = false }) => {
                 )
               }}
             />
+
+            <IconTooltip
+              content={
+                "This discount will be applied to every order created via the respective subscription."
+              }
+            />
           </div>
         </>
       )}
