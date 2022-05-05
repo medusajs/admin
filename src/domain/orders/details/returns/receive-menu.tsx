@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from "react"
-import { LineItem, Order, ReturnItem } from "@medusajs/medusa"
+import { LineItem, Order, Return, ReturnItem } from "@medusajs/medusa"
 import Button from "../../../../components/fundamentals/button"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import Modal from "../../../../components/molecules/modal"
@@ -10,7 +10,7 @@ import RMASelectReturnProductTable from "../../../../components/organisms/rma-se
 
 type ReceiveMenuProps = {
   order: Order
-  returnRequest: any
+  returnRequest: Return
   onDismiss: () => void
   onReceiveSwap?: (payload: any) => Promise<void>
   onReceiveReturn?: (id: string, payload: any) => Promise<void>

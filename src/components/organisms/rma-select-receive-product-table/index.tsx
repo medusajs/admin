@@ -11,7 +11,7 @@ type toReturnType = Record<string, { quantity: number }>
 
 type RMASelectProductTableProps = {
   order: Order
-  allItems: LineItem[]
+  allItems: (LineItem | null)[]
   toReturn: toReturnType
   setToReturn: (items: any) => void
 }
@@ -82,10 +82,10 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
       </Table.HeadRow>
       <Table.Body>
         {allItems.map((item) => {
-          console.log(item)
           // Only show items that have not been returned,
           // and aren't canceled
           if (
+            !item ||
             item.returned_quantity === item.quantity ||
             isLineItemCanceled(item)
           ) {
