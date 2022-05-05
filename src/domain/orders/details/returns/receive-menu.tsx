@@ -7,6 +7,7 @@ import CurrencyInput from "../../../../components/organisms/currency-input"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
 import RMASelectReturnProductTable from "../../../../components/organisms/rma-select-receive-product-table"
+import useNotification from "../../../../hooks/use-notification"
 
 type ReceiveMenuProps = {
   order: Order
@@ -14,7 +15,6 @@ type ReceiveMenuProps = {
   onDismiss: () => void
   onReceiveSwap?: (payload: any) => Promise<void>
   onReceiveReturn?: (id: string, payload: any) => Promise<void>
-  notification: any
   refunded?: boolean
 }
 
@@ -24,7 +24,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   onReceiveReturn,
   onReceiveSwap,
   onDismiss,
-  notification,
   refunded,
 }) => {
   const [submitting, setSubmitting] = useState(false)
@@ -32,13 +31,14 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   const [refundAmount, setRefundAmount] = useState(0)
   const [toReturn, setToReturn] = useState({})
 
+  const notification = useNotification()
+
   const allItems: LineItem[] = useMemo(() => {
     return order.items
       .map((i: LineItem) => {
         const found = returnRequest.items.find(
           (ri: ReturnItem) => ri.item_id === i.id
         )
-
         if (found) {
           return {
             ...i,
