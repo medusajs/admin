@@ -14,6 +14,7 @@ const defaultDiscount: DiscountFormValues = {
   regions: null,
   starts_at: new Date(),
   ends_at: null,
+  is_recurring: false,
 }
 
 type DiscountFormProviderProps = {

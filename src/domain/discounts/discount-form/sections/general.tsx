@@ -77,7 +77,6 @@ const General = ({ discount, isEdit = false }) => {
                   enableSearch
                   required
                   options={regionOptions}
-                  id="regionsSelector"
                   className={clsx({
                     ["opacity-50 pointer-events-none select-none"]: regionsDisabled,
                   })}
@@ -185,6 +184,24 @@ const General = ({ discount, isEdit = false }) => {
               content={
                 "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
               }
+            />
+          </div>
+
+          <div className="mt-xlarge flex items-center">
+            <Controller
+              name="is_recurring"
+              render={({ onChange, value }) => {
+                return (
+                  <Checkbox
+                    label="This is a recurring discount"
+                    name="is_recurring"
+                    id="is_recurring"
+                    checked={value}
+                    onChange={(e) => onChange(e.target.checked)}
+                    className={clsx("mr-1.5")}
+                  />
+                )
+              }}
             />
           </div>
         </>
