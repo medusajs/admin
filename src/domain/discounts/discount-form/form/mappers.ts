@@ -6,6 +6,19 @@ import {
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../types/shared"
 
+export interface ExtendedDiscount extends Discount {
+  is_recurring?: boolean
+}
+
+export interface ExtendAdminPostDiscountsReq extends AdminPostDiscountsReq {
+  is_recurring?: boolean
+}
+
+export interface ExtendAdminPostDiscountsDiscountReq
+  extends AdminPostDiscountsDiscountReq {
+  is_recurring?: boolean
+}
+
 export interface DiscountFormValues extends FieldValues {
   id?: string
   code?: string
@@ -21,12 +34,12 @@ export interface DiscountFormValues extends FieldValues {
   is_dynamic: boolean
   valid_duration?: string
   regions: Option[] | null
+  is_recurring?: boolean
 }
 
 export const discountToFormValuesMapper = (
-  discount: Discount
+  discount: ExtendedDiscount
 ): DiscountFormValues => {
-  console.log(discount)
   return {
     id: discount.id,
     code: discount.code,
@@ -46,12 +59,13 @@ export const discountToFormValuesMapper = (
     regions: discount.regions
       ? discount.regions.map((r) => ({ label: r.name, value: r.id }))
       : null,
+    is_recurring: discount.is_recurring,
   }
 }
 
 export const formValuesToCreateDiscountMapper = (
   values: DiscountFormValues
-): Omit<AdminPostDiscountsReq, "is_disabled"> => {
+): Omit<ExtendAdminPostDiscountsReq, "is_disabled"> => {
   console.log(values)
   return {
     code: values.code!,
@@ -73,12 +87,13 @@ export const formValuesToCreateDiscountMapper = (
       values.is_dynamic && values.valid_duration?.length
         ? values.valid_duration
         : undefined,
+    is_recurring: values.is_recurring,
   }
 }
 
 export const formValuesToUpdateDiscountMapper = (
   values: DiscountFormValues
-): AdminPostDiscountsDiscountReq => {
+): ExtendAdminPostDiscountsDiscountReq => {
   return {
     code: values.code,
     rule: {
@@ -95,5 +110,6 @@ export const formValuesToUpdateDiscountMapper = (
     valid_duration: values.valid_duration?.length
       ? values.valid_duration
       : undefined,
+    is_recurring: values.is_recurring,
   }
 }
