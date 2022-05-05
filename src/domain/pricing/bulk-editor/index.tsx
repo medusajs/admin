@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 import clsx from "clsx"
 
 import {
+  useAdminCreatePriceListPrices,
   useAdminPriceListProducts,
   useAdminPriceLists,
   useAdminRegions,
@@ -556,15 +557,18 @@ function ProductVariantRow(props: ProductVariantRowProps) {
       <Tile>{variant.sku}</Tile>
 
       {activeRegions.map((r) => {
-        // TODO: filter prices by the current price list id
-        // const current = variant.prices.find((p) => p.region_id === r.id)
-        const current = variant.prices.find(
-          (p) => p.currency_code === r.currency_code
-        )
+        const current = variant.prices.find((p) => p.region_id === r.id)
+
+        const a =
+          typeof current?.amount === "number"
+            ? current?.amount /
+              10 **
+                currencies[current?.currency_code.toUpperCase()]?.decimal_digits
+            : undefined
 
         const amount = isActive(variant.id, r.id)
           ? currentEditAmount
-          : getPriceChange(variant.id, r.id) || current?.amount // saved as a string
+          : getPriceChange(variant.id, r.id) || a // saved as a string
 
         return (
           <div key={r.id} className="min-w-[314px]">
@@ -637,7 +641,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
 
   const { regions } = useAdminRegions()
   // TODO: should filter variants from products that are related to the price list
-  const updatePriceList = useAdminUpdatePriceList(currentPriceListId)
+  const updatePriceList = useAdminCreatePriceListPrices(currentPriceListId)
   const { products, isFetching } = useAdminPriceListProducts(currentPriceListId)
 
   const onPriceListSelect = (priceListId: string) => {
@@ -666,9 +670,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
 
       // UPDATE an existing MA record
       if (moneyAmount) {
-        // update existing money amount
-        const toUpdate: Partial<MoneyAmount> = { ...moneyAmount }
-
         let preparedAmount = Math.round(
           parseFloat(amount) *
             10 **
@@ -679,13 +680,17 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
           return
         }
 
-        toUpdate.amount = preparedAmount
-
-        prices.push(toUpdate)
+        prices.push({
+          id: moneyAmount.id,
+          variant_id: moneyAmount.variant_id,
+          region_id: moneyAmount.region_id,
+          amount: preparedAmount,
+        })
       }
       // CREATE a new MA record
       else {
-        const curr = regions?.find((r) => r.id === regionId)!.currency!
+        const reg = regions?.find((r) => r.id === regionId)!
+        const curr = currencies[reg.currency_code.toUpperCase()]
 
         const preparedAmount = Math.round(
           parseFloat(amount) *
@@ -699,14 +704,13 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         prices.push({
           variant_id: variantId,
           region_id: regionId,
-          currency_code: curr.code,
           amount: preparedAmount,
         })
       }
 
       console.log({ prices })
 
-      // updatePriceList.mutate({ prices })
+      updatePriceList.mutate({ prices, override: true })
     })
   }
 
