@@ -238,7 +238,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
       {showCancel && (
         <DeletePrompt
           handleClose={() => setShowCancel(!showCancel)}
-          onDelete={async () => handleCancelExchange()}
+          onDelete={handleCancelExchange}
           confirmText="Yes, cancel"
           heading="Cancel exchange"
           text="Are you sure you want to cancel this exchange?"
@@ -248,7 +248,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
       {showCancelReturn && (
         <DeletePrompt
           handleClose={() => setShowCancelReturn(!showCancelReturn)}
-          onDelete={async () => handleCancelReturn()}
+          onDelete={handleCancelReturn}
           confirmText="Yes, cancel"
           heading="Cancel return"
           text="Are you sure you want to cancel this return?"
