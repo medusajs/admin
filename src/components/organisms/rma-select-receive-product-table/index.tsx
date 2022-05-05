@@ -1,3 +1,4 @@
+import { LineItem, Order } from "@medusajs/medusa"
 import clsx from "clsx"
 import React from "react"
 import { formatAmountWithSymbol } from "../../../utils/prices"
@@ -6,19 +7,19 @@ import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import Table from "../../molecules/table"
 
+type toReturnType = Record<string, { quantity: number }>
+
 type RMASelectProductTableProps = {
-  order: any
-  allItems: any[]
-  toReturn: any
+  order: Order
+  allItems: LineItem[]
+  toReturn: toReturnType
   setToReturn: (items: any) => void
-  imagesOnReturns?: any
 }
 
 const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
   order,
   allItems,
   toReturn,
-  imagesOnReturns = false,
   setToReturn,
 }) => {
   const handleQuantity = (change, item) => {
@@ -50,9 +51,6 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
       delete newReturns[id]
     } else {
       newReturns[id] = {
-        images: imagesOnReturns ? [] : null,
-        reason: null,
-        note: "",
         quantity: item.quantity,
       }
     }
