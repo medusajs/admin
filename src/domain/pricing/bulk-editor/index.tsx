@@ -6,7 +6,6 @@ import {
   useAdminPriceListProducts,
   useAdminPriceLists,
   useAdminRegions,
-  useAdminUpdatePriceList,
 } from "medusa-react"
 import {
   MoneyAmount,
@@ -124,6 +123,37 @@ function Tile(props: TileProps) {
   )
 }
 
+function Footer() {
+  return (
+    <div className="fixed bottom-0 left-0 w-full flex justify-center p-5">
+      <div className="flex flex-row gap-2 items-center text-small text-gray-400">
+        <div className="rounded-base bg-grey-10 p-1">
+          <PointerIcon />
+        </div>
+        <span>or</span>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowLeftIcon size={14} />
+        </div>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowUpIcon size={14} />
+        </div>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowRightIcon size={14} />
+        </div>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowDownIcon size={14} />
+        </div>
+        <span>to switch between cells.</span>
+        <span>Hold</span>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ShiftIcon size={14} />
+        </div>
+        <span>to select multiple cells.</span>
+      </div>
+    </div>
+  )
+}
+
 type ProductSectionHeaderProps = {
   product: Product
   isFirst: boolean
@@ -214,6 +244,24 @@ type ProductSectionProps = {
   activeRegions: Region[]
   priceChanges: Record<string, string>
   setPriceChanges: (changes: Record<string, string>) => void
+
+  onHeaderClick: (regionId: string, productId: string) => void
+
+  isActive: (variantId: string, regionId: string) => boolean
+  getPriceChange: (variantId: string, regionId: string) => string
+
+  currentEditAmount?: string
+  onAmountChange: (variantId: string, regionId: string, amount: string) => void
+  onKeyDown: (
+    e: React.MouseEvent<HTMLInputElement>,
+    variantId: string,
+    regionId: string
+  ) => void
+  onPriceInputClick: (
+    e: React.MouseEvent<HTMLInputElement>,
+    variantId: string,
+    regionId: string
+  ) => void
 }
 
 let skip = false
@@ -225,7 +273,119 @@ function ProductSection(props: ProductSectionProps) {
     isFirst,
     priceChanges,
     setPriceChanges,
+    ...rest
   } = props
+
+  return (
+    <div className="px-8 mb-4">
+      <ProductSectionHeader
+        isFirst={isFirst}
+        product={product}
+        activeRegions={activeRegions}
+        onHeaderClick={rest.onHeaderClick}
+      />
+      {product.variants.map((v) => (
+        <ProductVariantRow
+          key={v.id}
+          variant={v}
+          activeRegions={activeRegions}
+          isActive={rest.isActive}
+          getPriceChange={rest.getPriceChange}
+          onKeyDown={rest.onKeyDown}
+          currentEditAmount={rest.currentEditAmount}
+          // HANDLERS
+          onAmountChange={rest.onAmountChange}
+          onPriceInputClick={rest.onPriceInputClick}
+        />
+      ))}
+    </div>
+  )
+}
+
+type ProductVariantRowProps = {
+  variant: ProductVariant
+  activeRegions: Region[]
+
+  isActive: (variantId: string, regionId: string) => boolean
+  getPriceChange: (variantId: string, regionId: string) => string
+
+  currentEditAmount?: string
+  onAmountChange: (variantId: string, regionId: string, amount: string) => void
+  onKeyDown: (
+    e: React.MouseEvent<HTMLInputElement>,
+    variantId: string,
+    regionId: string
+  ) => void
+  onPriceInputClick: (
+    e: React.MouseEvent<HTMLInputElement>,
+    variantId: string,
+    regionId: string
+  ) => void
+}
+
+function ProductVariantRow(props: ProductVariantRowProps) {
+  const {
+    currentEditAmount,
+    activeRegions,
+    variant,
+    onKeyDown,
+    onPriceInputClick,
+    onAmountChange,
+    getPriceChange,
+    isActive,
+  } = props
+
+  return (
+    <div className="flex gap-2 mb-2">
+      <Tile className="pl-[42px]">{variant.title}</Tile>
+      <Tile>{variant.sku}</Tile>
+
+      {activeRegions.map((r) => {
+        const current = variant.prices.find((p) => p.region_id === r.id)
+
+        const a =
+          typeof current?.amount === "number"
+            ? current?.amount /
+              10 **
+                currencies[current?.currency_code.toUpperCase()]?.decimal_digits
+            : undefined
+
+        const amount = isActive(variant.id, r.id)
+          ? currentEditAmount
+          : getPriceChange(variant.id, r.id) || a // saved as a string
+
+        return (
+          <div key={r.id} className="min-w-[314px]">
+            <PriceInput
+              amount={amount}
+              currency={currencies[r.currency_code.toUpperCase()]}
+              hasVirtualFocus={isActive(variant.id, r.id)}
+              onMouseDown={(e) => onPriceInputClick(e, variant.id, r.id)}
+              onAmountChange={(a) => onAmountChange(variant.id, r.id, a)}
+              onKeyDown={(e) => onKeyDown(e, variant.id, r.id)}
+              onBlur={
+                /* prevent `onAmountChange` call from the library */
+                (e) => e.preventDefault()
+              }
+              id={getPriceKey(variant.id, r.id)}
+              className="js-bt-input"
+            />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+type PriceListBulkEditorProps = {
+  products: Product[]
+  activeRegions: Region[]
+  priceChanges: Record<string, string>
+  setPriceChanges: (a: Record<string, string>) => void
+}
+
+function PriceListBulkEditor(props: PriceListBulkEditorProps) {
+  const { activeRegions, products, priceChanges, setPriceChanges } = props
 
   const [activeFields, setActiveFields] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<string>()
@@ -236,8 +396,13 @@ function ProductSection(props: ProductSectionProps) {
    * A struct for mapping between table cell indexes and variant/regions ids.
    */
   const matrix = useMemo(() => {
-    return [product.variants.map((v) => v.id), activeRegions.map((r) => r.id)]
-  }, [activeRegions, product.variants])
+    const variants = products.reduce(
+      (acc, p) => [...acc, ...p.variants.map((v) => v.id)],
+      []
+    )
+
+    return [variants, activeRegions.map((r) => r.id)]
+  }, [activeRegions, products])
 
   useEffect(() => {
     // TODO: when a region is removed unset `priceChanges` related to that region
@@ -480,169 +645,59 @@ function ProductSection(props: ProductSectionProps) {
     setCurrentEditAmount(amount)
   }
 
-  const onHeaderClick = (regionId: string) => {
-    document
-      .getElementById(getPriceKey(product.variants[0].id, regionId))
-      ?.focus()
-
-    setCurrentEditAmount(undefined)
-
-    const tmp = {}
-    product.variants.forEach((v) => (tmp[getPriceKey(v.id, regionId)] = true))
-    setActiveFields(tmp)
+  const onHeaderClick = (regionId: string, productId: string) => {
+    // document
+    //   .getElementById(getPriceKey(product.variants[0].id, regionId))
+    //   ?.focus()
+    //
+    // setCurrentEditAmount(undefined)
+    //
+    // const tmp = {}
+    // product.variants.forEach((v) => (tmp[getPriceKey(v.id, regionId)] = true))
+    // setActiveFields(tmp)
   }
 
   return (
-    <div className="px-8 mb-4">
-      <ProductSectionHeader
-        isFirst={isFirst}
-        product={product}
-        activeRegions={activeRegions}
-        onHeaderClick={onHeaderClick}
-      />
-      {product.variants.map((v) => (
-        <ProductVariantRow
-          key={v.id}
-          variant={v}
-          isActive={isActive}
-          getPriceChange={getPriceChange}
-          onKeyDown={onKeyDown}
+    <>
+      {products.map((p, ind) => (
+        <ProductSection
+          key={p.id}
+          product={p}
+          isFirst={!ind}
+          priceChanges={priceChanges}
+          setPriceChanges={setPriceChanges}
           activeRegions={activeRegions}
+          // Edit controls
           currentEditAmount={currentEditAmount}
-          // HANDLERS
-          onAmountChange={onAmountChange}
+          onKeyDown={onKeyDown}
+          onHeaderClick={onHeaderClick}
           onPriceInputClick={onPriceInputClick}
+          onAmountChange={onAmountChange}
+          getPriceChange={getPriceChange}
+          isActive={isActive}
         />
       ))}
-    </div>
+    </>
   )
 }
 
-type ProductVariantRowProps = {
-  variant: ProductVariant
-  activeRegions: Region[]
-
-  isActive: (variantId: string, regionId: string) => boolean
-  getPriceChange: (variantId: string, regionId: string) => string
-
-  currentEditAmount?: string
-  onAmountChange: (variantId: string, regionId: string, amount: string) => void
-  onKeyDown: (
-    e: React.MouseEvent<HTMLInputElement>,
-    variantId: string,
-    regionId: string
-  ) => void
-  onPriceInputClick: (
-    e: React.MouseEvent<HTMLInputElement>,
-    variantId: string,
-    regionId: string
-  ) => void
-}
-
-function ProductVariantRow(props: ProductVariantRowProps) {
-  const {
-    currentEditAmount,
-    activeRegions,
-    variant,
-    onKeyDown,
-    onPriceInputClick,
-    onAmountChange,
-    getPriceChange,
-    isActive,
-  } = props
-
-  return (
-    <div className="flex gap-2 mb-2">
-      <Tile className="pl-[42px]">{variant.title}</Tile>
-      <Tile>{variant.sku}</Tile>
-
-      {activeRegions.map((r) => {
-        const current = variant.prices.find((p) => p.region_id === r.id)
-
-        const a =
-          typeof current?.amount === "number"
-            ? current?.amount /
-              10 **
-                currencies[current?.currency_code.toUpperCase()]?.decimal_digits
-            : undefined
-
-        const amount = isActive(variant.id, r.id)
-          ? currentEditAmount
-          : getPriceChange(variant.id, r.id) || a // saved as a string
-
-        return (
-          <div key={r.id} className="min-w-[314px]">
-            <PriceInput
-              amount={amount}
-              currency={currencies[r.currency_code.toUpperCase()]}
-              hasVirtualFocus={isActive(variant.id, r.id)}
-              onMouseDown={(e) => onPriceInputClick(e, variant.id, r.id)}
-              onAmountChange={(a) => onAmountChange(variant.id, r.id, a)}
-              onKeyDown={(e) => onKeyDown(e, variant.id, r.id)}
-              onBlur={
-                /* prevent `onAmountChange` call from the library */
-                (e) => e.preventDefault()
-              }
-              id={getPriceKey(variant.id, r.id)}
-              className="js-bt-input"
-            />
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-function Footer() {
-  return (
-    <div className="fixed bottom-0 left-0 w-full flex justify-center p-5">
-      <div className="flex flex-row gap-2 items-center text-small text-gray-400">
-        <div className="rounded-base bg-grey-10 p-1">
-          <PointerIcon />
-        </div>
-        <span>or</span>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowLeftIcon size={14} />
-        </div>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowUpIcon size={14} />
-        </div>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowRightIcon size={14} />
-        </div>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowDownIcon size={14} />
-        </div>
-        <span>to switch between cells.</span>
-        <span>Hold</span>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ShiftIcon size={14} />
-        </div>
-        <span>to select multiple cells.</span>
-      </div>
-    </div>
-  )
-}
-
-type PriceListBulkEditorProps = {
+type PriceListBulkEditorContainer = {
   priceList: PriceList
   closeForm: () => void
 }
 
-function PriceListBulkEditor(props: PriceListBulkEditorProps) {
+function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   const { priceList, closeForm } = props
 
-  const [priceChanges, setPriceChanges] = useState<Record<string, string>>({})
   const [currentPriceListId, setCurrentPriceListId] = useState(priceList.id)
-
-  const [activeRegions, setActiveRegions] = useState<string[]>([])
-
-  console.log(priceList)
+  const [priceChanges, setPriceChanges] = useState<Record<string, string>>({})
 
   const { regions } = useAdminRegions()
-  // TODO: should filter variants from products that are related to the price list
+  const [activeRegions, setActiveRegions] = useState<string[]>([])
+
+  // TODO: should we filter only variants that are part of the price list ?
   const updatePriceList = useAdminCreatePriceListPrices(currentPriceListId)
-  const { products, isFetching } = useAdminPriceListProducts(currentPriceListId)
+  const { products, isLoading } = useAdminPriceListProducts(currentPriceListId)
 
   const onPriceListSelect = (priceListId: string) => {
     // TODO: check for changes
@@ -654,6 +709,10 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     closeForm()
   }
 
+  /**
+   * Save changes callback.
+   * Iterate over a price changes object and prepare MA prices for bulk update.
+   */
   const onSave = () => {
     const prices: Partial<MoneyAmount>[] = []
 
@@ -708,18 +767,21 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         })
       }
 
-      console.log({ prices })
-
       updatePriceList.mutate({ prices, override: true })
     })
   }
 
-  console.log(products)
+  const displayRegions = activeRegions
+    .map((r) => regions?.find((a) => a.id === r))
+    .filter((i) => !!i)
+    .sort((a, b) => a.currency_code.localeCompare(b.currency_code)) as Region[]
 
-  if (isFetching) return null
+  if (isLoading || !regions) {
+    return null
+  }
 
   return (
-    <Fade isVisible isFullScreen={true}>
+    <Fade isVisible isFullScreen>
       <FocusModal>
         <FocusModal.Header>
           <div className="medium:w-8/12 w-full px-8 flex justify-between">
@@ -760,24 +822,12 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
           />
 
           <div className="medium:w-8/12 w-full flex flex-col justify-start mx-auto mb-7 overflow-x-auto-TODO">
-            {regions &&
-              products.map((p, ind) => (
-                <ProductSection
-                  key={p.id}
-                  product={p}
-                  priceChanges={priceChanges}
-                  setPriceChanges={setPriceChanges}
-                  isFirst={!ind}
-                  activeRegions={
-                    activeRegions
-                      .map((r) => regions?.find((a) => a.id === r))
-                      .filter((i) => !!i)
-                      .sort((a, b) =>
-                        a.currency_code.localeCompare(b.currency_code)
-                      ) as Region[]
-                  }
-                />
-              ))}
+            <PriceListBulkEditor
+              products={products!}
+              activeRegions={displayRegions}
+              priceChanges={priceChanges}
+              setPriceChanges={setPriceChanges}
+            />
           </div>
           <Footer />
         </FocusModal.Main>
@@ -786,4 +836,4 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   )
 }
 
-export default PriceListBulkEditor
+export default PriceListBulkEditorContainer
