@@ -24,8 +24,7 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
 }) => {
   const handleQuantity = (change, item) => {
     if (
-      (item.quantity - item.returned_quantity === toReturn[item.id].quantity &&
-        change > 0) ||
+      (item.quantity === toReturn[item.id].quantity && change > 0) ||
       (toReturn[item.id].quantity === 1 && change < 0)
     ) {
       return
