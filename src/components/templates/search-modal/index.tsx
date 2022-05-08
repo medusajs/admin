@@ -102,7 +102,7 @@ const SearchModal = ({ handleClose }) => {
                   onClick={handleClear}
                   content="Clear search"
                 >
-                  <CrossIcon className="flex text-grey-50" />
+                  <CrossIcon className="flex text-grey-50" onClick={handleClose} />
                 </Tooltip>
               </div>
               <KeyboardShortcuts className="mt-xlarge px-xlarge flex items-center gap-x-3 text-grey-40 inter-small-regular" />
