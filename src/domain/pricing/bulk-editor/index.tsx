@@ -354,8 +354,12 @@ function ProductVariantRow(props: ProductVariantRowProps) {
       <Tile>{variant.sku}</Tile>
 
       {activeRegions.map((r) => {
-        // TODO: what if this variant have multiple MAs for a region but for example with different quantities?
-        const current = variant.prices.find((p) => p.region_id === r.id)
+        const current = variant.prices.find(
+          (p) =>
+            p.region_id === r.id &&
+            p.min_quantity === null &&
+            p.max_quantity === null
+        )
 
         const a =
           typeof current?.amount === "number"
