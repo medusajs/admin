@@ -32,6 +32,9 @@ import ArrowUpIcon from "../../../components/fundamentals/icons/arrow-up-icon"
 import ArrowDownIcon from "../../../components/fundamentals/icons/arrow-down-icon"
 import ShiftIcon from "../../../components/fundamentals/icons/shift-icon"
 
+/**
+ * Struct for holding multiedit state.
+ */
 type CellPointers = {
   anchorV: number
   anchorR: number
@@ -40,7 +43,7 @@ type CellPointers = {
   maxV: number
   minR: number
   maxR: number
-  // last
+  // "coordinates" of the last clicked cell
   lastV: number
   lastR: number
 }
@@ -277,8 +280,6 @@ type ProductSectionProps = {
   ) => void
 }
 
-let skip = false
-
 function ProductSection(props: ProductSectionProps) {
   const {
     activeRegions,
@@ -381,10 +382,8 @@ function ProductVariantRow(props: ProductVariantRowProps) {
               onMouseDown={(e) => onPriceInputClick(e, variant.id, r.id)}
               onAmountChange={(a) => onAmountChange(variant.id, r.id, a)}
               onKeyDown={(e) => onKeyDown(e, variant.id, r.id)}
-              onBlur={
-                /* prevent `onAmountChange` call from the library */
-                (e) => e.preventDefault()
-              }
+              /* prevent `onAmountChange` call from the library */
+              onBlur={(e) => e.preventDefault()}
               data-id={getPriceKey(variant.id, r.id)}
               className="js-bt-input"
             />
@@ -406,7 +405,9 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   const { activeRegions, products, priceChanges, setPriceChanges } = props
 
   const [activeFields, setActiveFields] = useState({})
-  const [currentEditAmount, setCurrentEditAmount] = useState<string>()
+  const [currentEditAmount, setCurrentEditAmount] = useState<
+    string | undefined
+  >()
 
   const { current: pointers } = useRef<CellPointers>({} as CellPointers)
 
@@ -498,23 +499,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   ) => {
     const cellKey = getPriceKey(variantId, regionId)
 
-    // TODO: force formatting on cell blur
-
-    // const tmp = { ...priceChanges }
-    // const c =
-    //   currencies[
-    //     props.activeRegions
-    //       .find((r) => r.id === regionId)
-    //       .currency_code.toUpperCase()
-    //   ]
-    //
-    // const formatted = (
-    //   Math.round(parseFloat(currentEditAmount) * 10 ** c.decimal_digits) /
-    //   10 ** c.decimal_digits
-    // ).toFixed(c.decimal_digits)
-    //
-    // Object.keys(activeFields).forEach((k) => (tmp[k] = formatted))
-
     if (e.shiftKey) {
       e.preventDefault() // do not focus
 
@@ -534,7 +518,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         e.target.focus()
       }
     } else {
-      skip = true
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
     }
@@ -553,7 +536,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     }
 
     if (e.key === "Enter") {
-      skip = true
       e.target?.blur()
       setCurrentEditAmount(undefined)
       setActiveFields({})
@@ -644,22 +626,36 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     regionId: string,
     amount: string
   ) => {
-    // skip this callback in case `onAmount` is called on price input blur
-    if (skip) {
-      skip = false
-
+    if (amount === currentEditAmount) {
       return
+    }
+
+    let formatted = amount
+
+    // only on initial edit set formatted value to be consistent
+    // but omit setting this formatted value on every edit to prevent wierd corner cases
+    if (amount && !currentEditAmount) {
+      const c =
+        currencies[
+          props.activeRegions
+            .find((r) => r.id === regionId)!
+            .currency_code.toUpperCase()
+        ]
+
+      formatted = (
+        Math.round(parseFloat(amount) * 10 ** c.decimal_digits) /
+        10 ** c.decimal_digits
+      ).toFixed(c.decimal_digits)
     }
 
     const tmp = { ...priceChanges }
 
     // for each input that is currently edited set the amount
-    Object.keys(activeFields).forEach((k) => (tmp[k] = amount))
-
-    // TODO: investigate first digit keypress is not registered i.e `onAmountChange` is not called
+    Object.keys(activeFields).forEach((k) => (tmp[k] = formatted))
 
     setPriceChanges(tmp)
-    setCurrentEditAmount(amount)
+
+    setCurrentEditAmount(formatted)
   }
 
   const onHeaderClick = (
@@ -754,7 +750,12 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
         ?.variants.find((v) => v.id === variantId)
 
       // find MA record that matches variant id and region id
-      const moneyAmount = variant!.prices.find((p) => p.region_id === regionId)
+      const moneyAmount = variant!.prices.find(
+        (p: MoneyAmount) =>
+          p.region_id === regionId &&
+          p.min_quantity === null &&
+          p.max_quantity === null
+      )
 
       // UPDATE an existing MA record
       if (moneyAmount) {
