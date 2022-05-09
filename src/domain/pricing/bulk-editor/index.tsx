@@ -32,9 +32,29 @@ import ArrowUpIcon from "../../../components/fundamentals/icons/arrow-up-icon"
 import ArrowDownIcon from "../../../components/fundamentals/icons/arrow-down-icon"
 import ShiftIcon from "../../../components/fundamentals/icons/shift-icon"
 
+type CellPointers = {
+  anchorV: number
+  anchorR: number
+  // row/col min-max
+  minV: number
+  maxV: number
+  minR: number
+  maxR: number
+  // last
+  lastV: number
+  lastR: number
+}
+
+/**
+ * Generate unique ID for a cell in the bulk table.
+ */
 const getPriceKey = (variantId: string, regionId: string) =>
   `${variantId}-${regionId}`
 
+/**
+ * Helper for generating table field filter options.
+ * @param region
+ */
 function generateField(region: Region) {
   return {
     id: region.id,
@@ -48,6 +68,34 @@ function generateField(region: Region) {
       </span>
     ),
   }
+}
+
+type TileProps = {
+  className?: string
+  children: React.ReactNode
+}
+
+/**
+ * Bulk editor cell tile component.
+ */
+function Tile(props: TileProps) {
+  return (
+    <div
+      className={`
+        border border-solid border-grey-20
+        h-[40px]
+        min-w-[314px]
+        rounded-lg
+        bg-grey-5
+        text-gray-90
+        text-small
+        flex items-center
+        pl-3
+        ${props.className || ""}`}
+    >
+      {props.children}
+    </div>
+  )
 }
 
 type PriceListBulkEditorHeaderProps = {
@@ -98,62 +146,6 @@ function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
   )
 }
 
-type TileProps = {
-  className?: string
-  children: React.ReactNode
-}
-
-function Tile(props: TileProps) {
-  return (
-    <div
-      className={`
-        border border-solid border-grey-20
-        h-[40px]
-        min-w-[314px]
-        rounded-lg
-        bg-grey-5
-        text-gray-90
-        text-small
-        flex items-center
-        pl-3
-        ${props.className || ""}`}
-    >
-      {props.children}
-    </div>
-  )
-}
-
-function Footer() {
-  return (
-    <div className="fixed bottom-0 left-0 w-full flex justify-center p-5">
-      <div className="flex flex-row gap-2 items-center text-small text-gray-400">
-        <div className="rounded-base bg-grey-10 p-1">
-          <PointerIcon />
-        </div>
-        <span>or</span>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowLeftIcon size={14} />
-        </div>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowUpIcon size={14} />
-        </div>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowRightIcon size={14} />
-        </div>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowDownIcon size={14} />
-        </div>
-        <span>to switch between cells.</span>
-        <span>Hold</span>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ShiftIcon size={14} />
-        </div>
-        <span>to select multiple cells.</span>
-      </div>
-    </div>
-  )
-}
-
 type ProductSectionHeaderProps = {
   product: Product
   isFirst: boolean
@@ -161,6 +153,9 @@ type ProductSectionHeaderProps = {
   onHeaderClick: (regionId: string, productId: string) => void
 }
 
+/**
+ * Header for the product section of the bulk editor table.
+ */
 function ProductSectionHeader(props: ProductSectionHeaderProps) {
   const { activeRegions, product, isFirst, onHeaderClick } = props
 
@@ -225,17 +220,35 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
   )
 }
 
-type CellPointers = {
-  anchorV: number
-  anchorR: number
-  // row/col min-max
-  minV: number
-  maxV: number
-  minR: number
-  maxR: number
-  // last
-  lastV: number
-  lastR: number
+function PriceListBulkEditorFooter() {
+  return (
+    <div className="fixed bottom-0 left-0 w-full flex justify-center p-5">
+      <div className="flex flex-row gap-2 items-center text-small text-gray-400">
+        <div className="rounded-base bg-grey-10 p-1">
+          <PointerIcon />
+        </div>
+        <span>or</span>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowLeftIcon size={14} />
+        </div>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowUpIcon size={14} />
+        </div>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowRightIcon size={14} />
+        </div>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ArrowDownIcon size={14} />
+        </div>
+        <span>to switch between cells.</span>
+        <span>Hold</span>
+        <div className="rounded-base bg-grey-10 p-1">
+          <ShiftIcon size={14} />
+        </div>
+        <span>to select multiple cells.</span>
+      </div>
+    </div>
+  )
 }
 
 type ProductSectionProps = {
@@ -368,7 +381,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
                 /* prevent `onAmountChange` call from the library */
                 (e) => e.preventDefault()
               }
-              id={getPriceKey(variant.id, r.id)}
+              data-id={getPriceKey(variant.id, r.id)}
               className="js-bt-input"
             />
           </div>
@@ -511,7 +524,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         if (wasFocused) {
           // find another active cell to focus
           const id = Object.keys(activeFields).filter((k) => k !== cellKey)[0]
-          document.getElementById(id)?.focus()
+          document.querySelectorAll(`[data-id="${id}"]`)[0].focus()
         }
       } else {
         e.target.focus()
@@ -654,8 +667,10 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     const product = products.find((p) => p.id === productId)!
 
     document
-      .getElementById(getPriceKey(product.variants[0].id, regionId))
-      ?.focus()
+      .querySelectorAll(
+        `[data-id="${getPriceKey(product.variants[0].id, regionId)}"]`
+      )[0]
+      .focus()
 
     const tmp = isShiftDown ? { ...activeFields } : {}
 
@@ -808,6 +823,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
                 Bulk editor
               </span>
             </div>
+
             <div className="gap-x-small flex">
               <Button
                 size="small"
@@ -817,6 +833,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
               >
                 Discard
               </Button>
+
               <Button size="small" onClick={onSave} className="rounded-rounded">
                 Save
               </Button>
@@ -839,7 +856,8 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
               setPriceChanges={setPriceChanges}
             />
           </div>
-          <Footer />
+
+          <PriceListBulkEditorFooter />
         </FocusModal.Main>
       </FocusModal>
     </Fade>
