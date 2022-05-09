@@ -214,7 +214,9 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
               </div>
             </div>
             <div className="mt-xlarge">
-              <h3 className="inter-base-semibold mb-base">Denominations</h3>
+              <h3 className="inter-base-semibold mb-base">
+                Denominations<span className="text-rose-50">*</span>
+              </h3>
               <div className="flex flex-col gap-y-xsmall">
                 {denominations.map((denomination) => {
                   return (

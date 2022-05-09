@@ -50,7 +50,7 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
       <PopoverPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
         <PopoverPrimitive.Trigger asChild>
           <button
-            className={clsx("w-full rounded-base border ", {
+            className={clsx("w-full rounded-rounded border ", {
               "shadow-input border-violet-60": isOpen,
               "border-grey-20": !isOpen,
             })}

@@ -13,6 +13,7 @@ import { SelectOption } from "../../../../components/molecules/select/types"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
+import { focusByName } from "../../../../utils/focus-by-name"
 import usePricesFieldArray from "../../product-form/form/usePricesFieldArray"
 
 const defaultVariant = {
@@ -49,11 +50,19 @@ const VariantEditor = ({
     appendPrice,
     deletePrice,
     availableCurrencies,
-  } = usePricesFieldArray(store?.currencies.map((c) => c.code) || [], {
-    control,
-    name: "prices",
-    keyName: "indexId",
-  })
+  } = usePricesFieldArray(
+    store?.currencies.map((c) => c.code) || [],
+    {
+      control,
+      name: "prices",
+      keyName: "indexId",
+    },
+    {
+      defaultAmount: 1000,
+      defaultCurrencyCode:
+        store?.default_currency.code || store?.currencies[0].code || "usd",
+    }
+  )
 
   const { fields } = useFieldArray({
     control,
@@ -72,6 +81,15 @@ const VariantEditor = ({
   }, [variant, store])
 
   const handleSave = (data) => {
+    if (!data.prices) {
+      focusByName("add-price")
+      return
+    }
+
+    if (!data.title) {
+      data.title = data.options.map((o) => o.value).join(" / ")
+    }
+
     data.prices = data.prices.map(({ price: { currency_code, amount } }) => ({
       currency_code,
       amount: Math.round(amount),
@@ -124,6 +142,7 @@ const VariantEditor = ({
                   <Input
                     ref={register({ required: true })}
                     name={`options[${index}].value`}
+                    required={true}
                     label={field.title}
                     defaultValue={field.value}
                   />
@@ -140,9 +159,10 @@ const VariantEditor = ({
           <div className="mb-8">
             <label
               tabIndex={0}
-              className="inter-base-semibold mb-4 flex items-center gap-xsmall"
+              className="inter-base-semibold mb-4 flex items-center"
             >
               {"Prices"}
+              <span className="text-rose-50 mr-xsmall">*</span>
               <IconTooltip content={"Variant prices"} />
             </label>
 
@@ -201,6 +221,7 @@ const VariantEditor = ({
               onClick={appendPrice}
               size="small"
               variant="ghost"
+              name="add-price"
               disabled={availableCurrencies?.length === 0}
             >
               <PlusIcon size={20} /> Add a price
