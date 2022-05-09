@@ -312,7 +312,7 @@ const OrderDetails = ({ id }) => {
                   </button>
                 </Tooltip>
               }
-              subtitle={moment(order.created_at).format("d MMMM YYYY hh:mm a")}
+              subtitle={moment(order.created_at).format("D MMMM YYYY hh:mm a")}
               status={<OrderStatusComponent status={order?.status} />}
               forceDropdown={true}
               actionables={[
