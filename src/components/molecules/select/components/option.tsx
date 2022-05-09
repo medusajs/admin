@@ -14,6 +14,7 @@ export const Option = <
   isSelected,
   isFocused,
   children,
+  label,
 }: OptionProps<T, IsMulti, GroupType>) => {
   return (
     <div
@@ -30,7 +31,9 @@ export const Option = <
         )}
       >
         <div className="items-center h-full flex overflow-hidden gap-x-3 pl-1">
-          <Adornment isMulti={isMulti} isSelected={isSelected} />
+          {label !== "Select all" && (
+            <Adornment isMulti={isMulti} isSelected={isSelected} />
+          )}
           <span className="text-grey-90 inter-base-regular truncate">
             {children}
           </span>

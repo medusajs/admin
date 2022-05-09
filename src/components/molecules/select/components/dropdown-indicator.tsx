@@ -1,3 +1,4 @@
+import React from "react"
 import { DropdownIndicatorProps, GroupBase } from "react-select"
 import ArrowDownIcon from "../../../fundamentals/icons/arrow-down-icon"
 
@@ -7,7 +8,7 @@ export const DropdownIndicator = <
   GroupType extends GroupBase<T>
 >({
   innerProps,
-  selectProps: { menuIsOpen },
+  selectProps: { menuIsOpen, name },
 }: DropdownIndicatorProps<T, IsMulti, GroupType>) => {
   return (
     <div
@@ -15,17 +16,11 @@ export const DropdownIndicator = <
       className="text-grey-50 h-full flex flex-col items-center justify-between"
     >
       <button>
-        <ScreenReaderMessage isMenuOpen={menuIsOpen} />
+        <span className="sr-only">
+          {menuIsOpen ? "Close" : "Open"} {name} dropdown
+        </span>
         <ArrowDownIcon size={16} />
       </button>
     </div>
-  )
-}
-
-const ScreenReaderMessage = ({ isMenuOpen = false }) => {
-  return (
-    <span className="sr-only">
-      {isMenuOpen ? "Close" : "Open"} select dropdown
-    </span>
   )
 }

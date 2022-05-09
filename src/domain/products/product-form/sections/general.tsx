@@ -12,7 +12,7 @@ import Checkbox from "../../../../components/atoms/checkbox"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
-import Select from "../../../../components/molecules/select"
+import Select from "../../../../components/molecules/select/selects/select"
 import StatusSelector from "../../../../components/molecules/status-selector"
 import TagInput from "../../../../components/molecules/tag-input"
 import Textarea from "../../../../components/molecules/textarea"
@@ -114,13 +114,21 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             ref={register}
           />
           <Controller
-            as={Select}
             control={control}
-            label="Collection"
             name="collection"
-            placeholder="Select collection..."
-            options={collectionOptions}
-            clearSelected
+            render={({ onChange, value }) => {
+              return (
+                <Select
+                  label="Collection"
+                  placeholder="Select collection..."
+                  searchPlaceholder="Search collections..."
+                  options={collectionOptions}
+                  isClearable
+                  isSearchable
+                  onChange={onChange}
+                />
+              )
+            }}
           />
           <Controller
             control={control}
@@ -130,14 +138,15 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
                 <Select
                   label="Type"
                   placeholder="Select type..."
+                  searchPlaceholder="Search types..."
                   options={typeOptions}
                   onChange={onChange}
                   value={value}
-                  isCreatable
+                  isCreateable
                   onCreateOption={(value) => {
                     return setNewType(value)
                   }}
-                  clearSelected
+                  isClearable
                 />
               )
             }}

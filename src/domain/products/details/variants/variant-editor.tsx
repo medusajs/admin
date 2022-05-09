@@ -8,7 +8,8 @@ import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
-import Select from "../../../../components/molecules/select"
+import Select from "../../../../components/molecules/select/selects/select"
+import { SelectOption } from "../../../../components/molecules/select/types"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
@@ -36,8 +37,8 @@ const VariantEditor = ({
   const [selectedCountry, setSelectedCountry] = useState(() => {
     const defaultCountry = variant.origin_country
       ? countryOptions.find((cd) => cd.label === variant.origin_country)
-      : null
-    return defaultCountry || null
+      : undefined
+    return defaultCountry
   })
 
   const { control, register, reset, watch, handleSubmit } = useForm({
@@ -306,11 +307,11 @@ const VariantEditor = ({
                 ref={register}
               />
               <Select
-                enableSearch
+                isSearchable
                 label={"Country of origin"}
                 options={countryOptions}
                 value={selectedCountry}
-                onChange={setSelectedCountry}
+                onChange={(value) => setSelectedCountry(value as SelectOption)}
               />
               <Input
                 label="Material"

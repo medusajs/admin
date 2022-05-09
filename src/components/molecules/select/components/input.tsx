@@ -1,6 +1,7 @@
 import React from "react"
 import { components as Primitives, GroupBase, InputProps } from "react-select"
 import SearchIcon from "../../../fundamentals/icons/search-icon"
+import { useSelectContext } from "../context"
 
 export const Input = <
   T,
@@ -9,8 +10,7 @@ export const Input = <
 >(
   props: InputProps<T, IsMulti, GroupType>
 ) => {
-  // const { searchPlaceholder } = useSelectContext()
-  const searchPlaceholder = "Search"
+  const { searchPlaceholder } = useSelectContext()
   const {
     isHidden,
     value,
@@ -22,13 +22,13 @@ export const Input = <
   }
 
   return (
-    <div className="w-full flex items-center">
+    <div className="w-full flex items-center h-[45px]">
       <SearchIcon size={20} className="text-grey-40 mr-2" />
       <div className="relative">
         <Primitives.Input {...props} className="py-2xsmall" />
         {!value && (
           <span
-            className="absolute left-0 inter-base-regular text-grey-40"
+            className="absolute inset-0 flex items-center justify-start inter-base-regular text-grey-40"
             role="tooltip"
           >
             {searchPlaceholder || "Search..."}

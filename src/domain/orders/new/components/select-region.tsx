@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
-import Select from "../../../../components/molecules/select"
+import Select from "../../../../components/molecules/old-select"
 
 const SelectRegionScreen = ({ handleRegionSelect, region, options }) => {
   const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)

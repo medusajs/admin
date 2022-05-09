@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
-import Select from "../../../components/molecules/select"
+import Select from "../../../components/molecules/old-select"
 
 type AddressModalProps = {
   handleClose: () => void

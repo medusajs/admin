@@ -10,7 +10,7 @@ import PlusIcon from "../../fundamentals/icons/plus-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import Input from "../../molecules/input"
-import Select from "../../molecules/select"
+import Select from "../../molecules/old-select"
 
 type CurrencyInputProps = {
   currencyCodes?: string[]

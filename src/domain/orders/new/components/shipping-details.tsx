@@ -1,13 +1,12 @@
-import React, { useContext, useEffect, useState } from "react"
 import qs from "query-string"
-import Medusa from "../../../../services/api"
+import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import AddressForm from "../../../../components/templates/address-form"
-
-import Select from "../../../../components/molecules/select"
-import RadioGroup from "../../../../components/organisms/radio-group"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
+import Select from "../../../../components/molecules/old-select"
+import RadioGroup from "../../../../components/organisms/radio-group"
+import AddressForm from "../../../../components/templates/address-form"
+import Medusa from "../../../../services/api"
 
 const ShippingDetails = ({
   customerAddresses,

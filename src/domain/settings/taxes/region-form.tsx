@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form"
 import Checkbox from "../../../components/atoms/checkbox"
 import Button from "../../../components/fundamentals/button"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
-import Select from "../../../components/molecules/select"
+import Select from "../../../components/molecules/old-select"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 

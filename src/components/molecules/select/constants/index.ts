@@ -15,5 +15,5 @@ export const SelectStyle: StylesConfig<unknown, boolean, GroupBase<unknown>> = {
     ...provided,
     zIndex: 60,
   }),
-  menu: () => ({ zIndex: 60 }),
+  menu: () => ({ zIndex: 60, top: 0, marginBottom: "16px" }),
 }

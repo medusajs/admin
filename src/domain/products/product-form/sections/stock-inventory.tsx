@@ -3,7 +3,7 @@ import { Controller } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
-import Select from "../../../../components/molecules/select"
+import Select from "../../../../components/molecules/select/selects/select"
 import BodyCard from "../../../../components/organisms/body-card"
 import { countries as countryData } from "../../../../utils/countries"
 import { numberOrNull } from "../../../../utils/form-helpers"
@@ -145,9 +145,10 @@ const StockAndInventory = () => {
               render={({ onChange, value }) => {
                 return (
                   <Select
-                    enableSearch
+                    isSearchable
                     label="Country of origin"
                     placeholder="Select a country"
+                    searchPlaceholder="Search for a country..."
                     options={countryOptions}
                     value={value}
                     onChange={onChange}

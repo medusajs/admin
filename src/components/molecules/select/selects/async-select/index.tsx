@@ -1,4 +1,6 @@
-import React from "react"
+import React, { useEffect, useRef } from "react"
+import { ActionMeta, GroupBase, SelectInstance } from "react-select"
+import options from "../../../../../domain/products/details/options"
 import {
   ClearIndicator,
   Control,
@@ -16,7 +18,7 @@ import {
 } from "../../components"
 import { SelectStyle } from "../../constants"
 import { SelectProvider } from "../../context"
-import { AsyncSelectProps } from "../../types"
+import { AsyncSelectProps, SelectOption } from "../../types"
 import { AsyncPaginate } from "./async-paginate-base"
 import { AsyncPaginateCreatable } from "./async-paginate-createable"
 
@@ -36,10 +38,38 @@ const AsyncSelect = ({
   ...contextProps
 }: AsyncSelectProps) => {
   const Component = isCreateable ? AsyncPaginateCreatable : AsyncPaginate
+  const selectRef = useRef<
+    SelectInstance<unknown, boolean, GroupBase<unknown>>
+  >(null)
+
+  useEffect(() => {
+    const closeOnResize = () => {
+      selectRef.current?.blur()
+    }
+
+    window.addEventListener("resize", closeOnResize)
+    return () => window.removeEventListener("resize", closeOnResize)
+  }, [])
+
+  const handleClick = (newValue: unknown, actionMeta: ActionMeta<unknown>) => {
+    if (
+      hasSelectAll &&
+      (newValue as SelectOption[]).find((option) => option.value === "__ALL__")
+    ) {
+      if (Array.isArray(value) && value.length === options?.length) {
+        onChange([], actionMeta)
+      } else {
+        onChange(options, actionMeta)
+      }
+    } else {
+      onChange(newValue, actionMeta)
+    }
+  }
 
   return (
     <SelectProvider context={contextProps}>
       <Component
+        selectRef={selectRef}
         value={value}
         isClearable={isClearable}
         isDisabled={isDisabled}
@@ -49,12 +79,13 @@ const AsyncSelect = ({
         hideSelectedOptions={false}
         onCreateOption={onCreateOption}
         loadOptions={loadOptions}
-        onChange={onChange}
+        onChange={handleClick}
         additional={{
           hasSelectAll,
         }}
-        menuPortalTarget={menuPortalTarget || document.body}
         menuPlacement="bottom"
+        menuPosition="fixed"
+        closeMenuOnScroll={true}
         placeholder={placeholder}
         styles={SelectStyle}
         components={{
