@@ -158,7 +158,7 @@ type ProductSectionHeaderProps = {
   product: Product
   isFirst: boolean
   activeRegions: Region[]
-  onHeaderClick: (regionId: string) => void
+  onHeaderClick: (regionId: string, productId: string) => void
 }
 
 function ProductSectionHeader(props: ProductSectionHeaderProps) {
@@ -212,7 +212,7 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
         </div>
         {activeRegions.map((r) => (
           <div
-            onClick={() => onHeaderClick(r.id)}
+            onClick={(e) => onHeaderClick(r.id, product.id, e.shiftKey)}
             className="min-w-[314px] cursor-pointer"
           >
             <span className="text-small font-semibold text-grey-50">
@@ -341,6 +341,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
       <Tile>{variant.sku}</Tile>
 
       {activeRegions.map((r) => {
+        // TODO: what if this variant have multiple MAs for a region but for example with different quantities?
         const current = variant.prices.find((p) => p.region_id === r.id)
 
         const a =
@@ -411,7 +412,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   useEffect(() => {
     const handler = (e) => {
       const isPriceInputClicked = e.target.classList.contains("js-bt-input")
-      // TODO: check whether the input is from the same product section or from another
 
       // artificial blur event
       if (!isPriceInputClicked) {
@@ -645,16 +645,24 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     setCurrentEditAmount(amount)
   }
 
-  const onHeaderClick = (regionId: string, productId: string) => {
-    // document
-    //   .getElementById(getPriceKey(product.variants[0].id, regionId))
-    //   ?.focus()
-    //
-    // setCurrentEditAmount(undefined)
-    //
-    // const tmp = {}
-    // product.variants.forEach((v) => (tmp[getPriceKey(v.id, regionId)] = true))
-    // setActiveFields(tmp)
+  const onHeaderClick = (
+    regionId: string,
+    productId: string,
+    isShiftDown = false
+  ) => {
+    // Optional TODO: if shift is pressed select entire col
+    const product = products.find((p) => p.id === productId)!
+
+    document
+      .getElementById(getPriceKey(product.variants[0].id, regionId))
+      ?.focus()
+
+    const tmp = isShiftDown ? { ...activeFields } : {}
+
+    setCurrentEditAmount(undefined)
+
+    product.variants.forEach((v) => (tmp[getPriceKey(v.id, regionId)] = true))
+    setActiveFields(tmp)
   }
 
   return (
@@ -697,7 +705,9 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
 
   // TODO: should we filter only variants that are part of the price list ?
   const updatePriceList = useAdminCreatePriceListPrices(currentPriceListId)
-  const { products, isLoading } = useAdminPriceListProducts(currentPriceListId)
+  const { products } = useAdminPriceListProducts(currentPriceListId, null, {
+    keepPreviousData: true,
+  })
 
   const onPriceListSelect = (priceListId: string) => {
     // TODO: check for changes
@@ -776,7 +786,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
     .filter((i) => !!i)
     .sort((a, b) => a.currency_code.localeCompare(b.currency_code)) as Region[]
 
-  if (isLoading || !regions) {
+  if (!regions || !products) {
     return null
   }
 
