@@ -297,6 +297,8 @@ const SSelect = React.forwardRef(
       return () => clearTimeout(delayDebounceFn)
     }, [isFocussed])
 
+    console.log(portalRef?.current?.lastChild)
+
     return (
       <div ref={containerRef}>
         <InputContainer

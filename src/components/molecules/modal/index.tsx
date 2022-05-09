@@ -1,9 +1,9 @@
-import React from "react"
-import CrossIcon from "../../fundamentals/icons/cross-icon"
-import clsx from "clsx"
 import * as Dialog from "@radix-ui/react-dialog"
 import * as Portal from "@radix-ui/react-portal"
+import clsx from "clsx"
+import React, { useEffect } from "react"
 import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
+import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 type ModalState = {
   portalRef: any
@@ -72,6 +72,11 @@ const Modal: ModalType = ({
   children,
 }) => {
   const portalRef = React.useRef(null)
+
+  useEffect(() => {
+    console.log("Modal: useEffect")
+    console.log(portalRef?.current?.lastChild)
+  }, [portalRef])
   return (
     <Dialog.Root open={open} onOpenChange={handleClose}>
       <Portal.UnstablePortal ref={portalRef}>

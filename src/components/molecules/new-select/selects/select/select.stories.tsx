@@ -1,6 +1,9 @@
 import { storiesOf } from "@storybook/react"
 import useState from "storybook-addon-state"
 import Select from "."
+import Button from "../../../../fundamentals/button"
+import Modal from "../../../modal"
+import SSelect from "../../../select"
 import { SelectOption } from "../../types"
 
 const options: SelectOption[] = []
@@ -128,6 +131,110 @@ storiesOf("Molecules/Select", module).add("Multiselect", () => {
         isMulti={true}
         hasSelectAll={true}
       />
+      <span className="inter-base-regular">
+        Current value:{" "}
+        <span className="px-2 py-1 bg-grey-20 rounded-base">
+          {value ? JSON.stringify(value, null, 2) : "undefined"}
+        </span>
+      </span>
+    </div>
+  )
+})
+
+storiesOf("Molecules/Select", module).add("Modaled", () => {
+  const [value, setValue] = useState<SelectOption[] | undefined>(
+    "value",
+    undefined
+  )
+
+  const [show, setShow] = useState<boolean>("show", false)
+
+  return (
+    <div className="max-w-xl flex-1 flex flex-col gap-y-base">
+      <h1 className="inter-xlarge-semibold">Modal Example</h1>
+      <Button variant="primary" onClick={() => setShow(true)}>
+        Open Modal
+      </Button>
+      {show && (
+        <Modal handleClose={() => setShow(false)}>
+          <Modal.Body>
+            <Modal.Header handleClose={() => setShow(false)}>
+              Modal
+            </Modal.Header>
+            <Modal.Content>
+              <Select
+                label="Option"
+                onChange={(newValue) =>
+                  setValue(newValue as SelectOption[] | undefined)
+                }
+                value={value}
+                options={options}
+                isClearable={true}
+                isSearchable={true}
+                isMulti={true}
+                hasSelectAll={true}
+              />
+            </Modal.Content>
+            <Modal.Footer>
+              <Button variant="primary" onClick={() => setShow(false)}>
+                Save
+              </Button>
+            </Modal.Footer>
+          </Modal.Body>
+        </Modal>
+      )}
+      <span className="inter-base-regular">
+        Current value:{" "}
+        <span className="px-2 py-1 bg-grey-20 rounded-base">
+          {value ? JSON.stringify(value, null, 2) : "undefined"}
+        </span>
+      </span>
+    </div>
+  )
+})
+
+storiesOf("Molecules/Select", module).add("Modal Old Select", () => {
+  const [value, setValue] = useState<SelectOption[] | undefined>(
+    "value",
+    undefined
+  )
+
+  const [show, setShow] = useState<boolean>("show", false)
+
+  return (
+    <div className="max-w-xl flex-1 flex flex-col gap-y-base">
+      <h1 className="inter-xlarge-semibold">Modal Example</h1>
+      <Button variant="primary" onClick={() => setShow(true)}>
+        Open Modal
+      </Button>
+      {show && (
+        <Modal handleClose={() => setShow(false)}>
+          <Modal.Body>
+            <Modal.Header handleClose={() => setShow(false)}>
+              Modal
+            </Modal.Header>
+            <Modal.Content>
+              <SSelect
+                label="Option"
+                onChange={(newValue) =>
+                  setValue(newValue as SelectOption[] | undefined)
+                }
+                value={value}
+                options={options}
+                isClearable={true}
+                isSearchable={true}
+                isMulti={true}
+                hasSelectAll={true}
+              />
+            </Modal.Content>
+            <Modal.Footer>
+              <Button variant="primary" onClick={() => setShow(false)}>
+                Save
+              </Button>
+            </Modal.Footer>
+          </Modal.Body>
+        </Modal>
+      )}
       <span className="inter-base-regular">
         Current value:{" "}
         <span className="px-2 py-1 bg-grey-20 rounded-base">

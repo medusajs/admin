@@ -1,7 +1,6 @@
 import React from "react"
 import { components as Primitives, GroupBase, InputProps } from "react-select"
 import SearchIcon from "../../../fundamentals/icons/search-icon"
-import { useSelectContext } from "../context"
 
 export const Input = <
   T,
@@ -10,7 +9,8 @@ export const Input = <
 >(
   props: InputProps<T, IsMulti, GroupType>
 ) => {
-  const { searchPlaceholder } = useSelectContext()
+  // const { searchPlaceholder } = useSelectContext()
+  const searchPlaceholder = "Search"
   const {
     isHidden,
     value,

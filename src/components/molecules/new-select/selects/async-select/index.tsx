@@ -35,7 +35,7 @@ const AsyncSelect = ({
   loadOptions,
   ...contextProps
 }: AsyncSelectProps) => {
-  const Component = SelectComponent(isCreateable)
+  const Component = isCreateable ? AsyncPaginateCreatable : AsyncPaginate
 
   return (
     <SelectProvider context={contextProps}>
@@ -79,14 +79,6 @@ const AsyncSelect = ({
       />
     </SelectProvider>
   )
-}
-
-const SelectComponent = (isCreateAble?: boolean) => {
-  if (isCreateAble) {
-    return AsyncPaginateCreatable
-  } else {
-    return AsyncPaginate
-  }
 }
 
 export default AsyncSelect

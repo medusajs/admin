@@ -1,6 +1,11 @@
 import clsx from "clsx"
 import React from "react"
-import { GroupBase, MenuProps, OnChangeValue } from "react-select"
+import {
+  components as Primitives,
+  GroupBase,
+  MenuProps,
+  OnChangeValue,
+} from "react-select"
 import Spinner from "../../../atoms/spinner"
 import { useSelectContext } from "../context"
 
@@ -9,11 +14,13 @@ export const Menu = <
   IsMulti extends boolean,
   GroupType extends GroupBase<T>
 >({
-  innerProps,
-  innerRef,
-  selectProps: { isLoading, options, value, onChange, onMenuClose },
   children,
+  ...rest
 }: MenuProps<T, IsMulti, GroupType>) => {
+  const {
+    selectProps: { value, options, onMenuClose, onChange, isLoading },
+  } = rest
+
   const { hasSelectAll } = useSelectContext()
 
   const allSelected = (value as T[])?.length === options.length
@@ -27,9 +34,8 @@ export const Menu = <
   }
 
   return (
-    <div
-      {...innerProps}
-      ref={innerRef}
+    <Primitives.Menu
+      {...rest}
       className="bg-grey-0 z-60 rounded-b-rounded border border-grey-20 overflow-hidden shadow-select-menu"
     >
       {hasSelectAll && !allSelected && (
@@ -44,7 +50,7 @@ export const Menu = <
           <Spinner size="small" variant="secondary" />
         </div>
       )}
-    </div>
+    </Primitives.Menu>
   )
 }
 
@@ -56,7 +62,6 @@ const SelectAll = ({ handleClick }: { handleClick: () => void }) => {
         onClick={handleClick}
         tabIndex={1}
       >
-        <span className="sr-only">Select All</span>
         <span className="text-grey-90 inter-base-regular">Select All</span>
       </button>
     </div>

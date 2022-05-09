@@ -1,5 +1,7 @@
+import { useContext, useEffect } from "react"
 import Base from "react-select"
 import Createable from "react-select/creatable"
+import { ModalContext } from "../../../modal"
 import {
   ClearIndicator,
   Control,
@@ -32,7 +34,13 @@ const Select = ({
   onCreateOption,
   ...contextProps
 }: SelectProps) => {
-  const Component = SelectComponent(isCreateable)
+  const Component = isCreateable ? Createable : Base
+
+  const { portalRef } = useContext(ModalContext)
+
+  useEffect(() => {
+    console.log("portalRef", portalRef?.current?.lastChild)
+  }, [portalRef])
 
   return (
     <SelectProvider context={contextProps}>
@@ -47,8 +55,10 @@ const Select = ({
         hideSelectedOptions={false}
         onCreateOption={onCreateOption}
         onChange={onChange}
-        menuPortalTarget={menuPortalTarget || document.body}
-        menuPlacement="bottom"
+        backspaceRemovesValue={false}
+        menuPortalTarget={portalRef?.current?.lastChild || document.body}
+        menuPlacement="auto"
+        className="react-select-container"
         placeholder={placeholder}
         styles={SelectStyle}
         components={{
@@ -72,14 +82,6 @@ const Select = ({
       />
     </SelectProvider>
   )
-}
-
-const SelectComponent = (isCreateAble?: boolean) => {
-  if (isCreateAble) {
-    return Createable
-  } else {
-    return Base
-  }
 }
 
 export default Select

@@ -31,8 +31,8 @@ type MultiProps =
       hasSelectAll?: never
     } & BaseProps)
 
-// If the Select is createable then the onCreate prop is required,
-// if it's not createable then the onCreate prop should be undefined
+// If the Select is createable then the onCreateOption prop is required,
+// if it's not createable then the onCreateOtion prop should be undefined
 type CreateAbleProps =
   | ({
       isCreateable: true
