@@ -8,8 +8,7 @@ import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
-import Select from "../../../../components/molecules/select/selects/select"
-import { SelectOption } from "../../../../components/molecules/select/types"
+import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
@@ -332,7 +331,7 @@ const VariantEditor = ({
                 label={"Country of origin"}
                 options={countryOptions}
                 value={selectedCountry}
-                onChange={(value) => setSelectedCountry(value as SelectOption)}
+                onChange={setSelectedCountry}
               />
               <Input
                 label="Material"

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 import Base, {
   ActionMeta,
   GroupBase,
@@ -6,6 +6,7 @@ import Base, {
   SelectInstance,
 } from "react-select"
 import Createable from "react-select/creatable"
+import { ModalContext } from "../../../modal"
 import {
   ClearIndicator,
   Control,
@@ -43,6 +44,7 @@ const Select = <
   onCreateOption,
   hasSelectAll,
   id,
+  name,
   ...contextProps
 }: SelectProps<Option, IsMulti, Group, IsCreateable, IsAsync>) => {
   const Component = isCreateable ? Createable : Base
@@ -81,11 +83,14 @@ const Select = <
     }
   }
 
+  const { portalRef } = useContext(ModalContext)
+
   return (
     <div className="relative">
       <SelectProvider context={{ hasSelectAll, ...contextProps }}>
         <Component
           id={id}
+          name={name}
           ref={selectRef}
           value={value}
           options={
@@ -106,6 +111,7 @@ const Select = <
               actionMeta: ActionMeta<unknown>
             ) => void
           }
+          menuPortalTarget={portalRef?.current?.lastChild || null}
           backspaceRemovesValue={false}
           closeMenuOnScroll={true}
           menuPlacement="bottom"

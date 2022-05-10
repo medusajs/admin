@@ -2,7 +2,7 @@ import _ from "lodash"
 import React, { useState } from "react"
 import { Flex, Text } from "rebass"
 import { ReactComponent as TrashIcon } from "../../../assets/svg/trash.svg"
-import MultiSelect from "../../../components/molecules/old-select"
+import MultiSelect from "../../../components/molecules/select"
 import Medusa from "../../../services/api"
 
 const ProductSelection = ({

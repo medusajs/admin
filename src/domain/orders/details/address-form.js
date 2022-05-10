@@ -1,7 +1,7 @@
 import { isEmpty } from "lodash"
 import React, { useEffect, useState } from "react"
 import Input from "../../../components/molecules/input"
-import Select from "../../../components/molecules/old-select"
+import Select from "../../../components/molecules/select"
 import { countries } from "../../../utils/countries"
 
 const AddressForm = ({

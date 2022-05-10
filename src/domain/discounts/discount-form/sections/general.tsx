@@ -5,7 +5,7 @@ import { Controller } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../components/molecules/input"
-import Select from "../../../../components/molecules/select/selects/select"
+import Select from "../../../../components/molecules/select"
 import Textarea from "../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { useDiscountForm } from "../form/discount-form-context"
@@ -81,7 +81,7 @@ const General = ({ discount, isEdit = false }) => {
                   className={clsx({
                     ["opacity-50 pointer-events-none select-none"]: regionsDisabled,
                   })}
-                  disabled={regionsDisabled}
+                  isDisabled={regionsDisabled}
                 />
               )
             }}

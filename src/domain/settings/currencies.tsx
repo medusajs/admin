@@ -2,7 +2,7 @@ import { navigate } from "gatsby"
 import { useAdminStore, useAdminUpdateStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import BreadCrumb from "../../components/molecules/breadcrumb"
-import Select from "../../components/molecules/old-select"
+import Select from "../../components/molecules/select"
 import BodyCard from "../../components/organisms/body-card"
 import TwoSplitPane from "../../components/templates/two-split-pane"
 import useNotification from "../../hooks/use-notification"
@@ -108,8 +108,7 @@ const CurrencySettings = () => {
             label="Default store currency"
             options={storeCurrencies} // You are only allow to choose default currency from store currencies
             value={selectedCurrency}
-            isMultiSelect={false}
-            enableSearch={true}
+            isSearchable
             onChange={(e: SelectCurrency) => setSelectedCurrency(e)}
             className="mb-6"
           />
@@ -117,8 +116,8 @@ const CurrencySettings = () => {
             label="Store currencies"
             options={allCurrencies}
             value={storeCurrencies}
-            isMultiSelect={true}
-            enableSearch={true}
+            isMulti
+            isSearchable
             onChange={handleChange}
             className="mb-2"
           />

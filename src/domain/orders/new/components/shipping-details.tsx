@@ -3,10 +3,15 @@ import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
-import Select from "../../../../components/molecules/old-select"
+import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import AddressForm from "../../../../components/templates/address-form"
 import Medusa from "../../../../services/api"
+
+type CustomerOptionType = {
+  label: string
+  value: string
+}
 
 const ShippingDetails = ({
   customerAddresses,
@@ -43,26 +48,41 @@ const ShippingDetails = ({
     }
   }, [shipping])
 
-  // "region",
-  const debouncedFetch = (filter) => {
+  const loadOptions = async (
+    search: string,
+    prevOptions: readonly CustomerOptionType[] = []
+  ) => {
     const prepared = qs.stringify(
       {
-        q: filter,
-        offset: 0,
+        q: search,
+        offset: prevOptions.length,
         limit: 10,
       },
       { skipNull: true, skipEmptyString: true }
     )
 
-    return Medusa.customers
+    const response = await Medusa.customers
       .list(`?${prepared}`)
-      .then(({ data }) =>
-        data.customers.map(({ id, first_name, last_name, email }) => ({
-          label: `${first_name || ""} ${last_name || ""} (${email})`,
-          value: id,
-        }))
-      )
-      .catch((error) => [])
+      .then(({ data }) => {
+        return {
+          data: data.customers.map(({ id, first_name, last_name, email }) => ({
+            label: `${first_name || ""} ${last_name || ""} (${email})`,
+            value: id,
+          })),
+          hasMore: data.count > prevOptions.length + 10,
+        }
+      })
+      .catch(() => {
+        return {
+          data: [],
+          hasMore: false,
+        }
+      })
+
+    return {
+      options: response.data,
+      hasMore: response.hasMore,
+    }
   }
 
   const onCustomerSelect = async (val) => {
@@ -101,12 +121,12 @@ const ShippingDetails = ({
     setFetchingAddresses(false)
   }
 
-  const onCustomerCreate = (val) => {
+  const onCustomerCreate = (email: string) => {
     setCustomerAddresses([])
     setAddNew(true)
-    form.setValue("email", val)
-    form.setValue("customer", { label: val, value: val })
-    return { label: val, value: val }
+    form.setValue("email", email)
+    form.setValue("customer", { label: email, value: email })
+    return { label: email, value: email }
   }
 
   const onCreateNew = () => {
@@ -125,11 +145,11 @@ const ShippingDetails = ({
         className="mt-4"
         label="Find or create a customer"
         value={selectedCustomer}
-        options={[]}
-        enableSearch
+        isAsync={true}
+        isSearchable
         onChange={(val) => onCustomerSelect(val)}
-        filterOptions={debouncedFetch}
-        isCreatable
+        loadOptions={loadOptions}
+        isCreateable
         onCreateOption={(val) => {
           onCustomerCreate(val)
         }}

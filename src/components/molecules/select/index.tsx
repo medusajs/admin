@@ -7,8 +7,8 @@ import { SelectProps } from "./types"
 const Select = <
   Option extends unknown,
   Group extends GroupBase<Option>,
+  IsAsync extends boolean,
   IsCreateable extends boolean = false,
-  IsAsync extends boolean = false,
   IsMulti extends boolean = false
 >({
   isAsync,

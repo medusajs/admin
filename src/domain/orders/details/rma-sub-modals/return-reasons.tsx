@@ -6,7 +6,7 @@ import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import InputField from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
-import Select from "../../../../components/molecules/old-select"
+import Select from "../../../../components/molecules/select"
 import Medusa from "../../../../services/api"
 
 type RMAReturnReasonSubModalProps = {

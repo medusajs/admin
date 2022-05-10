@@ -3,7 +3,7 @@ import Button from "../../../../components/fundamentals/button"
 import AlertIcon from "../../../../components/fundamentals/icons/alert-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
-import Select from "../../../../components/molecules/old-select"
+import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { extractOptionPrice } from "../../../../utils/prices"
 
@@ -64,7 +64,7 @@ const SelectShippingMethod = ({
                     )}`,
                   }
                 : null
-            } //
+            }
             options={
               shippingOptions?.map((so) => ({
                 value: so.id,

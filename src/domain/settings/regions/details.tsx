@@ -11,7 +11,7 @@ import Spinner from "../../../components/atoms/spinner"
 import DuplicateIcon from "../../../components/fundamentals/icons/duplicate-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Input from "../../../components/molecules/input"
-import Select from "../../../components/molecules/old-select"
+import Select from "../../../components/molecules/select"
 import BodyCard from "../../../components/organisms/body-card"
 import CurrencyInput from "../../../components/organisms/currency-input"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
@@ -264,8 +264,8 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                   className="mb-base"
                 />
                 <Select
-                  isMultiSelect
-                  enableSearch
+                  isMulti
+                  isSearchable
                   label="Countries"
                   hasSelectAll
                   options={countryOptions}
@@ -275,12 +275,12 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                 />
                 {!!paymentOptions.length && (
                   <Select
-                    isMultiSelect
+                    isMulti
                     onChange={handlePaymentChange}
                     options={paymentOptions}
                     value={paymentProviders}
                     label="Payment Providers"
-                    enableSearch
+                    isSearchable
                     className="mb-base"
                   />
                 )}
@@ -290,8 +290,8 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                     options={fulfillmentOptions}
                     value={fulfillmentProviders}
                     label="Fulfillment Providers"
-                    enableSearch
-                    isMultiSelect
+                    isSearchable
+                    isMulti
                   />
                 )}
               </div>

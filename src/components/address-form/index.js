@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { countries } from "../../utils/countries"
 import Input from "../molecules/input"
-import Select from "../molecules/old-select"
+import Select from "../molecules/select"
 
 const AddressForm = ({
   form = {},

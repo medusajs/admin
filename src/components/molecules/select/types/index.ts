@@ -10,7 +10,7 @@ export interface SelectProps<
   IsAsync extends boolean
 > {
   value?: PropsValue<Option>
-  options: readonly (Option | Group)[]
+  options?: IsAsync extends true ? readonly (Option | Group)[] : never
   isMulti?: IsMulti
   isAsync?: IsAsync
   loadOptions?: IsAsync extends true
@@ -30,6 +30,7 @@ export interface SelectProps<
   tooltip?: string | React.ReactElement
   id?: string
   className?: React.InputHTMLAttributes<HTMLInputElement>["className"]
+  name?: React.InputHTMLAttributes<HTMLInputElement>["name"]
 }
 
 export type SelectOption = {

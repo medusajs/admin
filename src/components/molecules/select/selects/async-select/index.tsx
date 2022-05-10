@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 import {
   ActionMeta,
   GroupBase,
@@ -6,6 +6,7 @@ import {
   SelectInstance,
 } from "react-select"
 import options from "../../../../../domain/products/details/options"
+import { ModalContext } from "../../../modal"
 import {
   ClearIndicator,
   Control,
@@ -23,7 +24,7 @@ import {
 } from "../../components"
 import { SelectStyle } from "../../constants"
 import { SelectProvider } from "../../context"
-import { SelectOption, SelectProps } from "../../types"
+import { SelectProps } from "../../types"
 import { AsyncPaginate } from "./async-paginate-base"
 import { AsyncPaginateCreatable } from "./async-paginate-createable"
 
@@ -35,6 +36,7 @@ const AsyncSelect = <
   IsMulti extends boolean = false
 >({
   id,
+  name,
   value,
   isClearable,
   isCreateable,
@@ -67,26 +69,30 @@ const AsyncSelect = <
     actionMeta: ActionMeta<Option>
   ) => {
     // If option clicked is not "Select all"
-    if (
-      !isMulti &&
-      !(newValue as SelectOption[]).find((option) => option.value === "__ALL__")
-    ) {
+    if (!hasSelectAll) {
       onChange(newValue as Option, actionMeta)
       return
     }
 
     // If option clicked is "Select all", determine if we should select all or deselect all
-    if (Array.isArray(value) && value.length === options?.length) {
+    if (
+      Array.isArray(value) &&
+      value.length === options?.length &&
+      (newValue as any[]).find((option) => option.value === "__ALL__")
+    ) {
       onChange([] as Option, actionMeta)
     } else {
       onChange(options as Option, actionMeta)
     }
   }
 
+  const { portalRef } = useContext(ModalContext)
+
   return (
     <SelectProvider context={contextProps}>
       <Component
         id={id}
+        name={name}
         selectRef={selectRef}
         value={value}
         isClearable={isClearable}
@@ -103,6 +109,8 @@ const AsyncSelect = <
             actionMeta: ActionMeta<unknown>
           ) => void
         }
+        debounceTimeout={300}
+        menuPortalTarget={portalRef?.current?.lastChild || null}
         menuPlacement="bottom"
         menuPosition="fixed"
         closeMenuOnScroll={true}

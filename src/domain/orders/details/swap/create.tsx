@@ -7,8 +7,8 @@ import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
-import Select from "../../../../components/molecules/old-select"
 import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
+import Select from "../../../../components/molecules/select"
 import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 import Medusa from "../../../../services/api"
