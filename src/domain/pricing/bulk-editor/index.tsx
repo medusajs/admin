@@ -262,6 +262,8 @@ type ProductSectionProps = {
 
   onHeaderClick: (regionId: string, productId: string) => void
 
+  isVariantInPriceList: (variantId: string) => boolean
+
   isActive: (variantId: string, regionId: string) => boolean
   getPriceChange: (variantId: string, regionId: string) => string
 
@@ -286,6 +288,7 @@ function ProductSection(props: ProductSectionProps) {
     isFirst,
     priceChanges,
     setPriceChanges,
+    isVariantInPriceList,
     ...rest
   } = props
 
@@ -306,6 +309,7 @@ function ProductSection(props: ProductSectionProps) {
           getPriceChange={rest.getPriceChange}
           onKeyDown={rest.onKeyDown}
           currentEditAmount={rest.currentEditAmount}
+          disabled={!isVariantInPriceList(v.id)}
           // HANDLERS
           onAmountChange={rest.onAmountChange}
           onPriceInputClick={rest.onPriceInputClick}
@@ -316,6 +320,7 @@ function ProductSection(props: ProductSectionProps) {
 }
 
 type ProductVariantRowProps = {
+  disabled: boolean
   variant: ProductVariant
   activeRegions: Region[]
 
@@ -341,6 +346,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
     currentEditAmount,
     activeRegions,
     variant,
+    disabled,
     onKeyDown,
     onPriceInputClick,
     onAmountChange,
@@ -350,7 +356,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
 
   return (
     <div className="flex gap-2 mb-2">
-      <Tile className="pl-[42px] text-grey-90">
+      <Tile active={!disabled} className="pl-[42px] text-grey-90">
         {variant.title} {variant.sku && `(${variant.sku})`}
       </Tile>
 
@@ -377,6 +383,7 @@ function ProductVariantRow(props: ProductVariantRowProps) {
           <div key={r.id} className="min-w-[314px]">
             <PriceInput
               amount={amount}
+              disabled={disabled}
               currency={currencies[r.currency_code.toUpperCase()]}
               hasVirtualFocus={isActive(variant.id, r.id)}
               onMouseDown={(e) => onPriceInputClick(e, variant.id, r.id)}
@@ -398,13 +405,20 @@ type PriceListBulkEditorProps = {
   products: Product[]
   activeRegions: Region[]
   priceChanges: Record<string, string>
+  isVariantInPriceList: (variantId: string) => boolean
   setPriceChanges: (a: Record<string, string>) => void
 }
 
 let SKIP = false
 
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
-  const { activeRegions, products, priceChanges, setPriceChanges } = props
+  const {
+    activeRegions,
+    products,
+    priceChanges,
+    setPriceChanges,
+    isVariantInPriceList,
+  } = props
 
   const [activeFields, setActiveFields] = useState({})
   const [currentEditAmount, setCurrentEditAmount] = useState<
@@ -697,6 +711,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
           priceChanges={priceChanges}
           setPriceChanges={setPriceChanges}
           activeRegions={activeRegions}
+          isVariantInPriceList={isVariantInPriceList}
           // Edit controls
           currentEditAmount={currentEditAmount}
           onKeyDown={onKeyDown}
@@ -730,6 +745,18 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   const { products } = useAdminPriceListProducts(currentPriceListId, null, {
     keepPreviousData: true,
   })
+
+  const variantsOfList = useMemo(
+    () =>
+      priceList.prices.reduce((ret, p) => {
+        ret[p.variant_id] = true
+        return ret
+      }, {}),
+    [priceList]
+  )
+
+  const isVariantInPriceList = (variantId: string) =>
+    !!variantsOfList[variantId]
 
   const onPriceListSelect = (priceListId: string) => {
     // TODO: check for changes
@@ -866,6 +893,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
               activeRegions={displayRegions}
               priceChanges={priceChanges}
               setPriceChanges={setPriceChanges}
+              isVariantInPriceList={isVariantInPriceList}
             />
           </div>
 

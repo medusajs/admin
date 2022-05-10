@@ -14,6 +14,7 @@ import clsx from "clsx"
  */
 type PriceInputProps = {
   amount: string
+  disabled?: boolean
   currency: CurrencyType
   hasVirtualFocus?: boolean
   onAmountChange: (amount?: string) => void
@@ -29,7 +30,14 @@ type PriceInputProps = {
  * and the currency of the provided price.
  */
 function PriceInput(props: PriceInputProps) {
-  const { amount, currency, hasVirtualFocus, onAmountChange, ...rest } = props
+  const {
+    amount,
+    currency,
+    disabled,
+    hasVirtualFocus,
+    onAmountChange,
+    ...rest
+  } = props
   const { code, symbol_native, decimal_digits } = currency
 
   /* ********* COMPUTED ********* */
@@ -53,6 +61,7 @@ function PriceInput(props: PriceInputProps) {
       <AmountField
         // step={undefined}
         value={amount}
+        // disabled={disabled}
         onValueChange={onChange}
         allowNegativeValue={false}
         placeholder={placeholder}
@@ -80,6 +89,7 @@ function PriceInput(props: PriceInputProps) {
           {
             "bg-white border-violet-60": hasVirtualFocus,
             "border-grey-20": !hasVirtualFocus,
+            "bg-grey-10 border-none": !hasVirtualFocus && disabled,
           },
           props.className || ""
         )}
