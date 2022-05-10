@@ -1,5 +1,10 @@
 import React, { useEffect, useRef } from "react"
-import Base, { ActionMeta, GroupBase, SelectInstance } from "react-select"
+import Base, {
+  ActionMeta,
+  GroupBase,
+  OnChangeValue,
+  SelectInstance,
+} from "react-select"
 import Createable from "react-select/creatable"
 import {
   ClearIndicator,
@@ -17,9 +22,15 @@ import {
 } from "../../components"
 import { SelectStyle } from "../../constants"
 import { SelectProvider } from "../../context"
-import { SelectOption, SelectProps } from "../../types"
+import { SelectProps } from "../../types"
 
-const Select = ({
+const Select = <
+  Option extends unknown,
+  Group extends GroupBase<Option>,
+  IsCreateable extends boolean = false,
+  IsAsync extends boolean = false,
+  IsMulti extends boolean = false
+>({
   value,
   options,
   isClearable,
@@ -27,13 +38,13 @@ const Select = ({
   isDisabled,
   isSearchable,
   isMulti,
-  menuPortalTarget,
   placeholder = "Select...",
   onChange,
   onCreateOption,
   hasSelectAll,
+  id,
   ...contextProps
-}: SelectProps) => {
+}: SelectProps<Option, IsMulti, Group, IsCreateable, IsAsync>) => {
   const Component = isCreateable ? Createable : Base
   const selectRef = useRef<
     SelectInstance<unknown, boolean, GroupBase<unknown>>
@@ -48,18 +59,25 @@ const Select = ({
     return () => window.removeEventListener("resize", closeOnResize)
   }, [])
 
-  const handleClick = (newValue: unknown, actionMeta: ActionMeta<unknown>) => {
+  const handleClick = (
+    newValue: OnChangeValue<Option, IsMulti>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    // If option clicked is not "Select all"
+    if (!hasSelectAll) {
+      onChange(newValue as Option, actionMeta)
+      return
+    }
+
+    // If option clicked is "Select all", determine if we should select all or deselect all
     if (
-      hasSelectAll &&
-      (newValue as SelectOption[]).find((option) => option.value === "__ALL__")
+      Array.isArray(value) &&
+      value.length === options?.length &&
+      (newValue as any[]).find((option) => option.value === "__ALL__")
     ) {
-      if (Array.isArray(value) && value.length === options?.length) {
-        onChange([], actionMeta)
-      } else {
-        onChange(options, actionMeta)
-      }
+      onChange([] as Option, actionMeta)
     } else {
-      onChange(newValue, actionMeta)
+      onChange(options as Option, actionMeta)
     }
   }
 
@@ -67,6 +85,7 @@ const Select = ({
     <div className="relative">
       <SelectProvider context={{ hasSelectAll, ...contextProps }}>
         <Component
+          id={id}
           ref={selectRef}
           value={value}
           options={
@@ -81,7 +100,12 @@ const Select = ({
           closeMenuOnSelect={!isMulti}
           hideSelectedOptions={false}
           onCreateOption={onCreateOption}
-          onChange={handleClick}
+          onChange={
+            handleClick as (
+              newValue: unknown,
+              actionMeta: ActionMeta<unknown>
+            ) => void
+          }
           backspaceRemovesValue={false}
           closeMenuOnScroll={true}
           menuPlacement="bottom"

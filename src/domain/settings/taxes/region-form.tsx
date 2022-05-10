@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form"
 import Checkbox from "../../../components/atoms/checkbox"
 import Button from "../../../components/fundamentals/button"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
-import Select from "../../../components/molecules/old-select"
+import Select from "../../../components/molecules/select/selects/select"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 
@@ -101,14 +101,15 @@ export const RegionTaxForm = ({ region }) => {
           defaultValue={region.tax_provider_id}
           rules={{ required: true }}
           render={(props) => (
-            <Select
-              disabled={isProvidersLoading}
-              label="Tax Provider"
-              options={providerOptions}
-              value={props.value}
-              onChange={props.onChange}
-              className="mb-base"
-            />
+            <div className="mb-base">
+              <Select
+                isDisabled={isProvidersLoading}
+                label="Tax Provider"
+                options={providerOptions}
+                value={props.value}
+                onChange={props.onChange}
+              />
+            </div>
           )}
         />
         <div className="flex item-center gap-x-1.5">

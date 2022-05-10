@@ -1,5 +1,10 @@
 import React, { useEffect, useRef } from "react"
-import { ActionMeta, GroupBase, SelectInstance } from "react-select"
+import {
+  ActionMeta,
+  GroupBase,
+  OnChangeValue,
+  SelectInstance,
+} from "react-select"
 import options from "../../../../../domain/products/details/options"
 import {
   ClearIndicator,
@@ -18,11 +23,18 @@ import {
 } from "../../components"
 import { SelectStyle } from "../../constants"
 import { SelectProvider } from "../../context"
-import { AsyncSelectProps, SelectOption } from "../../types"
+import { SelectOption, SelectProps } from "../../types"
 import { AsyncPaginate } from "./async-paginate-base"
 import { AsyncPaginateCreatable } from "./async-paginate-createable"
 
-const AsyncSelect = ({
+const AsyncSelect = <
+  Option extends unknown,
+  Group extends GroupBase<Option>,
+  IsAsync extends true,
+  IsCreateable extends boolean = false,
+  IsMulti extends boolean = false
+>({
+  id,
   value,
   isClearable,
   isCreateable,
@@ -30,13 +42,12 @@ const AsyncSelect = ({
   isSearchable,
   isMulti,
   hasSelectAll,
-  menuPortalTarget,
   placeholder = "Select...",
   onChange,
   onCreateOption,
   loadOptions,
   ...contextProps
-}: AsyncSelectProps) => {
+}: SelectProps<Option, IsMulti, Group, IsCreateable, IsAsync>) => {
   const Component = isCreateable ? AsyncPaginateCreatable : AsyncPaginate
   const selectRef = useRef<
     SelectInstance<unknown, boolean, GroupBase<unknown>>
@@ -51,24 +62,31 @@ const AsyncSelect = ({
     return () => window.removeEventListener("resize", closeOnResize)
   }, [])
 
-  const handleClick = (newValue: unknown, actionMeta: ActionMeta<unknown>) => {
+  const handleClick = (
+    newValue: OnChangeValue<Option, IsMulti>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    // If option clicked is not "Select all"
     if (
-      hasSelectAll &&
-      (newValue as SelectOption[]).find((option) => option.value === "__ALL__")
+      !isMulti &&
+      !(newValue as SelectOption[]).find((option) => option.value === "__ALL__")
     ) {
-      if (Array.isArray(value) && value.length === options?.length) {
-        onChange([], actionMeta)
-      } else {
-        onChange(options, actionMeta)
-      }
+      onChange(newValue as Option, actionMeta)
+      return
+    }
+
+    // If option clicked is "Select all", determine if we should select all or deselect all
+    if (Array.isArray(value) && value.length === options?.length) {
+      onChange([] as Option, actionMeta)
     } else {
-      onChange(newValue, actionMeta)
+      onChange(options as Option, actionMeta)
     }
   }
 
   return (
     <SelectProvider context={contextProps}>
       <Component
+        id={id}
         selectRef={selectRef}
         value={value}
         isClearable={isClearable}
@@ -78,11 +96,13 @@ const AsyncSelect = ({
         closeMenuOnSelect={!isMulti}
         hideSelectedOptions={false}
         onCreateOption={onCreateOption}
-        loadOptions={loadOptions}
-        onChange={handleClick}
-        additional={{
-          hasSelectAll,
-        }}
+        loadOptions={loadOptions as any}
+        onChange={
+          handleClick as (
+            newValue: unknown,
+            actionMeta: ActionMeta<unknown>
+          ) => void
+        }
         menuPlacement="bottom"
         menuPosition="fixed"
         closeMenuOnScroll={true}

@@ -2,7 +2,7 @@ import clsx from "clsx"
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { currencies } from "../../../utils/currencies"
 import Input from "../input"
-import Select from "../old-select"
+import Select from "../select/selects/select"
 
 type CurrencyInputProps = {
   options?: string[]

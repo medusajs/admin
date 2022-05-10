@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import Button from "../../../components/fundamentals/button"
 import Modal from "../../../components/molecules/modal"
-import Select from "../../../components/molecules/old-select"
+import Select from "../../../components/molecules/select"
 
 const EditGiftCardModal = ({
   handleClose,

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
-import Select from "../../../components/molecules/old-select"
+import Select from "../../../components/molecules/select/selects/select"
 import CurrencyInput from "../../../components/organisms/currency-input"
 import useNotification from "../../../hooks/use-notification"
 import { countries as countryData } from "../../../utils/countries"
@@ -156,40 +156,45 @@ const NewRegion = ({ onDone, onClick }) => {
                   ref={register}
                   className="mb-base min-w-[335px] w-full"
                 />
-                <Select
-                  isMultiSelect
-                  enableSearch
-                  label="Countries"
-                  hasSelectAll
-                  options={countryOptions}
-                  value={countries}
-                  onChange={handleChange}
-                  className="mb-base min-w-[335px] w-full"
-                />
+                <div className="max-w-[335px]">
+                  <Select
+                    isMulti
+                    isSearchable
+                    label="Countries"
+                    hasSelectAll
+                    options={countryOptions}
+                    value={countries}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
             </div>
             <div className="mt-xlarge mb-small">
               <p className="inter-base-semibold mb-base">Providers</p>
               <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
                 {!!paymentOptions.length && (
-                  <Select
-                    isMultiSelect
-                    onChange={handlePaymentChange}
-                    options={paymentOptions}
-                    value={paymentProviders}
-                    label="Payment Providers"
-                    enableSearch
-                  />
+                  <div className="max-w-[335px]">
+                    <Select
+                      isMulti
+                      onChange={handlePaymentChange}
+                      options={paymentOptions}
+                      value={paymentProviders}
+                      label="Payment Providers"
+                      isSearchable
+                    />
+                  </div>
                 )}
                 {!!fulfillmentOptions.length && (
-                  <Select
-                    onChange={handleFulfillmentChange}
-                    options={fulfillmentOptions}
-                    value={fulfillmentProviders}
-                    label="Fulfillment Providers"
-                    enableSearch
-                    isMultiSelect
-                  />
+                  <div className="max-w-[335px]">
+                    <Select
+                      onChange={handleFulfillmentChange}
+                      options={fulfillmentOptions}
+                      value={fulfillmentProviders}
+                      label="Fulfillment Providers"
+                      isMulti
+                      isSearchable
+                    />
+                  </div>
                 )}
               </div>
             </div>

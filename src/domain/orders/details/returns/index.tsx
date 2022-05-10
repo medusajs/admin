@@ -9,8 +9,8 @@ import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
-import Select from "../../../../components/molecules/old-select"
 import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
+import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 import { getErrorMessage } from "../../../../utils/error-messages"
@@ -170,10 +170,12 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
                 placeholder="Add a shipping method"
                 value={shippingMethod}
                 onChange={handleShippingSelected}
-                options={shippingOptions.map((o) => ({
-                  label: o.name,
-                  value: o.id,
-                }))}
+                options={
+                  shippingOptions?.map((o) => ({
+                    label: o.name,
+                    value: o.id,
+                  })) || []
+                }
               />
             )}
             {shippingMethod && (

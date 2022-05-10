@@ -9,7 +9,7 @@ import { Controller } from "react-hook-form"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../../../components/fundamentals/icons/unpublish-icon"
 import Input from "../../../../components/molecules/input"
-import Select from "../../../../components/molecules/old-select"
+import Select from "../../../../components/molecules/select"
 import StatusSelector from "../../../../components/molecules/status-selector"
 import TagInput from "../../../../components/molecules/tag-input"
 import BodyCard from "../../../../components/organisms/body-card"
@@ -157,11 +157,11 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
                       options={typeOptions}
                       onChange={onChange}
                       value={value}
-                      isCreatable
+                      isCreateable
                       onCreateOption={(value) => {
                         return setNewType(value)
                       }}
-                      clearSelected
+                      isClearable
                     />
                   )
                 }}

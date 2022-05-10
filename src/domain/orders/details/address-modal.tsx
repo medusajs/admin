@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
-import Select from "../../../components/molecules/old-select"
+import Select from "../../../components/molecules/select"
 
 type AddressModalProps = {
   handleClose: () => void
@@ -83,7 +83,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
           </div>
           <div className="space-y-4 mt-8">
             <span className="inter-base-semibold">Address</span>
-            <div className="flex space-x-4">
+            <div className="grid grid-cols-2 gap-4">
               <Input
                 label="Address"
                 name="address_1"
@@ -96,8 +96,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 ref={register}
                 placeholder="Address 2"
               />
-            </div>
-            <div className="flex space-x-4">
               <Input
                 label="State"
                 name="province"
@@ -110,8 +108,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 ref={register}
                 placeholder="Postal code"
               />
-            </div>
-            <div className="flex space-x-4">
               <Input
                 label="City"
                 name="city"
@@ -119,8 +115,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 placeholder="City"
               />
               <Select
-                ref={register}
-                name="country_code"
                 label="Country"
                 options={countryOptions}
                 onChange={setCountry}

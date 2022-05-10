@@ -1,7 +1,6 @@
 import clsx from "clsx"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import AmountField from "react-currency-input-field"
-import { Option } from "../../../types/shared"
 import { currencies, CurrencyType } from "../../../utils/currencies"
 import { getDecimalDigits, normalizeAmount } from "../../../utils/prices"
 import Tooltip from "../../atoms/tooltip"
@@ -10,7 +9,12 @@ import PlusIcon from "../../fundamentals/icons/plus-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import Input from "../../molecules/input"
-import Select from "../../molecules/old-select"
+import Select from "../../molecules/select"
+
+type CurrencyOptionType = {
+  label: string
+  value: string
+}
 
 type CurrencyInputProps = {
   currencyCodes?: string[]
@@ -61,7 +65,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
   children,
   className,
 }) => {
-  const options: Option[] =
+  const options: CurrencyOptionType[] =
     currencyCodes?.map((code) => ({
       label: code.toUpperCase(),
       value: code,
@@ -71,13 +75,13 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
     CurrencyType | undefined
   >(getCurrencyInfo(currentCurrency))
 
-  const [value, setValue] = useState<Option | null>(
+  const [value, setValue] = useState<CurrencyOptionType | undefined>(
     currentCurrency
       ? {
           label: currentCurrency.toUpperCase(),
           value: currentCurrency,
         }
-      : null
+      : undefined
   )
 
   useEffect(() => {
@@ -90,7 +94,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
     }
   }, [currentCurrency])
 
-  const onCurrencyChange = (currency: Option) => {
+  const onCurrencyChange = (currency: CurrencyOptionType) => {
     // Should not be nescessary, but the component we use for select input
     // has a bug where it passes a null object if you click on the label
     // of the already selected value
@@ -123,12 +127,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
           >
             {!readOnly ? (
               <Select
-                enableSearch
+                isSearchable
                 label="Currency"
                 value={value}
-                onChange={onCurrencyChange}
+                onChange={(value) => onCurrencyChange(value)}
                 options={options}
-                disabled={readOnly}
+                isDisabled={readOnly}
               />
             ) : (
               <Input
