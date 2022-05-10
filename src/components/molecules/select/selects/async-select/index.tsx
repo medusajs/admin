@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react"
+import React, { useContext, useRef } from "react"
 import {
   ActionMeta,
   GroupBase,
@@ -25,6 +25,7 @@ import {
 import { SelectStyle } from "../../constants"
 import { SelectProvider } from "../../context"
 import { SelectProps } from "../../types"
+import { closeOnScroll, useCloseOnResize } from "../../utils"
 import { AsyncPaginate } from "./async-paginate-base"
 import { AsyncPaginateCreatable } from "./async-paginate-createable"
 
@@ -54,15 +55,9 @@ const AsyncSelect = <
   const selectRef = useRef<
     SelectInstance<unknown, boolean, GroupBase<unknown>>
   >(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const closeOnResize = () => {
-      selectRef.current?.blur()
-    }
-
-    window.addEventListener("resize", closeOnResize)
-    return () => window.removeEventListener("resize", closeOnResize)
-  }, [])
+  useCloseOnResize(selectRef.current)
 
   const handleClick = (
     newValue: OnChangeValue<Option, IsMulti>,
@@ -89,54 +84,56 @@ const AsyncSelect = <
   const { portalRef } = useContext(ModalContext)
 
   return (
-    <SelectProvider context={contextProps}>
-      <Component
-        id={id}
-        name={name}
-        selectRef={selectRef}
-        value={value}
-        isClearable={isClearable}
-        isDisabled={isDisabled}
-        isSearchable={isSearchable}
-        isMulti={isMulti}
-        closeMenuOnSelect={!isMulti}
-        hideSelectedOptions={false}
-        onCreateOption={onCreateOption}
-        loadOptions={loadOptions as any}
-        onChange={
-          handleClick as (
-            newValue: unknown,
-            actionMeta: ActionMeta<unknown>
-          ) => void
-        }
-        debounceTimeout={300}
-        menuPortalTarget={portalRef?.current?.lastChild || null}
-        menuPlacement="bottom"
-        menuPosition="fixed"
-        closeMenuOnScroll={true}
-        placeholder={placeholder}
-        styles={SelectStyle}
-        components={{
-          SelectContainer: SelectContainer,
-          Option: Option,
-          Menu: Menu,
-          ValueContainer: ValueContainer,
-          Control: Control,
-          DropdownIndicator: DropdownIndicator,
-          IndicatorSeparator: () => null,
-          Input: Input,
-          ClearIndicator: ClearIndicator,
-          MultiValueRemove: () => null,
-          MultiValue: MultiValue,
-          MultiValueLabel: MultiValueLabel,
-          IndicatorsContainer: IndicatorsContainer,
-          LoadingIndicator: () => null,
-          Placeholder: Placeholder,
-          LoadingMessage: () => null,
-          SingleValue: SingleValue,
-        }}
-      />
-    </SelectProvider>
+    <div className="relative" ref={containerRef}>
+      <SelectProvider context={contextProps}>
+        <Component
+          id={id}
+          name={name}
+          selectRef={selectRef}
+          value={value}
+          isClearable={isClearable}
+          isDisabled={isDisabled}
+          isSearchable={isSearchable}
+          isMulti={isMulti}
+          closeMenuOnSelect={!isMulti}
+          hideSelectedOptions={false}
+          onCreateOption={onCreateOption}
+          loadOptions={loadOptions as any}
+          onChange={
+            handleClick as (
+              newValue: unknown,
+              actionMeta: ActionMeta<unknown>
+            ) => void
+          }
+          debounceTimeout={300}
+          menuPortalTarget={portalRef?.current?.lastChild || null}
+          menuPlacement="bottom"
+          menuPosition="fixed"
+          closeMenuOnScroll={(e) => closeOnScroll(e, containerRef.current)}
+          placeholder={placeholder}
+          styles={SelectStyle}
+          components={{
+            SelectContainer: SelectContainer,
+            Option: Option,
+            Menu: Menu,
+            ValueContainer: ValueContainer,
+            Control: Control,
+            DropdownIndicator: DropdownIndicator,
+            IndicatorSeparator: () => null,
+            Input: Input,
+            ClearIndicator: ClearIndicator,
+            MultiValueRemove: () => null,
+            MultiValue: MultiValue,
+            MultiValueLabel: MultiValueLabel,
+            IndicatorsContainer: IndicatorsContainer,
+            LoadingIndicator: () => null,
+            Placeholder: Placeholder,
+            LoadingMessage: () => null,
+            SingleValue: SingleValue,
+          }}
+        />
+      </SelectProvider>
+    </div>
   )
 }
 

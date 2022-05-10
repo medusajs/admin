@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react"
+import React, { useContext, useRef } from "react"
 import Base, {
   ActionMeta,
   GroupBase,
@@ -24,6 +24,7 @@ import {
 import { SelectStyle } from "../../constants"
 import { SelectProvider } from "../../context"
 import { SelectProps } from "../../types"
+import { closeOnScroll, useCloseOnResize } from "../../utils"
 
 const Select = <
   Option extends unknown,
@@ -51,15 +52,9 @@ const Select = <
   const selectRef = useRef<
     SelectInstance<unknown, boolean, GroupBase<unknown>>
   >(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const closeOnResize = () => {
-      selectRef.current?.blur()
-    }
-
-    window.addEventListener("resize", closeOnResize)
-    return () => window.removeEventListener("resize", closeOnResize)
-  }, [])
+  useCloseOnResize(selectRef.current)
 
   const handleClick = (
     newValue: OnChangeValue<Option, IsMulti>,
@@ -86,7 +81,7 @@ const Select = <
   const { portalRef } = useContext(ModalContext)
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <SelectProvider context={{ hasSelectAll, ...contextProps }}>
         <Component
           id={id}
@@ -112,8 +107,8 @@ const Select = <
             ) => void
           }
           menuPortalTarget={portalRef?.current?.lastChild || null}
+          closeMenuOnScroll={(e) => closeOnScroll(e, containerRef.current)}
           backspaceRemovesValue={false}
-          closeMenuOnScroll={true}
           menuPlacement="bottom"
           menuPosition="fixed"
           placeholder={placeholder}
