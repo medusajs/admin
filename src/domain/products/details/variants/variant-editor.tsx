@@ -98,7 +98,7 @@ const VariantEditor = ({
       (acc, key) => ({ ...acc, [key]: null }),
       {}
     )
-    data.metadata = data.metadata.reduce((acc, { key, value }) => {
+    data.metadata = metadata.reduce((acc, { key, value }) => {
       acc[key] = value
       return acc
     }, emptyMetadata)
