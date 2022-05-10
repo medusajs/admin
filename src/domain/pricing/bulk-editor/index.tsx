@@ -21,7 +21,6 @@ import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import NativeSelect from "../../../components/molecules/native-select"
 import TableFieldsFilters from "../../../components/molecules/table-fileds-filter"
-import TableSearch from "../../../components/molecules/table/table-search"
 import { currencies } from "../../../utils/currencies"
 import PriceInput from "../../../components/organisms/price-input"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
@@ -31,6 +30,9 @@ import ArrowLeftIcon from "../../../components/fundamentals/icons/arrow-left-ico
 import ArrowUpIcon from "../../../components/fundamentals/icons/arrow-up-icon"
 import ArrowDownIcon from "../../../components/fundamentals/icons/arrow-down-icon"
 import ShiftIcon from "../../../components/fundamentals/icons/shift-icon"
+import SortingIcon from "../../../components/fundamentals/icons/sorting-icon"
+import ListIcon from "../../../components/fundamentals/icons/list-icon"
+import ListArrowIcon from "../../../components/fundamentals/icons/list-arrow"
 
 /**
  * Struct for holding multiedit state.
@@ -74,6 +76,7 @@ function generateField(region: Region) {
 }
 
 type TileProps = {
+  active?: boolean
   className?: string
   children: React.ReactNode
 }
@@ -84,17 +87,22 @@ type TileProps = {
 function Tile(props: TileProps) {
   return (
     <div
-      className={`
-        border border-solid border-grey-20
+      className={clsx(
+        `
         h-[40px]
         min-w-[314px]
         rounded-lg
-        bg-grey-5
         text-gray-90
         text-small
         flex items-center
         pl-3
-        ${props.className || ""}`}
+        `,
+        props.className,
+        {
+          "border border-solid border-grey-20 bg-grey-5": props.active,
+          "bg-grey-10": !props.active,
+        }
+      )}
     >
       {props.children}
     </div>
@@ -140,10 +148,6 @@ function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
             <TableFieldsFilters fields={fields} onChange={setRegions} />
           </div>
         </div>
-
-        <div className="shrink-0">
-          <TableSearch />
-        </div>
       </div>
     </div>
   )
@@ -168,12 +172,10 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
         <div className="flex mb-2 gap-2">
           <div className="min-w-[314px]">
             <span className="text-small font-semibold text-grey-50">
-              Product title:
+              Product title (SKU):
             </span>
           </div>
-          <div className="min-w-[314px]">
-            <span className="text-small font-semibold text-grey-50">SKU</span>
-          </div>
+
           {activeRegions.map((r) => (
             <div className="min-w-[314px]">
               <span className="text-small font-semibold text-grey-50">
@@ -203,18 +205,15 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
             </div>
           </Tile>
         </div>
-        <div className="min-w-[314px]">
-          <span className="text-small font-semibold text-grey-50">
-            <Tile>-</Tile>
-          </span>
-        </div>
         {activeRegions.map((r) => (
           <div
             onClick={(e) => onHeaderClick(r.id, product.id, e.shiftKey)}
             className="min-w-[314px] cursor-pointer"
           >
             <span className="text-small font-semibold text-grey-50">
-              <Tile>-</Tile>
+              <Tile className="flex justify-end px-2">
+                <ListArrowIcon size={16} />
+              </Tile>
             </span>
           </div>
         ))}
@@ -269,7 +268,7 @@ type ProductSectionProps = {
   currentEditAmount?: string
   onAmountChange: (variantId: string, regionId: string, amount: string) => void
   onKeyDown: (
-    e: React.MouseEvent<HTMLInputElement>,
+    e: React.KeyboardEvent<HTMLInputElement>,
     variantId: string,
     regionId: string
   ) => void
@@ -326,7 +325,7 @@ type ProductVariantRowProps = {
   currentEditAmount?: string
   onAmountChange: (variantId: string, regionId: string, amount: string) => void
   onKeyDown: (
-    e: React.MouseEvent<HTMLInputElement>,
+    e: React.KeyboardEvent<HTMLInputElement>,
     variantId: string,
     regionId: string
   ) => void
@@ -351,8 +350,9 @@ function ProductVariantRow(props: ProductVariantRowProps) {
 
   return (
     <div className="flex gap-2 mb-2">
-      <Tile className="pl-[42px]">{variant.title}</Tile>
-      <Tile>{variant.sku}</Tile>
+      <Tile className="pl-[42px] text-grey-90">
+        {variant.title} {variant.sku && `(${variant.sku})`}
+      </Tile>
 
       {activeRegions.map((r) => {
         const current = variant.prices.find(
@@ -400,6 +400,8 @@ type PriceListBulkEditorProps = {
   priceChanges: Record<string, string>
   setPriceChanges: (a: Record<string, string>) => void
 }
+
+let SKIP = false
 
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   const { activeRegions, products, priceChanges, setPriceChanges } = props
@@ -518,6 +520,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         e.target.focus()
       }
     } else {
+      SKIP = true
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
     }
@@ -630,6 +633,11 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
       return
     }
 
+    if (SKIP) {
+      SKIP = false
+      return
+    }
+
     let formatted = amount
 
     // only on initial edit set formatted value to be consistent
@@ -663,7 +671,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     productId: string,
     isShiftDown = false
   ) => {
-    // Optional TODO: if shift is pressed select entire col
     const product = products.find((p) => p.id === productId)!
 
     document
