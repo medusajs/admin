@@ -30,9 +30,8 @@ import ArrowLeftIcon from "../../../components/fundamentals/icons/arrow-left-ico
 import ArrowUpIcon from "../../../components/fundamentals/icons/arrow-up-icon"
 import ArrowDownIcon from "../../../components/fundamentals/icons/arrow-down-icon"
 import ShiftIcon from "../../../components/fundamentals/icons/shift-icon"
-import SortingIcon from "../../../components/fundamentals/icons/sorting-icon"
-import ListIcon from "../../../components/fundamentals/icons/list-icon"
 import ListArrowIcon from "../../../components/fundamentals/icons/list-arrow"
+import IconTooltip from "../../../components/molecules/icon-tooltip"
 
 /**
  * Struct for holding multiedit state.
@@ -356,8 +355,14 @@ function ProductVariantRow(props: ProductVariantRowProps) {
 
   return (
     <div className="flex gap-2 mb-2">
-      <Tile active={!disabled} className="pl-[42px] text-grey-90">
+      <Tile
+        active={!disabled}
+        className="pl-[42px] pr-2 text-grey-90 flex justify-between items-center"
+      >
         {variant.title} {variant.sku && `(${variant.sku})`}
+        {disabled && (
+          <IconTooltip content="Variant not part of price list. Edit the price field to add it." />
+        )}
       </Tile>
 
       {activeRegions.map((r) => {
@@ -588,8 +593,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
       pointers.minR = currentR
       pointers.maxR = currentR
 
-      // TODO: if "Shift" key is not pressed implement cell navigation
-
       return
     }
 
@@ -740,7 +743,6 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   const { regions } = useAdminRegions()
   const [activeRegions, setActiveRegions] = useState<string[]>([])
 
-  // TODO: should we filter only variants that are part of the price list ?
   const updatePriceList = useAdminCreatePriceListPrices(currentPriceListId)
   const { products } = useAdminPriceListProducts(currentPriceListId, null, {
     keepPreviousData: true,
