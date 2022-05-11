@@ -10,10 +10,10 @@ import Table from "../../molecules/table"
 type toReturnType = Record<string, { quantity: number }>
 
 type RMASelectProductTableProps = {
-  order: Order
-  allItems: (LineItem | null)[]
+  order: Omit<Order, "beforeInsert">
+  allItems: (Omit<LineItem, "beforeInsert"> | null)[]
   toReturn: toReturnType
-  setToReturn: (items: any) => void
+  setToReturn: (items: toReturnType) => void
 }
 
 const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
@@ -71,6 +71,18 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
     return false
   }
 
+  const isLineItemReturned = (item: Omit<LineItem, "beforeInsert">) => {
+    const { shipped_quantity, returned_quantity } = item
+
+    if (!returned_quantity) {
+      return false
+    }
+
+    if (shipped_quantity && returned_quantity === shipped_quantity) {
+      return true
+    }
+  }
+
   return (
     <Table>
       <Table.HeadRow className="text-grey-50 inter-small-semibold">
@@ -83,11 +95,7 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
         {allItems.map((item) => {
           // Only show items that have not been returned,
           // and aren't canceled
-          if (
-            !item ||
-            item.returned_quantity === item.quantity ||
-            isLineItemCanceled(item)
-          ) {
+          if (!item || isLineItemReturned(item) || isLineItemCanceled(item)) {
             return
           }
           const checked = item.id in toReturn

@@ -1,3 +1,5 @@
+import { Order, ProductVariant } from "@medusajs/medusa"
+import { useAdminShippingOptions } from "medusa-react"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
@@ -11,44 +13,41 @@ import RMAShippingPrice from "../../../../components/molecules/rma-select-shippi
 import Select from "../../../../components/molecules/select"
 import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
-import Medusa from "../../../../services/api"
+import useNotification from "../../../../hooks/use-notification"
+import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import {
+  extractNormalizedAmount,
   formatAmountWithSymbol,
-  normalizeAmount,
 } from "../../../../utils/prices"
+import { removeNullish } from "../../../../utils/remove-nullish"
 import RMASelectProductSubModal from "../rma-sub-modals/products"
 import { filterItems } from "../utils/create-filtering"
 
-const removeNullish = (obj) =>
-  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
-
-const extractPrice = (prices, order) => {
-  let price = prices.find((ma) => ma.region_id === order.region_id)
-
-  if (!price) {
-    price = prices.find((ma) => ma.currency_code === order.currency_code)
-  }
-
-  if (price) {
-    return normalizeAmount(order.currency_code, price.amount)
-  }
-
-  return 0
+type SwapMenuProps = {
+  order: Omit<Order, "beforeInsert">
+  onCreate: (payload: any) => Promise<void>
+  onDismiss: () => void
 }
 
-const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
+const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
   const layeredModalContext = useContext(LayeredModalContext)
   const [submitting, setSubmitting] = useState(false)
   const [toReturn, setToReturn] = useState({})
   const [useCustomShippingPrice, setUseCustomShippingPrice] = useState(false)
 
-  const [itemsToAdd, setItemsToAdd] = useState([])
-  const [shippingLoading, setShippingLoading] = useState(true)
-  const [shippingOptions, setShippingOptions] = useState([])
-  const [shippingMethod, setShippingMethod] = useState()
-  const [shippingPrice, setShippingPrice] = useState()
+  const [itemsToAdd, setItemsToAdd] = useState<
+    Omit<ProductVariant, "beforeInsert">[]
+  >([])
+  const [shippingMethod, setShippingMethod] = useState<Option | undefined>(
+    undefined
+  )
+  const [shippingPrice, setShippingPrice] = useState<number | undefined>(
+    undefined
+  )
   const [noNotification, setNoNotification] = useState(order.no_notification)
+
+  const notification = useNotification()
 
   // Includes both order items and swap items
   const allItems = useMemo(() => {
@@ -58,17 +57,14 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
     return []
   }, [order])
 
-  useEffect(() => {
-    Medusa.shippingOptions
-      .list({
-        region_id: order.region_id,
-        is_return: true,
-      })
-      .then(({ data }) => {
-        setShippingOptions(data.shipping_options)
-        setShippingLoading(false)
-      })
-  }, [])
+  const {
+    shipping_options: shippingOptions,
+    isLoading: shippingLoading,
+  } = useAdminShippingOptions({
+    // @ts-ignore TODO remove once #1493 is merged
+    is_return: true,
+    region_id: order.region_id,
+  })
 
   const returnTotal = useMemo(() => {
     const items = Object.keys(toReturn).map((t) =>
@@ -88,41 +84,43 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
 
   const additionalTotal = useMemo(() => {
     return itemsToAdd.reduce((acc, next) => {
-      const price = extractPrice(next.prices, order)
+      const price = extractNormalizedAmount(next.prices, order)
       const lineTotal = price * 100 * next.quantity * (1 + order.tax_rate / 100)
       return acc + lineTotal
     }, 0)
   }, [itemsToAdd])
 
-  const handleToAddQuantity = (value, index) => {
+  const handleToAddQuantity = (value: number, index: number) => {
     const updated = [...itemsToAdd]
+
+    const itemToUpdate = updated[index]
+
     updated[index] = {
-      ...itemsToAdd[index],
-      quantity: itemsToAdd[index].quantity + value,
+      ...itemToUpdate,
+      quantity: itemToUpdate.quantity + value,
     }
 
     setItemsToAdd(updated)
   }
 
-  const handleRemoveItem = (index) => {
+  const handleRemoveItem = (index: number) => {
     const updated = [...itemsToAdd]
     updated.splice(index, 1)
     setItemsToAdd(updated)
   }
 
-  const handleShippingSelected = (selectedItem) => {
-    if (selectedItem.value !== "Add a shipping method") {
-      setShippingMethod(selectedItem)
-      const method = shippingOptions.find((o) => selectedItem.value === o.id)
-      setShippingPrice(method.amount)
-    } else {
-      setShippingMethod()
-      setShippingPrice(0)
+  const handleShippingSelected = (selectedItem: Option) => {
+    if (!shippingOptions) {
+      return
     }
+
+    setShippingMethod(selectedItem)
+    const method = shippingOptions?.find((o) => selectedItem.value === o.id)
+    setShippingPrice(method?.amount)
   }
 
-  const handleUpdateShippingPrice = (value) => {
-    if (value >= 0) {
+  const handleUpdateShippingPrice = (value: number | undefined) => {
+    if (value && value >= 0) {
       setShippingPrice(value)
     }
   }
@@ -130,8 +128,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
   useEffect(() => {
     if (!useCustomShippingPrice && shippingMethod && shippingOptions) {
       const method = shippingOptions.find((o) => shippingMethod.value === o.id)
-      console.log(shippingMethod, method)
-      setShippingPrice(method.amount)
+      setShippingPrice(method?.amount)
     }
   }, [useCustomShippingPrice, shippingMethod])
 
@@ -220,10 +217,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
                 placeholder="Add a shipping method"
                 value={shippingMethod}
                 onChange={handleShippingSelected}
-                options={shippingOptions.map((o) => ({
-                  label: o.name,
-                  value: o.id,
-                }))}
+                options={
+                  shippingOptions?.map((o) => ({
+                    label: o.name,
+                    value: o.id,
+                  })) || []
+                }
               />
             )}
             {shippingMethod && (

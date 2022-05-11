@@ -1,3 +1,4 @@
+import { Order } from "@medusajs/medusa"
 import { useAdminRequestReturn, useAdminShippingOptions } from "medusa-react"
 import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
@@ -13,12 +14,18 @@ import RMAShippingPrice from "../../../../components/molecules/rma-select-shippi
 import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
+import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
 import { removeNullish } from "../../../../utils/remove-nullish"
 import { filterItems } from "../utils/create-filtering"
 
-const ReturnMenu = ({ order, onDismiss, notification }) => {
+type ReturnMenuProps = {
+  order: Order
+  onDismiss: () => void
+}
+
+const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
   const layoutmodalcontext = useContext(LayeredModalContext)
 
   const [submitting, setSubmitting] = useState(false)
@@ -26,7 +33,6 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
   const [refundable, setRefundable] = useState(0)
   const [refundAmount, setRefundAmount] = useState(0)
   const [toReturn, setToReturn] = useState({})
-  const [quantities, setQuantities] = useState({})
   const [useCustomShippingPrice, setUseCustomShippingPrice] = useState(false)
 
   const [noNotification, setNoNotification] = useState(order.no_notification)
@@ -34,6 +40,8 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
   const [shippingMethod, setShippingMethod] = useState(null)
 
   const [allItems, setAllItems] = useState<any[]>([])
+
+  const notification = useNotification()
 
   const requestReturnOrder = useAdminRequestReturn(order.id)
 
@@ -67,7 +75,7 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
     setRefundable(total)
 
     setRefundAmount(total)
-  }, [toReturn, quantities, shippingPrice])
+  }, [toReturn, shippingPrice])
 
   const onSubmit = async () => {
     const items = Object.entries(toReturn).map(([key, value]) => {
@@ -152,8 +160,6 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
               allItems={allItems}
               toReturn={toReturn}
               setToReturn={(items) => setToReturn(items)}
-              quantities={quantities}
-              setQuantities={setQuantities}
             />
           </div>
 
@@ -170,10 +176,12 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
                 placeholder="Add a shipping method"
                 value={shippingMethod}
                 onChange={handleShippingSelected}
-                options={shippingOptions.map((o) => ({
-                  label: o.name,
-                  value: o.id,
-                }))}
+                options={
+                  shippingOptions?.map((o) => ({
+                    label: o.name,
+                    value: o.id,
+                  })) || []
+                }
               />
             )}
             {shippingMethod && (
