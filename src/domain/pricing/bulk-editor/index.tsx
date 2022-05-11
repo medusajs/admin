@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
+import { pick } from "lodash"
 import clsx from "clsx"
 
 import {
@@ -114,6 +115,9 @@ type PriceListBulkEditorHeaderProps = {
   onPriceListSelect: (priceListId: string) => void
 }
 
+/**
+ * Header component for the bulk editor.
+ */
 function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
   const { currentPriceListId, onPriceListSelect, setRegions } = props
 
@@ -221,6 +225,9 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
   )
 }
 
+/**
+ * Footer component for the bulk editor.
+ */
 function PriceListBulkEditorFooter() {
   return (
     <div className="fixed bottom-0 left-0 w-full flex justify-center p-5">
@@ -280,6 +287,9 @@ type ProductSectionProps = {
   ) => void
 }
 
+/**
+ * Product section container, renders product variant rows.
+ */
 function ProductSection(props: ProductSectionProps) {
   const {
     activeRegions,
@@ -340,6 +350,9 @@ type ProductVariantRowProps = {
   ) => void
 }
 
+/**
+ * Component renders a bulk editor row.
+ */
 function ProductVariantRow(props: ProductVariantRowProps) {
   const {
     currentEditAmount,
@@ -380,9 +393,13 @@ function ProductVariantRow(props: ProductVariantRowProps) {
                 currencies[current?.currency_code.toUpperCase()]?.decimal_digits
             : undefined
 
+        let editedPrice = getPriceChange(variant.id, r.id)
+        if (editedPrice === null) editedPrice = undefined
+        else editedPrice = editedPrice || a
+
         const amount = isActive(variant.id, r.id)
           ? currentEditAmount
-          : getPriceChange(variant.id, r.id) || a // saved as a string
+          : editedPrice
 
         return (
           <div key={r.id} className="min-w-[314px]">
@@ -416,6 +433,10 @@ type PriceListBulkEditorProps = {
 
 let SKIP = false
 
+/**
+ * Root component for the bulk editor.
+ * Implements table rendering and all multiedit/multiselect behaviour.
+ */
 function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   const {
     activeRegions,
@@ -500,8 +521,14 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   const isActive = (variantId: string, regionId: string) =>
     activeFields[getPriceKey(variantId, regionId)]
 
-  const getPriceChange = (variantId: string, regionId: string) =>
-    priceChanges[getPriceKey(variantId, regionId)]
+  const getPriceChange = (variantId: string, regionId: string) => {
+    const key = getPriceKey(variantId, regionId)
+
+    if (key in priceChanges && !priceChanges[key]) {
+      return null
+    }
+    return priceChanges[key]
+  }
 
   /* ********** HANDLERS ********** */
 
@@ -515,6 +542,11 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     regionId: string
   ) => {
     const cellKey = getPriceKey(variantId, regionId)
+
+    if (SKIP) {
+      SKIP = false
+      setCurrentEditAmount(undefined)
+    }
 
     if (e.shiftKey) {
       e.preventDefault() // do not focus
@@ -642,41 +674,31 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     regionId: string,
     amount: string
   ) => {
-    if (amount === currentEditAmount) {
-      return
-    }
-
-    if (SKIP) {
-      SKIP = false
-      return
-    }
-
-    let formatted = amount
-
-    // only on initial edit set formatted value to be consistent
-    // but omit setting this formatted value on every edit to prevent wierd corner cases
-    if (amount && !currentEditAmount) {
-      const c =
-        currencies[
-          props.activeRegions
-            .find((r) => r.id === regionId)!
-            .currency_code.toUpperCase()
-        ]
-
-      formatted = (
-        Math.round(parseFloat(amount) * 10 ** c.decimal_digits) /
-        10 ** c.decimal_digits
-      ).toFixed(c.decimal_digits)
-    }
+    // let formatted = amount
+    //
+    // // only on initial edit set formatted value to be consistent
+    // // but omit setting this formatted value on every edit to prevent wierd corner cases
+    // if (amount && !currentEditAmount) {
+    //   const c =
+    //     currencies[
+    //       props.activeRegions
+    //         .find((r) => r.id === regionId)!
+    //         .currency_code.toUpperCase()
+    //     ]
+    //
+    //   formatted = (
+    //     Math.round(parseFloat(amount) * 10 ** c.decimal_digits) /
+    //     10 ** c.decimal_digits
+    //   ).toFixed(c.decimal_digits)
+    // }
 
     const tmp = { ...priceChanges }
 
     // for each input that is currently edited set the amount
-    Object.keys(activeFields).forEach((k) => (tmp[k] = formatted))
+    Object.keys(activeFields).forEach((k) => (tmp[k] = amount))
 
     setPriceChanges(tmp)
-
-    setCurrentEditAmount(formatted)
+    setCurrentEditAmount(amount)
   }
 
   const onHeaderClick = (
@@ -730,6 +752,9 @@ type PriceListBulkEditorContainer = {
   closeForm: () => void
 }
 
+/**
+ * Root container for the bulk editor.
+ */
 function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   const { priceList, closeForm } = props
 
@@ -814,64 +839,93 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   const onSave = () => {
     const prices: Partial<MoneyAmount>[] = []
 
-    Object.entries(priceChanges).map(([k, amount]) => {
+    console.log({ priceChanges })
+    const _priceChanges = { ...priceChanges }
+
+    priceList.prices
+      .map((p) =>
+        pick(p, [
+          "id",
+          "amount",
+          "variant_id",
+          "region_id",
+          "min_quantity",
+          "max_quantity",
+          "currency_code",
+        ])
+      )
+      .map((plPrice) => {
+        if (
+          plPrice.region_id &&
+          plPrice.min_quantity === null &&
+          plPrice.max_quantity === null
+        ) {
+          const priceKey = getPriceKey(plPrice.variant_id, plPrice.region_id)
+          if (priceKey in _priceChanges) {
+            // MA is deleted
+            if (_priceChanges[priceKey] === undefined) {
+              return
+            }
+
+            // MA is updated
+
+            let preparedAmount = Math.round(
+              parseFloat(_priceChanges[priceKey]) *
+                10 **
+                  currencies[plPrice.currency_code.toUpperCase()].decimal_digits
+            )
+
+            if (isNaN(preparedAmount)) {
+              return
+            }
+
+            console.log(preparedAmount)
+            prices.push({
+              id: plPrice.id,
+              variant_id: plPrice.variant_id,
+              region_id: plPrice.region_id,
+              amount: preparedAmount,
+            })
+
+            delete _priceChanges[priceKey]
+          } else {
+            prices.push(plPrice)
+          }
+        } else {
+          prices.push(plPrice)
+        }
+      })
+
+    // entries that are left --> MAs to be created
+    Object.entries(_priceChanges).map(([k, amount]) => {
       const [variantId, regionId] = k.split("-")
+      console.log("here")
 
-      // find the product variant
-      const variant = products
-        ?.find((p) => p.variants.find((v) => v.id === variantId))
-        ?.variants.find((v) => v.id === variantId)
+      const reg = regions?.find((r) => r.id === regionId)!
+      const curr = currencies[reg.currency_code.toUpperCase()]
 
-      // find MA record that matches variant id and region id
-      const moneyAmount = variant!.prices.find(
-        (p: MoneyAmount) =>
-          p.region_id === regionId &&
-          p.min_quantity === null &&
-          p.max_quantity === null
+      const preparedAmount = Math.round(
+        parseFloat(amount) *
+          10 ** currencies[curr.code.toUpperCase()].decimal_digits
       )
 
-      // UPDATE an existing MA record
-      if (moneyAmount) {
-        let preparedAmount = Math.round(
-          parseFloat(amount) *
-            10 **
-              currencies[moneyAmount.currency_code.toUpperCase()].decimal_digits
-        )
-
-        if (isNaN(preparedAmount)) {
-          return
-        }
-
-        prices.push({
-          id: moneyAmount.id,
-          variant_id: moneyAmount.variant_id,
-          region_id: moneyAmount.region_id,
-          amount: preparedAmount,
-        })
-      }
-      // CREATE a new MA record
-      else {
-        const reg = regions?.find((r) => r.id === regionId)!
-        const curr = currencies[reg.currency_code.toUpperCase()]
-
-        const preparedAmount = Math.round(
-          parseFloat(amount) *
-            10 ** currencies[curr.code.toUpperCase()].decimal_digits
-        )
-
-        if (isNaN(preparedAmount)) {
-          return
-        }
-
-        prices.push({
-          variant_id: variantId,
-          region_id: regionId,
-          amount: preparedAmount,
-        })
+      if (isNaN(preparedAmount)) {
+        return
       }
 
-      updatePriceList.mutate({ prices, override: true })
+      prices.push({
+        variant_id: variantId,
+        region_id: regionId,
+        amount: preparedAmount,
+      })
     })
+
+    console.log({ prices }, _priceChanges)
+
+    updatePriceList.mutate(
+      { prices, override: true },
+      { onSuccess: () => closeForm() }
+    )
   }
 
   const displayRegions = activeRegions
@@ -883,7 +937,6 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
     return null
   }
 
-  console.log(priceChanges)
   return (
     <Fade isVisible isFullScreen>
       <FocusModal>
