@@ -445,10 +445,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   }, [activeRegions, products])
 
   useEffect(() => {
-    // TODO: when a region is removed unset `priceChanges` related to that region
-  }, [activeRegions])
-
-  useEffect(() => {
     const handler = (e) => {
       const isPriceInputClicked = e.target.classList.contains("js-bt-input")
 
@@ -756,6 +752,26 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
       }, {}),
     [priceList]
   )
+
+  /**
+   * When a region is removed unset `priceChanges` related to that region
+   */
+  useEffect(() => {
+    const regions = activeRegions.reduce((acc, r) => {
+      acc[r] = true
+      return acc
+    }, {})
+
+    const tmp = { ...priceChanges }
+    for (const id in tmp) {
+      const [_, regionId] = tmp[id].split("-")
+      if (!(regionId in regions)) {
+        delete tmp[id]
+      }
+    }
+
+    setPriceChanges(tmp)
+  }, [activeRegions])
 
   const isVariantInPriceList = (variantId: string) =>
     !!variantsOfList[variantId]
