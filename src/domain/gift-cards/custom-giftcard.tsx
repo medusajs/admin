@@ -51,9 +51,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
     const update = {
       region_id: selectedRegion.value.id,
-      value: Math.round(
-        giftCardAmount / (1 + selectedRegion.value.tax_rate / 100)
-      ),
+      value: Math.round(giftCardAmount),
       ...data,
     }
 
