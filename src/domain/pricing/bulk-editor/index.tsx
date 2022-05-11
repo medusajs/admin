@@ -845,7 +845,6 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
     priceList.prices
       .map((p) =>
         pick(p, [
-          "id",
           "amount",
           "variant_id",
           "region_id",
@@ -881,7 +880,6 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
 
             console.log(preparedAmount)
             prices.push({
-              id: plPrice.id,
               variant_id: plPrice.variant_id,
               region_id: plPrice.region_id,
               amount: preparedAmount,
@@ -920,8 +918,16 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
       })
     })
 
-    console.log({ prices }, _priceChanges)
+    console.log(prices, _priceChanges)
 
+    prices.forEach((p) => {
+      delete p.id
+      if (p.region_id) {
+        delete p.currency_code
+      }
+    }) // new records will be created
+
+    // TODO: invalidate products endpoint
     updatePriceList.mutate(
       { prices, override: true },
       { onSuccess: () => closeForm() }
