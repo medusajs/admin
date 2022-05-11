@@ -41,9 +41,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   const notification = useNotification()
 
   const allItems: Omit<LineItem, "beforeInsert">[] = useMemo(() => {
-    console.log(order)
-    console.log(returnRequest)
-
     const idLookUp = returnRequest.items.map((i) => i.item_id)
     const quantityLookUp: Map<string, number> = new Map()
 
@@ -69,7 +66,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
       .filter((i) => idLookUp.includes(i.id))
       .map((i) => ({ ...i, quantity: quantityLookUp.get(i.id) || i.quantity }))
 
-    console.log(withAdjustedQuantity)
     return withAdjustedQuantity
   }, [order, returnRequest])
 
