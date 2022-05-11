@@ -776,14 +776,35 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   const isVariantInPriceList = (variantId: string) =>
     !!variantsOfList[variantId]
 
+  const checkForChanges = () => {
+    const hasChanges = !!Object.keys(priceChanges).length
+
+    if (hasChanges) {
+      if (
+        confirm(
+          "There are unsaved changes. Do you want to discard and continue?"
+        )
+      ) {
+        setPriceChanges({})
+        return true
+      } else {
+        return false
+      }
+    }
+
+    return true
+  }
+
   const onPriceListSelect = (priceListId: string) => {
-    // TODO: check for changes
-    setCurrentPriceListId(priceListId)
+    if (checkForChanges()) {
+      setCurrentPriceListId(priceListId)
+    }
   }
 
   const onClose = () => {
-    // TODO: check for changes
-    closeForm()
+    if (checkForChanges()) {
+      closeForm()
+    }
   }
 
   /**
@@ -862,6 +883,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
     return null
   }
 
+  console.log(priceChanges)
   return (
     <Fade isVisible isFullScreen>
       <FocusModal>
