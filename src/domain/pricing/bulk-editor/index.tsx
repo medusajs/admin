@@ -58,7 +58,6 @@ const getPriceKey = (variantId: string, regionId: string) =>
 
 /**
  * Helper for generating table field filter options.
- * @param region
  */
 function generateField(region: Region) {
   return {
@@ -233,9 +232,9 @@ function PriceListBulkEditorFooter() {
     <div className="fixed bottom-0 left-0 w-full flex justify-center p-5">
       <div className="flex flex-row gap-2 items-center text-small text-gray-400">
         <div className="rounded-base bg-grey-10 p-1">
-          <PointerIcon />
+          <ShiftIcon size={14} />
         </div>
-        <span>or</span>
+        <span> + </span>
         <div className="rounded-base bg-grey-10 p-1">
           <ArrowLeftIcon size={14} />
         </div>
@@ -248,7 +247,7 @@ function PriceListBulkEditorFooter() {
         <div className="rounded-base bg-grey-10 p-1">
           <ArrowDownIcon size={14} />
         </div>
-        <span>to switch between cells.</span>
+        <span>to select multiple rows/columns.</span>
         <span>Hold</span>
         <div className="rounded-base bg-grey-10 p-1">
           <ShiftIcon size={14} />
