@@ -559,6 +559,11 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         e.target.focus()
       }
     } else {
+      // TODO: the issue here is that `onAmount` is called by the underlying library on blur (which is triggered after this on click handler)
+      // SCENARIO: one cell is focused and the user clicks on an other cell (without shift)
+      // the `onClick` handler of the second cell is called first which executes the following 2 lines and resets the state
+      // after that, onBlur of the first cell, the underlying library calls `onAmount` change which sets last edit value in the state again.
+
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
     }
