@@ -839,7 +839,6 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   const onSave = () => {
     const prices: Partial<MoneyAmount>[] = []
 
-    console.log({ priceChanges })
     const _priceChanges = { ...priceChanges }
 
     priceList.prices
@@ -918,8 +917,6 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
       })
     })
 
-    console.log(prices, _priceChanges)
-
     prices.forEach((p) => {
       delete p.id
       if (p.region_id) {
@@ -927,7 +924,6 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
       }
     }) // new records will be created
 
-    // TODO: invalidate products endpoint
     updatePriceList.mutate(
       { prices, override: true },
       { onSuccess: () => closeForm() }
