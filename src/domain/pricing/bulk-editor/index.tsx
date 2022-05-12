@@ -430,8 +430,6 @@ type PriceListBulkEditorProps = {
   setPriceChanges: (a: Record<string, string>) => void
 }
 
-let SKIP = false
-
 /**
  * Root component for the bulk editor.
  * Implements table rendering and all multiedit/multiselect behaviour.
@@ -542,11 +540,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   ) => {
     const cellKey = getPriceKey(variantId, regionId)
 
-    if (SKIP) {
-      SKIP = false
-      setCurrentEditAmount(undefined)
-    }
-
     if (e.shiftKey) {
       e.preventDefault() // do not focus
 
@@ -566,7 +559,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         e.target.focus()
       }
     } else {
-      SKIP = true
       setCurrentEditAmount(undefined)
       setActiveFields({ [cellKey]: true })
     }
