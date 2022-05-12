@@ -876,7 +876,6 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
               return
             }
 
-            console.log(preparedAmount)
             prices.push({
               variant_id: plPrice.variant_id,
               region_id: plPrice.region_id,
@@ -895,7 +894,6 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
     // entries that are left --> MAs to be created
     Object.entries(_priceChanges).map(([k, amount]) => {
       const [variantId, regionId] = k.split("-")
-      console.log("here")
 
       const reg = regions?.find((r) => r.id === regionId)!
       const curr = currencies[reg.currency_code.toUpperCase()]
