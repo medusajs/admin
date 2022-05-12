@@ -1,6 +1,9 @@
 import { ClaimItem, LineItem, Order } from "@medusajs/medusa"
 
-export const filterItems = (order: Omit<Order, "beforeInserts">, isClaim) => {
+export const filterItems = (
+  order: Omit<Order, "beforeInserts">,
+  isClaim: boolean
+) => {
   let orderItems = order.items.reduce(
     (map, obj) =>
       map.set(obj.id, {

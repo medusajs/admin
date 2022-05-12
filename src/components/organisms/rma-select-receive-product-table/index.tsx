@@ -1,6 +1,10 @@
 import { LineItem, Order } from "@medusajs/medusa"
 import clsx from "clsx"
 import React from "react"
+import {
+  isLineItemCanceled,
+  isLineItemReturned,
+} from "../../../utils/is-line-item"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
@@ -41,7 +45,7 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
     setToReturn(newReturns)
   }
 
-  const handleReturnToggle = (item) => {
+  const handleReturnToggle = (item: Omit<LineItem, "beforeInsert">) => {
     const id = item.id
 
     const newReturns = { ...toReturn }
@@ -57,32 +61,6 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
     setToReturn(newReturns)
   }
 
-  const isLineItemCanceled = (item) => {
-    const { swap_id, claim_order_id } = item
-    const travFind = (col, id) =>
-      col.filter((f) => f.id == id && f.canceled_at).length > 0
-
-    if (swap_id) {
-      return travFind(order.swaps, swap_id)
-    }
-    if (claim_order_id) {
-      return travFind(order.claims, claim_order_id)
-    }
-    return false
-  }
-
-  const isLineItemReturned = (item: Omit<LineItem, "beforeInsert">) => {
-    const { shipped_quantity, returned_quantity } = item
-
-    if (!returned_quantity) {
-      return false
-    }
-
-    if (shipped_quantity && returned_quantity === shipped_quantity) {
-      return true
-    }
-  }
-
   return (
     <Table>
       <Table.HeadRow className="text-grey-50 inter-small-semibold">
@@ -95,7 +73,11 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
         {allItems.map((item) => {
           // Only show items that have not been returned,
           // and aren't canceled
-          if (!item || isLineItemReturned(item) || isLineItemCanceled(item)) {
+          if (
+            !item ||
+            isLineItemReturned(item) ||
+            isLineItemCanceled(item, order)
+          ) {
             return
           }
           const checked = item.id in toReturn

@@ -1,4 +1,4 @@
-import { Order } from "@medusajs/medusa"
+import { LineItem, Order } from "@medusajs/medusa"
 import { useAdminRequestReturn, useAdminShippingOptions } from "medusa-react"
 import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
@@ -15,6 +15,7 @@ import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 import useNotification from "../../../../hooks/use-notification"
+import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
 import { removeNullish } from "../../../../utils/remove-nullish"
@@ -32,14 +33,16 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
   const [refundEdited, setRefundEdited] = useState(false)
   const [refundable, setRefundable] = useState(0)
   const [refundAmount, setRefundAmount] = useState(0)
-  const [toReturn, setToReturn] = useState({})
+  const [toReturn, setToReturn] = useState<
+    Record<string, { quantity: number }>
+  >({})
   const [useCustomShippingPrice, setUseCustomShippingPrice] = useState(false)
 
   const [noNotification, setNoNotification] = useState(order.no_notification)
   const [shippingPrice, setShippingPrice] = useState<number>()
-  const [shippingMethod, setShippingMethod] = useState(null)
+  const [shippingMethod, setShippingMethod] = useState<Option | null>(null)
 
-  const [allItems, setAllItems] = useState<any[]>([])
+  const [allItems, setAllItems] = useState<Omit<LineItem, "beforeInsert">[]>([])
 
   const notification = useNotification()
 
@@ -65,11 +68,15 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
     )
     const total =
       items.reduce((acc, next) => {
-        return (
-          acc +
-          (next.refundable / (next.quantity - next.returned_quantity)) *
-            toReturn[next.id].quantity
-        )
+        if (next) {
+          return (
+            acc +
+            (next.refundable || 0 / (next.quantity - next.returned_quantity)) *
+              toReturn[next.id].quantity
+          )
+        }
+
+        return acc
       }, 0) - (shippingPrice || 0)
 
     setRefundable(total)
@@ -101,7 +108,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
     if (shippingMethod) {
       data.return_shipping = {
         option_id: shippingMethod.value,
-        price: shippingPrice / (1 + order.tax_rate / 100),
+        price: shippingPrice ? shippingPrice / (1 + order.tax_rate / 100) : 0,
       }
     }
 
@@ -123,20 +130,23 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
   }
 
   const handleShippingSelected = (selectedItem) => {
-    if (selectedItem.value !== "Add a shipping method") {
-      setShippingMethod(selectedItem)
-      const method = shippingOptions.find((o) => selectedItem.value === o.id)
-      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
-    } else {
-      setShippingMethod(null)
-      setShippingPrice(0)
+    setShippingMethod(selectedItem)
+    const method = shippingOptions?.find((o) => selectedItem.value === o.id)
+
+    if (method) {
+      const multiplier = order.tax_rate ? 1 + order.tax_rate / 100 : 1
+      setShippingPrice(method.amount * multiplier)
     }
   }
 
   useEffect(() => {
     if (!useCustomShippingPrice && shippingMethod) {
-      const method = shippingOptions.find((o) => shippingMethod.value === o.id)
-      setShippingPrice(method.amount * (1 + order.tax_rate / 100))
+      const method = shippingOptions?.find((o) => shippingMethod.value === o.id)
+
+      if (method) {
+        const multiplier = order.tax_rate ? 1 + order.tax_rate / 100 : 1
+        setShippingPrice(method.amount * multiplier)
+      }
     }
   }, [useCustomShippingPrice, shippingMethod])
 
@@ -201,7 +211,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
                 <div className="flex mb-4 inter-small-regular justify-between">
                   <span>Shipping</span>
                   <div>
-                    {displayAmount(order.currency_code, shippingPrice)}{" "}
+                    {displayAmount(order.currency_code, shippingPrice || 0)}{" "}
                     <span className="text-grey-40 ml-3">
                       {order.currency_code.toUpperCase()}
                     </span>
