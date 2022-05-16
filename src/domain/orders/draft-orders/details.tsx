@@ -168,7 +168,7 @@ const DraftOrderDetails = ({ id }) => {
       (discount) => discount.code === data.code.value
     )
 
-    if (!discount) return
+    if (!discount) throw new Error("That discount doesn't exist.")
 
     const { code } = discount
 
@@ -189,10 +189,8 @@ const DraftOrderDetails = ({ id }) => {
       code,
     })
 
-    queryClient.setQueryData(["admin_draft_orders", "detail", id], (query) => {
-      // @ts-ignore
-      query.draft_order = res.data.draft_order
-      return query
+    queryClient.setQueryData(["admin_draft_orders", "detail", id], {
+      draft_order: res.data.draft_order,
     })
   }
 
