@@ -172,14 +172,8 @@ const DraftOrderDetails = ({ id }) => {
 
     const { code } = discount
 
-    const currentDiscounts = draft_order
-      ? draft_order.cart.discounts.map(({ code }) => ({ code }))
-      : []
-
     updateDraftOrder(
-      {
-        discounts: [...currentDiscounts, { code }],
-      },
+      { discounts: [{ code }] },
       { onSuccess: () => setDiscountModalIsOpen(false) }
     )
   }

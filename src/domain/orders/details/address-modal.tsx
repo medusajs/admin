@@ -1,3 +1,4 @@
+import { Address } from "@medusajs/medusa"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
@@ -8,8 +9,8 @@ import Select from "../../../components/molecules/select"
 type AddressModalProps = {
   handleClose: () => void
   handleSave: ({ data, type }) => Promise<void>
-  allowedCountries: string[]
-  address?: object
+  allowedCountries?: { display_name: string; iso_2: string }[]
+  address?: Address
   type: "shipping" | "billing"
 }
 
@@ -24,19 +25,17 @@ const AddressModal: React.FC<AddressModalProps> = ({
     defaultValues: { ...address },
   })
 
-  register("country_code")
-
   const countryOptions = allowedCountries
     .map((c) => ({ label: c.display_name, value: c.iso_2 }))
     .filter(Boolean)
 
   const [selectedCountry, setSelectedCountry] = useState(
-    countryOptions.find((o) => o.value === address?.country_code)
+    countryOptions.find((o) => o.value === address?.country_code) ?? null
   )
 
   const setCountry = (value) => {
     if (!value) {
-      setSelectedCountry(undefined)
+      setSelectedCountry(null)
     } else {
       setSelectedCountry(value)
       setValue("country_code", value.value)
