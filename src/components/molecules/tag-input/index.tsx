@@ -43,7 +43,7 @@ const TagInput: React.FC<TagInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleAddValue = (newVal) => {
-    let update = newVal
+    let update = newVal.trim()
 
     if (typeof onValidate !== "undefined") {
       update = onValidate(newVal)
