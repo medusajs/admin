@@ -224,35 +224,88 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
   )
 }
 
+type PriceListBulkEditorFooterProps = {
+  count?: number
+  page: number
+  setPage: (offset: number) => void
+}
+
 /**
  * Footer component for the bulk editor.
  */
-function PriceListBulkEditorFooter() {
+function PriceListBulkEditorFooter(props: PriceListBulkEditorFooterProps) {
+  const { page, count, setPage } = props
+
+  const pageStart = page * BULK_TABLE_PRODUCT_LIMIT + 1
+  const pageEnd = Math.min((page + 1) * BULK_TABLE_PRODUCT_LIMIT, count)
+
+  const pageInfo = `${pageStart} - ${pageEnd} of ${count}`
+
+  const canPrev = page > 0
+  const canNext = !((page + 1) * BULK_TABLE_PRODUCT_LIMIT > count)
+
+  const onPrev = () => {
+    if (canPrev) setPage(page - 1)
+  }
+
+  const onNext = () => {
+    if (canNext) {
+      setPage(page + 1)
+    }
+  }
+
   return (
     <div className="fixed bottom-0 left-0 w-full flex justify-center p-5">
-      <div className="flex flex-row gap-2 items-center text-small text-gray-400">
-        <div className="rounded-base bg-grey-10 p-1">
-          <ShiftIcon size={14} />
+      <div className="medium:w-8/12 w-full flex justify-between text-small text-gray-400">
+        <div>{pageInfo}</div>
+
+        <div className="flex flex-row gap-2 items-center">
+          <div className="rounded-base bg-grey-10 p-1">
+            <ShiftIcon size={14} />
+          </div>
+          <span> + </span>
+          <div className="rounded-base bg-grey-10 p-1">
+            <ArrowLeftIcon size={14} />
+          </div>
+          <div className="rounded-base bg-grey-10 p-1">
+            <ArrowUpIcon size={14} />
+          </div>
+          <div className="rounded-base bg-grey-10 p-1">
+            <ArrowRightIcon size={14} />
+          </div>
+          <div className="rounded-base bg-grey-10 p-1">
+            <ArrowDownIcon size={14} />
+          </div>
+          <span>to select multiple rows/columns.</span>
+          <span>Hold</span>
+          <div className="rounded-base bg-grey-10 p-1">
+            <ShiftIcon size={14} />
+          </div>
+          <span>to select multiple cells.</span>
         </div>
-        <span> + </span>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowLeftIcon size={14} />
+        <div className="flex justify-between items-center gap-2">
+          <span>
+            {page + 1} of {Math.ceil(count / BULK_TABLE_PRODUCT_LIMIT)}
+          </span>
+          <a
+            className={clsx({
+              "cursor-pointer": canPrev,
+              "text-grey-30": !canPrev,
+            })}
+            onClick={onPrev}
+          >
+            <ArrowLeftIcon />
+          </a>
+          <a
+            className={clsx({
+              "cursor-pointer": canNext,
+              "text-grey-30": !canNext,
+            })}
+            onClick={onNext}
+          >
+            <ArrowRightIcon />
+          </a>
         </div>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowUpIcon size={14} />
-        </div>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowRightIcon size={14} />
-        </div>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ArrowDownIcon size={14} />
-        </div>
-        <span>to select multiple rows/columns.</span>
-        <span>Hold</span>
-        <div className="rounded-base bg-grey-10 p-1">
-          <ShiftIcon size={14} />
-        </div>
-        <span>to select multiple cells.</span>
       </div>
     </div>
   )
@@ -743,6 +796,8 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   )
 }
 
+const BULK_TABLE_PRODUCT_LIMIT = 2
+
 type PriceListBulkEditorContainer = {
   priceList: PriceList
   closeForm: () => void
@@ -753,6 +808,7 @@ type PriceListBulkEditorContainer = {
  */
 function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   const { priceList, closeForm } = props
+  const [page, setPage] = useState(0)
 
   const [currentPriceListId, setCurrentPriceListId] = useState(priceList.id)
   const [priceChanges, setPriceChanges] = useState<Record<string, string>>({})
@@ -761,9 +817,16 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   const [activeRegions, setActiveRegions] = useState<string[]>([])
 
   const updatePriceList = useAdminCreatePriceListPrices(currentPriceListId)
-  const { products } = useAdminPriceListProducts(currentPriceListId, null, {
-    keepPreviousData: true,
-  })
+  const { products, count } = useAdminPriceListProducts(
+    currentPriceListId,
+    {
+      limit: BULK_TABLE_PRODUCT_LIMIT,
+      offset: page * BULK_TABLE_PRODUCT_LIMIT,
+    },
+    {
+      keepPreviousData: true,
+    }
+  )
 
   const variantsOfList = useMemo(
     () =>
@@ -986,7 +1049,11 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
             />
           </div>
 
-          <PriceListBulkEditorFooter />
+          <PriceListBulkEditorFooter
+            page={page}
+            count={count}
+            setPage={setPage}
+          />
         </FocusModal.Main>
       </FocusModal>
     </Fade>
