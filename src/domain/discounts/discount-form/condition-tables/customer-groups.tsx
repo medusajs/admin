@@ -59,7 +59,12 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
     const selectedCustomerGroups =
       customer_groups?.filter((cg) => values.includes(cg.id)) || []
 
-    setItems(selectedCustomerGroups.map((customer_group) => customer_group.id))
+    setItems(
+      selectedCustomerGroups.map((customer_group) => ({
+        id: customer_group.id,
+        label: customer_group.name,
+      }))
+    )
   }
 
   return (
@@ -76,7 +81,7 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
             }}
             resourceName="Customer groups"
             totalCount={count || 0}
-            selectedIds={items}
+            selectedIds={items.map((i) => i.id)}
             data={customer_groups}
             columns={columns}
             isLoading={isLoading}

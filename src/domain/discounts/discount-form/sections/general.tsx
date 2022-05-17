@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react"
-import { useAdminRegions } from "medusa-react"
-import { Controller } from "react-hook-form"
 import clsx from "clsx"
+import { useAdminRegions } from "medusa-react"
+import React, { useEffect, useState } from "react"
+import { Controller } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../components/molecules/input"
@@ -77,7 +77,6 @@ const General = ({ discount, isEdit = false }) => {
                   enableSearch
                   required
                   options={regionOptions}
-                  id="regionsSelector"
                   className={clsx({
                     ["opacity-50 pointer-events-none select-none"]: regionsDisabled,
                   })}

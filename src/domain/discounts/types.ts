@@ -18,7 +18,7 @@ export enum DiscountConditionType {
 
 export type ConditionPayload = {
   id?: string
-  items?: string[]
+  items?: { id: string; label: string }[]
 }
 
 export type DiscountConditionRecord = {
@@ -37,4 +37,19 @@ export enum DiscountConditionOperator {
 export type CreateConditionProps = {
   type: DiscountConditionType
   ids: string[]
+}
+
+type CondtionMapItem = {
+  id?: string
+  operator?: DiscountConditionOperator
+  type: DiscountConditionType
+  items: { id: string; label: string }[]
+}
+
+export type ConditionMap = {
+  products: CondtionMapItem
+  product_collections: CondtionMapItem
+  product_tags: CondtionMapItem
+  customer_groups: CondtionMapItem
+  product_types: CondtionMapItem
 }

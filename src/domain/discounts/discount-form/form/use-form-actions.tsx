@@ -42,12 +42,15 @@ export const useFormActions = (id: string, data: any) => {
   }
 
   const onUpdate = async (values: DiscountFormValues) => {
+    const { conditions } = data
     await updateDiscount.mutateAsync({
-      ...formValuesToUpdateDiscountMapper({
-        id,
-        ...data,
-        ...values,
-      }),
+      ...formValuesToUpdateDiscountMapper(
+        {
+          id,
+          ...values,
+        },
+        conditions
+      ),
     })
   }
 

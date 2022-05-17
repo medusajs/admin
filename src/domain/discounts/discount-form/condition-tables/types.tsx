@@ -69,7 +69,7 @@ const TypeConditionSelector = ({ onClose }) => {
     const selectedTypes =
       product_types?.filter((type) => values.includes(type.id)) || []
 
-    setItems(selectedTypes.map((type) => type.id))
+    setItems(selectedTypes.map((type) => ({ id: type.id, label: type.value })))
   }
 
   const columns = useMemo<Column<ProductType>[]>(() => {
@@ -77,7 +77,7 @@ const TypeConditionSelector = ({ onClose }) => {
       {
         Header: () => (
           <div className="flex items-center gap-1 min-w-[626px]">
-            Title <SortingIcon size={16} />
+            Type <SortingIcon size={16} />
           </div>
         ),
         accessor: "value",
@@ -96,13 +96,13 @@ const TypeConditionSelector = ({ onClose }) => {
         ) : (
           <SelectableTable
             options={{
-              // enableSearch: true, TODO: enable search
+              enableSearch: true,
               immediateSearchFocus: true,
-              // searchPlaceholder: "Search by title...",
+              searchPlaceholder: "Search by type...",
             }}
-            resourceName="Products"
+            resourceName="Types"
             totalCount={count || 0}
-            selectedIds={items?.map((c) => c)}
+            selectedIds={items?.map((c) => c.id)}
             data={product_types}
             columns={columns}
             isLoading={isLoading}

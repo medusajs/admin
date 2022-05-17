@@ -67,11 +67,16 @@ const CollectionConditionSelector = ({ onClose }) => {
   )
 
   const changed = (values: string[]) => {
-    const selectedProducts =
+    const selectedCollections =
       collections?.filter((collections) => values.includes(collections.id)) ||
       []
 
-    setItems(selectedProducts.map((product) => product.id))
+    setItems(
+      selectedCollections.map((collection) => ({
+        id: collection.id,
+        label: collection.title,
+      }))
+    )
   }
 
   const columns = useMemo<Column<ProductCollection>[]>(() => {
@@ -116,7 +121,7 @@ const CollectionConditionSelector = ({ onClose }) => {
             }}
             resourceName="Collections"
             totalCount={count || 0}
-            selectedIds={items?.map((c) => c)}
+            selectedIds={items?.map((c) => c.id)}
             data={collections}
             columns={columns}
             isLoading={isLoading}
@@ -132,7 +137,7 @@ const CollectionConditionSelector = ({ onClose }) => {
           <Button
             variant="ghost"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               onClose()
               reset()
             }}
@@ -142,7 +147,7 @@ const CollectionConditionSelector = ({ onClose }) => {
           <Button
             variant="primary"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               updateCondition({ type: "product_collections", update: items })
               pop()
             }}
@@ -152,7 +157,7 @@ const CollectionConditionSelector = ({ onClose }) => {
           <Button
             variant="primary"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               updateCondition({ type: "product_collections", update: items })
               onClose()
               reset()

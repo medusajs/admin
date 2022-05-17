@@ -4,7 +4,7 @@ import { Controller } from "react-hook-form"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import { useDiscountForm } from "../form/discount-form-context"
 
-const PromotionType = ({ promotion, isEdit = false }) => {
+const PromotionType = ({ isEdit = false }) => {
   const { control, isFreeShipping, setIsFreeShipping } = useDiscountForm()
 
   return (
@@ -25,7 +25,7 @@ const PromotionType = ({ promotion, isEdit = false }) => {
 
               onChange(values)
             }}
-            className={clsx("flex items-center gap-base mt-base", {
+            className={clsx("flex items-center gap-base mt-base px-1", {
               ["opacity-50 pointer-events-none select-none"]: isEdit,
             })}
             tabIndex={isEdit ? -1 : 0}

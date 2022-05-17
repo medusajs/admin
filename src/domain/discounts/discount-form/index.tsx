@@ -1,14 +1,13 @@
+import { Discount } from "@medusajs/medusa"
 import { navigate } from "gatsby"
 import * as React from "react"
 import { useFormContext } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
-import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../components/organisms/accordion"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
-import AddConditionsModal from "./add-conditions-modal"
 import { useDiscountForm } from "./form/discount-form-context"
 import { useFormActions } from "./form/use-form-actions"
 import Conditions from "./sections/conditions"
@@ -17,7 +16,7 @@ import General from "./sections/general"
 import PromotionType from "./sections/promotion-type"
 
 type DiscountFormProps = {
-  discount?: any
+  discount?: Discount
   isEdit?: boolean
   additionalOpen?: string[]
   closeForm?: () => void
@@ -29,8 +28,6 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   additionalOpen = [],
   isEdit = false,
 }) => {
-  const [showAddConditionsModal, setShowConditionsModal] = React.useState(false)
-
   const notification = useNotification()
   const { handleSubmit } = useFormContext()
   const {
@@ -38,13 +35,11 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     endsAt,
     hasStartDate,
     hasExpiryDate,
-    conditionType,
-    setConditionType,
     conditions,
   } = useDiscountForm()
 
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
-    discount?.id,
+    discount?.id!,
     {
       ...discount,
       ...(hasStartDate ? { starts_at: startsAt } : {}),
@@ -138,7 +133,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 tooltip="Select a promotion type"
                 value="promotion-type"
               >
-                <PromotionType promotion={discount} isEdit={isEdit} />
+                <PromotionType isEdit={isEdit} />
               </Accordion.Item>
               <Accordion.Item
                 title="General"
@@ -163,23 +158,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="conditions"
                 tooltip="Add conditions to your Promotion"
               >
-                <Conditions discountId={discount.id} isEdit={isEdit} />
-                <Button
-                  size="small"
-                  variant="ghost"
-                  onClick={() => setShowConditionsModal(true)}
-                  className="mt-4 p-2 w-full rounded-rounded border"
-                >
-                  <PlusIcon size={18} />
-                  <span>Add Condition</span>
-                </Button>
-                {showAddConditionsModal && (
-                  <AddConditionsModal
-                    value={conditionType}
-                    setValue={setConditionType}
-                    close={() => setShowConditionsModal(false)}
-                  />
-                )}
+                <Conditions discount={discount} isEdit={isEdit} />
               </Accordion.Item>
             </Accordion>
           </div>

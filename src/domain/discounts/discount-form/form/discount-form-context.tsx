@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react"
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import { Option } from "../../../../types/shared"
-import { DiscountConditionRecord } from "../../types"
+import { ConditionMap, DiscountConditionType } from "../../types"
 import { DiscountFormValues } from "./mappers"
 
 const defaultDiscount: DiscountFormValues = {
@@ -30,15 +30,40 @@ type UpdateConditionProps = {
     | "product_types"
     | "product_tags"
     | "customer_groups"
-  update: string[] | null
+  update: { id: string; label: string }[] | null
 }
 
-const defaultConditions: DiscountConditionRecord = {
-  products: null,
-  product_collections: null,
-  product_tags: null,
-  customer_groups: null,
-  product_types: null,
+const defaultConditions: ConditionMap = {
+  products: {
+    id: undefined,
+    operator: undefined,
+    type: DiscountConditionType.PRODUCTS,
+    items: [],
+  },
+  product_collections: {
+    id: undefined,
+    operator: undefined,
+    type: DiscountConditionType.PRODUCT_COLLECTIONS,
+    items: [],
+  },
+  product_tags: {
+    id: undefined,
+    operator: undefined,
+    type: DiscountConditionType.PRODUCT_TAGS,
+    items: [],
+  },
+  product_types: {
+    id: undefined,
+    operator: undefined,
+    type: DiscountConditionType.PRODUCT_TYPES,
+    items: [],
+  },
+  customer_groups: {
+    id: undefined,
+    operator: undefined,
+    type: DiscountConditionType.CUSTOMER_GROUPS,
+    items: [],
+  },
 }
 
 export const DiscountFormProvider = ({
@@ -62,9 +87,7 @@ export const DiscountFormProvider = ({
   const [startsAt, setStartsAt] = useState(discount.starts_at)
   const [endsAt, setEndsAt] = useState(discount.ends_at)
 
-  const [conditions, setConditions] = useState<DiscountConditionRecord>(
-    discount.rule?.conditions || defaultConditions
-  )
+  const [conditions, setConditions] = useState<ConditionMap>(defaultConditions)
 
   const updateCondition = ({ type, update }: UpdateConditionProps) => {
     setConditions((prevConditions) => ({
@@ -272,6 +295,7 @@ export const DiscountFormProvider = ({
           handleConfigurationChanged,
           conditions,
           updateCondition,
+          setConditions,
         }}
       >
         {children}
@@ -299,8 +323,9 @@ const DiscountFormContext = React.createContext<{
   setStartsAt: (value: Date) => void
   setHasStartDate: (value: boolean) => void
   handleConfigurationChanged: (values: string[]) => void
-  conditions: DiscountConditionRecord
+  conditions: ConditionMap
   updateCondition: ({ type, update }: UpdateConditionProps) => void
+  setConditions: Dispatch<SetStateAction<ConditionMap>>
 } | null>(null)
 
 export const useDiscountForm = () => {

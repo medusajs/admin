@@ -1,5 +1,4 @@
 import { ProductTag } from "@medusajs/medusa"
-import { omit } from "lodash"
 import { useAdminProductTags } from "medusa-react"
 import React, { useContext, useState } from "react"
 import { Column, HeaderGroup, Row } from "react-table"
@@ -22,7 +21,7 @@ const Columns: Column<ProductTag>[] = [
   {
     Header: () => (
       <div className="flex items-center gap-1">
-        Name <SortingIcon size={16} />
+        Tag <SortingIcon size={16} />
       </div>
     ),
     accessor: "value",
@@ -34,18 +33,6 @@ const Columns: Column<ProductTag>[] = [
           </span>
         </div>
       )
-    },
-  },
-  {
-    Header: () => (
-      <div className="flex items-center gap-1 justify-end">
-        Products <SortingIcon size={16} />
-      </div>
-    ),
-    accessor: "products",
-    // TODO: for now
-    Cell: ({ row: { original } }) => {
-      return <div className="text-right text-grey-30">n/a</div>
     },
   },
 ]
@@ -92,7 +79,7 @@ const TagConditionSelector = ({ onClose }) => {
 
   const { isLoading, count, product_tags } = useAdminProductTags(
     // TODO: omit for now since BD return 400 if "q" is present
-    omit(params.queryObject, ["q"]),
+    params.queryObject,
     {
       keepPreviousData: true,
     }
@@ -102,7 +89,7 @@ const TagConditionSelector = ({ onClose }) => {
     const selectedTags =
       product_tags?.filter((t) => values.includes(t.id)) || []
 
-    setItems(selectedTags.map((t) => t.id))
+    setItems(selectedTags.map((t) => ({ id: t.id, label: t.value })))
   }
 
   return (
@@ -115,11 +102,11 @@ const TagConditionSelector = ({ onClose }) => {
             options={{
               enableSearch: true,
               immediateSearchFocus: true,
-              searchPlaceholder: "Search product tags...",
+              searchPlaceholder: "Search by tag...",
             }}
             resourceName="Tags"
             totalCount={count || 0}
-            selectedIds={items}
+            selectedIds={items.map((i) => i.id)}
             data={product_tags}
             columns={Columns}
             isLoading={isLoading}
@@ -145,7 +132,7 @@ const TagConditionSelector = ({ onClose }) => {
           <Button
             variant="primary"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               updateCondition({ type: "product_tags", update: items })
               pop()
             }}
@@ -155,7 +142,7 @@ const TagConditionSelector = ({ onClose }) => {
           <Button
             variant="primary"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               updateCondition({ type: "product_tags", update: items })
               onClose()
               reset()

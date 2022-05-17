@@ -80,7 +80,12 @@ const ProductConditionSelector = ({ onClose }) => {
     const selectedProducts =
       products?.filter((product) => values.includes(product.id)) || []
 
-    setItems(selectedProducts.map((product) => product.id))
+    setItems(
+      selectedProducts.map((product) => ({
+        id: product.id,
+        label: product.title,
+      }))
+    )
   }
 
   const columns = useMemo<Column<Product>[]>(() => {
@@ -159,7 +164,7 @@ const ProductConditionSelector = ({ onClose }) => {
             }}
             resourceName="Products"
             totalCount={count || 0}
-            selectedIds={items}
+            selectedIds={items.map((i) => i.id)}
             data={products}
             columns={columns}
             isLoading={isLoading}
@@ -175,7 +180,7 @@ const ProductConditionSelector = ({ onClose }) => {
           <Button
             variant="ghost"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               onClose()
               reset()
             }}
@@ -185,7 +190,7 @@ const ProductConditionSelector = ({ onClose }) => {
           <Button
             variant="primary"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               updateCondition({ type: "products", update: items })
               pop()
             }}
@@ -195,7 +200,7 @@ const ProductConditionSelector = ({ onClose }) => {
           <Button
             variant="primary"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               updateCondition({ type: "products", update: items })
               onClose()
               reset()

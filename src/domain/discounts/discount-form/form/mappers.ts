@@ -3,17 +3,24 @@ import {
   AdminCreateCondition,
   AdminPostDiscountsDiscountReq,
   AdminPostDiscountsReq,
+  AdminUpsertCondition,
   Discount,
-  DiscountCondition,
 } from "@medusajs/medusa"
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../types/shared"
-import { DiscountConditionOperator, DiscountConditionRecord } from "../../types"
+import {
+  ConditionMap,
+  DiscountConditionOperator,
+  DiscountConditionRecord,
+} from "../../types"
 
 export interface DiscountFormValues extends FieldValues {
   id?: string
   code?: string
-  rule_id?: string
+  rule?: {
+    id?: string
+    value?: number
+  }
   type: string
   value?: number
   allocation: string
@@ -34,53 +41,6 @@ export enum DiscountConditionType {
   CUSTOMER_GROUPS = "customer_groups",
 }
 
-const mapConditionsToFormValues = (conditions: DiscountCondition[]) => {
-  const record: DiscountConditionRecord = {
-    customer_groups: null,
-    product_collections: null,
-    product_tags: null,
-    product_types: null,
-    products: null,
-  }
-
-  for (const condition of conditions) {
-    switch (condition.type) {
-      case DiscountConditionType.PRODUCTS:
-        record.products = {
-          id: condition.id,
-          items: [] as string[],
-        }
-        break
-      case DiscountConditionType.PRODUCT_TYPES:
-        record.product_types = {
-          id: condition.id,
-          items: [] as string[],
-        }
-        break
-      case DiscountConditionType.PRODUCT_COLLECTIONS:
-        record.product_collections = {
-          id: condition.id,
-          items: [] as string[],
-        }
-        break
-      case DiscountConditionType.PRODUCT_TAGS:
-        record.product_tags = {
-          id: condition.id,
-          items: [] as string[],
-        }
-        break
-      case DiscountConditionType.CUSTOMER_GROUPS:
-        record.customer_groups = {
-          id: condition.id,
-          items: [] as string[],
-        }
-        break
-    }
-  }
-
-  return record
-}
-
 export const discountToFormValuesMapper = (
   discount: Discount
 ): DiscountFormValues => {
@@ -90,8 +50,8 @@ export const discountToFormValuesMapper = (
     rule_id: discount.rule.id,
     type: discount.rule.type,
     rule: {
+      id: discount.rule.id,
       value: discount.rule.value,
-      conditions: mapConditionsToFormValues(discount.rule.conditions),
     },
     allocation: discount.rule.allocation,
     description: discount.rule.description,
@@ -116,7 +76,7 @@ export const formValuesToCreateDiscountMapper = (
       type: values.type,
       value:
         values.type !== "free_shipping"
-          ? parseInt((values.rule.value! as unknown) as string, 10)
+          ? parseInt((values.rule!.value! as unknown) as string, 10)
           : 0,
       description: values.description,
       conditions: mapCreateConditions(values.conditions),
@@ -133,17 +93,35 @@ export const formValuesToCreateDiscountMapper = (
   }
 }
 
+const mapConditionsToUpdate = (map: ConditionMap) => {
+  const conditions: AdminUpsertCondition[] = []
+
+  for (const [key, value] of Object.entries(map)) {
+    if (value && value.items.length) {
+      conditions.push({
+        id: value.id,
+        operator: DiscountConditionOperator.IN,
+        [key]: value.items.map((i) => i.id),
+      })
+    }
+  }
+
+  return conditions
+}
+
 export const formValuesToUpdateDiscountMapper = (
-  values: DiscountFormValues
+  values: DiscountFormValues,
+  conditions: ConditionMap
 ): AdminPostDiscountsDiscountReq => {
   return {
     code: values.code,
     rule: {
       allocation: values.allocation,
-      id: values.rule_id!,
+      id: values.rule!.id!,
       type: values.type,
-      value: parseInt((values.rule.value as unknown) as string, 10),
+      value: parseInt((values.rule!.value as unknown) as string, 10),
       description: values.description,
+      conditions: mapConditionsToUpdate(conditions),
     },
     ends_at: values.ends_at ?? undefined,
     regions: values.regions?.map((r) => r.value),
