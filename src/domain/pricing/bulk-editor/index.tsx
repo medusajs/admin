@@ -25,7 +25,6 @@ import TableFieldsFilters from "../../../components/molecules/table-fileds-filte
 import { currencies } from "../../../utils/currencies"
 import PriceInput from "../../../components/organisms/price-input"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
-import PointerIcon from "../../../components/fundamentals/icons/pointer-icon"
 import ArrowRightIcon from "../../../components/fundamentals/icons/arrow-right-icon"
 import ArrowLeftIcon from "../../../components/fundamentals/icons/arrow-left-icon"
 import ArrowUpIcon from "../../../components/fundamentals/icons/arrow-up-icon"
@@ -33,6 +32,11 @@ import ArrowDownIcon from "../../../components/fundamentals/icons/arrow-down-ico
 import ShiftIcon from "../../../components/fundamentals/icons/shift-icon"
 import ListArrowIcon from "../../../components/fundamentals/icons/list-arrow"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
+
+/**
+ * Number of products that are shown on a single bulk table page.
+ */
+const BULK_TABLE_PRODUCT_LIMIT = 5
 
 /**
  * Struct for holding multiedit state.
@@ -795,8 +799,6 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     </>
   )
 }
-
-const BULK_TABLE_PRODUCT_LIMIT = 2
 
 type PriceListBulkEditorContainer = {
   priceList: PriceList
