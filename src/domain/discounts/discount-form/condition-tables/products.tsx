@@ -159,7 +159,7 @@ const ProductConditionSelector = ({ onClose }) => {
             }}
             resourceName="Products"
             totalCount={count || 0}
-            selectedIds={items?.map((c) => c)}
+            selectedIds={items}
             data={products}
             columns={columns}
             isLoading={isLoading}

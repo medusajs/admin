@@ -16,7 +16,7 @@ export enum DiscountConditionType {
   CUSTOMER_GROUPS = "customer_groups",
 }
 
-type ConditionPayload = {
+export type ConditionPayload = {
   id?: string
   items?: string[]
 }

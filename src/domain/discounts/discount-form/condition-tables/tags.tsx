@@ -88,7 +88,7 @@ const TagConditionSelector = ({ onClose }) => {
   const { pop, reset } = useContext(LayeredModalContext)
   const { updateCondition, conditions } = useDiscountForm()
 
-  const [items, setItems] = useState(conditions.product_tags || [])
+  const [items, setItems] = useState(conditions.product_tags?.items || [])
 
   const { isLoading, count, product_tags } = useAdminProductTags(
     // TODO: omit for now since BD return 400 if "q" is present
@@ -102,12 +102,7 @@ const TagConditionSelector = ({ onClose }) => {
     const selectedTags =
       product_tags?.filter((t) => values.includes(t.id)) || []
 
-    setItems(
-      selectedTags.map((t) => ({
-        id: t.id,
-        value: t.value,
-      }))
-    )
+    setItems(selectedTags.map((t) => t.id))
   }
 
   return (
@@ -124,7 +119,7 @@ const TagConditionSelector = ({ onClose }) => {
             }}
             resourceName="Tags"
             totalCount={count || 0}
-            selectedIds={items?.map((c) => c.id)}
+            selectedIds={items}
             data={product_tags}
             columns={Columns}
             isLoading={isLoading}

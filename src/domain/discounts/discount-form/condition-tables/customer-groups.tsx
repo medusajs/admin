@@ -45,7 +45,7 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
   const params = useQueryFilters(defaultQueryProps)
   const { pop, reset } = useContext(LayeredModalContext)
   const { updateCondition, conditions } = useDiscountForm()
-  const [items, setItems] = useState(conditions.customer_groups || [])
+  const [items, setItems] = useState(conditions.customer_groups?.items || [])
 
   const { isLoading, count, customer_groups } = useAdminCustomerGroups(
     params.queryObject,
@@ -59,12 +59,7 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
     const selectedCustomerGroups =
       customer_groups?.filter((cg) => values.includes(cg.id)) || []
 
-    setItems(
-      selectedCustomerGroups.map((customer_group) => ({
-        id: customer_group.id,
-        title: customer_group.name,
-      }))
-    )
+    setItems(selectedCustomerGroups.map((customer_group) => customer_group.id))
   }
 
   return (
@@ -81,7 +76,7 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
             }}
             resourceName="Customer groups"
             totalCount={count || 0}
-            selectedIds={items?.map((c) => c.id)}
+            selectedIds={items}
             data={customer_groups}
             columns={columns}
             isLoading={isLoading}

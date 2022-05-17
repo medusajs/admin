@@ -3,26 +3,45 @@ import NumberedItem from "../../../../components/molecules/numbered-item"
 import { removeNullish } from "../../../../utils/remove-nullish"
 import { useDiscountForm } from "../form/discount-form-context"
 import { DiscountConditionType } from "../form/mappers"
+import ConditionItem from "./condition-item"
 import useConditionActions from "./use-condition-actions"
+type ConditionsProps = {
+  discountId: string
+  isEdit?: boolean
+}
 
-const Conditions: React.FC = () => {
+const Conditions: React.FC<ConditionsProps> = ({
+  discountId,
+  isEdit = false,
+}) => {
   const { conditions } = useDiscountForm()
 
   const cleanConditions = removeNullish(conditions)
 
   const { getActions } = useConditionActions()
+
+  console.log(discountId)
   return (
     <div className="pt-6 flex flex-col gap-y-small">
       {Object.keys(cleanConditions).map((key, i) => {
         return (
-          conditions[key] && (
-            <NumberedItem
-              index={i + 1}
-              title={getTitle(key as DiscountConditionType)}
-              description={getDescription(key as DiscountConditionType)}
-              actions={getActions(key)}
-            />
-          )
+          <div>
+            {discountId ? (
+              <ConditionItem
+                index={i}
+                discountId={discountId}
+                conditionId={cleanConditions[key].id}
+                type={key as DiscountConditionType}
+              />
+            ) : (
+              <NumberedItem
+                index={i + 1}
+                title={getTitle(key as DiscountConditionType)}
+                description={getDescription(key as DiscountConditionType)}
+                actions={getActions(key)}
+              />
+            )}
+          </div>
         )
       })}
     </div>
@@ -32,15 +51,15 @@ const Conditions: React.FC = () => {
 const getTitle = (type: DiscountConditionType) => {
   switch (type) {
     case DiscountConditionType.PRODUCTS:
-      return "Products"
+      return "Product"
     case DiscountConditionType.PRODUCT_COLLECTIONS:
-      return "Product collections"
+      return "Collection"
     case DiscountConditionType.PRODUCT_TAGS:
-      return "Product tags"
+      return "Tag"
     case DiscountConditionType.CUSTOMER_GROUPS:
-      return "Customer groups"
+      return "Customer group"
     case DiscountConditionType.PRODUCT_TYPES:
-      return "Product types"
+      return "Type"
   }
 }
 

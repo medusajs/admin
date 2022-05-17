@@ -163,7 +163,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="conditions"
                 tooltip="Add conditions to your Promotion"
               >
-                <Conditions />
+                <Conditions discountId={discount.id} isEdit={isEdit} />
                 <Button
                   size="small"
                   variant="ghost"
