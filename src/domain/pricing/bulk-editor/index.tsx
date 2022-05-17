@@ -859,6 +859,10 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
     setPriceChanges(tmp)
   }, [activeRegions])
 
+  useEffect(() => {
+    setPage(0)
+  }, [currentPriceListId])
+
   const isVariantInPriceList = (variantId: string) =>
     !!variantsOfList[variantId]
 
