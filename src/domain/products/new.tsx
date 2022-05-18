@@ -84,10 +84,12 @@ const SaveNotification = ({ isLoading = false }) => {
 
   const onPublish = (values: FieldValues) => {
     onSubmit({ ...values, status: "published" })
+    resetForm()
   }
 
   const onSaveDraft = (values: FieldValues) => {
     onSubmit({ ...values, status: "draft" })
+    resetForm()
   }
 
   const isDirty = checkForDirtyState(
