@@ -50,9 +50,8 @@ const ProductDetail = ({ id }) => {
     })
   }
 
-  if (didFail) {
-    return <NotFound />
-  }
+  if (didFail) return <NotFound />
+  if (!product) return <Spinner />
 
   return (
     <Flex flexDirection="column" pb={5} pt={5}>
@@ -79,6 +78,7 @@ const ProductDetail = ({ id }) => {
         toaster={notification}
       />
       <InventoryManager product={product} onSubmit={handleDetailsSubmit} />
+      <MetadataForm parent={product} onSubmit={handleDetailsSubmit} />
       <Card mr={3} width="100%">
         <Card.Header>Raw product</Card.Header>
         <Card.Body>

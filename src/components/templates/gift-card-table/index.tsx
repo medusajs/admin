@@ -130,7 +130,7 @@ const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
           {giftCard.balance ? (
             giftCard?.region ? (
               formatAmountWithSymbol({
-                amount: giftCard.value,
+                amount: giftCard.balance,
                 currency: giftCard.region.currency_code,
               })
             ) : (

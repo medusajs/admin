@@ -1,9 +1,9 @@
-import React from "react"
-import CrossIcon from "../../fundamentals/icons/cross-icon"
-import clsx from "clsx"
 import * as Dialog from "@radix-ui/react-dialog"
 import * as Portal from "@radix-ui/react-portal"
+import clsx from "clsx"
+import React from "react"
 import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
+import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 type ModalState = {
   portalRef: any

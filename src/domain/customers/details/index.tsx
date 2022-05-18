@@ -1,9 +1,11 @@
 import { RouteComponentProps } from "@reach/router"
+import { navigate } from "gatsby"
 import { useAdminCustomer } from "medusa-react"
 import moment from "moment"
 import React, { useState } from "react"
 import Avatar from "../../../components/atoms/avatar"
 import Spinner from "../../../components/atoms/spinner"
+import DetailsIcon from "../../../components/fundamentals/details-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
@@ -12,6 +14,8 @@ import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import CustomerOrdersTable from "../../../components/templates/customer-orders-table"
+import useNotification from "../../../hooks/use-notification"
+import { useImpersonateCustomer } from "../../../services/nibll-api"
 import EditCustomerModal from "./edit"
 
 type CustomerDetailProps = {
@@ -21,6 +25,14 @@ type CustomerDetailProps = {
 const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
   const { customer, isLoading } = useAdminCustomer(id, {})
   const [showEdit, setShowEdit] = useState(false)
+  const notification = useNotification()
+  const { mutate: impersonate } = useImpersonateCustomer({
+    onSuccess: ({ data: { redirect_url } }) =>
+      window.open(redirect_url, "_blank"),
+    onError: () => {
+      notification("Error", "Failed to impersonate customer", "error")
+    },
+  })
 
   const customerName = () => {
     if (customer?.first_name && customer?.last_name) {
@@ -35,6 +47,11 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
       label: "Edit",
       onClick: () => setShowEdit(true),
       icon: <EditIcon size={20} />,
+    },
+    {
+      label: "Impersonate",
+      onClick: () => impersonate(customer?.id || ""),
+      icon: <DetailsIcon size={20} />,
     },
     {
       label: "Delete (not implemented yet)",
