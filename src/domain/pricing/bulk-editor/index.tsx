@@ -1,10 +1,4 @@
-import React, {
-  ReactElement,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { pick } from "lodash"
 import clsx from "clsx"
 
@@ -38,6 +32,7 @@ import ArrowDownIcon from "../../../components/fundamentals/icons/arrow-down-ico
 import ShiftIcon from "../../../components/fundamentals/icons/shift-icon"
 import ListArrowIcon from "../../../components/fundamentals/icons/list-arrow"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
+import HorizontalScrollFade from "../../../components/atoms/horizontal-scroll"
 
 /**
  * Number of products that are shown on a single bulk table page.
@@ -481,65 +476,6 @@ function ProductVariantRow(props: ProductVariantRowProps) {
           </div>
         )
       })}
-    </div>
-  )
-}
-
-type HorizontalScrollFadeProps = {
-  children: React.ReactElement
-}
-
-function HorizontalScrollFade(props: HorizontalScrollFadeProps) {
-  const r = useRef()
-
-  const [showLeft, setShowLeft] = useState(false)
-  const [showRight, setShowRight] = useState(false)
-
-  useEffect(() => {
-    const el = r.current
-    if (el) {
-      onScroll(el)
-    }
-  })
-
-  const onScroll = (el: HTMLElement) => {
-    const isScrolled = el.scrollWidth > el.clientWidth
-
-    if (isScrolled) {
-      setShowLeft(!!el.scrollLeft)
-      setShowRight(el.scrollWidth - el.scrollLeft > el.clientWidth)
-    } else {
-      setShowLeft(false)
-      setShowRight(false)
-    }
-  }
-
-  return (
-    <div className="relative">
-      <div
-        ref={r}
-        className="overflow-x-auto hide-scrollbar relative"
-        onScroll={(e) => onScroll(e.target)}
-      >
-        {props.children}
-      </div>
-
-      <div className="absolute top-0 w-full h-full flex flex-row justify-between z-[100] pointer-events-none">
-        <div
-          style={{
-            opacity: showLeft ? 1 : 0,
-            background: "linear-gradient(to left, transparent 60%, #f3f4f6)",
-          }}
-          className="w-[30px] h-full"
-        />
-        <div
-          style={{
-            opacity: showRight ? 1 : 0,
-            background: "linear-gradient(to right, transparent 60%, #f3f4f6)",
-          }}
-          className="w-[30px] h-full"
-        />
-      </div>
     </div>
   )
 }
