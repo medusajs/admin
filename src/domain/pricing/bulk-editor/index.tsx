@@ -778,25 +778,27 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
 
   return (
     <HorizontalScrollFade>
-      {products.map((p, ind) => (
-        <ProductSection
-          key={p.id}
-          product={p}
-          isFirst={!ind}
-          priceChanges={priceChanges}
-          setPriceChanges={setPriceChanges}
-          activeRegions={activeRegions}
-          isVariantInPriceList={isVariantInPriceList}
-          // Edit controls
-          currentEditAmount={currentEditAmount}
-          onKeyDown={onKeyDown}
-          onHeaderClick={onHeaderClick}
-          onPriceInputClick={onPriceInputClick}
-          onAmountChange={onAmountChange}
-          getPriceChange={getPriceChange}
-          isActive={isActive}
-        />
-      ))}
+      <div style={{ marginBottom: -16, marginTop: -4 }}>
+        {products.map((p, ind) => (
+          <ProductSection
+            key={p.id}
+            product={p}
+            isFirst={!ind}
+            priceChanges={priceChanges}
+            setPriceChanges={setPriceChanges}
+            activeRegions={activeRegions}
+            isVariantInPriceList={isVariantInPriceList}
+            // Edit controls
+            currentEditAmount={currentEditAmount}
+            onKeyDown={onKeyDown}
+            onHeaderClick={onHeaderClick}
+            onPriceInputClick={onPriceInputClick}
+            onAmountChange={onAmountChange}
+            getPriceChange={getPriceChange}
+            isActive={isActive}
+          />
+        ))}
+      </div>
     </HorizontalScrollFade>
   )
 }
@@ -1046,7 +1048,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
             currentPriceListId={currentPriceListId}
           />
 
-          <div className="medium:w-8/12 w-full flex flex-col justify-start mx-auto mb-7">
+          <div className="medium:w-8/12 w-full flex flex-col justify-start mx-auto mb-7 pt-2">
             <PriceListBulkEditor
               products={products!}
               activeRegions={displayRegions}

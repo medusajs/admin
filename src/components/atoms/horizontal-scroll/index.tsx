@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 
 type HorizontalScrollFadeProps = {
-  children: React.ReactNode[]
+  children: React.ReactNode | React.ReactNode[]
 }
 
 /**
