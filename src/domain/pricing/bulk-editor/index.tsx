@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, {
+  ReactElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { pick } from "lodash"
 import clsx from "clsx"
 
@@ -479,6 +485,65 @@ function ProductVariantRow(props: ProductVariantRowProps) {
   )
 }
 
+type HorizontalScrollFadeProps = {
+  children: React.ReactElement
+}
+
+function HorizontalScrollFade(props: HorizontalScrollFadeProps) {
+  const r = useRef()
+
+  const [showLeft, setShowLeft] = useState(false)
+  const [showRight, setShowRight] = useState(false)
+
+  useEffect(() => {
+    const el = r.current
+    if (el) {
+      onScroll(el)
+    }
+  })
+
+  const onScroll = (el: HTMLElement) => {
+    const isScrolled = el.scrollWidth > el.clientWidth
+
+    if (isScrolled) {
+      setShowLeft(!!el.scrollLeft)
+      setShowRight(el.scrollWidth - el.scrollLeft > el.clientWidth)
+    } else {
+      setShowLeft(false)
+      setShowRight(false)
+    }
+  }
+
+  return (
+    <div className="relative">
+      <div
+        ref={r}
+        className="overflow-x-auto hide-scrollbar relative"
+        onScroll={(e) => onScroll(e.target)}
+      >
+        {props.children}
+      </div>
+
+      <div className="absolute top-0 w-full h-full flex flex-row justify-between z-[100] pointer-events-none">
+        <div
+          style={{
+            opacity: showLeft ? 1 : 0,
+            background: "linear-gradient(to left, transparent 60%, #f3f4f6)",
+          }}
+          className="w-[30px] h-full"
+        />
+        <div
+          style={{
+            opacity: showRight ? 1 : 0,
+            background: "linear-gradient(to right, transparent 60%, #f3f4f6)",
+          }}
+          className="w-[30px] h-full"
+        />
+      </div>
+    </div>
+  )
+}
+
 type PriceListBulkEditorProps = {
   products: Product[]
   activeRegions: Region[]
@@ -776,7 +841,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   }
 
   return (
-    <>
+    <HorizontalScrollFade>
       {products.map((p, ind) => (
         <ProductSection
           key={p.id}
@@ -796,7 +861,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
           isActive={isActive}
         />
       ))}
-    </>
+    </HorizontalScrollFade>
   )
 }
 
@@ -1045,7 +1110,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
             currentPriceListId={currentPriceListId}
           />
 
-          <div className="medium:w-8/12 w-full flex flex-col justify-start mx-auto mb-7 overflow-x-auto-TODO">
+          <div className="medium:w-8/12 w-full flex flex-col justify-start mx-auto mb-7">
             <PriceListBulkEditor
               products={products!}
               activeRegions={displayRegions}

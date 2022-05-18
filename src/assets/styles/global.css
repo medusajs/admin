@@ -419,3 +419,7 @@
 .remove-number-spinner {
   -moz-appearance: textfield;
 }
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
