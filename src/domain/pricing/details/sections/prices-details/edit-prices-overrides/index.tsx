@@ -37,9 +37,16 @@ const EditPricesOverridesModal = ({
           onSubmit={(values) => {
             const updatedPrices = mapToPriceList(values)
 
-            updatePriceList.mutate({
-              prices: updatedPrices,
-            })
+            updatePriceList.mutate(
+              {
+                prices: updatedPrices,
+              },
+              {
+                onSuccess: () => {
+                  close()
+                },
+              }
+            )
           }}
         />
       ),
