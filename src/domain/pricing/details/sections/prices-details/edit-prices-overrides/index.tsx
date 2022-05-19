@@ -1,4 +1,5 @@
 import { Product } from "@medusajs/medusa"
+import { useAdminUpdatePriceList } from "medusa-react"
 import * as React from "react"
 import Button from "../../../../../../components/fundamentals/button"
 import { CollapsibleTree } from "../../../../../../components/molecules/collapsible-tree"
@@ -8,6 +9,8 @@ import LayeredModal, {
 } from "../../../../../../components/molecules/modal/layered-modal"
 import PriceOverrides from "../../../../../../components/templates/price-overrides"
 import ProductVariantLeaf from "./product-variant-leaf"
+import { useParams } from "@reach/router"
+import { mapToPriceList } from "./mappers"
 
 type EditPricesOverridesModalProps = {
   product: Product
@@ -19,6 +22,8 @@ const EditPricesOverridesModal = ({
   product,
 }: EditPricesOverridesModalProps) => {
   const context = useLayeredModal()
+  const { id: priceListId } = useParams()
+  const updatePriceList = useAdminUpdatePriceList(priceListId)
 
   const getOnClick = (variant) => () =>
     context.push({
@@ -29,7 +34,13 @@ const EditPricesOverridesModal = ({
           prices={variant.prices}
           variants={product.variants}
           onClose={close}
-          onSubmit={console.log}
+          onSubmit={(values) => {
+            const updatedPrices = mapToPriceList(values)
+
+            updatePriceList.mutate({
+              prices: updatedPrices,
+            })
+          }}
         />
       ),
     })
