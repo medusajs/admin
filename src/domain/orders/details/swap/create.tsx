@@ -1,5 +1,14 @@
-import { Order, ProductVariant } from "@medusajs/medusa"
-import { useAdminShippingOptions } from "medusa-react"
+import {
+  AdminPostOrdersOrderSwapsReq,
+  Order,
+  ProductVariant,
+  ReturnReason,
+} from "@medusajs/medusa"
+import {
+  useAdminCreateSwap,
+  useAdminOrder,
+  useAdminShippingOptions,
+} from "medusa-react"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
@@ -16,32 +25,39 @@ import RMASelectProductTable from "../../../../components/organisms/rma-select-p
 import useNotification from "../../../../hooks/use-notification"
 import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
-import {
-  extractNormalizedAmount,
-  formatAmountWithSymbol,
-} from "../../../../utils/prices"
-import { removeNullish } from "../../../../utils/remove-nullish"
+import { formatAmountWithSymbol } from "../../../../utils/prices"
 import RMASelectProductSubModal from "../rma-sub-modals/products"
 import { filterItems } from "../utils/create-filtering"
 
 type SwapMenuProps = {
   order: Omit<Order, "beforeInsert">
-  onCreate: (payload: any) => Promise<void>
   onDismiss: () => void
 }
 
-const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
+type ReturnRecord = Record<
+  string,
+  {
+    images: string[]
+    note: string
+    quantity: number
+    reason: {
+      label: string
+      value: ReturnReason
+    } | null
+  }
+>
+
+type SelectProduct = Omit<ProductVariant & { quantity: number }, "beforeInsert">
+
+const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
+  const { refetch } = useAdminOrder(order.id)
+  const { mutate, isLoading } = useAdminCreateSwap(order.id)
   const layeredModalContext = useContext(LayeredModalContext)
-  const [submitting, setSubmitting] = useState(false)
-  const [toReturn, setToReturn] = useState({})
+  const [toReturn, setToReturn] = useState<ReturnRecord>({})
   const [useCustomShippingPrice, setUseCustomShippingPrice] = useState(false)
 
-  const [itemsToAdd, setItemsToAdd] = useState<
-    Omit<ProductVariant, "beforeInsert">[]
-  >([])
-  const [shippingMethod, setShippingMethod] = useState<Option | undefined>(
-    undefined
-  )
+  const [itemsToAdd, setItemsToAdd] = useState<SelectProduct[]>([])
+  const [shippingMethod, setShippingMethod] = useState<Option | null>(null)
   const [shippingPrice, setShippingPrice] = useState<number | undefined>(
     undefined
   )
@@ -61,7 +77,6 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
     shipping_options: shippingOptions,
     isLoading: shippingLoading,
   } = useAdminShippingOptions({
-    // @ts-ignore TODO remove once #1493 is merged
     is_return: true,
     region_id: order.region_id,
   })
@@ -73,9 +88,13 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
 
     return (
       items.reduce((acc, next) => {
+        if (!next) {
+          return acc
+        }
+
         return (
           acc +
-          (next.refundable / (next.quantity - next.returned_quantity)) *
+          ((next.refundable || 0) / (next.quantity - next.returned_quantity)) *
             toReturn[next.id].quantity
         )
       }, 0) - (shippingPrice || 0)
@@ -84,8 +103,20 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
 
   const additionalTotal = useMemo(() => {
     return itemsToAdd.reduce((acc, next) => {
-      const price = extractNormalizedAmount(next.prices, order)
-      const lineTotal = price * 100 * next.quantity * (1 + order.tax_rate / 100)
+      let amount = next.prices.find((ma) => ma.region_id === order.region_id)
+        ?.amount
+
+      if (!amount) {
+        amount = next.prices.find(
+          (ma) => ma.currency_code === order.currency_code
+        )?.amount
+      }
+
+      if (!amount) {
+        amount = 0
+      }
+
+      const lineTotal = amount * next.quantity
       return acc + lineTotal
     }, 0)
   }, [itemsToAdd])
@@ -132,31 +163,28 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
     }
   }, [useCustomShippingPrice, shippingMethod])
 
-  const handleProductSelect = (variants) => {
+  const handleProductSelect = (variants: SelectProduct[]) => {
+    const existingIds = itemsToAdd.map((i) => i.id)
+
     setItemsToAdd((itemsToAdd) => [
       ...itemsToAdd,
       ...variants
-        .filter((variant) => itemsToAdd.indexOf((v) => v.id === variant.id) < 0)
+        .filter((variant) => !existingIds.includes(variant.id))
         .map((variant) => ({ ...variant, quantity: 1 })),
     ])
   }
 
   const onSubmit = () => {
     const items = Object.entries(toReturn).map(([key, value]) => {
-      const clean = removeNullish(value)
-
-      if (clean.reason) {
-        clean.reason_id = clean.reason.value.value.id
-        delete clean.reason
-      }
-
       return {
         item_id: key,
-        ...clean,
+        note: value.note ?? undefined,
+        quantity: value.quantity,
+        reason_id: value.reason?.value.id ?? undefined,
       }
     })
 
-    const data = {
+    const data: AdminPostOrdersOrderSwapsReq = {
       return_items: items,
       additional_items: itemsToAdd.map((i) => ({
         variant_id: i.id,
@@ -169,22 +197,20 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
     if (shippingMethod) {
       data.return_shipping = {
         option_id: shippingMethod.value,
-        price: Math.round(shippingPrice),
+        price: Math.round(shippingPrice || 0),
       }
     }
 
-    if (onCreate) {
-      setSubmitting(true)
-      return onCreate(data)
-        .then(() => onDismiss())
-        .then(() =>
-          notification("Success", "Successfully created swap", "success")
-        )
-        .catch((error) =>
-          notification("Error", getErrorMessage(error), "error")
-        )
-        .finally(() => setSubmitting(false))
-    }
+    return mutate(data, {
+      onSuccess: () => {
+        refetch()
+        notification("Success", "Successfully created exchange", "success")
+        onDismiss()
+      },
+      onError: (err) => {
+        notification("Error", getErrorMessage(err), "error")
+      },
+    })
   }
 
   return (
@@ -303,6 +329,8 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
               {formatAmountWithSymbol({
                 currency: order.currency_code,
                 amount: additionalTotal,
+                digits: 2,
+                tax: order.tax_rate ?? undefined,
               })}
             </span>
           </div>
@@ -316,6 +344,8 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
               {formatAmountWithSymbol({
                 currency: order.currency_code,
                 amount: additionalTotal - returnTotal,
+                digits: 2,
+                tax: order.tax_rate ?? undefined,
               })}
             </span>
           </div>
@@ -353,7 +383,7 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onCreate, onDismiss }) => {
               disabled={
                 Object.keys(toReturn).length === 0 || itemsToAdd.length === 0
               }
-              loading={submitting}
+              loading={isLoading}
               type="submit"
               variant="primary"
             >
