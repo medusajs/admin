@@ -8,11 +8,7 @@ import {
 } from "@medusajs/medusa"
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../types/shared"
-import {
-  ConditionMap,
-  DiscountConditionOperator,
-  DiscountConditionRecord,
-} from "../../types"
+import { ConditionMap, DiscountConditionOperator } from "../../types"
 
 export interface DiscountFormValues extends FieldValues {
   id?: string
@@ -133,16 +129,14 @@ export const formValuesToUpdateDiscountMapper = (
   }
 }
 
-const mapCreateConditions = (
-  record: DiscountConditionRecord
-): AdminCreateCondition[] => {
+const mapCreateConditions = (record: ConditionMap): AdminCreateCondition[] => {
   const conditions: AdminCreateCondition[] = []
 
-  for (const [key, value] of Object.entries(record)) {
-    if (value) {
+  for (const value of Object.values(record)) {
+    if (value && value.items.length) {
       conditions.push({
         operator: DiscountConditionOperator.IN,
-        [key]: value.items,
+        [value.type]: value.items?.map((i) => i.id),
       })
     }
   }
