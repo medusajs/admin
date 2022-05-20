@@ -6,6 +6,7 @@ import {
   useAdminDiscounts,
   useAdminDraftOrder,
   useAdminDraftOrderRegisterPayment,
+  useAdminGetDiscountByCode,
   useAdminStore,
   useAdminUpdateDraftOrder,
 } from "medusa-react"
@@ -164,9 +165,7 @@ const DraftOrderDetails = ({ id }) => {
   }
 
   const handleAddDiscount = (data: AddDiscountCodeInput) => {
-    const discount = discounts?.find(
-      (discount) => discount.code === data.code.value
-    )
+    const { discount } = useAdminGetDiscountByCode(data.code.value)
 
     if (!discount) throw new Error("That discount doesn't exist.")
 
