@@ -1,53 +1,63 @@
-import React, { useEffect, useState } from "react"
+import React, { useMemo, useEffect, useState } from "react"
+import { LineItem, Order, Return, ReturnItem } from "@medusajs/medusa"
 import Button from "../../../../components/fundamentals/button"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import Modal from "../../../../components/molecules/modal"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
+import RMASelectReturnProductTable from "../../../../components/organisms/rma-select-receive-product-table"
+import useNotification from "../../../../hooks/use-notification"
 
-const ReceiveMenu = ({
+type ReceiveMenuProps = {
+  order: Order
+  returnRequest: Return
+  onDismiss: () => void
+  onReceiveSwap?: (payload: any) => Promise<void>
+  onReceiveReturn?: (id: string, payload: any) => Promise<void>
+  refunded?: boolean
+}
+
+const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   order,
   returnRequest,
   onReceiveReturn,
   onReceiveSwap,
   onDismiss,
-  notification,
+  refunded,
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
   const [refundAmount, setRefundAmount] = useState(0)
-  const [toReturn, setToReturn] = useState([])
-  const [quantities, setQuantities] = useState({})
+  const [toReturn, setToReturn] = useState({})
 
-  const [allItems, setAllItems] = useState([])
+  const notification = useNotification()
 
-  useEffect(() => {
-    if (order) {
-      let temp = [...order.items]
-
-      if (order.swaps && order.swaps.length) {
-        for (const s of order.swaps) {
-          temp = [...temp, ...s.additional_items]
+  const allItems: LineItem[] = useMemo(() => {
+    return order.items
+      .map((i: LineItem) => {
+        const found = returnRequest.items.find(
+          (ri: ReturnItem) => ri.item_id === i.id
+        )
+        if (found) {
+          return {
+            ...i,
+            quantity: found.quantity,
+          }
+        } else {
+          return null
         }
-      }
-
-      setAllItems(temp)
-    }
+      })
+      .filter(Boolean) as LineItem[]
   }, [order])
 
   useEffect(() => {
     const returns = []
     let qty = {}
-    returnRequest.items.forEach((i) => {
+    returnRequest.items.forEach((i: ReturnItem) => {
       const item = allItems.find((l) => l.id === i.item_id)
-      if (
-        item &&
-        !item.returned &&
-        item.quantity - item.returned_quantity > 0
-      ) {
-        returns.push(i.item_id)
+      if (item && item.quantity - item.returned_quantity > 0) {
+        returns[i.item_id] = item
         qty = {
           ...qty,
           [i.item_id]: i.quantity,
@@ -56,39 +66,44 @@ const ReceiveMenu = ({
     })
 
     setToReturn(returns)
-    setQuantities(qty)
   }, [allItems])
 
   useEffect(() => {
-    if (!toReturn.length) {
+    if (!Object.entries(toReturn).length) {
+      setRefundAmount(0)
       return
     }
 
-    const items = toReturn.map((t) => allItems.find((i) => i.id === t))
+    const items = Object.keys(toReturn).map((t) => ({
+      ...allItems.find((i) => i.id === t),
+      quantity: toReturn[t].quantity,
+    }))
+
     const total =
       items.reduce((acc, next) => {
-        return acc + (next.refundable / next.quantity) * quantities[next.id]
+        return typeof next === "undefined"
+          ? acc
+          : acc + next.quantity * (next?.unit_price || 0)
       }, 0) -
       ((returnRequest.shipping_method &&
-        returnRequest.shipping_method.price * (1 + order.tax_rate / 100)) ||
+        returnRequest.shipping_method.price *
+          (1 + (order.tax_rate || 0) / 100)) ||
         0)
 
     if (!refundEdited || total < refundAmount) {
       setRefundAmount(refundAmount < 0 ? 0 : total)
     }
-  }, [toReturn, quantities])
+  }, [toReturn])
 
   const onSubmit = () => {
-    const items = toReturn.map((t) => ({
-      item_id: t,
-      quantity: quantities[t],
+    const items = Object.keys(toReturn).map((k) => ({
+      item_id: k,
+      quantity: toReturn[k].quantity,
     }))
 
     if (returnRequest.is_swap && onReceiveSwap) {
       setSubmitting(true)
-      return onReceiveReturn(returnRequest.id, {
-        items,
-      })
+      return onReceiveSwap(items)
         .then(() => onDismiss())
         .then(() =>
           notification("Success", "Successfully returned order", "success")
@@ -128,17 +143,15 @@ const ReceiveMenu = ({
     <Modal handleClose={onDismiss}>
       <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
-          <h2 class="inter-xlarge-semibold">Receive Return</h2>
+          <h2 className="inter-xlarge-semibold">Receive Return</h2>
         </Modal.Header>
         <Modal.Content>
           <h3 className="inter-base-semibold">Items to receive</h3>
-          <RMASelectProductTable
+          <RMASelectReturnProductTable
             order={order}
             allItems={allItems}
             toReturn={toReturn}
             setToReturn={(items) => setToReturn(items)}
-            quantities={quantities}
-            setQuantities={setQuantities}
           />
 
           {!returnRequest.is_swap && (
@@ -158,42 +171,43 @@ const ReceiveMenu = ({
                     </span>
                   </div>
                 )}
-
-              <div>
-                <div className="flex inter-base-semibold justify-between w-full">
-                  <span>Total Refund</span>
-                  <div className="flex items-center">
-                    {!refundEdited && (
-                      <>
-                        <span
-                          className="mr-2 cursor-pointer text-grey-40"
-                          onClick={() => setRefundEdited(true)}
-                        >
-                          <EditIcon size={20} />{" "}
-                        </span>
-                        {`${displayAmount(
-                          order.currency_code,
-                          refundAmount
-                        )} ${order.currency_code.toUpperCase()}`}
-                      </>
-                    )}
+              {!refunded && (
+                <div>
+                  <div className="flex inter-base-semibold justify-between w-full">
+                    <span>Total Refund</span>
+                    <div className="flex items-center">
+                      {!refundEdited && (
+                        <>
+                          <span
+                            className="mr-2 cursor-pointer text-grey-40"
+                            onClick={() => setRefundEdited(true)}
+                          >
+                            <EditIcon size={20} />{" "}
+                          </span>
+                          {`${displayAmount(
+                            order.currency_code,
+                            refundAmount
+                          )} ${order.currency_code.toUpperCase()}`}
+                        </>
+                      )}
+                    </div>
                   </div>
+                  {refundEdited && (
+                    <CurrencyInput
+                      className="mt-2"
+                      size="small"
+                      currentCurrency={order.currency_code}
+                      readOnly
+                    >
+                      <CurrencyInput.AmountInput
+                        label={"Amount"}
+                        amount={refundAmount}
+                        onChange={handleRefundUpdated}
+                      />
+                    </CurrencyInput>
+                  )}
                 </div>
-                {refundEdited && (
-                  <CurrencyInput
-                    className="mt-2"
-                    size="small"
-                    currentCurrency={order.currency_code}
-                    readOnly
-                  >
-                    <CurrencyInput.AmountInput
-                      label={"Amount"}
-                      amount={refundAmount}
-                      onChange={handleRefundUpdated}
-                    />
-                  </CurrencyInput>
-                )}
-              </div>
+              )}
             </>
           )}
         </Modal.Content>

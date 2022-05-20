@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import AlertIcon from "../../../../components/fundamentals/icons/alert-icon"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import Select from "../../../../components/molecules/select"
 import TextArea from "../../../../components/molecules/textarea"
@@ -145,7 +145,7 @@ const RefundMenu = ({ order, onDismiss }) => {
                 />
                 <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                   Send notifications
-                  <InfoTooltip content="Notify customer of created return" />
+                  <IconTooltip content="Notify customer of created return" />
                 </span>
               </div>
               <div className="flex gap-x-xsmall">

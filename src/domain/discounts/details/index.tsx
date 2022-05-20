@@ -1,200 +1,54 @@
+import { Discount } from "@medusajs/medusa"
 import { RouteComponentProps } from "@reach/router"
 import { navigate } from "gatsby"
-import {
-  useAdminDeleteDiscount,
-  useAdminDiscount,
-  useAdminProducts,
-  useAdminRegions,
-  useAdminUpdateDiscount,
-} from "medusa-react"
-import React, { useEffect, useMemo, useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import { useAdminUpdateDiscount } from "medusa-react"
+import { useAdminDeleteDiscount, useAdminDiscount } from "medusa-react"
+import React, { useState } from "react"
+import Fade from "../../../components/atoms/fade-wrapper"
 import Spinner from "../../../components/atoms/spinner"
-import Button from "../../../components/fundamentals/button"
+import Badge from "../../../components/fundamentals/badge"
+import EditIcon from "../../../components/fundamentals/icons/edit-icon"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
+import StatusSelector from "../../../components/molecules/status-selector"
+import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import DiscountGeneral from "../../../components/templates/discount-general"
-import DiscountSettings from "../../../components/templates/discount-settings"
+import RawJSON from "../../../components/organisms/raw-json"
+import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
-import {
-  extractProductOptions,
-  extractRegionOptions,
-} from "../../../utils/extract-options"
-import { hydrateDiscount } from "../../../utils/hydrate-discount"
-import { DiscountFormType } from "../types"
+import { formatAmountWithSymbol } from "../../../utils/prices"
+import DiscountForm from "../discount-form"
+import { DiscountFormProvider } from "../discount-form/form/discount-form-context"
+import { discountToFormValuesMapper } from "../discount-form/form/mappers"
+import PromotionSettings from "./settings"
 
 type EditProps = {
   id: string
 } & RouteComponentProps
 
 const Edit: React.FC<EditProps> = ({ id }) => {
-  const { regions } = useAdminRegions()
-  const { products } = useAdminProducts()
+  const [isOpen, setIsOpen] = useState(false)
   const { discount, isLoading } = useAdminDiscount(id)
-  const updateDiscount = useAdminUpdateDiscount(id)
+  const [showDelete, setShowDelete] = useState(false)
   const deleteDiscount = useAdminDeleteDiscount(id)
   const notification = useNotification()
+  const [openItems, setOpenItems] = useState<string[]>([])
 
-  // General state
-  const [regionsDisabled, setRegionsDisabled] = useState(false)
-  const [isDynamic, setIsDynamic] = useState(discount?.is_dynamic ?? false)
-  const [isDisabled, setIsDisabled] = useState(discount?.is_disabled ?? false)
-  const [discountType, setDiscountType] = useState<string>(
-    discount?.rule?.type || "percentage"
-  )
-  const [selectedRegions, setSelectedRegions] = useState<
-    { label: string; value: string }[]
-  >([])
-  const regionOptions: { label: string; value: string }[] = useMemo(() => {
-    return extractRegionOptions(regions)
-  }, [regions])
-
-  // Settings state
-  const [isFreeShipping, setIsFreeShipping] = useState(
-    discount?.rule?.type === "free_shipping"
-  )
-  const [allocationItem, setAllocationItem] = useState<boolean | undefined>(
-    discount?.rule?.allocation === "item"
-  )
-  const [expiryDate, setExpiryDate] = useState<Date | undefined>(
-    discount?.ends_at
-  )
-  const [hasExpiryDate, setHasExpiryDate] = useState(
-    discount?.ends_at ? true : false
-  )
-  const [startDate, setStartDate] = useState(new Date())
-  const [availabilityDuration, setAvailabilityDuration] = useState<
-    string | undefined
-  >(discount?.valid_duration)
-  const [appliesToAll, setAppliesToAll] = useState(
-    !discount?.rule?.valid_for?.length
-  )
-
-  const [showDelete, setShowDelete] = useState(false)
-
-  const [selectedProducts, setSelectedProducts] = useState<
-    { label: string; value: string }[]
-  >([])
-  const productOptions: { label: string; value: string }[] = useMemo(() => {
-    return extractProductOptions(products)
-  }, [products])
-
-  useEffect(() => {
-    if (discountType === "fixed" && selectedRegions.length > 1) {
-      setDiscountType("percentage")
-    }
-  }, [selectedRegions, discountType])
-
-  const methods = useForm<DiscountFormType>()
-
-  useEffect(() => {
-    hydrateDiscount({
-      discount,
-      actions: {
-        setRegionsDisabled,
-        setIsDynamic,
-        setIsDisabled,
-        setDiscountType,
-        setSelectedRegions,
-        setIsFreeShipping,
-        setAllocationItem,
-        setExpiryDate,
-        setHasExpiryDate,
-        setStartDate,
-        setAvailabilityDuration,
-        setAppliesToAll,
-        setSelectedProducts,
-        setValue: methods.setValue,
-      },
-      isEdit: true,
-    })
-  }, [discount])
+  const openWithItems = (items: string[]) => {
+    setOpenItems(items)
+    setIsOpen(true)
+  }
 
   const handleDelete = () => {
-    if (!discount) {
-      notification("Error", "Discount not found", "error")
-    }
-
     deleteDiscount.mutate(undefined, {
       onSuccess: () => {
-        navigate("/a/discounts")
+        notification("Success", "Discount deleted", "success")
+      },
+      onError: (error) => {
+        notification("Error", getErrorMessage(error), "error")
       },
     })
-  }
-
-  const handleDuplicate = () => {
-    if (!discount) {
-      notification("Error", "Discount not found", "error")
-    }
-
-    navigate(`/a/discounts/new`, {
-      state: {
-        discount: discount,
-      },
-    })
-  }
-
-  const handleStatusUpdate = () => {
-    if (!discount) {
-      return
-    }
-
-    updateDiscount.mutate(
-      { is_disabled: !isDisabled },
-      {
-        onSuccess: () => {
-          notification("Success", "Discount updated", "success")
-        },
-        onError: (error) => {
-          notification("Error", getErrorMessage(error), "error")
-        },
-      }
-    )
-  }
-
-  const submit = (data: DiscountFormType) => {
-    if (!discount) {
-      return
-    }
-
-    const payload = {
-      ...data,
-      rule: {
-        ...data.rule,
-        id: discount.rule.id,
-        value: discount.rule.value,
-        type: isFreeShipping ? "free_shipping" : discountType,
-        allocation: allocationItem ? "item" : "total",
-        valid_for: appliesToAll ? [] : selectedProducts.map((p) => p.value),
-      },
-      usage_limit: parseFloat(data.usage_limit),
-      starts_at: startDate,
-      ends_at: hasExpiryDate ? expiryDate : null,
-      regions: selectedRegions.map(({ value }) => value),
-      valid_duration: availabilityDuration,
-      is_dynamic: isDynamic,
-    }
-
-    updateDiscount.mutate(
-      { ...payload }, // TODO: fix wrong type on rule.value and rule.valid_for
-      {
-        onSuccess: () => {
-          notification("Success", "Successfully updated discount", "success")
-        },
-        onError: (error) => {
-          notification("Error", getErrorMessage(error), "error")
-        },
-      }
-    )
-  }
-
-  if (isLoading || !discount) {
-    return (
-      <div className="flex items-center justify-center">
-        <Spinner size="large" variant="secondary" />
-      </div>
-    )
   }
 
   return (
@@ -209,74 +63,194 @@ const Edit: React.FC<EditProps> = ({ id }) => {
           heading="Delete discount"
         />
       )}
+
       <Breadcrumb
-        currentPage="Edit Discount"
+        currentPage="Add Discount"
         previousBreadcrumb="Discount"
         previousRoute="/a/discounts"
       />
-      <FormProvider {...methods}>
-        {/* disable accidental submissions */}
-        <form onSubmit={(e) => e.preventDefault()}>
-          <div className="flex flex-col gap-y-large">
-            <DiscountGeneral
-              isEdit={true}
-              isDisabled={isDisabled}
-              subtitle="Create a discount code for all or some of your products"
-              regionOptions={regionOptions}
-              selectedRegions={selectedRegions}
-              setSelectedRegions={setSelectedRegions}
-              discountType={discountType}
-              setDiscountType={setDiscountType}
-              isFreeShipping={isFreeShipping}
-              isDynamic={isDynamic}
-              setIsDynamic={setIsDynamic}
-              regionIsDisabled={regionsDisabled}
-              onDelete={() => setShowDelete(!showDelete)}
-              onDuplicate={handleDuplicate}
-              onStatusChange={handleStatusUpdate}
-            />
-            <DiscountSettings
-              appliesToAll={appliesToAll}
-              setAppliesToAll={setAppliesToAll}
-              productOptions={productOptions}
-              selectedProducts={selectedProducts}
-              setSelectedProducts={setSelectedProducts}
-              expiryDate={expiryDate}
-              setExpiryDate={setExpiryDate}
-              hasExpiryDate={hasExpiryDate}
-              setHasExpiryDate={setHasExpiryDate}
-              startDate={startDate}
-              setStartDate={setStartDate}
-              setAvailabilityDuration={setAvailabilityDuration}
-              availabilityDuration={availabilityDuration}
-              isFreeShipping={isFreeShipping}
-              setIsFreeShipping={setIsFreeShipping}
-              allocationItem={allocationItem}
-              setAllocationItem={setAllocationItem}
-              isDynamic={isDynamic}
-              isEdit={true}
-            />
-            <div className="w-full flex items-center justify-end gap-x-xsmall">
-              <Button
-                variant="secondary"
-                size="medium"
-                type="button"
-                onClick={() => navigate("/a/discounts")}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                size="medium"
-                onClick={methods.handleSubmit(submit)}
-              >
-                Save changes
-              </Button>
+      {isLoading || !discount ? (
+        <div className="h-full flex items-center justify-center">
+          <Spinner variant="secondary" />
+        </div>
+      ) : (
+        <>
+          <HeadingBodyCard
+            promotion={discount}
+            id={id}
+            setIsOpen={setIsOpen}
+            title={discount.code}
+            subtitle={discount.rule.description}
+          >
+            <div className="flex">
+              <div className="border-l border-grey-20 pl-6">
+                {getPromotionDescription(discount)}
+                <span className="inter-small-regular text-grey-50">
+                  {"Discount Amount"}
+                </span>
+              </div>
+              <div className="border-l border-grey-20 pl-6 ml-12">
+                <h2 className="inter-xlarge-regular text-grey-90">
+                  {discount.usage_count.toLocaleString("en-US")}
+                </h2>
+                <span className="inter-small-regular text-grey-50">
+                  {"Total Redemptions"}
+                </span>
+              </div>
             </div>
+          </HeadingBodyCard>
+          <div className="mt-4 w-full">
+            <PromotionSettings
+              promotion={discount}
+              openWithItems={openWithItems}
+            />
           </div>
-        </form>
-      </FormProvider>
+        </>
+      )}
+      <div className="mt-xlarge">
+        <RawJSON data={discount} title="Raw discount" />
+      </div>
+      {!isLoading && discount && (
+        <DiscountFormProvider
+          discount={discountToFormValuesMapper(discount as any)} // suppressing type mismatch
+          isEdit
+        >
+          <Fade isVisible={isOpen} isFullScreen={true}>
+            <DiscountForm
+              additionalOpen={openItems}
+              closeForm={() => {
+                setOpenItems([])
+                setIsOpen(false)
+              }}
+              discount={discount}
+              isEdit
+            />
+          </Fade>
+        </DiscountFormProvider>
+      )}
     </div>
+  )
+}
+
+const getPromotionDescription = (discount: Discount) => {
+  switch (discount.rule.type) {
+    case "fixed":
+      return (
+        <div className="flex items-baseline">
+          <h2 className="inter-xlarge-regular">
+            {formatAmountWithSymbol({
+              currency: discount.regions[0].currency_code,
+              amount: discount.rule.value,
+            })}
+          </h2>
+          <span className="inter-base-regular text-grey-50 ml-1">
+            {discount.regions[0].currency_code.toUpperCase()}
+          </span>
+        </div>
+      )
+    case "percentage":
+      return (
+        <div className="flex items-baseline">
+          <h2 className="inter-xlarge-regular text-grey-90">
+            {discount.rule.value}
+          </h2>
+          <span className="inter-base-regular text-grey-50 ml-1">%</span>
+        </div>
+      )
+    case "free_shipping":
+      return (
+        <h2 className="inter-xlarge-regular text-grey-90">{`FREE SHIPPING`}</h2>
+      )
+    default:
+      return "Unknown discount type"
+  }
+}
+
+const HeadingBodyCard = ({ id, promotion, setIsOpen, ...props }) => {
+  const dialog = useImperativeDialog()
+  const notification = useNotification()
+  const updatePromotion = useAdminUpdateDiscount(id)
+  const deletePromotion = useAdminDeleteDiscount(id)
+
+  const onDelete = async () => {
+    const shouldDelete = await dialog({
+      heading: "Delete Promotion",
+      text: "Are you sure you want to delete this promotion?",
+    })
+    if (shouldDelete) {
+      deletePromotion.mutate(undefined, {
+        onSuccess: () => {
+          notification("Success", "Promotion deleted successfully", "success")
+          navigate("/a/discounts/")
+        },
+        onError: (err) => {
+          notification("Ooops", getErrorMessage(err), "error")
+        },
+      })
+    }
+  }
+
+  const onStatusChange = async () => {
+    updatePromotion.mutate(
+      {
+        is_disabled: !promotion.is_disabled,
+      },
+      {
+        onSuccess: () => {
+          const pastTense = !promotion.is_disabled ? "published" : "drafted"
+          notification(
+            "Success",
+            `Promotion ${pastTense} successfully`,
+            "success"
+          )
+        },
+        onError: (err) => {
+          notification("Ooops", getErrorMessage(err), "error")
+        },
+      }
+    )
+  }
+
+  const actionables = [
+    {
+      label: "Edit Promotion",
+      onClick: () => setIsOpen(true),
+      icon: <EditIcon />,
+    },
+    {
+      label: "Delete Promotion",
+      onClick: onDelete,
+      variant: "danger" as const,
+      icon: <TrashIcon />,
+    },
+  ]
+
+  return (
+    <BodyCard
+      actionables={actionables}
+      forceDropdown
+      className="min-h-[200px]"
+      status={
+        <div className="flex items-center gap-x-2xsmall">
+          {promotion.is_dynamic && (
+            <span>
+              <Badge variant="default">
+                <span className="text-grey-90 inter-small-regular">
+                  {"Template discount"}
+                </span>
+              </Badge>
+            </span>
+          )}
+          <StatusSelector
+            isDraft={promotion?.is_disabled}
+            activeState="Published"
+            draftState="Draft"
+            onChange={onStatusChange}
+          />
+        </div>
+      }
+      {...props}
+    />
   )
 }
 

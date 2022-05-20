@@ -5,20 +5,22 @@ import {
   useAdminDeleteCollection,
   useAdminUpdateCollection,
 } from "medusa-react"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
-import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import ViewRaw from "../../../components/molecules/view-raw"
-import AddProductModal from "../../../components/organisms/add-product-modal"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { MetadataField } from "../../../components/organisms/metadata"
 import CollectionModal from "../../../components/templates/collection-modal"
+import AddProductsTable from "../../../components/templates/collection-product-table/add-product-table"
 import ViewProductsTable from "../../../components/templates/collection-product-table/view-products-table"
+import useNotification from "../../../hooks/use-notification"
+import Medusa from "../../../services/api"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
@@ -28,6 +30,8 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showAddProducts, setShowAddProducts] = useState(false)
+  const notification = useNotification()
+  const [updates, setUpdates] = useState(0)
 
   const handleDelete = () => {
     deleteCollection.mutate(undefined, {
@@ -66,10 +70,36 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
     })
   }
 
-  const handleAddProducts = (productIds: any[]) => {
-    console.log("should add these products:", productIds) // TODO: API does not support this yet
-    setShowAddProducts(false)
+  const handleAddProducts = async (
+    addedIds: string[],
+    removedIds: string[]
+  ) => {
+    try {
+      if (addedIds.length > 0) {
+        await Medusa.collections.addProducts(collection?.id, {
+          product_ids: addedIds,
+        })
+      }
+
+      if (removedIds.length > 0) {
+        await Medusa.collections.removeProducts(collection?.id, {
+          product_ids: removedIds,
+        })
+      }
+
+      setShowAddProducts(false)
+      notification("Success", "Updated products in collection", "success")
+      refetch()
+    } catch (error) {
+      notification("Error", getErrorMessage(error), "error")
+    }
   }
+
+  useEffect(() => {
+    if (collection?.products?.length) {
+      setUpdates(updates + 1) // force re-render product table when products are added/removed
+    }
+  }, [collection?.products])
 
   return (
     <>
@@ -77,7 +107,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
         <Breadcrumb
           currentPage="Edit Collection"
           previousBreadcrumb="Collections"
-          previousRoute="/a/collections"
+          previousRoute="/a/products?view=collections"
         />
         <div className="rounded-rounded py-large px-xlarge border border-grey-20 bg-grey-0 mb-large">
           {isLoading || !collection ? (
@@ -129,8 +159,8 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
           className="h-full"
           actionables={[
             {
-              label: "Add Product",
-              icon: <PlusIcon size="20" />,
+              label: "Edit Products",
+              icon: <EditIcon size="20" />,
               onClick: () => setShowAddProducts(!showAddProducts),
             },
           ]}
@@ -141,7 +171,11 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
                 <Spinner variant="secondary" size="large" />
               </div>
             ) : (
-              <ViewProductsTable collectionId={collection.id} />
+              <ViewProductsTable
+                key={updates} // force re-render when collection is updated
+                collectionId={collection.id}
+                refetchCollection={refetch}
+              />
             )}
           </div>
         </BodyCard>
@@ -164,10 +198,10 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
         />
       )}
       {showAddProducts && (
-        <AddProductModal
-          handleClose={() => setShowAddProducts(!showAddProducts)}
+        <AddProductsTable
+          onClose={() => setShowAddProducts(false)}
           onSubmit={handleAddProducts}
-          collectionProducts={collection?.products ?? []}
+          existingRelations={collection?.products ?? []}
         />
       )}
     </>

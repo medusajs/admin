@@ -4,7 +4,7 @@ import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
@@ -167,7 +167,7 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
               <Select
                 label="Shipping Method"
                 className="mt-2"
-                overrideStrings={{ search: "Add a shipping method" }}
+                placeholder="Add a shipping method"
                 value={shippingMethod}
                 onChange={handleShippingSelected}
                 options={shippingOptions.map((o) => ({
@@ -180,7 +180,7 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
               <RMAShippingPrice
                 useCustomShippingPrice={useCustomShippingPrice}
                 shippingPrice={shippingPrice}
-                currency_code={order.currency_code}
+                currencyCode={order.currency_code}
                 updateShippingPrice={handleUpdateShippingPrice}
                 setUseCustomShippingPrice={setUseCustomShippingPrice}
               />
@@ -261,7 +261,7 @@ const ReturnMenu = ({ order, onDismiss, notification }) => {
               />
               <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                 Send notifications
-                <InfoTooltip content="Notify customer of created return" />
+                <IconTooltip content="Notify customer of created return" />
               </span>
             </div>
             <div className="flex gap-x-xsmall">

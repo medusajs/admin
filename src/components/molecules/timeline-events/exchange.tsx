@@ -1,17 +1,25 @@
 import {
   useAdminCancelReturn,
   useAdminCancelSwap,
+  useAdminOrder,
   useAdminStore,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
+import CreateFulfillmentModal from "../../../domain/orders/details/create-fulfillment"
+import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
 import { ExchangeEvent } from "../../../hooks/use-build-timeline"
+import useNotification from "../../../hooks/use-notification"
+import Medusa from "../../../services/api"
+import { getErrorMessage } from "../../../utils/error-messages"
 import CopyToClipboard from "../../atoms/copy-to-clipboard"
 import Button from "../../fundamentals/button"
 import CancelIcon from "../../fundamentals/icons/cancel-icon"
+import DollarSignIcon from "../../fundamentals/icons/dollar-sign-icon"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
+import TruckIcon from "../../fundamentals/icons/truck-icon"
 import DeletePrompt from "../../organisms/delete-prompt"
 import { ActionType } from "../actionables"
-import InfoTooltip from "../info-tooltip"
+import IconTooltip from "../icon-tooltip"
 import { FulfillmentStatus, PaymentStatus, ReturnStatus } from "../order-status"
 import EventActionables from "./event-actionables"
 import EventContainer, { EventIconColor } from "./event-container"
@@ -19,9 +27,14 @@ import EventItemContainer from "./event-item-container"
 
 type ExchangeProps = {
   event: ExchangeEvent
+  refetch: () => void
 }
 
-const ExchangeStatus: React.FC<ExchangeProps> = ({ event }) => {
+type ExchangeStatusProps = {
+  event: ExchangeEvent
+}
+
+const ExchangeStatus: React.FC<ExchangeStatusProps> = ({ event }) => {
   const divider = <div className="h-11 w-px bg-grey-20" />
 
   return (
@@ -44,9 +57,11 @@ const ExchangeStatus: React.FC<ExchangeProps> = ({ event }) => {
   )
 }
 
-const Exchange: React.FC<ExchangeProps> = ({ event }) => {
+const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const [showCancel, setShowCancel] = useState(false)
-  // const [showCancelReturn, setShowCancelReturn] = useState(false)
+  const [showCancelReturn, setShowCancelReturn] = useState(false)
+  const [showReceiveReturn, setShowReceiveReturn] = useState(false)
+  const [showCreateFulfillment, setShowCreateFulfillment] = useState(false)
   const cancelExchange = useAdminCancelSwap(event.orderId)
   const cancelReturn = useAdminCancelReturn(event.returnId)
   const [differenceCardId, setDifferenceCardId] = useState<string | undefined>(
@@ -55,42 +70,80 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
   const [paymentFormatWarning, setPaymentFormatWarning] = useState<
     string | undefined
   >(undefined)
+  const [payable, setPayable] = useState(true)
   const { store } = useAdminStore()
+  const { order } = useAdminOrder(event.orderId)
+
+  const notification = useNotification()
 
   useEffect(() => {
     if (!store) {
       return
     }
 
-    if (!store.payment_link_template) {
-      setPaymentFormatWarning(
-        "No payment link has been set for this store. Please update store settings."
-      )
+    if (event.paymentStatus !== "not_paid") {
+      setPayable(false)
+      return
     }
-    if (store.payment_link_template?.indexOf("{cart_id}") === -1) {
+
+    if (store.swap_link_template?.indexOf("{cart_id}") === -1) {
       setPaymentFormatWarning(
         "Store payment link does not have the default format, as it does not contain '{cart_id}'. Either update the payment link to include '{cart_id}' or update this method to reflect the format of your payment link."
       )
     }
-    if (event.exchangeCartId) {
-      setDifferenceCardId(
-        store.payment_link_template.replace(/\{cart_id\}/, event.exchangeCartId)
+
+    if (!store.swap_link_template) {
+      setPaymentFormatWarning(
+        "No payment link has been set for this store. Please update store settings."
       )
     }
-  }, [store?.payment_link_template, event.exchangeCartId])
+
+    if (event.exchangeCartId) {
+      setDifferenceCardId(
+        store.swap_link_template?.replace(/\{cart_id\}/, event.exchangeCartId)
+      )
+    }
+  }, [store?.swap_link_template, event.exchangeCartId, event.paymentStatus])
 
   const paymentLink = getPaymentLink(
+    payable,
     differenceCardId,
     paymentFormatWarning,
     event.exchangeCartId
   )
 
-  const handleCancelExchange = () => {
-    cancelExchange.mutate(event.id)
+  const handleCancelExchange = async () => {
+    await cancelExchange.mutateAsync(event.id)
+    refetch()
   }
 
-  const handleCancelReturn = () => {
-    cancelReturn.mutate()
+  const handleCancelReturn = async () => {
+    await cancelReturn.mutateAsync()
+    refetch()
+  }
+
+  const handleReceiveReturn = async (items) => {
+    Medusa.orders
+      .receiveReturn(event.returnId, { items })
+      .then(() => {
+        notification("Success", "Return received", "success")
+        refetch()
+      })
+      .catch((err) => {
+        notification("Error", getErrorMessage(err), "error")
+      })
+  }
+
+  const handleProcessSwapPayment = () => {
+    Medusa.orders
+      .processSwapPayment(event.orderId, event.id)
+      .then((_res) => {
+        notification("Success", "Payment processed successfully", "success")
+        refetch()
+      })
+      .catch((err) => {
+        notification("Error", getErrorMessage(err), "error")
+      })
   }
 
   const returnItems = getReturnItems(event)
@@ -98,7 +151,28 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
 
   const actions: ActionType[] = []
 
-  if (!event.isCanceled && !event.canceledAt) {
+  if (event.paymentStatus === "awaiting") {
+    actions.push({
+      label: "Capture payment",
+      icon: <DollarSignIcon size={20} />,
+      onClick: handleProcessSwapPayment,
+    })
+  }
+
+  if (event.returnStatus === "requested") {
+    actions.push({
+      label: "Cancel return",
+      icon: <TruckIcon size={20} />,
+      onClick: () => setShowCancelReturn(!showCancelReturn),
+    })
+  }
+
+  if (
+    !event.isCanceled &&
+    !event.canceledAt &&
+    event.fulfillmentStatus !== "fulfilled" &&
+    event.fulfillmentStatus !== "shipped"
+  ) {
     actions.push({
       label: "Cancel exchange",
       icon: <CancelIcon size={20} />,
@@ -107,17 +181,8 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
     })
   }
 
-  if (event.returnStatus !== "canceled") {
-    actions.push({
-      label: "Cancel return",
-      icon: <CancelIcon size={20} />,
-      onClick: handleCancelReturn,
-      variant: "danger",
-    })
-  }
-
   const args = {
-    title: event.canceledAt ? "Exchange Canceled" : "Exchange Requested",
+    title: event.canceledAt ? "Exchange Cancelled" : "Exchange Requested",
     icon: event.canceledAt ? (
       <CancelIcon size={20} />
     ) : (
@@ -146,12 +211,20 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
         {newItems}
         <div className="flex items-center gap-x-xsmall">
           {event.returnStatus === "requested" && (
-            <Button variant="secondary" size="small">
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => setShowReceiveReturn(true)}
+            >
               Receive Return
             </Button>
           )}
           {event.fulfillmentStatus === "not_fulfilled" && (
-            <Button variant="secondary" size="small">
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => setShowCreateFulfillment(true)}
+            >
               Fulfill Exchange
             </Button>
           )}
@@ -165,23 +238,44 @@ const Exchange: React.FC<ExchangeProps> = ({ event }) => {
       {showCancel && (
         <DeletePrompt
           handleClose={() => setShowCancel(!showCancel)}
-          onDelete={async () => handleCancelExchange()}
+          onDelete={handleCancelExchange}
           confirmText="Yes, cancel"
           heading="Cancel exchange"
           text="Are you sure you want to cancel this exchange?"
-          successText="Exchange canceled"
+          successText="Exchange cancelled"
         />
       )}
-      {/* showCancelReturn && (
+      {showCancelReturn && (
         <DeletePrompt
           handleClose={() => setShowCancelReturn(!showCancelReturn)}
-          onDelete={async () => handleCancelReturn()}
+          onDelete={handleCancelReturn}
           confirmText="Yes, cancel"
           heading="Cancel return"
           text="Are you sure you want to cancel this return?"
-          successText="Return canceled"
+          successText="Return cancelled"
         />
-          )*/}
+      )}
+      {showReceiveReturn && (
+        <ReceiveMenu
+          order={order}
+          returnRequest={{
+            ...event.raw.return_order,
+            is_swap: true,
+            swap_id: event.id,
+          }}
+          onReceiveSwap={handleReceiveReturn}
+          onDismiss={() => setShowReceiveReturn(false)}
+          notification={notification}
+          isSwapOrClaim={true}
+        />
+      )}
+      {showCreateFulfillment && (
+        <CreateFulfillmentModal
+          orderId={event.orderId}
+          orderToFulfill={event.raw}
+          handleCancel={() => setShowCreateFulfillment(false)}
+        />
+      )}
     </>
   )
 }
@@ -200,17 +294,23 @@ function getNewItems(event: ExchangeEvent) {
 }
 
 function getPaymentLink(
+  payable: boolean,
   differenceCardId: string | undefined,
   paymentFormatWarning: string | undefined,
   exchangeCartId: string | undefined
 ) {
-  return differenceCardId ? (
+  return payable ? (
     <div className="inter-small-regular text-grey-50 flex flex-col gap-y-xsmall">
       <div className="flex items-center gap-x-xsmall">
-        {paymentFormatWarning && <InfoTooltip content={paymentFormatWarning} />}
+        {paymentFormatWarning && <IconTooltip content={paymentFormatWarning} />}
         <span>Payment link:</span>
       </div>
-      <CopyToClipboard value={differenceCardId} displayValue={exchangeCartId} />
+      {differenceCardId && (
+        <CopyToClipboard
+          value={differenceCardId}
+          displayValue={exchangeCartId}
+        />
+      )}
     </div>
   ) : null
 }
@@ -232,18 +332,6 @@ function getActions(event: ExchangeEvent, actions: ActionType[]) {
   if (actions.length === 0) {
     return null
   }
-
-  // if (event.returnStatus !== "canceled") {
-  //   return (
-  //     <div className="flex items-center opacity-50">
-  //       <Tooltip content="Return must be canceled before the exchange can be canceled">
-  //         <div className="pointer-events-none">
-  //           <EventActionables actions={actions} />
-  //         </div>
-  //       </Tooltip>
-  //     </div>
-  //   )
-  // }
 
   return <EventActionables actions={actions} />
 }

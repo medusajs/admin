@@ -9,6 +9,7 @@ import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
 import TableSearch from "./table-search"
 
 type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
+  forceDropdown?: boolean
   actions?: ActionType[]
   linkTo?: string
 }
@@ -27,8 +28,9 @@ type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
   hasPrev: boolean
 }
 
-type TableCellProps = React.HTMLAttributes<HTMLTableCellElement> & {
+type TableCellProps = React.TdHTMLAttributes<HTMLTableCellElement> & {
   linkTo?: string
+  name?: string
 }
 
 type SortingHeadCellProps = {
@@ -37,7 +39,7 @@ type SortingHeadCellProps = {
   setSortDirection: (string) => void
 } & React.HTMLAttributes<HTMLTableCellElement>
 
-type TableProps = {
+export type TableProps = {
   filteringOptions?: FilteringOptionProps[] | ReactNode
   enableSearch?: boolean
   immediateSearchFocus?: boolean
@@ -51,9 +53,9 @@ type TableElement<T> = React.ForwardRefExoticComponent<T> &
   React.RefAttributes<unknown>
 
 type TableType = {
-  Head: TableElement<React.HTMLAttributes<HTMLTableElement>>
+  Head: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   HeadRow: TableElement<React.HTMLAttributes<HTMLTableRowElement>>
-  HeadCell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
+  HeadCell: TableElement<React.ThHTMLAttributes<HTMLTableCellElement>>
   SortingHeadCell: TableElement<SortingHeadCellProps>
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
@@ -62,7 +64,7 @@ type TableType = {
     React.RefAttributes<unknown>
 } & TableElement<TableProps>
 
-const Table: TableType = React.forwardRef(
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
   (
     {
       className,
@@ -75,7 +77,7 @@ const Table: TableType = React.forwardRef(
       filteringOptions,
       containerClassName,
       ...props
-    }: TableProps,
+    },
     ref
   ) => {
     if (enableSearch && !handleSearch) {
@@ -100,7 +102,7 @@ const Table: TableType = React.forwardRef(
                 autoFocus={immediateSearchFocus}
                 placeholder={searchPlaceholder}
                 searchValue={searchValue}
-                onSearch={handleSearch}
+                onSearch={handleSearch!}
               />
             )}
           </div>
@@ -115,57 +117,46 @@ const Table: TableType = React.forwardRef(
       </div>
     )
   }
-)
+) as TableType
 
-Table.Head = React.forwardRef(
-  (
-    { className, children, ...props }: React.HTMLAttributes<HTMLTableElement>,
-    ref
-  ) => (
-    <thead
-      ref={ref}
-      className={clsx(
-        "whitespace-nowrap inter-small-semibold text-grey-50 border-t border-b border-grey-20",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </thead>
-  )
-)
+Table.Head = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, children, ...props }, ref) => (
+  <thead
+    ref={ref}
+    className={clsx(
+      "whitespace-nowrap inter-small-semibold text-grey-50 border-t border-b border-grey-20",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </thead>
+))
 
-Table.HeadRow = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableRowElement>,
-    ref
-  ) => (
-    <tr ref={ref} className={clsx(className)} {...props}>
-      {children}
-    </tr>
-  )
-)
+Table.HeadRow = React.forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, children, ...props }, ref) => (
+  <tr ref={ref} className={clsx(className)} {...props}>
+    {children}
+  </tr>
+))
 
-Table.HeadCell = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number },
-    ref
-  ) => (
-    <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>
-      {children}
-    </th>
-  )
-)
+Table.HeadCell = React.forwardRef<
+  HTMLTableCellElement,
+  React.HTMLAttributes<HTMLTableCellElement>
+>(({ className, children, ...props }, ref) => (
+  <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>
+    {children}
+  </th>
+))
 
-Table.SortingHeadCell = React.forwardRef(
+Table.SortingHeadCell = React.forwardRef<
+  HTMLTableCellElement,
+  SortingHeadCellProps
+>(
   (
     {
       onSortClicked,
@@ -207,23 +198,17 @@ Table.SortingHeadCell = React.forwardRef(
   }
 )
 
-Table.Body = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableSectionElement>,
-    ref
-  ) => (
-    <tbody ref={ref} className={clsx(className)} {...props}>
-      {children}
-    </tbody>
-  )
-)
+Table.Body = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, children, ...props }, ref) => (
+  <tbody ref={ref} className={clsx(className)} {...props}>
+    {children}
+  </tbody>
+))
 
-Table.Cell = React.forwardRef(
-  ({ className, linkTo, children, ...props }: TableCellProps, ref) => (
+Table.Cell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, linkTo, children, ...props }, ref) => (
     <td
       ref={ref}
       className={clsx("inter-small-regular h-[40px]", className)}
@@ -240,14 +225,14 @@ Table.Cell = React.forwardRef(
   )
 )
 
-Table.Row = React.forwardRef(
-  ({ className, actions, children, linkTo, ...props }: TableRowProps, ref) => (
+Table.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+  ({ className, actions, children, linkTo, forceDropdown, ...props }, ref) => (
     <tr
       ref={ref}
       className={clsx(
-        "inter-small-regular border-t border-b border-grey-20 text-grey-90 hover:bg-grey-5",
+        "inter-small-regular border-t border-b border-grey-20 text-grey-90",
         className,
-        { "cursor-pointer": linkTo !== undefined }
+        { "cursor-pointer hover:bg-grey-5": linkTo !== undefined }
       )}
       {...props}
       {...(linkTo && {
@@ -259,7 +244,7 @@ Table.Row = React.forwardRef(
       {children}
       {actions && (
         <Table.Cell onClick={(e) => e.stopPropagation()} className="w-[32px]">
-          <Actionables actions={actions} />
+          <Actionables forceDropdown={forceDropdown} actions={actions} />
         </Table.Cell>
       )}
     </tr>
@@ -279,6 +264,9 @@ export const TablePagination = ({
   hasNext,
   hasPrev,
 }: TablePaginationProps) => {
+  const soothedOffset = count > 0 ? offset + 1 : 0
+  const soothedPageCount = Math.max(1, pageCount)
+
   return (
     <div
       className={clsx(
@@ -286,11 +274,9 @@ export const TablePagination = ({
         className
       )}
     >
-      <div>{`${
-        count > 0 ? offset + 1 : 0
-      } - ${pageSize} of ${count} ${title}`}</div>
+      <div>{`${soothedOffset} - ${pageSize} of ${count} ${title}`}</div>
       <div className="flex space-x-4">
-        <div>{`${currentPage} of ${pageCount}`}</div>
+        <div>{`${currentPage} of ${soothedPageCount}`}</div>
         <div className="flex space-x-4 items-center">
           <div
             className={clsx(

@@ -1,8 +1,8 @@
 import clsx from "clsx"
-import React, { useImperativeHandle } from "react"
+import React, { ReactNode, useImperativeHandle } from "react"
 
 type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  label: string
+  label: ReactNode
 }
 
 const Checkbox = React.forwardRef(
@@ -12,10 +12,7 @@ const Checkbox = React.forwardRef(
     useImperativeHandle(ref, () => checkboxRef.current)
     return (
       <label
-        className={clsx(
-          "flex items-center inter-base-semibold cursor-pointer",
-          className
-        )}
+        className={clsx("flex items-center cursor-pointer", className)}
         htmlFor={id}
       >
         <input

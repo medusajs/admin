@@ -1,10 +1,12 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import clsx from "clsx"
 import SidebarTeamMember from "../../molecules/sidebar-team-member"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import InviteModal from "../invite-modal"
+import { useAdminUsers } from "medusa-react"
+import { User } from "@medusajs/medusa"
 
 type PaginationArrowsProps = {
   currentPage: number
@@ -13,17 +15,9 @@ type PaginationArrowsProps = {
   handlePreviousPage: () => void
 }
 
-type SidebarTeamUser = {
-  id: string
-  email: string
-  first_name?: string
-  last_name?: string
-  img?: string
-}
+type UserType = Omit<User, "password_hash">
 
-type SidebarTeamProps = {
-  users: SidebarTeamUser[]
-}
+const PAGE_SIZE = 6
 
 const getColor = (index: number): string => {
   const colors = [
@@ -76,10 +70,23 @@ const PaginationArrows: React.FC<PaginationArrowsProps> = ({
   )
 }
 
-const SidebarTeam: React.FC<SidebarTeamProps> = ({ users }) => {
+const SidebarTeam: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
-  const paginatedUsers = []
+  const [paginatedUsers, setPaginatedUsers] = useState<UserType[][]>([])
+
+  const { users, isLoading } = useAdminUsers()
+
+  useEffect(() => {
+    if (!isLoading && users?.length) {
+      const paginationResult: UserType[][] = []
+      for (let i = 0; i < users.length; i += PAGE_SIZE) {
+        paginationResult.push(users.slice(i, i + PAGE_SIZE))
+      }
+
+      setPaginatedUsers(paginationResult)
+    }
+  }, [isLoading, users])
 
   const previousPage = () => {
     if (currentPage !== 0) {
@@ -91,11 +98,6 @@ const SidebarTeam: React.FC<SidebarTeamProps> = ({ users }) => {
     if (paginatedUsers.length !== currentPage + 1) {
       setCurrentPage(currentPage + 1)
     }
-  }
-
-  const pageSize = 6
-  for (let i = 0; i < users.length; i += pageSize) {
-    paginatedUsers.push(users.slice(i, i + pageSize))
   }
 
   return (

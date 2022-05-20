@@ -6,10 +6,9 @@ import ReactDatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import Button from "../../fundamentals/button"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
-import ChevronLeftIcon from "../../fundamentals/icons/chevron-left-icon"
-import ChevronRightIcon from "../../fundamentals/icons/chevron-right-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
+import CustomHeader from "./custom-header"
 import { DateTimePickerProps } from "./types"
 
 const getDateClassname = (d, tempDate) => {
@@ -51,7 +50,7 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
       <PopoverPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
         <PopoverPrimitive.Trigger asChild>
           <button
-            className={clsx("w-full rounded-base border ", {
+            className={clsx("w-full rounded-rounded border ", {
               "shadow-input border-violet-60": isOpen,
               "border-grey-20": !isOpen,
             })}
@@ -102,39 +101,6 @@ const DatePicker: React.FC<DateTimePickerProps> = ({
   )
 }
 
-const CustomHeader = ({ date, decreaseMonth, increaseMonth, ...props }) => {
-  return (
-    <div className="flex w-full justify-between items-center">
-      <div className="w-10 h-10">
-        <Button
-          variant="ghost"
-          size="medium"
-          tabIndex={-1}
-          className="w-full h-full flex justify-center p-2 focus:border-0 focus:shadow-none"
-          onClick={decreaseMonth}
-        >
-          <ChevronLeftIcon size={16} />
-        </Button>
-      </div>
-      <span className="inter-base-semibold">
-        {moment(date).format("MMMM, YYYY")}
-      </span>
-
-      <div className="w-10 h-10">
-        <Button
-          variant="ghost"
-          size="medium"
-          tabIndex={-1}
-          className="w-full h-full flex justify-center p-2 focus:border-0 focus:shadow-none"
-          onClick={increaseMonth}
-        >
-          <ChevronRightIcon size={16} />
-        </Button>
-      </div>
-    </div>
-  )
-}
-
 export const CalendarComponent = ({ date, onChange }) => (
   <ReactDatePicker
     selected={date}
@@ -142,13 +108,7 @@ export const CalendarComponent = ({ date, onChange }) => (
     onChange={onChange}
     calendarClassName="date-picker"
     dayClassName={(d) => getDateClassname(d, date)}
-    renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
-      <CustomHeader
-        date={date}
-        decreaseMonth={decreaseMonth}
-        increaseMonth={increaseMonth}
-      />
-    )}
+    renderCustomHeader={({ ...props }) => <CustomHeader {...props} />}
   />
 )
 

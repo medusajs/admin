@@ -4,7 +4,7 @@ import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
@@ -159,22 +159,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
     })
   }, [shippingMethod, showCustomPrice])
 
-  // useEffect(() => {
-  //  const items = toReturn.map(t => order.items.find(i => i.id === t))
-  //  const returnTotal =
-  //    items.reduce((acc, next) => {
-  //      return acc + (next.refundable / next.quantity) * quantities[next.id]
-  //    }, 0) - (shippingPrice || 0)
-
-  //  const newItemsTotal = itemsToAdd.reduce((acc, next) => {
-  //    const price = extractPrice(next.prices, order)
-  //    const lineTotal = price * 100 * next.quantity
-  //    return acc + lineTotal
-  //  }, 0)
-
-  //  setToPay(newItemsTotal - returnTotal)
-  // }, [toReturn, quantities, shippingPrice, itemsToAdd])
-
   const onSubmit = () => {
     const claim_items = Object.entries(toReturn).map(([key, val]) => {
       val.reason = val.reason?.value
@@ -276,14 +260,6 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
     }
   }
 
-  // const handleUpdateShippingPrice = e => {
-  //   const element = e.target
-  //   const value = element.value
-  //   if (value >= 0) {
-  //     setShippingPrice(parseFloat(value) * 100)
-  //   }
-  // }
-
   const handleProductSelect = (variants) => {
     setItemsToAdd((itemsToAdd) => [
       ...itemsToAdd,
@@ -313,7 +289,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
           </div>
           <div className="mt-4">
             <h3 className="inter-base-semibold">
-              Shipping Return{" "}
+              Shipping Return
               {returnShippingMethod && (
                 <span className="text-grey-40 inter-base-regular">
                   ({returnShippingMethod.region.name})
@@ -329,7 +305,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
                 clearSelected
                 label="Shipping Method"
                 className="mt-2"
-                overrideStrings={{ search: "Add a shipping method" }}
+                placeholder="Add a shipping method"
                 value={
                   returnShippingMethod
                     ? {
@@ -349,7 +325,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
               <RMAShippingPrice
                 useCustomShippingPrice={showCustomPrice.return}
                 shippingPrice={customOptionPrice.return || null}
-                currency_code={returnShippingMethod.region.currency_code}
+                currencyCode={returnShippingMethod.region.currency_code}
                 updateShippingPrice={(value) =>
                   setCustomOptionPrice({
                     ...customOptionPrice,
@@ -533,7 +509,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
                 <Select
                   label="Shipping Method"
                   className="mt-2"
-                  overrideStrings={{ search: "Add a shipping method" }}
+                  placeholder="Add a shipping method"
                   value={
                     shippingMethod
                       ? {
@@ -639,7 +615,7 @@ const ClaimMenu = ({ order, onCreate, onDismiss, notification }) => {
               />
               <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                 Send notifications
-                <InfoTooltip content="Notify customer of created return" />
+                <IconTooltip content="Notify customer of created return" />
               </span>
             </div>
             <div className="flex gap-x-xsmall">

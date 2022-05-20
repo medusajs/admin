@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import React, { useContext } from "react"
 import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
+import Medusa from "../../../services/api"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import Button from "../../fundamentals/button"
 import CheckIcon from "../../fundamentals/icons/check-icon"
@@ -8,7 +9,6 @@ import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import { LayeredModalContext } from "../../molecules/modal/layered-modal"
 import Table from "../../molecules/table"
-import Medusa from "../../../services/api"
 
 type RMASelectProductTableProps = {
   order: any
@@ -17,6 +17,7 @@ type RMASelectProductTableProps = {
   setToReturn: (items: any) => void
   customReturnOptions?: any[]
   imagesOnReturns?: any
+  isSwapOrClaim?: boolean
 }
 
 const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
@@ -26,6 +27,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   customReturnOptions = undefined,
   imagesOnReturns = false,
   setToReturn,
+  isSwapOrClaim = false,
 }) => {
   const { push, pop } = useContext(LayeredModalContext)
 
@@ -171,7 +173,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                     </div>
                     <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
                       <span>
-                        <span className="text-grey-90">{item.title}</span> test
+                        <span className="text-grey-90">{item.title}</span>
                       </span>
                       <span>{item?.variant?.title || ""}</span>
                     </div>
@@ -212,10 +214,10 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   {order.currency_code.toUpperCase()}
                 </Table.Cell>
               </Table.Row>
-              {checked && (
+              {checked && !isSwapOrClaim && (
                 <Table.Row className="last:border-b-0 hover:bg-grey-0">
                   <Table.Cell></Table.Cell>
-                  <Table.Cell colspan={2}>
+                  <Table.Cell colSpan={2}>
                     <div className="max-w-[470px] truncate">
                       {toReturn[item.id]?.reason && (
                         <span className="inter-small-regular text-grey-40">
@@ -240,8 +242,8 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                       )}
                     </div>
                   </Table.Cell>
-                  <Table.Cell colspan={2}>
-                    <div className="flex w-full justify-end">
+                  <Table.Cell colSpan={2}>
+                    <div className="flex w-full justify-end mb-small">
                       <Button
                         onClick={() =>
                           push(

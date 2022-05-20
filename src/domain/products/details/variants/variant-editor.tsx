@@ -1,11 +1,11 @@
 import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
+import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import Select from "../../../../components/molecules/select"
@@ -13,127 +13,113 @@ import CurrencyInput from "../../../../components/organisms/currency-input"
 import Metadata from "../../../../components/organisms/metadata"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
-import { removeNullish } from "../../../../utils/remove-nullish"
+import { focusByName } from "../../../../utils/focus-by-name"
+import usePricesFieldArray from "../../product-form/form/usePricesFieldArray"
 
-const VariantEditor = ({ variant, onSubmit, onCancel }) => {
+const defaultVariant = {
+  prices: [] as any,
+  origin_country: "",
+  options: [] as any,
+  metadata: {} as any,
+}
+
+const VariantEditor = ({
+  variant = defaultVariant,
+  onSubmit,
+  onCancel,
+  title,
+  optionsMap,
+}) => {
   const countryOptions = countryData.map((c) => ({
     label: c.name,
     value: c.alpha2.toLowerCase(),
   }))
 
-  const { store, isLoading } = useAdminStore()
-  const [currencyOptions, setCurrencyOptions] = useState([])
-  const [prices, setPrices] = useState(variant.prices)
+  const { store } = useAdminStore()
+
+  const [selectedCountry, setSelectedCountry] = useState(() => {
+    const defaultCountry = variant.origin_country
+      ? countryOptions.find((cd) => cd.label === variant.origin_country)
+      : null
+    return defaultCountry || null
+  })
+
   const [metadata, setMetadata] = useState(
-    Object.keys(variant.metadata).map((key) => ({
+    Object.keys(variant.metadata || {}).map((key) => ({
       key,
       value: variant.metadata[key],
     }))
   )
-  const [selectedCountry, setSelectedCountry] = useState(
-    variant.origin_country
-      ? countryOptions.find((cd) => cd.label === variant.origin_country)
-      : undefined
+
+  const { control, register, reset, watch, handleSubmit } = useForm({
+    defaultValues: variant,
+  })
+  const {
+    fields: prices,
+    appendPrice,
+    deletePrice,
+    availableCurrencies,
+  } = usePricesFieldArray(
+    store?.currencies.map((c) => c.code) || [],
+    {
+      control,
+      name: "prices",
+      keyName: "indexId",
+    },
+    {
+      defaultAmount: 1000,
+      defaultCurrencyCode:
+        store?.default_currency.code || store?.currencies[0].code || "usd",
+    }
   )
 
-  const { setValue, getValues, register, reset, watch, handleSubmit } = useForm(
-    variant
-  )
+  const { fields } = useFieldArray({
+    control,
+    name: "options",
+    keyName: "indexId",
+  })
 
   useEffect(() => {
     reset({
       ...variant,
+      options: Object.values(optionsMap),
+      prices: variant?.prices.map((p) => ({
+        price: { ...p },
+      })),
     })
-
-    variant.options.forEach((option, index) => {
-      register(`options.${index}.option_id`)
-      setValue(`options.${index}.option_id`, option.option_id)
-      register(`options.${index}.value`)
-      setValue(`options.${index}.value`, option.value)
-    })
-  }, [variant])
-
-  useEffect(() => {
-    register(`metadata`)
-    setValue(`metadata`, metadata)
-  }, [metadata])
-
-  const getCurrencyOptions = () => {
-    return ((store && store.currencies) || [])
-      .map((v) => ({
-        value: v.code.toUpperCase(),
-        label: v.code.toUpperCase(),
-      }))
-      .filter(
-        (o) => !prices.find((p) => !p.edit && p.currency_code === o.value)
-      )
-  }
-
-  useEffect(() => {
-    setCurrencyOptions(getCurrencyOptions())
-  }, [store, isLoading, variant.prices])
-
-  const handleCurrencySelected = (index, currency) => {
-    const newPrices = [...prices]
-    newPrices[index] = {
-      ...newPrices[index],
-      currency_code: currency.toLowerCase(),
-    }
-
-    setPrices(newPrices)
-  }
-
-  const handlePriceChange = (index, value) => {
-    const newPrices = [...prices]
-    newPrices[index] = {
-      ...newPrices[index],
-      amount: value,
-    }
-
-    setPrices(newPrices)
-  }
-
-  const removePrice = (index) => {
-    const newPrices = [...prices]
-    newPrices.splice(index, 1)
-    setPrices(newPrices)
-  }
-
-  const addPrice = () => {
-    const newPrices = [
-      ...prices,
-      {
-        edit: true,
-        region: "",
-        currency_code: currencyOptions[0].value,
-        amount: "",
-        sale_amount: "",
-      },
-    ]
-
-    setPrices(newPrices)
-  }
+  }, [variant, store])
 
   const handleSave = (data) => {
-    data.prices = prices.map(({ currency_code, region_id, amount }) => ({
+    if (!data.prices) {
+      focusByName("add-price")
+      return
+    }
+
+    if (!data.title) {
+      data.title = data.options.map((o) => o.value).join(" / ")
+    }
+
+    data.prices = data.prices.map(({ price: { currency_code, amount } }) => ({
       currency_code,
-      region_id,
       amount: Math.round(amount),
     }))
+    data.options = data.options.map((option) => ({ ...option }))
 
-    data.origin_country = selectedCountry?.label
-    data.inventory_quantity = parseInt(data.inventory_quantity)
-
-    data.prices = data.prices.map((p) => removeNullish(p))
-
-    const emptyMetadata = Object.keys(variant.metadata).reduce(
+    const emptyMetadata = Object.keys(variant.metadata || {}).reduce(
       (acc, key) => ({ ...acc, [key]: null }),
       {}
     )
-    data.metadata = data.metadata.reduce((acc, { key, value }) => {
+    data.metadata = metadata.reduce((acc, { key, value }) => {
       acc[key] = value
       return acc
     }, emptyMetadata)
+
+    data.origin_country = selectedCountry?.label
+    data.inventory_quantity = parseInt(data.inventory_quantity)
+    data.weight = data?.weight ? parseInt(data.weight, 10) : undefined
+    data.height = data?.height ? parseInt(data.height, 10) : undefined
+    data.width = data?.width ? parseInt(data.width, 10) : undefined
+    data.length = data?.length ? parseInt(data.length, 10) : undefined
 
     const cleaned = convertEmptyStringToNull(data)
     onSubmit(cleaned)
@@ -141,7 +127,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
 
   watch(["manage_inventory", "allow_backorder"])
 
-  const variantTitle = variant.options
+  const variantTitle = variant?.options
     .map((opt) => opt?.value || "")
     .join(" / ")
 
@@ -150,10 +136,12 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
       <Modal.Body>
         <Modal.Header handleClose={onCancel}>
           <h2 className="inter-xlarge-semibold">
-            Edit Variant{" "}
-            <span className="text-grey-50 inter-xlarge-regular">
-              ({variantTitle})
-            </span>
+            {title}{" "}
+            {variantTitle && (
+              <span className="text-grey-50 inter-xlarge-regular">
+                ({variantTitle})
+              </span>
+            )}
           </h2>
         </Modal.Header>
         <Modal.Content>
@@ -165,69 +153,102 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               {"General"}
             </label>
 
-            <div className="grid grid-cols-1 ">
+            <div className="grid grid-cols-1 gap-y-small">
               <Input label="Title" name="title" ref={register} />
+              {fields.map((field, index) => (
+                <div key={field.indexId}>
+                  <Input
+                    ref={register({ required: true })}
+                    name={`options[${index}].value`}
+                    required={true}
+                    label={field.title}
+                    defaultValue={field.value}
+                  />
+                  <input
+                    ref={register()}
+                    type="hidden"
+                    name={`options[${index}].option_id`}
+                    defaultValue={field.option_id}
+                  />
+                </div>
+              ))}
             </div>
           </div>
           <div className="mb-8">
             <label
               tabIndex={0}
-              className="inter-base-semibold mb-4 flex items-center gap-xsmall"
+              className="inter-base-semibold mb-4 flex items-center"
             >
               {"Prices"}
-              <InfoTooltip content={"Variant prices"} />
+              <span className="text-rose-50 mr-xsmall">*</span>
+              <IconTooltip content={"Variant prices"} />
             </label>
 
             <div className="grid grid-cols-1 gap-y-xsmall">
-              {prices.map((p, index) => (
-                <div
-                  className="flex items-center"
-                  key={`${p.currency_code}${index}`}
-                >
+              {prices.map((field, index) => (
+                <div className="flex items-center" key={field.indexId}>
                   <div className="w-full">
-                    <CurrencyInput
-                      currencyCodes={currencyOptions.map((co) => co.value)}
-                      currentCurrency={p.currency_code.toUpperCase()}
-                      onChange={(currency) =>
-                        handleCurrencySelected(index, currency)
-                      }
-                      size="small"
-                    >
-                      <CurrencyInput.AmountInput
-                        label="amount"
-                        step={0.01}
-                        amount={p.amount}
-                        onChange={(value) => handlePriceChange(index, value)}
-                      />
-                    </CurrencyInput>
+                    <Controller
+                      control={control}
+                      key={field.indexId}
+                      name={`prices[${index}].price`}
+                      ref={register()}
+                      defaultValue={field.price}
+                      render={({ onChange, value }) => {
+                        let codes = availableCurrencies
+                        if (value?.currency_code) {
+                          codes = [value?.currency_code, ...availableCurrencies]
+                        }
+                        codes.sort()
+                        return (
+                          <CurrencyInput
+                            currencyCodes={codes}
+                            currentCurrency={value?.currency_code}
+                            size="medium"
+                            readOnly={index === 0}
+                            onChange={(code) =>
+                              onChange({ ...value, currency_code: code })
+                            }
+                          >
+                            <CurrencyInput.AmountInput
+                              label="Amount"
+                              onChange={(amount) =>
+                                onChange({ ...value, amount })
+                              }
+                              amount={value?.amount}
+                            />
+                          </CurrencyInput>
+                        )
+                      }}
+                    />
                   </div>
 
                   <Button
                     variant="ghost"
                     size="small"
                     className="ml-8 w-8 h-8 mr-2.5 text-grey-40 hover:text-grey-80 transition-colors"
-                    onClick={() => removePrice(index)}
+                    onClick={deletePrice(index)}
                   >
                     <TrashIcon />
                   </Button>
                 </div>
               ))}
             </div>
-            {currencyOptions.length !== prices.length && (
-              <Button
-                className="mt-4"
-                onClick={addPrice}
-                size="small"
-                variant="ghost"
-              >
-                <PlusIcon size={20} /> Add a price
-              </Button>
-            )}
+            <Button
+              className="mt-4"
+              onClick={appendPrice}
+              size="small"
+              variant="ghost"
+              name="add-price"
+              disabled={availableCurrencies?.length === 0}
+            >
+              <PlusIcon size={20} /> Add a price
+            </Button>
           </div>
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
               {"Stock & Inventory"}
-              <InfoTooltip content={"Stock and inventory information"} />
+              <IconTooltip content={"Stock and inventory information"} />
             </label>
             <div className="w-full mt-4 grid medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input label="SKU" name="sku" placeholder="SKU" ref={register} />
@@ -235,7 +256,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               <Input
                 label="Inventory quantity"
                 name="inventory_quantity"
-                placeholder="Inventory quantity"
+                placeholder="100"
                 type="number"
                 ref={register}
               />
@@ -248,65 +269,37 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
               />
             </div>
 
-            <div className="flex mt-6 gap-x-large">
-              <div
-                className="cursor-pointer flex items-center"
-                onClick={(e) => {
-                  setValue("manage_inventory", !getValues("manage_inventory"), {
-                    shouldDirty: true,
-                  })
-                }}
-              >
-                <div
-                  className={`w-5 h-5 mr-3 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-                    getValues("manage_inventory") && "bg-violet-60"
-                  }`}
-                >
-                  <span className="self-center">
-                    {getValues("manage_inventory") && <CheckIcon size={16} />}
-                  </span>
-                </div>
-                <input
-                  className="hidden"
-                  type="checkbox"
-                  ref={register}
+            <div className="flex items-center mt-6 gap-x-large">
+              <div className="flex item-center gap-x-1.5">
+                <Checkbox
                   name="manage_inventory"
-                />
-                <span className="mr-1">Manage Inventory</span>
-                <InfoTooltip content={"Manage inventory for variant"} />
-              </div>
-              <div
-                className="cursor-pointer flex items-center"
-                onClick={(e) => {
-                  setValue("allow_backorder", !getValues("allow_backorder"), {
-                    shouldDirty: true,
-                  })
-                }}
-              >
-                <div
-                  className={`w-5 h-5 mr-3 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-                    getValues("allow_backorder") && "bg-violet-60"
-                  }`}
-                >
-                  <span className="self-center">
-                    {getValues("allow_backorder") && <CheckIcon size={16} />}
-                  </span>
-                </div>
-                <input
-                  type="checkbox"
-                  className="hidden"
+                  label="Manage Inventory"
                   ref={register}
-                  name="allow_backorder"
                 />
-                <span className="mr-1">Allow backorders</span>
-                <InfoTooltip content={"Allow backorders for variant"} />
+                <IconTooltip
+                  content={
+                    "When checked Medusa will regulate the inventory when orders and returns are made."
+                  }
+                />
+              </div>
+              <div className="flex item-center gap-x-1.5">
+                <Checkbox
+                  name="allow_backorder"
+                  ref={register}
+                  label="Allow backorders"
+                />
+                <IconTooltip
+                  content={
+                    "When checked the product will be available for purchase despite the product being sold out."
+                  }
+                />
               </div>
             </div>
           </div>
 
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
-              Dimensions <InfoTooltip content={"Variant dimensions"} />
+              Dimensions <IconTooltip content={"Variant dimensions"} />
             </label>
             <div className="w-full mt-4 grid medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input
@@ -337,7 +330,7 @@ const VariantEditor = ({ variant, onSubmit, onCancel }) => {
           </div>
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
-              Customs <InfoTooltip content={"Variant customs information"} />
+              Customs <IconTooltip content={"Variant customs information"} />
             </label>
             <div className="w-full grid mt-4 medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input

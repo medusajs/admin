@@ -1,12 +1,14 @@
 import { Address } from "@medusajs/medusa"
+import moment from "moment"
 import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
   useAdminDraftOrder,
   useAdminDraftOrderRegisterPayment,
+  useAdminStore,
   useAdminUpdateDraftOrder,
 } from "medusa-react"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import ReactJson from "react-json-view"
 import Avatar from "../../../components/atoms/avatar"
 import Spinner from "../../../components/atoms/spinner"
@@ -26,6 +28,7 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
 import { DisplayTotal, FormattedAddress } from "../details/templates"
+import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 
 const DraftOrderDetails = ({ id }) => {
   type DeletePromptData = {
@@ -49,6 +52,18 @@ const DraftOrderDetails = ({ id }) => {
   }>(null)
 
   const { draft_order, isLoading } = useAdminDraftOrder(id)
+  const { store, isLoading: isLoadingStore } = useAdminStore()
+
+  const [paymentLink, setPaymentLink] = useState("")
+
+  useEffect(() => {
+    if (store && draft_order && store.payment_link_template) {
+      console.log(store.payment_link_template)
+      setPaymentLink(
+        store.payment_link_template.replace(/\{cart_id\}/, draft_order.cart_id)
+      )
+    }
+  }, [isLoading, isLoadingStore])
 
   const markPaid = useAdminDraftOrderRegisterPayment(id)
   const cancelOrder = useAdminDeleteDraftOrder(id)
@@ -140,8 +155,10 @@ const DraftOrderDetails = ({ id }) => {
           <div className="flex flex-col w-full h-full">
             <BodyCard
               className={"w-full mb-4 min-h-[200px]"}
-              title="Order #2414"
-              subtitle="29 January 2022, 23:01"
+              title={`Order #${draft_order.display_id}`}
+              subtitle={moment(draft_order.created_at).format(
+                "D MMMM YYYY hh:mm a"
+              )}
               status={<OrderStatusComponent />}
               customActionable={
                 draft_order?.status === "completed" && (
@@ -341,6 +358,20 @@ const DraftOrderDetails = ({ id }) => {
                   totalAmount={cart?.total}
                   totalTitle={"Total to pay"}
                 />
+                {draft_order?.status !== "completed" && (
+                  <div className="text-grey-50 inter-small-regular w-full flex items-center mt-5">
+                    <span className="mr-2.5">Payment link:</span>
+                    {store?.payment_link_template ? (
+                      <CopyToClipboard
+                        value={paymentLink}
+                        displayValue={draft_order.cart_id}
+                        successDuration={1000}
+                      />
+                    ) : (
+                      "Configure payment link in store settings"
+                    )}
+                  </div>
+                )}
               </div>
             </BodyCard>
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Shipping">

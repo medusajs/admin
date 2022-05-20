@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
@@ -217,7 +217,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
               <Select
                 label="Shipping Method"
                 className="mt-2"
-                overrideStrings={{ search: "Add a shipping method" }}
+                placeholder="Add a shipping method"
                 value={shippingMethod}
                 onChange={handleShippingSelected}
                 options={shippingOptions.map((o) => ({
@@ -345,7 +345,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
               />
               <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
                 Send notifications
-                <InfoTooltip content="If unchecked the customer will not receive communication about this exchange" />
+                <IconTooltip content="If unchecked the customer will not receive communication about this exchange" />
               </span>
             </div>
 

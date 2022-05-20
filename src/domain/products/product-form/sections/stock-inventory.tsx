@@ -1,12 +1,21 @@
 import React from "react"
+import { Controller } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
+import Select from "../../../../components/molecules/select"
 import BodyCard from "../../../../components/organisms/body-card"
+import { countries as countryData } from "../../../../utils/countries"
+import { numberOrNull } from "../../../../utils/form-helpers"
 import { useProductForm } from "../form/product-form-context"
 
 const StockAndInventory = () => {
-  const { isVariantsView, register } = useProductForm()
+  const { isVariantsView, register, control } = useProductForm()
+  const countryOptions = countryData.map((c) => ({
+    label: c.name,
+    value: c.name,
+  }))
+
   return (
     <BodyCard
       title="Stock & Inventory"
@@ -38,7 +47,13 @@ const StockAndInventory = () => {
                 name="inventory_quantity"
                 type="number"
                 placeholder="100"
+                ref={register({ setValueAs: numberOrNull })}
+              />
+              <Input
+                label="Material"
+                name="material"
                 ref={register}
+                placeholder="Wool..."
               />
             </div>
           </>
@@ -51,7 +66,7 @@ const StockAndInventory = () => {
                 label="Manage Inventory"
                 ref={register}
               />
-              <InfoTooltip
+              <IconTooltip
                 content={
                   "When checked Medusa will regulate the inventory when orders and returns are made."
                 }
@@ -63,7 +78,7 @@ const StockAndInventory = () => {
                 ref={register}
                 label="Allow backorders"
               />
-              <InfoTooltip
+              <IconTooltip
                 content={
                   "When checked the product will be available for purchase despite the product being sold out."
                 }
@@ -82,29 +97,33 @@ const StockAndInventory = () => {
               type="number"
               label="Height"
               name="height"
-              ref={register}
+              ref={register({ setValueAs: numberOrNull })}
+              min={0}
               placeholder="100..."
             />
             <Input
               type="number"
               label="Width"
               name="width"
-              ref={register}
+              ref={register({ setValueAs: numberOrNull })}
               placeholder="100..."
+              min={0}
             />
             <Input
               type="number"
               label="Length"
               name="length"
-              ref={register}
+              ref={register({ setValueAs: numberOrNull })}
               placeholder="100..."
+              min={0}
             />
             <Input
               type="number"
               label="Weight"
               name="weight"
-              ref={register}
+              ref={register({ setValueAs: numberOrNull })}
               placeholder="100..."
+              min={0}
             />
           </div>
           <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-4 mb-large">
@@ -120,17 +139,21 @@ const StockAndInventory = () => {
               ref={register}
               placeholder="100..."
             />
-            <Input
-              ref={register}
-              label="Country of origin"
+            <Controller
+              control={control}
               name="origin_country"
-              placeholder="Denmark..."
-            />
-            <Input
-              label="Material"
-              name="material"
-              ref={register}
-              placeholder="Wool..."
+              render={({ onChange, value }) => {
+                return (
+                  <Select
+                    enableSearch
+                    label="Country of origin"
+                    placeholder="Select a country"
+                    options={countryOptions}
+                    value={value}
+                    onChange={onChange}
+                  />
+                )
+              }}
             />
           </div>
         </div>

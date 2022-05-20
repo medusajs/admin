@@ -2,9 +2,7 @@ import {
   useAdminCreateRegion,
   useAdminDeleteRegion,
   useAdminRegion,
-  useAdminRegionFulfillmentOptions,
   useAdminStore,
-  useAdminStorePaymentProviders,
   useAdminUpdateRegion,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
@@ -38,11 +36,10 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   const notification = useNotification()
 
   const { store, isLoading: storeIsLoading } = useAdminStore()
+  const { fulfillment_providers, payment_providers } = store
   const createRegion = useAdminCreateRegion()
   const deleteRegion = useAdminDeleteRegion(id)
   const { region, isLoading: regionIsLoading } = useAdminRegion(id)
-  const { payment_providers } = useAdminStorePaymentProviders()
-  const { fulfillment_options } = useAdminRegionFulfillmentOptions(id)
   const updateRegion = useAdminUpdateRegion(id)
 
   const [showDanger, setShowDanger] = useState(false)
@@ -67,19 +64,20 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   }, [payment_providers])
 
   useEffect(() => {
-    if (!fulfillment_options) {
+    if (!fulfillment_providers) {
       return
     }
+
     setFulfillmentOptions(
-      fulfillment_options.map((c) => fulfillmentProvidersMapper(c.provider_id))
+      fulfillment_providers.map((c) => fulfillmentProvidersMapper(c.id))
     )
-  }, [fulfillment_options])
+  }, [fulfillment_providers])
 
   useEffect(() => {
     if (!region) {
       return
     }
-    reset({ ...region, tax_rate: region.tax_rate / 100 })
+    reset({ ...region })
     register({ name: "countries" })
     register({ name: "payment_providers" })
     register({ name: "fulfillment_providers" })
@@ -156,7 +154,6 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
     updateRegion.mutate(
       {
         ...data,
-        tax_rate: data.tax_rate * 100,
         currency_code: selectedCurrency,
       },
       {
@@ -183,12 +180,11 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
 
     const payload = {
       currency_code: region.currency_code,
-      tax_rate: region.tax_rate,
-      tax_code: region.tax_code,
       payment_providers: region.payment_providers.map((p) => p.id),
       fulfillment_providers: region.fulfillment_providers.map((f) => f.id),
       countries: [], // As countries can't belong to more than one region at the same time we can just pass an empty array
       name: `${region.name} Copy`,
+      tax_rate: region.tax_rate,
     }
 
     createRegion.mutate(payload, {
@@ -267,24 +263,6 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                   onChange={handleChangeCurrency}
                   className="mb-base"
                 />
-                <Input
-                  className="mb-base"
-                  type="number"
-                  placeholder="0.25"
-                  step="0.01"
-                  min={0}
-                  max={1}
-                  name="tax_rate"
-                  label="Tax Rate"
-                  ref={register({ max: 1, min: 0 })}
-                />
-                <Input
-                  placeholder="1000"
-                  name="tax_code"
-                  label="Tax Code"
-                  ref={register}
-                  className="mb-base"
-                />
                 <Select
                   isMultiSelect
                   enableSearch
@@ -320,7 +298,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
             )}
           </div>
         </form>
-        {region && fulfillment_options && (
+        {region && fulfillmentOptions && (
           <div className="mt-2xlarge">
             <Shipping region={region} />
           </div>
