@@ -24,7 +24,8 @@ const Prices = ({ id }) => {
     },
     {
       label: "Import price list",
-      onClick: openUpload,
+      // onClick: openUpload,
+      onClick: () => {},
       icon: <UploadIcon size={20} />,
     },
   ]
