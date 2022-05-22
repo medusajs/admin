@@ -22,12 +22,11 @@ const Prices = ({ id }) => {
       onClick: openEdit,
       icon: <EditIcon size={20} />,
     },
-    {
-      label: "Import price list",
-      // onClick: openUpload,
-      onClick: () => {},
-      icon: <UploadIcon size={20} />,
-    },
+    // {
+    //   label: "Import price list",
+    //   onClick: openUpload,
+    //   icon: <UploadIcon size={20} />,
+    // },
   ]
   return (
     <BodyCard title="Prices" actionables={actionables} forceDropdown>
