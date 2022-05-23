@@ -1,13 +1,12 @@
+import { useAdminStoreTaxProviders, useAdminUpdateRegion } from "medusa-react"
 import React, { useEffect, useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { useAdminUpdateRegion, useAdminStoreTaxProviders } from "medusa-react"
-
-import useNotification from "../../../hooks/use-notification"
-import Button from "../../../components/fundamentals/button"
 import Checkbox from "../../../components/atoms/checkbox"
-import InfoTooltip from "../../../components/molecules/info-tooltip"
-import { getErrorMessage } from "../../../utils/error-messages"
+import Button from "../../../components/fundamentals/button"
+import IconTooltip from "../../../components/molecules/icon-tooltip"
 import Select from "../../../components/molecules/select"
+import useNotification from "../../../hooks/use-notification"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 export const RegionTaxForm = ({ region }) => {
   const {
@@ -119,7 +118,7 @@ export const RegionTaxForm = ({ region }) => {
             ref={register}
             label="Calculate taxes automatically?"
           />
-          <InfoTooltip
+          <IconTooltip
             content={
               "When checked Medusa will automatically apply tax calculations to Carts in this Region. When unchecked you will have to manually compute taxes at checkout. Manual taxes are recommended if using a 3rd party tax provider to avoid performing too many requests"
             }
@@ -132,7 +131,7 @@ export const RegionTaxForm = ({ region }) => {
             ref={register}
             label="Apply tax to gift cards?"
           />
-          <InfoTooltip
+          <IconTooltip
             content={
               "When checked taxes will be applied to gift cards on checkout. In some contries tax regulations require that taxes are applied to gift cards on purchase."
             }

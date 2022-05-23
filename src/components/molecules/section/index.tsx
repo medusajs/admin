@@ -1,5 +1,5 @@
 import React from "react"
-import InfoTooltip from "../info-tooltip"
+import IconTooltip from "../icon-tooltip"
 
 type SectionProps = {
   title: string
@@ -19,7 +19,7 @@ const Section: React.FC<SectionProps> = ({
         <h3 className="inter-base-semibold">{title}</h3>
         {tooltip && (
           <div className="flex items-center ml-1.5">
-            <InfoTooltip content={tooltip} />
+            <IconTooltip content={tooltip} />
           </div>
         )}
       </div>

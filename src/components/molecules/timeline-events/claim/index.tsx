@@ -22,13 +22,13 @@ type ClaimProps = {
 }
 
 const Claim: React.FC<ClaimProps> = ({ event, refetch }) => {
-  const cancelClaim = useAdminCancelClaim(event.id)
+  const cancelClaim = useAdminCancelClaim(event.orderId)
   const [showDetails, setShowDetails] = useState(false)
   const [showCancel, setShowCancel] = useState(false)
   const [showFulfillment, setShowFulfillment] = useState(false)
 
   const handleCancel = () => {
-    cancelClaim.mutate("") // error on hook endpoint is /admin/orders/claim_01FTRG93AK830MS285CB20CBJW/claims//cancel
+    cancelClaim.mutate(event.id)
   }
 
   const handleCloseFulfillmentModal = () => {

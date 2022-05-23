@@ -10,7 +10,7 @@ import PlusIcon from "../../fundamentals/icons/plus-icon"
 import InputContainer from "../../fundamentals/input-container"
 import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
 
-type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
   InputHeaderProps & {
     label?: string
     deletable?: boolean

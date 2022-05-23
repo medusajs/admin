@@ -5,13 +5,14 @@ import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
+import { focusByName } from "../../../../utils/focus-by-name"
 import usePricesFieldArray from "../../product-form/form/usePricesFieldArray"
 
 const defaultVariant = {
@@ -48,11 +49,19 @@ const VariantEditor = ({
     appendPrice,
     deletePrice,
     availableCurrencies,
-  } = usePricesFieldArray(store?.currencies.map((c) => c.code) || [], {
-    control,
-    name: "prices",
-    keyName: "indexId",
-  })
+  } = usePricesFieldArray(
+    store?.currencies.map((c) => c.code) || [],
+    {
+      control,
+      name: "prices",
+      keyName: "indexId",
+    },
+    {
+      defaultAmount: 1000,
+      defaultCurrencyCode:
+        store?.default_currency.code || store?.currencies[0].code || "usd",
+    }
+  )
 
   const { fields } = useFieldArray({
     control,
@@ -71,6 +80,15 @@ const VariantEditor = ({
   }, [variant, store])
 
   const handleSave = (data) => {
+    if (!data.prices) {
+      focusByName("add-price")
+      return
+    }
+
+    if (!data.title) {
+      data.title = data.options.map((o) => o.value).join(" / ")
+    }
+
     data.prices = data.prices.map(({ price: { currency_code, amount } }) => ({
       currency_code,
       amount: Math.round(amount),
@@ -123,6 +141,7 @@ const VariantEditor = ({
                   <Input
                     ref={register({ required: true })}
                     name={`options[${index}].value`}
+                    required={true}
                     label={field.title}
                     defaultValue={field.value}
                   />
@@ -139,10 +158,11 @@ const VariantEditor = ({
           <div className="mb-8">
             <label
               tabIndex={0}
-              className="inter-base-semibold mb-4 flex items-center gap-xsmall"
+              className="inter-base-semibold mb-4 flex items-center"
             >
               {"Prices"}
-              <InfoTooltip content={"Variant prices"} />
+              <span className="text-rose-50 mr-xsmall">*</span>
+              <IconTooltip content={"Variant prices"} />
             </label>
 
             <div className="grid grid-cols-1 gap-y-xsmall">
@@ -200,6 +220,7 @@ const VariantEditor = ({
               onClick={appendPrice}
               size="small"
               variant="ghost"
+              name="add-price"
               disabled={availableCurrencies?.length === 0}
             >
               <PlusIcon size={20} /> Add a price
@@ -208,7 +229,7 @@ const VariantEditor = ({
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
               {"Stock & Inventory"}
-              <InfoTooltip content={"Stock and inventory information"} />
+              <IconTooltip content={"Stock and inventory information"} />
             </label>
             <div className="w-full mt-4 grid medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input label="SKU" name="sku" placeholder="SKU" ref={register} />
@@ -236,7 +257,7 @@ const VariantEditor = ({
                   label="Manage Inventory"
                   ref={register}
                 />
-                <InfoTooltip
+                <IconTooltip
                   content={
                     "When checked Medusa will regulate the inventory when orders and returns are made."
                   }
@@ -248,7 +269,7 @@ const VariantEditor = ({
                   ref={register}
                   label="Allow backorders"
                 />
-                <InfoTooltip
+                <IconTooltip
                   content={
                     "When checked the product will be available for purchase despite the product being sold out."
                   }
@@ -259,7 +280,7 @@ const VariantEditor = ({
 
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
-              Dimensions <InfoTooltip content={"Variant dimensions"} />
+              Dimensions <IconTooltip content={"Variant dimensions"} />
             </label>
             <div className="w-full mt-4 grid medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input
@@ -290,7 +311,7 @@ const VariantEditor = ({
           </div>
           <div className="mb-8">
             <label className="inter-base-semibold flex items-center gap-xsmall">
-              Customs <InfoTooltip content={"Variant customs information"} />
+              Customs <IconTooltip content={"Variant customs information"} />
             </label>
             <div className="w-full grid mt-4 medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
               <Input

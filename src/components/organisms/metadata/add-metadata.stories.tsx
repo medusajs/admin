@@ -16,4 +16,5 @@ const Template: ComponentStory<typeof Metadata> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   control: {},
+  metadata: [],
 }

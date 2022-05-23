@@ -11,6 +11,7 @@ import GiftCards from "../domain/gift-cards"
 import Oauth from "../domain/oauth"
 import Orders from "../domain/orders"
 import DraftOrders from "../domain/orders/draft-orders"
+import Pricing from "../domain/pricing"
 import Products from "../domain/products"
 import Settings from "../domain/settings"
 
@@ -28,6 +29,7 @@ const IndexPage = () => {
         <PrivateRoute path="draft-orders/*" component={DraftOrders} />
         <PrivateRoute path="discounts/*" component={Discounts} />
         <PrivateRoute path="customers/*" component={Customers} />
+        <PrivateRoute path="pricing/*" component={Pricing} />
         <PrivateRoute path="settings/*" component={Settings} />
       </Router>
     </Layout>

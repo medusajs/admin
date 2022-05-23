@@ -1,20 +1,20 @@
+import { useAdminCreateVariant } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import Button from "../../../../components/fundamentals/button"
+import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
+import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import InfoTooltip from "../../../../components/molecules/info-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Input from "../../../../components/molecules/input"
 import TagInput from "../../../../components/molecules/tag-input"
 import BodyCard from "../../../../components/organisms/body-card"
 import VariantGrid from "../../../../components/variant-grid"
-import { getCombinations } from "../../../../utils/get-combinations"
-import NewOption from "../../details/variants/option-edit"
-import { useProductForm } from "../form/product-form-context"
-import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
-import VariantEditor from "../../details/variants/variant-editor"
-import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
-import { useAdminCreateVariant } from "medusa-react"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import { getCombinations } from "../../../../utils/get-combinations"
+import NewOption from "../../details/variants/option-edit"
+import VariantEditor from "../../details/variants/variant-editor"
+import { useProductForm } from "../form/product-form-context"
 import { buildOptionsMap } from "../utils"
 
 const Variants = ({ isEdit, product }) => {
@@ -95,7 +95,12 @@ const Variants = ({ isEdit, product }) => {
   }
 
   const handleAddVariant = (data) => {
-    createVariant.mutate(data, {
+    const newVariant = {
+      ...data,
+      inventory_quantity: data.inventory_quantity || 0,
+    }
+
+    createVariant.mutate(newVariant, {
       onSuccess: () => {
         notification("Success", "Successfully added a variant", "success")
         setShowAddVariantModal(false)
@@ -171,7 +176,7 @@ const Variants = ({ isEdit, product }) => {
             <div className="flex justify-center mb-base flex-col space-y-2">
               <div className="flex space-x-2">
                 <h6 className="inter-base-semibold text-grey-90">Variants</h6>
-                <InfoTooltip content="Add product options to create variants" />
+                <IconTooltip content="Add product options to create variants" />
               </div>
             </div>
           </>
