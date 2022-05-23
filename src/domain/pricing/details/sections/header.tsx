@@ -67,7 +67,7 @@ const Header = ({ priceList }) => {
       {showBulkEditor && (
         <BulkEditor
           priceList={priceList}
-          closeForm={() => setShowBulkEditor(false)}
+          closeEditor={() => setShowBulkEditor(false)}
         />
       )}
     </HeadingBodyCard>

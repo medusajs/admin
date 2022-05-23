@@ -21,7 +21,7 @@ import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import NativeSelect from "../../../components/molecules/native-select"
-import TableFieldsFilters from "../../../components/molecules/table-fileds-filter"
+import TableFieldsFilters from "../../../components/molecules/table-fields-filters"
 import { currencies } from "../../../utils/currencies"
 import PriceInput from "../../../components/organisms/price-input"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
@@ -805,14 +805,14 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
 
 type PriceListBulkEditorContainer = {
   priceList: PriceList
-  closeForm: () => void
+  closeEditor: () => void
 }
 
 /**
  * Root container for the bulk editor.
  */
 function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
-  const { priceList, closeForm } = props
+  const { priceList, closeEditor } = props
   const [page, setPage] = useState(0)
 
   const [currentPriceListId, setCurrentPriceListId] = useState(priceList.id)
@@ -896,7 +896,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
 
   const onClose = () => {
     if (checkForChanges()) {
-      closeForm()
+      closeEditor()
     }
   }
 
@@ -992,7 +992,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
 
     updatePriceList.mutate(
       { prices, override: true },
-      { onSuccess: () => closeForm() }
+      { onSuccess: () => closeEditor() }
     )
   }
 
@@ -1029,7 +1029,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
                 size="small"
                 variant="ghost"
                 className="border rounded-rounded"
-                onClick={closeForm}
+                onClick={closeEditor}
               >
                 Discard
               </Button>
