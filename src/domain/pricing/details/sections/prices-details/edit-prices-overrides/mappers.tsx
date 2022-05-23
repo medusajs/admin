@@ -6,6 +6,7 @@ export const mapToPriceList = (values: PriceOverridesFormValues) => {
   return values.prices
     .map((price) => {
       return values.variants.map((variant) => ({
+        id: price.id,
         variant_id: variant,
         ...xorObjFields(price, "currency_code", "region_id"),
         amount: price.amount,
