@@ -1,26 +1,43 @@
-import { AdminPostDiscountsReq } from "@medusajs/medusa"
-import React, { FC } from "react"
-import { Controller, useForm } from "react-hook-form"
-import {
-  AddDiscountCodeInput,
-  DiscountOption,
-} from "../../domain/orders/draft-orders/details"
+import React, { FC, useState } from "react"
+import { useForm } from "react-hook-form"
+import { AddDiscountCodeInput } from "../../domain/orders/draft-orders/details"
 import Button from "../fundamentals/button"
 import Modal from "../molecules/modal"
-import Select from "../molecules/select"
+import ReactSearchBox from "react-search-box"
+import { Discount } from "@medusajs/medusa"
+import medusaApi from "../../services/api"
+import { Record } from "../../types/react-search-box"
 
 export interface DiscountModal {
-  discountOptions: DiscountOption[]
   handleClose: () => void
   handleSave: (data: AddDiscountCodeInput) => void
 }
 
 export const DiscountModal: FC<DiscountModal> = ({
-  discountOptions,
   handleClose,
   handleSave,
 }) => {
-  const { control, handleSubmit } = useForm()
+  const [discounts, setDiscounts] = useState([])
+  const { handleSubmit, register, getValues, setValue } = useForm()
+  const placeholder = getValues("code") ?? "Search Discounts"
+
+  const handleSelect = (record: Record) => setValue("code", record.item.value)
+  const handleChange = async (value: string) => {
+    const res = await medusaApi.discounts.list({
+      q: value,
+      limit: 0,
+      offset: 0,
+    })
+
+    const { discounts } = res.data
+
+    setDiscounts(
+      discounts.map((discount: Discount) => ({
+        key: "code",
+        value: discount.code,
+      }))
+    )
+  }
 
   return (
     <Modal handleClose={handleClose}>
@@ -31,19 +48,12 @@ export const DiscountModal: FC<DiscountModal> = ({
 
         <form onSubmit={handleSubmit(handleSave)}>
           <Modal.Content>
-            <Controller
-              name="code"
-              control={control}
-              defaultValue={{ label: "Discount", value: "discount" }}
-              rules={{ required: true }}
-              render={(props) => (
-                <Select
-                  label="Discount"
-                  options={discountOptions}
-                  value={props.value}
-                  onChange={props.onChange}
-                />
-              )}
+            <ReactSearchBox
+              {...register("code")}
+              data={discounts}
+              onChange={handleChange}
+              onSelect={handleSelect}
+              placeholder={placeholder}
             />
           </Modal.Content>
 

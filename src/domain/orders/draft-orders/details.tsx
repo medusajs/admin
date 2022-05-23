@@ -1,12 +1,10 @@
-import { Address, AdminDraftOrdersRes, DraftOrder } from "@medusajs/medusa"
+import { Address } from "@medusajs/medusa"
 import moment from "moment"
 import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
-  useAdminDiscounts,
   useAdminDraftOrder,
   useAdminDraftOrderRegisterPayment,
-  useAdminGetDiscountByCode,
   useAdminStore,
   useAdminUpdateDraftOrder,
 } from "medusa-react"
@@ -41,7 +39,7 @@ export interface DiscountOption {
 }
 
 export interface AddDiscountCodeInput {
-  code: { value: string }
+  code: string
 }
 
 const DraftOrderDetails = ({ id }) => {
@@ -57,7 +55,6 @@ const DraftOrderDetails = ({ id }) => {
     show: false,
   }
 
-  const [discountOptions, setDiscountOptions] = useState<DiscountOption[]>([])
   const [paymentLink, setPaymentLink] = useState("")
   const [discountModalIsOpen, setDiscountModalIsOpen] = useState(false)
   const [deletePromptData, setDeletePromptData] = useState<DeletePromptData>(
@@ -69,7 +66,6 @@ const DraftOrderDetails = ({ id }) => {
     type: "billing" | "shipping"
   }>(null)
 
-  const { discounts } = useAdminDiscounts()
   const { mutate: updateDraftOrder } = useAdminUpdateDraftOrder(id)
   const { draft_order, isLoading } = useAdminDraftOrder(id)
   const { store, isLoading: isLoadingStore } = useAdminStore()
@@ -86,18 +82,6 @@ const DraftOrderDetails = ({ id }) => {
       )
     }
   }, [isLoading, isLoadingStore])
-
-  useEffect(() => {
-    if (!discounts) return
-
-    const options = discounts.map((discount) => ({
-      label: discount.code,
-      value: discount.code,
-      disabled: discount.is_disabled,
-    }))
-
-    setDiscountOptions(options)
-  }, discounts)
 
   const OrderStatusComponent = () => {
     switch (draft_order?.status) {
@@ -164,8 +148,9 @@ const DraftOrderDetails = ({ id }) => {
     })
   }
 
-  const handleAddDiscount = (data: AddDiscountCodeInput) => {
-    const { discount } = useAdminGetDiscountByCode(data.code.value)
+  const handleAddDiscount = async (data: AddDiscountCodeInput) => {
+    const res = await medusaApi.discounts.retrieveByCode(data.code)
+    const { discount } = res.data
 
     if (!discount) throw new Error("That discount doesn't exist.")
 
@@ -597,7 +582,6 @@ const DraftOrderDetails = ({ id }) => {
 
       {discountModalIsOpen && (
         <DiscountModal
-          discountOptions={discountOptions}
           handleClose={() => setDiscountModalIsOpen(false)}
           handleSave={handleAddDiscount}
         />
