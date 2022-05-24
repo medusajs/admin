@@ -13,16 +13,6 @@ type CustomerReferralsTableProps = {
 const CustomerReferralsTable: React.FC<CustomerReferralsTableProps> = ({
   referrals,
 }) => {
-  //     id: string
-  // referrer_customer_id: string
-  // referred_customer_id: string
-  // discount: Discount
-  // gift_card?: GiftCard
-  // rewarded: boolean
-  // created_at: Date
-  // updated_at: Date
-  // rewarded_at?: Date
-
   const decideStatus = (rewarded) => {
     if (!rewarded) {
       return <StatusDot variant="warning" title={"Pending"} />
@@ -47,6 +37,7 @@ const CustomerReferralsTable: React.FC<CustomerReferralsTableProps> = ({
             (
               {
                 referred_customer_id,
+                referred_customer,
                 created_at,
                 rewarded,
                 gift_card,
@@ -60,14 +51,26 @@ const CustomerReferralsTable: React.FC<CustomerReferralsTableProps> = ({
                     {moment(created_at).format("DD MMM YYYY hh:mm")}
                   </Table.Cell>
                   <Table.Cell
-                    className="flex cursor-pointer hover:bg-gray-100"
+                    className="cursor-pointer hover:bg-gray-100"
                     linkTo={`/a/customers/${referred_customer_id}`}
                   >
-                    {referred_customer_id}
+                    {referred_customer.first_name} {referred_customer.last_name}
                   </Table.Cell>
                   {/* TODO: figure out how we want to display discount and possibly link to discount given */}
-                  <Table.Cell className="">{discount?.code}</Table.Cell>
-                  <Table.Cell className="">
+                  <Table.Cell
+                    className="cursor-pointer hover:bg-gray-100"
+                    linkTo={
+                      discount?.id ? `/a/discounts/${discount?.id}` : undefined
+                    }
+                  >
+                    {discount?.code}
+                  </Table.Cell>
+                  <Table.Cell
+                    className="cursor-pointer hover:bg-gray-100"
+                    linkTo={
+                      gift_card ? `/a/gift-cards/${gift_card.id}` : undefined
+                    }
+                  >
                     {stringDisplayPrice({
                       amount: gift_card?.value,
                       currencyCode: "USD",

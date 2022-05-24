@@ -15,6 +15,7 @@ declare module "@medusajs/medusa" {
     id: string
     referrer_customer_id: string
     referred_customer_id: string
+    referred_customer: Customer
     discount: Discount
     gift_card?: GiftCard
     rewarded: boolean
@@ -25,5 +26,6 @@ declare module "@medusajs/medusa" {
 
   export interface Customer {
     referral?: CustomerReferral
+    referred_redemptions?: CustomerReferralRedemption[]
   }
 }
