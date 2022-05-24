@@ -31,7 +31,7 @@ const EditPricesOverridesModal = ({
       onBack: () => context.pop(),
       view: (
         <PriceOverrides
-          prices={variant.prices}
+          prices={variant.prices.filter((pr) => pr.price_list_id)}
           variants={product.variants}
           onClose={close}
           onSubmit={(values) => {
@@ -43,6 +43,7 @@ const EditPricesOverridesModal = ({
               },
               {
                 onSuccess: () => {
+                  context.pop()
                   close()
                 },
               }

@@ -34,7 +34,7 @@ const PriceOverrides = ({
   const { handleSubmit, control, reset } = useForm<PriceOverridesFormValues>({
     defaultValues: {
       variants: [],
-      prices,
+      prices: prices,
     },
   })
 
@@ -115,6 +115,7 @@ const PriceOverrides = ({
                   return (
                     <PriceAmount
                       value={field.value}
+                      key={price.id}
                       onChange={(amount) => {
                         field.onChange({
                           ...field.value,
