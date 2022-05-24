@@ -1,5 +1,5 @@
+import { CustomerReferralRedemption } from "@medusajs/medusa"
 import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import { useAdminCustomer } from "medusa-react"
 import moment from "moment"
 import React, { useState } from "react"
@@ -14,6 +14,7 @@ import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import CustomerOrdersTable from "../../../components/templates/customer-orders-table"
+import CustomerReferralsTable from "../../../components/templates/customer-referrals-table"
 import useNotification from "../../../hooks/use-notification"
 import { useImpersonateCustomer } from "../../../services/nibll-api"
 import EditCustomerModal from "./edit"
@@ -119,6 +120,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
         </div>
       </BodyCard>
       <BodyCard
+        className={"mb-4"}
         title={`Orders (${customer?.orders.length})`}
         subtitle="An overview of Customer Orders"
       >
@@ -132,6 +134,26 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
           </div>
         )}
       </BodyCard>
+      {customer?.referred_redemptions && (
+        <BodyCard
+          title={`Referrals (${customer?.referred_redemptions.length})`}
+          subtitle="An overview of Customer Referrals"
+        >
+          {isLoading || !customer ? (
+            <div className="w-full pt-2xlarge flex items-center justify-center">
+              <Spinner size={"large"} variant={"secondary"} />
+            </div>
+          ) : (
+            <div className="flex grow  flex-col pt-2 mt-large">
+              <CustomerReferralsTable
+                referrals={
+                  customer.referred_redemptions as CustomerReferralRedemption[]
+                }
+              />
+            </div>
+          )}
+        </BodyCard>
+      )}
       <div className="mt-large">
         <RawJSON data={customer} title="Raw customer" />
       </div>
