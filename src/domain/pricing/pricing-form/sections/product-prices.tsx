@@ -1,19 +1,28 @@
-import { Product } from "@medusajs/medusa"
+import { MoneyAmount, Product, ProductVariant } from "@medusajs/medusa"
+import { useAdminStore } from "medusa-react"
 import * as React from "react"
-import FileUploadField from "../../../../components/atoms/file-upload-field"
 import Button from "../../../../components/fundamentals/button"
+import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import SearchIcon from "../../../../components/fundamentals/icons/search-icon"
+import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import LoadingContainer from "../../../../components/loading-container"
 import { ActionType } from "../../../../components/molecules/actionables"
 import InputField from "../../../../components/molecules/input"
+import Modal from "../../../../components/molecules/modal"
 import ProductVariantTree from "../../../../components/organisms/product-variant-tree"
 import AddProductsModal from "../../../../components/templates/add-products-modal"
+import PriceOverrides from "../../../../components/templates/price-overrides"
+import { usePriceListForm } from "../form/pricing-form-context"
+import { CreatePriceListPricesFormValues } from "../types"
 
 export type ProductPricesProps = {
   products: Product[]
   setProducts: (products: Product[]) => void
-  getVariantActions?: (product: Product) => ActionType[] | undefined
+  getVariantActions?: (
+    product: Product,
+    setProduct: (product: Product) => void
+  ) => ActionType[] | undefined
   getProductActions?: (product: Product) => ActionType[] | undefined
   isLoading?: boolean
   onSearch?: (query: string) => void
@@ -26,16 +35,71 @@ const ProductPrices = ({
   isLoading = false,
   onSearch,
   onFileChosen,
-  getVariantActions = () => undefined,
-  getProductActions = () => undefined,
 }: ProductPricesProps) => {
   const [showAdd, setShowAdd] = React.useState(false)
+  const [
+    selectedVariant,
+    setSelectedVariant,
+  ] = React.useState<ProductVariant | null>(null)
+  const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(
+    null
+  )
+  const unselect = () => setSelectedVariant(null)
+
+  const { prices, setPrices } = usePriceListForm()
+  const { store } = useAdminStore()
 
   const onChange = (e) => {
     const query = e.target.value
     if (onSearch) {
       onSearch(query)
     }
+  }
+
+  const defaultPrices = store?.currencies.map((curr) => ({
+    currency_code: curr.code,
+    amount: 0,
+  })) as MoneyAmount[]
+
+  const getProductActions = (product) => {
+    setSelectedProduct(product)
+    return undefined
+  }
+
+  const getVariantActions = (variant) => {
+    return [
+      {
+        label: "Edit prices",
+        icon: <EditIcon />,
+        onClick: () => {
+          setSelectedVariant(variant)
+        },
+      },
+      {
+        label: "Remove from list",
+        icon: <TrashIcon size={20} />,
+        onClick: () => {
+          // missing core support
+        },
+        variant: "danger" as const,
+      },
+    ]
+  }
+
+  const handleSubmit = (values) => {
+    values.variants.forEach((variantId: string) => {
+      const prices: CreatePriceListPricesFormValues[number] = values.prices
+        .filter((pr) => pr.amount > 0)
+        .map((pr) => ({
+          amount: pr.amount,
+          currency_code: pr.currency_code,
+        }))
+      setPrices((state) => ({
+        ...state,
+        [variantId]: prices,
+      }))
+      unselect()
+    })
   }
 
   return (
@@ -57,8 +121,8 @@ const ProductPrices = ({
                 <ProductVariantTree
                   product={product}
                   key={product.id}
-                  productActions={getProductActions(product)}
-                  variantActions={getVariantActions(product)}
+                  getProductActions={getProductActions}
+                  getVariantActions={getVariantActions}
                 />
               </div>
             ))}
@@ -99,8 +163,41 @@ const ProductPrices = ({
           close={() => setShowAdd(false)}
         />
       )}
+      {selectedVariant && selectedProduct && (
+        <Modal open handleClose={unselect}>
+          <Modal.Body>
+            <Modal.Header handleClose={unselect}>
+              <h2 className="inter-xlarge-semibold">Edit Prices</h2>
+            </Modal.Header>
+
+            <PriceOverrides
+              onClose={unselect}
+              variants={selectedProduct.variants}
+              prices={
+                prices
+                  ? mergeExistingWithDefault(
+                      prices[selectedVariant.id],
+                      defaultPrices
+                    )
+                  : defaultPrices
+              }
+              defaultVariant={selectedVariant}
+              onSubmit={handleSubmit}
+            />
+          </Modal.Body>
+        </Modal>
+      )}
     </div>
   )
+}
+
+const mergeExistingWithDefault = (variantPrices: any[] = [], defaultPrices) => {
+  return defaultPrices.map((pr) => {
+    const price = variantPrices.find(
+      (vpr) => vpr?.currency_code === pr.currency_code
+    )
+    return price || pr
+  })
 }
 
 export default ProductPrices

@@ -4,10 +4,12 @@ import {
   useForm,
   useFormContext,
   useWatch,
+  SubmitHandler,
 } from "react-hook-form"
 import { weekFromNow } from "../../../../utils/date-utils"
 import {
   ConfigurationField,
+  CreatePriceListPricesFormValues,
   PriceListFormValues,
   PriceListType,
 } from "../types"
@@ -25,6 +27,13 @@ const defaultState: PriceListFormValues = {
 const PriceListFormContext = React.createContext<{
   configFields: Record<ConfigurationField, unknown>
   handleConfigurationSwitch: (values: string[]) => void
+  prices: CreatePriceListPricesFormValues | null
+  setPrices: React.Dispatch<
+    React.SetStateAction<CreatePriceListPricesFormValues | null>
+  >
+  handleSubmit: <T>(
+    submitHandler: SubmitHandler<T>
+  ) => (e?: React.BaseSyntheticEvent) => Promise<void>
 } | null>(null)
 
 type FormProviderProps = {
@@ -45,6 +54,10 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
   const methods = useForm<PriceListFormValues>({
     defaultValues: priceList,
   })
+
+  const [prices, setPrices] = useState<CreatePriceListPricesFormValues | null>(
+    null
+  )
 
   const currentStartsAt = useWatch({
     name: "starts_at",
@@ -114,12 +127,21 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
     }
   }
 
+  const handleSubmit = (submitHandler) => {
+    return methods.handleSubmit((values) => {
+      submitHandler({ ...values, prices })
+    })
+  }
+
   return (
     <FormProvider {...methods}>
       <PriceListFormContext.Provider
         value={{
           configFields,
           handleConfigurationSwitch,
+          prices,
+          handleSubmit,
+          setPrices,
         }}
       >
         {children}

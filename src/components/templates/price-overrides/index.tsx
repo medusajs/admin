@@ -22,6 +22,7 @@ type PriceOverridesType = {
   prices: MoneyAmount[]
   variants: ProductVariant[]
   onSubmit: (values: PriceOverridesFormValues) => void
+  defaultVariant?: ProductVariant
 }
 
 const PriceOverrides = ({
@@ -29,6 +30,7 @@ const PriceOverrides = ({
   prices,
   variants,
   onSubmit,
+  defaultVariant,
 }: PriceOverridesType) => {
   const [mode, setMode] = React.useState(MODES.SELECTED_ONLY)
   const { handleSubmit, control, reset } = useForm<PriceOverridesFormValues>({
@@ -55,17 +57,21 @@ const PriceOverrides = ({
 
   // set default variant
   React.useEffect(() => {
-    const selectedVariantId = prices[0].variant_id
-    const selectedIndex = variants.findIndex(
-      (variant) => variant.id === selectedVariantId
-    )
-    const variantOptions = Array(variants.length).fill(null)
-    variantOptions[selectedIndex] = selectedVariantId
-    reset({
-      prices,
-      variants: variantOptions,
-    })
-  }, [variants, prices])
+    if (prices.length > 0 && variants?.length > 0) {
+      const selectedVariantId = defaultVariant
+        ? defaultVariant.id
+        : prices[0]?.variant_id
+      const selectedIndex = variants.findIndex(
+        (variant) => variant.id === selectedVariantId
+      )
+      const variantOptions = Array(variants.length).fill(null)
+      variantOptions[selectedIndex] = selectedVariantId
+      reset({
+        prices,
+        variants: variantOptions,
+      })
+    }
+  }, [variants, prices, defaultVariant])
 
   return (
     <>
