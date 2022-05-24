@@ -1,6 +1,6 @@
 import { MoneyAmount, ProductVariant } from "@medusajs/medusa"
 import React from "react"
-import { Control, Controller, useForm } from "react-hook-form"
+import { Control, Controller, useForm, useWatch } from "react-hook-form"
 import Checkbox, { CheckboxProps } from "../../atoms/checkbox"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
@@ -12,11 +12,16 @@ const MODES = {
   SELECTED_ONLY: "selected",
 }
 
+export type PriceOverridesFormValues = {
+  variants: string[]
+  prices: MoneyAmount[]
+}
+
 type PriceOverridesType = {
   onClose: () => void
   prices: MoneyAmount[]
   variants: ProductVariant[]
-  onSubmit: (data: any) => void
+  onSubmit: (values: PriceOverridesFormValues) => void
 }
 
 const PriceOverrides = ({
@@ -26,14 +31,41 @@ const PriceOverrides = ({
   onSubmit,
 }: PriceOverridesType) => {
   const [mode, setMode] = React.useState(MODES.SELECTED_ONLY)
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, control, reset } = useForm<PriceOverridesFormValues>({
     defaultValues: {
       variants: [],
-      prices,
+      prices: prices,
     },
   })
 
-  const onClick = handleSubmit(onSubmit)
+  const onClick = handleSubmit((values) => {
+    if (mode === MODES.APPLY_ALL) {
+      onSubmit({
+        ...values,
+        variants: variants.map((variant) => variant.id),
+      })
+    } else {
+      onSubmit({
+        ...values,
+        // remove null or undefined
+        variants: values.variants.filter(Boolean),
+      })
+    }
+  })
+
+  // set default variant
+  React.useEffect(() => {
+    const selectedVariantId = prices[0].variant_id
+    const selectedIndex = variants.findIndex(
+      (variant) => variant.id === selectedVariantId
+    )
+    const variantOptions = Array(variants.length).fill(null)
+    variantOptions[selectedIndex] = selectedVariantId
+    reset({
+      prices,
+      variants: variantOptions,
+    })
+  }, [variants, prices])
 
   return (
     <>
@@ -65,6 +97,7 @@ const PriceOverrides = ({
                   label={`${variant.title} (SKU: ${variant.sku})`}
                   id={variant.id}
                   index={idx}
+                  value={variant.id}
                 />
               </div>
             ))}
@@ -82,6 +115,7 @@ const PriceOverrides = ({
                   return (
                     <PriceAmount
                       value={field.value}
+                      key={price.id}
                       onChange={(amount) => {
                         field.onChange({
                           ...field.value,
@@ -132,8 +166,14 @@ const ControlledCheckbox = ({
   name,
   id,
   index,
+  value,
   ...props
 }: ControlledCheckboxProps) => {
+  const variants = useWatch<string[]>({
+    control,
+    name,
+  })
+
   return (
     <Controller
       control={control}
@@ -144,19 +184,16 @@ const ControlledCheckbox = ({
             className="shrink-0 inter-small-regular"
             {...props}
             {...field}
-            checked={field.value.some((value) => value === id)}
+            checked={variants?.some((variant) => variant === value)}
             onChange={(e) => {
               // copy field value
-              const valueCopy = [...(field.value || [])]
+              const valueCopy = [...(variants || [])] as any[]
 
               // update checkbox value
               valueCopy[index] = e.target.checked ? id : null
 
-              // remove nulls from field value
-              const cleanedValue = valueCopy.filter(Boolean)
-
               // update field value
-              field.onChange(cleanedValue)
+              field.onChange(valueCopy)
             }}
           />
         )
