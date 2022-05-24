@@ -320,8 +320,6 @@ type ProductSectionProps = {
   product: Product
   isFirst: boolean
   activeRegions: Region[]
-  priceChanges: Record<string, string>
-  setPriceChanges: (changes: Record<string, string>) => void
 
   onHeaderClick: (regionId: string, productId: string) => void
 
@@ -352,8 +350,6 @@ function ProductSection(props: ProductSectionProps) {
     activeRegions,
     product,
     isFirst,
-    priceChanges,
-    setPriceChanges,
     isVariantInPriceList,
     ...rest
   } = props
@@ -610,7 +606,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
 
         if (wasFocused) {
           // find another active cell to focus
-          const id = Object.keys(activeFields).filter((k) => k !== cellKey)[0]
+          const id = Object.keys(activeFields).find((k) => k !== cellKey)
           document.querySelectorAll(`[data-id="${id}"]`)[0].focus()
         }
       } else {
@@ -728,23 +724,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     regionId: string,
     amount: string
   ) => {
-    // let formatted = amount
-    //
-    // // only on initial edit set formatted value to be consistent
-    // // but omit setting this formatted value on every edit to prevent wierd corner cases
-    // if (amount && !currentEditAmount) {
-    //   const c =
-    //     currencies[
-    //       props.activeRegions
-    //         .find((r) => r.id === regionId)!
-    //         .currency_code.toUpperCase()
-    //     ]
-    //
-    //   formatted = (
-    //     Math.round(parseFloat(amount) * 10 ** c.decimal_digits) /
-    //     10 ** c.decimal_digits
-    //   ).toFixed(c.decimal_digits)
-    // }
+    //TODO: format all price inputs on change here
 
     const tmp = { ...priceChanges }
 
