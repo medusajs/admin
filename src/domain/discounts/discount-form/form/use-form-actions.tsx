@@ -1,5 +1,10 @@
 import { navigate } from "gatsby"
-import { useAdminCreateDiscount, useAdminUpdateDiscount } from "medusa-react"
+import {
+  useAdminCreateDiscount,
+  useAdminDiscountRemoveCondition,
+  useAdminUpdateDiscount,
+} from "medusa-react"
+import { CondtionMapItem } from "../../types"
 import { useDiscountForm } from "./discount-form-context"
 import {
   DiscountFormValues,
@@ -10,6 +15,7 @@ import {
 export const useFormActions = (id: string, data: any) => {
   const updateDiscount = useAdminUpdateDiscount(id)
   const createDiscount = useAdminCreateDiscount()
+  const removeCondition = useAdminDiscountRemoveCondition(id)
 
   const { conditions } = useDiscountForm()
 
@@ -51,9 +57,20 @@ export const useFormActions = (id: string, data: any) => {
     })
   }
 
+  const onRemoveConditions = async (conditions: CondtionMapItem[]) => {
+    await Promise.all(
+      conditions.map((condition) => {
+        if (condition.id) {
+          removeCondition.mutateAsync(condition.id)
+        }
+      })
+    )
+  }
+
   return {
     onSaveAsInactive,
     onSaveAsActive,
     onUpdate,
+    onRemoveConditions,
   }
 }

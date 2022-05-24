@@ -1,18 +1,24 @@
 import { useAdminGetDiscountCondition } from "medusa-react"
 import React, { useEffect, useMemo, useRef, useState } from "react"
+import Badge from "../../../../../components/fundamentals/badge"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
-import NumberedItem from "../../../../../components/molecules/numbered-item"
+import Actionables from "../../../../../components/molecules/actionables"
 import { useObserveWidth } from "../../../../../hooks/use-observe-width"
-import { ConditionMap, DiscountConditionType } from "../../../types"
+import {
+  ConditionMap,
+  DiscountConditionOperator,
+  DiscountConditionType,
+} from "../../../types"
 import EditConditionsModal from "../../edit-conditions-modal"
+import { useDiscountForm } from "../../form/discount-form-context"
 
 type ConditionItemProps<Type extends DiscountConditionType> = {
   index: number
   discountId?: string
   conditionId?: string
   type: Type
-  updateCondition: React.Dispatch<React.SetStateAction<ConditionMap>>
+  setCondition: React.Dispatch<React.SetStateAction<ConditionMap>>
   items: { id: string; label: string }[]
 }
 
@@ -21,7 +27,7 @@ const ConditionItem = <Type extends DiscountConditionType>({
   discountId,
   conditionId,
   type,
-  updateCondition,
+  setCondition,
   items,
 }: ConditionItemProps<Type>) => {
   const queryParams = useMemo(() => {
@@ -49,6 +55,8 @@ const ConditionItem = <Type extends DiscountConditionType>({
     }
   )
 
+  const { updateCondition } = useDiscountForm()
+
   const [showEdit, setShowEdit] = useState(false)
 
   useEffect(() => {
@@ -58,7 +66,7 @@ const ConditionItem = <Type extends DiscountConditionType>({
 
     switch (type) {
       case DiscountConditionType.PRODUCTS:
-        updateCondition((prevConditions) => {
+        setCondition((prevConditions) => {
           return {
             ...prevConditions,
             products: {
@@ -74,7 +82,7 @@ const ConditionItem = <Type extends DiscountConditionType>({
         })
         break
       case DiscountConditionType.PRODUCT_COLLECTIONS:
-        updateCondition((prevConditions) => {
+        setCondition((prevConditions) => {
           return {
             ...prevConditions,
             product_collections: {
@@ -90,7 +98,7 @@ const ConditionItem = <Type extends DiscountConditionType>({
         })
         break
       case DiscountConditionType.PRODUCT_TAGS:
-        updateCondition((prevConditions) => {
+        setCondition((prevConditions) => {
           return {
             ...prevConditions,
             product_tags: {
@@ -106,7 +114,7 @@ const ConditionItem = <Type extends DiscountConditionType>({
         })
         break
       case DiscountConditionType.CUSTOMER_GROUPS:
-        updateCondition((prevConditions) => {
+        setCondition((prevConditions) => {
           return {
             ...prevConditions,
             customer_groups: {
@@ -122,7 +130,7 @@ const ConditionItem = <Type extends DiscountConditionType>({
         })
         break
       case DiscountConditionType.PRODUCT_TYPES:
-        updateCondition((prevConditions) => {
+        setCondition((prevConditions) => {
           return {
             ...prevConditions,
             product_types: {
@@ -149,46 +157,66 @@ const ConditionItem = <Type extends DiscountConditionType>({
     return null
   }
 
-  const description = (
-    <div
-      ref={containerRef}
-      className="w-full flex items-center inter-small-regular gap-x-xsmall flex-1"
-    >
-      <div className="gap-x-2xsmall text-grey-50">
-        {visibleItems.map((item, i) => {
-          return (
-            <span key={i}>
-              {type === DiscountConditionType.PRODUCT_TAGS && "#"}
-              {item.label}
-              {i !== visibleItems.length - 1 && ", "}
-            </span>
-          )
-        })}
-      </div>
-      {remainder > 0 && <span className="text-grey-40">+{remainder} more</span>}
-    </div>
-  )
-
   return (
     <div>
-      <NumberedItem
-        index={index + 1}
-        title={getTitle(type)}
-        description={description}
-        actions={[
-          {
-            icon: <EditIcon size={16} />,
-            label: "Edit",
-            onClick: () => setShowEdit(true),
-          },
-          {
-            icon: <TrashIcon size={16} />,
-            label: "Delete condition",
-            onClick: () => {},
-            variant: "danger",
-          },
-        ]}
-      />
+      <div className="p-base border rounded-rounded flex gap-base justify-between items-center">
+        <div className="flex overflow-hidden gap-base w-full">
+          <div>
+            <Badge
+              className="inter-base-semibold flex justify-center items-center w-[40px] h-[40px]"
+              variant="default"
+            >
+              §{index + 1}
+            </Badge>
+          </div>
+          <div className="truncate flex flex-col justify-center flex-1 w-full">
+            <div className="inter-small-semibold">{getTitle(type)}</div>
+            <div
+              ref={containerRef}
+              className="w-full flex items-center inter-small-regular gap-x-xsmall flex-1"
+            >
+              <div className="gap-x-2xsmall text-grey-50">
+                {visibleItems.map((item, i) => {
+                  return (
+                    <span key={i}>
+                      {type === DiscountConditionType.PRODUCT_TAGS && "#"}
+                      {item.label}
+                      {i !== visibleItems.length - 1 && ", "}
+                    </span>
+                  )
+                })}
+              </div>
+              {remainder > 0 && (
+                <span className="text-grey-40">+{remainder} more</span>
+              )}
+            </div>
+          </div>
+        </div>
+        <div>
+          <Actionables
+            forceDropdown
+            actions={[
+              {
+                label: "Edit",
+                onClick: () => setShowEdit(true),
+                icon: <EditIcon size={16} />,
+              },
+              {
+                label: "Delete condition",
+                onClick: () =>
+                  updateCondition({
+                    type,
+                    items: [],
+                    operator: DiscountConditionOperator.IN,
+                    shouldDelete: true,
+                  }),
+                icon: <TrashIcon size={16} />,
+                variant: "danger",
+              },
+            ]}
+          />
+        </div>
+      </div>
       {showEdit && (
         <EditConditionsModal onClose={() => setShowEdit(false)} view={type} />
       )}
@@ -215,7 +243,7 @@ const getVisibleItems = <T extends unknown>(
   items: T[],
   width: number
 ): [T[], number] => {
-  const columns = Math.max(Math.floor(width / 85) - 1, 1)
+  const columns = Math.max(Math.floor(width / 110) - 1, 1)
   const visibleItems = items.slice(0, columns)
   const remainder = items.length - columns
 

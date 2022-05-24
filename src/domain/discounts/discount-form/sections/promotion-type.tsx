@@ -5,7 +5,7 @@ import RadioGroup from "../../../../components/organisms/radio-group"
 import { useDiscountForm } from "../form/discount-form-context"
 
 const PromotionType = () => {
-  const { control, isFreeShipping, setIsFreeShipping } = useDiscountForm()
+  const { control } = useDiscountForm()
 
   const regions = useWatch({
     control,
@@ -21,15 +21,7 @@ const PromotionType = () => {
         return (
           <RadioGroup.Root
             value={value}
-            onValueChange={(values) => {
-              if (values === "free_shipping" && !isFreeShipping) {
-                setIsFreeShipping(true)
-              } else if (values !== "free_shipping" && isFreeShipping) {
-                setIsFreeShipping(false)
-              }
-
-              onChange(values)
-            }}
+            onValueChange={onChange}
             className={clsx("flex items-center gap-base mt-base px-1")}
           >
             <RadioGroup.Item

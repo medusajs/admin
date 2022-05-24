@@ -1,6 +1,6 @@
 import React from "react"
-import RadioGroup from "../../../../components/organisms/radio-group"
-import { DiscountConditionOperator } from "../../types"
+import RadioGroup from "../../../../../components/organisms/radio-group"
+import { DiscountConditionOperator } from "../../../types"
 
 type ConditionOperatorProps = {
   value: "in" | "not_in"

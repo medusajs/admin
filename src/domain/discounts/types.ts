@@ -38,7 +38,7 @@ export type CreateConditionProps = {
   ids: string[]
 }
 
-type CondtionMapItem = {
+export type CondtionMapItem = {
   id?: string
   operator: DiscountConditionOperator
   type: DiscountConditionType

@@ -1,5 +1,5 @@
 import { Discount } from "@medusajs/medusa"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import Button from "../../../../../components/fundamentals/button"
 import PlusIcon from "../../../../../components/fundamentals/icons/plus-icon"
 import AddConditionsModal from "../../add-conditions-modal"
@@ -30,6 +30,13 @@ const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
     }
   }, [discount?.rule?.conditions])
 
+  const allSet = useMemo(() => {
+    const allSet = Object.values(conditions).every((condition) => {
+      return condition.items.length
+    })
+    return allSet
+  }, [conditions])
+
   return (
     <div className="pt-5">
       <div className="flex flex-col gap-y-small">
@@ -39,20 +46,22 @@ const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
             discountId={discount?.id}
             conditionId={values.id}
             type={values.type}
-            updateCondition={setConditions}
+            setCondition={setConditions}
             items={values.items}
           />
         ))}
       </div>
-      <Button
-        size="small"
-        variant="ghost"
-        onClick={() => setShowConditionsModal(true)}
-        className="mt-4 p-2 w-full rounded-rounded border"
-      >
-        <PlusIcon size={18} />
-        <span>Add Condition</span>
-      </Button>
+      {!allSet && (
+        <Button
+          size="small"
+          variant="ghost"
+          onClick={() => setShowConditionsModal(true)}
+          className="mt-4 p-2 w-full rounded-rounded border"
+        >
+          <PlusIcon size={18} />
+          <span>Add Condition</span>
+        </Button>
+      )}
       {showConditionsModal && (
         <AddConditionsModal close={() => setShowConditionsModal(false)} />
       )}

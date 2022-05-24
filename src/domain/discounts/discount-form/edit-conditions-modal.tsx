@@ -1,7 +1,11 @@
 import React from "react"
-import Button from "../../../components/fundamentals/button"
 import Modal from "../../../components/molecules/modal"
 import { DiscountConditionType } from "../types"
+import EditCollectionConditionSelector from "./condition-tables/edit-condition-tables/collections"
+import EditCustomerGroupConditionSelector from "./condition-tables/edit-condition-tables/customer-groups"
+import EditProductConditionSelector from "./condition-tables/edit-condition-tables/products"
+import EditTagConditionSelector from "./condition-tables/edit-condition-tables/tags"
+import EditTypeConditionSelector from "./condition-tables/edit-condition-tables/types"
 
 type EditConditionsModalProps = {
   onClose: () => void
@@ -15,45 +19,43 @@ const EditConditionsModal: React.FC<EditConditionsModalProps> = ({
   return (
     <Modal open handleClose={onClose}>
       <Modal.Header handleClose={onClose}>
-        <h1 className="inter-xlarge-semibold">Edit</h1>
+        <h1 className="inter-xlarge-semibold">Edit {getTitle(view)}</h1>
       </Modal.Header>
       <Modal.Body>
-        <Modal.Content>
-          {() => {
-            switch (view) {
-              case DiscountConditionType.PRODUCTS:
-                return <span>Products</span>
-              case DiscountConditionType.CUSTOMER_GROUPS:
-                return "Customer Groups"
-              case DiscountConditionType.PRODUCT_COLLECTIONS:
-                return "Collections"
-              default:
-                return <div>hey</div>
-            }
-          }}
-          <div>{view}</div>
-        </Modal.Content>
+        <Content view={view} onClose={onClose} />
       </Modal.Body>
-      <Modal.Footer>
-        <div className="flex items-center justify-end w-full gap-x-xsmall">
-          <Button variant="secondary" size="small" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="danger" size="small" onClick={onClose}>
-            Delete condition
-          </Button>
-          <Button
-            variant="primary"
-            size="small"
-            onClick={onClose}
-            className="min-w-[128px]"
-          >
-            Save
-          </Button>
-        </div>
-      </Modal.Footer>
     </Modal>
   )
+}
+
+const getTitle = (view: DiscountConditionType) => {
+  switch (view) {
+    case DiscountConditionType.PRODUCTS:
+      return "products"
+    case DiscountConditionType.CUSTOMER_GROUPS:
+      return "groups"
+    case DiscountConditionType.PRODUCT_TAGS:
+      return "tags"
+    case DiscountConditionType.PRODUCT_COLLECTIONS:
+      return "collections"
+    case DiscountConditionType.PRODUCT_TYPES:
+      return "types"
+  }
+}
+
+const Content = ({ view, onClose }: EditConditionsModalProps) => {
+  switch (view) {
+    case DiscountConditionType.PRODUCTS:
+      return <EditProductConditionSelector onClose={onClose} />
+    case DiscountConditionType.CUSTOMER_GROUPS:
+      return <EditCustomerGroupConditionSelector onClose={onClose} />
+    case DiscountConditionType.PRODUCT_COLLECTIONS:
+      return <EditCollectionConditionSelector onClose={onClose} />
+    case DiscountConditionType.PRODUCT_TAGS:
+      return <EditTagConditionSelector onClose={onClose} />
+    case DiscountConditionType.PRODUCT_TYPES:
+      return <EditTypeConditionSelector onClose={onClose} />
+  }
 }
 
 export default EditConditionsModal

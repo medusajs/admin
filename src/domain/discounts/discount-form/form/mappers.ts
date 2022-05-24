@@ -73,7 +73,6 @@ export const formValuesToCreateDiscountMapper = (
   values: DiscountFormValues,
   conditions: ConditionMap
 ): Omit<AdminPostDiscountsReq, "is_disabled"> => {
-  console.log(values)
   return {
     code: values.code!,
     rule: {

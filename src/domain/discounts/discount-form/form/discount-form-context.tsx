@@ -75,29 +75,32 @@ const defaultConditions: ConditionMap = {
 
 export const DiscountFormProvider = ({
   discount = defaultDiscount,
-  isEdit = false,
   children,
 }: DiscountFormProviderProps) => {
-  const [regionsDisabled, setRegionsDisabled] = useState(false)
-  const [isFreeShipping, setIsFreeShipping] = useState(false)
   const [hasExpiryDate, setHasExpiryDate] = useState(false)
   const [hasStartDate, setHasStartDate] = useState(false)
-  const [prevType, setPrevType] = useState<string | undefined>(undefined)
   const [prevUsageLimit, setPrevUsageLimit] = useState<number | undefined>(
     undefined
   )
-  const [prevValidDuration, setPrevValidDuration] = useState<string>("")
-  const [startsAt, setStartsAt] = useState(discount.starts_at)
+  const [prevValidDuration, setPrevValidDuration] = useState<
+    string | undefined
+  >(undefined)
 
   const [conditions, setConditions] = useState<ConditionMap>(defaultConditions)
 
-  const updateCondition = ({ type, items, operator }: UpdateConditionProps) => {
+  const updateCondition = ({
+    type,
+    items,
+    operator,
+    shouldDelete,
+  }: UpdateConditionProps) => {
     setConditions((prevConditions) => ({
       ...prevConditions,
       [type]: {
         ...prevConditions[type],
         items,
         operator,
+        shouldDelete,
       },
     }))
   }
@@ -112,12 +115,13 @@ export const DiscountFormProvider = ({
 
   const type = methods.watch("rule.type") as string | undefined
   const conditionType = methods.watch("condition_type")
-  const isDynamic = methods.watch("is_dynamic") as boolean
-  const regions = methods.watch("regions") as Option[] | null
+  const isDynamic = methods.watch("is_dynamic")
   const usageLimit = methods.watch("usage_limit")
-  const validDuration = methods.watch("valid_duration") as string
+  const validDuration = methods.watch("valid_duration")
+  const regions = methods.watch("regions")
 
   const endsAt = methods.watch("ends_at")
+  const startsAt = methods.watch("starts_at")
 
   useEffect(() => {
     if (hasExpiryDate && !endsAt) {
@@ -133,38 +137,14 @@ export const DiscountFormProvider = ({
   }, [endsAt, hasExpiryDate])
 
   useEffect(() => {
-    if (isEdit && discount.type === "fixed") {
-      setRegionsDisabled(true)
-    } else {
-      setRegionsDisabled(false)
+    if (hasStartDate && !startsAt) {
+      methods.setValue("starts_at", new Date())
     }
 
-    if (type === "free_shipping") {
-      setIsFreeShipping(true)
-    } else {
-      setIsFreeShipping(false)
+    if (!hasStartDate && startsAt) {
+      methods.setValue("starts_at", null)
     }
-  }, [type, isEdit])
-
-  const handleSelectFreeShipping = () => {
-    setPrevType(type)
-    methods.setValue("rule.type", "free_shipping")
-  }
-
-  const handleUnselectFreeShipping = () => {
-    methods.setValue("rule.type", prevType ? prevType : "percentage") // reset to previous value
-
-    if (prevType === "fixed" && regions) {
-      let newReg: Option | undefined = undefined
-      if (Array.isArray(regions)) {
-        newReg = regions[0]
-      } else {
-        newReg = (regions as unknown) as { label: string; value: string }
-      }
-
-      methods.setValue("regions", newReg) // if prev value type was fixed, and user has selected multiple regions while free shipping was selected, reset to first region
-    }
-  }
+  }, [endsAt, hasExpiryDate])
 
   const handleConfigurationChanged = (values) => {
     if (values.indexOf("ends_at") > -1 && !hasExpiryDate) {
@@ -202,22 +182,11 @@ export const DiscountFormProvider = ({
     }
   }
 
-  useEffect(() => {
-    if (isFreeShipping) {
-      handleSelectFreeShipping()
-    } else {
-      if (type === "free_shipping") {
-        handleUnselectFreeShipping()
-      }
-    }
-  }, [isFreeShipping])
-
   const handleReset = () => {
     setHasExpiryDate(discount.ends_at ? true : false)
-    setStartsAt(discount.starts_at)
+    setConditions(defaultConditions)
     methods.reset({
       ...discount,
-      valid_for: null,
     })
   }
 
@@ -232,21 +201,17 @@ export const DiscountFormProvider = ({
           type,
           conditionType,
           setConditionType,
-          regions,
-          regionsDisabled,
-          isFreeShipping,
-          setIsFreeShipping,
           isDynamic,
+          regions,
           hasExpiryDate,
           setHasExpiryDate,
           hasStartDate,
-          startsAt,
           setHasStartDate,
-          setStartsAt,
           handleConfigurationChanged,
           conditions,
           updateCondition,
           setConditions,
+          handleReset,
         }}
       >
         {children}
@@ -260,20 +225,21 @@ const DiscountFormContext = React.createContext<{
   conditionType?: string
   setConditionType: (value: string | undefined) => void
   isDynamic: boolean
-  regionsDisabled: boolean
-  regions: any[] | null
-  isFreeShipping: boolean
-  setIsFreeShipping: (value: boolean) => void
+  regions?: Option[]
   hasExpiryDate: boolean
   setHasExpiryDate: (value: boolean) => void
-  startsAt: Date | undefined
   hasStartDate: boolean
-  setStartsAt: (value: Date) => void
   setHasStartDate: (value: boolean) => void
   handleConfigurationChanged: (values: string[]) => void
   conditions: ConditionMap
-  updateCondition: ({ type, items: update }: UpdateConditionProps) => void
+  updateCondition: ({
+    type,
+    items,
+    operator,
+    shouldDelete,
+  }: UpdateConditionProps) => void
   setConditions: Dispatch<SetStateAction<ConditionMap>>
+  handleReset: () => void
 } | null>(null)
 
 export const useDiscountForm = () => {

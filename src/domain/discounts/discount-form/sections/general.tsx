@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import { useAdminRegions } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import { Controller } from "react-hook-form"
+import { Controller, useWatch } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../components/molecules/input"
@@ -18,13 +18,12 @@ const General = ({ discount, isEdit = false }) => {
   >(initialCurrency)
 
   const { regions: opts } = useAdminRegions()
-  const {
-    register,
+  const { register, control, regions } = useDiscountForm()
+
+  const type = useWatch({
     control,
-    type,
-    regions,
-    regionsDisabled,
-  } = useDiscountForm()
+    name: "rule.type",
+  })
 
   useEffect(() => {
     if (type === "fixed" && regions) {
@@ -76,10 +75,6 @@ const General = ({ discount, isEdit = false }) => {
                   enableSearch
                   required
                   options={regionOptions}
-                  className={clsx({
-                    ["opacity-50 pointer-events-none select-none"]: regionsDisabled,
-                  })}
-                  disabled={regionsDisabled}
                 />
               )
             }}

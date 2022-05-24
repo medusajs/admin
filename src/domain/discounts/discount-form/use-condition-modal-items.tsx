@@ -1,11 +1,11 @@
 import React, { useContext } from "react"
 import { LayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import { DiscountConditionType } from "../types"
-import CollectionConditionSelector from "./condition-tables/collections"
-import CustomerGroupConditionSelector from "./condition-tables/customer-groups"
-import ProductConditionSelector from "./condition-tables/products"
-import TagConditionSelector from "./condition-tables/tags"
-import TypeConditionSelector from "./condition-tables/types"
+import AddCollectionConditionSelector from "./condition-tables/add-condition-tables/collections"
+import AddCustomerGroupConditionSelector from "./condition-tables/add-condition-tables/customer-groups"
+import AddProductConditionSelector from "./condition-tables/add-condition-tables/products"
+import AddTagConditionSelector from "./condition-tables/add-condition-tables/tags"
+import AddTypeConditionSelector from "./condition-tables/add-condition-tables/types"
 
 export type ConditionItem = {
   label: string
@@ -26,7 +26,7 @@ const useConditionModalItems = (close: () => void) => {
         layeredModalContext.push({
           title: "Choose products",
           onBack: () => layeredModalContext.pop(),
-          view: <ProductConditionSelector onClose={() => close()} />,
+          view: <AddProductConditionSelector onClose={() => close()} />,
         }),
     },
     {
@@ -37,7 +37,7 @@ const useConditionModalItems = (close: () => void) => {
         layeredModalContext.push({
           title: "Choose groups",
           onBack: () => layeredModalContext.pop(),
-          view: <CustomerGroupConditionSelector onClose={close} />,
+          view: <AddCustomerGroupConditionSelector onClose={close} />,
         }),
     },
     {
@@ -48,7 +48,7 @@ const useConditionModalItems = (close: () => void) => {
         layeredModalContext.push({
           title: "Choose tags",
           onBack: () => layeredModalContext.pop(),
-          view: <TagConditionSelector onClose={close} />,
+          view: <AddTagConditionSelector onClose={close} />,
         }),
     },
     {
@@ -59,7 +59,7 @@ const useConditionModalItems = (close: () => void) => {
         layeredModalContext.push({
           title: "Choose collections",
           onBack: () => layeredModalContext.pop(),
-          view: <CollectionConditionSelector onClose={() => close()} />,
+          view: <AddCollectionConditionSelector onClose={() => close()} />,
         }),
     },
     {
@@ -70,7 +70,7 @@ const useConditionModalItems = (close: () => void) => {
         layeredModalContext.push({
           title: "Choose types",
           onBack: () => layeredModalContext.pop(),
-          view: <TypeConditionSelector onClose={() => close()} />,
+          view: <AddTypeConditionSelector onClose={() => close()} />,
         }),
     },
   ]
