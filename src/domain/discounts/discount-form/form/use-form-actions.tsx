@@ -4,6 +4,8 @@ import {
   useAdminDiscountRemoveCondition,
   useAdminUpdateDiscount,
 } from "medusa-react"
+import useNotification from "../../../../hooks/use-notification"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import { CondtionMapItem } from "../../types"
 import { useDiscountForm } from "./discount-form-context"
 import {
@@ -16,6 +18,8 @@ export const useFormActions = (id: string, data: any) => {
   const updateDiscount = useAdminUpdateDiscount(id)
   const createDiscount = useAdminCreateDiscount()
   const removeCondition = useAdminDiscountRemoveCondition(id)
+
+  const notification = useNotification()
 
   const { conditions } = useDiscountForm()
 
@@ -61,7 +65,11 @@ export const useFormActions = (id: string, data: any) => {
     await Promise.all(
       conditions.map((condition) => {
         if (condition.id) {
-          removeCondition.mutateAsync(condition.id)
+          removeCondition.mutateAsync(condition.id, {
+            onError: (error) => {
+              notification("Error", getErrorMessage(error), "error")
+            },
+          })
         }
       })
     )

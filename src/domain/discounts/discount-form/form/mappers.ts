@@ -125,14 +125,15 @@ export const formValuesToUpdateDiscountMapper = (
       allocation: values.rule.type === "fixed" ? "item" : "total",
       id: ruleId,
       type: values.rule.type,
-      value: values.rule.value,
+      value: values.rule.type !== "free_shipping" ? values.rule.value : 0,
       description: values.rule.description,
       conditions: mapConditionsToUpdate(conditions),
     },
+    is_dynamic: values.is_dynamic,
     ends_at: values.ends_at,
     regions: values.regions?.map((r) => r.value),
     starts_at: values.starts_at,
-    usage_limit: parseInt((values.usage_limit as unknown) as string, 10),
+    usage_limit: values.usage_limit,
     valid_duration: values.valid_duration?.length
       ? values.valid_duration
       : undefined,

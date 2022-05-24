@@ -46,7 +46,12 @@ const EditConditionFooter: React.FC<EditConditionFooterProps> = ({
         variant="primary"
         size="small"
         onClick={() => {
-          updateCondition({ type, items, operator, shouldDelete: false })
+          updateCondition({
+            type,
+            items,
+            operator,
+            shouldDelete: items?.length ? false : true, // If the user removed all items from the condition, we should delete it
+          })
           onClose()
         }}
         className="min-w-[128px]"

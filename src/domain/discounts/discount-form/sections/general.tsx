@@ -1,4 +1,4 @@
-import clsx from "clsx"
+import { Discount } from "@medusajs/medusa"
 import { useAdminRegions } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { Controller, useWatch } from "react-hook-form"
@@ -10,7 +10,11 @@ import Textarea from "../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { useDiscountForm } from "../form/discount-form-context"
 
-const General = ({ discount, isEdit = false }) => {
+type GeneralProps = {
+  discount?: Discount
+}
+
+const General: React.FC<GeneralProps> = ({ discount }) => {
   const initialCurrency = discount?.regions?.[0].currency_code || undefined
 
   const [fixedRegionCurrency, setFixedRegionCurrency] = useState<
@@ -18,11 +22,16 @@ const General = ({ discount, isEdit = false }) => {
   >(initialCurrency)
 
   const { regions: opts } = useAdminRegions()
-  const { register, control, regions } = useDiscountForm()
+  const { register, control } = useDiscountForm()
 
   const type = useWatch({
     control,
     name: "rule.type",
+  })
+
+  const regions = useWatch({
+    control,
+    name: "regions",
   })
 
   useEffect(() => {
@@ -167,10 +176,6 @@ const General = ({ discount, isEdit = false }) => {
                     id="is_dynamic"
                     checked={value}
                     onChange={(e) => onChange(e.target.checked)}
-                    disabled={isEdit}
-                    className={clsx("mr-1.5", {
-                      ["opacity-50 pointer-events-none select-none"]: isEdit,
-                    })}
                   />
                 )
               }}

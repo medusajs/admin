@@ -1,10 +1,9 @@
 import { useAdminGetDiscountCondition } from "medusa-react"
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import Badge from "../../../../../components/fundamentals/badge"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import Actionables from "../../../../../components/molecules/actionables"
-import { useObserveWidth } from "../../../../../hooks/use-observe-width"
 import {
   ConditionMap,
   DiscountConditionOperator,
@@ -148,9 +147,13 @@ const ConditionItem = <Type extends DiscountConditionType>({
     }
   }, [discount_condition, type])
 
-  const containerRef = useRef<HTMLDivElement>(null)
-  const width = useObserveWidth(containerRef)
-  const [visibleItems, remainder] = getVisibleItems(items, width)
+  const [visibleItems, remainder] = useMemo(() => {
+    const columns = Math.max(Math.floor(400 / 110) - 1, 1)
+    const visibleItems = items.slice(0, columns)
+    const remainder = items.length - columns
+
+    return [visibleItems, remainder]
+  }, [items])
 
   // If no items in the list, don't render anything
   if (!items.length) {
@@ -171,11 +174,8 @@ const ConditionItem = <Type extends DiscountConditionType>({
           </div>
           <div className="truncate flex flex-col justify-center flex-1 w-full">
             <div className="inter-small-semibold">{getTitle(type)}</div>
-            <div
-              ref={containerRef}
-              className="w-full flex items-center inter-small-regular gap-x-xsmall flex-1"
-            >
-              <div className="gap-x-2xsmall text-grey-50">
+            <div className="w-full flex items-center inter-small-regular gap-x-xsmall flex-1">
+              <div className="gap-x-2xsmall text-grey-50 flex items-center w-full inter-small-regular flex-1">
                 {visibleItems.map((item, i) => {
                   return (
                     <span key={i}>
@@ -185,10 +185,10 @@ const ConditionItem = <Type extends DiscountConditionType>({
                     </span>
                   )
                 })}
+                {remainder > 0 && (
+                  <span className="text-grey-40 ml-2">+{remainder} more</span>
+                )}
               </div>
-              {remainder > 0 && (
-                <span className="text-grey-40">+{remainder} more</span>
-              )}
             </div>
           </div>
         </div>
@@ -237,17 +237,6 @@ const getTitle = (type: DiscountConditionType) => {
     case DiscountConditionType.PRODUCT_TYPES:
       return "Type"
   }
-}
-
-const getVisibleItems = <T extends unknown>(
-  items: T[],
-  width: number
-): [T[], number] => {
-  const columns = Math.max(Math.floor(width / 110) - 1, 1)
-  const visibleItems = items.slice(0, columns)
-  const remainder = items.length - columns
-
-  return [visibleItems, remainder]
 }
 
 export default ConditionItem

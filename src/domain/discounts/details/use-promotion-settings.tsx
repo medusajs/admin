@@ -1,5 +1,8 @@
 import { Discount } from "@medusajs/medusa"
-import { useAdminUpdateDiscount } from "medusa-react"
+import {
+  useAdminDiscountRemoveCondition,
+  useAdminUpdateDiscount,
+} from "medusa-react"
 import moment from "moment"
 import { parse } from "postcss"
 import React, { ReactNode } from "react"
@@ -99,6 +102,7 @@ const getConditionSettings = (condition: any, openWithItems) => {
 
 const usePromotionSettings = (promotion: Discount, openWithItems) => {
   const updateDiscount = useAdminUpdateDiscount(promotion.id)
+  const removeCondition = useAdminDiscountRemoveCondition(promotion.id)
 
   const notification = useNotification()
 
@@ -241,7 +245,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
 
   if (promotion.rule.conditions?.length) {
     const displaySettings = promotion.rule.conditions
-      .map((condition, i) => {
+      .map((condition) => {
         const setting = getConditionSettings(condition, openWithItems)
         if (setting) {
           return {
@@ -253,51 +257,18 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
                 icon: <TrashIcon size={20} />,
                 variant: "danger",
                 onClick: async () =>
-                  await updateDiscount.mutateAsync(
-                    {
-                      rule: {
-                        ...promotion.rule,
-                        conditions: [
-                          ...promotion.rule.conditions.slice(0, i).map((c) => ({
-                            id: c.id,
-                            operator: c.operator,
-                            ...removeNullish({
-                              products: c.products,
-                              product_types: c.product_types,
-                              product_tags: c.product_tags,
-                              product_collections: c.product_collections,
-                              customer_groups: c.customer_groups,
-                            }),
-                          })),
-                          ...promotion.rule.conditions
-                            .slice(i + 1)
-                            .map((c) => ({
-                              id: c.id,
-                              operator: c.operator,
-                              ...removeNullish({
-                                products: c.products,
-                                product_types: c.product_types,
-                                product_tags: c.product_tags,
-                                product_collections: c.product_collections,
-                                customer_groups: c.customer_groups,
-                              }),
-                            })),
-                        ],
-                      },
+                  await removeCondition.mutateAsync(condition.id, {
+                    onSuccess: () => {
+                      notification(
+                        "Success",
+                        "Discount condition removed",
+                        "success"
+                      )
                     },
-                    {
-                      onSuccess: () => {
-                        notification(
-                          "Success",
-                          "Discount condition removed",
-                          "success"
-                        )
-                      },
-                      onError: (error) => {
-                        notification("Error", getErrorMessage(error), "error")
-                      },
-                    }
-                  ),
+                    onError: (error) => {
+                      notification("Error", getErrorMessage(error), "error")
+                    },
+                  }),
               },
             ],
           }

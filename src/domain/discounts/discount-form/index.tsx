@@ -157,7 +157,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="general"
                 forceMountContent
               >
-                <General discount={discount} isEdit={isEdit} />
+                <General discount={discount} />
               </Accordion.Item>
               <Accordion.Item
                 forceMountContent

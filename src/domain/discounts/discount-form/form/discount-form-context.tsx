@@ -1,6 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
-import { Option } from "../../../../types/shared"
 import {
   ConditionMap,
   DiscountConditionOperator,
@@ -118,7 +117,6 @@ export const DiscountFormProvider = ({
   const isDynamic = methods.watch("is_dynamic")
   const usageLimit = methods.watch("usage_limit")
   const validDuration = methods.watch("valid_duration")
-  const regions = methods.watch("regions")
 
   const endsAt = methods.watch("ends_at")
   const startsAt = methods.watch("starts_at")
@@ -138,7 +136,7 @@ export const DiscountFormProvider = ({
 
   useEffect(() => {
     if (hasStartDate && !startsAt) {
-      methods.setValue("starts_at", new Date())
+      methods.setValue("starts_at", new Date(new Date().getTime()))
     }
 
     if (!hasStartDate && startsAt) {
@@ -202,7 +200,6 @@ export const DiscountFormProvider = ({
           conditionType,
           setConditionType,
           isDynamic,
-          regions,
           hasExpiryDate,
           setHasExpiryDate,
           hasStartDate,
@@ -225,7 +222,6 @@ const DiscountFormContext = React.createContext<{
   conditionType?: string
   setConditionType: (value: string | undefined) => void
   isDynamic: boolean
-  regions?: Option[]
   hasExpiryDate: boolean
   setHasExpiryDate: (value: boolean) => void
   hasStartDate: boolean
