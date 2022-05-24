@@ -76,7 +76,7 @@ const ProductPrices = ({
           Add Products Manually
         </Button>
       </div>
-      {onFileChosen && (
+      {/* {onFileChosen && (
         <div className="mt-3">
           <FileUploadField
             className="py-8"
@@ -91,7 +91,7 @@ const ProductPrices = ({
             }
           />
         </div>
-      )}
+      )} */}
       {showAdd && (
         <AddProductsModal
           onSave={setProducts}
