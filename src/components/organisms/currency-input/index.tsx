@@ -35,7 +35,7 @@ type AmountInputProps = {
   onChange?: (amount: number | undefined) => void
   onValidate?: (amount: number | undefined) => boolean
   invalidMessage?: string
-} & React.InputHTMLAttributes<HTMLInputElement>
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">
 
 const CurrencyContext = React.createContext<CurrencyInputState>({
   currencyInfo: undefined,

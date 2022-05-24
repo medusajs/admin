@@ -1,3 +1,14 @@
+import {
+  AdminPostOrdersOrderSwapsReq,
+  Order,
+  ProductVariant,
+  ReturnReason,
+} from "@medusajs/medusa"
+import {
+  useAdminCreateSwap,
+  useAdminOrder,
+  useAdminShippingOptions,
+} from "medusa-react"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
@@ -11,44 +22,48 @@ import RMAShippingPrice from "../../../../components/molecules/rma-select-shippi
 import Select from "../../../../components/molecules/select"
 import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
 import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
-import Medusa from "../../../../services/api"
+import useNotification from "../../../../hooks/use-notification"
+import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
-import {
-  formatAmountWithSymbol,
-  normalizeAmount,
-} from "../../../../utils/prices"
+import { formatAmountWithSymbol } from "../../../../utils/prices"
 import RMASelectProductSubModal from "../rma-sub-modals/products"
 import { filterItems } from "../utils/create-filtering"
 
-const removeNullish = (obj) =>
-  Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
-
-const extractPrice = (prices, order) => {
-  let price = prices.find((ma) => ma.region_id === order.region_id)
-
-  if (!price) {
-    price = prices.find((ma) => ma.currency_code === order.currency_code)
-  }
-
-  if (price) {
-    return normalizeAmount(order.currency_code, price.amount)
-  }
-
-  return 0
+type SwapMenuProps = {
+  order: Omit<Order, "beforeInsert">
+  onDismiss: () => void
 }
 
-const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
+type ReturnRecord = Record<
+  string,
+  {
+    images: string[]
+    note: string
+    quantity: number
+    reason: {
+      label: string
+      value: ReturnReason
+    } | null
+  }
+>
+
+type SelectProduct = Omit<ProductVariant & { quantity: number }, "beforeInsert">
+
+const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
+  const { refetch } = useAdminOrder(order.id)
+  const { mutate, isLoading } = useAdminCreateSwap(order.id)
   const layeredModalContext = useContext(LayeredModalContext)
-  const [submitting, setSubmitting] = useState(false)
-  const [toReturn, setToReturn] = useState({})
+  const [toReturn, setToReturn] = useState<ReturnRecord>({})
   const [useCustomShippingPrice, setUseCustomShippingPrice] = useState(false)
 
-  const [itemsToAdd, setItemsToAdd] = useState([])
-  const [shippingLoading, setShippingLoading] = useState(true)
-  const [shippingOptions, setShippingOptions] = useState([])
-  const [shippingMethod, setShippingMethod] = useState()
-  const [shippingPrice, setShippingPrice] = useState()
+  const [itemsToAdd, setItemsToAdd] = useState<SelectProduct[]>([])
+  const [shippingMethod, setShippingMethod] = useState<Option | null>(null)
+  const [shippingPrice, setShippingPrice] = useState<number | undefined>(
+    undefined
+  )
   const [noNotification, setNoNotification] = useState(order.no_notification)
+
+  const notification = useNotification()
 
   // Includes both order items and swap items
   const allItems = useMemo(() => {
@@ -58,17 +73,13 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
     return []
   }, [order])
 
-  useEffect(() => {
-    Medusa.shippingOptions
-      .list({
-        region_id: order.region_id,
-        is_return: true,
-      })
-      .then(({ data }) => {
-        setShippingOptions(data.shipping_options)
-        setShippingLoading(false)
-      })
-  }, [])
+  const {
+    shipping_options: shippingOptions,
+    isLoading: shippingLoading,
+  } = useAdminShippingOptions({
+    is_return: true,
+    region_id: order.region_id,
+  })
 
   const returnTotal = useMemo(() => {
     const items = Object.keys(toReturn).map((t) =>
@@ -77,9 +88,13 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
 
     return (
       items.reduce((acc, next) => {
+        if (!next) {
+          return acc
+        }
+
         return (
           acc +
-          (next.refundable / (next.quantity - next.returned_quantity)) *
+          ((next.refundable || 0) / (next.quantity - next.returned_quantity)) *
             toReturn[next.id].quantity
         )
       }, 0) - (shippingPrice || 0)
@@ -88,41 +103,55 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
 
   const additionalTotal = useMemo(() => {
     return itemsToAdd.reduce((acc, next) => {
-      const price = extractPrice(next.prices, order)
-      const lineTotal = price * 100 * next.quantity * (1 + order.tax_rate / 100)
+      let amount = next.prices.find((ma) => ma.region_id === order.region_id)
+        ?.amount
+
+      if (!amount) {
+        amount = next.prices.find(
+          (ma) => ma.currency_code === order.currency_code
+        )?.amount
+      }
+
+      if (!amount) {
+        amount = 0
+      }
+
+      const lineTotal = amount * next.quantity
       return acc + lineTotal
     }, 0)
   }, [itemsToAdd])
 
-  const handleToAddQuantity = (value, index) => {
+  const handleToAddQuantity = (value: number, index: number) => {
     const updated = [...itemsToAdd]
+
+    const itemToUpdate = updated[index]
+
     updated[index] = {
-      ...itemsToAdd[index],
-      quantity: itemsToAdd[index].quantity + value,
+      ...itemToUpdate,
+      quantity: itemToUpdate.quantity + value,
     }
 
     setItemsToAdd(updated)
   }
 
-  const handleRemoveItem = (index) => {
+  const handleRemoveItem = (index: number) => {
     const updated = [...itemsToAdd]
     updated.splice(index, 1)
     setItemsToAdd(updated)
   }
 
-  const handleShippingSelected = (selectedItem) => {
-    if (selectedItem.value !== "Add a shipping method") {
-      setShippingMethod(selectedItem)
-      const method = shippingOptions.find((o) => selectedItem.value === o.id)
-      setShippingPrice(method.amount)
-    } else {
-      setShippingMethod()
-      setShippingPrice(0)
+  const handleShippingSelected = (selectedItem: Option) => {
+    if (!shippingOptions) {
+      return
     }
+
+    setShippingMethod(selectedItem)
+    const method = shippingOptions?.find((o) => selectedItem.value === o.id)
+    setShippingPrice(method?.amount)
   }
 
-  const handleUpdateShippingPrice = (value) => {
-    if (value >= 0) {
+  const handleUpdateShippingPrice = (value: number | undefined) => {
+    if (value && value >= 0) {
       setShippingPrice(value)
     }
   }
@@ -130,36 +159,32 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
   useEffect(() => {
     if (!useCustomShippingPrice && shippingMethod && shippingOptions) {
       const method = shippingOptions.find((o) => shippingMethod.value === o.id)
-      console.log(shippingMethod, method)
-      setShippingPrice(method.amount)
+      setShippingPrice(method?.amount)
     }
   }, [useCustomShippingPrice, shippingMethod])
 
-  const handleProductSelect = (variants) => {
+  const handleProductSelect = (variants: SelectProduct[]) => {
+    const existingIds = itemsToAdd.map((i) => i.id)
+
     setItemsToAdd((itemsToAdd) => [
       ...itemsToAdd,
       ...variants
-        .filter((variant) => itemsToAdd.indexOf((v) => v.id === variant.id) < 0)
+        .filter((variant) => !existingIds.includes(variant.id))
         .map((variant) => ({ ...variant, quantity: 1 })),
     ])
   }
 
   const onSubmit = () => {
     const items = Object.entries(toReturn).map(([key, value]) => {
-      const clean = removeNullish(value)
-
-      if (clean.reason) {
-        clean.reason_id = clean.reason.value.value.id
-        delete clean.reason
-      }
-
       return {
         item_id: key,
-        ...clean,
+        note: value.note ?? undefined,
+        quantity: value.quantity,
+        reason_id: value.reason?.value.id ?? undefined,
       }
     })
 
-    const data = {
+    const data: AdminPostOrdersOrderSwapsReq = {
       return_items: items,
       additional_items: itemsToAdd.map((i) => ({
         variant_id: i.id,
@@ -172,22 +197,20 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
     if (shippingMethod) {
       data.return_shipping = {
         option_id: shippingMethod.value,
-        price: Math.round(shippingPrice),
+        price: Math.round(shippingPrice || 0),
       }
     }
 
-    if (onCreate) {
-      setSubmitting(true)
-      return onCreate(data)
-        .then(() => onDismiss())
-        .then(() =>
-          notification("Success", "Successfully created swap", "success")
-        )
-        .catch((error) =>
-          notification("Error", getErrorMessage(error), "error")
-        )
-        .finally(() => setSubmitting(false))
-    }
+    return mutate(data, {
+      onSuccess: () => {
+        refetch()
+        notification("Success", "Successfully created exchange", "success")
+        onDismiss()
+      },
+      onError: (err) => {
+        notification("Error", getErrorMessage(err), "error")
+      },
+    })
   }
 
   return (
@@ -220,10 +243,12 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
                 placeholder="Add a shipping method"
                 value={shippingMethod}
                 onChange={handleShippingSelected}
-                options={shippingOptions.map((o) => ({
-                  label: o.name,
-                  value: o.id,
-                }))}
+                options={
+                  shippingOptions?.map((o) => ({
+                    label: o.name,
+                    value: o.id,
+                  })) || []
+                }
               />
             )}
             {shippingMethod && (
@@ -304,6 +329,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
               {formatAmountWithSymbol({
                 currency: order.currency_code,
                 amount: additionalTotal,
+                digits: 2,
+                tax: order.tax_rate ?? undefined,
               })}
             </span>
           </div>
@@ -317,6 +344,8 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
               {formatAmountWithSymbol({
                 currency: order.currency_code,
                 amount: additionalTotal - returnTotal,
+                digits: 2,
+                tax: order.tax_rate ?? undefined,
               })}
             </span>
           </div>
@@ -354,7 +383,7 @@ const SwapMenu = ({ order, onCreate, onDismiss, notification }) => {
               disabled={
                 Object.keys(toReturn).length === 0 || itemsToAdd.length === 0
               }
-              loading={submitting}
+              loading={isLoading}
               type="submit"
               variant="primary"
             >
