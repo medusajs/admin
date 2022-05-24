@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 export type DiscountFormType = {
   code: string
   usage_limit: string
@@ -41,9 +40,10 @@ export type CreateConditionProps = {
 
 type CondtionMapItem = {
   id?: string
-  operator?: DiscountConditionOperator
+  operator: DiscountConditionOperator
   type: DiscountConditionType
   items: { id: string; label: string }[]
+  shouldDelete?: boolean
 }
 
 export type ConditionMap = {

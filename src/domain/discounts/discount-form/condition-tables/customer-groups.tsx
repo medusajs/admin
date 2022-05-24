@@ -9,7 +9,9 @@ import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import Table from "../../../../components/molecules/table"
 import useQueryFilters from "../../../../hooks/use-query-filters"
+import { DiscountConditionOperator } from "../../types"
 import { useDiscountForm } from "../form/discount-form-context"
+import ConditionOperator from "./condition-operator"
 import { SelectableTable } from "./selectable-table"
 
 const defaultQueryProps = {
@@ -46,6 +48,9 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
   const { pop, reset } = useContext(LayeredModalContext)
   const { updateCondition, conditions } = useDiscountForm()
   const [items, setItems] = useState(conditions.customer_groups?.items || [])
+  const [operator, setOperator] = useState<DiscountConditionOperator>(
+    conditions.customer_groups.operator
+  )
 
   const { isLoading, count, customer_groups } = useAdminCustomerGroups(
     params.queryObject,
@@ -73,23 +78,26 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
         {isLoading ? (
           <Spinner />
         ) : (
-          <SelectableTable
-            options={{
-              enableSearch: true,
-              immediateSearchFocus: true,
-              searchPlaceholder: "Search groups...",
-            }}
-            resourceName="Customer groups"
-            totalCount={count || 0}
-            selectedIds={items.map((i) => i.id)}
-            data={customer_groups}
-            columns={columns}
-            isLoading={isLoading}
-            onChange={changed}
-            renderRow={CustomerGroupsRow}
-            renderHeaderGroup={CustomerGroupsHeader}
-            {...params}
-          />
+          <>
+            <ConditionOperator value={operator} onChange={setOperator} />
+            <SelectableTable
+              options={{
+                enableSearch: true,
+                immediateSearchFocus: true,
+                searchPlaceholder: "Search groups...",
+              }}
+              resourceName="Customer groups"
+              totalCount={count || 0}
+              selectedIds={items.map((i) => i.id)}
+              data={customer_groups}
+              columns={columns}
+              isLoading={isLoading}
+              onChange={changed}
+              renderRow={CustomerGroupsRow}
+              renderHeaderGroup={CustomerGroupsHeader}
+              {...params}
+            />
+          </>
         )}
       </Modal.Content>
       <Modal.Footer isLargeModal>
@@ -97,7 +105,7 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
           <Button
             variant="ghost"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               onClose()
               reset()
             }}
@@ -108,7 +116,11 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={() => {
-              updateCondition({ type: "customer_groups", update: items })
+              updateCondition({
+                type: "customer_groups",
+                items: items,
+                operator,
+              })
               pop()
             }}
           >
@@ -118,7 +130,11 @@ const CustomerGroupConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={() => {
-              updateCondition({ type: "customer_groups", update: items })
+              updateCondition({
+                type: "customer_groups",
+                items: items,
+                operator,
+              })
               onClose()
               reset()
             }}

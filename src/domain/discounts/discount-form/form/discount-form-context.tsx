@@ -1,18 +1,23 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import { Option } from "../../../../types/shared"
-import { ConditionMap, DiscountConditionType } from "../../types"
+import {
+  ConditionMap,
+  DiscountConditionOperator,
+  DiscountConditionType,
+} from "../../types"
 import { DiscountFormValues } from "./mappers"
 
 const defaultDiscount: DiscountFormValues = {
   code: "",
-  type: "percentage",
-  value: undefined,
-  description: "",
-  allocation: "total",
-  valid_for: null,
+  rule: {
+    type: "percentage",
+    value: 0,
+    description: "",
+  },
+  usage_limit: undefined,
   is_dynamic: false,
-  regions: null,
+  regions: [],
   starts_at: new Date(),
   ends_at: null,
 }
@@ -30,37 +35,39 @@ type UpdateConditionProps = {
     | "product_types"
     | "product_tags"
     | "customer_groups"
-  update: { id: string; label: string }[] | null
+  items: { id: string; label: string }[] | null
+  operator: DiscountConditionOperator
+  shouldDelete?: boolean
 }
 
 const defaultConditions: ConditionMap = {
   products: {
     id: undefined,
-    operator: undefined,
+    operator: DiscountConditionOperator.IN,
     type: DiscountConditionType.PRODUCTS,
     items: [],
   },
   product_collections: {
     id: undefined,
-    operator: undefined,
+    operator: DiscountConditionOperator.IN,
     type: DiscountConditionType.PRODUCT_COLLECTIONS,
     items: [],
   },
   product_tags: {
     id: undefined,
-    operator: undefined,
+    operator: DiscountConditionOperator.IN,
     type: DiscountConditionType.PRODUCT_TAGS,
     items: [],
   },
   product_types: {
     id: undefined,
-    operator: undefined,
+    operator: DiscountConditionOperator.IN,
     type: DiscountConditionType.PRODUCT_TYPES,
     items: [],
   },
   customer_groups: {
     id: undefined,
-    operator: undefined,
+    operator: DiscountConditionOperator.IN,
     type: DiscountConditionType.CUSTOMER_GROUPS,
     items: [],
   },
@@ -76,70 +83,54 @@ export const DiscountFormProvider = ({
   const [hasExpiryDate, setHasExpiryDate] = useState(false)
   const [hasStartDate, setHasStartDate] = useState(false)
   const [prevType, setPrevType] = useState<string | undefined>(undefined)
-  const [prevUsageLimit, setPrevUsageLimit] = useState<string>("")
-  const [prevValidDuration, setPrevValidDuration] = useState<string>("")
-  const [prevAllocation, setPrevAllocation] = useState<string | undefined>(
-    "total"
-  )
-  const [prevExpiryDate, setPrevExpiryDate] = useState<Date | undefined>(
+  const [prevUsageLimit, setPrevUsageLimit] = useState<number | undefined>(
     undefined
   )
+  const [prevValidDuration, setPrevValidDuration] = useState<string>("")
   const [startsAt, setStartsAt] = useState(discount.starts_at)
-  const [endsAt, setEndsAt] = useState(discount.ends_at)
 
   const [conditions, setConditions] = useState<ConditionMap>(defaultConditions)
 
-  const updateCondition = ({ type, update }: UpdateConditionProps) => {
+  const updateCondition = ({ type, items, operator }: UpdateConditionProps) => {
     setConditions((prevConditions) => ({
       ...prevConditions,
       [type]: {
         ...prevConditions[type],
-        items: update,
+        items,
+        operator,
       },
     }))
   }
 
-  const methods = useForm({ defaultValues: discount, reValidateMode: "onBlur" })
-
-  methods.register({
-    name: "allocation",
-    value: discount?.allocation || "total",
+  const methods = useForm<DiscountFormValues>({
+    defaultValues: discount,
+    reValidateMode: "onBlur",
   })
-
-  const setAllocation = (value) => {
-    methods.setValue("allocation", value)
-    setPrevAllocation(value)
-  }
 
   const setConditionType = (value: string | undefined) =>
     methods.setValue("condition_type", value)
 
-  const type = methods.watch("type") as string | undefined
+  const type = methods.watch("rule.type") as string | undefined
   const conditionType = methods.watch("condition_type")
   const isDynamic = methods.watch("is_dynamic") as boolean
-  const allocation = methods.watch("allocation") as string
   const regions = methods.watch("regions") as Option[] | null
-  const usageLimit = methods.watch("usage_limit") as string
+  const usageLimit = methods.watch("usage_limit")
   const validDuration = methods.watch("valid_duration") as string
+
+  const endsAt = methods.watch("ends_at")
 
   useEffect(() => {
     if (hasExpiryDate && !endsAt) {
-      const value = prevExpiryDate
-        ? prevExpiryDate
-        : new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
-      setEndsAt(value)
+      methods.setValue(
+        "ends_at",
+        new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+      )
     }
 
     if (!hasExpiryDate && endsAt) {
-      setEndsAt(null)
+      methods.setValue("ends_at", null)
     }
-  }, [hasExpiryDate])
-
-  useEffect(() => {
-    if (endsAt) {
-      setPrevExpiryDate(endsAt)
-    }
-  }, [endsAt])
+  }, [endsAt, hasExpiryDate])
 
   useEffect(() => {
     if (isEdit && discount.type === "fixed") {
@@ -157,14 +148,11 @@ export const DiscountFormProvider = ({
 
   const handleSelectFreeShipping = () => {
     setPrevType(type)
-    setPrevAllocation(allocation)
-    methods.setValue("type", "free_shipping")
-    methods.setValue("allocation", "total")
+    methods.setValue("rule.type", "free_shipping")
   }
 
   const handleUnselectFreeShipping = () => {
-    methods.setValue("allocation", prevAllocation ? prevAllocation : "total") // reset to previous value
-    methods.setValue("type", prevType ? prevType : "percentage") // reset to previous value
+    methods.setValue("rule.type", prevType ? prevType : "percentage") // reset to previous value
 
     if (prevType === "fixed" && regions) {
       let newReg: Option | undefined = undefined
@@ -192,13 +180,13 @@ export const DiscountFormProvider = ({
     }
 
     // usage_limit
-    if (values.indexOf("usage_limit") === -1 && usageLimit !== "") {
+    if (values.indexOf("usage_limit") === -1 && usageLimit) {
       setPrevUsageLimit(usageLimit)
       // debounce the setValue call to not flash an empty field when collapsing the accordion
       setTimeout(() => {
         methods.setValue("usage_limit", "")
       }, 300)
-    } else if (values.indexOf("usage_limit") > -1 && usageLimit === "") {
+    } else if (values.indexOf("usage_limit") > -1 && usageLimit) {
       methods.setValue("usage_limit", prevUsageLimit)
     }
 
@@ -227,7 +215,6 @@ export const DiscountFormProvider = ({
   const handleReset = () => {
     setHasExpiryDate(discount.ends_at ? true : false)
     setStartsAt(discount.starts_at)
-    setEndsAt(discount.ends_at)
     methods.reset({
       ...discount,
       valid_for: null,
@@ -238,39 +225,6 @@ export const DiscountFormProvider = ({
     handleReset()
   }, [discount])
 
-  const [datesChanged, setDatesChanged] = useState({
-    startsAt: false,
-    endsAt: false,
-  })
-
-  useEffect(() => {
-    if (startsAt.getTime() !== discount.starts_at.getTime()) {
-      setDatesChanged({
-        ...datesChanged,
-        startsAt: true,
-      })
-    } else {
-      setDatesChanged({
-        ...datesChanged,
-        startsAt: false,
-      })
-    }
-  }, [startsAt])
-
-  useEffect(() => {
-    if (endsAt?.getTime() !== discount.ends_at?.getTime()) {
-      setDatesChanged({
-        ...datesChanged,
-        endsAt: true,
-      })
-    } else {
-      setDatesChanged({
-        ...datesChanged,
-        endsAt: false,
-      })
-    }
-  }, [endsAt])
-
   return (
     <FormProvider {...methods}>
       <DiscountFormContext.Provider
@@ -279,7 +233,6 @@ export const DiscountFormProvider = ({
           conditionType,
           setConditionType,
           regions,
-          setAllocation,
           regionsDisabled,
           isFreeShipping,
           setIsFreeShipping,
@@ -287,11 +240,9 @@ export const DiscountFormProvider = ({
           hasExpiryDate,
           setHasExpiryDate,
           hasStartDate,
-          setHasStartDate,
           startsAt,
+          setHasStartDate,
           setStartsAt,
-          endsAt,
-          setEndsAt,
           handleConfigurationChanged,
           conditions,
           updateCondition,
@@ -309,28 +260,25 @@ const DiscountFormContext = React.createContext<{
   conditionType?: string
   setConditionType: (value: string | undefined) => void
   isDynamic: boolean
-  setAllocation: (value: string) => void
   regionsDisabled: boolean
   regions: any[] | null
   isFreeShipping: boolean
   setIsFreeShipping: (value: boolean) => void
   hasExpiryDate: boolean
   setHasExpiryDate: (value: boolean) => void
-  endsAt: Date | null
-  setEndsAt: (value: Date | null) => void
-  startsAt: Date
+  startsAt: Date | undefined
   hasStartDate: boolean
   setStartsAt: (value: Date) => void
   setHasStartDate: (value: boolean) => void
   handleConfigurationChanged: (values: string[]) => void
   conditions: ConditionMap
-  updateCondition: ({ type, update }: UpdateConditionProps) => void
+  updateCondition: ({ type, items: update }: UpdateConditionProps) => void
   setConditions: Dispatch<SetStateAction<ConditionMap>>
 } | null>(null)
 
 export const useDiscountForm = () => {
   const context = React.useContext(DiscountFormContext)
-  const form = useFormContext()
+  const form = useFormContext<DiscountFormValues>()
   if (!context) {
     throw new Error("useDiscountForm must be a child of DiscountFormContext")
   }

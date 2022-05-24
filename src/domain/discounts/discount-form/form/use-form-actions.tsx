@@ -1,5 +1,6 @@
 import { navigate } from "gatsby"
 import { useAdminCreateDiscount, useAdminUpdateDiscount } from "medusa-react"
+import { useDiscountForm } from "./discount-form-context"
 import {
   DiscountFormValues,
   formValuesToCreateDiscountMapper,
@@ -10,11 +11,12 @@ export const useFormActions = (id: string, data: any) => {
   const updateDiscount = useAdminUpdateDiscount(id)
   const createDiscount = useAdminCreateDiscount()
 
+  const { conditions } = useDiscountForm()
+
   const onSaveAsInactive = async (values: DiscountFormValues) => {
     await createDiscount.mutateAsync(
       {
-        ...formValuesToCreateDiscountMapper(values),
-        ...data,
+        ...formValuesToCreateDiscountMapper(values, conditions),
         is_disabled: true,
       },
       {
@@ -26,11 +28,9 @@ export const useFormActions = (id: string, data: any) => {
   }
 
   const onSaveAsActive = async (values: DiscountFormValues) => {
-    const { conditions, ...rest } = data
     await createDiscount.mutateAsync(
       {
-        ...formValuesToCreateDiscountMapper({ ...values, conditions }),
-        ...rest,
+        ...formValuesToCreateDiscountMapper(values, conditions),
         is_disabled: false,
       },
       {
@@ -42,15 +42,12 @@ export const useFormActions = (id: string, data: any) => {
   }
 
   const onUpdate = async (values: DiscountFormValues) => {
-    const { conditions } = data
+    const { discount } = data
+
+    const ruleId = discount?.rule?.id
+
     await updateDiscount.mutateAsync({
-      ...formValuesToUpdateDiscountMapper(
-        {
-          id,
-          ...values,
-        },
-        conditions
-      ),
+      ...formValuesToUpdateDiscountMapper(ruleId, values, conditions),
     })
   }
 

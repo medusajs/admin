@@ -43,10 +43,6 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
     control,
     isDynamic,
     hasExpiryDate,
-    startsAt,
-    setStartsAt,
-    endsAt,
-    setEndsAt,
     handleConfigurationChanged,
   } = useDiscountForm()
 
@@ -99,15 +95,24 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
                   }
                 )}
               >
-                <DatePicker
-                  date={startsAt}
-                  label="Start date"
-                  onSubmitDate={setStartsAt}
-                />
-                <TimePicker
-                  label="Start time"
-                  date={startsAt}
-                  onSubmitDate={setStartsAt}
+                <Controller
+                  name="starts_at"
+                  render={({ value, onChange }) => {
+                    return (
+                      <>
+                        <DatePicker
+                          date={value}
+                          label="Start date"
+                          onSubmitDate={onChange}
+                        />
+                        <TimePicker
+                          label="Start time"
+                          date={value}
+                          onSubmitDate={onChange}
+                        />
+                      </>
+                    )
+                  }}
                 />
               </div>
             </Accordion.Item>
@@ -132,15 +137,27 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
                   }
                 )}
               >
-                <DatePicker
-                  label="Expiry date"
-                  date={endsAt ?? new Date()}
-                  onSubmitDate={setEndsAt}
-                />
-                <TimePicker
-                  label="Expiry time"
-                  date={endsAt ?? new Date()}
-                  onSubmitDate={setEndsAt}
+                <Controller
+                  name="ends_at"
+                  render={({ value, onChange }) => {
+                    const date =
+                      value ||
+                      new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+                    return (
+                      <>
+                        <DatePicker
+                          date={date}
+                          label="Expiry date"
+                          onSubmitDate={onChange}
+                        />
+                        <TimePicker
+                          label="Expiry time"
+                          date={date}
+                          onSubmitDate={onChange}
+                        />
+                      </>
+                    )
+                  }}
                 />
               </div>
             </Accordion.Item>
@@ -163,7 +180,7 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
               >
                 <InputField
                   name="usage_limit"
-                  ref={register}
+                  ref={register({ valueAsNumber: true })}
                   label="Number of redemptions"
                   type="number"
                   placeholder="5"

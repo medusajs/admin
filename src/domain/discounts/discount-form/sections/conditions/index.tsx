@@ -8,19 +8,10 @@ import ConditionItem from "./condition-item"
 
 type ConditionsProps = {
   discount?: Discount
-  isEdit?: boolean
 }
 
-const Conditions: React.FC<ConditionsProps> = ({
-  discount,
-  isEdit = false,
-}) => {
-  const {
-    conditionType,
-    setConditionType,
-    setConditions,
-    conditions,
-  } = useDiscountForm()
+const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
+  const { setConditions, conditions } = useDiscountForm()
   const [showConditionsModal, setShowConditionsModal] = useState(false)
 
   useEffect(() => {
@@ -63,11 +54,7 @@ const Conditions: React.FC<ConditionsProps> = ({
         <span>Add Condition</span>
       </Button>
       {showConditionsModal && (
-        <AddConditionsModal
-          value={conditionType}
-          setValue={setConditionType}
-          close={() => setShowConditionsModal(false)}
-        />
+        <AddConditionsModal close={() => setShowConditionsModal(false)} />
       )}
     </div>
   )

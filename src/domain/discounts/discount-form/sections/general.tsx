@@ -24,7 +24,6 @@ const General = ({ discount, isEdit = false }) => {
     type,
     regions,
     regionsDisabled,
-    isFreeShipping,
   } = useDiscountForm()
 
   useEffect(() => {
@@ -111,6 +110,7 @@ const General = ({ discount, isEdit = false }) => {
                         rules={{
                           required: "Amount is required",
                           min: 1,
+                          valueAsNumber: true,
                         }}
                         render={({ value, onChange }) => {
                           return (
@@ -128,7 +128,7 @@ const General = ({ discount, isEdit = false }) => {
                 ) : (
                   <div className="flex-1">
                     <InputField
-                      label="Amount"
+                      label="Percentage"
                       min={0}
                       required
                       type="number"
@@ -136,9 +136,9 @@ const General = ({ discount, isEdit = false }) => {
                       prefix={"%"}
                       name="rule.value"
                       ref={register({
-                        required: isFreeShipping ? false : "Amount is required",
+                        required: "Percentage is required",
+                        valueAsNumber: true,
                       })}
-                      tabIndex={isFreeShipping || isEdit ? -1 : 0}
                     />
                   </div>
                 )}
@@ -155,7 +155,7 @@ const General = ({ discount, isEdit = false }) => {
           </div>
           <Textarea
             label="Description"
-            name="description"
+            name="rule.description"
             required
             placeholder="Summer Sale 2022"
             rows={1}

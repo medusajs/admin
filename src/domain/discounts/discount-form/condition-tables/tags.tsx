@@ -9,7 +9,9 @@ import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import Table from "../../../../components/molecules/table"
 import useQueryFilters from "../../../../hooks/use-query-filters"
+import { DiscountConditionOperator } from "../../types"
 import { useDiscountForm } from "../form/discount-form-context"
+import ConditionOperator from "./condition-operator"
 import { SelectableTable } from "./selectable-table"
 
 const defaultQueryProps = {
@@ -76,6 +78,9 @@ const TagConditionSelector = ({ onClose }) => {
   const { updateCondition, conditions } = useDiscountForm()
 
   const [items, setItems] = useState(conditions.product_tags?.items || [])
+  const [operator, setOperator] = useState<DiscountConditionOperator>(
+    conditions.product_tags.operator
+  )
 
   const { isLoading, count, product_tags } = useAdminProductTags(
     // TODO: omit for now since BD return 400 if "q" is present
@@ -98,23 +103,26 @@ const TagConditionSelector = ({ onClose }) => {
         {isLoading ? (
           <Spinner />
         ) : (
-          <SelectableTable
-            options={{
-              enableSearch: true,
-              immediateSearchFocus: true,
-              searchPlaceholder: "Search by tag...",
-            }}
-            resourceName="Tags"
-            totalCount={count || 0}
-            selectedIds={items.map((i) => i.id)}
-            data={product_tags}
-            columns={Columns}
-            isLoading={isLoading}
-            onChange={changed}
-            renderRow={TagRow}
-            renderHeaderGroup={TagHeader}
-            {...params}
-          />
+          <>
+            <ConditionOperator value={operator} onChange={setOperator} />
+            <SelectableTable
+              options={{
+                enableSearch: true,
+                immediateSearchFocus: true,
+                searchPlaceholder: "Search by tag...",
+              }}
+              resourceName="Tags"
+              totalCount={count || 0}
+              selectedIds={items.map((i) => i.id)}
+              data={product_tags}
+              columns={Columns}
+              isLoading={isLoading}
+              onChange={changed}
+              renderRow={TagRow}
+              renderHeaderGroup={TagHeader}
+              {...params}
+            />
+          </>
         )}
       </Modal.Content>
       <Modal.Footer isLargeModal>
@@ -122,7 +130,7 @@ const TagConditionSelector = ({ onClose }) => {
           <Button
             variant="ghost"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               onClose()
               reset()
             }}
@@ -133,7 +141,7 @@ const TagConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={() => {
-              updateCondition({ type: "product_tags", update: items })
+              updateCondition({ type: "product_tags", items: items, operator })
               pop()
             }}
           >
@@ -143,7 +151,7 @@ const TagConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={() => {
-              updateCondition({ type: "product_tags", update: items })
+              updateCondition({ type: "product_tags", items: items, operator })
               onClose()
               reset()
             }}

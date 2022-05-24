@@ -28,7 +28,7 @@ const useConditionActions = () => {
         label: "Delete condition",
         variant: "danger" as const,
         onClick: () => {
-          updateCondition({ type: conditionType, update: null })
+          updateCondition({ type: conditionType, items: null })
         },
         icon: <TrashIcon size={20} />,
       },

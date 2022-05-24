@@ -19,7 +19,7 @@ const NumberedItem: React.FC<NumberedItemProps> = ({
 }) => {
   return (
     <div className="p-base border rounded-rounded flex gap-base justify-between items-center">
-      <div className="flex overflow-hidden gap-base w-1/2">
+      <div className="flex overflow-hidden gap-base">
         <div>
           <Badge
             className="inter-base-semibold flex justify-center items-center w-[40px] h-[40px]"

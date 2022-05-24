@@ -1,15 +1,20 @@
 import clsx from "clsx"
 import React from "react"
-import { Controller } from "react-hook-form"
+import { Controller, useWatch } from "react-hook-form"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import { useDiscountForm } from "../form/discount-form-context"
 
-const PromotionType = ({ isEdit = false }) => {
+const PromotionType = () => {
   const { control, isFreeShipping, setIsFreeShipping } = useDiscountForm()
+
+  const regions = useWatch({
+    control,
+    name: "regions",
+  })
 
   return (
     <Controller
-      name="type"
+      name="rule.type"
       control={control}
       rules={{ required: true }}
       render={({ onChange, value }) => {
@@ -25,10 +30,7 @@ const PromotionType = ({ isEdit = false }) => {
 
               onChange(values)
             }}
-            className={clsx("flex items-center gap-base mt-base px-1", {
-              ["opacity-50 pointer-events-none select-none"]: isEdit,
-            })}
-            tabIndex={isEdit ? -1 : 0}
+            className={clsx("flex items-center gap-base mt-base px-1")}
           >
             <RadioGroup.Item
               value="percentage"
@@ -41,6 +43,8 @@ const PromotionType = ({ isEdit = false }) => {
               className="flex-1"
               label="Fixed amount"
               description={"Discount in whole numbers"}
+              disabled={Array.isArray(regions) && regions.length > 1}
+              disabledTooltip="You can only select one valid region if you want to use the fixed amount type"
             />
             <RadioGroup.Item
               value="free_shipping"

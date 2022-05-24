@@ -11,7 +11,9 @@ import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import Table from "../../../../components/molecules/table"
 import useQueryFilters from "../../../../hooks/use-query-filters"
+import { DiscountConditionOperator } from "../../types"
 import { useDiscountForm } from "../form/discount-form-context"
+import ConditionOperator from "./condition-operator"
 import { SelectableTable } from "./selectable-table"
 
 const getProductStatusVariant = (status) => {
@@ -71,6 +73,9 @@ const ProductConditionSelector = ({ onClose }) => {
   const { pop, reset } = useContext(LayeredModalContext)
   const { updateCondition, conditions } = useDiscountForm()
   const [items, setItems] = useState(conditions.products?.items || [])
+  const [operator, setOperator] = useState<DiscountConditionOperator>(
+    conditions.products.operator
+  )
 
   const { isLoading, count, products } = useAdminProducts(params.queryObject, {
     keepPreviousData: true,
@@ -156,23 +161,26 @@ const ProductConditionSelector = ({ onClose }) => {
         {isLoading ? (
           <Spinner />
         ) : (
-          <SelectableTable
-            options={{
-              enableSearch: true,
-              immediateSearchFocus: true,
-              searchPlaceholder: "Search products...",
-            }}
-            resourceName="Products"
-            totalCount={count || 0}
-            selectedIds={items.map((i) => i.id)}
-            data={products}
-            columns={columns}
-            isLoading={isLoading}
-            onChange={changed}
-            renderRow={ProductRow}
-            renderHeaderGroup={ProductsHeader}
-            {...params}
-          />
+          <>
+            <ConditionOperator value={operator} onChange={setOperator} />
+            <SelectableTable
+              options={{
+                enableSearch: true,
+                immediateSearchFocus: true,
+                searchPlaceholder: "Search products...",
+              }}
+              resourceName="Products"
+              totalCount={count || 0}
+              selectedIds={items.map((i) => i.id)}
+              data={products}
+              columns={columns}
+              isLoading={isLoading}
+              onChange={changed}
+              renderRow={ProductRow}
+              renderHeaderGroup={ProductsHeader}
+              {...params}
+            />
+          </>
         )}
       </Modal.Content>
       <Modal.Footer isLargeModal>
@@ -191,7 +199,7 @@ const ProductConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={() => {
-              updateCondition({ type: "products", update: items })
+              updateCondition({ type: "products", items: items, operator })
               pop()
             }}
           >
@@ -201,7 +209,7 @@ const ProductConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={() => {
-              updateCondition({ type: "products", update: items })
+              updateCondition({ type: "products", items: items, operator })
               onClose()
               reset()
             }}

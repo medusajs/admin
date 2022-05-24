@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import Button from "../../../components/fundamentals/button"
 import ChevronRightIcon from "../../../components/fundamentals/icons/chevron-right-icon"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
@@ -12,23 +12,31 @@ import useConditionModalItems, {
 } from "./use-condition-modal-items"
 
 type AddConditionsModalProps = {
-  value?: string
-  setValue: (v: string) => void
   close: () => void
 }
 
-function AddConditionsModal(props: AddConditionsModalProps) {
-  const { close } = props
+const AddConditionsModal: React.FC<AddConditionsModalProps> = ({ close }) => {
   const layeredModalContext = useContext(LayeredModalContext)
+  const [items, setItems] = useState(useConditionModalItems(close))
 
-  const { setConditionType } = useDiscountForm()
+  const { setConditionType, conditions } = useDiscountForm()
 
   const onClose = () => {
     setConditionType(undefined)
     close()
   }
 
-  const items = useConditionModalItems(close)
+  useEffect(() => {
+    const setConditions: string[] = []
+
+    for (const [key, value] of Object.entries(conditions)) {
+      if (value.items.length) {
+        setConditions.push(key)
+      }
+    }
+
+    setItems(items.filter((i) => !setConditions.includes(i.value)))
+  }, [conditions])
 
   return (
     <LayeredModal context={layeredModalContext} handleClose={onClose}>
@@ -36,14 +44,21 @@ function AddConditionsModal(props: AddConditionsModalProps) {
         <Modal.Header handleClose={onClose}>
           <span className="inter-xlarge-semibold">Add Conditions</span>
           <span className="font-semibold text-grey-90 mt-6 flex items-center gap-1">
-            Choose a condition type <IconTooltip content="TODO add text?" />
+            Choose a condition type{" "}
+            <IconTooltip content="You can only add one of each type of condition" />
           </span>
         </Modal.Header>
 
         <Modal.Content className="flex-1">
-          {items.map((t) => (
-            <ConditionTypeItem key={t.value} {...t} />
-          ))}
+          {items.length ? (
+            items.map((t) => <ConditionTypeItem key={t.value} {...t} />)
+          ) : (
+            <div className="flex flex-col items-center justify-center flex-1 h-full">
+              <span className="inter-base-regular text-grey-40">
+                Can't add anymore conditions
+              </span>
+            </div>
+          )}
         </Modal.Content>
 
         <Modal.Footer>

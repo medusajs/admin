@@ -148,7 +148,7 @@ const usePromotionSettings = (promotion: Discount, openWithItems) => {
           variant: "danger",
           onClick: async () =>
             await updateDiscount.mutateAsync(
-              { ends_at: undefined },
+              { ends_at: null },
               {
                 onSuccess: () => {
                   notification(

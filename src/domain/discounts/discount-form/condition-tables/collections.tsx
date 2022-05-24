@@ -9,7 +9,9 @@ import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import Table from "../../../../components/molecules/table"
 import useQueryFilters from "../../../../hooks/use-query-filters"
+import { DiscountConditionOperator } from "../../types"
 import { useDiscountForm } from "../form/discount-form-context"
+import ConditionOperator from "./condition-operator"
 import { SelectableTable } from "./selectable-table"
 
 const CollectionRow = ({ row }: { row: Row<ProductCollection> }) => {
@@ -56,6 +58,9 @@ const CollectionConditionSelector = ({ onClose }) => {
   const { updateCondition, conditions } = useDiscountForm()
   const [items, setItems] = useState(
     conditions.product_collections?.items || []
+  )
+  const [operator, setOperator] = useState<DiscountConditionOperator>(
+    conditions.product_collections.operator
   )
 
   const { isLoading, count, collections } = useAdminCollections(
@@ -113,23 +118,27 @@ const CollectionConditionSelector = ({ onClose }) => {
         {isLoading ? (
           <Spinner />
         ) : (
-          <SelectableTable
-            options={{
-              enableSearch: true,
-              immediateSearchFocus: true,
-              searchPlaceholder: "Search by title...",
-            }}
-            resourceName="Collections"
-            totalCount={count || 0}
-            selectedIds={items?.map((c) => c.id)}
-            data={collections}
-            columns={columns}
-            isLoading={isLoading}
-            onChange={changed}
-            renderRow={CollectionRow}
-            renderHeaderGroup={CollectionsHeader}
-            {...params}
-          />
+          <>
+            <ConditionOperator value={operator} onChange={setOperator} />
+            <SelectableTable
+              options={{
+                enableSearch: true,
+                immediateSearchFocus: true,
+                searchPlaceholder: "Search by title...",
+                filters: [{ title: "Title", name: "title" }],
+              }}
+              resourceName="Collections"
+              totalCount={count || 0}
+              selectedIds={items?.map((c) => c.id)}
+              data={collections}
+              columns={columns}
+              isLoading={isLoading}
+              onChange={changed}
+              renderRow={CollectionRow}
+              renderHeaderGroup={CollectionsHeader}
+              {...params}
+            />
+          </>
         )}
       </Modal.Content>
       <Modal.Footer isLargeModal>
@@ -148,7 +157,11 @@ const CollectionConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={() => {
-              updateCondition({ type: "product_collections", update: items })
+              updateCondition({
+                type: "product_collections",
+                items,
+                operator,
+              })
               pop()
             }}
           >
@@ -158,7 +171,7 @@ const CollectionConditionSelector = ({ onClose }) => {
             variant="primary"
             size="small"
             onClick={() => {
-              updateCondition({ type: "product_collections", update: items })
+              updateCondition({ type: "product_collections", items, operator })
               onClose()
               reset()
             }}

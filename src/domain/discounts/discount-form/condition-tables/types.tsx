@@ -9,7 +9,9 @@ import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import Table from "../../../../components/molecules/table"
 import useQueryFilters from "../../../../hooks/use-query-filters"
+import { DiscountConditionOperator } from "../../types"
 import { useDiscountForm } from "../form/discount-form-context"
+import ConditionOperator from "./condition-operator"
 import { SelectableTable } from "./selectable-table"
 
 const TypeRow = ({ row }: { row: Row<ProductType> }) => {
@@ -55,7 +57,10 @@ const TypeConditionSelector = ({ onClose }) => {
   const params = useQueryFilters(defaultQueryProps)
   const { pop, reset } = useContext(LayeredModalContext)
   const { updateCondition, conditions } = useDiscountForm()
-  const [items, setItems] = useState(conditions.products?.items || [])
+  const [items, setItems] = useState(conditions.product_types?.items || [])
+  const [operator, setOperator] = useState<DiscountConditionOperator>(
+    conditions.product_types.operator
+  )
 
   const { isLoading, count, product_types } = useAdminProductTypes(
     params.queryObject,
@@ -94,23 +99,26 @@ const TypeConditionSelector = ({ onClose }) => {
         {isLoading ? (
           <Spinner />
         ) : (
-          <SelectableTable
-            options={{
-              enableSearch: true,
-              immediateSearchFocus: true,
-              searchPlaceholder: "Search by type...",
-            }}
-            resourceName="Types"
-            totalCount={count || 0}
-            selectedIds={items?.map((c) => c.id)}
-            data={product_types}
-            columns={columns}
-            isLoading={isLoading}
-            onChange={changed}
-            renderRow={TypeRow}
-            renderHeaderGroup={TypesHeader}
-            {...params}
-          />
+          <>
+            <ConditionOperator value={operator} onChange={setOperator} />
+            <SelectableTable
+              options={{
+                enableSearch: true,
+                immediateSearchFocus: true,
+                searchPlaceholder: "Search by type...",
+              }}
+              resourceName="Types"
+              totalCount={count || 0}
+              selectedIds={items?.map((c) => c.id)}
+              data={product_types}
+              columns={columns}
+              isLoading={isLoading}
+              onChange={changed}
+              renderRow={TypeRow}
+              renderHeaderGroup={TypesHeader}
+              {...params}
+            />
+          </>
         )}
       </Modal.Content>
       <Modal.Footer isLargeModal>
@@ -118,7 +126,7 @@ const TypeConditionSelector = ({ onClose }) => {
           <Button
             variant="ghost"
             size="small"
-            onClick={(e) => {
+            onClick={() => {
               onClose()
               reset()
             }}
@@ -128,8 +136,8 @@ const TypeConditionSelector = ({ onClose }) => {
           <Button
             variant="primary"
             size="small"
-            onClick={(e) => {
-              updateCondition({ type: "product_types", update: items })
+            onClick={() => {
+              updateCondition({ type: "product_types", items: items, operator })
               pop()
             }}
           >
@@ -138,8 +146,8 @@ const TypeConditionSelector = ({ onClose }) => {
           <Button
             variant="primary"
             size="small"
-            onClick={(e) => {
-              updateCondition({ type: "product_types", update: items })
+            onClick={() => {
+              updateCondition({ type: "product_types", items: items, operator })
               onClose()
               reset()
             }}

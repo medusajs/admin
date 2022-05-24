@@ -141,7 +141,7 @@ export const SelectableTable = <
           {isLoading ? (
             <Spinner size="large" />
           ) : (
-            table.rows.map((row, i) => {
+            table.rows.map((row) => {
               table.prepareRow(row)
               return renderRow({ row })
             })

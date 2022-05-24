@@ -8,7 +8,7 @@ import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../components/organisms/accordion"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
-import { useDiscountForm } from "./form/discount-form-context"
+import { DiscountFormValues } from "./form/mappers"
 import { useFormActions } from "./form/use-form-actions"
 import Conditions from "./sections/conditions"
 import Configuration from "./sections/configuration"
@@ -30,21 +30,11 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
 }) => {
   const notification = useNotification()
   const { handleSubmit } = useFormContext()
-  const {
-    startsAt,
-    endsAt,
-    hasStartDate,
-    hasExpiryDate,
-    conditions,
-  } = useDiscountForm()
 
   const { onSaveAsActive, onSaveAsInactive, onUpdate } = useFormActions(
     discount?.id!,
     {
-      ...discount,
-      ...(hasStartDate ? { starts_at: startsAt } : {}),
-      ends_at: hasExpiryDate ? endsAt : null,
-      conditions,
+      discount,
     }
   )
 
@@ -56,7 +46,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     }
   }
 
-  const submitGhost = async (data) => {
+  const submitGhost = async (data: DiscountFormValues) => {
     if (!isEdit) {
       onSaveAsInactive(data)
         .then(() => {
@@ -70,7 +60,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     }
   }
 
-  const submitCTA = async (data) => {
+  const submitCTA = async (data: DiscountFormValues) => {
     try {
       if (isEdit) {
         await onUpdate(data)
@@ -133,7 +123,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 tooltip="Select a promotion type"
                 value="promotion-type"
               >
-                <PromotionType isEdit={isEdit} />
+                <PromotionType />
               </Accordion.Item>
               <Accordion.Item
                 title="General"
@@ -158,7 +148,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="conditions"
                 tooltip="Add conditions to your Promotion"
               >
-                <Conditions discount={discount} isEdit={isEdit} />
+                <Conditions discount={discount} />
               </Accordion.Item>
             </Accordion>
           </div>

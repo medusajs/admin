@@ -1,8 +1,11 @@
 import { useAdminGetDiscountCondition } from "medusa-react"
-import React, { useEffect, useMemo, useRef } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
+import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
+import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import NumberedItem from "../../../../../components/molecules/numbered-item"
 import { useObserveWidth } from "../../../../../hooks/use-observe-width"
 import { ConditionMap, DiscountConditionType } from "../../../types"
+import EditConditionsModal from "../../edit-conditions-modal"
 
 type ConditionItemProps<Type extends DiscountConditionType> = {
   index: number
@@ -42,8 +45,11 @@ const ConditionItem = <Type extends DiscountConditionType>({
     queryParams,
     {
       enabled: !!discountId && !!conditionId,
+      cacheTime: 0,
     }
   )
+
+  const [showEdit, setShowEdit] = useState(false)
 
   useEffect(() => {
     if (!discount_condition) {
@@ -66,6 +72,71 @@ const ConditionItem = <Type extends DiscountConditionType>({
             },
           }
         })
+        break
+      case DiscountConditionType.PRODUCT_COLLECTIONS:
+        updateCondition((prevConditions) => {
+          return {
+            ...prevConditions,
+            product_collections: {
+              ...prevConditions.product_collections,
+              id: discount_condition.id,
+              operator: discount_condition.operator,
+              items: discount_condition.product_collections.map((p) => ({
+                id: p.id,
+                label: p.title,
+              })),
+            },
+          }
+        })
+        break
+      case DiscountConditionType.PRODUCT_TAGS:
+        updateCondition((prevConditions) => {
+          return {
+            ...prevConditions,
+            product_tags: {
+              ...prevConditions.product_tags,
+              id: discount_condition.id,
+              operator: discount_condition.operator,
+              items: discount_condition.product_tags.map((p) => ({
+                id: p.id,
+                label: p.value,
+              })),
+            },
+          }
+        })
+        break
+      case DiscountConditionType.CUSTOMER_GROUPS:
+        updateCondition((prevConditions) => {
+          return {
+            ...prevConditions,
+            customer_groups: {
+              ...prevConditions.customer_groups,
+              id: discount_condition.id,
+              operator: discount_condition.operator,
+              items: discount_condition.customer_groups.map((p) => ({
+                id: p.id,
+                label: p.name,
+              })),
+            },
+          }
+        })
+        break
+      case DiscountConditionType.PRODUCT_TYPES:
+        updateCondition((prevConditions) => {
+          return {
+            ...prevConditions,
+            product_types: {
+              ...prevConditions.product_types,
+              id: discount_condition.id,
+              operator: discount_condition.operator,
+              items: discount_condition.product_types.map((p) => ({
+                id: p.id,
+                label: p.value,
+              })),
+            },
+          }
+        })
+        break
     }
   }, [discount_condition, type])
 
@@ -106,11 +177,21 @@ const ConditionItem = <Type extends DiscountConditionType>({
         description={description}
         actions={[
           {
+            icon: <EditIcon size={16} />,
             label: "Edit",
+            onClick: () => setShowEdit(true),
+          },
+          {
+            icon: <TrashIcon size={16} />,
+            label: "Delete condition",
             onClick: () => {},
+            variant: "danger",
           },
         ]}
       />
+      {showEdit && (
+        <EditConditionsModal onClose={() => setShowEdit(false)} view={type} />
+      )}
     </div>
   )
 }
