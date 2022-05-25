@@ -17,9 +17,9 @@ export interface DiscountFormValues extends FieldValues {
   }
   starts_at?: Date
   ends_at?: Date | null
-  usage_limit?: number
+  usage_limit: number | null
   is_dynamic: boolean
-  valid_duration?: string
+  valid_duration: string | null
   regions?: Option[]
 }
 
@@ -86,7 +86,7 @@ export const formValuesToCreateDiscountMapper = (
     ends_at: values.ends_at ?? undefined,
     regions: values.regions?.map((r) => r.value),
     starts_at: values.starts_at,
-    usage_limit: values.usage_limit,
+    usage_limit: values.usage_limit ?? undefined,
     valid_duration:
       values.is_dynamic && values.valid_duration?.length
         ? values.valid_duration
@@ -124,12 +124,10 @@ export const formValuesToUpdateDiscountMapper = (
     rule: {
       allocation: values.rule.type === "fixed" ? "item" : "total",
       id: ruleId,
-      type: values.rule.type,
       value: values.rule.type !== "free_shipping" ? values.rule.value : 0,
       description: values.rule.description,
       conditions: mapConditionsToUpdate(conditions),
     },
-    is_dynamic: values.is_dynamic,
     ends_at: values.ends_at,
     regions: values.regions?.map((r) => r.value),
     starts_at: values.starts_at,

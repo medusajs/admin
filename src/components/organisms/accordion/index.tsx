@@ -1,7 +1,6 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import clsx from "clsx"
-import React, { useEffect } from "react"
-import Button from "../../fundamentals/button"
+import React from "react"
 import IconTooltip from "../../molecules/icon-tooltip"
 
 type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
@@ -100,12 +99,12 @@ Accordion.Item = Item
 
 const MorphingTrigger = () => {
   return (
-    <Button variant="ghost" size="small" className="p-[6px] relative group">
+    <div className="p-[6px] relative group btn-ghost">
       <div className="w-5 h-5">
         <span className="absolute bg-grey-50 rounded-circle inset-y-[31.75%] left-[48%] right-1/2 w-[1.5px] group-radix-state-open:rotate-90 duration-300" />
         <span className="absolute bg-grey-50 rounded-circle inset-x-[31.75%] top-[48%] bottom-1/2 h-[1.5px] group-radix-state-open:rotate-90 group-radix-state-open:left-1/2 group-radix-state-open:right-1/2 duration-300" />
       </div>
-    </Button>
+    </div>
   )
 }
 

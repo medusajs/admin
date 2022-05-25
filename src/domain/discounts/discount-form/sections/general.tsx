@@ -12,9 +12,10 @@ import { useDiscountForm } from "../form/discount-form-context"
 
 type GeneralProps = {
   discount?: Discount
+  isEdit?: boolean
 }
 
-const General: React.FC<GeneralProps> = ({ discount }) => {
+const General: React.FC<GeneralProps> = ({ discount, isEdit = false }) => {
   const initialCurrency = discount?.regions?.[0].currency_code || undefined
 
   const [fixedRegionCurrency, setFixedRegionCurrency] = useState<
@@ -165,27 +166,29 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
             rows={1}
             ref={register({ required: "Description is required" })}
           />
-          <div className="mt-xlarge flex items-center">
-            <Controller
-              name="is_dynamic"
-              render={({ onChange, value }) => {
-                return (
-                  <Checkbox
-                    label="This is a template discount"
-                    name="is_dynamic"
-                    id="is_dynamic"
-                    checked={value}
-                    onChange={(e) => onChange(e.target.checked)}
-                  />
-                )
-              }}
-            />
-            <IconTooltip
-              content={
-                "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
-              }
-            />
-          </div>
+          {!isEdit && (
+            <div className="mt-xlarge flex items-center">
+              <Controller
+                name="is_dynamic"
+                render={({ onChange, value }) => {
+                  return (
+                    <Checkbox
+                      label="This is a template discount"
+                      name="is_dynamic"
+                      id="is_dynamic"
+                      checked={value}
+                      onChange={(e) => onChange(e.target.checked)}
+                    />
+                  )
+                }}
+              />
+              <IconTooltip
+                content={
+                  "Template discounts allow you to define a set of rules that can be used across a group of discounts. This is useful in campaigns that should generate unique codes for each user, but where the rules for all unique codes should be the same."
+                }
+              />
+            </div>
+          )}
         </>
       )}
     </div>

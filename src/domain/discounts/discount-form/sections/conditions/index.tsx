@@ -37,12 +37,19 @@ const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
     return allSet
   }, [conditions])
 
+  const filteredConditions = useMemo(() => {
+    return Object.values(conditions).filter((condition) => {
+      return condition.id || condition.items.length
+    })
+  }, [conditions])
+
   return (
     <div className="pt-5">
       <div className="flex flex-col gap-y-small">
-        {Object.values(conditions).map((values, i) => (
+        {filteredConditions.map((values, i) => (
           <ConditionItem
             index={i}
+            key={i}
             discountId={discount?.id}
             conditionId={values.id}
             type={values.type}

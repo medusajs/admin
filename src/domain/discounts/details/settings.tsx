@@ -43,6 +43,7 @@ const PromotionSettings: React.FC<PromotionSettingsProps> = ({
       >
         {settings.map((setting, i) => (
           <NumberedItem
+            key={i}
             title={setting.title}
             index={i + 1}
             description={setting.description}

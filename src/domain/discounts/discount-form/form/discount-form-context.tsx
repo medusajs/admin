@@ -1,11 +1,18 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Discount } from "@medusajs/medusa"
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import {
   ConditionMap,
   DiscountConditionOperator,
   DiscountConditionType,
 } from "../../types"
-import { DiscountFormValues } from "./mappers"
+import { DiscountFormValues, discountToFormValuesMapper } from "./mappers"
 
 const defaultDiscount: DiscountFormValues = {
   code: "",
@@ -14,7 +21,8 @@ const defaultDiscount: DiscountFormValues = {
     value: 0,
     description: "",
   },
-  usage_limit: undefined,
+  usage_limit: null,
+  valid_duration: null,
   is_dynamic: false,
   regions: [],
   starts_at: new Date(),
@@ -22,7 +30,7 @@ const defaultDiscount: DiscountFormValues = {
 }
 
 type DiscountFormProviderProps = {
-  discount?: DiscountFormValues
+  discount?: Discount
   isEdit?: boolean
   children?: React.ReactNode
 }
@@ -73,7 +81,7 @@ const defaultConditions: ConditionMap = {
 }
 
 export const DiscountFormProvider = ({
-  discount = defaultDiscount,
+  discount,
   children,
 }: DiscountFormProviderProps) => {
   const [hasExpiryDate, setHasExpiryDate] = useState(false)
@@ -82,7 +90,7 @@ export const DiscountFormProvider = ({
     undefined
   )
   const [prevValidDuration, setPrevValidDuration] = useState<
-    string | undefined
+    string | null | undefined
   >(undefined)
 
   const [conditions, setConditions] = useState<ConditionMap>(defaultConditions)
@@ -104,8 +112,16 @@ export const DiscountFormProvider = ({
     }))
   }
 
+  const formValues = useMemo(() => {
+    if (!discount) {
+      return defaultDiscount
+    }
+
+    return discountToFormValuesMapper(discount)
+  }, [discount])
+
   const methods = useForm<DiscountFormValues>({
-    defaultValues: discount,
+    defaultValues: formValues,
     reValidateMode: "onBlur",
   })
 
@@ -181,10 +197,10 @@ export const DiscountFormProvider = ({
   }
 
   const handleReset = () => {
-    setHasExpiryDate(discount.ends_at ? true : false)
+    setHasExpiryDate(formValues.ends_at ? true : false)
     setConditions(defaultConditions)
     methods.reset({
-      ...discount,
+      ...formValues,
     })
   }
 

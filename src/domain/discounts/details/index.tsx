@@ -23,7 +23,6 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import DiscountForm from "../discount-form"
 import { DiscountFormProvider } from "../discount-form/form/discount-form-context"
-import { discountToFormValuesMapper } from "../discount-form/form/mappers"
 import PromotionSettings from "./settings"
 
 const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
@@ -112,10 +111,7 @@ const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
         <RawJSON data={discount} title="Raw discount" />
       </div>
       {!isLoading && discount && (
-        <DiscountFormProvider
-          discount={discountToFormValuesMapper(discount as Discount)}
-          isEdit
-        >
+        <DiscountFormProvider discount={discount} isEdit>
           <Fade isVisible={isOpen} isFullScreen={true}>
             <DiscountForm
               additionalOpen={openItems}

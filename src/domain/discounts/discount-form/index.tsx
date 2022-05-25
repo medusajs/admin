@@ -142,15 +142,17 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
               defaultValue={["promotion-type", ...additionalOpen]}
               type="multiple"
             >
-              <Accordion.Item
-                forceMountContent
-                title="Promotion type"
-                required
-                tooltip="Select a promotion type"
-                value="promotion-type"
-              >
-                <PromotionType />
-              </Accordion.Item>
+              {!isEdit && (
+                <Accordion.Item
+                  forceMountContent
+                  title="Promotion type"
+                  required
+                  tooltip="Select a promotion type"
+                  value="promotion-type"
+                >
+                  <PromotionType />
+                </Accordion.Item>
+              )}
               <Accordion.Item
                 title="General"
                 required
