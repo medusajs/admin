@@ -678,6 +678,11 @@ export default {
       const path = `/admin/draft-orders${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
+
+    removeDiscountFromDraftOrder(id, payload) {
+      const path = `/admin/draft-orders/${id}/remove-discount/`
+      return medusaRequest("POST", path, payload)
+    },
   },
   invites: {
     create(data) {
