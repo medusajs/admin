@@ -37,8 +37,15 @@ export const useCustomerColumns = () => {
         ),
       },
       {
+        accessor: "referred_redemptions",
+        Header: () => <div className="text-right">Referrals</div>,
+        Cell: ({ cell: { value } }) => (
+          <div className="text-right">{value?.length || 0}</div>
+        ),
+      },
+      {
         Header: "",
-        accessor: "col-2",
+        accessor: "col-3",
       },
     ],
     []

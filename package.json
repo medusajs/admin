@@ -2,7 +2,7 @@
   "name": "@lambdacurry/gatsby-theme-medusa-admin",
   "private": false,
   "main": "index.js",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "This Gatsby theme was created based on the proprietary Medusa admin system to manage Medusa Stores developed by @medusajs",
   "author": "@lambdacurry",
   "resolutions": {
@@ -72,6 +72,7 @@
     "react-jwt": "^1.1.4",
     "react-multi-select-component": "^4.1.15",
     "react-popper": "^2.2.5",
+    "react-search-box": "^2.2.1",
     "react-select": "^5.2.2",
     "react-table": "^7.7.0",
     "react-toast-notifications": "^2.4.0",

@@ -15,7 +15,7 @@ import { useCustomerFilters } from "./use-customer-filters"
 const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {
-  expand: "orders",
+  expand: "orders,referred_redemptions",
 }
 
 const CustomerTable: React.FC<RouteComponentProps> = () => {

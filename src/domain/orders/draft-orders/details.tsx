@@ -15,7 +15,6 @@ import Spinner from "../../../components/atoms/spinner"
 import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
-// import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import ImagePlaceholderIcon from "../../../components/fundamentals/icons/image-placeholder-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
@@ -29,6 +28,19 @@ import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
 import { DisplayTotal, FormattedAddress } from "../details/templates"
 import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
+import medusaApi from "../../../services/api"
+import { queryClient } from "../../../services/config"
+import { DiscountModal } from "../../../components/discount-modal/DiscountModal"
+
+export interface DiscountOption {
+  label: string
+  value: string | null
+  disabled?: boolean | undefined
+}
+
+export interface AddDiscountCodeInput {
+  code: string
+}
 
 const DraftOrderDetails = ({ id }) => {
   type DeletePromptData = {
@@ -43,18 +55,24 @@ const DraftOrderDetails = ({ id }) => {
     show: false,
   }
 
+  const [paymentLink, setPaymentLink] = useState("")
+  const [discountModalIsOpen, setDiscountModalIsOpen] = useState(false)
   const [deletePromptData, setDeletePromptData] = useState<DeletePromptData>(
     initDeleteState
   )
+
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
     type: "billing" | "shipping"
   }>(null)
 
+  const { mutate: updateDraftOrder } = useAdminUpdateDraftOrder(id)
   const { draft_order, isLoading } = useAdminDraftOrder(id)
   const { store, isLoading: isLoadingStore } = useAdminStore()
-
-  const [paymentLink, setPaymentLink] = useState("")
+  const markPaid = useAdminDraftOrderRegisterPayment(id)
+  const cancelOrder = useAdminDeleteDraftOrder(id)
+  const updateOrder = useAdminUpdateDraftOrder(id)
+  const notification = useNotification()
 
   useEffect(() => {
     if (store && draft_order && store.payment_link_template) {
@@ -64,12 +82,6 @@ const DraftOrderDetails = ({ id }) => {
       )
     }
   }, [isLoading, isLoadingStore])
-
-  const markPaid = useAdminDraftOrderRegisterPayment(id)
-  const cancelOrder = useAdminDeleteDraftOrder(id)
-  const updateOrder = useAdminUpdateDraftOrder(id)
-
-  const notification = useNotification()
 
   const OrderStatusComponent = () => {
     switch (draft_order?.status) {
@@ -133,6 +145,30 @@ const DraftOrderDetails = ({ id }) => {
         setAddressModal(null)
       },
       onError: (err) => notification("Error", getErrorMessage(err), "error"),
+    })
+  }
+
+  const handleAddDiscount = async (data: AddDiscountCodeInput) => {
+    const res = await medusaApi.discounts.retrieveByCode(data.code)
+    const { discount } = res.data
+
+    if (!discount) throw new Error("That discount doesn't exist.")
+
+    const { code } = discount
+
+    updateDraftOrder(
+      { discounts: [{ code }] },
+      { onSuccess: () => setDiscountModalIsOpen(false) }
+    )
+  }
+
+  const handleRemoveDiscount = async (code: string) => {
+    const res = await medusaApi.draftOrders.removeDiscountFromDraftOrder(id, {
+      code,
+    })
+
+    queryClient.setQueryData(["admin_draft_orders", "detail", id], {
+      draft_order: res.data.draft_order,
     })
   }
 
@@ -204,28 +240,49 @@ const DraftOrderDetails = ({ id }) => {
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Email
                   </div>
+
                   <div>{cart?.email}</div>
                 </div>
+
                 <div className="flex flex-col pl-6">
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Phone
                   </div>
                   <div>{cart?.shipping_address?.phone || ""}</div>
                 </div>
+
                 <div className="flex flex-col pl-6">
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Amount ({region?.currency_code.toUpperCase()})
                   </div>
+
                   <div>
-                    {formatAmountWithSymbol({
-                      amount: cart?.total,
-                      currency: region?.currency_code,
-                    })}
+                    {!!cart?.total &&
+                      !!region?.currency_code &&
+                      formatAmountWithSymbol({
+                        amount: cart?.total,
+                        currency: region?.currency_code,
+                      })}
                   </div>
                 </div>
               </div>
             </BodyCard>
-            <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Summary">
+
+            <BodyCard
+              className={"w-full mb-4 min-h-0 h-auto"}
+              title="Summary"
+              customActionable={
+                <>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={() => setDiscountModalIsOpen(true)}
+                  >
+                    Add Discount
+                  </Button>
+                </>
+              }
+            >
               <div className="mt-6">
                 {cart?.items?.map((item, i) => (
                   <div
@@ -259,23 +316,25 @@ const DraftOrderDetails = ({ id }) => {
                     <div className="flex  items-center">
                       <div className="flex small:space-x-2 medium:space-x-4 large:space-x-6 mr-3">
                         <div className="inter-small-regular text-grey-50">
-                          {formatAmountWithSymbol({
-                            amount: item.unit_price,
-                            currency: region?.currency_code,
-                            digits: 2,
-                            tax: region?.tax_rate,
-                          })}
+                          {!!region?.currency_code &&
+                            formatAmountWithSymbol({
+                              amount: item.unit_price,
+                              currency: region.currency_code,
+                              digits: 2,
+                              tax: region?.tax_rate,
+                            })}
                         </div>
                         <div className="inter-small-regular text-grey-50">
                           x {item.quantity}
                         </div>
                         <div className="inter-small-regular text-grey-90">
-                          {formatAmountWithSymbol({
-                            amount: item.unit_price * item.quantity,
-                            currency: region?.currency_code,
-                            digits: 2,
-                            tax: region?.tax_rate,
-                          })}
+                          {!!region?.currency_code &&
+                            formatAmountWithSymbol({
+                              amount: item.unit_price * item.quantity,
+                              currency: region?.currency_code,
+                              digits: 2,
+                              tax: region?.tax_rate,
+                            })}
                         </div>
                       </div>
                       <div className="inter-small-regular text-grey-50">
@@ -284,11 +343,13 @@ const DraftOrderDetails = ({ id }) => {
                     </div>
                   </div>
                 ))}
+
                 <DisplayTotal
                   currency={region?.currency_code}
                   totalAmount={draft_order?.cart?.subtotal}
                   totalTitle={"Subtotal"}
                 />
+
                 {cart?.discounts?.map((discount, index) => (
                   <div
                     key={index}
@@ -296,31 +357,46 @@ const DraftOrderDetails = ({ id }) => {
                   >
                     <div className="flex inter-small-regular text-grey-90 items-center">
                       Discount:{" "}
-                      <Badge className="ml-3" variant="default">
+                      <Badge
+                        className="flex items-center ml-3 pr-[2px]"
+                        variant="default"
+                      >
                         {discount.code}
+                        <Button
+                          className="h-6 ml-1 p-2"
+                          onClick={() => handleRemoveDiscount(discount.code)}
+                          size="small"
+                          variant="ghost"
+                        >
+                          ✖
+                        </Button>
                       </Badge>
                     </div>
                     <div className="inter-small-regular text-grey-90">
                       -
-                      {formatAmountWithSymbol({
-                        amount: cart?.discount_total,
-                        currency: region?.currency_code || "",
-                        digits: 2,
-                        tax: region?.tax_rate,
-                      })}
+                      {!!cart.discount_total &&
+                        formatAmountWithSymbol({
+                          amount: cart.discount_total,
+                          currency: region?.currency_code || "",
+                          digits: 2,
+                          tax: region?.tax_rate,
+                        })}
                     </div>
                   </div>
                 ))}
+
                 <DisplayTotal
                   currency={region?.currency_code}
                   totalAmount={cart?.shipping_total}
                   totalTitle={"Shipping"}
                 />
+
                 <DisplayTotal
                   currency={region?.currency_code}
                   totalAmount={cart?.tax_total}
                   totalTitle={`Tax`}
                 />
+
                 <DisplayTotal
                   currency={region?.currency_code}
                   variant="large"
@@ -329,6 +405,7 @@ const DraftOrderDetails = ({ id }) => {
                 />
               </div>
             </BodyCard>
+
             <BodyCard
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Payment"
@@ -374,6 +451,7 @@ const DraftOrderDetails = ({ id }) => {
                 )}
               </div>
             </BodyCard>
+
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Shipping">
               <div className="mt-6">
                 {cart?.shipping_methods.map((method) => (
@@ -403,6 +481,7 @@ const DraftOrderDetails = ({ id }) => {
                 ))}
               </div>
             </BodyCard>
+
             <BodyCard
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Customer"
@@ -411,8 +490,9 @@ const DraftOrderDetails = ({ id }) => {
                   label: "Edit Shipping Address",
                   icon: <TruckIcon size={"20"} />,
                   onClick: () =>
+                    !!cart?.shipping_address &&
                     setAddressModal({
-                      address: cart?.shipping_address,
+                      address: cart.shipping_address,
                       type: "shipping",
                     }),
                 },
@@ -475,6 +555,7 @@ const DraftOrderDetails = ({ id }) => {
                 </div>
               </div>
             </BodyCard>
+
             <BodyCard
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Raw Draft Order"
@@ -489,15 +570,23 @@ const DraftOrderDetails = ({ id }) => {
           </div>
         </div>
       )}
+
       {addressModal && (
         <AddressModal
           handleClose={() => setAddressModal(null)}
           handleSave={(obj) => handleUpdateAddress(obj)}
           address={addressModal.address}
           type={addressModal.type}
-          email={cart?.email}
         />
       )}
+
+      {discountModalIsOpen && (
+        <DiscountModal
+          handleClose={() => setDiscountModalIsOpen(false)}
+          handleSave={handleAddDiscount}
+        />
+      )}
+
       {/* An attempt to make a reusable delete prompt, so we don't have to hold +10
       state variables for showing different prompts */}
       {deletePromptData.show && (

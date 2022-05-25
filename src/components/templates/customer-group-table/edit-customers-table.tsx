@@ -94,6 +94,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   const [activeGroupId, setActiveGroupId] = useState()
 
   const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
+
   const { customers = [], count = 0 } = useAdminCustomers({
     ...queryObject,
     groups: activeGroupId ? [activeGroupId] : null,

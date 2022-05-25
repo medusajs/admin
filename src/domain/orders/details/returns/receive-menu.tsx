@@ -1,22 +1,20 @@
-
-import { LineItem, ReturnItem } from "@medusajs/medusa"
+import { LineItem, Order, Return, ReturnItem } from "@medusajs/medusa"
 import React, { useEffect, useMemo, useState } from "react"
 import Button from "../../../../components/fundamentals/button"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import Modal from "../../../../components/molecules/modal"
 import CurrencyInput from "../../../../components/organisms/currency-input"
-import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
+import RMASelectReturnProductTable from "../../../../components/organisms/rma-select-receive-product-table"
+import useNotification from "../../../../hooks/use-notification"
 
 type ReceiveMenuProps = {
-  order: any
-  returnRequest: any
+  order: Order
+  returnRequest: Return
   onDismiss: () => void
   onReceiveSwap?: (payload: any) => Promise<void>
   onReceiveReturn?: (id: string, payload: any) => Promise<void>
-  notification: any
-  isSwapOrClaim?: boolean
   refunded?: boolean
 }
 
@@ -26,15 +24,14 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   onReceiveReturn,
   onReceiveSwap,
   onDismiss,
-  notification,
-  isSwapOrClaim,
   refunded,
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const [refundEdited, setRefundEdited] = useState(false)
   const [refundAmount, setRefundAmount] = useState(0)
   const [toReturn, setToReturn] = useState({})
-  const [quantities, setQuantities] = useState({})
+
+  const notification = useNotification()
 
   const allItems: LineItem[] = useMemo(() => {
     return order.items
@@ -42,7 +39,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
         const found = returnRequest.items.find(
           (ri: ReturnItem) => ri.item_id === i.id
         )
-
         if (found) {
           return {
             ...i,
@@ -52,7 +48,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
           return null
         }
       })
-      .filter(Boolean)
+      .filter(Boolean) as LineItem[]
   }, [order])
 
   useEffect(() => {
@@ -70,37 +66,39 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
     })
 
     setToReturn(returns)
-    setQuantities(qty)
   }, [allItems])
 
   useEffect(() => {
     if (!Object.entries(toReturn).length) {
+      setRefundAmount(0)
       return
     }
 
-    const items = Object.keys(toReturn).map((t) =>
-      allItems.find((i) => i.id === t)
-    )
+    const items = Object.keys(toReturn).map((t) => ({
+      ...allItems.find((i) => i.id === t),
+      quantity: toReturn[t].quantity,
+    }))
 
     const total =
       items.reduce((acc, next) => {
-        return (
-          acc + ((next.refundable || 0) / next.quantity) * quantities[next.id]
-        )
+        return typeof next === "undefined"
+          ? acc
+          : acc + next.quantity * (next?.unit_price || 0)
       }, 0) -
       ((returnRequest.shipping_method &&
-        returnRequest.shipping_method.price * (1 + order.tax_rate / 100)) ||
+        returnRequest.shipping_method.price *
+          (1 + (order.tax_rate || 0) / 100)) ||
         0)
 
     if (!refundEdited || total < refundAmount) {
       setRefundAmount(refundAmount < 0 ? 0 : total)
     }
-  }, [toReturn, quantities])
+  }, [toReturn])
 
   const onSubmit = () => {
     const items = Object.keys(toReturn).map((k) => ({
       item_id: k,
-      quantity: quantities[k],
+      quantity: toReturn[k].quantity,
     }))
 
     if (returnRequest.is_swap && onReceiveSwap) {
@@ -149,12 +147,11 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
         </Modal.Header>
         <Modal.Content>
           <h3 className="inter-base-semibold">Items to receive</h3>
-          <RMASelectProductTable
+          <RMASelectReturnProductTable
             order={order}
             allItems={allItems}
             toReturn={toReturn}
             setToReturn={(items) => setToReturn(items)}
-            isSwapOrClaim={isSwapOrClaim}
           />
 
           {!returnRequest.is_swap && (
