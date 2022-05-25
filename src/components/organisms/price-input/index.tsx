@@ -48,7 +48,9 @@ function PriceInput(props: PriceInputProps) {
 
   /* ********* HANDLERS ********* */
 
-  const onChange: CurrencyInputProps["onValueChange"] = (value) => {
+  const onChange: CurrencyInputProps["onValueChange"] = (
+    value: string | undefined
+  ) => {
     onAmountChange(value)
   }
 

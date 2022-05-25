@@ -59,17 +59,19 @@ function Chip(props: ChipProps) {
  */
 function FieldMenuItem(props: FieldMenuItemProps) {
   const { checked, field, onChange } = props
+
+  const label =
+    typeof field.label === "function"
+      ? field.label({ isSelected: checked })
+      : field.label
+
   return (
     <DropdownMenu.Item>
       <Checkbox
         checked={checked}
         className="px-[6px] mx-2 h-[32px] hover:bg-grey-10 rounded text-small"
         onChange={onChange}
-        label={
-          typeof field.label === "function"
-            ? field.label({ isSelected: props.checked })
-            : field.label
-        }
+        label={label}
       />
     </DropdownMenu.Item>
   )
@@ -84,12 +86,12 @@ function FieldsMenu(props: FieldsMenuProps) {
   const { fields, onBlur, selectedFields } = props
 
   const contentRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   // local copy of selected filters which is synced with the container list on blur
   const [currentlySelected, setCurrentlySelected] = useState<string[]>([])
 
   const onTriggerClick = () => {
-    setOpen(true)
+    setIsOpen(true)
   }
 
   const toggleCheck = (id: string) => {
@@ -101,22 +103,22 @@ function FieldsMenu(props: FieldsMenuProps) {
   }
 
   useEffect(() => {
-    if (open) {
+    if (isOpen) {
       setCurrentlySelected(selectedFields)
     }
-  }, [open, selectedFields])
+  }, [isOpen, selectedFields])
 
   useEffect(() => {
-    if (!open) {
+    if (!isOpen) {
       onBlur(currentlySelected)
     }
-  }, [open])
+  }, [isOpen])
 
   // close dropdown "manually" on click outside the menu
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!contentRef.current?.contains(event.target)) {
-        setOpen(false)
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!contentRef.current?.contains(event.target as Node)) {
+        setIsOpen(false)
       }
     }
     document.addEventListener("mousedown", handleClickOutside)
@@ -126,7 +128,7 @@ function FieldsMenu(props: FieldsMenuProps) {
   }, [contentRef])
 
   return (
-    <DropdownMenu.Root open={open}>
+    <DropdownMenu.Root open={isOpen}>
       <DropdownMenu.Trigger>
         <Button
           onClick={onTriggerClick}
@@ -174,7 +176,7 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
 
   const visibleFields = selectedFields.map((id) =>
     fields.find((f) => f.id === id)
-  )
+  ) as Field[]
 
   return (
     <div className="flex-wrap flex items-center gap-y-2">
@@ -183,7 +185,7 @@ function TableFieldsFilters(props: TableFieldsFilterProps) {
       </span>
 
       {visibleFields.map((f) => (
-        <Chip key={f!.id} remove={() => removeSelected(f!.id)} {...f!} />
+        <Chip key={f.id} remove={() => removeSelected(f.id)} {...f} />
       ))}
 
       <FieldsMenu

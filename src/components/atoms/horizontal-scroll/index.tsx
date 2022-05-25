@@ -8,13 +8,13 @@ type HorizontalScrollFadeProps = {
  * A box that renders horizontal fade areas instead of the scrollbar
  */
 function HorizontalScrollFade(props: HorizontalScrollFadeProps) {
-  const r = useRef()
+  const ref = useRef()
 
   const [showLeft, setShowLeft] = useState(false)
   const [showRight, setShowRight] = useState(false)
 
   useEffect(() => {
-    const el = r.current
+    const el = ref.current
     if (el) {
       onScroll(el)
     }
@@ -35,7 +35,7 @@ function HorizontalScrollFade(props: HorizontalScrollFadeProps) {
   return (
     <div className="relative">
       <div
-        ref={r}
+        ref={ref}
         className="overflow-x-auto hide-scrollbar relative"
         onScroll={(e) => onScroll(e.target)}
       >
