@@ -1,13 +1,18 @@
-export const filterItems = (order, isClaim) => {
+import { ClaimItem, LineItem, Order } from "@medusajs/medusa"
+
+export const filterItems = (
+  order: Omit<Order, "beforeInserts">,
+  isClaim: boolean
+) => {
   let orderItems = order.items.reduce(
     (map, obj) =>
       map.set(obj.id, {
         ...obj,
       }),
-    new Map()
+    new Map<string, Omit<LineItem, "beforeInsert">>()
   )
 
-  let claimedItems = []
+  let claimedItems: ClaimItem[] = []
 
   if (order.claims && order.claims.length) {
     for (const s of order.claims) {
