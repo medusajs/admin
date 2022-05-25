@@ -449,8 +449,11 @@ function ProductVariantRow(props: ProductVariantRowProps) {
             : undefined
 
         let editedPrice = getPriceChange(variant.id, r.id)
-        if (editedPrice === null) editedPrice = undefined
-        else editedPrice = editedPrice || a
+        if (editedPrice === null) {
+          editedPrice = undefined
+        } else {
+          editedPrice = editedPrice || a
+        }
 
         const amount = isActive(variant.id, r.id)
           ? currentEditAmount
@@ -519,8 +522,10 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   }, [activeRegions, products])
 
   useEffect(() => {
-    const handler = (e) => {
-      const isPriceInputClicked = e.target.classList.contains("js-bt-input")
+    const onMouseDown = (e: MouseEvent) => {
+      const isPriceInputClicked = (e.target as Element).classList.contains(
+        "js-bt-input"
+      )
 
       // artificial blur event
       if (!isPriceInputClicked) {
@@ -529,8 +534,8 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
       }
     }
 
-    document.addEventListener("mousedown", handler)
-    return () => document.removeEventListener("mousedown", handler)
+    document.addEventListener("mousedown", onMouseDown)
+    return () => document.removeEventListener("mousedown", onMouseDown)
   }, [])
 
   /* ********** HELPERS ********** */
@@ -609,7 +614,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
         if (wasFocused) {
           // find another active cell to focus
           const id = Object.keys(activeFields).find((k) => k !== cellKey)
-          document.querySelectorAll(`[data-id="${id}"]`)[0].focus()
+          document.querySelector(`[data-id="${id}"]`)?.focus()
         }
       } else {
         e.target.focus()
@@ -745,10 +750,10 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     const product = products.find((p) => p.id === productId)!
 
     document
-      .querySelectorAll(
+      .querySelector(
         `[data-id="${getPriceKey(product.variants[0].id, regionId)}"]`
-      )[0]
-      .focus()
+      )
+      ?.focus()
 
     const tmp = isShiftDown ? { ...activeFields } : {}
 
@@ -855,11 +860,11 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
     const hasChanges = !!Object.keys(priceChanges).length
 
     if (hasChanges) {
-      if (
-        confirm(
-          "There are unsaved changes. Do you want to discard and continue?"
-        )
-      ) {
+      const isConfirmed = confirm(
+        "There are unsaved changes. Do you want to discard and continue?"
+      )
+
+      if (isConfirmed) {
         setPriceChanges({})
         return true
       } else {
