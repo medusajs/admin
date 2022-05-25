@@ -41,9 +41,6 @@ const ProductPrices = ({
     selectedVariant,
     setSelectedVariant,
   ] = React.useState<ProductVariant | null>(null)
-  const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(
-    null
-  )
   const unselect = () => setSelectedVariant(null)
 
   const { prices, setPrices } = usePriceListForm()
@@ -60,11 +57,6 @@ const ProductPrices = ({
     currency_code: curr.code,
     amount: 0,
   })) as MoneyAmount[]
-
-  const getProductActions = (product) => {
-    setSelectedProduct(product)
-    return undefined
-  }
 
   const getVariantActions = (variant) => {
     return [
@@ -102,6 +94,8 @@ const ProductPrices = ({
     })
   }
 
+  const selectedProduct = findProduct(products, selectedVariant)
+
   return (
     <div className="mt-6">
       <div>
@@ -121,7 +115,6 @@ const ProductPrices = ({
                 <ProductVariantTree
                   product={product}
                   key={product.id}
-                  getProductActions={getProductActions}
                   getVariantActions={getVariantActions}
                 />
               </div>
@@ -163,7 +156,7 @@ const ProductPrices = ({
           close={() => setShowAdd(false)}
         />
       )}
-      {selectedVariant && selectedProduct && (
+      {selectedVariant && (
         <Modal open handleClose={unselect}>
           <Modal.Body>
             <Modal.Header handleClose={unselect}>
@@ -198,6 +191,15 @@ const mergeExistingWithDefault = (variantPrices: any[] = [], defaultPrices) => {
     )
     return price || pr
   })
+}
+
+const findProduct = (
+  products: Product[] = [],
+  variant: ProductVariant | null
+): Product => {
+  return products.find((product) =>
+    product.variants.find((v) => v.id === variant?.id)
+  )!
 }
 
 export default ProductPrices

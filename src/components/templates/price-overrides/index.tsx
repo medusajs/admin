@@ -23,6 +23,7 @@ type PriceOverridesType = {
   variants: ProductVariant[]
   onSubmit: (values: PriceOverridesFormValues) => void
   defaultVariant?: ProductVariant
+  isEdit?: boolean
 }
 
 const PriceOverrides = ({
@@ -31,6 +32,7 @@ const PriceOverrides = ({
   variants,
   onSubmit,
   defaultVariant,
+  isEdit = false,
 }: PriceOverridesType) => {
   const [mode, setMode] = React.useState(MODES.SELECTED_ONLY)
   const { handleSubmit, control, reset } = useForm<PriceOverridesFormValues>({
@@ -44,13 +46,13 @@ const PriceOverrides = ({
     if (mode === MODES.APPLY_ALL) {
       onSubmit({
         ...values,
-        variants: variants.map((variant) => variant.id),
+        variants: variants?.map((variant) => variant.id),
       })
     } else {
       onSubmit({
         ...values,
         // remove null or undefined
-        variants: values.variants.filter(Boolean),
+        variants: values.variants?.filter(Boolean),
       })
     }
   })
@@ -76,21 +78,23 @@ const PriceOverrides = ({
   return (
     <>
       <Modal.Content isLargeModal={true}>
-        <RadioGroup.Root
-          value={mode}
-          onValueChange={(value) => setMode(value)}
-          className="pt-2 flex items-center"
-        >
-          <RadioGroup.SimpleItem
-            value={MODES.SELECTED_ONLY}
-            label="Apply overrides on selected variants"
-          />
-          <RadioGroup.SimpleItem
-            value={MODES.APPLY_ALL}
-            label="Apply on all variants"
-          />
-        </RadioGroup.Root>
-        {mode === MODES.SELECTED_ONLY && (
+        {!isEdit && (
+          <RadioGroup.Root
+            value={mode}
+            onValueChange={(value) => setMode(value)}
+            className="pt-2 flex items-center"
+          >
+            <RadioGroup.SimpleItem
+              value={MODES.SELECTED_ONLY}
+              label="Apply overrides on selected variants"
+            />
+            <RadioGroup.SimpleItem
+              value={MODES.APPLY_ALL}
+              label="Apply on all variants"
+            />
+          </RadioGroup.Root>
+        )}
+        {mode === MODES.SELECTED_ONLY && !isEdit && (
           <div className="pt-6 flex flex-col gap-2">
             {variants.map((variant, idx) => (
               <div
