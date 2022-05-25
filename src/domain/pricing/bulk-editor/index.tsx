@@ -241,13 +241,15 @@ type PriceListBulkEditorFooterProps = {
 function PriceListBulkEditorFooter(props: PriceListBulkEditorFooterProps) {
   const { page, count, setPage } = props
 
+  const upperProductNumberLimit = (page + 1) * BULK_TABLE_PRODUCT_LIMIT
+
   const pageStart = page * BULK_TABLE_PRODUCT_LIMIT + 1
-  const pageEnd = Math.min((page + 1) * BULK_TABLE_PRODUCT_LIMIT, count)
+  const pageEnd = Math.min(upperProductNumberLimit, count)
 
   const pageInfo = `${pageStart} - ${pageEnd} of ${count}`
 
   const canPrev = page > 0
-  const canNext = !((page + 1) * BULK_TABLE_PRODUCT_LIMIT > count)
+  const canNext = upperProductNumberLimit < count
 
   const onPrev = () => {
     if (canPrev) setPage(page - 1)
