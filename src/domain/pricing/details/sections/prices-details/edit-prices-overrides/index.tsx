@@ -92,6 +92,7 @@ const EditPricesOverridesModal = ({
                     key={variant.id}
                     onClick={getOnClick(variant)}
                     variant={variant}
+                    prices={variant.prices.filter((pr) => pr.price_list_id)}
                   />
                 </CollapsibleTree.Leaf>
               ))}

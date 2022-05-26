@@ -1,4 +1,4 @@
-import { ProductVariant } from "@medusajs/medusa"
+import { MoneyAmount, ProductVariant } from "@medusajs/medusa"
 import * as React from "react"
 import Button from "../../../../../../components/fundamentals/button"
 import ChevronRightIcon from "../../../../../../components/fundamentals/icons/chevron-right-icon"
@@ -6,10 +6,16 @@ import ChevronRightIcon from "../../../../../../components/fundamentals/icons/ch
 type ProductVariantLeafProps = {
   onClick: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"]
   variant: ProductVariant
+  prices: MoneyAmount[]
 }
 
-const ProductVariantLeaf = ({ variant, onClick }: ProductVariantLeafProps) => {
-  const { title, sku, prices } = variant
+const ProductVariantLeaf = ({
+  variant,
+  prices,
+  onClick,
+}: ProductVariantLeafProps) => {
+  const { title, sku } = variant
+  const hasPrices = prices.length > 0
   return (
     <div className="flex flex-1 items-center">
       <div className="truncate">
@@ -18,7 +24,7 @@ const ProductVariantLeaf = ({ variant, onClick }: ProductVariantLeafProps) => {
       </div>
       <div className="flex items-center text-grey-50 flex-1 justify-end">
         <div className="text-grey-50 mr-xsmall">
-          {prices.length ? (
+          {hasPrices ? (
             <span>{`${prices.length} price${
               prices.length > 1 ? "s" : ""
             }`}</span>
