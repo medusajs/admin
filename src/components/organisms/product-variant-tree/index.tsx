@@ -1,4 +1,4 @@
-import { Product } from "@medusajs/medusa"
+import { Product, ProductVariant } from "@medusajs/medusa"
 import React from "react"
 import { ActionType } from "../../molecules/actionables"
 import { CollapsibleTree } from "../../molecules/collapsible-tree"
@@ -18,18 +18,20 @@ type ProductVariantTreeProps = {
   product: Pick<Product, "title" | "id" | "thumbnail"> & {
     variants: LeafProps[]
   }
-  productActions?: ActionType[]
-  variantActions?: ActionType[]
+  getProductActions?: (product: Product) => ActionType[] | undefined
+  getVariantActions?: (variant: ProductVariant) => ActionType[] | undefined
 }
 
 const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({
   product,
-  productActions,
-  variantActions,
+  getProductActions,
+  getVariantActions,
 }) => {
   return (
     <CollapsibleTree>
-      <CollapsibleTree.Parent actions={productActions}>
+      <CollapsibleTree.Parent
+        actions={getProductActions && getProductActions(product as Product)}
+      >
         <div>
           <img src={product.thumbnail} className="w-4 h-5 rounded-base" />
         </div>
@@ -37,7 +39,12 @@ const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({
       </CollapsibleTree.Parent>
       <CollapsibleTree.Content>
         {product.variants.map((variant) => (
-          <CollapsibleTree.Leaf key={variant.id} actions={variantActions}>
+          <CollapsibleTree.Leaf
+            key={variant.id}
+            actions={
+              getVariantActions && getVariantActions(variant as ProductVariant)
+            }
+          >
             <ProductVariantLeaf {...variant} />
           </CollapsibleTree.Leaf>
         ))}

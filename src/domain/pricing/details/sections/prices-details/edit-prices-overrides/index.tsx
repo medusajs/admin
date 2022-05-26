@@ -1,5 +1,5 @@
-import { Product } from "@medusajs/medusa"
-import { useAdminUpdatePriceList } from "medusa-react"
+import { MoneyAmount, Product } from "@medusajs/medusa"
+import { useAdminStore, useAdminUpdatePriceList } from "medusa-react"
 import * as React from "react"
 import Button from "../../../../../../components/fundamentals/button"
 import { CollapsibleTree } from "../../../../../../components/molecules/collapsible-tree"
@@ -11,6 +11,7 @@ import PriceOverrides from "../../../../../../components/templates/price-overrid
 import ProductVariantLeaf from "./product-variant-leaf"
 import { useParams } from "@reach/router"
 import { mapToPriceList } from "./mappers"
+import { mergeExistingWithDefault } from "../../../utils"
 
 type EditPricesOverridesModalProps = {
   product: Product
@@ -24,6 +25,12 @@ const EditPricesOverridesModal = ({
   const context = useLayeredModal()
   const { id: priceListId } = useParams()
   const updatePriceList = useAdminUpdatePriceList(priceListId)
+  const { store } = useAdminStore()
+
+  const defaultPrices = store?.currencies.map((curr) => ({
+    currency_code: curr.code,
+    amount: 0,
+  })) as MoneyAmount[]
 
   const getOnClick = (variant) => () =>
     context.push({
@@ -31,11 +38,16 @@ const EditPricesOverridesModal = ({
       onBack: () => context.pop(),
       view: (
         <PriceOverrides
-          prices={variant.prices.filter((pr) => pr.price_list_id)}
+          prices={mergeExistingWithDefault(
+            variant.prices.filter((pr) => pr.price_list_id),
+            defaultPrices
+          )}
+          isEdit
+          defaultVariant={variant}
           variants={product.variants}
           onClose={close}
           onSubmit={(values) => {
-            const updatedPrices = mapToPriceList(values)
+            const updatedPrices = mapToPriceList(values, variant.id)
 
             updatePriceList.mutate(
               {

@@ -12,6 +12,7 @@ import {
 } from "../form/mappers"
 import { usePriceListForm } from "../form/pricing-form-context"
 import {
+  CreatePriceListFormValues,
   HeaderAction,
   PriceListFormProps,
   PriceListFormValues,
@@ -30,7 +31,7 @@ const FormHeader = (props: PriceListFormProps) => {
   const createPriceList = useAdminCreatePriceList()
   const updatePriceList = useAdminUpdatePriceList(props.id!)
 
-  const onPublish = (values: PriceListFormValues) => {
+  const onPublish = (values: CreatePriceListFormValues) => {
     createPriceList.mutate(
       mapFormValuesToCreatePriceList(values, PriceListStatus.ACTIVE),
       {
@@ -44,7 +45,7 @@ const FormHeader = (props: PriceListFormProps) => {
     )
   }
 
-  const onSaveAsDraft = (values: PriceListFormValues) => {
+  const onSaveAsDraft = (values: CreatePriceListFormValues) => {
     createPriceList.mutate(
       mapFormValuesToCreatePriceList(values, PriceListStatus.DRAFT),
       {

@@ -22,6 +22,8 @@ type PriceOverridesType = {
   prices: MoneyAmount[]
   variants: ProductVariant[]
   onSubmit: (values: PriceOverridesFormValues) => void
+  defaultVariant?: ProductVariant
+  isEdit?: boolean
 }
 
 const PriceOverrides = ({
@@ -29,6 +31,8 @@ const PriceOverrides = ({
   prices,
   variants,
   onSubmit,
+  defaultVariant,
+  isEdit = false,
 }: PriceOverridesType) => {
   const [mode, setMode] = React.useState(MODES.SELECTED_ONLY)
   const { handleSubmit, control, reset } = useForm<PriceOverridesFormValues>({
@@ -42,49 +46,55 @@ const PriceOverrides = ({
     if (mode === MODES.APPLY_ALL) {
       onSubmit({
         ...values,
-        variants: variants.map((variant) => variant.id),
+        variants: variants?.map((variant) => variant.id),
       })
     } else {
       onSubmit({
         ...values,
         // remove null or undefined
-        variants: values.variants.filter(Boolean),
+        variants: values.variants?.filter(Boolean),
       })
     }
   })
 
   // set default variant
   React.useEffect(() => {
-    const selectedVariantId = prices[0].variant_id
-    const selectedIndex = variants.findIndex(
-      (variant) => variant.id === selectedVariantId
-    )
-    const variantOptions = Array(variants.length).fill(null)
-    variantOptions[selectedIndex] = selectedVariantId
-    reset({
-      prices,
-      variants: variantOptions,
-    })
-  }, [variants, prices])
+    if (prices.length > 0 && variants?.length > 0) {
+      const selectedVariantId = defaultVariant
+        ? defaultVariant.id
+        : prices[0]?.variant_id
+      const selectedIndex = variants.findIndex(
+        (variant) => variant.id === selectedVariantId
+      )
+      const variantOptions = Array(variants.length).fill(null)
+      variantOptions[selectedIndex] = selectedVariantId
+      reset({
+        prices,
+        variants: variantOptions,
+      })
+    }
+  }, [variants, prices, defaultVariant])
 
   return (
     <>
       <Modal.Content isLargeModal={true}>
-        <RadioGroup.Root
-          value={mode}
-          onValueChange={(value) => setMode(value)}
-          className="pt-2 flex items-center"
-        >
-          <RadioGroup.SimpleItem
-            value={MODES.SELECTED_ONLY}
-            label="Apply overrides on selected variants"
-          />
-          <RadioGroup.SimpleItem
-            value={MODES.APPLY_ALL}
-            label="Apply on all variants"
-          />
-        </RadioGroup.Root>
-        {mode === MODES.SELECTED_ONLY && (
+        {!isEdit && (
+          <RadioGroup.Root
+            value={mode}
+            onValueChange={(value) => setMode(value)}
+            className="pt-2 flex items-center"
+          >
+            <RadioGroup.SimpleItem
+              value={MODES.SELECTED_ONLY}
+              label="Apply overrides on selected variants"
+            />
+            <RadioGroup.SimpleItem
+              value={MODES.APPLY_ALL}
+              label="Apply on all variants"
+            />
+          </RadioGroup.Root>
+        )}
+        {mode === MODES.SELECTED_ONLY && !isEdit && (
           <div className="pt-6 flex flex-col gap-2">
             {variants.map((variant, idx) => (
               <div

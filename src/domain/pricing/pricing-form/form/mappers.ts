@@ -3,7 +3,13 @@ import {
   AdminPostPriceListsPriceListReq,
   PriceList,
 } from "@medusajs/medusa"
-import { PriceListFormValues, PriceListStatus, PriceListType } from "../types"
+import xorObjFields from "../../../../utils/xorObjFields"
+import {
+  CreatePriceListFormValues,
+  PriceListFormValues,
+  PriceListStatus,
+  PriceListType,
+} from "../types"
 
 export const mapPriceListToFormValues = (
   priceList: PriceList
@@ -30,9 +36,24 @@ export const mapPriceListToFormValues = (
 }
 
 export const mapFormValuesToCreatePriceList = (
-  values: PriceListFormValues,
+  values: CreatePriceListFormValues,
   status: PriceListStatus
 ): AdminPostPriceListsPriceListReq => {
+  let prices
+  if (values.prices) {
+    prices = Object.entries(values.prices)
+      .map(([variantId, price]) =>
+        price.map((pr) => ({
+          variant_id: variantId,
+          amount: pr.amount,
+          ...xorObjFields(pr, "currency_code", "region_id"),
+          min_quantity: pr.min_quantity,
+          max_quantity: pr.max_quantity,
+        }))
+      )
+      .flat(1)
+  }
+
   return {
     description: values.description!,
     name: values.name!,
@@ -43,14 +64,7 @@ export const mapFormValuesToCreatePriceList = (
       : undefined,
     ends_at: values.ends_at || undefined,
     starts_at: values.starts_at || undefined,
-    prices: [
-      // TODO: Replace when addding prices has been added
-      {
-        amount: 2500,
-        currency_code: "usd",
-        variant_id: "variant_01FY6FS47101G8MKK7PDVHPWZ0", // Replace this with a variant_id from your DB for testing purposes
-      },
-    ],
+    prices,
   }
 }
 

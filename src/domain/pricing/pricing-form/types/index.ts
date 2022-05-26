@@ -36,6 +36,20 @@ export type PriceListFormValues = {
   prices: PriceProps[] | null
 }
 
+export type CreatePriceListPricesFormValues = {
+  [k: string]: RegionPriceProps[] | CurrencyPriceProps[]
+}
+
+export type CreatePriceListFormValues = {
+  name: string | null
+  description: string | null
+  starts_at: Date | null
+  ends_at: Date | null
+  customer_groups: Option[] | null
+  type: PriceListType | null
+  prices: CreatePriceListPricesFormValues | null
+}
+
 export enum ConfigurationField {
   STARTS_AT = "starts_at",
   ENDS_AT = "ends_at",
