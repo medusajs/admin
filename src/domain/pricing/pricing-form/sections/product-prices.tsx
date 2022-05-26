@@ -13,6 +13,7 @@ import Modal from "../../../../components/molecules/modal"
 import ProductVariantTree from "../../../../components/organisms/product-variant-tree"
 import AddProductsModal from "../../../../components/templates/add-products-modal"
 import PriceOverrides from "../../../../components/templates/price-overrides"
+import { mergeExistingWithDefault } from "../../details/utils"
 import { usePriceListForm } from "../form/pricing-form-context"
 import { CreatePriceListPricesFormValues } from "../types"
 
@@ -182,15 +183,6 @@ const ProductPrices = ({
       )}
     </div>
   )
-}
-
-const mergeExistingWithDefault = (variantPrices: any[] = [], defaultPrices) => {
-  return defaultPrices.map((pr) => {
-    const price = variantPrices.find(
-      (vpr) => vpr?.currency_code === pr.currency_code
-    )
-    return price || pr
-  })
 }
 
 const findProduct = (

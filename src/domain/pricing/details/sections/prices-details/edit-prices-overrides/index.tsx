@@ -11,6 +11,7 @@ import PriceOverrides from "../../../../../../components/templates/price-overrid
 import ProductVariantLeaf from "./product-variant-leaf"
 import { useParams } from "@reach/router"
 import { mapToPriceList } from "./mappers"
+import { mergeExistingWithDefault } from "../../../utils"
 
 type EditPricesOverridesModalProps = {
   product: Product
@@ -121,15 +122,6 @@ const EditPricesOverridesModal = ({
       </Modal.Body>
     </LayeredModal>
   )
-}
-
-const mergeExistingWithDefault = (variantPrices: any[] = [], defaultPrices) => {
-  return defaultPrices.map((pr) => {
-    const price = variantPrices.find(
-      (vpr) => vpr?.currency_code === pr.currency_code
-    )
-    return price || pr
-  })
 }
 
 export default EditPricesOverridesModal
