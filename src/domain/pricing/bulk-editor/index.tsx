@@ -389,7 +389,7 @@ type ProductVariantRowProps = {
   activeRegions: Region[]
 
   isActive: (variantId: string, regionId: string) => boolean
-  getPriceChange: (variantId: string, regionId: string) => string
+  getPriceChange: (variantId: string, regionId: string) => string | undefined
 
   currentEditAmount?: string
   onAmountChange: (variantId: string, regionId: string, amount: string) => void
@@ -433,45 +433,44 @@ function ProductVariantRow(props: ProductVariantRowProps) {
         )}
       </Tile>
 
-      {activeRegions.map((r) => {
+      {activeRegions.map((region) => {
         const current = variant.prices.find(
           (p) =>
-            p.region_id === r.id &&
+            p.region_id === region.id &&
             p.min_quantity === null &&
             p.max_quantity === null
         )
 
-        const a =
-          typeof current?.amount === "number"
-            ? current?.amount /
-              10 **
-                currencies[current?.currency_code.toUpperCase()]?.decimal_digits
-            : undefined
+        const baseAmount = current?.amount
+          ? current?.amount /
+            10 **
+              currencies[current?.currency_code.toUpperCase()]?.decimal_digits
+          : undefined
 
-        let editedPrice = getPriceChange(variant.id, r.id)
+        let editedPrice = getPriceChange(variant.id, region.id)
         if (editedPrice === null) {
           editedPrice = undefined
         } else {
-          editedPrice = editedPrice || a
+          editedPrice = editedPrice || baseAmount
         }
 
-        const amount = isActive(variant.id, r.id)
+        const amount = isActive(variant.id, region.id)
           ? currentEditAmount
           : editedPrice
 
         return (
-          <div key={r.id} className="min-w-[314px]">
+          <div key={region.id} className="min-w-[314px]">
             <PriceInput
               amount={amount}
               disabled={disabled}
-              currency={currencies[r.currency_code.toUpperCase()]}
-              hasVirtualFocus={isActive(variant.id, r.id)}
-              onMouseDown={(e) => onPriceInputClick(e, variant.id, r.id)}
-              onAmountChange={(a) => onAmountChange(variant.id, r.id, a)}
-              onKeyDown={(e) => onKeyDown(e, variant.id, r.id)}
+              currency={currencies[region.currency_code.toUpperCase()]}
+              hasVirtualFocus={isActive(variant.id, region.id)}
+              onMouseDown={(e) => onPriceInputClick(e, variant.id, region.id)}
+              onAmountChange={(a) => onAmountChange(variant.id, region.id, a)}
+              onKeyDown={(e) => onKeyDown(e, variant.id, region.id)}
               /* prevent `onAmountChange` call from the library */
               onBlur={(e) => e.preventDefault()}
-              data-id={getPriceKey(variant.id, r.id)}
+              data-id={getPriceKey(variant.id, region.id)}
               className="js-bt-input"
             />
           </div>
@@ -512,9 +511,9 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   /**
    * A struct for mapping between table cell indexes and variant/regions ids.
    */
-  const matrix = useMemo(() => {
+  const matrix: [string[], string[]] = useMemo(() => {
     const variants = products.reduce(
-      (acc, p) => [...acc, ...p.variants.map((v) => v.id)],
+      (acc: string[], p: Product) => [...acc, ...p.variants.map((v) => v.id)],
       []
     )
 
@@ -595,21 +594,21 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
    * Responsible for triggering focus/blur events on an input filed.
    */
   const onPriceInputClick = (
-    e: React.MouseEvent<HTMLInputElement>,
+    event: React.MouseEvent<HTMLInputElement>,
     variantId: string,
     regionId: string
   ) => {
     const cellKey = getPriceKey(variantId, regionId)
 
-    if (e.shiftKey) {
-      e.preventDefault() // do not focus
+    if (event.shiftKey) {
+      event.preventDefault() // do not focus
 
       const active = isActive(variantId, regionId)
       toggleActive(cellKey)
 
       if (active) {
-        const wasFocused = e.target === document.activeElement
-        e.target.blur()
+        const wasFocused = event.target === document.activeElement
+        event.target.blur()
 
         if (wasFocused) {
           // find another active cell to focus
@@ -617,7 +616,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
           document.querySelector(`[data-id="${id}"]`)?.focus()
         }
       } else {
-        e.target.focus()
+        event.target.focus()
       }
     } else {
       // TODO: the issue here is that `onAmount` is called by the underlying library on blur (which is triggered after this on click handler)
@@ -634,29 +633,29 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
    * A handler that implement logic for arrow keys multi select.
    */
   const onKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
+    event: React.KeyboardEvent<HTMLInputElement>,
     variantId: string,
     regionId: string
   ) => {
-    if (e.key === "Tab") {
-      e.preventDefault()
+    if (event.key === "Tab") {
+      event.preventDefault()
     }
 
-    if (e.key === "Enter") {
-      e.target?.blur()
+    if (event.key === "Enter") {
+      event.target?.blur()
       setCurrentEditAmount(undefined)
       setActiveFields({})
       return
     }
 
-    if (!e.shiftKey) {
+    if (!event.shiftKey) {
       return
     }
 
-    const isArrowUp = e.key === "ArrowUp"
-    const isArrowDown = e.key === "ArrowDown"
-    const isArrowRight = e.key === "ArrowRight"
-    const isArrowLeft = e.key === "ArrowLeft"
+    const isArrowUp = event.key === "ArrowUp"
+    const isArrowDown = event.key === "ArrowDown"
+    const isArrowRight = event.key === "ArrowRight"
+    const isArrowLeft = event.key === "ArrowLeft"
 
     const [variants, regions] = matrix
 
@@ -681,7 +680,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
       return
     }
 
-    e.preventDefault()
+    event.preventDefault()
 
     if (isArrowUp) {
       pointers.lastV = Math.max(pointers.lastV - 1, 0)
@@ -731,7 +730,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
     regionId: string,
     amount: string
   ) => {
-    //TODO: format all price inputs on change here
+    // TODO: format all price inputs on change here
 
     const tmp = { ...priceChanges }
 
@@ -790,7 +789,7 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   )
 }
 
-type PriceListBulkEditorContainer = {
+type PriceListBulkEditorContainerProps = {
   priceList: PriceList
   closeEditor: () => void
 }
@@ -798,7 +797,9 @@ type PriceListBulkEditorContainer = {
 /**
  * Root container for the bulk editor.
  */
-function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
+function PriceListBulkEditorContainer(
+  props: PriceListBulkEditorContainerProps
+) {
   const { priceList, closeEditor } = props
   const [page, setPage] = useState(0)
 
@@ -922,7 +923,7 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
 
             // MA is updated
 
-            let preparedAmount = Math.round(
+            const preparedAmount = Math.round(
               parseFloat(_priceChanges[priceKey]) *
                 10 **
                   currencies[plPrice.currency_code.toUpperCase()].decimal_digits
@@ -984,7 +985,9 @@ function PriceListBulkEditorContainer(props: PriceListBulkEditorContainer) {
   }
 
   const displayRegions = activeRegions
-    .map((r) => regions?.find((a) => a.id === r))
+    .map((activeRegionId) =>
+      regions?.find((region) => region.id === activeRegionId)
+    )
     .filter((i) => !!i)
     .sort((a, b) => a.currency_code.localeCompare(b.currency_code)) as Region[]
 

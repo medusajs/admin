@@ -13,7 +13,7 @@ import clsx from "clsx"
  * `PriceInput` interface
  */
 type PriceInputProps = {
-  amount: string
+  amount?: string
   disabled?: boolean
   currency: CurrencyType
   hasVirtualFocus?: boolean
