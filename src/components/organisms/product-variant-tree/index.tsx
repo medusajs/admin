@@ -11,6 +11,7 @@ type LeafProps = {
     id: string
     currency_code: string
     amount: number
+    price_list_id: string | null
   }[]
 }
 
@@ -54,6 +55,7 @@ const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({
 }
 
 const ProductVariantLeaf = ({ sku, title, prices = [] }: LeafProps) => {
+  const filteredPrices = prices.filter((pr) => pr.price_list_id)
   return (
     <div className="flex flex-1">
       <div className="truncate">
@@ -62,9 +64,9 @@ const ProductVariantLeaf = ({ sku, title, prices = [] }: LeafProps) => {
       </div>
       <div className="flex items-center text-grey-50 flex-1 justify-end">
         <div className="text-grey-50 mr-xsmall">
-          {prices.length ? (
+          {filteredPrices.length ? (
             <span>{`${prices.length} price${
-              prices.length > 1 ? "s" : ""
+              filteredPrices.length > 1 ? "s" : ""
             }`}</span>
           ) : (
             <span className="inter-small-semibold text-orange-40">
