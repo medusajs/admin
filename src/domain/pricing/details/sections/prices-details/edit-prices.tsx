@@ -3,13 +3,14 @@ import { debounce } from "lodash"
 import { useAdminPriceListProducts } from "medusa-react"
 import * as React from "react"
 import Tooltip from "../../../../../components/atoms/tooltip"
-import Button from "../../../../../components/fundamentals/button"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import InfoIcon from "../../../../../components/fundamentals/icons/info-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import FocusModal from "../../../../../components/molecules/modal/focus-modal"
 import useQueryFilters from "../../../../../hooks/use-query-filters"
+import FormHeader from "../../../pricing-form/form-header/"
 import ProductPrices from "../../../pricing-form/sections/product-prices"
+import { ViewType } from "../../../pricing-form/types"
 import { merge } from "./utils"
 
 const defaultQueryFilters = {
@@ -37,26 +38,7 @@ const EditPrices = ({ close, id }) => {
   return (
     <FocusModal>
       <FocusModal.Header>
-        <div className="medium:w-8/12 w-full px-8 flex justify-between">
-          <Button
-            size="small"
-            variant="ghost"
-            onClick={close}
-            className="border rounded-rounded"
-          >
-            Cancel
-          </Button>
-          <div className="gap-x-small flex">
-            <Button
-              onClick={close}
-              size="small"
-              variant="primary"
-              className="rounded-rounded"
-            >
-              Save changes
-            </Button>
-          </div>
-        </div>
+        <FormHeader id={id} viewType={ViewType.EDIT_PRICES} onClose={close} />
       </FocusModal.Header>
       <FocusModal.Main>
         <div className="flex justify-center mb-[25%]">
