@@ -12,7 +12,6 @@ export const mapIdsToItems = <T extends Idable>(
   ids: string[] = [],
   source: T[] = []
 ) => {
-  console.log({ items, ids, source })
   const itemIds = items.map((item) => item?.id)
   /* we need to add an entity to the selectedItems list */
   if (items.length < ids.length) {

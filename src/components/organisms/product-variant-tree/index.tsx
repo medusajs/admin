@@ -1,4 +1,4 @@
-import { Product } from "@medusajs/medusa"
+import { Product, ProductVariant } from "@medusajs/medusa"
 import React from "react"
 import { ActionType } from "../../molecules/actionables"
 import { CollapsibleTree } from "../../molecules/collapsible-tree"
@@ -11,6 +11,7 @@ type LeafProps = {
     id: string
     currency_code: string
     amount: number
+    price_list_id: string | null
   }[]
 }
 
@@ -18,18 +19,20 @@ type ProductVariantTreeProps = {
   product: Pick<Product, "title" | "id" | "thumbnail"> & {
     variants: LeafProps[]
   }
-  productActions?: ActionType[]
-  variantActions?: ActionType[]
+  getProductActions?: (product: Product) => ActionType[] | undefined
+  getVariantActions?: (variant: ProductVariant) => ActionType[] | undefined
 }
 
 const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({
   product,
-  productActions,
-  variantActions,
+  getProductActions,
+  getVariantActions,
 }) => {
   return (
     <CollapsibleTree>
-      <CollapsibleTree.Parent actions={productActions}>
+      <CollapsibleTree.Parent
+        actions={getProductActions && getProductActions(product as Product)}
+      >
         <div>
           <img src={product.thumbnail} className="w-4 h-5 rounded-base" />
         </div>
@@ -37,7 +40,12 @@ const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({
       </CollapsibleTree.Parent>
       <CollapsibleTree.Content>
         {product.variants.map((variant) => (
-          <CollapsibleTree.Leaf key={variant.id} actions={variantActions}>
+          <CollapsibleTree.Leaf
+            key={variant.id}
+            actions={
+              getVariantActions && getVariantActions(variant as ProductVariant)
+            }
+          >
             <ProductVariantLeaf {...variant} />
           </CollapsibleTree.Leaf>
         ))}
@@ -47,6 +55,7 @@ const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({
 }
 
 const ProductVariantLeaf = ({ sku, title, prices = [] }: LeafProps) => {
+  const filteredPrices = prices.filter((pr) => pr.price_list_id)
   return (
     <div className="flex flex-1">
       <div className="truncate">
@@ -55,9 +64,9 @@ const ProductVariantLeaf = ({ sku, title, prices = [] }: LeafProps) => {
       </div>
       <div className="flex items-center text-grey-50 flex-1 justify-end">
         <div className="text-grey-50 mr-xsmall">
-          {prices.length ? (
-            <span>{`${prices.length} price${
-              prices.length > 1 ? "s" : ""
+          {filteredPrices.length ? (
+            <span>{`${filteredPrices.length} price${
+              filteredPrices.length > 1 ? "s" : ""
             }`}</span>
           ) : (
             <span className="inter-small-semibold text-orange-40">

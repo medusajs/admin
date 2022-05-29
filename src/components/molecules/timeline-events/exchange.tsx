@@ -2,6 +2,7 @@ import {
   useAdminCancelReturn,
   useAdminCancelSwap,
   useAdminOrder,
+  useAdminReceiveReturn,
   useAdminStore,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
@@ -74,6 +75,8 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const { store } = useAdminStore()
   const { order } = useAdminOrder(event.orderId)
 
+  const { mutateAsync: receiveReturn } = useAdminReceiveReturn(event.returnId)
+
   const notification = useNotification()
 
   useEffect(() => {
@@ -112,26 +115,27 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
     event.exchangeCartId
   )
 
-  const handleCancelExchange = () => {
-    cancelExchange.mutate(event.id)
+  const handleCancelExchange = async () => {
+    await cancelExchange.mutateAsync(event.id)
     refetch()
   }
 
-  const handleCancelReturn = () => {
-    cancelReturn.mutate()
+  const handleCancelReturn = async () => {
+    await cancelReturn.mutateAsync()
     refetch()
   }
 
-  const handleReceiveReturn = async (items) => {
-    Medusa.orders
-      .receiveReturn(event.returnId, { items })
-      .then(() => {
-        notification("Success", "Return received", "success")
-        refetch()
-      })
-      .catch((err) => {
-        notification("Error", getErrorMessage(err), "error")
-      })
+  const handleReceiveReturn = async (
+    items: { item_id: string; quantity: number }[]
+  ) => {
+    await receiveReturn(
+      { items },
+      {
+        onSuccess: () => {
+          refetch()
+        },
+      }
+    )
   }
 
   const handleProcessSwapPayment = () => {
@@ -163,7 +167,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
     actions.push({
       label: "Cancel return",
       icon: <TruckIcon size={20} />,
-      onClick: handleCancelReturn,
+      onClick: () => setShowCancelReturn(!showCancelReturn),
     })
   }
 
@@ -182,7 +186,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   }
 
   const args = {
-    title: event.canceledAt ? "Exchange Canceled" : "Exchange Requested",
+    title: event.canceledAt ? "Exchange Cancelled" : "Exchange Requested",
     icon: event.canceledAt ? (
       <CancelIcon size={20} />
     ) : (
@@ -238,35 +242,29 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
       {showCancel && (
         <DeletePrompt
           handleClose={() => setShowCancel(!showCancel)}
-          onDelete={async () => handleCancelExchange()}
+          onDelete={handleCancelExchange}
           confirmText="Yes, cancel"
           heading="Cancel exchange"
           text="Are you sure you want to cancel this exchange?"
-          successText="Exchange canceled"
+          successText="Exchange cancelled"
         />
       )}
       {showCancelReturn && (
         <DeletePrompt
           handleClose={() => setShowCancelReturn(!showCancelReturn)}
-          onDelete={async () => handleCancelReturn()}
+          onDelete={handleCancelReturn}
           confirmText="Yes, cancel"
           heading="Cancel return"
           text="Are you sure you want to cancel this return?"
-          successText="Return canceled"
+          successText="Return cancelled"
         />
       )}
-      {showReceiveReturn && (
+      {showReceiveReturn && order && (
         <ReceiveMenu
           order={order}
-          returnRequest={{
-            ...event.raw.return_order,
-            is_swap: true,
-            swap_id: event.id,
-          }}
+          returnRequest={event.raw.return_order}
           onReceiveSwap={handleReceiveReturn}
           onDismiss={() => setShowReceiveReturn(false)}
-          notification={notification}
-          isSwapOrClaim={true}
         />
       )}
       {showCreateFulfillment && (

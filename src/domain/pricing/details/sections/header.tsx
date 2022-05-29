@@ -14,8 +14,6 @@ import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import PriceListForm from "../../pricing-form"
-import { mapPriceListToFormValues } from "../../pricing-form/form/mappers"
-import { PriceListFormProvider } from "../../pricing-form/form/pricing-form-context"
 import { ViewType } from "../../pricing-form/types"
 import BulkEditor from "../../bulk-editor"
 
@@ -58,11 +56,9 @@ const Header = ({ priceList }) => {
         </div>
       </div>
       {isOpen && (
-        <PriceListFormProvider priceList={mapPriceListToFormValues(priceList)}>
-          <Fade isVisible={isOpen} isFullScreen={true}>
-            <PriceListForm id={priceList.id} viewType={ViewType.EDIT_DETAILS} />
-          </Fade>
-        </PriceListFormProvider>
+        <Fade isVisible={isOpen} isFullScreen={true}>
+          <PriceListForm id={priceList.id} viewType={ViewType.EDIT_DETAILS} />
+        </Fade>
       )}
       {showBulkEditor && (
         <BulkEditor

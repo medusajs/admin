@@ -12,6 +12,7 @@ import {
 } from "../form/mappers"
 import { usePriceListForm } from "../form/pricing-form-context"
 import {
+  CreatePriceListFormValues,
   HeaderAction,
   PriceListFormProps,
   PriceListFormValues,
@@ -19,7 +20,7 @@ import {
   ViewType,
 } from "../types"
 
-const FormHeader = (props: PriceListFormProps) => {
+const FormHeader = (props: PriceListFormProps & { onClose?: () => void }) => {
   const { handleSubmit } = usePriceListForm()
   const notification = useNotification()
 
@@ -30,7 +31,7 @@ const FormHeader = (props: PriceListFormProps) => {
   const createPriceList = useAdminCreatePriceList()
   const updatePriceList = useAdminUpdatePriceList(props.id!)
 
-  const onPublish = (values: PriceListFormValues) => {
+  const onPublish = (values: CreatePriceListFormValues) => {
     createPriceList.mutate(
       mapFormValuesToCreatePriceList(values, PriceListStatus.ACTIVE),
       {
@@ -44,7 +45,7 @@ const FormHeader = (props: PriceListFormProps) => {
     )
   }
 
-  const onSaveAsDraft = (values: PriceListFormValues) => {
+  const onSaveAsDraft = (values: CreatePriceListFormValues) => {
     createPriceList.mutate(
       mapFormValuesToCreatePriceList(values, PriceListStatus.DRAFT),
       {
@@ -72,7 +73,7 @@ const FormHeader = (props: PriceListFormProps) => {
   const onUpdatePrices = (values: PriceListFormValues) => {
     updatePriceList.mutate(mapFormValuesToUpdatePriceListPrices(values), {
       onSuccess: ({ price_list }) => {
-        navigate(`/a/pricing/${price_list.id}`)
+        props.onClose && props.onClose()
       },
       onError: (error) => {
         notification("Error", getErrorMessage(error), "error")

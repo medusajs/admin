@@ -1,5 +1,7 @@
+import { adminUserKeys } from "medusa-react"
 import React, { useReducer } from "react"
 import Medusa from "../services/api"
+import { queryClient } from "../services/config"
 
 export const defaultAccountContext = {
   isLoggedIn: false,
@@ -60,6 +62,7 @@ export const AccountProvider = ({ children }) => {
 
         handleUpdateUser: (id, user) => {
           return Medusa.users.update(id, user).then(({ data }) => {
+            queryClient.invalidateQueries(adminUserKeys.all)
             dispatch({ type: "updateUser", payload: data.user })
           })
         },
