@@ -43,8 +43,6 @@
     "lodash": "^4.17.21",
     "medusa-react": "^0.3.1-next.35",
     "moment": "^2.27.0",
-    "prop-types": "^15.8.1",
-    "qs": "^6.10.3",
     "query-string": "^7.1.1",
     "randomatic": "^3.1.1",
     "react": "^16.12.0",
