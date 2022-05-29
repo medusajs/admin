@@ -55,13 +55,13 @@ type CellPointers = {
   lastR: number
 }
 
-/**
+/*
  * Generate unique ID for a cell in the bulk table.
  */
 const getPriceKey = (variantId: string, regionId: string) =>
   `${variantId}-${regionId}`
 
-/**
+/*
  * Helper for generating table field filter options.
  */
 function generateField(region: Region) {
@@ -85,7 +85,7 @@ type TileProps = {
   children: React.ReactNode
 }
 
-/**
+/*
  * Bulk editor cell tile component.
  */
 function Tile(props: TileProps) {
@@ -119,7 +119,7 @@ type PriceListBulkEditorHeaderProps = {
   onPriceListSelect: (priceListId: string) => void
 }
 
-/**
+/*
  * Header component for the bulk editor.
  */
 function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
@@ -145,8 +145,10 @@ function PriceListBulkEditorHeader(props: PriceListBulkEditorHeaderProps) {
               value={currentPriceListId}
               onValueChange={onPriceListSelect}
             >
-              {price_lists?.map((pl) => (
-                <NativeSelect.Item value={pl.id}>{pl.name}</NativeSelect.Item>
+              {price_lists?.map((priceList) => (
+                <NativeSelect.Item value={priceList.id}>
+                  {priceList.name}
+                </NativeSelect.Item>
               ))}
             </NativeSelect>
           </div>
@@ -164,10 +166,14 @@ type ProductSectionHeaderProps = {
   product: Product
   isFirst: boolean
   activeRegions: Region[]
-  onHeaderClick: (regionId: string, productId: string) => void
+  onHeaderClick: (
+    regionId: string,
+    productId: string,
+    isShiftDown?: boolean
+  ) => void
 }
 
-/**
+/*
  * Header for the product section of the bulk editor table.
  */
 function ProductSectionHeader(props: ProductSectionHeaderProps) {
@@ -183,10 +189,10 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
             </span>
           </div>
 
-          {activeRegions.map((r) => (
+          {activeRegions.map((region) => (
             <div className="min-w-[314px]">
               <span className="text-small font-semibold text-grey-50">
-                {r.currency_code.toUpperCase()} ({r.name})
+                {region.currency_code.toUpperCase()} ({region.name})
               </span>
             </div>
           ))}
@@ -212,9 +218,9 @@ function ProductSectionHeader(props: ProductSectionHeaderProps) {
             </div>
           </Tile>
         </div>
-        {activeRegions.map((r) => (
+        {activeRegions.map((region) => (
           <div
-            onClick={(e) => onHeaderClick(r.id, product.id, e.shiftKey)}
+            onClick={(e) => onHeaderClick(region.id, product.id, e.shiftKey)}
             className="min-w-[314px] cursor-pointer"
           >
             <span className="text-small font-semibold text-grey-50">
@@ -235,7 +241,7 @@ type PriceListBulkEditorFooterProps = {
   setPage: (offset: number) => void
 }
 
-/**
+/*
  * Footer component for the bulk editor.
  */
 function PriceListBulkEditorFooter(props: PriceListBulkEditorFooterProps) {
@@ -252,7 +258,9 @@ function PriceListBulkEditorFooter(props: PriceListBulkEditorFooterProps) {
   const canNext = upperProductNumberLimit < count
 
   const onPrev = () => {
-    if (canPrev) setPage(page - 1)
+    if (canPrev) {
+      setPage(page - 1)
+    }
   }
 
   const onNext = () => {
@@ -323,7 +331,11 @@ type ProductSectionProps = {
   isFirst: boolean
   activeRegions: Region[]
 
-  onHeaderClick: (regionId: string, productId: string) => void
+  onHeaderClick: (
+    regionId: string,
+    productId: string,
+    isShiftDown?: boolean
+  ) => void
 
   isVariantInPriceList: (variantId: string) => boolean
 
@@ -344,7 +356,7 @@ type ProductSectionProps = {
   ) => void
 }
 
-/**
+/*
  * Product section container, renders product variant rows.
  */
 function ProductSection(props: ProductSectionProps) {
@@ -364,16 +376,16 @@ function ProductSection(props: ProductSectionProps) {
         activeRegions={activeRegions}
         onHeaderClick={rest.onHeaderClick}
       />
-      {product.variants.map((v) => (
+      {product.variants.map((variant) => (
         <ProductVariantRow
-          key={v.id}
-          variant={v}
+          key={variant.id}
+          variant={variant}
           activeRegions={activeRegions}
           isActive={rest.isActive}
           getPriceChange={rest.getPriceChange}
           onKeyDown={rest.onKeyDown}
           currentEditAmount={rest.currentEditAmount}
-          disabled={!isVariantInPriceList(v.id)}
+          disabled={!isVariantInPriceList(variant.id)}
           // HANDLERS
           onAmountChange={rest.onAmountChange}
           onPriceInputClick={rest.onPriceInputClick}
@@ -392,7 +404,7 @@ type ProductVariantRowProps = {
   getPriceChange: (variantId: string, regionId: string) => string | undefined
 
   currentEditAmount?: string
-  onAmountChange: (variantId: string, regionId: string, amount: string) => void
+  onAmountChange: (variantId: string, regionId: string, amount?: string) => void
   onKeyDown: (
     e: React.KeyboardEvent<HTMLInputElement>,
     variantId: string,
@@ -405,7 +417,7 @@ type ProductVariantRowProps = {
   ) => void
 }
 
-/**
+/*
  * Component renders a bulk editor row.
  */
 function ProductVariantRow(props: ProductVariantRowProps) {
@@ -488,7 +500,7 @@ type PriceListBulkEditorProps = {
   setPriceChanges: (a: Record<string, string>) => void
 }
 
-/**
+/*
  * Root component for the bulk editor.
  * Implements table rendering and all multiedit/multiselect behaviour.
  */
@@ -765,10 +777,10 @@ function PriceListBulkEditor(props: PriceListBulkEditorProps) {
   return (
     <HorizontalScrollFade>
       <div style={{ marginBottom: -16, marginTop: -4 }}>
-        {products.map((p, ind) => (
+        {products.map((product, ind) => (
           <ProductSection
-            key={p.id}
-            product={p}
+            key={product.id}
+            product={product}
             isFirst={!ind}
             priceChanges={priceChanges}
             setPriceChanges={setPriceChanges}
@@ -794,7 +806,7 @@ type PriceListBulkEditorContainerProps = {
   closeEditor: () => void
 }
 
-/**
+/*
  * Root container for the bulk editor.
  */
 function PriceListBulkEditorContainer(
@@ -971,10 +983,10 @@ function PriceListBulkEditorContainer(
       })
     })
 
-    prices.forEach((p) => {
-      delete p.id
-      if (p.region_id) {
-        delete p.currency_code
+    prices.forEach((price) => {
+      delete price.id
+      if (price.region_id) {
+        delete price.currency_code
       }
     }) // new records will be created
 
