@@ -1,3 +1,5 @@
+import React from "react"
+
 type IconProps = {
   color?: string
   size?: string | number

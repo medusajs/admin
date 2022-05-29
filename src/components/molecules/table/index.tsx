@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
-import React, { ReactNode } from "react"
+import React from "react"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
@@ -40,7 +40,7 @@ type SortingHeadCellProps = {
 } & React.HTMLAttributes<HTMLTableCellElement>
 
 export type TableProps = {
-  filteringOptions?: FilteringOptionProps[] | ReactNode
+  filteringOptions?: FilteringOptionProps[] | React.ReactNode
   enableSearch?: boolean
   immediateSearchFocus?: boolean
   searchPlaceholder?: string

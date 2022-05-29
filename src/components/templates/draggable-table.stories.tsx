@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory, storiesOf } from "@storybook/react"
+import { ComponentStory, storiesOf } from "@storybook/react"
 import React, { useState } from "react"
 import DraggableTable from "./draggable-table"
 
