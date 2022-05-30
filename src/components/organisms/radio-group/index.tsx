@@ -71,7 +71,7 @@ const Item = ({
       )}
       <div className="truncate">
         <div className="flex items-center">
-          <p className="inter-small-semibold truncate">
+          <p className="inter-base-semibold truncate">
             {label}{" "}
             {sublabel ? (
               <span className="inter-small-regular">{sublabel}</span>

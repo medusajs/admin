@@ -6,12 +6,12 @@ import BreadCrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import RadioGroup from "../../../components/organisms/radio-group"
 import TwoSplitPane from "../../../components/templates/two-split-pane"
-import useModal from "../../../hooks/use-modal"
+import useModal from "../../../hooks/use-toggle-state"
 import CreateReturnReasonModal from "./create-reason-modal"
 import ReturnReasonDetail from "./detail"
 
 const ReturnReasons = () => {
-  const { isOpen, handleOpen, handleClose } = useModal()
+  const { state: isOpen, open, close } = useModal()
   const [selectedReason, setSelectedReason] = useState<any>(null)
   const { isLoading, return_reasons } = useAdminReturnReasons({
     onSuccess: (data) => {
@@ -46,7 +46,7 @@ const ReturnReasons = () => {
                   <PlusIcon size={20} />
                 </span>
               ),
-              onClick: handleOpen,
+              onClick: open,
             },
           ]}
           subtitle="Manage reasons for returned items"
@@ -77,7 +77,7 @@ const ReturnReasons = () => {
         </BodyCard>
         {selectedReason && <ReturnReasonDetail reason={selectedReason} />}
       </TwoSplitPane>
-      {isOpen && <CreateReturnReasonModal handleClose={handleClose} />}
+      {isOpen && <CreateReturnReasonModal handleClose={close} />}
     </div>
   )
 }

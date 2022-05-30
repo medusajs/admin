@@ -2,6 +2,7 @@ import {
   useAdminCancelReturn,
   useAdminCancelSwap,
   useAdminOrder,
+  useAdminReceiveReturn,
   useAdminStore,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
@@ -74,6 +75,8 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const { store } = useAdminStore()
   const { order } = useAdminOrder(event.orderId)
 
+  const { mutateAsync: receiveReturn } = useAdminReceiveReturn(event.returnId)
+
   const notification = useNotification()
 
   useEffect(() => {
@@ -122,16 +125,17 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
     refetch()
   }
 
-  const handleReceiveReturn = async (items) => {
-    Medusa.orders
-      .receiveReturn(event.returnId, { items })
-      .then(() => {
-        notification("Success", "Return received", "success")
-        refetch()
-      })
-      .catch((err) => {
-        notification("Error", getErrorMessage(err), "error")
-      })
+  const handleReceiveReturn = async (
+    items: { item_id: string; quantity: number }[]
+  ) => {
+    await receiveReturn(
+      { items },
+      {
+        onSuccess: () => {
+          refetch()
+        },
+      }
+    )
   }
 
   const handleProcessSwapPayment = () => {
@@ -255,18 +259,12 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
           successText="Return cancelled"
         />
       )}
-      {showReceiveReturn && (
+      {showReceiveReturn && order && (
         <ReceiveMenu
           order={order}
-          returnRequest={{
-            ...event.raw.return_order,
-            is_swap: true,
-            swap_id: event.id,
-          }}
+          returnRequest={event.raw.return_order}
           onReceiveSwap={handleReceiveReturn}
           onDismiss={() => setShowReceiveReturn(false)}
-          notification={notification}
-          isSwapOrClaim={true}
         />
       )}
       {showCreateFulfillment && (

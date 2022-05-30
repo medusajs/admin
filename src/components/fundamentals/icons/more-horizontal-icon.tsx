@@ -1,4 +1,3 @@
-import PropTypes from "prop-types"
 import React from "react"
 import IconProps from "./types/icon-type"
 
@@ -39,16 +38,6 @@ const MoreHorizontalIcon: React.FC<IconProps> = ({
       />
     </svg>
   )
-}
-
-MoreHorizontalIcon.defaultProps = {
-  color: "currentColor",
-  size: "24px",
-}
-
-MoreHorizontalIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default MoreHorizontalIcon

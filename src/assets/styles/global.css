@@ -401,6 +401,14 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-grey-40;
   }
+
+  .accordion-margin-transition {
+    @apply transition-[margin] duration-300 ease-[cubic-bezier(0.87,0,0.13,1)]
+  }
+
+  .col-tree:last-child .bottom-half-dash {
+    @apply border-none;
+  }
 }
 
 /* Classes to remove number spinners from inputs of type number */

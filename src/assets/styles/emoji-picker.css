@@ -43,35 +43,35 @@
 }
 
 .emoji-picker-react .emoji-categories button.icn-smileys_people {
- background-image: url("../svg-2.0/happy.svg") !important;
+ background-image: url("../svg/happy.svg") !important;
 }
 
 .emoji-picker-react .emoji-categories button.icn-animals_nature {
-    background-image: url("../svg-2.0/sprout.svg") !important;
+    background-image: url("../svg/sprout.svg") !important;
 }
 
 .emoji-picker-react .emoji-categories button.icn-food_drink {
-    background-image: url("../svg-2.0/carrot.svg") !important;
+    background-image: url("../svg/carrot.svg") !important;
 }
 
 .emoji-picker-react .emoji-categories button.icn-travel_places {
-    background-image: url("../svg-2.0/plane.svg") !important;
+    background-image: url("../svg/plane.svg") !important;
 }
 
 .emoji-picker-react .emoji-categories button.icn-activities {
-    background-image: url("../svg-2.0/controller.svg") !important;
+    background-image: url("../svg/controller.svg") !important;
 }
 
 .emoji-picker-react .emoji-categories button.icn-objects {
-    background-image: url("../svg-2.0/lightbulb.svg") !important;
+    background-image: url("../svg/lightbulb.svg") !important;
 }
 
 .emoji-picker-react .emoji-categories button.icn-symbols {
-    background-image: url("../svg-2.0/heart.svg") !important;
+    background-image: url("../svg/heart.svg") !important;
 }
 
 .emoji-picker-react .emoji-categories button.icn-flags {
-    background-image: url("../svg-2.0/flag.svg") !important;
+    background-image: url("../svg/flag.svg") !important;
 }
 
 .emoji-picker-react .emoji-categories button {

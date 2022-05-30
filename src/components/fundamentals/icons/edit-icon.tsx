@@ -1,10 +1,10 @@
 import React from "react"
-import IconProps from "./icon-type"
+import IconProps from "./types/icon-type"
 
 const EditIcon: React.FC<IconProps> = ({
   size = "24px",
   color = "currentColor",
-  attributes,
+  ...attributes
 }) => {
   return (
     <svg
