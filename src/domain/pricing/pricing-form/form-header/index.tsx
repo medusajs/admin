@@ -20,7 +20,7 @@ import {
   ViewType,
 } from "../types"
 
-const FormHeader = (props: PriceListFormProps) => {
+const FormHeader = (props: PriceListFormProps & { onClose?: () => void }) => {
   const { handleSubmit } = usePriceListForm()
   const notification = useNotification()
 
@@ -73,7 +73,7 @@ const FormHeader = (props: PriceListFormProps) => {
   const onUpdatePrices = (values: PriceListFormValues) => {
     updatePriceList.mutate(mapFormValuesToUpdatePriceListPrices(values), {
       onSuccess: ({ price_list }) => {
-        navigate(`/a/pricing/${price_list.id}`)
+        props.onClose && props.onClose()
       },
       onError: (error) => {
         notification("Error", getErrorMessage(error), "error")

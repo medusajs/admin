@@ -6,6 +6,7 @@ import {
 import xorObjFields from "../../../../utils/xorObjFields"
 import {
   CreatePriceListFormValues,
+  CreatePriceListPricesFormValues,
   PriceListFormValues,
   PriceListStatus,
   PriceListType,
@@ -84,9 +85,24 @@ export const mapFormValuesToUpdatePriceListDetails = (
 }
 
 export const mapFormValuesToUpdatePriceListPrices = (
-  values: PriceListFormValues
-): AdminPostPriceListsPriceListPriceListReq => {
-  return {
-    prices: values.prices!,
+  values: PriceListFormValues & { prices: CreatePriceListPricesFormValues }
+): AdminPostPriceListsPriceListPriceListReq | void => {
+  let prices
+  if (values.prices) {
+    prices = Object.entries(values.prices)
+      .map(([variantId, price]) =>
+        price.map((pr) => ({
+          variant_id: variantId,
+          amount: pr.amount,
+          ...xorObjFields(pr, "currency_code", "region_id"),
+          min_quantity: pr.min_quantity,
+          max_quantity: pr.max_quantity,
+        }))
+      )
+      .flat(1)
+
+    return {
+      prices,
+    }
   }
 }
