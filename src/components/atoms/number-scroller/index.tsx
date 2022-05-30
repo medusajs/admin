@@ -22,9 +22,10 @@ const NumberScroller: React.FC<NumberScrollerProps> = ({
         className
       )}
     >
-      {numbers.map((n) => {
+      {numbers.map((n, i) => {
         return (
           <div
+            key={i}
             className={clsx(
               "w-[40px] h-[40px] last:mb-4 rounded inter-base-regular hover:bg-grey-20",
               {
