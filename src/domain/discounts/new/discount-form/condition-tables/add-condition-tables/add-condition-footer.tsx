@@ -1,10 +1,10 @@
-import React from "react"
+import React, { useContext } from "react"
 import Button from "../../../../../../components/fundamentals/button"
+import { LayeredModalContext } from "../../../../../../components/molecules/modal/layered-modal"
 import { DiscountConditionOperator } from "../../../../types"
 import { useDiscountForm } from "../../form/discount-form-context"
 
-type EditConditionFooterProps = {
-  onClose: () => void
+type AddConditionFooterProps = {
   type:
     | "products"
     | "product_collections"
@@ -13,34 +13,29 @@ type EditConditionFooterProps = {
     | "customer_groups"
   items: { id: string; label: string }[]
   operator: DiscountConditionOperator
+  onClose: () => void
 }
 
-const EditConditionFooter: React.FC<EditConditionFooterProps> = ({
+const AddConditionFooter: React.FC<AddConditionFooterProps> = ({
   type,
   items,
   operator,
   onClose,
 }) => {
+  const { pop, reset } = useContext(LayeredModalContext)
   const { updateCondition } = useDiscountForm()
+
   return (
-    <div className="flex items-center justify-end w-full gap-x-xsmall">
-      <Button variant="secondary" size="small" onClick={onClose}>
-        Cancel
-      </Button>
+    <div className="w-full flex justify-end gap-x-xsmall">
       <Button
-        variant="danger"
+        variant="ghost"
         size="small"
         onClick={() => {
-          updateCondition({
-            type,
-            items: [],
-            operator: DiscountConditionOperator.IN,
-            shouldDelete: true,
-          })
           onClose()
+          reset()
         }}
       >
-        Delete condition
+        Cancel
       </Button>
       <Button
         variant="primary"
@@ -50,16 +45,25 @@ const EditConditionFooter: React.FC<EditConditionFooterProps> = ({
             type,
             items,
             operator,
-            shouldDelete: items?.length ? false : true, // If the user removed all items from the condition, we should delete it
           })
-          onClose()
+          pop()
         }}
-        className="min-w-[128px]"
       >
-        Save
+        Save and add more
+      </Button>
+      <Button
+        variant="primary"
+        size="small"
+        onClick={() => {
+          updateCondition({ type, items, operator })
+          onClose()
+          reset()
+        }}
+      >
+        Save and close
       </Button>
     </div>
   )
 }
 
-export default EditConditionFooter
+export default AddConditionFooter

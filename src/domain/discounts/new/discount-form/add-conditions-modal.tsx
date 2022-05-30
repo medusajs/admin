@@ -6,31 +6,38 @@ import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
-import { useDiscountForm } from "./form/discount-form-context"
+import { AddConditionSelectorProps, ConditionMap } from "../../types"
 import useConditionModalItems, {
   ConditionItem,
 } from "./use-condition-modal-items"
 
-type AddConditionsModalProps = {
-  close: () => void
+type AddConditionsModalProps = AddConditionSelectorProps & {
+  isDetails?: boolean
+  conditions: ConditionMap
+  save?: () => void
 }
 
-const AddConditionsModal: React.FC<AddConditionsModalProps> = ({ close }) => {
+const AddConditionsModal = ({
+  onClose,
+  conditions,
+  save,
+  isDetails = false,
+}: AddConditionsModalProps) => {
   const layeredModalContext = useContext(LayeredModalContext)
-  const [items, setItems] = useState(useConditionModalItems(close))
 
-  const { setConditionType, conditions } = useDiscountForm()
-
-  const onClose = () => {
-    setConditionType(undefined)
-    close()
-  }
+  const [items, setItems] = useState<ConditionItem[]>(
+    useConditionModalItems({ onClose, isDetails })
+  )
 
   useEffect(() => {
     const setConditions: string[] = []
 
     for (const [key, value] of Object.entries(conditions)) {
-      if (value.items.length) {
+      // If we are in the details view we only want to view the conditions that haven't already been added,
+      // meaning !id. We don't support updatig existing conditions through the admin atm.
+      const filter = isDetails ? value.id : value.items.length
+
+      if (filter) {
         setConditions.push(key)
       }
     }
@@ -72,7 +79,12 @@ const AddConditionsModal: React.FC<AddConditionsModalProps> = ({ close }) => {
               Cancel
             </Button>
             <Button
-              disabled
+              onClick={() => {
+                if (save) {
+                  save()
+                }
+                onClose()
+              }}
               size="small"
               className="w-32 text-small justify-center"
               variant="primary"

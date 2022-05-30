@@ -3,9 +3,11 @@ import React, { useState } from "react"
 import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
-import { DiscountConditionOperator } from "../../../../types"
+import {
+  AddConditionSelectorProps,
+  DiscountConditionOperator,
+} from "../../../../types"
 import { useDiscountForm } from "../../form/discount-form-context"
-import AddConditionFooter from "../shared/add-condition-footer"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
 import {
@@ -14,11 +16,16 @@ import {
   useGroupColumns,
 } from "../shared/groups"
 import { SelectableTable } from "../shared/selectable-table"
+import AddConditionFooter from "./add-condition-footer"
 
-const AddCustomerGroupConditionSelector = ({ onClose }) => {
+const AddCustomerGroupConditionSelector = ({
+  onClose,
+}: AddConditionSelectorProps) => {
   const params = useQueryFilters(defaultQueryProps)
+
   const { conditions } = useDiscountForm()
-  const [items, setItems] = useState(conditions.customer_groups?.items || [])
+
+  const [items, setItems] = useState(conditions?.customer_groups?.items || [])
   const [operator, setOperator] = useState<DiscountConditionOperator>(
     conditions.customer_groups.operator
   )

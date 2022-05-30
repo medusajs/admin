@@ -12,8 +12,8 @@ import {
 } from "../shared/collection"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
-import EditConditionFooter from "../shared/edit-condition-footer"
 import { SelectableTable } from "../shared/selectable-table"
+import EditConditionFooter from "./edit-condition-footer"
 
 const EditCollectionConditionSelector = ({ onClose }) => {
   const params = useQueryFilters(defaultQueryProps)

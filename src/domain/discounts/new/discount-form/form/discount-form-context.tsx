@@ -4,13 +4,15 @@ import {
   ConditionMap,
   DiscountConditionOperator,
   DiscountConditionType,
+  DiscountRuleType,
+  UpdateConditionProps,
 } from "../../../types"
 import { DiscountFormValues } from "./mappers"
 
 const defaultDiscount: DiscountFormValues = {
   code: "",
   rule: {
-    type: "percentage",
+    type: DiscountRuleType.PERCENTAGE,
     value: 0,
     description: "",
   },
@@ -25,18 +27,6 @@ const defaultDiscount: DiscountFormValues = {
 type DiscountFormProviderProps = {
   discount?: DiscountFormValues
   children?: React.ReactNode
-}
-
-type UpdateConditionProps = {
-  type:
-    | "products"
-    | "product_collections"
-    | "product_types"
-    | "product_tags"
-    | "customer_groups"
-  items: { id: string; label: string }[] | null
-  operator: DiscountConditionOperator
-  shouldDelete?: boolean
 }
 
 const defaultConditions: ConditionMap = {
@@ -85,19 +75,13 @@ export const DiscountFormProvider = ({
 
   const [conditions, setConditions] = useState<ConditionMap>(defaultConditions)
 
-  const updateCondition = ({
-    type,
-    items,
-    operator,
-    shouldDelete,
-  }: UpdateConditionProps) => {
+  const updateCondition = ({ type, items, operator }: UpdateConditionProps) => {
     setConditions((prevConditions) => ({
       ...prevConditions,
       [type]: {
         ...prevConditions[type],
         items,
         operator,
-        shouldDelete,
       },
     }))
   }
@@ -106,11 +90,7 @@ export const DiscountFormProvider = ({
     defaultValues: discount,
   })
 
-  const setConditionType = (value: string | undefined) =>
-    methods.setValue("condition_type", value)
-
   const type = methods.watch("rule.type")
-  const conditionType = methods.watch("condition_type")
   const isDynamic = methods.watch("is_dynamic")
   const usageLimit = methods.watch("usage_limit")
   const validDuration = methods.watch("valid_duration")
@@ -195,8 +175,6 @@ export const DiscountFormProvider = ({
       <DiscountFormContext.Provider
         value={{
           type,
-          conditionType,
-          setConditionType,
           isDynamic,
           hasExpiryDate,
           setHasExpiryDate,
@@ -217,8 +195,6 @@ export const DiscountFormProvider = ({
 
 const DiscountFormContext = React.createContext<{
   type?: string
-  conditionType?: string
-  setConditionType: (value: string | undefined) => void
   isDynamic: boolean
   hasExpiryDate: boolean
   setHasExpiryDate: (value: boolean) => void
@@ -226,12 +202,7 @@ const DiscountFormContext = React.createContext<{
   setHasStartDate: (value: boolean) => void
   handleConfigurationChanged: (values: string[]) => void
   conditions: ConditionMap
-  updateCondition: ({
-    type,
-    items,
-    operator,
-    shouldDelete,
-  }: UpdateConditionProps) => void
+  updateCondition: (props: UpdateConditionProps) => void
   setConditions: Dispatch<SetStateAction<ConditionMap>>
   handleReset: () => void
 } | null>(null)

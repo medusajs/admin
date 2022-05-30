@@ -98,7 +98,6 @@ const useDiscountConfigurations = (discount: Discount) => {
     })
   }
   if (discount.valid_duration) {
-    console.log(discount.valid_duration)
     conditions.push({
       title: "Duration",
       description: (

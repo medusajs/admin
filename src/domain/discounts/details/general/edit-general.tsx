@@ -74,7 +74,7 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
       : []
   }, [regions])
 
-  const selectedRegions = useWatch({
+  const selectedRegions = useWatch<Option[]>({
     control,
     name: "regions",
   })
@@ -102,7 +102,7 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
                 validate: (value) =>
                   Array.isArray(value) ? value.length > 0 : !!value,
               }}
-              render={({ field: { value, onChange } }) => {
+              render={({ value, onChange }) => {
                 return (
                   <Select
                     value={value}
@@ -125,7 +125,8 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
                 className="flex-1"
                 placeholder="SUMMERSALE10"
                 required
-                {...register("code", { required: "Code is required" })}
+                name="code"
+                ref={register({ required: "Code is required" })}
               />
 
               {type !== "free_shipping" && (
@@ -145,7 +146,7 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
                             required: "Amount is required",
                             min: 1,
                           }}
-                          render={({ field: { value, onChange } }) => {
+                          render={({ value, onChange }) => {
                             return (
                               <CurrencyInput.AmountInput
                                 label={"Amount"}
@@ -167,7 +168,8 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
                         type="number"
                         placeholder="10"
                         prefix={"%"}
-                        {...register("value", {
+                        name="value"
+                        ref={register({
                           required: "Percentage is required",
                           valueAsNumber: true,
                         })}
@@ -190,7 +192,8 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
               required
               placeholder="Summer Sale 2022"
               rows={1}
-              {...register("description", {
+              name="description"
+              ref={register({
                 required: "Description is required",
               })}
             />

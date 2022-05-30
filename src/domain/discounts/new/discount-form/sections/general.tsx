@@ -68,7 +68,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
               validate: (value) =>
                 Array.isArray(value) ? value.length > 0 : !!value,
             }}
-            render={({ field: { onChange, value } }) => {
+            render={({ onChange, value }) => {
               return (
                 <Select
                   value={value || null}
@@ -91,7 +91,8 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
               className="flex-1"
               placeholder="SUMMERSALE10"
               required
-              {...register("code", { required: "Code is required" })}
+              name="code"
+              ref={register({ required: "Code is required" })}
             />
 
             {type !== "free_shipping" && (
@@ -111,7 +112,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
                           required: "Amount is required",
                           min: 1,
                         }}
-                        render={({ field: { value, onChange } }) => {
+                        render={({ value, onChange }) => {
                           return (
                             <CurrencyInput.AmountInput
                               label={"Amount"}
@@ -133,7 +134,8 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
                       type="number"
                       placeholder="10"
                       prefix={"%"}
-                      {...register("rule.value", {
+                      name="rule.value"
+                      ref={register({
                         required: true,
                         valueAsNumber: true,
                       })}
@@ -156,7 +158,8 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
             required
             placeholder="Summer Sale 2022"
             rows={1}
-            {...register("rule.description", {
+            name="rule.description"
+            ref={register({
               required: true,
             })}
           />
@@ -164,7 +167,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
             <Controller
               name="is_dynamic"
               control={control}
-              render={({ field: { onChange, value } }) => {
+              render={({ onChange, value }) => {
                 return (
                   <Checkbox
                     label="This is a template discount"

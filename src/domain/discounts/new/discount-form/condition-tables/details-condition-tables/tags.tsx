@@ -3,21 +3,23 @@ import React, { useState } from "react"
 import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
+import { useConditions } from "../../../../details/conditions/add-condition/conditions-provider"
 import {
   AddConditionSelectorProps,
   DiscountConditionOperator,
 } from "../../../../types"
-import { useDiscountForm } from "../../form/discount-form-context"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
 import { SelectableTable } from "../shared/selectable-table"
 import { TagColumns, TagHeader, TagRow } from "../shared/tags"
-import AddConditionFooter from "./add-condition-footer"
+import DetailsConditionFooter from "./details-condition-footer"
 
-const AddTagConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
+const DetailsTagConditionSelector = ({
+  onClose,
+}: AddConditionSelectorProps) => {
   const params = useQueryFilters(defaultQueryProps)
 
-  const { conditions } = useDiscountForm()
+  const { conditions } = useConditions()
 
   const [items, setItems] = useState(conditions.product_tags?.items || [])
   const [operator, setOperator] = useState<DiscountConditionOperator>(
@@ -67,7 +69,7 @@ const AddTagConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
         )}
       </Modal.Content>
       <Modal.Footer isLargeModal>
-        <AddConditionFooter
+        <DetailsConditionFooter
           type="product_tags"
           items={items}
           onClose={onClose}
@@ -78,4 +80,4 @@ const AddTagConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
   )
 }
 
-export default AddTagConditionSelector
+export default DetailsTagConditionSelector

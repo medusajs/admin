@@ -6,14 +6,14 @@ import {
 } from "@medusajs/medusa"
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../../types/shared"
-import { ConditionMap } from "../../../types"
+import { AllocationType, ConditionMap, DiscountRuleType } from "../../../types"
 
 export interface DiscountFormValues extends FieldValues {
   code: string
   rule: {
     value: number
     description: string
-    type: string
+    type: DiscountRuleType
   }
   starts_at?: Date
   ends_at?: Date | null
@@ -73,11 +73,13 @@ export const formValuesToCreateDiscountMapper = (
   values: DiscountFormValues,
   conditions: ConditionMap
 ): Omit<AdminPostDiscountsReq, "is_disabled"> => {
-  console.log(values.usage_limit)
   return {
     code: values.code!,
     rule: {
-      allocation: values.rule.type === "fixed" ? "item" : "total",
+      allocation:
+        values.rule.type === "fixed"
+          ? AllocationType.ITEM
+          : AllocationType.TOTAL,
       type: values.rule.type,
       value: values.rule.type !== "free_shipping" ? values.rule.value : 0,
       description: values.rule.description,
@@ -123,9 +125,12 @@ export const formValuesToUpdateDiscountMapper = (
   return {
     code: values.code,
     rule: {
-      allocation: values.rule.type === "fixed" ? "item" : "total",
+      allocation:
+        values.rule.type === "fixed"
+          ? AllocationType.ITEM
+          : AllocationType.TOTAL,
       id: ruleId,
-      value: values.rule.type !== "free_shipping" ? values.rule.value : 0,
+      value: values.rule.value,
       description: values.rule.description,
       conditions: mapConditionsToUpdate(conditions),
     },

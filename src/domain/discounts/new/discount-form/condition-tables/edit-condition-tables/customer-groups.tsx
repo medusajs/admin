@@ -7,13 +7,13 @@ import { DiscountConditionOperator } from "../../../../types"
 import { useDiscountForm } from "../../form/discount-form-context"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
-import EditConditionFooter from "../shared/edit-condition-footer"
 import {
   CustomerGroupsHeader,
   CustomerGroupsRow,
   useGroupColumns,
 } from "../shared/groups"
 import { SelectableTable } from "../shared/selectable-table"
+import EditConditionFooter from "./edit-condition-footer"
 
 const EditCustomerGroupConditionSelector = ({ onClose }) => {
   const params = useQueryFilters(defaultQueryProps)

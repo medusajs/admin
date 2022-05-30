@@ -11,7 +11,7 @@ type ConditionsProps = {
 }
 
 const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
-  const { setConditions, conditions } = useDiscountForm()
+  const { setConditions, conditions, updateCondition } = useDiscountForm()
   const [showConditionsModal, setShowConditionsModal] = useState(false)
 
   useEffect(() => {
@@ -70,7 +70,11 @@ const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
         </Button>
       )}
       {showConditionsModal && (
-        <AddConditionsModal close={() => setShowConditionsModal(false)} />
+        <AddConditionsModal
+          onClose={() => setShowConditionsModal(false)}
+          conditions={conditions}
+          updateCondition={updateCondition}
+        />
       )}
     </div>
   )

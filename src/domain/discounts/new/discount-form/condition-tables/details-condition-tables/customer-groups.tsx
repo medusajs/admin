@@ -1,42 +1,56 @@
-import { useAdminProductTags } from "medusa-react"
+import { useAdminCustomerGroups } from "medusa-react"
 import React, { useState } from "react"
 import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
+import { useConditions } from "../../../../details/conditions/add-condition/conditions-provider"
 import {
   AddConditionSelectorProps,
   DiscountConditionOperator,
 } from "../../../../types"
-import { useDiscountForm } from "../../form/discount-form-context"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
+import {
+  CustomerGroupsHeader,
+  CustomerGroupsRow,
+  useGroupColumns,
+} from "../shared/groups"
 import { SelectableTable } from "../shared/selectable-table"
-import { TagColumns, TagHeader, TagRow } from "../shared/tags"
-import AddConditionFooter from "./add-condition-footer"
+import DetailsConditionFooter from "./details-condition-footer"
 
-const AddTagConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
+const DetailsCustomerGroupConditionSelector = ({
+  onClose,
+}: AddConditionSelectorProps) => {
   const params = useQueryFilters(defaultQueryProps)
 
-  const { conditions } = useDiscountForm()
+  const { conditions } = useConditions()
 
-  const [items, setItems] = useState(conditions.product_tags?.items || [])
+  const [items, setItems] = useState(conditions?.customer_groups?.items || [])
   const [operator, setOperator] = useState<DiscountConditionOperator>(
-    conditions.product_tags.operator
+    conditions.customer_groups.operator
   )
 
-  const { isLoading, count, product_tags } = useAdminProductTags(
+  const { isLoading, count, customer_groups } = useAdminCustomerGroups(
     params.queryObject,
     {
+      // avoid UI flickering by keeping previous data
       keepPreviousData: true,
     }
   )
 
   const changed = (values: string[]) => {
-    const selectedTags =
-      product_tags?.filter((t) => values.includes(t.id)) || []
+    const selectedCustomerGroups =
+      customer_groups?.filter((cg) => values.includes(cg.id)) || []
 
-    setItems(selectedTags.map((t) => ({ id: t.id, label: t.value })))
+    setItems(
+      selectedCustomerGroups.map((customer_group) => ({
+        id: customer_group.id,
+        label: customer_group.name,
+      }))
+    )
   }
+
+  const columns = useGroupColumns()
 
   return (
     <>
@@ -50,25 +64,25 @@ const AddTagConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
               options={{
                 enableSearch: true,
                 immediateSearchFocus: true,
-                searchPlaceholder: "Search by tag...",
+                searchPlaceholder: "Search groups...",
               }}
-              resourceName="Tags"
+              resourceName="Customer groups"
               totalCount={count || 0}
               selectedIds={items.map((i) => i.id)}
-              data={product_tags}
-              columns={TagColumns}
+              data={customer_groups}
+              columns={columns}
               isLoading={isLoading}
               onChange={changed}
-              renderRow={TagRow}
-              renderHeaderGroup={TagHeader}
+              renderRow={CustomerGroupsRow}
+              renderHeaderGroup={CustomerGroupsHeader}
               {...params}
             />
           </>
         )}
       </Modal.Content>
       <Modal.Footer isLargeModal>
-        <AddConditionFooter
-          type="product_tags"
+        <DetailsConditionFooter
+          type="customer_groups"
           items={items}
           onClose={onClose}
           operator={operator}
@@ -78,4 +92,4 @@ const AddTagConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
   )
 }
 
-export default AddTagConditionSelector
+export default DetailsCustomerGroupConditionSelector

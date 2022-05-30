@@ -2,6 +2,7 @@ import clsx from "clsx"
 import React from "react"
 import { Controller, useWatch } from "react-hook-form"
 import RadioGroup from "../../../../../components/organisms/radio-group"
+import { DiscountRuleType } from "../../../types"
 import { useDiscountForm } from "../form/discount-form-context"
 
 const PromotionType = () => {
@@ -17,7 +18,7 @@ const PromotionType = () => {
       name="rule.type"
       control={control}
       rules={{ required: true }}
-      render={({ field: { onChange, value } }) => {
+      render={({ onChange, value }) => {
         return (
           <RadioGroup.Root
             value={value}
@@ -25,13 +26,13 @@ const PromotionType = () => {
             className={clsx("flex items-center gap-base mt-base px-1")}
           >
             <RadioGroup.Item
-              value="percentage"
+              value={DiscountRuleType.PERCENTAGE}
               className="flex-1"
               label="Percentage"
               description={"Discount applied in %"}
             />
             <RadioGroup.Item
-              value="fixed"
+              value={DiscountRuleType.FIXED}
               className="flex-1"
               label="Fixed amount"
               description={"Discount in whole numbers"}
@@ -39,7 +40,7 @@ const PromotionType = () => {
               disabledTooltip="You can only select one valid region if you want to use the fixed amount type"
             />
             <RadioGroup.Item
-              value="free_shipping"
+              value={DiscountRuleType.FREE_SHIPPING}
               className="flex-1"
               label="Free shipping"
               description={"Override delivery amount"}

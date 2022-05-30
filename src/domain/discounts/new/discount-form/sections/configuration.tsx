@@ -98,7 +98,7 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
                 <Controller
                   name="starts_at"
                   control={control}
-                  render={({ field: { value, onChange } }) => {
+                  render={({ value, onChange }) => {
                     const date = value || new Date()
                     return (
                       <>
@@ -142,7 +142,7 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
                 <Controller
                   name="ends_at"
                   control={control}
-                  render={({ field: { value, onChange } }) => {
+                  render={({ value, onChange }) => {
                     const date =
                       value ||
                       new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
@@ -182,7 +182,8 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
                 })}
               >
                 <InputField
-                  {...register("usage_limit", { valueAsNumber: true })}
+                  name="usage_limit"
+                  ref={register({ valueAsNumber: true })}
                   label="Number of redemptions"
                   type="number"
                   placeholder="5"
@@ -213,7 +214,7 @@ const Settings: React.FC<SettingsProps> = ({ promotion, isEdit = false }) => {
                   <Controller
                     name="valid_duration"
                     control={control}
-                    render={({ field: { value, onChange } }) => {
+                    render={({ value, onChange }) => {
                       return (
                         <AvailabilityDuration
                           value={value ?? undefined}

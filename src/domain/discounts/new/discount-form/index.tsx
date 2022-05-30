@@ -5,7 +5,6 @@ import Button from "../../../../components/fundamentals/button"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../../components/organisms/accordion"
-import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { useDiscountForm } from "./form/discount-form-context"
@@ -30,17 +29,9 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   isEdit = false,
 }) => {
   const notification = useNotification()
-  const { handleSubmit, conditions, handleReset } = useDiscountForm()
-  const dialog = useImperativeDialog()
+  const { handleSubmit, handleReset } = useDiscountForm()
 
-  const {
-    onSaveAsActive,
-    onSaveAsInactive,
-    onUpdate,
-    onRemoveConditions,
-  } = useFormActions(discount?.id!, {
-    discount,
-  })
+  const { onSaveAsActive, onSaveAsInactive } = useFormActions()
 
   const closeFormModal = () => {
     if (closeForm) {
@@ -69,29 +60,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
 
   const submitCTA = async (data: DiscountFormValues) => {
     try {
-      if (isEdit) {
-        const conditionsToDelete = Object.values(conditions).filter(
-          (condition) => condition.shouldDelete && condition.id
-        )
-
-        if (conditionsToDelete.length > 0) {
-          const shouldDelete = await dialog({
-            text: `Are you sure you want to delete ${
-              conditionsToDelete.length
-            } ${conditionsToDelete.length > 1 ? "conditions" : "condtion"}?`,
-            heading: "Delete conditions",
-          })
-
-          if (!shouldDelete) {
-            return
-          }
-
-          await onRemoveConditions(conditionsToDelete)
-        }
-        await onUpdate(data)
-      } else {
-        await onSaveAsActive(data)
-      }
+      await onSaveAsActive(data)
       closeFormModal()
       handleReset()
     } catch (error) {
