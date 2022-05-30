@@ -25,7 +25,11 @@ const FormHeader = (props: PriceListFormProps & { onClose?: () => void }) => {
   const notification = useNotification()
 
   const closeForm = () => {
-    navigate(-1)
+    if (props.viewType !== ViewType.CREATE && props.onClose) {
+      props.onClose()
+    } else {
+      navigate(-1)
+    }
   }
 
   const createPriceList = useAdminCreatePriceList()
