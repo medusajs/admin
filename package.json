@@ -11,7 +11,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
-    "@medusajs/medusa": "^1.1.65-alpha.63",
+    "@medusajs/medusa": "^1.2.1",
     "@medusajs/medusa-js": "^1.1.1",
     "@popperjs/core": "^2.10.2",
     "@radix-ui/react-accordion": "^0.1.6",
