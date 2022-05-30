@@ -1,5 +1,4 @@
 export const getErrorMessage = (error) => {
-  console.log(error)
   let msg = error?.response?.data?.message
   if (msg[0].message) {
     msg = msg[0].message
