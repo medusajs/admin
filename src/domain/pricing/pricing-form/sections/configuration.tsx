@@ -20,7 +20,7 @@ const checkForEnabledConfigs = (
 ): string[] => {
   const enabledConfigs: string[] = []
 
-  if (config.customer_groups) {
+  if (config.customer_groups?.length > 0) {
     enabledConfigs.push(ConfigurationField.CUSTOMER_GROUPS)
   }
   if (config.starts_at) {
