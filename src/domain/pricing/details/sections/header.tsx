@@ -50,7 +50,11 @@ const Header = ({ priceList }) => {
       </div>
       {isOpen && (
         <Fade isVisible={isOpen} isFullScreen={true}>
-          <PriceListForm id={priceList.id} viewType={ViewType.EDIT_DETAILS} />
+          <PriceListForm
+            id={priceList.id}
+            onClose={() => setIsOpen(false)}
+            viewType={ViewType.EDIT_DETAILS}
+          />
         </Fade>
       )}
     </HeadingBodyCard>
