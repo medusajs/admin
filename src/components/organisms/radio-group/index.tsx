@@ -24,7 +24,6 @@ const Item = ({
   label,
   sublabel,
   description,
-  checked,
   className,
   disabled,
   disabledTooltip,

@@ -9,6 +9,7 @@ type SwitchableItemProps = {
   tooltip?: string
   open: boolean
   onSwitch: () => void
+  children: React.ReactNode
 }
 
 const SwitchableItem: React.FC<SwitchableItemProps> = ({
