@@ -9,22 +9,22 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Input from "../../../components/molecules/input"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import useModal from "../../../hooks/use-modal"
+import useToggleState from "../../../hooks/use-toggle-state"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import CreateReturnReasonModal from "./create-reason-modal"
 
 const ReturnReasonDetail = ({ reason }) => {
   const {
-    isOpen: showDuplicateModal,
-    handleOpen: handleOpenDuplicateModal,
-    handleClose: handleCloseDuplicateModal,
-  } = useModal()
+    state: showDuplicateModal,
+    open: handleOpenDuplicateModal,
+    close: handleCloseDuplicateModal,
+  } = useToggleState()
   const {
-    isOpen: showDanger,
-    handleClose: handleClosePrompt,
-    handleOpen: handleOpenPrompt,
-  } = useModal()
+    state: showDanger,
+    open: handleClosePrompt,
+    close: handleOpenPrompt,
+  } = useToggleState()
   const { register, reset, handleSubmit } = useForm()
   const notification = useNotification()
   const deleteRR = useAdminDeleteReturnReason(reason?.id)
