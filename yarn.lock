@@ -2278,7 +2278,7 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@^1.2.1-next.41", "@medusajs/medusa-js@^1.2.1-next.41+d4470b0c":
+"@medusajs/medusa-js@^1.2.1-next.41+d4470b0c":
   version "1.2.1-next.41"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.2.1-next.41.tgz#c26f1ca40fea6e4c300d863a6b292f324e206348"
   integrity sha512-J7bIojNHrZ2jdRZrS1GYrW7XBPt300dClG76qklp7Xgqz643F0CZjfy5koaMukMpPU5D7Ru4s5f2yUdyb/5O/A==
