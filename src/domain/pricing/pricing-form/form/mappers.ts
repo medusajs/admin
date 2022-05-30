@@ -19,8 +19,8 @@ export const mapPriceListToFormValues = (
     description: priceList.description,
     type: priceList.type,
     name: priceList.name,
-    ends_at: priceList.ends_at,
-    starts_at: priceList.starts_at,
+    ends_at: priceList.ends_at ? new Date(priceList.ends_at) : null,
+    starts_at: priceList.starts_at ? new Date(priceList.starts_at) : null,
     prices: priceList.prices.map((p) => ({
       amount: p.amount,
       max_quantity: p.max_quantity,
