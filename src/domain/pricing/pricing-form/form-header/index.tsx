@@ -66,7 +66,7 @@ const FormHeader = (props: PriceListFormProps & { onClose?: () => void }) => {
   const onUpdateDetails = (values: PriceListFormValues) => {
     updatePriceList.mutate(mapFormValuesToUpdatePriceListDetails(values), {
       onSuccess: ({ price_list }) => {
-        navigate(`/a/pricing/${price_list.id}`)
+        closeForm()
       },
       onError: (error) => {
         notification("Error", getErrorMessage(error), "error")
