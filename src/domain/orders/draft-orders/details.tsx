@@ -1,5 +1,4 @@
 import { Address } from "@medusajs/medusa"
-import moment from "moment"
 import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
@@ -8,9 +7,11 @@ import {
   useAdminStore,
   useAdminUpdateDraftOrder,
 } from "medusa-react"
+import moment from "moment"
 import React, { useEffect, useState } from "react"
 import ReactJson from "react-json-view"
 import Avatar from "../../../components/atoms/avatar"
+import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import Spinner from "../../../components/atoms/spinner"
 import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
@@ -28,7 +29,6 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
 import { DisplayTotal, FormattedAddress } from "../details/templates"
-import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 
 const DraftOrderDetails = ({ id }) => {
   type DeletePromptData = {
@@ -58,7 +58,6 @@ const DraftOrderDetails = ({ id }) => {
 
   useEffect(() => {
     if (store && draft_order && store.payment_link_template) {
-      console.log(store.payment_link_template)
       setPaymentLink(
         store.payment_link_template.replace(/\{cart_id\}/, draft_order.cart_id)
       )

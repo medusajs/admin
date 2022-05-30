@@ -53,3 +53,29 @@ export type ConditionMap = {
   customer_groups: CondtionMapItem
   product_types: CondtionMapItem
 }
+
+export enum AllocationType {
+  ITEM = "item",
+  TOTAL = "total",
+}
+
+export enum DiscountRuleType {
+  FIXED = "fixed",
+  PERCENTAGE = "percentage",
+  FREE_SHIPPING = "free_shipping",
+}
+
+export type UpdateConditionProps = {
+  type:
+    | "products"
+    | "product_collections"
+    | "product_types"
+    | "product_tags"
+    | "customer_groups"
+  items: { id: string; label: string }[] | null
+  operator: DiscountConditionOperator
+}
+
+export type AddConditionSelectorProps = {
+  onClose: () => void
+}
