@@ -5,6 +5,7 @@ import { useHotkeys } from "react-hotkeys-hook"
 import PrivateRoute from "../components/private-route"
 import SEO from "../components/seo"
 import Layout from "../components/templates/layout"
+import Collections from "../domain/collections"
 import Customers from "../domain/customers"
 import Discounts from "../domain/discounts"
 import GiftCards from "../domain/gift-cards"
@@ -24,6 +25,7 @@ const IndexPage = () => {
       <Router basepath="a" className="h-full">
         <PrivateRoute path="oauth/:app_name" component={Oauth} />
         <PrivateRoute path="products/*" component={Products} />
+        <PrivateRoute path="collections/*" component={Collections} />
         <PrivateRoute path="gift-cards/*" component={GiftCards} />
         <PrivateRoute path="orders/*" component={Orders} />
         <PrivateRoute path="draft-orders/*" component={DraftOrders} />
