@@ -131,33 +131,6 @@ export const usePromotionTableColumns = () => {
         ),
       },
       {
-        Header: () => <div>Products</div>,
-        id: "products",
-        Cell: ({ row: { original }, index }) => {
-          let count = 0
-          let text
-          if (!original.rule.conditions?.length) {
-            text = "All products"
-          } else {
-            text = getConditionText(original.rule.conditions[0])
-            count = original.rule.conditions.reduce((prev, curr) => {
-              return prev + getNumberOfConditions(curr)
-            }, -1)
-          }
-
-          return (
-            <Table.Cell className="" key={index}>
-              {text}{" "}
-              {count > 0 ? (
-                <span className="text-grey-40">{` + ${count} more`}</span>
-              ) : (
-                <></>
-              )}
-            </Table.Cell>
-          )
-        },
-      },
-      {
         Header: () => <div className="text-right">Redemptions</div>,
         accessor: "usage_count",
         Cell: ({ row: { original }, index }) => {
@@ -185,39 +158,5 @@ const getUsageCount = (usageCount: number) => {
       return `${Math.floor(usageCount / 1000)}k`
     default:
       return usageCount
-  }
-}
-
-const getNumberOfConditions = (condition) => {
-  switch (condition.type) {
-    case "product_types":
-      return condition.product_types.length
-    case "products":
-      return condition.products.length
-    case "product_collections":
-      return condition.product_collections.length
-    case "product_tags":
-      return condition.product_tags.length
-    case "customer_groups":
-      return condition.customer_groups.length
-    default:
-      return null
-  }
-}
-
-const getConditionText = (condition) => {
-  switch (condition.type) {
-    case "product_types":
-      return condition.product_types[0].value
-    case "products":
-      return condition.products[0].title
-    case "product_collections":
-      return condition.product_collections[0].title
-    case "product_tags":
-      return condition.product_tags[0].value
-    case "customer_groups":
-      return condition.customer_groups[0].name
-    default:
-      return null
   }
 }

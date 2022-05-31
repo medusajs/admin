@@ -1,12 +1,11 @@
-import clsx from "clsx"
 import { useAdminVariants } from "medusa-react"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import StatusIndicator from "../../../../components/fundamentals/status-indicator"
+import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import Table, { TablePagination } from "../../../../components/molecules/table"
@@ -31,38 +30,6 @@ type RMASelectProductSubModalProps = {
   selectedItems?: any
   isLargeModal?: boolean
 }
-
-const IndeterminateCheckbox = React.forwardRef(
-  ({ indeterminate, className, checked, ...rest }, ref) => {
-    const defaultRef = React.useRef()
-    const resolvedRef = ref || defaultRef
-
-    React.useEffect(() => {
-      resolvedRef.current.indeterminate = indeterminate
-    }, [resolvedRef, indeterminate])
-
-    return (
-      <div className="items-center h-full flex">
-        <div
-          onClick={() => resolvedRef.current?.click()}
-          className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border cursor-pointer rounded-base ${
-            checked && "bg-violet-60"
-          }`}
-        >
-          <span className="self-center">
-            {checked && <CheckIcon size={16} />}
-          </span>
-        </div>
-        <input
-          type="checkbox"
-          className={clsx("hidden", className)}
-          ref={resolvedRef}
-          {...rest}
-        />
-      </div>
-    )
-  }
-)
 
 const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   onSubmit,

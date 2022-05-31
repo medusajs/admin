@@ -171,6 +171,7 @@ type UploadModalProps = {
   description2Title: string
   description2Text: string
   onUploadComplete: () => void
+  onClose: () => void
 }
 
 /**
@@ -184,6 +185,7 @@ function UploadModal(props: UploadModalProps) {
     description2Title,
     fileTitle,
     onUploadComplete,
+    onClose,
   } = props
   // TODO: remove hardcoded progress
   const [progress, setProgress] = useState<number>(20)
@@ -202,7 +204,7 @@ function UploadModal(props: UploadModalProps) {
   }
 
   return (
-    <Modal open handleClose={console.log}>
+    <Modal open handleClose={onClose}>
       <Modal.Body>
         <Modal.Content>
           <div className="flex flex-col">
@@ -263,7 +265,7 @@ function UploadModal(props: UploadModalProps) {
               variant="secondary"
               className="mr-2 text-small justify-center"
               size="small"
-              onClick={console.log}
+              onClick={onClose}
             >
               Cancel
             </Button>

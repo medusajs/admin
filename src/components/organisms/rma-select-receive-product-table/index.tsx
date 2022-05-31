@@ -1,6 +1,10 @@
 import { LineItem, Order } from "@medusajs/medusa"
 import clsx from "clsx"
 import React from "react"
+import {
+  isLineItemCanceled,
+  isLineItemReturned,
+} from "../../../utils/is-line-item"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
@@ -10,10 +14,10 @@ import Table from "../../molecules/table"
 type toReturnType = Record<string, { quantity: number }>
 
 type RMASelectProductTableProps = {
-  order: Order
-  allItems: (LineItem | null)[]
+  order: Omit<Order, "beforeInsert">
+  allItems: (Omit<LineItem, "beforeInsert"> | null)[]
   toReturn: toReturnType
-  setToReturn: (items: any) => void
+  setToReturn: (items: toReturnType) => void
 }
 
 const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
@@ -41,7 +45,7 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
     setToReturn(newReturns)
   }
 
-  const handleReturnToggle = (item) => {
+  const handleReturnToggle = (item: Omit<LineItem, "beforeInsert">) => {
     const id = item.id
 
     const newReturns = { ...toReturn }
@@ -55,20 +59,6 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
     }
 
     setToReturn(newReturns)
-  }
-
-  const isLineItemCanceled = (item) => {
-    const { swap_id, claim_order_id } = item
-    const travFind = (col, id) =>
-      col.filter((f) => f.id == id && f.canceled_at).length > 0
-
-    if (swap_id) {
-      return travFind(order.swaps, swap_id)
-    }
-    if (claim_order_id) {
-      return travFind(order.claims, claim_order_id)
-    }
-    return false
   }
 
   return (
@@ -85,8 +75,8 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
           // and aren't canceled
           if (
             !item ||
-            item.returned_quantity === item.quantity ||
-            isLineItemCanceled(item)
+            isLineItemReturned(item) ||
+            isLineItemCanceled(item, order)
           ) {
             return
           }

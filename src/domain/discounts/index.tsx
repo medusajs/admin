@@ -1,5 +1,4 @@
-import { Router } from "@reach/router"
-import { navigate } from "gatsby"
+import { RouteComponentProps, Router } from "@reach/router"
 import React, { useState } from "react"
 import Fade from "../../components/atoms/fade-wrapper"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
@@ -7,16 +6,16 @@ import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
 import DiscountTable from "../../components/templates/discount-table"
 import Details from "./details"
-import DiscountForm from "./discount-form"
-import { DiscountFormProvider } from "./discount-form/form/discount-form-context"
 import New from "./new"
+import DiscountForm from "./new/discount-form"
+import { DiscountFormProvider } from "./new/discount-form/form/discount-form-context"
 
-const DiscountIndex = () => {
+const DiscountIndex: React.FC<RouteComponentProps> = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const actionables = [
     {
-      label: "Add Promotion",
+      label: "Add Discount",
       onClick: () => setIsOpen(true),
       icon: <PlusIcon size={20} />,
     },
@@ -27,7 +26,7 @@ const DiscountIndex = () => {
       <div className="w-full flex flex-col grow">
         <BodyCard
           actionables={actionables}
-          customHeader={<TableViewHeader views={["promotions"]} />}
+          customHeader={<TableViewHeader views={["discounts"]} />}
         >
           <DiscountTable />
         </BodyCard>

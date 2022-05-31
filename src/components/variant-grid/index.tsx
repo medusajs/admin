@@ -1,7 +1,7 @@
 import {
+  useAdminCreateVariant,
   useAdminDeleteVariant,
   useAdminUpdateVariant,
-  useAdminCreateVariant,
 } from "medusa-react"
 import React, { useState } from "react"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
@@ -9,9 +9,9 @@ import { buildOptionsMap } from "../../domain/products/product-form/utils"
 import useImperativeDialog from "../../hooks/use-imperative-dialog"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
+import DuplicateIcon from "../fundamentals/icons/duplicate-icon"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
-import DuplicateIcon from "../fundamentals/icons/duplicate-icon"
 import GridInput from "../molecules/grid-input"
 import Table from "../molecules/table"
 import { useGridColumns } from "./use-grid-columns"

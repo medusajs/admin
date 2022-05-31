@@ -4,14 +4,15 @@ import Spinner from "../atoms/spinner"
 type LoadingContainerProps = {
   isLoading: boolean
   placeholder?: React.ReactElement
+  children: React.ReactElement | React.ReactElement[]
 }
 
-const LoadingContainer: React.FC<LoadingContainerProps> = ({
+const LoadingContainer = ({
   isLoading,
   children,
   placeholder,
   ...props
-}) => {
+}: LoadingContainerProps) => {
   placeholder = placeholder || <Spinner size="large" variant="secondary" />
 
   if (isLoading) {

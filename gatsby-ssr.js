@@ -1,11 +1,10 @@
-import React from "react"
-import "./src/assets/styles/global.css"
-import { CacheProvider } from "./src/context/cache"
-import { AccountProvider } from "./src/context/account"
-import { InterfaceProvider } from "./src/context/interface"
-import { ThemeProvider as Provider } from "./src/theme"
-import { ToastProvider } from "react-toast-notifications"
 import { MedusaProvider } from "medusa-react"
+import React from "react"
+import { ToastProvider } from "react-toast-notifications"
+import "./src/assets/styles/global.css"
+import { AccountProvider } from "./src/context/account"
+import { CacheProvider } from "./src/context/cache"
+import { InterfaceProvider } from "./src/context/interface"
 import { medusaUrl, queryClient } from "./src/services/config"
 
 export const wrapPageElement = ({ element }) => {
@@ -20,7 +19,7 @@ export const wrapPageElement = ({ element }) => {
         <AccountProvider>
           <InterfaceProvider>
             <ToastProvider autoDismiss={true} placement="bottom-left">
-              <Provider>{element}</Provider>
+              {element}
             </ToastProvider>
           </InterfaceProvider>
         </AccountProvider>

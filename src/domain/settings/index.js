@@ -11,7 +11,6 @@ import TaxesIcon from "../../components/fundamentals/icons/taxes-icon"
 import TruckIcon from "../../components/fundamentals/icons/truck-icon"
 import UsersIcon from "../../components/fundamentals/icons/users-icon"
 import SettingsOverview from "../../components/templates/settings-overview"
-import Apps from "./apps"
 import Currencies from "./currencies"
 import Details from "./details"
 import PersonalInformation from "./personal-information"
@@ -19,8 +18,6 @@ import Regions from "./regions"
 import RegionDetails from "./regions/details"
 import NewRegion from "./regions/new"
 import ReturnReasons from "./return-reasons"
-import ShippingProfileDetail from "./shipping-profiles/details"
-import NewShippingProfile from "./shipping-profiles/new"
 import Taxes from "./taxes"
 import Users from "./users"
 
@@ -89,16 +86,12 @@ const SettingsIndex = () => {
 const Settings = () => (
   <Router className="h-full">
     <SettingsIndex path="/" />
-    <Apps path="apps" />
 
     <Details path="details" />
 
     <Currencies path="currencies" />
 
     <ReturnReasons path="return-reasons" />
-
-    <NewShippingProfile path="shipping-profiles/new" />
-    <ShippingProfileDetail path="shipping-profiles/:id" />
 
     <Regions path="regions" />
     <RegionDetails path="regions/:id" />

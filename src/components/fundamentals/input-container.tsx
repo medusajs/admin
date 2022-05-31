@@ -1,16 +1,13 @@
-import React from "react"
 import clsx from "clsx"
-import { MouseEventHandler } from "react"
+import React, { MouseEventHandler } from "react"
 
 type InputContainerProps = React.HTMLAttributes<HTMLDivElement> & {
-  key?: string
   className?: string
   onClick?: MouseEventHandler<HTMLDivElement>
   onFocusLost?: () => void
 }
 
 const InputContainer: React.FC<InputContainerProps> = ({
-  key,
   onClick,
   onFocusLost,
   children,
@@ -20,7 +17,6 @@ const InputContainer: React.FC<InputContainerProps> = ({
   return (
     <div
       {...props}
-      key={key}
       tabIndex={-1}
       onClick={onClick}
       onBlur={(e) => {
