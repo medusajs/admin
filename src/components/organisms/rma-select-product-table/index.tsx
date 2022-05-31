@@ -1,7 +1,9 @@
+import { LineItem, Order } from "@medusajs/medusa"
 import clsx from "clsx"
 import React, { useContext } from "react"
 import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
 import Medusa from "../../../services/api"
+import { isLineItemCanceled } from "../../../utils/is-line-item"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import Button from "../../fundamentals/button"
 import CheckIcon from "../../fundamentals/icons/check-icon"
@@ -11,8 +13,8 @@ import { LayeredModalContext } from "../../molecules/modal/layered-modal"
 import Table from "../../molecules/table"
 
 type RMASelectProductTableProps = {
-  order: any
-  allItems: any[]
+  order: Omit<Order, "beforeInsert">
+  allItems: Omit<LineItem, "beforeInsert">[]
   toReturn: any
   setToReturn: (items: any) => void
   customReturnOptions?: any[]
@@ -105,20 +107,6 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
     }
   }
 
-  const isLineItemCanceled = (item) => {
-    const { swap_id, claim_order_id } = item
-    const travFind = (col, id) =>
-      col.filter((f) => f.id == id && f.canceled_at).length > 0
-
-    if (swap_id) {
-      return travFind(order.swaps, swap_id)
-    }
-    if (claim_order_id) {
-      return travFind(order.claims, claim_order_id)
-    }
-    return false
-  }
-
   return (
     <Table>
       <Table.HeadRow className="text-grey-50 inter-small-semibold">
@@ -133,7 +121,7 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
           // and aren't canceled
           if (
             item.returned_quantity === item.quantity ||
-            isLineItemCanceled(item)
+            isLineItemCanceled(item, order)
           ) {
             return
           }
@@ -207,17 +195,17 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                 <Table.Cell className="text-right">
                   {formatAmountWithSymbol({
                     currency: order.currency_code,
-                    amount: item.refundable,
+                    amount: item.refundable || 0,
                   })}
                 </Table.Cell>
                 <Table.Cell className="text-right text-grey-40 pr-1">
                   {order.currency_code.toUpperCase()}
                 </Table.Cell>
               </Table.Row>
-              {checked && (
+              {checked && !isSwapOrClaim && (
                 <Table.Row className="last:border-b-0 hover:bg-grey-0">
                   <Table.Cell></Table.Cell>
-                  <Table.Cell colspan={2}>
+                  <Table.Cell colSpan={2}>
                     <div className="max-w-[470px] truncate">
                       {toReturn[item.id]?.reason && (
                         <span className="inter-small-regular text-grey-40">
@@ -242,32 +230,30 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                       )}
                     </div>
                   </Table.Cell>
-                  {!isSwapOrClaim && (
-                    <Table.Cell colspan={2}>
-                      <div className="flex w-full justify-end mb-small">
-                        <Button
-                          onClick={() =>
-                            push(
-                              ReturnReasonScreen(
-                                pop,
-                                toReturn[item.id]?.reason,
-                                toReturn[item.id]?.note,
-                                customReturnOptions,
-                                imagesOnReturns,
-                                (reason, note, files) =>
-                                  setReturnReason(reason, note, files, item.id)
-                              )
+                  <Table.Cell colSpan={2}>
+                    <div className="flex w-full justify-end mb-small">
+                      <Button
+                        onClick={() =>
+                          push(
+                            ReturnReasonScreen(
+                              pop,
+                              toReturn[item.id]?.reason,
+                              toReturn[item.id]?.note,
+                              customReturnOptions,
+                              imagesOnReturns,
+                              (reason, note, files) =>
+                                setReturnReason(reason, note, files, item.id)
                             )
-                          }
-                          variant="ghost"
-                          size="small"
-                          className="border border-grey-20"
-                        >
-                          Select Reason
-                        </Button>
-                      </div>
-                    </Table.Cell>
-                  )}
+                          )
+                        }
+                        variant="ghost"
+                        size="small"
+                        className="border border-grey-20"
+                      >
+                        Select Reason
+                      </Button>
+                    </div>
+                  </Table.Cell>
                 </Table.Row>
               )}
             </>

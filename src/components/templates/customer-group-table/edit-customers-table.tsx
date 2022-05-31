@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
 import { Customer } from "@medusajs/medusa"
 import { useAdminCustomerGroups, useAdminCustomers } from "medusa-react"
+import React, { useEffect, useState } from "react"
 import {
   HeaderGroup,
   Row,
@@ -8,13 +8,11 @@ import {
   useRowSelect,
   useTable,
 } from "react-table"
-
-import Modal from "../../molecules/modal"
+import useQueryFilters from "../../../hooks/use-query-filters"
 import Button from "../../fundamentals/button"
+import Modal from "../../molecules/modal"
 import Table, { TablePagination } from "../../molecules/table"
 import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
-import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
-import useQueryFilters from "../../../hooks/use-query-filters"
 
 /**
  * Default filtering config for querying customers endpoint.
@@ -153,14 +151,18 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   ]
 
   const handleNext = () => {
-    if (!table.canNextPage) return
+    if (!table.canNextPage) {
+      return
+    }
 
     paginate(1)
     table.nextPage()
   }
 
   const handlePrev = () => {
-    if (!table.canPreviousPage) return
+    if (!table.canPreviousPage) {
+      return
+    }
 
     paginate(-1)
     table.previousPage()
@@ -169,7 +171,9 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   const handleSearch = (text: string) => {
     setQuery(text)
 
-    if (text) table.gotoPage(0)
+    if (text) {
+      table.gotoPage(0)
+    }
   }
 
   return (

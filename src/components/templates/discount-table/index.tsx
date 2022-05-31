@@ -36,6 +36,7 @@ const DiscountTable: React.FC = () => {
 
   const { discounts, isLoading, count } = useAdminDiscounts({
     is_dynamic: false,
+    expand: "rule,rule.conditions,rule.conditions.products",
     ...queryObject,
   })
 

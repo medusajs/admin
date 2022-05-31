@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
-import React, { ReactNode } from "react"
+import React from "react"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
@@ -28,7 +28,7 @@ type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
   hasPrev: boolean
 }
 
-type TableCellProps = React.HTMLAttributes<HTMLTableCellElement> & {
+type TableCellProps = React.TdHTMLAttributes<HTMLTableCellElement> & {
   linkTo?: string
   name?: string
 }
@@ -40,7 +40,7 @@ type SortingHeadCellProps = {
 } & React.HTMLAttributes<HTMLTableCellElement>
 
 export type TableProps = {
-  filteringOptions?: FilteringOptionProps[] | ReactNode
+  filteringOptions?: FilteringOptionProps[] | React.ReactNode
   enableSearch?: boolean
   immediateSearchFocus?: boolean
   searchPlaceholder?: string
@@ -53,9 +53,9 @@ type TableElement<T> = React.ForwardRefExoticComponent<T> &
   React.RefAttributes<unknown>
 
 type TableType = {
-  Head: TableElement<React.HTMLAttributes<HTMLTableElement>>
+  Head: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   HeadRow: TableElement<React.HTMLAttributes<HTMLTableRowElement>>
-  HeadCell: TableElement<React.HTMLAttributes<HTMLTableCellElement>>
+  HeadCell: TableElement<React.ThHTMLAttributes<HTMLTableCellElement>>
   SortingHeadCell: TableElement<SortingHeadCellProps>
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
@@ -64,7 +64,7 @@ type TableType = {
     React.RefAttributes<unknown>
 } & TableElement<TableProps>
 
-const Table: TableType = React.forwardRef(
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
   (
     {
       className,
@@ -77,7 +77,7 @@ const Table: TableType = React.forwardRef(
       filteringOptions,
       containerClassName,
       ...props
-    }: TableProps,
+    },
     ref
   ) => {
     if (enableSearch && !handleSearch) {
@@ -102,7 +102,7 @@ const Table: TableType = React.forwardRef(
                 autoFocus={immediateSearchFocus}
                 placeholder={searchPlaceholder}
                 searchValue={searchValue}
-                onSearch={handleSearch}
+                onSearch={handleSearch!}
               />
             )}
           </div>
@@ -117,57 +117,46 @@ const Table: TableType = React.forwardRef(
       </div>
     )
   }
-)
+) as TableType
 
-Table.Head = React.forwardRef(
-  (
-    { className, children, ...props }: React.HTMLAttributes<HTMLTableElement>,
-    ref
-  ) => (
-    <thead
-      ref={ref}
-      className={clsx(
-        "whitespace-nowrap inter-small-semibold text-grey-50 border-t border-b border-grey-20",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </thead>
-  )
-)
+Table.Head = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, children, ...props }, ref) => (
+  <thead
+    ref={ref}
+    className={clsx(
+      "whitespace-nowrap inter-small-semibold text-grey-50 border-t border-b border-grey-20",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </thead>
+))
 
-Table.HeadRow = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableRowElement>,
-    ref
-  ) => (
-    <tr ref={ref} className={clsx(className)} {...props}>
-      {children}
-    </tr>
-  )
-)
+Table.HeadRow = React.forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, children, ...props }, ref) => (
+  <tr ref={ref} className={clsx(className)} {...props}>
+    {children}
+  </tr>
+))
 
-Table.HeadCell = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number },
-    ref
-  ) => (
-    <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>
-      {children}
-    </th>
-  )
-)
+Table.HeadCell = React.forwardRef<
+  HTMLTableCellElement,
+  React.HTMLAttributes<HTMLTableCellElement>
+>(({ className, children, ...props }, ref) => (
+  <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>
+    {children}
+  </th>
+))
 
-Table.SortingHeadCell = React.forwardRef(
+Table.SortingHeadCell = React.forwardRef<
+  HTMLTableCellElement,
+  SortingHeadCellProps
+>(
   (
     {
       onSortClicked,
@@ -209,23 +198,17 @@ Table.SortingHeadCell = React.forwardRef(
   }
 )
 
-Table.Body = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLTableSectionElement>,
-    ref
-  ) => (
-    <tbody ref={ref} className={clsx(className)} {...props}>
-      {children}
-    </tbody>
-  )
-)
+Table.Body = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, children, ...props }, ref) => (
+  <tbody ref={ref} className={clsx(className)} {...props}>
+    {children}
+  </tbody>
+))
 
-Table.Cell = React.forwardRef(
-  ({ className, linkTo, children, ...props }: TableCellProps, ref) => (
+Table.Cell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, linkTo, children, ...props }, ref) => (
     <td
       ref={ref}
       className={clsx("inter-small-regular h-[40px]", className)}
@@ -242,18 +225,8 @@ Table.Cell = React.forwardRef(
   )
 )
 
-Table.Row = React.forwardRef(
-  (
-    {
-      className,
-      actions,
-      children,
-      linkTo,
-      forceDropdown,
-      ...props
-    }: TableRowProps,
-    ref
-  ) => (
+Table.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+  ({ className, actions, children, linkTo, forceDropdown, ...props }, ref) => (
     <tr
       ref={ref}
       className={clsx(
