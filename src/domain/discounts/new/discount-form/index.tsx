@@ -95,7 +95,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
               onClick={handleSubmit(submitCTA)}
               className="rounded-rounded"
             >
-              Publish promotion
+              {isEdit ? "Save changes" : "Publish discount"}
             </Button>
           </div>
         </div>
@@ -104,18 +104,18 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         <div className="flex justify-center mb-[25%]">
           <div className="medium:w-7/12 large:w-6/12 small:w-4/5 w-full pt-16">
             <h1 className="inter-xlarge-semibold">
-              {isEdit ? "Edit promotion" : "Create new promotion"}
+              {isEdit ? "Edit discount" : "Create new discount"}
             </h1>
             <Accordion
               className="pt-7 text-grey-90"
-              defaultValue={["promotion-type", ...additionalOpen]}
+              defaultValue={["discount-type", ...additionalOpen]}
               type="multiple"
             >
               <Accordion.Item
                 forceMountContent
-                title="Promotion type"
+                title="Discount type"
                 required
-                tooltip="Select a promotion type"
+                tooltip="Select a discount type"
                 value="promotion-type"
               >
                 <PromotionType />
@@ -132,16 +132,16 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 forceMountContent
                 title="Configuration"
                 value="configuration"
-                description="Promotion code applies from you hit the publish button and forever if left untouched."
+                description="Discount code applies from you hit the publish button and forever if left untouched."
               >
                 <Configuration promotion={discount} isEdit={isEdit} />
               </Accordion.Item>
               <Accordion.Item
                 forceMountContent
                 title="Conditions"
-                description="Promotion code apply to all products if left untouched."
+                description="Discount code apply to all products if left untouched."
                 value="conditions"
-                tooltip="Add conditions to your Promotion"
+                tooltip="Add conditions to your Discount"
               >
                 <Conditions discount={discount} />
               </Accordion.Item>
