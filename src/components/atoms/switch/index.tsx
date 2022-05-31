@@ -12,12 +12,15 @@ function Switch(props: RadixSwitch.SwitchProps) {
       className={clsx(
         "w-8 h-[18px] rounded-full transition-bg bg-gray-300 radix-state-checked:bg-violet-60"
       )}
+      asChild
     >
-      <RadixSwitch.Thumb
-        className={clsx(
-          "w-2 h-2 bg-white rounded-full block transition-transform translate-x-[5px] radix-state-checked:translate-x-[19px]"
-        )}
-      />
+      <div className="flex items-center">
+        <RadixSwitch.Thumb
+          className={clsx(
+            "w-2 h-2 bg-white rounded-full block transition-transform translate-x-[5px] radix-state-checked:translate-x-[19px]"
+          )}
+        />
+      </div>
     </RadixSwitch.Root>
   )
 }

@@ -1,15 +1,10 @@
 import clsx from "clsx"
-import { navigate } from "gatsby"
 import { isEmpty } from "lodash"
 import { useAdminDiscounts } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import Spinner from "../../atoms/spinner"
-import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
-import PublishIcon from "../../fundamentals/icons/publish-icon"
-import TrashIcon from "../../fundamentals/icons/trash-icon"
-import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import Table, { TablePagination } from "../../molecules/table"
 import DiscountFilters from "../discount-filter-dropdown"
 import { usePromotionTableColumns } from "./use-promotion-columns"
@@ -41,6 +36,7 @@ const DiscountTable: React.FC = () => {
 
   const { discounts, isLoading, count } = useAdminDiscounts({
     is_dynamic: false,
+    expand: "rule,rule.conditions,rule.conditions.products",
     ...queryObject,
   })
 

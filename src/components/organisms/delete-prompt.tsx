@@ -62,7 +62,7 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
               loading={isLoading}
               size="small"
               className="w-24 text-small justify-center"
-              variant="danger"
+              variant="nuclear"
               onClick={handleSubmit}
             >
               {confirmText}

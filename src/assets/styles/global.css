@@ -248,7 +248,7 @@
   }
 
   .btn {
-    @apply flex items-center justify-center rounded-base focus:outline-none focus:shadow-cta;
+    @apply flex items-center justify-center rounded-rounded focus:outline-none focus:shadow-cta;
   }
 
   .btn-large {
@@ -272,6 +272,10 @@
   }
 
   .btn-danger {
+   @apply bg-grey-0 text-rose-50 border border-grey-20 hover:bg-grey-10 active:bg-grey-20 disabled:bg-grey-0 disabled:text-grey-30
+  }
+
+  .btn-nuclear {
     @apply bg-rose-50 text-grey-0 hover:bg-rose-40 active:bg-rose-60 disabled:bg-grey-20 disabled:text-grey-40;
   }
 

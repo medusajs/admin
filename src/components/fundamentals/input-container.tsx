@@ -2,7 +2,6 @@ import clsx from "clsx"
 import React, { MouseEventHandler } from "react"
 
 type InputContainerProps = React.HTMLAttributes<HTMLDivElement> & {
-  key?: string
   className?: string
   onClick?: MouseEventHandler<HTMLDivElement>
   onFocusLost?: () => void
