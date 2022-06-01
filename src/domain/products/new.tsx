@@ -6,8 +6,6 @@ import toast from "react-hot-toast"
 import Toaster from "../../components/declarative-toaster"
 import FormToasterContainer from "../../components/molecules/form-toaster"
 import useNotification from "../../hooks/use-notification"
-import Medusa from "../../services/api"
-import { consolidateImages } from "../../utils/consolidate-images"
 import { getErrorMessage } from "../../utils/error-messages"
 import { checkForDirtyState } from "../../utils/form-helpers"
 import { handleFormError } from "../../utils/handle-form-error"
@@ -28,30 +26,9 @@ const NewProductPage = () => {
   const onSubmit = async (data, viewType) => {
     setIsLoading(true)
 
-    const images = data.images
-      .filter((img) => img.url.startsWith("blob"))
-      .map((img) => img.nativeFile)
+    const payload = await formValuesToCreateProductMapper(data, viewType)
 
-    let uploadedImgs = []
-    if (images.length > 0) {
-      uploadedImgs = await Medusa.uploads
-        .create(images)
-        .then(({ data }) => {
-          const uploaded = data.uploads.map(({ url }) => url)
-          return uploaded
-        })
-        .catch((err) => {
-          setIsLoading(false)
-          notification("Error uploading images", getErrorMessage(err), "error")
-          return
-        })
-    }
-    const newData = {
-      ...data,
-      images: consolidateImages(data.images, uploadedImgs),
-    }
-
-    createProduct.mutate(formValuesToCreateProductMapper(newData, viewType), {
+    createProduct.mutate(payload, {
       onSuccess: ({ product }) => {
         setIsLoading(false)
         notification("Success", "Product was succesfully created", "success")

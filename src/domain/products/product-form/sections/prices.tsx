@@ -32,6 +32,7 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
     <BodyCard
       title="Pricing"
       subtitle="Give products a price for each of the currencies that you sell in"
+      className="min-h-0"
     >
       <div className="mt-base">
         <h6 className="inter-base-semibold text-grey-90 mr-1.5">Prices</h6>

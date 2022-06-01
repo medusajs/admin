@@ -21,11 +21,8 @@ import RadioGroup from "../../../../components/organisms/radio-group"
 import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
-import {
-  SINGLE_PRODUCT_VIEW,
-  useProductForm,
-  VARIANTS_VIEW,
-} from "../form/product-form-context"
+import { useProductForm } from "../form/product-form-context"
+import { PRODUCT_VIEW } from "../utils/constants"
 
 const General = ({ showViewOptions = true, isEdit = false, product }) => {
   const {
@@ -40,6 +37,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
 
   const typeOptions =
     product_types?.map((tag) => ({ label: tag.value, value: tag.id })) || []
+
   const collectionOptions =
     collections?.map((collection) => ({
       label: collection.title,
@@ -114,13 +112,20 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             ref={register}
           />
           <Controller
-            as={Select}
             control={control}
-            label="Collection"
             name="collection"
-            placeholder="Select collection..."
-            options={collectionOptions}
-            clearSelected
+            render={({ onChange, value }) => {
+              return (
+                <Select
+                  onChange={onChange}
+                  value={value}
+                  label="Collection"
+                  placeholder="Select collection..."
+                  options={collectionOptions}
+                  clearSelected
+                />
+              )
+            }}
           />
           <Controller
             control={control}
@@ -173,11 +178,11 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           >
             <RadioGroup.SimpleItem
               label="Simple product"
-              value={SINGLE_PRODUCT_VIEW}
+              value={PRODUCT_VIEW.SINGLE_PRODUCT_VIEW}
             />
             <RadioGroup.SimpleItem
               label="Product with variants"
-              value={VARIANTS_VIEW}
+              value={PRODUCT_VIEW.VARIANTS_VIEW}
             />
           </RadioGroup.Root>
         )}
@@ -215,6 +220,7 @@ const GeneralBodyCard = ({ isEdit, product, ...props }) => {
     const newStatus = product?.status === "published" ? "draft" : "published"
     updateProduct.mutate(
       {
+        // @ts-ignore TODO fix update type in API
         status: newStatus,
       },
       {

@@ -5,7 +5,7 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
-import { buildOptionsMap } from "../../domain/products/product-form/utils"
+import { buildOptionsMap } from "../../domain/products/product-form/utils/helpers"
 import useImperativeDialog from "../../hooks/use-imperative-dialog"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"

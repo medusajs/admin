@@ -15,7 +15,8 @@ import { getCombinations } from "../../../../utils/get-combinations"
 import NewOption from "../../details/variants/option-edit"
 import VariantEditor from "../../details/variants/variant-editor"
 import { useProductForm } from "../form/product-form-context"
-import { buildOptionsMap } from "../utils"
+import { buildOptionsMap } from "../utils/helpers"
+import EditVariants from "./variants/edit"
 
 const Variants = ({ isEdit, product }) => {
   const {
@@ -181,12 +182,16 @@ const Variants = ({ isEdit, product }) => {
             </div>
           </>
         )}
-        <VariantGrid
-          edit={isEdit}
-          product={product}
-          variants={variants}
-          onVariantsChange={(vars) => setVariants(vars)}
-        />
+        {isEdit ? (
+          <EditVariants product={product} />
+        ) : (
+          <VariantGrid
+            edit={isEdit}
+            product={product}
+            variants={variants}
+            onVariantsChange={(vars) => setVariants(vars)}
+          />
+        )}
       </div>
       {showAddOption && (
         <NewOption

@@ -1,15 +1,9 @@
 import { useFieldArray, UseFieldArrayOptions, useWatch } from "react-hook-form"
+import { PriceFormValue } from "../utils/types"
 
 type UsePricesFieldArrayOptions = {
   defaultAmount: number
   defaultCurrencyCode: string
-}
-
-type PriceFormValue = {
-  price: {
-    currency_code: string
-    amount: number
-  }
 }
 
 const usePricesFieldArray = <TKeyName extends string = "id">(
@@ -56,7 +50,7 @@ const usePricesFieldArray = <TKeyName extends string = "id">(
     })
   }
 
-  const deletePrice = (index) => {
+  const deletePrice = (index: number | undefined) => {
     return () => {
       remove(index)
     }

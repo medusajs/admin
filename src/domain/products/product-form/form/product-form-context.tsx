@@ -1,41 +1,8 @@
 import React from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import { trimValues } from "../../../../utils/trim-values"
-
-export const VARIANTS_VIEW = "variants"
-
-export const SINGLE_PRODUCT_VIEW = "single"
-
-type PRODUCT_VIEW = typeof VARIANTS_VIEW | typeof SINGLE_PRODUCT_VIEW
-
-const defaultProduct = {
-  variants: [],
-  images: [],
-  prices: [],
-  tags: [],
-  options: [],
-  type: null,
-  collection: null,
-  id: "",
-  thumbnail: 0,
-  title: "",
-  handle: "",
-  description: "",
-  sku: "",
-  ean: "",
-  inventory_quantity: null,
-  manage_inventory: false,
-  allow_backorder: false,
-  weight: null,
-  height: null,
-  width: null,
-  length: null,
-  mid_code: null,
-  hs_code: null,
-  origin_country: null,
-  material: "",
-  discountable: false,
-}
+import { PRODUCT_VIEW } from "../utils/constants"
+import { ProductFormValues } from "../utils/types"
 
 const ProductFormContext = React.createContext<{
   productOptions: any[]
@@ -49,18 +16,16 @@ const ProductFormContext = React.createContext<{
   setViewType: (value: PRODUCT_VIEW) => void
   viewType: PRODUCT_VIEW
   isVariantsView: boolean
-  onSubmit: (values: any) => void
+  onSubmit: (values: ProductFormValues) => void
   resetForm: () => void
   additionalDirtyState: Record<string, boolean>
 } | null>(null)
 
-export const ProductFormProvider = ({
-  product = defaultProduct,
-  onSubmit,
-  children,
-}) => {
+export const ProductFormProvider = ({ product, onSubmit, children }) => {
   const [viewType, setViewType] = React.useState<PRODUCT_VIEW>(
-    product.variants?.length > 0 ? VARIANTS_VIEW : SINGLE_PRODUCT_VIEW
+    product?.variants?.length > 0
+      ? PRODUCT_VIEW.VARIANTS_VIEW
+      : PRODUCT_VIEW.SINGLE_PRODUCT_VIEW
   )
   const [images, setImages] = React.useState<any[]>([])
   const [variants, setVariants] = React.useState<any[]>([])
@@ -77,15 +42,13 @@ export const ProductFormProvider = ({
     const tmp = images.filter((img) => img.url !== image.url)
     setImages(tmp)
   }
-  const methods = useForm()
+  const methods = useForm<ProductFormValues>()
 
   const resetForm = () => {
-    methods.reset({
-      ...product,
-    })
+    methods.reset({ ...product })
     setHasImagesChanged(false)
-    setImages(product.images)
-    setProductOptions(product.options)
+    setImages(product?.images ?? [])
+    setProductOptions(product?.options ?? [])
 
     if (product?.variants) {
       const variants = product?.variants?.map((v) => ({
@@ -113,7 +76,7 @@ export const ProductFormProvider = ({
     resetForm()
   }, [product])
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values: ProductFormValues) => {
     onSubmit(
       { ...trimValues(values), images, variants, options: productOptions },
       viewType
@@ -134,7 +97,7 @@ export const ProductFormProvider = ({
           removeImage,
           setViewType,
           viewType,
-          isVariantsView: viewType === VARIANTS_VIEW,
+          isVariantsView: viewType === PRODUCT_VIEW.VARIANTS_VIEW,
           onSubmit: handleSubmit,
           resetForm,
           additionalDirtyState: {
@@ -150,7 +113,7 @@ export const ProductFormProvider = ({
 
 export const useProductForm = () => {
   const context = React.useContext(ProductFormContext)
-  const form = useFormContext()
+  const form = useFormContext<ProductFormValues>()
   if (!context) {
     throw new Error("useProductForm must be a child of ProductFormContext")
   }

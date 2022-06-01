@@ -23,7 +23,7 @@ export const useGridColumns = (product, isEditing) => {
       {
         header: "Prices",
         field: "prices",
-        formatter: (prices) => `${prices.length} price(s)`,
+        formatter: (prices) => `${prices?.length ?? 0} price(s)`,
       },
       ...defaultFields,
     ]

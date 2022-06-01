@@ -19,34 +19,22 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
   const currencyCodes = store?.currencies.map((currency) => currency.code)
 
   return (
-    <>
-      <div>
-        <General isEdit={isEdit} product={product} showViewOptions={!isEdit} />
-      </div>
+    <div className="flex flex-col gap-y-base pb-xlarge">
+      <General isEdit={isEdit} product={product} showViewOptions={!isEdit} />
       {(isVariantsView || isEdit) && (
-        <div className="mt-large">
-          <Variants isEdit={isEdit} product={product} />
-        </div>
+        <Variants isEdit={isEdit} product={product} />
       )}
       {!isVariantsView && !isEdit && (
-        <div className="mt-large">
-          <Prices
-            currencyCodes={currencyCodes}
-            defaultCurrencyCode={store?.default_currency_code}
-            defaultAmount={1000}
-          />
-        </div>
+        <Prices
+          currencyCodes={currencyCodes}
+          defaultCurrencyCode={store?.default_currency_code}
+          defaultAmount={1000}
+        />
       )}
-      <div className="mt-large">
-        <Images />
-      </div>
-      <div className="mt-large">
-        <StockAndInventory />
-      </div>
-      <div className="mt-large">
-        <RawJSON data={product} title="Raw product" />
-      </div>
-    </>
+      <Images />
+      <StockAndInventory />
+      <RawJSON data={product} title="Raw product" />
+    </div>
   )
 }
 
