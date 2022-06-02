@@ -1,53 +1,67 @@
-import React from "react"
+import { navigate } from "gatsby"
+import { useAdminCreateProduct, useAdminUpdateProduct } from "medusa-react"
+import React, { useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
+import useNotification from "../../../../hooks/use-notification"
+import { ProductStatus } from "../../../../types/shared"
+import { handleFormError } from "../../../../utils/handle-form-error"
 import { trimValues } from "../../../../utils/trim-values"
 import { PRODUCT_VIEW } from "../utils/constants"
 import { ProductFormValues } from "../utils/types"
+import {
+  formValuesToCreateProductMapper,
+  formValuesToUpdateProductMapper,
+} from "./mappers"
 
 const ProductFormContext = React.createContext<{
   productOptions: any[]
   setProductOptions: (vars: any[]) => void
   variants: any[]
   setVariants: (vars: any[]) => void
-  images: any[]
-  setImages: (images: any[]) => void
-  appendImage: (image: any) => void
-  removeImage: (image: any) => void
   setViewType: (value: PRODUCT_VIEW) => void
   viewType: PRODUCT_VIEW
   isVariantsView: boolean
-  onSubmit: (values: ProductFormValues) => void
   resetForm: () => void
+  setImageDirtyState: (dirty: boolean) => void
   additionalDirtyState: Record<string, boolean>
+  onCreate: () => Promise<void>
+  onCreateDraft: () => Promise<void>
+  onUpdate: () => Promise<void>
 } | null>(null)
 
-export const ProductFormProvider = ({ product, onSubmit, children }) => {
+type ProductFormProviderProps = {
+  productId?: string
+  product?: ProductFormValues
+  children: React.ReactNode
+}
+
+export const ProductFormProvider = ({
+  productId,
+  product,
+
+  children,
+}: ProductFormProviderProps) => {
   const [viewType, setViewType] = React.useState<PRODUCT_VIEW>(
-    product?.variants?.length > 0
+    product?.variants?.length
       ? PRODUCT_VIEW.VARIANTS_VIEW
       : PRODUCT_VIEW.SINGLE_PRODUCT_VIEW
   )
-  const [images, setImages] = React.useState<any[]>([])
+
   const [variants, setVariants] = React.useState<any[]>([])
-  const [productOptions, setProductOptions] = React.useState<any[]>([])
-  const [hasImagesChanged, setHasImagesChanged] = React.useState(false)
+  const [productOptions, setProductOptions] = useState<any[]>([])
+  const [imageDirtyState, setImageDirtyState] = useState(false)
 
-  const appendImage = (image) => {
-    setHasImagesChanged(true)
-    setImages([...images, image])
-  }
-
-  const removeImage = (image) => {
-    setHasImagesChanged(true)
-    const tmp = images.filter((img) => img.url !== image.url)
-    setImages(tmp)
-  }
-  const methods = useForm<ProductFormValues>()
+  const methods = useForm<ProductFormValues>({
+    defaultValues: {
+      ...product,
+      variants: product?.variants || [],
+      images: product?.images || [],
+    },
+  })
 
   const resetForm = () => {
     methods.reset({ ...product })
-    setHasImagesChanged(false)
-    setImages(product?.images ?? [])
+    setImageDirtyState(false)
     setProductOptions(product?.options ?? [])
 
     if (product?.variants) {
@@ -72,16 +86,58 @@ export const ProductFormProvider = ({ product, onSubmit, children }) => {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     resetForm()
   }, [product])
 
-  const handleSubmit = (values: ProductFormValues) => {
-    onSubmit(
-      { ...trimValues(values), images, variants, options: productOptions },
+  const { mutate: create } = useAdminCreateProduct()
+  const { mutate: update } = useAdminUpdateProduct(productId!)
+  const notification = useNotification()
+
+  const onCreate = methods.handleSubmit(async (values) => {
+    const cleanedValues = trimValues(values)
+
+    const payload = await formValuesToCreateProductMapper(
+      cleanedValues,
       viewType
     )
-  }
+
+    create(payload, {
+      onSuccess: ({ product }) => {
+        notification("Success", "Product created successfully", "success")
+        navigate(`/a/products/${product.id}`)
+      },
+    })
+  }, handleFormError)
+
+  const onCreateDraft = methods.handleSubmit(async (values) => {
+    const cleanedValues = trimValues(values)
+
+    const payload = await formValuesToCreateProductMapper(
+      { ...cleanedValues, status: ProductStatus.DRAFT },
+      viewType
+    )
+
+    create(payload, {
+      onSuccess: ({ product }) => {
+        notification("Success", "Product created successfully", "success")
+        navigate(`/a/products/${product.id}`)
+      },
+    })
+  }, handleFormError)
+
+  const onUpdate = methods.handleSubmit(async (values) => {
+    const cleanedValues = trimValues(values)
+
+    const payload = await formValuesToUpdateProductMapper(cleanedValues)
+
+    update(payload, {
+      onSuccess: ({ product }) => {
+        notification("Success", "Product updated successfully", "success")
+        navigate(`/a/products/${product.id}`)
+      },
+    })
+  }, handleFormError)
 
   return (
     <FormProvider {...methods}>
@@ -91,17 +147,16 @@ export const ProductFormProvider = ({ product, onSubmit, children }) => {
           setProductOptions,
           variants,
           setVariants,
-          images,
-          setImages,
-          appendImage,
-          removeImage,
           setViewType,
           viewType,
           isVariantsView: viewType === PRODUCT_VIEW.VARIANTS_VIEW,
-          onSubmit: handleSubmit,
           resetForm,
+          onCreate,
+          onCreateDraft,
+          onUpdate,
+          setImageDirtyState,
           additionalDirtyState: {
-            images: hasImagesChanged,
+            images: imageDirtyState,
           },
         }}
       >

@@ -18,7 +18,7 @@ const DEFAULT_PAGE_SIZE_TILE_VIEW = 18
 type ProductTableProps = {}
 
 const defaultQueryProps = {
-  fields: "id,title,type,thumbnail",
+  fields: "id,title,type,thumbnail,status",
   expand: "variants,options,variants.prices,variants.options,collection,tags",
   is_giftcard: false,
 }
@@ -56,6 +56,8 @@ const ProductTable: React.FC<ProductTableProps> = () => {
   const { products, isLoading, isRefetching, count } = useAdminProducts({
     ...queryObject,
   })
+
+  console.log(queryObject)
 
   useEffect(() => {
     if (typeof count !== "undefined") {

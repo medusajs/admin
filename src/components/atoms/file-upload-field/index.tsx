@@ -91,6 +91,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
       <input
         ref={inputRef}
         accept={filetypes.join(", ")}
+        multiple
         type="file"
         onChange={handleFileUpload}
         className="hidden"

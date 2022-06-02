@@ -10,7 +10,9 @@ export type VariantFormValues = {
   sku: string | null
   ean: string | null
   inventory_quantity: number | null
-  options: Option[]
+  options: {
+    value: string
+  }[]
 }
 
 export type PriceFormValue = {
@@ -20,16 +22,12 @@ export type PriceFormValue = {
   }
 }
 
-export type UploadImage = {
+export type FormImage = {
   url: string
-  name: string
-  size: number
-  nativeFile: File
+  name?: string
+  size?: number
+  nativeFile?: File
 }
-
-export type ExistingImage = { url: string }
-
-export type ImageFormValues = (UploadImage | ExistingImage)[]
 
 export type ProductFormValues = {
   title: string
@@ -52,10 +50,10 @@ export type ProductFormValues = {
   origin_country: Option | null
   mid_code: string | null
   hs_code: string | null
-  variants: VariantFormValues[] | null
+  variants: VariantFormValues[]
   prices?: PriceFormValue[] | null
   thumbnail: number | null
-  images: ImageFormValues
+  images: FormImage[]
   options: ProductOption[]
   status: ProductStatus | null
 }

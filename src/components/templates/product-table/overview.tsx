@@ -6,6 +6,7 @@ import Button from "../../fundamentals/button"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import MoreHorizontalIcon from "../../fundamentals/icons/more-horizontal-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
+import ImagePlaceholder from "../../fundamentals/image-placeholder"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Actionables from "../../molecules/actionables"
 import useProductActions from "./use-product-actions"
@@ -64,10 +65,16 @@ const ProductTile = ({ product }) => {
           />
         </div>
         <Link to={`${product.id}`}>
-          <img
-            className="min-h-[230px] block object-cover rounded-rounded"
-            src={product.thumbnail}
-          />
+          {product.thumbnail ? (
+            <img
+              className="min-h-[230px] block object-cover rounded-rounded"
+              src={product.thumbnail}
+            />
+          ) : (
+            <div className="min-h-[230px] flex items-center justify-center bg-grey-5 rounded-rounded">
+              <ImagePlaceholder size={20} />
+            </div>
+          )}
           <div>
             <div className="mt-base flex items-center justify-between">
               <p className="inter-small-regular text-grey-90 line-clamp-1 mr-3">

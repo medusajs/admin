@@ -9,7 +9,7 @@ import { useProductForm } from "../form/product-form-context"
 import usePricesFieldArray from "../form/usePricesFieldArray"
 
 const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
-  const { register, control } = useProductForm()
+  const { control } = useProductForm()
   const {
     fields,
     appendPrice,
@@ -49,7 +49,6 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
                     control={control}
                     key={field.indexId}
                     name={`prices[${index}].price`}
-                    ref={register()}
                     defaultValue={field.price}
                     render={({ onChange, value }) => {
                       const codes = [

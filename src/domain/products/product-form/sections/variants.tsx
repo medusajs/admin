@@ -1,14 +1,8 @@
 import { useAdminCreateVariant } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import Button from "../../../../components/fundamentals/button"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
-import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import IconTooltip from "../../../../components/molecules/icon-tooltip"
-import Input from "../../../../components/molecules/input"
-import TagInput from "../../../../components/molecules/tag-input"
 import BodyCard from "../../../../components/organisms/body-card"
-import VariantGrid from "../../../../components/variant-grid"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { getCombinations } from "../../../../utils/get-combinations"
@@ -16,7 +10,7 @@ import NewOption from "../../details/variants/option-edit"
 import VariantEditor from "../../details/variants/variant-editor"
 import { useProductForm } from "../form/product-form-context"
 import { buildOptionsMap } from "../utils/helpers"
-import EditVariants from "./variants/edit"
+import CreateVariants from "./variants/create"
 
 const Variants = ({ isEdit, product }) => {
   const {
@@ -132,7 +126,7 @@ const Variants = ({ isEdit, product }) => {
         ]
       }
     >
-      <div>
+      {/* <div>
         {!isEdit && (
           <>
             <div className="flex items-center mb-base">
@@ -143,29 +137,31 @@ const Variants = ({ isEdit, product }) => {
             <div className="flex flex-col gap-y-base max-w-[570px] w-full mb-4">
               {productOptions.map((o, index) => (
                 <div key={index} className="flex items-center">
-                  <div className="flex gap-x-small grow">
+                  <div className="flex gap-x-2xsmall grow">
                     <Input
                       required
                       className="w-[144px]"
                       name={`options[${index}].name`}
                       onChange={(e) => updateOptionName(e, index)}
                       label="Option title"
-                      placeholder="Color"
+                      placeholder="Color, Size..."
                       value={o?.name || o.title}
                     />
                     <TagInput
                       className="grow"
-                      placeholder="Blue, Green"
+                      placeholder="Blue, Green..."
                       values={o?.values}
                       onChange={(values) => updateOptionValue(index, values)}
                     />
                   </div>
-                  <button
-                    className="ml-large"
+                  <Button
+                    variant="ghost"
+                    size="small"
+                    className="ml-base"
                     onClick={() => handleRemoveOption(index)}
                   >
-                    <TrashIcon className="text-grey-40" />
-                  </button>
+                    <TrashIcon className="text-grey-40" size={20} />
+                  </Button>
                 </div>
               ))}
               <div className="mt-xs">
@@ -192,7 +188,8 @@ const Variants = ({ isEdit, product }) => {
             onVariantsChange={(vars) => setVariants(vars)}
           />
         )}
-      </div>
+      </div> */}
+      <CreateVariants />
       {showAddOption && (
         <NewOption
           productId={product.id}

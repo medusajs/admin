@@ -1,16 +1,12 @@
 import { useAdminProduct, useAdminUpdateProduct } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import { FieldValues } from "react-hook-form"
 import toast from "react-hot-toast"
 import Spinner from "../../components/atoms/spinner"
 import Toaster from "../../components/declarative-toaster"
 import FormToasterContainer from "../../components/molecules/form-toaster"
 import useNotification from "../../hooks/use-notification"
-import Medusa from "../../services/api"
-import { consolidateImages } from "../../utils/consolidate-images"
 import { getErrorMessage } from "../../utils/error-messages"
 import { checkForDirtyState } from "../../utils/form-helpers"
-import { handleFormError } from "../../utils/handle-form-error"
 import ProductForm from "./product-form"
 import {
   formValuesToUpdateProductMapper,
@@ -20,59 +16,35 @@ import {
   ProductFormProvider,
   useProductForm,
 } from "./product-form/form/product-form-context"
+import { ProductFormValues } from "./product-form/utils/types"
 
 const EditProductPage = ({ id }) => {
   const notification = useNotification()
   const { product, isLoading } = useAdminProduct(id, {
     keepPreviousData: true,
   })
-  const updateProduct = useAdminUpdateProduct(id)
-  const [submitting, setSubmitting] = useState(false)
+  const { mutate, isLoading: submitting } = useAdminUpdateProduct(id)
 
-  const onSubmit = async (data) => {
-    setSubmitting(true)
-    const images = data.images
-      .filter((img) => img.url.startsWith("blob"))
-      .map((img) => img.nativeFile)
+  const onSubmit = async (data: ProductFormValues) => {
+    const payload = await formValuesToUpdateProductMapper(data)
 
-    let uploadedImgs = []
-    if (images.length > 0) {
-      uploadedImgs = await Medusa.uploads
-        .create(images)
-        .then(({ data }) => {
-          const uploaded = data.uploads.map(({ url }) => url)
-          return uploaded
-        })
-        .catch((err) => {
-          setSubmitting(false)
-          notification("Error uploading images", getErrorMessage(err), "error")
-          return
-        })
-    }
-
-    const newData = {
-      ...data,
-      images: consolidateImages(data.images, uploadedImgs),
-    }
-
-    updateProduct.mutate(formValuesToUpdateProductMapper(newData), {
+    mutate(payload, {
       onSuccess: () => {
-        setSubmitting(false)
         notification("Success", "Product updated successfully", "success")
       },
       onError: (error) => {
-        setSubmitting(false)
         notification("Error", getErrorMessage(error), "error")
       },
     })
   }
 
-  return isLoading ? (
+  return isLoading || !product ? (
     <div className="w-full pt-2xlarge flex items-center justify-center">
       <Spinner size={"large"} variant={"secondary"} />
     </div>
   ) : (
     <ProductFormProvider
+      productId={id}
       product={productToFormValuesMapper(product)}
       onSubmit={onSubmit}
     >
@@ -87,17 +59,13 @@ const TOAST_ID = "edit-product-dirty"
 const UpdateNotification = ({ isLoading = false }) => {
   const {
     formState,
-    onSubmit,
     handleSubmit,
     resetForm,
     additionalDirtyState,
+    onUpdate,
   } = useProductForm()
   const [visible, setVisible] = useState(false)
   const [blocking, setBlocking] = useState(true)
-
-  const onUpdate = (values: FieldValues) => {
-    onSubmit({ ...values })
-  }
 
   useEffect(() => {
     const timeout = setTimeout(setBlocking, 300, false)
@@ -128,9 +96,7 @@ const UpdateNotification = ({ isLoading = false }) => {
     >
       <FormToasterContainer isLoading={isLoading}>
         <FormToasterContainer.Actions>
-          <FormToasterContainer.ActionButton
-            onClick={handleSubmit(onUpdate, handleFormError)}
-          >
+          <FormToasterContainer.ActionButton onClick={onUpdate}>
             Save
           </FormToasterContainer.ActionButton>
           <FormToasterContainer.DiscardButton onClick={resetForm}>

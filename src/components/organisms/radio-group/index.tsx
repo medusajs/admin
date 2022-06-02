@@ -15,6 +15,9 @@ type RadioGroupSimpleItemProps = {
 } & RadioGroupPrimitive.RadioGroupItemProps &
   React.RefAttributes<HTMLButtonElement>
 
+type DotProps = RadioGroupPrimitive.RadioGroupItemProps &
+  React.RefAttributes<HTMLButtonElement>
+
 const Root = RadioGroupPrimitive.Root
 
 const Item = ({
@@ -119,4 +122,34 @@ const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
   )
 }
 
-export default { Root, Item, SimpleItem }
+const Dot: React.FC<DotProps> = ({ className, ...rest }) => {
+  return (
+    <label
+      className={clsx(
+        {
+          ["opacity-50 select-none pointer-events-none"]: rest.disabled,
+        },
+        className
+      )}
+      htmlFor={rest.value}
+    >
+      <RadioGroupPrimitive.Item
+        {...rest}
+        id={rest.value}
+        className={clsx(
+          "radio-outer-ring outline-0",
+          "shrink-0 w-[20px] h-[20px] shadow-[0_0_0_1px] shadow-[#D1D5DB] rounded-circle"
+        )}
+      >
+        <RadioGroupPrimitive.Indicator
+          className={clsx(
+            "flex items-center justify-center w-full h-full relative indicator",
+            "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
+          )}
+        />
+      </RadioGroupPrimitive.Item>
+    </label>
+  )
+}
+
+export default { Root, Item, SimpleItem, Dot }

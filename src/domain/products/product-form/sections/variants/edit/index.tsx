@@ -105,24 +105,24 @@ const EditVariants = ({ product }: EditVariantsProps) => {
     <Table>
       <Table.Head>
         <Table.HeadRow>
-          {columns.map((col) => (
-            <Table.HeadCell className="w-[100px] px-2 py-4">
+          {columns.map((col, i) => (
+            <Table.HeadCell key={i} className="w-[100px] px-2 py-4">
               {col.header}
             </Table.HeadCell>
           ))}
         </Table.HeadRow>
       </Table.Head>
       <Table.Body>
-        {product.variants.map((variant, i) => {
+        {product.variants.map((variant, j) => {
           return (
             <Table.Row
-              key={i}
+              key={j}
               color={"inherit"}
               actions={editVariantActions(variant)}
             >
-              {columns.map((col, j) => {
+              {columns.map((col, n) => {
                 return (
-                  <Table.Cell key={j}>
+                  <Table.Cell key={n}>
                     <div className="px-2 py-4 truncate">
                       {getDisplayValue(variant, col)}
                     </div>

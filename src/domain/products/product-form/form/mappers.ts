@@ -21,7 +21,7 @@ export const productToFormValuesMapper = (
     handle: product.handle,
     description: product.description,
     thumbnail,
-    images: [],
+    images: product.images.map((i) => ({ url: i.url })),
     collection: product.collection
       ? { value: product.collection.id, label: product.collection.title }
       : null,
@@ -80,8 +80,8 @@ export const formValuesToCreateProductMapper = async (
         title: values.title,
         allow_backorder: values.allow_backorder,
         manage_inventory: values.manage_inventory,
-        sku: values.sku ?? undefined,
-        ean: values?.ean ?? undefined,
+        sku: values.sku && values.sku !== "" ? values.sku : undefined,
+        ean: values.ean && values.ean !== "" ? values.ean : undefined,
         inventory_quantity: values.inventory_quantity
           ? values.inventory_quantity
           : 0,
@@ -105,7 +105,7 @@ export const formValuesToCreateProductMapper = async (
     payload.options = values.options.map((o) => ({ title: o.name }))
   }
 
-  if (values.images.length) {
+  if (values.images?.length) {
     const images = await prepareImages(values.images)
     payload.images = images.map((img) => img.url)
   }
@@ -147,12 +147,14 @@ export const formValuesToUpdateProductMapper = async (
     "images" | "thumbnail"
   >
 
-  if (values.images.length) {
+  if (values.images?.length) {
     const images = await prepareImages(values.images)
     payload.images = images.map((img) => img.url)
+  } else {
+    payload.images = []
   }
 
-  if (values.thumbnail) {
+  if (values.thumbnail !== null && values.images) {
     payload.thumbnail = payload.images?.length
       ? payload.images[values.thumbnail]
       : undefined

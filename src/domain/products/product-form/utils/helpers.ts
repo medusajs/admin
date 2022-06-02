@@ -1,10 +1,5 @@
 import Medusa from "../../../../services/api"
-import {
-  ExistingImage,
-  ImageFormValues,
-  UploadImage,
-  VariantFormValues,
-} from "./types"
+import { FormImage, VariantFormValues } from "./types"
 
 type BuildOptionsMap = (product: any, variant?: any) => { [key: string]: any }
 
@@ -41,13 +36,13 @@ export const getVariantTitle = (variant: VariantFormValues) => {
 }
 
 const splitImages = (
-  images: ImageFormValues
-): { uploadImages: UploadImage[]; existingImages: ExistingImage[] } => {
-  const uploadImages: UploadImage[] = []
-  const existingImages: ExistingImage[] = []
+  images: FormImage[]
+): { uploadImages: FormImage[]; existingImages: FormImage[] } => {
+  const uploadImages: FormImage[] = []
+  const existingImages: FormImage[] = []
 
   images.forEach((image) => {
-    if ("nativeFile" in image) {
+    if (image.nativeFile) {
       uploadImages.push(image)
     } else {
       existingImages.push(image)
@@ -57,17 +52,15 @@ const splitImages = (
   return { uploadImages, existingImages }
 }
 
-export const prepareImages = async (images: ImageFormValues) => {
+export const prepareImages = async (images: FormImage[]) => {
   const { uploadImages, existingImages } = splitImages(images)
 
-  let uploadedImgs: ExistingImage[] = []
+  let uploadedImgs: FormImage[] = []
   if (uploadImages.length > 0) {
-    uploadedImgs = await Medusa.uploads.create(images).then(({ data }) => {
-      const uploaded = data.uploads.map(({ url }) => {
-        url
-      })
-      return uploaded
-    })
+    const files = uploadImages.map((i) => i.nativeFile)
+    uploadedImgs = await Medusa.uploads
+      .create(files)
+      .then(({ data }) => data.uploads)
   }
 
   return [...existingImages, ...uploadedImgs]
