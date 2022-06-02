@@ -120,18 +120,14 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
               <InputField
                 label={"Email"}
                 required
-                name="metadata.email"
+                {...register('metadata.email', { required: true })}
                 placeholder="lebron@james.com"
-                type="email"
-                ref={register({ required: true })}
-              />
+                type="email" />
               <Textarea
                 label={"Personal Message"}
                 rows={7}
                 placeholder="Something nice to someone special"
-                name="metadata.personal_message"
-                ref={register()}
-              />
+                {...register('metadata.personal_message')} />
             </div>
           </div>
         </Modal.Content>
@@ -158,7 +154,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
 
 export default CustomGiftcard

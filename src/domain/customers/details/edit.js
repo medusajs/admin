@@ -45,28 +45,13 @@ const EditCustomerModal = ({ handleClose, customer }) => {
         <Modal.Content>
           <div className="inter-base-semibold text-grey-90 mb-4">General</div>
           <div className="w-full flex mb-4 space-x-2">
-            <InputField
-              label="First Name"
-              name="first_name"
-              placeholder="Lebron"
-              ref={register}
-            />
-            <InputField
-              label="Last Name"
-              name="last_name"
-              placeholder="James"
-              ref={register}
-            />
+            <InputField label="First Name" {...register('first_name')} placeholder="Lebron" />
+            <InputField label="Last Name" {...register('last_name')} placeholder="James" />
           </div>
           <div className="inter-base-semibold text-grey-90 mb-4">Contact</div>
           <div className="flex space-x-2">
-            <InputField label="Email" name="email" disabled ref={register} />
-            <InputField
-              label="Phone number"
-              name="phone"
-              placeholder="+45 42 42 42 42"
-              ref={register}
-            />
+            <InputField label="Email" {...register('email')} disabled />
+            <InputField label="Phone number" {...register('phone')} placeholder="+45 42 42 42 42" />
           </div>
         </Modal.Content>
         <Modal.Footer>
@@ -92,7 +77,7 @@ const EditCustomerModal = ({ handleClose, customer }) => {
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
 
 export default EditCustomerModal

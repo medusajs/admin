@@ -76,10 +76,9 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           <Input
             id="name"
             label="Name"
-            name="title"
             placeholder="Jacket, Sunglasses..."
             required
-            ref={register({
+            {...register("title", {
               required: "Name is required",
               minLength: 1,
               pattern: /(.|\s)*\S(.|\s)*/,
@@ -88,10 +87,9 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           <Input
             tooltipContent="Handles are human friendly unique identifiers that are appropriate for URL slugs."
             label="Handle"
-            name="handle"
             placeholder="bathrobe"
             prefix="/"
-            ref={register()}
+            {...register("handle")}
           />
         </div>
         <label
@@ -103,18 +101,17 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
         </label>
         <div className="grid grid-rows-3 grid-cols-2 gap-x-8 gap-y-4 mb-large">
           <Textarea
-            name="description"
             id="description"
             label="Description"
             placeholder="Short description of the product..."
             className="row-span-full"
             rows={8}
-            ref={register}
+            {...register("description")}
           />
           <Controller
             control={control}
             name="collection"
-            render={({ onChange, value }) => {
+            render={({ field: { onChange, value } }) => {
               return (
                 <Select
                   onChange={onChange}
@@ -130,7 +127,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           <Controller
             control={control}
             name="type"
-            render={({ value, onChange }) => {
+            render={({ field: { value, onChange } }) => {
               return (
                 <Select
                   label="Type"
@@ -149,7 +146,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           />
           <Controller
             name="tags"
-            render={({ onChange, value }) => {
+            render={({ field: { onChange, value } }) => {
               return (
                 <TagInput
                   label="Tags (separated by comma)"
@@ -163,7 +160,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           />
         </div>
         <div className="flex item-center gap-x-1.5 mb-xlarge">
-          <Checkbox name="discountable" ref={register} label="Discountable" />
+          <Checkbox {...register("discountable")} label="Discountable" />
           <IconTooltip
             content={
               "When unchecked discounts will not be applied to this product"
@@ -210,7 +207,7 @@ const GeneralBodyCard = ({ isEdit, product, ...props }) => {
           navigate("/a/products/")
         },
         onError: (err) => {
-          notification("Ooops", getErrorMessage(err), "error")
+          notification("Error", getErrorMessage(err), "error")
         },
       })
     }

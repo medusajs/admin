@@ -59,11 +59,9 @@ const ResendModal: React.FC<ResendModalProps> = ({
                   label={"Email"}
                   type="text"
                   placeholder={"Email"}
-                  name={`to`}
-                  ref={register({
+                  {...register(`to`, {
                     required: "Must be filled",
-                  })}
-                />
+                  })} />
               </div>
             </div>
           </Modal.Content>
@@ -92,7 +90,7 @@ const ResendModal: React.FC<ResendModalProps> = ({
         </Modal.Body>
       </form>
     </Modal>
-  )
+  );
 }
 
 export default ResendModal

@@ -84,30 +84,24 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
             <div>
               <p className="inter-base-semibold mb-base">Details</p>
               <Input
-                name="name"
+                {...register('name', { required: true })}
                 label="Name"
                 placeholder="Rate name"
-                ref={register({ required: true })}
-                className="mb-base min-w-[335px] w-full"
-              />
+                className="mb-base min-w-[335px] w-full" />
               <Input
                 type="number"
                 min={0}
                 max={100}
                 step={0.01}
-                name="rate"
+                {...register('rate', { min: 0, max: 100, required: true })}
                 label="Rate"
                 placeholder="12"
-                ref={register({ min: 0, max: 100, required: true })}
-                className="mb-base min-w-[335px] w-full"
-              />
+                className="mb-base min-w-[335px] w-full" />
               <Input
                 placeholder="1000"
-                name="code"
+                {...register('code', { required: true })}
                 label="Code"
-                ref={register({ required: true })}
-                className="mb-base min-w-[335px] w-full"
-              />
+                className="mb-base min-w-[335px] w-full" />
             </div>
             <div>
               <p className="inter-base-semibold mb-base">Overrides</p>
@@ -251,7 +245,7 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
         </Modal.Body>
       </form>
     </LayeredModal>
-  )
+  );
 }
 
 const SelectOverridesScreen = (

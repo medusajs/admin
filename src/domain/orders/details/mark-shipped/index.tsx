@@ -134,12 +134,10 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
                   label={index === 0 ? "Tracking number" : ""}
                   type="text"
                   placeholder={"Tracking number..."}
-                  name={`tracking_numbers[${index}].value`}
-                  ref={register({
+                  {...register(`tracking_numbers[${index}].value`, {
                     required: "Must be filled",
                   })}
-                  onDelete={() => removeTracking(index)}
-                />
+                  onDelete={() => removeTracking(index)} />
               ))}
             </div>
           </div>
@@ -203,7 +201,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
 
 export default MarkShippedModal

@@ -221,101 +221,97 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
     )
   }
 
-  return (
-    <>
-      <BodyCard
-        title="Details"
-        events={[{ label: "Save", onClick: handleSubmit(onSave) }]}
-        actionables={[
-          {
-            label: "Duplicate Region",
-            onClick: handleDuplicate,
-            icon: <DuplicateIcon />,
-          },
-          {
-            label: "Delete Region",
-            onClick: () => setShowDanger(true),
-            icon: <TrashIcon />,
-            variant: "danger",
-          },
-        ]}
-      >
-        <form onSubmit={handleSubmit(onSave)}>
-          <div className="flex flex-col w-full">
-            {regionIsLoading || storeIsLoading ? (
-              <div className="flex flex-col items-center justify-center h-screen mt-auto">
-                <div className="h-[75px] w-[75px] mt-[50%]">
-                  <Spinner />
-                </div>
+  return <>
+    <BodyCard
+      title="Details"
+      events={[{ label: "Save", onClick: handleSubmit(onSave) }]}
+      actionables={[
+        {
+          label: "Duplicate Region",
+          onClick: handleDuplicate,
+          icon: <DuplicateIcon />,
+        },
+        {
+          label: "Delete Region",
+          onClick: () => setShowDanger(true),
+          icon: <TrashIcon />,
+          variant: "danger",
+        },
+      ]}
+    >
+      <form onSubmit={handleSubmit(onSave)}>
+        <div className="flex flex-col w-full">
+          {regionIsLoading || storeIsLoading ? (
+            <div className="flex flex-col items-center justify-center h-screen mt-auto">
+              <div className="h-[75px] w-[75px] mt-[50%]">
+                <Spinner />
               </div>
-            ) : (
-              <div className="w-full">
-                <Input
-                  name="name"
-                  label="Name"
-                  placeholder="Region name..."
-                  ref={register({ required: true })}
-                  className="mb-base"
-                />
-                <CurrencyInput
-                  currentCurrency={selectedCurrency}
-                  currencyCodes={currencies}
-                  onChange={handleChangeCurrency}
-                  className="mb-base"
-                />
+            </div>
+          ) : (
+            <div className="w-full">
+              <Input
+                {...register('name', { required: true })}
+                label="Name"
+                placeholder="Region name..."
+                className="mb-base" />
+              <CurrencyInput
+                currentCurrency={selectedCurrency}
+                currencyCodes={currencies}
+                onChange={handleChangeCurrency}
+                className="mb-base"
+              />
+              <Select
+                isMultiSelect
+                enableSearch
+                label="Countries"
+                hasSelectAll
+                options={countryOptions}
+                value={countries}
+                onChange={handleChange}
+                className="mb-base"
+              />
+              {!!paymentOptions.length && (
                 <Select
                   isMultiSelect
+                  onChange={handlePaymentChange}
+                  options={paymentOptions}
+                  value={paymentProviders}
+                  label="Payment Providers"
                   enableSearch
-                  label="Countries"
-                  hasSelectAll
-                  options={countryOptions}
-                  value={countries}
-                  onChange={handleChange}
                   className="mb-base"
                 />
-                {!!paymentOptions.length && (
-                  <Select
-                    isMultiSelect
-                    onChange={handlePaymentChange}
-                    options={paymentOptions}
-                    value={paymentProviders}
-                    label="Payment Providers"
-                    enableSearch
-                    className="mb-base"
-                  />
-                )}
-                {!!fulfillmentOptions.length && (
-                  <Select
-                    onChange={handleFulfillmentChange}
-                    options={fulfillmentOptions}
-                    value={fulfillmentProviders}
-                    label="Fulfillment Providers"
-                    enableSearch
-                    isMultiSelect
-                  />
-                )}
-              </div>
-            )}
-          </div>
-        </form>
-        {region && fulfillmentOptions && (
-          <div className="mt-2xlarge">
-            <Shipping region={region} />
-          </div>
-        )}
-      </BodyCard>
-      {showDanger && (
-        <DeletePrompt
-          handleClose={() => setShowDanger(!showDanger)}
-          text="Are you sure you want to delete this region from your Medusa Store?"
-          heading="Delete region"
-          onDelete={handleDelete}
-          successText="Successfully deleted region"
-          confirmText="Yes, delete"
-        />
+              )}
+              {!!fulfillmentOptions.length && (
+                <Select
+                  onChange={handleFulfillmentChange}
+                  options={fulfillmentOptions}
+                  value={fulfillmentProviders}
+                  label="Fulfillment Providers"
+                  enableSearch
+                  isMultiSelect
+                />
+              )}
+            </div>
+          )}
+        </div>
+      </form>
+      {region && fulfillmentOptions && (
+        <div className="mt-2xlarge">
+          <Shipping region={region} />
+        </div>
       )}
-    </>
-  )
+    </BodyCard>
+    {showDanger && (
+      <DeletePrompt
+        handleClose={() => setShowDanger(!showDanger)}
+        text="Are you sure you want to delete this region from your Medusa Store?"
+        heading="Delete region"
+        onDelete={handleDelete}
+        successText="Successfully deleted region"
+        confirmText="Yes, delete"
+      />
+    )}
+  </>;
 }
 
 export default RegionDetails

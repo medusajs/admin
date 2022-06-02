@@ -114,18 +114,14 @@ const ResetPasswordPage = ({ location }) => {
                 <SigninInput
                   placeholder="Password"
                   type={"password"}
-                  name="password"
-                  ref={register({ required: true })}
-                  autoComplete="new-password"
-                />
+                  {...register('password', { required: true })}
+                  autoComplete="new-password" />
                 <SigninInput
                   placeholder="Confirm password"
                   type={"password"}
-                  name="repeat_password"
-                  ref={register({ required: true })}
+                  {...register('repeat_password', { required: true })}
                   autoComplete="new-password"
-                  className="mb-0"
-                />
+                  className="mb-0" />
                 {error && (
                   <span className="text-rose-50 w-full mt-xsmall inter-small-regular">
                     The two passwords are not the same
@@ -152,7 +148,7 @@ const ResetPasswordPage = ({ location }) => {
         </div>
       </div>
     </LoginLayout>
-  )
+  );
 }
 
 export default ResetPasswordPage

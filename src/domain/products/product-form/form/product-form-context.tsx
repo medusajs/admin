@@ -54,6 +54,7 @@ export const ProductFormProvider = ({
   const methods = useForm<ProductFormValues>({
     defaultValues: {
       ...product,
+      thumbnail: product?.thumbnail || 0,
       variants: product?.variants || [],
       images: product?.images || [],
     },

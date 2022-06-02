@@ -48,9 +48,9 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
                   <Controller
                     control={control}
                     key={field.indexId}
-                    name={`prices[${index}].price`}
+                    name={`prices.${index}.price`}
                     defaultValue={field.price}
-                    render={({ onChange, value }) => {
+                    render={({ field: { onChange, value } }) => {
                       const codes = [
                         value?.currency_code,
                         ...availableCurrencies,

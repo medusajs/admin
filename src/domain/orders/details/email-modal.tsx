@@ -33,12 +33,7 @@ const EmailModal: React.FC<EmailModalProps> = ({
         <Modal.Content>
           <div className="space-y-4">
             <div className="flex mt-4 space-x-4">
-              <Input
-                label="Email"
-                name="email"
-                ref={register}
-                placeholder="Email"
-              />
+              <Input label="Email" {...register('email')} placeholder="Email" />
             </div>
           </div>
         </Modal.Content>
@@ -64,7 +59,7 @@ const EmailModal: React.FC<EmailModalProps> = ({
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
 
 export default EmailModal

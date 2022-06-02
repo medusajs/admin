@@ -161,145 +161,141 @@ const EditShipping = ({ shippingOption, region, onDone, onClick }) => {
     })
   }
 
-  return (
-    <>
-      {showDelete ? (
-        <DeletePrompt
-          text={"Are you sure you want to delete this shipping option?"}
-          successText="Successfully deleted shipping option"
-          handleClose={() => setShowDelete(false)}
-          onDelete={async () => {
-            handleDelete()
-          }}
-        />
-      ) : (
-        <Modal handleClose={onClick}>
-          <form onSubmit={handleSubmit(handleSave)}>
-            <Modal.Body>
-              <Modal.Header handleClose={onClick}>
-                <div>
-                  <h1 className="inter-xlarge-semibold">
-                    {shippingOption.is_return
-                      ? "Edit Return Shipping Option"
-                      : "Edit Shipping Option"}
-                  </h1>
-                </div>
-              </Modal.Header>
-              <Modal.Content>
-                <div className="mb-large">
-                  <p className="inter-base-semibold">Fulfillment Method</p>
-                  <p className="inter-base-regular text-grey-50">
-                    {shippingOption.data.id} via {shippingOption.provider_id}
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
-                  <Input
-                    label="Name"
-                    name="name"
-                    ref={register}
-                    placeholder="Shipping option name"
-                    className="flex-grow"
+  return <>
+    {showDelete ? (
+      <DeletePrompt
+        text={"Are you sure you want to delete this shipping option?"}
+        successText="Successfully deleted shipping option"
+        handleClose={() => setShowDelete(false)}
+        onDelete={async () => {
+          handleDelete()
+        }}
+      />
+    ) : (
+      <Modal handleClose={onClick}>
+        <form onSubmit={handleSubmit(handleSave)}>
+          <Modal.Body>
+            <Modal.Header handleClose={onClick}>
+              <div>
+                <h1 className="inter-xlarge-semibold">
+                  {shippingOption.is_return
+                    ? "Edit Return Shipping Option"
+                    : "Edit Shipping Option"}
+                </h1>
+              </div>
+            </Modal.Header>
+            <Modal.Content>
+              <div className="mb-large">
+                <p className="inter-base-semibold">Fulfillment Method</p>
+                <p className="inter-base-regular text-grey-50">
+                  {shippingOption.data.id} via {shippingOption.provider_id}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
+                <Input
+                  label="Name"
+                  {...register('name')}
+                  placeholder="Shipping option name"
+                  className="flex-grow" />
+                <CurrencyInput
+                  readOnly
+                  currentCurrency={region.currency_code}
+                  size="small"
+                >
+                  <CurrencyInput.AmountInput
+                    amount={shippingOption.amount}
+                    label="Price"
+                    onChange={(amount) => handleAmountChange(amount)}
                   />
-                  <CurrencyInput
-                    readOnly
-                    currentCurrency={region.currency_code}
-                    size="small"
-                  >
-                    <CurrencyInput.AmountInput
-                      amount={shippingOption.amount}
-                      label="Price"
-                      onChange={(amount) => handleAmountChange(amount)}
-                    />
-                  </CurrencyInput>
-                </div>
-                <div className="mt-large mb-xlarge">
-                  <label className="inline-flex items-center inter-base-semibold">
-                    <input
-                      type="checkbox"
-                      id="true"
-                      name="requires_shipping"
-                      value="true"
-                      checked={!adminOnly}
-                      onChange={() => setAdminOnly(!adminOnly)}
-                      className="mr-small w-5 h-5 accent-violet-60 rounded-base"
-                    />
-                    Show on website
-                  </label>
-                </div>
-                {!shippingOption.is_return && (
-                  <>
-                    <p className="inter-base-semibold mb-base">Requirements</p>
-                    <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
-                      <CurrencyInput
-                        readOnly
-                        currentCurrency={region.currency_code}
-                        size="small"
-                      >
-                        <CurrencyInput.AmountInput
-                          amount={
-                            shippingOption.requirements?.min_subtotal?.amount
-                          }
-                          label="Min. subtotal"
-                          onChange={(amount) => handleMinChange(amount)}
-                        />
-                      </CurrencyInput>
-                      <CurrencyInput
-                        readOnly
-                        currentCurrency={region.currency_code}
-                        size="small"
-                      >
-                        <CurrencyInput.AmountInput
-                          amount={
-                            shippingOption.requirements?.max_subtotal?.amount
-                          }
-                          label="Max. subtotal"
-                          onChange={(amount) => handleMaxChange(amount)}
-                        />
-                      </CurrencyInput>
-                    </div>
-                  </>
-                )}
-                <div className="mt-xlarge">
-                  <p className="inter-base-semibold">Danger Zone</p>
-                  <p className="inter-base-regular text-grey-50 mb-base">
-                    This will permanently delete this option from your Medusa
-                    Store
-                  </p>
-                  <button
-                    onClick={() => setShowDelete(true)}
-                    className="text-rose-50 inter-base-semibold"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </Modal.Content>
-              <Modal.Footer>
-                <div className="flex items-center justify-end w-full gap-x-xsmall">
-                  <Button
-                    type="button"
-                    onClick={onClick}
-                    variant="secondary"
-                    size="small"
-                    className="w-eventButton justify-center"
-                  >
-                    Cancel changes
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="small"
-                    className="w-eventButton justify-center"
-                  >
-                    Save
-                  </Button>
-                </div>
-              </Modal.Footer>
-            </Modal.Body>
-          </form>
-        </Modal>
-      )}
-    </>
-  )
+                </CurrencyInput>
+              </div>
+              <div className="mt-large mb-xlarge">
+                <label className="inline-flex items-center inter-base-semibold">
+                  <input
+                    type="checkbox"
+                    id="true"
+                    name="requires_shipping"
+                    value="true"
+                    checked={!adminOnly}
+                    onChange={() => setAdminOnly(!adminOnly)}
+                    className="mr-small w-5 h-5 accent-violet-60 rounded-base"
+                  />
+                  Show on website
+                </label>
+              </div>
+              {!shippingOption.is_return && (
+                <>
+                  <p className="inter-base-semibold mb-base">Requirements</p>
+                  <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
+                    <CurrencyInput
+                      readOnly
+                      currentCurrency={region.currency_code}
+                      size="small"
+                    >
+                      <CurrencyInput.AmountInput
+                        amount={
+                          shippingOption.requirements?.min_subtotal?.amount
+                        }
+                        label="Min. subtotal"
+                        onChange={(amount) => handleMinChange(amount)}
+                      />
+                    </CurrencyInput>
+                    <CurrencyInput
+                      readOnly
+                      currentCurrency={region.currency_code}
+                      size="small"
+                    >
+                      <CurrencyInput.AmountInput
+                        amount={
+                          shippingOption.requirements?.max_subtotal?.amount
+                        }
+                        label="Max. subtotal"
+                        onChange={(amount) => handleMaxChange(amount)}
+                      />
+                    </CurrencyInput>
+                  </div>
+                </>
+              )}
+              <div className="mt-xlarge">
+                <p className="inter-base-semibold">Danger Zone</p>
+                <p className="inter-base-regular text-grey-50 mb-base">
+                  This will permanently delete this option from your Medusa
+                  Store
+                </p>
+                <button
+                  onClick={() => setShowDelete(true)}
+                  className="text-rose-50 inter-base-semibold"
+                >
+                  Delete
+                </button>
+              </div>
+            </Modal.Content>
+            <Modal.Footer>
+              <div className="flex items-center justify-end w-full gap-x-xsmall">
+                <Button
+                  type="button"
+                  onClick={onClick}
+                  variant="secondary"
+                  size="small"
+                  className="w-eventButton justify-center"
+                >
+                  Cancel changes
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="small"
+                  className="w-eventButton justify-center"
+                >
+                  Save
+                </Button>
+              </div>
+            </Modal.Footer>
+          </Modal.Body>
+        </form>
+      </Modal>
+    )}
+  </>;
 }
 
 export default EditShipping

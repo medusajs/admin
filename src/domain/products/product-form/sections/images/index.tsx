@@ -4,13 +4,12 @@ import FileUploadField from "../../../../../components/atoms/file-upload-field"
 import BodyCard from "../../../../../components/organisms/body-card"
 import RadioGroup from "../../../../../components/organisms/radio-group"
 import { useProductForm } from "../../form/product-form-context"
-import { FormImage } from "../../utils/types"
 import ImageTable, { DataType } from "./image-table"
 
 const Images = () => {
   const { register, setImageDirtyState, control } = useProductForm()
 
-  const { fields, append, remove } = useFieldArray<FormImage>({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "images",
   })
@@ -39,12 +38,12 @@ const Images = () => {
         <Controller
           name="thumbnail"
           control={control}
-          render={({ value, onChange }) => {
+          render={({ field: { value, onChange } }) => {
             return (
               <RadioGroup.Root
-                value={value}
+                value={value ? `${value}` : undefined}
                 onValueChange={(value) => {
-                  onChange(value)
+                  onChange(parseInt(value))
                 }}
               >
                 <ImageTable
@@ -53,29 +52,26 @@ const Images = () => {
                 />
                 {fields.map((field, index) => {
                   return (
-                    <div key={index} className="flex items-center">
+                    <div key={field.id} className="flex items-center">
                       <input
                         className="hidden"
-                        name={`images[${index}].url`}
-                        ref={register()}
+                        {...register(`images.${index}.url`)}
                         defaultValue={field.url}
                       />
                       {field.nativeFile && (
                         <>
                           <input
                             className="hidden"
-                            name={`images[${index}].name`}
-                            ref={register()}
+                            {...register(`images.${index}.name`)}
                             defaultValue={field.name}
                           />
                           <input
                             className="hidden"
-                            name={`images[${index}].size`}
-                            ref={register()}
+                            {...register(`images.${index}.size`)}
                             defaultValue={field.size}
                           />
                           <Controller
-                            name={`images[${index}].nativeFile`}
+                            name={`images.${index}.nativeFile`}
                             control={control}
                             defaultValue={field.nativeFile}
                             render={() => <></>}

@@ -1,30 +1,35 @@
-import { useFieldArray, UseFieldArrayOptions, useWatch } from "react-hook-form"
-import { PriceFormValue } from "../utils/types"
+import { useFieldArray, UseFieldArrayProps, useWatch } from "react-hook-form"
+import { ProductFormValues } from "../utils/types"
 
 type UsePricesFieldArrayOptions = {
   defaultAmount: number
   defaultCurrencyCode: string
 }
 
-const usePricesFieldArray = <TKeyName extends string = "id">(
+const usePricesFieldArray = <TKey extends string>(
   currencyCodes: string[],
-  { control, name, keyName }: UseFieldArrayOptions<TKeyName>,
+  {
+    control,
+    name,
+    keyName,
+  }: UseFieldArrayProps<ProductFormValues, "prices", TKey>,
   options: UsePricesFieldArrayOptions = {
     defaultAmount: 1000,
     defaultCurrencyCode: "usd",
   }
 ) => {
   const { defaultAmount, defaultCurrencyCode } = options
-  const { fields, append, remove } = useFieldArray<PriceFormValue, TKeyName>({
+  const { fields, append, remove } = useFieldArray({
     control,
     name,
     keyName,
   })
-  const watchedFields = useWatch({
-    control,
-    name,
-    defaultValue: fields,
-  })
+  const watchedFields =
+    useWatch({
+      control,
+      name,
+      defaultValue: fields,
+    }) || []
 
   const selectedCurrencies = watchedFields.map(
     (field) => field?.price?.currency_code

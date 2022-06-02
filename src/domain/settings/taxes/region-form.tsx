@@ -114,10 +114,8 @@ export const RegionTaxForm = ({ region }) => {
         <div className="flex item-center gap-x-1.5">
           <Checkbox
             className="inter-base-regular"
-            name="automatic_taxes"
-            ref={register}
-            label="Calculate taxes automatically?"
-          />
+            {...register('automatic_taxes')}
+            label="Calculate taxes automatically?" />
           <IconTooltip
             content={
               "When checked Medusa will automatically apply tax calculations to Carts in this Region. When unchecked you will have to manually compute taxes at checkout. Manual taxes are recommended if using a 3rd party tax provider to avoid performing too many requests"
@@ -127,10 +125,8 @@ export const RegionTaxForm = ({ region }) => {
         <div className="flex item-center gap-x-1.5">
           <Checkbox
             className="inter-base-regular"
-            name="gift_cards_taxable"
-            ref={register}
-            label="Apply tax to gift cards?"
-          />
+            {...register('gift_cards_taxable')}
+            label="Apply tax to gift cards?" />
           <IconTooltip
             content={
               "When checked taxes will be applied to gift cards on checkout. In some contries tax regulations require that taxes are applied to gift cards on purchase."
@@ -151,5 +147,5 @@ export const RegionTaxForm = ({ region }) => {
         )}
       </div>
     </form>
-  )
+  );
 }

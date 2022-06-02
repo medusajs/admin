@@ -28,62 +28,56 @@ const CustomItemSubModal: React.FC<CustomItemSubModalProps> = ({
     pop()
   }
 
-  return (
-    <>
-      <Modal.Content isLargeModal={isLargeModal}>
-        <div className="min-h-[705px] gap-y-xsmall">
-          <InputField
-            placeholder="E.g. Gift wrapping"
-            label="Title"
-            name="title"
-            className="my-4"
+  return <>
+    <Modal.Content isLargeModal={isLargeModal}>
+      <div className="min-h-[705px] gap-y-xsmall">
+        <InputField
+          placeholder="E.g. Gift wrapping"
+          label="Title"
+          {...register('title', { required: true })}
+          className="my-4"
+          required />
+        <CurrencyInput
+          currentCurrency={region.currency_code}
+          size="small"
+          readOnly
+        >
+          <CurrencyInput.AmountInput
             required
-            ref={register({ required: true })}
+            label="Price"
+            amount={amount}
+            onChange={(value) => setAmount(value || 0)}
           />
-          <CurrencyInput
-            currentCurrency={region.currency_code}
-            size="small"
-            readOnly
-          >
-            <CurrencyInput.AmountInput
-              required
-              label="Price"
-              amount={amount}
-              onChange={(value) => setAmount(value || 0)}
-            />
-          </CurrencyInput>
-          <InputField
-            className="my-4"
-            label="Quantity"
-            name="quantity"
-            type="number"
-            required
-            ref={register({ required: true })}
-          />
-        </div>
-      </Modal.Content>
-      <Modal.Footer isLargeModal={isLargeModal}>
-        <div className="flex w-full justify-end gap-x-xsmall">
-          <Button
-            variant="ghost"
-            size="small"
-            className="w-[112px]"
-            onClick={() => pop()}
-          >
-            Back
-          </Button>
-          <Button
-            variant="primary"
-            className="w-[112px]"
-            size="small"
-            onClick={handleSubmit(onSubmitItem)}
-          >
-            Add
-          </Button>
-        </div>
-      </Modal.Footer>
-    </>
-  )
+        </CurrencyInput>
+        <InputField
+          className="my-4"
+          label="Quantity"
+          {...register('quantity', { required: true })}
+          type="number"
+          required />
+      </div>
+    </Modal.Content>
+    <Modal.Footer isLargeModal={isLargeModal}>
+      <div className="flex w-full justify-end gap-x-xsmall">
+        <Button
+          variant="ghost"
+          size="small"
+          className="w-[112px]"
+          onClick={() => pop()}
+        >
+          Back
+        </Button>
+        <Button
+          variant="primary"
+          className="w-[112px]"
+          size="small"
+          onClick={handleSubmit(onSubmitItem)}
+        >
+          Add
+        </Button>
+      </div>
+    </Modal.Footer>
+  </>;
 }
 
 export default CustomItemSubModal

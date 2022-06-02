@@ -72,19 +72,15 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
                   label="Title"
                   required
                   placeholder="Sunglasses"
-                  name="title"
-                  ref={register({ required: true })}
-                />
+                  {...register('title', { required: true })} />
                 <InputField
                   label="Handle"
                   placeholder="sunglasses"
-                  name="handle"
+                  {...register('handle')}
                   prefix="/"
                   tooltip={
                     <IconTooltip content="URL Slug for the product. Will be auto generated if left blank." />
-                  }
-                  ref={register}
-                />
+                  } />
               </div>
             </div>
             <div className="mt-xlarge w-full">
@@ -109,7 +105,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
         </form>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
 
 export default CollectionModal

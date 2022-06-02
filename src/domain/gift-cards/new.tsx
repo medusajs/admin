@@ -169,15 +169,11 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
                 label={"Name"}
                 required
                 placeholder="The best Gift Card"
-                name="name"
-                ref={register({ required: true })}
-              />
+                {...register('name', { required: true })} />
               <Textarea
                 label="Description"
                 placeholder="The best Gift Card of all time"
-                name="description"
-                ref={register}
-              />
+                {...register('description')} />
             </div>
             <div className="mt-xlarge">
               <h3 className="inter-base-semibold">Thumbnail</h3>
@@ -274,7 +270,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
         </Modal.Body>
       </form>
     </Modal>
-  )
+  );
 }
 
 export default NewGiftCard

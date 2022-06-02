@@ -59,73 +59,34 @@ const AddressModal: React.FC<AddressModalProps> = ({
           <div className="space-y-4">
             <span className="inter-base-semibold">General</span>
             <div className="flex space-x-4">
-              <Input
-                label="First name"
-                name="first_name"
-                placeholder="First name"
-                ref={register}
-              />
-              <Input
-                label="Last name"
-                name="last_name"
-                placeholder="Last name"
-                ref={register}
-              />
+              <Input label="First name" {...register('first_name')} placeholder="First name" />
+              <Input label="Last name" {...register('last_name')} placeholder="Last name" />
             </div>
             <div className="flex mt-4 space-x-4">
-              <Input
-                label="Phone"
-                name="phone"
-                ref={register}
-                placeholder="Phone"
-              />
+              <Input label="Phone" {...register('phone')} placeholder="Phone" />
             </div>
           </div>
           <div className="space-y-4 mt-8">
             <span className="inter-base-semibold">Address</span>
             <div className="flex space-x-4">
-              <Input
-                label="Address"
-                name="address_1"
-                ref={register}
-                placeholder="Address 1"
-              />
-              <Input
-                label="Address 2"
-                name="address_2"
-                ref={register}
-                placeholder="Address 2"
-              />
+              <Input label="Address" {...register('address_1')} placeholder="Address 1" />
+              <Input label="Address 2" {...register('address_2')} placeholder="Address 2" />
             </div>
             <div className="flex space-x-4">
-              <Input
-                label="State"
-                name="province"
-                ref={register}
-                placeholder="State or province"
-              />
+              <Input label="State" {...register('province')} placeholder="State or province" />
               <Input
                 label="Postal code"
-                name="postal_code"
-                ref={register}
-                placeholder="Postal code"
-              />
+                {...register('postal_code')}
+                placeholder="Postal code" />
             </div>
             <div className="flex space-x-4">
-              <Input
-                label="City"
-                name="city"
-                ref={register}
-                placeholder="City"
-              />
+              <Input label="City" {...register('city')} placeholder="City" />
               <Select
-                ref={register}
-                name="country_code"
+                {...register('country_code')}
                 label="Country"
                 options={countryOptions}
                 onChange={setCountry}
-                value={selectedCountry}
-              />
+                value={selectedCountry} />
             </div>
           </div>
         </Modal.Content>
@@ -151,7 +112,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
 
 export default AddressModal

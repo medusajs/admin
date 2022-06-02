@@ -1,55 +1,71 @@
-import React from "react"
-import { Controller, useFieldArray } from "react-hook-form"
+import React, { useEffect } from "react"
+import {
+  Controller,
+  useFieldArray,
+  UseFieldArrayAppend,
+  UseFieldArrayRemove,
+} from "react-hook-form"
 import Button from "../../../../../../components/fundamentals/button"
 import TrashIcon from "../../../../../../components/fundamentals/icons/trash-icon"
-import {
-  default as Input,
-  default as InputField,
-} from "../../../../../../components/molecules/input"
+import { default as Input } from "../../../../../../components/molecules/input"
 import TagInput from "../../../../../../components/molecules/tag-input"
 import { useProductForm } from "../../../form/product-form-context"
-import { ProductOption, VariantFormValues } from "../../../utils/types"
+import { ProductFormValues, ProductOption } from "../../../utils/types"
 
-const ProductOptions = () => {
-  const { control, register, getValues } = useProductForm()
+type ProductOptionProps = {
+  createVariant: UseFieldArrayAppend<ProductFormValues, "variants">
+  deleteVariant: UseFieldArrayRemove
+}
+
+const ProductOptions = ({
+  createVariant,
+  deleteVariant,
+}: ProductOptionProps) => {
+  const { control, register, watch } = useProductForm()
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "options",
   })
 
-  const {
-    fields: vars,
-    append: createVariant,
-    remove: deleteVariant,
-  } = useFieldArray<VariantFormValues>({
-    control,
-    name: "variants",
+  // const detectChange = () => {
+  //   const { options, variants } = getValues()
+
+  //   console.log("variants", variants)
+  //   console.log("options", options)
+
+  //   if (!options) {
+  //     return
+  //   }
+
+  //   const combinations = getNewCombinations(options, variants)
+
+  //   const newVariants: VariantFormValues[] = combinations.map((c) => {
+  //     return {
+  //       title: c.join(" / "),
+  //       ean: null,
+  //       sku: null,
+  //       inventory_quantity: null,
+  //       options: c.map((o) => ({ value: o })),
+  //     }
+  //   })
+
+  //   createVariant(newVariants, {
+  //     shouldFocus: false,
+  //   })
+  // }
+
+  const watchFieldArray = watch("options")
+  const controlledFields = fields.map((field, index) => {
+    return {
+      ...field,
+      ...watchFieldArray[index],
+    }
   })
 
-  const detectChange = () => {
-    const { options, variants } = getValues()
-
-    console.log("vars", vars)
-
-    if (!options) {
-      return
-    }
-
-    const combinations = getNewCombinations(options, variants)
-
-    const newVariants: VariantFormValues[] = combinations.map((c) => {
-      return {
-        title: c.join(" / "),
-        ean: null,
-        sku: null,
-        inventory_quantity: null,
-        options: c.map((o) => ({ value: o })),
-      }
-    })
-
-    createVariant(newVariants, false)
-  }
+  useEffect(() => {
+    console.log(getNewCombinations(controlledFields))
+  }, [controlledFields])
 
   return (
     <div>
@@ -65,25 +81,21 @@ const ProductOptions = () => {
               <Input
                 required
                 className="w-[144px]"
-                name={`options[${index}].name`}
-                ref={register()}
+                {...register(`options.${index}.name`)}
                 label="Option title"
                 placeholder="Color, Size..."
               />
               <Controller
-                name={`options[${index}].values`}
+                name={`options.${index}.values`}
                 control={control}
                 defaultValue={o?.values || []}
-                render={({ onChange, value }) => {
+                render={({ field: { onChange, value } }) => {
                   return (
                     <TagInput
                       className="grow"
                       placeholder="Blue, Green..."
                       values={value}
-                      onChange={(e) => {
-                        onChange(e)
-                        detectChange()
-                      }}
+                      onChange={onChange}
                     />
                   )
                 }}
@@ -100,43 +112,25 @@ const ProductOptions = () => {
           </div>
         ))}
         <div className="mt-xs">
-          <Button onClick={append} size="small" variant="ghost">
+          <Button
+            onClick={() =>
+              append({
+                name: "",
+                values: [],
+              })
+            }
+            size="small"
+            variant="ghost"
+          >
             + Add an option
           </Button>
         </div>
       </div>
-      {vars.map((v, i) => {
-        console.log(vars)
-        return (
-          <div key={v.id}>
-            <InputField
-              name={`variants[${i}].title`}
-              ref={register()}
-              defaultValue={v.title ?? undefined}
-            />
-            {v.options?.map((o, j) => {
-              return (
-                <div key={j}>
-                  <span>value {o.value}</span>
-                  <input
-                    type="hidden"
-                    name={`variants[${i}].options[${j}].value`}
-                    defaultValue={o.value}
-                  />
-                </div>
-              )
-            })}
-          </div>
-        )
-      })}
     </div>
   )
 }
 
-const getNewCombinations = (
-  options: ProductOption[],
-  variants: VariantFormValues[]
-) => {
+const getNewCombinations = (options: ({ id: string } & ProductOption)[]) => {
   const combinations: string[][] = []
 
   const getCombination = (options: ProductOption[], current: string[]) => {
@@ -152,25 +146,7 @@ const getNewCombinations = (
 
   getCombination(options, [])
 
-  const existingCombinations = variants?.map((v) => {
-    return v.options?.map((v) => v.value)
-  })
-
-  if (!existingCombinations?.length) {
-    return combinations
-  }
-
-  const filterExisting = (arr: string[][], farr: string[]) => {
-    if (JSON.stringify(arr).includes(JSON.stringify(farr))) {
-      return false
-    }
-  }
-
-  const newCombinations = combinations.filter((c) =>
-    filterExisting(existingCombinations, c)
-  )
-
-  return newCombinations
+  return combinations
 }
 
 export default ProductOptions

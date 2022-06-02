@@ -1,17 +1,25 @@
 import React from "react"
+import { useFieldArray } from "react-hook-form"
+import InputField from "../../../../../../components/molecules/input"
+import { useProductForm } from "../../../form/product-form-context"
 import ProductOptions from "./product-options"
 
 const CreateVariants = () => {
+  const { control, register } = useProductForm()
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variants",
+  })
+
   return (
     <div>
-      <ProductOptions />
-      {/* {fields.map((v, i) => {
-        console.log(fields)
+      <ProductOptions createVariant={append} deleteVariant={remove} />
+      {fields.map((v, i) => {
         return (
           <div key={v.id}>
             <InputField
-              name={`variants[${i}].title`}
-              ref={register()}
+              {...register(`variants.${i}.title`)}
               defaultValue={v.title ?? undefined}
             />
             {v.options?.map((o, j) => {
@@ -28,7 +36,7 @@ const CreateVariants = () => {
             })}
           </div>
         )
-      })} */}
+      })}
     </div>
   )
 }

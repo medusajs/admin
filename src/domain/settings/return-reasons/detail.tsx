@@ -64,61 +64,54 @@ const ReturnReasonDetail = ({ reason }) => {
     }
   }, [reason])
 
-  return (
-    <>
-      <BodyCard
-        actionables={[
-          {
-            label: "Duplicate reason",
-            icon: <DuplicateIcon size={20} />,
-            onClick: () => handleOpenDuplicateModal(),
-          },
-          {
-            label: "Delete reason",
-            variant: "danger",
-            icon: <TrashIcon size={20} />,
-            onClick: () => handleOpenPrompt(),
-          },
-        ]}
-        events={[
-          {
-            label: "Save",
-            onClick: handleSubmit(onSave),
-          },
-          {
-            label: "Cancel changes",
-            onClick: handleCancel,
-          },
-        ]}
-        title="Details"
-        subtitle={reason?.value}
-      >
-        <form onSubmit={handleSubmit(onSave)}>
-          <Input ref={register} name="label" label="Label" />
-          <Input
-            ref={register}
-            name="description"
-            label="Description"
-            className="mt-base"
-          />
-        </form>
-      </BodyCard>
-      {showDuplicateModal && (
-        <CreateReturnReasonModal
-          initialReason={reason}
-          handleClose={handleCloseDuplicateModal}
-        />
-      )}
-      {showDanger && (
-        <DeletePrompt
-          heading="Delete Return Reason"
-          text="Are you sure you want to delete this return reason?"
-          handleClose={handleClosePrompt}
-          onDelete={handleDeletion}
-        />
-      )}
-    </>
-  )
+  return <>
+    <BodyCard
+      actionables={[
+        {
+          label: "Duplicate reason",
+          icon: <DuplicateIcon size={20} />,
+          onClick: () => handleOpenDuplicateModal(),
+        },
+        {
+          label: "Delete reason",
+          variant: "danger",
+          icon: <TrashIcon size={20} />,
+          onClick: () => handleOpenPrompt(),
+        },
+      ]}
+      events={[
+        {
+          label: "Save",
+          onClick: handleSubmit(onSave),
+        },
+        {
+          label: "Cancel changes",
+          onClick: handleCancel,
+        },
+      ]}
+      title="Details"
+      subtitle={reason?.value}
+    >
+      <form onSubmit={handleSubmit(onSave)}>
+        <Input {...register('label')} label="Label" />
+        <Input {...register('description')} label="Description" className="mt-base" />
+      </form>
+    </BodyCard>
+    {showDuplicateModal && (
+      <CreateReturnReasonModal
+        initialReason={reason}
+        handleClose={handleCloseDuplicateModal}
+      />
+    )}
+    {showDanger && (
+      <DeletePrompt
+        heading="Delete Return Reason"
+        text="Are you sure you want to delete this return reason?"
+        handleClose={handleClosePrompt}
+        onDelete={handleDeletion}
+      />
+    )}
+  </>;
 }
 
 export default ReturnReasonDetail

@@ -32,27 +32,25 @@ const StockAndInventory = () => {
             <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-large">
               <Input
                 label="Stock Keeping Unit (SKU)"
-                name="sku"
                 placeholder="SUN-G, JK1234..."
-                ref={register}
+                {...register("sku")}
               />
               <Input
                 label="Barcode (EAN)"
-                name="ean"
                 placeholder="1231231231234..."
-                ref={register}
+                {...register("ean")}
               />
               <Input
                 label="Quantity in stock"
-                name="inventory_quantity"
                 type="number"
                 placeholder="100"
-                ref={register({ setValueAs: numberOrNull })}
+                {...register("inventory_quantity", {
+                  setValueAs: numberOrNull,
+                })}
               />
               <Input
                 label="Material"
-                name="material"
-                ref={register}
+                {...register("material")}
                 placeholder="Wool..."
               />
             </div>
@@ -62,9 +60,8 @@ const StockAndInventory = () => {
           <div className="flex items-center gap-4 mb-xlarge">
             <div className="flex item-center gap-x-1.5">
               <Checkbox
-                name="manage_inventory"
                 label="Manage Inventory"
-                ref={register}
+                {...register("manage_inventory")}
               />
               <IconTooltip
                 content={
@@ -74,8 +71,7 @@ const StockAndInventory = () => {
             </div>
             <div className="flex item-center gap-x-1.5">
               <Checkbox
-                name="allow_backorder"
-                ref={register}
+                {...register("allow_backorder")}
                 label="Allow backorders"
               />
               <IconTooltip
@@ -96,32 +92,28 @@ const StockAndInventory = () => {
             <Input
               type="number"
               label="Height"
-              name="height"
-              ref={register({ setValueAs: numberOrNull })}
+              {...register("height", { setValueAs: numberOrNull })}
               min={0}
               placeholder="100..."
             />
             <Input
               type="number"
               label="Width"
-              name="width"
-              ref={register({ setValueAs: numberOrNull })}
+              {...register("width", { setValueAs: numberOrNull })}
               placeholder="100..."
               min={0}
             />
             <Input
               type="number"
               label="Length"
-              name="length"
-              ref={register({ setValueAs: numberOrNull })}
+              {...register("length", { setValueAs: numberOrNull })}
               placeholder="100..."
               min={0}
             />
             <Input
               type="number"
               label="Weight"
-              name="weight"
-              ref={register({ setValueAs: numberOrNull })}
+              {...register("weight", { setValueAs: numberOrNull })}
               placeholder="100..."
               min={0}
             />
@@ -129,20 +121,18 @@ const StockAndInventory = () => {
           <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-4 mb-large">
             <Input
               label="MID Code"
-              name="mid_code"
-              ref={register}
+              {...register("mid_code")}
               placeholder="100..."
             />
             <Input
               label="HS Code"
-              name="hs_code"
-              ref={register}
+              {...register("hs_code")}
               placeholder="100..."
             />
             <Controller
               control={control}
               name="origin_country"
-              render={({ onChange, value }) => {
+              render={({ field: { onChange, value } }) => {
                 return (
                   <Select
                     enableSearch

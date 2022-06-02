@@ -126,12 +126,10 @@ const NewRegion = ({ onDone, onClick }) => {
               <p className="inter-base-semibold mb-base">General</p>
               <div className="grid grid-cols-1 medium:grid-cols-2 gap-y-xsmall gap-x-base">
                 <Input
-                  name="name"
+                  {...register('name', { required: true })}
                   label="Name"
                   placeholder="Region name..."
-                  ref={register({ required: true })}
-                  className="mb-base min-w-[335px] w-full"
-                />
+                  className="mb-base min-w-[335px] w-full" />
                 <CurrencyInput
                   currencyCodes={currencies}
                   currentCurrency={selectedCurrency}
@@ -145,17 +143,13 @@ const NewRegion = ({ onDone, onClick }) => {
                   step="0.01"
                   min={0}
                   max={1}
-                  name="tax_rate"
-                  label="Tax Rate"
-                  ref={register({ max: 1, min: 0 })}
-                />
+                  {...register('tax_rate', { max: 1, min: 0 })}
+                  label="Tax Rate" />
                 <Input
                   placeholder="1000"
-                  name="tax_code"
+                  {...register('tax_code')}
                   label="Tax Code"
-                  ref={register}
-                  className="mb-base min-w-[335px] w-full"
-                />
+                  className="mb-base min-w-[335px] w-full" />
                 <Select
                   isMultiSelect
                   enableSearch
@@ -218,7 +212,7 @@ const NewRegion = ({ onDone, onClick }) => {
         </Modal.Body>
       </form>
     </Modal>
-  )
+  );
 }
 
 export default NewRegion

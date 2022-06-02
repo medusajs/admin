@@ -113,11 +113,9 @@ const RefundMenu = ({ order, onDismiss }) => {
                 )}
               />
               <TextArea
-                name="note"
+                {...register('note')}
                 label="Note"
-                placeholder="Discount for loyal customer"
-                ref={register}
-              />
+                placeholder="Discount for loyal customer" />
             </div>
           </Modal.Content>
           <Modal.Footer>
@@ -171,7 +169,7 @@ const RefundMenu = ({ order, onDismiss }) => {
         </Modal.Body>
       </form>
     </Modal>
-  )
+  );
 }
 
 export default RefundMenu

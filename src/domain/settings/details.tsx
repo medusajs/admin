@@ -78,36 +78,28 @@ const AccountDetails = () => {
           <Input
             className="mt-base"
             label="Store name"
-            name="name"
-            placeholder="Medusa Store"
-            ref={register}
-          />
+            {...register('name')}
+            placeholder="Medusa Store" />
           <h6 className="mt-2xlarge inter-base-semibold">Advanced settings</h6>
           <Input
             className="mt-base"
             label="Swap link template"
-            name="swap_link_template"
-            placeholder="https://acme.inc/swap"
-            ref={register}
-          />
+            {...register('swap_link_template')}
+            placeholder="https://acme.inc/swap" />
           <Input
             className="mt-base"
             label="Draft order link template"
-            name="payment_link_template"
-            placeholder="https://acme.inc/swap"
-            ref={register}
-          />
+            {...register('payment_link_template')}
+            placeholder="https://acme.inc/swap" />
           <Input
             className="mt-base"
             label="Invite link template"
-            name="invite_link_template"
-            placeholder="https://acme.inc/invite={invite_token}"
-            ref={register}
-          />
+            {...register('invite_link_template')}
+            placeholder="https://acme.inc/invite={invite_token}" />
         </BodyCard>
       </div>
     </form>
-  )
+  );
 }
 
 const validateUrl = (address) => {

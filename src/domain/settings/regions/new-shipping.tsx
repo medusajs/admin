@@ -170,12 +170,10 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
             <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
               <Input
                 label="Name"
-                name="name"
-                ref={register({ required: true })}
+                {...register('name', { required: true })}
                 required
                 placeholder="New Shipping Option"
-                className="flex-grow"
-              />
+                className="flex-grow" />
               <CurrencyInput
                 currentCurrency={region.currency_code}
                 readOnly
@@ -295,7 +293,7 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
         </Modal.Body>
       </form>
     </Modal>
-  )
+  );
 }
 
 export default NewShipping

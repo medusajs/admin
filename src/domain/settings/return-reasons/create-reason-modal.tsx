@@ -51,26 +51,20 @@ const CreateReturnReasonModal = ({
         <Modal.Content>
           <div className="flex">
             <Input
-              ref={register({ required: true })}
-              name="value"
+              {...register('value', { required: true })}
               label="Value"
-              placeholder="wrong_size"
-            />
+              placeholder="wrong_size" />
             <Input
               className="ml-base"
-              ref={register({ required: true })}
-              name="label"
+              {...register('label', { required: true })}
               label="Label"
-              placeholder="Wrong size"
-            />
+              placeholder="Wrong size" />
           </div>
           <Input
             className="mt-large"
-            ref={register}
-            name="description"
+            {...register('description')}
             label="Description"
-            placeholder="Customer received a wrong size"
-          />
+            placeholder="Customer received a wrong size" />
         </Modal.Content>
         <Modal.Footer>
           <div className="flex w-full h-8 justify-end">
@@ -95,7 +89,7 @@ const CreateReturnReasonModal = ({
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
 
 export default CreateReturnReasonModal

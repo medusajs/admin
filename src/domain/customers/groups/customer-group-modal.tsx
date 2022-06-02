@@ -66,11 +66,9 @@ function CustomerGroupModal(props: CustomerGroupModalProps) {
             <div className="flex space-x-4">
               <Input
                 label="Title"
-                name="name"
+                {...register('name')}
                 placeholder="Customer group name"
-                required
-                ref={register}
-              />
+                required />
             </div>
           </div>
 
@@ -101,7 +99,7 @@ function CustomerGroupModal(props: CustomerGroupModalProps) {
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
 
 export default CustomerGroupModal
