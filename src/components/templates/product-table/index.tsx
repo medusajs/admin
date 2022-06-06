@@ -57,8 +57,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     ...queryObject,
   })
 
-  console.log(queryObject)
-
   useEffect(() => {
     if (typeof count !== "undefined") {
       const controlledPageCount = Math.ceil(count / limit)

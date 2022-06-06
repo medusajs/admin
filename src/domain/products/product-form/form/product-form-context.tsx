@@ -161,7 +161,7 @@ export const ProductFormProvider = ({
           },
         }}
       >
-        {children}
+        <form>{children}</form>
       </ProductFormContext.Provider>
     </FormProvider>
   )

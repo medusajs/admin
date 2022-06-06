@@ -1,5 +1,6 @@
 import { MoneyAmount, Product } from "@medusajs/medusa"
 import { ProductVariantOption } from "@medusajs/medusa/dist/types/product-variant"
+import { useMemo } from "react"
 
 export type Column = {
   header: string
@@ -15,22 +16,26 @@ export const useEditColumns = (product: Product): Column[] => {
     { header: "Inventory", field: "inventory_quantity" },
   ]
 
-  const optionColumns = product.options.map((o) => ({
-    header: o.title,
-    field: "options",
-    formatter: (variantOptions: ProductVariantOption[]) => {
-      const displayVal = variantOptions.find((val) => val.option_id === o.id)
-      return displayVal?.value || " - "
-    },
-  }))
+  const editColumns = useMemo(() => {
+    const optionColumns = product.options.map((o) => ({
+      header: o.title,
+      field: "options",
+      formatter: (variantOptions: ProductVariantOption[]) => {
+        const displayVal = variantOptions.find((val) => val.option_id === o.id)
+        return displayVal?.value || " - "
+      },
+    }))
 
-  return [
-    ...optionColumns,
-    {
-      header: "Prices",
-      field: "prices",
-      formatter: (prices: MoneyAmount[]) => `${prices?.length ?? 0} price(s)`,
-    },
-    ...defaultFields,
-  ]
+    return [
+      ...optionColumns,
+      {
+        header: "Prices",
+        field: "prices",
+        formatter: (prices: MoneyAmount[]) => `${prices?.length ?? 0} price(s)`,
+      },
+      ...defaultFields,
+    ]
+  }, [product])
+
+  return editColumns
 }

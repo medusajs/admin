@@ -4,6 +4,8 @@ import {
   useFieldArray,
   UseFieldArrayAppend,
   UseFieldArrayRemove,
+  UseFieldArrayUpdate,
+  useWatch,
 } from "react-hook-form"
 import Button from "../../../../../../components/fundamentals/button"
 import TrashIcon from "../../../../../../components/fundamentals/icons/trash-icon"
@@ -14,58 +16,58 @@ import { ProductFormValues, ProductOption } from "../../../utils/types"
 
 type ProductOptionProps = {
   createVariant: UseFieldArrayAppend<ProductFormValues, "variants">
+  updateVariant: UseFieldArrayUpdate<ProductFormValues, "variants">
   deleteVariant: UseFieldArrayRemove
 }
 
 const ProductOptions = ({
   createVariant,
+  updateVariant,
   deleteVariant,
 }: ProductOptionProps) => {
-  const { control, register, watch } = useProductForm()
+  const { control, register } = useProductForm()
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "options",
   })
 
-  // const detectChange = () => {
-  //   const { options, variants } = getValues()
+  const options = useWatch({
+    name: "options",
+    control,
+  })
 
-  //   console.log("variants", variants)
-  //   console.log("options", options)
-
-  //   if (!options) {
-  //     return
-  //   }
-
-  //   const combinations = getNewCombinations(options, variants)
-
-  //   const newVariants: VariantFormValues[] = combinations.map((c) => {
-  //     return {
-  //       title: c.join(" / "),
-  //       ean: null,
-  //       sku: null,
-  //       inventory_quantity: null,
-  //       options: c.map((o) => ({ value: o })),
-  //     }
-  //   })
-
-  //   createVariant(newVariants, {
-  //     shouldFocus: false,
-  //   })
-  // }
-
-  const watchFieldArray = watch("options")
-  const controlledFields = fields.map((field, index) => {
-    return {
-      ...field,
-      ...watchFieldArray[index],
-    }
+  const variants = useWatch({
+    name: "variants",
+    control,
   })
 
   useEffect(() => {
-    console.log(getNewCombinations(controlledFields))
-  }, [controlledFields])
+    if (options?.length) {
+      const combinations = getCombination(options)
+
+      const newVariants: ProductFormValues["variants"] = combinations.map(
+        (c) => {
+          return {
+            title: null,
+            ean: null,
+            sku: null,
+            inventory_quantity: null,
+            options: c.map((o) => ({ value: o })),
+          }
+        }
+      )
+
+      if (variants?.length) {
+        for (let i = 0; i < variants.length; i++) {
+          updateVariant(i, newVariants[i])
+          newVariants.splice(i, 1)
+        }
+      }
+
+      createVariant(newVariants, { shouldFocus: false })
+    }
+  }, [options])
 
   return (
     <div>
@@ -74,7 +76,7 @@ const ProductOptions = ({
           Product Options
         </h6>
       </div>
-      <div className="flex flex-col gap-y-base max-w-[570px] w-full mb-4">
+      <div className="flex flex-col gap-y-base max-w-[570px] w-full mb-base">
         {fields.map((o, index) => (
           <div key={o.id} className="flex items-center">
             <div className="flex gap-x-2xsmall grow">
@@ -111,7 +113,7 @@ const ProductOptions = ({
             </Button>
           </div>
         ))}
-        <div className="mt-xs">
+        <div>
           <Button
             onClick={() =>
               append({
@@ -121,6 +123,7 @@ const ProductOptions = ({
             }
             size="small"
             variant="ghost"
+            type="button"
           >
             + Add an option
           </Button>
@@ -130,7 +133,7 @@ const ProductOptions = ({
   )
 }
 
-const getNewCombinations = (options: ({ id: string } & ProductOption)[]) => {
+const getCombination = (options: ProductOption[]) => {
   const combinations: string[][] = []
 
   const getCombination = (options: ProductOption[], current: string[]) => {

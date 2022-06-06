@@ -88,6 +88,7 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
                 variant="ghost"
                 size="small"
                 className="p-1 text-grey-40 cursor-pointer mx-6"
+                type="button"
               >
                 <TrashIcon size={20} />
               </Button>
