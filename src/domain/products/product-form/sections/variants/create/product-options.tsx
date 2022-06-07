@@ -141,8 +141,13 @@ const getCombination = (options: ProductOption[]) => {
       combinations.push(current)
     } else {
       const [head, ...tail] = options
-      for (const value of head.values) {
-        getCombination(tail, [...current, value])
+
+      if (head.values.length === 0) {
+        getCombination(tail, current)
+      } else {
+        for (const value of head.values) {
+          getCombination(tail, [...current, value])
+        }
       }
     }
   }
