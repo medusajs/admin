@@ -1,9 +1,26 @@
-export default function (provider) {
+import { Option } from "../types/shared"
+
+export default function (provider: string): Option {
   switch (provider) {
     case "stripe":
       return {
         label: "Stripe",
         value: "stripe",
+      }
+    case "stripe-ideal":
+      return {
+        label: "Stripe Ideal",
+        value: "stripe-ideal",
+      }
+    case "stripe-giropay":
+      return {
+        label: "Stripe Giropay",
+        value: "stripe-giropay",
+      }
+    case "stripe-bancontact":
+      return {
+        label: "Stripe Bancontact",
+        value: "stripe-bancontact",
       }
     case "mobilepay-adyen":
       return {
@@ -45,6 +62,12 @@ export default function (provider) {
         label: "iDEAL via Adyen",
         value: "ideal-adyen",
       }
+    case "manual": {
+      return {
+        label: "Manual",
+        value: "manual",
+      }
+    }
     default:
       return {
         label: provider,

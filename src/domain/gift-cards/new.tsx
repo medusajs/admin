@@ -3,9 +3,10 @@ import {
   useAdminCreateProduct,
   useAdminProducts,
   useAdminStore,
+  useCreateLineItem,
 } from "medusa-react"
 import React, { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFieldArray, useForm } from "react-hook-form"
 import FileUploadField from "../../components/atoms/file-upload-field"
 import Button from "../../components/fundamentals/button"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
@@ -13,7 +14,6 @@ import TrashIcon from "../../components/fundamentals/icons/trash-icon"
 import InputField from "../../components/molecules/input"
 import Modal from "../../components/molecules/modal"
 import Textarea from "../../components/molecules/textarea"
-import CurrencyInput from "../../components/organisms/currency-input"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
 import { ProductStatus } from "../../types/shared"
@@ -24,61 +24,46 @@ type NewGiftCardProps = {
   onClose: () => void
 }
 
-type Denomination = {
-  name: string
-  component: React.ReactNode
+type NewGiftCardFormData = {
+  title: string
+  description: string | undefined
+  thumbnail: {
+    url: string
+    name: string
+    size: number
+    nativeFile: File
+  } | null
+  denominations: {
+    amount: number
+  }[]
 }
 
-const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
+const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
   const [thumbnail, setThumbnail] = useState<{
     url: string
     name: string
     size: string
     nativeFile: File
   } | null>(null)
-  const { register, setValue, unregister, handleSubmit } = useForm()
   const { store } = useAdminStore()
   const { refetch } = useAdminProducts()
-  const giftCard = useAdminCreateProduct()
-  const [denominations, setDenominations] = useState<Denomination[]>([])
+  const { mutate: create } = useAdminCreateProduct()
   const notification = useNotification()
 
-  const handleValueUpdate = (name: string, value?: number) => {
-    if (!value) {
-      return
-    }
-    setValue(name, value)
-  }
+  const { register, setValue, handleSubmit, control } = useForm<
+    NewGiftCardFormData
+  >()
 
-  const addDenomination = () => {
-    const name = `denominations.${denominations.length}`
-    register(name)
-    const component = (
-      <CurrencyInput
-        currentCurrency={store?.default_currency_code}
-        readOnly
-        size="medium"
-      >
-        <CurrencyInput.AmountInput
-          label="Amount"
-          amount={undefined}
-          onChange={(v) => handleValueUpdate(name, v)}
-        />
-      </CurrencyInput>
-    )
-    setDenominations([...denominations, { name, component }])
-  }
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "denominations",
+  })
 
-  const deleteDenomination = (name: string) => {
-    unregister(name)
-    setDenominations(denominations.filter((d) => d.name !== name))
-  }
-
-  const handleFileUpload = (files) => {
+  const handleFileUpload = (files: File[]) => {
     const file = files[0]
     const url = URL.createObjectURL(file)
 
-    setThumbnail({
+    setValue("thumbnail", {
       url,
       name: file.name,
       size: file.size,
@@ -86,20 +71,24 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
     })
   }
 
-  const onSubmit = async (data: {
-    name: string
-    description?: string
-    denominations: number[]
-  }) => {
-    const trimmedName = data.name.trim()
+  const { mutate } = useCreateLineItem("cart_your_id")
+
+  mutate({
+    quantity: 1,
+    variant_id: "variant_your_id",
+    metadata: {
+      engarving: "Hi mom",
+    },
+  })
+
+  const onSubmit = async (data: NewGiftCardFormData) => {
+    const trimmedName = data.title.trim()
 
     if (!trimmedName) {
       notification("Error", "Please enter a name for the Gift Card", "error")
       focusByName("name")
       return
     }
-
-    console.log(data)
 
     if (!data.denominations) {
       notification("Error", "Please add at least one denomination", "error")
@@ -120,10 +109,10 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
       images = uploadedImgs
     }
 
-    giftCard.mutate(
+    create(
       {
         is_giftcard: true,
-        title: data.name,
+        title: data.title,
         description: data.description,
         discountable: false,
         options: [{ title: "Denominations" }],
@@ -131,8 +120,10 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
           title: `${i + 1}`,
           inventory_quantity: 0,
           manage_inventory: false,
-          prices: [{ amount: d, currency_code: store?.default_currency_code }],
-          options: [{ value: `${d}` }],
+          prices: [
+            { amount: d.amount, currency_code: store?.default_currency_code },
+          ],
+          options: [{ value: `${d.amount}` }],
         })),
         images: images.length ? images : undefined,
         thumbnail: images.length ? images[0] : undefined,
@@ -162,18 +153,20 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
           </Modal.Header>
           <Modal.Content>
             <div className="mb-base">
-              <h3 className="inter-base-semibold">Product information</h3>
+              <h3 className="inter-base-semibold">Gift Card Details</h3>
             </div>
             <div className="flex flex-col gap-y-base">
               <InputField
                 label={"Name"}
                 required
                 placeholder="The best Gift Card"
-                {...register('name', { required: true })} />
+                {...register("name", { required: true })}
+              />
               <Textarea
                 label="Description"
                 placeholder="The best Gift Card of all time"
-                {...register('description')} />
+                {...register("description")}
+              />
             </div>
             <div className="mt-xlarge">
               <h3 className="inter-base-semibold">Thumbnail</h3>
@@ -270,7 +263,7 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
         </Modal.Body>
       </form>
     </Modal>
-  );
+  )
 }
 
 export default NewGiftCard

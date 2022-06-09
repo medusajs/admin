@@ -114,8 +114,11 @@ const Shipping: React.FC<ShippingProps> = ({ region }) => {
       {editOption && (
         <EditShipping
           shippingOption={editOption}
-          onClick={() => setEditOption(null)}
-          onDone={refetch}
+          onSuccess={() => {
+            setEditOption(null)
+            refetch()
+          }}
+          onCancel={() => setEditOption(null)}
           region={region}
         />
       )}

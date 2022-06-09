@@ -1,3 +1,4 @@
+import { ReturnReason } from "@medusajs/medusa"
 import { useAdminCreateReturnReason } from "medusa-react"
 import React from "react"
 import { useForm } from "react-hook-form"
@@ -8,7 +9,13 @@ import useNotification from "../../../hooks/use-notification"
 
 type CreateReturnReasonModalProps = {
   handleClose: () => void
-  initialReason?: any
+  initialReason?: ReturnReason
+}
+
+type CreateReturnReasonFormData = {
+  value: string
+  label: string
+  description: string | null
 }
 
 // the reason props is used for prefilling the form when duplicating
@@ -16,7 +23,7 @@ const CreateReturnReasonModal = ({
   handleClose,
   initialReason,
 }: CreateReturnReasonModalProps) => {
-  const { register, handleSubmit, reset } = useForm({
+  const { register, handleSubmit } = useForm<CreateReturnReasonFormData>({
     defaultValues: {
       value: initialReason?.value,
       label: initialReason?.label,
@@ -24,21 +31,27 @@ const CreateReturnReasonModal = ({
     },
   })
   const notification = useNotification()
-  const createRR = useAdminCreateReturnReason()
+  const { mutate, isLoading } = useAdminCreateReturnReason()
 
-  const onCreate = async (data) => {
-    await createRR.mutateAsync(data, {
-      onSuccess: () => {
-        notification("Success", "Created a new return reason", "success")
+  const onCreate = (data: CreateReturnReasonFormData) => {
+    mutate(
+      {
+        ...data,
+        description: data.description || undefined,
       },
-      onError: () => {
-        notification(
-          "Error",
-          "Cant create a Return reason with an existing code",
-          "error"
-        )
-      },
-    })
+      {
+        onSuccess: () => {
+          notification("Success", "Created a new return reason", "success")
+        },
+        onError: () => {
+          notification(
+            "Error",
+            "Cant create a Return reason with an existing code",
+            "error"
+          )
+        },
+      }
+    )
     handleClose()
   }
 
@@ -48,48 +61,53 @@ const CreateReturnReasonModal = ({
         <Modal.Header handleClose={handleClose}>
           <span className="inter-xlarge-semibold">Add Reason</span>
         </Modal.Header>
-        <Modal.Content>
-          <div className="flex">
+        <form onSubmit={handleSubmit(onCreate)}>
+          <Modal.Content>
+            <div className="flex">
+              <Input
+                {...register("value", { required: true })}
+                label="Value"
+                placeholder="wrong_size"
+              />
+              <Input
+                className="ml-base"
+                {...register("label", { required: true })}
+                label="Label"
+                placeholder="Wrong size"
+              />
+            </div>
             <Input
-              {...register('value', { required: true })}
-              label="Value"
-              placeholder="wrong_size" />
-            <Input
-              className="ml-base"
-              {...register('label', { required: true })}
-              label="Label"
-              placeholder="Wrong size" />
-          </div>
-          <Input
-            className="mt-large"
-            {...register('description')}
-            label="Description"
-            placeholder="Customer received a wrong size" />
-        </Modal.Content>
-        <Modal.Footer>
-          <div className="flex w-full h-8 justify-end">
-            <Button
-              variant="ghost"
-              className="mr-2 w-32 text-small justify-center"
-              size="large"
-              onClick={handleClose}
-            >
-              Cancel
-            </Button>
-            <Button
-              loading={createRR.isLoading}
-              size="large"
-              className="w-32 text-small justify-center"
-              variant="primary"
-              onClick={handleSubmit(onCreate)}
-            >
-              Create
-            </Button>
-          </div>
-        </Modal.Footer>
+              className="mt-large"
+              {...register("description")}
+              label="Description"
+              placeholder="Customer received the wrong size"
+            />
+          </Modal.Content>
+          <Modal.Footer>
+            <div className="flex w-full h-8 justify-end">
+              <Button
+                variant="ghost"
+                className="mr-2 w-32 text-small justify-center"
+                size="large"
+                onClick={handleClose}
+                type="button"
+              >
+                Cancel
+              </Button>
+              <Button
+                loading={isLoading}
+                size="large"
+                className="w-32 text-small justify-center"
+                variant="primary"
+              >
+                Create
+              </Button>
+            </div>
+          </Modal.Footer>
+        </form>
       </Modal.Body>
     </Modal>
-  );
+  )
 }
 
 export default CreateReturnReasonModal

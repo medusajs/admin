@@ -18,7 +18,7 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
     onDelete?: MouseEventHandler<HTMLSpanElement>
     onChange?: ChangeEventHandler<HTMLInputElement>
     onFocus?: FocusEventHandler<HTMLInputElement>
-    prefix?: string
+    prefix?: string | React.ReactNode
     startAdornment?: React.ReactNode
     props?: React.HTMLAttributes<HTMLDivElement>
   }

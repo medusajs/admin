@@ -1,11 +1,12 @@
+import { Region } from "@medusajs/medusa"
 import {
   useAdminCreateShippingOption,
   useAdminRegionFulfillmentOptions,
   useAdminShippingProfiles,
 } from "medusa-react"
-import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import Spinner from "../../../components/atoms/spinner"
+import React, { useMemo } from "react"
+import { Controller, useForm } from "react-hook-form"
+import Checkbox from "../../../components/atoms/checkbox"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
@@ -16,42 +17,86 @@ import { Option } from "../../../types/shared"
 import { getErrorMessage } from "../../../utils/error-messages"
 import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
 
-const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
-  const { register, setValue, handleSubmit } = useForm()
-  const {
-    shipping_profiles,
-    isLoading: isProfilesLoading,
-  } = useAdminShippingProfiles()
+type NewShippingProps = {
+  isReturn: boolean
+  region: Region
+  onCreated: () => void
+  onClick: () => void
+}
+
+type NewShippingFormData = {
+  requirements: {
+    min_subtotal: {
+      amount: number
+    }
+    max_subtotal: {
+      amount: number
+    }
+  }
+  name: string
+  fulfilment_option: Option
+  profile_id: Option
+  admin_only: boolean
+  amount: number
+}
+
+type OptionType = {
+  id: string
+  name?: string
+  is_return?: boolean
+}
+
+const NewShipping = ({
+  isReturn,
+  region,
+  onCreated,
+  onClick,
+}: NewShippingProps) => {
+  const { register, handleSubmit, control } = useForm<NewShippingFormData>()
+
+  const { shipping_profiles } = useAdminShippingProfiles()
   const { fulfillment_options } = useAdminRegionFulfillmentOptions(region.id)
-  const [adminOnly, setAdminOnly] = useState(false)
-  const [options, setOptions] = useState([])
-  const [selectedOption, setSelectedOption] = useState(null)
-  const [profileOptions, setProfileOptions] = useState<Option[]>([])
-  const [selectedProfile, setSelectedProfile] = useState(null)
   const createShippingOption = useAdminCreateShippingOption()
+
+  const shippingProfileOptions: Option[] = useMemo(() => {
+    return (
+      shipping_profiles?.map(({ id, name }) => ({
+        label: name,
+        value: id,
+      })) || []
+    )
+  }, [shipping_profiles])
+
+  const fulfillmentOptions: Option[] = useMemo(() => {
+    if (!fulfillment_options) {
+      return []
+    }
+
+    const options = fulfillment_options.reduce((acc, current, index) => {
+      const opts = current.options as OptionType[]
+
+      const filtered = opts.filter((o) => !!o.is_return === !!isReturn)
+
+      return acc.concat(
+        filtered.map((option, o) => ({
+          label: `${option.name || option.id} via ${
+            fulfillmentProvidersMapper(current.provider_id).label
+          }`,
+          value: `${index}.${o}`,
+        }))
+      )
+    }, [] as Option[])
+
+    return options
+  }, [fulfillment_options])
+
   const notification = useNotification()
 
-  useEffect(() => {
-    register("amount", { required: true })
-    register("requirements.max_subtotal.amount")
-    register("requirements.min_subtotal.amount")
-  }, [])
-
-  const handleAmountChange = (fieldName: string, amount?: number) => {
-    setValue(fieldName, amount)
-  }
-
-  const handleSave = (data: {
-    name: string
-    requirements: { amount: number; type: string }[]
-    fulfillment_option: { value: string; label: string }
-    profile_id: { value: string; label: string }
-    amount: number
-  }) => {
+  const onSave = (data: NewShippingFormData) => {
     const fOptions = fulfillment_options?.map((provider) => {
-      const filtered = provider.options.filter(
-        (o) => !!o.is_return === !!isReturn
-      )
+      const options = provider.options as OptionType[]
+
+      const filtered = options.filter((o) => !!o.is_return === !!isReturn)
 
       return {
         ...provider,
@@ -59,12 +104,10 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
       }
     })
 
-    const [providerIndex, optionIndex] = data.fulfillment_option.value.split(
-      "."
-    )
+    const [providerIndex, optionIndex] = data.fulfilment_option.value.split(".")
     const { provider_id, options } = fOptions?.[providerIndex] || {}
 
-    let reqs = []
+    let reqs: { type: string; amount: number }[] = []
     if (data.requirements) {
       reqs = Object.entries(data.requirements).reduce((acc, [key, value]) => {
         if (value.amount && value.amount > 0) {
@@ -73,7 +116,7 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
         } else {
           return acc
         }
-      }, [])
+      }, [] as { type: string; amount: number }[])
     }
 
     const payload = {
@@ -86,7 +129,7 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
       amount: data.amount,
       is_return: isReturn,
       provider_id,
-      admin_only: adminOnly,
+      admin_only: !data.admin_only,
     }
 
     createShippingOption.mutate(payload, {
@@ -107,55 +150,9 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
     })
   }
 
-  useEffect(() => {
-    const opts = (fulfillment_options || []).reduce((acc, provider, p) => {
-      const filtered = provider.options.filter(
-        (o) => !!o.is_return === !!isReturn
-      )
-
-      return acc.concat(
-        filtered.map((option, o) => ({
-          label: `${option.name || option.id} via ${
-            fulfillmentProvidersMapper(provider.provider_id).label
-          }`,
-          value: `${p}.${o}`,
-        }))
-      )
-    }, [])
-
-    setOptions(opts)
-
-    register({ name: "fulfillment_option" }, { required: true })
-  }, [fulfillment_options])
-
-  useEffect(() => {
-    const opts = !shipping_profiles
-      ? []
-      : shipping_profiles.map((p) => ({
-          label: p.name,
-          value: p.id,
-        }))
-
-    setProfileOptions(opts)
-
-    if (!isReturn) {
-      register({ name: "profile_id" }, { required: true })
-    }
-  }, [isProfilesLoading, shipping_profiles])
-
-  const handleProfileChange = (value) => {
-    setValue("profile_id", value)
-    setSelectedProfile(value)
-  }
-
-  const handleFulfillmentChange = (value) => {
-    setValue("fulfillment_option", value)
-    setSelectedOption(value)
-  }
-
   return (
     <Modal handleClose={onClick}>
-      <form onSubmit={handleSubmit(handleSave)}>
+      <form onSubmit={handleSubmit(onSave)}>
         <Modal.Body>
           <Modal.Header handleClose={onClick}>
             <div>
@@ -170,64 +167,74 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
             <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
               <Input
                 label="Name"
-                {...register('name', { required: true })}
+                {...register("name", { required: true })}
                 required
                 placeholder="New Shipping Option"
-                className="flex-grow" />
+                className="flex-grow"
+              />
               <CurrencyInput
                 currentCurrency={region.currency_code}
                 readOnly
                 size="small"
               >
-                <CurrencyInput.AmountInput
-                  label="Price"
-                  onChange={(v) => handleAmountChange("amount", v)}
-                  amount={undefined}
+                <Controller
+                  name="amount"
+                  control={control}
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <CurrencyInput.AmountInput
+                        label="Price"
+                        onChange={onChange}
+                        amount={value}
+                      />
+                    )
+                  }}
                 />
               </CurrencyInput>
             </div>
             <div className="mt-large mb-xlarge">
-              <label className="inline-flex items-center inter-base-semibold">
-                <input
-                  type="checkbox"
-                  id="true"
-                  name="requires_shipping"
-                  value="true"
-                  checked={!adminOnly}
-                  onChange={() => setAdminOnly(!adminOnly)}
-                  className="mr-small w-5 h-5 accent-violet-60 rounded-base"
-                />
-                Show on website
-              </label>
+              <Checkbox
+                {...register("admin_only")}
+                label="Show on website"
+                defaultChecked={true}
+              />
             </div>
             {!isReturn && (
               <div className="mb-base">
-                {isProfilesLoading ? (
-                  <div className="flex flex-col items-center justify-center h-screen mt-auto">
-                    <div className="h-[75px] w-[75px] mt-[50%]">
-                      <Spinner />
-                    </div>
-                  </div>
-                ) : (
-                  <Select
-                    label="Shipping Profile"
-                    value={selectedProfile}
-                    onChange={handleProfileChange}
-                    required
-                    name="profile_id"
-                    options={profileOptions}
-                  />
-                )}
+                <Controller
+                  control={control}
+                  name="profile_id"
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <Select
+                        label="Shipping Profile"
+                        value={value}
+                        onChange={onChange}
+                        required
+                        name="profile_id"
+                        options={shippingProfileOptions}
+                      />
+                    )
+                  }}
+                />
               </div>
             )}
             <div className="mb-base">
-              <Select
-                label="Fulfillment Method"
-                value={selectedOption}
-                onChange={handleFulfillmentChange}
-                required
-                name="fulfillment_option"
-                options={options}
+              <Controller
+                control={control}
+                name="fulfilment_option"
+                render={({ field: { value, onChange } }) => {
+                  return (
+                    <Select
+                      label="Fulfillment Method"
+                      value={value}
+                      onChange={onChange}
+                      required
+                      name="fulfillment_option"
+                      options={fulfillmentOptions}
+                    />
+                  )
+                }}
               />
             </div>
             {!isReturn && (
@@ -239,15 +246,18 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
                     readOnly
                     size="small"
                   >
-                    <CurrencyInput.AmountInput
-                      label="Price"
-                      onChange={(v) =>
-                        handleAmountChange(
-                          "requirements.min_subtotal.amount",
-                          v
+                    <Controller
+                      control={control}
+                      name="requirements.min_subtotal.amount"
+                      render={({ field: { value, onChange } }) => {
+                        return (
+                          <CurrencyInput.AmountInput
+                            label="Price"
+                            onChange={onChange}
+                            amount={value}
+                          />
                         )
-                      }
-                      amount={undefined}
+                      }}
                     />
                   </CurrencyInput>
                   <CurrencyInput
@@ -255,15 +265,18 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
                     readOnly
                     size="small"
                   >
-                    <CurrencyInput.AmountInput
-                      label="Price"
-                      onChange={(v) =>
-                        handleAmountChange(
-                          "requirements.max_subtotal.amount",
-                          v
+                    <Controller
+                      control={control}
+                      name="requirements.max_subtotal.amount"
+                      render={({ field: { value, onChange } }) => {
+                        return (
+                          <CurrencyInput.AmountInput
+                            label="Price"
+                            onChange={onChange}
+                            amount={value}
+                          />
                         )
-                      }
-                      amount={undefined}
+                      }}
                     />
                   </CurrencyInput>
                 </div>
@@ -277,6 +290,7 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
                 size="small"
                 className="justify-center w-eventButton"
                 onClick={onClick}
+                type="button"
               >
                 Cancel
               </Button>
@@ -293,7 +307,7 @@ const NewShipping = ({ isReturn, region, onCreated, onClick }) => {
         </Modal.Body>
       </form>
     </Modal>
-  );
+  )
 }
 
 export default NewShipping

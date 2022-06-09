@@ -1,80 +1,109 @@
-import React, { useState } from "react"
+import { useAdminCreateInvite } from "medusa-react"
+import React from "react"
+import { Controller, useForm } from "react-hook-form"
 import useNotification from "../../../hooks/use-notification"
-import Medusa from "../../../services/api"
+import { Role } from "../../../types/shared"
+import { getErrorMessage } from "../../../utils/error-messages"
 import Button from "../../fundamentals/button"
 import InputField from "../../molecules/input"
 import Modal from "../../molecules/modal"
+import Select from "../../molecules/select"
 
 type InviteModalProps = {
   handleClose: () => void
 }
 
+type InviteModalFormData = {
+  user: string
+  role: Role
+}
+
 const InviteModal: React.FC<InviteModalProps> = ({ handleClose }) => {
-  const [email, setEmail] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [role, setRole] = useState("member")
   const notification = useNotification()
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const { mutate, isLoading } = useAdminCreateInvite()
 
-    setIsLoading(true)
+  const { control, register, handleSubmit } = useForm<InviteModalFormData>()
 
-    const values = {
-      user: email,
-      role,
-    }
-
-    Medusa.invites
-      .create(values)
-      .then((_res) => {
-        setIsLoading(false)
-        handleClose()
-        notification("Success", "user(s) invited", "success")
-      })
-      .catch((_error) => {
-        setIsLoading(false)
-        notification("Error", "Could not add user(s)", "error")
-        handleClose()
-      })
+  const onSubmit = (data: InviteModalFormData) => {
+    mutate(
+      {
+        user: data.user,
+        role: data.role.value,
+      },
+      {
+        onSuccess: () => {
+          notification("Success", `Invitation sent to ${data.user}`, "success")
+          handleClose()
+        },
+        onError: (error) => {
+          notification("Error", getErrorMessage(error), "error")
+        },
+      }
+    )
   }
+
+  const roleOptions: Role[] = [
+    { value: "member", label: "Member" },
+    { value: "admin", label: "Admin" },
+    { value: "developer", label: "Developer" },
+  ]
 
   return (
     <Modal handleClose={handleClose}>
-      <Modal.Body>
-        <Modal.Header handleClose={handleClose}>
-          <span className="inter-xlarge-semibold">Invite Users</span>
-        </Modal.Header>
-        <Modal.Content>
-          <InputField
-            label="Email"
-            placeholder="lebron@james.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Modal.Content>
-        <Modal.Footer>
-          <div className="flex w-full h-8 justify-end">
-            <Button
-              variant="ghost"
-              className="mr-2 w-32 text-small justify-center"
-              size="large"
-              onClick={handleClose}
-            >
-              Cancel
-            </Button>
-            <Button
-              loading={isLoading}
-              size="large"
-              className="w-32 text-small justify-center"
-              variant="primary"
-              onClick={handleSubmit}
-            >
-              Invite
-            </Button>
-          </div>
-        </Modal.Footer>
-      </Modal.Body>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Modal.Body>
+          <Modal.Header handleClose={handleClose}>
+            <span className="inter-xlarge-semibold">Invite Users</span>
+          </Modal.Header>
+          <Modal.Content>
+            <div className="flex flex-col gap-y-base">
+              <InputField
+                label="Email"
+                placeholder="lebron@james.com"
+                required
+                {...register("user", { required: true })}
+              />
+              <Controller
+                name="role"
+                control={control}
+                defaultValue={{ label: "Member", value: "member" }}
+                render={({ field: { value, onChange } }) => {
+                  return (
+                    <Select
+                      label="Role"
+                      onChange={onChange}
+                      options={roleOptions}
+                      value={value}
+                    />
+                  )
+                }}
+              />
+            </div>
+          </Modal.Content>
+          <Modal.Footer>
+            <div className="flex w-full h-8 justify-end">
+              <Button
+                variant="ghost"
+                className="mr-2 w-32 text-small justify-center"
+                size="large"
+                type="button"
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+              <Button
+                loading={isLoading}
+                size="large"
+                className="w-32 text-small justify-center"
+                variant="primary"
+              >
+                Invite
+              </Button>
+            </div>
+          </Modal.Footer>
+        </Modal.Body>
+      </form>
     </Modal>
   )
 }

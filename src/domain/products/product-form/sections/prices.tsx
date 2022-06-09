@@ -6,7 +6,7 @@ import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import BodyCard from "../../../../components/organisms/body-card"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { useProductForm } from "../form/product-form-context"
-import usePricesFieldArray from "../form/usePricesFieldArray"
+import usePricesFieldArray from "../form/use-prices-field-array"
 
 const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
   const { control } = useProductForm()

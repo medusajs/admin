@@ -284,10 +284,7 @@ const UserTable: React.FC<UserTableProps> = ({
           <EditUser
             handleClose={handleClose}
             user={selectedUser}
-            onSubmit={() => {
-              notification("Success", "User has been updated", "success")
-              triggerRefetch()
-            }}
+            onSuccess={() => triggerRefetch()}
           />
         ))}
       {selectedInvite && (

@@ -1,4 +1,6 @@
-export default function (provider) {
+import { Option } from "../types/shared"
+
+export default function (provider: string): Option {
   switch (provider) {
     case "primecargo":
       return {
@@ -18,7 +20,7 @@ export default function (provider) {
     default:
       return {
         label: provider,
-        value: provider
+        value: provider,
       }
   }
 }

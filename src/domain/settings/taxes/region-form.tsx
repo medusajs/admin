@@ -1,3 +1,4 @@
+import { Region } from "@medusajs/medusa"
 import { useAdminStoreTaxProviders, useAdminUpdateRegion } from "medusa-react"
 import React, { useEffect, useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -6,16 +7,29 @@ import Button from "../../../components/fundamentals/button"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
 import Select from "../../../components/molecules/select"
 import useNotification from "../../../hooks/use-notification"
+import { Option } from "../../../types/shared"
 import { getErrorMessage } from "../../../utils/error-messages"
 
-export const RegionTaxForm = ({ region }) => {
+type RegionTaxFormProps = {
+  region: Region
+}
+
+type TaxProviderOption = Option | { label: string; value: null }
+
+type RegionTaxFormData = {
+  automatic_taxes: boolean
+  gift_cards_taxable: boolean
+  tax_provider_id: TaxProviderOption
+}
+
+export const RegionTaxForm = ({ region }: RegionTaxFormProps) => {
   const {
     register,
     handleSubmit,
     control,
     reset,
     formState: { isDirty },
-  } = useForm({
+  } = useForm<RegionTaxFormData>({
     defaultValues: {
       automatic_taxes: region.automatic_taxes,
       gift_cards_taxable: region.gift_cards_taxable,
@@ -64,6 +78,7 @@ export const RegionTaxForm = ({ region }) => {
         })),
       ]
     }
+
     return [
       {
         label: "System Tax Provider",
@@ -98,15 +113,14 @@ export const RegionTaxForm = ({ region }) => {
         <Controller
           name="tax_provider_id"
           control={control}
-          defaultValue={region.tax_provider_id}
           rules={{ required: true }}
-          render={(props) => (
+          render={({ field: { value, onChange } }) => (
             <Select
               disabled={isProvidersLoading}
               label="Tax Provider"
               options={providerOptions}
-              value={props.value}
-              onChange={props.onChange}
+              value={value}
+              onChange={onChange}
               className="mb-base"
             />
           )}
@@ -114,8 +128,9 @@ export const RegionTaxForm = ({ region }) => {
         <div className="flex item-center gap-x-1.5">
           <Checkbox
             className="inter-base-regular"
-            {...register('automatic_taxes')}
-            label="Calculate taxes automatically?" />
+            {...register("automatic_taxes")}
+            label="Calculate taxes automatically?"
+          />
           <IconTooltip
             content={
               "When checked Medusa will automatically apply tax calculations to Carts in this Region. When unchecked you will have to manually compute taxes at checkout. Manual taxes are recommended if using a 3rd party tax provider to avoid performing too many requests"
@@ -125,8 +140,9 @@ export const RegionTaxForm = ({ region }) => {
         <div className="flex item-center gap-x-1.5">
           <Checkbox
             className="inter-base-regular"
-            {...register('gift_cards_taxable')}
-            label="Apply tax to gift cards?" />
+            {...register("gift_cards_taxable")}
+            label="Apply tax to gift cards?"
+          />
           <IconTooltip
             content={
               "When checked taxes will be applied to gift cards on checkout. In some contries tax regulations require that taxes are applied to gift cards on purchase."
@@ -147,5 +163,5 @@ export const RegionTaxForm = ({ region }) => {
         )}
       </div>
     </form>
-  );
+  )
 }

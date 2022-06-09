@@ -13,7 +13,7 @@ import CurrencyInput from "../../../../components/organisms/currency-input"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
 import { focusByName } from "../../../../utils/focus-by-name"
-import usePricesFieldArray from "../../product-form/form/usePricesFieldArray"
+import usePricesFieldArray from "../../product-form/form/use-prices-field-array"
 
 const defaultVariant = {
   prices: [] as any,
@@ -135,18 +135,20 @@ const VariantEditor = ({
             </label>
 
             <div className="grid grid-cols-1 gap-y-small">
-              <Input label="Title" {...register('title')} />
+              <Input label="Title" {...register("title")} />
               {fields.map((field, index) => (
                 <div key={field.indexId}>
                   <Input
                     {...register(`options[${index}].value`, { required: true })}
                     required={true}
                     label={field.title}
-                    defaultValue={field.value} />
+                    defaultValue={field.value}
+                  />
                   <input
                     type="hidden"
                     {...register(`options[${index}].option_id`)}
-                    defaultValue={field.option_id} />
+                    defaultValue={field.option_id}
+                  />
                 </div>
               ))}
             </div>
@@ -195,7 +197,8 @@ const VariantEditor = ({
                             />
                           </CurrencyInput>
                         )
-                      }} />
+                      }}
+                    />
                   </div>
 
                   <Button
@@ -226,20 +229,28 @@ const VariantEditor = ({
               <IconTooltip content={"Stock and inventory information"} />
             </label>
             <div className="w-full mt-4 grid medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
-              <Input label="SKU" {...register('sku')} placeholder="SKU" />
-              <Input label="EAN" {...register('ean')} placeholder="EAN" />
+              <Input label="SKU" {...register("sku")} placeholder="SKU" />
+              <Input label="EAN" {...register("ean")} placeholder="EAN" />
               <Input
                 label="Inventory quantity"
-                {...register('inventory_quantity')}
+                {...register("inventory_quantity")}
                 placeholder="100"
-                type="number" />
+                type="number"
+              />
 
-              <Input label="UPC Barcode" {...register('barcode')} placeholder="Barcode" />
+              <Input
+                label="UPC Barcode"
+                {...register("barcode")}
+                placeholder="Barcode"
+              />
             </div>
 
             <div className="flex items-center mt-6 gap-x-large">
               <div className="flex item-center gap-x-1.5">
-                <Checkbox {...register('manage_inventory')} label="Manage Inventory" />
+                <Checkbox
+                  {...register("manage_inventory")}
+                  label="Manage Inventory"
+                />
                 <IconTooltip
                   content={
                     "When checked Medusa will regulate the inventory when orders and returns are made."
@@ -247,7 +258,10 @@ const VariantEditor = ({
                 />
               </div>
               <div className="flex item-center gap-x-1.5">
-                <Checkbox {...register('allow_backorder')} label="Allow backorders" />
+                <Checkbox
+                  {...register("allow_backorder")}
+                  label="Allow backorders"
+                />
                 <IconTooltip
                   content={
                     "When checked the product will be available for purchase despite the product being sold out."
@@ -262,10 +276,26 @@ const VariantEditor = ({
               Dimensions <IconTooltip content={"Variant dimensions"} />
             </label>
             <div className="w-full mt-4 grid medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
-              <Input label="Height" placeholder="Product Height" {...register('height')} />
-              <Input label="Width" placeholder="Product Width" {...register('width')} />
-              <Input label="Length" {...register('length')} placeholder="Product Length" />
-              <Input label="Weight" {...register('weight')} placeholder="Product Weight" />
+              <Input
+                label="Height"
+                placeholder="Product Height"
+                {...register("height")}
+              />
+              <Input
+                label="Width"
+                placeholder="Product Width"
+                {...register("width")}
+              />
+              <Input
+                label="Length"
+                {...register("length")}
+                placeholder="Product Length"
+              />
+              <Input
+                label="Weight"
+                {...register("weight")}
+                placeholder="Product Weight"
+              />
             </div>
           </div>
           <div className="mb-8">
@@ -273,8 +303,16 @@ const VariantEditor = ({
               Customs <IconTooltip content={"Variant customs information"} />
             </label>
             <div className="w-full grid mt-4 medium:grid-cols-2 grid-cols-1 gap-y-base gap-x-xsmall">
-              <Input label="MID Code" placeholder="MID Code" {...register('mid_code')} />
-              <Input label="HS Code" placeholder="HS Code" {...register('hs_code')} />
+              <Input
+                label="MID Code"
+                placeholder="MID Code"
+                {...register("mid_code")}
+              />
+              <Input
+                label="HS Code"
+                placeholder="HS Code"
+                {...register("hs_code")}
+              />
               <Select
                 enableSearch
                 label={"Country of origin"}
@@ -282,7 +320,11 @@ const VariantEditor = ({
                 value={selectedCountry}
                 onChange={setSelectedCountry}
               />
-              <Input label="Material" {...register('material')} placeholder="Material" />
+              <Input
+                label="Material"
+                {...register("material")}
+                placeholder="Material"
+              />
             </div>
           </div>
         </Modal.Content>
@@ -309,7 +351,7 @@ const VariantEditor = ({
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  );
+  )
 }
 
 export default VariantEditor

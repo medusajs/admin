@@ -1,3 +1,4 @@
+import { Store } from "@medusajs/medusa"
 import { useAdminStore, useAdminUpdateStore } from "medusa-react"
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -7,44 +8,50 @@ import BodyCard from "../../components/organisms/body-card"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 
+type AccountDetailsFormData = {
+  name: string
+  swap_link_template: string | undefined
+  payment_link_template: string | undefined
+  invite_link_template: string | undefined
+}
+
 const AccountDetails = () => {
-  const { register, reset, handleSubmit } = useForm()
-  const { store, isSuccess } = useAdminStore()
-  const updateStore = useAdminUpdateStore()
+  const { register, reset, handleSubmit } = useForm<AccountDetailsFormData>()
+  const { store } = useAdminStore()
+  const { mutate } = useAdminUpdateStore()
   const notification = useNotification()
 
-  useEffect(() => {
-    if (!isSuccess) {
-      return
-    }
-    reset({
-      name: store.name,
-      swap_link_template: store.swap_link_template,
-      payment_link_template: store.payment_link_template,
-      invite_link_template: store.invite_link_template,
-    })
-  }, [store, isSuccess, reset])
-
   const handleCancel = () => {
-    reset({
-      name: store.name,
-      swap_link_template: store.swap_link_template,
-      payment_link_template: store.payment_link_template,
-      invite_link_template: store.invite_link_template,
-    })
+    if (store) {
+      reset(mapStoreDetails(store))
+    }
   }
 
-  const onSubmit = (data) => {
-    if (
-      !validateUrl(data.swap_link_template) ||
-      !validateUrl(data.payment_link_template) ||
-      !validateUrl(data.invite_link_template)
-    ) {
-      notification("Error", "Malformed url", "error")
+  useEffect(() => {
+    handleCancel()
+  }, [store])
+
+  const onSubmit = (data: AccountDetailsFormData) => {
+    const validateSwapLinkTemplate = validateUrl(data.swap_link_template)
+    const validatePaymentLinkTemplate = validateUrl(data.payment_link_template)
+    const validateInviteLinkTemplate = validateUrl(data.invite_link_template)
+
+    if (!validateSwapLinkTemplate) {
+      notification("Error", "Malformed swap url", "error")
       return
     }
 
-    updateStore.mutate(data, {
+    if (!validatePaymentLinkTemplate) {
+      notification("Error", "Malformed payment url", "error")
+      return
+    }
+
+    if (!validateInviteLinkTemplate) {
+      notification("Error", "Malformed invite url", "error")
+      return
+    }
+
+    mutate(data, {
       onSuccess: () => {
         notification("Success", "Successfully updated store", "success")
       },
@@ -69,7 +76,7 @@ const AccountDetails = () => {
               type: "button",
               onClick: handleSubmit(onSubmit),
             },
-            { label: "Cancel Changes", type: "button", onClick: handleCancel },
+            { label: "Cancel changes", type: "button", onClick: handleCancel },
           ]}
           title="Store Details"
           subtitle="Manage your business details"
@@ -78,31 +85,35 @@ const AccountDetails = () => {
           <Input
             className="mt-base"
             label="Store name"
-            {...register('name')}
-            placeholder="Medusa Store" />
+            {...register("name")}
+            placeholder="Medusa Store"
+          />
           <h6 className="mt-2xlarge inter-base-semibold">Advanced settings</h6>
           <Input
             className="mt-base"
             label="Swap link template"
-            {...register('swap_link_template')}
-            placeholder="https://acme.inc/swap" />
+            {...register("swap_link_template")}
+            placeholder="https://acme.inc/swap={swap_id}"
+          />
           <Input
             className="mt-base"
             label="Draft order link template"
-            {...register('payment_link_template')}
-            placeholder="https://acme.inc/swap" />
+            {...register("payment_link_template")}
+            placeholder="https://acme.inc/payment={payment_id}"
+          />
           <Input
             className="mt-base"
             label="Invite link template"
-            {...register('invite_link_template')}
-            placeholder="https://acme.inc/invite={invite_token}" />
+            {...register("invite_link_template")}
+            placeholder="https://acme.inc/invite={invite_token}"
+          />
         </BodyCard>
       </div>
     </form>
-  );
+  )
 }
 
-const validateUrl = (address) => {
+const validateUrl = (address: string | undefined) => {
   if (!address || address === "") {
     return true
   }
@@ -112,6 +123,15 @@ const validateUrl = (address) => {
     return url.protocol === "http:" || url.protocol === "https:"
   } catch (_) {
     return false
+  }
+}
+
+const mapStoreDetails = (store: Store): AccountDetailsFormData => {
+  return {
+    name: store.name,
+    swap_link_template: store.swap_link_template,
+    payment_link_template: store.payment_link_template,
+    invite_link_template: store.invite_link_template,
   }
 }
 

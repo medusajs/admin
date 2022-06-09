@@ -1,99 +1,76 @@
+import { FulfillmentProvider, PaymentProvider, Store } from "@medusajs/medusa"
 import { useAdminCreateRegion, useAdminStore } from "medusa-react"
-import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import React, { useMemo } from "react"
+import { Controller, useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import Select from "../../../components/molecules/select"
 import CurrencyInput from "../../../components/organisms/currency-input"
 import useNotification from "../../../hooks/use-notification"
+import { Option } from "../../../types/shared"
 import { countries as countryData } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
+import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.mapper"
+import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 
-const NewRegion = ({ onDone, onClick }) => {
-  const [currencies, setCurrencies] = useState<string[]>([])
-  const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>(
-    undefined
-  )
-  const [countries, setCountries] = useState([])
-  const [paymentOptions, setPaymentOptions] = useState([])
-  const [paymentProviders, setPaymentProviders] = useState([])
-  const [fulfillmentOptions, setFulfillmentOptions] = useState([])
-  const [fulfillmentProviders, setFulfillmentProviders] = useState([])
+type NewRegionProps = {
+  onSuccess: (id: string) => void
+  onCancel: () => void
+}
 
-  const { store, isLoading: storeIsLoading } = useAdminStore()
+type NewRegionFormData = {
+  name: string
+  countries: Option[]
+  currency_code: string
+  payment_providers: Option[]
+  fulfillment_providers: Option[]
+  tax_rate: number
+  tax_code: string
+}
+
+const NewRegion = ({ onSuccess, onCancel }: NewRegionProps) => {
+  const { store } = useAdminStore()
+  const { fulfillment_providers, payment_providers } = store as Store & {
+    fulfillment_providers: FulfillmentProvider[]
+    payment_providers: PaymentProvider[]
+  }
   const createRegion = useAdminCreateRegion()
-  const { register, setValue, handleSubmit } = useForm()
+  const { register, handleSubmit, control } = useForm<NewRegionFormData>()
   const notification = useNotification()
 
-  useEffect(() => {
-    if (storeIsLoading || !store) {
-      return
-    }
-    register({ name: "currency_code" })
-    setCurrencies(store.currencies.map((currency) => currency.code))
-    setPaymentOptions(
-      store.payment_providers.map((c) => ({
-        // Store Type is wrong, fix
-        value: c.id,
-        label: c.id,
-      }))
+  const fulfilmentOptions = useMemo(() => {
+    return (
+      fulfillment_providers?.map((c) => fulfillmentProvidersMapper(c.id)) || []
     )
-    setFulfillmentOptions(
-      store.fulfillment_providers.map((c) => ({
-        // Store Type is wrong, fix
-        value: c.id,
-        label: c.id,
-      }))
-    )
-  }, [store, storeIsLoading])
+  }, [fulfillment_providers])
 
-  const handlePaymentChange = (values) => {
-    setPaymentProviders(values)
-    register({ name: "payment_providers" })
-    setValue(
-      "payment_providers",
-      values.map((c) => c.value)
-    )
-  }
+  const paymentOptions = useMemo(() => {
+    return payment_providers?.map((c) => paymentProvidersMapper(c.id)) || []
+  }, [payment_providers])
 
-  const handleFulfillmentChange = (values) => {
-    setFulfillmentProviders(values)
-    register({ name: "fulfillment_providers" })
-    setValue(
-      "fulfillment_providers",
-      values.map((c) => c.value)
-    )
-  }
+  const currencyOptions: string[] = useMemo(() => {
+    return store?.currencies?.map((c) => c.code) || []
+  }, [store])
 
-  const handleChange = (values) => {
-    setCountries(values)
-    register({ name: "countries", required: true })
-    setValue(
-      "countries",
-      values.map((c) => c.value)
-    )
-  }
+  const countryOptions = useMemo(() => {
+    return countryData.map((c) => ({ label: c.name, value: c.alpha2 }))
+  }, [countryData])
 
-  const onSave = (data) => {
-    if (!data.countries?.length) {
-      notification("Success", "Choose at least one country", "error")
-      return
-    }
-
+  const onSave = (data: NewRegionFormData) => {
     createRegion.mutate(
       {
         ...data,
+        payment_providers: data.payment_providers.map((p) => p.value),
+        fulfillment_providers: data.fulfillment_providers.map((p) => p.value),
+        countries: data.countries.map((c) => c.value),
         currency_code: data.currency_code,
         tax_rate: data.tax_rate * 100,
       },
       {
         onSuccess: ({ region }) => {
           notification("Success", "Successfully created region", "success")
-          if (onDone) {
-            onDone(region.id)
-          }
-          onClick()
+          onSuccess(region.id)
         },
         onError: (error) => {
           notification("Error", getErrorMessage(error), "error")
@@ -102,21 +79,11 @@ const NewRegion = ({ onDone, onClick }) => {
     )
   }
 
-  const countryOptions = countryData.map((c) => ({
-    label: c.name,
-    value: c.alpha2,
-  }))
-
-  const handleChangeCurrency = (currency: string) => {
-    setValue("currency_code", currency)
-    setSelectedCurrency(currency)
-  }
-
   return (
-    <Modal handleClose={onClick}>
+    <Modal handleClose={onCancel}>
       <form onSubmit={handleSubmit(onSave)}>
         <Modal.Body>
-          <Modal.Header handleClose={onClick}>
+          <Modal.Header handleClose={onCancel}>
             <div>
               <h1 className="inter-xlarge-semibold">Add Region</h1>
             </div>
@@ -126,15 +93,24 @@ const NewRegion = ({ onDone, onClick }) => {
               <p className="inter-base-semibold mb-base">General</p>
               <div className="grid grid-cols-1 medium:grid-cols-2 gap-y-xsmall gap-x-base">
                 <Input
-                  {...register('name', { required: true })}
+                  {...register("name", { required: true })}
                   label="Name"
                   placeholder="Region name..."
-                  className="mb-base min-w-[335px] w-full" />
-                <CurrencyInput
-                  currencyCodes={currencies}
-                  currentCurrency={selectedCurrency}
-                  onChange={handleChangeCurrency}
-                  className="items-baseline"
+                  className="mb-base min-w-[335px] w-full"
+                />
+                <Controller
+                  control={control}
+                  name="currency_code"
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <CurrencyInput
+                        currencyCodes={currencyOptions}
+                        currentCurrency={value}
+                        onChange={onChange}
+                        className="items-baseline"
+                      />
+                    )
+                  }}
                 />
                 <Input
                   className="mb-base min-w-[335px] w-full"
@@ -143,48 +119,72 @@ const NewRegion = ({ onDone, onClick }) => {
                   step="0.01"
                   min={0}
                   max={1}
-                  {...register('tax_rate', { max: 1, min: 0 })}
-                  label="Tax Rate" />
+                  {...register("tax_rate", { max: 1, min: 0 })}
+                  label="Tax Rate"
+                />
                 <Input
                   placeholder="1000"
-                  {...register('tax_code')}
+                  {...register("tax_code")}
                   label="Tax Code"
-                  className="mb-base min-w-[335px] w-full" />
-                <Select
-                  isMultiSelect
-                  enableSearch
-                  label="Countries"
-                  hasSelectAll
-                  options={countryOptions}
-                  value={countries}
-                  onChange={handleChange}
                   className="mb-base min-w-[335px] w-full"
+                />
+                <Controller
+                  control={control}
+                  name="countries"
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <Select
+                        isMultiSelect
+                        enableSearch
+                        label="Countries"
+                        hasSelectAll
+                        clearSelected
+                        options={countryOptions}
+                        value={value}
+                        onChange={onChange}
+                        className="mb-base min-w-[335px] w-full"
+                      />
+                    )
+                  }}
                 />
               </div>
             </div>
             <div className="mt-xlarge mb-small">
               <p className="inter-base-semibold mb-base">Providers</p>
               <div className="grid grid-cols-1 medium:grid-cols-2 gap-base">
-                {!!paymentOptions.length && (
-                  <Select
-                    isMultiSelect
-                    onChange={handlePaymentChange}
-                    options={paymentOptions}
-                    value={paymentProviders}
-                    label="Payment Providers"
-                    enableSearch
-                  />
-                )}
-                {!!fulfillmentOptions.length && (
-                  <Select
-                    onChange={handleFulfillmentChange}
-                    options={fulfillmentOptions}
-                    value={fulfillmentProviders}
-                    label="Fulfillment Providers"
-                    enableSearch
-                    isMultiSelect
-                  />
-                )}
+                <Controller
+                  control={control}
+                  name="payment_providers"
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <Select
+                        isMultiSelect
+                        onChange={onChange}
+                        options={paymentOptions}
+                        value={value}
+                        label="Payment Providers"
+                        enableSearch
+                      />
+                    )
+                  }}
+                />
+                <Controller
+                  control={control}
+                  name="fulfillment_providers"
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <Select
+                        isMultiSelect
+                        onChange={onChange}
+                        options={fulfilmentOptions}
+                        value={value}
+                        label="Fulfillment Providers"
+                        enableSearch
+                      />
+                    )
+                  }}
+                />
               </div>
             </div>
           </Modal.Content>
@@ -192,7 +192,7 @@ const NewRegion = ({ onDone, onClick }) => {
             <div className="flex items-center justify-end w-full gap-x-xsmall">
               <Button
                 type="button"
-                onClick={onClick}
+                onClick={onCancel}
                 variant="secondary"
                 size="small"
                 className="w-eventButton justify-center"
@@ -212,7 +212,7 @@ const NewRegion = ({ onDone, onClick }) => {
         </Modal.Body>
       </form>
     </Modal>
-  );
+  )
 }
 
 export default NewRegion

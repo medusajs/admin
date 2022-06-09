@@ -1,16 +1,27 @@
 import React from "react"
+import { UseFormRegister } from "react-hook-form"
 import Input from "../../../components/molecules/input"
+import { EditTaxRateFormData, SimpleEditFormData } from "./edit-form"
 
-export const EditTaxRateDetails = ({ lockName, register }) => {
+type EditTaxRateProps = {
+  register:
+    | UseFormRegister<EditTaxRateFormData>
+    | UseFormRegister<SimpleEditFormData>
+  lockName: boolean
+}
+
+export const EditTaxRateDetails = ({
+  lockName,
+  register,
+}: EditTaxRateProps) => {
   return (
     <div>
       <p className="inter-base-semibold mb-base">Details</p>
       <Input
         disabled={lockName}
-        name="name"
         label="Name"
         placeholder={lockName ? "Default" : "Rate name"}
-        ref={register({ required: !lockName })}
+        {...register("name", { required: !lockName })}
         className="mb-base min-w-[335px] w-full"
       />
       <Input
@@ -18,17 +29,15 @@ export const EditTaxRateDetails = ({ lockName, register }) => {
         min={0}
         max={100}
         step={0.01}
-        name="rate"
         label="Rate"
         placeholder="12"
-        ref={register({ min: 0, max: 100, required: true })}
+        {...register("rate", { min: 0, max: 100, required: true })}
         className="mb-base min-w-[335px] w-full"
       />
       <Input
         placeholder="1000"
-        name="code"
         label="Code"
-        ref={register({ required: true })}
+        {...register("code", { required: true })}
         className="mb-base min-w-[335px] w-full"
       />
     </div>

@@ -12,7 +12,7 @@ type AddMetadataProps = {
 
 export type MetadataField = {
   key: string
-  value: any
+  value: string
 }
 
 const Metadata: React.FC<AddMetadataProps> = ({

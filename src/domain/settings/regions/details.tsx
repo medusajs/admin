@@ -1,12 +1,18 @@
 import {
+  FulfillmentProvider,
+  PaymentProvider,
+  Region,
+  Store,
+} from "@medusajs/medusa"
+import {
   useAdminCreateRegion,
   useAdminDeleteRegion,
   useAdminRegion,
   useAdminStore,
   useAdminUpdateRegion,
 } from "medusa-react"
-import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import React, { useEffect, useMemo, useState } from "react"
+import { Controller, useForm } from "react-hook-form"
 import Spinner from "../../../components/atoms/spinner"
 import DuplicateIcon from "../../../components/fundamentals/icons/duplicate-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
@@ -23,138 +29,75 @@ import fulfillmentProvidersMapper from "../../../utils/fulfillment-providers.map
 import paymentProvidersMapper from "../../../utils/payment-providers-mapper"
 import Shipping from "./shipping"
 
-const RegionDetails = ({ id, onDelete, handleSelect }) => {
-  const [currencies, setCurrencies] = useState([])
-  const [countries, setCountries] = useState<Option[]>([])
-  const [selectedCurrency, setSelectedCurrency] = useState<string>()
-  const [paymentOptions, setPaymentOptions] = useState<Option[]>([])
-  const [paymentProviders, setPaymentProviders] = useState<Option[]>([])
-  const [fulfillmentOptions, setFulfillmentOptions] = useState<Option[]>([])
-  const [fulfillmentProviders, setFulfillmentProviders] = useState<Option[]>([])
+type RegionDetailsProps = {
+  id: string
+  onDelete: () => void
+  handleSelect: (id: string) => void
+}
 
-  const { register, reset, setValue, handleSubmit } = useForm()
+type RegionDetailsFormData = {
+  name: string
+  countries: Option[]
+  currency_code: string
+  payment_providers: Option[]
+  fulfillment_providers: Option[]
+}
+
+const RegionDetails = ({ id, onDelete, handleSelect }: RegionDetailsProps) => {
+  const [showDanger, setShowDanger] = useState(false)
   const notification = useNotification()
 
-  const { store, isLoading: storeIsLoading } = useAdminStore()
-  const { fulfillment_providers, payment_providers } = store
   const createRegion = useAdminCreateRegion()
   const deleteRegion = useAdminDeleteRegion(id)
-  const { region, isLoading: regionIsLoading } = useAdminRegion(id)
   const updateRegion = useAdminUpdateRegion(id)
 
-  const [showDanger, setShowDanger] = useState(false)
+  const { region, isLoading: regionIsLoading } = useAdminRegion(id)
+  const { store, isLoading: storeIsLoading } = useAdminStore()
+  const { fulfillment_providers, payment_providers } = store as Store & {
+    fulfillment_providers: FulfillmentProvider[]
+    payment_providers: PaymentProvider[]
+  }
+
+  const { register, reset, handleSubmit, control } = useForm<
+    RegionDetailsFormData
+  >()
 
   useEffect(() => {
-    if (!store || !region) {
-      return
+    if (region) {
+      reset(mapRegion(region))
     }
-    register({ name: "currency_code" })
-    setValue("currency_code", region.currency_code)
-    setSelectedCurrency(region.currency_code)
-    setCurrencies(getCurrencies(store.currencies))
-  }, [store, region])
-
-  useEffect(() => {
-    if (!payment_providers) {
-      return
-    }
-    setPaymentOptions(
-      payment_providers.map((c) => paymentProvidersMapper(c.id))
-    )
-  }, [payment_providers])
-
-  useEffect(() => {
-    if (!fulfillment_providers) {
-      return
-    }
-
-    setFulfillmentOptions(
-      fulfillment_providers.map((c) => fulfillmentProvidersMapper(c.id))
-    )
-  }, [fulfillment_providers])
-
-  useEffect(() => {
-    if (!region) {
-      return
-    }
-    reset({ ...region })
-    register({ name: "countries" })
-    register({ name: "payment_providers" })
-    register({ name: "fulfillment_providers" })
-
-    setValue(
-      "countries",
-      region.countries.map((c) => c.iso_2)
-    )
-    setCountries(
-      region.countries.map((c) => ({ value: c.iso_2, label: c.display_name }))
-    )
-
-    setValue(
-      "payment_providers",
-      region.payment_providers.map((v) => v.id)
-    )
-    setPaymentProviders(
-      region.payment_providers.map((v) => paymentProvidersMapper(v.id))
-    )
-
-    setValue(
-      "fulfillment_providers",
-      region?.fulfillment_providers.map((v) => v.id)
-    )
-    setFulfillmentProviders(
-      region.fulfillment_providers.map((v) => fulfillmentProvidersMapper(v.id))
-    )
   }, [region])
 
-  const getCurrencies = (storeCurrencies) => {
-    const currs = storeCurrencies
-      .filter((item) => item.code !== region?.currency_code)
-      .map((el) => el.code)
-    currs.unshift(region?.currency_code)
+  const countryOptions = useMemo(() => {
+    return countryData.map((c) => ({
+      label: c.name,
+      value: c.alpha2.toLowerCase(),
+    }))
+  }, [countryData])
 
-    return currs ?? []
-  }
+  const paymentProviderOptions = useMemo(() => {
+    return payment_providers.map((p) => paymentProvidersMapper(p.id))
+  }, [payment_providers])
 
-  const handlePaymentChange = (values) => {
-    setPaymentProviders(values)
-    setValue(
-      "payment_providers",
-      values.map((v) => v.value)
-    )
-  }
+  const fulfillmentProviderOptions = useMemo(() => {
+    return fulfillment_providers.map((p) => fulfillmentProvidersMapper(p.id))
+  }, [fulfillment_providers])
 
-  const handleFulfillmentChange = (values) => {
-    const providers = values.map((v) => ({ value: v.value }))
-    setFulfillmentProviders(providers)
-    setValue(
-      "fulfillment_providers",
-      values.map((v) => v.value)
-    )
-  }
+  const currencyOptions = useMemo(() => {
+    return store?.currencies.map((c) => c.code) || []
+  }, [store])
 
-  const handleChange = (values) => {
-    setCountries(values)
-    setValue(
-      "countries",
-      values.map((c) => c.value)
-    )
-  }
-
-  const handleChangeCurrency = (value) => {
-    setValue("currency_code", value)
-    setSelectedCurrency(value)
-  }
-
-  const onSave = async (data) => {
-    if (!data.countries || data.countries.length === 0) {
-      return
-    }
-
+  const onSave = async (data: RegionDetailsFormData) => {
     updateRegion.mutate(
       {
         ...data,
-        currency_code: selectedCurrency,
+        countries: data.countries.map((country) => country.value),
+        payment_providers: data.payment_providers.map(
+          (provider) => provider.value
+        ),
+        fulfillment_providers: data.fulfillment_providers.map(
+          (provider) => provider.value
+        ),
       },
       {
         onSuccess: () => {
@@ -166,11 +109,6 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       }
     )
   }
-
-  const countryOptions = countryData.map((c) => ({
-    label: c.name,
-    value: c.alpha2.toLowerCase(),
-  }))
 
   const handleDuplicate = () => {
     if (!region) {
@@ -201,9 +139,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
   const handleDelete = async () => {
     deleteRegion.mutate(undefined, {
       onSuccess: () => {
-        if (onDelete) {
-          onDelete(null)
-        }
+        onDelete()
       },
       onError: (error) => {
         notification("Error", getErrorMessage(error), "error")
@@ -211,7 +147,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
     })
   }
 
-  if (storeIsLoading || !currencies.length) {
+  if (storeIsLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen mt-auto">
         <div className="h-[75px] w-[75px] mt-[50%]">
@@ -256,48 +192,76 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
                   placeholder="Region name..."
                   className="mb-base"
                 />
-                <CurrencyInput
-                  currentCurrency={selectedCurrency}
-                  currencyCodes={currencies}
-                  onChange={handleChangeCurrency}
-                  className="mb-base"
+                <Controller
+                  name="currency_code"
+                  control={control}
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <CurrencyInput
+                        currentCurrency={value}
+                        currencyCodes={currencyOptions}
+                        onChange={onChange}
+                        className="mb-base"
+                      />
+                    )
+                  }}
                 />
-                <Select
-                  isMultiSelect
-                  enableSearch
-                  label="Countries"
-                  hasSelectAll
-                  options={countryOptions}
-                  value={countries}
-                  onChange={handleChange}
-                  className="mb-base"
+                <Controller
+                  name="countries"
+                  control={control}
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <Select
+                        isMultiSelect
+                        enableSearch
+                        label="Countries"
+                        hasSelectAll
+                        options={countryOptions}
+                        value={value}
+                        onChange={onChange}
+                        className="mb-base"
+                      />
+                    )
+                  }}
                 />
-                {!!paymentOptions.length && (
-                  <Select
-                    isMultiSelect
-                    onChange={handlePaymentChange}
-                    options={paymentOptions}
-                    value={paymentProviders}
-                    label="Payment Providers"
-                    enableSearch
-                    className="mb-base"
-                  />
-                )}
-                {!!fulfillmentOptions.length && (
-                  <Select
-                    onChange={handleFulfillmentChange}
-                    options={fulfillmentOptions}
-                    value={fulfillmentProviders}
-                    label="Fulfillment Providers"
-                    enableSearch
-                    isMultiSelect
-                  />
-                )}
+                <Controller
+                  name="payment_providers"
+                  control={control}
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <Select
+                        isMultiSelect
+                        onChange={onChange}
+                        options={paymentProviderOptions}
+                        value={value}
+                        label="Payment Providers"
+                        enableSearch
+                        className="mb-base"
+                      />
+                    )
+                  }}
+                />
+                <Controller
+                  name="fulfillment_providers"
+                  control={control}
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <Select
+                        onChange={onChange}
+                        options={fulfillmentProviderOptions}
+                        value={value}
+                        label="Fulfillment Providers"
+                        enableSearch
+                        isMultiSelect
+                      />
+                    )
+                  }}
+                />
               </div>
             )}
           </div>
         </form>
-        {region && fulfillmentOptions && (
+        {region && fulfillmentProviderOptions && (
           <div className="mt-2xlarge">
             <Shipping region={region} />
           </div>
@@ -315,6 +279,23 @@ const RegionDetails = ({ id, onDelete, handleSelect }) => {
       )}
     </>
   )
+}
+
+const mapRegion = (region: Region): RegionDetailsFormData => {
+  return {
+    name: region.name,
+    countries: region.countries.map((c) => ({
+      value: c.iso_2,
+      label: c.display_name,
+    })),
+    currency_code: region.currency_code,
+    payment_providers: region.payment_providers.map((p) =>
+      paymentProvidersMapper(p.id)
+    ),
+    fulfillment_providers: region.fulfillment_providers.map((f) =>
+      fulfillmentProvidersMapper(f.id)
+    ),
+  }
 }
 
 export default RegionDetails

@@ -124,8 +124,11 @@ const Regions = () => {
       </div>
       {addRegion && (
         <NewRegion
-          onClick={() => setAddRegion(!addRegion)}
-          onDone={handleSelect}
+          onCancel={() => setAddRegion(!addRegion)}
+          onSuccess={(id) => {
+            setAddRegion(!addRegion)
+            handleSelect(id)
+          }}
         />
       )}
     </>
