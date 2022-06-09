@@ -46,7 +46,7 @@ const PricesTable = ({ id, selectProduct }: PricesTableProps) => {
           return (
             <PricesTableRow
               {...row.getRowProps()}
-              product={row}
+              product={row.original}
               priceListId={id}
               onClick={handleSelect}
               className="hover:bg-grey-5 hover:cursor-pointer"
@@ -115,7 +115,13 @@ const PricesTableRow = ({
       variant: "danger" as const,
       onClick: () => {
         deleteProductPrices.mutate(undefined, {
-          onSuccess: () => {},
+          onSuccess: () => {
+            notification(
+              "Success",
+              `Deleted prices of product: ${product.title}`,
+              "success"
+            )
+          },
           onError: (err) =>
             notification("Error", getErrorMessage(err), "error"),
         })
