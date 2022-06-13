@@ -186,7 +186,12 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                   </div>
                 ) : (
                   <FileUploadField
-                    filetypes={["image/png", "image/jpeg"]}
+                    filetypes={[
+                      "image/gif",
+                      "image/jpeg",
+                      "image/png",
+                      "image/webp",
+                    ]}
                     onFileChosen={handleFileUpload}
                     placeholder="1200 x 1600 (3:4) recommended, up to 10MB each"
                   />
