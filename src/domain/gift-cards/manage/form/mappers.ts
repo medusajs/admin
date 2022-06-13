@@ -1,47 +1,55 @@
-export const formValuesToUpdateGiftCardMapper = (values) => {
-  const payload = {
-    ...values,
-    thumbnail: values.images?.length
-      ? values.images[values.thumbnail]
+import { AdminPostProductsProductReq, Product } from "@medusajs/medusa"
+import { prepareImages } from "../../../products/product-form/utils/helpers"
+import { MangeGiftCardFormData } from "../utils/types"
+
+export const formValuesToUpdateGiftCardMapper = async (
+  values: MangeGiftCardFormData
+): Promise<AdminPostProductsProductReq> => {
+  const imagePayload = {} as Pick<
+    AdminPostProductsProductReq,
+    "images" | "thumbnail"
+  >
+
+  if (values.images?.length) {
+    const images = await prepareImages(values.images)
+    imagePayload.images = images.map((img) => img.url)
+  }
+
+  if (values.thumbnail) {
+    imagePayload.thumbnail = imagePayload.images?.length
+      ? imagePayload.images[values.thumbnail]
+      : undefined
+  }
+
+  return {
+    title: values.title,
+    subtitle: values.subtitle ?? undefined,
+    description: values.description ?? undefined,
+    type: values.type
+      ? { id: values.type?.value, value: values.type.label }
       : undefined,
+    tags: values.tags?.map((tag) => ({ value: tag })) ?? [],
+    ...imagePayload,
   }
-
-  if (values.images) {
-    payload["images"] = values.images
-  }
-
-  if (values.type) {
-    payload["type"] = { id: values.type.value, value: values.type.label }
-  }
-
-  if (values.tags) {
-    payload["tags"] = values.tags.map((tag) => ({ value: tag }))
-  }
-
-  return payload
 }
 
-export const giftCardToFormValuesMapper = (giftCard) => {
-  let thumbnail = giftCard?.images?.length
+export const giftCardToFormValuesMapper = (
+  giftCard: Product
+): MangeGiftCardFormData => {
+  let thumbnail = giftCard.images?.length
     ? giftCard.images.findIndex((img) => img.url === giftCard.thumbnail)
     : 0
   thumbnail = thumbnail === -1 ? 0 : thumbnail
+
   return {
-    ...giftCard,
-    type: giftCard?.type
-      ? { id: giftCard.type.id, label: giftCard.type.value }
+    title: giftCard.title,
+    subtitle: giftCard.subtitle,
+    description: giftCard.description,
+    type: giftCard.type
+      ? { label: giftCard.type.value, value: giftCard.type.id }
       : null,
-    tags: giftCard?.tags ? giftCard.tags.map((t) => t.value) : [],
-    images: giftCard?.images?.length
-      ? giftCard.images
-      : giftCard?.thumbnail
-      ? [{ url: giftCard?.thumbnail }]
-      : [],
+    tags: giftCard.tags.map((t) => t.value),
+    images: giftCard.images.map((img) => ({ url: img.url })),
     thumbnail,
-    prices: giftCard?.variants.length
-      ? giftCard.variants[0].prices.map((price) => ({
-          price: { currency_code: price.currency_code, amount: price.amount },
-        }))
-      : [],
   }
 }

@@ -108,26 +108,23 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
           <div className="flex flex-col w-1/2 space-y-4">
             <Input
               label="Name"
-              name="title"
               placeholder="Add name"
               defaultValue={giftCard?.title}
-              ref={register}
+              {...register("title", { required: true })}
             />
             <Input
               label="Subtitle"
-              name="subtitle"
               placeholder="Add a subtitle"
               defaultValue={giftCard?.subtitle}
-              ref={register}
+              {...register("subtitle")}
             />
           </div>
           <Input
             label="Description"
-            name="description"
             placeholder="Add a description"
             defaultValue={giftCard?.description}
             className="w-1/2"
-            ref={register}
+            {...register("description")}
           />
         </div>
         <DetailsCollapsible
@@ -140,16 +137,15 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
             <div className="flex flex-col w-1/2 space-y-4">
               <Input
                 label="Handle"
-                name="handle"
                 placeholder="Product handle"
                 defaultValue={giftCard?.handle}
-                ref={register}
+                {...register("handle")}
                 tooltipContent="URL of the product"
               />
               <Controller
                 control={control}
                 name="type"
-                render={({ value, onChange }) => {
+                render={({ field: { value, onChange } }) => {
                   return (
                     <Select
                       label="Type"
@@ -169,7 +165,7 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
             </div>
             <Controller
               name="tags"
-              render={({ onChange, value }) => {
+              render={({ field: { onChange, value } }) => {
                 return (
                   <TagInput
                     label="Tags (separated by comma)"

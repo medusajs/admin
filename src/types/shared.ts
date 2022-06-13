@@ -31,3 +31,10 @@ export type Role = {
   value: "admin" | "member" | "developer"
   label: string
 }
+
+export type FormImage = {
+  url: string
+  name?: string
+  size?: number
+  nativeFile?: File
+}

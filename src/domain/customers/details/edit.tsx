@@ -1,3 +1,4 @@
+import { Customer } from "@medusajs/medusa"
 import { useAdminUpdateCustomer } from "medusa-react"
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -6,8 +7,17 @@ import InputField from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
+import { validateEmail } from "../../../utils/validate-email"
 
-const EditCustomerModal = ({ handleClose, customer }) => {
+type EditCustomerModalProps = {
+  customer: Customer
+  handleClose: () => void
+}
+
+const EditCustomerModal = ({
+  handleClose,
+  customer,
+}: EditCustomerModalProps) => {
   const { register, reset, handleSubmit } = useForm()
 
   const notification = useNotification()
@@ -34,7 +44,7 @@ const EditCustomerModal = ({ handleClose, customer }) => {
       email: customer.email,
       phone: customer.phone || "",
     })
-  }, [])
+  }, [customer])
 
   return (
     <Modal handleClose={handleClose}>
@@ -45,13 +55,31 @@ const EditCustomerModal = ({ handleClose, customer }) => {
         <Modal.Content>
           <div className="inter-base-semibold text-grey-90 mb-4">General</div>
           <div className="w-full flex mb-4 space-x-2">
-            <InputField label="First Name" {...register('first_name')} placeholder="Lebron" />
-            <InputField label="Last Name" {...register('last_name')} placeholder="James" />
+            <InputField
+              label="First Name"
+              {...register("first_name")}
+              placeholder="Lebron"
+            />
+            <InputField
+              label="Last Name"
+              {...register("last_name")}
+              placeholder="James"
+            />
           </div>
           <div className="inter-base-semibold text-grey-90 mb-4">Contact</div>
           <div className="flex space-x-2">
-            <InputField label="Email" {...register('email')} disabled />
-            <InputField label="Phone number" {...register('phone')} placeholder="+45 42 42 42 42" />
+            <InputField
+              label="Email"
+              {...register("email", {
+                validate: (value) => !!validateEmail(value),
+              })}
+              disabled
+            />
+            <InputField
+              label="Phone number"
+              {...register("phone")}
+              placeholder="+45 42 42 42 42"
+            />
           </div>
         </Modal.Content>
         <Modal.Footer>
@@ -77,7 +105,7 @@ const EditCustomerModal = ({ handleClose, customer }) => {
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  );
+  )
 }
 
 export default EditCustomerModal

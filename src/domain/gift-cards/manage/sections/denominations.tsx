@@ -14,7 +14,7 @@ import { getErrorMessage } from "../../../../utils/error-messages"
 import DenominationTable from "../denomination-table"
 
 type DenominationsProps = {
-  giftCard: Omit<Product, "beforeInsert">
+  giftCard: Product
 }
 
 const Denominations: React.FC<DenominationsProps> = ({ giftCard }) => {

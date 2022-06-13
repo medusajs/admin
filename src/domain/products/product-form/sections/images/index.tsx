@@ -3,8 +3,10 @@ import { Controller, useFieldArray } from "react-hook-form"
 import FileUploadField from "../../../../../components/atoms/file-upload-field"
 import BodyCard from "../../../../../components/organisms/body-card"
 import RadioGroup from "../../../../../components/organisms/radio-group"
+import ImageTable, {
+  ImageTableDataType,
+} from "../../../../../components/templates/image-table"
 import { useProductForm } from "../../form/product-form-context"
-import ImageTable, { DataType } from "./image-table"
 
 const Images = () => {
   const { register, setImageDirtyState, control } = useProductForm()
@@ -47,7 +49,7 @@ const Images = () => {
                 }}
               >
                 <ImageTable
-                  data={fields as DataType[]}
+                  data={fields as ImageTableDataType[]}
                   onDelete={handleRemove}
                 />
                 {fields.map((field, index) => {

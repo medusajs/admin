@@ -1,4 +1,4 @@
-import { Option, ProductStatus } from "../../../../types/shared"
+import { FormImage, Option, ProductStatus } from "../../../../types/shared"
 
 export type ProductOption = {
   name: string
@@ -20,13 +20,6 @@ export type PriceFormValue = {
     currency_code: string
     amount: number
   }
-}
-
-export type FormImage = {
-  url: string
-  name?: string
-  size?: number
-  nativeFile?: File
 }
 
 export type ProductFormValues = {

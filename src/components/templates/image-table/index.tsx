@@ -1,16 +1,16 @@
 import React, { useMemo } from "react"
 import { Column, useTable } from "react-table"
-import Button from "../../../../../components/fundamentals/button"
-import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
-import IconTooltip from "../../../../../components/molecules/icon-tooltip"
-import Table from "../../../../../components/molecules/table"
-import RadioGroup from "../../../../../components/organisms/radio-group"
-import { FormImage } from "../../utils/types"
+import { FormImage } from "../../../types/shared"
+import Button from "../../fundamentals/button"
+import TrashIcon from "../../fundamentals/icons/trash-icon"
+import IconTooltip from "../../molecules/icon-tooltip"
+import Table from "../../molecules/table"
+import RadioGroup from "../../organisms/radio-group"
 
-export type DataType = { id?: string } & FormImage
+export type ImageTableDataType = { id?: string } & FormImage
 
 type ImageTableProps = {
-  data: DataType[]
+  data: ImageTableDataType[]
   onDelete: (index: number) => void
 }
 

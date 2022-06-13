@@ -7,7 +7,9 @@ import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
-import Actionables from "../../../components/molecules/actionables"
+import Actionables, {
+  ActionType,
+} from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
@@ -30,7 +32,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
     }
   }
 
-  const actions = [
+  const actions: ActionType[] = [
     {
       label: "Edit",
       onClick: () => setShowEdit(true),
@@ -51,7 +53,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
         previousBreadcrumb={"Customers"}
         previousRoute="/a/customers"
       />
-      <BodyCard className={"h-auto w-full pt-[100px] mb-4"}>
+      <BodyCard className={"h-auto w-full pt-[100px] mb-4 relative"}>
         <div className="h-[120px] w-full absolute top-0 right-0 left-0 bg-gradient-to-b from-fuschia-20 z-0" />
         <div className="flex flex-col grow overflow-y-auto">
           <div className="w-[64px] h-[64px] mb-4">
@@ -119,7 +121,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
         <RawJSON data={customer} title="Raw customer" />
       </div>
 
-      {showEdit && (
+      {showEdit && customer && (
         <EditCustomerModal
           customer={customer}
           handleClose={() => setShowEdit(false)}

@@ -3,10 +3,8 @@ import {
   useAdminCreateProduct,
   useAdminProducts,
   useAdminStore,
-  useCreateLineItem,
 } from "medusa-react"
-import React, { useState } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import FileUploadField from "../../components/atoms/file-upload-field"
 import Button from "../../components/fundamentals/button"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
@@ -14,11 +12,13 @@ import TrashIcon from "../../components/fundamentals/icons/trash-icon"
 import InputField from "../../components/molecules/input"
 import Modal from "../../components/molecules/modal"
 import Textarea from "../../components/molecules/textarea"
+import CurrencyInput from "../../components/organisms/currency-input"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
 import { ProductStatus } from "../../types/shared"
 import { getErrorMessage } from "../../utils/error-messages"
 import { focusByName } from "../../utils/focus-by-name"
+import React from "react"
 
 type NewGiftCardProps = {
   onClose: () => void
@@ -39,12 +39,6 @@ type NewGiftCardFormData = {
 }
 
 const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
-  const [thumbnail, setThumbnail] = useState<{
-    url: string
-    name: string
-    size: string
-    nativeFile: File
-  } | null>(null)
   const { store } = useAdminStore()
   const { refetch } = useAdminProducts()
   const { mutate: create } = useAdminCreateProduct()
@@ -71,14 +65,9 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
     })
   }
 
-  const { mutate } = useCreateLineItem("cart_your_id")
-
-  mutate({
-    quantity: 1,
-    variant_id: "variant_your_id",
-    metadata: {
-      engarving: "Hi mom",
-    },
+  const thumbnail = useWatch({
+    control,
+    name: "thumbnail",
   })
 
   const onSubmit = async (data: NewGiftCardFormData) => {
@@ -160,7 +149,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                 label={"Name"}
                 required
                 placeholder="The best Gift Card"
-                {...register("name", { required: true })}
+                {...register("title", { required: true })}
               />
               <Textarea
                 label="Description"
@@ -186,7 +175,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                         <button
                           className="text-rose-50 inter-small-semibold"
                           type="button"
-                          onClick={() => setThumbnail(null)}
+                          onClick={() => setValue("thumbnail", null)}
                         >
                           Delete
                         </button>
@@ -207,19 +196,37 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                 Denominations<span className="text-rose-50">*</span>
               </h3>
               <div className="flex flex-col gap-y-xsmall">
-                {denominations.map((denomination) => {
+                {fields.map((denomination, index) => {
                   return (
                     <div
-                      key={denomination.name}
+                      key={denomination.id}
                       className="flex items-center gap-x-base last:mb-large"
                     >
-                      {denomination.component}
+                      <CurrencyInput
+                        currentCurrency={store?.default_currency_code}
+                        readOnly
+                        size="medium"
+                      >
+                        <Controller
+                          control={control}
+                          name={`denominations.${index}.amount`}
+                          render={({ field: { value, onChange } }) => {
+                            return (
+                              <CurrencyInput.AmountInput
+                                label="Amount"
+                                amount={value}
+                                onChange={onChange}
+                              />
+                            )
+                          }}
+                        />
+                      </CurrencyInput>
                       <Button
                         variant="ghost"
                         size="large"
                         className="w-xlarge h-xlarge text-grey-40"
                         type="button"
-                        onClick={() => deleteDenomination(denomination.name)}
+                        onClick={() => remove(index)}
                       >
                         <TrashIcon size={20} />
                       </Button>
@@ -231,7 +238,11 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                 name="add-denomination"
                 variant="ghost"
                 size="small"
-                onClick={addDenomination}
+                onClick={() =>
+                  append({
+                    amount: undefined,
+                  })
+                }
                 type="button"
               >
                 <PlusIcon size={20} />
