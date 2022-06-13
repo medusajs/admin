@@ -24,7 +24,7 @@ import NewGiftCard from "./new"
 
 const Overview: React.FC<RouteComponentProps> = () => {
   const { products, isLoading } = useAdminProducts({
-    is_giftcard: "true",
+    is_giftcard: true,
   })
   const { store } = useAdminStore()
   const { gift_cards: giftCards } = useAdminGiftCards()

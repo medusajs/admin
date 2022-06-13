@@ -591,13 +591,13 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
                         )}
                         {showCustomPrice.standard && (
                           <div className="flex w-full items-center">
-                            <CurrencyInput
+                            <CurrencyInput.Root
                               readOnly
                               className="mt-4 w-full"
                               size="small"
                               currentCurrency={order.currency_code}
                             >
-                              <CurrencyInput.AmountInput
+                              <CurrencyInput.Amount
                                 label={"Amount"}
                                 amount={customOptionPrice.standard}
                                 onChange={(value) =>
@@ -607,7 +607,7 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
                                   })
                                 }
                               />
-                            </CurrencyInput>
+                            </CurrencyInput.Root>
                             <Button
                               onClick={() =>
                                 setShowCustomPrice({

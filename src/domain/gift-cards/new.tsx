@@ -4,6 +4,7 @@ import {
   useAdminProducts,
   useAdminStore,
 } from "medusa-react"
+import React from "react"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import FileUploadField from "../../components/atoms/file-upload-field"
 import Button from "../../components/fundamentals/button"
@@ -18,7 +19,6 @@ import Medusa from "../../services/api"
 import { ProductStatus } from "../../types/shared"
 import { getErrorMessage } from "../../utils/error-messages"
 import { focusByName } from "../../utils/focus-by-name"
-import React from "react"
 
 type NewGiftCardProps = {
   onClose: () => void
@@ -41,12 +41,14 @@ type NewGiftCardFormData = {
 const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
   const { store } = useAdminStore()
   const { refetch } = useAdminProducts()
-  const { mutate: create } = useAdminCreateProduct()
+  const { mutate } = useAdminCreateProduct()
   const notification = useNotification()
 
   const { register, setValue, handleSubmit, control } = useForm<
     NewGiftCardFormData
-  >()
+  >({
+    shouldUnregister: true,
+  })
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -79,7 +81,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
       return
     }
 
-    if (!data.denominations) {
+    if (!data.denominations?.length) {
       notification("Error", "Please add at least one denomination", "error")
       focusByName("add-denomination")
       return
@@ -98,7 +100,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
       images = uploadedImgs
     }
 
-    create(
+    mutate(
       {
         is_giftcard: true,
         title: data.title,
@@ -133,7 +135,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
 
   return (
     <Modal handleClose={onClose}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit, (err) => console.log(err))}>
         <Modal.Body>
           <Modal.Header handleClose={onClose}>
             <div>
@@ -202,7 +204,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                       key={denomination.id}
                       className="flex items-center gap-x-base last:mb-large"
                     >
-                      <CurrencyInput
+                      <CurrencyInput.Root
                         currentCurrency={store?.default_currency_code}
                         readOnly
                         size="medium"
@@ -210,17 +212,22 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                         <Controller
                           control={control}
                           name={`denominations.${index}.amount`}
-                          render={({ field: { value, onChange } }) => {
+                          rules={{
+                            required: true,
+                            shouldUnregister: true,
+                          }}
+                          render={({ field: { value, onChange, ref } }) => {
                             return (
-                              <CurrencyInput.AmountInput
+                              <CurrencyInput.Amount
                                 label="Amount"
                                 amount={value}
                                 onChange={onChange}
+                                ref={ref}
                               />
                             )
                           }}
                         />
-                      </CurrencyInput>
+                      </CurrencyInput.Root>
                       <Button
                         variant="ghost"
                         size="large"

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react"
-import { useAdminRegions } from "medusa-react"
-import { Controller } from "react-hook-form"
 import clsx from "clsx"
+import { useAdminRegions } from "medusa-react"
+import { useEffect, useState } from "react"
+import { Controller } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../components/molecules/input"
@@ -64,7 +64,7 @@ const General = ({ discount, isEdit = false }) => {
               validate: (value) =>
                 Array.isArray(value) ? value.length > 0 : !!value,
             }}
-            render={({ onChange, value }) => {
+            render={({ field: { onChange, value } }) => {
               return (
                 <Select
                   value={value}
@@ -92,15 +92,14 @@ const General = ({ discount, isEdit = false }) => {
               className="flex-1"
               placeholder="SUMMERSALE10"
               required
-              name="code"
-              ref={register({ required: "Code is required" })}
+              {...register("code", { required: "Code is required" })}
             />
 
             {type !== "free_shipping" && (
               <>
                 {type === "fixed" ? (
                   <div className="flex-1">
-                    <CurrencyInput
+                    <CurrencyInput.Root
                       size="small"
                       currentCurrency={fixedRegionCurrency}
                       readOnly
@@ -113,9 +112,9 @@ const General = ({ discount, isEdit = false }) => {
                           required: "Amount is required",
                           min: 1,
                         }}
-                        render={({ value, onChange }) => {
+                        render={({ field: { value, onChange } }) => {
                           return (
-                            <CurrencyInput.AmountInput
+                            <CurrencyInput.Amount
                               label={"Amount"}
                               required
                               amount={value}
@@ -124,7 +123,7 @@ const General = ({ discount, isEdit = false }) => {
                           )
                         }}
                       />
-                    </CurrencyInput>
+                    </CurrencyInput.Root>
                   </div>
                 ) : (
                   <div className="flex-1">
@@ -135,8 +134,7 @@ const General = ({ discount, isEdit = false }) => {
                       type="number"
                       placeholder="10"
                       prefix={"%"}
-                      name="rule.value"
-                      ref={register({
+                      {...register("rule.value", {
                         required: isFreeShipping ? false : "Amount is required",
                       })}
                       tabIndex={isFreeShipping || isEdit ? -1 : 0}
@@ -156,16 +154,17 @@ const General = ({ discount, isEdit = false }) => {
           </div>
           <Textarea
             label="Description"
-            name="description"
             required
             placeholder="Summer Sale 2022"
             rows={1}
-            ref={register({ required: "Description is required" })}
+            {...register("description", {
+              required: "Description is required",
+            })}
           />
           <div className="mt-xlarge flex items-center">
             <Controller
               name="is_dynamic"
-              render={({ onChange, value }) => {
+              render={({ field: { onChange, value } }) => {
                 return (
                   <Checkbox
                     label="This is a template discount"

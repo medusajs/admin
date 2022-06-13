@@ -1,4 +1,5 @@
 import { Product } from "@medusajs/medusa"
+import { navigate } from "gatsby"
 import {
   useAdminDeleteProduct,
   useAdminProductTypes,
@@ -67,6 +68,7 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
   const onDelete = () => {
     deleteGiftCard.mutate(undefined, {
       onSuccess: () => {
+        navigate("/a/gift-cards")
         notification("Success", "Gift card updated successfully", "success")
       },
       onError: (error) => {

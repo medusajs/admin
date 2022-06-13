@@ -1,5 +1,12 @@
 import clsx from "clsx"
-import React, { useContext, useEffect, useRef, useState } from "react"
+import React, {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react"
 import AmountField from "react-currency-input-field"
 import { Option } from "../../../types/shared"
 import { currencies, CurrencyType } from "../../../utils/currencies"
@@ -49,9 +56,7 @@ const getCurrencyInfo = (currencyCode?: string) => {
   return currencyInfo
 }
 
-const CurrencyInput: React.FC<CurrencyInputProps> & {
-  AmountInput: React.FC<AmountInputProps>
-} = ({
+const Root: React.FC<CurrencyInputProps> = ({
   currentCurrency,
   currencyCodes,
   size = "full",
@@ -147,120 +152,128 @@ const CurrencyInput: React.FC<CurrencyInputProps> & {
   )
 }
 
-const AmountInput: React.FC<AmountInputProps> = ({
-  label,
-  required = false,
-  amount,
-  step = 1,
-  allowNegative = false,
-  onChange,
-  onValidate,
-  invalidMessage,
-  ...rest
-}) => {
-  const { currencyInfo } = useContext(CurrencyContext)
-  const [invalid, setInvalid] = useState<boolean>(false)
-  const [value, setValue] = useState<string | undefined>(
-    amount ? `${normalizeAmount(currencyInfo?.code, amount)}` : undefined
-  )
-  const inputRef = useRef<HTMLInputElement | null>(null)
+const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
+  (
+    {
+      label,
+      required = false,
+      amount,
+      step = 1,
+      allowNegative = false,
+      onChange,
+      onValidate,
+      invalidMessage,
+      ...rest
+    }: AmountInputProps,
+    ref
+  ) => {
+    const { currencyInfo } = useContext(CurrencyContext)
+    const [invalid, setInvalid] = useState<boolean>(false)
+    const [value, setValue] = useState<string | undefined>(
+      amount ? `${normalizeAmount(currencyInfo?.code!, amount)}` : undefined
+    )
+    const inputRef = useRef<HTMLInputElement | null>(null)
 
-  useEffect(() => {
-    inputRef.current?.dispatchEvent(new Event("blur"))
-  }, [currencyInfo?.decimal_digits])
+    useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+      ref,
+      () => inputRef.current
+    )
 
-  useEffect(() => {
-    if (currencyInfo && amount) {
-      setValue(`${normalizeAmount(currencyInfo?.code, amount)}`)
-    }
-  }, [amount])
+    useEffect(() => {
+      inputRef.current?.dispatchEvent(new Event("blur"))
+    }, [currencyInfo?.decimal_digits])
 
-  const handleChange = (value) => {
-    let persistedAmount: number | undefined = undefined
+    useEffect(() => {
+      if (currencyInfo && amount) {
+        setValue(`${normalizeAmount(currencyInfo?.code, amount)}`)
+      }
+    }, [amount])
 
-    if (!value) {
-      value = 0
-    }
+    const handleChange = (value) => {
+      let persistedAmount: number | undefined = undefined
 
-    if (currencyInfo) {
-      const amount = parseFloat(value)
-      const multiplier = getDecimalDigits(currencyInfo.code)
-      persistedAmount = multiplier * amount
-    }
-
-    if (onChange && typeof persistedAmount !== "undefined") {
-      const updateAmount = Math.round(persistedAmount)
-      let update = true
-      if (onValidate) {
-        update = onValidate(updateAmount)
+      if (!value) {
+        value = 0
       }
 
-      if (update) {
-        onChange(updateAmount)
-        setValue(`${value}`)
-        setInvalid(false)
-      } else {
-        setInvalid(true)
+      if (currencyInfo) {
+        const amount = parseFloat(value)
+        const multiplier = getDecimalDigits(currencyInfo.code)
+        persistedAmount = multiplier * amount
+      }
+
+      if (onChange && typeof persistedAmount !== "undefined") {
+        const updateAmount = Math.round(persistedAmount)
+        let update = true
+        if (onValidate) {
+          update = onValidate(updateAmount)
+        }
+
+        if (update) {
+          onChange(updateAmount)
+          setValue(`${value}`)
+          setInvalid(false)
+        } else {
+          setInvalid(true)
+        }
       }
     }
-  }
 
-  const handleManualValueChange = (val: number) => {
-    const newValue = parseFloat(value ?? "0") + val
+    const handleManualValueChange = (val: number) => {
+      const newValue = parseFloat(value ?? "0") + val
 
-    if (!allowNegative && newValue < 0) {
-      return
+      if (!allowNegative && newValue < 0) {
+        return
+      }
+
+      handleChange(`${newValue}`)
     }
 
-    handleChange(`${newValue}`)
-  }
-
-  return (
-    <InputContainer onClick={() => inputRef.current?.focus()} {...rest}>
-      <InputHeader label={label} required={required} />
-      <div className="flex items-center mt-2xsmall">
-        {currencyInfo?.symbol_native && (
-          <Tooltip
-            open={invalid}
-            side={"top"}
-            content={invalidMessage || "Amount is not valid"}
-          >
-            <span className="inter-base-regular text-grey-40 mr-xsmall">
-              {currencyInfo.symbol_native}
-            </span>
-          </Tooltip>
-        )}
-        <AmountField
-          className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
-          decimalScale={currencyInfo?.decimal_digits}
-          value={value}
-          onValueChange={handleChange}
-          ref={inputRef}
-          step={step}
-          allowNegativeValue={allowNegative}
-          placeholder="0.00"
-        />
-        <div className="flex self-end">
-          <button
-            className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
-            type="button"
-            onClick={() => handleManualValueChange(-step)}
-          >
-            <MinusIcon size={16} />
-          </button>
-          <button
-            type="button"
-            className="text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
-            onClick={() => handleManualValueChange(step)}
-          >
-            <PlusIcon size={16} />
-          </button>
+    return (
+      <InputContainer onClick={() => inputRef.current?.focus()} {...rest}>
+        <InputHeader label={label} required={required} />
+        <div className="flex items-center mt-2xsmall">
+          {currencyInfo?.symbol_native && (
+            <Tooltip
+              open={invalid}
+              side={"top"}
+              content={invalidMessage || "Amount is not valid"}
+            >
+              <span className="inter-base-regular text-grey-40 mr-xsmall">
+                {currencyInfo.symbol_native}
+              </span>
+            </Tooltip>
+          )}
+          <AmountField
+            className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
+            decimalScale={currencyInfo?.decimal_digits}
+            value={value}
+            onValueChange={handleChange}
+            ref={inputRef}
+            step={step}
+            allowNegativeValue={allowNegative}
+            placeholder="0.00"
+          />
+          <div className="flex self-end">
+            <button
+              className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
+              type="button"
+              onClick={() => handleManualValueChange(-step)}
+            >
+              <MinusIcon size={16} />
+            </button>
+            <button
+              type="button"
+              className="text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
+              onClick={() => handleManualValueChange(step)}
+            >
+              <PlusIcon size={16} />
+            </button>
+          </div>
         </div>
-      </div>
-    </InputContainer>
-  )
-}
+      </InputContainer>
+    )
+  }
+)
 
-CurrencyInput.AmountInput = AmountInput
-
-export default CurrencyInput
+export default { Root, Amount }

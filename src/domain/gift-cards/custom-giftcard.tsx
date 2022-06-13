@@ -93,7 +93,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                 />
               </div>
               <div className="w-[415px]">
-                <CurrencyInput
+                <CurrencyInput.Root
                   size="medium"
                   currencyCodes={
                     isLoading ? undefined : regions?.map((r) => r.currency_code)
@@ -101,7 +101,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                   readOnly
                   currentCurrency={selectedRegion?.value?.currency_code}
                 >
-                  <CurrencyInput.AmountInput
+                  <CurrencyInput.Amount
                     label={"Amount"}
                     amount={giftCardAmount}
                     onChange={(value) => {
@@ -110,7 +110,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                     name="amount"
                     required={true}
                   />
-                </CurrencyInput>
+                </CurrencyInput.Root>
               </div>
             </div>
           </div>
@@ -120,14 +120,16 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
               <InputField
                 label={"Email"}
                 required
-                {...register('metadata.email', { required: true })}
+                {...register("metadata.email", { required: true })}
                 placeholder="lebron@james.com"
-                type="email" />
+                type="email"
+              />
               <Textarea
                 label={"Personal Message"}
                 rows={7}
                 placeholder="Something nice to someone special"
-                {...register('metadata.personal_message')} />
+                {...register("metadata.personal_message")}
+              />
             </div>
           </div>
         </Modal.Content>
@@ -154,7 +156,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  );
+  )
 }
 
 export default CustomGiftcard

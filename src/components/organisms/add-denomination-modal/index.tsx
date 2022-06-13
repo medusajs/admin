@@ -125,19 +125,19 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
               <Controller
                 control={control}
                 name="default_price"
-                render={({ onChange, value }) => {
+                render={({ field: { onChange, value } }) => {
                   return (
-                    <CurrencyInput
+                    <CurrencyInput.Root
                       currentCurrency={storeCurrency}
                       readOnly
                       size="medium"
                     >
-                      <CurrencyInput.AmountInput
+                      <CurrencyInput.Amount
                         label="Amount"
                         amount={value}
                         onChange={onChange}
                       />
-                    </CurrencyInput>
+                    </CurrencyInput.Root>
                   )
                 }}
               />
@@ -158,16 +158,16 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                         <Controller
                           control={control}
                           key={field.indexId}
-                          name={`prices[${index}].price`}
+                          name={`prices.${index}.price`}
                           defaultValue={field.price}
-                          render={({ onChange, value }) => {
+                          render={({ field: { onChange, value } }) => {
                             const codes = [
                               value?.currency_code,
                               ...availableCurrencies,
                             ]
                             codes.sort()
                             return (
-                              <CurrencyInput
+                              <CurrencyInput.Root
                                 currencyCodes={codes}
                                 currentCurrency={value?.currency_code}
                                 size="medium"
@@ -176,14 +176,14 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                                   onChange({ ...value, currency_code: code })
                                 }
                               >
-                                <CurrencyInput.AmountInput
+                                <CurrencyInput.Amount
                                   label="Amount"
                                   onChange={(amount) =>
                                     onChange({ ...value, amount })
                                   }
                                   amount={value?.amount}
                                 />
-                              </CurrencyInput>
+                              </CurrencyInput.Root>
                             )
                           }}
                         />
