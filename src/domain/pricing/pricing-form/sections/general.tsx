@@ -17,17 +17,15 @@ const General = () => {
       <div className="flex flex-col gap-y-small group-radix-state-open:mt-5 accordion-margin-transition">
         <InputField
           label="Name"
-          name="name"
           required
           placeholder="B2B, Black Friday..."
-          ref={register({ required: "Name is required" })}
+          {...register("name",{ required: "Name is required" })}
         />
         <InputField
           label="Description"
-          name="description"
           required
           placeholder="For our business partners..."
-          ref={register({ required: "Description is required" })}
+          {...register("description",{ required: "Description is required" })}
         />
       </div>
     </Accordion.Item>

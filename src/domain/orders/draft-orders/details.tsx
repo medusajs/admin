@@ -57,7 +57,6 @@ const DraftOrderDetails = ({ id }) => {
 
   useEffect(() => {
     if (store && draft_order && store.payment_link_template) {
-      console.log(store.payment_link_template)
       setPaymentLink(
         store.payment_link_template.replace(/\{cart_id\}/, draft_order.cart_id)
       )

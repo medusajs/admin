@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import React, { ReactNode, useImperativeHandle } from "react"
 
-type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
+export type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label: ReactNode
 }
 

@@ -1,17 +1,15 @@
 import React, { useState } from "react"
 import {
-  FormProvider,
-  useForm,
+  FormProvider, SubmitHandler, useForm,
   useFormContext,
-  useWatch,
-  SubmitHandler,
+  useWatch
 } from "react-hook-form"
 import { weekFromNow } from "../../../../utils/date-utils"
 import {
   ConfigurationField,
   CreatePriceListPricesFormValues,
   PriceListFormValues,
-  PriceListType,
+  PriceListType
 } from "../types"
 
 const defaultState: PriceListFormValues = {
@@ -105,13 +103,13 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
       // if the configuration field value is null, we set a default value
       switch (configField) {
         case ConfigurationField.STARTS_AT:
-          methods.setValue(configField, new Date())
+          methods.setValue("starts_at", new Date())
           break
         case ConfigurationField.ENDS_AT:
-          methods.setValue(configField, weekFromNow())
+          methods.setValue("ends_at", weekFromNow())
           break
         case ConfigurationField.CUSTOMER_GROUPS:
-          methods.setValue(configField, [])
+          methods.setValue("customer_groups", [])
           break
       }
     }
@@ -152,7 +150,7 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
 
 export const usePriceListForm = () => {
   const context = React.useContext(PriceListFormContext)
-  const form = useFormContext()
+  const form = useFormContext<PriceListFormValues>()
   if (context === null) {
     throw new Error(
       "usePriceListForm must be used within a PriceListFormProvider"

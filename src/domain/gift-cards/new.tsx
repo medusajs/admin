@@ -2,9 +2,8 @@ import { navigate } from "gatsby"
 import {
   useAdminCreateProduct,
   useAdminProducts,
-  useAdminStore,
+  useAdminStore
 } from "medusa-react"
-import React from "react"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import FileUploadField from "../../components/atoms/file-upload-field"
 import Button from "../../components/fundamentals/button"

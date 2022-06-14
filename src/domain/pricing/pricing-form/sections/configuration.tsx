@@ -83,7 +83,7 @@ const Configuration: React.FC<ConfigurationProps> = () => {
               <Controller
                 name="starts_at"
                 control={control}
-                render={({ value, onChange }) => {
+                render={({ field: { value, onChange } }) => {
                   return (
                     <>
                       <DatePicker
@@ -124,7 +124,7 @@ const Configuration: React.FC<ConfigurationProps> = () => {
               <Controller
                 name="ends_at"
                 control={control}
-                render={({ value, onChange }) => {
+                render={({ field: { value, onChange } }) => {
                   return (
                     <>
                       <DatePicker
@@ -157,8 +157,7 @@ const Configuration: React.FC<ConfigurationProps> = () => {
             <Controller
               name="customer_groups"
               control={control}
-              css={{ width: "100%" }}
-              render={({ value, onChange, ref }) => {
+              render={({ field: { value, onChange, ref }}) => {
                 return (
                   <div
                     className={clsx(
