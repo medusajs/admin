@@ -49,13 +49,18 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
       handle: data.handle,
     }
 
-    if (metadata.length > 0) {
+    const base = Object.keys(collection?.metadata ?? {}).reduce(
+      (acc, next) => ({ ...acc, [next]: null }),
+      {}
+    )
+
+    if (metadata) {
       const payloadMetadata = metadata.reduce((acc, next) => {
         return {
           ...acc,
           [next.key]: next.value ?? null,
         }
-      }, {})
+      }, base)
 
       payload.metadata = payloadMetadata // deleting metadata will not work as it's not supported by the core
     }
