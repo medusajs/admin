@@ -49,12 +49,12 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
       handle: data.handle,
     }
 
-    const base = Object.keys(collection?.metadata ?? {}).reduce(
-      (acc, next) => ({ ...acc, [next]: null }),
-      {}
-    )
-
     if (metadata) {
+      const base = Object.keys(collection?.metadata ?? {}).reduce(
+        (acc, next) => ({ ...acc, [next]: null }),
+        {}
+      )
+
       const payloadMetadata = metadata.reduce((acc, next) => {
         return {
           ...acc,
