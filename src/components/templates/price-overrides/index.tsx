@@ -99,13 +99,12 @@ const PriceOverrides = ({
             {variants.map((variant, idx) => (
               <div
                 id={variant.id}
-                key={idx}
                 className="py-2.5 px-3 border border-grey-20 rounded-rounded"
               >
                 <ControlledCheckbox
                   control={control}
-                  name={`variants`}
-                  label={`${variant.title} ${variant.sku ? `(SKU: ${variant.sku})` : ""}`}
+                  name="variants"
+                  label={`${variant.title} (SKU: ${variant.sku})`}
                   id={variant.id}
                   index={idx}
                   value={variant.id}
@@ -122,14 +121,14 @@ const PriceOverrides = ({
                 control={control}
                 name={`prices.${idx}`}
                 key={price.id}
-                render={({ field: { value, onChange}}) => {
+                render={({ field }) => {
                   return (
                     <PriceAmount
-                      value={value}
+                      value={field.value}
                       key={price.id}
                       onChange={(amount) => {
-                        onChange({
-                          ...value,
+                        field.onChange({
+                          ...field.value,
                           amount,
                         })
                       }}
@@ -166,8 +165,8 @@ const PriceOverrides = ({
 }
 
 type ControlledCheckboxProps = {
-  control: Control<PriceOverridesFormValues, any>
-  name: keyof PriceOverridesFormValues
+  control: Control
+  name: string
   id: string
   index: number
 } & CheckboxProps
@@ -180,7 +179,6 @@ const ControlledCheckbox = ({
   value,
   ...props
 }: ControlledCheckboxProps) => {
-  
   const variants = useWatch({
     control,
     name,
@@ -190,12 +188,12 @@ const ControlledCheckbox = ({
     <Controller
       control={control}
       name={name}
-      render={({ field: { value, onChange, ref}}) => {
+      render={({ field }) => {
         return (
           <Checkbox
             className="shrink-0 inter-small-regular"
             {...props}
-            ref={ref}
+            {...field}
             checked={variants?.some((variant) => variant === value)}
             onChange={(e) => {
               // copy field value
@@ -205,7 +203,7 @@ const ControlledCheckbox = ({
               valueCopy[index] = e.target.checked ? id : null
 
               // update field value
-              onChange(valueCopy)
+              field.onChange(valueCopy)
             }}
           />
         )

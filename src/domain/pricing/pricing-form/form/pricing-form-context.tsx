@@ -23,7 +23,7 @@ const defaultState: PriceListFormValues = {
 }
 
 const PriceListFormContext = React.createContext<{
-  configFields: Record<ConfigurationField, unknown>
+  configFields: Pick<PriceListFormValues, "starts_at" | "ends_at" | "customer_groups">
   handleConfigurationSwitch: (values: string[]) => void
   prices: CreatePriceListPricesFormValues | null
   setPrices: React.Dispatch<
@@ -43,7 +43,7 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
   children,
 }) => {
   const [configFields, setConfigFields] = useState<
-    Record<ConfigurationField, unknown>
+    Pick<PriceListFormValues, "starts_at" | "ends_at" | "customer_groups">
   >({
     customer_groups: priceList.customer_groups,
     ends_at: priceList.ends_at,
@@ -74,13 +74,13 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
     let configToSave: unknown | null = null
 
     switch (configField) {
-      case ConfigurationField.CUSTOMER_GROUPS:
+      case "customer_groups":
         configToSave = currentCustomerGroups
         break
-      case ConfigurationField.STARTS_AT:
+      case "starts_at":
         configToSave = currentStartsAt
         break
-      case ConfigurationField.ENDS_AT:
+      case "ends_at":
         configToSave = currentEndsAt
         break
     }
@@ -102,13 +102,13 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
     } else {
       // if the configuration field value is null, we set a default value
       switch (configField) {
-        case ConfigurationField.STARTS_AT:
+        case "starts_at":
           methods.setValue("starts_at", new Date())
           break
-        case ConfigurationField.ENDS_AT:
+        case "ends_at":
           methods.setValue("ends_at", weekFromNow())
           break
-        case ConfigurationField.CUSTOMER_GROUPS:
+        case "customer_groups":
           methods.setValue("customer_groups", [])
           break
       }

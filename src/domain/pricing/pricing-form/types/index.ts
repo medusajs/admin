@@ -50,11 +50,9 @@ export type CreatePriceListFormValues = {
   prices: CreatePriceListPricesFormValues | null
 }
 
-export enum ConfigurationField {
-  STARTS_AT = "starts_at",
-  ENDS_AT = "ends_at",
-  CUSTOMER_GROUPS = "customer_groups",
-}
+export type ConfigurationField = keyof Pick<PriceListFormValues, "starts_at" | "ends_at" | "customer_groups">
+
+export type ConfigurationFields = Pick<PriceListFormValues, "starts_at" | "ends_at" | "customer_groups">
 
 export enum PriceListStatus {
   ACTIVE = "active",
