@@ -2,13 +2,16 @@ import { Router, useLocation } from "@reach/router"
 import { navigate } from "gatsby"
 import { useAdminCreateCollection } from "medusa-react"
 import React, { useEffect, useState } from "react"
+import ExportIcon from "../../components/fundamentals/icons/export-icon"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
+import ProductExport from "../../components/organisms/product-export"
 import AddCollectionModal from "../../components/templates/collection-modal"
 import CollectionsTable from "../../components/templates/collections-table"
 import ProductTable from "../../components/templates/product-table"
 import useNotification from "../../hooks/use-notification"
+import useToggleState from "../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../utils/error-messages"
 import EditProductPage from "./edit"
 import NewProductPage from "./new"
@@ -47,6 +50,15 @@ const ProductIndex = () => {
       case "products":
         return [
           {
+            label: "Export",
+            onClick: () => openExportModal(),
+            icon: (
+              <span className="text-grey-90">
+                <ExportIcon size={20} />
+              </span>
+            ),
+          },
+          {
             label: "New Product",
             onClick: () => navigate("/a/products/new"),
             icon: (
@@ -72,6 +84,11 @@ const ProductIndex = () => {
   }
 
   const [showNewCollection, setShowNewCollection] = useState(false)
+  const {
+    open: openExportModal,
+    close: closeExportModal,
+    state: exportModalOpen,
+  } = useToggleState(false)
 
   const handleCreateCollection = async (data, colMetadata) => {
     const metadata = colMetadata
@@ -101,6 +118,7 @@ const ProductIndex = () => {
       <div className="flex flex-col grow h-full">
         <div className="w-full flex flex-col grow">
           <BodyCard
+            forceDropdown={false}
             actionables={CurrentAction()}
             customHeader={
               <TableViewHeader
@@ -118,6 +136,12 @@ const ProductIndex = () => {
         <AddCollectionModal
           onClose={() => setShowNewCollection(!showNewCollection)}
           onSubmit={handleCreateCollection}
+        />
+      )}
+      {exportModalOpen && (
+        <ProductExport
+          handleClose={() => closeExportModal()}
+          // onSubmit={handleCreateCollection}
         />
       )}
     </>
