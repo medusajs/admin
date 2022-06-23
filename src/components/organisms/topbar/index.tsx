@@ -1,6 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { navigate } from "gatsby"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { AccountContext } from "../../../context/account"
 import Avatar from "../../atoms/avatar"
 import Button from "../../fundamentals/button"
@@ -10,11 +10,23 @@ import SignOutIcon from "../../fundamentals/icons/log-out-icon"
 import NotificationBell from "../../molecules/notification-bell"
 import SearchBar from "../../molecules/search-bar"
 import MailDialog from "../help-dialog"
+import ActivityDrawer from "../activity-drawer"
+import useToggleState from "../../../hooks/use-toggle-state"
 
 const Topbar: React.FC = () => {
+  const {
+    state: activityDrawerState,
+    toggle: toggleActivityDrawer,
+    close: activityDrawerClose
+  } = useToggleState(false)
+
   const { first_name, last_name, email, handleLogout } = useContext(
     AccountContext
   )
+
+  useEffect(() => {
+    console.log("activityDrawerState", activityDrawerState)
+  }, [activityDrawerState])
 
   const [showSupportform, setShowSupportForm] = useState(false)
 
@@ -35,7 +47,11 @@ const Topbar: React.FC = () => {
         >
           <HelpCircleIcon size={24} />
         </Button>
-        <NotificationBell hasNotifications={false} />
+
+        <NotificationBell
+          onClick={toggleActivityDrawer}
+          hasNotifications={false} />
+
         <div className="ml-large w-large h-large">
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
@@ -76,6 +92,9 @@ const Topbar: React.FC = () => {
       </div>
       {showSupportform && (
         <MailDialog onDismiss={() => setShowSupportForm(false)} />
+      )}
+      {activityDrawerState && (
+        <ActivityDrawer onDismiss={activityDrawerClose} />
       )}
     </div>
   )
