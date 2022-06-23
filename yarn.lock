@@ -2278,7 +2278,18 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@^1.2.2":
+"@medusajs/medusa-js@1.2.1-alpha.79":
+  version "1.2.1-alpha.79"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.2.1-alpha.79.tgz#2de65f5de93d2df47200bb9d7d3ada48ffc2fd76"
+  integrity sha512-hgrQXope4Oc6NIfF8qjKzMMFxBq+t1/5zPRCvPg3dR+tuxsYUegyQcUP7N/E/dWK+t0/2M2UaPmZG7ypkhVZQA==
+  dependencies:
+    "@medusajs/medusa" "^1.3.1-alpha.79+7b09b8c36"
+    axios "^0.24.0"
+    form-data "^4.0.0"
+    qs "^6.10.3"
+    retry-axios "^2.6.0"
+
+"@medusajs/medusa-js@^1.2.1-alpha.79+7b09b8c36":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.2.2.tgz#a6b31492e92c103cad00faa37e7867e672afab35"
   integrity sha512-/VqntKDDXVBiyJGSj0nP0REkQimu8+eoeIxwD5rVan25S+QNBr71e4vf24xvPxfjjD+AGRyH0S6R+md9+lVE2A==
@@ -2289,7 +2300,58 @@
     qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa@^1.3.2":
+"@medusajs/medusa@1.3.1-alpha.79":
+  version "1.3.1-alpha.79"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.3.1-alpha.79.tgz#b5a0788f0df047309703424f2826cb32db06a05a"
+  integrity sha512-rg4l90pVSckF76CNH/h3R1wi8n7beVIeGocBXSeKl+LoVLHbARAHrvzC5A7EW8cRH9Q/7ygeIuTloVkgRYCuwA==
+  dependencies:
+    "@hapi/joi" "^16.1.8"
+    "@medusajs/medusa-cli" "^1.3.0"
+    "@types/lodash" "^4.14.168"
+    awilix "^4.2.3"
+    body-parser "^1.19.0"
+    bull "^3.12.1"
+    chokidar "^3.4.2"
+    class-transformer "^0.5.1"
+    class-validator "^0.13.1"
+    connect-redis "^5.0.0"
+    cookie-parser "^1.4.4"
+    core-js "^3.6.5"
+    cors "^2.8.5"
+    cross-spawn "^7.0.3"
+    express "^4.17.1"
+    express-session "^1.17.1"
+    fs-exists-cached "^1.0.0"
+    glob "^7.1.6"
+    ioredis "^4.17.3"
+    ioredis-mock "^5.6.0"
+    iso8601-duration "^1.3.0"
+    joi "^17.3.0"
+    joi-objectid "^3.0.1"
+    jsonwebtoken "^8.5.1"
+    medusa-core-utils "^1.1.31"
+    medusa-test-utils "^1.1.37"
+    morgan "^1.9.1"
+    multer "^1.4.2"
+    node-schedule "^2.1.0"
+    papaparse "^5.3.2"
+    passport "^0.4.0"
+    passport-http-bearer "^1.0.1"
+    passport-jwt "^4.0.0"
+    passport-local "^1.0.0"
+    pg "^8.5.1"
+    randomatic "^3.1.1"
+    redis "^3.0.2"
+    reflect-metadata "^0.1.13"
+    request-ip "^2.1.3"
+    resolve-cwd "^3.0.0"
+    scrypt-kdf "^2.0.1"
+    sqlite3 "^5.0.2"
+    ulid "^2.3.0"
+    uuid "^8.3.1"
+    winston "^3.2.1"
+
+"@medusajs/medusa@^1.3.1-alpha.79+7b09b8c36", "@medusajs/medusa@^1.3.2":
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.3.2.tgz#ad223c8f2896fbb11a3bb0d65b033c2195e90ca2"
   integrity sha512-8NDad9FdEZNW48UQnWBVD0V0h0z8PVeFYrgf5gbZF4PWwEZH0RB47C/pvwSNUqL4GT/QlYGxXlimpi+dCzqc/A==
@@ -13040,13 +13102,13 @@ medusa-core-utils@^1.1.31:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
-medusa-react@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.3.2.tgz#35c95eb267bb77cf70a39502f2e23446af15ebfb"
-  integrity sha512-aR0YjoDlYEBnyUyHu5dOP7Lu7z4j0c5yaUmwjojc0wG5XzWZHC9YEDkuouQGm7DHDXjeM64srrjLnBusV3hhGg==
+medusa-react@0.3.1-alpha.79:
+  version "0.3.1-alpha.79"
+  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.3.1-alpha.79.tgz#5fd30ea30c6adb012c61c0984fd0410dcae043fc"
+  integrity sha512-a/DgF7406L+hJvOSkXh/aii3221LcNwrm6Zu6EUk7EmraL5HC10pLUh83A7cSdmpyWmyyi6VHHNhjEKzih7HPg==
   dependencies:
-    "@medusajs/medusa" "^1.3.2"
-    "@medusajs/medusa-js" "^1.2.2"
+    "@medusajs/medusa" "^1.3.1-alpha.79+7b09b8c36"
+    "@medusajs/medusa-js" "^1.2.1-alpha.79+7b09b8c36"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
@@ -14268,6 +14330,11 @@ pako@^1.0.5, pako@~1.0.5:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
+
+papaparse@^5.3.2:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/papaparse/-/papaparse-5.3.2.tgz#d1abed498a0ee299f103130a6109720404fbd467"
+  integrity sha512-6dNZu0Ki+gyV0eBsFKJhYr+MdQYAzFUGlBMNj3GNrmHxmz1lfRa24CjFObPXtjcetlOv5Ad299MhIK0znp3afw==
 
 parallel-transform@^1.1.0:
   version "1.2.0"
