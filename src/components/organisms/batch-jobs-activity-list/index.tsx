@@ -1,47 +1,24 @@
 import useNotification from "../../../hooks/use-notification"
-import { useAdminBatchJobs, useAdminCancelBatchJob } from "medusa-react"
-import React, { useEffect, useState } from "react"
+import { useAdminCancelBatchJob } from "medusa-react"
+import React, { useContext, useEffect } from "react"
 import { getErrorMessage } from "../../../utils/error-messages"
 import getRelativeTime from "../../../utils/get-human-relative-time"
 import { getActivityDescriptionFromBatchJob } from "./utils"
 import MedusaIcon from "../../fundamentals/icons/medusa-icon"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Button from "../../fundamentals/button"
-import FileIcon from "../../fundamentals/icons/file-icon"
-import { AdminGetBatchParams } from "@medusajs/medusa"
+import DownloadFileButton from "../../molecules/download-file"
+import { PollingContext } from "../../../context/polling"
+import Medusa from "../../../services/api"
 
 const BatchJobActivityList = () => {
-  const notification = useNotification()
-  const [shouldPollBatchJobs, setShouldPollBatchJobs] = useState(true)
-  const {
-    batch_jobs,
-    error: listBatchJobsError
-  } = useAdminBatchJobs({} as AdminGetBatchParams, {
-    refetchInterval: shouldPollBatchJobs ? 5000 : false,
-    refetchIntervalInBackground: shouldPollBatchJobs
-  } as any)
-
-  useEffect(() => {
-    if (batch_jobs?.length) {
-      const shouldPoll = batch_jobs.some((batch: any): boolean => {
-        return (!!batch.pre_processed_at || !!batch.processing_at)
-        && !batch.completed
-        && !batch.failed_at
-        && !batch.canceled_at
-      })
-      setShouldPollBatchJobs(shouldPoll)
-    }
-
-    if (listBatchJobsError) {
-      notification("Error listing the batch jobs", getErrorMessage(listBatchJobsError), "error")
-    }
-  }, [batch_jobs, listBatchJobsError])
+  const { batchJobsPolling } = useContext(PollingContext)
 
   return <div>
     <div className="inter-xlarge-semibold p-4">Activities</div>
 
-    {batch_jobs?.length && (
-      batch_jobs?.map(batchJob => {
+    {!!batchJobsPolling?.length && (
+      batchJobsPolling?.map(batchJob => {
         return <BatchJobActivityCard batchJob={batchJob}/>
       })
     )}
@@ -72,6 +49,20 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
     })
   }
 
+  const deleteFile = () => {
+    Medusa.uploads.delete(batchJob.result?.file_key)
+      .then(() => {
+        notification("Success", "Export file has been removed", "success")
+      })
+      .catch(() => {
+        notification("Error", "Something went wrong while deleting the export file", "error")
+      })
+  }
+
+  const downloadFile = () => {
+
+  }
+
   return (
     <div className="flex p-4 hover:bg-grey-5 border-b border-grey-20">
       <div className="">
@@ -91,20 +82,19 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
           <span>{getActivityDescription()}</span>
 
           {batchJob.result?.file_key && (
-            <Button className="flex justify-start mt-4" variant={"ghost"}>
-              <FileIcon size={30}/>
-              <div className="flex flex-col text-left">
-                <span>{batchJob.result.file_key}</span>
-                <span className="text-grey-40">956 kb</span>
-              </div>
-            </Button>
+            <DownloadFileButton
+              onClick={downloadFile}
+              variant={"ghost"}
+              fileName={batchJob.result.file_key}
+              fileSize={"956 kb"}
+            />
           )}
         </div>
 
         <div className="flex ml-8">
           {canDownload && (
             <div className="flex">
-              <Button size={"small"} className="flex justify-start mt-4" variant={"danger"}>
+              <Button onClick={deleteFile} size={"small"} className="flex justify-start mt-4" variant={"danger"}>
                   Delete
               </Button>
               <Button size={"small"} className="flex justify-start mt-4" variant={"ghost"}>
