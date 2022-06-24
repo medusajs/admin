@@ -7,7 +7,7 @@ type Props = ButtonProps & {
   fileSize: string
 }
 
-const DownloadFileButton = ({ fileName, fileSize, ...buttonProps }: Props) => {
+const DownloadableFileButton = ({ fileName, fileSize, ...buttonProps }: Props) => {
   return (
     <Button className="flex justify-start mt-4" {...buttonProps}>
       <FileIcon size={30}/>
@@ -19,4 +19,4 @@ const DownloadFileButton = ({ fileName, fileSize, ...buttonProps }: Props) => {
   )
 }
 
-export default DownloadFileButton
+export default DownloadableFileButton
