@@ -1,46 +1,25 @@
-import { useAdminCreateBatchJob } from "medusa-react"
 import React from "react"
-import useNotification from "../../../hooks/use-notification"
-import { getErrorMessage } from "../../../utils/error-messages"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
 
-type ProductExportModalProps = {
+type ExportModalProps = {
   handleClose: () => void
   onSubmit?: () => void
+  loading: boolean
+  title: string
 }
 
-const ProductExport: React.FC<ProductExportModalProps> = ({
+const ExportModal: React.FC<ExportModalProps> = ({
   handleClose,
-  // onSubmit,
+  title,
+  loading,
+  onSubmit,
 }) => {
-  const notification = useNotification()
-  const createBatchJob = useAdminCreateBatchJob()
-
-  const submit = () => {
-    const reqObj = {
-      type: "product-export",
-      context: {},
-    }
-
-    createBatchJob.mutate(reqObj, {
-      onSuccess: () => {
-        notification("Success", "Successfully initiated export", "success")
-      },
-      onError: (err) => {
-        notification("Error", getErrorMessage(err), "error")
-        handleClose()
-      },
-    })
-
-    handleClose()
-  }
-
   return (
     <Modal handleClose={handleClose}>
       <Modal.Body>
         <Modal.Header handleClose={handleClose}>
-          <span className="inter-xlarge-semibold">Export Products</span>
+          <span className="inter-xlarge-semibold">{title}</span>
         </Modal.Header>
         <Modal.Content>
           <div className="flex inter-small-semibold mb-2">Current filters</div>
@@ -61,10 +40,10 @@ const ProductExport: React.FC<ProductExportModalProps> = ({
               Cancel
             </Button>
             <Button
-              loading={createBatchJob.isLoading}
+              loading={loading}
               variant="primary"
               size="small"
-              onClick={submit}
+              onClick={onSubmit}
             >
               Export
             </Button>
@@ -75,4 +54,4 @@ const ProductExport: React.FC<ProductExportModalProps> = ({
   )
 }
 
-export default ProductExport
+export default ExportModal

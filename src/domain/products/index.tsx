@@ -1,12 +1,13 @@
 import { Router, useLocation } from "@reach/router"
 import { navigate } from "gatsby"
-import { useAdminCreateCollection } from "medusa-react"
+import { useAdminCreateBatchJob, useAdminCreateCollection } from "medusa-react"
 import React, { useEffect, useState } from "react"
+import Button from "../../components/fundamentals/button"
 import ExportIcon from "../../components/fundamentals/icons/export-icon"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
-import ProductExport from "../../components/organisms/product-export"
+import ExportModal from "../../components/organisms/export-modal"
 import AddCollectionModal from "../../components/templates/collection-modal"
 import CollectionsTable from "../../components/templates/collections-table"
 import ProductTable from "../../components/templates/product-table"
@@ -21,6 +22,8 @@ const VIEWS = ["products", "collections"]
 const ProductIndex = () => {
   const location = useLocation()
   const [view, setView] = useState("products")
+
+  const createBatchJob = useAdminCreateBatchJob()
 
   const notification = useNotification()
 
@@ -48,38 +51,39 @@ const ProductIndex = () => {
   const CurrentAction = () => {
     switch (view) {
       case "products":
-        return [
-          {
-            label: "Export",
-            onClick: () => openExportModal(),
-            icon: (
-              <span className="text-grey-90">
-                <ExportIcon size={20} />
-              </span>
-            ),
-          },
-          {
-            label: "New Product",
-            onClick: () => navigate("/a/products/new"),
-            icon: (
-              <span className="text-grey-90">
-                <PlusIcon size={20} />
-              </span>
-            ),
-          },
-        ]
+        return (
+          <div className="flex space-x-2">
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => openExportModal()}
+            >
+              <ExportIcon size={20} />
+              Export Products
+            </Button>
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => navigate(`/a/products/new`)}
+            >
+              <PlusIcon size={20} />
+              New Product
+            </Button>
+          </div>
+        )
       default:
-        return [
-          {
-            label: "New Collection",
-            onClick: () => setShowNewCollection(!showNewCollection),
-            icon: (
-              <span className="text-grey-90">
-                <PlusIcon size={20} />
-              </span>
-            ),
-          },
-        ]
+        return (
+          <div className="flex space-x-2">
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => setShowNewCollection(!showNewCollection)}
+            >
+              <PlusIcon size={20} />
+              New Collection
+            </Button>
+          </div>
+        )
     }
   }
 
@@ -113,13 +117,31 @@ const ProductIndex = () => {
     )
   }
 
+  const handleCreateExport = () => {
+    const reqObj = {
+      type: "product-export",
+      context: {},
+    }
+
+    createBatchJob.mutate(reqObj, {
+      onSuccess: () => {
+        notification("Success", "Successfully initiated export", "success")
+      },
+      onError: (err) => {
+        notification("Error", getErrorMessage(err), "error")
+      },
+    })
+
+    closeExportModal()
+  }
+
   return (
     <>
       <div className="flex flex-col grow h-full">
         <div className="w-full flex flex-col grow">
           <BodyCard
             forceDropdown={false}
-            actionables={CurrentAction()}
+            customActionable={CurrentAction()}
             customHeader={
               <TableViewHeader
                 views={VIEWS}
@@ -139,9 +161,11 @@ const ProductIndex = () => {
         />
       )}
       {exportModalOpen && (
-        <ProductExport
+        <ExportModal
+          title="Export Products"
           handleClose={() => closeExportModal()}
-          // onSubmit={handleCreateCollection}
+          onSubmit={handleCreateExport}
+          loading={createBatchJob.isLoading}
         />
       )}
     </>
