@@ -50,6 +50,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
   }
 
   const deleteFile = () => {
+    if (!batchJob.result?.file_key) return
     Medusa.uploads.delete(batchJob.result?.file_key)
       .then(() => {
         notification("Success", "Export file has been removed", "success")
@@ -59,8 +60,24 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
       })
   }
 
-  const downloadFile = () => {
+  const downloadFile = async () => {
+    if (!batchJob.result?.file_key) return
+    Medusa.uploads.downloadUrl(batchJob.result?.file_key)
+      .then((response) => {
+        const link = document.createElement("a");
+        link.href = response.data.download_url;
+        link.setAttribute(
+            "download",
+            `${batchJob.result?.file_key}`
+        );
+        document.body.appendChild(link);
+        link.click();
 
+        document.body.removeChild(link);
+      })
+      .catch(() => {
+        notification("Error", "Something went wrong while downloading the export file", "error")
+      })
   }
 
   return (
@@ -97,7 +114,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
               <Button onClick={deleteFile} size={"small"} className="flex justify-start mt-4" variant={"danger"}>
                   Delete
               </Button>
-              <Button size={"small"} className="flex justify-start mt-4" variant={"ghost"}>
+              <Button onClick={downloadFile} size={"small"} className="flex justify-start mt-4" variant={"ghost"}>
                   Download
               </Button>
             </div>
