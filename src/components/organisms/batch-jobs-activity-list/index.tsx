@@ -7,7 +7,7 @@ import { getActivityDescriptionFromBatchJob } from "./utils"
 import MedusaIcon from "../../fundamentals/icons/medusa-icon"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Button from "../../fundamentals/button"
-import DownloadFileButton from "../../molecules/download-file"
+import DownloadableFileButton from "../../molecules/downloadable-file-button"
 import { PollingContext } from "../../../context/polling"
 import Medusa from "../../../services/api"
 
@@ -82,7 +82,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
           <span>{getActivityDescription()}</span>
 
           {batchJob.result?.file_key && (
-            <DownloadFileButton
+            <DownloadableFileButton
               onClick={downloadFile}
               variant={"ghost"}
               fileName={batchJob.result.file_key}
