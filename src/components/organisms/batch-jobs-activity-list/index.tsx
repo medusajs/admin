@@ -10,14 +10,14 @@ import DownloadableFileButton from "../../molecules/downloadable-file-button"
 import Medusa from "../../../services/api"
 import { BatchJob } from "@medusajs/medusa/dist"
 import { bytesConverter } from "../../../utils/bytes-converter"
-import { ActivityCard } from "../../molecules/activirty-card"
+import { ActivityCard } from "../../molecules/activity-card"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
     {
       !!batchJobs?.length && (
         batchJobs?.map(batchJob => {
-          return <BatchJobActivityCard batchJob={batchJob}/>
+          return <BatchJobActivityCard key={batchJob.id} batchJob={batchJob}/>
         })
       )
     }
@@ -150,15 +150,21 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
 
   return (
     <ActivityCard
-      key={batchJob.id}
       title="Medusa Team"
       titleIcon={<MedusaIcon className="mr-3" size={20}/>}
       relativeTimeElapsed={relativeTimeElapsed.rtf}
       shouldShowStatus={true}
-      description={getActivityDescription()}
-      bodyActions={getBodyAction()}
-      footerActions={getFooterActions()}
-    />
+    >
+      <div className="flex flex-col ml-8">
+        <span>{getActivityDescription()}</span>
+
+        {getBodyAction()}
+      </div>
+
+      <div className="flex ml-8">
+        {getFooterActions()}
+      </div>
+    </ActivityCard>
   )
 }
 

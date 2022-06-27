@@ -7,23 +7,19 @@ export type ActivityCardProps = {
   titleIcon?: ReactNode
   relativeTimeElapsed?: string
   shouldShowStatus?: boolean
-  description?: string
-  bodyActions?: ReactNode
-  footerActions?: ReactNode
+  children?: ReactNode[]
 }
 
 export const ActivityCard: React.FC<ActivityCardProps> = (
   props: ActivityCardProps
 ) => {
   const {
+    key,
     title,
     titleIcon,
     relativeTimeElapsed,
     shouldShowStatus,
-    description,
-    bodyActions,
-    footerActions,
-    key
+    children
   } = props
 
   return (
@@ -41,7 +37,11 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
             {
               (!!relativeTimeElapsed || shouldShowStatus) && (
                 <div className="flex">
-                  <span>{relativeTimeElapsed}</span>
+                  {
+                    !!relativeTimeElapsed && (
+                      <span>{relativeTimeElapsed}</span>
+                    )
+                  }
                   {
                     shouldShowStatus &&
                     <StatusIndicator variant={"primary"} className="ml-2"/>
@@ -51,26 +51,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
             }
           </div>
 
-          {
-            (!!description || bodyActions!!) && (
-              <div className={"flex flex-col " + (titleIcon && "ml-8")}>
-                {
-                  !!description &&
-                  <span>{description}</span>
-                }
-
-                {bodyActions}
-              </div>
-            )
-          }
-
-          {
-            !!footerActions && (
-              <div className={"flex " + (titleIcon && "ml-8")}>
-                {footerActions}
-              </div>
-            )
-          }
+          {children}
         </div>
       </div>
     </div>
