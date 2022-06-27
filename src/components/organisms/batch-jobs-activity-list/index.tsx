@@ -78,7 +78,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
 
   return (
     <div key={batchJob.id} className="flex p-4 hover:bg-grey-5 border-b border-grey-20">
-      <div className="">
+      <div className="relative w-full h-full">
         <div className="flex justify-between inter-base-semibold">
           <div className="flex">
             <MedusaIcon className="mr-3" size={20}/>
