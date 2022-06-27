@@ -1,9 +1,8 @@
 import useNotification from "../../../hooks/use-notification"
-import { useAdminCancelBatchJob } from "medusa-react"
+import { useAdminCancelBatchJob, useAdminStore } from "medusa-react"
 import React, { useEffect } from "react"
 import { getErrorMessage } from "../../../utils/error-messages"
 import getRelativeTime from "../../../utils/get-human-relative-time"
-import { getActivityDescriptionFromBatchJob } from "./utils"
 import MedusaIcon from "../../fundamentals/icons/medusa-icon"
 import Button from "../../fundamentals/button"
 import DownloadableFileButton from "../../molecules/downloadable-file-button"
@@ -11,6 +10,7 @@ import Medusa from "../../../services/api"
 import { BatchJob } from "@medusajs/medusa/dist"
 import { bytesConverter } from "../../../utils/bytes-converter"
 import { ActivityCard } from "../../molecules/activity-card"
+import { useBatchJobDescription } from "../../../hooks/use-batch-job-description"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
@@ -26,6 +26,7 @@ const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
 
 const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
   const notification = useNotification()
+  const { store } = useAdminStore()
   const { mutate: cancelBatchJob, error: cancelBatchJobError  } =
     useAdminCancelBatchJob(batchJob.id)
 
@@ -34,14 +35,17 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
     to: batchJob.created_at,
   })
 
-  const canCancel = !batchJob.completed_at
-    && !batchJob.failed_at
-    && !batchJob.canceled_at
+  const batchJobActivityDescription = useBatchJobDescription(
+    batchJob,
+    relativeTimeElapsed.raw
+  )
 
-  const canDownload = !!batchJob.completed_at
-    && !batchJob.failed_at
-    && !batchJob.canceled_at
-    && batchJob.result?.file_key
+  const canCancel = batchJob.status !== "completed" &&
+    batchJob.status !== "failed" &&
+    batchJob.status !== "canceled"
+
+  const canDownload = batchJob.status === "completed" &&
+    batchJob.result?.file_key
 
   useEffect(() => {
     if (cancelBatchJobError) {
@@ -52,12 +56,6 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
       )
     }
   }, [cancelBatchJobError])
-
-  const getActivityDescription = () => {
-    return getActivityDescriptionFromBatchJob(batchJob, {
-      elapsedTime: relativeTimeElapsed.raw
-    })
-  }
 
   const deleteFile = () => {
     if (!batchJob.result?.file_key) return
@@ -150,13 +148,13 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
 
   return (
     <ActivityCard
-      title="Medusa Team"
-      titleIcon={<MedusaIcon className="mr-3" size={20}/>}
+      title={store?.name ?? "Medusa Team"}
+      icon={<MedusaIcon className="mr-3" size={20}/>}
       relativeTimeElapsed={relativeTimeElapsed.rtf}
       shouldShowStatus={true}
     >
       <div className="flex flex-col ml-8">
-        <span>{getActivityDescription()}</span>
+        <span>{batchJobActivityDescription}</span>
 
         {getBodyAction()}
       </div>

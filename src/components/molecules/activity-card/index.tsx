@@ -4,7 +4,7 @@ import StatusIndicator from "../../fundamentals/status-indicator"
 export type ActivityCardProps = {
   key?: string
   title: string
-  titleIcon?: ReactNode
+  icon?: ReactNode
   relativeTimeElapsed?: string
   shouldShowStatus?: boolean
   children?: ReactNode[]
@@ -16,7 +16,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
   const {
     key,
     title,
-    titleIcon,
+    icon,
     relativeTimeElapsed,
     shouldShowStatus,
     children
@@ -29,7 +29,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
           <div className="flex justify-between inter-base-semibold">
             <div className="flex">
               {
-                !!titleIcon && titleIcon
+                !!icon && icon
               }
               <span>{title}</span>
             </div>

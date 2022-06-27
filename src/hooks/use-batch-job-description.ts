@@ -1,13 +1,29 @@
 import { BatchJob } from "@medusajs/medusa/dist"
+import { useEffect, useState } from "react"
 
-export function getActivityDescriptionFromBatchJob(batchJob: BatchJob, {
-  elapsedTime
-}: {
+export const useBatchJobDescription = (
+  batchJob: BatchJob,
   elapsedTime?: number
-}): string {
+): string => {
+  const [description, setDescription] = useState("")
+
+  useEffect(() => {
+    const builtDescription = buildDescriptionFromBatchJob(batchJob, elapsedTime)
+    setDescription(builtDescription)
+  }, [batchJob])
+
+  return description
+}
+
+function buildDescriptionFromBatchJob(
+  batchJob: BatchJob,
+  elapsedTime?: number
+): string {
   let description = ""
 
   const entityName = batchJob.type.split("-").reverse().pop()
+
+  const twentyForHours = 24 * 60 * 60 * 1000
 
   switch (batchJob.status) {
     case "failed":
@@ -17,7 +33,6 @@ export function getActivityDescriptionFromBatchJob(batchJob: BatchJob, {
       description = `The export of the ${entityName} list has been canceled.`
       break;
     case "completed":
-      const twentyForHours = 24 * 60 * 60 * 1000
       if (elapsedTime && Math.abs(elapsedTime) > twentyForHours) {
         description =`This export file is no longer available. The file will only be stored for 24 hours.`
         break;

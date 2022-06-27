@@ -12,7 +12,10 @@ const DownloadableFileButton = ({ fileName, fileSize, ...buttonProps }: Props) =
     <Button className="flex justify-start mt-4" {...buttonProps}>
       <FileIcon size={30}/>
       <div className="flex flex-col text-left">
-        <span className="overflow-hidden truncate w-4/5">{fileName}</span>
+        <span className="overflow-hidden truncate w-4/5 inter-small-regular">
+          {fileName}
+        </span>
+
         {!!fileSize && (
           <span className="text-grey-40">{fileSize}</span>
         )}

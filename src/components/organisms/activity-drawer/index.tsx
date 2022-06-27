@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react"
 import useOutsideClick from "../../../hooks/use-outside-click"
 import BatchJobActivityList from "../batch-jobs-activity-list"
 import { PollingContext } from "../../../context/polling"
-import SidedMouthFaceIcon from "../../fundamentals/icons/sided-mouth-face/sided-mouth-face"
+import SidedMouthFaceIcon from "../../fundamentals/icons/sided-mouth-face"
 
 const ActivityDrawer = ({ onDismiss }) => {
   const ref = React.useRef<HTMLDivElement>(null)
