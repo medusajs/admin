@@ -77,7 +77,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
   }
 
   return (
-    <div className="flex p-4 hover:bg-grey-5 border-b border-grey-20">
+    <div key={batchJob.id} className="flex p-4 hover:bg-grey-5 border-b border-grey-20">
       <div className="">
         <div className="flex justify-between inter-base-semibold">
           <div className="flex">
