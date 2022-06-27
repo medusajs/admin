@@ -18,17 +18,17 @@ export const wrapPageElement = ({ element }) => {
         client: queryClient,
       }}
     >
-      <PollingProvider>
         <CacheProvider>
           <AccountProvider>
-            <InterfaceProvider>
-              <SteppedProvider>
-                <LayeredModalProvider>{element}</LayeredModalProvider>
-              </SteppedProvider>
-            </InterfaceProvider>
+            <PollingProvider>
+              <InterfaceProvider>
+                <SteppedProvider>
+                  <LayeredModalProvider>{element}</LayeredModalProvider>
+                </SteppedProvider>
+              </InterfaceProvider>
+            </PollingProvider>
           </AccountProvider>
         </CacheProvider>
-      </PollingProvider>
     </MedusaProvider>
   )
 }

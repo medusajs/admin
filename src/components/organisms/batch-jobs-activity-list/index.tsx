@@ -12,13 +12,13 @@ import { PollingContext } from "../../../context/polling"
 import Medusa from "../../../services/api"
 
 const BatchJobActivityList = () => {
-  const { batchJobsPolling } = useContext(PollingContext)
+  const { batchJobs } = useContext(PollingContext)
 
   return <div>
     <div className="inter-xlarge-semibold p-4">Activities</div>
 
-    {!!batchJobsPolling?.length && (
-      batchJobsPolling?.map(batchJob => {
+    {!!batchJobs?.length && (
+      batchJobs?.map(batchJob => {
         return <BatchJobActivityCard batchJob={batchJob}/>
       })
     )}

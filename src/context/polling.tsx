@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import useNotification from "../hooks/use-notification"
 import { useAdminBatchJobs } from "medusa-react"
 import { AdminGetBatchParams } from "@medusajs/medusa"
 import { getErrorMessage } from "../utils/error-messages"
 import { BatchJob } from "@medusajs/medusa/dist"
+import { AccountContext } from "./account"
 
 export const defaultPollingContext: {
-  batchJobsPolling?: BatchJob[]
+  batchJobs?: BatchJob[]
 } = {
-  batchJobsPolling: [] as BatchJob[]
+  batchJobs: [] as BatchJob[]
 }
 
 export const PollingContext = React.createContext(defaultPollingContext)
 
 export const PollingProvider = ({ children }) => {
+  const { isLoggedIn } = useContext(AccountContext)
   const notification = useNotification()
 
-  const [shouldPollBatchJobs, setShouldPollBatchJobs] = useState(true)
-  const [batchJobs, setBatchJobs] = useState<BatchJob[] | undefined>([])
+  const [shouldPollBatchJobs, setShouldPollBatchJobs] = useState(false)
+  const [polledBatchJobs, setPolledBatchJobs] = useState<BatchJob[] | undefined>([])
 
   const {
-    batch_jobs,
+    batch_jobs: batchJobs,
     error: listBatchJobsError
   } = useAdminBatchJobs({} as AdminGetBatchParams, {
     refetchInterval: shouldPollBatchJobs ? 5000 : false,
@@ -28,26 +30,34 @@ export const PollingProvider = ({ children }) => {
   } as any)
 
   useEffect(() => {
-    setBatchJobs(batch_jobs)
-
-    if (batch_jobs?.length) {
-      const shouldPoll = !batch_jobs?.length
-        || batch_jobs.some((batch: any): boolean => {
-          return (!!batch.pre_processed_at || !!batch.processing_at)
-            && !batch.completed
-            && !batch.failed_at
-            && !batch.canceled_at
-        })
-      setShouldPollBatchJobs(shouldPoll)
+    if (!isLoggedIn) {
+      setShouldPollBatchJobs(false)
+      return
     }
+
+    setPolledBatchJobs(batchJobs)
+
+    const shouldPoll = !polledBatchJobs?.length
+      || polledBatchJobs.some((batch: any): boolean => {
+        return (!!batch.pre_processed_at || !!batch.processing_at)
+          && !batch.completed
+          && !batch.failed_at
+          && !batch.canceled_at
+      })
+
+    setShouldPollBatchJobs(shouldPoll)
 
     if (listBatchJobsError) {
-      notification("Error listing the batch jobs during polling", getErrorMessage(listBatchJobsError), "error")
+      notification(
+        "Error listing the batch jobs during polling",
+        getErrorMessage(listBatchJobsError),
+        "error"
+      )
     }
-  }, [batch_jobs, listBatchJobsError])
+  }, [batchJobs, listBatchJobsError, isLoggedIn])
 
   const value = {
-    batchJobsPolling: batchJobs,
+    batchJobs: polledBatchJobs,
   }
 
   return (

@@ -1,6 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { navigate } from "gatsby"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 import { AccountContext } from "../../../context/account"
 import Avatar from "../../atoms/avatar"
 import Button from "../../fundamentals/button"
@@ -23,10 +23,6 @@ const Topbar: React.FC = () => {
   const { first_name, last_name, email, handleLogout } = useContext(
     AccountContext
   )
-
-  useEffect(() => {
-    console.log("activityDrawerState", activityDrawerState)
-  }, [activityDrawerState])
 
   const [showSupportform, setShowSupportForm] = useState(false)
 
