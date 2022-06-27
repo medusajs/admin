@@ -1,10 +1,12 @@
 import clsx from "clsx"
-import { useAdminCancelReturn, useAdminOrder } from "medusa-react"
+import {
+  useAdminCancelReturn,
+  useAdminOrder,
+  useAdminReceiveReturn,
+} from "medusa-react"
 import React, { useState } from "react"
 import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
 import { ReturnEvent } from "../../../hooks/use-build-timeline"
-import useNotification from "../../../hooks/use-notification"
-import Medusa from "../../../services/api"
 import Button from "../../fundamentals/button"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
 import CancelIcon from "../../fundamentals/icons/cancel-icon"
@@ -28,8 +30,6 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
 
   const { order } = useAdminOrder(event.orderId)
 
-  const notification = useNotification()
-
   const handleCancel = () => {
     cancelReturn.mutate(undefined, {
       onSuccess: () => {
@@ -38,9 +38,20 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
     })
   }
 
-  const handleReceive = async (id, payload) => {
-    await Medusa.orders.receiveReturn(id, payload) // TODO: replace with hook from medusa-react
-    refetch()
+  const { mutateAsync: receiveReturn } = useAdminReceiveReturn(event.id)
+
+  const handleReceiveReturn = async (
+    items: { item_id: string; quantity: number }[],
+    refund?: number
+  ) => {
+    await receiveReturn(
+      { items, refund },
+      {
+        onSuccess: () => {
+          refetch()
+        },
+      }
+    )
   }
 
   const args = buildReturn(event, handleCancel, () => setShowReceive(true))
@@ -58,16 +69,12 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
           text="Are you sure you want to cancel this return?"
         />
       )}
-      {showReceive && (
+      {showReceive && order && (
         <ReceiveMenu
           onDismiss={() => setShowReceive(false)}
-          notification={notification}
-          onReceiveReturn={handleReceive}
+          onReceiveReturn={handleReceiveReturn}
           order={order}
           returnRequest={event.raw}
-          isSwapOrClaim={
-            event.raw.claim_order_id !== null || event.raw.swap_id !== null
-          }
           refunded={event.refunded}
         />
       )}

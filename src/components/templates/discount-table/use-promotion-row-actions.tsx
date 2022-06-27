@@ -22,8 +22,8 @@ const usePromotionActions = (promotion) => {
 
   const handleDelete = async () => {
     const shouldDelete = await dialog({
-      heading: "Delete Promotion",
-      text: "Are you sure you want to delete this Promotion?",
+      heading: "Delete Discount",
+      text: "Are you sure you want to delete this Discount?",
     })
 
     if (shouldDelete) {
@@ -56,7 +56,7 @@ const usePromotionActions = (promotion) => {
                   "Success",
                   `Successfully ${
                     promotion.is_disabled ? "published" : "unpublished"
-                  } promotion`,
+                  } discount`,
                   "success"
                 )
               },

@@ -24,3 +24,5 @@ export type PaginationProps = {
   limit: number
   offset: number
 }
+
+export type Idable = { id: string; [x: string]: any }

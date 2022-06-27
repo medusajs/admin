@@ -99,8 +99,6 @@ const NewGiftCard: React.FC<NewGiftCardProps> = ({ onClose }) => {
       return
     }
 
-    console.log(data)
-
     if (!data.denominations) {
       notification("Error", "Please add at least one denomination", "error")
       focusByName("add-denomination")

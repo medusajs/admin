@@ -32,8 +32,8 @@ const Tooltip = ({
         onOpenChange={onOpenChange}
         delayDuration={delayDuration}
       >
-        <RadixTooltip.Trigger onClick={onClick} type="button">
-          {children}
+        <RadixTooltip.Trigger onClick={onClick} asChild={true}>
+          <span>{children}</span>
         </RadixTooltip.Trigger>
         <RadixTooltip.Content
           side={side ?? "bottom"}

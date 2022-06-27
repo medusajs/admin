@@ -1,10 +1,5 @@
 import clsx from "clsx"
-import {
-  useAdminCreateClaim,
-  useAdminCreateNote,
-  useAdminCreateSwap,
-  useAdminOrder,
-} from "medusa-react"
+import { useAdminCreateNote, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
 import ClaimMenu from "../../../domain/orders/details/claim/create"
 import ReturnMenu from "../../../domain/orders/details/returns"
@@ -53,8 +48,6 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   const [showRequestReturn, setShowRequestReturn] = useState(false)
   const [showCreateSwap, setshowCreateSwap] = useState(false)
   const [showCreateClaim, setshowCreateClaim] = useState(false)
-  const createSwap = useAdminCreateSwap(orderId)
-  const createClaim = useAdminCreateClaim(orderId)
 
   const actions: ActionType[] = [
     {
@@ -127,28 +120,17 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
           )}
         </div>
       </div>
-      {showRequestReturn && (
+      {showRequestReturn && order && (
         <ReturnMenu
           order={order}
-          notification={notification}
           onDismiss={() => setShowRequestReturn(false)}
         />
       )}
-      {showCreateSwap && (
-        <SwapMenu
-          order={order}
-          onCreate={createSwap.mutateAsync}
-          notification={notification}
-          onDismiss={() => setshowCreateSwap(false)}
-        />
+      {showCreateSwap && order && (
+        <SwapMenu order={order} onDismiss={() => setshowCreateSwap(false)} />
       )}
-      {showCreateClaim && (
-        <ClaimMenu
-          order={order}
-          onCreate={createClaim.mutateAsync}
-          notification={notification}
-          onDismiss={() => setshowCreateClaim(false)}
-        />
+      {showCreateClaim && order && (
+        <ClaimMenu order={order} onDismiss={() => setshowCreateClaim(false)} />
       )}
     </>
   )

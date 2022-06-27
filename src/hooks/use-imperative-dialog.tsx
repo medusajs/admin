@@ -34,7 +34,7 @@ const DeleteDialog = ({
             <Button
               size="small"
               className="w-24 text-small justify-center"
-              variant="danger"
+              variant="nuclear"
               onClick={onConfirm}
             >
               {confirmText}

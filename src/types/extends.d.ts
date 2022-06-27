@@ -1,6 +1,17 @@
 import { Discount, GiftCard } from "@medusajs/medusa"
 
 declare module "@medusajs/medusa" {
+  export interface AdminPostDiscountsReq {
+    is_recurring: boolean
+  }
+
+  export interface AdminPostDiscountsDiscountReq {
+    is_recurring?: boolean
+  }
+
+  export interface Discount {
+    is_recurring: boolean
+  }
   export interface CustomerReferral {
     id: string
     customer_id: string
