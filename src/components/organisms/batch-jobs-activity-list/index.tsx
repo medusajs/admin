@@ -24,11 +24,16 @@ const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
 
 const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
   const notification = useNotification()
-  const { mutate: cancelBatchJob, error: cancelBatchJobError,  } = useAdminCancelBatchJob(batchJob.id)
+  const { mutate: cancelBatchJob, error: cancelBatchJobError  } =
+    useAdminCancelBatchJob(batchJob.id)
 
   useEffect(() => {
     if (cancelBatchJobError) {
-      notification("Error canceling the batch job", getErrorMessage(cancelBatchJobError), "error")
+      notification(
+        "Error canceling the batch job",
+        getErrorMessage(cancelBatchJobError),
+        "error"
+      )
     }
   }, [cancelBatchJobError])
 
@@ -37,8 +42,14 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
     to: batchJob.created_at,
   })
 
-  const canCancel = !batchJob.completed_at && !batchJob.failed_at && !batchJob.canceled_at
-  const canDownload = !!batchJob.completed_at && !batchJob.failed_at && !batchJob.canceled_at && batchJob.result?.file_key
+  const canCancel = !batchJob.completed_at
+    && !batchJob.failed_at
+    && !batchJob.canceled_at
+
+  const canDownload = !!batchJob.completed_at
+    && !batchJob.failed_at
+    && !batchJob.canceled_at
+    && batchJob.result?.file_key
 
   const getActivityDescription = () => {
     return getActivityDescriptionFromBatchJob(batchJob, {
@@ -50,10 +61,18 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
     if (!batchJob.result?.file_key) return
     Medusa.uploads.delete(batchJob.result?.file_key)
       .then(() => {
-        notification("Success", "Export file has been removed", "success")
+        notification(
+          "Success",
+          "Export file has been removed",
+          "success"
+        )
       })
       .catch(() => {
-        notification("Error", "Something went wrong while deleting the export file", "error")
+        notification(
+          "Error",
+          "Something went wrong while deleting the export file",
+          "error"
+        )
       })
   }
 
@@ -73,54 +92,74 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
         document.body.removeChild(link);
       })
       .catch(() => {
-        notification("Error", "Something went wrong while downloading the export file", "error")
+        notification(
+          "Error",
+          "Something went wrong while downloading the export file",
+          "error")
       })
   }
 
   return (
-    <div key={batchJob.id} className="flex p-4 hover:bg-grey-5 border-b border-grey-20">
-      <div className="relative w-full h-full">
-        <div className="flex justify-between inter-base-semibold">
-          <div className="flex">
-            <MedusaIcon className="mr-3" size={20}/>
-            <span>Medusa Team</span>
-          </div>
-
-          <div className="flex">
-            <span>{relativeTimeElapsed.rtf}</span>
-            <StatusIndicator variant={"primary"} className="ml-2"/>
-          </div>
-        </div>
-
-        <div className="flex flex-col ml-8">
-          <span>{getActivityDescription()}</span>
-
-          {batchJob.result?.file_key && (
-            <DownloadableFileButton
-              onClick={downloadFile}
-              variant={"ghost"}
-              fileName={batchJob.result.file_key}
-              fileSize={bytesConverter(batchJob.result.file_size ?? 0)}
-            />
-          )}
-        </div>
-
-        <div className="flex ml-8">
-          {canDownload && (
+    <div key={batchJob.id} className="mx-4 border-b border-grey-20">
+      <div className="-mx-4 flex p-4 hover:bg-grey-5">
+        <div className="relative w-full h-full">
+          <div className="flex justify-between inter-base-semibold">
             <div className="flex">
-              <Button onClick={deleteFile} size={"small"} className="flex justify-start mt-4" variant={"danger"}>
-                  Delete
-              </Button>
-              <Button onClick={downloadFile} size={"small"} className="flex justify-start mt-4" variant={"ghost"}>
-                  Download
-              </Button>
+              <MedusaIcon className="mr-3" size={20}/>
+              <span>Medusa Team</span>
             </div>
-          )}
-          {canCancel && (
-            <Button onClick={() => cancelBatchJob()} size={"small"} className="flex justify-start mt-4" variant={"danger"}>
+
+            <div className="flex">
+              <span>{relativeTimeElapsed.rtf}</span>
+              <StatusIndicator variant={"primary"} className="ml-2"/>
+            </div>
+          </div>
+
+          <div className="flex flex-col ml-8">
+            <span>{getActivityDescription()}</span>
+
+            {batchJob.result?.file_key && (
+              <DownloadableFileButton
+                onClick={downloadFile}
+                variant={"ghost"}
+                fileName={batchJob.result.file_key}
+                fileSize={bytesConverter(batchJob.result.file_size ?? 0)}
+              />
+            )}
+          </div>
+
+          <div className="flex ml-8">
+            {canDownload && (
+              <div className="flex">
+                <Button
+                  onClick={deleteFile}
+                  size={"small"}
+                  className="flex justify-start mt-4"
+                  variant={"danger"}
+                >
+                  Delete
+                </Button>
+                <Button
+                  onClick={downloadFile}
+                  size={"small"}
+                  className="flex justify-start mt-4"
+                  variant={"ghost"}
+                >
+                  Download
+                </Button>
+              </div>
+            )}
+            {canCancel && (
+              <Button
+                onClick={() => cancelBatchJob()}
+                size={"small"}
+                className="flex justify-start mt-4"
+                variant={"danger"}
+              >
                 Cancel
-            </Button>
-          )}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

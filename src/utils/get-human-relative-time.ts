@@ -1,4 +1,6 @@
-const units: [string, number][] = [
+import RelativeTimeFormatUnit = Intl.RelativeTimeFormatUnit
+
+const units: [RelativeTimeFormatUnit, number][] = [
   ["year", 31536000000],
   ["month", 2628000000],
   ["day", 86400000],

@@ -39,13 +39,16 @@ const ActivityDrawer = ({ onDismiss }) => {
 
 const EmptyActivityDrawer = () => {
   return (
-    <div className="p-4 h-full w-full flex flex-col justify-center items-center">
+    <div
+      className="p-4 h-full w-full flex flex-col justify-center items-center"
+    >
       <SidedMouthFaceIcon size={48}/>
       <span className={"mt-4 inter-large-semibold text-grey-90"}>
         It's quite in here...
       </span>
       <span className={"mt-4 text-grey-60 text-center"}>
-        You don't have any notifications at the moment, but once you do they will live here.
+        You don't have any notifications at the moment,
+        but once you do they will live here.
       </span>
     </div>
   )
