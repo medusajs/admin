@@ -21,10 +21,15 @@ export const PollingProvider = ({ children }) => {
   const [shouldPollBatchJobs, setShouldPollBatchJobs] = useState(false)
   const [polledBatchJobs, setPolledBatchJobs] = useState<BatchJob[] | undefined>([])
 
+  const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1))
+  oneMonthAgo.setHours(0, 0, 0, 0);
+
   const {
     batch_jobs: batchJobs,
     error: listBatchJobsError
-  } = useAdminBatchJobs({} as AdminGetBatchParams, {
+  } = useAdminBatchJobs({
+    created_at: { gte: oneMonthAgo }
+  } as AdminGetBatchParams, {
     refetchInterval: shouldPollBatchJobs ? 5000 : false,
     refetchIntervalInBackground: shouldPollBatchJobs
   } as any)

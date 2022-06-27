@@ -11,7 +11,13 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
   hasNotifications = false,
   onClick = () => void 0
 }) => {
-  return <button onClick={onClick}>{hasNotifications ? <BellNotiIcon /> : <BellIcon />}</button>
+
+  return <button onClick={onClick}>
+    {hasNotifications
+      ? <BellNotiIcon />
+      : <BellIcon />
+    }
+  </button>
 }
 
 export default NotificationBell
