@@ -9,7 +9,10 @@ type Props = ButtonProps & {
 
 const DownloadableFileButton = ({ fileName, fileSize, ...buttonProps }: Props) => {
   return (
-    <Button className="flex justify-start mt-4" {...buttonProps}>
+    <Button
+      className="flex justify-start mt-4" {...buttonProps}
+      title={fileName}
+    >
       <FileIcon size={30}/>
       <div className="flex flex-col text-left">
         <span className="overflow-hidden truncate w-4/5 inter-base-regular">
