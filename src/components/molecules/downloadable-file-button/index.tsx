@@ -4,7 +4,7 @@ import React from "react"
 
 type Props = ButtonProps & {
   fileName: string
-  fileSize: string
+  fileSize?: string
 }
 
 const DownloadableFileButton = ({ fileName, fileSize, ...buttonProps }: Props) => {
@@ -13,7 +13,9 @@ const DownloadableFileButton = ({ fileName, fileSize, ...buttonProps }: Props) =
       <FileIcon size={30}/>
       <div className="flex flex-col text-left">
         <span className="overflow-hidden truncate w-4/5">{fileName}</span>
-        <span className="text-grey-40">{fileSize}</span>
+        {!!fileSize && (
+          <span className="text-grey-40">{fileSize}</span>
+        )}
       </div>
     </Button>
   )

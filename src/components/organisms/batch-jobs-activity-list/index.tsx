@@ -10,6 +10,7 @@ import Button from "../../fundamentals/button"
 import DownloadableFileButton from "../../molecules/downloadable-file-button"
 import Medusa from "../../../services/api"
 import { BatchJob } from "@medusajs/medusa/dist"
+import { bytesConverter } from "../../../utils/bytes-converter"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
@@ -99,7 +100,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
               onClick={downloadFile}
               variant={"ghost"}
               fileName={batchJob.result.file_key}
-              fileSize={batchJob.result.file_size}
+              fileSize={bytesConverter(batchJob.result.file_size ?? 0)}
             />
           )}
         </div>
