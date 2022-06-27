@@ -31,6 +31,7 @@ import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import medusaApi from "../../../services/api"
 import { queryClient } from "../../../services/config"
 import { DiscountModal } from "../../../components/discount-modal/DiscountModal"
+import OrderLine from "../details/order-line"
 
 export interface DiscountOption {
   label: string
@@ -284,64 +285,8 @@ const DraftOrderDetails = ({ id }) => {
               }
             >
               <div className="mt-6">
-                {cart?.items?.map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded"
-                  >
-                    <div className="flex space-x-4 justify-center">
-                      <div className="flex h-[48px] w-[36px] rounded-rounded bg-grey-10 items-center justify-center">
-                        {item?.thumbnail ? (
-                          <img
-                            src={item.thumbnail}
-                            className="rounded-rounded object-cover"
-                          />
-                        ) : (
-                          <div className="text-grey-30">
-                            <ImagePlaceholderIcon />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-col justify-center">
-                        <span className="inter-small-regular text-grey-90 max-w-[225px] truncate">
-                          {item.title}
-                        </span>
-                        {item?.variant && (
-                          <span className="inter-small-regular text-grey-50">
-                            {item.variant.sku}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex  items-center">
-                      <div className="flex small:space-x-2 medium:space-x-4 large:space-x-6 mr-3">
-                        <div className="inter-small-regular text-grey-50">
-                          {!!region?.currency_code &&
-                            formatAmountWithSymbol({
-                              amount: item.unit_price,
-                              currency: region.currency_code,
-                              digits: 2,
-                              tax: region?.tax_rate,
-                            })}
-                        </div>
-                        <div className="inter-small-regular text-grey-50">
-                          x {item.quantity}
-                        </div>
-                        <div className="inter-small-regular text-grey-90">
-                          {!!region?.currency_code &&
-                            formatAmountWithSymbol({
-                              amount: item.unit_price * item.quantity,
-                              currency: region?.currency_code,
-                              digits: 2,
-                              tax: region?.tax_rate,
-                            })}
-                        </div>
-                      </div>
-                      <div className="inter-small-regular text-grey-50">
-                        {region?.currency_code.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
+                {cart?.items.map((item, index) => (
+                  <OrderLine key={index} item={item} region={region} />
                 ))}
 
                 <DisplayTotal
