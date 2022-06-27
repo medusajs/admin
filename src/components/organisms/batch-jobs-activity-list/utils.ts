@@ -7,7 +7,7 @@ export function getActivityDescriptionFromBatchJob(batchJob: BatchJob, {
 }): string {
   let description = ""
 
-  const entityName = getEntityFromBatchJob(batchJob)
+  const entityName = batchJob.type.split("-").reverse().pop()
 
   switch (batchJob.status) {
     case "failed":
@@ -39,13 +39,4 @@ export function getActivityDescriptionFromBatchJob(batchJob: BatchJob, {
   }
 
   return description
-}
-
-function getEntityFromBatchJob(batchJob: BatchJob): string {
-  switch (batchJob.type) {
-    case "product-export":
-      return "product"
-    default:
-      return ""
-  }
 }

@@ -5,20 +5,22 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import getRelativeTime from "../../../utils/get-human-relative-time"
 import { getActivityDescriptionFromBatchJob } from "./utils"
 import MedusaIcon from "../../fundamentals/icons/medusa-icon"
-import StatusIndicator from "../../fundamentals/status-indicator"
 import Button from "../../fundamentals/button"
 import DownloadableFileButton from "../../molecules/downloadable-file-button"
 import Medusa from "../../../services/api"
 import { BatchJob } from "@medusajs/medusa/dist"
 import { bytesConverter } from "../../../utils/bytes-converter"
+import { ActivityCard } from "../../molecules/activirty-card"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
-    {!!batchJobs?.length && (
-      batchJobs?.map(batchJob => {
-        return <BatchJobActivityCard batchJob={batchJob}/>
-      })
-    )}
+    {
+      !!batchJobs?.length && (
+        batchJobs?.map(batchJob => {
+          return <BatchJobActivityCard batchJob={batchJob}/>
+        })
+      )
+    }
   </div>
 }
 
@@ -26,16 +28,6 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
   const notification = useNotification()
   const { mutate: cancelBatchJob, error: cancelBatchJobError  } =
     useAdminCancelBatchJob(batchJob.id)
-
-  useEffect(() => {
-    if (cancelBatchJobError) {
-      notification(
-        "Error canceling the batch job",
-        getErrorMessage(cancelBatchJobError),
-        "error"
-      )
-    }
-  }, [cancelBatchJobError])
 
   const relativeTimeElapsed = getRelativeTime({
     from: new Date(),
@@ -50,6 +42,16 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
     && !batchJob.failed_at
     && !batchJob.canceled_at
     && batchJob.result?.file_key
+
+  useEffect(() => {
+    if (cancelBatchJobError) {
+      notification(
+        "Error canceling the batch job",
+        getErrorMessage(cancelBatchJobError),
+        "error"
+      )
+    }
+  }, [cancelBatchJobError])
 
   const getActivityDescription = () => {
     return getActivityDescriptionFromBatchJob(batchJob, {
@@ -99,70 +101,64 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
       })
   }
 
-  return (
-    <div key={batchJob.id} className="mx-4 border-b border-grey-20">
-      <div className="-mx-4 flex p-4 hover:bg-grey-5">
-        <div className="relative w-full h-full">
-          <div className="flex justify-between inter-base-semibold">
-            <div className="flex">
-              <MedusaIcon className="mr-3" size={20}/>
-              <span>Medusa Team</span>
-            </div>
+  const getBodyAction = () => {
+    return batchJob.result?.file_key &&
+      <DownloadableFileButton
+        onClick={downloadFile}
+        variant={"ghost"}
+        fileName={batchJob.result.file_key}
+        fileSize={bytesConverter(batchJob.result.file_size ?? 0)}
+      />
+  }
 
-            <div className="flex">
-              <span>{relativeTimeElapsed.rtf}</span>
-              <StatusIndicator variant={"primary"} className="ml-2"/>
-            </div>
+  const getFooterActions = () => {
+    return (
+      <div>
+        {canDownload && (
+          <div className="flex">
+            <Button
+              onClick={deleteFile}
+              size={"small"}
+              className="flex justify-start mt-4"
+              variant={"danger"}
+            >
+              Delete
+            </Button>
+            <Button
+              onClick={downloadFile}
+              size={"small"}
+              className="flex justify-start mt-4"
+              variant={"ghost"}
+            >
+              Download
+            </Button>
           </div>
-
-          <div className="flex flex-col ml-8">
-            <span>{getActivityDescription()}</span>
-
-            {batchJob.result?.file_key && (
-              <DownloadableFileButton
-                onClick={downloadFile}
-                variant={"ghost"}
-                fileName={batchJob.result.file_key}
-                fileSize={bytesConverter(batchJob.result.file_size ?? 0)}
-              />
-            )}
-          </div>
-
-          <div className="flex ml-8">
-            {canDownload && (
-              <div className="flex">
-                <Button
-                  onClick={deleteFile}
-                  size={"small"}
-                  className="flex justify-start mt-4"
-                  variant={"danger"}
-                >
-                  Delete
-                </Button>
-                <Button
-                  onClick={downloadFile}
-                  size={"small"}
-                  className="flex justify-start mt-4"
-                  variant={"ghost"}
-                >
-                  Download
-                </Button>
-              </div>
-            )}
-            {canCancel && (
-              <Button
-                onClick={() => cancelBatchJob()}
-                size={"small"}
-                className="flex justify-start mt-4"
-                variant={"danger"}
-              >
-                Cancel
-              </Button>
-            )}
-          </div>
-        </div>
+        )}
+        {canCancel && (
+          <Button
+            onClick={() => cancelBatchJob()}
+            size={"small"}
+            className="flex justify-start mt-4"
+            variant={"danger"}
+          >
+            Cancel
+          </Button>
+        )}
       </div>
-    </div>
+    )
+  }
+
+  return (
+    <ActivityCard
+      key={batchJob.id}
+      title="Medusa Team"
+      titleIcon={<MedusaIcon className="mr-3" size={20}/>}
+      relativeTimeElapsed={relativeTimeElapsed.rtf}
+      shouldShowStatus={true}
+      description={getActivityDescription()}
+      bodyActions={getBodyAction()}
+      footerActions={getFooterActions()}
+    />
   )
 }
 

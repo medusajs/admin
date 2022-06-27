@@ -6,10 +6,9 @@ import SidedMouthFaceIcon from "../../fundamentals/icons/sided-mouth-face/sided-
 
 const ActivityDrawer = ({ onDismiss }) => {
   const ref = React.useRef<HTMLDivElement>(null)
+  const { batchJobs } = useContext(PollingContext)
   const clickOutside = useOutsideClick({ ref })
   const [hasActivities, setHasActivities] = useState(false)
-
-  const { batchJobs } = useContext(PollingContext)
 
   useEffect(() => {
     setHasActivities(!!batchJobs?.length)
