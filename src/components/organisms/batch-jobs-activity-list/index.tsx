@@ -1,6 +1,6 @@
 import useNotification from "../../../hooks/use-notification"
 import { useAdminCancelBatchJob } from "medusa-react"
-import React, { useContext, useEffect } from "react"
+import React, { useEffect } from "react"
 import { getErrorMessage } from "../../../utils/error-messages"
 import getRelativeTime from "../../../utils/get-human-relative-time"
 import { getActivityDescriptionFromBatchJob } from "./utils"
@@ -8,15 +8,11 @@ import MedusaIcon from "../../fundamentals/icons/medusa-icon"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Button from "../../fundamentals/button"
 import DownloadableFileButton from "../../molecules/downloadable-file-button"
-import { PollingContext } from "../../../context/polling"
 import Medusa from "../../../services/api"
+import { BatchJob } from "@medusajs/medusa/dist"
 
-const BatchJobActivityList = () => {
-  const { batchJobs } = useContext(PollingContext)
-
+const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
-    <div className="inter-xlarge-semibold p-4">Activities</div>
-
     {!!batchJobs?.length && (
       batchJobs?.map(batchJob => {
         return <BatchJobActivityCard batchJob={batchJob}/>
@@ -103,7 +99,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
               onClick={downloadFile}
               variant={"ghost"}
               fileName={batchJob.result.file_key}
-              fileSize={"956 kb"}
+              fileSize={batchJob.result.file_size}
             />
           )}
         </div>
