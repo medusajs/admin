@@ -9,14 +9,13 @@ type NotificationBellProps = ButtonProps & {
 
 const NotificationBell: React.FC<NotificationBellProps> = ({
   hasNotifications = false,
-  onClick = () => void 0
+    ...attributes
 }) => {
 
   return <Button
-    onClick={onClick}
-    size="small"
-    variant="ghost"
     className="w-8 h-8 mr-3"
+    size="small"
+    {...attributes}
   >
     {hasNotifications
       ? <BellNotiIcon />

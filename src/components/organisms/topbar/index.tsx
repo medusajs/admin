@@ -20,17 +20,11 @@ const Topbar: React.FC = () => {
     toggle: toggleActivityDrawer,
     close: activityDrawerClose
   } = useToggleState(false)
-  const [hasActivities, setHasActivities] = useState(false)
 
   const { first_name, last_name, email, handleLogout } = useContext(
     AccountContext
   )
   const { batchJobs } = useContext(PollingContext)
-
-  useEffect(() => {
-    setHasActivities(!!batchJobs?.length)
-  }, [batchJobs])
-
 
   const [showSupportform, setShowSupportForm] = useState(false)
 
@@ -54,7 +48,8 @@ const Topbar: React.FC = () => {
 
         <NotificationBell
           onClick={toggleActivityDrawer}
-          hasNotifications={hasActivities}
+          variant={"ghost"}
+          hasNotifications={!!batchJobs}
         />
 
         <div className="ml-large w-large h-large">

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext } from "react"
 import useOutsideClick from "../../../hooks/use-outside-click"
 import BatchJobActivityList from "../batch-jobs-activity-list"
 import { PollingContext } from "../../../context/polling"
@@ -9,18 +9,7 @@ import Spinner from "../../atoms/spinner"
 const ActivityDrawer = ({ onDismiss }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const { batchJobs, hasPollingError } = useContext(PollingContext)
-  const clickOutside = useOutsideClick({ ref })
-  const [hasActivities, setHasActivities] = useState(false)
-
-  useEffect(() => {
-    setHasActivities(!!batchJobs?.length)
-  }, [batchJobs])
-
-  useEffect(() => {
-    if (clickOutside) {
-      return onDismiss()
-    }
-  }, [clickOutside])
+  useOutsideClick(onDismiss, ref)
 
   return (
     <div
@@ -31,7 +20,7 @@ const ActivityDrawer = ({ onDismiss }) => {
 
       {
         !hasPollingError ? (
-          hasActivities ? (
+          batchJobs ? (
             <BatchJobActivityList batchJobs={batchJobs} />
           ) : (
             <EmptyActivityDrawer/>

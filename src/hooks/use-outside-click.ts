@@ -1,23 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import * as React from "react"
+import { useEffect } from "react";
 
 type Props = {
   ref: any
+  callback: () => void
 }
 
-const useOutsideClick = (props: Props) => {
-  const { ref } = props
-  const [clickedOutside, setOutsideClick] = useState<boolean | null>(null);
-
+const useOutsideClick = (callback: () => void, ref: any) => {
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!ref.current.contains(e.target)) {
-        setOutsideClick(true);
-      } else {
-        setOutsideClick(false);
+        callback()
       }
-
-      setOutsideClick(null);
     };
 
     document.addEventListener("click", handleClickOutside);
@@ -26,8 +19,6 @@ const useOutsideClick = (props: Props) => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [ref]);
-
-  return clickedOutside
 };
 
 export default useOutsideClick

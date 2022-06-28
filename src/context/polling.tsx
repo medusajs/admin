@@ -30,7 +30,7 @@ export const PollingProvider = ({ children }) => {
     created_at: { gte: oneMonthAgo },
   } as AdminGetBatchParams, {
     refetchInterval: shouldPollBatchJobs ? 5000 : false,
-    refetchIntervalInBackground: shouldPollBatchJobs
+    refetchOnWindowFocus: shouldPollBatchJobs
   } as any)
 
   useEffect(() => {

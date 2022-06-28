@@ -2,7 +2,7 @@ import useNotification from "../../../hooks/use-notification"
 import { useAdminCancelBatchJob, useAdminStore } from "medusa-react"
 import React, { useEffect } from "react"
 import { getErrorMessage } from "../../../utils/error-messages"
-import getRelativeTime from "../../../utils/get-human-relative-time"
+import getRelativeTime from "../../../utils/get-relative-time"
 import MedusaIcon from "../../fundamentals/icons/medusa-icon"
 import Button from "../../fundamentals/button"
 import BatchJobFileCard from "../../molecules/batch-job-file-card"
@@ -17,16 +17,14 @@ import Spinner from "../../atoms/spinner"
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
     {
-      !!batchJobs?.length && (
-        batchJobs?.map(batchJob => {
-          return <BatchJobActivityCard key={batchJob.id} batchJob={batchJob}/>
-        })
-      )
+      batchJobs?.map(batchJob => {
+        return <BatchJobActivityCard key={batchJob.id} batchJob={batchJob}/>
+      })
     }
   </div>
 }
 
-const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
+const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
   const notification = useNotification()
   const { store } = useAdminStore()
   const { mutate: cancelBatchJob, error: cancelBatchJobError  } =
@@ -59,46 +57,51 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
     }
   }, [cancelBatchJobError])
 
-  const deleteFile = () => {
-    if (!batchJob.result?.file_key) return
-    Medusa.uploads.delete(batchJob.result?.file_key)
-      .then(() => {
-        notification(
-          "Success",
-          "Export file has been removed",
-          "success"
-        )
-      })
-      .catch(() => {
-        notification(
-          "Error",
-          "Something went wrong while deleting the export file",
-          "error"
-        )
-      })
+  const deleteFile = async () => {
+    if (!batchJob.result?.file_key) {
+      return
+    }
+
+    try {
+      await Medusa.uploads.delete(batchJob.result?.file_key)
+      notification(
+        "Success",
+        "Export file has been removed",
+        "success"
+      )
+    } catch (e) {
+      notification(
+        "Error",
+        "Something went wrong while deleting the export file",
+        "error"
+      )
+    }
   }
 
   const downloadFile = async () => {
-    if (!batchJob.result?.file_key) return
-    Medusa.uploads.downloadUrl(batchJob.result?.file_key)
-      .then((response) => {
-        const link = document.createElement("a");
-        link.href = response.data.download_url;
-        link.setAttribute(
-            "download",
-            `${batchJob.result?.file_key}`
-        );
-        document.body.appendChild(link);
-        link.click();
+    if (!batchJob.result?.file_key) {
+      return
+    }
 
-        document.body.removeChild(link);
-      })
-      .catch(() => {
-        notification(
-          "Error",
-          "Something went wrong while downloading the export file",
-          "error")
-      })
+    try {
+      const res = await Medusa.uploads.downloadUrl(batchJob.result?.file_key)
+      const link = document.createElement("a");
+      link.href = res.data.download_url;
+      link.setAttribute(
+          "download",
+          `${batchJob.result?.file_key}`
+      );
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+    } catch (e) {
+     notification(
+      "Error",
+      "Something went wrong while downloading the export file",
+      "error"
+     )
+    }
   }
 
   const getBatchJobFileCard = () => {
@@ -116,11 +119,11 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
       : <FileIcon fill={iconColor} size={20}/>
 
     const fileName = batchJob.result.file_key ?? `${batchJob.type}.csv`
-    const fileSize = batchJob.status !== "canceled" && (
+    const fileSize = batchJob.status !== "canceled" ? (
       batchJob.result.file_key
-        ? bytesConverter(batchJob.result.file_size)
+        ? bytesConverter(batchJob.result.file_size ?? 0)
         : "Preparing export..."
-    )
+    ) : undefined
 
     return (
       <BatchJobFileCard

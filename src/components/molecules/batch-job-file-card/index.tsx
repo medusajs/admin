@@ -8,12 +8,12 @@ type Props = {
 }
 
 const BatchJobFileCard = ({ fileName, fileSize, icon, onClick }: Props) => {
-  const preparedOnclick = (onClick ?? (() => void 0))
+  const preparedOnClick = (onClick ?? (() => void 0))
 
   return (
     <div
       className="flex items-center w-full cursor-pointer mt-4"
-      onClick={preparedOnclick}
+      onClick={preparedOnClick}
     >
       <div
         className="flex items-center justify-center p-2.5 border border-grey-20 rounded-lg"
