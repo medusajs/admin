@@ -23,7 +23,7 @@ function buildDescriptionFromBatchJob(
 
   const entityName = batchJob.type.split("-").reverse().pop()
 
-  const twentyForHours = 24 * 60 * 60 * 1000
+  const twentyfourHoursInMs = 24 * 60 * 60 * 1000
 
   switch (batchJob.status) {
     case "failed":
@@ -33,7 +33,7 @@ function buildDescriptionFromBatchJob(
       description = `The export of the ${entityName} list has been canceled.`
       break;
     case "completed":
-      if (elapsedTime && Math.abs(elapsedTime) > twentyForHours) {
+      if (elapsedTime && Math.abs(elapsedTime) > twentyfourHoursInMs) {
         description =`This export file is no longer available. The file will only be stored for 24 hours.`
         break;
       } else {

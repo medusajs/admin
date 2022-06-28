@@ -1,11 +1,10 @@
 import React from "react"
 import BellIcon from "../../fundamentals/icons/bell-icon"
 import BellNotiIcon from "../../fundamentals/icons/bell-noti-icon"
-import Button from "../../fundamentals/button"
+import Button, { ButtonProps } from "../../fundamentals/button"
 
-type NotificationBellProps = {
-  hasNotifications: boolean
-  onClick: () => void
+type NotificationBellProps = ButtonProps & {
+  hasNotifications?: boolean
 }
 
 const NotificationBell: React.FC<NotificationBellProps> = ({
@@ -13,7 +12,12 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
   onClick = () => void 0
 }) => {
 
-  return <Button variant={"ghost"} onClick={onClick}>
+  return <Button
+    onClick={onClick}
+    size="small"
+    variant="ghost"
+    className="w-8 h-8 mr-3"
+  >
     {hasNotifications
       ? <BellNotiIcon />
       : <BellIcon />

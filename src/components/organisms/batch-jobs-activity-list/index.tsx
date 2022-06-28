@@ -5,13 +5,14 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import getRelativeTime from "../../../utils/get-human-relative-time"
 import MedusaIcon from "../../fundamentals/icons/medusa-icon"
 import Button from "../../fundamentals/button"
-import DownloadableFileButton from "../../molecules/downloadable-file-button"
+import BatchJobFileCard from "../../molecules/batch-job-file-card"
 import Medusa from "../../../services/api"
 import { BatchJob } from "@medusajs/medusa/dist"
 import { bytesConverter } from "../../../utils/bytes-converter"
 import { ActivityCard } from "../../molecules/activity-card"
 import { useBatchJobDescription } from "../../../hooks/use-batch-job-description"
 import FileIcon from "../../fundamentals/icons/file-icon"
+import Spinner from "../../atoms/spinner"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
@@ -100,16 +101,33 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
       })
   }
 
-  const getBodyAction = () => {
-    return batchJob.result?.file_key && (
-      <DownloadableFileButton
+  const getBatchJobFileCard = () => {
+    const twentyfourHoursInMs = 24 * 60 * 60 * 1000
+
+    const iconColor = Math.abs(relativeTimeElapsed.raw) > twentyfourHoursInMs
+      ? "#9CA3AF"
+      : undefined
+
+    const icon = (
+      batchJob.status !== "completed"
+      && batchJob.status !== "canceled"
+    )
+      ? <Spinner size={"medium"} variant={"secondary"}/>
+      : <FileIcon fill={iconColor} size={20}/>
+
+    const fileName = batchJob.result.file_key ?? `${batchJob.type}.csv`
+    const fileSize = batchJob.status !== "canceled" && (
+      batchJob.result.file_key
+        ? bytesConverter(batchJob.result.file_size)
+        : "Preparing export..."
+    )
+
+    return (
+      <BatchJobFileCard
         onClick={downloadFile}
-        variant={"ghost"}
-        size={"small"}
-        className="inter-small-regular -ml-3 p-2.5 my-1"
-        fileName={batchJob.result.file_key}
-        icon={<FileIcon size={40}/>}
-        fileSize={bytesConverter(batchJob.result.file_size ?? 0)}
+        fileName={fileName}
+        icon={icon}
+        fileSize={fileSize}
       />
     )
   }
@@ -117,7 +135,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
   const getFooterActions = () => {
     return (
       (canDownload || canCancel) && (
-        <div className="flex mt-1.5">
+        <div className="flex mt-6">
           {canDownload && (
             <div className="flex">
               <Button
@@ -164,7 +182,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
       <div className="flex flex-col inter-small-regular">
         <span>{batchJobActivityDescription}</span>
 
-        {getBodyAction()}
+        {getBatchJobFileCard()}
       </div>
 
       {getFooterActions()}

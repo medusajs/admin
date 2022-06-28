@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Tooltip from "../../atoms/tooltip"
+import clsx from "clsx"
 
 export type ActivityCardProps = {
   key?: string
@@ -53,9 +54,9 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
   }
 
   return (
-    <div key={key} className="mx-4 border-b border-grey-20">
-      <div className="-mx-8 flex p-4 hover:bg-grey-5">
-        <div className="relative w-full h-full px-4">
+    <div key={key} className="mx-8 border-b last:border-b-0 border-grey-20">
+      <div className="flex hover:bg-grey-5 -mx-8 px-8 py-6">
+        <div className="relative w-full h-full">
           <div className="flex justify-between inter-small-semibold text-grey-90">
             <div className="flex">
               {
@@ -77,7 +78,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
             }
           </div>
 
-          <div className={"" + !!icon ? "ml-8" : ""}>
+          <div className={clsx(!!icon && "pl-8")}>
             {children}
           </div>
         </div>

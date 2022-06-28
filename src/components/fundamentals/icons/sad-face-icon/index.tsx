@@ -1,8 +1,8 @@
 import React from "react"
 import IconProps from "../types/icon-type"
 
-const SidedMouthFaceIcon: React.FC<IconProps> = ({
-  size = "24",
+const SadFaceIcon: React.FC<IconProps> = ({
+  size = "20",
   color = "currentColor",
   ...attributes
 }) => {
@@ -10,8 +10,8 @@ const SidedMouthFaceIcon: React.FC<IconProps> = ({
     <svg
       width={size}
       height={size}
-      fill="none"
       viewBox="0 0 48 48"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...attributes}
     >
@@ -23,29 +23,29 @@ const SidedMouthFaceIcon: React.FC<IconProps> = ({
         strokeLinejoin="round"
       />
       <path
-        d="M24 33.6649C20.592 33.6809 17.128 31.7849 16 28.2969"
+        d="M17 31.999C17 31.999 19.626 29.375 24 29.375C28.376 29.375 31 31.999 31 31.999"
         stroke={color}
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M34 18.4805C33.21 19.4505 32.13 20.0005 31 20.0005C29.87 20.0005 28.82 19.4505 28 18.4805"
+        d="M34 20C33.21 19.03 32.13 18.48 31 18.48C29.87 18.48 28.82 19.03 28 20"
         stroke={color}
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M20 18.4805C19.21 19.4505 18.13 20.0005 17 20.0005C15.87 20.0005 14.82 19.4505 14 18.4805"
+        d="M20 20C19.21 19.03 18.13 18.48 17 18.48C15.87 18.48 14.82 19.03 14 20"
         stroke={color}
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-
     </svg>
+
   )
 }
 
-export default SidedMouthFaceIcon
+export default SadFaceIcon

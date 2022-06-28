@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from "react"
-import useNotification from "../hooks/use-notification"
 import { useAdminBatchJobs } from "medusa-react"
 import { AdminGetBatchParams } from "@medusajs/medusa"
-import { getErrorMessage } from "../utils/error-messages"
 import { BatchJob } from "@medusajs/medusa/dist"
 import { AccountContext } from "./account"
 
 export const defaultPollingContext: {
   batchJobs?: BatchJob[]
+  hasPollingError?: boolean
 } = {
   batchJobs: [] as BatchJob[]
 }
@@ -16,10 +15,10 @@ export const PollingContext = React.createContext(defaultPollingContext)
 
 export const PollingProvider = ({ children }) => {
   const { isLoggedIn } = useContext(AccountContext)
-  const notification = useNotification()
 
   const [shouldPollBatchJobs, setShouldPollBatchJobs] = useState(false)
   const [polledBatchJobs, setPolledBatchJobs] = useState<BatchJob[] | undefined>([])
+  const [hasPollingError, setHasPollingError] = useState<boolean | undefined>()
 
   const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1))
   oneMonthAgo.setHours(0, 0, 0, 0);
@@ -28,7 +27,7 @@ export const PollingProvider = ({ children }) => {
     batch_jobs: batchJobs,
     error: listBatchJobsError
   } = useAdminBatchJobs({
-    created_at: { gte: oneMonthAgo }
+    created_at: { gte: oneMonthAgo },
   } as AdminGetBatchParams, {
     refetchInterval: shouldPollBatchJobs ? 5000 : false,
     refetchIntervalInBackground: shouldPollBatchJobs
@@ -51,18 +50,12 @@ export const PollingProvider = ({ children }) => {
       })
 
     setShouldPollBatchJobs(shouldPoll)
-
-    if (listBatchJobsError) {
-      notification(
-        "Error listing the batch jobs during polling",
-        getErrorMessage(listBatchJobsError),
-        "error"
-      )
-    }
+    setHasPollingError(!!listBatchJobsError)
   }, [batchJobs, listBatchJobsError, isLoggedIn])
 
   const value = {
     batchJobs: polledBatchJobs,
+    hasPollingError
   }
 
   return (

@@ -54,7 +54,8 @@ const Topbar: React.FC = () => {
 
         <NotificationBell
           onClick={toggleActivityDrawer}
-          hasNotifications={hasActivities} />
+          hasNotifications={hasActivities}
+        />
 
         <div className="ml-large w-large h-large">
           <DropdownMenu.Root>
