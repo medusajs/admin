@@ -1,26 +1,30 @@
-import FileIcon from "../../fundamentals/icons/file-icon"
 import Button, { ButtonProps } from "../../fundamentals/button"
-import React from "react"
+import React, { ReactNode } from "react"
 
 type Props = ButtonProps & {
   fileName: string
   fileSize?: string
+  icon?: ReactNode
 }
 
-const DownloadableFileButton = ({ fileName, fileSize, ...buttonProps }: Props) => {
+const DownloadableFileButton = ({ fileName, fileSize, icon, ...attributes }: Props) => {
   return (
     <Button
-      className="flex justify-start mt-4" {...buttonProps}
+      {...attributes}
+      className={"flex justify-start inter-small-regular" + attributes.className}
       title={fileName}
     >
-      <FileIcon size={30}/>
-      <div className="flex flex-col text-left">
-        <span className="overflow-hidden truncate w-4/5 inter-base-regular">
+      {!!icon && icon}
+
+      <div className="text-left">
+        <div className="overflow-hidden truncate max-w-[90%] inter-small-regular">
           {fileName}
-        </span>
+        </div>
 
         {!!fileSize && (
-          <span className="text-grey-40 inter-base-regular">{fileSize}</span>
+          <div className="text-grey-40 inter-small-regular">
+            {fileSize}
+          </div>
         )}
       </div>
     </Button>

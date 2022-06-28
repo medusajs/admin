@@ -23,7 +23,7 @@ const ActivityDrawer = ({ onDismiss }) => {
   return (
     <div
       ref={ref}
-      className="bg-grey-0 w-[400px] shadow-dropdown rounded-rounded top-[64px] bottom-2 right-3 rounded overflow-x-hidden fixed flex flex-col"
+      className="bg-grey-0 w-[400px] shadow-dropdown rounded-rounded top-[64px] bottom-2 right-3 rounded overflow-x-hidden fixed flex flex-col px-4"
     >
       <div className="inter-large-semibold p-4">Activity</div>
 

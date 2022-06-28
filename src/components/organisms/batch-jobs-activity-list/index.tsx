@@ -11,6 +11,7 @@ import { BatchJob } from "@medusajs/medusa/dist"
 import { bytesConverter } from "../../../utils/bytes-converter"
 import { ActivityCard } from "../../molecules/activity-card"
 import { useBatchJobDescription } from "../../../hooks/use-batch-job-description"
+import FileIcon from "../../fundamentals/icons/file-icon"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
@@ -100,13 +101,17 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
   }
 
   const getBodyAction = () => {
-    return batchJob.result?.file_key &&
+    return batchJob.result?.file_key && (
       <DownloadableFileButton
         onClick={downloadFile}
         variant={"ghost"}
+        size={"small"}
+        className="inter-small-regular -ml-3 p-2.5 my-1"
         fileName={batchJob.result.file_key}
+        icon={<FileIcon size={40}/>}
         fileSize={bytesConverter(batchJob.result.file_size ?? 0)}
       />
+    )
   }
 
   const getFooterActions = () => {
@@ -117,7 +122,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
             <Button
               onClick={deleteFile}
               size={"small"}
-              className="flex justify-start mt-4"
+              className="flex justify-start inter-small-regular"
               variant={"danger"}
             >
               Delete
@@ -125,7 +130,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
             <Button
               onClick={downloadFile}
               size={"small"}
-              className="flex justify-start mt-4"
+              className="flex justify-start inter-small-regular"
               variant={"ghost"}
             >
               Download
@@ -136,7 +141,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
           <Button
             onClick={() => cancelBatchJob()}
             size={"small"}
-            className="flex justify-start mt-4"
+            className="flex justify-start inter-small-regular"
             variant={"danger"}
           >
             Cancel
@@ -151,15 +156,16 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
       title={store?.name ?? "Medusa Team"}
       icon={<MedusaIcon className="mr-3" size={20}/>}
       relativeTimeElapsed={relativeTimeElapsed.rtf}
+      date={batchJob.created_at}
       shouldShowStatus={true}
     >
-      <div className="flex flex-col ml-8">
+      <div className="flex flex-col inter-small-regular">
         <span>{batchJobActivityDescription}</span>
 
         {getBodyAction()}
       </div>
 
-      <div className="flex ml-8">
+      <div className="flex mt-1.5">
         {getFooterActions()}
       </div>
     </ActivityCard>

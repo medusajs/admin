@@ -1,24 +1,30 @@
 import RelativeTimeFormatUnit = Intl.RelativeTimeFormatUnit
 
-const units: [RelativeTimeFormatUnit, number][] = [
-  ["year", 31536000000],
-  ["month", 2628000000],
-  ["day", 86400000],
-  ["hour", 3600000],
-  ["minute", 60000],
-  ["second", 1000],
+const units: [RelativeTimeFormatUnit, string, number][] = [
+  ["day", "d", 86400000],
+  ["hour", "h", 3600000],
+  ["minute", "m", 60000],
 ];
-
-const rtf = new Intl.RelativeTimeFormat("en", { style: "narrow" });
 
 const getRelativeTime = (dates: { from: Date | string; to: Date | string }) => {
   const elapsed = new Date(dates.to).getTime() - new Date(dates.from).getTime()
-ack
-  for (const [unit, amount] of units) {
-    if (Math.abs(elapsed) > amount || unit === "second") {
+
+  for (const [unit, displayedUnit, amount] of units) {
+    if (Math.abs(elapsed) > amount || unit === "minute") {
+      const isLessThan1Min = Math.abs(elapsed) <= amount
+      const suffix = elapsed <= 0 ? "ago" : ""
+      const prefix = elapsed > 0 ? "in" : ""
+      const indicator = Math.abs(elapsed) < 1 ? "<" : ""
+      const timeToShow = Math.max(1, Math.abs(Math.round(elapsed / amount)))
+
       return {
         raw: elapsed,
-        rtf: rtf.format(Math.round(elapsed / amount), unit)
+        rtf: `
+          ${indicator}${prefix ? prefix + " " : ""}
+          ${(isLessThan1Min ? "< " : "")} 
+          ${timeToShow}${displayedUnit} 
+          ${suffix}
+        `
       };
     }
   }

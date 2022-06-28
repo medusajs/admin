@@ -1,11 +1,13 @@
 import React, { ReactNode } from "react"
 import StatusIndicator from "../../fundamentals/status-indicator"
+import Tooltip from "../../atoms/tooltip"
 
 export type ActivityCardProps = {
   key?: string
   title: string
   icon?: ReactNode
   relativeTimeElapsed?: string
+  date?: string | Date
   shouldShowStatus?: boolean
   children?: ReactNode[]
 }
@@ -22,11 +24,39 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
     children
   } = props
 
+  const date = !!props.date && new Date(props.date).toLocaleDateString(
+    "en-us",
+    {
+      hour12: true,
+      day: "2-digit",
+      month: "short",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    })
+  const formattedDate = !!date && date.replace(",", " at")
+
+  const getTimeElement = () => {
+    return (
+      <div className="flex cursor-default">
+        {
+          !!relativeTimeElapsed && (
+            <span >{relativeTimeElapsed}</span>
+          )
+        }
+        {
+          shouldShowStatus &&
+          <StatusIndicator variant={"primary"} className="ml-2"/>
+        }
+      </div>
+    )
+  }
+
   return (
     <div key={key} className="mx-4 border-b border-grey-20">
-      <div className="-mx-4 flex p-4 hover:bg-grey-5">
-        <div className="relative w-full h-full">
-          <div className="flex justify-between inter-base-semibold">
+      <div className="-mx-8 flex p-4 hover:bg-grey-5">
+        <div className="relative w-full h-full px-4">
+          <div className="flex justify-between inter-small-semibold text-grey-90">
             <div className="flex">
               {
                 !!icon && icon
@@ -35,23 +65,21 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
             </div>
 
             {
-              (!!relativeTimeElapsed || shouldShowStatus) && (
-                <div className="flex">
-                  {
-                    !!relativeTimeElapsed && (
-                      <span>{relativeTimeElapsed}</span>
-                    )
-                  }
-                  {
-                    shouldShowStatus &&
-                    <StatusIndicator variant={"primary"} className="ml-2"/>
-                  }
-                </div>
+              ((!!relativeTimeElapsed || shouldShowStatus)) && (
+                formattedDate ? (
+                  <Tooltip content={formattedDate}>
+                    {getTimeElement()}
+                  </Tooltip>
+                ) : (
+                  getTimeElement()
+                )
               )
             }
           </div>
 
-          {children}
+          <div className={"" + !!icon ? "ml-8" : ""}>
+            {children}
+          </div>
         </div>
       </div>
     </div>
