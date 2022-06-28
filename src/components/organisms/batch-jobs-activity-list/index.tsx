@@ -116,38 +116,40 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
 
   const getFooterActions = () => {
     return (
-      <div>
-        {canDownload && (
-          <div className="flex">
+      (canDownload || canCancel) && (
+        <div className="flex mt-1.5">
+          {canDownload && (
+            <div className="flex">
+              <Button
+                onClick={deleteFile}
+                size={"small"}
+                className="flex justify-start inter-small-regular"
+                variant={"danger"}
+              >
+                Delete
+              </Button>
+              <Button
+                onClick={downloadFile}
+                size={"small"}
+                className="flex justify-start inter-small-regular"
+                variant={"ghost"}
+              >
+                Download
+              </Button>
+            </div>
+          )}
+          {canCancel && (
             <Button
-              onClick={deleteFile}
+              onClick={() => cancelBatchJob()}
               size={"small"}
               className="flex justify-start inter-small-regular"
               variant={"danger"}
             >
-              Delete
+              Cancel
             </Button>
-            <Button
-              onClick={downloadFile}
-              size={"small"}
-              className="flex justify-start inter-small-regular"
-              variant={"ghost"}
-            >
-              Download
-            </Button>
-          </div>
-        )}
-        {canCancel && (
-          <Button
-            onClick={() => cancelBatchJob()}
-            size={"small"}
-            className="flex justify-start inter-small-regular"
-            variant={"danger"}
-          >
-            Cancel
-          </Button>
-        )}
-      </div>
+          )}
+        </div>
+      )
     )
   }
 
@@ -165,9 +167,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: any }) => {
         {getBodyAction()}
       </div>
 
-      <div className="flex mt-1.5">
-        {getFooterActions()}
-      </div>
+      {getFooterActions()}
     </ActivityCard>
   )
 }
