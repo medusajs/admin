@@ -118,10 +118,10 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
       ? <Spinner size={"medium"} variant={"secondary"}/>
       : <FileIcon fill={iconColor} size={20}/>
 
-    const fileName = batchJob.result.file_key ?? `${batchJob.type}.csv`
+    const fileName = batchJob.result?.file_key ?? `${batchJob.type}.csv`
     const fileSize = batchJob.status !== "canceled" ? (
-      batchJob.result.file_key
-        ? bytesConverter(batchJob.result.file_size ?? 0)
+      batchJob.result?.file_key
+        ? bytesConverter(batchJob.result?.file_size ?? 0)
         : "Preparing export..."
     ) : undefined
 

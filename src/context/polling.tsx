@@ -27,8 +27,8 @@ export const PollingProvider = ({ children }) => {
     isFetching
   } = useAdminBatchJobs({
     created_at: { gte: oneMonthAgo },
-    failed_at: "null",
-  } as unknown as AdminGetBatchParams, {
+    failed_at: null,
+  } as AdminGetBatchParams, {
     refetchInterval: shouldPollBatchJobs ? 5000 : false,
     refetchOnWindowFocus: shouldPollBatchJobs
   } as any)
