@@ -7,9 +7,7 @@ import { AccountContext } from "./account"
 export const defaultPollingContext: {
   batchJobs?: BatchJob[]
   hasPollingError?: boolean
-} = {
-  batchJobs: [] as BatchJob[]
-}
+} = {}
 
 export const PollingContext = React.createContext(defaultPollingContext)
 
@@ -17,7 +15,7 @@ export const PollingProvider = ({ children }) => {
   const { isLoggedIn } = useContext(AccountContext)
 
   const [shouldPollBatchJobs, setShouldPollBatchJobs] = useState(false)
-  const [polledBatchJobs, setPolledBatchJobs] = useState<BatchJob[] | undefined>([])
+  const [polledBatchJobs, setPolledBatchJobs] = useState<BatchJob[] | undefined>()
   const [hasPollingError, setHasPollingError] = useState<boolean | undefined>()
 
   const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1))
@@ -25,15 +23,21 @@ export const PollingProvider = ({ children }) => {
 
   const {
     batch_jobs: batchJobs,
-    error: listBatchJobsError
+    isError: isBathJobPollingError,
+    isFetching
   } = useAdminBatchJobs({
     created_at: { gte: oneMonthAgo },
-  } as AdminGetBatchParams, {
+    failed_at: "null",
+  } as unknown as AdminGetBatchParams, {
     refetchInterval: shouldPollBatchJobs ? 5000 : false,
     refetchOnWindowFocus: shouldPollBatchJobs
   } as any)
 
   useEffect(() => {
+    if (isFetching) {
+      return
+    }
+
     if (!isLoggedIn) {
       setShouldPollBatchJobs(false)
       return
@@ -50,8 +54,8 @@ export const PollingProvider = ({ children }) => {
       })
 
     setShouldPollBatchJobs(shouldPoll)
-    setHasPollingError(!!listBatchJobsError)
-  }, [batchJobs, listBatchJobsError, isLoggedIn])
+    setHasPollingError(isBathJobPollingError)
+  }, [batchJobs, isFetching, isBathJobPollingError, isLoggedIn])
 
   const value = {
     batchJobs: polledBatchJobs,
