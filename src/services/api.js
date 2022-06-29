@@ -617,16 +617,6 @@ export default {
 
       return multipartRequest("/admin/uploads", formData)
     },
-
-    delete(fileKey) {
-      const path = `/admin/uploads`
-      return medusaRequest("DELETE", path, { file_key: fileKey })
-    },
-
-    downloadUrl(fileKey) {
-      const path = `/admin/uploads/download-url?file_key=${fileKey}`
-      return medusaRequest("GET", path, {})
-    },
   },
 
   draftOrders: {

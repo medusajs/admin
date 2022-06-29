@@ -1,6 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { navigate } from "gatsby"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 import { AccountContext } from "../../../context/account"
 import Avatar from "../../atoms/avatar"
 import Button from "../../fundamentals/button"

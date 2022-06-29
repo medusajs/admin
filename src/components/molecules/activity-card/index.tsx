@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react"
+import React, { MutableRefObject, ReactNode } from "react"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Tooltip from "../../atoms/tooltip"
 import clsx from "clsx"

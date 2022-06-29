@@ -1,12 +1,17 @@
 import useNotification from "../../../hooks/use-notification"
-import { useAdminCancelBatchJob, useAdminStore } from "medusa-react"
-import React, { useEffect } from "react"
+import {
+  useAdminCancelBatchJob,
+  useAdminDeleteFile,
+  useAdminCreatePresignedDownloadUrl,
+  useAdminStore
+} from "medusa-react"
+import clsx from "clsx"
+import React, { useEffect, useRef } from "react"
 import { getErrorMessage } from "../../../utils/error-messages"
 import getRelativeTime from "../../../utils/get-relative-time"
 import MedusaIcon from "../../fundamentals/icons/medusa-icon"
-import Button from "../../fundamentals/button"
+import Button, { ButtonProps } from "../../fundamentals/button"
 import BatchJobFileCard from "../../molecules/batch-job-file-card"
-import Medusa from "../../../services/api"
 import { BatchJob } from "@medusajs/medusa/dist"
 import { bytesConverter } from "../../../utils/bytes-converter"
 import { ActivityCard } from "../../molecules/activity-card"
@@ -25,11 +30,16 @@ const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
 }
 
 const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
+  const activityCardRef = useRef<HTMLDivElement>(null)
   const notification = useNotification()
   const { store } = useAdminStore()
   const { mutate: cancelBatchJob, error: cancelBatchJobError  } =
     useAdminCancelBatchJob(batchJob.id)
+  const { mutateAsync: deleteFile  } = useAdminDeleteFile()
+  const { mutateAsync: createPresignedUrl } =
+    useAdminCreatePresignedDownloadUrl()
 
+  const fileName = batchJob.result?.file_key ?? `${batchJob.type}.csv`
   const relativeTimeElapsed = getRelativeTime({
     from: new Date(),
     to: batchJob.created_at,
@@ -57,13 +67,41 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
     }
   }, [cancelBatchJobError])
 
-  const deleteFile = async () => {
+  const onDownloadFile = async () => {
     if (!batchJob.result?.file_key) {
       return
     }
 
     try {
-      await Medusa.uploads.delete(batchJob.result?.file_key)
+      const { download_url } = await createPresignedUrl({
+        file_key: batchJob.result?.file_key
+      })
+      const link = document.createElement("a");
+      link.href = download_url;
+      link.setAttribute(
+          "download",
+          `${batchJob.result?.file_key}`
+      );
+      activityCardRef.current?.appendChild(link)
+      link.click();
+
+      activityCardRef.current?.removeChild(link);
+    } catch (e) {
+     notification(
+      "Error",
+      "Something went wrong while downloading the export file",
+      "error"
+     )
+    }
+  }
+
+  const onDeleteFile = async () => {
+    if (!batchJob.result?.file_key) {
+      return
+    }
+
+    try {
+      await deleteFile({ file_key: batchJob.result?.file_key })
       notification(
         "Success",
         "Export file has been removed",
@@ -75,32 +113,6 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
         "Something went wrong while deleting the export file",
         "error"
       )
-    }
-  }
-
-  const downloadFile = async () => {
-    if (!batchJob.result?.file_key) {
-      return
-    }
-
-    try {
-      const res = await Medusa.uploads.downloadUrl(batchJob.result?.file_key)
-      const link = document.createElement("a");
-      link.href = res.data.download_url;
-      link.setAttribute(
-          "download",
-          `${batchJob.result?.file_key}`
-      );
-      document.body.appendChild(link);
-      link.click();
-
-      document.body.removeChild(link);
-    } catch (e) {
-     notification(
-      "Error",
-      "Something went wrong while downloading the export file",
-      "error"
-     )
     }
   }
 
@@ -118,7 +130,6 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
       ? <Spinner size={"medium"} variant={"secondary"}/>
       : <FileIcon fill={iconColor} size={20}/>
 
-    const fileName = batchJob.result?.file_key ?? `${batchJob.type}.csv`
     const fileSize = batchJob.status !== "canceled" ? (
       batchJob.result?.file_key
         ? bytesConverter(batchJob.result?.file_size ?? 0)
@@ -127,7 +138,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
 
     return (
       <BatchJobFileCard
-        onClick={downloadFile}
+        onClick={onDownloadFile}
         fileName={fileName}
         icon={icon}
         fileSize={fileSize}
@@ -136,38 +147,46 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
   }
 
   const getFooterActions = () => {
+    const buildButton = (
+      onClick: ButtonProps["onClick"],
+      variant: ButtonProps["variant"],
+      text: string,
+      className?: string
+    ) => {
+      return (
+        <Button
+          onClick={onClick}
+          size={"small"}
+          className={clsx(
+            "flex justify-start inter-small-regular",
+            className
+          )}
+          variant={variant}
+        >
+          {text}
+        </Button>
+      )
+    }
     return (
       (canDownload || canCancel) && (
         <div className="flex mt-6">
           {canDownload && (
             <div className="flex">
-              <Button
-                onClick={deleteFile}
-                size={"small"}
-                className="flex justify-start inter-small-regular"
-                variant={"danger"}
-              >
-                Delete
-              </Button>
-              <Button
-                onClick={downloadFile}
-                size={"small"}
-                className="flex justify-start inter-small-regular"
-                variant={"ghost"}
-              >
-                Download
-              </Button>
+              {buildButton(onDeleteFile, "danger", "Delete")}
+              {buildButton(
+                onDownloadFile,
+                "ghost",
+                "Download",
+                "ml-2"
+              )}
             </div>
           )}
           {canCancel && (
-            <Button
-              onClick={() => cancelBatchJob()}
-              size={"small"}
-              className="flex justify-start inter-small-regular"
-              variant={"danger"}
-            >
-              Cancel
-            </Button>
+            buildButton(
+              () => cancelBatchJob(),
+              "danger",
+              "Cancel"
+            )
           )}
         </div>
       )
@@ -182,7 +201,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
       date={batchJob.created_at}
       shouldShowStatus={true}
     >
-      <div className="flex flex-col inter-small-regular">
+      <div ref={activityCardRef} className="flex flex-col inter-small-regular">
         <span>{batchJobActivityDescription}</span>
 
         {getBatchJobFileCard()}
