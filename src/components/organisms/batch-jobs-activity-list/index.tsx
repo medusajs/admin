@@ -12,7 +12,7 @@ import { bytesConverter } from "../../../utils/bytes-converter"
 import { ActivityCard } from "../../molecules/activity-card"
 import FileIcon from "../../fundamentals/icons/file-icon"
 import Spinner from "../../atoms/spinner"
-import { batchJobDescriptionBuilder } from "../../../utils/batch-job-description-builder"
+import { batchJobDescriptionBuilder } from "./utils"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
