@@ -10,9 +10,9 @@ import Medusa from "../../../services/api"
 import { BatchJob } from "@medusajs/medusa/dist"
 import { bytesConverter } from "../../../utils/bytes-converter"
 import { ActivityCard } from "../../molecules/activity-card"
-import { useBatchJobDescription } from "../../../hooks/use-batch-job-description"
 import FileIcon from "../../fundamentals/icons/file-icon"
 import Spinner from "../../atoms/spinner"
+import { batchJobDescriptionBuilder } from "../../../utils/batch-job-description-builder"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return <div>
@@ -35,7 +35,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
     to: batchJob.created_at,
   })
 
-  const batchJobActivityDescription = useBatchJobDescription(
+  const batchJobActivityDescription = batchJobDescriptionBuilder(
     batchJob,
     relativeTimeElapsed.raw
   )

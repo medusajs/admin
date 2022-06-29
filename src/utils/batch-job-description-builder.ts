@@ -1,21 +1,6 @@
 import { BatchJob } from "@medusajs/medusa/dist"
-import { useEffect, useState } from "react"
 
-export const useBatchJobDescription = (
-  batchJob: BatchJob,
-  elapsedTime?: number
-): string => {
-  const [description, setDescription] = useState("")
-
-  useEffect(() => {
-    const builtDescription = buildDescriptionFromBatchJob(batchJob, elapsedTime)
-    setDescription(builtDescription)
-  }, [batchJob])
-
-  return description
-}
-
-function buildDescriptionFromBatchJob(
+export function batchJobDescriptionBuilder(
   batchJob: BatchJob,
   elapsedTime?: number
 ): string {

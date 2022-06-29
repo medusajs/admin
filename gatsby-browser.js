@@ -17,15 +17,15 @@ export const wrapPageElement = ({ element }) => {
         client: queryClient,
       }}
     >
-        <CacheProvider>
-          <AccountProvider>
-              <InterfaceProvider>
-                <SteppedProvider>
-                  <LayeredModalProvider>{element}</LayeredModalProvider>
-                </SteppedProvider>
-              </InterfaceProvider>
-          </AccountProvider>
-        </CacheProvider>
+      <CacheProvider>
+        <AccountProvider>
+            <InterfaceProvider>
+              <SteppedProvider>
+                <LayeredModalProvider>{element}</LayeredModalProvider>
+              </SteppedProvider>
+            </InterfaceProvider>
+        </AccountProvider>
+      </CacheProvider>
     </MedusaProvider>
   )
 }
