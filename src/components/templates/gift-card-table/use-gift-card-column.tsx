@@ -14,7 +14,7 @@ const useGiftCardTableColums = () => {
         Cell: ({ cell: { value }, index }) => (
           <Table.Cell
             key={index}
-            className="text-grey-90 group-hover:text-violet-60 min-w-[100px] pl-2"
+            className="text-grey-90 group-hover:text-violet-60 w-[20%] pl-2"
           >
             {value}
           </Table.Cell>
@@ -23,12 +23,16 @@ const useGiftCardTableColums = () => {
       {
         Header: "Order",
         accessor: "order_id",
-        Cell: ({ cell: { value }, index }) => (
+        Cell: ({ row, cell: { value }, index }) => (
           <Table.Cell
             key={index}
-            className="text-grey-90 group-hover:text-violet-60 min-w-[100px] pl-2"
+            className="text-grey-90 group-hover:text-violet-60 w-[10%] pl-2"
           >
-            {value}
+            {value ? (
+             row.original.order?.display_id
+            ) : (
+              <span className="text-grey-90">-</span>
+            )}
           </Table.Cell>
         ),
       },
@@ -77,7 +81,7 @@ const useGiftCardTableColums = () => {
       {
         Header: () => (
           <div className="pr-2 flex rounded-rounded w-full justify-end">
-            Date
+            Created
           </div>
         ),
         accessor: "created_at",
