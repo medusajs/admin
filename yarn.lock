@@ -2441,7 +2441,7 @@
     qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa-js@^1.2.1-next.101+fcd13564a":
+"@medusajs/medusa-js@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.2.2.tgz#a6b31492e92c103cad00faa37e7867e672afab35"
   integrity sha512-/VqntKDDXVBiyJGSj0nP0REkQimu8+eoeIxwD5rVan25S+QNBr71e4vf24xvPxfjjD+AGRyH0S6R+md9+lVE2A==
@@ -13267,13 +13267,13 @@ medusa-core-utils@^1.1.32, medusa-core-utils@^1.1.32-next.251+fcd13564a:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
-medusa-react@^0.3.1-next.101:
-  version "0.3.1-next.101"
-  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.3.1-next.101.tgz#5b97772340fdf2baa566d40f73984fd1abc90f90"
-  integrity sha512-pkkU23J3HLLYP/aDVm0GwmRSgiEIm497J+8g5Qk2nGhe7ItaSmcFumYllksWXgQJ3Jehmu/V9EVdxdt8H87/+g==
+medusa-react@^0.3.1-next.102:
+  version "0.3.1-next.102"
+  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.3.1-next.102.tgz#be91c1a70eac493bb4f748c05a2efc32e5f699e1"
+  integrity sha512-3bxGAeMHcg/xdgDKyn6e1+fYGeaNv2Uit/2ndiWbjOFm/bpbHiL/nS1HsaQ9wF9XFZ1r1km9XnmBRpJBspwhKA==
   dependencies:
-    "@medusajs/medusa" "^1.3.1-next.101+fcd13564a"
-    "@medusajs/medusa-js" "^1.2.1-next.101+fcd13564a"
+    "@medusajs/medusa" "^1.3.2"
+    "@medusajs/medusa-js" "^1.2.2"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"

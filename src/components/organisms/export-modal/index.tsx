@@ -22,11 +22,15 @@ const ExportModal: React.FC<ExportModalProps> = ({
           <span className="inter-xlarge-semibold">{title}</span>
         </Modal.Header>
         <Modal.Content>
+          {/* TODO: Add filtering
           <div className="flex inter-small-semibold mb-2">Current filters</div>
           <div className="flex mb-4 inter-small-regular text-grey-50">
             You havn’t applied any filtering. Remember that the export list
             feature in many ways are controlled by how you filter the list
             overview.
+          </div> */}
+          <div className="flex mb-4 inter-small-regular text-grey-50">
+            Initialize an export of all your products
           </div>
         </Modal.Content>
         <Modal.Footer>
