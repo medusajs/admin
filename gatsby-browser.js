@@ -19,11 +19,11 @@ export const wrapPageElement = ({ element }) => {
     >
       <CacheProvider>
         <AccountProvider>
-          <InterfaceProvider>
-            <SteppedProvider>
-              <LayeredModalProvider>{element}</LayeredModalProvider>
-            </SteppedProvider>
-          </InterfaceProvider>
+            <InterfaceProvider>
+              <SteppedProvider>
+                <LayeredModalProvider>{element}</LayeredModalProvider>
+              </SteppedProvider>
+            </InterfaceProvider>
         </AccountProvider>
       </CacheProvider>
     </MedusaProvider>
