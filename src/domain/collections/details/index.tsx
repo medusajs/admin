@@ -21,6 +21,7 @@ import ViewProductsTable from "../../../components/templates/collection-product-
 import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import { getErrorMessage } from "../../../utils/error-messages"
+import Images from "./images"
 
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
@@ -38,6 +39,8 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
       onSuccess: () => navigate(`/a/collections`),
     })
   }
+
+  console.log(collection)
 
   const handleUpdateDetails = (data: any, metadata: MetadataField[]) => {
     const payload: {
@@ -153,6 +156,11 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
             </div>
           )}
         </div>
+
+        <div className="mb-large">
+          <Images images={collection.images} />
+        </div>
+
         <BodyCard
           title="Products"
           subtitle="To start selling, all you need is a name, price, and image."
