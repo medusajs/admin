@@ -1,58 +1,76 @@
-import React, { useEffect, useState } from "react"
-import useNotification from "../hooks/use-notification"
-import { useAdminBatchJobs } from "medusa-react"
 import { AdminGetBatchParams } from "@medusajs/medusa"
-import { getErrorMessage } from "../utils/error-messages"
 import { BatchJob } from "@medusajs/medusa/dist"
+import { useAdminBatchJobs } from "medusa-react"
+import React, { useContext, useEffect, useState } from "react"
+import { AccountContext } from "./account"
 
 export const defaultPollingContext: {
-  batchJobsPolling?: BatchJob[]
-} = {
-  batchJobsPolling: [] as BatchJob[]
-}
+  batchJobs?: BatchJob[]
+  hasPollingError?: boolean
+} = {}
 
 export const PollingContext = React.createContext(defaultPollingContext)
 
 export const PollingProvider = ({ children }) => {
-  const notification = useNotification()
+  const { isLoggedIn } = useContext(AccountContext)
 
-  const [shouldPollBatchJobs, setShouldPollBatchJobs] = useState(true)
-  const [batchJobs, setBatchJobs] = useState<BatchJob[] | undefined>([])
+  const [shouldPollBatchJobs, setShouldPollBatchJobs] = useState(false)
+  const [polledBatchJobs, setPolledBatchJobs] = useState<
+    BatchJob[] | undefined
+  >()
+  const [hasPollingError, setHasPollingError] = useState<boolean | undefined>()
+
+  const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1))
+  oneMonthAgo.setHours(0, 0, 0, 0)
 
   const {
-    batch_jobs,
-    error: listBatchJobsError
-  } = useAdminBatchJobs({} as AdminGetBatchParams, {
-    refetchInterval: shouldPollBatchJobs ? 5000 : false,
-    refetchIntervalInBackground: shouldPollBatchJobs
-  } as any)
+    batch_jobs: batchJobs,
+    isError: isBathJobPollingError,
+    isFetching,
+  } = useAdminBatchJobs(
+    {
+      created_at: { gte: oneMonthAgo },
+      failed_at: null,
+    } as AdminGetBatchParams,
+    {
+      refetchInterval: shouldPollBatchJobs ? 5000 : false,
+      refetchOnWindowFocus: shouldPollBatchJobs,
+    } as any
+  )
 
   useEffect(() => {
-    setBatchJobs(batch_jobs)
-
-    if (batch_jobs?.length) {
-      const shouldPoll = !batch_jobs?.length
-        || batch_jobs.some((batch: any): boolean => {
-          return (!!batch.pre_processed_at || !!batch.processing_at)
-            && !batch.completed
-            && !batch.failed_at
-            && !batch.canceled_at
-        })
-      setShouldPollBatchJobs(shouldPoll)
+    if (isFetching) {
+      return
     }
 
-    if (listBatchJobsError) {
-      notification("Error listing the batch jobs during polling", getErrorMessage(listBatchJobsError), "error")
+    if (!isLoggedIn) {
+      setShouldPollBatchJobs(false)
+      return
     }
-  }, [batch_jobs, listBatchJobsError])
+
+    setPolledBatchJobs(batchJobs)
+
+    const shouldPoll =
+      !polledBatchJobs?.length ||
+      polledBatchJobs.some((batch: any): boolean => {
+        return (
+          (!!batch.pre_processed_at || !!batch.processing_at) &&
+          !batch.completed &&
+          !batch.failed_at &&
+          !batch.canceled_at
+        )
+      })
+
+    setShouldPollBatchJobs(shouldPoll)
+    setHasPollingError(isBathJobPollingError)
+  }, [batchJobs, isFetching, isBathJobPollingError, isLoggedIn])
 
   const value = {
-    batchJobsPolling: batchJobs,
+    batchJobs: polledBatchJobs,
+    hasPollingError,
   }
 
   return (
-    <PollingContext.Provider value={value}>
-      {children}
-    </PollingContext.Provider>
+    <PollingContext.Provider value={value}>{children}</PollingContext.Provider>
   )
 }

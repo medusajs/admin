@@ -2,6 +2,8 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { navigate } from "gatsby"
 import React, { useContext, useEffect, useState } from "react"
 import { AccountContext } from "../../../context/account"
+import { PollingContext } from "../../../context/polling"
+import useToggleState from "../../../hooks/use-toggle-state"
 import Avatar from "../../atoms/avatar"
 import Button from "../../fundamentals/button"
 import GearIcon from "../../fundamentals/icons/gear-icon"
@@ -9,20 +11,20 @@ import HelpCircleIcon from "../../fundamentals/icons/help-circle"
 import SignOutIcon from "../../fundamentals/icons/log-out-icon"
 import NotificationBell from "../../molecules/notification-bell"
 import SearchBar from "../../molecules/search-bar"
-import MailDialog from "../help-dialog"
 import ActivityDrawer from "../activity-drawer"
-import useToggleState from "../../../hooks/use-toggle-state"
+import MailDialog from "../help-dialog"
 
 const Topbar: React.FC = () => {
   const {
     state: activityDrawerState,
     toggle: toggleActivityDrawer,
-    close: activityDrawerClose
+    close: activityDrawerClose,
   } = useToggleState(false)
 
   const { first_name, last_name, email, handleLogout } = useContext(
     AccountContext
   )
+  const { batchJobs } = useContext(PollingContext)
 
   useEffect(() => {
     console.log("activityDrawerState", activityDrawerState)
@@ -50,7 +52,9 @@ const Topbar: React.FC = () => {
 
         <NotificationBell
           onClick={toggleActivityDrawer}
-          hasNotifications={false} />
+          variant={"ghost"}
+          hasNotifications={!!batchJobs}
+        />
 
         <div className="ml-large w-large h-large">
           <DropdownMenu.Root>

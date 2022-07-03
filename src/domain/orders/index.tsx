@@ -1,17 +1,17 @@
 import { RouteComponentProps, Router } from "@reach/router"
-import React, { useMemo } from "react"
 import { navigate } from "gatsby"
+import { useAdminCreateBatchJob } from "medusa-react"
+import React, { useMemo } from "react"
+import Button from "../../components/fundamentals/button"
+import ExportIcon from "../../components/fundamentals/icons/export-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
-import OrderTable from "../../components/templates/order-table"
-import Button from "../../components/fundamentals/button"
-import Details from "./details"
-import ExportIcon from "../../components/fundamentals/icons/export-icon"
-import useToggleState from "../../hooks/use-toggle-state"
-import { useAdminCreateBatchJob } from "medusa-react"
-import useNotification from "../../hooks/use-notification"
-import { getErrorMessage } from "../../utils/error-messages"
 import ExportModal from "../../components/organisms/export-modal"
+import OrderTable from "../../components/templates/order-table"
+import useNotification from "../../hooks/use-notification"
+import useToggleState from "../../hooks/use-toggle-state"
+import { getErrorMessage } from "../../utils/error-messages"
+import Details from "./details"
 
 const VIEWS = ["orders", "drafts"]
 
@@ -35,7 +35,7 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
         onClick={() => openExportModal()}
       >
         <ExportIcon size={20} />
-        Export List
+        Export Orders
       </Button>,
     ]
   }, [view])
