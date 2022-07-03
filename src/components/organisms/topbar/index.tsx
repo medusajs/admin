@@ -1,6 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { navigate } from "gatsby"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 import { AccountContext } from "../../../context/account"
 import { PollingContext } from "../../../context/polling"
 import useToggleState from "../../../hooks/use-toggle-state"
@@ -25,10 +25,6 @@ const Topbar: React.FC = () => {
     AccountContext
   )
   const { batchJobs } = useContext(PollingContext)
-
-  useEffect(() => {
-    console.log("activityDrawerState", activityDrawerState)
-  }, [activityDrawerState])
 
   const [showSupportform, setShowSupportForm] = useState(false)
 
