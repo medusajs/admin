@@ -10,7 +10,7 @@ export function bytesConverter(size: number): string | undefined {
 
   for (const [unit, divider] of units) {
     if (size >= divider) {
-      result = `${(size / divider).toPrecision(2)} ${unit}`
+      result = `${(size / divider).toFixed(2)} ${unit}`
     }
   }
 
