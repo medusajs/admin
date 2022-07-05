@@ -33,6 +33,8 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const [showAddProducts, setShowAddProducts] = useState(false)
   const notification = useNotification()
   const [updates, setUpdates] = useState(0)
+  const [images, setImages] = React.useState<any[]>([])
+  const [hasImagesChanged, setHasImagesChanged] = React.useState(false)
 
   const handleDelete = () => {
     deleteCollection.mutate(undefined, {
@@ -102,7 +104,22 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
     if (collection?.products?.length) {
       setUpdates(updates + 1) // force re-render product table when products are added/removed
     }
+
+    if (collection?.images?.length) {
+      setImages(collection?.images)
+    }
   }, [collection?.products])
+
+  const appendImage = (image) => {
+    setHasImagesChanged(true)
+    setImages([...images, image])
+  }
+
+  const removeImage = (image) => {
+    setHasImagesChanged(true)
+    const tmp = images.filter((img) => img.url !== image.url)
+    setImages(tmp)
+  }
 
   return (
     <>
@@ -157,9 +174,16 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
           )}
         </div>
 
-        <div className="mb-large">
-          <Images images={collection.images} />
-        </div>
+        {images && (
+          <div className="mb-large">
+            <Images
+              images={images}
+              setImages={setImages}
+              appendImage={appendImage}
+              removeImage={removeImage}
+            />
+          </div>
+        )}
 
         <BodyCard
           title="Products"

@@ -52,15 +52,7 @@ const columns = [
   },
 ]
 
-const Images = ({ images }) => {
-  // const {
-  //   images
-  //     setImages,
-  //     appendImage,
-  //     removeImage,
-  //   control,
-  // } = useProductForm()
-
+const Images = ({ images, setImages, appendImage, removeImage }) => {
   const { control } = useForm()
 
   return (
@@ -81,11 +73,10 @@ const Images = ({ images }) => {
                 }}
               >
                 <DraggableTable
-                  // onDelete={removeImage}
+                  onDelete={removeImage}
                   columns={columns}
                   entities={images}
-                  // setEntities={setImages}
-                  setEntities={() => {}}
+                  setEntities={setImages}
                 />
               </RadioGroup.Root>
             )
@@ -97,12 +88,12 @@ const Images = ({ images }) => {
           onFileChosen={(files) => {
             const file = files[0]
             const url = URL.createObjectURL(file)
-            // appendImage({
-            //   url,
-            //   name: file.name,
-            //   size: file.size,
-            //   nativeFile: file,
-            // })
+            appendImage({
+              url,
+              name: file.name,
+              size: file.size,
+              nativeFile: file,
+            })
           }}
           placeholder="1200 x 1600 (3:4) recommended, up to 10MB each"
           filetypes={["png", "jpg", "jpeg"]}
