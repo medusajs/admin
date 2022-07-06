@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react"
-import InputField from "../../../components/molecules/input"
-import Metadata, { MetadataField } from "../../../components/organisms/metadata"
-import IconTooltip from "../../../components/molecules/icon-tooltip"
-import Actionables from "../../../components/molecules/actionables"
-import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
+import InputField from "../../../../components/molecules/input"
+import Metadata, {
+  MetadataField,
+} from "../../../../components/organisms/metadata"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
+import Actionables from "../../../../components/molecules/actionables"
+import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import { useProductCollectionForm } from "../form/product-collection-form-context"
 
 type CollectionHeaderProps = {
-  onSubmit: (values: any, metadata: MetadataField[]) => void
   collection?: any
-  register?: any
-  setValue?: any
-  handleSubmit?: any
 }
 
-const CollectionHeader: React.FC<CollectionHeaderProps> = ({
-  onSubmit,
-  collection,
-  register,
-  setValue,
-  handleSubmit,
-}) => {
+const CollectionHeader: React.FC<CollectionHeaderProps> = ({ collection }) => {
   const [metadata, setMetadata] = useState<MetadataField[]>([])
   const [showDelete, setShowDelete] = useState(false)
+  const { onSubmit, register, setValue, handleSubmit, setHasMetadataChanged } =
+    useProductCollectionForm()
 
   if (!collection) {
     throw new Error("Collection is required for edit")
+  }
+
+  const handleSetMetadata = (metadata: MetadataField[]) => {
+    setMetadata(metadata)
+    setHasMetadataChanged(true)
   }
 
   useEffect(() => {
@@ -100,7 +100,7 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({
             </div>
           </div>
           <div className="mt-xlarge w-full">
-            <Metadata setMetadata={setMetadata} metadata={metadata} />
+            <Metadata setMetadata={handleSetMetadata} metadata={metadata} />
           </div>
         </div>
       </form>

@@ -8,17 +8,14 @@ import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import Modal from "../../molecules/modal"
 import Table, { TablePagination } from "../../molecules/table"
 import useCollectionProductColumns from "./use-collection-product-columns"
+import { useProductCollectionForm } from "../../../domain/collections/collection-form/form/product-collection-form-context"
 
 type AddProductsTableProps = {
   existingRelations: any[]
-  onSubmit: (selectedIds: string[], removedIds: string[]) => void
-  onClose: () => void
 }
 
 const AddProductsTable: React.FC<AddProductsTableProps> = ({
   existingRelations,
-  onSubmit,
-  onClose,
 }) => {
   const PAGE_SIZE = 10
   const [query, setQuery] = useState("")
@@ -36,6 +33,8 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
     limit: PAGE_SIZE,
     offset,
   })
+
+  const { addProducts, setShowAddProducts } = useProductCollectionForm()
 
   const columns = useCollectionProductColumns()
 
@@ -147,16 +146,21 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
   }, [selectedProducts, removedProducts])
 
   const handleSubmit = () => {
-    onSubmit(
+    addProducts(
       selectedProducts.map((p) => p.id),
       removedProducts.map((p) => p.id)
     )
+    setShowAddProducts(false)
+  }
+
+  const handleClose = () => {
+    setShowAddProducts(false)
   }
 
   return (
-    <Modal handleClose={onClose}>
+    <Modal handleClose={handleClose}>
       <Modal.Body>
-        <Modal.Header handleClose={onClose}>
+        <Modal.Header handleClose={handleClose}>
           <h3 className="inter-xlarge-semibold">Add Products</h3>
         </Modal.Header>
         <Modal.Content>
@@ -212,7 +216,7 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
               variant="ghost"
               size="small"
               className="w-eventButton"
-              onClick={onClose}
+              onClick={handleClose}
             >
               Cancel
             </Button>

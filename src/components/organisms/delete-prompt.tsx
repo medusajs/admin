@@ -30,6 +30,7 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
     e.preventDefault()
 
     setIsLoading(true)
+
     onDelete()
       .then(() => notification("Success", successText, "success"))
       .catch((err) => notification("Error", getErrorMessage(err), "error"))
