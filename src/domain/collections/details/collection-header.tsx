@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
 import InputField from "../../../components/molecules/input"
 import Metadata, { MetadataField } from "../../../components/organisms/metadata"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
@@ -9,13 +8,18 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 type CollectionHeaderProps = {
   onSubmit: (values: any, metadata: MetadataField[]) => void
   collection?: any
+  register?: any
+  setValue?: any
+  handleSubmit?: any
 }
 
 const CollectionHeader: React.FC<CollectionHeaderProps> = ({
   onSubmit,
   collection,
+  register,
+  setValue,
+  handleSubmit,
 }) => {
-  const { register, setValue, handleSubmit } = useForm()
   const [metadata, setMetadata] = useState<MetadataField[]>([])
   const [showDelete, setShowDelete] = useState(false)
 

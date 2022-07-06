@@ -37,9 +37,13 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const notification = useNotification()
   const [updates, setUpdates] = useState(0)
   const [images, setImages] = React.useState<any[]>([])
-  const [hasImagesChanged, setHasImagesChanged] = React.useState(false)
+  const [hasImagesChanged, setHasImagesChanged] = React.useState(true)
   const [submitting, setSubmitting] = useState(false)
-  const { control, formState } = useForm()
+  const { control, formState, register, setValue, handleSubmit } = useForm()
+
+  const additionalDirtyState = {
+    images: hasImagesChanged,
+  }
 
   const handleDelete = () => {
     deleteCollection.mutate(undefined, {
@@ -150,6 +154,9 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
                 collection={collection}
                 onClose={() => setShowEdit(!showEdit)}
                 onSubmit={handleUpdateDetails}
+                register={register}
+                setValue={setValue}
+                handleSubmit={handleSubmit}
               />
             </div>
           )}
@@ -214,9 +221,11 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
 
       <UpdateNotification
         isLoading={submitting}
-        hasImagesChanged={true}
         formState={formState}
+        onSubmit={() => {}}
         handleSubmit={() => {}}
+        resetForm={resetForm}
+        additionalDirtyState={additionalDirtyState}
       />
     </>
   )
@@ -230,14 +239,10 @@ const UpdateNotification = ({
   onSubmit,
   handleSubmit,
   resetForm,
-  hasImagesChanged,
+  additionalDirtyState,
 }) => {
   const [visible, setVisible] = useState(false)
   const [blocking, setBlocking] = useState(true)
-
-  const additionalDirtyState = {
-    images: hasImagesChanged,
-  }
 
   const onUpdate = (values: FieldValues) => {
     onSubmit({ ...values })
@@ -253,7 +258,9 @@ const UpdateNotification = ({
     additionalDirtyState
   )
 
+  console.log(isDirty)
   console.log(formState.dirtyFields)
+  console.log(formState)
 
   useEffect(() => {
     if (!blocking) {
