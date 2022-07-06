@@ -1,60 +1,12 @@
 import React from "react"
-import { Controller, useForm } from "react-hook-form"
+import { Controller } from "react-hook-form"
 import FileUploadField from "../../../components/atoms/file-upload-field"
 import BodyCard from "../../../components/organisms/body-card"
 import RadioGroup from "../../../components/organisms/radio-group"
 import DraggableTable from "../../../components/templates/draggable-table"
+import { columns } from "../../products/product-form/sections/images"
 
-const columns = [
-  {
-    Header: "Image",
-    accessor: "image",
-    Cell: ({ cell }) => {
-      return (
-        <div className="py-base large:w-[176px] xsmall:w-[80px]">
-          <img
-            className="h-[80px] w-[80px] object-cover rounded"
-            src={cell.row.original.url}
-          />
-        </div>
-      )
-    },
-  },
-  {
-    Header: "File Name",
-    accessor: "name",
-    Cell: ({ cell }) => {
-      return (
-        <div className="large:w-[700px] medium:w-[400px] small:w-auto">
-          <p className="inter-small-regular">{cell.row.original?.name}</p>
-          <span className="inter-small-regular text-grey-50">
-            {typeof cell.row.original.size === "number"
-              ? `${(cell.row.original.size / 1024).toFixed(2)} KB`
-              : cell.row.original?.size}
-          </span>
-        </div>
-      )
-    },
-  },
-  {
-    Header: <div className="text-center">Thumbnail</div>,
-    accessor: "thumbnail",
-    Cell: ({ cell }) => {
-      return (
-        <div className="flex justify-center">
-          <RadioGroup.SimpleItem
-            className="justify-center"
-            value={cell.row.index}
-          />
-        </div>
-      )
-    },
-  },
-]
-
-const Images = ({ images, setImages, appendImage, removeImage }) => {
-  const { control } = useForm()
-
+const Images = ({ images, setImages, appendImage, removeImage, control }) => {
   return (
     <BodyCard
       title="Images"

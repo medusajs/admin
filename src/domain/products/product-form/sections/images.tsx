@@ -6,7 +6,7 @@ import RadioGroup from "../../../../components/organisms/radio-group"
 import DraggableTable from "../../../../components/templates/draggable-table"
 import { useProductForm } from "../form/product-form-context"
 
-const columns = [
+export const columns = [
   {
     Header: "Image",
     accessor: "image",
@@ -54,13 +54,8 @@ const columns = [
 ]
 
 const Images = () => {
-  const {
-    images,
-    setImages,
-    appendImage,
-    removeImage,
-    control,
-  } = useProductForm()
+  const { images, setImages, appendImage, removeImage, control } =
+    useProductForm()
 
   return (
     <BodyCard title="Images" subtitle="Add up to 10 images to your product">

@@ -8,20 +8,23 @@ import {
 import React, { useEffect, useState } from "react"
 import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
-import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
-import ViewRaw from "../../../components/molecules/view-raw"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { MetadataField } from "../../../components/organisms/metadata"
-import CollectionModal from "../../../components/templates/collection-modal"
 import AddProductsTable from "../../../components/templates/collection-product-table/add-product-table"
 import ViewProductsTable from "../../../components/templates/collection-product-table/view-products-table"
 import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import { getErrorMessage } from "../../../utils/error-messages"
 import Images from "./images"
+import { FieldValues, useForm } from "react-hook-form"
+import CollectionHeader from "./collection-header"
+import { checkForDirtyState } from "../../../utils/form-helpers"
+import toast from "react-hot-toast"
+import Toaster from "../../../components/declarative-toaster"
+import FormToasterContainer from "../../../components/molecules/form-toaster"
+import { handleFormError } from "../../../utils/handle-form-error"
 
 const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
@@ -35,14 +38,14 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const [updates, setUpdates] = useState(0)
   const [images, setImages] = React.useState<any[]>([])
   const [hasImagesChanged, setHasImagesChanged] = React.useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const { control, formState } = useForm()
 
   const handleDelete = () => {
     deleteCollection.mutate(undefined, {
       onSuccess: () => navigate(`/a/collections`),
     })
   }
-
-  console.log(collection)
 
   const handleUpdateDetails = (data: any, metadata: MetadataField[]) => {
     const payload: {
@@ -106,9 +109,13 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
     }
 
     if (collection?.images?.length) {
-      setImages(collection?.images)
+      resetForm()
     }
   }, [collection?.products])
+
+  const resetForm = () => {
+    setImages(collection?.images)
+  }
 
   const appendImage = (image) => {
     setHasImagesChanged(true)
@@ -123,53 +130,27 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
 
   return (
     <>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full mb-large">
         <Breadcrumb
           currentPage="Edit Collection"
           previousBreadcrumb="Collections"
           previousRoute="/a/products?view=collections"
         />
-        <div className="rounded-rounded py-large px-xlarge border border-grey-20 bg-grey-0 mb-large">
+        <div
+          className="rounded-rounded py-large px-xlarge border
+         border-grey-20 bg-grey-0 mb-large"
+        >
           {isLoading || !collection ? (
             <div className="flex items-center w-full h-12">
               <Spinner variant="secondary" size="large" />
             </div>
           ) : (
             <div>
-              <div>
-                <div className="flex items-center justify-between">
-                  <h2 className="inter-xlarge-semibold mb-2xsmall">
-                    {collection.title}
-                  </h2>
-                  <Actionables
-                    forceDropdown
-                    actions={[
-                      {
-                        label: "Edit Collection",
-                        onClick: () => setShowEdit(true),
-                        icon: <EditIcon size="20" />,
-                      },
-                      {
-                        label: "Delete",
-                        onClick: () => setShowDelete(!showDelete),
-                        variant: "danger",
-                        icon: <TrashIcon size="20" />,
-                      },
-                    ]}
-                  />
-                </div>
-                <p className="inter-small-regular text-grey-50">
-                  /{collection.handle}
-                </p>
-              </div>
-              {collection.metadata && (
-                <div className="mt-large flex flex-col gap-y-base">
-                  <h3 className="inter-base-semibold">Metadata</h3>
-                  <div>
-                    <ViewRaw raw={collection.metadata} name="metadata" />
-                  </div>
-                </div>
-              )}
+              <CollectionHeader
+                collection={collection}
+                onClose={() => setShowEdit(!showEdit)}
+                onSubmit={handleUpdateDetails}
+              />
             </div>
           )}
         </div>
@@ -181,6 +162,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
               setImages={setImages}
               appendImage={appendImage}
               removeImage={removeImage}
+              control={control}
             />
           </div>
         )}
@@ -212,14 +194,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
           </div>
         </BodyCard>
       </div>
-      {showEdit && (
-        <CollectionModal
-          onClose={() => setShowEdit(!showEdit)}
-          onSubmit={handleUpdateDetails}
-          isEdit
-          collection={collection}
-        />
-      )}
+
       {showDelete && (
         <DeletePrompt
           handleClose={() => setShowDelete(!showDelete)}
@@ -236,7 +211,80 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
           existingRelations={collection?.products ?? []}
         />
       )}
+
+      <UpdateNotification
+        isLoading={submitting}
+        hasImagesChanged={true}
+        formState={formState}
+        handleSubmit={() => {}}
+      />
     </>
+  )
+}
+
+const TOAST_ID = "edit-product-collection-dirty"
+
+const UpdateNotification = ({
+  isLoading = false,
+  formState,
+  onSubmit,
+  handleSubmit,
+  resetForm,
+  hasImagesChanged,
+}) => {
+  const [visible, setVisible] = useState(false)
+  const [blocking, setBlocking] = useState(true)
+
+  const additionalDirtyState = {
+    images: hasImagesChanged,
+  }
+
+  const onUpdate = (values: FieldValues) => {
+    onSubmit({ ...values })
+  }
+
+  useEffect(() => {
+    const timeout = setTimeout(setBlocking, 300, false)
+    return () => clearTimeout(timeout)
+  }, [])
+
+  const isDirty = checkForDirtyState(
+    formState.dirtyFields,
+    additionalDirtyState
+  )
+
+  console.log(formState.dirtyFields)
+
+  useEffect(() => {
+    if (!blocking) {
+      setVisible(isDirty)
+    }
+
+    return () => {
+      toast.dismiss(TOAST_ID)
+    }
+  }, [isDirty])
+
+  return (
+    <Toaster
+      visible={visible}
+      duration={Infinity}
+      id={TOAST_ID}
+      position="bottom-right"
+    >
+      <FormToasterContainer isLoading={isLoading}>
+        <FormToasterContainer.Actions>
+          <FormToasterContainer.ActionButton
+            onClick={handleSubmit(onUpdate, handleFormError)}
+          >
+            Save
+          </FormToasterContainer.ActionButton>
+          <FormToasterContainer.DiscardButton onClick={resetForm}>
+            Discard
+          </FormToasterContainer.DiscardButton>
+        </FormToasterContainer.Actions>
+      </FormToasterContainer>
+    </Toaster>
   )
 }
 
