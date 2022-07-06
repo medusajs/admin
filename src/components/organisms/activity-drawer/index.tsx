@@ -1,10 +1,10 @@
 import React, { useContext } from "react"
-import useOutsideClick from "../../../hooks/use-outside-click"
-import BatchJobActivityList from "../batch-jobs-activity-list"
 import { PollingContext } from "../../../context/polling"
-import SidedMouthFaceIcon from "../../fundamentals/icons/sided-mouth-face"
-import SadFaceIcon from "../../fundamentals/icons/sad-face-icon"
+import useOutsideClick from "../../../hooks/use-outside-click"
 import Spinner from "../../atoms/spinner"
+import SadFaceIcon from "../../fundamentals/icons/sad-face-icon"
+import SidedMouthFaceIcon from "../../fundamentals/icons/sided-mouth-face"
+import BatchJobActivityList from "../batch-jobs-activity-list"
 
 const ActivityDrawer = ({ onDismiss }) => {
   const ref = React.useRef<HTMLDivElement>(null)
@@ -18,33 +18,29 @@ const ActivityDrawer = ({ onDismiss }) => {
     >
       <div className="inter-large-semibold pt-7 pl-8 pb-1">Activity</div>
 
-      {
-        !hasPollingError ? (
-          batchJobs ? (
-            <BatchJobActivityList batchJobs={batchJobs} />
-          ) : (
-            <EmptyActivityDrawer/>
-          )
+      {!hasPollingError ? (
+        batchJobs ? (
+          <BatchJobActivityList batchJobs={batchJobs} />
         ) : (
-          <ErrorActivityDrawer/>
+          <EmptyActivityDrawer />
         )
-      }
+      ) : (
+        <ErrorActivityDrawer />
+      )}
     </div>
   )
 }
 
 const EmptyActivityDrawer = () => {
   return (
-    <div
-      className="p-4 h-full w-full flex flex-col justify-center items-center"
-    >
-      <SidedMouthFaceIcon size={36}/>
+    <div className="p-4 h-full w-full flex flex-col justify-center items-center">
+      <SidedMouthFaceIcon size={36} />
       <span className={"mt-4 inter-large-semibold text-grey-90"}>
         It's quite in here...
       </span>
       <span className={"mt-4 text-grey-60 text-center inter-base-regular"}>
-        You don't have any notifications at the moment,
-        but once you do they will live here.
+        You don't have any notifications at the moment, but once you do they
+        will live here.
       </span>
     </div>
   )
@@ -52,16 +48,12 @@ const EmptyActivityDrawer = () => {
 
 const ErrorActivityDrawer = () => {
   return (
-    <div
-      className="p-4 h-full w-full flex flex-col justify-center items-center"
-    >
-      <SadFaceIcon size={36}/>
-      <span className={"mt-4 inter-large-semibold text-grey-90"}>
-        Oh no...
-      </span>
+    <div className="p-4 h-full w-full flex flex-col justify-center items-center">
+      <SadFaceIcon size={36} />
+      <span className={"mt-4 inter-large-semibold text-grey-90"}>Oh no...</span>
       <span className={"mt-2 text-grey-60 text-center inter-base-regular"}>
-        Something went wrong while trying to fetch
-        your notifications - We will keep trying!
+        Something went wrong while trying to fetch your notifications - We will
+        keep trying!
       </span>
 
       <div className="flex items-center mt-4">

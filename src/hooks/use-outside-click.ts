@@ -1,9 +1,4 @@
-import { useEffect } from "react";
-
-type Props = {
-  ref: any
-  callback: () => void
-}
+import { useEffect } from "react"
 
 const useOutsideClick = (callback: () => void, ref: any) => {
   useEffect(() => {
@@ -11,14 +6,14 @@ const useOutsideClick = (callback: () => void, ref: any) => {
       if (!ref.current.contains(e.target)) {
         callback()
       }
-    };
+    }
 
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("click", handleClickOutside)
 
     return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [ref]);
-};
+      document.removeEventListener("click", handleClickOutside)
+    }
+  }, [ref])
+}
 
 export default useOutsideClick

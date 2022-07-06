@@ -1,43 +1,46 @@
-import useNotification from "../../../hooks/use-notification"
+import { BatchJob } from "@medusajs/medusa/dist"
+import clsx from "clsx"
 import {
   useAdminCancelBatchJob,
-  useAdminDeleteFile,
   useAdminCreatePresignedDownloadUrl,
-  useAdminStore
+  useAdminDeleteFile,
+  useAdminStore,
 } from "medusa-react"
-import clsx from "clsx"
 import React, { useEffect, useRef } from "react"
+import useNotification from "../../../hooks/use-notification"
+import { bytesConverter } from "../../../utils/bytes-converter"
 import { getErrorMessage } from "../../../utils/error-messages"
 import getRelativeTime from "../../../utils/get-relative-time"
-import MedusaIcon from "../../fundamentals/icons/medusa-icon"
-import Button, { ButtonProps } from "../../fundamentals/button"
-import BatchJobFileCard from "../../molecules/batch-job-file-card"
-import { BatchJob } from "@medusajs/medusa/dist"
-import { bytesConverter } from "../../../utils/bytes-converter"
-import { ActivityCard } from "../../molecules/activity-card"
-import FileIcon from "../../fundamentals/icons/file-icon"
 import Spinner from "../../atoms/spinner"
+import Button, { ButtonProps } from "../../fundamentals/button"
+import FileIcon from "../../fundamentals/icons/file-icon"
+import MedusaIcon from "../../fundamentals/icons/medusa-icon"
+import { ActivityCard } from "../../molecules/activity-card"
+import BatchJobFileCard from "../../molecules/batch-job-file-card"
 import { batchJobDescriptionBuilder } from "./utils"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
-  return <div>
-    {
-      batchJobs?.map(batchJob => {
-        return <BatchJobActivityCard key={batchJob.id} batchJob={batchJob}/>
-      })
-    }
-  </div>
+  return (
+    <div>
+      {batchJobs?.map((batchJob) => {
+        return <BatchJobActivityCard key={batchJob.id} batchJob={batchJob} />
+      })}
+    </div>
+  )
 }
 
 const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
   const activityCardRef = useRef<HTMLDivElement>(null)
   const notification = useNotification()
   const { store } = useAdminStore()
-  const { mutate: cancelBatchJob, error: cancelBatchJobError  } =
-    useAdminCancelBatchJob(batchJob.id)
-  const { mutateAsync: deleteFile  } = useAdminDeleteFile()
-  const { mutateAsync: createPresignedUrl } =
-    useAdminCreatePresignedDownloadUrl()
+  const {
+    mutate: cancelBatchJob,
+    error: cancelBatchJobError,
+  } = useAdminCancelBatchJob(batchJob.id)
+  const { mutateAsync: deleteFile } = useAdminDeleteFile()
+  const {
+    mutateAsync: createPresignedUrl,
+  } = useAdminCreatePresignedDownloadUrl()
 
   const fileName = batchJob.result?.file_key ?? `${batchJob.type}.csv`
   const relativeTimeElapsed = getRelativeTime({
@@ -50,12 +53,13 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
     relativeTimeElapsed.raw
   )
 
-  const canCancel = batchJob.status !== "completed" &&
+  const canCancel =
+    batchJob.status !== "completed" &&
     batchJob.status !== "failed" &&
     batchJob.status !== "canceled"
 
-  const canDownload = batchJob.status === "completed" &&
-    batchJob.result?.file_key
+  const canDownload =
+    batchJob.status === "completed" && batchJob.result?.file_key
 
   useEffect(() => {
     if (cancelBatchJobError) {
@@ -74,24 +78,21 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
 
     try {
       const { download_url } = await createPresignedUrl({
-        file_key: batchJob.result?.file_key
+        file_key: batchJob.result?.file_key,
       })
-      const link = document.createElement("a");
-      link.href = download_url;
-      link.setAttribute(
-          "download",
-          `${batchJob.result?.file_key}`
-      );
+      const link = document.createElement("a")
+      link.href = download_url
+      link.setAttribute("download", `${batchJob.result?.file_key}`)
       activityCardRef.current?.appendChild(link)
-      link.click();
+      link.click()
 
-      activityCardRef.current?.removeChild(link);
+      activityCardRef.current?.removeChild(link)
     } catch (e) {
-     notification(
-      "Error",
-      "Something went wrong while downloading the export file",
-      "error"
-     )
+      notification(
+        "Error",
+        "Something went wrong while downloading the export file",
+        "error"
+      )
     }
   }
 
@@ -102,11 +103,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
 
     try {
       await deleteFile({ file_key: batchJob.result?.file_key })
-      notification(
-        "Success",
-        "Export file has been removed",
-        "success"
-      )
+      notification("Success", "Export file has been removed", "success")
     } catch (e) {
       notification(
         "Error",
@@ -119,22 +116,24 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
   const getBatchJobFileCard = () => {
     const twentyfourHoursInMs = 24 * 60 * 60 * 1000
 
-    const iconColor = Math.abs(relativeTimeElapsed.raw) > twentyfourHoursInMs
-      ? "#9CA3AF"
-      : undefined
+    const iconColor =
+      Math.abs(relativeTimeElapsed.raw) > twentyfourHoursInMs
+        ? "#9CA3AF"
+        : undefined
 
-    const icon = (
-      batchJob.status !== "completed"
-      && batchJob.status !== "canceled"
-    )
-      ? <Spinner size={"medium"} variant={"secondary"}/>
-      : <FileIcon fill={iconColor} size={20}/>
+    const icon =
+      batchJob.status !== "completed" && batchJob.status !== "canceled" ? (
+        <Spinner size={"medium"} variant={"secondary"} />
+      ) : (
+        <FileIcon fill={iconColor} size={20} />
+      )
 
-    const fileSize = batchJob.status !== "canceled" ? (
-      batchJob.result?.file_key
-        ? bytesConverter(batchJob.result?.file_size ?? 0)
-        : "Preparing export..."
-    ) : undefined
+    const fileSize =
+      batchJob.status !== "canceled"
+        ? batchJob.result?.file_key
+          ? bytesConverter(batchJob.result?.file_size ?? 0)
+          : "Preparing export..."
+        : undefined
 
     return (
       <BatchJobFileCard
@@ -157,10 +156,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
         <Button
           onClick={onClick}
           size={"small"}
-          className={clsx(
-            "flex justify-start inter-small-regular",
-            className
-          )}
+          className={clsx("flex justify-start inter-small-regular", className)}
           variant={variant}
         >
           {text}
@@ -173,21 +169,10 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
           {canDownload && (
             <div className="flex">
               {buildButton(onDeleteFile, "danger", "Delete")}
-              {buildButton(
-                onDownloadFile,
-                "ghost",
-                "Download",
-                "ml-2"
-              )}
+              {buildButton(onDownloadFile, "ghost", "Download", "ml-2")}
             </div>
           )}
-          {canCancel && (
-            buildButton(
-              () => cancelBatchJob(),
-              "danger",
-              "Cancel"
-            )
-          )}
+          {canCancel && buildButton(() => cancelBatchJob(), "danger", "Cancel")}
         </div>
       )
     )
@@ -196,7 +181,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
   return (
     <ActivityCard
       title={store?.name ?? "Medusa Team"}
-      icon={<MedusaIcon className="mr-3" size={20}/>}
+      icon={<MedusaIcon className="mr-3" size={20} />}
       relativeTimeElapsed={relativeTimeElapsed.rtf}
       date={batchJob.created_at}
       shouldShowStatus={true}
