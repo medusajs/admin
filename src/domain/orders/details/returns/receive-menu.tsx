@@ -1,4 +1,9 @@
-import { LineItem, Order, Return, ReturnItem } from "@medusajs/medusa"
+import {
+  LineItem as RawLineItem,
+  Order,
+  Return,
+  ReturnItem,
+} from "@medusajs/medusa"
 import React, { useEffect, useMemo, useState } from "react"
 import Button from "../../../../components/fundamentals/button"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
@@ -22,6 +27,8 @@ type ReceiveMenuProps = {
   onReceiveReturn?: (items: Item[], refund?: number) => Promise<void>
   refunded?: boolean
 }
+
+type LineItem = Omit<RawLineItem, "beforeInsert">
 
 const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   order,
@@ -88,21 +95,27 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
       return
     }
 
-    const items = Object.keys(toReturn).map((t) => ({
-      ...allItems.find((i) => i.id === t),
-      quantity: toReturn[t].quantity,
-    }))
+    const items = Object.keys(toReturn)
+      .map((t) => ({
+        ...allItems.find((i) => i.id === t),
+        quantity: toReturn[t].quantity,
+      }))
+      .filter((i) => typeof i !== "undefined") as LineItem[]
 
-    const total =
-      items.reduce((acc, next) => {
-        return typeof next === "undefined"
-          ? acc
-          : acc + next.quantity * (next?.unit_price || 0)
-      }, 0) -
-      ((returnRequest.shipping_method &&
+    const itemTotal = items.reduce((acc: number, curr: LineItem): number => {
+      const unitRefundable =
+        (curr.refundable || 0) / (curr.quantity - curr.returned_quantity)
+
+      return acc + unitRefundable * toReturn[curr.id].quantity
+    }, 0)
+
+    const shippingTotal =
+      (returnRequest.shipping_method &&
         returnRequest.shipping_method.price *
           (1 + (order.tax_rate || 0) / 100)) ||
-        0)
+      0
+
+    const total = itemTotal - shippingTotal
 
     if (!refundEdited || total < refundAmount) {
       setRefundAmount(refundAmount < 0 ? 0 : total)
