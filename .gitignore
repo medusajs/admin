@@ -73,3 +73,4 @@ yarn-error.log
 
 contentful-import*
 contentful-export*
+package-lock.json

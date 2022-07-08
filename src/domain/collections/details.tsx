@@ -51,11 +51,13 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
       handle?: string
       metadata?: object
       images?: []
+      thumbnail?: number
     } = {
       title: data.title,
       handle: data.handle,
       metadata: data.metadata,
       images: data.images,
+      thumbnail: data.thumbnail,
     }
 
     if (data?.metadata?.length > 0) {
