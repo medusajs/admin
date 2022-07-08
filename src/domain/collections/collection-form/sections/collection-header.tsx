@@ -13,10 +13,16 @@ type CollectionHeaderProps = {
 }
 
 const CollectionHeader: React.FC<CollectionHeaderProps> = ({ collection }) => {
-  const [metadata, setMetadata] = useState<MetadataField[]>([])
   const [showDelete, setShowDelete] = useState(false)
-  const { onSubmit, register, setValue, handleSubmit, setHasMetadataChanged } =
-    useProductCollectionForm()
+  const {
+    onSubmit,
+    register,
+    setValue,
+    handleSubmit,
+    setHasMetadataChanged,
+    metadata,
+    setMetadata,
+  } = useProductCollectionForm()
 
   if (!collection) {
     throw new Error("Collection is required for edit")

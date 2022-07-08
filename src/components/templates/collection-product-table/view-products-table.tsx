@@ -83,7 +83,7 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
     },
     usePagination,
     (hooks) => {
-      hooks.visibleColumns.push((columns) => [
+      hooks.visibleColumns.push((columns, index) => [
         ...columns,
         {
           id: "actions",
@@ -146,13 +146,22 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
           className="h-full"
         >
           {!products?.length ? (
-            <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
-              {isLoading ? (
-                <Spinner size="large" variant="secondary" />
-              ) : (
-                "No products yet"
-              )}
-            </div>
+            <Table.Body>
+              <Table.Row
+                className={
+                  "inter-small-regular text-grey-40 flex flex-grow " +
+                  "justify-center items-center"
+                }
+              >
+                <td>
+                  {isLoading ? (
+                    <Spinner size="large" variant="secondary" />
+                  ) : (
+                    "No products yet"
+                  )}
+                </td>
+              </Table.Row>
+            </Table.Body>
           ) : (
             <Table.Body {...getTableBodyProps()}>
               {rows.map((row) => {

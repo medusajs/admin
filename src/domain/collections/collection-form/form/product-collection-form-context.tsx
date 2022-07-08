@@ -8,8 +8,6 @@ const defaultProductCollection = {
   thumbnail: 0,
   title: "",
   handle: "",
-  metadata: [],
-  images: [],
 }
 
 const ProductCollectionFormContext = React.createContext<{
@@ -17,7 +15,7 @@ const ProductCollectionFormContext = React.createContext<{
   setImages: (images: any[]) => void
   appendImage: (image: any) => void
   removeImage: (image: any) => void
-  onSubmit: (values: any, metadata: MetadataField[]) => void
+  onSubmit: (values: any) => void
   resetForm: () => void
   additionalDirtyState: Record<string, boolean>
   onDelete: () => Promise<unknown>
@@ -64,7 +62,6 @@ export const ProductCollectionFormProvider = ({
     })
     setHasImagesChanged(false)
     setImages(collection.images)
-    setMetadata(collection.metadata) // todo left testing this
   }
 
   React.useEffect(() => {
@@ -72,8 +69,7 @@ export const ProductCollectionFormProvider = ({
   }, [collection])
 
   const handleSubmit = (values) => {
-    // todo left looking how values are passed
-    onSubmit({ ...trimValues(values), images })
+    onSubmit({ ...trimValues(values), images, metadata })
   }
 
   return (

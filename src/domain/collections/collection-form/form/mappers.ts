@@ -23,5 +23,6 @@ export const formValuesToUpdateProductCollectionMapper = (values) => {
       ? values.images[values.thumbnail]
       : undefined,
     images: values?.images || [],
+    metadata: values.metadata,
   }
 }

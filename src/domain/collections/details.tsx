@@ -26,9 +26,8 @@ import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import Medusa from "../../services/api"
 import { navigate } from "gatsby"
-import { MetadataField } from "../../components/organisms/metadata"
 
-const CollectionDetails: React.FC<RouteComponentProps> = ({ id, location }) => {
+const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const notification = useNotification()
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
   const { collection, isLoading, refetch } = useAdminCollection(ensuredPath, {
@@ -44,22 +43,24 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ id, location }) => {
     })
   }
 
-  const onSubmit = async (data: any, metadata: MetadataField[]) => {
+  const onSubmit = async (data: any) => {
     setSubmitting(true)
 
     const payload: {
       title: string
       handle?: string
       metadata?: object
+      images?: []
     } = {
       title: data.title,
       handle: data.handle,
+      metadata: data.metadata,
+      images: data.images,
     }
 
-    console.log(metadata, "metadata")
-    if (metadata.length > 0) {
-      payload.metadata = metadata
-        .filter((m) => m.key && m.value) // remove empty metadata
+    if (data?.metadata?.length > 0) {
+      payload.metadata = data!
+        .metadata!.filter((m) => m.key && m.value) // remove empty metadata
         .reduce((acc, next) => {
           return {
             ...acc,
@@ -90,6 +91,9 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ id, location }) => {
       ...payload,
       images: consolidateImages(data.images, uploadedImages),
     }
+
+    debugger
+    console.log(newData, "newData")
 
     updateCollection.mutate(
       formValuesToUpdateProductCollectionMapper(newData),

@@ -39,6 +39,7 @@ const ProductCollectionForm = ({
           currentPage="Edit Collection"
           previousBreadcrumb="Collections"
           previousRoute="/a/products?view=collections"
+          defaultValue={collection?.title ?? ""}
         />
         <div
           className="rounded-rounded py-large px-xlarge border
@@ -64,6 +65,7 @@ const ProductCollectionForm = ({
               onClick: () => setShowAddProducts(!showAddProducts),
             },
           ]}
+          defaultValue={collection?.products?.length ?? 0}
         >
           <div className="mt-large h-full">
             <ViewProductsTable
