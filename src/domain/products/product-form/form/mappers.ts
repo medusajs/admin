@@ -104,9 +104,7 @@ export const formValuesToUpdateProductMapper = (values) => {
     handle: values.handle,
     status: values.status,
     description: values.description,
-    thumbnail: values.images.length
-      ? values.images[values.thumbnail]
-      : undefined,
+    thumbnail: values.images.length ? values.images[values.thumbnail] : null,
     collection_id: values?.collection ? values.collection.value : null,
     type: values?.type
       ? { id: values.type.value, value: values.type.label }
