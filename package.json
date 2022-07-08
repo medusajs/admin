@@ -9,7 +9,7 @@
     "postcss": "^8.4.5"
   },
   "dependencies": {
-    "@medusajs/medusa": "1.3.3",
+    "@medusajs/medusa": "1.3.3-dev-1657277871973",
     "@radix-ui/react-accordion": "^0.1.6",
     "@radix-ui/react-avatar": "^0.1.3",
     "@radix-ui/react-collapsible": "^0.1.5",
@@ -41,7 +41,7 @@
     "immutability-helper": "^3.1.1",
     "iso8601-duration": "^1.3.0",
     "lodash": "^4.17.21",
-    "medusa-react": "0.3.3",
+    "medusa-react": "0.3.3-dev-1657277871973",
     "moment": "^2.27.0",
     "query-string": "^7.1.1",
     "randomatic": "^3.1.1",
@@ -53,6 +53,7 @@
     "react-dnd": "^14.0.5",
     "react-dnd-html5-backend": "^14.1.0",
     "react-dom": "^16.12.0",
+    "react-feature-toggles": "^3.0.3",
     "react-helmet": "^6.0.0",
     "react-hook-form": "^6.7.2",
     "react-hot-toast": "^2.2.0",
