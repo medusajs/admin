@@ -1,7 +1,18 @@
 import { useAdminStore } from "medusa-react"
 import React, { useContext, useEffect, useState } from "react"
 import { AccountContext } from "./account"
-import { FeatureToggleProvider } from "react-feature-toggles"
+
+export const defaultFeatureFlagContext: {
+  featureToggleList: Record<string, boolean>
+  isFeatureEnabled: (flag: string) => boolean
+} = {
+  featureToggleList: {},
+  isFeatureEnabled: function (flag): boolean {
+    return !!this.featureToggleList[flag]
+  },
+}
+
+export const FeatureFlagContext = React.createContext(defaultFeatureFlagContext)
 
 export const FeatureFlagProvider = ({ children }) => {
   const { isLoggedIn } = useContext(AccountContext)
@@ -18,14 +29,18 @@ export const FeatureFlagProvider = ({ children }) => {
     setFeatureFlags(store["feature_flags"])
   }, [isFetching, store, isLoggedIn])
 
-  const toggles = featureFlags.reduce(
+  const featureToggleList = featureFlags.reduce(
     (acc, flag) => ({ [flag]: true, ...acc }),
     {}
   )
 
+  const isFeatureEnabled = (flag: string) => !!featureToggleList[flag]
+
   return (
-    <FeatureToggleProvider featureToggleList={toggles}>
+    <FeatureFlagContext.Provider
+      value={{ isFeatureEnabled, featureToggleList }}
+    >
       {children}
-    </FeatureToggleProvider>
+    </FeatureFlagContext.Provider>
   )
 }

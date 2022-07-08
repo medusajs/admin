@@ -3,6 +3,7 @@ import { navigate } from "gatsby"
 import { useAdminCreateBatchJob } from "medusa-react"
 import React, { useMemo } from "react"
 import Button from "../../components/fundamentals/button"
+import FeatureToggle from "../../components/fundamentals/feature-toggle"
 import ExportIcon from "../../components/fundamentals/icons/export-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
@@ -95,10 +96,12 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
 
 const Orders = () => {
   return (
-    <Router>
-      <OrderIndex path="/" />
-      <Details path=":id" />
-    </Router>
+    <FeatureToggle featureFlag="sales_channels">
+      <Router>
+        <OrderIndex path="/" />
+        <Details path=":id" />
+      </Router>
+    </FeatureToggle>
   )
 }
 
