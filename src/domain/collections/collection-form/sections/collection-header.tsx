@@ -10,9 +10,13 @@ import { useProductCollectionForm } from "../form/product-collection-form-contex
 
 type CollectionHeaderProps = {
   collection?: any
+  isEdit?: boolean
 }
 
-const CollectionHeader: React.FC<CollectionHeaderProps> = ({ collection }) => {
+const CollectionHeader: React.FC<CollectionHeaderProps> = ({
+  collection,
+  isEdit = false,
+}) => {
   const [showDelete, setShowDelete] = useState(false)
   const {
     onSubmit,
@@ -24,7 +28,7 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({ collection }) => {
     setMetadata,
   } = useProductCollectionForm()
 
-  if (!collection) {
+  if (isEdit && !collection) {
     throw new Error("Collection is required for edit")
   }
 
@@ -39,7 +43,7 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({ collection }) => {
   }, [])
 
   useEffect(() => {
-    if (collection) {
+    if (isEdit && collection) {
       setValue("title", collection.title)
       setValue("handle", collection.handle)
 
@@ -51,7 +55,7 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({ collection }) => {
         })
       }
     }
-  }, [collection])
+  }, [collection, isEdit])
 
   const submit = (data: any) => {
     onSubmit(data, metadata)
@@ -64,7 +68,9 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({ collection }) => {
           <div>
             <h1 className="inter-xlarge-semibold mb-2xsmall">General</h1>
             <p className="inter-small-regular text-grey-50">
-              To create a collection, all you need is a title and a handle.
+              {isEdit
+                ? "You can edit the title and handle of this collection."
+                : "To create a collection, all you need is a title and a handle."}
             </p>
           </div>
 

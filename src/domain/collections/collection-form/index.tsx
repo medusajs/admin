@@ -26,17 +26,23 @@ const ProductCollectionForm = ({
     useProductCollectionForm()
   const { refetch } = useAdminCollection(ensuredPath)
 
+  if (isEdit && !collection) {
+    throw new Error("Collection is required for edit")
+  }
+
   useEffect(() => {
-    if (collection?.products?.length) {
-      setUpdates(updates + 1) // force re-render product table when products are added/removed
+    if (isEdit && collection) {
+      if (collection.products?.length) {
+        setUpdates(updates + 1) // force re-render product table when products are added/removed
+      }
     }
-  }, [collection?.products])
+  }, [collection, isEdit])
 
   return (
     <>
       <div className="flex flex-col h-full mb-large">
         <Breadcrumb
-          currentPage="Edit Collection"
+          currentPage={isEdit ? "Edit Collection" : "Add Collection"}
           previousBreadcrumb="Collections"
           previousRoute="/a/products?view=collections"
           defaultValue={collection?.title ?? ""}
@@ -46,7 +52,7 @@ const ProductCollectionForm = ({
          border-grey-20 bg-grey-0 mb-large"
         >
           <div>
-            <CollectionHeader collection={collection} />
+            <CollectionHeader collection={collection} isEdit={isEdit} />
           </div>
         </div>
 
@@ -70,7 +76,7 @@ const ProductCollectionForm = ({
           <div className="mt-large h-full">
             <ViewProductsTable
               key={updates} // force re-render when collection is updated
-              collectionId={collection.id}
+              collectionId={collection?.id}
               refetchCollection={refetch}
             />
           </div>

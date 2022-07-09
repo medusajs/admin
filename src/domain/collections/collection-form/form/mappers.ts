@@ -15,7 +15,7 @@ export const productCollectionToFormValuesMapper = (collection) => {
   }
 }
 
-export const formValuesToUpdateProductCollectionMapper = (values) => {
+export const formValuesToCreateUpdateProductCollectionMapper = (values) => {
   return {
     title: values.title,
     handle: values.handle,

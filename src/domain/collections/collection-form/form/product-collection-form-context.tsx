@@ -8,6 +8,8 @@ const defaultProductCollection = {
   thumbnail: 0,
   title: "",
   handle: "",
+  images: [],
+  products: [],
 }
 
 const ProductCollectionFormContext = React.createContext<{
@@ -18,8 +20,11 @@ const ProductCollectionFormContext = React.createContext<{
   onSubmit: (values: any) => void
   resetForm: () => void
   additionalDirtyState: Record<string, boolean>
-  onDelete: () => Promise<unknown>
-  addProducts: (addedIds: string[], removedIds: string[]) => Promise<unknown>
+  onDelete?: () => Promise<unknown> | undefined
+  addProducts?: (
+    addedIds: string[],
+    removedIds: string[]
+  ) => Promise<unknown> | undefined
   setShowAddProducts: (showAddProducts: boolean) => void
   showAddProducts: boolean
   ensuredPath: string
@@ -33,8 +38,8 @@ export const ProductCollectionFormProvider = ({
   collection = defaultProductCollection,
   onSubmit,
   children,
-  onDelete,
-  addProducts,
+  onDelete = () => Promise.resolve(),
+  addProducts = () => Promise.resolve(),
   path = "",
 }) => {
   const [images, setImages] = React.useState<any[]>([])

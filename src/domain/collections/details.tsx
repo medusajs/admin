@@ -1,24 +1,15 @@
-import { RouteComponentProps } from "@reach/router"
-import React, { useEffect, useState } from "react"
+import { RouteComponentProps, useLocation } from "@reach/router"
+import React, { useState } from "react"
 import {
   useAdminCollection,
   useAdminDeleteCollection,
   useAdminUpdateCollection,
 } from "medusa-react"
 import Spinner from "../../components/atoms/spinner"
-import {
-  ProductCollectionFormProvider,
-  useProductCollectionForm,
-} from "./collection-form/form/product-collection-form-context"
+import { ProductCollectionFormProvider } from "./collection-form/form/product-collection-form-context"
 import ProductCollectionForm from "./collection-form"
-import { FieldValues } from "react-hook-form"
-import { checkForDirtyState } from "../../utils/form-helpers"
-import Toaster from "../../components/declarative-toaster"
-import FormToasterContainer from "../../components/molecules/form-toaster"
-import { handleFormError } from "../../utils/handle-form-error"
-import toast from "react-hot-toast"
 import {
-  formValuesToUpdateProductCollectionMapper,
+  formValuesToCreateUpdateProductCollectionMapper,
   productCollectionToFormValuesMapper,
 } from "./collection-form/form/mappers"
 import { consolidateImages } from "../../utils/consolidate-images"
@@ -26,8 +17,10 @@ import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import Medusa from "../../services/api"
 import { navigate } from "gatsby"
+import { UpdateProductCollectionNotification } from "./collection-form/form/update-notification"
 
-const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
+const CollectionDetails: React.FC<RouteComponentProps> = () => {
+  const location = useLocation()
   const notification = useNotification()
   const ensuredPath = location!.pathname.replace("/a/collections/", ``)
   const { collection, isLoading, refetch } = useAdminCollection(ensuredPath, {
@@ -94,11 +87,8 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
       images: consolidateImages(data.images, uploadedImages),
     }
 
-    debugger
-    console.log(newData, "newData")
-
     updateCollection.mutate(
-      formValuesToUpdateProductCollectionMapper(newData),
+      formValuesToCreateUpdateProductCollectionMapper(newData),
       {
         onSuccess: () => {
           setSubmitting(false)
@@ -147,72 +137,8 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
       path={ensuredPath}
     >
       <ProductCollectionForm collection={collection} isEdit />
-      <UpdateNotification isLoading={submitting} />
+      <UpdateProductCollectionNotification isLoading={submitting} />
     </ProductCollectionFormProvider>
-  )
-}
-
-const TOAST_ID = "edit-product-collection-dirty"
-
-const UpdateNotification = ({ isLoading = false }) => {
-  const {
-    formState,
-    onSubmit,
-    handleSubmit,
-    resetForm,
-    additionalDirtyState,
-    metadata,
-  } = useProductCollectionForm()
-  const [visible, setVisible] = useState(false)
-  const [blocking, setBlocking] = useState(true)
-
-  const onUpdate = (values: FieldValues) => {
-    console.log(values, "values")
-    console.log(metadata)
-
-    onSubmit({ ...values }, metadata)
-  }
-
-  useEffect(() => {
-    const timeout = setTimeout(setBlocking, 300, false)
-    return () => clearTimeout(timeout)
-  }, [])
-
-  const isDirty = checkForDirtyState(
-    formState.dirtyFields,
-    additionalDirtyState
-  )
-
-  useEffect(() => {
-    if (!blocking) {
-      setVisible(isDirty)
-    }
-
-    return () => {
-      toast.dismiss(TOAST_ID)
-    }
-  }, [isDirty])
-
-  return (
-    <Toaster
-      visible={visible}
-      duration={Infinity}
-      id={TOAST_ID}
-      position="bottom-right"
-    >
-      <FormToasterContainer isLoading={isLoading}>
-        <FormToasterContainer.Actions>
-          <FormToasterContainer.ActionButton
-            onClick={handleSubmit(onUpdate, handleFormError)}
-          >
-            Save
-          </FormToasterContainer.ActionButton>
-          <FormToasterContainer.DiscardButton onClick={resetForm}>
-            Discard
-          </FormToasterContainer.DiscardButton>
-        </FormToasterContainer.Actions>
-      </FormToasterContainer>
-    </Toaster>
   )
 }
 
