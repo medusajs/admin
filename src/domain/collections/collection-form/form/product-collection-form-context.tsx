@@ -8,6 +8,7 @@ const defaultProductCollection = {
   thumbnail: 0,
   title: "",
   handle: "",
+  metadata: [],
   images: [],
   products: [],
 }
@@ -39,7 +40,8 @@ export const ProductCollectionFormProvider = ({
   onSubmit,
   children,
   onDelete = () => Promise.resolve(),
-  addProducts = () => Promise.resolve(),
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  addProducts = (addedIds: string[], removedIds: string[]) => Promise.resolve(),
   path = "",
 }) => {
   const [images, setImages] = React.useState<any[]>([])
@@ -65,8 +67,21 @@ export const ProductCollectionFormProvider = ({
     methods.reset({
       ...collection,
     })
+
     setHasImagesChanged(false)
     setImages(collection.images)
+
+    const parsedMetadata = []
+    Object.keys(collection.metadata).forEach((key) => {
+      // @ts-ignore
+      parsedMetadata.push({
+        key: key,
+        value: collection.metadata[key],
+      })
+    })
+
+    setHasMetadataChanged(false)
+    setMetadata(parsedMetadata)
   }
 
   React.useEffect(() => {

@@ -17,7 +17,7 @@ import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import Medusa from "../../services/api"
 import { navigate } from "gatsby"
-import { UpdateProductCollectionNotification } from "./collection-form/form/update-notification"
+import { ProductCollectionNotification } from "./collection-form/sections/create-update-notification"
 
 const CollectionDetails: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
@@ -30,8 +30,8 @@ const CollectionDetails: React.FC<RouteComponentProps> = () => {
   const [submitting, setSubmitting] = useState(false)
   const deleteCollection = useAdminDeleteCollection(ensuredPath)
 
-  const onDelete = () => {
-    deleteCollection.mutate(undefined, {
+  const onDelete = async () => {
+    await deleteCollection.mutate(undefined, {
       onSuccess: () => navigate(`/a/collections`),
     })
   }
@@ -62,6 +62,10 @@ const CollectionDetails: React.FC<RouteComponentProps> = () => {
             [next.key]: next.value,
           }
         }, {}) // deleting metadata will not work as it's not supported by the core
+    } else {
+      if (Array.isArray(data.metadata)) {
+        payload.metadata = {}
+      }
     }
 
     const images = data.images
@@ -92,7 +96,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = () => {
       {
         onSuccess: () => {
           setSubmitting(false)
-          notification("Success", "Product updated successfully", "success")
+          notification("Success", "Collection updated successfully", "success")
           refetch()
         },
         onError: (error) => {
@@ -118,7 +122,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = () => {
       }
 
       notification("Success", "Updated products in collection", "success")
-      refetch()
+      await refetch()
     } catch (error) {
       notification("Error", getErrorMessage(error), "error")
     }
@@ -137,7 +141,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = () => {
       path={ensuredPath}
     >
       <ProductCollectionForm collection={collection} isEdit />
-      <UpdateProductCollectionNotification isLoading={submitting} />
+      <ProductCollectionNotification isLoading={submitting} />
     </ProductCollectionFormProvider>
   )
 }

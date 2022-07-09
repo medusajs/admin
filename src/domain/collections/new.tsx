@@ -8,7 +8,7 @@ import { consolidateImages } from "../../utils/consolidate-images"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 import Medusa from "../../services/api"
-import { UpdateProductCollectionNotification } from "./collection-form/form/update-notification"
+import { ProductCollectionNotification } from "./collection-form/sections/create-update-notification"
 import { navigate } from "gatsby"
 
 const NewCollectionDetails: React.FC<RouteComponentProps> = () => {
@@ -43,6 +43,10 @@ const NewCollectionDetails: React.FC<RouteComponentProps> = () => {
             [next.key]: next.value,
           }
         }, {}) // deleting metadata will not work as it's not supported by the core
+    } else {
+      if (Array.isArray(data.metadata)) {
+        payload.metadata = {}
+      }
     }
 
     const images = data.images
@@ -84,7 +88,7 @@ const NewCollectionDetails: React.FC<RouteComponentProps> = () => {
   return (
     <ProductCollectionFormProvider onSubmit={onSubmit}>
       <ProductCollectionForm />
-      <UpdateProductCollectionNotification isLoading={submitting} />
+      <ProductCollectionNotification isLoading={submitting} />
     </ProductCollectionFormProvider>
   )
 }

@@ -58,7 +58,7 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({
   }, [collection, isEdit])
 
   const submit = (data: any) => {
-    onSubmit(data, metadata)
+    onSubmit({ ...data })
   }
 
   return (
@@ -74,48 +74,47 @@ const CollectionHeader: React.FC<CollectionHeaderProps> = ({
             </p>
           </div>
 
-          <Actionables
-            forceDropdown
-            actions={[
-              {
-                label: "Delete",
-                onClick: () => setShowDelete(!showDelete),
-                variant: "danger",
-                icon: <TrashIcon size="20" />,
-              },
-            ]}
-          />
+          {isEdit && (
+            <Actionables
+              forceDropdown
+              actions={[
+                {
+                  label: "Delete",
+                  onClick: () => setShowDelete(!showDelete),
+                  variant: "danger",
+                  icon: <TrashIcon size="20" />,
+                },
+              ]}
+            />
+          )}
         </div>
       </div>
       <form onSubmit={handleSubmit(submit)}>
-        <div>
-          <div>
-            <h2 className="inter-base-semibold mb-base">Details</h2>
-            <div className="flex items-center gap-x-base">
-              <InputField
-                label="Title"
-                required
-                placeholder="Sunglasses"
-                name="title"
-                ref={register({ required: true })}
-              />
-              <InputField
-                label="Handle"
-                placeholder="sunglasses"
-                name="handle"
-                prefix="/"
-                tooltip={
-                  <IconTooltip content="URL Slug for the product. Will be auto generated if left blank." />
-                }
-                ref={register}
-              />
-            </div>
-          </div>
-          <div className="mt-xlarge w-full">
-            <Metadata setMetadata={handleSetMetadata} metadata={metadata} />
-          </div>
+        <h2 className="inter-base-semibold mb-base">Details</h2>
+        <div className="flex items-center gap-x-base">
+          <InputField
+            label="Title"
+            required
+            placeholder="Sunglasses"
+            name="title"
+            ref={register({ required: true })}
+          />
+          <InputField
+            label="Handle"
+            placeholder="sunglasses"
+            name="handle"
+            prefix="/"
+            tooltip={
+              <IconTooltip content="URL Slug for the product. Will be auto generated if left blank." />
+            }
+            ref={register}
+          />
         </div>
       </form>
+
+      <div className="mt-xlarge w-full">
+        <Metadata setMetadata={handleSetMetadata} metadata={metadata} />
+      </div>
     </div>
   )
 }

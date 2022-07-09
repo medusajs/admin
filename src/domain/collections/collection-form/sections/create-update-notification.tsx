@@ -1,4 +1,4 @@
-import { useProductCollectionForm } from "./product-collection-form-context"
+import { useProductCollectionForm } from "../form/product-collection-form-context"
 import React, { useEffect, useState } from "react"
 import { FieldValues } from "react-hook-form"
 import { checkForDirtyState } from "../../../../utils/form-helpers"
@@ -9,20 +9,14 @@ import { handleFormError } from "../../../../utils/handle-form-error"
 
 const TOAST_ID = "edit-product-collection-dirty"
 
-export const UpdateProductCollectionNotification = ({ isLoading = false }) => {
-  const {
-    formState,
-    onSubmit,
-    handleSubmit,
-    resetForm,
-    additionalDirtyState,
-    metadata,
-  } = useProductCollectionForm()
+export const ProductCollectionNotification = ({ isLoading = false }) => {
+  const { formState, onSubmit, handleSubmit, resetForm, additionalDirtyState } =
+    useProductCollectionForm()
   const [visible, setVisible] = useState(false)
   const [blocking, setBlocking] = useState(true)
 
   const onUpdate = (values: FieldValues) => {
-    onSubmit({ ...values }, metadata)
+    onSubmit({ ...values })
   }
 
   useEffect(() => {

@@ -1,6 +1,5 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
-import Images from "./sections/images"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import CollectionHeader from "./sections/collection-header"
 import BodyCard from "../../../components/organisms/body-card"
@@ -10,6 +9,7 @@ import DeletePrompt from "../../../components/organisms/delete-prompt"
 import AddProductsTable from "../../../components/templates/collection-product-table/add-product-table"
 import { useProductCollectionForm } from "./form/product-collection-form-context"
 import { useAdminCollection } from "medusa-react"
+import Images from "./sections/images"
 
 type ProductCollectionFormProps = {
   collection?: any
@@ -40,7 +40,7 @@ const ProductCollectionForm = ({
 
   return (
     <>
-      <div className="flex flex-col h-full mb-large">
+      <div className="flex flex-col mb-large">
         <Breadcrumb
           currentPage={isEdit ? "Edit Collection" : "Add Collection"}
           previousBreadcrumb="Collections"
@@ -76,7 +76,7 @@ const ProductCollectionForm = ({
           <div className="mt-large h-full">
             <ViewProductsTable
               key={updates} // force re-render when collection is updated
-              collectionId={collection?.id}
+              collectionId={collection?.id ?? ""}
               refetchCollection={refetch}
             />
           </div>
