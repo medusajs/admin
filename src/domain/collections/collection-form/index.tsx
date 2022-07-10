@@ -10,6 +10,7 @@ import AddProductsTable from "../../../components/templates/collection-product-t
 import { useProductCollectionForm } from "./form/product-collection-form-context"
 import { useAdminCollection } from "medusa-react"
 import Images from "./sections/images"
+import RawJSON from "../../../components/organisms/raw-json"
 
 type ProductCollectionFormProps = {
   collection?: any
@@ -81,6 +82,10 @@ const ProductCollectionForm = ({
             />
           </div>
         </BodyCard>
+
+        <div className="mt-large">
+          <RawJSON data={collection} title="Raw product collection" />
+        </div>
       </div>
 
       {showDelete && (
