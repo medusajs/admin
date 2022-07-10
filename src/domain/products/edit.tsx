@@ -85,13 +85,8 @@ const EditProductPage = ({ id }) => {
 const TOAST_ID = "edit-product-dirty"
 
 const UpdateNotification = ({ isLoading = false }) => {
-  const {
-    formState,
-    onSubmit,
-    handleSubmit,
-    resetForm,
-    additionalDirtyState,
-  } = useProductForm()
+  const { formState, onSubmit, handleSubmit, resetForm, additionalDirtyState } =
+    useProductForm()
   const [visible, setVisible] = useState(false)
   const [blocking, setBlocking] = useState(true)
 

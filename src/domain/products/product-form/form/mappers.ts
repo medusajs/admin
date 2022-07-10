@@ -95,6 +95,7 @@ export const formValuesToCreateProductMapper = (values, viewType) => {
     hs_code: values.hs_code,
     is_giftcard: false,
     discountable: values.discountable,
+    subtitle: values.subtitle,
   }
 }
 
@@ -121,5 +122,6 @@ export const formValuesToUpdateProductMapper = (values) => {
     mid_code: values.mid_code,
     hs_code: values.hs_code,
     discountable: values.discountable,
+    subtitle: values.subtitle,
   }
 }
