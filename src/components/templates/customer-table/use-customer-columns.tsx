@@ -26,8 +26,9 @@ export const useCustomerColumns = () => {
         accessor: "email",
       },
       {
-        Header: "",
-        accessor: "col",
+        Header: "Status",
+        accessor: "subscription_status",
+        Cell: ({ cell: { value } }) => <div>{value}</div>,
       },
       {
         accessor: "orders",
