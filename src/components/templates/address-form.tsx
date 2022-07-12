@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
-import Select from "../molecules/select"
-import Input from "../molecules/input"
 import { countries } from "../../utils/countries"
+import Input from "../molecules/input"
+import Select from "../molecules/select"
 
 const AddressForm = ({
   form = {},
@@ -118,12 +118,12 @@ const AddressForm = ({
             name={`${[type]}.postal_code`}
           />
           <Input
-            ref={form.register}
-            placeholder="City"
-            label="City"
             ref={form.register({
               required: true,
             })}
+            placeholder="City"
+            label="City"
+            required={true}
             name={`${[type]}.city`}
           />
           <Select
