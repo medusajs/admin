@@ -7,6 +7,7 @@ import SteppedModal, {
   SteppedContext,
 } from "../../../components/molecules/modal/stepped-modal"
 import useMedusa from "../../../hooks/use-medusa"
+import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import { extractUnitPrice } from "../../../utils/prices"
 import { removeNullish } from "../../../utils/remove-nullish"
@@ -39,6 +40,8 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const [creatingOrder, setCreatingOrder] = useState(false)
   const [noNotification, setNoNotification] = useState(false)
   const [searchingProducts, setSearchingProducts] = useState(false)
+
+  const notification = useNotification()
 
   const steppedContext = React.useContext(SteppedContext)
   const layeredContext = React.useContext(LayeredModalContext)
@@ -216,7 +219,9 @@ const NewOrder = ({ onDismiss, refresh }) => {
       const { data } = await Medusa.draftOrders.create(draftOrder)
       navigate(`/a/draft-orders/${data.draft_order.id}`)
       onDismiss()
-    } catch (error) {}
+    } catch (error) {
+      notification("Error", "Something went wrong. Please try again", "error")
+    }
 
     setCreatingOrder(false)
   }
