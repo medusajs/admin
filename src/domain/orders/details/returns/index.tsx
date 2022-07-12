@@ -133,8 +133,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
     const method = shippingOptions?.find((o) => selectedItem.value === o.id)
 
     if (method) {
-      const multiplier = order.tax_rate ? 1 + order.tax_rate / 100 : 1
-      setShippingPrice(method.amount * multiplier)
+      setShippingPrice(method.price_incl_tax)
     }
   }
 
@@ -143,8 +142,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
       const method = shippingOptions?.find((o) => shippingMethod.value === o.id)
 
       if (method) {
-        const multiplier = order.tax_rate ? 1 + order.tax_rate / 100 : 1
-        setShippingPrice(method.amount * multiplier)
+        setShippingPrice(method.price_incl_tax)
       }
     }
   }, [useCustomShippingPrice, shippingMethod])
