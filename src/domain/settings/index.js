@@ -10,6 +10,7 @@ import MapPinIcon from "../../components/fundamentals/icons/map-pin-icon"
 import TaxesIcon from "../../components/fundamentals/icons/taxes-icon"
 import TruckIcon from "../../components/fundamentals/icons/truck-icon"
 import UsersIcon from "../../components/fundamentals/icons/users-icon"
+import ChannelsIcon from "../../components/fundamentals/icons/channels-icon"
 import SettingsOverview from "../../components/templates/settings-overview"
 import Currencies from "./currencies"
 import Details from "./details"
@@ -78,6 +79,12 @@ const SettingsIndex = () => {
         description={"Manage taxes across regions and products"}
         icon={<TaxesIcon />}
         to={`/a/settings/taxes`}
+      />
+      <SettingsCard
+        heading={"Sales channels"}
+        description={"Control which products are available in which channels"}
+        icon={<ChannelsIcon />}
+        to={`/a/sales-channels`}
       />
     </SettingsOverview>
   )
