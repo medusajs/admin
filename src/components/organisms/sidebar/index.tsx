@@ -5,6 +5,7 @@ import CustomerIcon from "../../fundamentals/icons/customer-icon"
 import DollarSignIcon from "../../fundamentals/icons/dollar-sign-icon"
 import GearIcon from "../../fundamentals/icons/gear-icon"
 import GiftIcon from "../../fundamentals/icons/gift-icon"
+import HappyIcon from "../../fundamentals/icons/happy-icon"
 import SaleIcon from "../../fundamentals/icons/sale-icon"
 import TagIcon from "../../fundamentals/icons/tag-icon"
 import SidebarCompanyLogo from "../../molecules/sidebar-company-logo"
@@ -70,6 +71,12 @@ const Sidebar: React.FC = () => {
             icon={<CashIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Pricing"}
+          />
+          <SidebarMenuItem
+            pageLink={"/a/reviews"}
+            icon={<HappyIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={"Feedback"}
           />
           <SidebarMenuItem
             pageLink={"/a/settings"}
