@@ -13,6 +13,32 @@ type ProductReviewsTableProps = {
   setPageNumber: (number: number) => void
 }
 
+const ProductReviewRow: React.FC<{ review: ProductReview; index: number }> = ({
+  review,
+  index,
+}) => (
+  <Table.Row key={`product-review-${index}`} color={"inherit"}>
+    <Table.Cell className="w-[100px] truncate">
+      {moment(review.created_at).format("MMM Do YYYY")}
+    </Table.Cell>
+    <Table.Cell className="w-[100px] truncate">
+      {review.customer.name}
+    </Table.Cell>
+    <Table.Cell>
+      <div className="flex items-center space-x-2">
+        <img
+          src={review.line_item.thumbnail}
+          alt="Thumbnail"
+          className="h-full object-cover w-[50px]"
+        />
+        <p>{review.line_item.title}</p>
+      </div>
+    </Table.Cell>
+    <Table.Cell className="w-[70px]">{review.rating}</Table.Cell>
+    <Table.Cell className="space-x-2">{review.note}</Table.Cell>
+  </Table.Row>
+)
+
 const ProductReviewsTable: React.FC<ProductReviewsTableProps> = ({
   reviews,
   pageNumber,
@@ -20,37 +46,6 @@ const ProductReviewsTable: React.FC<ProductReviewsTableProps> = ({
   totalResults,
   setPageNumber,
 }) => {
-  console.log(pageNumber, pageSize, totalResults)
-
-  const getRow = (review, index) => {
-    return (
-      <Table.Row
-        // linkTo={`/a/gift-cards/${giftCard.id}`}
-        key={`product-review-${index}`}
-        color={"inherit"}
-      >
-        <Table.Cell className="w-[100px] truncate">
-          {moment(review.created_at).format("MMM Do YYYY")}
-        </Table.Cell>
-        <Table.Cell className="w-[100px] truncate">
-          {review.customer.name}
-        </Table.Cell>
-        <Table.Cell>
-          <div className="flex items-center space-x-2">
-            <img
-              src={review.line_item.thumbnail}
-              alt="Thumbnail"
-              className="h-full object-cover w-[50px]"
-            />
-            <p>{review.line_item.title}</p>
-          </div>
-        </Table.Cell>
-        <Table.Cell className="w-[70px]">{review.rating}</Table.Cell>
-        <Table.Cell className="space-x-2">{review.note}</Table.Cell>
-      </Table.Row>
-    )
-  }
-
   return (
     <div className="w-full h-full overflow-y-auto">
       <Table>
@@ -64,7 +59,10 @@ const ProductReviewsTable: React.FC<ProductReviewsTableProps> = ({
           </Table.HeadRow>
         </Table.Head>
         <Table.Body className="text-grey-90">
-          {reviews?.map((r, idx) => getRow(r, idx))}
+          {reviews.map((r, idx) => (
+            <ProductReviewRow review={r} index={idx} key={r.id} />
+          ))}
+          {reviews?.length < 1 && "There are no reviews yet."}
         </Table.Body>
       </Table>
       <TablePagination
@@ -72,7 +70,7 @@ const ProductReviewsTable: React.FC<ProductReviewsTableProps> = ({
         limit={pageSize}
         offset={(pageNumber - 1) * pageSize}
         pageSize={reviews.length}
-        title="Customers"
+        title="Reviews"
         currentPage={pageNumber}
         pageCount={totalResults / pageSize}
         nextPage={() => setPageNumber(pageNumber + 1)}

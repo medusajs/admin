@@ -1,5 +1,6 @@
 import moment from "moment"
 import React from "react"
+import { CancellationFeedback } from "../../../services/nibll-api"
 import Table, { TablePagination } from "../../molecules/table"
 
 type CancellationFeedbackTableProps = {
@@ -12,6 +13,21 @@ type CancellationFeedbackTableProps = {
   setPageNumber: (number: number) => void
 }
 
+const CancellationFeedbackRow: React.FC<{
+  cancellation: CancellationFeedback
+  index: number
+}> = ({ cancellation, index }) => (
+  <Table.Row key={`cancellation-feedback-${index}`} color={"inherit"}>
+    <Table.Cell className="w-[100px] truncate">
+      {moment(cancellation.created_at).format("MMM Do YYYY")}
+    </Table.Cell>
+    <Table.Cell className="w-[100px]">{cancellation.customer.name}</Table.Cell>
+    <Table.Cell>{cancellation.reason}</Table.Cell>
+    <Table.Cell className="w-[50px]">{cancellation.rating}</Table.Cell>
+    <Table.Cell>{cancellation.final_notes}</Table.Cell>
+  </Table.Row>
+)
+
 const CancellationFeedbackTable: React.FC<CancellationFeedbackTableProps> = ({
   cancellations,
   pageNumber,
@@ -19,22 +35,6 @@ const CancellationFeedbackTable: React.FC<CancellationFeedbackTableProps> = ({
   totalResults,
   setPageNumber,
 }) => {
-  const getRow = (cancellation, index) => {
-    return (
-      <Table.Row key={`cancellation-feedback-${index}`} color={"inherit"}>
-        <Table.Cell className="w-[100px] truncate">
-          {moment(cancellation.created_at).format("MMM Do YYYY")}
-        </Table.Cell>
-        <Table.Cell className="w-[100px]">
-          {cancellation.customer.name}
-        </Table.Cell>
-        <Table.Cell>{cancellation.reason}</Table.Cell>
-        <Table.Cell className="w-[50px]">{cancellation.rating}</Table.Cell>
-        <Table.Cell>{cancellation.final_notes}</Table.Cell>
-      </Table.Row>
-    )
-  }
-
   return (
     <div className="w-full h-full overflow-y-auto">
       <Table>
@@ -48,7 +48,14 @@ const CancellationFeedbackTable: React.FC<CancellationFeedbackTableProps> = ({
           </Table.HeadRow>
         </Table.Head>
         <Table.Body className="text-grey-90">
-          {cancellations?.map((r, idx) => getRow(r, idx))}
+          {cancellations.map((cancellation, index) => (
+            <CancellationFeedbackRow
+              cancellation={cancellation}
+              index={index}
+              key={cancellation.id}
+            />
+          ))}
+          {cancellations.length < 1 && "There are no cancellations yet."}
         </Table.Body>
       </Table>
       <TablePagination
