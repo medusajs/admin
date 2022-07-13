@@ -18,6 +18,7 @@ import {
   SalesChannelProductsSelectModal,
   SalesChannelProductsTable,
 } from "../tables/product"
+import StatusIndicator from "../../../components/fundamentals/status-indicator"
 
 const mockChannels = [
   {
@@ -168,7 +169,13 @@ function SalesChannelDetailsHeader(props: {
       <h2 className="font-semibold text-xlarge text-grey-90 mb-4">
         {salesChannel.name}
       </h2>
-      <Actionables forceDropdown={true} actions={actions} />
+      <div className="flex justify-between items-center gap-4">
+        <StatusIndicator
+          title={salesChannel.is_disabled ? "Disabled" : "Enabled"}
+          variant={salesChannel.is_disabled ? "danger" : "success"}
+        />
+        <Actionables forceDropdown={true} actions={actions} />
+      </div>
 
       {showAddProducts && (
         <SalesChannelProductsSelectModal
@@ -236,7 +243,7 @@ function Details() {
         </div>
       </Link>
 
-      <div className="grid grid-cols-3 gap-2 min-h-[960px] w-full">
+      <div className="grid grid-cols-3 gap-2 min-h-[960px] w-full pb-8">
         <SalesChannelsList
           openCreateModal={openCreateModal}
           activeChannelId={activeSalesChannel?.id}

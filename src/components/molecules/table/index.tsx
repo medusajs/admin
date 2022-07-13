@@ -85,7 +85,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
     }
 
     return (
-      <div className="flex flex-col">
+      <div className={`flex flex-col ${containerClassName}`}>
         <div className="w-full flex justify-between mb-2">
           {filteringOptions ? (
             <div className="flex mb-2 self-end">

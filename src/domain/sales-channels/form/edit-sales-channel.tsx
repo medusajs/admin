@@ -3,6 +3,7 @@ import { SalesChannel } from "@medusajs/medusa"
 import Modal from "../../../components/molecules/modal"
 import InputField from "../../../components/molecules/input"
 import Button from "../../../components/fundamentals/button"
+import Switch from "../../../components/atoms/switch"
 
 type P = {
   salesChannel: SalesChannel
@@ -14,6 +15,7 @@ function EditSalesChannel(props: P) {
 
   const [name, setName] = useState(salesChannel.name)
   const [description, setDescription] = useState(salesChannel.description)
+  const [isDisabled, setIsDisabled] = useState(salesChannel.is_disabled)
 
   const handleSubmit = () => {}
 
@@ -24,8 +26,12 @@ function EditSalesChannel(props: P) {
           <span className="inter-xlarge-semibold">Sales channel details</span>
         </Modal.Header>
         <Modal.Content>
-          <div className="inter-base-semibold text-grey-90 mb-4">
-            General info
+          <div className="flex justify-between items-center mb-4">
+            <div className="inter-base-semibold text-grey-90">General info</div>
+            <Switch
+              checked={!isDisabled}
+              onCheckedChange={(v) => setIsDisabled(!v)}
+            />
           </div>
           <div className="w-full flex flex-col gap-3">
             <InputField
