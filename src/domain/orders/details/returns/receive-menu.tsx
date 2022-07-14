@@ -102,10 +102,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
       const unitRefundable =
         (curr.refundable || 0) / (curr.quantity - curr.returned_quantity)
 
-      console.log(curr)
-      console.log(unitRefundable)
-      console.log(toReturn[curr.id].quantity)
-
       return acc + unitRefundable * toReturn[curr.id].quantity
     }, 0)
 
