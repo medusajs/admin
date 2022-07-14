@@ -49,11 +49,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
 
   const allItems: Omit<LineItem, "beforeInsert">[] = useMemo(() => {
     const idLookUp = returnRequest.items.map((i) => i.item_id)
-    const quantityLookUp: Map<string, number> = new Map()
-
-    for (const ri of returnRequest.items) {
-      quantityLookUp.set(ri.item_id, ri.quantity)
-    }
 
     let allItems = [...order.items]
 
@@ -71,7 +66,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
 
     const withAdjustedQuantity = allItems
       .filter((i) => idLookUp.includes(i.id))
-      .map((i) => ({ ...i, quantity: quantityLookUp.get(i.id) || i.quantity }))
 
     return withAdjustedQuantity
   }, [order, returnRequest])
@@ -82,7 +76,10 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
     returnRequest.items.forEach((i: ReturnItem) => {
       const item = allItems.find((l) => l.id === i.item_id)
       if (item && item.quantity - item.returned_quantity > 0) {
-        returns[i.item_id] = item
+        returns[i.item_id] = {
+          ...item,
+          quantity: returnRequest.items.find((i) => i.item_id === item.id)?.quantity
+        }
       }
     })
 
@@ -98,7 +95,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
     const items = Object.keys(toReturn)
       .map((t) => ({
         ...allItems.find((i) => i.id === t),
-        quantity: toReturn[t].quantity,
       }))
       .filter((i) => typeof i !== "undefined") as LineItem[]
 
