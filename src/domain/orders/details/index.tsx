@@ -358,7 +358,11 @@ const OrderDetails = ({ id }) => {
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Summary">
               <div className="mt-6">
                 {order?.items?.map((item, i) => (
-                  <OrderLine key={i} item={item} region={order?.region} />
+                  <OrderLine
+                    key={i}
+                    item={item}
+                    currencyCode={order?.currency_code}
+                  />
                 ))}
                 <DisplayTotal
                   currency={order?.currency_code}
