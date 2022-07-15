@@ -1,7 +1,7 @@
-import React, { ReactNode, useReducer } from "react"
-import Modal, { ModalProps } from "../../molecules/modal"
-import Button from "../../fundamentals/button"
 import clsx from "clsx"
+import React, { ReactNode, useReducer } from "react"
+import Button from "../../fundamentals/button"
+import Modal, { ModalProps } from "../../molecules/modal"
 import LayeredModal, { ILayeredModalContext } from "./layered-modal"
 
 enum SteppedActions {
@@ -146,7 +146,7 @@ const SteppedModal: React.FC<SteppedProps> = ({
     >
       <Modal.Body
         className={clsx(
-          "transition-transform flex flex-col justify-between duration-100"
+          "transition-transform flex flex-col justify-between duration-100 max-h-full"
         )}
         isLargeModal={isLargeModal}
       >

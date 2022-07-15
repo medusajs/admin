@@ -57,7 +57,7 @@ const FormToasterContainer: React.FC<FormToasterContainerProps> & {
         </>
       )
     }
-  }, [isLoading])
+  }, [isLoading, children])
 
   return (
     <div

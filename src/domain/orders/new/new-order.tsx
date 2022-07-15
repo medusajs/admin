@@ -1,12 +1,13 @@
 import { navigate } from "gatsby"
-import _, { debounce } from "lodash"
-import React, { useCallback, useEffect, useState } from "react"
+import _ from "lodash"
+import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { LayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import SteppedModal, {
   SteppedContext,
 } from "../../../components/molecules/modal/stepped-modal"
 import useMedusa from "../../../hooks/use-medusa"
+import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import { extractUnitPrice } from "../../../utils/prices"
 import { removeNullish } from "../../../utils/remove-nullish"
@@ -40,6 +41,8 @@ const NewOrder = ({ onDismiss, refresh }) => {
   const [noNotification, setNoNotification] = useState(false)
   const [searchingProducts, setSearchingProducts] = useState(false)
 
+  const notification = useNotification()
+
   const steppedContext = React.useContext(SteppedContext)
   const layeredContext = React.useContext(LayeredModalContext)
 
@@ -60,24 +63,6 @@ const NewOrder = ({ onDismiss, refresh }) => {
   } = form.watch()
 
   const { regions } = useMedusa("regions")
-
-  const fetchProduct = async (q) => {
-    const { data } = await Medusa.variants.list({ q })
-    setSearchResults(data.variants)
-    setSearchingProducts(false)
-  }
-
-  // Avoid search on every keyboard stroke by debouncing .5 sec
-  const debouncedProductSearch = useCallback(debounce(fetchProduct, 500), [])
-
-  const handleProductSearch = async (q) => {
-    setSearchingProducts(true)
-    try {
-      debouncedProductSearch(q)
-    } catch (error) {
-      throw Error("Could not fetch products")
-    }
-  }
 
   const addCustomItem = ({ title, unit_price, quantity }) => {
     const item = { title, unit_price, quantity: quantity || 1 }
@@ -235,7 +220,7 @@ const NewOrder = ({ onDismiss, refresh }) => {
       navigate(`/a/draft-orders/${data.draft_order.id}`)
       onDismiss()
     } catch (error) {
-      onDismiss()
+      notification("Error", "Something went wrong. Please try again", "error")
     }
 
     setCreatingOrder(false)
