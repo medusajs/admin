@@ -86,6 +86,12 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
     setToReturn(returns)
   }, [allItems])
 
+  const shippingTaxRate = useMemo(() => {
+    return returnRequest.shipping_method.tax_lines.reduce((acc, curr) => {
+      return acc + curr.rate
+    }, 0)
+  }, [returnRequest])
+
   useEffect(() => {
     if (!Object.entries(toReturn).length) {
       setRefundAmount(0)
@@ -108,7 +114,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
     const shippingTotal =
       (returnRequest.shipping_method &&
         returnRequest.shipping_method.price *
-          (1 + (order.tax_rate || 0) / 100)) ||
+          (1 + shippingTaxRate / 100)) ||
       0
 
     const total = itemTotal - shippingTotal
@@ -116,7 +122,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
     if (!refundEdited || total < refundAmount) {
       setRefundAmount(refundAmount < 0 ? 0 : total)
     }
-  }, [toReturn])
+  }, [toReturn, shippingTaxRate])
 
   const onSubmit = () => {
     const items = Object.keys(toReturn).map((k) => ({
@@ -186,7 +192,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
                     <span>
                       {(
                         (returnRequest.shipping_method.price / 100) *
-                        (order.tax_rate ? 1 + order.tax_rate / 100 : 1)
+                        (1 + shippingTaxRate / 100)
                       ).toFixed(2)}{" "}
                       <span className="text-grey-50">
                         {order.currency_code.toUpperCase()}
