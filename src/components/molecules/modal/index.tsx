@@ -100,7 +100,7 @@ Modal.Body = ({ children, isLargeModal, className, style }) => {
 Modal.Content = ({ children, className, isLargeModal }) => {
   const { height } = useWindowDimensions()
   const style = {
-    maxHeight: height - 64 - 141,
+    maxHeight: height - 90 - 141,
   }
   return (
     <div

@@ -1,9 +1,7 @@
 export const formValuesToUpdateGiftCardMapper = (values) => {
   const payload = {
     ...values,
-    thumbnail: values.images?.length
-      ? values.images[values.thumbnail]
-      : undefined,
+    thumbnail: values.images?.length ? values.images[values.thumbnail] : null,
   }
 
   if (values.images) {

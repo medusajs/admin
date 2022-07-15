@@ -147,7 +147,7 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
               <Table.Cell className="text-right">
                 {formatAmountWithSymbol({
                   currency: order.currency_code,
-                  amount: item.quantity * item.unit_price,
+                  amount: item.refundable || 0,
                 })}
               </Table.Cell>
               <Table.Cell className="text-right text-grey-40 pr-1">

@@ -1,4 +1,4 @@
-import { LineItem, Order } from "@medusajs/medusa"
+import { LineItem as RawLineItem, Order } from "@medusajs/medusa"
 import { useAdminRequestReturn, useAdminShippingOptions } from "medusa-react"
 import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
@@ -25,6 +25,8 @@ type ReturnMenuProps = {
   order: Order
   onDismiss: () => void
 }
+
+type LineItem = Omit<RawLineItem, "beforeInsert">
 
 const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
   const layoutmodalcontext = useContext(LayeredModalContext)
@@ -63,21 +65,18 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
   })
 
   useEffect(() => {
-    const items = Object.keys(toReturn).map((t) =>
-      allItems.find((i) => i.id === t)
-    )
-    const total =
-      items.reduce((acc, next) => {
-        if (next) {
-          return (
-            acc +
-            (next.refundable || 0 / (next.quantity - next.returned_quantity)) *
-              toReturn[next.id].quantity
-          )
-        }
+    const items = Object.keys(toReturn)
+      .map((t) => allItems.find((i) => i.id === t))
+      .filter((i) => typeof i !== "undefined") as LineItem[]
 
-        return acc
-      }, 0) - (shippingPrice || 0)
+    const itemTotal = items.reduce((acc: number, curr: LineItem): number => {
+      const unitRefundable =
+        (curr.refundable || 0) / (curr.quantity - curr.returned_quantity)
+
+      return acc + unitRefundable * toReturn[curr.id].quantity
+    }, 0)
+
+    const total = itemTotal - (shippingPrice || 0)
 
     setRefundable(total)
 
@@ -134,8 +133,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
     const method = shippingOptions?.find((o) => selectedItem.value === o.id)
 
     if (method) {
-      const multiplier = order.tax_rate ? 1 + order.tax_rate / 100 : 1
-      setShippingPrice(method.amount * multiplier)
+      setShippingPrice(method.price_incl_tax)
     }
   }
 
@@ -144,8 +142,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
       const method = shippingOptions?.find((o) => shippingMethod.value === o.id)
 
       if (method) {
-        const multiplier = order.tax_rate ? 1 + order.tax_rate / 100 : 1
-        setShippingPrice(method.amount * multiplier)
+        setShippingPrice(method.price_incl_tax)
       }
     }
   }, [useCustomShippingPrice, shippingMethod])
