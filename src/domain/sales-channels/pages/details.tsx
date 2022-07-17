@@ -124,7 +124,7 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
         {/*INPUT*/}
         <div className="h-[50px] relative">
           <Input
-            value={setFilterText}
+            value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
             placeholder="Search by title or description"
             prefix={<SearchIcon size={18} />}
@@ -140,9 +140,11 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
 }
 
 type SalesChannelsListProps = {
-  salesChannels: SalesChannel[]
   activeChannelId: string
   openCreateModal: () => void
+  filterText: string
+  setFilterText: (text: string) => void
+  salesChannels: SalesChannel[]
   setActiveSalesChannel: (sc: SalesChannel) => void
 }
 
@@ -155,11 +157,17 @@ function SalesChannelsList(props: SalesChannelsListProps) {
     openCreateModal,
     setActiveSalesChannel,
     salesChannels,
+    filterText,
+    setFilterText,
   } = props
 
   return (
     <div className="col-span-1 rounded-lg border bg-grey-0 border-grey-20 px-8 py-6">
-      <SalesChannelsHeader openCreateModal={openCreateModal} />
+      <SalesChannelsHeader
+        filterText={filterText}
+        setFilterText={setFilterText}
+        openCreateModal={openCreateModal}
+      />
       <div>
         {salesChannels?.map((s) => (
           <SalesChannelTile
@@ -297,6 +305,7 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
  * Sales channels details page container.
  */
 function Details() {
+  const [filterText, setFilterText] = useState<string>()
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   const [
@@ -335,6 +344,17 @@ function Details() {
     return sc1.name.localeCompare(sc2.name)
   }
 
+  console.log(filterText)
+  function filterSalesChannels(channels: SalesChannel[]) {
+    if (!filterText) {
+      return channels
+    }
+
+    return channels.filter(
+      (ch) => !!ch.name.match(filterText) || !!ch.description?.match(filterText)
+    )
+  }
+
   if (!sales_channels || !activeSalesChannel) {
     return null
   }
@@ -350,10 +370,14 @@ function Details() {
 
       <div className="grid grid-cols-3 gap-2 min-h-[960px] w-full pb-8">
         <SalesChannelsList
+          filterText={filterText}
+          setFilterText={setFilterText}
           openCreateModal={openCreateModal}
           activeChannelId={activeSalesChannel.id}
           setActiveSalesChannel={setActiveSalesChannel}
-          salesChannels={sales_channels.sort(defaultChannelsSorter)}
+          salesChannels={filterSalesChannels(sales_channels).sort(
+            defaultChannelsSorter
+          )}
         />
         {activeSalesChannel && (
           <SalesChannelDetails
