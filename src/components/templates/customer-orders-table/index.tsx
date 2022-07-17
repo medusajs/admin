@@ -19,7 +19,7 @@ const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
   // to have customers putting in that many orders. This is only until
   // we've successfully implemented react-table, that will allow us
   // to add pagination
-  const { orders, isLoading } = useAdminOrders({
+  const { orders } = useAdminOrders({
     customer_id: customerId,
     offset: 0,
     limit: 14,
@@ -30,8 +30,8 @@ const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
 
   const calcImages = (order) => {
     const columns = Math.max(Math.floor(width / 20) - 1, 1)
-    const visibleImages = order.items.slice(0, columns)
-    const remainder = order.items.length - columns
+    const visibleImages = order?.items?.slice(0, columns)
+    const remainder = (order?.items?.length || 0) - columns
 
     return { visibleImages, remainder }
   }
