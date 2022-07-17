@@ -215,7 +215,10 @@ function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
   )
 }
 
-type SalesChannelDetailsProps = { salesChannel: SalesChannel }
+type SalesChannelDetailsProps = {
+  salesChannel: SalesChannel
+  resetDetails: () => void
+}
 
 /**
  * Sales channels details container.
@@ -290,7 +293,7 @@ function Details() {
     )
   }
 
-  const channelsSorter = (sc1, sc2) => {
+  function defaultChannelsSorter(sc1, sc2) {
     if (sc1.id === store?.default_sales_channel_id) {
       return -1
     }
@@ -299,6 +302,10 @@ function Details() {
     }
 
     return sc1.name.localeCompare(sc2.name)
+  }
+
+  if (!sales_channels || !activeSalesChannel) {
+    return null
   }
 
   return (
@@ -312,10 +319,10 @@ function Details() {
 
       <div className="grid grid-cols-3 gap-2 min-h-[960px] w-full pb-8">
         <SalesChannelsList
-          salesChannels={sales_channels?.sort(channelsSorter)}
           openCreateModal={openCreateModal}
-          activeChannelId={activeSalesChannel?.id}
+          activeChannelId={activeSalesChannel.id}
           setActiveSalesChannel={setActiveSalesChannel}
+          salesChannels={sales_channels.sort(defaultChannelsSorter)}
         />
         {activeSalesChannel && (
           <SalesChannelDetails

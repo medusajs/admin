@@ -24,9 +24,13 @@ import IndeterminateCheckbox from "../../../components/molecules/indeterminate-c
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import clsx from "clsx"
+import { Product } from "@medusajs/medusa"
+
+/* ****************************************** */
+/* ************** TABLE CONFIG ************** */
+/* ****************************************** */
 
 const DEFAULT_PAGE_SIZE = 15
-const DEFAULT_PAGE_SIZE_TILE_VIEW = 18
 
 const defaultQueryProps = {
   fields: "id,title,type,thumbnail,status",
@@ -80,19 +84,23 @@ const COLUMNS = [
   },
 ]
 
-type ProductTableProps = { isAddTable: boolean }
+/* ******************************************** */
+/* ************** PRODUCTS TABLE ************** */
+/* ******************************************** */
 
-const ProductTable: React.FC<ProductTableProps> = ({
-  isAddTable,
-  count,
-  products,
-  setSelectedRowIds,
-  selectedRowIds,
-  removeProductFromSalesChannel,
-  ...props
-}) => {
-  const location = useLocation()
+type ProductTableProps = {
+  isAddTable: boolean
+  count: number
+  products: Product[]
+  setSelectedRowIds: (ids: string[]) => void
+  selectedRowIds: string[]
+  removeProductFromSalesChannel: (ids: string[]) => void
+}
 
+/**
+ * Renders a table of sales channel products.
+ */
+function ProductTable(props: ProductTableProps) {
   const {
     removeTab,
     setTab,
@@ -107,6 +115,14 @@ const ProductTable: React.FC<ProductTableProps> = ({
     setQuery: setFreeText,
     queryObject,
     representationObject,
+
+    // CONTAINER props
+    isAddTable,
+    count,
+    products,
+    setSelectedRowIds,
+    selectedRowIds,
+    removeProductFromSalesChannel,
   } = props
 
   const offs = parseInt(queryObject.offset) || 0
@@ -351,6 +367,13 @@ function RemoveProductsPopup({ close, onRemove, total }) {
   )
 }
 
+/* **************************************** */
+/* ************** CONTAINERS ************** */
+/* **************************************** */
+
+/**
+ * Sales channel products table container.
+ */
 function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
@@ -417,6 +440,11 @@ function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
   )
 }
 
+/**
+ * Sales channels products add container.
+ * Renders product table for adding/editing sales channel products
+ * in a modal.
+ */
 function SalesChannelProductsSelectModal({ handleClose, salesChannel }) {
   const [selectedRowIds, setSelectedRowIds] = useState([])
   const filters = useProductFilters(location.search, defaultQueryProps)
