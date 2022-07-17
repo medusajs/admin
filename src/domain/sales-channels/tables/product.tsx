@@ -37,15 +37,21 @@ const defaultQueryProps = {
 
 const COLUMNS = [
   {
+    width: 30,
     id: "selection",
     Header: ({ getToggleAllPageRowsSelectedProps }) => (
-      <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+      <span className="flex justify-center">
+        <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+      </span>
     ),
     Cell: ({ row }) => {
       return (
-        <Table.Cell onClick={(e) => e.stopPropagation()} className="w-[10px]">
+        <span
+          onClick={(e) => e.stopPropagation()}
+          className="flex justify-center"
+        >
           <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-        </Table.Cell>
+        </span>
       )
     },
   },
@@ -274,10 +280,7 @@ function ProductTable(props: ProductTableProps) {
           {headerGroups?.map((headerGroup) => (
             <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((col) => (
-                <Table.HeadCell
-                  className="min-w-[100px]"
-                  {...col.getHeaderProps()}
-                >
+                <Table.HeadCell {...col.getHeaderProps()}>
                   {col.render("Header")}
                 </Table.HeadCell>
               ))}
