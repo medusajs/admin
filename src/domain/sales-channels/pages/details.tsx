@@ -4,9 +4,7 @@ import clsx from "clsx"
 
 import { SalesChannel } from "@medusajs/medusa"
 import {
-  useAdminDeleteProductsFromSalesChannel,
   useAdminDeleteSalesChannel,
-  useAdminSalesChannel,
   useAdminSalesChannels,
   useAdminStore,
 } from "medusa-react"
@@ -26,7 +24,12 @@ import {
 } from "../tables/product"
 import StatusIndicator from "../../../components/fundamentals/status-indicator"
 
-function Indicator(props: { isActive: boolean }) {
+type ListIndicatorProps = { isActive: boolean }
+
+/**
+ * Sales channels list indicator component.
+ */
+function ListIndicator(props: ListIndicatorProps) {
   const { isActive } = props
   return (
     <div
@@ -44,11 +47,16 @@ function Indicator(props: { isActive: boolean }) {
   )
 }
 
-function SalesChannelTile(props: {
+type SalesChannelTileProps = {
   salesChannel: SalesChannel
   isSelected: boolean
   onClick: () => void
-}) {
+}
+
+/**
+ * Sales channels list tile component.
+ */
+function SalesChannelTile(props: SalesChannelTileProps) {
   const { salesChannel, isSelected, onClick } = props
 
   return (
@@ -58,7 +66,7 @@ function SalesChannelTile(props: {
         "border-2 border-violet-60": isSelected,
       })}
     >
-      <Indicator isActive={isSelected} />
+      <ListIndicator isActive={isSelected} />
       <div>
         <h3 className="font-semibold text-grey-90 leading-5 mb-1">
           {salesChannel.name}
@@ -71,7 +79,12 @@ function SalesChannelTile(props: {
   )
 }
 
-function SalesChannelsHeader(props: { openCreateModal: () => void }) {
+type SalesChannelsHeaderProps = { openCreateModal: () => void }
+
+/**
+ * Sales channel header.
+ */
+function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
   const { openCreateModal } = props
   return (
     <>
@@ -95,12 +108,17 @@ function SalesChannelsHeader(props: { openCreateModal: () => void }) {
   )
 }
 
-function SalesChannelsList(props: {
+type SalesChannelsListProps = {
   salesChannels: SalesChannel[]
   activeChannelId: string
   openCreateModal: () => void
   setActiveSalesChannel: (sc: SalesChannel) => void
-}) {
+}
+
+/**
+ * Sales channels list.
+ */
+function SalesChannelsList(props: SalesChannelsListProps) {
   const {
     activeChannelId,
     openCreateModal,
@@ -124,12 +142,17 @@ function SalesChannelsList(props: {
   )
 }
 
-function SalesChannelDetailsHeader(props: {
+type SalesChannelDetailsHeaderProps = {
   salesChannel: SalesChannel
   openUpdateModal: () => void
   resetDetails: () => void
   setShowAddProducts: () => void
-}) {
+}
+
+/**
+ * Sales channels details header.
+ */
+function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
   const {
     salesChannel,
     openUpdateModal,
@@ -192,7 +215,12 @@ function SalesChannelDetailsHeader(props: {
   )
 }
 
-function SalesChannelDetails(props: { salesChannel: SalesChannel }) {
+type SalesChannelDetailsProps = { salesChannel: SalesChannel }
+
+/**
+ * Sales channels details container.
+ */
+function SalesChannelDetails(props: SalesChannelDetailsProps) {
   const { resetDetails, salesChannel } = props
   const [showUpdateModal, setShowUpdateModal] = useState(false)
   const [showAddProducts, setShowAddProducts] = useState(false)
@@ -231,6 +259,9 @@ function SalesChannelDetails(props: { salesChannel: SalesChannel }) {
   )
 }
 
+/**
+ * Sales channels details page container.
+ */
 function Details() {
   const [showCreateModal, setShowCreateModal] = useState(false)
 
