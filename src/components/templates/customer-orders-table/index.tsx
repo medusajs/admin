@@ -80,7 +80,7 @@ const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
                     ref={containerRef}
                     className="flex space-x-1 w-[60px] mr-2 items-center"
                   >
-                    {visibleImages.map((tag) => (
+                    {visibleImages?.map((tag) => (
                       <div className="h-[35px] w-[25px] flex items-center ">
                         <img
                           className="rounded object-cover"
