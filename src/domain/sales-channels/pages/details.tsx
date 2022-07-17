@@ -23,6 +23,8 @@ import {
   SalesChannelProductsTable,
 } from "../tables/product"
 import StatusIndicator from "../../../components/fundamentals/status-indicator"
+import Input from "../../../components/molecules/input"
+import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 
 type ListIndicatorProps = { isActive: boolean }
 
@@ -79,32 +81,61 @@ function SalesChannelTile(props: SalesChannelTileProps) {
   )
 }
 
-type SalesChannelsHeaderProps = { openCreateModal: () => void }
+type SalesChannelsHeaderProps = {
+  openCreateModal: () => void
+  filterText: string
+  setFilterText: (text: string) => void
+}
 
 /**
  * Sales channel header.
  */
 function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
-  const { openCreateModal } = props
+  const { openCreateModal, filterText, setFilterText } = props
+  const [showFilter, setShowFilter] = useState(false)
+
+  const classes = {
+    "translate-y-[-50px]": showFilter,
+    "translate-y-[0px]": !showFilter,
+  }
+
   return (
-    <>
-      <div className="flex justify-between items-center mb-1">
-        <h2 className="font-semibold text-xlarge text-grey-90">
-          Sales Channels
-        </h2>
-        <div className="flex justify-between items-center gap-4">
-          <SearchIcon size={15} />
-          <PlusIcon
-            size={15}
-            onClick={openCreateModal}
-            className="cursor-pointer"
+    <div className="h-[55px] mb-6 overflow-hidden">
+      <div className={clsx(" transition-all duration-200", classes)}>
+        {/*HEADER*/}
+        <div className="h-[55px]">
+          <div className="flex justify-between items-center">
+            <h2 className="font-semibold text-xlarge text-grey-90">
+              Sales Channels
+            </h2>
+            <div className="flex justify-between items-center gap-4">
+              <SearchIcon size={15} onClick={() => setShowFilter(true)} />
+              <PlusIcon
+                size={15}
+                onClick={openCreateModal}
+                className="cursor-pointer"
+              />
+            </div>
+          </div>
+          <div className="text-grey-50 text-small mb-6">
+            Control which products are available in which channels
+          </div>
+        </div>
+        {/*INPUT*/}
+        <div className="h-[50px] relative">
+          <Input
+            value={setFilterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            placeholder="Search by title or description"
+            prefix={<SearchIcon size={18} />}
+          />
+          <CrossIcon
+            onClick={() => setShowFilter(false)}
+            className="absolute right top-0"
           />
         </div>
       </div>
-      <div className="text-grey-50 text-small mb-6">
-        Control which products are available in which channels
-      </div>
-    </>
+    </div>
   )
 }
 
