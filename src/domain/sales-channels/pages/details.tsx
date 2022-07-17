@@ -1,9 +1,15 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Link } from "gatsby"
 import clsx from "clsx"
 
 import { SalesChannel } from "@medusajs/medusa"
-import { useAdminSalesChannels } from "medusa-react"
+import {
+  useAdminDeleteProductsFromSalesChannel,
+  useAdminDeleteSalesChannel,
+  useAdminSalesChannel,
+  useAdminSalesChannels,
+  useAdminStore,
+} from "medusa-react"
 
 import AddSalesChannelModal from "../form/add-sales-channel"
 import ArrowLeftIcon from "../../../components/fundamentals/icons/arrow-left-icon"
@@ -19,27 +25,6 @@ import {
   SalesChannelProductsTable,
 } from "../tables/product"
 import StatusIndicator from "../../../components/fundamentals/status-indicator"
-
-const mockChannels = [
-  {
-    name: "Default sales channel",
-    description: "Main (default) sales channel",
-    id: "id_1",
-    is_disabled: false,
-  },
-  {
-    name: "POS channel",
-    description: "Store channel",
-    id: "id_2",
-    is_disabled: false,
-  },
-  {
-    name: "FB marketplace",
-    description: "Facebook and instagram marketplace sales channel",
-    id: "id_3",
-    is_disabled: true,
-  },
-]
 
 function Indicator(props: { isActive: boolean }) {
   const { isActive } = props
@@ -111,20 +96,23 @@ function SalesChannelsHeader(props: { openCreateModal: () => void }) {
 }
 
 function SalesChannelsList(props: {
+  salesChannels: SalesChannel[]
   activeChannelId: string
   openCreateModal: () => void
-  setActiveSalesChannel: (salesChannel: SalesChannel) => void
+  setActiveSalesChannel: (sc: SalesChannel) => void
 }) {
-  const { activeChannelId, openCreateModal, setActiveSalesChannel } = props
-
-  // const { sales_channels } =  useAdminSalesChannels()
-  const sales_channels = mockChannels
+  const {
+    activeChannelId,
+    openCreateModal,
+    setActiveSalesChannel,
+    salesChannels,
+  } = props
 
   return (
     <div className="col-span-1 rounded-lg border bg-grey-0 border-grey-20 px-8 py-6">
       <SalesChannelsHeader openCreateModal={openCreateModal} />
       <div>
-        {sales_channels?.map((s) => (
+        {salesChannels?.map((s) => (
           <SalesChannelTile
             salesChannel={s}
             isSelected={activeChannelId === s.id}
@@ -139,11 +127,21 @@ function SalesChannelsList(props: {
 function SalesChannelDetailsHeader(props: {
   salesChannel: SalesChannel
   openUpdateModal: () => void
+  resetDetails: () => void
+  setShowAddProducts: () => void
 }) {
-  const { salesChannel, openUpdateModal } = props
+  const {
+    salesChannel,
+    openUpdateModal,
+    resetDetails,
+    setShowAddProducts,
+  } = props
+
+  const { mutate: deleteSalesChannel } = useAdminDeleteSalesChannel(
+    salesChannel.id
+  )
 
   const [showDelete, setShowDelete] = useState()
-  const [showAddProducts, setShowADdProducts] = useState(false)
 
   const actions = [
     {
@@ -154,7 +152,7 @@ function SalesChannelDetailsHeader(props: {
     {
       label: "Add/Edit products",
       icon: <PlusIcon />,
-      onClick: () => setShowADdProducts(true),
+      onClick: () => setShowAddProducts(true),
     },
     {
       label: "Delete sales channel",
@@ -177,16 +175,13 @@ function SalesChannelDetailsHeader(props: {
         <Actionables forceDropdown={true} actions={actions} />
       </div>
 
-      {showAddProducts && (
-        <SalesChannelProductsSelectModal
-          handleClose={() => setShowADdProducts(false)}
-        />
-      )}
-
       {showDelete && (
         <DeletePrompt
           handleClose={() => setShowDelete(false)}
-          // onDelete={async () => onDelete()}
+          onDelete={async () => {
+            deleteSalesChannel()
+            resetDetails()
+          }}
           confirmText="Yes, delete"
           successText="Sales channel deleted"
           text={`Are you sure you want to delete "${salesChannel.name}" sales channel?`}
@@ -198,8 +193,9 @@ function SalesChannelDetailsHeader(props: {
 }
 
 function SalesChannelDetails(props: { salesChannel: SalesChannel }) {
-  const { salesChannel } = props
+  const { resetDetails, salesChannel } = props
   const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [showAddProducts, setShowAddProducts] = useState(false)
 
   const openUpdateModal = () => setShowUpdateModal(true)
   const closeUpdateModal = () => setShowUpdateModal(false)
@@ -207,16 +203,28 @@ function SalesChannelDetails(props: { salesChannel: SalesChannel }) {
   return (
     <div className="col-span-2 rounded-rounded border bg-grey-0 border-grey-20 px-8 py-6">
       <SalesChannelDetailsHeader
+        resetDetails={resetDetails}
         salesChannel={salesChannel}
         openUpdateModal={openUpdateModal}
+        setShowAddProducts={setShowAddProducts}
       />
 
-      <SalesChannelProductsTable />
+      <SalesChannelProductsTable
+        salesChannelId={salesChannel.id}
+        showAddModal={() => setShowAddProducts(true)}
+      />
 
       {showUpdateModal && (
         <EditSalesChannel
           handleClose={closeUpdateModal}
           salesChannel={salesChannel}
+        />
+      )}
+
+      {showAddProducts && (
+        <SalesChannelProductsSelectModal
+          salesChannel={salesChannel}
+          handleClose={() => setShowAddProducts(false)}
         />
       )}
     </div>
@@ -229,10 +237,38 @@ function Details() {
   const [
     activeSalesChannel,
     setActiveSalesChannel,
-  ] = useState<SalesChannel | null>(mockChannels[0])
+  ] = useState<SalesChannel | null>()
+
+  const { store } = useAdminStore()
+  const { sales_channels } = useAdminSalesChannels()
+
+  useEffect(() => {
+    if (!activeSalesChannel && sales_channels && store) {
+      setActiveSalesChannel(
+        sales_channels.find((sc) => sc.id === store.default_sales_channel_id)
+      )
+    }
+  }, [sales_channels, store])
 
   const openCreateModal = () => setShowCreateModal(true)
   const closeCreateModal = () => setShowCreateModal(false)
+
+  const resetDetails = () => {
+    setActiveSalesChannel(
+      sales_channels.find((sc) => sc.id === store?.default_sales_channel_id)
+    )
+  }
+
+  const channelsSorter = (sc1, sc2) => {
+    if (sc1.id === store?.default_sales_channel_id) {
+      return -1
+    }
+    if (sc2.id === store?.default_sales_channel_id) {
+      return 1
+    }
+
+    return sc1.name.localeCompare(sc2.name)
+  }
 
   return (
     <div>
@@ -245,15 +281,17 @@ function Details() {
 
       <div className="grid grid-cols-3 gap-2 min-h-[960px] w-full pb-8">
         <SalesChannelsList
+          salesChannels={sales_channels?.sort(channelsSorter)}
           openCreateModal={openCreateModal}
           activeChannelId={activeSalesChannel?.id}
           setActiveSalesChannel={setActiveSalesChannel}
         />
-        <SalesChannelDetails
-          salesChannel={mockChannels.find(
-            (c) => c.id === activeSalesChannel.id
-          )}
-        />
+        {activeSalesChannel && (
+          <SalesChannelDetails
+            salesChannel={activeSalesChannel}
+            resetDetails={resetDetails}
+          />
+        )}
       </div>
 
       {showCreateModal && <AddSalesChannelModal onClose={closeCreateModal} />}

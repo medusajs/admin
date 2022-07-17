@@ -1,8 +1,12 @@
 import { useLocation } from "@reach/router"
 import { isEmpty } from "lodash"
-import { useAdminProducts } from "medusa-react"
+import {
+  useAdminAddProductsToSalesChannel,
+  useAdminDeleteProductsFromSalesChannel,
+  useAdminProducts,
+} from "medusa-react"
 import qs from "qs"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
 
@@ -23,8 +27,6 @@ import clsx from "clsx"
 
 const DEFAULT_PAGE_SIZE = 15
 const DEFAULT_PAGE_SIZE_TILE_VIEW = 18
-
-type ProductTableProps = {}
 
 const defaultQueryProps = {
   fields: "id,title,type,thumbnail,status",
@@ -78,11 +80,15 @@ const COLUMNS = [
   },
 ]
 
+type ProductTableProps = { isAddTable: boolean }
+
 const ProductTable: React.FC<ProductTableProps> = ({
+  isAddTable,
   count,
   products,
   setSelectedRowIds,
   selectedRowIds,
+  removeProductFromSalesChannel,
   ...props
 }) => {
   const location = useLocation()
@@ -171,6 +177,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
       pageCount: numPages,
       autoResetPage: false,
       autoResetSelectedRows: true,
+      getRowId: (row) => row.id,
     },
     usePagination,
     useRowSelect
@@ -216,16 +223,16 @@ const ProductTable: React.FC<ProductTableProps> = ({
     }
   }
 
-  const actions = [
+  const getActions = (id: string) => [
     {
       label: "Details",
-      // onClick: () => navigate(`/a/product/${row.original.id}`),
+      onClick: () => navigate(`/a/products/${id}`),
       icon: <DetailsIcon size={20} />,
     },
     {
       label: "Remove from the channel",
       variant: "danger",
-      onClick: () => undefined,
+      onClick: () => removeProductFromSalesChannel(id),
       icon: <TrashIcon size={20} />,
     },
   ]
@@ -267,7 +274,12 @@ const ProductTable: React.FC<ProductTableProps> = ({
         <Table.Body {...getTableBodyProps()}>
           {rows.map((row) => {
             prepareRow(row)
-            return <ProductRow row={row} actions={actions} />
+            return (
+              <ProductRow
+                row={row}
+                actions={!isAddTable ? getActions(row.original.id) : undefined}
+              />
+            )
           })}
         </Table.Body>
       </Table>
@@ -339,21 +351,49 @@ function RemoveProductsPopup({ close, onRemove, total }) {
   )
 }
 
-function SalesChannelProductsTable() {
+function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
   const filters = useProductFilters(location.search, defaultQueryProps)
 
+  const {
+    mutate: deleteProductsFromSalesChannel,
+  } = useAdminDeleteProductsFromSalesChannel(salesChannelId)
+
   const { products, count, isLoading } = useAdminProducts({
     ...filters.queryObject,
+    expand: "sales_channels",
   })
+
+  const removeProductFromSalesChannel = (id: string) => {
+    deleteProductsFromSalesChannel({ product_ids: [{ id }] })
+  }
+
+  const removeSelectedProducts = async () => {
+    await deleteProductsFromSalesChannel({
+      product_ids: selectedRowIds.map((id) => ({ id })),
+    })
+    setSelectedRowIds([])
+  }
+
+  // TODO: use the products endpoint to do this once `expand` with `sales_channels` is supported
+  const filteredProducts = useMemo(
+    () =>
+      products?.filter(
+        (product) =>
+          !!product.sales_channels!.find(
+            (channel) => channel.id === salesChannelId
+          )
+      ),
+    [products, salesChannelId]
+  )
 
   if (isLoading) {
     return null
   }
 
-  if (!products?.length) {
-    return <Placeholder />
+  if (!filteredProducts?.length) {
+    return <Placeholder showAddModal={showAddModal} />
   }
 
   const toBeRemoveCount = selectedRowIds.length
@@ -362,26 +402,37 @@ function SalesChannelProductsTable() {
     <div className="relative h-[880px]">
       <ProductTable
         count={count}
-        products={products}
+        products={filteredProducts}
         selectedRowIds={selectedRowIds}
+        removeProductFromSalesChannel={removeProductFromSalesChannel}
         setSelectedRowIds={setSelectedRowIds}
         {...filters}
       />
       <RemoveProductsPopup
         total={toBeRemoveCount}
+        onRemove={removeSelectedProducts}
         close={() => setSelectedRowIds([])}
       />
     </div>
   )
 }
 
-function SalesChannelProductsSelectModal({ handleClose, handleSubmit }) {
+function SalesChannelProductsSelectModal({ handleClose, salesChannel }) {
   const [selectedRowIds, setSelectedRowIds] = useState([])
   const filters = useProductFilters(location.search, defaultQueryProps)
 
   const { products, count } = useAdminProducts({
     ...filters.queryObject,
   })
+
+  const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
+    salesChannel.id
+  )
+
+  const handleSubmit = () => {
+    addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
+    handleClose()
+  }
 
   if (!products?.length) {
     return null
@@ -395,6 +446,7 @@ function SalesChannelProductsSelectModal({ handleClose, handleSubmit }) {
         </Modal.Header>
         <Modal.Content>
           <ProductTable
+            isAddTable
             products={products}
             count={count}
             selectedRowIds={selectedRowIds}
@@ -416,7 +468,6 @@ function SalesChannelProductsSelectModal({ handleClose, handleSubmit }) {
               variant="primary"
               className="min-w-[100px]"
               size="small"
-              // loading={updateSalesChannel.isLoading}
               onClick={handleSubmit}
             >
               Save

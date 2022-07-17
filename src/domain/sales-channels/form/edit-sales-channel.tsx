@@ -1,5 +1,8 @@
 import React, { useState } from "react"
+import { useAdminUpdateSalesChannel } from "medusa-react"
+
 import { SalesChannel } from "@medusajs/medusa"
+
 import Modal from "../../../components/molecules/modal"
 import InputField from "../../../components/molecules/input"
 import Button from "../../../components/fundamentals/button"
@@ -13,11 +16,18 @@ type P = {
 function EditSalesChannel(props: P) {
   const { handleClose, salesChannel } = props
 
+  const { mutate: updateSalesChannel } = useAdminUpdateSalesChannel(
+    salesChannel.id
+  )
+
   const [name, setName] = useState(salesChannel.name)
   const [description, setDescription] = useState(salesChannel.description)
   const [isDisabled, setIsDisabled] = useState(salesChannel.is_disabled)
 
-  const handleSubmit = () => {}
+  const handleSubmit = () => {
+    updateSalesChannel({ name, description, is_disabled: isDisabled })
+    handleClose()
+  }
 
   return (
     <Modal handleClose={handleClose}>

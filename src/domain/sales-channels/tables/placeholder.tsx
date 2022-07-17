@@ -2,7 +2,7 @@ import React from "react"
 
 import Button from "../../../components/fundamentals/button"
 
-function Placeholder() {
+function Placeholder({ showAddModal }) {
   return (
     <div className="h-full flex flex-col justify-center items-center">
       <svg
@@ -42,7 +42,7 @@ function Placeholder() {
         they will live here.
       </p>
 
-      <Button variant="primary" size="small">
+      <Button onClick={showAddModal} variant="primary" size="small">
         Add products
       </Button>
     </div>
