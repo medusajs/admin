@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
-import { Link } from "gatsby"
 import clsx from "clsx"
+import { Link } from "gatsby"
+import React, { useEffect, useState } from "react"
 
 import { SalesChannel } from "@medusajs/medusa"
 import {
@@ -9,15 +9,15 @@ import {
   useAdminStore,
 } from "medusa-react"
 
-import AddSalesChannelModal from "../form/add-sales-channel"
-import ArrowLeftIcon from "../../../components/fundamentals/icons/arrow-left-icon"
-import SearchIcon from "../../../components/fundamentals/icons/search-icon"
-import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import Actionables from "../../../components/molecules/actionables"
 import EditSalesChannel from "../form/edit-sales-channel"
+import AddSalesChannelModal from "../form/add-sales-channel"
+import Actionables from "../../../components/molecules/actionables"
+import DeletePrompt from "../../../components/organisms/delete-prompt"
+import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import DeletePrompt from "../../../components/organisms/delete-prompt"
+import SearchIcon from "../../../components/fundamentals/icons/search-icon"
+import ArrowLeftIcon from "../../../components/fundamentals/icons/arrow-left-icon"
 import {
   SalesChannelProductsSelectModal,
   SalesChannelProductsTable,

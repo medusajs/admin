@@ -1,4 +1,5 @@
-import { useLocation } from "@reach/router"
+import clsx from "clsx"
+import { navigate } from "gatsby"
 import { isEmpty } from "lodash"
 import {
   useAdminAddProductsToSalesChannel,
@@ -8,23 +9,19 @@ import {
 import qs from "qs"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
-import ProductsFilter from "../../../domain/products/filter-dropdown"
-
-import Table, { TablePagination } from "../../../components/molecules/table"
-
-import { useProductFilters } from "../../../components/templates/product-table/use-product-filters"
-import Modal from "../../../components/molecules/modal"
-import Button from "../../../components/fundamentals/button"
+import { Product } from "@medusajs/medusa"
 
 import Placeholder from "./placeholder"
-import { navigate } from "gatsby"
+import Modal from "../../../components/molecules/modal"
+import Button from "../../../components/fundamentals/button"
+import ProductsFilter from "../../../domain/products/filter-dropdown"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
-import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
-import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
-import clsx from "clsx"
-import { Product } from "@medusajs/medusa"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
+import Table, { TablePagination } from "../../../components/molecules/table"
+import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
+import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
+import { useProductFilters } from "../../../components/templates/product-table/use-product-filters"
 
 /* ****************************************** */
 /* ************** TABLE CONFIG ************** */
