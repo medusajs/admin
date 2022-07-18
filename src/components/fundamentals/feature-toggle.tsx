@@ -11,9 +11,9 @@ const FeatureToggle: React.FC<FeatureToggleProps> = ({
   showOnlyWhenDisabled = false,
   children,
 }) => {
-  const { featureToggleList } = React.useContext(FeatureFlagContext)
+  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
 
-  const showContent = !!featureToggleList[featureFlag] === !showOnlyWhenDisabled
+  const showContent = isFeatureEnabled(featureFlag) === !showOnlyWhenDisabled
   return showContent ? <>{children}</> : null
 }
 
