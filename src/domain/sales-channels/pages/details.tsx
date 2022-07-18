@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { Link } from "gatsby"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 import { SalesChannel } from "@medusajs/medusa"
 import {
@@ -23,7 +23,6 @@ import {
   SalesChannelProductsTable,
 } from "../tables/product"
 import StatusIndicator from "../../../components/fundamentals/status-indicator"
-import Input from "../../../components/molecules/input"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 
 type ListIndicatorProps = { isActive: boolean }
@@ -83,7 +82,7 @@ function SalesChannelTile(props: SalesChannelTileProps) {
 
 type SalesChannelsHeaderProps = {
   openCreateModal: () => void
-  filterText: string
+  filterText?: string
   setFilterText: (text: string) => void
 }
 
@@ -94,22 +93,38 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
   const { openCreateModal, filterText, setFilterText } = props
   const [showFilter, setShowFilter] = useState(false)
 
+  const inputRef = useRef()
+
   const classes = {
     "translate-y-[-50px]": showFilter,
     "translate-y-[0px]": !showFilter,
   }
 
+  const hideFilter = () => {
+    setShowFilter(false)
+    setFilterText("")
+  }
+
+  useEffect(() => {
+    if (showFilter) {
+      // inputRef.current.focus()
+    }
+  }, [showFilter])
+
   return (
     <div className="h-[55px] mb-6 overflow-hidden">
       <div className={clsx(" transition-all duration-200", classes)}>
-        {/*HEADER*/}
         <div className="h-[55px]">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-1">
             <h2 className="font-semibold text-xlarge text-grey-90">
               Sales Channels
             </h2>
             <div className="flex justify-between items-center gap-4">
-              <SearchIcon size={15} onClick={() => setShowFilter(true)} />
+              <SearchIcon
+                size={15}
+                onClick={() => setShowFilter(true)}
+                className="cursor-pointer"
+              />
               <PlusIcon
                 size={15}
                 onClick={openCreateModal}
@@ -121,18 +136,18 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
             Control which products are available in which channels
           </div>
         </div>
-        {/*INPUT*/}
-        <div className="h-[50px] relative">
-          <Input
+
+        <div className="h-[40px] my-[5px] w-full flex items-center justify-around gap-2 text-grey-40 bg-grey-5 px-4 rounded-xl border">
+          <SearchIcon size={20} />
+          <input
+            ref={inputRef}
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
             placeholder="Search by title or description"
-            prefix={<SearchIcon size={18} />}
+            className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
+            autoComplete="off"
           />
-          <CrossIcon
-            onClick={() => setShowFilter(false)}
-            className="absolute right top-0"
-          />
+          <CrossIcon onClick={hideFilter} className="cursor-pointer" />
         </div>
       </div>
     </div>
@@ -142,7 +157,7 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
 type SalesChannelsListProps = {
   activeChannelId: string
   openCreateModal: () => void
-  filterText: string
+  filterText?: string
   setFilterText: (text: string) => void
   salesChannels: SalesChannel[]
   setActiveSalesChannel: (sc: SalesChannel) => void
@@ -344,15 +359,18 @@ function Details() {
     return sc1.name.localeCompare(sc2.name)
   }
 
-  console.log(filterText)
   function filterSalesChannels(channels: SalesChannel[]) {
     if (!filterText) {
       return channels
     }
 
-    return channels.filter(
-      (ch) => !!ch.name.match(filterText) || !!ch.description?.match(filterText)
-    )
+    return channels.filter((ch) => {
+      const filter = filterText.toLowerCase()
+      return (
+        !!ch.name.toLowerCase().match(filter) ||
+        !!ch.description?.toLowerCase().match(filter)
+      )
+    })
   }
 
   if (!sales_channels || !activeSalesChannel) {
