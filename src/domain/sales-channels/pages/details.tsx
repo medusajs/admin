@@ -7,6 +7,7 @@ import {
   useAdminDeleteSalesChannel,
   useAdminSalesChannels,
   useAdminStore,
+  useAdminUpdateSalesChannel,
 } from "medusa-react"
 
 import EditSalesChannel from "../form/edit-sales-channel"
@@ -22,8 +23,8 @@ import {
   SalesChannelProductsSelectModal,
   SalesChannelProductsTable,
 } from "../tables/product"
-import StatusIndicator from "../../../components/fundamentals/status-indicator"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
+import StatusSelector from "../../../components/molecules/status-selector"
 
 type ListIndicatorProps = { isActive: boolean }
 
@@ -200,7 +201,7 @@ type SalesChannelDetailsHeaderProps = {
   salesChannel: SalesChannel
   openUpdateModal: () => void
   resetDetails: () => void
-  setShowAddProducts: () => void
+  setShowAddProducts: (show: boolean) => void
 }
 
 /**
@@ -218,7 +219,11 @@ function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
     salesChannel.id
   )
 
-  const [showDelete, setShowDelete] = useState()
+  const { mutate: updateSalesChannel } = useAdminUpdateSalesChannel(
+    salesChannel.id
+  )
+
+  const [showDelete, setShowDelete] = useState(false)
 
   const actions = [
     {
@@ -245,9 +250,13 @@ function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
         {salesChannel.name}
       </h2>
       <div className="flex justify-between items-center gap-4">
-        <StatusIndicator
-          title={salesChannel.is_disabled ? "Disabled" : "Enabled"}
-          variant={salesChannel.is_disabled ? "danger" : "success"}
+        <StatusSelector
+          onChange={() =>
+            updateSalesChannel({ is_disabled: !salesChannel.is_disabled })
+          }
+          isDraft={salesChannel.is_disabled}
+          draftState="Disabled"
+          activeState="Enabled"
         />
         <Actionables forceDropdown={true} actions={actions} />
       </div>
@@ -332,12 +341,18 @@ function Details() {
   const { sales_channels } = useAdminSalesChannels()
 
   useEffect(() => {
-    if (!activeSalesChannel && sales_channels && store) {
-      setActiveSalesChannel(
-        sales_channels.find((sc) => sc.id === store.default_sales_channel_id)
-      )
+    if (sales_channels && store) {
+      if (!activeSalesChannel) {
+        setActiveSalesChannel(
+          sales_channels.find((sc) => sc.id === store.default_sales_channel_id)
+        )
+      } else {
+        setActiveSalesChannel(
+          sales_channels.find((sc) => sc.id === activeSalesChannel.id)
+        )
+      }
     }
-  }, [sales_channels, store])
+  }, [sales_channels, store, activeSalesChannel?.id])
 
   const openCreateModal = () => setShowCreateModal(true)
   const closeCreateModal = () => setShowCreateModal(false)
