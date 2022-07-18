@@ -49,9 +49,28 @@ function ListIndicator(props: ListIndicatorProps) {
   )
 }
 
+/**
+ * List indicator for disabled SC.
+ */
+function DisabledLabel() {
+  return (
+    <div
+      className="
+      w-[54px] h-[28px]
+      rounded-xl
+      bg-grey-10
+      flex items-center justify-center
+      text-grey-50 text-small font-semibold"
+    >
+      Draft
+    </div>
+  )
+}
+
 type SalesChannelTileProps = {
   salesChannel: SalesChannel
   isSelected: boolean
+  isDisabled: boolean
   onClick: () => void
 }
 
@@ -59,24 +78,34 @@ type SalesChannelTileProps = {
  * Sales channels list tile component.
  */
 function SalesChannelTile(props: SalesChannelTileProps) {
-  const { salesChannel, isSelected, onClick } = props
+  const { salesChannel, isSelected, onClick, isDisabled } = props
 
   return (
     <div
       onClick={onClick}
-      className={clsx("mb-2 p-4 cursor-pointer rounded-lg border flex gap-2", {
-        "border-2 border-violet-60": isSelected,
-      })}
+      className={clsx(
+        "mb-2 p-4 cursor-pointer rounded-lg border flex justify-between",
+        {
+          "border-2 border-violet-60": isSelected,
+        }
+      )}
     >
-      <ListIndicator isActive={isSelected} />
-      <div>
-        <h3 className="font-semibold text-grey-90 leading-5 mb-1">
-          {salesChannel.name}
-        </h3>
-        <span className="text-small text-grey-50">
-          {salesChannel.description}
-        </span>
+      <div className="flex gap-2">
+        <ListIndicator isActive={isSelected} />
+        <div>
+          <h3 className="font-semibold text-grey-90 leading-5 mb-1">
+            {salesChannel.name}
+          </h3>
+          <span className="text-small text-grey-50">
+            {salesChannel.description}
+          </span>
+        </div>
       </div>
+      {isDisabled && (
+        <div className="flex flex-col justify-center">
+          <DisabledLabel />
+        </div>
+      )}
     </div>
   )
 }
@@ -188,6 +217,7 @@ function SalesChannelsList(props: SalesChannelsListProps) {
         {salesChannels?.map((s) => (
           <SalesChannelTile
             salesChannel={s}
+            isDisabled={s.is_disabled}
             isSelected={activeChannelId === s.id}
             onClick={() => setActiveSalesChannel(s)}
           />
