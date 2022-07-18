@@ -19,73 +19,21 @@ import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Table, { TablePagination } from "../../../components/molecules/table"
-import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
-import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
 import { useProductFilters } from "../../../components/templates/product-table/use-product-filters"
+import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
 
 /* ****************************************** */
 /* ************** TABLE CONFIG ************** */
 /* ****************************************** */
 
-const DEFAULT_PAGE_SIZE = 15
+const DEFAULT_PAGE_SIZE = 12
 
 const defaultQueryProps = {
   fields: "id,title,type,thumbnail,status",
   expand: "variants,options,variants.prices,variants.options,collection,tags",
   is_giftcard: false,
+  limit: DEFAULT_PAGE_SIZE,
 }
-
-const COLUMNS = [
-  {
-    width: 30,
-    id: "selection",
-    Header: ({ getToggleAllPageRowsSelectedProps }) => (
-      <span className="flex justify-center">
-        <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
-      </span>
-    ),
-    Cell: ({ row }) => {
-      return (
-        <span
-          onClick={(e) => e.stopPropagation()}
-          className="flex justify-center"
-        >
-          <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-        </span>
-      )
-    },
-  },
-  {
-    Header: "Name",
-    accessor: "title",
-    Cell: ({ row: { original } }) => {
-      return (
-        <div className="flex items-center">
-          <div className="h-[40px] w-[30px] my-1.5 flex items-center mr-4">
-            {original.thumbnail ? (
-              <img
-                src={original.thumbnail}
-                className="h-full object-cover rounded-soft"
-              />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full rounded-soft bg-grey-10">
-                <ImagePlaceholder size={16} />
-              </div>
-            )}
-          </div>
-          {original.title}
-        </div>
-      )
-    },
-  },
-  {
-    Header: "Collection",
-    accessor: "collection",
-    Cell: ({ cell: { value } }) => {
-      return <div>{value?.title || "-"}</div>
-    },
-  },
-]
 
 /* ******************************************** */
 /* ************** PRODUCTS TABLE ************** */
@@ -182,7 +130,7 @@ function ProductTable(props: ProductTableProps) {
     state: { pageIndex, pageSize, ...state },
   } = useTable(
     {
-      columns: COLUMNS,
+      columns: SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS,
       data: products || [],
       manualPagination: true,
       initialState: {

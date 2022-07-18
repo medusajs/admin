@@ -15,6 +15,9 @@ type GeneralProps = {
   setDescription: (description: string) => void
 }
 
+/**
+ * General section for the SC create form.
+ */
 function General(props: GeneralProps) {
   const { name, description, setName, setDescription } = props
 
@@ -50,6 +53,9 @@ type AddSalesChannelModalProps = {
   onClose: () => void
 }
 
+/**
+ * Modal for creating sales channels.
+ */
 const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
   const [name, setName] = useState<string>()
   const [description, setDescription] = useState<string>()
@@ -73,18 +79,11 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
             <CrossIcon size={20} />
           </Button>
           <div className="gap-x-small flex">
-            {/*<Button*/}
-            {/*  onClick={() => save()}*/}
-            {/*  size="small"*/}
-            {/*  variant="ghost"*/}
-            {/*  className="border rounded-rounded"*/}
-            {/*>*/}
-            {/*  Save as draft*/}
-            {/*</Button>*/}
             <Button
               size="small"
               variant="primary"
               onClick={() => save()}
+              disabled={!name}
               className="rounded-rounded"
             >
               Save changes
@@ -118,7 +117,7 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
                 forceMountContent
                 title="Products"
                 value="products"
-              ></Accordion.Item>
+              />
             </Accordion>
           </div>
         </div>
