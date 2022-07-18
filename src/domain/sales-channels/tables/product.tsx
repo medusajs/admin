@@ -21,6 +21,7 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Table, { TablePagination } from "../../../components/molecules/table"
 import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
 import useQueryFilters from "../../../hooks/use-query-filters"
+import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
 
 /* ****************************************** */
 /* ************** TABLE CONFIG ************** */
@@ -58,16 +59,17 @@ type ProductTableProps = {
  */
 function ProductTable(props: ProductTableProps) {
   const {
-    removeTab,
-    setTab,
-    saveTab,
-    availableTabs: filterTabs,
-    activeFilterTab,
-    reset,
+    productFilters: {
+      setTab,
+      saveTab,
+      removeTab,
+      availableTabs: filterTabs,
+      activeFilterTab,
+      setFilters,
+      reset,
+      filters,
+    },
     paginate,
-    setFilters,
-    setLimit,
-    filters,
     setQuery: setFreeText,
     queryObject,
 
@@ -193,18 +195,20 @@ function ProductTable(props: ProductTableProps) {
     <div className="w-full h-[880px] overflow-y-auto flex flex-col">
       <Table
         containerClassName="flex-1"
-        // filteringOptions={
-        //   <ProductsFilter
-        //     filters={filters}
-        //     submitFilters={setFilters}
-        //     clearFilters={clearFilters}
-        //     tabs={filterTabs}
-        //     onTabClick={setTab}
-        //     activeTab={activeFilterTab}
-        //     onRemoveTab={removeTab}
-        //     onSaveTab={saveTab}
-        //   />
-        // }
+        filteringOptions={
+          filters && (
+            <ProductsFilter
+              filters={filters}
+              submitFilters={setFilters}
+              clearFilters={clearFilters}
+              tabs={filterTabs}
+              onTabClick={setTab}
+              activeTab={activeFilterTab}
+              onRemoveTab={removeTab}
+              onSaveTab={saveTab}
+            />
+          )
+        }
         enableSearch
         handleSearch={setQuery}
         {...getTableProps()}
@@ -273,7 +277,20 @@ const ProductRow = ({ row, actions }) => {
   )
 }
 
-function RemoveProductsPopup({ close, onRemove, total }) {
+type RemoveProductsPopupProps = {
+  close: () => void
+  onRemove: () => void
+  total: number
+}
+
+/**
+ * Popup for removing selected products from a sales channel.
+ */
+function RemoveProductsPopup({
+  close,
+  onRemove,
+  total,
+}: RemoveProductsPopupProps) {
   const classes = {
     "translate-y-1 opacity-0": !total,
     "translate-y-0 opacity-100": total,
@@ -311,6 +328,7 @@ function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
   const params = useQueryFilters(defaultQueryProps)
+  const filters = useProductFilters()
 
   const {
     mutate: deleteProductsFromSalesChannel,
@@ -343,11 +361,7 @@ function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
     [products, salesChannelId]
   )
 
-  if (isLoading) {
-    return null
-  }
-
-  if (!filteredProducts?.length) {
+  if (!filteredProducts?.length && !isLoading) {
     return <Placeholder showAddModal={showAddModal} />
   }
 
@@ -361,6 +375,7 @@ function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
         selectedRowIds={selectedRowIds}
         removeProductFromSalesChannel={removeProductFromSalesChannel}
         setSelectedRowIds={setSelectedRowIds}
+        productFilters={filters}
         {...params}
       />
       <RemoveProductsPopup
@@ -395,10 +410,6 @@ function SalesChannelProductsSelectModal({ handleClose, salesChannel }) {
     handleClose()
   }
 
-  if (!products?.length) {
-    return null
-  }
-
   return (
     <Modal handleClose={handleClose}>
       <Modal.Body>
@@ -408,7 +419,7 @@ function SalesChannelProductsSelectModal({ handleClose, salesChannel }) {
         <Modal.Content>
           <ProductTable
             isAddTable
-            products={products}
+            products={products || []}
             count={count}
             selectedRowIds={selectedRowIds}
             setSelectedRowIds={setSelectedRowIds}
