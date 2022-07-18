@@ -19,8 +19,8 @@ import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Table, { TablePagination } from "../../../components/molecules/table"
-import { useProductFilters } from "../../../components/templates/product-table/use-product-filters"
 import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
+import useQueryFilters from "../../../hooks/use-query-filters"
 
 /* ****************************************** */
 /* ************** TABLE CONFIG ************** */
@@ -28,11 +28,16 @@ import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
 
 const DEFAULT_PAGE_SIZE = 12
 
+/**
+ * Default filtering config for querying products endpoint.
+ */
 const defaultQueryProps = {
-  fields: "id,title,type,thumbnail,status",
-  expand: "variants,options,variants.prices,variants.options,collection,tags",
-  is_giftcard: false,
+  additionalFilters: {
+    expand: "collection,sales_channels",
+    fields: "id,title,type,thumbnail,status",
+  },
   limit: DEFAULT_PAGE_SIZE,
+  offset: 0,
 }
 
 /* ******************************************** */
@@ -65,7 +70,6 @@ function ProductTable(props: ProductTableProps) {
     filters,
     setQuery: setFreeText,
     queryObject,
-    representationObject,
 
     // CONTAINER props
     isAddTable,
@@ -93,25 +97,6 @@ function ProductTable(props: ProductTableProps) {
       setNumPages(controlledPageCount)
     }
   }, [count])
-
-  const updateUrlFromFilter = (obj = {}) => {
-    const stringified = qs.stringify(obj)
-    window.history.replaceState(`/a/products`, "", `${`?${stringified}`}`)
-  }
-
-  const refreshWithFilters = () => {
-    const filterObj = representationObject
-
-    if (isEmpty(filterObj)) {
-      updateUrlFromFilter({ offset: 0, limit: DEFAULT_PAGE_SIZE })
-    } else {
-      updateUrlFromFilter(filterObj)
-    }
-  }
-
-  useEffect(() => {
-    refreshWithFilters()
-  }, [representationObject])
 
   const {
     getTableProps,
@@ -208,18 +193,18 @@ function ProductTable(props: ProductTableProps) {
     <div className="w-full h-[880px] overflow-y-auto flex flex-col">
       <Table
         containerClassName="flex-1"
-        filteringOptions={
-          <ProductsFilter
-            filters={filters}
-            submitFilters={setFilters}
-            clearFilters={clearFilters}
-            tabs={filterTabs}
-            onTabClick={setTab}
-            activeTab={activeFilterTab}
-            onRemoveTab={removeTab}
-            onSaveTab={saveTab}
-          />
-        }
+        // filteringOptions={
+        //   <ProductsFilter
+        //     filters={filters}
+        //     submitFilters={setFilters}
+        //     clearFilters={clearFilters}
+        //     tabs={filterTabs}
+        //     onTabClick={setTab}
+        //     activeTab={activeFilterTab}
+        //     onRemoveTab={removeTab}
+        //     onSaveTab={saveTab}
+        //   />
+        // }
         enableSearch
         handleSearch={setQuery}
         {...getTableProps()}
@@ -297,11 +282,11 @@ function RemoveProductsPopup({ close, onRemove, total }) {
   return (
     <div
       className={clsx(
-        "absolute w-full bottom-1 flex justify-center transition-all duration-200",
+        "absolute w-full bottom-1 flex justify-center transition-all duration-200 pointer-events-none",
         classes
       )}
     >
-      <div className="h-[48px] min-w-[224px] rounded-lg border shadow-toaster flex items-center justify-around gap-3 px-4 py-3">
+      <div className="h-[48px] min-w-[224px] rounded-lg border shadow-toaster flex items-center justify-around gap-3 px-4 py-3 pointer-events-auto">
         <span className="text-small text-grey-50">{total} selected</span>
         <div className="w-[1px] h-[20px] bg-grey-20" />
         <Button variant="danger" size="small" onClick={onRemove}>
@@ -325,15 +310,14 @@ function RemoveProductsPopup({ close, onRemove, total }) {
 function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
-  const filters = useProductFilters(location.search, defaultQueryProps)
+  const params = useQueryFilters(defaultQueryProps)
 
   const {
     mutate: deleteProductsFromSalesChannel,
   } = useAdminDeleteProductsFromSalesChannel(salesChannelId)
 
   const { products, count, isLoading } = useAdminProducts({
-    ...filters.queryObject,
-    expand: "sales_channels",
+    ...params.queryObject,
   })
 
   const removeProductFromSalesChannel = (id: string) => {
@@ -377,7 +361,7 @@ function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
         selectedRowIds={selectedRowIds}
         removeProductFromSalesChannel={removeProductFromSalesChannel}
         setSelectedRowIds={setSelectedRowIds}
-        {...filters}
+        {...params}
       />
       <RemoveProductsPopup
         total={toBeRemoveCount}
@@ -395,10 +379,11 @@ function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
  */
 function SalesChannelProductsSelectModal({ handleClose, salesChannel }) {
   const [selectedRowIds, setSelectedRowIds] = useState([])
-  const filters = useProductFilters(location.search, defaultQueryProps)
+
+  const params = useQueryFilters(defaultQueryProps)
 
   const { products, count } = useAdminProducts({
-    ...filters.queryObject,
+    ...params.queryObject,
   })
 
   const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
@@ -427,7 +412,7 @@ function SalesChannelProductsSelectModal({ handleClose, salesChannel }) {
             count={count}
             selectedRowIds={selectedRowIds}
             setSelectedRowIds={setSelectedRowIds}
-            {...filters}
+            {...params}
           />
         </Modal.Content>
         <Modal.Footer>
