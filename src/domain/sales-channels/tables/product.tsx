@@ -1,12 +1,10 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
-import { isEmpty } from "lodash"
 import {
   useAdminAddProductsToSalesChannel,
   useAdminDeleteProductsFromSalesChannel,
   useAdminProducts,
 } from "medusa-react"
-import qs from "qs"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
 import { Product, SalesChannel } from "@medusajs/medusa"
@@ -22,7 +20,6 @@ import Table, { TablePagination } from "../../../components/molecules/table"
 import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
-import salesChannels from "../index"
 
 /* ****************************************** */
 /* ************** TABLE CONFIG ************** */
@@ -79,7 +76,6 @@ function ProductTable(props: ProductTableProps) {
     count,
     products,
     setSelectedRowIds,
-    selectedRowIds,
     removeProductFromSalesChannel,
   } = props
 
@@ -122,10 +118,6 @@ function ProductTable(props: ProductTableProps) {
       data: products || [],
       manualPagination: true,
       initialState: {
-        selectedRowIds: selectedRowIds.reduce((prev, id) => {
-          prev[id] = true
-          return prev
-        }, {}),
         pageIndex: Math.floor(offs / limit),
         pageSize: limit,
       },
@@ -140,13 +132,7 @@ function ProductTable(props: ProductTableProps) {
 
   useEffect(() => {
     setSelectedRowIds(Object.keys(state.selectedRowIds))
-  }, [state.selectedRowIds])
-
-  useEffect(() => {
-    if (!selectedRowIds.length && Object.keys(state.selectedRowIds).length) {
-      toggleAllRowsSelected(false)
-    }
-  }, [selectedRowIds])
+  }, [Object.keys(state.selectedRowIds).length])
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -254,6 +240,9 @@ function ProductTable(props: ProductTableProps) {
   )
 }
 
+/**
+ * Renders product table row.
+ */
 const ProductRow = ({ row, actions }) => {
   const product = row.original
 
@@ -343,6 +332,7 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
 
   const { products, count, isLoading } = useAdminProducts({
     ...params.queryObject,
+    ...filters.queryObject,
   })
 
   const removeProductFromSalesChannel = (id: string) => {
@@ -368,7 +358,9 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
     [products, salesChannelId]
   )
 
-  if (!filteredProducts?.length && !isLoading) {
+  const isFilterOn = Object.keys(filters.queryObject).length
+
+  if (!filteredProducts?.length && !isLoading && !isFilterOn) {
     return <Placeholder showAddModal={showAddModal} />
   }
 
@@ -379,7 +371,6 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
       <ProductTable
         count={count}
         products={filteredProducts}
-        selectedRowIds={selectedRowIds}
         removeProductFromSalesChannel={removeProductFromSalesChannel}
         setSelectedRowIds={setSelectedRowIds}
         productFilters={filters}
@@ -411,9 +402,11 @@ function SalesChannelProductsSelectModal(
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
   const params = useQueryFilters(defaultQueryProps)
+  const filters = useProductFilters()
 
   const { products, count } = useAdminProducts({
     ...params.queryObject,
+    ...filters.queryObject,
   })
 
   const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
@@ -436,8 +429,8 @@ function SalesChannelProductsSelectModal(
             isAddTable
             products={products || []}
             count={count}
-            selectedRowIds={selectedRowIds}
             setSelectedRowIds={setSelectedRowIds}
+            productFilters={filters}
             {...params}
           />
         </Modal.Content>
