@@ -21,15 +21,8 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
   isEdit = false,
   product,
 }) => {
-  const { count, isLoading } = useAdminSalesChannels()
-
-  const [remainder, setRemainder] = React.useState(0)
-
-  useEffect(() => {
-    if (product.sales_channels) {
-      setRemainder(Math.max(product.sales_channels.length - 3, 0))
-    }
-  }, [isLoading])
+  const { count } = useAdminSalesChannels()
+  const remainder = Math.max(product.sales_channels.length - 3, 0)
 
   return (
     <BodyCard
@@ -39,12 +32,9 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
     >
       <div className="flex space-x-2">
         <div className="flex space-x-2 max-w-[600px] overflow-clip">
-          {product.sales_channels &&
-            product.sales_channels
-              .slice(0, 3)
-              .map((sc) => (
-                <SalesChannelBadge channel={sc} onClick={() => {}} />
-              ))}
+          {product.sales_channels?.slice(0, 3).map((sc) => (
+            <SalesChannelBadge channel={sc} onClick={() => {}} />
+          ))}
         </div>
         {remainder > 0 && (
           <Badge variant="ghost">

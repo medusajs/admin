@@ -54,9 +54,9 @@ const ChannelsIcon: React.FC<IconProps> = ({
       <path
         d="M15.6361 12H7.53613"
         stroke={color}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )
