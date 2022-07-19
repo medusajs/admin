@@ -107,7 +107,6 @@ function ProductTable(props: ProductTableProps) {
     canPreviousPage,
     canNextPage,
     pageCount,
-    toggleAllRowsSelected,
     nextPage,
     previousPage,
     // Get the state from the instance
@@ -347,6 +346,7 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
   }
 
   // TODO: use the products endpoint to do this once `expand` with `sales_channels` is supported
+  // until then proper pagination or revalidation of data on products select wont work
   const filteredProducts = useMemo(
     () =>
       products?.filter(
