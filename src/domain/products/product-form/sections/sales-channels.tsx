@@ -22,7 +22,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
   product,
 }) => {
   const { count } = useAdminSalesChannels()
-  const remainder = Math.max(product.sales_channels.length - 3, 0)
+  const remainder = Math.max(product?.sales_channels?.length - 3, 0)
 
   return (
     <BodyCard
@@ -32,7 +32,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
     >
       <div className="flex space-x-2">
         <div className="flex space-x-2 max-w-[600px] overflow-clip">
-          {product.sales_channels?.slice(0, 3).map((sc) => (
+          {product?.sales_channels?.slice(0, 3).map((sc) => (
             <SalesChannelBadge channel={sc} onClick={() => {}} />
           ))}
         </div>
@@ -47,7 +47,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
       <span className="inter-base-regular text-grey-50 mb-large mt-base">
         Available in{" "}
         <span className="inter-base-semibold text-grey-90">
-          {product.sales_channels.length}
+          {product?.sales_channels?.length || 0}
         </span>{" "}
         out of <span className="inter-base-semibold text-grey-90">{count}</span>{" "}
         Sales Channels
