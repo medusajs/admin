@@ -19,7 +19,8 @@ type ProductTableProps = {}
 
 const defaultQueryProps = {
   fields: "id,title,type,thumbnail,status",
-  expand: "variants,options,variants.prices,variants.options,collection,tags",
+  expand:
+    "variants,options,variants.prices,variants.options,collection,tags,sales_channels",
   is_giftcard: false,
 }
 
