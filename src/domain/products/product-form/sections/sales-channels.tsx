@@ -43,10 +43,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
             product.sales_channels
               .slice(0, 3)
               .map((sc) => (
-                <SalesChannelBadge
-                  channel={sc}
-                  onClick={() => console.log("testing")}
-                />
+                <SalesChannelBadge channel={sc} onClick={() => {}} />
               ))}
         </div>
         {remainder > 0 && (
@@ -81,7 +78,7 @@ const SalesChannelBadge: React.FC<SalesChannelBadgeProps> = ({
   onClick,
 }) => {
   return (
-    <Badge variant="ghost">
+    <Badge variant="ghost" className="pl-4 pr-3">
       <div className="flex py-1.5 items-center">
         <span className="inter-base-regular text-grey-90">{channel.name}</span>
         <button onClick={onClick} className="text-grey-40 ml-2">
