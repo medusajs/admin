@@ -32,9 +32,12 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
     >
       <div className="flex space-x-2">
         <div className="flex space-x-2 max-w-[600px] overflow-clip">
-          {product?.sales_channels?.slice(0, 3).map((sc) => (
-            <SalesChannelBadge channel={sc} onClick={() => {}} />
-          ))}
+          {isEdit &&
+            product.sales_channels
+              ?.slice(0, 3)
+              .map((sc) => (
+                <SalesChannelBadge channel={sc} onClick={() => {}} />
+              ))}
         </div>
         {remainder > 0 && (
           <Badge variant="ghost">
@@ -47,7 +50,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
       <span className="inter-base-regular text-grey-50 mb-large mt-base">
         Available in{" "}
         <span className="inter-base-semibold text-grey-90">
-          {product?.sales_channels?.length || 0}
+          {isEdit ? product.sales_channels?.length : 0}
         </span>{" "}
         out of <span className="inter-base-semibold text-grey-90">{count}</span>{" "}
         Sales Channels
