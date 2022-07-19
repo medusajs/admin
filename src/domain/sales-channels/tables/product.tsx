@@ -9,7 +9,7 @@ import {
 import qs from "qs"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
-import { Product } from "@medusajs/medusa"
+import { Product, SalesChannel } from "@medusajs/medusa"
 
 import Placeholder from "./placeholder"
 import Modal from "../../../components/molecules/modal"
@@ -22,6 +22,7 @@ import Table, { TablePagination } from "../../../components/molecules/table"
 import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
+import salesChannels from "../index"
 
 /* ****************************************** */
 /* ************** TABLE CONFIG ************** */
@@ -321,10 +322,16 @@ function RemoveProductsPopup({
 /* ************** CONTAINERS ************** */
 /* **************************************** */
 
+type SalesChannelProductsTableProps = {
+  salesChannelId: string
+  showAddModal: () => void
+}
+
 /**
  * Sales channel products table container.
  */
-function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
+function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
+  const { salesChannelId, showAddModal } = props
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
   const params = useQueryFilters(defaultQueryProps)
@@ -387,12 +394,20 @@ function SalesChannelProductsTable({ salesChannelId, showAddModal }) {
   )
 }
 
+type SalesChannelProductsSelectModalProps = {
+  handleClose: () => void
+  salesChannel: SalesChannel
+}
+
 /**
  * Sales channels products add container.
  * Renders product table for adding/editing sales channel products
  * in a modal.
  */
-function SalesChannelProductsSelectModal({ handleClose, salesChannel }) {
+function SalesChannelProductsSelectModal(
+  props: SalesChannelProductsSelectModalProps
+) {
+  const { handleClose, salesChannel } = props
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
   const params = useQueryFilters(defaultQueryProps)
