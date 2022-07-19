@@ -131,7 +131,7 @@ function ProductTable(props: ProductTableProps) {
       },
       pageCount: numPages,
       autoResetPage: false,
-      autoResetSelectedRows: true,
+      autoResetSelectedRows: false,
       getRowId: (row) => row.id,
     },
     usePagination,
