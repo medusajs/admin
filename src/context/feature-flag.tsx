@@ -17,7 +17,9 @@ export const FeatureFlagContext = React.createContext(defaultFeatureFlagContext)
 export const FeatureFlagProvider = ({ children }) => {
   const { isLoggedIn } = useContext(AccountContext)
 
-  const [featureFlags, setFeatureFlags] = useState<string[]>([])
+  const [featureFlags, setFeatureFlags] = useState<
+    { key: string; value: boolean }[]
+  >([])
 
   const { store, isFetching } = useAdminStore()
 
@@ -30,7 +32,7 @@ export const FeatureFlagProvider = ({ children }) => {
   }, [isFetching, store, isLoggedIn])
 
   const featureToggleList = featureFlags.reduce(
-    (acc, flag) => ({ [flag]: true, ...acc }),
+    (acc, flag) => ({ ...acc, [flag.key]: flag.value }),
     {}
   )
 
