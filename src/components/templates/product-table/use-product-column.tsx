@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React, { useMemo, useState } from "react"
+import Tooltip from "../../atoms/tooltip"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
 import ImagePlaceholder from "../../fundamentals/image-placeholder"
@@ -28,10 +29,20 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
         <span className="inter-small-regular">
           {salesChannels[0].name}
           {salesChannels.length > 1 && (
-            <span className="text-grey-40">
-              {" "}
-              + {salesChannels.length - 1} more
-            </span>
+            <Tooltip
+              content={
+                <div className="flex flex-col">
+                  {salesChannels.slice(1).map((sc) => (
+                    <span>{sc.name}</span>
+                  ))}
+                </div>
+              }
+            >
+              <span className="text-grey-40">
+                {" "}
+                + {salesChannels.length - 1} more
+              </span>
+            </Tooltip>
           )}
         </span>
       )
