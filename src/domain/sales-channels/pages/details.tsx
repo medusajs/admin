@@ -25,6 +25,8 @@ import {
 } from "../tables/product"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import StatusSelector from "../../../components/molecules/status-selector"
+import TwoSplitPane from "../../../components/templates/two-split-pane"
+import Fade from "../../../components/atoms/fade-wrapper"
 
 type ListIndicatorProps = { isActive: boolean }
 
@@ -36,7 +38,7 @@ function ListIndicator(props: ListIndicatorProps) {
   return (
     <div
       className={clsx(
-        "flex justify-center items-center w-[18px] h-[18px] bg-white border rounded-circle",
+        "flex justify-center items-center flex-shrink-0 w-[18px] h-[18px] bg-white border rounded-circle",
         {
           "border-2 border-violet-60": isActive,
         }
@@ -84,25 +86,28 @@ function SalesChannelTile(props: SalesChannelTileProps) {
     <div
       onClick={onClick}
       className={clsx(
-        "mb-2 p-4 cursor-pointer rounded-lg border flex justify-between",
+        "mb-2 p-4 cursor-pointer rounded-lg border flex justify-between h-[83px]",
         {
           "border-2 border-violet-60": isSelected,
         }
       )}
     >
-      <div className="flex gap-2">
+      <div className="flex gap-2 overflow-hidden">
         <ListIndicator isActive={isSelected} />
-        <div>
+        <div className="overflow-hidden block truncate">
           <h3 className="font-semibold text-grey-90 leading-5 mb-1">
             {salesChannel.name}
           </h3>
-          <span className="text-small text-grey-50">
+          <span
+            title={salesChannel.description}
+            className="text-small text-grey-50 "
+          >
             {salesChannel.description}
           </span>
         </div>
       </div>
       {isDisabled && (
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center flex-shrink-0">
           <DisabledLabel />
         </div>
       )}
@@ -147,7 +152,7 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
         <div className="h-[55px]">
           <div className="flex justify-between items-center mb-1">
             <h2 className="font-semibold text-xlarge text-grey-90">
-              Sales Channels
+              Sales channels
             </h2>
             <div className="flex justify-between items-center gap-4">
               <SearchIcon
@@ -162,7 +167,7 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
               />
             </div>
           </div>
-          <div className="text-grey-50 text-small mb-6">
+          <div className="text-grey-50 text-small mb-6 block overflow-hidden truncate max-w-[100%]">
             Control which products are available in which channels
           </div>
         </div>
@@ -175,6 +180,7 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
             onChange={(e) => setFilterText(e.target.value)}
             placeholder="Search by title or description"
             className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
+            onBlur={() => setShowFilter(!!filterText)}
             autoComplete="off"
           />
           <CrossIcon onClick={hideFilter} className="cursor-pointer" />
@@ -207,7 +213,7 @@ function SalesChannelsList(props: SalesChannelsListProps) {
   } = props
 
   return (
-    <div className="col-span-1 rounded-lg border bg-grey-0 border-grey-20 px-8 py-6">
+    <div className="col-span-1 rounded-lg border bg-grey-0 border-grey-20 px-8 py-6 min-h-[960px]">
       <SalesChannelsHeader
         filterText={filterText}
         setFilterText={setFilterText}
@@ -385,7 +391,9 @@ function Details() {
   }, [sales_channels, store, activeSalesChannel?.id])
 
   const openCreateModal = () => setShowCreateModal(true)
-  const closeCreateModal = () => setShowCreateModal(false)
+  const closeCreateModal = () => {
+    setShowCreateModal(false)
+  }
 
   const resetDetails = () => {
     setActiveSalesChannel(
@@ -431,7 +439,7 @@ function Details() {
         </div>
       </Link>
 
-      <div className="grid grid-cols-3 gap-2 min-h-[960px] w-full pb-8">
+      <TwoSplitPane threeCols>
         <SalesChannelsList
           filterText={filterText}
           setFilterText={setFilterText}
@@ -448,9 +456,11 @@ function Details() {
             resetDetails={resetDetails}
           />
         )}
-      </div>
+      </TwoSplitPane>
 
-      {showCreateModal && <AddSalesChannelModal onClose={closeCreateModal} />}
+      <Fade isVisible={showCreateModal} isFullScreen={true}>
+        <AddSalesChannelModal onClose={closeCreateModal} />
+      </Fade>
     </div>
   )
 }

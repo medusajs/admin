@@ -25,7 +25,6 @@ function General(props: GeneralProps) {
     <div className="flex flex-col gap-y-base my-base">
       <div className="flex-1">
         <InputField
-          required
           label="Title"
           type="string"
           name="name"

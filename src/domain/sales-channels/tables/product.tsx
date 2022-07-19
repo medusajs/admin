@@ -359,8 +359,14 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
   )
 
   const isFilterOn = Object.keys(filters.queryObject).length
+  const hasSearchTerm = params.queryObject.q
 
-  if (!filteredProducts?.length && !isLoading && !isFilterOn) {
+  if (
+    !filteredProducts?.length &&
+    !isLoading &&
+    !isFilterOn &&
+    !hasSearchTerm
+  ) {
     return <Placeholder showAddModal={showAddModal} />
   }
 
