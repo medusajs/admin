@@ -29,9 +29,11 @@ const ProductTable: React.FC<ProductTableProps> = () => {
 
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
 
+  let hiddenColumns = ["sales_channel"]
   if (isFeatureEnabled("sales_channels")) {
     defaultQueryProps.expand =
       "variants,options,variants.prices,variants.options,collection,tags,sales_channels"
+    hiddenColumns = []
   }
 
   const {
@@ -129,6 +131,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       initialState: {
         pageIndex: Math.floor(offs / limit),
         pageSize: limit,
+        hiddenColumns,
       },
       pageCount: numPages,
       autoResetPage: false,

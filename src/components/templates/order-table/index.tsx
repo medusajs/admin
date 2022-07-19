@@ -25,8 +25,10 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
 
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
 
+  let hiddenColumns = ["sales_channel"]
   if (isFeatureEnabled("sales_channels")) {
     defaultQueryProps.expand = "shipping_address,sales_channel"
+    hiddenColumns = []
   }
 
   const {
@@ -82,6 +84,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
       initialState: {
         pageSize: lim,
         pageIndex: offs / lim,
+        hiddenColumns,
       },
       pageCount: numPages,
       autoResetPage: false,

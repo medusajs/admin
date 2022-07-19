@@ -1,7 +1,6 @@
 import clsx from "clsx"
 import { useAdminStore } from "medusa-react"
-import React, { useMemo, useState } from "react"
-import { FeatureFlagContext } from "../../../context/feature-flag"
+import React, { useMemo } from "react"
 import { defaultChannelsSorter } from "../../../utils/sales-channel-compare-operator"
 import Tooltip from "../../atoms/tooltip"
 import ListIcon from "../../fundamentals/icons/list-icon"
@@ -28,10 +27,10 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
   const { store } = useAdminStore()
 
   const getProductSalesChannels = (salesChannels) => {
-    salesChannels.sort(
-      defaultChannelsSorter(store?.default_sales_channel_id || "")
-    )
     if (salesChannels?.length) {
+      salesChannels.sort(
+        defaultChannelsSorter(store?.default_sales_channel_id || "")
+      )
       return (
         <span className="inter-small-regular">
           {salesChannels[0].name}
@@ -55,19 +54,6 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
       )
     }
     return <></>
-  }
-
-  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
-
-  let scColumns: any[] = []
-  if (isFeatureEnabled("sales_channels")) {
-    scColumns = [
-      {
-        Header: "Availability",
-        accessor: "sales_channels",
-        Cell: ({ cell: { value } }) => getProductSalesChannels(value),
-      },
-    ]
   }
 
   const columns = useMemo(
@@ -107,7 +93,11 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
         accessor: "status",
         Cell: ({ cell: { value } }) => getProductStatus(value),
       },
-      ...scColumns,
+      {
+        Header: "Availability",
+        accessor: "sales_channels",
+        Cell: ({ cell: { value } }) => getProductSalesChannels(value),
+      },
       {
         Header: "Inventory",
         accessor: "variants",
