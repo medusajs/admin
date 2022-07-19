@@ -19,6 +19,7 @@ import Tooltip from "../../../components/atoms/tooltip"
 import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
+import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
@@ -353,12 +354,14 @@ const OrderDetails = ({ id }) => {
                       .join(", ")}
                   </div>
                 </div>
-                <div className="flex flex-col pl-6">
-                  <div className="inter-smaller-regular text-grey-50 mb-1 whitespace-nowrap">
-                    Sales Channel
+                <FeatureToggle featureFlag="sales_channels">
+                  <div className="flex flex-col pl-6">
+                    <div className="inter-smaller-regular text-grey-50 mb-1 whitespace-nowrap">
+                      Sales Channel
+                    </div>
+                    <div>{order?.sales_channel?.name || "N/A"}</div>
                   </div>
-                  <div>{order?.sales_channel?.name || "N/A"}</div>
-                </div>
+                </FeatureToggle>
               </div>
             </BodyCard>
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Summary">

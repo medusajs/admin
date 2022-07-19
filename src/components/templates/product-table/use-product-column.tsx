@@ -24,7 +24,6 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
   }
 
   const getProductSalesChannels = (salesChannels) => {
-    console.log(salesChannels)
     if (salesChannels?.length) {
       return (
         <span className="inter-small-regular">
