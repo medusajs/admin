@@ -1,6 +1,8 @@
 import clsx from "clsx"
+import { useAdminStore } from "medusa-react"
 import React, { useMemo, useState } from "react"
 import { FeatureFlagContext } from "../../../context/feature-flag"
+import { defaultChannelsSorter } from "../../../utils/sales-channel-compare-operator"
 import Tooltip from "../../atoms/tooltip"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
@@ -23,7 +25,12 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
     }
   }
 
+  const { store } = useAdminStore()
+
   const getProductSalesChannels = (salesChannels) => {
+    salesChannels.sort(
+      defaultChannelsSorter(store?.default_sales_channel_id || "")
+    )
     if (salesChannels?.length) {
       return (
         <span className="inter-small-regular">
