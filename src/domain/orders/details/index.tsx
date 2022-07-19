@@ -353,6 +353,12 @@ const OrderDetails = ({ id }) => {
                       .join(", ")}
                   </div>
                 </div>
+                <div className="flex flex-col pl-6">
+                  <div className="inter-smaller-regular text-grey-50 mb-1 whitespace-nowrap">
+                    Sales Channel
+                  </div>
+                  <div>{order?.sales_channel?.name || "N/A"}</div>
+                </div>
               </div>
             </BodyCard>
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Summary">
