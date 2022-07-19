@@ -53,6 +53,9 @@ const EditProductPage = ({ id }) => {
     const newData = {
       ...data,
       images: consolidateImages(data.images, uploadedImgs),
+      metadata: {
+        test: "hehehe",
+      },
     }
 
     updateProduct.mutate(formValuesToUpdateProductMapper(newData), {

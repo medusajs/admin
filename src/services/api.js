@@ -196,6 +196,19 @@ export default {
       const path = `/admin/variants${params && `?${params}`}`
       return medusaRequest("GET", path)
     },
+    listOutstock(search = {}) {
+      const params = Object.keys(search)
+        .map((k) => {
+          if (search[k] === "" || search[k] === null) {
+            return null
+          }
+          return `${k}=${search[k]}`
+        })
+        .filter((s) => !!s)
+        .join("&")
+      const path = `/admin/outstock_variants${params && `?${params}`}`
+      return medusaRequest("GET", path)
+    },
   },
 
   products: {
@@ -777,5 +790,5 @@ export default {
       const path = `/admin/users/${userId}`
       return medusaRequest("DELETE", path)
     },
-  },
+  }
 }

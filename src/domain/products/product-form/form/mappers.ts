@@ -119,5 +119,6 @@ export const formValuesToUpdateProductMapper = (values) => {
     mid_code: values.mid_code,
     hs_code: values.hs_code,
     discountable: values.discountable,
+    metadata: values?.metadata || {},
   }
 }
