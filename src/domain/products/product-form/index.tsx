@@ -1,5 +1,6 @@
 import { useAdminStore } from "medusa-react"
 import * as React from "react"
+import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import RawJSON from "../../../components/organisms/raw-json"
 import { useProductForm } from "./form/product-form-context"
@@ -30,7 +31,9 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
       <div className="flex flex-col space-y-base pb-2xlarge">
         <General isEdit={isEdit} product={product} showViewOptions={!isEdit} />
 
-        <SalesChannels isEdit={isEdit} product={product} />
+        <FeatureToggle featureFlag="sales_channels">
+          <SalesChannels isEdit={isEdit} product={product} />
+        </FeatureToggle>
 
         {(isVariantsView || isEdit) && (
           <Variants isEdit={isEdit} product={product} />
