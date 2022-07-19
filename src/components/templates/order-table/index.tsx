@@ -5,6 +5,7 @@ import { useAdminOrders } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
+import { FeatureFlagContext } from "../../../context/feature-flag"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
 import OrderFilters from "../order-filter-dropdown"
@@ -14,13 +15,19 @@ import { useOrderFilters } from "./use-order-filters"
 const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {
-  expand: "shipping_address,sales_channel",
+  expand: "shipping_address",
   fields:
     "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
 }
 
 const OrderTable: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
+
+  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
+
+  if (isFeatureEnabled("sales_channels")) {
+    defaultQueryProps.expand = "shipping_address,sales_channel"
+  }
 
   const {
     removeTab,
