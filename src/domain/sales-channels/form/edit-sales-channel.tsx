@@ -7,12 +7,12 @@ import Modal from "../../../components/molecules/modal"
 import InputField from "../../../components/molecules/input"
 import Button from "../../../components/fundamentals/button"
 
-type P = {
+type EditSalesChannelProps = {
   salesChannel: SalesChannel
   handleClose: () => void
 }
 
-function EditSalesChannel(props: P) {
+function EditSalesChannel(props: EditSalesChannelProps) {
   const { handleClose, salesChannel } = props
 
   const { mutate: updateSalesChannel } = useAdminUpdateSalesChannel(

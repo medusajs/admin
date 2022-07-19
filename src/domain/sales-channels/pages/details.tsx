@@ -27,6 +27,7 @@ import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import StatusSelector from "../../../components/molecules/status-selector"
 import TwoSplitPane from "../../../components/templates/two-split-pane"
 import Fade from "../../../components/atoms/fade-wrapper"
+import Breadcrumb from "../../../components/molecules/breadcrumb"
 
 type ListIndicatorProps = { isActive: boolean }
 
@@ -148,7 +149,7 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
 
   return (
     <div className="h-[55px] mb-6 overflow-hidden">
-      <div className={clsx(" transition-all duration-200", classes)}>
+      <div className={clsx("transition-all duration-200", classes)}>
         <div className="h-[55px]">
           <div className="flex justify-between items-center mb-1">
             <h2 className="font-semibold text-xlarge text-grey-90">
@@ -432,12 +433,18 @@ function Details() {
 
   return (
     <div>
-      <Link to={"/a/settings"}>
-        <div className="flex text-grey-40 hover:text-purple-600 gap-2 items-center mb-2">
-          <ArrowLeftIcon />
-          <span className="text-small">Back to Settings</span>
-        </div>
-      </Link>
+      {/*<Link to={"/a/settings"}>*/}
+      {/*  <div className="flex text-grey-40 hover:text-purple-600 gap-2 items-center mb-2">*/}
+      {/*    <ArrowLeftIcon />*/}
+      {/*    <span className="text-small">Back to Settings</span>*/}
+      {/*  </div>*/}
+      {/*</Link>*/}
+
+      <Breadcrumb
+        currentPage={"Sales channels"}
+        previousBreadcrumb={"Settings"}
+        previousRoute="/a/settings"
+      />
 
       <TwoSplitPane threeCols>
         <SalesChannelsList
