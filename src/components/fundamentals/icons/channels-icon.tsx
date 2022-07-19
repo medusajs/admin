@@ -53,7 +53,7 @@ const ChannelsIcon: React.FC<IconProps> = ({
       />
       <path
         d="M15.6361 12H7.53613"
-        stroke="#111827"
+        stroke={color}
         stroke-width="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
