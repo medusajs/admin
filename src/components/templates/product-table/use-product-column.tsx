@@ -21,6 +21,24 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
     }
   }
 
+  const getProductSalesChannels = (salesChannels) => {
+    console.log(salesChannels)
+    if (salesChannels?.length) {
+      return (
+        <span className="inter-small-regular">
+          {salesChannels[0].name}
+          {salesChannels.length > 1 && (
+            <span className="text-grey-40">
+              {" "}
+              + {salesChannels.length - 1} more
+            </span>
+          )}
+        </span>
+      )
+    }
+    return <></>
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -57,6 +75,11 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
         Header: "Status",
         accessor: "status",
         Cell: ({ cell: { value } }) => getProductStatus(value),
+      },
+      {
+        Header: "Availability",
+        accessor: "sales_channels",
+        Cell: ({ cell: { value } }) => getProductSalesChannels(value),
       },
       {
         Header: "Inventory",
