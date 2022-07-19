@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React, { useMemo, useState } from "react"
+import { FeatureFlagContext } from "../../../context/feature-flag"
 import Tooltip from "../../atoms/tooltip"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
@@ -50,6 +51,19 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
     return <></>
   }
 
+  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
+
+  let scColumns: any[] = []
+  if (isFeatureEnabled("sales_channels")) {
+    scColumns = [
+      {
+        Header: "Availability",
+        accessor: "sales_channels",
+        Cell: ({ cell: { value } }) => getProductSalesChannels(value),
+      },
+    ]
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -87,11 +101,7 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
         accessor: "status",
         Cell: ({ cell: { value } }) => getProductStatus(value),
       },
-      {
-        Header: "Availability",
-        accessor: "sales_channels",
-        Cell: ({ cell: { value } }) => getProductSalesChannels(value),
-      },
+      ...scColumns,
       {
         Header: "Inventory",
         accessor: "variants",

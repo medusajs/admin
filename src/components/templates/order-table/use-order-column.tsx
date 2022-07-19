@@ -1,6 +1,7 @@
 import moment from "moment"
 import React, { useMemo } from "react"
 import ReactCountryFlag from "react-country-flag"
+import { FeatureFlagContext } from "../../../context/feature-flag"
 import { getColor } from "../../../utils/color"
 import { isoAlpha2Countries } from "../../../utils/countries"
 import { formatAmountWithSymbol } from "../../../utils/prices"
@@ -10,6 +11,21 @@ import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import Table from "../../molecules/table"
 
 const useOrderTableColums = () => {
+  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
+
+  let scColumns: any[] = []
+  if (isFeatureEnabled("sales_channels")) {
+    scColumns = [
+      {
+        Header: "Sales Channel",
+        accessor: "sales_channel",
+        Cell: ({ cell: { value }, index }) => (
+          <Table.Cell key={index}>{value?.name ?? "N/A"}</Table.Cell>
+        ),
+      },
+    ]
+  }
+
   const decideStatus = (status) => {
     switch (status) {
       case "captured":
@@ -77,13 +93,7 @@ const useOrderTableColums = () => {
           <Table.Cell key={index}>{decideStatus(value)}</Table.Cell>
         ),
       },
-      {
-        Header: "Sales Channel",
-        accessor: "sales_channel",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{value?.name ?? "N/A"}</Table.Cell>
-        ),
-      },
+      ...scColumns,
       {
         Header: () => <div className="text-right">Total</div>,
         accessor: "total",
