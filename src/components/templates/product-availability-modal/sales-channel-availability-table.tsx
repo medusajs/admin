@@ -34,7 +34,7 @@ export const useAvailableChannelsModalTableColumns = () => {
         width: 30,
         id: "selection",
         Header: ({ getToggleAllPageRowsSelectedProps }) => (
-          <span className="flex justify-center">
+          <span className="flex justify-center w-[30px]">
             <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
           </span>
         ),
@@ -42,7 +42,7 @@ export const useAvailableChannelsModalTableColumns = () => {
           return (
             <span
               onClick={(e) => e.stopPropagation()}
-              className="flex justify-center"
+              className="flex justify-center w-[30px]"
             >
               <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
             </span>
@@ -118,7 +118,7 @@ const SalesChannelAvailabilityTable: React.FC<SalesChannelAvailabilityTableProps
   }
 
   return (
-    <>
+    <div className="min-h-[350px] flex flex-col justify-between">
       <Table
         {...getTableProps()}
         enableSearch
@@ -166,7 +166,7 @@ const SalesChannelAvailabilityTable: React.FC<SalesChannelAvailabilityTableProps
         hasNext={canNextPage}
         hasPrev={canPreviousPage}
       />
-    </>
+    </div>
   )
 }
 
