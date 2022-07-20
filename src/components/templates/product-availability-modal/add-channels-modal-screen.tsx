@@ -44,6 +44,9 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
   const [query, setQuery] = useState("")
   const [freeText, setFreeText] = useState("")
 
+  const { pop } = React.useContext(LayeredModalContext)
+  const [columns] = useAvailableChannelsModalTableColumns()
+
   const { sales_channels: salesChannels } = useAdminSalesChannels({
     q: freeText,
   })
@@ -55,8 +58,6 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
       return !selectedSalesChannelIds.includes(salesChannel.id)
     })
   }
-
-  const [columns] = useAvailableChannelsModalTableColumns()
 
   const tableState = useTable(
     {
@@ -86,8 +87,6 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
     return () => clearTimeout(delayDebounceFn)
   }, [query])
 
-  const { pop } = React.useContext(LayeredModalContext)
-
   return (
     <>
       <Modal.Content isLargeModal>
@@ -108,7 +107,7 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
             className="w-[112px]"
             onClick={() => pop()}
           >
-            Cancel
+            Back
           </Button>
           <Button
             variant="primary"
