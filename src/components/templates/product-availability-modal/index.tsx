@@ -9,12 +9,14 @@ import AvailableChannelsModalScreen from "./available-channels-modal-screen"
 
 type ProductAvailabilityModalProps = {
   salesChannels: SalesChannel[]
+  saveSelectedSalesChannels: (salesChannels: SalesChannel[]) => void
   handleClose: () => void
 }
 
 const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
   salesChannels,
   handleClose,
+  saveSelectedSalesChannels,
 }) => {
   const context = React.useContext(LayeredModalContext)
 
@@ -23,8 +25,8 @@ const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
   >(salesChannels)
 
   const onSave = () => {
-    // Save selected channels
-    console.log(selectedSalesChannels)
+    saveSelectedSalesChannels(selectedSalesChannels)
+    handleClose()
   }
 
   return (

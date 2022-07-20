@@ -36,7 +36,19 @@ export const productToFormValuesMapper = (product) => {
   }
 }
 
-export const formValuesToCreateProductMapper = (values, viewType) => {
+export const formValuesToCreateProductMapper = (
+  values,
+  viewType,
+  isFeatureEnabled
+) => {
+  const scData = {}
+
+  if (isFeatureEnabled("sales_channels")) {
+    scData["sales_channels"] = values.sales_channels.map((salesChannel) => ({
+      id: salesChannel.id,
+    }))
+  }
+
   // Simple product
   if (viewType === SINGLE_PRODUCT_VIEW) {
     values.variants = [
@@ -95,10 +107,19 @@ export const formValuesToCreateProductMapper = (values, viewType) => {
     hs_code: values.hs_code,
     is_giftcard: false,
     discountable: values.discountable,
+    ...scData,
   }
 }
 
-export const formValuesToUpdateProductMapper = (values) => {
+export const formValuesToUpdateProductMapper = (values, isFeatureEnabled) => {
+  const scData = {}
+
+  if (isFeatureEnabled("sales_channels")) {
+    scData["sales_channels"] = values.sales_channels.map((salesChannel) => ({
+      id: salesChannel.id,
+    }))
+  }
+
   return {
     title: values.title,
     handle: values.handle,
@@ -108,7 +129,7 @@ export const formValuesToUpdateProductMapper = (values) => {
     collection_id: values?.collection ? values.collection.value : null,
     type: values?.type
       ? { id: values.type.value, value: values.type.label }
-      : null,
+      : undefined,
     images: values?.images || [],
     tags: values?.tags ? values.tags.map((tag) => ({ value: tag })) : [],
     width: values?.width ? parseInt(values.width, 10) : undefined,
@@ -119,5 +140,6 @@ export const formValuesToUpdateProductMapper = (values) => {
     mid_code: values.mid_code,
     hs_code: values.hs_code,
     discountable: values.discountable,
+    ...scData,
   }
 }
