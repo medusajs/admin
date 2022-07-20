@@ -1,10 +1,13 @@
 import clsx from "clsx"
 import React, { useEffect, useState } from "react"
+import { useAdminRegions } from "medusa-react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
 import FilterDropdownItem from "../../../components/molecules/filter-dropdown/item"
 import SaveFilterItem from "../../../components/molecules/filter-dropdown/save-field"
 import TabFilter from "../../../components/molecules/filter-tab"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
+
+const REGION_PAGE_SIZE = 10
 
 const statusFilters = [
   "completed",
@@ -103,6 +106,29 @@ const OrderFilters = ({
     0
   )
 
+  const [regionsPagination, setRegionsPagination] = useState({
+    offset: 0,
+    limit: REGION_PAGE_SIZE,
+  })
+
+  const { regions, count, isLoading: isLoadingRegions } = useAdminRegions(
+    regionsPagination
+  )
+
+  const handlePaginateRegions = (direction) => {
+    if (direction > 0) {
+      setRegionsPagination((prev) => ({
+        ...prev,
+        offset: prev.offset + prev.limit,
+      }))
+    } else if (direction < 0) {
+      setRegionsPagination((prev) => ({
+        ...prev,
+        offset: Math.max(prev.offset - prev.limit, 0),
+      }))
+    }
+  }
+
   return (
     <div className="flex space-x-1">
       <FilterDropdownContainer
@@ -148,6 +174,25 @@ const OrderFilters = ({
           filters={tempState.fulfillment.filter}
           open={tempState.fulfillment.open}
           setFilter={(val) => setSingleFilter("fulfillment", val)}
+        />
+        <FilterDropdownItem
+          filterTitle="Regions"
+          options={
+            regions?.map((region) => ({
+              value: region.id,
+              label: region.name,
+            })) || []
+          }
+          isLoading={isLoadingRegions}
+          hasPrev={regionsPagination.offset > 0}
+          hasMore={
+            regionsPagination.offset + regionsPagination.limit < (count ?? 0)
+          }
+          onShowPrev={() => handlePaginateRegions(-1)}
+          onShowNext={() => handlePaginateRegions(1)}
+          filters={tempState.region.filter}
+          open={tempState.region.open}
+          setFilter={(v) => setSingleFilter("region", v)}
         />
         <FilterDropdownItem
           filterTitle="Date"
