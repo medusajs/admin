@@ -23,6 +23,7 @@ import Taxes from "./taxes"
 import Users from "./users"
 
 const SettingsIndex = () => {
+  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
   return (
     <SettingsOverview>
       <SettingsCard
@@ -80,12 +81,14 @@ const SettingsIndex = () => {
         icon={<TaxesIcon />}
         to={`/a/settings/taxes`}
       />
-      <SettingsCard
-        heading={"Sales channels"}
-        description={"Control which products are available in which channels"}
-        icon={<ChannelsIcon />}
-        to={`/a/sales-channels`}
-      />
+      {isFeatureEnabled("sales_channels") && (
+        <SettingsCard
+          heading={"Sales channels"}
+          description={"Control which products are available in which channels"}
+          icon={<ChannelsIcon />}
+          to={`/a/sales-channels`}
+        />
+      )}
     </SettingsOverview>
   )
 }
