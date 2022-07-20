@@ -13,7 +13,7 @@ const MailDialog = ({ onDismiss }) => {
   const [body, setBody] = useState("")
   const [bodySelectionStart, setBodySelectionStart] = useState(0)
   const [link, setLink] = useState("mailto:support@medusajs.com")
-  const ref = React.useRef(null)
+  const ref = React.useRef<HTMLDivElement>(null)
   const [showEmojiPicker, setShowEmojiPicker] = React.useState(false)
 
   React.useEffect(() => {

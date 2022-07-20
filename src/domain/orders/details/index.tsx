@@ -280,7 +280,7 @@ const OrderDetails = ({ id }) => {
                 subtitle={moment(order.created_at).format(
                   "d MMMM YYYY hh:mm a"
                 )}
-                status={<OrderStatusComponent status={order?.status} />}
+                status={<OrderStatusComponent status={order.status} />}
                 forceDropdown={true}
                 actionables={[
                   {
@@ -300,7 +300,7 @@ const OrderDetails = ({ id }) => {
                       className="text-grey-90 active:text-violet-90 cursor-pointer gap-x-1 flex items-center"
                       onClick={handleCopyEmail}
                     >
-                      {order?.email}
+                      {order.email}
                       <ClipboardCopyIcon size={12} />
                     </button>
                   </div>
@@ -308,14 +308,14 @@ const OrderDetails = ({ id }) => {
                     <div className="inter-smaller-regular text-grey-50 mb-1">
                       Phone
                     </div>
-                    <div>{order?.shipping_address?.phone || "N/A"}</div>
+                    <div>{order.shipping_address?.phone || "N/A"}</div>
                   </div>
                   <div className="flex flex-col pl-6">
                     <div className="inter-smaller-regular text-grey-50 mb-1">
                       Payment
                     </div>
                     <div>
-                      {order?.payments
+                      {order.payments
                         ?.map((p) => capitalize(p.provider_id))
                         .join(", ")}
                     </div>
@@ -327,19 +327,23 @@ const OrderDetails = ({ id }) => {
                 title="Summary"
               >
                 <div className="mt-6">
-                  {order?.items?.map((item, i) => (
-                    <OrderLine key={i} item={item} region={order?.region} />
+                  {order.items?.map((item, i) => (
+                    <OrderLine
+                      key={i}
+                      item={item}
+                      currencyCode={order.currency_code}
+                    />
                   ))}
                   <DisplayTotal
-                    currency={order?.currency_code}
-                    totalAmount={order?.subtotal}
+                    currency={order.currency_code}
+                    totalAmount={order.subtotal}
                     totalTitle={"Subtotal"}
                   />
                   {order?.discounts?.map((discount, index) => (
                     <DisplayTotal
                       key={index}
-                      currency={order?.currency_code}
-                      totalAmount={-1 * order?.discount_total}
+                      currency={order.currency_code}
+                      totalAmount={-1 * order.discount_total}
                       totalTitle={
                         <div className="flex inter-small-regular text-grey-90 items-center">
                           Discount:{" "}
@@ -353,8 +357,8 @@ const OrderDetails = ({ id }) => {
                   {order?.gift_cards?.map((giftCard, index) => (
                     <DisplayTotal
                       key={index}
-                      currency={order?.currency_code}
-                      totalAmount={-1 * order?.gift_card_total}
+                      currency={order.currency_code}
+                      totalAmount={-1 * order.gift_card_total}
                       totalTitle={
                         <div className="flex inter-small-regular text-grey-90 items-center">
                           Gift card:{" "}
@@ -373,19 +377,19 @@ const OrderDetails = ({ id }) => {
                     />
                   ))}
                   <DisplayTotal
-                    currency={order?.currency_code}
-                    totalAmount={order?.shipping_total}
+                    currency={order.currency_code}
+                    totalAmount={order.shipping_total}
                     totalTitle={"Shipping"}
                   />
                   <DisplayTotal
-                    currency={order?.currency_code}
-                    totalAmount={order?.tax_total}
+                    currency={order.currency_code}
+                    totalAmount={order.tax_total}
                     totalTitle={`Tax`}
                   />
                   <DisplayTotal
                     variant={"large"}
-                    currency={order?.currency_code}
-                    totalAmount={order?.total}
+                    currency={order.currency_code}
+                    totalAmount={order.total}
                     totalTitle={hasMovements ? "Original Total" : "Total"}
                   />
                   <PaymentDetails
@@ -393,9 +397,9 @@ const OrderDetails = ({ id }) => {
                     swapAmount={swapAmount}
                     swapRefund={swapRefund}
                     returnRefund={returnRefund}
-                    paidTotal={order?.paid_total}
-                    refundedTotal={order?.refunded_total}
-                    currency={order?.currency_code}
+                    paidTotal={order.paid_total}
+                    refundedTotal={order.refunded_total}
+                    currency={order.currency_code}
                   />
                 </div>
               </BodyCard>
@@ -403,7 +407,7 @@ const OrderDetails = ({ id }) => {
                 className={"w-full mb-4 min-h-0 h-auto"}
                 title="Payment"
                 status={
-                  <PaymentStatusComponent status={order?.payment_status} />
+                  <PaymentStatusComponent status={order.payment_status} />
                 }
                 customActionable={
                   <PaymentActionables
@@ -414,13 +418,13 @@ const OrderDetails = ({ id }) => {
                 }
               >
                 <div className="mt-6">
-                  {order?.payments.map((payment) => (
+                  {order.payments.map((payment) => (
                     <div className="flex flex-col" key={payment.id}>
                       <DisplayTotal
-                        currency={order?.currency_code}
-                        totalAmount={payment?.amount}
+                        currency={order.currency_code}
+                        totalAmount={payment.amount}
                         totalTitle={payment.id}
-                        subtitle={`${moment(payment?.created_at).format(
+                        subtitle={`${moment(payment.created_at).format(
                           "DD MMM YYYY hh:mm"
                         )}`}
                       />
@@ -438,12 +442,12 @@ const OrderDetails = ({ id }) => {
                             <div className="inter-small-regular text-grey-90 mr-3">
                               -
                               {formatAmountWithSymbol({
-                                amount: payment?.amount_refunded,
-                                currency: order?.currency_code,
+                                amount: payment.amount_refunded,
+                                currency: order.currency_code,
                               })}
                             </div>
                             <div className="inter-small-regular text-grey-50">
-                              {order?.currency_code.toUpperCase()}
+                              {order.currency_code.toUpperCase()}
                             </div>
                           </div>
                         </div>
@@ -457,12 +461,12 @@ const OrderDetails = ({ id }) => {
                     <div className="flex">
                       <div className="inter-small-semibold text-grey-90 mr-3">
                         {formatAmountWithSymbol({
-                          amount: order?.paid_total - order?.refunded_total,
-                          currency: order?.currency_code,
+                          amount: order.paid_total - order.refunded_total,
+                          currency: order.currency_code,
                         })}
                       </div>
                       <div className="inter-small-regular text-grey-50">
-                        {order?.currency_code.toUpperCase()}
+                        {order.currency_code.toUpperCase()}
                       </div>
                     </div>
                   </div>
@@ -473,7 +477,7 @@ const OrderDetails = ({ id }) => {
                 title="Fulfillment"
                 status={
                   <FulfillmentStatusComponent
-                    status={order?.fulfillment_status}
+                    status={order.fulfillment_status}
                   />
                 }
                 customActionable={
@@ -491,7 +495,7 @@ const OrderDetails = ({ id }) => {
                 }
               >
                 <div className="mt-6">
-                  {order?.shipping_methods.map((method) => (
+                  {order.shipping_methods.map((method) => (
                     <div className="flex flex-col" key={method.id}>
                       <span className="inter-small-regular text-grey-50">
                         Shipping Method
@@ -537,20 +541,20 @@ const OrderDetails = ({ id }) => {
                   <div className="flex w-full space-x-4 items-center">
                     <div className="flex w-[40px] h-[40px] ">
                       <Avatar
-                        user={order?.customer}
+                        user={order.customer}
                         font="inter-large-semibold"
                         color="bg-fuschia-40"
                       />
                     </div>
                     <div>
                       <h1 className="inter-large-semibold text-grey-90">
-                        {`${order?.shipping_address.first_name} ${order?.shipping_address.last_name}`}
+                        {`${order.shipping_address?.first_name} ${order.shipping_address?.last_name}`}
                       </h1>
                       <span className="inter-small-regular text-grey-50">
-                        {order?.shipping_address.city},{" "}
+                        {order.shipping_address?.city},{" "}
                         {
                           isoAlpha2Countries[
-                            order?.shipping_address.country_code?.toUpperCase()
+                            order.shipping_address?.country_code?.toUpperCase()
                           ]
                         }
                       </span>
@@ -562,17 +566,17 @@ const OrderDetails = ({ id }) => {
                         Contact
                       </div>
                       <div className="flex flex-col inter-small-regular">
-                        <span>{order?.email}</span>
-                        <span>{order?.shipping_address?.phone || ""}</span>
+                        <span>{order.email}</span>
+                        <span>{order.shipping_address?.phone || ""}</span>
                       </div>
                     </div>
                     <FormattedAddress
                       title={"Shipping"}
-                      addr={order?.shipping_address}
+                      addr={order.shipping_address}
                     />
                     <FormattedAddress
                       title={"Billing"}
-                      addr={order?.billing_address}
+                      addr={order.billing_address}
                     />
                   </div>
                 </div>

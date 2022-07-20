@@ -4,6 +4,7 @@ import TrashIcon from "../../fundamentals/icons/trash-icon"
 import CurrencyInput from "../../organisms/currency-input"
 
 type RMAShippingPriceProps = {
+  inclTax: boolean
   useCustomShippingPrice: boolean
   shippingPrice: number | undefined
   currencyCode: string
@@ -13,6 +14,7 @@ type RMAShippingPriceProps = {
 
 const RMAShippingPrice: React.FC<RMAShippingPriceProps> = ({
   useCustomShippingPrice,
+  inclTax,
   shippingPrice,
   currencyCode,
   updateShippingPrice,

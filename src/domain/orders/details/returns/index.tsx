@@ -1,4 +1,4 @@
-import { LineItem, Order } from "@medusajs/medusa"
+import { LineItem as RawLineItem, Order } from "@medusajs/medusa"
 import { useAdminRequestReturn, useAdminShippingOptions } from "medusa-react"
 import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
@@ -25,6 +25,8 @@ type ReturnMenuProps = {
   order: Order
   onDismiss: () => void
 }
+
+type LineItem = Omit<RawLineItem, "beforeInsert">
 
 const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
   const layoutmodalcontext = useContext(LayeredModalContext)
@@ -103,9 +105,13 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
     }
 
     if (shippingMethod) {
+      const taxRate = shippingMethod.tax_rates.reduce((acc, curr) => {
+        return acc + curr.rate / 100
+      }, 0)
+
       data.return_shipping = {
         option_id: shippingMethod.value,
-        price: shippingPrice ? shippingPrice / (1 + order.tax_rate / 100) : 0,
+        price: shippingPrice ? Math.round(shippingPrice / (1 + taxRate)) : 0,
       }
     }
 
@@ -131,8 +137,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
     const method = shippingOptions?.find((o) => selectedItem.value === o.id)
 
     if (method) {
-      const multiplier = order.tax_rate ? 1 + order.tax_rate / 100 : 1
-      setShippingPrice(method.amount * multiplier)
+      setShippingPrice(method.price_incl_tax)
     }
   }
 
@@ -141,8 +146,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
       const method = shippingOptions?.find((o) => shippingMethod.value === o.id)
 
       if (method) {
-        const multiplier = order.tax_rate ? 1 + order.tax_rate / 100 : 1
-        setShippingPrice(method.amount * multiplier)
+        setShippingPrice(method.price_incl_tax)
       }
     }
   }, [useCustomShippingPrice, shippingMethod])
@@ -187,12 +191,14 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
                   shippingOptions?.map((o) => ({
                     label: o.name,
                     value: o.id,
+                    tax_rates: o.tax_rates,
                   })) || []
                 }
               />
             )}
             {shippingMethod && (
               <RMAShippingPrice
+                inclTax
                 useCustomShippingPrice={useCustomShippingPrice}
                 shippingPrice={shippingPrice}
                 currencyCode={order.currency_code}

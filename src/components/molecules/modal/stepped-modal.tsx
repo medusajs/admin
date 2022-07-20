@@ -146,7 +146,7 @@ const SteppedModal: React.FC<SteppedProps> = ({
     >
       <Modal.Body
         className={clsx(
-          "transition-transform flex flex-col justify-between duration-100"
+          "transition-transform flex flex-col justify-between duration-100 max-h-full"
         )}
       >
         <Modal.Header handleClose={resetAndClose}>
