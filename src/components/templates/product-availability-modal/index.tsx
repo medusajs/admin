@@ -1,3 +1,4 @@
+import { SalesChannel } from "@medusajs/medusa"
 import React from "react"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
@@ -7,15 +8,24 @@ import LayeredModal, {
 import AvailableChannelsModalScreen from "./available-channels-modal-screen"
 
 type ProductAvailabilityModalProps = {
-  selectedChannelIds: string[]
+  salesChannels: SalesChannel[]
   handleClose: () => void
 }
 
 const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
-  selectedChannelIds,
+  salesChannels,
   handleClose,
 }) => {
   const context = React.useContext(LayeredModalContext)
+
+  const [selectedSalesChannels, setSelectedSalesChannels] = React.useState<
+    SalesChannel[]
+  >(salesChannels)
+
+  const onSave = () => {
+    // Save selected channels
+    console.log(selectedSalesChannels)
+  }
 
   return (
     <LayeredModal context={context} handleClose={handleClose}>
@@ -25,14 +35,15 @@ const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
         </Modal.Header>
         <Modal.Content>
           <AvailableChannelsModalScreen
-            selectedChannelIds={selectedChannelIds}
+            salesChannels={selectedSalesChannels}
+            setSelectedSalesChannels={setSelectedSalesChannels}
           />
         </Modal.Content>
         <Modal.Footer>
           <div className="flex w-full justify-end">
             <div className="flex gap-x-xsmall">
               <Button
-                onClick={() => handleClose()}
+                onClick={handleClose}
                 className="w-[112px]"
                 size="small"
                 variant="ghost"
@@ -40,7 +51,7 @@ const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
                 Cancel
               </Button>
               <Button
-                onClick={() => handleClose()}
+                onClick={onSave}
                 className="w-[112px]"
                 size="small"
                 variant="primary"
