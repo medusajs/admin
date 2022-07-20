@@ -73,8 +73,6 @@ const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> 
     onDeselect()
   }
 
-  // VIEW
-
   return (
     <SalesChannelAvailabilityTable
       tableAction={
