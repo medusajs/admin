@@ -86,7 +86,7 @@ const SalesChannelAvailabilityTable: React.FC<SalesChannelAvailabilityTableProps
     nextPage,
     previousPage,
     // Get the state from the instance
-    state: { pageIndex, pageSize, ...state },
+    state: { pageIndex, ...state },
   } = tableState
 
   const paginate = (direction: 1 | -1) => {
