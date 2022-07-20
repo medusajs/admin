@@ -64,7 +64,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
 
 const SalesChannelBadge: React.FC<SalesChannelBadgeProps> = ({ channel }) => {
   return (
-    <Badge variant="ghost" className="pl-4 pr-3">
+    <Badge variant="ghost" className="px-4">
       <div className="flex py-1.5 items-center">
         <span className="inter-base-regular text-grey-90">{channel.name}</span>
       </div>
