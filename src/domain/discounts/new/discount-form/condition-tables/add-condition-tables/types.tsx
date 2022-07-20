@@ -43,7 +43,7 @@ const AddTypeConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
+      <Modal.Content>
         {isLoading ? (
           <Spinner />
         ) : (
@@ -69,7 +69,7 @@ const AddTypeConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
           </>
         )}
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <AddConditionFooter
           type="product_types"
           items={items}

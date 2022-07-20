@@ -74,9 +74,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
                     className="h-full object-cover rounded-soft"
                   />
                 ) : (
-                  <div className="flex items-center justify-center w-full h-full rounded-soft bg-grey-10">
-                    <ImagePlaceholder size={16} />
-                  </div>
+                  <ImagePlaceholder />
                 )}
               </div>
               <div className="flex flex-col">
@@ -212,7 +210,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={isLargeModal}>
+      <Modal.Content>
         <div className="min-h-[680px]">
           <Table
             immediateSearchFocus
@@ -257,7 +255,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
           />
         </div>
       </Modal.Content>
-      <Modal.Footer isLargeModal={isLargeModal}>
+      <Modal.Footer>
         <div className="flex w-full justify-end gap-x-xsmall">
           <Button
             variant="ghost"

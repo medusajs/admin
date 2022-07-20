@@ -36,9 +36,7 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
                     className="h-full object-cover rounded-soft"
                   />
                 ) : (
-                  <div className="flex items-center justify-center w-full h-full rounded-soft bg-grey-5">
-                    <ImagePlaceholder size={12} />
-                  </div>
+                  <ImagePlaceholder />
                 )}
               </div>
               {original.title}

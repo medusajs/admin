@@ -1,7 +1,13 @@
+import { Address } from "@medusajs/medusa"
 import React from "react"
 
-export const FormattedAddress = ({ title, addr }) => {
-  if (!addr?.id) {
+type FormattedAddressProps = {
+  title: string
+  addr?: Address
+}
+
+export const FormattedAddress = ({ title, addr }: FormattedAddressProps) => {
+  if (!addr) {
     return (
       <div className="flex flex-col pl-6">
         <div className="inter-small-regular text-grey-50 mb-1">{title}</div>
@@ -20,7 +26,7 @@ export const FormattedAddress = ({ title, addr }) => {
         <span>
           {addr?.city}
           {", "}
-          {`${addr?.province} ` || ""}
+          {addr?.province ? `${addr.province} ` : ""}
           {addr?.postal_code} {addr?.country_code?.toUpperCase()}
         </span>
       </div>

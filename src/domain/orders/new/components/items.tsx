@@ -1,31 +1,38 @@
-import React, { useContext, useEffect, useState } from "react"
 import clsx from "clsx"
+import React, { useContext, useEffect, useState } from "react"
 
 import Button from "../../../../components/fundamentals/button"
-import { displayAmount, extractUnitPrice } from "../../../../utils/prices"
-import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
-import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
-import RMASelectProductSubModal from "../../details/rma-sub-modals/products"
-import Table from "../../../../components/molecules/table"
-import InputField from "../../../../components/molecules/input"
 import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
+import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
-import CustomItemSubModal from "./custom-item-sub-modal"
-import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
+import InputField from "../../../../components/molecules/input"
+import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
+import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
+import Table from "../../../../components/molecules/table"
+import { displayAmount, extractUnitPrice } from "../../../../utils/prices"
+import RMASelectProductSubModal from "../../details/rma-sub-modals/products"
+import { useNewOrderForm } from "../form"
+import CustomItemSubModal from "./custom-item-sub-modal"
 
 const Items = ({
   items,
   handleAddItems,
   handleAddQuantity,
   handleRemoveItem,
-  selectedRegion,
   handlePriceChange,
   handleAddCustom,
 }) => {
   const { enableNextPage, disableNextPage, nextStepEnabled } = React.useContext(
     SteppedContext
   )
+
+  const { region } = useNewOrderForm()
+
+  useEffect(() => {
+    console.log(region)
+  }, [region])
+
   const [editQuantity, setEditQuantity] = useState(-1)
   const [editPrice, setEditPrice] = useState(-1)
 
@@ -70,7 +77,7 @@ const Items = ({
   return (
     <div className="flex flex-col min-h-[705px] pt-4">
       <span className="inter-base-semibold mb-4">Items for the order</span>
-      {items.length > 0 && (
+      {items.length > 0 && region && (
         <Table>
           <Table.HeadRow className="text-grey-50 border-t inter-small-semibold">
             <Table.HeadCell>Details</Table.HeadCell>
@@ -83,12 +90,12 @@ const Items = ({
             <Table.HeadCell></Table.HeadCell>
           </Table.HeadRow>
           {items.map((item, index) => {
-            const itemPrice = extractUnitPrice(item, selectedRegion, false)
+            const itemPrice = extractUnitPrice(item, region, false)
 
             return (
               <Table.Row className={clsx("border-b-grey-0 hover:bg-grey-0")}>
                 <Table.Cell>
-                  <div className="min-w-[240px] flex py-2">
+                  <div className="min-w-[240px] flex items-center py-2">
                     <div className="w-[30px] h-[40px] ">
                       {item?.product?.thumbnail ? (
                         <img
@@ -165,16 +172,15 @@ const Items = ({
                       className="cursor-pointer"
                       onClick={() => setEditPrice(index)}
                     >
-                      {displayAmount(selectedRegion.currency_code, itemPrice)}
+                      {displayAmount(region!.currency_code, itemPrice)}
                     </span>
                   )}
                 </Table.Cell>
                 <Table.Cell className="text-right text-grey-40 pr-1">
-                  {selectedRegion.currency_code.toUpperCase()}
+                  {region!.currency_code.toUpperCase()}
                 </Table.Cell>
                 <Table.Cell>
                   <Button
-                    className="w-5 h-5 hover:bg-grey-20"
                     variant="ghost"
                     size="small"
                     onClick={() => removeItem(index)}
@@ -197,7 +203,7 @@ const Items = ({
               CreateCustomProductScreen(
                 layeredContext.pop,
                 addCustomItem,
-                selectedRegion
+                region
               )
             )
           }}

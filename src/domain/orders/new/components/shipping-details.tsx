@@ -1,13 +1,18 @@
-import React, { useContext, useEffect, useState } from "react"
 import qs from "query-string"
-import Medusa from "../../../../services/api"
+import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import AddressForm from "../../../../components/templates/address-form"
+import AddressForm, {
+  AddressPayload,
+} from "../../../../components/templates/address-form"
+import Medusa from "../../../../services/api"
 
+import { useForm } from "react-hook-form"
+import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
-import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
+import { nestedForm } from "../../../../utils/nested-form"
+import { useNewOrderForm } from "../form"
 
 const ShippingDetails = ({
   customerAddresses,
@@ -21,11 +26,15 @@ const ShippingDetails = ({
     SteppedContext
   )
 
+  const { validCountries } = useNewOrderForm()
+
   const { shipping, customer: selectedCustomer, requireShipping } = form.watch([
     "shipping",
     "customer",
     "requireShipping",
   ])
+
+  const formWithAddress = useForm<{ shipping_address: AddressPayload }>()
 
   useEffect(() => {
     if (
@@ -178,9 +187,8 @@ const ShippingDetails = ({
       ) : (
         <div className="mt-4">
           <AddressForm
-            allowedCountries={region.countries?.map((c) => c.iso_2) || []}
-            country={shipping?.country_code}
-            form={form}
+            form={nestedForm(formWithAddress, "shipping_address")}
+            countryOptions={validCountries}
             type="shipping"
           />
         </div>

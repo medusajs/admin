@@ -207,18 +207,18 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
                     </div>
                   </div>
                   {refundEdited && (
-                    <CurrencyInput
+                    <CurrencyInput.Root
                       className="mt-2"
                       size="small"
                       currentCurrency={order.currency_code}
                       readOnly
                     >
-                      <CurrencyInput.AmountInput
+                      <CurrencyInput.Amount
                         label={"Amount"}
                         amount={refundAmount}
                         onChange={handleRefundUpdated}
                       />
-                    </CurrencyInput>
+                    </CurrencyInput.Root>
                   )}
                 </div>
               )}

@@ -110,9 +110,9 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
   }
 
   return (
-    <Modal handleClose={handleClose}>
+    <Modal handleClose={handleClose} isLargeModal>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Modal.Body isLargeModal>
+        <Modal.Body>
           <Modal.Header handleClose={handleClose}>
             <span className="inter-xlarge-semibold">Add Denomination</span>
           </Modal.Header>

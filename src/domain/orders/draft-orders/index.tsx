@@ -1,13 +1,14 @@
-import React, { useState, useMemo } from "react"
 import { RouteComponentProps, Router } from "@reach/router"
 import { navigate } from "gatsby"
+import React, { useMemo, useState } from "react"
 
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../../components/organisms/body-card"
 import TableViewHeader from "../../../components/organisms/custom-table-header"
 import DraftOrderTable from "../../../components/templates/draft-order-table"
-import DraftOrderDetails from "./details"
+import NewOrderFormProvider from "../new/form"
 import NewOrder from "../new/new-order"
+import DraftOrderDetails from "./details"
 
 const VIEWS = ["orders", "drafts"]
 
@@ -46,7 +47,9 @@ const DraftOrderIndex: React.FC<RouteComponentProps> = () => {
         </BodyCard>
       </div>
       {showNewOrder && (
-        <NewOrder onDismiss={() => setShowNewOrder(false)} refresh />
+        <NewOrderFormProvider>
+          <NewOrder onDismiss={() => setShowNewOrder(false)} />
+        </NewOrderFormProvider>
       )}
     </div>
   )

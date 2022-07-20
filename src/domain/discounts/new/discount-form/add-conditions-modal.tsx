@@ -4,11 +4,11 @@ import ChevronRightIcon from "../../../../components/fundamentals/icons/chevron-
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
-  LayeredModalContext
+  LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
 import { AddConditionSelectorProps, ConditionMap } from "../../types"
 import useConditionModalItems, {
-  ConditionItem
+  ConditionItem,
 } from "./use-condition-modal-items"
 
 type AddConditionsModalProps = AddConditionSelectorProps & {

@@ -59,25 +59,22 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
     shipping_options: shippingOptions,
   } = useAdminShippingOptions({
     region_id: order.region_id,
-    is_return: "true",
+    is_return: true,
   })
 
   useEffect(() => {
-    const items = Object.keys(toReturn).map((t) =>
-      allItems.find((i) => i.id === t)
-    )
-    const total =
-      items.reduce((acc, next) => {
-        if (next) {
-          return (
-            acc +
-            (next.refundable || 0 / (next.quantity - next.returned_quantity)) *
-              toReturn[next.id].quantity
-          )
-        }
+    const items = Object.keys(toReturn)
+      .map((t) => allItems.find((i) => i.id === t))
+      .filter((i) => typeof i !== "undefined") as LineItem[]
 
-        return acc
-      }, 0) - (shippingPrice || 0)
+    const itemTotal = items.reduce((acc: number, curr: LineItem): number => {
+      const unitRefundable =
+        (curr.refundable || 0) / (curr.quantity - curr.returned_quantity)
+
+      return acc + unitRefundable * toReturn[curr.id].quantity
+    }, 0)
+
+    const total = itemTotal - (shippingPrice || 0)
 
     setRefundable(total)
 
@@ -238,18 +235,18 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
                 </div>
               </div>
               {refundEdited && (
-                <CurrencyInput
+                <CurrencyInput.Root
                   className="mt-2"
                   size="small"
                   currentCurrency={order.currency_code}
                   readOnly
                 >
-                  <CurrencyInput.AmountInput
+                  <CurrencyInput.Amount
                     label={"Amount"}
                     amount={refundAmount}
                     onChange={handleRefundUpdated}
                   />
-                </CurrencyInput>
+                </CurrencyInput.Root>
               )}
             </div>
           )}

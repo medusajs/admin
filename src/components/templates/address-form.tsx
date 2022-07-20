@@ -1,88 +1,59 @@
-import React, { useEffect, useState } from "react"
-import Select from "../molecules/select"
+import React from "react"
+import { Controller } from "react-hook-form"
+import { Option } from "../../types/shared"
+import { NestedForm } from "../../utils/nested-form"
 import Input from "../molecules/input"
-import { countries } from "../../utils/countries"
+import Select from "../molecules/select"
 
-const AddressForm = ({
-  form = {},
-  country,
-  allowedCountries,
-  type = "address",
-}) => {
-  const countryOptions = countries
-    .map((c) => {
-      if (allowedCountries) {
-        const clean = allowedCountries.map((c) => c.toLowerCase())
-        if (clean.includes(c.alpha2.toLowerCase())) {
-          return { label: c.name, value: c.alpha2.toLowerCase() }
-        } else {
-          return null
-        }
-      } else {
-        return { label: c.name, value: c.alpha2.toLowerCase() }
-      }
-    })
-    .filter(Boolean)
+export interface AddressPayload {
+  first_name: string
+  last_name: string
+  company: string | null
+  address_1: string
+  address_2: string | null
+  city: string
+  province: string | null
+  country_code: Option
+  postal_code: string
+  phone: string | null
+}
 
-  const [selectedCountry, setSelectedCountry] = useState(
-    countryOptions.find((o) => o.value === country)
-  )
+type AddressFormProps = {
+  form: NestedForm<AddressPayload>
+  countryOptions: Option[]
+  type: "shipping" | "billing" | "address"
+}
 
-  form.register(`${type}.country_code`)
-
-  const setCountry = (value) => {
-    if (value) {
-      setSelectedCountry(value)
-      form.setValue(`${type}.country_code`, value.value)
-    }
-  }
-
-  useEffect(() => {
-    if (country && !form.getValues(`${[type].country_code}`)) {
-      form.setValue(`${[type].country_code}`, country)
-    }
-  }, [])
+const AddressForm = ({ form, countryOptions, type }: AddressFormProps) => {
+  const { register, path, control } = form
 
   return (
     <div>
       <span className="inter-base-semibold">General</span>
       <div className="grid grid-cols-2 gap-x-base gap-y-base mt-4 mb-8">
         <Input
-          ref={form.register({
+          {...register(path("first_name"), {
             required: true,
           })}
           placeholder="First Name"
           label="First Name"
           required={true}
-          name={`${[type]}.first_name`}
         />
         <Input
-          ref={form.register({
+          {...form.register(path("last_name"), {
             required: true,
           })}
           placeholder="Last Name"
           label="Last Name"
           required={true}
-          name={`${[type]}.last_name`}
         />
         <Input
-          ref={form.register({
-            required: true,
-          })}
-          placeholder="Email"
-          label="Email"
-          type="email"
-          required={true}
-          name={`email`}
-        />
-        <Input
-          ref={form.register({
+          {...form.register(path("phone"), {
             required: true,
           })}
           placeholder="Phone"
           label="Phone"
           required={true}
-          name={`${[type]}.phone`}
         />
       </div>
 
@@ -91,51 +62,64 @@ const AddressForm = ({
           ? `${type.charAt(0).toUpperCase()}${type.slice(1)} `
           : ""
       }Address`}</span>
-      <div className="mt-4">
+      <div className="grid grid-cols-1 gap-y-base mt-4">
         <Input
-          ref={form.register({
+          {...form.register(path("address_1"), {
             required: true,
           })}
           placeholder="Address 1"
           label="Address 1"
           required={true}
-          name={`${[type]}.address_1`}
         />
-        <div className="grid grid-cols-2 gap-x-base gap-y-base mt-4">
+        <Input
+          {...form.register(path("address_2"))}
+          placeholder="Address 2"
+          label="Address 2"
+        />
+        <Input
+          {...form.register(path("company"))}
+          placeholder="Company"
+          label="Company"
+        />
+        <div className="grid grid-cols-[144px_1fr] gap-x-base">
           <Input
-            ref={form.register}
-            placeholder="Province"
-            label="Province"
-            name={`${[type]}.province`}
-          />
-          <Input
-            ref={form.register({
+            {...form.register(path("postal_code"), {
               required: true,
             })}
             placeholder="Postal code"
             label="Postal code"
             required={true}
-            name={`${[type]}.postal_code`}
+            autoComplete="off"
           />
           <Input
-            ref={form.register}
             placeholder="City"
             label="City"
-            ref={form.register({
+            {...form.register(path("city"), {
               required: true,
             })}
-            name={`${[type]}.city`}
-          />
-          <Select
-            ref={form.register}
-            name={`${[type]}.country_code`}
-            label="Country"
             required
-            value={country || null}
-            options={countryOptions}
-            onChange={setCountry}
-            value={selectedCountry}
-            defaultValue="Choose a country"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-x-base">
+          <Input
+            {...form.register(path("province"))}
+            placeholder="Province"
+            label="Province"
+          />
+          <Controller
+            control={control}
+            name={path("country_code")}
+            render={({ field: { value, onChange } }) => {
+              return (
+                <Select
+                  label="Country"
+                  required
+                  value={value}
+                  options={countryOptions}
+                  onChange={onChange}
+                />
+              )
+            }}
           />
         </div>
       </div>

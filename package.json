@@ -6,7 +6,8 @@
   "author": "@medusajs",
   "resolutions": {
     "devcert": "1.2.1",
-    "postcss": "^8.4.5"
+    "postcss": "^8.4.5",
+    "@types/react": "^16.14.26"
   },
   "dependencies": {
     "@medusajs/medusa": "^1.3.1",
@@ -63,6 +64,7 @@
     "react-table": "^7.7.0",
     "react-toast-notifications": "^2.4.0",
     "stream-browserify": "^3.0.0",
+    "type-fest": "^2.16.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

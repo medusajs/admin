@@ -77,7 +77,7 @@ const PriceOverrides = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
+      <Modal.Content>
         {!isEdit && (
           <RadioGroup.Root
             value={mode}
@@ -140,7 +140,7 @@ const PriceOverrides = ({
           </div>
         </div>
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <div className="flex w-full h-8 justify-end">
           <Button
             variant="ghost"

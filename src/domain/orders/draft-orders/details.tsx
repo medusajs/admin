@@ -17,8 +17,8 @@ import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
-import ImagePlaceholderIcon from "../../../components/fundamentals/icons/image-placeholder-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
+import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
@@ -231,16 +231,14 @@ const DraftOrderDetails = ({ id }) => {
                     className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded"
                   >
                     <div className="flex space-x-4 justify-center">
-                      <div className="flex h-[48px] w-[36px] rounded-rounded bg-grey-10 items-center justify-center">
+                      <div className="flex h-[48px] w-[36px] rounded-rounded items-center justify-center">
                         {item?.thumbnail ? (
                           <img
                             src={item.thumbnail}
                             className="rounded-rounded object-cover"
                           />
                         ) : (
-                          <div className="text-grey-30">
-                            <ImagePlaceholderIcon />
-                          </div>
+                          <ImagePlaceholder />
                         )}
                       </div>
                       <div className="flex flex-col justify-center">

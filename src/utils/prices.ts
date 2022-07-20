@@ -8,12 +8,15 @@ export function normalizeAmount(currency: string, amount: number): number {
 
 export function displayAmount(currency: string, amount: number) {
   const normalizedAmount = normalizeAmount(currency, amount)
+
   return normalizedAmount.toFixed(
     currencies[currency.toUpperCase()].decimal_digits
   )
 }
 
 export const extractUnitPrice = (item, region, withTax = true) => {
+  console.log(item, region, withTax)
+
   let itemPrice = item.unit_price
 
   if (itemPrice === undefined) {

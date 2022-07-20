@@ -1,16 +1,18 @@
-import React from "react"
-import CrossIcon from "../../fundamentals/icons/cross-icon"
-import clsx from "clsx"
 import * as Dialog from "@radix-ui/react-dialog"
 import * as Portal from "@radix-ui/react-portal"
+import clsx from "clsx"
+import React from "react"
 import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
+import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 type ModalState = {
   portalRef: any
+  isLargeModal?: boolean
 }
 
 export const ModalContext = React.createContext<ModalState>({
   portalRef: undefined,
+  isLargeModal: true,
 })
 
 export type ModalProps = {
@@ -20,7 +22,6 @@ export type ModalProps = {
 }
 
 type ModalChildProps = {
-  isLargeModal?: boolean
   className?: string
   style?: React.CSSProperties
 }
@@ -75,9 +76,9 @@ const Modal: ModalType = ({
   return (
     <Dialog.Root open={open} onOpenChange={handleClose}>
       <Portal.UnstablePortal ref={portalRef}>
-        <ModalContext.Provider value={{ portalRef }}>
+        <ModalContext.Provider value={{ portalRef, isLargeModal }}>
           <Overlay>
-            <Content>{addProp(children, { isLargeModal })}</Content>
+            <Content>{children}</Content>
           </Overlay>
         </ModalContext.Provider>
       </Portal.UnstablePortal>
@@ -85,19 +86,23 @@ const Modal: ModalType = ({
   )
 }
 
-Modal.Body = ({ children, isLargeModal, className, style }) => {
+Modal.Body = ({ children, className, style }) => {
+  const { isLargeModal } = React.useContext(ModalContext)
+
   return (
     <div
       style={style}
       className={clsx("inter-base-regular h-full", className)}
       onClick={(e) => e.stopPropagation()}
     >
-      {addProp(children, { isLargeModal })}
+      {children}
     </div>
   )
 }
 
-Modal.Content = ({ children, className, isLargeModal }) => {
+Modal.Content = ({ children, className }) => {
+  const { isLargeModal } = React.useContext(ModalContext)
+
   const { height } = useWindowDimensions()
   const style = {
     maxHeight: height - 64 - 141,
@@ -133,7 +138,9 @@ Modal.Header = ({ handleClose = undefined, children }) => {
   )
 }
 
-Modal.Footer = ({ children, isLargeModal }) => {
+Modal.Footer = ({ children }) => {
+  const { isLargeModal } = React.useContext(ModalContext)
+
   return (
     <div
       onClick={(e) => e.stopPropagation()}

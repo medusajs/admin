@@ -82,7 +82,10 @@ const RMASelectReturnProductTable: React.FC<RMASelectProductTableProps> = ({
           }
           const checked = item.id in toReturn
           return (
-            <Table.Row className={clsx("border-b-grey-0 hover:bg-grey-0")}>
+            <Table.Row
+              className={clsx("border-b-grey-0 hover:bg-grey-0")}
+              key={item.id}
+            >
               <Table.Cell>
                 <div className="items-center ml-1 h-full flex">
                   <div

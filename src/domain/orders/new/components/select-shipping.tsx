@@ -6,6 +6,7 @@ import { SteppedContext } from "../../../../components/molecules/modal/stepped-m
 import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { extractOptionPrice } from "../../../../utils/prices"
+import { useNewOrderForm } from "../form"
 
 const SelectShippingMethod = ({
   shippingOptions,
@@ -15,13 +16,18 @@ const SelectShippingMethod = ({
   setShowCustomPrice,
   setCustomOptionPrice,
   customOptionPrice,
-  region,
 }) => {
   const { disableNextPage, enableNextPage } = useContext(SteppedContext)
+
+  const { region } = useNewOrderForm()
 
   useEffect(() => {
     if (!shippingOption) {
       disableNextPage()
+    }
+
+    if (shippingOption) {
+      enableNextPage()
     }
   }, [])
 
@@ -30,12 +36,12 @@ const SelectShippingMethod = ({
       <span className="inter-base-semibold">
         Shipping method{" "}
         <span className="inter-base-regular text-grey-50">
-          (To {region.name})
+          (To {region!.name})
         </span>
       </span>
 
       {!shippingOptions?.length ? (
-        <div className="inter-small-regular mt-6 p-4 text-orange-50 bg-orange-5 rounded-rounded flex text-grey-50">
+        <div className="inter-small-regular mt-6 p-4 text-orange-50 bg-orange-5 rounded-rounded flex">
           <div className="h-full mr-3">
             <AlertIcon size={20} />
           </div>
@@ -89,17 +95,17 @@ const SelectShippingMethod = ({
             {showCustomPrice && (
               <div className="flex items-center">
                 <div className="w-full">
-                  <CurrencyInput
+                  <CurrencyInput.Root
                     readOnly
                     size="small"
                     currentCurrency={region.currency_code}
                   >
-                    <CurrencyInput.AmountInput
+                    <CurrencyInput.Amount
                       label="Custom Price"
-                      value={customOptionPrice}
+                      amount={customOptionPrice}
                       onChange={(value) => setCustomOptionPrice(value)}
                     />
-                  </CurrencyInput>
+                  </CurrencyInput.Root>
                 </div>
                 <Button
                   variant="ghost"

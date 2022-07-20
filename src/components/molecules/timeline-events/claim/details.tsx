@@ -20,7 +20,11 @@ const ClaimDetails = ({ claim, order, onDismiss }) => {
   const layeredModalContext = useContext(LayeredModalContext)
 
   return (
-    <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
+    <LayeredModal
+      context={layeredModalContext}
+      handleClose={onDismiss}
+      isLargeModal
+    >
       <Modal.Body>
         <Modal.Header handleClose={onDismiss}>
           <h2 className="inter-xlarge-semibold">Claim Details</h2>
@@ -158,7 +162,7 @@ const ReasonDetails = (pop, claimItem) => {
     onBack: () => pop(),
     view: (
       <>
-        <Modal.Content isLargeModal={true}>
+        <Modal.Content>
           <div className="h-full">
             <h2 className="inter-base-semibold mb-4">Claim Reason</h2>
             <div className="mb-8 text-grey-50 inter-small-semibold">
