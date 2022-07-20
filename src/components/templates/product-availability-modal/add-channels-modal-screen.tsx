@@ -42,9 +42,10 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
   const limit = 15
   const [offset, setOffset] = useState(0)
   const [query, setQuery] = useState("")
+  const [freeText, setFreeText] = useState("")
 
-  const { sales_channels: salesChannels, isLoading } = useAdminSalesChannels({
-    q: query,
+  const { sales_channels: salesChannels } = useAdminSalesChannels({
+    q: freeText,
   })
 
   const numPages = Math.ceil((salesChannels?.length || 0) / limit)
@@ -77,6 +78,7 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
 
   React.useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
+      setFreeText(query)
       if (query) {
         tableState.gotoPage(0)
       }
@@ -89,18 +91,14 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
   return (
     <>
       <Modal.Content isLargeModal>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <SalesChannelAvailabilityTable
-            salesChannels={salesChannels as SalesChannel[]}
-            limit={limit}
-            offset={offset}
-            setOffset={setOffset}
-            setQuery={setQuery}
-            tableState={tableState}
-          />
-        )}
+        <SalesChannelAvailabilityTable
+          salesChannels={(salesChannels as SalesChannel[]) || []}
+          limit={limit}
+          offset={offset}
+          setOffset={setOffset}
+          setQuery={setQuery}
+          tableState={tableState}
+        />
       </Modal.Content>
       <Modal.Footer isLargeModal>
         <div className="flex justify-end w-full space-x-xsmall">
