@@ -94,7 +94,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
       </BodyCard>
       {isScModalOpen && !isLoading && (
         <ProductAvailabilityModal
-          saveSelectedSalesChannels={setSalesChannels}
+          storeSelectedSalesChannels={setSalesChannels}
           salesChannels={salesChannels}
           handleClose={closeScModal}
         />

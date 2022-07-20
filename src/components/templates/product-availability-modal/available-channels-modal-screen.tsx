@@ -15,28 +15,15 @@ const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> 
   salesChannels,
   setSelectedSalesChannels,
 }) => {
-  function filterSalesChannels(channels: SalesChannel[]) {
-    if (!query) {
-      return channels
-    }
-
-    return channels.filter((ch) => {
-      const filter = query.toLowerCase()
-      return (
-        !!ch.name.toLowerCase().match(filter) ||
-        !!ch.description?.toLowerCase().match(filter)
-      )
-    })
-  }
-
-  const [columns] = useAvailableChannelsModalTableColumns()
-
   const limit = 15
+  const numPages = Math.ceil(salesChannels?.length / limit)
+
   const [offset, setOffset] = useState(0)
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
   const [query, setQuery] = useState("")
 
-  const numPages = Math.ceil(salesChannels?.length / limit)
+  const [columns] = useAvailableChannelsModalTableColumns()
+
   const tableState = useTable(
     {
       columns,
@@ -54,6 +41,20 @@ const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> 
     usePagination,
     useRowSelect
   )
+
+  function filterSalesChannels(channels: SalesChannel[]) {
+    if (!query) {
+      return channels
+    }
+
+    return channels.filter((ch) => {
+      const filter = query.toLowerCase()
+      return (
+        !!ch.name.toLowerCase().match(filter) ||
+        !!ch.description?.toLowerCase().match(filter)
+      )
+    })
+  }
 
   const onDeselect = () => {
     setSelectedRowIds([])
