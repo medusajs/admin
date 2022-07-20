@@ -28,13 +28,11 @@ const getProductStatusVariant = (status) => {
 type RMASelectProductSubModalProps = {
   onSubmit: (selectItems) => void
   selectedItems?: any
-  isLargeModal?: boolean
 }
 
 const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   onSubmit,
   selectedItems,
-  isLargeModal = true,
 }) => {
   const PAGE_SIZE = 12
   const { pop } = useContext(LayeredModalContext)

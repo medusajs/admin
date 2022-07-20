@@ -1,8 +1,14 @@
-import { Region } from "@medusajs/medusa"
-import { useAdminRegion, useAdminShippingOptions } from "medusa-react"
+import { Region, ShippingOption } from "@medusajs/medusa"
+import {
+  useAdminCreateDraftOrder,
+  useAdminRegion,
+  useAdminShippingOptions,
+} from "medusa-react"
 import React, { createContext, ReactNode, useContext, useMemo } from "react"
 import {
   FormProvider,
+  useFieldArray,
+  UseFieldArrayReturn,
   useForm,
   useFormContext,
   useWatch,
@@ -10,23 +16,38 @@ import {
 import { AddressPayload } from "../../../../components/templates/address-form"
 import { Option } from "../../../../types/shared"
 
-type NewOrderForm = {
-  shipping_address: AddressPayload | null
-  billing_address: AddressPayload | null
+export type NewOrderForm = {
+  shipping_address: AddressPayload
+  billing_address: AddressPayload
   region: Option | null
+  items: {
+    quantity: number
+    variant_id?: string
+    title: string
+    unit_price: number
+    thumbnail?: string | null
+    product_title?: string
+  }[]
+  shipping_option: Option | null
+  custom_shipping_price?: number
 }
 
 type NewOrderContextValue = {
   validCountries: Option[]
   region: Region | undefined
+  items: UseFieldArrayReturn<NewOrderForm, "items", "id">
+  shippingOptions: ShippingOption[]
 }
 
 const NewOrderContext = createContext<NewOrderContextValue | null>(null)
 
 const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
-  const form = useForm<NewOrderForm>()
-
-  //   const pay: AdminPostDraftOrdersReq = {}
+  const form = useForm<NewOrderForm>({
+    defaultValues: {
+      items: [],
+    },
+  })
+  const { mutate } = useAdminCreateDraftOrder()
 
   const selectedRegion = useWatch({ control: form.control, name: "region" })
   const { region } = useAdminRegion(selectedRegion?.value!, {
@@ -54,13 +75,59 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
     }
   )
 
-  const validShippingOptions = useMemo(() => {}, [shipping_options])
+  const items = useFieldArray({
+    control: form.control,
+    name: "items",
+  })
+
+  const validShippingOptions = useMemo(() => {
+    if (!shipping_options) {
+      return []
+    }
+
+    const total = items.fields.reduce((acc, next) => {
+      return acc + next.quantity * next.unit_price
+    }, 0)
+
+    return shipping_options.reduce((acc, next) => {
+      if (next.requirements) {
+        const minSubtotal = next.requirements.find(
+          (req) => req.type === "min_subtotal"
+        )
+
+        if (minSubtotal) {
+          if (total <= minSubtotal.amount) {
+            return acc
+          }
+        }
+
+        const maxSubtotal = next.requirements.find(
+          (req) => req.type === "max_subtotal"
+        )
+
+        if (maxSubtotal) {
+          if (total >= maxSubtotal.amount) {
+            return acc
+          }
+        }
+      }
+
+      acc.push(next)
+      return acc
+    }, [] as ShippingOption[])
+  }, [shipping_options, items])
+
+  const handleSubmit = form.handleSubmit((data) => {
+    console.log(data)
+  })
 
   return (
     <NewOrderContext.Provider
       value={{
         validCountries,
         region,
+        items,
+        shippingOptions: validShippingOptions,
       }}
     >
       <FormProvider {...form}>{children}</FormProvider>
@@ -76,7 +143,7 @@ export const useNewOrderForm = () => {
     throw new Error("useNewOrderForm must be used within NewOrderFormProvider")
   }
 
-  return { ...context, ...form }
+  return { context, form }
 }
 
 export default NewOrderFormProvider

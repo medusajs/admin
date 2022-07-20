@@ -15,8 +15,6 @@ export function displayAmount(currency: string, amount: number) {
 }
 
 export const extractUnitPrice = (item, region, withTax = true) => {
-  console.log(item, region, withTax)
-
   let itemPrice = item.unit_price
 
   if (itemPrice === undefined) {

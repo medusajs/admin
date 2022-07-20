@@ -1,13 +1,10 @@
 import qs from "query-string"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import AddressForm, {
-  AddressPayload,
-} from "../../../../components/templates/address-form"
+import AddressForm from "../../../../components/templates/address-form"
 import Medusa from "../../../../services/api"
 
-import { useForm } from "react-hook-form"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
@@ -18,7 +15,6 @@ const ShippingDetails = ({
   customerAddresses,
   region,
   setCustomerAddresses,
-  form,
 }) => {
   const [addNew, setAddNew] = useState(false)
   const [fetchingAddresses, setFetchingAddresses] = useState(false)
@@ -26,32 +22,33 @@ const ShippingDetails = ({
     SteppedContext
   )
 
-  const { validCountries } = useNewOrderForm()
+  const {
+    context: { validCountries },
+    form,
+  } = useNewOrderForm()
 
-  const { shipping, customer: selectedCustomer, requireShipping } = form.watch([
-    "shipping",
-    "customer",
-    "requireShipping",
-  ])
+  // const { shipping, customer: selectedCustomer, requireShipping } = form.watch([
+  //   "shipping",
+  //   "customer",
+  //   "requireShipping",
+  // ])
 
-  const formWithAddress = useForm<{ shipping_address: AddressPayload }>()
-
-  useEffect(() => {
-    if (
-      !shipping?.first_name ||
-      !shipping?.last_name ||
-      !shipping?.address_1 ||
-      !shipping?.city ||
-      !shipping?.country_code ||
-      !shipping?.postal_code
-    ) {
-      if (nextStepEnabled) {
-        disableNextPage()
-      }
-    } else if (!nextStepEnabled) {
-      enableNextPage()
-    }
-  }, [shipping])
+  // useEffect(() => {
+  //   if (
+  //     !shipping?.first_name ||
+  //     !shipping?.last_name ||
+  //     !shipping?.address_1 ||
+  //     !shipping?.city ||
+  //     !shipping?.country_code ||
+  //     !shipping?.postal_code
+  //   ) {
+  //     if (nextStepEnabled) {
+  //       disableNextPage()
+  //     }
+  //   } else if (!nextStepEnabled) {
+  //     enableNextPage()
+  //   }
+  // }, [shipping])
 
   // "region",
   const debouncedFetch = (filter) => {
@@ -134,7 +131,6 @@ const ShippingDetails = ({
       <Select
         className="mt-4"
         label="Find or create a customer"
-        value={selectedCustomer}
         options={[]}
         enableSearch
         onChange={(val) => onCustomerSelect(val)}
@@ -187,7 +183,7 @@ const ShippingDetails = ({
       ) : (
         <div className="mt-4">
           <AddressForm
-            form={nestedForm(formWithAddress, "shipping_address")}
+            form={nestedForm(form, "shipping_address")}
             countryOptions={validCountries}
             type="shipping"
           />
