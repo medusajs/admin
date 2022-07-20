@@ -77,7 +77,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
       </BodyCard>
       {isScModalOpen && (
         <ProductAvailabilityModal
-          selectedChannelIds={[]}
+          salesChannels={isEdit ? product.sales_channels : []}
           handleClose={closeScModal}
         />
       )}
