@@ -4,8 +4,6 @@ export const defaultChannelsSorter = (defaultSalesChanenlId: string) => (
   sc1: SalesChannel,
   sc2: SalesChannel
 ) => {
-  console.log(defaultSalesChanenlId)
-
   if (sc1.id === defaultSalesChanenlId) {
     return -1
   }
