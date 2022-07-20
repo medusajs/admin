@@ -1,10 +1,9 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { Product, SalesChannel } from "@medusajs/medusa"
 import { useAdminSalesChannels } from "medusa-react"
 import Badge from "../../../../components/fundamentals/badge"
 import Button from "../../../../components/fundamentals/button"
 import ChannelsIcon from "../../../../components/fundamentals/icons/channels-icon"
-import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import BodyCard from "../../../../components/organisms/body-card"
 
 type SalesChannelsProps = {
@@ -14,7 +13,6 @@ type SalesChannelsProps = {
 
 type SalesChannelBadgeProps = {
   channel: SalesChannel
-  onClick: () => void
 }
 
 const SalesChannels: React.FC<SalesChannelsProps> = ({
@@ -35,9 +33,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
           {isEdit &&
             product.sales_channels
               ?.slice(0, 3)
-              .map((sc) => (
-                <SalesChannelBadge channel={sc} onClick={() => {}} />
-              ))}
+              .map((sc) => <SalesChannelBadge channel={sc} />)}
         </div>
         {remainder > 0 && (
           <Badge variant="ghost">
@@ -66,17 +62,11 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
   )
 }
 
-const SalesChannelBadge: React.FC<SalesChannelBadgeProps> = ({
-  channel,
-  onClick,
-}) => {
+const SalesChannelBadge: React.FC<SalesChannelBadgeProps> = ({ channel }) => {
   return (
     <Badge variant="ghost" className="pl-4 pr-3">
       <div className="flex py-1.5 items-center">
         <span className="inter-base-regular text-grey-90">{channel.name}</span>
-        <button onClick={onClick} className="text-grey-40 ml-2">
-          <CrossIcon size={16} />
-        </button>
       </div>
     </Badge>
   )
