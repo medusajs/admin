@@ -7,6 +7,7 @@ import FocusModal from "../../../components/molecules/modal/focus-modal"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import Accordion from "../../../components/organisms/accordion"
 import InputField from "../../../components/molecules/input"
+import useNotification from "../../../hooks/use-notification"
 
 type GeneralProps = {
   name: string
@@ -55,13 +56,18 @@ type AddSalesChannelModalProps = {
 /**
  * Modal for creating sales channels.
  */
+const notification = useNotification()
+
+const [name, setName] = useState<string>()
+const [description, setDescription] = useState<string>()
+
 const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
-  const [name, setName] = useState<string>()
-  const [description, setDescription] = useState<string>()
   const { mutate: createSalesChannel } = useAdminCreateSalesChannel()
 
   async function save() {
     await createSalesChannel({ name, description })
+    notification("Success", "Product successfully removed", "success")
+
     onClose()
   }
 

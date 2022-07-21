@@ -28,6 +28,7 @@ import StatusSelector from "../../../components/molecules/status-selector"
 import TwoSplitPane from "../../../components/templates/two-split-pane"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
+import useToggleState from "../../../hooks/use-toggle-state"
 
 type ListIndicatorProps = { isActive: boolean }
 
@@ -238,19 +239,14 @@ type SalesChannelDetailsHeaderProps = {
   salesChannel: SalesChannel
   openUpdateModal: () => void
   resetDetails: () => void
-  setShowAddProducts: (show: boolean) => void
+  hideProductsAdd: () => void
 }
 
 /**
  * Sales channels details header.
  */
 function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
-  const {
-    salesChannel,
-    openUpdateModal,
-    resetDetails,
-    setShowAddProducts,
-  } = props
+  const { salesChannel, openUpdateModal, resetDetails, hideProductsAdd } = props
 
   const { mutate: deleteSalesChannel } = useAdminDeleteSalesChannel(
     salesChannel.id
@@ -271,7 +267,7 @@ function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
     {
       label: "Add/Edit products",
       icon: <PlusIcon />,
-      onClick: () => setShowAddProducts(true),
+      onClick: () => hideProductsAdd(),
     },
     {
       label: "Delete sales channel",
@@ -325,11 +321,13 @@ type SalesChannelDetailsProps = {
  */
 function SalesChannelDetails(props: SalesChannelDetailsProps) {
   const { resetDetails, salesChannel } = props
-  const [showUpdateModal, setShowUpdateModal] = useState(false)
-  const [showAddProducts, setShowAddProducts] = useState(false)
 
-  const openUpdateModal = () => setShowUpdateModal(true)
-  const closeUpdateModal = () => setShowUpdateModal(false)
+  const [showUpdateModal, openUpdateModal, closeUpdateModal] = useToggleState(
+    false
+  )
+  const [showAddProducts, showProductsAdd, hideProductsAdd] = useToggleState(
+    false
+  )
 
   return (
     <div className="col-span-2 rounded-rounded border bg-grey-0 border-grey-20 px-8 py-6">
@@ -337,12 +335,12 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
         resetDetails={resetDetails}
         salesChannel={salesChannel}
         openUpdateModal={openUpdateModal}
-        setShowAddProducts={setShowAddProducts}
+        hideProductsAdd={hideProductsAdd}
       />
 
       <SalesChannelProductsTable
         salesChannelId={salesChannel.id}
-        showAddModal={() => setShowAddProducts(true)}
+        showAddModal={showProductsAdd}
       />
 
       {showUpdateModal && (
@@ -355,7 +353,7 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
       {showAddProducts && (
         <SalesChannelProductsSelectModal
           salesChannel={salesChannel}
-          handleClose={() => setShowAddProducts(false)}
+          handleClose={hideProductsAdd}
         />
       )}
     </div>

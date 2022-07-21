@@ -20,6 +20,7 @@ import Table, { TablePagination } from "../../../components/molecules/table"
 import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
+import useNotification from "../../../hooks/use-notification"
 
 /* ****************************************** */
 /* ************** TABLE CONFIG ************** */
@@ -322,6 +323,8 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
   const { salesChannelId, showAddModal } = props
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
+  const notification = useNotification()
+
   const params = useQueryFilters(defaultQueryProps)
   const filters = useProductFilters()
 
@@ -336,12 +339,20 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
 
   const removeProductFromSalesChannel = (id: string) => {
     deleteProductsFromSalesChannel({ product_ids: [{ id }] })
+
+    notification("Success", "Product successfully removed", "success")
   }
 
   const removeSelectedProducts = async () => {
     await deleteProductsFromSalesChannel({
       product_ids: selectedRowIds.map((id) => ({ id })),
     })
+
+    notification(
+      "Success",
+      "Products successfully removed from the sales channel",
+      "success"
+    )
     setSelectedRowIds([])
   }
 
@@ -407,6 +418,8 @@ function SalesChannelProductsSelectModal(
   const { handleClose, salesChannel } = props
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
+  const notification = useNotification()
+
   const params = useQueryFilters(defaultQueryProps)
   const filters = useProductFilters()
 
@@ -422,6 +435,11 @@ function SalesChannelProductsSelectModal(
   const handleSubmit = () => {
     addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
     handleClose()
+    notification(
+      "Success",
+      "Products successfully added to the sales channel",
+      "success"
+    )
   }
 
   return (
