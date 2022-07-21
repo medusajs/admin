@@ -21,6 +21,8 @@ const defaultVariant = {
   options: [] as any,
 }
 
+type VariantEditorFormData = {}
+
 const VariantEditor = ({
   variant = defaultVariant,
   onSubmit,
@@ -44,6 +46,7 @@ const VariantEditor = ({
   const { control, register, reset, watch, handleSubmit } = useForm({
     defaultValues: variant,
   })
+
   const {
     fields: prices,
     appendPrice,
@@ -170,16 +173,15 @@ const VariantEditor = ({
                     <Controller
                       control={control}
                       key={field.indexId}
-                      {...register(`prices[${index}].price`)}
-                      defaultValue={field.price}
-                      render={({ onChange, value }) => {
+                      {...register(`prices.${index}.price`)}
+                      render={({ field: { onChange, value } }) => {
                         let codes = availableCurrencies
                         if (value?.currency_code) {
                           codes = [value?.currency_code, ...availableCurrencies]
                         }
                         codes.sort()
                         return (
-                          <CurrencyInput
+                          <CurrencyInput.Root
                             currencyCodes={codes}
                             currentCurrency={value?.currency_code}
                             size="medium"
@@ -188,14 +190,14 @@ const VariantEditor = ({
                               onChange({ ...value, currency_code: code })
                             }
                           >
-                            <CurrencyInput.AmountInput
+                            <CurrencyInput.Amount
                               label="Amount"
                               onChange={(amount) =>
                                 onChange({ ...value, amount })
                               }
                               amount={value?.amount}
                             />
-                          </CurrencyInput>
+                          </CurrencyInput.Root>
                         )
                       }}
                     />

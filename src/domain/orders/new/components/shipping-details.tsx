@@ -5,9 +5,11 @@ import Button from "../../../../components/fundamentals/button"
 import AddressForm from "../../../../components/templates/address-form"
 import Medusa from "../../../../services/api"
 
+import { useAdminCustomer } from "medusa-react"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
+import { Option } from "../../../../types/shared"
 import { nestedForm } from "../../../../utils/nested-form"
 import { useNewOrderForm } from "../form"
 
@@ -16,6 +18,9 @@ const ShippingDetails = ({
   region,
   setCustomerAddresses,
 }) => {
+  const [selectedCustomerId, setSelectedCustomerId] = useState<
+    string | undefined
+  >(undefined)
   const [addNew, setAddNew] = useState(false)
   const [fetchingAddresses, setFetchingAddresses] = useState(false)
   const { disableNextPage, enableNextPage, nextStepEnabled } = useContext(
@@ -51,7 +56,7 @@ const ShippingDetails = ({
   // }, [shipping])
 
   // "region",
-  const debouncedFetch = (filter) => {
+  const debouncedFetch = async (filter: string): Promise<Option[]> => {
     const prepared = qs.stringify(
       {
         q: filter,
@@ -61,7 +66,7 @@ const ShippingDetails = ({
       { skipNull: true, skipEmptyString: true }
     )
 
-    return Medusa.customers
+    return await Medusa.customers
       .list(`?${prepared}`)
       .then(({ data }) =>
         data.customers.map(({ id, first_name, last_name, email }) => ({
@@ -72,7 +77,15 @@ const ShippingDetails = ({
       .catch((error) => [])
   }
 
-  const onCustomerSelect = async (val) => {
+  const { customer } = useAdminCustomer(selectedCustomerId!, {
+    enabled: !!selectedCustomerId,
+  })
+
+  const [selectedAddress, setSelectedAddress] = useState<string | undefined>(
+    undefined
+  )
+
+  const onCustomerSelect = (val: Option) => {
     const email = /\(([^()]*)\)$/.exec(val?.label)
 
     if (!val || !email) {
@@ -145,7 +158,7 @@ const ShippingDetails = ({
         <div>
           <Spinner variant="primary" />
         </div>
-      ) : customerAddresses.length && !addNew ? (
+      ) : customer?.shipping_addresses.length && !addNew ? (
         <div className="mt-6">
           <span className="inter-base-semibold">Choose existing addresses</span>
           <RadioGroup.Root
@@ -157,7 +170,7 @@ const ShippingDetails = ({
               form.setValue("billing", address)
             }}
           >
-            {customerAddresses.map((sa, i) => (
+            {customer.shipping_addresses.map((sa, i) => (
               <RadioGroup.Item
                 label={`${sa.first_name} ${sa.last_name}`}
                 checked={shipping && sa.id === shipping.id}

@@ -57,7 +57,7 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
                       ]
                       codes.sort()
                       return (
-                        <CurrencyInput
+                        <CurrencyInput.Root
                           currencyCodes={codes}
                           currentCurrency={value?.currency_code}
                           size="medium"
@@ -66,14 +66,14 @@ const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
                             onChange({ ...value, currency_code: code })
                           }
                         >
-                          <CurrencyInput.AmountInput
+                          <CurrencyInput.Amount
                             label="Amount"
                             onChange={(amount) =>
                               onChange({ ...value, amount })
                             }
                             amount={value?.amount}
                           />
-                        </CurrencyInput>
+                        </CurrencyInput.Root>
                       )
                     }}
                   />

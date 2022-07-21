@@ -1,93 +1,21 @@
 import { useAdminCreateVariant } from "medusa-react"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../../../components/organisms/body-card"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
-import { getCombinations } from "../../../../utils/get-combinations"
 import NewOption from "../../details/variants/option-edit"
 import VariantEditor from "../../details/variants/variant-editor"
-import { useProductForm } from "../form/product-form-context"
 import { buildOptionsMap } from "../utils/helpers"
 import CreateVariants from "./variants/create"
+import EditVariants from "./variants/edit"
 
 const Variants = ({ isEdit, product }) => {
-  const {
-    setValue,
-    setVariants,
-    variants,
-    productOptions,
-    setProductOptions,
-  } = useProductForm()
   const [showAddVariantModal, setShowAddVariantModal] = useState(false)
   const [showAddOption, setShowAddOption] = useState(false)
   const notification = useNotification()
   const createVariant = useAdminCreateVariant(product?.id)
-
-  useEffect(() => {
-    if (isEdit) {
-      return
-    }
-
-    const os = [...productOptions]
-    const combinations = getCombinations(os)
-
-    const newVariants = combinations.map((optionValues) => {
-      if (!optionValues) {
-        return null
-      }
-
-      const existing = variants.find((v) =>
-        v.options.every((value, index) => optionValues[index] === value)
-      ) || { prices: [] }
-
-      existing.options = optionValues.filter((v) => v !== "")
-
-      return existing
-    })
-
-    setVariants(newVariants.filter((v) => !!v))
-  }, [productOptions])
-
-  const updateOptionValue = (index, values) => {
-    const newOptions = [...productOptions]
-    newOptions[index] = {
-      ...newOptions[index],
-      values,
-    }
-
-    setValue(`options[${index}].values`, values)
-    setProductOptions(newOptions)
-  }
-
-  const handleRemoveOption = (index) => {
-    const newOptions = [...productOptions]
-    newOptions.splice(index, 1)
-    setProductOptions(newOptions)
-  }
-
-  const handleAddOption = (e) => {
-    setProductOptions([
-      ...productOptions,
-      {
-        name: "",
-        values: [],
-      },
-    ])
-  }
-
-  const updateOptionName = (e, index) => {
-    const element = e.target
-    const newOptions = [...productOptions]
-    newOptions[index] = {
-      ...newOptions[index],
-      name: element.value,
-    }
-
-    setValue(`options[${index}].name`, element.value)
-    setProductOptions(newOptions)
-  }
 
   const handleAddVariant = (data) => {
     const newVariant = {
@@ -189,7 +117,7 @@ const Variants = ({ isEdit, product }) => {
           />
         )}
       </div> */}
-      <CreateVariants />
+      {!isEdit ? <CreateVariants /> : <EditVariants product={product} />}
       {showAddOption && (
         <NewOption
           productId={product.id}

@@ -88,6 +88,7 @@ export const useCreateColumns = ({ control }: UseCreateColunmsProps) => {
               return (
                 <GridInput
                   value={value ?? undefined}
+                  type="number"
                   onChange={onChange}
                   placeholder="100"
                 />

@@ -13,6 +13,7 @@ import Table from "../../../../../../components/molecules/table"
 import useImperativeDialog from "../../../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../../../utils/error-messages"
+import VariantEditor from "../../../../details/variants/variant-editor"
 import { Column, useEditColumns } from "./use-edit-columns"
 
 type EditVariantsProps = {
@@ -102,38 +103,49 @@ const EditVariants = ({ product }: EditVariantsProps) => {
   }
 
   return (
-    <Table>
-      <Table.Head>
-        <Table.HeadRow>
-          {columns.map((col, i) => (
-            <Table.HeadCell key={i} className="w-[100px] px-2 py-4">
-              {col.header}
-            </Table.HeadCell>
-          ))}
-        </Table.HeadRow>
-      </Table.Head>
-      <Table.Body>
-        {product.variants.map((variant, j) => {
-          return (
-            <Table.Row
-              key={j}
-              color={"inherit"}
-              actions={editVariantActions(variant)}
-            >
-              {columns.map((col, n) => {
-                return (
-                  <Table.Cell key={n}>
-                    <div className="px-2 py-4 truncate">
-                      {getDisplayValue(variant, col)}
-                    </div>
-                  </Table.Cell>
-                )
-              })}
-            </Table.Row>
-          )
-        })}
-      </Table.Body>
-    </Table>
+    <>
+      <Table>
+        <Table.Head>
+          <Table.HeadRow>
+            {columns.map((col, i) => (
+              <Table.HeadCell key={i} className="w-[100px] px-2 py-4">
+                {col.header}
+              </Table.HeadCell>
+            ))}
+          </Table.HeadRow>
+        </Table.Head>
+        <Table.Body>
+          {product.variants.map((variant, j) => {
+            return (
+              <Table.Row
+                key={j}
+                color={"inherit"}
+                actions={editVariantActions(variant)}
+              >
+                {columns.map((col, n) => {
+                  return (
+                    <Table.Cell key={n}>
+                      <div className="px-2 py-4 truncate">
+                        {getDisplayValue(variant, col)}
+                      </div>
+                    </Table.Cell>
+                  )
+                })}
+              </Table.Row>
+            )
+          })}
+        </Table.Body>
+      </Table>
+      {selectedVariant && (
+        <VariantEditor
+          variant={selectedVariant}
+          onCancel={() => setSelectedVariant(null)}
+          onSubmit={isDuplicate ? handleDuplicate : handleUpdate}
+          optionsMap={buildOptionsMap(product, selectedVariant)}
+          title="Edit variant"
+        />
+      )}
+    </>
   )
 }
 

@@ -107,6 +107,7 @@ const AddressModal = ({
                 className="w-32 text-small justify-center"
                 variant="primary"
                 type="submit"
+                loading={isLoading}
               >
                 Save
               </Button>

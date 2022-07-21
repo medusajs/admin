@@ -1,21 +1,43 @@
 import React, { useEffect, useState } from "react"
-import AddressForm from "../../../../components/templates/address-form"
+import { useWatch } from "react-hook-form"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
+import AddressForm from "../../../../components/templates/address-form"
+import { nestedForm } from "../../../../utils/nested-form"
+import { useNewOrderForm } from "../form"
 
-const Billing = ({ form, region }) => {
+const Billing = () => {
+  const {
+    context: { validCountries },
+    form,
+  } = useNewOrderForm()
+
   const [useShipping, setUseShipping] = useState(false)
 
-  const { shipping } = form.watch(["shipping"])
+  const shippingAddress = useWatch({
+    control: form.control,
+    name: "shipping_address",
+  })
 
   useEffect(() => {
     if (!useShipping) {
-      form.setValue("billing", {})
+      form.setValue("billing_address", {
+        address_1: "",
+        address_2: "",
+        city: "",
+        country_code: { label: "", value: "" },
+        first_name: "",
+        company: "",
+        last_name: "",
+        phone: "",
+        postal_code: "",
+        province: "",
+      })
     }
   }, [useShipping])
 
   const onUseShipping = () => {
     setUseShipping(!useShipping)
-    form.setValue("billing", { ...shipping })
+    form.setValue("billing_address", shippingAddress)
   }
 
   return (
@@ -45,9 +67,8 @@ const Billing = ({ form, region }) => {
       </div>
       {!useShipping && (
         <AddressForm
-          allowedCountries={region.countries?.map((c) => c.iso_2) || []}
-          form={form}
-          country={shipping.country_code}
+          countryOptions={validCountries}
+          form={nestedForm(form, "billing_address")}
           type="billing"
         />
       )}

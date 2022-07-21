@@ -97,7 +97,7 @@ export const formValuesToCreateProductMapper = async (
       title: getVariantTitle(v),
       sku: v.sku ?? undefined,
       ean: v.ean ?? undefined,
-      inventory_quantity: v.inventory_quantity ?? 0,
+      inventory_quantity: v.inventory_quantity ? +v.inventory_quantity : 0,
       prices: [],
       options: v.options.map((o) => ({ value: o.value })),
     }))
