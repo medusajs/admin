@@ -12,7 +12,7 @@ import SalesChannelAvailabilityTable, {
 
 export const useAddChannelsModalScreen = (
   selectedRowIds,
-  onAddSalesChannelsToSelected
+  onAddSelectedToAvailableChannels
 ) => {
   const { pop } = React.useContext(LayeredModalContext)
 
@@ -22,7 +22,7 @@ export const useAddChannelsModalScreen = (
     view: (
       <AddChannelsModalScreen
         selectedSalesChannelIds={selectedRowIds}
-        onAddSalesChannelsToSelected={onAddSalesChannelsToSelected}
+        onAddSelectedToAvailableChannels={onAddSelectedToAvailableChannels}
       />
     ),
   }
@@ -30,11 +30,11 @@ export const useAddChannelsModalScreen = (
 
 type AddChannelsModalScreenProps = {
   selectedSalesChannelIds: string[]
-  onAddSalesChannelsToSelected: (salesChannels: SalesChannel[]) => void
+  onAddSelectedToAvailableChannels: (salesChannels: SalesChannel[]) => void
 }
 
 const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
-  onAddSalesChannelsToSelected,
+  onAddSelectedToAvailableChannels: onAddSelectedToAvailableChannels,
   selectedSalesChannelIds,
 }) => {
   const limit = 15
@@ -112,7 +112,7 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
             size="small"
             className="w-[128px]"
             onClick={() => {
-              onAddSalesChannelsToSelected(
+              onAddSelectedToAvailableChannels(
                 tableState.selectedFlatRows.map((row) => row.original)
               )
               pop()

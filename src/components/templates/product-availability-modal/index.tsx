@@ -20,12 +20,12 @@ const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
 }) => {
   const context = React.useContext(LayeredModalContext)
 
-  const [selectedSalesChannels, setSelectedSalesChannels] = React.useState<
+  const [availableChannels, setAvailableChannels] = React.useState<
     SalesChannel[]
   >(salesChannels)
 
   const onSave = () => {
-    storeSelectedSalesChannels(selectedSalesChannels)
+    storeSelectedSalesChannels(availableChannels)
     onClose()
   }
 
@@ -37,8 +37,8 @@ const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
         </Modal.Header>
         <Modal.Content>
           <AvailableChannelsModalScreen
-            salesChannels={selectedSalesChannels}
-            setSelectedSalesChannels={setSelectedSalesChannels}
+            availableChannels={availableChannels}
+            setAvailableChannels={setAvailableChannels}
           />
         </Modal.Content>
         <Modal.Footer>

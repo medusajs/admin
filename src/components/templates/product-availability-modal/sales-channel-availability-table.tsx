@@ -20,9 +20,9 @@ type SalesChannelAvailabilityTableProps = {
 }
 
 type SalesChannelTableActionsProps = {
-  selectedRowIds: string[]
-  chosenSalesChannelIds: string[]
-  onAddSalesChannelsToSelected: (salesChannels: SalesChannel[]) => void
+  numberOfSelectedRows: number
+  availableChannelIds: string[]
+  onAddSalesChannelsToAvailableChannels: (salesChannels: SalesChannel[]) => void
   onDeselect: () => void
   onRemove: () => void
 }
@@ -163,24 +163,24 @@ const SalesChannelAvailabilityTable: React.FC<SalesChannelAvailabilityTableProps
 }
 
 export const SalesChannelTableActions: React.FC<SalesChannelTableActionsProps> = ({
-  selectedRowIds,
-  chosenSalesChannelIds,
-  onAddSalesChannelsToSelected,
+  numberOfSelectedRows,
+  availableChannelIds,
+  onAddSalesChannelsToAvailableChannels,
   onDeselect,
   onRemove,
 }) => {
   const addChannelModalScreen = useAddChannelsModalScreen(
-    chosenSalesChannelIds,
-    onAddSalesChannelsToSelected
+    availableChannelIds,
+    onAddSalesChannelsToAvailableChannels
   )
   const { push } = React.useContext(LayeredModalContext)
 
   return (
     <div className="flex space-x-xsmall">
-      {selectedRowIds?.length ? (
+      {numberOfSelectedRows ? (
         <div className="divide-x flex items-center">
           <span className="mr-3 inter-small-regular text-grey-50">
-            {selectedRowIds?.length} selected
+            {numberOfSelectedRows} selected
           </span>
           <div className="flex space-x-xsmall pl-3">
             <Button

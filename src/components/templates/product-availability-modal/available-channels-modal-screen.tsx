@@ -7,16 +7,16 @@ import SalesChannelAvailabilityTable, {
 } from "./sales-channel-availability-table"
 
 type AvailableChannelsModalScreenProps = {
-  salesChannels: SalesChannel[]
-  setSelectedSalesChannels: (salesChannels: SalesChannel[]) => void
+  availableChannels: SalesChannel[]
+  setAvailableChannels: (salesChannels: SalesChannel[]) => void
 }
 
 const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> = ({
-  salesChannels,
-  setSelectedSalesChannels,
+  availableChannels,
+  setAvailableChannels: setAvailableChannels,
 }) => {
   const limit = 15
-  const numPages = Math.ceil(salesChannels?.length / limit)
+  const numPages = Math.ceil(availableChannels?.length / limit)
 
   const [offset, setOffset] = useState(0)
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
@@ -27,7 +27,7 @@ const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> 
   const tableState = useTable(
     {
       columns,
-      data: filterSalesChannels(salesChannels),
+      data: filterSalesChannels(availableChannels),
       manualPagination: true,
       initialState: {
         pageIndex: Math.floor(offset / limit),
@@ -61,16 +61,16 @@ const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> 
     tableState.toggleAllRowsSelected(false)
   }
 
-  const onAddSalesChannelsToSelected = (selectedSalesChannels) => {
-    setSelectedSalesChannels([...salesChannels, ...selectedSalesChannels])
+  const onAddSalesChannelsToAvailableChannels = (selectedSalesChannels) => {
+    setAvailableChannels([...availableChannels, ...selectedSalesChannels])
     tableState.toggleAllRowsSelected(false)
   }
 
   const onRemove = () => {
-    const remainingSalesChannels = salesChannels.filter(
+    const remainingSalesChannels = availableChannels.filter(
       (ch) => !selectedRowIds.includes(ch.id)
     )
-    setSelectedSalesChannels(remainingSalesChannels)
+    setAvailableChannels(remainingSalesChannels)
     onDeselect()
   }
 
@@ -78,14 +78,16 @@ const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> 
     <SalesChannelAvailabilityTable
       tableAction={
         <SalesChannelTableActions
-          selectedRowIds={selectedRowIds}
-          chosenSalesChannelIds={salesChannels.map((sc) => sc.id)}
-          onAddSalesChannelsToSelected={onAddSalesChannelsToSelected}
+          numberOfSelectedRows={selectedRowIds.length}
+          availableChannelIds={availableChannels.map((sc) => sc.id)}
+          onAddSalesChannelsToAvailableChannels={
+            onAddSalesChannelsToAvailableChannels
+          }
           onDeselect={onDeselect}
           onRemove={onRemove}
         />
       }
-      salesChannels={salesChannels}
+      salesChannels={availableChannels}
       setSelectedRowIds={setSelectedRowIds}
       limit={limit}
       offset={offset}
