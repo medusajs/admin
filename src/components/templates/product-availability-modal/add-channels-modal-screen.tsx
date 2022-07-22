@@ -2,7 +2,6 @@ import { SalesChannel } from "@medusajs/medusa"
 import { useAdminSalesChannels } from "medusa-react"
 import React, { useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
-import Spinner from "../../atoms/spinner"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
 import { LayeredModalContext } from "../../molecules/modal/layered-modal"
@@ -20,7 +19,6 @@ export const useAddChannelsModalScreen = (
   return {
     title: "Add Sales Channels",
     onBack: () => pop(),
-    onConfirm: () => pop(),
     view: (
       <AddChannelsModalScreen
         selectedSalesChannelIds={selectedRowIds}
