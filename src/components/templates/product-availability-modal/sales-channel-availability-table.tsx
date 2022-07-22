@@ -89,14 +89,6 @@ const SalesChannelAvailabilityTable: React.FC<SalesChannelAvailabilityTableProps
     state: { pageIndex, ...state },
   } = tableState
 
-  const paginate = (direction: 1 | -1) => {
-    if (direction > 0) {
-      setOffset(offset + limit)
-    } else {
-      setOffset(Math.max(offset - limit, 0))
-    }
-  }
-
   React.useEffect(() => {
     if (setSelectedRowIds) {
       setSelectedRowIds(Object.keys(state.selectedRowIds))
@@ -105,14 +97,14 @@ const SalesChannelAvailabilityTable: React.FC<SalesChannelAvailabilityTableProps
 
   const handleNext = () => {
     if (canNextPage) {
-      paginate(1)
+      setOffset(offset + limit)
       nextPage()
     }
   }
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      paginate(-1)
+      setOffset(Math.max(offset - limit, 0))
       previousPage()
     }
   }
