@@ -10,12 +10,12 @@ import AvailableChannelsModalScreen from "./available-channels-modal-screen"
 type ProductAvailabilityModalProps = {
   salesChannels: SalesChannel[]
   storeSelectedSalesChannels: (salesChannels: SalesChannel[]) => void
-  handleClose: () => void
+  onClose: () => void
 }
 
 const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
   salesChannels,
-  handleClose,
+  onClose,
   storeSelectedSalesChannels,
 }) => {
   const context = React.useContext(LayeredModalContext)
@@ -26,13 +26,13 @@ const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
 
   const onSave = () => {
     storeSelectedSalesChannels(selectedSalesChannels)
-    handleClose()
+    onClose()
   }
 
   return (
-    <LayeredModal context={context} handleClose={handleClose}>
+    <LayeredModal context={context} handleClose={onClose}>
       <Modal.Body>
-        <Modal.Header handleClose={handleClose}>
+        <Modal.Header handleClose={onClose}>
           <h2 className="inter-xlarge-semibold">Change Availability</h2>
         </Modal.Header>
         <Modal.Content>
@@ -45,7 +45,7 @@ const ProductAvailabilityModal: React.FC<ProductAvailabilityModalProps> = ({
           <div className="flex w-full justify-end">
             <div className="flex gap-x-xsmall">
               <Button
-                onClick={handleClose}
+                onClick={onClose}
                 className="w-[112px]"
                 size="small"
                 variant="ghost"

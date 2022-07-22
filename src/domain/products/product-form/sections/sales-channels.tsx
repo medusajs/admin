@@ -96,7 +96,7 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
         <ProductAvailabilityModal
           storeSelectedSalesChannels={setSalesChannels}
           salesChannels={salesChannels}
-          handleClose={closeScModal}
+          onClose={closeScModal}
         />
       )}
     </>
