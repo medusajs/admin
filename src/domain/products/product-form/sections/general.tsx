@@ -28,8 +28,13 @@ import {
 } from "../form/product-form-context"
 
 const General = ({ showViewOptions = true, isEdit = false, product }) => {
-  const { register, control, setViewType, viewType, setValue } =
-    useProductForm()
+  const {
+    register,
+    control,
+    setViewType,
+    viewType,
+    setValue,
+  } = useProductForm()
   const { product_types } = useAdminProductTypes(undefined, { cacheTime: 0 })
   const { collections } = useAdminCollections()
 
@@ -91,6 +96,17 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             ref={register()}
           />
         </div>
+        <div className="flex gap-8 mb-base">
+          <Input
+            id="subtitle"
+            label="Subtitle"
+            name="subtitle"
+            placeholder="Jacket, Sunglasses..."
+            ref={register()}
+            className="w-1/2"
+          />
+          <div className="w-1/2"></div>
+        </div>
         <label
           className="inter-small-regular text-grey-50 block max-w-[370px] mb-base"
           htmlFor="description"
@@ -150,17 +166,6 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
               )
             }}
             control={control}
-          />
-        </div>
-        <div className="grid grid-rows-3 grid-cols-2 gap-x-8 gap-y-4 mb-large">
-          <Textarea
-            name="subtitle"
-            id="subtitle"
-            label="Product details"
-            placeholder="Details of the product..."
-            className="row-span-full"
-            rows={3}
-            ref={register}
           />
         </div>
         <div className="flex item-center gap-x-1.5 mb-xlarge">
