@@ -1,4 +1,5 @@
 import { SalesChannel } from "@medusajs/medusa"
+import clsx from "clsx"
 import React, { useMemo } from "react"
 import { TableInstance } from "react-table"
 import Button from "../../fundamentals/button"
@@ -173,12 +174,20 @@ export const SalesChannelTableActions: React.FC<SalesChannelTableActionsProps> =
     availableChannelIds,
     onAddSalesChannelsToAvailableChannels
   )
+
+  const showAddChannels = !!numberOfSelectedRows
+
+  const classes = {
+    "translate-y-[-42px]": !showAddChannels,
+    "translate-y-[0px]": showAddChannels,
+  }
+
   const { push } = React.useContext(LayeredModalContext)
 
   return (
-    <div className="flex space-x-xsmall">
-      {numberOfSelectedRows ? (
-        <div className="divide-x flex items-center">
+    <div className="flex space-x-xsmall h-[34px] overflow-hidden">
+      <div className={clsx("transition-all duration-200", classes)}>
+        <div className="divide-x flex items-center mb-2">
           <span className="mr-3 inter-small-regular text-grey-50">
             {numberOfSelectedRows} selected
           </span>
@@ -201,16 +210,17 @@ export const SalesChannelTableActions: React.FC<SalesChannelTableActionsProps> =
             </Button>
           </div>
         </div>
-      ) : (
-        <Button
-          size="small"
-          variant="ghost"
-          className="border border-grey-20"
-          onClick={() => push(addChannelModalScreen)}
-        >
-          <PlusIcon size={20} /> Add Channels
-        </Button>
-      )}
+        <div className="flex justify-end">
+          <Button
+            size="small"
+            variant="ghost"
+            className="border border-grey-20"
+            onClick={() => push(addChannelModalScreen)}
+          >
+            <PlusIcon size={20} /> Add Channels
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
