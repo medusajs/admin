@@ -56,13 +56,14 @@ type AddSalesChannelModalProps = {
 /**
  * Modal for creating sales channels.
  */
-const notification = useNotification()
-
-const [name, setName] = useState<string>()
-const [description, setDescription] = useState<string>()
 
 const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
   const { mutate: createSalesChannel } = useAdminCreateSalesChannel()
+
+  const notification = useNotification()
+
+  const [name, setName] = useState<string>()
+  const [description, setDescription] = useState<string>()
 
   async function save() {
     await createSalesChannel({ name, description })
