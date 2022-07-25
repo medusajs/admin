@@ -77,7 +77,7 @@ export const ProductFormProvider = ({
 
   // SALES CHANNELS
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
-  const [salesChannels, setSalesChannels] = React.useState<any[]>(
+  const [salesChannels, setSalesChannels] = React.useState<SalesChannel[]>(
     product.sales_channels
   )
 

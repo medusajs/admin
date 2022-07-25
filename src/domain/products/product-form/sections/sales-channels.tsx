@@ -37,8 +37,8 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
   const isLoading = isLoadingSalesChannels || isLoadingStore
 
   useEffect(() => {
-    if (!isEdit && !isLoadingStore) {
-      setSalesChannels([store?.default_sales_channel as SalesChannel])
+    if (!isEdit && !isLoadingStore && store?.default_sales_channel) {
+      setSalesChannels([store.default_sales_channel])
     }
   }, [isLoadingStore])
 

@@ -89,7 +89,7 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
     <>
       <Modal.Content isLargeModal>
         <SalesChannelAvailabilityTable
-          salesChannels={(salesChannels as SalesChannel[]) || []}
+          salesChannels={salesChannels || []}
           limit={limit}
           offset={offset}
           setOffset={setOffset}
