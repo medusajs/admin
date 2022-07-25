@@ -402,7 +402,8 @@ function Details(props: DetailsProps) {
   }, [routeSalesChannelId, activeSalesChannel, sales_channels])
 
   const openCreateModal = () => setShowCreateModal(true)
-  const closeCreateModal = () => {
+  const closeCreateModal = (scId: string) => {
+    setActiveSalesChannelId(scId)
     setShowCreateModal(false)
   }
 

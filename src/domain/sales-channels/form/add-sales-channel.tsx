@@ -8,6 +8,7 @@ import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import Accordion from "../../../components/organisms/accordion"
 import InputField from "../../../components/molecules/input"
 import useNotification from "../../../hooks/use-notification"
+import { SalesChannel } from "@medusajs/medusa"
 
 type GeneralProps = {
   name: string
@@ -50,7 +51,7 @@ function General(props: GeneralProps) {
 }
 
 type AddSalesChannelModalProps = {
-  onClose: () => void
+  onClose: (scId: string) => void
 }
 
 /**
@@ -69,13 +70,13 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
     await createSalesChannel(
       { name, description },
       {
-        onSuccess: () => {
+        onSuccess: ({ sales_channel }) => {
           notification(
             "Success",
             "The sales channel is successfully created",
             "success"
           )
-          onClose()
+          onClose(sales_channel.id)
         },
         onError: () =>
           notification("Error", "Failed to create the sales channel", "error"),
