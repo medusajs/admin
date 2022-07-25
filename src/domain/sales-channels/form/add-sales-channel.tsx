@@ -1,8 +1,5 @@
 import React, { useState } from "react"
-import {
-  useAdminCreateSalesChannel,
-  useAdminUpdateSalesChannel,
-} from "medusa-react"
+import { useAdminCreateSalesChannel } from "medusa-react"
 
 import Button from "../../../components/fundamentals/button"
 

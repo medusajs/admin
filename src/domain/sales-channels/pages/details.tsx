@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import { Link } from "gatsby"
+import { Link, navigate } from "gatsby"
 import React, { useEffect, useRef, useState } from "react"
 
 import { SalesChannel } from "@medusajs/medusa"
@@ -198,7 +198,7 @@ type SalesChannelsListProps = {
   filterText?: string
   setFilterText: (text: string) => void
   salesChannels: SalesChannel[]
-  setActiveSalesChannel: (sc: SalesChannel) => void
+  setActiveSalesChannelId: (salesChannelId: string) => void
 }
 
 /**
@@ -208,7 +208,7 @@ function SalesChannelsList(props: SalesChannelsListProps) {
   const {
     activeChannelId,
     openCreateModal,
-    setActiveSalesChannel,
+    setActiveSalesChannelId,
     salesChannels,
     filterText,
     setFilterText,
@@ -227,7 +227,7 @@ function SalesChannelsList(props: SalesChannelsListProps) {
             salesChannel={s}
             isDisabled={s.is_disabled}
             isSelected={activeChannelId === s.id}
-            onClick={() => setActiveSalesChannel(s)}
+            onClick={() => setActiveSalesChannelId(s.id)}
           />
         ))}
       </div>
@@ -360,10 +360,13 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
   )
 }
 
+type DetailsProps = { id: string }
+
 /**
  * Sales channels details page container.
  */
-function Details() {
+function Details(props: DetailsProps) {
+  const { id: routeSalesChannelId } = props
   const [filterText, setFilterText] = useState<string>()
   const [showCreateModal, setShowCreateModal] = useState(false)
 
@@ -375,19 +378,28 @@ function Details() {
   const { store } = useAdminStore()
   const { sales_channels } = useAdminSalesChannels()
 
+  const setActiveSalesChannelId = (scId: string) => {
+    navigate(`/a/sales-channels/${scId}`)
+  }
+
   useEffect(() => {
     if (sales_channels && store) {
       if (!activeSalesChannel) {
-        setActiveSalesChannel(
-          sales_channels.find((sc) => sc.id === store.default_sales_channel_id)
-        )
+        setActiveSalesChannelId(store.default_sales_channel_id)
       } else {
-        setActiveSalesChannel(
-          sales_channels.find((sc) => sc.id === activeSalesChannel.id)
-        )
+        setActiveSalesChannelId(activeSalesChannel.id)
       }
     }
   }, [sales_channels, store, activeSalesChannel?.id])
+
+  useEffect(() => {
+    if (routeSalesChannelId !== activeSalesChannel?.id) {
+      const activeChannel = sales_channels?.find(
+        (sc) => sc.id === routeSalesChannelId
+      )
+      setActiveSalesChannel(activeChannel)
+    }
+  }, [routeSalesChannelId, activeSalesChannel, sales_channels])
 
   const openCreateModal = () => setShowCreateModal(true)
   const closeCreateModal = () => {
@@ -395,9 +407,7 @@ function Details() {
   }
 
   const resetDetails = () => {
-    setActiveSalesChannel(
-      sales_channels.find((sc) => sc.id === store?.default_sales_channel_id)
-    )
+    setActiveSalesChannelId(store!.default_sales_channel_id)
   }
 
   function defaultChannelsSorter(sc1, sc2) {
@@ -450,7 +460,7 @@ function Details() {
           setFilterText={setFilterText}
           openCreateModal={openCreateModal}
           activeChannelId={activeSalesChannel.id}
-          setActiveSalesChannel={setActiveSalesChannel}
+          setActiveSalesChannelId={setActiveSalesChannelId}
           salesChannels={filterSalesChannels(sales_channels).sort(
             defaultChannelsSorter
           )}
