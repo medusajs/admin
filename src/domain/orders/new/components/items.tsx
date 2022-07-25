@@ -1,7 +1,7 @@
 import { ProductVariant } from "@medusajs/medusa"
 import clsx from "clsx"
-import React, { useContext, useEffect, useRef, useState } from "react"
-import { Controller, FieldArrayWithId } from "react-hook-form"
+import React, { useContext, useEffect, useState } from "react"
+import { Controller } from "react-hook-form"
 
 import Button from "../../../../components/fundamentals/button"
 import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
@@ -12,27 +12,24 @@ import InputField from "../../../../components/molecules/input"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Table from "../../../../components/molecules/table"
-import CurrencyInput from "../../../../components/organisms/currency-input"
-import useOnClickOutside from "../../../../hooks/use-on-click-outside"
-import { displayAmount, extractUnitPrice } from "../../../../utils/prices"
+import {
+  displayAmount,
+  extractUnitPrice,
+  getNativeSymbol,
+  persistedPrice,
+} from "../../../../utils/prices"
 import RMASelectProductSubModal from "../../details/rma-sub-modals/products"
-import { NewOrderForm, useNewOrderForm } from "../form"
+import { useNewOrderForm } from "../form"
 import CustomItemSubModal from "./custom-item-sub-modal"
 
-const Items = ({
-  handleAddItems,
-  handleAddQuantity,
-  handleRemoveItem,
-  handlePriceChange,
-  handleAddCustom,
-}) => {
+const Items = () => {
   const { enableNextPage, disableNextPage, nextStepEnabled } = React.useContext(
     SteppedContext
   )
 
   const {
     context: { region, items },
-    form: { control, register, setValue },
+    form: { control, register, setValue, getValues },
   } = useNewOrderForm()
   const { fields, append, remove, update } = items
 
@@ -61,31 +58,24 @@ const Items = ({
     }
   }
 
-  const priceRef = useRef<HTMLDivElement>(null)
+  const handleEditQuantity = (index: number, value: number) => {
+    const oldQuantity = getValues(`items.${index}.quantity`)
+    const newQuantity = +oldQuantity + value
 
-  useOnClickOutside(priceRef, () => {
-    console.log("clicked outside price", editPrice)
-    if (editPrice >= 0) {
-      setEditPrice(-1)
-    }
-  })
-
-  const quantityRef = useRef<HTMLDivElement>(null)
-
-  useOnClickOutside(quantityRef, () => {
-    setEditQuantity(-1)
-  })
-
-  const handleEditQuantity = (
-    index: number,
-    item: FieldArrayWithId<NewOrderForm, "items", "id">,
-    value: number
-  ) => {
-    const newQuantity = +item.quantity + value
+    console.log(oldQuantity, newQuantity)
 
     if (newQuantity > 0) {
-      update(index, { ...item, quantity: newQuantity })
+      setValue(`items.${index}.quantity`, newQuantity)
     }
+  }
+
+  const handlePriceChange = (
+    index: number,
+    value: number,
+    currency: string
+  ) => {
+    const dbPrice = persistedPrice(currency, value)
+    setValue(`items.${index}.unit_price`, dbPrice)
   }
 
   const addCustomItem = (title: string, quantity: number, amount: number) => {
@@ -161,30 +151,37 @@ const Items = ({
                 </Table.Cell>
                 <Table.Cell className="text-right w-32 pr-8">
                   {editQuantity === index ? (
-                    <div ref={quantityRef}>
-                      <InputField
-                        type="number"
-                        {...register(`items.${index}.quantity`, {
-                          valueAsNumber: true,
-                        })}
-                      />
-                    </div>
+                    <InputField
+                      type="number"
+                      {...register(`items.${index}.quantity`, {
+                        valueAsNumber: true,
+                      })}
+                      onBlur={() => setEditQuantity(-1)}
+                    />
                   ) : (
                     <div className="flex w-full text-right justify-end text-grey-50 ">
                       <span
-                        onClick={() => handleEditQuantity(index, item, -1)}
+                        onClick={() => handleEditQuantity(index, -1)}
                         className="w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 mr-2"
                       >
                         <MinusIcon size={16} />
                       </span>
-                      <span
+                      <button
+                        type="button"
                         className="px-1 hover:bg-grey-20 rounded cursor-pointer"
                         onClick={() => setEditQuantity(index)}
                       >
-                        {item.quantity}
-                      </span>
+                        <input
+                          type="number"
+                          {...register(`items.${index}.quantity`, {
+                            valueAsNumber: true,
+                          })}
+                          className="bg-transparent w-full text-center text-grey-90"
+                          disabled
+                        />
+                      </button>
                       <span
-                        onClick={() => handleEditQuantity(index, item, 1)}
+                        onClick={() => handleEditQuantity(index, 1)}
                         className={clsx(
                           "w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 ml-2"
                         )}
@@ -196,47 +193,49 @@ const Items = ({
                 </Table.Cell>
                 <Table.Cell className="text-right">
                   {editPrice === index ? (
-                    // <InputField
-                    //   label=""
-                    //   type="number"
-                    //   value={(item.unit_price || 0) / 100}
-                    //   onBlur={() => {
-                    //     setEditPrice(-1)
-                    //   }}
-                    //   onChange={(e) =>
-                    //     handlePriceChange(e.target.value, index)
-                    //   }
-                    // />
                     <Controller
-                      name={`items.${index}.unit_price`}
                       control={control}
-                      render={({ field: { value, onChange } }) => {
+                      name={`items.${index}.unit_price`}
+                      render={({ field: { value } }) => {
                         return (
-                          <div ref={priceRef}>
-                            <CurrencyInput.Root
-                              currentCurrency={region.currency_code}
-                              readOnly
-                              hideCurrency
-                            >
-                              <CurrencyInput.Amount
-                                amount={value}
-                                onChange={onChange}
-                                label=""
-                              />
-                            </CurrencyInput.Root>
-                          </div>
+                          <InputField
+                            type="number"
+                            value={displayAmount(region.currency_code, value)}
+                            onBlur={() => {
+                              setEditPrice(-1)
+                            }}
+                            prefix={getNativeSymbol(region.currency_code)}
+                            onChange={
+                              (e) => {
+                                handlePriceChange(
+                                  index,
+                                  +e.target.value,
+                                  region.currency_code
+                                )
+                              }
+                              // handlePriceChange(e.target.value, index)
+                            }
+                          />
                         )
                       }}
                     />
                   ) : (
-                    <span
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setEditPrice(index)
+                    <Controller
+                      name={`items.${index}.unit_price`}
+                      control={control}
+                      render={({ field: { value } }) => {
+                        return (
+                          <span
+                            className="cursor-pointer"
+                            onClick={() => {
+                              setEditPrice(index)
+                            }}
+                          >
+                            {displayAmount(region!.currency_code, value)}
+                          </span>
+                        )
                       }}
-                    >
-                      {displayAmount(region!.currency_code, item.unit_price)}
-                    </span>
+                    />
                   )}
                 </Table.Cell>
                 <Table.Cell className="text-right text-grey-40 pr-1">
@@ -248,7 +247,7 @@ const Items = ({
                     size="small"
                     onClick={() => removeItem(index)}
                   >
-                    <TrashIcon size={20} />
+                    <TrashIcon size={20} className="text-grey-50" />
                   </Button>
                 </Table.Cell>
               </Table.Row>

@@ -2,10 +2,13 @@ import qs from "query-string"
 import React, { useContext, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import AddressForm from "../../../../components/templates/address-form"
+import AddressForm, {
+  AddressPayload,
+} from "../../../../components/templates/address-form"
 import Medusa from "../../../../services/api"
 
 import { useAdminCustomer } from "medusa-react"
+import { Controller } from "react-hook-form"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
@@ -88,37 +91,75 @@ const ShippingDetails = ({
   const onCustomerSelect = (val: Option) => {
     const email = /\(([^()]*)\)$/.exec(val?.label)
 
-    if (!val || !email) {
-      form.setValue("customer", "")
-      form.setValue("customerId", "")
-      setCustomerAddresses([])
+    setSelectedCustomerId(val.value)
+
+    // if (!val || !email) {
+    //   form.setValue("customer", "")
+    //   form.setValue("customerId", "")
+    //   setCustomerAddresses([])
+    //   return
+    // }
+
+    // form.setValue("customer", val)
+    // form.setValue("email", email[1])
+    // form.setValue("customerId", val.value)
+
+    // setFetchingAddresses(true)
+    // await Medusa.customers
+    //   .retrieve(val.value)
+    //   .then(({ data }) => {
+    //     form.setValue("shipping.first_name", data.customer.first_name)
+    //     form.setValue("shipping.last_name", data.customer.last_name)
+    //     form.setValue("shipping.email", data.customer.email)
+    //     form.setValue("shipping.phone", data.customer.phone)
+    //     const countries = region.countries.map(({ iso_2 }) => iso_2)
+    //     const inRegion = data.customer.shipping_addresses.filter((sa) =>
+    //       countries.includes(sa.country_code)
+    //     )
+
+    //     if (inRegion) {
+    //       setAddNew(false)
+    //     }
+    //     setCustomerAddresses(inRegion)
+    //   })
+    //   .catch((_) => setCustomerAddresses([]))
+    // setFetchingAddresses(false)
+  }
+
+  const onAddressSelect = (addressId: string) => {
+    const address = customer?.shipping_addresses.find(
+      (sa) => sa.id === addressId
+    )
+
+    if (!address) {
       return
     }
 
-    form.setValue("customer", val)
-    form.setValue("email", email[1])
-    form.setValue("customerId", val.value)
+    const countryOption = validCountries.find(
+      (c) => c.value === address.country_code
+    )
 
-    setFetchingAddresses(true)
-    await Medusa.customers
-      .retrieve(val.value)
-      .then(({ data }) => {
-        form.setValue("shipping.first_name", data.customer.first_name)
-        form.setValue("shipping.last_name", data.customer.last_name)
-        form.setValue("shipping.email", data.customer.email)
-        form.setValue("shipping.phone", data.customer.phone)
-        const countries = region.countries.map(({ iso_2 }) => iso_2)
-        const inRegion = data.customer.shipping_addresses.filter((sa) =>
-          countries.includes(sa.country_code)
-        )
+    if (!countryOption) {
+      return
+    }
 
-        if (inRegion) {
-          setAddNew(false)
-        }
-        setCustomerAddresses(inRegion)
-      })
-      .catch((_) => setCustomerAddresses([]))
-    setFetchingAddresses(false)
+    const payload: AddressPayload = {
+      first_name: address.first_name || "",
+      last_name: address.last_name || "",
+      address_1: address.address_1 || "",
+      address_2: address.address_2,
+      city: address.city || "",
+      country_code: countryOption,
+      postal_code: address.postal_code || "",
+      phone: address.phone,
+      company: address.company,
+      province: address.province,
+    }
+
+    form.setValue("shipping_address", payload)
+    form.setValue("billing_address", payload)
+
+    setSelectedAddress(addressId)
   }
 
   const onCustomerCreate = (val) => {
@@ -126,7 +167,6 @@ const ShippingDetails = ({
     setAddNew(true)
     form.setValue("email", val)
     form.setValue("customer", { label: val, value: val })
-    return { label: val, value: val }
   }
 
   const onCreateNew = () => {
@@ -141,16 +181,26 @@ const ShippingDetails = ({
   return (
     <div className="min-h-[705px]">
       <span className="inter-base-semibold">Customer and shipping details</span>
-      <Select
-        className="mt-4"
-        label="Find or create a customer"
-        options={[]}
-        enableSearch
-        onChange={(val) => onCustomerSelect(val)}
-        filterOptions={debouncedFetch}
-        isCreatable
-        onCreateOption={(val) => {
-          onCustomerCreate(val)
+      <button></button>
+      <Controller
+        control={form.control}
+        name="customer_id"
+        render={({ field: { value, onChange } }) => {
+          return (
+            <Select
+              className="mt-4"
+              label="Find or create a customer"
+              options={[]}
+              enableSearch
+              value={value || null}
+              onChange={(val) => onCustomerSelect(val)}
+              filterOptions={debouncedFetch as any}
+              isCreatable
+              onCreateOption={(val) => {
+                onCustomerCreate(val)
+              }}
+            />
+          )
         }}
       />
 
@@ -163,20 +213,16 @@ const ShippingDetails = ({
           <span className="inter-base-semibold">Choose existing addresses</span>
           <RadioGroup.Root
             className="mt-4"
-            value={shipping.id}
-            onValueChange={(value) => {
-              const address = customerAddresses.find((ca) => ca.id === value)
-              form.setValue("shipping", address)
-              form.setValue("billing", address)
-            }}
+            value={selectedAddress}
+            onValueChange={onAddressSelect}
           >
             {customer.shipping_addresses.map((sa, i) => (
               <RadioGroup.Item
                 label={`${sa.first_name} ${sa.last_name}`}
-                checked={shipping && sa.id === shipping.id}
+                checked={!!selectedAddress && sa.id === selectedAddress}
                 description={`${sa.address_1}, ${sa.address_2} ${
                   sa.postal_code
-                } ${sa.city} ${sa.country_code.toUpperCase()}`}
+                } ${sa.city} ${sa.country_code?.toUpperCase()}`}
                 value={sa.id}
                 key={i}
               ></RadioGroup.Item>

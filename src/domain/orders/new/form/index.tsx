@@ -29,6 +29,8 @@ export type NewOrderForm = {
     product_title?: string
   }[]
   shipping_option: Option | null
+  customer_id?: Option | null
+  email: string
   custom_shipping_price?: number
 }
 
