@@ -1,7 +1,7 @@
 import { Region, ShippingOption } from "@medusajs/medusa"
 import {
-  useAdminCreateDraftOrder,
   useAdminRegion,
+  useAdminShippingOption,
   useAdminShippingOptions,
 } from "medusa-react"
 import React, { createContext, ReactNode, useContext, useMemo } from "react"
@@ -17,9 +17,11 @@ import { AddressPayload } from "../../../../components/templates/address-form"
 import { Option } from "../../../../types/shared"
 
 export type NewOrderForm = {
-  shipping_address: AddressPayload
-  billing_address: AddressPayload
-  region: Option | null
+  shipping_address?: AddressPayload
+  shipping_address_id?: string
+  billing_address?: AddressPayload
+  billing_address_id?: string
+  region: Option
   items: {
     quantity: number
     variant_id?: string
@@ -28,15 +30,17 @@ export type NewOrderForm = {
     thumbnail?: string | null
     product_title?: string
   }[]
-  shipping_option: Option | null
+  shipping_option: Option
   customer_id?: Option | null
   email: string
   custom_shipping_price?: number
+  discount_code?: string
 }
 
 type NewOrderContextValue = {
   validCountries: Option[]
   region: Region | undefined
+  selectedShippingOption: ShippingOption | undefined
   items: UseFieldArrayReturn<NewOrderForm, "items", "id">
   shippingOptions: ShippingOption[]
 }
@@ -49,12 +53,23 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
       items: [],
     },
   })
-  const { mutate } = useAdminCreateDraftOrder()
 
   const selectedRegion = useWatch({ control: form.control, name: "region" })
   const { region } = useAdminRegion(selectedRegion?.value!, {
     enabled: !!selectedRegion,
   })
+
+  const selectedShippingOption = useWatch({
+    control: form.control,
+    name: "shipping_option",
+  })
+
+  const { shipping_option } = useAdminShippingOption(
+    selectedShippingOption?.value!,
+    {
+      enabled: !!selectedShippingOption?.value,
+    }
+  )
 
   const validCountries = useMemo(() => {
     if (!region) {
@@ -119,15 +134,12 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
     }, [] as ShippingOption[])
   }, [shipping_options, items])
 
-  const handleSubmit = form.handleSubmit((data) => {
-    console.log(data)
-  })
-
   return (
     <NewOrderContext.Provider
       value={{
         validCountries,
         region,
+        selectedShippingOption: shipping_option,
         items,
         shippingOptions: validShippingOptions,
       }}

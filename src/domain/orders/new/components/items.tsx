@@ -31,7 +31,7 @@ const Items = () => {
     context: { region, items },
     form: { control, register, setValue, getValues },
   } = useNewOrderForm()
-  const { fields, append, remove, update } = items
+  const { fields, append, remove } = items
 
   const [editQuantity, setEditQuantity] = useState(-1)
   const [editPrice, setEditPrice] = useState(-1)
@@ -61,8 +61,6 @@ const Items = () => {
   const handleEditQuantity = (index: number, value: number) => {
     const oldQuantity = getValues(`items.${index}.quantity`)
     const newQuantity = +oldQuantity + value
-
-    console.log(oldQuantity, newQuantity)
 
     if (newQuantity > 0) {
       setValue(`items.${index}.quantity`, newQuantity)

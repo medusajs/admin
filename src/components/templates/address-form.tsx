@@ -19,12 +19,18 @@ export interface AddressPayload {
 }
 
 type AddressFormProps = {
-  form: NestedForm<AddressPayload>
+  form: NestedForm<AddressPayload | undefined>
   countryOptions: Option[]
   type: "shipping" | "billing" | "address"
+  required?: boolean
 }
 
-const AddressForm = ({ form, countryOptions, type }: AddressFormProps) => {
+const AddressForm = ({
+  form,
+  countryOptions,
+  type,
+  required = true,
+}: AddressFormProps) => {
   const { register, path, control } = form
 
   return (
@@ -37,7 +43,7 @@ const AddressForm = ({ form, countryOptions, type }: AddressFormProps) => {
           })}
           placeholder="First Name"
           label="First Name"
-          required={true}
+          required={required}
         />
         <Input
           {...form.register(path("last_name"), {
@@ -45,15 +51,12 @@ const AddressForm = ({ form, countryOptions, type }: AddressFormProps) => {
           })}
           placeholder="Last Name"
           label="Last Name"
-          required={true}
+          required={required}
         />
         <Input
-          {...form.register(path("phone"), {
-            required: true,
-          })}
+          {...form.register(path("phone"))}
           placeholder="Phone"
           label="Phone"
-          required={true}
         />
       </div>
 
@@ -65,11 +68,11 @@ const AddressForm = ({ form, countryOptions, type }: AddressFormProps) => {
       <div className="grid grid-cols-1 gap-y-base mt-4">
         <Input
           {...form.register(path("address_1"), {
-            required: true,
+            required: required,
           })}
           placeholder="Address 1"
           label="Address 1"
-          required={true}
+          required={required}
         />
         <Input
           {...form.register(path("address_2"))}
@@ -84,20 +87,20 @@ const AddressForm = ({ form, countryOptions, type }: AddressFormProps) => {
         <div className="grid grid-cols-[144px_1fr] gap-x-base">
           <Input
             {...form.register(path("postal_code"), {
-              required: true,
+              required: required,
             })}
             placeholder="Postal code"
             label="Postal code"
-            required={true}
+            required={required}
             autoComplete="off"
           />
           <Input
             placeholder="City"
             label="City"
             {...form.register(path("city"), {
-              required: true,
+              required: required,
             })}
-            required
+            required={required}
           />
         </div>
         <div className="grid grid-cols-2 gap-x-base">
@@ -109,11 +112,12 @@ const AddressForm = ({ form, countryOptions, type }: AddressFormProps) => {
           <Controller
             control={control}
             name={path("country_code")}
+            rules={{ required: required }}
             render={({ field: { value, onChange } }) => {
               return (
                 <Select
                   label="Country"
-                  required
+                  required={required}
                   value={value}
                   options={countryOptions}
                   onChange={onChange}

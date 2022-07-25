@@ -1,29 +1,23 @@
 import qs from "query-string"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import AddressForm, {
-  AddressPayload,
-} from "../../../../components/templates/address-form"
+import AddressForm from "../../../../components/templates/address-form"
 import Medusa from "../../../../services/api"
 
 import { useAdminCustomer } from "medusa-react"
-import { Controller } from "react-hook-form"
+import { Controller, useWatch } from "react-hook-form"
+import LockIcon from "../../../../components/fundamentals/icons/lock-icon"
+import InputField from "../../../../components/molecules/input"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import { Option } from "../../../../types/shared"
+import isNullishObject from "../../../../utils/is-nullish-object"
 import { nestedForm } from "../../../../utils/nested-form"
 import { useNewOrderForm } from "../form"
 
-const ShippingDetails = ({
-  customerAddresses,
-  region,
-  setCustomerAddresses,
-}) => {
-  const [selectedCustomerId, setSelectedCustomerId] = useState<
-    string | undefined
-  >(undefined)
+const ShippingDetails = () => {
   const [addNew, setAddNew] = useState(false)
   const [fetchingAddresses, setFetchingAddresses] = useState(false)
   const { disableNextPage, enableNextPage, nextStepEnabled } = useContext(
@@ -35,30 +29,6 @@ const ShippingDetails = ({
     form,
   } = useNewOrderForm()
 
-  // const { shipping, customer: selectedCustomer, requireShipping } = form.watch([
-  //   "shipping",
-  //   "customer",
-  //   "requireShipping",
-  // ])
-
-  // useEffect(() => {
-  //   if (
-  //     !shipping?.first_name ||
-  //     !shipping?.last_name ||
-  //     !shipping?.address_1 ||
-  //     !shipping?.city ||
-  //     !shipping?.country_code ||
-  //     !shipping?.postal_code
-  //   ) {
-  //     if (nextStepEnabled) {
-  //       disableNextPage()
-  //     }
-  //   } else if (!nextStepEnabled) {
-  //     enableNextPage()
-  //   }
-  // }, [shipping])
-
-  // "region",
   const debouncedFetch = async (filter: string): Promise<Option[]> => {
     const prepared = qs.stringify(
       {
@@ -80,154 +50,155 @@ const ShippingDetails = ({
       .catch((error) => [])
   }
 
-  const { customer } = useAdminCustomer(selectedCustomerId!, {
-    enabled: !!selectedCustomerId,
+  const customerId = useWatch({
+    control: form.control,
+    name: "customer_id",
   })
 
-  const [selectedAddress, setSelectedAddress] = useState<string | undefined>(
-    undefined
-  )
+  const { customer } = useAdminCustomer(customerId?.value!, {
+    enabled: !!customerId?.value,
+  })
 
   const onCustomerSelect = (val: Option) => {
     const email = /\(([^()]*)\)$/.exec(val?.label)
 
-    setSelectedCustomerId(val.value)
-
-    // if (!val || !email) {
-    //   form.setValue("customer", "")
-    //   form.setValue("customerId", "")
-    //   setCustomerAddresses([])
-    //   return
-    // }
-
-    // form.setValue("customer", val)
-    // form.setValue("email", email[1])
-    // form.setValue("customerId", val.value)
-
-    // setFetchingAddresses(true)
-    // await Medusa.customers
-    //   .retrieve(val.value)
-    //   .then(({ data }) => {
-    //     form.setValue("shipping.first_name", data.customer.first_name)
-    //     form.setValue("shipping.last_name", data.customer.last_name)
-    //     form.setValue("shipping.email", data.customer.email)
-    //     form.setValue("shipping.phone", data.customer.phone)
-    //     const countries = region.countries.map(({ iso_2 }) => iso_2)
-    //     const inRegion = data.customer.shipping_addresses.filter((sa) =>
-    //       countries.includes(sa.country_code)
-    //     )
-
-    //     if (inRegion) {
-    //       setAddNew(false)
-    //     }
-    //     setCustomerAddresses(inRegion)
-    //   })
-    //   .catch((_) => setCustomerAddresses([]))
-    // setFetchingAddresses(false)
-  }
-
-  const onAddressSelect = (addressId: string) => {
-    const address = customer?.shipping_addresses.find(
-      (sa) => sa.id === addressId
-    )
-
-    if (!address) {
-      return
+    if (email) {
+      form.setValue("email", email[1])
     }
-
-    const countryOption = validCountries.find(
-      (c) => c.value === address.country_code
-    )
-
-    if (!countryOption) {
-      return
-    }
-
-    const payload: AddressPayload = {
-      first_name: address.first_name || "",
-      last_name: address.last_name || "",
-      address_1: address.address_1 || "",
-      address_2: address.address_2,
-      city: address.city || "",
-      country_code: countryOption,
-      postal_code: address.postal_code || "",
-      phone: address.phone,
-      company: address.company,
-      province: address.province,
-    }
-
-    form.setValue("shipping_address", payload)
-    form.setValue("billing_address", payload)
-
-    setSelectedAddress(addressId)
-  }
-
-  const onCustomerCreate = (val) => {
-    setCustomerAddresses([])
-    setAddNew(true)
-    form.setValue("email", val)
-    form.setValue("customer", { label: val, value: val })
   }
 
   const onCreateNew = () => {
-    form.setValue("shipping.address_1", undefined)
-    form.setValue("shipping.postal_code", undefined)
-    form.setValue("shipping.city", undefined)
-    form.setValue("shipping.province", undefined)
-
+    form.setValue("shipping_address_id", undefined)
     setAddNew(true)
   }
 
+  const email = useWatch({
+    control: form.control,
+    name: "email",
+  })
+
+  useEffect(() => {
+    if (!email) {
+      disableNextPage()
+    } else {
+      enableNextPage()
+    }
+  }, [email])
+
+  const shippingAddress = useWatch({
+    control: form.control,
+    name: "shipping_address",
+  })
+
+  const [requiredFields, setRequiredFields] = useState(false)
+
+  useEffect(() => {
+    if (!email) {
+      disableNextPage()
+      return
+    }
+
+    if (shippingAddress && !isNullishObject(shippingAddress)) {
+      if (
+        !shippingAddress.first_name ||
+        !shippingAddress.last_name ||
+        !shippingAddress.address_1 ||
+        !shippingAddress.city ||
+        !shippingAddress.country_code ||
+        !shippingAddress.postal_code
+      ) {
+        disableNextPage()
+        setRequiredFields(true)
+      } else {
+        enableNextPage()
+      }
+    } else {
+      enableNextPage()
+      setRequiredFields(false)
+    }
+  }, [shippingAddress, email])
+
   return (
-    <div className="min-h-[705px]">
-      <span className="inter-base-semibold">Customer and shipping details</span>
-      <button></button>
-      <Controller
-        control={form.control}
-        name="customer_id"
-        render={({ field: { value, onChange } }) => {
-          return (
-            <Select
-              className="mt-4"
-              label="Find or create a customer"
-              options={[]}
-              enableSearch
-              value={value || null}
-              onChange={(val) => onCustomerSelect(val)}
-              filterOptions={debouncedFetch as any}
-              isCreatable
-              onCreateOption={(val) => {
-                onCustomerCreate(val)
-              }}
-            />
-          )
-        }}
-      />
+    <div className="min-h-[705px] flex flex-col gap-y-8">
+      <div>
+        <span className="inter-base-semibold">
+          Customer and shipping details
+        </span>
+        <Controller
+          control={form.control}
+          name="customer_id"
+          render={({ field: { value, onChange } }) => {
+            return (
+              <Select
+                className="mt-4"
+                label="Find existing customer"
+                options={[]}
+                enableSearch
+                value={value || null}
+                onChange={(val) => {
+                  onCustomerSelect(val)
+                  onChange(val)
+                }}
+                filterOptions={debouncedFetch as any}
+                clearSelected
+              />
+            )
+          }}
+        />
+      </div>
+
+      <div className="flex flex-col gap-y-4">
+        <span className="inter-base-semibold">Email</span>
+        <InputField
+          {...form.register("email")}
+          label="Email"
+          placeholder="lebron@james.com"
+          disabled={!!customerId}
+          required
+          // @ts-ignore
+          prefix={
+            !!customerId ? (
+              <LockIcon size={16} className="text-grey-40" />
+            ) : undefined
+          }
+          tabIndex={!!customerId ? -1 : 0}
+        />
+      </div>
 
       {fetchingAddresses ? (
         <div>
           <Spinner variant="primary" />
         </div>
       ) : customer?.shipping_addresses.length && !addNew ? (
-        <div className="mt-6">
+        <div>
           <span className="inter-base-semibold">Choose existing addresses</span>
-          <RadioGroup.Root
-            className="mt-4"
-            value={selectedAddress}
-            onValueChange={onAddressSelect}
-          >
-            {customer.shipping_addresses.map((sa, i) => (
-              <RadioGroup.Item
-                label={`${sa.first_name} ${sa.last_name}`}
-                checked={!!selectedAddress && sa.id === selectedAddress}
-                description={`${sa.address_1}, ${sa.address_2} ${
-                  sa.postal_code
-                } ${sa.city} ${sa.country_code?.toUpperCase()}`}
-                value={sa.id}
-                key={i}
-              ></RadioGroup.Item>
-            ))}
-          </RadioGroup.Root>
+          <Controller
+            control={form.control}
+            name="shipping_address_id"
+            render={({ field: { value, onChange } }) => {
+              return (
+                <RadioGroup.Root
+                  className="mt-4"
+                  value={value}
+                  onValueChange={(id) => {
+                    onChange(id)
+                  }}
+                >
+                  {customer.shipping_addresses.map((sa, i) => (
+                    <RadioGroup.Item
+                      label={`${sa.first_name} ${sa.last_name}`}
+                      checked={!!value && sa.id === value}
+                      description={`${sa.address_1}, ${sa.address_2} ${
+                        sa.postal_code
+                      } ${sa.city} ${sa.country_code?.toUpperCase()}`}
+                      value={sa.id}
+                      key={i}
+                    ></RadioGroup.Item>
+                  ))}
+                </RadioGroup.Root>
+              )
+            }}
+          />
           <div className="mt-4 flex w-full justify-end">
             <Button
               variant="ghost"
@@ -240,11 +211,12 @@ const ShippingDetails = ({
           </div>
         </div>
       ) : (
-        <div className="mt-4">
+        <div>
           <AddressForm
             form={nestedForm(form, "shipping_address")}
             countryOptions={validCountries}
             type="shipping"
+            required={requiredFields}
           />
         </div>
       )}
