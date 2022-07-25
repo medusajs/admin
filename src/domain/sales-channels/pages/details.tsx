@@ -239,14 +239,14 @@ type SalesChannelDetailsHeaderProps = {
   salesChannel: SalesChannel
   openUpdateModal: () => void
   resetDetails: () => void
-  hideProductsAdd: () => void
+  showProductsAdd: () => void
 }
 
 /**
  * Sales channels details header.
  */
 function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
-  const { salesChannel, openUpdateModal, resetDetails, hideProductsAdd } = props
+  const { salesChannel, openUpdateModal, resetDetails, showProductsAdd } = props
 
   const { mutate: deleteSalesChannel } = useAdminDeleteSalesChannel(
     salesChannel.id
@@ -267,7 +267,7 @@ function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
     {
       label: "Add/Edit products",
       icon: <PlusIcon />,
-      onClick: () => hideProductsAdd(),
+      onClick: () => showProductsAdd(),
     },
     {
       label: "Delete sales channel",
@@ -335,7 +335,7 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
         resetDetails={resetDetails}
         salesChannel={salesChannel}
         openUpdateModal={openUpdateModal}
-        hideProductsAdd={hideProductsAdd}
+        showProductsAdd={showProductsAdd}
       />
 
       <SalesChannelProductsTable
