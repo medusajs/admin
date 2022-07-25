@@ -6,14 +6,20 @@ import { SalesChannel } from "@medusajs/medusa"
 import Modal from "../../../components/molecules/modal"
 import InputField from "../../../components/molecules/input"
 import Button from "../../../components/fundamentals/button"
+import useNotification from "../../../hooks/use-notification"
 
 type EditSalesChannelProps = {
   salesChannel: SalesChannel
   handleClose: () => void
 }
 
+/**
+ * Modal with sales channels edit form.
+ */
 function EditSalesChannel(props: EditSalesChannelProps) {
   const { handleClose, salesChannel } = props
+
+  const notification = useNotification()
 
   const { mutate: updateSalesChannel } = useAdminUpdateSalesChannel(
     salesChannel.id
@@ -23,8 +29,21 @@ function EditSalesChannel(props: EditSalesChannelProps) {
   const [description, setDescription] = useState(salesChannel.description)
 
   const handleSubmit = () => {
-    updateSalesChannel({ name, description })
-    handleClose()
+    updateSalesChannel(
+      { name, description },
+      {
+        onSuccess: () => {
+          notification(
+            "Success",
+            "The sales channel is successfully updated",
+            "success"
+          )
+          handleClose()
+        },
+        onError: () =>
+          notification("Error", "Failed to update the sales channel", "error"),
+      }
+    )
   }
 
   return (
