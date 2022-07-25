@@ -1,5 +1,8 @@
 import React, { useState } from "react"
-import { useAdminCreateSalesChannel } from "medusa-react"
+import {
+  useAdminCreateSalesChannel,
+  useAdminUpdateSalesChannel,
+} from "medusa-react"
 
 import Button from "../../../components/fundamentals/button"
 
@@ -66,10 +69,44 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
   const [description, setDescription] = useState<string>()
 
   async function save() {
-    await createSalesChannel({ name, description })
-    notification("Success", "Product successfully removed", "success")
+    await createSalesChannel(
+      { name, description },
+      {
+        onSuccess: () => {
+          notification(
+            "Success",
+            "The sales channel is successfully created",
+            "success"
+          )
+          onClose()
+        },
+        onError: () =>
+          notification("Error", "Failed to create the sales channel", "error"),
+      }
+    )
+  }
 
-    onClose()
+  async function saveAsDraft() {
+    await createSalesChannel(
+      {
+        name,
+        description,
+        // TODO: allow passing `is_disabled` on the create endpoint
+        is_disabled: true,
+      },
+      {
+        onSuccess: () => {
+          notification(
+            "Success",
+            "The sales channel is successfully created",
+            "success"
+          )
+          onClose()
+        },
+        onError: () =>
+          notification("Error", "Failed to create the sales channel", "error"),
+      }
+    )
   }
 
   return (
@@ -85,6 +122,16 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
             <CrossIcon size={20} />
           </Button>
           <div className="gap-x-small flex">
+            <Button
+              size="small"
+              variant="secondary"
+              onClick={() => saveAsDraft()}
+              disabled={!name}
+              className="rounded-rounded"
+            >
+              Save as draft
+            </Button>
+
             <Button
               size="small"
               variant="primary"
