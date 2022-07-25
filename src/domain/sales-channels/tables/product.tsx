@@ -65,8 +65,8 @@ function ProductTable(props: ProductTableProps) {
       availableTabs: filterTabs,
       activeFilterTab,
       setFilters,
-      reset,
       filters,
+      reset,
     },
     paginate,
     setQuery: setFreeText,
@@ -142,7 +142,7 @@ function ProductTable(props: ProductTableProps) {
       } else {
         if (typeof query !== "undefined") {
           // if we delete query string, we reset the table view
-          reset()
+          setFreeText("")
         }
       }
     }, 400)
