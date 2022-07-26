@@ -103,7 +103,7 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
             variant="ghost"
             size="small"
             className="w-[112px]"
-            onClick={() => pop()}
+            onClick={pop}
           >
             Back
           </Button>
