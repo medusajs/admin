@@ -18,7 +18,7 @@ export const useAddChannelsModalScreen = (
 
   return {
     title: "Add Sales Channels",
-    onBack: () => pop(),
+    onBack: pop,
     view: (
       <AddChannelsModalScreen
         selectedSalesChannelIds={selectedRowIds}
