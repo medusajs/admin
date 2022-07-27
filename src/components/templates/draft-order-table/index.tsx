@@ -1,6 +1,6 @@
 import { RouteComponentProps, useLocation } from "@reach/router"
 import { useAdminDraftOrders } from "medusa-react"
-import React, { useEffect, useState } from "react"
+import React, { Fragment, useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
@@ -112,18 +112,22 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
             {...getTableProps()}
           >
             <Table.Head>
-              {headerGroups?.map((headerGroup, index) => (
-                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((col, headerIndex) => (
-                    <Table.HeadCell
-                      className="w-[100px]"
-                      {...col.getHeaderProps()}
-                    >
-                      {col.render("Header")}
-                    </Table.HeadCell>
-                  ))}
-                </Table.HeadRow>
-              ))}
+              {headerGroups?.map((headerGroup) => {
+                return (
+                  <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map((col, index) => {
+                      return (
+                        <Table.HeadCell
+                          className="w-[100px]"
+                          {...col.getHeaderProps()}
+                        >
+                          {col.render("Header", { customIndex: index })}
+                        </Table.HeadCell>
+                      )
+                    })}
+                  </Table.HeadRow>
+                )
+              })}
             </Table.Head>
             <Table.Body {...getTableBodyProps()}>
               {rows.map((row) => {
@@ -135,7 +139,9 @@ const DraftOrderTable: React.FC<RouteComponentProps> = () => {
                     {...row.getRowProps()}
                   >
                     {row.cells.map((cell, index) => {
-                      return cell.render("Cell", { index })
+                      return (
+                        <Fragment key={index}>{cell.render("Cell")}</Fragment>
+                      )
                     })}
                   </Table.Row>
                 )

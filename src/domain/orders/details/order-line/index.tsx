@@ -1,20 +1,34 @@
+import { LineItem } from "@medusajs/medusa"
 import React from "react"
+import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 
-const OrderLine = ({ item, region }) => {
+type OrderLineProps = {
+  item: LineItem
+  currencyCode: string
+}
+
+const OrderLine = ({ item, currencyCode }: OrderLineProps) => {
+  console.log(item)
   return (
     <div className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded">
       <div className="flex space-x-4 justify-center">
-        <div className="flex h-[48px] w-[36px]">
-          <img src={item.thumbnail} className="rounded-rounded object-cover" />
+        <div className="flex h-[48px] w-[36px] rounded-rounded overflow-hidden">
+          {item.thumbnail ? (
+            <img src={item.thumbnail} className="object-cover" />
+          ) : (
+            <ImagePlaceholder />
+          )}
         </div>
-        <div className="flex flex-col justify-center">
-          <span className="inter-small-regular text-grey-90 max-w-[225px] truncate">
+        <div className="flex flex-col justify-center max-w-[185px]">
+          <span className="inter-small-regular text-grey-90 truncate">
             {item.title}
           </span>
           {item?.variant && (
-            <span className="inter-small-regular text-grey-50">
-              {item.variant.sku}
+            <span className="inter-small-regular text-grey-50 truncate">
+              {`${item.variant.title}${
+                item.variant.sku ? ` (${item.variant.sku})` : ""
+              }`}
             </span>
           )}
         </div>
@@ -24,9 +38,9 @@ const OrderLine = ({ item, region }) => {
           <div className="inter-small-regular text-grey-50">
             {formatAmountWithSymbol({
               amount: item.unit_price,
-              currency: region?.currency_code,
+              currency: currencyCode,
               digits: 2,
-              tax: region?.tax_rate,
+              tax: item.tax_lines,
             })}
           </div>
           <div className="inter-small-regular text-grey-50">
@@ -35,14 +49,14 @@ const OrderLine = ({ item, region }) => {
           <div className="inter-small-regular text-grey-90">
             {formatAmountWithSymbol({
               amount: item.unit_price * item.quantity,
-              currency: region?.currency_code,
+              currency: currencyCode,
               digits: 2,
-              tax: region?.tax_rate,
+              tax: item.tax_lines,
             })}
           </div>
         </div>
         <div className="inter-small-regular text-grey-50">
-          {region?.currency_code.toUpperCase()}
+          {currencyCode.toUpperCase()}
         </div>
       </div>
     </div>

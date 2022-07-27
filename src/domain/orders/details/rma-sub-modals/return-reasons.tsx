@@ -56,7 +56,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={isLargeModal}>
+      <Modal.Content>
         <div className="h-full">
           <h2 className="inter-base-semibold mb-4">Reason for Return</h2>
           <Select
@@ -128,7 +128,7 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
           )}
         </div>
       </Modal.Content>
-      <Modal.Footer isLargeModal={isLargeModal}>
+      <Modal.Footer>
         <div className="flex w-full justify-end gap-x-xsmall">
           <Button
             variant="ghost"

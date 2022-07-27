@@ -34,7 +34,7 @@ type CurrencyInputState = {
 }
 
 type AmountInputProps = {
-  label: string
+  label?: string
   amount: number | undefined
   required?: boolean
   step?: number

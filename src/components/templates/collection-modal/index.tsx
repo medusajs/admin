@@ -125,7 +125,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
   }
 
   return (
-    <Modal handleClose={onClose}>
+    <Modal handleClose={onClose} isLargeModal>
       <Modal.Body>
         <Modal.Header handleClose={onClose}>
           <div>
@@ -138,7 +138,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
           </div>
         </Modal.Header>
         <form onSubmit={handleSubmit(submit)}>
-          <Modal.Content isLargeModal>
+          <Modal.Content>
             <div>
               <h2 className="inter-base-semibold mb-base">Details</h2>
               <div className="flex items-center gap-x-base">

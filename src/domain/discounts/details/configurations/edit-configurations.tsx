@@ -62,13 +62,13 @@ const EditConfigurations: React.FC<EditConfigurationsProps> = ({
   }, [discount])
 
   return (
-    <Modal handleClose={onClose}>
+    <Modal handleClose={onClose} isLargeModal>
       <Modal.Body>
         <Modal.Header handleClose={onClose}>
           <h1 className="inter-xlarge-semibold">Edit configurations</h1>
         </Modal.Header>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Modal.Content isLargeModal>
+          <Modal.Content>
             <div className="flex flex-col gap-y-xlarge">
               <Controller
                 name="starts_at"
@@ -107,7 +107,7 @@ const EditConfigurations: React.FC<EditConfigurationsProps> = ({
               <Controller
                 name="ends_at"
                 control={control}
-                render={({ field: { value, onChange }}) => {
+                render={({ field: { value, onChange } }) => {
                   return (
                     <SwitchableItem
                       open={!!value}

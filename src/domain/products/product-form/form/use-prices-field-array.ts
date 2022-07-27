@@ -1,9 +1,19 @@
 import { useFieldArray, UseFieldArrayProps, useWatch } from "react-hook-form"
+import { NestedForm } from "../../../../utils/nested-form"
 import { ProductFormValues } from "../utils/types"
 
 type UsePricesFieldArrayOptions = {
   defaultAmount: number
   defaultCurrencyCode: string
+}
+
+type PricesPayload = {
+  currency_code: string
+  amount: number
+}[]
+
+type UseFieldArrayFormProps = {
+  form: NestedForm<PricesPayload>
 }
 
 const usePricesFieldArray = <TKey extends string>(

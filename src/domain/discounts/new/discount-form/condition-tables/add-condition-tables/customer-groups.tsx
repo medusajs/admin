@@ -54,7 +54,7 @@ const AddCustomerGroupConditionSelector = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
+      <Modal.Content>
         {isLoading ? (
           <Spinner />
         ) : (
@@ -80,7 +80,7 @@ const AddCustomerGroupConditionSelector = ({
           </>
         )}
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <AddConditionFooter
           type="customer_groups"
           items={items}

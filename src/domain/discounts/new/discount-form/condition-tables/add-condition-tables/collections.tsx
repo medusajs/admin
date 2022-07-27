@@ -57,7 +57,7 @@ const AddCollectionConditionSelector = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
+      <Modal.Content>
         {isLoading ? (
           <Spinner />
         ) : (
@@ -83,7 +83,7 @@ const AddCollectionConditionSelector = ({
           </>
         )}
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <AddConditionFooter
           type="product_collections"
           items={items}

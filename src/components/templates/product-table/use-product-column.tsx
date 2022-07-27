@@ -1,5 +1,8 @@
 import clsx from "clsx"
+import { useAdminStore } from "medusa-react"
 import React, { useMemo } from "react"
+import { defaultChannelsSorter } from "../../../utils/sales-channel-compare-operator"
+import Tooltip from "../../atoms/tooltip"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
 import ImagePlaceholder from "../../fundamentals/image-placeholder"
@@ -21,6 +24,38 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
     }
   }
 
+  const { store } = useAdminStore()
+
+  const getProductSalesChannels = (salesChannels) => {
+    if (salesChannels?.length) {
+      salesChannels.sort(
+        defaultChannelsSorter(store?.default_sales_channel_id || "")
+      )
+      return (
+        <span className="inter-small-regular">
+          {salesChannels[0].name}
+          {salesChannels.length > 1 && (
+            <Tooltip
+              content={
+                <div className="flex flex-col">
+                  {salesChannels.slice(1).map((sc) => (
+                    <span>{sc.name}</span>
+                  ))}
+                </div>
+              }
+            >
+              <span className="text-grey-40">
+                {" "}
+                + {salesChannels.length - 1} more
+              </span>
+            </Tooltip>
+          )}
+        </span>
+      )
+    }
+    return <></>
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -36,9 +71,7 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
                     className="h-full object-cover rounded-soft"
                   />
                 ) : (
-                  <div className="flex items-center justify-center w-full h-full rounded-soft bg-grey-5">
-                    <ImagePlaceholder size={12} />
-                  </div>
+                  <ImagePlaceholder />
                 )}
               </div>
               {original.title}
@@ -57,6 +90,11 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
         Header: "Status",
         accessor: "status",
         Cell: ({ cell: { value } }) => getProductStatus(value),
+      },
+      {
+        Header: "Availability",
+        accessor: "sales_channels",
+        Cell: ({ cell: { value } }) => getProductSalesChannels(value),
       },
       {
         Header: "Inventory",

@@ -72,7 +72,7 @@ const ProductTile = ({ product }) => {
             />
           ) : (
             <div className="min-h-[230px] flex items-center justify-center bg-grey-5 rounded-rounded">
-              <ImagePlaceholder size={20} />
+              <ImagePlaceholder />
             </div>
           )}
           <div>

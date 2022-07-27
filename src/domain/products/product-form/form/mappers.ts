@@ -97,7 +97,7 @@ export const formValuesToCreateProductMapper = async (
       title: getVariantTitle(v),
       sku: v.sku ?? undefined,
       ean: v.ean ?? undefined,
-      inventory_quantity: v.inventory_quantity ?? 0,
+      inventory_quantity: v.inventory_quantity ? +v.inventory_quantity : 0,
       prices: [],
       options: v.options.map((o) => ({ value: o.value })),
     }))
@@ -162,10 +162,14 @@ export const formValuesToUpdateProductMapper = async (
 
   return {
     title: values.title,
-    handle: values.handle ?? undefined,
-    description: values.description ?? undefined,
-    status: values.status ?? undefined,
-    collection_id: values.collection?.value,
+    handle: values.handle,
+    status: values.status,
+    description: values.description,
+    thumbnail:
+      values.images.length && values.thumbnail
+        ? values.images[values.thumbnail]
+        : null,
+    collection_id: values?.collection ? values.collection.value : null,
     type: values.type?.value
       ? { id: values.type.value, value: values.type.label }
       : undefined,
