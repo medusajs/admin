@@ -142,14 +142,14 @@ const VariantEditor = ({
               {fields.map((field, index) => (
                 <div key={field.indexId}>
                   <Input
-                    {...register(`options[${index}].value`, { required: true })}
+                    {...register(`options.${index}.value`, { required: true })}
                     required={true}
                     label={field.title}
                     defaultValue={field.value}
                   />
                   <input
                     type="hidden"
-                    {...register(`options[${index}].option_id`)}
+                    {...register(`options.${index}.option_id`)}
                     defaultValue={field.option_id}
                   />
                 </div>
@@ -173,7 +173,7 @@ const VariantEditor = ({
                     <Controller
                       control={control}
                       key={field.indexId}
-                      {...register(`prices.${index}.price`)}
+                      name={`prices.${index}.price`}
                       render={({ field: { onChange, value } }) => {
                         let codes = availableCurrencies
                         if (value?.currency_code) {

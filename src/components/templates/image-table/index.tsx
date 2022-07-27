@@ -21,59 +21,53 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
     return [
       {
         Header: () => (
-          <Table.HeadCell className="ml-large min-w-[140px] max-w-[140px]">
+          <div className="ml-large min-w-[140px] max-w-[140px]">
             <span>Image</span>
-          </Table.HeadCell>
+          </div>
         ),
         collapse: true,
         accessor: "url",
         Cell: ({ cell: { value } }) => {
           return (
-            <Table.Cell className="py-base ml-large">
+            <div className="py-base ml-large">
               <img
                 className="h-[80px] w-[80px] object-cover rounded"
                 src={value}
               />
-            </Table.Cell>
+            </div>
           )
         },
       },
       {
-        Header: () => (
-          <Table.HeadCell>
-            <span>File name</span>
-          </Table.HeadCell>
-        ),
+        Header: () => <span>File name</span>,
         accessor: "name",
         Cell: ({ cell }) => {
           return (
-            <Table.Cell className="w-full">
+            <div className="w-full">
               <p className="inter-small-regular">{cell.row.original?.name}</p>
               {cell.row.original?.size && (
                 <span className="inter-small-regular text-grey-50">
                   {(cell.row.original.size / 1024).toFixed(2)} KB
                 </span>
               )}
-            </Table.Cell>
+            </div>
           )
         },
       },
       {
         Header: () => (
-          <Table.HeadCell className="flex gap-x-[6px] items-center">
+          <div className="flex gap-x-[6px] items-center">
             <span>Thumbnail</span>
             <IconTooltip content="Select which image you want to use as the thumbnail for this product" />
-          </Table.HeadCell>
+          </div>
         ),
         id: "thumbnail",
         collapse: true,
         Cell: ({ cell }) => {
           return (
-            <Table.Cell className="h-full w-full">
-              <div className="flex items-center justify-center">
-                <RadioGroup.Dot value={cell.row.index} />
-              </div>
-            </Table.Cell>
+            <div className="flex items-center justify-center h-full w-full">
+              <RadioGroup.Dot value={cell.row.index} />
+            </div>
           )
         },
       },
@@ -82,17 +76,15 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
         id: "delete",
         Cell: ({ row }) => {
           return (
-            <Table.Cell>
-              <Button
-                onClick={() => onDelete(row.index)}
-                variant="ghost"
-                size="small"
-                className="p-1 text-grey-40 cursor-pointer mx-6"
-                type="button"
-              >
-                <TrashIcon size={20} />
-              </Button>
-            </Table.Cell>
+            <Button
+              onClick={() => onDelete(row.index)}
+              variant="ghost"
+              size="small"
+              className="p-1 text-grey-40 cursor-pointer mx-6"
+              type="button"
+            >
+              <TrashIcon size={20} />
+            </Button>
           )
         },
       },
@@ -115,8 +107,12 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
       <Table.Head>
         {headerGroups?.map((headerGroup) => (
           <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((col, index) => {
-              return col.render("Header", { index })
+            {headerGroup.headers.map((col) => {
+              return (
+                <Table.HeadCell {...col.getHeaderProps()}>
+                  {col.render("Header")}
+                </Table.HeadCell>
+              )
             })}
           </Table.HeadRow>
         ))}
@@ -126,8 +122,12 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
           prepareRow(row)
           return (
             <Table.Row {...row.getRowProps()} className="px-base" key={index}>
-              {row.cells.map((cell, index) => {
-                return cell.render("Cell", { key: index })
+              {row.cells.map((cell) => {
+                return (
+                  <Table.Cell {...cell.getCellProps()}>
+                    {cell.render("Cell")}
+                  </Table.Cell>
+                )
               })}
             </Table.Row>
           )
