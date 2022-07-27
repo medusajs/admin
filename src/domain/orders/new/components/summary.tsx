@@ -13,6 +13,7 @@ import ImagePlaceholder from "../../../../components/fundamentals/image-placehol
 import Input from "../../../../components/molecules/input"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Table from "../../../../components/molecules/table"
+import isNullishObject from "../../../../utils/is-nullish-object"
 import { displayAmount, extractOptionPrice } from "../../../../utils/prices"
 import { useNewOrderForm } from "../form"
 
@@ -27,11 +28,13 @@ const Summary = () => {
   } = useNewOrderForm()
 
   const shipping = useWatch({
+    defaultValue: undefined,
     control: form.control,
     name: "shipping_address",
   })
 
   const billing = useWatch({
+    defaultValue: undefined,
     control: form.control,
     name: "billing_address",
   })
@@ -60,6 +63,8 @@ const Summary = () => {
     control: form.control,
     name: "custom_shipping_price",
   })
+
+  console.log(shipping, billing)
 
   const { discount, status } = useAdminGetDiscountByCode(discountCode!, {
     enabled: !!discountCode,
@@ -122,53 +127,57 @@ const Summary = () => {
     <div className="min-h-[705px]">
       <SummarySection title={"Items"} editIndex={1}>
         <Table>
-          <Table.HeadRow className="text-grey-50 border-t inter-small-semibold">
-            <Table.HeadCell>Details</Table.HeadCell>
-            <Table.HeadCell className="text-right">Quantity</Table.HeadCell>
-            <Table.HeadCell className="text-right">
-              Price (excl. Taxes)
-            </Table.HeadCell>
-            <Table.HeadCell></Table.HeadCell>
-          </Table.HeadRow>
-          {regionObj &&
-            items &&
-            items.fields.map((item) => {
-              return (
-                <Table.Row
-                  key={item.id}
-                  className={clsx("border-b-grey-0 hover:bg-grey-0")}
-                >
-                  <Table.Cell>
-                    <div className="min-w-[240px] flex py-2">
-                      <div className="w-[30px] h-[40px] ">
-                        {item.thumbnail ? (
-                          <img
-                            className="h-full w-full object-cover rounded"
-                            src={item.thumbnail}
-                          />
-                        ) : (
-                          <ImagePlaceholder />
-                        )}
-                      </div>
-                      <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
-                        <span>
-                          <span className="text-grey-90">
-                            {item.product_title}
+          <Table.Head>
+            <Table.HeadRow className="text-grey-50 border-t inter-small-semibold">
+              <Table.HeadCell>Details</Table.HeadCell>
+              <Table.HeadCell className="text-right">Quantity</Table.HeadCell>
+              <Table.HeadCell className="text-right">
+                Price (excl. Taxes)
+              </Table.HeadCell>
+              <Table.HeadCell></Table.HeadCell>
+            </Table.HeadRow>
+          </Table.Head>
+          <Table.Body>
+            {regionObj &&
+              items &&
+              items.fields.map((item) => {
+                return (
+                  <Table.Row
+                    key={item.id}
+                    className={clsx("border-b-grey-0 hover:bg-grey-0")}
+                  >
+                    <Table.Cell>
+                      <div className="min-w-[240px] flex py-2">
+                        <div className="w-[30px] h-[40px] ">
+                          {item.thumbnail ? (
+                            <img
+                              className="h-full w-full object-cover rounded"
+                              src={item.thumbnail}
+                            />
+                          ) : (
+                            <ImagePlaceholder />
+                          )}
+                        </div>
+                        <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
+                          <span>
+                            <span className="text-grey-90">
+                              {item.product_title}
+                            </span>
                           </span>
-                        </span>
-                        <span>{item.title}</span>
+                          <span>{item.title}</span>
+                        </div>
                       </div>
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell className="text-right">
-                    {item.quantity}
-                  </Table.Cell>
-                  <Table.Cell className="text-right">
-                    {displayAmount(regionObj?.currency_code, item.unit_price)}
-                  </Table.Cell>
-                </Table.Row>
-              )
-            })}
+                    </Table.Cell>
+                    <Table.Cell className="text-right">
+                      {item.quantity}
+                    </Table.Cell>
+                    <Table.Cell className="text-right">
+                      {displayAmount(regionObj?.currency_code, item.unit_price)}
+                    </Table.Cell>
+                  </Table.Row>
+                )
+              })}
+          </Table.Body>
         </Table>
         {!showAddDiscount && !discount?.rule && (
           <div className="w-full flex justify-end">
@@ -291,8 +300,8 @@ const Summary = () => {
 
       {selectedShippingOption && (
         <SummarySection title={"Shipping details"} editIndex={2}>
-          <div className="flex w-full">
-            {shipping && (
+          <div className="grid grid-cols-2 gap-x-6 w-full">
+            {!isNullishObject(shipping) && shipping && (
               <div className="border-r flex flex-col border-grey-20 pr-6">
                 <span className="text-grey-50">Address</span>
                 <span>
@@ -300,12 +309,12 @@ const Summary = () => {
                 </span>
                 <span>
                   {`${shipping.postal_code} ${shipping.city},
-                ${shipping.country_code.label}`}
+                ${shipping.country_code?.label}`}
                 </span>
               </div>
             )}
             {regionObj && (
-              <div className="pl-6 flex flex-col">
+              <div className="flex flex-col">
                 <span className="text-grey-50">Shipping method</span>
                 <span>
                   {selectedShippingOption.name} -{" "}
@@ -330,7 +339,7 @@ const Summary = () => {
         </SummarySection>
       )}
 
-      {billing && (
+      {!isNullishObject(billing) && billing && (
         <SummarySection title={"Billing details"} editIndex={3}>
           <span className="text-grey-50">Address</span>
           <span>

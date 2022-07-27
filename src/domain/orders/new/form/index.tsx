@@ -17,9 +17,9 @@ import { AddressPayload } from "../../../../components/templates/address-form"
 import { Option } from "../../../../types/shared"
 
 export type NewOrderForm = {
-  shipping_address?: AddressPayload
+  shipping_address: AddressPayload
   shipping_address_id?: string
-  billing_address?: AddressPayload
+  billing_address: AddressPayload
   billing_address_id?: string
   region: Option
   items: {
@@ -35,6 +35,7 @@ export type NewOrderForm = {
   email: string
   custom_shipping_price?: number
   discount_code?: string
+  same_as_shipping?: boolean
 }
 
 type NewOrderContextValue = {
@@ -51,6 +52,8 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
   const form = useForm<NewOrderForm>({
     defaultValues: {
       items: [],
+      billing_address: undefined,
+      shipping_address: undefined,
     },
   })
 

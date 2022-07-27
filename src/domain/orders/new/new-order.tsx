@@ -6,6 +6,7 @@ import SteppedModal, {
   SteppedContext,
 } from "../../../components/molecules/modal/stepped-modal"
 import useNotification from "../../../hooks/use-notification"
+import isNullishObject from "../../../utils/is-nullish-object"
 import { persistedPrice } from "../../../utils/prices"
 import Billing from "./components/billing-details"
 import Items from "./components/items"
@@ -32,7 +33,6 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
   } = useNewOrderForm()
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
     mutate(
       {
         email: data.email,
@@ -62,7 +62,9 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
               : undefined,
           },
         ],
-        shipping_address: data.shipping_address
+        shipping_address: data.shipping_address_id
+          ? data.shipping_address_id
+          : !isNullishObject(data.shipping_address)
           ? {
               address_1: data.shipping_address?.address_1,
               address_2: data.shipping_address?.address_2 || undefined,
@@ -76,7 +78,9 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
               province: data.shipping_address?.province || undefined,
             }
           : undefined,
-        billing_address: data.billing_address
+        billing_address: data.billing_address_id
+          ? data.billing_address_id
+          : data.billing_address
           ? {
               address_1: data.billing_address?.address_1,
               address_2: data.billing_address?.address_2 || undefined,

@@ -19,10 +19,7 @@ import { useNewOrderForm } from "../form"
 
 const ShippingDetails = () => {
   const [addNew, setAddNew] = useState(false)
-  const [fetchingAddresses, setFetchingAddresses] = useState(false)
-  const { disableNextPage, enableNextPage, nextStepEnabled } = useContext(
-    SteppedContext
-  )
+  const { disableNextPage, enableNextPage } = useContext(SteppedContext)
 
   const {
     context: { validCountries },
@@ -47,7 +44,7 @@ const ShippingDetails = () => {
           value: id,
         }))
       )
-      .catch((error) => [])
+      .catch(() => [])
   }
 
   const customerId = useWatch({
@@ -55,7 +52,7 @@ const ShippingDetails = () => {
     name: "customer_id",
   })
 
-  const { customer } = useAdminCustomer(customerId?.value!, {
+  const { customer, isLoading } = useAdminCustomer(customerId?.value!, {
     enabled: !!customerId?.value,
   })
 
@@ -165,7 +162,7 @@ const ShippingDetails = () => {
         />
       </div>
 
-      {fetchingAddresses ? (
+      {isLoading ? (
         <div>
           <Spinner variant="primary" />
         </div>

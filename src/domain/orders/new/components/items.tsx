@@ -109,148 +109,152 @@ const Items = () => {
       <span className="inter-base-semibold mb-4">Items for the order</span>
       {fields.length > 0 && region && (
         <Table>
-          <Table.HeadRow className="text-grey-50 border-t inter-small-semibold">
-            <Table.HeadCell>Details</Table.HeadCell>
-            <Table.HeadCell className="text-right pr-8">
-              Quantity
-            </Table.HeadCell>
-            <Table.HeadCell className="text-right">
-              Price (excl. Taxes)
-            </Table.HeadCell>
-            <Table.HeadCell></Table.HeadCell>
-          </Table.HeadRow>
-          {fields.map((item, index) => {
-            return (
-              <Table.Row
-                key={item.id}
-                className={clsx("border-b-grey-0 hover:bg-grey-0")}
-              >
-                <Table.Cell>
-                  <div className="min-w-[240px] flex items-center py-2">
-                    <div className="w-[30px] h-[40px] ">
-                      {item.thumbnail ? (
-                        <img
-                          className="h-full w-full object-cover rounded"
-                          src={item.thumbnail}
-                        />
-                      ) : (
-                        <ImagePlaceholder />
-                      )}
-                    </div>
-                    <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
-                      {item.product_title && (
-                        <span className="text-grey-90">
-                          {item.product_title}
-                        </span>
-                      )}
-                      <span>{item.title}</span>
-                    </div>
-                  </div>
-                </Table.Cell>
-                <Table.Cell className="text-right w-32 pr-8">
-                  {editQuantity === index ? (
-                    <InputField
-                      type="number"
-                      {...register(`items.${index}.quantity`, {
-                        valueAsNumber: true,
-                      })}
-                      onBlur={() => setEditQuantity(-1)}
-                    />
-                  ) : (
-                    <div className="flex w-full text-right justify-end text-grey-50 ">
-                      <span
-                        onClick={() => handleEditQuantity(index, -1)}
-                        className="w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 mr-2"
-                      >
-                        <MinusIcon size={16} />
-                      </span>
-                      <button
-                        type="button"
-                        className="px-1 hover:bg-grey-20 rounded cursor-pointer"
-                        onClick={() => setEditQuantity(index)}
-                      >
-                        <input
-                          type="number"
-                          {...register(`items.${index}.quantity`, {
-                            valueAsNumber: true,
-                          })}
-                          className="bg-transparent w-full text-center text-grey-90"
-                          disabled
-                        />
-                      </button>
-                      <span
-                        onClick={() => handleEditQuantity(index, 1)}
-                        className={clsx(
-                          "w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 ml-2"
-                        )}
-                      >
-                        <PlusIcon size={16} />
-                      </span>
-                    </div>
-                  )}
-                </Table.Cell>
-                <Table.Cell className="text-right">
-                  {editPrice === index ? (
-                    <Controller
-                      control={control}
-                      name={`items.${index}.unit_price`}
-                      render={({ field: { value } }) => {
-                        return (
-                          <InputField
-                            type="number"
-                            value={displayAmount(region.currency_code, value)}
-                            onBlur={() => {
-                              setEditPrice(-1)
-                            }}
-                            prefix={getNativeSymbol(region.currency_code)}
-                            onChange={
-                              (e) => {
-                                handlePriceChange(
-                                  index,
-                                  +e.target.value,
-                                  region.currency_code
-                                )
-                              }
-                              // handlePriceChange(e.target.value, index)
-                            }
+          <Table.Head>
+            <Table.HeadRow className="text-grey-50 border-t inter-small-semibold">
+              <Table.HeadCell>Details</Table.HeadCell>
+              <Table.HeadCell className="text-right pr-8">
+                Quantity
+              </Table.HeadCell>
+              <Table.HeadCell className="text-right">
+                Price (excl. Taxes)
+              </Table.HeadCell>
+              <Table.HeadCell></Table.HeadCell>
+            </Table.HeadRow>
+          </Table.Head>
+          <Table.Body>
+            {fields.map((item, index) => {
+              return (
+                <Table.Row
+                  key={item.id}
+                  className={clsx("border-b-grey-0 hover:bg-grey-0")}
+                >
+                  <Table.Cell>
+                    <div className="min-w-[240px] flex items-center py-2">
+                      <div className="w-[30px] h-[40px] ">
+                        {item.thumbnail ? (
+                          <img
+                            className="h-full w-full object-cover rounded"
+                            src={item.thumbnail}
                           />
-                        )
-                      }}
-                    />
-                  ) : (
-                    <Controller
-                      name={`items.${index}.unit_price`}
-                      control={control}
-                      render={({ field: { value } }) => {
-                        return (
-                          <span
-                            className="cursor-pointer"
-                            onClick={() => {
-                              setEditPrice(index)
-                            }}
-                          >
-                            {displayAmount(region!.currency_code, value)}
+                        ) : (
+                          <ImagePlaceholder />
+                        )}
+                      </div>
+                      <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
+                        {item.product_title && (
+                          <span className="text-grey-90">
+                            {item.product_title}
                           </span>
-                        )
-                      }}
-                    />
-                  )}
-                </Table.Cell>
-                <Table.Cell className="text-right text-grey-40 pr-1">
-                  {region!.currency_code.toUpperCase()}
-                </Table.Cell>
-                <Table.Cell>
-                  <Button
-                    variant="ghost"
-                    size="small"
-                    onClick={() => removeItem(index)}
-                  >
-                    <TrashIcon size={20} className="text-grey-50" />
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            )
-          })}
+                        )}
+                        <span>{item.title}</span>
+                      </div>
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell className="text-right w-32 pr-8">
+                    {editQuantity === index ? (
+                      <InputField
+                        type="number"
+                        {...register(`items.${index}.quantity`, {
+                          valueAsNumber: true,
+                        })}
+                        onBlur={() => setEditQuantity(-1)}
+                      />
+                    ) : (
+                      <div className="flex w-full text-right justify-end text-grey-50 ">
+                        <span
+                          onClick={() => handleEditQuantity(index, -1)}
+                          className="w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 mr-2"
+                        >
+                          <MinusIcon size={16} />
+                        </span>
+                        <button
+                          type="button"
+                          className="px-1 hover:bg-grey-20 rounded cursor-pointer"
+                          onClick={() => setEditQuantity(index)}
+                        >
+                          <input
+                            type="number"
+                            {...register(`items.${index}.quantity`, {
+                              valueAsNumber: true,
+                            })}
+                            className="bg-transparent w-full text-center text-grey-90"
+                            disabled
+                          />
+                        </button>
+                        <span
+                          onClick={() => handleEditQuantity(index, 1)}
+                          className={clsx(
+                            "w-5 h-5 flex items-center justify-center rounded cursor-pointer hover:bg-grey-20 ml-2"
+                          )}
+                        >
+                          <PlusIcon size={16} />
+                        </span>
+                      </div>
+                    )}
+                  </Table.Cell>
+                  <Table.Cell className="text-right">
+                    {editPrice === index ? (
+                      <Controller
+                        control={control}
+                        name={`items.${index}.unit_price`}
+                        render={({ field: { value } }) => {
+                          return (
+                            <InputField
+                              type="number"
+                              value={displayAmount(region.currency_code, value)}
+                              onBlur={() => {
+                                setEditPrice(-1)
+                              }}
+                              prefix={getNativeSymbol(region.currency_code)}
+                              onChange={
+                                (e) => {
+                                  handlePriceChange(
+                                    index,
+                                    +e.target.value,
+                                    region.currency_code
+                                  )
+                                }
+                                // handlePriceChange(e.target.value, index)
+                              }
+                            />
+                          )
+                        }}
+                      />
+                    ) : (
+                      <Controller
+                        name={`items.${index}.unit_price`}
+                        control={control}
+                        render={({ field: { value } }) => {
+                          return (
+                            <span
+                              className="cursor-pointer"
+                              onClick={() => {
+                                setEditPrice(index)
+                              }}
+                            >
+                              {displayAmount(region!.currency_code, value)}
+                            </span>
+                          )
+                        }}
+                      />
+                    )}
+                  </Table.Cell>
+                  <Table.Cell className="text-right text-grey-40 pr-1">
+                    {region!.currency_code.toUpperCase()}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Button
+                      variant="ghost"
+                      size="small"
+                      onClick={() => removeItem(index)}
+                    >
+                      <TrashIcon size={20} className="text-grey-50" />
+                    </Button>
+                  </Table.Cell>
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
         </Table>
       )}
       <div className="flex w-full justify-end mt-3 gap-x-xsmall">

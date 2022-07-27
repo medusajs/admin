@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useWatch } from "react-hook-form"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import AddressForm from "../../../../components/templates/address-form"
+import isNullishObject from "../../../../utils/is-nullish-object"
 import { nestedForm } from "../../../../utils/nested-form"
 import { useNewOrderForm } from "../form"
 
@@ -23,20 +24,18 @@ const Billing = () => {
     name: "shipping_address_id",
   })
 
+  const sameAsShipping = useWatch({
+    control: form.control,
+    name: "same_as_shipping",
+  })
+
   useEffect(() => {
     if (!useShipping) {
-      form.setValue("billing_address", {
-        address_1: "",
-        address_2: "",
-        city: "",
-        country_code: { label: "", value: "" },
-        first_name: "",
-        company: "",
-        last_name: "",
-        phone: "",
-        postal_code: "",
-        province: "",
-      })
+      form.resetField("billing_address")
+      form.resetField("billing_address_id")
+      form.setValue("same_as_shipping", false)
+    } else {
+      form.setValue("same_as_shipping", true)
     }
   }, [useShipping])
 
@@ -57,7 +56,7 @@ const Billing = () => {
   return (
     <div className="min-h-[705px]">
       <span className="inter-base-semibold">Billing Address</span>
-      {shippingAddress || shippingAddressId ? (
+      {!isNullishObject(shippingAddress) || shippingAddressId ? (
         <div
           className="items-center flex mt-4 mb-6 cursor-pointer"
           onClick={() => onUseShipping()}
@@ -74,8 +73,7 @@ const Billing = () => {
           <input
             className="hidden"
             type="checkbox"
-            onChange={() => onUseShipping()}
-            checked={useShipping}
+            {...form.register("same_as_shipping")}
             tabIndex={-1}
           />
           <span className="ml-3 text-grey-90">Use same as shipping</span>

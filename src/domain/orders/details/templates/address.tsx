@@ -24,10 +24,10 @@ export const FormattedAddress = ({ title, addr }: FormattedAddressProps) => {
           {addr?.address_1} {addr?.address_2}
         </span>
         <span>
-          {addr?.city}
+          {addr?.postal_code} {addr?.city}
           {", "}
           {addr?.province ? `${addr.province} ` : ""}
-          {addr?.postal_code} {addr?.country_code?.toUpperCase()}
+          {addr?.country_code?.toUpperCase()}
         </span>
       </div>
     </div>

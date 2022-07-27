@@ -5,7 +5,7 @@ import { NestedForm } from "../../utils/nested-form"
 import Input from "../molecules/input"
 import Select from "../molecules/select"
 
-export interface AddressPayload {
+export type AddressPayload = {
   first_name: string
   last_name: string
   company: string | null
@@ -19,7 +19,7 @@ export interface AddressPayload {
 }
 
 type AddressFormProps = {
-  form: NestedForm<AddressPayload | undefined>
+  form: NestedForm<AddressPayload>
   countryOptions: Option[]
   type: "shipping" | "billing" | "address"
   required?: boolean
@@ -52,6 +52,11 @@ const AddressForm = ({
           placeholder="Last Name"
           label="Last Name"
           required={required}
+        />
+        <Input
+          {...form.register(path("company"))}
+          placeholder="Company"
+          label="Company"
         />
         <Input
           {...form.register(path("phone"))}

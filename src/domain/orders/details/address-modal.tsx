@@ -1,46 +1,56 @@
-import { Address, AdminPostOrdersOrderReq, Country } from "@medusajs/medusa"
-import { useAdminUpdateOrder } from "medusa-react"
+import {
+  Address,
+  AdminPostDraftOrdersReq,
+  AdminPostOrdersOrderReq,
+  Country,
+} from "@medusajs/medusa"
 import React from "react"
 import { useForm } from "react-hook-form"
+import { MutateOptions } from "react-query"
 import Button from "../../../components/fundamentals/button"
 import Modal from "../../../components/molecules/modal"
-import AddressForm from "../../../components/templates/address-form"
+import AddressForm, {
+  AddressPayload,
+} from "../../../components/templates/address-form"
 import useNotification from "../../../hooks/use-notification"
-import { Option } from "../../../types/shared"
 import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { nestedForm } from "../../../utils/nested-form"
 
-type AddressModalFormData = {
-  first_name: string
-  last_name: string
-  phone: string | null
-  company: string | null
-  address_1: string
-  address_2: string | null
-  city: string
-  province: string | null
-  country_code: Option
-  postal_code: string
+type AddressType =
+  | AdminPostOrdersOrderReq["shipping_address"]
+  | Partial<AdminPostOrdersOrderReq["shipping_address"]>
+  | AdminPostDraftOrdersReq["shipping_address"]
+  | Partial<AdminPostDraftOrdersReq["shipping_address"]>
+
+type TVariables = {
+  shipping_address?: AddressType
+  billing_address?: AddressType
 }
+
+type MutateAction = <T extends TVariables>(
+  variables: T,
+  options?: MutateOptions<unknown, Error, unknown, unknown> | undefined
+) => void
 
 type AddressModalProps = {
   handleClose: () => void
-  orderId: string
+  submit: MutateAction
+  submitting?: boolean
   allowedCountries?: Country[]
   address?: Address
   type: "shipping" | "billing"
 }
 
 const AddressModal = ({
-  orderId,
   address,
   allowedCountries = [],
   handleClose,
+  submit,
   type,
+  submitting = false,
 }: AddressModalProps) => {
-  const { mutate, isLoading } = useAdminUpdateOrder(orderId)
-  const form = useForm({
+  const form = useForm<AddressPayload>({
     defaultValues: mapAddressToFormData(address),
   })
   const notification = useNotification()
@@ -49,8 +59,8 @@ const AddressModal = ({
     .map((c) => ({ label: c.display_name, value: c.iso_2 }))
     .filter(Boolean)
 
-  const handleUpdateAddress = (data: AddressModalFormData) => {
-    const updateObj: AdminPostOrdersOrderReq = {}
+  const handleUpdateAddress = (data: AddressPayload) => {
+    const updateObj: TVariables = {}
 
     if (type === "shipping") {
       // @ts-ignore
@@ -66,7 +76,7 @@ const AddressModal = ({
       }
     }
 
-    return mutate(updateObj, {
+    return submit(updateObj, {
       onSuccess: () => {
         notification("Success", "Successfully updated address", "success")
         handleClose()
@@ -107,7 +117,7 @@ const AddressModal = ({
                 className="w-32 text-small justify-center"
                 variant="primary"
                 type="submit"
-                loading={isLoading}
+                loading={submitting}
               >
                 Save
               </Button>
@@ -119,7 +129,7 @@ const AddressModal = ({
   )
 }
 
-const mapAddressToFormData = (address?: Address): AddressModalFormData => {
+const mapAddressToFormData = (address?: Address): AddressPayload => {
   const countryDisplayName =
     isoAlpha2Countries[address?.country_code?.toUpperCase()]
 

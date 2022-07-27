@@ -1,4 +1,5 @@
 import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
+import { RouteComponentProps } from "@reach/router"
 import { navigate } from "gatsby"
 import { capitalize, sum } from "lodash"
 import {
@@ -6,6 +7,7 @@ import {
   useAdminCapturePayment,
   useAdminOrder,
   useAdminRegion,
+  useAdminUpdateOrder,
 } from "medusa-react"
 import moment from "moment"
 import React, { useMemo, useState } from "react"
@@ -34,6 +36,7 @@ import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
 import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
+import extractCustomerName from "../../../utils/extract-customer-name"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
@@ -108,7 +111,9 @@ const gatherAllFulfillments = (order) => {
   return all
 }
 
-const OrderDetails = ({ id }) => {
+type OrderDetailProps = RouteComponentProps<{ id: string }>
+
+const OrderDetails = ({ id }: OrderDetailProps) => {
   const dialog = useImperativeDialog()
 
   const [addressModal, setAddressModal] = useState<null | {
@@ -124,10 +129,14 @@ const OrderDetails = ({ id }) => {
   const [showRefund, setShowRefund] = useState(false)
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
-  const { order, isLoading } = useAdminOrder(id)
+  const { order, isLoading } = useAdminOrder(id!)
 
-  const capturePayment = useAdminCapturePayment(id)
-  const cancelOrder = useAdminCancelOrder(id)
+  const capturePayment = useAdminCapturePayment(id!)
+  const cancelOrder = useAdminCancelOrder(id!)
+
+  const { mutate: updateOrder, isLoading: submitting } = useAdminUpdateOrder(
+    id!
+  )
 
   const { region } = useAdminRegion(order?.region_id!, {
     enabled: !!order?.region_id,
@@ -548,16 +557,18 @@ const OrderDetails = ({ id }) => {
                     </div>
                     <div>
                       <h1 className="inter-large-semibold text-grey-90">
-                        {`${order.shipping_address?.first_name} ${order.shipping_address?.last_name}`}
+                        {extractCustomerName(order)}
                       </h1>
-                      <span className="inter-small-regular text-grey-50">
-                        {order.shipping_address?.city},{" "}
-                        {
-                          isoAlpha2Countries[
-                            order.shipping_address?.country_code?.toUpperCase()
-                          ]
-                        }
-                      </span>
+                      {order.shipping_address && (
+                        <span className="inter-small-regular text-grey-50">
+                          {order.shipping_address.city},{" "}
+                          {
+                            isoAlpha2Countries[
+                              order.shipping_address.country_code?.toUpperCase()
+                            ]
+                          }
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex mt-6 space-x-6 divide-x">
@@ -590,7 +601,7 @@ const OrderDetails = ({ id }) => {
           {addressModal && (
             <AddressModal
               handleClose={() => setAddressModal(null)}
-              orderId={order.id}
+              submit={updateOrder}
               address={addressModal.address}
               type={addressModal.type}
               allowedCountries={region?.countries}
