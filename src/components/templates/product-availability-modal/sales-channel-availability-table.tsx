@@ -187,7 +187,7 @@ export const SalesChannelTableActions: React.FC<SalesChannelTableActionsProps> =
   return (
     <div className="flex space-x-xsmall h-[34px] overflow-hidden">
       <div className={clsx("transition-all duration-200", classes)}>
-        <div className="divide-x flex items-center mb-2">
+        <div className="divide-x flex items-center h-[34px] mb-2">
           <span className="mr-3 inter-small-regular text-grey-50">
             {numberOfSelectedRows} selected
           </span>
@@ -210,7 +210,7 @@ export const SalesChannelTableActions: React.FC<SalesChannelTableActionsProps> =
             </Button>
           </div>
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end h-[34px]">
           <Button
             size="small"
             variant="ghost"

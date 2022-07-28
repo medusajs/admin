@@ -33,11 +33,12 @@ type AddChannelsModalScreenProps = {
   onAddSelectedToAvailableChannels: (salesChannels: SalesChannel[]) => void
 }
 
+const LIMIT = 15
+
 const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
   onAddSelectedToAvailableChannels: onAddSelectedToAvailableChannels,
   selectedSalesChannelIds,
 }) => {
-  const limit = 15
   const [offset, setOffset] = useState(0)
   const [query, setQuery] = useState("")
   const [freeText, setFreeText] = useState("")
@@ -49,7 +50,7 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
     q: freeText,
   })
 
-  const numPages = Math.ceil((salesChannels?.length || 0) / limit)
+  const numPages = Math.ceil((salesChannels?.length || 0) / LIMIT)
 
   const filterSalesChannels = (salesChannels: SalesChannel[]) => {
     return salesChannels.filter((salesChannel) => {
@@ -63,8 +64,8 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
       data: salesChannels ? filterSalesChannels(salesChannels) : [],
       manualPagination: true,
       initialState: {
-        pageIndex: Math.floor(offset / limit),
-        pageSize: limit,
+        pageIndex: Math.floor(offset / LIMIT),
+        pageSize: LIMIT,
       },
       autoResetPage: false,
       autoResetSelectedRows: false,
@@ -90,7 +91,7 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
       <Modal.Content isLargeModal>
         <SalesChannelAvailabilityTable
           salesChannels={salesChannels || []}
-          limit={limit}
+          limit={LIMIT}
           offset={offset}
           setOffset={setOffset}
           setQuery={setQuery}

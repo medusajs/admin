@@ -11,12 +11,13 @@ type AvailableChannelsModalScreenProps = {
   setAvailableChannels: (salesChannels: SalesChannel[]) => void
 }
 
+const LIMIT = 15
+
 const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> = ({
   availableChannels,
   setAvailableChannels: setAvailableChannels,
 }) => {
-  const limit = 15
-  const numPages = Math.ceil(availableChannels?.length / limit)
+  const numPages = Math.ceil(availableChannels?.length / LIMIT)
 
   const [offset, setOffset] = useState(0)
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
@@ -30,8 +31,8 @@ const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> 
       data: filterSalesChannels(availableChannels),
       manualPagination: true,
       initialState: {
-        pageIndex: Math.floor(offset / limit),
-        pageSize: limit,
+        pageIndex: Math.floor(offset / LIMIT),
+        pageSize: LIMIT,
       },
       autoResetPage: false,
       autoResetSelectedRows: false,
@@ -89,7 +90,7 @@ const AvailableChannelsModalScreen: React.FC<AvailableChannelsModalScreenProps> 
       }
       salesChannels={availableChannels}
       setSelectedRowIds={setSelectedRowIds}
-      limit={limit}
+      limit={LIMIT}
       offset={offset}
       setOffset={setOffset}
       setQuery={setQuery}

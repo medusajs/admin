@@ -99,7 +99,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
             <span aria-hidden />
           )}
           <div className="flex items-center">
-            <div className="mr-small">{tableActions && tableActions}</div>
+            {tableActions && <div className="mr-small">{tableActions}</div>}
             {enableSearch && (
               <TableSearch
                 autoFocus={immediateSearchFocus}
