@@ -8,6 +8,8 @@ import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import Accordion from "../../../components/organisms/accordion"
 import InputField from "../../../components/molecules/input"
 import useNotification from "../../../hooks/use-notification"
+import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import { SalesChannelProductsSelectModal } from "../tables/product"
 
 type GeneralProps = {
   name: string
@@ -44,6 +46,34 @@ function General(props: GeneralProps) {
           onChange={(ev) => setDescription(ev.target.value)}
         />
       </div>
+    </div>
+  )
+}
+
+function AddProducts() {
+  const [showModal, setShowModal] = useState(false)
+
+  return (
+    <div>
+      <sapn className="text-gray-500">
+        Select products that will be available via this channel. You can assign
+        products to multiple channels.
+      </sapn>
+      <Button
+        size="small"
+        type="button"
+        variant="secondary"
+        className="w-full h-[40px] mt-6"
+        onClick={() => setShowModal(true)}
+      >
+        <PlusIcon size={20} />
+        Add Products
+      </Button>
+      {/*{showModal && (*/}
+      {/*  <SalesChannelAvaliableProductsModal*/}
+      {/*    handleClose={() => setShowModal(false)}*/}
+      {/*  />*/}
+      {/*)}*/}
     </div>
   )
 }
@@ -150,7 +180,6 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
             >
               <Accordion.Item
                 title="General info"
-                required
                 value="general"
                 forceMountContent
               >
@@ -161,11 +190,9 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
                   setDescription={setDescription}
                 />
               </Accordion.Item>
-              <Accordion.Item
-                forceMountContent
-                title="Products"
-                value="products"
-              />
+              <Accordion.Item title="Products" value="products">
+                <AddProducts />
+              </Accordion.Item>
             </Accordion>
           </div>
         </div>

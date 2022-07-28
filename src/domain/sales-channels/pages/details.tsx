@@ -19,6 +19,7 @@ import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import SearchIcon from "../../../components/fundamentals/icons/search-icon"
 import {
+  SalesChannelAvailableProductsModal,
   SalesChannelProductsSelectModal,
   SalesChannelProductsTable,
 } from "../tables/product"
@@ -344,7 +345,7 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
       )}
 
       {showAddProducts && (
-        <SalesChannelProductsSelectModal
+        <SalesChannelAvailableProductsModal
           salesChannel={salesChannel}
           handleClose={hideProductsAdd}
         />

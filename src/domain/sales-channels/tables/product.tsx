@@ -246,13 +246,10 @@ function ProductTable(props: ProductTableProps) {
  * Renders product table row.
  */
 const ProductRow = ({ row, actions }) => {
-  const product = row.original
-
   return (
     <Table.Row
       color={"inherit"}
-      className={row.isSelected ? "bg-grey-5" : ""}
-      linkTo={`/a/products/${product.id}`}
+      className={row.isSelected ? "bg-grey-5 cursor-pointer" : "cursor-pointer"}
       actions={actions}
       {...row.getRowProps()}
     >
@@ -335,10 +332,8 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
   const { products, count, isLoading } = useAdminProducts({
     ...params.queryObject,
     ...filters.queryObject,
+    sales_channel_id: [props.salesChannelId],
   })
-
-  const { sales_channels } = useAdminSalesChannels({ expand: "products" })
-  console.log({ sales_channels })
 
   const removeProductFromSalesChannel = (id: string) => {
     deleteProductsFromSalesChannel({ product_ids: [{ id }] })
@@ -359,28 +354,10 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
     setSelectedRowIds([])
   }
 
-  // TODO: use the products endpoint to do this once `expand` with `sales_channels` is supported
-  // until then proper pagination or revalidation of data on products select wont work
-  const filteredProducts = useMemo(
-    () =>
-      products?.filter(
-        (product) =>
-          !!product.sales_channels!.find(
-            (channel) => channel.id === salesChannelId
-          )
-      ),
-    [products, salesChannelId]
-  )
-
   const isFilterOn = Object.keys(filters.queryObject).length
   const hasSearchTerm = params.queryObject.q
 
-  if (
-    !filteredProducts?.length &&
-    !isLoading &&
-    !isFilterOn &&
-    !hasSearchTerm
-  ) {
+  if (!products?.length && !isLoading && !isFilterOn && !hasSearchTerm) {
     return <Placeholder showAddModal={showAddModal} />
   }
 
@@ -390,7 +367,7 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
     <div className="relative h-[880px]">
       <ProductTable
         count={count}
-        products={filteredProducts}
+        products={products}
         removeProductFromSalesChannel={removeProductFromSalesChannel}
         setSelectedRowIds={setSelectedRowIds}
         productFilters={filters}
@@ -449,7 +426,7 @@ function SalesChannelProductsSelectModal(
     <Modal handleClose={handleClose}>
       <Modal.Body>
         <Modal.Header handleClose={handleClose}>
-          <span className="inter-xlarge-semibold">Products available</span>
+          <span className="inter-xlarge-semibold">Add products</span>
         </Modal.Header>
         <Modal.Content>
           <ProductTable
@@ -486,4 +463,90 @@ function SalesChannelProductsSelectModal(
   )
 }
 
-export { SalesChannelProductsTable, SalesChannelProductsSelectModal }
+type SalesChannelAvailableProductsModalProps = {
+  handleClose: () => void
+  salesChannel: SalesChannel
+  products: Product[]
+}
+
+function SalesChannelAvailableProductsModal(
+  props: SalesChannelAvailableProductsModalProps
+) {
+  const { handleClose } = props
+  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
+
+  const notification = useNotification()
+
+  const filters = useProductFilters()
+  const params = useQueryFilters(defaultQueryProps)
+
+  const { products, count } = useAdminProducts({
+    ...params.queryObject,
+    ...filters.queryObject,
+    sales_channel_id: [props.salesChannel.id],
+  })
+
+  useEffect(() => {
+    setSelectedRowIds(products?.map((p) => p.id))
+  }, [products])
+
+  // const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
+  //   salesChannel.id
+  // )
+
+  // const handleSubmit = () => {
+  //   addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
+  //   handleClose()
+  //   notification(
+  //     "Success",
+  //     "Products successfully added to the sales channel",
+  //     "success"
+  //   )
+  // }
+
+  return (
+    <Modal handleClose={handleClose}>
+      <Modal.Body>
+        <Modal.Header handleClose={handleClose}>
+          <span className="inter-xlarge-semibold">Add products</span>
+        </Modal.Header>
+        <Modal.Content>
+          <ProductTable
+            products={products || []}
+            count={count}
+            selectedRowIds={selectedRowIds}
+            setSelectedRowIds={setSelectedRowIds}
+            productFilters={filters}
+            {...params}
+          />
+        </Modal.Content>
+        <Modal.Footer>
+          <div className="w-full flex justify-end">
+            <Button
+              variant="ghost"
+              size="small"
+              onClick={handleClose}
+              className="mr-2"
+            >
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              className="min-w-[100px]"
+              size="small"
+              // onClick={handleSubmit}
+            >
+              Save
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal.Body>
+    </Modal>
+  )
+}
+
+export {
+  SalesChannelProductsTable,
+  SalesChannelProductsSelectModal,
+  SalesChannelAvailableProductsModal,
+}
