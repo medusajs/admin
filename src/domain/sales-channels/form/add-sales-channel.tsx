@@ -9,7 +9,6 @@ import Accordion from "../../../components/organisms/accordion"
 import InputField from "../../../components/molecules/input"
 import useNotification from "../../../hooks/use-notification"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import { SalesChannelProductsSelectModal } from "../tables/product"
 
 type GeneralProps = {
   name: string
@@ -116,7 +115,6 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
       {
         name,
         description,
-        // TODO: allow passing `is_disabled` on the create endpoint
         is_disabled: true,
       },
       {

@@ -170,27 +170,45 @@ function SalesChannelAvailableProductsModal(
     const toAdd = difference(selectedIds, initialIds)
     const toRemove = difference(initialIds, selectedIds)
 
-    addProductsToSalesChannel({ product_ids: toAdd.map((id) => ({ id })) })
-    deleteProductsFromSalesChannel({
-      product_ids: toRemove.map((id) => ({ id })),
-    })
+    addProductsToSalesChannel(
+      { product_ids: toAdd.map((id) => ({ id })) },
+      {
+        onSuccess: () =>
+          notification(
+            "Success",
+            "Successfully added products to the sales channel",
+            "success"
+          ),
+        onError: () =>
+          notification(
+            "Error",
+            "Unable to add products to the sales channel",
+            "error"
+          ),
+      }
+    )
+    deleteProductsFromSalesChannel(
+      {
+        product_ids: toRemove.map((id) => ({ id })),
+      },
+      {
+        onSuccess: () =>
+          notification(
+            "Success",
+            "Successfully removed products from the sales channel",
+            "success"
+          ),
+        onError: () =>
+          notification(
+            "Error",
+            "Unable to remove products from the sales channel",
+            "error"
+          ),
+      }
+    )
 
     handleClose()
   }
-
-  // const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
-  //   salesChannel.id
-  // )
-
-  // const handleSubmit = () => {
-  //   addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
-  //   handleClose()
-  //   notification(
-  //     "Success",
-  //     "Products successfully added to the sales channel",
-  //     "success"
-  //   )
-  // }
 
   return (
     <LayeredModal context={modalContext} handleClose={handleClose}>
