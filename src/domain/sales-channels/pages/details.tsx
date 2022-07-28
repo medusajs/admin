@@ -263,7 +263,7 @@ function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
       onClick: () => showProductsAdd(),
     },
     {
-      label: "Delete sales channel",
+      label: "Delete channel",
       icon: <TrashIcon size={20} />,
       variant: "danger",
       onClick: () => setShowDelete(true),
@@ -297,7 +297,7 @@ function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
           confirmText="Yes, delete"
           successText="Sales channel deleted"
           text={`Are you sure you want to delete "${salesChannel.name}" sales channel?`}
-          heading="Delete sales channel"
+          heading="Delete channel"
         />
       )}
     </div>
