@@ -2,11 +2,13 @@ import { SalesChannel } from "@medusajs/medusa"
 import clsx from "clsx"
 import React, { useMemo } from "react"
 import { TableInstance } from "react-table"
-import Button from "../../fundamentals/button"
-import PlusIcon from "../../fundamentals/icons/plus-icon"
-import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
-import { LayeredModalContext } from "../../molecules/modal/layered-modal"
-import Table, { TablePagination } from "../../molecules/table"
+import Button from "../../../../../../components/fundamentals/button"
+import PlusIcon from "../../../../../../components/fundamentals/icons/plus-icon"
+import IndeterminateCheckbox from "../../../../../../components/molecules/indeterminate-checkbox"
+import { LayeredModalContext } from "../../../../../../components/molecules/modal/layered-modal"
+import Table, {
+  TablePagination,
+} from "../../../../../../components/molecules/table"
 import { useAddChannelsModalScreen } from "./add-channels-modal-screen"
 
 type SalesChannelAvailabilityTableProps = {

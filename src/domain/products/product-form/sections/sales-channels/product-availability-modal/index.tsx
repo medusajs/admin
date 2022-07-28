@@ -1,10 +1,10 @@
 import { SalesChannel } from "@medusajs/medusa"
 import React from "react"
-import Button from "../../fundamentals/button"
-import Modal from "../../molecules/modal"
+import Button from "../../../../../../components/fundamentals/button"
+import Modal from "../../../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
-} from "../../molecules/modal/layered-modal"
+} from "../../../../../../components/molecules/modal/layered-modal"
 import AvailableChannelsModalScreen from "./available-channels-modal-screen"
 
 type ProductAvailabilityModalProps = {

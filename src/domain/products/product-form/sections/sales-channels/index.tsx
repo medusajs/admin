@@ -1,14 +1,14 @@
 import React, { useEffect } from "react"
 import { Product, SalesChannel } from "@medusajs/medusa"
 import { useAdminSalesChannels, useAdminStore } from "medusa-react"
-import Badge from "../../../../components/fundamentals/badge"
-import Button from "../../../../components/fundamentals/button"
-import ChannelsIcon from "../../../../components/fundamentals/icons/channels-icon"
-import BodyCard from "../../../../components/organisms/body-card"
-import useToggleState from "../../../../hooks/use-toggle-state"
-import ProductAvailabilityModal from "../../../../components/templates/product-availability-modal"
-import Spinner from "../../../../components/atoms/spinner"
-import { useProductForm } from "../form/product-form-context"
+import Badge from "../../../../../components/fundamentals/badge"
+import Button from "../../../../../components/fundamentals/button"
+import ChannelsIcon from "../../../../../components/fundamentals/icons/channels-icon"
+import BodyCard from "../../../../../components/organisms/body-card"
+import useToggleState from "../../../../../hooks/use-toggle-state"
+import ProductAvailabilityModal from "./product-availability-modal"
+import Spinner from "../../../../../components/atoms/spinner"
+import { useProductForm } from "../../form/product-form-context"
 
 type SalesChannelsProps = {
   isEdit?: boolean

@@ -2,9 +2,9 @@ import { SalesChannel } from "@medusajs/medusa"
 import { useAdminSalesChannels } from "medusa-react"
 import React, { useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
-import Button from "../../fundamentals/button"
-import Modal from "../../molecules/modal"
-import { LayeredModalContext } from "../../molecules/modal/layered-modal"
+import Button from "../../../../../../components/fundamentals/button"
+import Modal from "../../../../../../components/molecules/modal"
+import { LayeredModalContext } from "../../../../../../components/molecules/modal/layered-modal"
 
 import SalesChannelAvailabilityTable, {
   useAvailableChannelsModalTableColumns,
