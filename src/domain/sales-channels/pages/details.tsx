@@ -474,7 +474,9 @@ function Details(props: DetailsProps) {
         />
         {activeSalesChannel && (
           <SalesChannelDetails
-            salesChannel={activeSalesChannel}
+            salesChannel={
+              sales_channels.find((sc) => sc.id === activeSalesChannel.id)!
+            }
             resetDetails={resetDetails}
           />
         )}
