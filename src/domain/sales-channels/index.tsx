@@ -6,12 +6,10 @@ import Details from "./pages/details"
 const SalesChannels = () => {
   return (
     <Router>
-      {
-        <>
-          <Details path="/" />
-          <Details path="/:id" />
-        </>
-      }
+      <>
+        <Details path="/" />
+        <Details path="/:id" />
+      </>
     </Router>
   )
 }

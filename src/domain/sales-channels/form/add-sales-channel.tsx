@@ -36,7 +36,6 @@ function General(props: GeneralProps) {
       </div>
       <div className="flex-1">
         <InputField
-          required
           label="Description"
           type="string"
           name="description"
