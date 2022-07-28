@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { SalesChannel } from "@medusajs/medusa"
 import {
   useAdminDeleteSalesChannel,
+  useAdminProducts,
   useAdminSalesChannels,
   useAdminStore,
   useAdminUpdateSalesChannel,
@@ -18,17 +19,16 @@ import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import SearchIcon from "../../../components/fundamentals/icons/search-icon"
-import {
-  SalesChannelAvailableProductsModal,
-  SalesChannelProductsSelectModal,
-  SalesChannelProductsTable,
-} from "../tables/product"
+import { SalesChannelProductsTable } from "../tables/product"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import StatusSelector from "../../../components/molecules/status-selector"
 import TwoSplitPane from "../../../components/templates/two-split-pane"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import useToggleState from "../../../hooks/use-toggle-state"
+import useQueryFilters from "../../../hooks/use-query-filters"
+import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
+import { SalesChannelAvailableProductsModal } from "../modal/available-products-modal"
 
 type ListIndicatorProps = { isActive: boolean }
 
@@ -316,6 +316,23 @@ type SalesChannelDetailsProps = {
 function SalesChannelDetails(props: SalesChannelDetailsProps) {
   const { resetDetails, salesChannel } = props
 
+  const params = useQueryFilters({
+    additionalFilters: {
+      expand: "collection,sales_channels",
+      fields: "id,title,type,thumbnail,status",
+    },
+    limit: 12,
+    offset: 0,
+  })
+
+  const filters = useProductFilters()
+
+  const { products, count } = useAdminProducts({
+    ...params.queryObject,
+    ...filters.queryObject,
+    sales_channel_id: [salesChannel.id],
+  })
+
   const [showUpdateModal, openUpdateModal, closeUpdateModal] = useToggleState(
     false
   )
@@ -344,10 +361,12 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
         />
       )}
 
-      {showAddProducts && (
+      {showAddProducts && products && (
         <SalesChannelAvailableProductsModal
           salesChannel={salesChannel}
           handleClose={hideProductsAdd}
+          products={products}
+          count={count}
         />
       )}
     </div>

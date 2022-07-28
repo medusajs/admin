@@ -45,6 +45,7 @@ export type TableProps = {
   immediateSearchFocus?: boolean
   searchPlaceholder?: string
   searchValue?: string
+  tableActions?: React.ReactNode
   containerClassName?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
@@ -69,6 +70,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
     {
       className,
       children,
+      tableActions,
       enableSearch,
       immediateSearchFocus,
       searchPlaceholder,
@@ -96,7 +98,8 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
           ) : (
             <span aria-hidden />
           )}
-          <div className="flex">
+          <div className="flex items-center">
+            {tableActions && <div className="mr-small">{tableActions}</div>}
             {enableSearch && (
               <TableSearch
                 autoFocus={immediateSearchFocus}

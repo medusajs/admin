@@ -1,18 +1,14 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import {
-  useAdminAddProductsToSalesChannel,
   useAdminDeleteProductsFromSalesChannel,
   useAdminProducts,
-  useAdminSalesChannel,
-  useAdminSalesChannels,
 } from "medusa-react"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
-import { Product, SalesChannel } from "@medusajs/medusa"
+import { Product } from "@medusajs/medusa"
 
 import Placeholder from "./placeholder"
-import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
@@ -58,8 +54,9 @@ type ProductTableProps = {
 /**
  * Renders a table of sales channel products.
  */
-function ProductTable(props: ProductTableProps) {
+export function ProductTable(props: ProductTableProps) {
   const {
+    tableActions,
     productFilters: {
       setTab,
       saveTab,
@@ -183,6 +180,7 @@ function ProductTable(props: ProductTableProps) {
   return (
     <div className="w-full h-[880px] overflow-y-auto flex flex-col">
       <Table
+        tableActions={tableActions}
         containerClassName="flex-1"
         filteringOptions={
           filters && (
@@ -198,7 +196,7 @@ function ProductTable(props: ProductTableProps) {
             />
           )
         }
-        enableSearch
+        enableSearch={isAddTable}
         handleSearch={setQuery}
         {...getTableProps()}
       >
@@ -382,171 +380,85 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
   )
 }
 
-type SalesChannelProductsSelectModalProps = {
-  handleClose: () => void
-  salesChannel: SalesChannel
-}
+// type SalesChannelProductsSelectModalProps = {
+//   handleClose: () => void
+//   salesChannel: SalesChannel
+// }
+//
+// /**
+//  * Sales channels products add container.
+//  * Renders product table for adding/editing sales channel products
+//  * in a modal.
+//  */
+// function SalesChannelProductsSelectModal(
+//   props: SalesChannelProductsSelectModalProps
+// ) {
+//   const { handleClose, salesChannel } = props
+//   const [selectedRowIds, setSelectedRowIds] = useState([])
+//
+//   const notification = useNotification()
+//
+//   const params = useQueryFilters(defaultQueryProps)
+//   const filters = useProductFilters()
+//
+//   const { products, count } = useAdminProducts({
+//     ...params.queryObject,
+//     ...filters.queryObject,
+//   })
+//
+//   const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
+//     salesChannel.id
+//   )
+//
+//   const handleSubmit = () => {
+//     addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
+//     handleClose()
+//     notification(
+//       "Success",
+//       "Products successfully added to the sales channel",
+//       "success"
+//     )
+//   }
+//
+//   return (
+//     <Modal handleClose={handleClose}>
+//       <Modal.Body>
+//         <Modal.Header handleClose={handleClose}>
+//           <span className="inter-xlarge-semibold">Add products</span>
+//         </Modal.Header>
+//         <Modal.Content>
+//           <ProductTable
+//             isAddTable
+//             products={products || []}
+//             count={count}
+//             setSelectedRowIds={setSelectedRowIds}
+//             productFilters={filters}
+//             {...params}
+//           />
+//         </Modal.Content>
+//         <Modal.Footer>
+//           <div className="w-full flex justify-end">
+//             <Button
+//               variant="ghost"
+//               size="small"
+//               onClick={handleClose}
+//               className="mr-2"
+//             >
+//               Close
+//             </Button>
+//             <Button
+//               variant="primary"
+//               className="min-w-[100px]"
+//               size="small"
+//               onClick={handleSubmit}
+//             >
+//               Save
+//             </Button>
+//           </div>
+//         </Modal.Footer>
+//       </Modal.Body>
+//     </Modal>
+//   )
+// }
 
-/**
- * Sales channels products add container.
- * Renders product table for adding/editing sales channel products
- * in a modal.
- */
-function SalesChannelProductsSelectModal(
-  props: SalesChannelProductsSelectModalProps
-) {
-  const { handleClose, salesChannel } = props
-  const [selectedRowIds, setSelectedRowIds] = useState([])
-
-  const notification = useNotification()
-
-  const params = useQueryFilters(defaultQueryProps)
-  const filters = useProductFilters()
-
-  const { products, count } = useAdminProducts({
-    ...params.queryObject,
-    ...filters.queryObject,
-  })
-
-  const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
-    salesChannel.id
-  )
-
-  const handleSubmit = () => {
-    addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
-    handleClose()
-    notification(
-      "Success",
-      "Products successfully added to the sales channel",
-      "success"
-    )
-  }
-
-  return (
-    <Modal handleClose={handleClose}>
-      <Modal.Body>
-        <Modal.Header handleClose={handleClose}>
-          <span className="inter-xlarge-semibold">Add products</span>
-        </Modal.Header>
-        <Modal.Content>
-          <ProductTable
-            isAddTable
-            products={products || []}
-            count={count}
-            setSelectedRowIds={setSelectedRowIds}
-            productFilters={filters}
-            {...params}
-          />
-        </Modal.Content>
-        <Modal.Footer>
-          <div className="w-full flex justify-end">
-            <Button
-              variant="ghost"
-              size="small"
-              onClick={handleClose}
-              className="mr-2"
-            >
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              className="min-w-[100px]"
-              size="small"
-              onClick={handleSubmit}
-            >
-              Save
-            </Button>
-          </div>
-        </Modal.Footer>
-      </Modal.Body>
-    </Modal>
-  )
-}
-
-type SalesChannelAvailableProductsModalProps = {
-  handleClose: () => void
-  salesChannel: SalesChannel
-  products: Product[]
-}
-
-function SalesChannelAvailableProductsModal(
-  props: SalesChannelAvailableProductsModalProps
-) {
-  const { handleClose } = props
-  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
-
-  const notification = useNotification()
-
-  const filters = useProductFilters()
-  const params = useQueryFilters(defaultQueryProps)
-
-  const { products, count } = useAdminProducts({
-    ...params.queryObject,
-    ...filters.queryObject,
-    sales_channel_id: [props.salesChannel.id],
-  })
-
-  useEffect(() => {
-    setSelectedRowIds(products?.map((p) => p.id))
-  }, [products])
-
-  // const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
-  //   salesChannel.id
-  // )
-
-  // const handleSubmit = () => {
-  //   addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
-  //   handleClose()
-  //   notification(
-  //     "Success",
-  //     "Products successfully added to the sales channel",
-  //     "success"
-  //   )
-  // }
-
-  return (
-    <Modal handleClose={handleClose}>
-      <Modal.Body>
-        <Modal.Header handleClose={handleClose}>
-          <span className="inter-xlarge-semibold">Add products</span>
-        </Modal.Header>
-        <Modal.Content>
-          <ProductTable
-            products={products || []}
-            count={count}
-            selectedRowIds={selectedRowIds}
-            setSelectedRowIds={setSelectedRowIds}
-            productFilters={filters}
-            {...params}
-          />
-        </Modal.Content>
-        <Modal.Footer>
-          <div className="w-full flex justify-end">
-            <Button
-              variant="ghost"
-              size="small"
-              onClick={handleClose}
-              className="mr-2"
-            >
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              className="min-w-[100px]"
-              size="small"
-              // onClick={handleSubmit}
-            >
-              Save
-            </Button>
-          </div>
-        </Modal.Footer>
-      </Modal.Body>
-    </Modal>
-  )
-}
-
-export {
-  SalesChannelProductsTable,
-  SalesChannelProductsSelectModal,
-  SalesChannelAvailableProductsModal,
-}
+export { SalesChannelProductsTable }
