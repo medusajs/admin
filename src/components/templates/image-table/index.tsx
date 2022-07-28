@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
 import { Column, useTable } from "react-table"
 import { FormImage } from "../../../types/shared"
+import { NestedForm } from "../../../utils/nested-form"
 import Button from "../../fundamentals/button"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import IconTooltip from "../../molecules/icon-tooltip"
@@ -11,10 +12,13 @@ export type ImageTableDataType = { id?: string } & FormImage
 
 type ImageTableProps = {
   data: ImageTableDataType[]
+  form: NestedForm<FormImage[]>
   onDelete: (index: number) => void
 }
 
-const ImageTable = ({ data, onDelete }: ImageTableProps) => {
+const ImageTable = ({ data, form, onDelete }: ImageTableProps) => {
+  const { control, register } = form
+
   const columns = useMemo<
     Column<{ id?: string | undefined } & FormImage>[]
   >(() => {
@@ -25,6 +29,8 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
             <span>Image</span>
           </div>
         ),
+        maxWidth: 140,
+        width: 140,
         collapse: true,
         accessor: "url",
         Cell: ({ cell: { value } }) => {
@@ -56,16 +62,17 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
       },
       {
         Header: () => (
-          <div className="flex gap-x-[6px] items-center">
+          <div className="flex gap-x-[6px] items-center justify-center">
             <span>Thumbnail</span>
             <IconTooltip content="Select which image you want to use as the thumbnail for this product" />
           </div>
         ),
         id: "thumbnail",
+        width: 120,
         collapse: true,
         Cell: ({ cell }) => {
           return (
-            <div className="flex items-center justify-center h-full w-full">
+            <div className="flex items-center justify-center">
               <RadioGroup.Dot value={cell.row.index} />
             </div>
           )
@@ -74,6 +81,7 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
       {
         Header: () => null,
         id: "delete",
+        width: 40,
         Cell: ({ row }) => {
           return (
             <Button
@@ -100,6 +108,9 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
   } = useTable({
     columns,
     data,
+    defaultColumn: {
+      width: "auto",
+    },
   })
 
   return (
@@ -107,10 +118,10 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
       <Table.Head>
         {headerGroups?.map((headerGroup) => (
           <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((col) => {
+            {headerGroup.headers.map((col, index) => {
               return (
                 <Table.HeadCell {...col.getHeaderProps()}>
-                  {col.render("Header")}
+                  {col.render("Header", { index })}
                 </Table.HeadCell>
               )
             })}
@@ -124,7 +135,10 @@ const ImageTable = ({ data, onDelete }: ImageTableProps) => {
             <Table.Row {...row.getRowProps()} className="px-base" key={index}>
               {row.cells.map((cell) => {
                 return (
-                  <Table.Cell {...cell.getCellProps()}>
+                  <Table.Cell
+                    width={cell.column.width}
+                    {...cell.getCellProps()}
+                  >
                     {cell.render("Cell")}
                   </Table.Cell>
                 )

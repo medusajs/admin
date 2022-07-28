@@ -1,5 +1,6 @@
 import Medusa from "../../../../services/api"
-import { FormImage, VariantFormValues } from "./types"
+import { FormImage } from "../../../../types/shared"
+import { VariantFormValues } from "./types"
 
 type BuildOptionsMap = (product: any, variant?: any) => { [key: string]: any }
 

@@ -37,4 +37,5 @@ export type FormImage = {
   name?: string
   size?: number
   nativeFile?: File
+  isThumbnail?: boolean
 }

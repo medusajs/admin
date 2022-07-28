@@ -45,7 +45,6 @@ export type ProductFormValues = {
   hs_code: string | null
   variants: VariantFormValues[]
   prices?: PriceFormValue[] | null
-  thumbnail: number | null
   images: FormImage[]
   options: ProductOption[]
   status: ProductStatus | null

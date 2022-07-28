@@ -11,17 +11,15 @@ import { ProductFormValues } from "../utils/types"
 export const productToFormValuesMapper = (
   product: Product
 ): ProductFormValues => {
-  let thumbnail = product?.images?.length
-    ? product.images.findIndex((img) => img.url === product.thumbnail)
-    : 0
-  thumbnail = thumbnail === -1 ? 0 : thumbnail
-
   return {
     title: product.title,
     handle: product.handle,
     description: product.description,
-    thumbnail,
-    images: product.images.map((i) => ({ url: i.url })),
+    images: product.images.map((i) => ({
+      url: i.url,
+      isThumbnail:
+        product.thumbnail && i.url === product.thumbnail ? true : false,
+    })),
     collection: product.collection
       ? { value: product.collection.id, label: product.collection.title }
       : null,
@@ -110,10 +108,12 @@ export const formValuesToCreateProductMapper = async (
     payload.images = images.map((img) => img.url)
   }
 
-  if (values.thumbnail) {
-    payload.thumbnail = payload.images?.length
-      ? payload.images[values.thumbnail]
-      : undefined
+  if (values.images?.length && payload.images?.length) {
+    const thumbnailIndex = values.images.findIndex((i) => i.isThumbnail)
+
+    if (thumbnailIndex !== -1) {
+      payload.thumbnail = payload.images[thumbnailIndex]
+    }
   }
 
   return {
@@ -154,10 +154,12 @@ export const formValuesToUpdateProductMapper = async (
     payload.images = []
   }
 
-  if (values.thumbnail !== null && values.images) {
-    payload.thumbnail = payload.images?.length
-      ? payload.images[values.thumbnail]
-      : undefined
+  if (values.images?.length && payload.images.length) {
+    const thumbnailIndex = values.images.findIndex((i) => i.isThumbnail)
+
+    if (thumbnailIndex !== -1) {
+      payload.thumbnail = payload.images[thumbnailIndex]
+    }
   }
 
   return {
@@ -165,10 +167,6 @@ export const formValuesToUpdateProductMapper = async (
     handle: values.handle,
     status: values.status,
     description: values.description,
-    thumbnail:
-      values.images.length && values.thumbnail
-        ? values.images[values.thumbnail]
-        : null,
     collection_id: values?.collection ? values.collection.value : null,
     type: values.type?.value
       ? { id: values.type.value, value: values.type.label }
