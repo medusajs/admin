@@ -136,10 +136,10 @@ const SalesChannelAvailabilityTable: React.FC<SalesChannelAvailabilityTableProps
             prepareRow(row)
             return (
               <Table.Row color={"inherit"} {...row.getRowProps()}>
-                {row.cells.map((cell, index) => {
+                {row.cells.map((cell) => {
                   return (
                     <Table.Cell {...cell.getCellProps()}>
-                      {cell.render("Cell", { index })}
+                      {cell.render("Cell")}
                     </Table.Cell>
                   )
                 })}
