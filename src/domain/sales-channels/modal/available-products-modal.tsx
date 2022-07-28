@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { difference } from "lodash"
 import clsx from "clsx"
 
 import { Product, SalesChannel } from "@medusajs/medusa"
@@ -6,7 +7,11 @@ import { Product, SalesChannel } from "@medusajs/medusa"
 import useNotification from "../../../hooks/use-notification"
 import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
 import useQueryFilters from "../../../hooks/use-query-filters"
-import { useAdminProducts } from "medusa-react"
+import {
+  useAdminAddProductsToSalesChannel,
+  useAdminDeleteProductsFromSalesChannel,
+  useAdminProducts,
+} from "medusa-react"
 import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
@@ -108,6 +113,14 @@ function SalesChannelAvailableProductsModal(
 
   const notification = useNotification()
 
+  const {
+    mutate: deleteProductsFromSalesChannel,
+  } = useAdminDeleteProductsFromSalesChannel(props.salesChannel.id)
+
+  const {
+    mutate: addProductsToSalesChannel,
+  } = useAdminAddProductsToSalesChannel(props.salesChannel.id)
+
   const filters = useProductFilters()
   const params = useQueryFilters(defaultQueryProps)
 
@@ -148,6 +161,21 @@ function SalesChannelAvailableProductsModal(
         onAvailableProductsChange={onAddToAvailable}
       />
     ),
+  }
+
+  const handleSubmit = () => {
+    const initialIds = products?.map((p) => p.id) as string[]
+    const selectedIds = availableProducts.map((p) => p.id)
+
+    const toAdd = difference(selectedIds, initialIds)
+    const toRemove = difference(initialIds, selectedIds)
+
+    addProductsToSalesChannel({ product_ids: toAdd.map((id) => ({ id })) })
+    deleteProductsFromSalesChannel({
+      product_ids: toRemove.map((id) => ({ id })),
+    })
+
+    handleClose()
   }
 
   // const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
@@ -204,7 +232,7 @@ function SalesChannelAvailableProductsModal(
               variant="primary"
               className="min-w-[100px]"
               size="small"
-              // onClick={handleSubmit}
+              onClick={handleSubmit}
             >
               Save
             </Button>
