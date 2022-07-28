@@ -4,6 +4,8 @@ import {
   useAdminAddProductsToSalesChannel,
   useAdminDeleteProductsFromSalesChannel,
   useAdminProducts,
+  useAdminSalesChannel,
+  useAdminSalesChannels,
 } from "medusa-react"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
@@ -254,21 +256,19 @@ const ProductRow = ({ row, actions }) => {
       actions={actions}
       {...row.getRowProps()}
     >
-      {" "}
       {row.cells.map((cell, index) => {
         return (
           <Table.Cell {...cell.getCellProps()}>
-            {" "}
-            {cell.render("Cell", { index })}{" "}
+            {cell.render("Cell", { index })}
           </Table.Cell>
         )
-      })}{" "}
+      })}
     </Table.Row>
   )
 }
 
 type RemoveProductsPopupProps = {
-  close: () => void
+  onClose: () => void
   onRemove: () => void
   total: number
 }
@@ -277,7 +277,7 @@ type RemoveProductsPopupProps = {
  * Popup for removing selected products from a sales channel.
  */
 function RemoveProductsPopup({
-  close,
+  onClose,
   onRemove,
   total,
 }: RemoveProductsPopupProps) {
@@ -299,7 +299,7 @@ function RemoveProductsPopup({
         <Button variant="danger" size="small" onClick={onRemove}>
           Remove
         </Button>
-        <button onClick={close} className="text-grey-50 cursor-pointer">
+        <button onClick={onClose} className="text-grey-50 cursor-pointer">
           <CrossIcon size={20} />
         </button>
       </div>
@@ -336,6 +336,9 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
     ...params.queryObject,
     ...filters.queryObject,
   })
+
+  const { sales_channels } = useAdminSalesChannels({ expand: "products" })
+  console.log({ sales_channels })
 
   const removeProductFromSalesChannel = (id: string) => {
     deleteProductsFromSalesChannel({ product_ids: [{ id }] })
@@ -396,7 +399,7 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
       <RemoveProductsPopup
         total={toBeRemoveCount}
         onRemove={removeSelectedProducts}
-        close={() => setSelectedRowIds([])}
+        onClose={() => setSelectedRowIds([])}
       />
     </div>
   )

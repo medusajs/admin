@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import { Link, navigate } from "gatsby"
+import { navigate } from "gatsby"
 import React, { useEffect, useRef, useState } from "react"
 
 import { SalesChannel } from "@medusajs/medusa"
@@ -18,7 +18,6 @@ import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import SearchIcon from "../../../components/fundamentals/icons/search-icon"
-import ArrowLeftIcon from "../../../components/fundamentals/icons/arrow-left-icon"
 import {
   SalesChannelProductsSelectModal,
   SalesChannelProductsTable,
@@ -141,12 +140,6 @@ function SalesChannelsHeader(props: SalesChannelsHeaderProps) {
     setShowFilter(false)
     setFilterText("")
   }
-
-  useEffect(() => {
-    if (showFilter) {
-      // inputRef.current.focus()
-    }
-  }, [showFilter])
 
   return (
     <div className="h-[55px] mb-6 overflow-hidden">
@@ -442,13 +435,6 @@ function Details(props: DetailsProps) {
 
   return (
     <div>
-      {/*<Link to={"/a/settings"}>*/}
-      {/*  <div className="flex text-grey-40 hover:text-purple-600 gap-2 items-center mb-2">*/}
-      {/*    <ArrowLeftIcon />*/}
-      {/*    <span className="text-small">Back to Settings</span>*/}
-      {/*  </div>*/}
-      {/*</Link>*/}
-
       <Breadcrumb
         currentPage={"Sales channels"}
         previousBreadcrumb={"Settings"}

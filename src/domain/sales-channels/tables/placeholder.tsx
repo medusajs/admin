@@ -6,7 +6,7 @@ import SidedMouthFaceIcon from "../../../components/fundamentals/icons/sided-mou
 function Placeholder({ showAddModal }) {
   return (
     <div className="h-full flex flex-col justify-center items-center">
-      <SidedMouthFaceIcon color="#6B7280" width="48" height="48" />
+      <SidedMouthFaceIcon color="grey-50" width="48" height="48" />
 
       <h3 className="font-semibold text-large text-gray-90 mt-6">
         Start building your channels setup...
