@@ -21,7 +21,10 @@ const defaultQueryProps = {
   offset: 0,
 }
 
-export function AddProductsModalScreen({ handleClose }) {
+export function AddProductsModalScreen({
+  handleClose,
+  onAvailableProductsChange,
+}) {
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
 
   const filters = useProductFilters()
@@ -31,6 +34,12 @@ export function AddProductsModalScreen({ handleClose }) {
     ...params.queryObject,
     ...filters.queryObject,
   })
+
+  const onAdd = () => {
+    onAvailableProductsChange(
+      products!.filter(({ id }) => selectedRowIds.includes(id!))
+    )
+  }
 
   return (
     <>
@@ -60,6 +69,7 @@ export function AddProductsModalScreen({ handleClose }) {
             size="small"
             className="w-[128px]"
             onClick={() => {
+              onAdd()
               handleClose()
             }}
           >

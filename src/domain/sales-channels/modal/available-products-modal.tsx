@@ -117,6 +117,10 @@ function SalesChannelAvailableProductsModal(
     sales_channel_id: [props.salesChannel.id],
   })
 
+  useEffect(() => {
+    setAvailableProducts(products)
+  }, [products])
+
   const onDeselect = () => {
     setSelectedRowIds([])
     // tableState.toggleAllRowsSelected(false)
@@ -138,7 +142,12 @@ function SalesChannelAvailableProductsModal(
   const addModalScreen = {
     title: "Add Products",
     onBack: modalContext.pop,
-    view: <AddProductsModalScreen handleClose={modalContext.pop} />,
+    view: (
+      <AddProductsModalScreen
+        handleClose={modalContext.pop}
+        onAvailableProductsChange={onAddToAvailable}
+      />
+    ),
   }
 
   // const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
@@ -173,7 +182,7 @@ function SalesChannelAvailableProductsModal(
                 addModalScreen={addModalScreen}
               />
             }
-            products={products || []}
+            products={availableProducts || []}
             count={count}
             selectedRowIds={selectedRowIds}
             setSelectedRowIds={setSelectedRowIds}
