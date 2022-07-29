@@ -209,7 +209,7 @@ function SalesChannelsList(props: SalesChannelsListProps) {
   } = props
 
   return (
-    <div className="col-span-1 rounded-lg border bg-grey-0 border-grey-20 px-8 py-6 min-h-[960px]">
+    <div className="col-span-1 rounded-lg border bg-grey-0 border-grey-20 px-8 py-6 h-[968px]">
       <SalesChannelsHeader
         filterText={filterText}
         setFilterText={setFilterText}
@@ -341,7 +341,7 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
   )
 
   return (
-    <div className="col-span-2 rounded-rounded border bg-grey-0 border-grey-20 px-8 py-6">
+    <div className="col-span-2 rounded-rounded border bg-grey-0 border-grey-20 px-8 py-6 h-[968px]">
       <SalesChannelDetailsHeader
         resetDetails={resetDetails}
         salesChannel={salesChannel}
