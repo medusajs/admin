@@ -4,7 +4,12 @@ import {
   useAdminDeleteProductsFromSalesChannel,
   useAdminProducts,
 } from "medusa-react"
-import React, { useEffect, useState } from "react"
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
 import { Product } from "@medusajs/medusa"
 
@@ -54,191 +59,200 @@ type ProductTableProps = {
 /**
  * Renders a table of sales channel products.
  */
-export function ProductTable(props: ProductTableProps) {
-  const {
-    tableActions,
-    productFilters: {
-      setTab,
-      saveTab,
-      removeTab,
-      availableTabs: filterTabs,
-      activeFilterTab,
-      setFilters,
-      filters,
-      reset,
-    },
-    paginate,
-    setQuery: setFreeText,
-    queryObject,
-
-    // CONTAINER props
-    isAddTable,
-    count,
-    products,
-    setSelectedRowIds,
-    removeProductFromSalesChannel,
-  } = props
-
-  const offs = parseInt(queryObject.offset) || 0
-  const limit = parseInt(queryObject.limit)
-
-  const [query, setQuery] = useState(queryObject.query)
-  const [numPages, setNumPages] = useState(0)
-
-  const clearFilters = () => {
-    reset()
-    setQuery("")
-  }
-
-  useEffect(() => {
-    if (typeof count !== "undefined") {
-      const controlledPageCount = Math.ceil(count / limit)
-      setNumPages(controlledPageCount)
-    }
-  }, [count])
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    gotoPage,
-    canPreviousPage,
-    canNextPage,
-    pageCount,
-    nextPage,
-    previousPage,
-    // Get the state from the instance
-    state: { pageIndex, pageSize, ...state },
-  } = useTable(
-    {
-      columns: SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS,
-      data: products || [],
-      manualPagination: true,
-      initialState: {
-        pageIndex: Math.floor(offs / limit),
-        pageSize: limit,
+export const ProductTable = forwardRef(
+  (props: ProductTableProps, ref: React.Ref<any>) => {
+    const {
+      tableActions,
+      productFilters: {
+        setTab,
+        saveTab,
+        removeTab,
+        availableTabs: filterTabs,
+        activeFilterTab,
+        setFilters,
+        filters,
+        reset,
       },
-      pageCount: numPages,
-      autoResetPage: false,
-      autoResetSelectedRows: false,
-      getRowId: (row) => row.id,
-    },
-    usePagination,
-    useRowSelect
-  )
+      paginate,
+      setQuery: setFreeText,
+      queryObject,
 
-  useEffect(() => {
-    setSelectedRowIds(Object.keys(state.selectedRowIds))
-  }, [Object.keys(state.selectedRowIds).length])
+      // CONTAINER props
+      isAddTable,
+      count,
+      products,
+      setSelectedRowIds,
+      removeProductFromSalesChannel,
+    } = props
 
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (query) {
-        setFreeText(query)
-        gotoPage(0)
-      } else {
-        if (typeof query !== "undefined") {
-          // if we delete query string, we reset the table view
-          setFreeText("")
-        }
+    const offs = parseInt(queryObject.offset) || 0
+    const limit = parseInt(queryObject.limit)
+
+    const [query, setQuery] = useState(queryObject.query)
+    const [numPages, setNumPages] = useState(0)
+
+    const clearFilters = () => {
+      reset()
+      setQuery("")
+    }
+
+    useEffect(() => {
+      if (typeof count !== "undefined") {
+        const controlledPageCount = Math.ceil(count / limit)
+        setNumPages(controlledPageCount)
       }
-    }, 400)
+    }, [count])
 
-    return () => clearTimeout(delayDebounceFn)
-  }, [query])
+    const {
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      rows,
+      prepareRow,
+      gotoPage,
+      canPreviousPage,
+      canNextPage,
+      pageCount,
+      nextPage,
+      previousPage,
+      toggleAllRowsSelected,
+      // Get the state from the instance
+      state: { pageIndex, pageSize, ...state },
+    } = useTable(
+      {
+        columns: SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS,
+        data: products || [],
+        manualPagination: true,
+        initialState: {
+          pageIndex: Math.floor(offs / limit),
+          pageSize: limit,
+        },
+        pageCount: numPages,
+        autoResetPage: false,
+        autoResetSelectedRows: false,
+        getRowId: (row) => row.id,
+      },
+      usePagination,
+      useRowSelect
+    )
 
-  const handleNext = () => {
-    if (canNextPage) {
-      paginate(1)
-      nextPage()
-    }
-  }
+    useImperativeHandle(ref, () => ({
+      toggleAllRowsSelected: toggleAllRowsSelected,
+    }))
 
-  const handlePrev = () => {
-    if (canPreviousPage) {
-      paginate(-1)
-      previousPage()
-    }
-  }
+    useEffect(() => {
+      setSelectedRowIds(Object.keys(state.selectedRowIds))
+    }, [Object.keys(state.selectedRowIds).length])
 
-  const getActions = (id: string) => [
-    {
-      label: "Details",
-      onClick: () => navigate(`/a/products/${id}`),
-      icon: <DetailsIcon size={20} />,
-    },
-    {
-      label: "Remove from the channel",
-      variant: "danger",
-      onClick: () => removeProductFromSalesChannel(id),
-      icon: <TrashIcon size={20} />,
-    },
-  ]
-
-  return (
-    <div className="w-full h-[880px] overflow-y-auto flex flex-col">
-      <Table
-        tableActions={tableActions}
-        containerClassName="flex-1"
-        filteringOptions={
-          filters && (
-            <ProductsFilter
-              filters={filters}
-              submitFilters={setFilters}
-              clearFilters={clearFilters}
-              tabs={filterTabs}
-              onTabClick={setTab}
-              activeTab={activeFilterTab}
-              onRemoveTab={removeTab}
-              onSaveTab={saveTab}
-            />
-          )
+    useEffect(() => {
+      const delayDebounceFn = setTimeout(() => {
+        if (query) {
+          setFreeText(query)
+          gotoPage(0)
+        } else {
+          if (typeof query !== "undefined") {
+            // if we delete query string, we reset the table view
+            setFreeText("")
+          }
         }
-        enableSearch={isAddTable}
-        handleSearch={setQuery}
-        {...getTableProps()}
-      >
-        <Table.Head>
-          {headerGroups?.map((headerGroup) => (
-            <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((col) => (
-                <Table.HeadCell {...col.getHeaderProps()}>
-                  {col.render("Header")}
-                </Table.HeadCell>
-              ))}
-            </Table.HeadRow>
-          ))}
-        </Table.Head>
-        <Table.Body {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row)
-            return (
-              <ProductRow
-                row={row}
-                actions={!isAddTable ? getActions(row.original.id) : undefined}
+      }, 400)
+
+      return () => clearTimeout(delayDebounceFn)
+    }, [query])
+
+    const handleNext = () => {
+      if (canNextPage) {
+        paginate(1)
+        nextPage()
+      }
+    }
+
+    const handlePrev = () => {
+      if (canPreviousPage) {
+        paginate(-1)
+        previousPage()
+      }
+    }
+
+    const getActions = (id: string) => [
+      {
+        label: "Details",
+        onClick: () => navigate(`/a/products/${id}`),
+        icon: <DetailsIcon size={20} />,
+      },
+      {
+        label: "Remove from the channel",
+        variant: "danger",
+        onClick: () => removeProductFromSalesChannel(id),
+        icon: <TrashIcon size={20} />,
+      },
+    ]
+
+    return (
+      <div className="w-full h-[880px] overflow-y-auto flex flex-col">
+        <Table
+          tableActions={tableActions}
+          containerClassName="flex-1"
+          filteringOptions={
+            filters && (
+              <ProductsFilter
+                filters={filters}
+                submitFilters={setFilters}
+                clearFilters={clearFilters}
+                tabs={filterTabs}
+                onTabClick={setTab}
+                activeTab={activeFilterTab}
+                onRemoveTab={removeTab}
+                onSaveTab={saveTab}
               />
             )
-          })}
-        </Table.Body>
-      </Table>
-      <TablePagination
-        count={count!}
-        limit={limit}
-        offset={offs}
-        pageSize={offs + rows.length}
-        title="Products"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
-    </div>
-  )
-}
+          }
+          enableSearch={isAddTable}
+          handleSearch={setQuery}
+          {...getTableProps()}
+        >
+          <Table.Head>
+            {headerGroups?.map((headerGroup) => (
+              <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((col) => (
+                  <Table.HeadCell {...col.getHeaderProps()}>
+                    {col.render("Header")}
+                  </Table.HeadCell>
+                ))}
+              </Table.HeadRow>
+            ))}
+          </Table.Head>
+          <Table.Body {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row)
+              return (
+                <ProductRow
+                  row={row}
+                  actions={
+                    !isAddTable ? getActions(row.original.id) : undefined
+                  }
+                />
+              )
+            })}
+          </Table.Body>
+        </Table>
+        <TablePagination
+          count={count!}
+          limit={limit}
+          offset={offs}
+          pageSize={offs + rows.length}
+          title="Products"
+          currentPage={pageIndex + 1}
+          pageCount={pageCount}
+          nextPage={handleNext}
+          prevPage={handlePrev}
+          hasNext={canNextPage}
+          hasPrev={canPreviousPage}
+        />
+      </div>
+    )
+  }
+)
 
 /**
  * Renders product table row.

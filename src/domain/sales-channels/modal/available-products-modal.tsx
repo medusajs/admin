@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { difference } from "lodash"
 import clsx from "clsx"
 
@@ -35,18 +35,19 @@ const defaultQueryProps = {
   offset: 0,
 }
 
-type SalesChannelAvailableProductsModalProps = {
-  handleClose: () => void
-  salesChannel: SalesChannel
-  products: Product[]
-  addChannelModalScreen: {
+type SalesChannelTableActionsProps = {
+  numberOfSelectedRows: number
+  onDeselect: () => void
+  onRemove: () => void
+  onAddToAvailable: (sc: SalesChannel) => void
+  addModalScreen: {
     title: string
     onBack: () => void
     view: React.ReactElement
   }
 }
 
-export const SalesChannelTableActions: React.FC<any> = ({
+export const SalesChannelTableActions: React.FC<SalesChannelTableActionsProps> = ({
   numberOfSelectedRows,
   onDeselect,
   onRemove,
@@ -102,9 +103,21 @@ export const SalesChannelTableActions: React.FC<any> = ({
   )
 }
 
+type SalesChannelAvailableProductsModalProps = {
+  handleClose: () => void
+  salesChannel: SalesChannel
+  products: Product[]
+  addChannelModalScreen: {
+    title: string
+    onBack: () => void
+    view: React.ReactElement
+  }
+}
+
 function SalesChannelAvailableProductsModal(
   props: SalesChannelAvailableProductsModalProps
 ) {
+  const tableRef = useRef(null)
   const { handleClose } = props
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
   const [availableProducts, setAvailableProducts] = useState<Product[]>([])
@@ -136,12 +149,12 @@ function SalesChannelAvailableProductsModal(
 
   const onDeselect = () => {
     setSelectedRowIds([])
-    // tableState.toggleAllRowsSelected(false)
+    tableRef.current.toggleAllRowsSelected(false)
   }
 
   const onAddToAvailable = (selected) => {
     setAvailableProducts([...availableProducts, ...selected])
-    // tableState.toggleAllRowsSelected(false)
+    tableRef.current.toggleAllRowsSelected(false)
   }
 
   const onRemove = () => {
@@ -221,18 +234,18 @@ function SalesChannelAvailableProductsModal(
             tableActions={
               <SalesChannelTableActions
                 numberOfSelectedRows={selectedRowIds.length}
-                availableProductIds={availableProducts.map((sc) => sc.id)}
                 onAddToAvailable={onAddToAvailable}
                 onDeselect={onDeselect}
                 onRemove={onRemove}
                 addModalScreen={addModalScreen}
               />
             }
-            products={availableProducts || []}
             count={count}
+            products={availableProducts || []}
             selectedRowIds={selectedRowIds}
             setSelectedRowIds={setSelectedRowIds}
             productFilters={filters}
+            ref={tableRef}
             {...params}
           />
         </Modal.Content>
