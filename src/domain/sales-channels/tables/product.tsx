@@ -53,7 +53,7 @@ type ProductTableProps = {
   products: Product[]
   setSelectedRowIds: (ids: string[]) => void
   selectedRowIds: string[]
-  removeProductFromSalesChannel: (ids: string[]) => void
+  removeProductFromSalesChannel: (id: string) => void
 }
 
 /**
@@ -116,6 +116,7 @@ export const ProductTable = forwardRef(
       nextPage,
       previousPage,
       toggleAllRowsSelected,
+      toggleRowSelected,
       // Get the state from the instance
       state: { pageIndex, pageSize, ...state },
     } = useTable(
@@ -227,6 +228,7 @@ export const ProductTable = forwardRef(
               prepareRow(row)
               return (
                 <ProductRow
+                  onClick={() => toggleRowSelected(row.id)}
                   row={row}
                   actions={
                     !isAddTable ? getActions(row.original.id) : undefined
@@ -257,9 +259,10 @@ export const ProductTable = forwardRef(
 /**
  * Renders product table row.
  */
-const ProductRow = ({ row, actions }) => {
+const ProductRow = ({ row, actions, onClick }) => {
   return (
     <Table.Row
+      onClick={onClick}
       color={"inherit"}
       className={row.isSelected ? "bg-grey-5 cursor-pointer" : "cursor-pointer"}
       actions={actions}
