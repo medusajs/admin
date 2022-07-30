@@ -9,6 +9,7 @@ import useToggleState from "../../../../../hooks/use-toggle-state"
 import ProductAvailabilityModal from "./product-availability-modal"
 import Spinner from "../../../../../components/atoms/spinner"
 import { useProductForm } from "../../form/product-form-context"
+import CrossIcon from "../../../../../components/fundamentals/icons/cross-icon"
 
 type SalesChannelsProps = {
   isEdit?: boolean
@@ -17,6 +18,7 @@ type SalesChannelsProps = {
 
 type SalesChannelBadgeProps = {
   channel: SalesChannel
+  onRemove: () => void
 }
 
 const SalesChannels: React.FC<SalesChannelsProps> = ({
@@ -65,13 +67,22 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
           <>
             <div className="flex space-x-2">
               <div className="flex space-x-2 max-w-[600px] overflow-clip">
-                {salesChannels?.slice(0, 3).map((sc) => (
-                  <SalesChannelBadge channel={sc} />
-                ))}
+                {salesChannels?.slice(0, 3).map((sc, idx) => {
+                  return (
+                    <SalesChannelBadge
+                      channel={sc}
+                      onRemove={() => {
+                        const newSalesChannels = [...salesChannels]
+                        newSalesChannels.splice(idx, 1)
+                        setSalesChannels(newSalesChannels)
+                      }}
+                    />
+                  )
+                })}
               </div>
               {remainder > 0 && (
                 <Badge variant="ghost">
-                  <div className="flex items-center h-full inter-base-regular text-grey-50">
+                  <div className="flex px-2 items-center h-full inter-base-regular text-grey-50">
                     + {remainder} more
                   </div>
                 </Badge>
@@ -112,11 +123,21 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
   )
 }
 
-const SalesChannelBadge: React.FC<SalesChannelBadgeProps> = ({ channel }) => {
+const SalesChannelBadge: React.FC<SalesChannelBadgeProps> = ({
+  channel,
+  onRemove,
+}) => {
   return (
-    <Badge variant="ghost" className="px-4">
-      <div className="flex py-1.5 items-center">
+    <Badge variant="ghost" className="">
+      <div className="flex py-1.5 pl-2 pr-1 space-x-xsmall items-center">
         <span className="inter-base-regular text-grey-90">{channel.name}</span>
+        <Button
+          variant="ghost"
+          className="h-5 w-5 p-0 text-grey-50"
+          onClick={onRemove}
+        >
+          <CrossIcon size={16} />
+        </Button>
       </div>
     </Badge>
   )
