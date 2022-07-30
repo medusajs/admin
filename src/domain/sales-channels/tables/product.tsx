@@ -54,6 +54,7 @@ type ProductTableProps = {
   setSelectedRowIds: (ids: string[]) => void
   selectedRowIds: string[]
   removeProductFromSalesChannel: (id: string) => void
+  productFilters: Record<string, any>
 }
 
 /**

@@ -114,13 +114,78 @@ type SalesChannelAvailableProductsModalProps = {
   }
 }
 
+const LIMIT = 12
+
+function useAvailableProducts(
+  salesChannelId: string,
+  newProductsIds: string[]
+) {
+  const filters = useProductFilters()
+  // const params = useQueryFilters(defaultQueryProps)
+
+  const [offsetSalesChannelProducts, setOffsetSalesChannelProducts] = useState(
+    0
+  )
+  const [offsetAdditionalProducts, setOffsetAdditionalProducts] = useState(0)
+  const [pageIndex, setPageIndex] = useState(0)
+
+  const {
+    products: salesChannelProducts = [],
+    count: salesChannelProductsCount = 0,
+  } = useAdminProducts({
+    offset: offsetSalesChannelProducts,
+    limit: LIMIT,
+    ...filters.queryObject,
+    sales_channel_id: [salesChannelId],
+  })
+
+  const {
+    products: addedProducts = [],
+    count: addedProductsCount = 0,
+  } = useAdminProducts(
+    {
+      limit: LIMIT,
+      offset: offsetAdditionalProducts,
+      id: newProductsIds,
+      ...filters.queryObject,
+    },
+    { enabled: !!newProductsIds?.length }
+  )
+
+  return {
+    products: [...addedProducts, ...salesChannelProducts],
+    count: salesChannelProductsCount + addedProductsCount,
+    filters,
+    params: {
+      queryObject: {
+        limit: LIMIT,
+        offset: offsetSalesChannelProducts + offsetAdditionalProducts,
+      },
+      currentPage: pageIndex + 1,
+      pageCount: (salesChannelProductsCount + addedProductsCount) / LIMIT,
+      nextPage: () => {
+        setPageIndex((i) => i + 1)
+      },
+      prevPage: () => {
+        setPageIndex((i) => i - 1)
+      },
+      paginate(num: number) {
+        if (num > 0) setPageIndex((i) => i + 1)
+        if (num < 0) setPageIndex((i) => i - 1)
+      },
+      hasNext: () => true,
+      hasPrev: () => false,
+    },
+  }
+}
+
 function SalesChannelAvailableProductsModal(
   props: SalesChannelAvailableProductsModalProps
 ) {
   const tableRef = useRef(null)
   const { handleClose } = props
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
-  const [availableProducts, setAvailableProducts] = useState<Product[]>([])
+  const [availableProducts, setAvailableProducts] = useState<string[]>([])
 
   const modalContext = React.useContext(LayeredModalContext)
 
@@ -134,26 +199,18 @@ function SalesChannelAvailableProductsModal(
     mutate: addProductsToSalesChannel,
   } = useAdminAddProductsToSalesChannel(props.salesChannel.id)
 
-  const filters = useProductFilters()
-  const params = useQueryFilters(defaultQueryProps)
-
-  const { products, count } = useAdminProducts({
-    ...params.queryObject,
-    ...filters.queryObject,
-    sales_channel_id: [props.salesChannel.id],
-  })
-
-  useEffect(() => {
-    setAvailableProducts(products)
-  }, [products])
+  const { products, count, filters, params } = useAvailableProducts(
+    props.salesChannel.id,
+    availableProducts
+  )
 
   const onDeselect = () => {
     setSelectedRowIds([])
     tableRef.current.toggleAllRowsSelected(false)
   }
 
-  const onAddToAvailable = (selected) => {
-    setAvailableProducts([...availableProducts, ...selected])
+  const onAddToAvailable = (selected: string[]) => {
+    setAvailableProducts([...new Set([...availableProducts, ...selected])])
     tableRef.current.toggleAllRowsSelected(false)
   }
 
@@ -177,14 +234,8 @@ function SalesChannelAvailableProductsModal(
   }
 
   const handleSubmit = () => {
-    const initialIds = products?.map((p) => p.id) as string[]
-    const selectedIds = availableProducts.map((p) => p.id)
-
-    const toAdd = difference(selectedIds, initialIds)
-    const toRemove = difference(initialIds, selectedIds)
-
     addProductsToSalesChannel(
-      { product_ids: toAdd.map((id) => ({ id })) },
+      { product_ids: availableProducts.map((id) => ({ id })) },
       {
         onSuccess: () =>
           notification(
@@ -200,25 +251,29 @@ function SalesChannelAvailableProductsModal(
           ),
       }
     )
-    deleteProductsFromSalesChannel(
-      {
-        product_ids: toRemove.map((id) => ({ id })),
-      },
-      {
-        onSuccess: () =>
-          notification(
-            "Success",
-            "Successfully removed products from the sales channel",
-            "success"
-          ),
-        onError: () =>
-          notification(
-            "Error",
-            "Unable to remove products from the sales channel",
-            "error"
-          ),
-      }
-    )
+
+    // TODO: maintain a list for removal because now if a products isn't found in the response for the sales channel
+    // it is removed but the issue is that this response is paginated
+
+    // deleteProductsFromSalesChannel(
+    //   {
+    //     product_ids: toRemove.map((id) => ({ id })),
+    //   },
+    //   {
+    //     onSuccess: () =>
+    //       notification(
+    //         "Success",
+    //         "Successfully removed products from the sales channel",
+    //         "success"
+    //       ),
+    //     onError: () =>
+    //       notification(
+    //         "Error",
+    //         "Unable to remove products from the sales channel",
+    //         "error"
+    //       ),
+    //   }
+    // )
 
     handleClose()
   }
@@ -241,7 +296,7 @@ function SalesChannelAvailableProductsModal(
               />
             }
             count={count}
-            products={availableProducts || []}
+            products={products}
             selectedRowIds={selectedRowIds}
             setSelectedRowIds={setSelectedRowIds}
             productFilters={filters}

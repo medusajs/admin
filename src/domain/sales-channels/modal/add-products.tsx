@@ -1,11 +1,13 @@
 import React, { useState } from "react"
 
+import { Product } from "@medusajs/medusa"
+import { useAdminProducts } from "medusa-react"
+
 import Modal from "../../../components/molecules/modal"
 import { ProductTable } from "../tables/product"
 import Button from "../../../components/fundamentals/button"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
-import { useAdminProducts } from "medusa-react"
 
 const DEFAULT_PAGE_SIZE = 12
 
@@ -21,10 +23,15 @@ const defaultQueryProps = {
   offset: 0,
 }
 
+type AddProductsModalScreenProps = {
+  handleClose: () => void
+  onAvailableProductsChange: (ids: string[]) => void
+}
+
 export function AddProductsModalScreen({
   handleClose,
   onAvailableProductsChange,
-}) {
+}: AddProductsModalScreenProps) {
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
 
   const filters = useProductFilters()
@@ -36,9 +43,7 @@ export function AddProductsModalScreen({
   })
 
   const onAdd = () => {
-    onAvailableProductsChange(
-      products!.filter(({ id }) => selectedRowIds.includes(id!))
-    )
+    onAvailableProductsChange(selectedRowIds)
   }
 
   return (
@@ -46,8 +51,8 @@ export function AddProductsModalScreen({
       <Modal.Content isLargeModal>
         <ProductTable
           isAddTable
-          products={products || []}
-          count={count}
+          count={count || 0}
+          products={(products as Product[]) || []}
           selectedRowIds={selectedRowIds}
           setSelectedRowIds={setSelectedRowIds}
           productFilters={filters}
