@@ -29,7 +29,11 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
     close: closeScModal,
   } = useToggleState()
 
-  const { salesChannels, setSalesChannels } = useProductForm()
+  const {
+    salesChannels,
+    setSalesChannels,
+    additionalDirtyState,
+  } = useProductForm()
 
   const { count, isLoading: isLoadingSalesChannels } = useAdminSalesChannels()
   const { store, isLoading: isLoadingStore } = useAdminStore()
@@ -37,12 +41,17 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
   const isLoading = isLoadingSalesChannels || isLoadingStore
 
   useEffect(() => {
-    if (!isEdit && !isLoadingStore && store?.default_sales_channel) {
-      setSalesChannels([store.default_sales_channel])
+    if (
+      !isEdit &&
+      !isLoadingStore &&
+      store?.default_sales_channel &&
+      !additionalDirtyState.salesChannels
+    ) {
+      setSalesChannels([store.default_sales_channel], false)
     }
-  }, [isLoadingStore])
+  }, [isLoadingStore, additionalDirtyState.salesChannels])
 
-  const remainder = Math.max(product?.sales_channels?.length - 3, 0)
+  const remainder = Math.max(salesChannels.length - 3, 0)
   return (
     <>
       <BodyCard

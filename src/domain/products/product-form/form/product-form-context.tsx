@@ -50,7 +50,10 @@ const ProductFormContext = React.createContext<{
   appendImage: (image: any) => void
   removeImage: (image: any) => void
   salesChannels: SalesChannel[]
-  setSalesChannels: (salesChannels: SalesChannel[]) => void
+  setSalesChannels: (
+    salesChannels: SalesChannel[],
+    setDirtyState?: boolean
+  ) => void
   setViewType: (value: PRODUCT_VIEW) => void
   viewType: PRODUCT_VIEW
   isVariantsView: boolean
@@ -92,10 +95,13 @@ export const ProductFormProvider = ({
     setImages(tmp)
   }
 
-  const setProductSalesChannels = (salesChannels: SalesChannel[]) => {
+  const setProductSalesChannels = (
+    salesChannels: SalesChannel[],
+    setDirtyState: boolean = true
+  ) => {
     if (isFeatureEnabled("sales_channels")) {
       setSalesChannels(salesChannels)
-      setHasSalesChannelsChanged(true)
+      setHasSalesChannelsChanged((scChanged) => setDirtyState || scChanged)
     }
   }
 
@@ -109,6 +115,11 @@ export const ProductFormProvider = ({
     setHasSalesChannelsChanged(false)
     setImages(product.images)
     setProductOptions(product.options)
+
+    if (isFeatureEnabled("sales_channels")) {
+      setSalesChannels(product.sales_channels)
+      setHasSalesChannelsChanged(false)
+    }
 
     if (product?.variants) {
       const variants = product?.variants?.map((v) => ({
