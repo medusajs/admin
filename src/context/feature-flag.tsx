@@ -23,13 +23,24 @@ export const FeatureFlagProvider = ({ children }) => {
 
   const { store, isFetching } = useAdminStore()
 
+  if (store) {
+    delete store["feature_flags"]
+  }
+
   useEffect(() => {
-    if (isFetching || !store || !isLoggedIn) {
+    if (
+      isFetching ||
+      !store ||
+      !isLoggedIn ||
+      !store["feature_flags"]?.length
+    ) {
       return
     }
 
     setFeatureFlags(store["feature_flags"])
   }, [isFetching, store, isLoggedIn])
+
+  console.log(featureFlags)
 
   const featureToggleList = featureFlags.reduce(
     (acc, flag) => ({ ...acc, [flag.key]: flag.value }),
