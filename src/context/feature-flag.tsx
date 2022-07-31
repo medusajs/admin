@@ -36,8 +36,6 @@ export const FeatureFlagProvider = ({ children }) => {
     setFeatureFlags(store["feature_flags"])
   }, [isFetching, store, isLoggedIn])
 
-  console.log(featureFlags)
-
   const featureToggleList = featureFlags.reduce(
     (acc, flag) => ({ ...acc, [flag.key]: flag.value }),
     {}
