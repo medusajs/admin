@@ -23,10 +23,6 @@ export const FeatureFlagProvider = ({ children }) => {
 
   const { store, isFetching } = useAdminStore()
 
-  if (store) {
-    delete store["feature_flags"]
-  }
-
   useEffect(() => {
     if (
       isFetching ||
