@@ -33,7 +33,7 @@ type AddChannelsModalScreenProps = {
   onAddSelectedToAvailableChannels: (salesChannels: SalesChannel[]) => void
 }
 
-const LIMIT = 1
+const LIMIT = 15
 
 const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
   onAddSelectedToAvailableChannels: onAddSelectedToAvailableChannels,
