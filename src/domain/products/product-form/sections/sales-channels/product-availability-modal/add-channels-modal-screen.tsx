@@ -33,7 +33,7 @@ type AddChannelsModalScreenProps = {
   onAddSelectedToAvailableChannels: (salesChannels: SalesChannel[]) => void
 }
 
-const LIMIT = 15
+const LIMIT = 1
 
 const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
   onAddSelectedToAvailableChannels: onAddSelectedToAvailableChannels,
@@ -46,11 +46,13 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
   const { pop } = React.useContext(LayeredModalContext)
   const [columns] = useAvailableChannelsModalTableColumns()
 
-  const { sales_channels: salesChannels } = useAdminSalesChannels({
+  const { sales_channels: salesChannels, count } = useAdminSalesChannels({
     q: freeText,
+    limit: LIMIT,
+    offset,
   })
 
-  const numPages = Math.ceil((salesChannels?.length || 0) / LIMIT)
+  const numPages = Math.ceil((count || 0) / LIMIT)
 
   const filterSalesChannels = (salesChannels: SalesChannel[]) => {
     return salesChannels.filter((salesChannel) => {
