@@ -114,7 +114,7 @@ type SalesChannelAvailableProductsModalProps = {
   }
 }
 
-const LIMIT = 12
+const LIMIT = 5
 
 function useAvailableProducts(
   salesChannelId: string,
@@ -123,33 +123,38 @@ function useAvailableProducts(
   const filters = useProductFilters()
   // const params = useQueryFilters(defaultQueryProps)
 
-  const [offsetSalesChannelProducts, setOffsetSalesChannelProducts] = useState(
-    0
-  )
-  const [offsetAdditionalProducts, setOffsetAdditionalProducts] = useState(0)
+  const [offset, setOffset] = useState(0)
   const [pageIndex, setPageIndex] = useState(0)
 
   const {
     products: salesChannelProducts = [],
     count: salesChannelProductsCount = 0,
   } = useAdminProducts({
-    offset: offsetSalesChannelProducts,
+    offset: offset,
     limit: LIMIT,
     ...filters.queryObject,
     sales_channel_id: [salesChannelId],
   })
 
+  console.log(
+    offset,
+    salesChannelProductsCount,
+    salesChannelProductsCount - offset
+  )
   const {
     products: addedProducts = [],
     count: addedProductsCount = 0,
   } = useAdminProducts(
     {
       limit: LIMIT,
-      offset: offsetAdditionalProducts,
+      offset: salesChannelProductsCount - offset,
       id: newProductsIds,
       ...filters.queryObject,
     },
-    { enabled: !!newProductsIds?.length }
+    {
+      enabled:
+        !!newProductsIds?.length && salesChannelProductsCount - offset > 0,
+    }
   )
 
   return {
@@ -159,22 +164,24 @@ function useAvailableProducts(
     params: {
       queryObject: {
         limit: LIMIT,
-        offset: offsetSalesChannelProducts + offsetAdditionalProducts,
+        offset,
       },
       currentPage: pageIndex + 1,
       pageCount: (salesChannelProductsCount + addedProductsCount) / LIMIT,
       nextPage: () => {
+        setOffset((o) => o + LIMIT)
         setPageIndex((i) => i + 1)
       },
       prevPage: () => {
+        setOffset((o) => o - LIMIT)
         setPageIndex((i) => i - 1)
       },
       paginate(num: number) {
         if (num > 0) setPageIndex((i) => i + 1)
         if (num < 0) setPageIndex((i) => i - 1)
       },
-      hasNext: () => true,
-      hasPrev: () => false,
+      hasNext: () => offset < salesChannelProductsCount + addedProductsCount,
+      hasPrev: () => pageIndex > 0,
     },
   }
 }
