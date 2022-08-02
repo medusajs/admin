@@ -188,9 +188,10 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
                   setDescription={setDescription}
                 />
               </Accordion.Item>
-              <Accordion.Item title="Products" value="products">
-                <AddProducts />
-              </Accordion.Item>
+              {/*TODO: add a modal for initially selecting products*/}
+              {/*<Accordion.Item title="Products" value="products">*/}
+              {/*  <AddProducts />*/}
+              {/*</Accordion.Item>*/}
             </Accordion>
           </div>
         </div>

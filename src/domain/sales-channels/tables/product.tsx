@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import {
+  useAdminAddProductsToSalesChannel,
   useAdminDeleteProductsFromSalesChannel,
   useAdminProducts,
 } from "medusa-react"
@@ -8,10 +9,11 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
-import { Product } from "@medusajs/medusa"
+import { Product, SalesChannel } from "@medusajs/medusa"
 
 import Placeholder from "./placeholder"
 import Button from "../../../components/fundamentals/button"
@@ -24,6 +26,7 @@ import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
 import useNotification from "../../../hooks/use-notification"
+import Modal from "../../../components/molecules/modal"
 
 /* ****************************************** */
 /* ************** TABLE CONFIG ************** */
@@ -53,6 +56,7 @@ type ProductTableProps = {
   products: Product[]
   setSelectedRowIds: (ids: string[]) => void
   selectedRowIds: string[]
+  currentSalesChannelId?: string
   removeProductFromSalesChannel: (id: string) => void
   productFilters: Record<string, any>
 }
@@ -64,6 +68,7 @@ export const ProductTable = forwardRef(
   (props: ProductTableProps, ref: React.Ref<any>) => {
     const {
       tableActions,
+      currentSalesChannelId,
       productFilters: {
         setTab,
         saveTab,
@@ -144,7 +149,7 @@ export const ProductTable = forwardRef(
 
     useEffect(() => {
       setSelectedRowIds(Object.keys(state.selectedRowIds))
-    }, [Object.keys(state.selectedRowIds).length])
+    }, [state.selectedRowIds])
 
     useEffect(() => {
       const delayDebounceFn = setTimeout(() => {
@@ -230,6 +235,11 @@ export const ProductTable = forwardRef(
               return (
                 <ProductRow
                   onClick={() => toggleRowSelected(row.id)}
+                  disabled={
+                    !!row.original.sales_channels.find(
+                      (sc) => sc.id === currentSalesChannelId
+                    )
+                  }
                   row={row}
                   actions={
                     !isAddTable ? getActions(row.original.id) : undefined
@@ -260,12 +270,15 @@ export const ProductTable = forwardRef(
 /**
  * Renders product table row.
  */
-const ProductRow = ({ row, actions, onClick }) => {
+const ProductRow = ({ row, actions, onClick, disabled }) => {
   return (
     <Table.Row
-      onClick={onClick}
+      onClick={!disabled && onClick}
       color={"inherit"}
-      className={row.isSelected ? "bg-grey-5 cursor-pointer" : "cursor-pointer"}
+      className={clsx("cursor-pointer", {
+        "bg-grey-5 cursor-pointer": row.isSelected,
+        "opacity-40 cursor-not-allowed pointer-events-none": disabled,
+      })}
       actions={actions}
       {...row.getRowProps()}
     >
@@ -333,6 +346,7 @@ type SalesChannelProductsTableProps = {
  * Sales channel products table container.
  */
 function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
+  const tableRef = useRef()
   const { salesChannelId, showAddModal } = props
   const [selectedRowIds, setSelectedRowIds] = useState([])
 
@@ -351,6 +365,16 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
     sales_channel_id: [props.salesChannelId],
   })
 
+  const resetSelection = () => {
+    setSelectedRowIds([])
+    // TODO: a bug in react-table (sometimes selection is left in the state)
+    tableRef.current.toggleAllRowsSelected(false)
+  }
+
+  useEffect(() => {
+    resetSelection()
+  }, [products])
+
   const removeProductFromSalesChannel = (id: string) => {
     deleteProductsFromSalesChannel({ product_ids: [{ id }] })
 
@@ -367,7 +391,7 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
       "Products successfully removed from the sales channel",
       "success"
     )
-    setSelectedRowIds([])
+    resetSelection()
   }
 
   const isFilterOn = Object.keys(filters.queryObject).length
@@ -382,6 +406,7 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
   return (
     <div className="relative h-[880px]">
       <ProductTable
+        ref={tableRef}
         count={count}
         products={products}
         removeProductFromSalesChannel={removeProductFromSalesChannel}
@@ -392,10 +417,93 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
       <RemoveProductsPopup
         total={toBeRemoveCount}
         onRemove={removeSelectedProducts}
-        onClose={() => setSelectedRowIds([])}
+        onClose={resetSelection}
       />
     </div>
   )
 }
 
-export { SalesChannelProductsTable }
+type SalesChannelProductsSelectModalProps = {
+  handleClose: () => void
+  salesChannel: SalesChannel
+}
+
+/**
+ * Sales channels products add container.
+ * Renders product table for adding/editing sales channel products
+ * in a modal.
+ */
+function SalesChannelProductsSelectModal(
+  props: SalesChannelProductsSelectModalProps
+) {
+  const { handleClose, salesChannel } = props
+  const [selectedRowIds, setSelectedRowIds] = useState([])
+
+  const notification = useNotification()
+
+  const params = useQueryFilters(defaultQueryProps)
+  const filters = useProductFilters()
+
+  const { products, count } = useAdminProducts({
+    ...params.queryObject,
+    ...filters.queryObject,
+    expand: "sales_channels",
+  })
+
+  const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
+    salesChannel.id
+  )
+
+  const handleSubmit = () => {
+    addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
+    handleClose()
+    notification(
+      "Success",
+      "Products successfully added to the sales channel",
+      "success"
+    )
+  }
+
+  return (
+    <Modal handleClose={handleClose}>
+      <Modal.Body>
+        <Modal.Header handleClose={handleClose}>
+          <span className="inter-xlarge-semibold">Add products</span>
+        </Modal.Header>
+        <Modal.Content>
+          <ProductTable
+            isAddTable
+            products={products || []}
+            count={count}
+            setSelectedRowIds={setSelectedRowIds}
+            productFilters={filters}
+            currentSalesChannelId={salesChannel.id}
+            {...params}
+          />
+        </Modal.Content>
+        <Modal.Footer>
+          <div className="w-full flex justify-end">
+            <Button
+              variant="ghost"
+              size="small"
+              onClick={handleClose}
+              className="mr-2"
+            >
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              className="min-w-[100px]"
+              size="small"
+              onClick={handleSubmit}
+            >
+              Save
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal.Body>
+    </Modal>
+  )
+}
+
+export { SalesChannelProductsSelectModal, SalesChannelProductsTable }
