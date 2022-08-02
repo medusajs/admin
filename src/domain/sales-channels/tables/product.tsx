@@ -379,7 +379,6 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
 
   const resetSelection = () => {
     setSelectedRowIds([])
-    // TODO: a bug in react-table (sometimes selection is left in the state)
     tableRef.current?.toggleAllRowsSelected(false)
   }
 
