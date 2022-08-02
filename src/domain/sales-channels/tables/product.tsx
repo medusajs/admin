@@ -138,6 +138,18 @@ export const ProductTable = forwardRef(
         autoResetPage: false,
         autoResetSelectedRows: false,
         getRowId: (row) => row.id,
+        stateReducer: (newState, action) => {
+          switch (action.type) {
+            case "toggleAllRowsSelected":
+              return {
+                ...newState,
+                selectedRowIds: {},
+              }
+
+            default:
+              return newState
+          }
+        },
       },
       usePagination,
       useRowSelect
