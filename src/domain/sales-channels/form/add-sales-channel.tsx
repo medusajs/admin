@@ -162,7 +162,7 @@ const AddSalesChannelModal = ({ onClose }: AddSalesChannelModalProps) => {
               disabled={!name}
               className="rounded-rounded"
             >
-              Save changes
+              Publish channel
             </Button>
           </div>
         </div>
