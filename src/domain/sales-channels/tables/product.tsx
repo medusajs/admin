@@ -373,7 +373,7 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
 
   useEffect(() => {
     resetSelection()
-  }, [products])
+  }, [products, salesChannelId])
 
   const removeProductFromSalesChannel = (id: string) => {
     deleteProductsFromSalesChannel({ product_ids: [{ id }] })
