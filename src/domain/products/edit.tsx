@@ -5,6 +5,7 @@ import toast from "react-hot-toast"
 import Spinner from "../../components/atoms/spinner"
 import Toaster from "../../components/declarative-toaster"
 import FormToasterContainer from "../../components/molecules/form-toaster"
+import { FeatureFlagContext } from "../../context/feature-flag"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
 import { consolidateImages } from "../../utils/consolidate-images"
@@ -28,6 +29,8 @@ const EditProductPage = ({ id }) => {
   })
   const updateProduct = useAdminUpdateProduct(id)
   const [submitting, setSubmitting] = useState(false)
+
+  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
 
   const onSubmit = async (data) => {
     setSubmitting(true)
@@ -55,16 +58,19 @@ const EditProductPage = ({ id }) => {
       images: consolidateImages(data.images, uploadedImgs),
     }
 
-    updateProduct.mutate(formValuesToUpdateProductMapper(newData), {
-      onSuccess: () => {
-        setSubmitting(false)
-        notification("Success", "Product updated successfully", "success")
-      },
-      onError: (error) => {
-        setSubmitting(false)
-        notification("Error", getErrorMessage(error), "error")
-      },
-    })
+    updateProduct.mutate(
+      formValuesToUpdateProductMapper(newData, isFeatureEnabled),
+      {
+        onSuccess: () => {
+          setSubmitting(false)
+          notification("Success", "Product updated successfully", "success")
+        },
+        onError: (error) => {
+          setSubmitting(false)
+          notification("Error", getErrorMessage(error), "error")
+        },
+      }
+    )
   }
 
   return isLoading ? (

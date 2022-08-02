@@ -1,5 +1,7 @@
+import { SalesChannel } from "@medusajs/medusa"
 import React from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
+import { FeatureFlagContext } from "../../../../context/feature-flag"
 import { trimValues } from "../../../../utils/trim-values"
 
 export const VARIANTS_VIEW = "variants"
@@ -14,6 +16,7 @@ const defaultProduct = {
   prices: [],
   tags: [],
   options: [],
+  sales_channels: [],
   type: null,
   collection: null,
   id: "",
@@ -46,6 +49,11 @@ const ProductFormContext = React.createContext<{
   setImages: (images: any[]) => void
   appendImage: (image: any) => void
   removeImage: (image: any) => void
+  salesChannels: SalesChannel[]
+  setSalesChannels: (
+    salesChannels: SalesChannel[],
+    setDirtyState?: boolean
+  ) => void
   setViewType: (value: PRODUCT_VIEW) => void
   viewType: PRODUCT_VIEW
   isVariantsView: boolean
@@ -66,6 +74,15 @@ export const ProductFormProvider = ({
   const [variants, setVariants] = React.useState<any[]>([])
   const [productOptions, setProductOptions] = React.useState<any[]>([])
   const [hasImagesChanged, setHasImagesChanged] = React.useState(false)
+  const [hasSalesChannelsChanged, setHasSalesChannelsChanged] = React.useState(
+    false
+  )
+
+  // SALES CHANNELS
+  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
+  const [salesChannels, setSalesChannels] = React.useState<SalesChannel[]>(
+    product.sales_channels
+  )
 
   const appendImage = (image) => {
     setHasImagesChanged(true)
@@ -77,6 +94,17 @@ export const ProductFormProvider = ({
     const tmp = images.filter((img) => img.url !== image.url)
     setImages(tmp)
   }
+
+  const setProductSalesChannels = (
+    salesChannels: SalesChannel[],
+    setDirtyState: boolean = true
+  ) => {
+    if (isFeatureEnabled("sales_channels")) {
+      setSalesChannels(salesChannels)
+      setHasSalesChannelsChanged((scChanged) => setDirtyState || scChanged)
+    }
+  }
+
   const methods = useForm()
 
   const resetForm = () => {
@@ -84,8 +112,14 @@ export const ProductFormProvider = ({
       ...product,
     })
     setHasImagesChanged(false)
+    setHasSalesChannelsChanged(false)
     setImages(product.images)
     setProductOptions(product.options)
+
+    if (isFeatureEnabled("sales_channels")) {
+      setSalesChannels(product.sales_channels)
+      setHasSalesChannelsChanged(false)
+    }
 
     if (product?.variants) {
       const variants = product?.variants?.map((v) => ({
@@ -114,10 +148,18 @@ export const ProductFormProvider = ({
   }, [product])
 
   const handleSubmit = (values) => {
-    onSubmit(
-      { ...trimValues(values), images, variants, options: productOptions },
-      viewType
-    )
+    const data = {
+      ...trimValues(values),
+      images,
+      variants,
+      options: productOptions,
+    }
+
+    if (isFeatureEnabled("sales_channels")) {
+      data.sales_channels = salesChannels
+    }
+
+    onSubmit(data, viewType)
   }
 
   return (
@@ -132,6 +174,8 @@ export const ProductFormProvider = ({
           setImages,
           appendImage,
           removeImage,
+          salesChannels,
+          setSalesChannels: setProductSalesChannels,
           setViewType,
           viewType,
           isVariantsView: viewType === VARIANTS_VIEW,
@@ -139,6 +183,7 @@ export const ProductFormProvider = ({
           resetForm,
           additionalDirtyState: {
             images: hasImagesChanged,
+            salesChannels: hasSalesChannelsChanged,
           },
         }}
       >
