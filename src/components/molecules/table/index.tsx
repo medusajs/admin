@@ -46,7 +46,6 @@ export type TableProps = {
   immediateSearchFocus?: boolean
   searchPlaceholder?: string
   searchValue?: string
-  tableActions?: React.ReactNode
   containerClassName?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
@@ -76,7 +75,6 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
       immediateSearchFocus,
       searchPlaceholder,
       searchValue,
-      tableActions,
       handleSearch,
       filteringOptions,
       containerClassName,
