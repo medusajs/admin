@@ -83,5 +83,5 @@ export const useGiftCardForm = () => {
   if (!context) {
     throw new Error("useGiftCardForm must be a child of GiftCardFormContext")
   }
-  return { ...form, ...context }
+  return { form, ...context }
 }

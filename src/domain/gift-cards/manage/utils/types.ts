@@ -7,6 +7,6 @@ export type MangeGiftCardFormData = {
   description?: string | null
   type: Option | null
   tags?: string[]
-  images?: FormImage[]
+  images: FormImage[]
   thumbnail: number
 }

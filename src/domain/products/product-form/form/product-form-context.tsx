@@ -138,5 +138,5 @@ export const useProductForm = () => {
   if (!context) {
     throw new Error("useProductForm must be a child of ProductFormContext")
   }
-  return { ...form, ...context }
+  return { form, ...context }
 }

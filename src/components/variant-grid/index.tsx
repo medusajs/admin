@@ -5,10 +5,12 @@ import {
 } from "medusa-react"
 import React, { useState } from "react"
 import VariantEditor from "../../domain/products/details/variants/variant-editor"
+import { useProductForm } from "../../domain/products/product-form/form/product-form-context"
 import { buildOptionsMap } from "../../domain/products/product-form/utils/helpers"
 import useImperativeDialog from "../../hooks/use-imperative-dialog"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
+import { nestedForm } from "../../utils/nested-form"
 import DuplicateIcon from "../fundamentals/icons/duplicate-icon"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
@@ -43,6 +45,12 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
 
     onVariantsChange(newVariants)
   }
+
+  const [selectedIndex, setSelectedIndex] = useState<number>(0)
+
+  const si = `variant.${selectedIndex}`
+
+  const { form } = useProductForm()
 
   const getDisplayValue = (variant, column) => {
     const { formatter, field } = column
@@ -90,7 +98,7 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
     )
   }
 
-  const editVariantActions = (variant) => {
+  const editVariantActions = (variant, index: number) => {
     return [
       {
         label: "Edit",
@@ -132,7 +140,7 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
               <Table.Row
                 key={i}
                 color={"inherit"}
-                actions={edit && editVariantActions(variant)}
+                actions={edit && editVariantActions(variant, i)}
               >
                 {columns.map((col, j) => {
                   return (
@@ -165,6 +173,7 @@ const VariantGrid = ({ product, variants, edit, onVariantsChange }) => {
           onSubmit={isDuplicate ? handleDuplicateVariant : handleUpdateVariant}
           optionsMap={buildOptionsMap(product, selectedVariant)}
           title="Edit variant"
+          form={nestedForm(form, `variants.${selectedIndex}` as "variants.0")}
         />
       )}
     </>

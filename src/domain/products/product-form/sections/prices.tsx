@@ -9,7 +9,9 @@ import { useProductForm } from "../form/product-form-context"
 import usePricesFieldArray from "../form/use-prices-field-array"
 
 const Prices = ({ currencyCodes, defaultCurrencyCode, defaultAmount }) => {
-  const { control } = useProductForm()
+  const {
+    form: { control },
+  } = useProductForm()
   const {
     fields,
     appendPrice,

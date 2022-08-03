@@ -1,8 +1,12 @@
+import { Product, ProductVariant } from "@medusajs/medusa"
 import Medusa from "../../../../services/api"
 import { FormImage } from "../../../../types/shared"
 import { VariantFormValues } from "./types"
 
-type BuildOptionsMap = (product: any, variant?: any) => { [key: string]: any }
+type BuildOptionsMap = (
+  product: Product,
+  variant?: Partial<ProductVariant>
+) => { [key: string]: { title: string; value: string; option_id: string } }
 
 export const buildOptionsMap: BuildOptionsMap = (
   product,

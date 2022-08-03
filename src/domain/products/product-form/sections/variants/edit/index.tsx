@@ -14,6 +14,7 @@ import useImperativeDialog from "../../../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../../../utils/error-messages"
 import VariantEditor from "../../../../details/variants/variant-editor"
+import { buildOptionsMap } from "../../../utils/helpers"
 import { Column, useEditColumns } from "./use-edit-columns"
 
 type EditVariantsProps = {

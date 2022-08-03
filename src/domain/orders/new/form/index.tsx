@@ -4,7 +4,13 @@ import {
   useAdminShippingOption,
   useAdminShippingOptions,
 } from "medusa-react"
-import React, { createContext, ReactNode, useContext, useMemo } from "react"
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react"
 import {
   FormProvider,
   useFieldArray,
@@ -73,6 +79,13 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
       enabled: !!selectedShippingOption?.value,
     }
   )
+
+  useEffect(() => {
+    if (selectedShippingOption) {
+      form.resetField("shipping_option")
+      form.resetField("custom_shipping_price")
+    }
+  }, [selectedRegion])
 
   const validCountries = useMemo(() => {
     if (!region) {

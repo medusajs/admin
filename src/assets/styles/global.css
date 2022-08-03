@@ -33,6 +33,12 @@
   font-display: swap;
 }
 
+@layer base {
+  html {
+    @apply overflow-hidden
+  }
+}
+
 @layer components {
   .inter-5xlarge-regular {
     @apply font-sans text-5xlarge leading-4xlarge font-normal;

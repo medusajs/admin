@@ -1,7 +1,8 @@
 import React from "react"
-import { useFieldArray } from "react-hook-form"
+import { Controller, useFieldArray } from "react-hook-form"
 import FileUploadField from "../../../../../components/atoms/file-upload-field"
 import BodyCard from "../../../../../components/organisms/body-card"
+import RadioGroup from "../../../../../components/organisms/radio-group"
 import ImageTable, {
   ImageTableDataType,
 } from "../../../../../components/templates/image-table"
@@ -37,12 +38,7 @@ const Images = () => {
   return (
     <BodyCard title="Images" subtitle="Add up to 10 images to your product">
       <div className="mt-base">
-        <ImageTable
-          data={fields as ImageTableDataType[]}
-          form={nestedForm(form, "images")}
-          onDelete={handleRemove}
-        />
-        {/* <Controller
+        <Controller
           name="thumbnail"
           control={form.control}
           render={({ field: { value, onChange } }) => {
@@ -58,41 +54,10 @@ const Images = () => {
                   form={nestedForm(form, "images")}
                   onDelete={handleRemove}
                 />
-                {fields.map((field, index) => {
-                  return (
-                    <div key={field.id} className="flex items-center">
-                      <input
-                        className="hidden"
-                        {...form.register(`images.${index}.url`)}
-                        defaultValue={field.url}
-                      />
-                      {field.nativeFile && (
-                        <>
-                          <input
-                            className="hidden"
-                            {...form.register(`images.${index}.name`)}
-                            defaultValue={field.name}
-                          />
-                          <input
-                            className="hidden"
-                            {...form.register(`images.${index}.size`)}
-                            defaultValue={field.size}
-                          />
-                          <Controller
-                            name={`images.${index}.nativeFile`}
-                            control={form.control}
-                            defaultValue={field.nativeFile}
-                            render={() => <></>}
-                          />
-                        </>
-                      )}
-                    </div>
-                  )
-                })}
               </RadioGroup.Root>
             )
           }}
-        /> */}
+        />
       </div>
       <div className="mt-2xlarge">
         <FileUploadField

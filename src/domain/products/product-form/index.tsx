@@ -22,13 +22,13 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
   const currencyCodes = store?.currencies.map((currency) => currency.code)
 
   return (
-    <div>
+    <div className="pb-2xlarge">
       <Breadcrumb
         currentPage={"Product Details"}
         previousBreadcrumb={"Products"}
         previousRoute="/a/products"
       />
-      <div className="flex flex-col space-y-base pb-2xlarge">
+      <div className="flex flex-col space-y-base">
         <General isEdit={isEdit} product={product} showViewOptions={!isEdit} />
 
         <FeatureToggle featureFlag="sales_channels">

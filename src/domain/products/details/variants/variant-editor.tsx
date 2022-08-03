@@ -10,10 +10,13 @@ import Input from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
+import { Option } from "../../../../types/shared"
 import { convertEmptyStringToNull } from "../../../../utils/convert-empty-string-to-null"
 import { countries as countryData } from "../../../../utils/countries"
 import { focusByName } from "../../../../utils/focus-by-name"
+import { NestedForm } from "../../../../utils/nested-form"
 import usePricesFieldArray from "../../product-form/form/use-prices-field-array"
+import { VariantFormValues } from "../../product-form/utils/types"
 
 const defaultVariant = {
   prices: [] as any,
@@ -21,7 +24,41 @@ const defaultVariant = {
   options: [] as any,
 }
 
-type VariantEditorFormData = {}
+type VariantFormProps = {
+  title?: string | null
+  options: {
+    title: string
+    value: string
+    option_id: string
+  }
+  prices?: {
+    amount: number
+    currency_code: string
+  }[]
+  sku?: string
+  ean?: string
+  inventory_quantity: number
+  upc?: string
+  manage_inventory: boolean
+  allow_backorder: boolean
+  height?: number
+  width?: number
+  length?: number
+  weight?: number
+  mid_code?: string
+  hs_code?: string
+  origin_country?: Option
+  material?: string
+}
+
+type VariantEditorProps = {
+  form: NestedForm<VariantFormValues>
+  variant?: any
+  onSubmit: (variant: any) => void
+  onCancel: () => void
+  title: any
+  optionsMap: any
+}
 
 const VariantEditor = ({
   variant = defaultVariant,
@@ -29,11 +66,20 @@ const VariantEditor = ({
   onCancel,
   title,
   optionsMap,
-}) => {
+  form,
+}: VariantEditorProps) => {
   const countryOptions = countryData.map((c) => ({
     label: c.name,
     value: c.alpha2.toLowerCase(),
   }))
+
+  console.log(form, "hey")
+
+  useEffect(() => {
+    if (form) {
+      console.log(form.getValues(), form)
+    }
+  }, [form])
 
   const { store } = useAdminStore()
   const [selectedCountry, setSelectedCountry] = useState(() => {

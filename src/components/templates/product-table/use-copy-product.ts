@@ -1,3 +1,4 @@
+import { AdminPostProductsReq, Product } from "@medusajs/medusa"
 import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
 import useNotification from "../../../hooks/use-notification"
@@ -5,13 +6,15 @@ import { getErrorMessage } from "../../../utils/error-messages"
 
 const useCopyProduct = () => {
   const notification = useNotification()
-  const createProduct = useAdminCreateProduct()
+  const { mutate } = useAdminCreateProduct()
 
-  const handleCopyProduct = async (product) => {
-    const copy: any = {
+  const handleCopyProduct = (product: Product) => {
+    const copy: AdminPostProductsReq = {
       title: `${product.title} copy`,
-      description: `${product.description}`,
+      description: product.description || undefined,
       handle: `${product.handle}-copy`,
+      is_giftcard: product.is_giftcard,
+      discountable: product.discountable,
     }
 
     copy.options = product.options.map((po) => ({
@@ -21,18 +24,12 @@ const useCopyProduct = () => {
     copy.variants = product.variants.map((pv) => ({
       title: pv.title,
       inventory_quantity: pv.inventory_quantity,
-      prices: pv.prices.map((price) => {
-        const p = {
-          amount: price.amount,
+      prices: pv.prices.map((p) => {
+        return {
+          amount: p.amount,
+          currency_code: p.currency_code,
+          region_id: p.region_id,
         }
-        if (price.region_id) {
-          p.region_id = price.region_id
-        }
-        if (price.currency_code) {
-          p.currency_code = price.currency_code
-        }
-
-        return p
       }),
       options: pv.options.map((pvo) => ({ value: pvo.value })),
     }))
@@ -56,16 +53,15 @@ const useCopyProduct = () => {
       copy.thumbnail = product.thumbnail
     }
 
-    try {
-      const data = await createProduct.mutateAsync(copy)
-      const newProduct = data?.product
-      if (newProduct) {
-        navigate(`/a/products/${newProduct.id}`)
+    mutate(copy, {
+      onSuccess: ({ product: copiedProduct }) => {
+        navigate(`/a/products/${copiedProduct.id}`)
         notification("Success", "Created a new product", "success")
-      }
-    } catch (err) {
-      notification("Error", getErrorMessage(err), "error")
-    }
+      },
+      onError: (error) => {
+        notification("Error", getErrorMessage(error), "error")
+      },
+    })
   }
 
   return handleCopyProduct

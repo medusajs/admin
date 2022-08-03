@@ -11,15 +11,22 @@ import { ProductFormValues } from "../utils/types"
 export const productToFormValuesMapper = (
   product: Product
 ): ProductFormValues => {
+  let thumbnail: number | null = product.images.findIndex(
+    (image) => image.url === product.thumbnail
+  )
+
+  if (thumbnail === -1) {
+    thumbnail = null
+  }
+
   return {
     title: product.title,
     handle: product.handle,
     description: product.description,
     images: product.images.map((i) => ({
       url: i.url,
-      isThumbnail:
-        product.thumbnail && i.url === product.thumbnail ? true : false,
     })),
+    thumbnail,
     collection: product.collection
       ? { value: product.collection.id, label: product.collection.title }
       : null,
@@ -108,12 +115,8 @@ export const formValuesToCreateProductMapper = async (
     payload.images = images.map((img) => img.url)
   }
 
-  if (values.images?.length && payload.images?.length) {
-    const thumbnailIndex = values.images.findIndex((i) => i.isThumbnail)
-
-    if (thumbnailIndex !== -1) {
-      payload.thumbnail = payload.images[thumbnailIndex]
-    }
+  if (values.thumbnail) {
+    payload.thumbnail = payload.images?.[values.thumbnail]
   }
 
   return {
@@ -154,12 +157,9 @@ export const formValuesToUpdateProductMapper = async (
     payload.images = []
   }
 
-  if (values.images?.length && payload.images.length) {
-    const thumbnailIndex = values.images.findIndex((i) => i.isThumbnail)
-
-    if (thumbnailIndex !== -1) {
-      payload.thumbnail = payload.images[thumbnailIndex]
-    }
+  if (values.thumbnail) {
+    // @ts-ignore
+    payload.thumbnail = payload.images?.[values.thumbnail] || null
   }
 
   return {

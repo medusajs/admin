@@ -1,5 +1,5 @@
 import qs from "query-string"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import AddressForm from "../../../../components/templates/address-form"
@@ -14,6 +14,7 @@ import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import { Option } from "../../../../types/shared"
 import isNullishObject from "../../../../utils/is-nullish-object"
+import mapAddressToForm from "../../../../utils/map-address-to-form"
 import { nestedForm } from "../../../../utils/nested-form"
 import { useNewOrderForm } from "../form"
 
@@ -56,6 +57,19 @@ const ShippingDetails = () => {
     enabled: !!customerId?.value,
   })
 
+  const validAddresses = useMemo(() => {
+    if (!customer) {
+      return []
+    }
+
+    const validCountryCodes = validCountries.map(({ value }) => value)
+
+    return customer.shipping_addresses.filter(
+      ({ country_code }) =>
+        !country_code || validCountryCodes.includes(country_code)
+    )
+  }, [customer])
+
   const onCustomerSelect = (val: Option) => {
     const email = /\(([^()]*)\)$/.exec(val?.label)
 
@@ -67,6 +81,18 @@ const ShippingDetails = () => {
   const onCreateNew = () => {
     form.setValue("shipping_address_id", undefined)
     setAddNew(true)
+  }
+
+  const onSelectExistingAddress = (id: string) => {
+    if (!customer) {
+      return
+    }
+
+    const address = customer.shipping_addresses?.find((a) => a.id === id)
+
+    if (address) {
+      form.setValue("shipping_address", mapAddressToForm(address))
+    }
   }
 
   const email = useWatch({
@@ -166,7 +192,7 @@ const ShippingDetails = () => {
         <div>
           <Spinner variant="primary" />
         </div>
-      ) : customer?.shipping_addresses.length && !addNew ? (
+      ) : validAddresses.length && !addNew ? (
         <div>
           <span className="inter-base-semibold">Choose existing addresses</span>
           <Controller
@@ -179,9 +205,10 @@ const ShippingDetails = () => {
                   value={value}
                   onValueChange={(id) => {
                     onChange(id)
+                    onSelectExistingAddress(id)
                   }}
                 >
-                  {customer.shipping_addresses.map((sa, i) => (
+                  {validAddresses.map((sa, i) => (
                     <RadioGroup.Item
                       label={`${sa.first_name} ${sa.last_name}`}
                       checked={!!value && sa.id === value}

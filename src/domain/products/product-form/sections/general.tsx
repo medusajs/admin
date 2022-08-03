@@ -26,11 +26,9 @@ import { PRODUCT_VIEW } from "../utils/constants"
 
 const General = ({ showViewOptions = true, isEdit = false, product }) => {
   const {
-    register,
-    control,
+    form: { register, control, setValue },
     setViewType,
     viewType,
-    setValue,
   } = useProductForm()
   const { product_types } = useAdminProductTypes(undefined, { cacheTime: 0 })
   const { collections } = useAdminCollections()
@@ -99,6 +97,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           Give your product a short and clear description. 120-160 characters is
           the recommended length for search engines.
         </label>
+
         <div className="grid grid-rows-3 grid-cols-2 gap-x-8 gap-y-4 mb-large">
           <Textarea
             id="description"

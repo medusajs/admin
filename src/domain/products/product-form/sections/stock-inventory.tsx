@@ -10,7 +10,10 @@ import { numberOrNull } from "../../../../utils/form-helpers"
 import { useProductForm } from "../form/product-form-context"
 
 const StockAndInventory = () => {
-  const { isVariantsView, register, control } = useProductForm()
+  const {
+    isVariantsView,
+    form: { register, control },
+  } = useProductForm()
   const countryOptions = countryData.map((c) => ({
     label: c.name,
     value: c.name,

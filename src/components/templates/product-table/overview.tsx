@@ -1,3 +1,4 @@
+import { Product } from "@medusajs/medusa"
 import clsx from "clsx"
 import { Link } from "gatsby"
 import * as React from "react"
@@ -11,7 +12,15 @@ import StatusIndicator from "../../fundamentals/status-indicator"
 import Actionables from "../../molecules/actionables"
 import useProductActions from "./use-product-actions"
 
-const ProductOverview = ({ products, toggleListView }) => {
+type ProductOverviewProps = {
+  products?: Product[]
+  toggleListView: () => void
+}
+
+const ProductOverview = ({
+  products,
+  toggleListView,
+}: ProductOverviewProps) => {
   return (
     <>
       <div className="flex justify-end border-t border-b border-grey-20 py-2.5 pr-xlarge">

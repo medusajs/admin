@@ -1,4 +1,5 @@
 import React, { useMemo } from "react"
+import { Controller } from "react-hook-form"
 import { Column, useTable } from "react-table"
 import { FormImage } from "../../../types/shared"
 import { NestedForm } from "../../../utils/nested-form"
@@ -17,7 +18,7 @@ type ImageTableProps = {
 }
 
 const ImageTable = ({ data, form, onDelete }: ImageTableProps) => {
-  const { control, register } = form
+  const { control, register, path } = form
 
   const columns = useMemo<
     Column<{ id?: string | undefined } & FormImage>[]
@@ -46,17 +47,25 @@ const ImageTable = ({ data, form, onDelete }: ImageTableProps) => {
       },
       {
         Header: () => <span>File name</span>,
-        accessor: "name",
+        accessor: "nativeFile",
         Cell: ({ cell }) => {
           return (
-            <div className="w-full">
-              <p className="inter-small-regular">{cell.row.original?.name}</p>
-              {cell.row.original?.size && (
-                <span className="inter-small-regular text-grey-50">
-                  {(cell.row.original.size / 1024).toFixed(2)} KB
-                </span>
-              )}
-            </div>
+            <Controller
+              control={control}
+              name={path(`${cell.row.index}.nativeFile`)}
+              render={({ field: { value } }) => {
+                return (
+                  <div className="w-full">
+                    <p className="inter-small-regular">{value?.name}</p>
+                    {value?.size && (
+                      <span className="inter-small-regular text-grey-50">
+                        {(value.size / 1024).toFixed(2)} KB
+                      </span>
+                    )}
+                  </div>
+                )
+              }}
+            />
           )
         },
       },

@@ -84,11 +84,6 @@ const AddressForm = ({
           placeholder="Address 2"
           label="Address 2"
         />
-        <Input
-          {...form.register(path("company"))}
-          placeholder="Company"
-          label="Company"
-        />
         <div className="grid grid-cols-[144px_1fr] gap-x-base">
           <Input
             {...form.register(path("postal_code"), {

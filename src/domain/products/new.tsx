@@ -22,7 +22,7 @@ const NewProductPage = () => {
 
 const SaveNotification = ({ isLoading = false }) => {
   const {
-    formState,
+    form: { formState },
     resetForm,
     additionalDirtyState,
     onCreate,

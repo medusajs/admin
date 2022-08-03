@@ -6,13 +6,14 @@ import RadioGroup from "../../../../components/organisms/radio-group"
 import ImageTable, {
   ImageTableDataType,
 } from "../../../../components/templates/image-table"
+import { nestedForm } from "../../../../utils/nested-form"
 import { useGiftCardForm } from "../form/gift-card-form-context"
 
 const Images = () => {
-  const { register, setImageDirtyState, control } = useGiftCardForm()
+  const { form, setImageDirtyState } = useGiftCardForm()
 
   const { fields, append, remove } = useFieldArray({
-    control,
+    control: form.control,
     name: "images",
   })
 
@@ -39,7 +40,7 @@ const Images = () => {
       <div className="mt-base">
         <Controller
           name="thumbnail"
-          control={control}
+          control={form.control}
           render={({ field: { value, onChange } }) => {
             return (
               <RadioGroup.Root
@@ -50,6 +51,7 @@ const Images = () => {
               >
                 <ImageTable
                   data={fields as ImageTableDataType[]}
+                  form={nestedForm(form, "images")}
                   onDelete={handleRemove}
                 />
                 {fields.map((field, index) => {
@@ -57,24 +59,24 @@ const Images = () => {
                     <div key={field.id} className="flex items-center">
                       <input
                         className="hidden"
-                        {...register(`images.${index}.url`)}
+                        {...form.register(`images.${index}.url`)}
                         defaultValue={field.url}
                       />
                       {field.nativeFile && (
                         <>
                           <input
                             className="hidden"
-                            {...register(`images.${index}.name`)}
+                            {...form.register(`images.${index}.name`)}
                             defaultValue={field.name}
                           />
                           <input
                             className="hidden"
-                            {...register(`images.${index}.size`)}
+                            {...form.register(`images.${index}.size`)}
                             defaultValue={field.size}
                           />
                           <Controller
                             name={`images.${index}.nativeFile`}
-                            control={control}
+                            control={form.control}
                             defaultValue={field.nativeFile}
                             render={() => <></>}
                           />

@@ -5,8 +5,10 @@ import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../../../components/organisms/body-card"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import { nestedForm } from "../../../../utils/nested-form"
 import NewOption from "../../details/variants/option-edit"
 import VariantEditor from "../../details/variants/variant-editor"
+import { useProductForm } from "../form/product-form-context"
 import { buildOptionsMap } from "../utils/helpers"
 import CreateVariants from "./variants/create"
 import EditVariants from "./variants/edit"
@@ -16,6 +18,8 @@ const Variants = ({ isEdit, product }) => {
   const [showAddOption, setShowAddOption] = useState(false)
   const notification = useNotification()
   const createVariant = useAdminCreateVariant(product?.id)
+
+  const { form } = useProductForm()
 
   const handleAddVariant = (data) => {
     const newVariant = {
@@ -131,6 +135,7 @@ const Variants = ({ isEdit, product }) => {
           onSubmit={handleAddVariant}
           title="Add variant"
           optionsMap={buildOptionsMap(product)}
+          form={nestedForm(form, "variants.0")}
         />
       )}
     </BodyCard>
