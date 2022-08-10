@@ -5,7 +5,7 @@ import Button from "../../components/fundamentals/button"
 import InputField from "../../components/molecules/input"
 import Modal from "../../components/molecules/modal"
 import Select from "../../components/molecules/select"
-import Textarea from "../../components/molecules/textarea"
+import TextArea from "../../components/molecules/textarea"
 import CurrencyInput from "../../components/organisms/currency-input"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
@@ -124,7 +124,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
                 placeholder="lebron@james.com"
                 type="email"
               />
-              <Textarea
+              <TextArea
                 label={"Personal Message"}
                 rows={7}
                 placeholder="Something nice to someone special"

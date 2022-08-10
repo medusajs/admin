@@ -15,7 +15,7 @@ import Input from "../../../../components/molecules/input"
 import Select from "../../../../components/molecules/select"
 import StatusSelector from "../../../../components/molecules/status-selector"
 import TagInput from "../../../../components/molecules/tag-input"
-import Textarea from "../../../../components/molecules/textarea"
+import TextArea from "../../../../components/molecules/textarea"
 import BodyCard from "../../../../components/organisms/body-card"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
@@ -99,7 +99,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
         </label>
 
         <div className="grid grid-rows-3 grid-cols-2 gap-x-8 gap-y-4 mb-large">
-          <Textarea
+          <TextArea
             id="description"
             label="Description"
             placeholder="Short description of the product..."

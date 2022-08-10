@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import Button from "../../fundamentals/button"
 import DiscordIcon from "../../fundamentals/icons/discord-icon"
 import InputField from "../../molecules/input"
-import Textarea from "../../molecules/textarea"
+import TextArea from "../../molecules/textarea"
 
 import * as RadixDropdown from "@radix-ui/react-popover"
 import Picker, { SKIN_TONE_NEUTRAL } from "emoji-picker-react"
@@ -69,7 +69,7 @@ const MailDialog = ({ onDismiss }) => {
           placeholder="What is it about?..."
           onChange={(e) => setSubject(e.target.value)}
         />
-        <Textarea
+        <TextArea
           label={"How can we help?"}
           placeholder="Write a message..."
           value={body}
@@ -86,7 +86,7 @@ const MailDialog = ({ onDismiss }) => {
             onChange={setShowEmojiPicker}
             onEmojiClick={handleAddEmoji}
           />
-        </Textarea>
+        </TextArea>
       </div>
       <div className="flex flex-col items-center">
         <span className="text-grey-40 mb-3">
