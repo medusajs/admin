@@ -1,3 +1,4 @@
+import { Product } from "@medusajs/medusa"
 import { useAdminStore } from "medusa-react"
 import * as React from "react"
 import FeatureToggle from "../../../components/fundamentals/feature-toggle"
@@ -12,7 +13,7 @@ import StockAndInventory from "./sections/stock-inventory"
 import Variants from "./sections/variants"
 
 type ProductFormProps = {
-  product?: any
+  product?: Product
   isEdit?: boolean
 }
 

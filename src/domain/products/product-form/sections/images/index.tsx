@@ -10,7 +10,7 @@ import { nestedForm } from "../../../../../utils/nested-form"
 import { useProductForm } from "../../form/product-form-context"
 
 const Images = () => {
-  const form = useProductForm()
+  const { form, setImageDirtyState } = useProductForm()
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -18,7 +18,7 @@ const Images = () => {
   })
 
   const handleRemove = (index: number) => {
-    form.setImageDirtyState(true)
+    setImageDirtyState(true)
     remove(index)
   }
 

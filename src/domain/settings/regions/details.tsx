@@ -197,7 +197,7 @@ const RegionDetails = ({ id, onDelete, handleSelect }: RegionDetailsProps) => {
                   control={control}
                   render={({ field: { value, onChange } }) => {
                     return (
-                      <CurrencyInput
+                      <CurrencyInput.Root
                         currentCurrency={value}
                         currencyCodes={currencyOptions}
                         onChange={onChange}

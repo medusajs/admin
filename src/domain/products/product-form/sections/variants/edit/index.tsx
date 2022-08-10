@@ -13,7 +13,9 @@ import Table from "../../../../../../components/molecules/table"
 import useImperativeDialog from "../../../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../../../utils/error-messages"
+import { nestedForm } from "../../../../../../utils/nested-form"
 import VariantEditor from "../../../../details/variants/variant-editor"
+import { useProductForm } from "../../../form/product-form-context"
 import { buildOptionsMap } from "../../../utils/helpers"
 import { Column, useEditColumns } from "./use-edit-columns"
 
@@ -34,6 +36,8 @@ const EditVariants = ({ product }: EditVariantsProps) => {
   const dialog = useImperativeDialog()
   const notification = useNotification()
 
+  const { form } = useProductForm()
+
   const handleDelete = async (variant: ProductVariant) => {
     const shouldDelete = await dialog({
       heading: "Delete product variant",
@@ -50,6 +54,10 @@ const EditVariants = ({ product }: EditVariantsProps) => {
         },
       })
     }
+  }
+
+  const handleUpdate = (data: unknown) => {
+    console.log(data)
   }
 
   const handleDuplicate = (variant: ProductVariant) => {
@@ -139,6 +147,7 @@ const EditVariants = ({ product }: EditVariantsProps) => {
       </Table>
       {selectedVariant && (
         <VariantEditor
+          form={nestedForm(form, "variants.0")}
           variant={selectedVariant}
           onCancel={() => setSelectedVariant(null)}
           onSubmit={isDuplicate ? handleDuplicate : handleUpdate}
