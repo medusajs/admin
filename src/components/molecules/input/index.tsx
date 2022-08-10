@@ -75,11 +75,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
     }
 
     return (
-      <div
-        className={clsx("w-full", className)}
-        onClick={() => !fieldProps.disabled && inputRef?.current?.focus()}
-        {...props}
-      >
+      <div className={clsx("w-full", className)} {...props}>
         {label && (
           <InputHeader
             {...{ label, required, tooltipContent, tooltip }}

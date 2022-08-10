@@ -12,7 +12,7 @@ import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../components/fundamentals/icons/trash-icon"
 import InputField from "../../components/molecules/input"
 import Modal from "../../components/molecules/modal"
-import Textarea from "../../components/molecules/textarea"
+import TextArea from "../../components/molecules/textarea"
 import CurrencyInput from "../../components/organisms/currency-input"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
@@ -153,7 +153,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                 placeholder="The best Gift Card"
                 {...register("title", { required: true })}
               />
-              <Textarea
+              <TextArea
                 label="Description"
                 placeholder="The best Gift Card of all time"
                 {...register("description")}

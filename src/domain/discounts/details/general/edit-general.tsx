@@ -6,7 +6,7 @@ import Button from "../../../../components/fundamentals/button"
 import InputField from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import Select from "../../../../components/molecules/select"
-import Textarea from "../../../../components/molecules/textarea"
+import TextArea from "../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import useNotification from "../../../../hooks/use-notification"
 import { Option } from "../../../../types/shared"
@@ -102,7 +102,7 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
                 validate: (value) =>
                   Array.isArray(value) ? value.length > 0 : !!value,
               }}
-              render={({ field: {value, onChange} }) => {
+              render={({ field: { value, onChange } }) => {
                 return (
                   <Select
                     value={value}
@@ -125,7 +125,7 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
                 className="flex-1"
                 placeholder="SUMMERSALE10"
                 required
-                {...register("code",{ required: "Code is required" })}
+                {...register("code", { required: "Code is required" })}
               />
 
               {type !== "free_shipping" && (
@@ -167,7 +167,7 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
                         type="number"
                         placeholder="10"
                         prefix={"%"}
-                        {...register("value",{
+                        {...register("value", {
                           required: "Percentage is required",
                           valueAsNumber: true,
                         })}
@@ -185,7 +185,7 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
               </span>
               <span>Uppercase letters and numbers only.</span>
             </div>
-            <Textarea
+            <TextArea
               label="Description"
               required
               placeholder="Summer Sale 2022"

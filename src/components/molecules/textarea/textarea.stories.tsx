@@ -1,14 +1,14 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react"
 import React from "react"
-import Textarea from "."
+import TextArea from "."
 
 export default {
   title: "Molecules/Textarea",
-  component: Textarea,
-} as ComponentMeta<typeof Textarea>
+  component: TextArea,
+} as ComponentMeta<typeof TextArea>
 
-const Template: ComponentStory<typeof Textarea> = (args) => (
-  <Textarea {...args} />
+const Template: ComponentStory<typeof TextArea> = (args) => (
+  <TextArea {...args} />
 )
 
 export const Short = Template.bind({})

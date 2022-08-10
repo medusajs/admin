@@ -6,7 +6,7 @@ import Checkbox from "../../../../../components/atoms/checkbox"
 import IconTooltip from "../../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../../components/molecules/input"
 import Select from "../../../../../components/molecules/select"
-import Textarea from "../../../../../components/molecules/textarea"
+import TextArea from "../../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../../components/organisms/currency-input"
 import { useDiscountForm } from "../form/discount-form-context"
 
@@ -133,7 +133,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
                       type="number"
                       placeholder="10"
                       prefix={"%"}
-                      {...register("rule.value",{
+                      {...register("rule.value", {
                         required: true,
                         valueAsNumber: true,
                       })}
@@ -151,12 +151,12 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
             </span>
             <span>Uppercase letters and numbers only.</span>
           </div>
-          <Textarea
+          <TextArea
             label="Description"
             required
             placeholder="Summer Sale 2022"
             rows={1}
-            {...register("rule.description",{
+            {...register("rule.description", {
               required: true,
             })}
           />
@@ -164,7 +164,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
             <Controller
               name="is_dynamic"
               control={control}
-              render={({ field: { onChange, value } }) => {
+              render={({ field: { onChange, value } }) => {
                 return (
                   <Checkbox
                     label="This is a template discount"
