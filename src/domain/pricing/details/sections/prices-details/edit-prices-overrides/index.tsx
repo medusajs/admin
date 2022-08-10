@@ -12,6 +12,7 @@ import ProductVariantLeaf from "./product-variant-leaf"
 import { useParams } from "@reach/router"
 import { mapToPriceList } from "./mappers"
 import { mergeExistingWithDefault } from "../../../utils"
+import useNotification from "../../../../../../hooks/use-notification"
 
 type EditPricesOverridesModalProps = {
   product: Product
@@ -31,6 +32,8 @@ const EditPricesOverridesModal = ({
     currency_code: curr.code,
     amount: 0,
   })) as MoneyAmount[]
+
+  const notification = useNotification()
 
   const getOnClick = (variant) => () =>
     context.push({
@@ -57,6 +60,11 @@ const EditPricesOverridesModal = ({
                 onSuccess: () => {
                   context.pop()
                   close()
+                  notification(
+                    "Success",
+                    "Price overrides updated",
+                    "success"
+                  )
                 },
               }
             )
