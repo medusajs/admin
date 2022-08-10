@@ -51,7 +51,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
         previousBreadcrumb={"Customers"}
         previousRoute="/a/customers"
       />
-      <BodyCard className={"h-auto w-full pt-[100px] mb-4"}>
+      <BodyCard className={"h-auto w-full pt-[100px] mb-4 relative"}>
         <div className="h-[120px] w-full absolute top-0 right-0 left-0 bg-gradient-to-b from-fuschia-20 z-0" />
         <div className="flex flex-col grow overflow-y-auto">
           <div className="w-[64px] h-[64px] mb-4">

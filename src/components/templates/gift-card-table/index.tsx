@@ -1,197 +1,196 @@
-import moment from "moment"
+import { RouteComponentProps, useLocation } from "@reach/router"
+import clsx from "clsx"
+import { isEmpty } from "lodash"
+import { useAdminGiftCards } from "medusa-react"
+import qs from "qs"
 import React, { useEffect, useState } from "react"
-import { formatAmountWithSymbol } from "../../../utils/prices"
-import StatusIndicator from "../../fundamentals/status-indicator"
-import IconTooltip from "../../molecules/icon-tooltip"
-import Table from "../../molecules/table"
-import { FilteringOptionProps } from "../../molecules/table/filtering-option"
+import { usePagination, useTable } from "react-table"
+import Spinner from "../../atoms/spinner"
+import Table, { TablePagination } from "../../molecules/table"
+import GiftCardFilters from "../gift-card-filter-dropdown"
+import useGiftCardTableColums from "./use-gift-card-column"
+import { useGiftCardFilters } from "./use-gift-card-filters"
 
-type GiftCardTableProps = {
-  giftCards: any[]
-}
+const DEFAULT_PAGE_SIZE = 15
 
-const GiftCardTable: React.FC<GiftCardTableProps> = ({ giftCards }) => {
-  const [shownGiftCards, setShowngiftCards] = useState<any[]>(giftCards)
-  const [
-    originalAmountSortDirection,
-    setOriginalAmountSortDirection,
-  ] = useState(undefined)
-  const [
-    remainingAmountSortDirection,
-    setRemainingAmountSortDirection,
-  ] = useState(undefined)
-  const [createdAtSortDirection, setCreatedAtSortDirection] = useState(
-    undefined
+const defaultQueryProps = {}
+
+const GiftCardTable: React.FC<RouteComponentProps> = () => {
+  const location = useLocation()
+
+  const {
+    removeTab,
+    setTab,
+    saveTab,
+    availableTabs: filterTabs,
+    activeFilterTab,
+    reset,
+    paginate,
+    setFilters,
+    filters,
+    setQuery: setFreeText,
+    queryObject,
+    representationObject,
+  } = useGiftCardFilters(location.search, defaultQueryProps)
+  const filtersOnLoad = queryObject
+
+  const offs = parseInt(filtersOnLoad?.offset) || 0
+  const lim = parseInt(filtersOnLoad.limit) || DEFAULT_PAGE_SIZE
+
+  const [query, setQuery] = useState(filtersOnLoad?.query)
+  const [numPages, setNumPages] = useState(0)
+
+  const { gift_cards, isLoading, count } = useAdminGiftCards(queryObject)
+
+  useEffect(() => {
+    const controlledPageCount = Math.ceil(count! / queryObject.limit)
+    setNumPages(controlledPageCount)
+  }, [gift_cards])
+
+  const [columns] = useGiftCardTableColums()
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    canPreviousPage,
+    canNextPage,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    // Get the state from the instance
+    state: { pageIndex },
+  } = useTable(
+    {
+      columns,
+      data: gift_cards || [],
+      manualPagination: true,
+      initialState: {
+        pageSize: lim,
+        pageIndex: offs / lim,
+      },
+      pageCount: numPages,
+      autoResetPage: false,
+    },
+    usePagination
   )
 
-  const [sortingClicked, setSortingClicked] = useState(false)
+  // Debounced search
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (query) {
+        setFreeText(query)
+        gotoPage(0)
+      } else {
+        // if we delete query string, we reset the table view
+        reset()
+      }
+    }, 400)
 
-  const [filteringOptions, setFilterinOptions] = useState<
-    FilteringOptionProps[]
-  >([])
+    return () => clearTimeout(delayDebounceFn)
+  }, [query])
 
-  const handleSort = () => {
-    // TODO Correct sorting with api update
+  const handleNext = () => {
+    if (canNextPage) {
+      paginate(1)
+      nextPage()
+    }
+  }
+
+  const handlePrev = () => {
+    if (canPreviousPage) {
+      paginate(-1)
+      previousPage()
+    }
+  }
+
+  const updateUrlFromFilter = (obj = {}) => {
+    const stringified = qs.stringify(obj)
+    window.history.replaceState(`/a/gift-cards`, "", `${`?${stringified}`}`)
+  }
+
+  const refreshWithFilters = () => {
+    const filterObj = representationObject
+
+    if (isEmpty(filterObj)) {
+      updateUrlFromFilter({ offset: 0, limit: DEFAULT_PAGE_SIZE })
+    } else {
+      updateUrlFromFilter(filterObj)
+    }
+  }
+
+  const clearFilters = () => {
+    reset()
+    setQuery("")
   }
 
   useEffect(() => {
-    if (sortingClicked) {
-      handleSort()
-    }
-    setSortingClicked(false)
-  }, [sortingClicked])
-
-  useEffect(() => {
-    if (!giftCards) {
-      return
-    }
-    const creationTimeOptions = giftCards.reduce((prev, curr) => {
-      const year = moment(curr.created_at).format("YYYY")
-      prev[year] = [...(prev[year] || []), curr]
-      return prev
-    }, {})
-
-    // TODO correct filtering with api update
-    setFilterinOptions([
-      {
-        title: "Creation time",
-        options: [
-          {
-            title: "All",
-            count: giftCards.length,
-            onClick: () => setShowngiftCards(giftCards),
-          },
-          ...Object.keys(creationTimeOptions).map((co) => {
-            return {
-              title: co,
-              count: creationTimeOptions[co].length,
-              onClick: () => setShowngiftCards(creationTimeOptions[co]),
-            }
-          }),
-        ],
-      },
-      {
-        title: "Status",
-        options: [
-          {
-            title: "All",
-            count: giftCards.length,
-            onClick: () => setShowngiftCards(giftCards),
-          },
-          {
-            title: "None",
-            count: giftCards.filter((gc) => !gc.balance).length,
-            onClick: () =>
-              setShowngiftCards(giftCards.filter((gc) => !gc.balance)),
-          },
-          {
-            title: "Value left",
-            count: giftCards.filter((gc) => gc.balance).length,
-            onClick: () =>
-              setShowngiftCards(giftCards.filter((gc) => gc.balance)),
-          },
-        ],
-      },
-    ])
-
-    setShowngiftCards(giftCards)
-  }, [giftCards])
-
-  const getGiftCardRow = (giftCard, index) => {
-    return (
-      <Table.Row
-        linkTo={`/a/gift-cards/${giftCard.id}`}
-        key={`giftCard-${index}`}
-        color={"inherit"}
-      >
-        <Table.Cell className="w-[200px] truncate">{giftCard.code}</Table.Cell>
-        <Table.Cell
-          className="truncate"
-          {...(giftCard.order && {
-            linkTo: `/a/orders/${giftCard.order.id}`,
-          })}
-        >
-          {giftCard.order ? `# ${giftCard.order.display_id}` : "-"}
-        </Table.Cell>
-        <Table.Cell>
-          {giftCard?.region ? (
-            formatAmountWithSymbol({
-              amount: giftCard.value,
-              currency: giftCard.region.currency_code,
-            })
-          ) : (
-            <div className="flex items-center space-x-2">
-              <span>N / A</span>
-              <IconTooltip content={"Region has been deleted"} />
-            </div>
-          )}
-        </Table.Cell>
-        <Table.Cell className="">
-          {giftCard.balance ? (
-            giftCard?.region ? (
-              formatAmountWithSymbol({
-                amount: giftCard.value,
-                currency: giftCard.region.currency_code,
-              })
-            ) : (
-              <div className="flex items-center space-x-2">
-                <span>N / A</span>
-                <IconTooltip content={"Region has been deleted"} />
-              </div>
-            )
-          ) : (
-            <StatusIndicator title="None" variant="danger" />
-          )}
-        </Table.Cell>
-        <Table.Cell className="truncate">
-          {moment(giftCard.created_at).format("MMM Do YYYY")}
-        </Table.Cell>
-        <Table.Cell></Table.Cell>
-      </Table.Row>
-    )
-  }
-
-  const handleGiftCardSearch = (term: string) => {}
+    refreshWithFilters()
+  }, [representationObject])
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full overflow-y-auto flex flex-col justify-between min-h-[300px] h-full ">
       <Table
-        filteringOptions={filteringOptions}
+        filteringOptions={null}
         enableSearch
-        searchPlaceholder={"Search Gift Cards"}
-        handleSearch={handleGiftCardSearch}
+        handleSearch={setQuery}
+        searchValue={query}
+        {...getTableProps()}
+        className={clsx({ ["relative"]: isLoading })}
       >
         <Table.Head>
-          <Table.HeadRow>
-            <Table.HeadCell>Code</Table.HeadCell>
-            <Table.HeadCell>Order</Table.HeadCell>
-            <Table.SortingHeadCell
-              sortDirection={originalAmountSortDirection}
-              setSortDirection={setOriginalAmountSortDirection}
-              onSortClicked={() => setSortingClicked(true)}
-            >
-              Original amount
-            </Table.SortingHeadCell>
-            <Table.SortingHeadCell
-              sortDirection={remainingAmountSortDirection}
-              setSortDirection={setRemainingAmountSortDirection}
-              onSortClicked={() => setSortingClicked(true)}
-            >
-              Amount left
-            </Table.SortingHeadCell>
-            <Table.SortingHeadCell
-              sortDirection={createdAtSortDirection}
-              setSortDirection={setCreatedAtSortDirection}
-              onSortClicked={() => setSortingClicked(true)}
-            >
-              Created
-            </Table.SortingHeadCell>
-          </Table.HeadRow>
+          {headerGroups?.map((headerGroup) => (
+            <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((col) => (
+                <Table.HeadCell {...col.getHeaderProps()}>
+                  {col.render("Header")}
+                </Table.HeadCell>
+              ))}
+            </Table.HeadRow>
+          ))}
         </Table.Head>
-        <Table.Body className="text-grey-90">
-          {shownGiftCards?.map((gc, idx) => getGiftCardRow(gc, idx))}
-        </Table.Body>
+        {isLoading || !gift_cards ? (
+          <div className="flex w-full h-full absolute items-center justify-center mt-10">
+            <div className="">
+              <Spinner size={"large"} variant={"secondary"} />
+            </div>
+          </div>
+        ) : (
+          <Table.Body {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row)
+              return (
+                <Table.Row
+                  color={"inherit"}
+                  linkTo={row.original.id}
+                  {...row.getRowProps()}
+                  className="group"
+                >
+                  {row.cells.map((cell, index) => {
+                    return cell.render("Cell", { index })
+                  })}
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        )}
       </Table>
+      <TablePagination
+        count={count!}
+        limit={queryObject.limit}
+        offset={queryObject.offset}
+        pageSize={queryObject.offset + rows.length}
+        title="Gift cards"
+        currentPage={pageIndex + 1}
+        pageCount={pageCount}
+        nextPage={handleNext}
+        prevPage={handlePrev}
+        hasNext={canNextPage}
+        hasPrev={canPreviousPage}
+      />
     </div>
   )
 }

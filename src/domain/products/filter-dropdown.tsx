@@ -58,7 +58,7 @@ const ProductsFilter = ({
 
   const numberOfFilters = useMemo(
     () =>
-      Object.entries(filters).reduce((acc, [, value]) => {
+      Object.entries(filters || {}).reduce((acc, [, value]) => {
         if (value?.open) {
           acc = acc + 1
         }

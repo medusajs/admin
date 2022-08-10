@@ -78,6 +78,13 @@ const useOrderTableColums = () => {
         ),
       },
       {
+        Header: "Sales Channel",
+        accessor: "sales_channel",
+        Cell: ({ cell: { value }, index }) => (
+          <Table.Cell key={index}>{value?.name ?? "N/A"}</Table.Cell>
+        ),
+      },
+      {
         Header: () => <div className="text-right">Total</div>,
         accessor: "total",
         Cell: ({ row, cell: { value }, index }) => (

@@ -15,6 +15,7 @@
     "new-cap": "off",
     "require-jsdoc": "off",
     "semi": "off",
+    "valid-jsdoc": "off",
     "no-unused-expressions": "off",
     "camelcase": "off",
     "no-invalid-this": "off",
@@ -23,7 +24,7 @@
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-implicit-any": "off",
-    "@typescript-eslint/no-unused-vars": "error"
+    "@typescript-eslint/no-unused-vars": "error",
   },
   "settings": {
     "react": {

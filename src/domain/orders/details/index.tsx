@@ -19,6 +19,7 @@ import Tooltip from "../../../components/atoms/tooltip"
 import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
+import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
 import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
@@ -312,7 +313,7 @@ const OrderDetails = ({ id }) => {
                   </button>
                 </Tooltip>
               }
-              subtitle={moment(order.created_at).format("d MMMM YYYY hh:mm a")}
+              subtitle={moment(order.created_at).format("DD MMM YYYY hh:mm")}
               status={<OrderStatusComponent status={order?.status} />}
               forceDropdown={true}
               actionables={[
@@ -353,12 +354,24 @@ const OrderDetails = ({ id }) => {
                       .join(", ")}
                   </div>
                 </div>
+                <FeatureToggle featureFlag="sales_channels">
+                  <div className="flex flex-col pl-6">
+                    <div className="inter-smaller-regular text-grey-50 mb-1 whitespace-nowrap">
+                      Sales Channel
+                    </div>
+                    <div>{order?.sales_channel?.name || "N/A"}</div>
+                  </div>
+                </FeatureToggle>
               </div>
             </BodyCard>
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Summary">
               <div className="mt-6">
                 {order?.items?.map((item, i) => (
-                  <OrderLine key={i} item={item} region={order?.region} />
+                  <OrderLine
+                    key={i}
+                    item={item}
+                    currencyCode={order?.currency_code}
+                  />
                 ))}
                 <DisplayTotal
                   currency={order?.currency_code}
