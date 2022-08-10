@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import React, {
   ChangeEventHandler,
   FocusEventHandler,
@@ -7,29 +8,25 @@ import React, {
 } from "react"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
-import InputContainer from "../../fundamentals/input-container"
 import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
+export type InputProps = Omit<React.ComponentProps<"input">, "prefix"> &
   InputHeaderProps & {
     label?: string
     deletable?: boolean
-    key?: string
     onDelete?: MouseEventHandler<HTMLSpanElement>
     onChange?: ChangeEventHandler<HTMLInputElement>
     onFocus?: FocusEventHandler<HTMLInputElement>
-    prefix?: string | React.ReactNode
-    startAdornment?: React.ReactNode
+    prefix?: React.ReactNode
     props?: React.HTMLAttributes<HTMLDivElement>
   }
 
-const InputField = React.forwardRef(
+const InputField = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
       placeholder,
       label,
       name,
-      key,
       required,
       deletable,
       onDelete,
@@ -40,16 +37,18 @@ const InputField = React.forwardRef(
       prefix,
       props,
       className,
-      startAdornment,
       ...fieldProps
     }: InputProps,
     ref
   ) => {
-    const inputRef = useRef(null)
+    const inputRef = useRef<HTMLInputElement | null>(null)
 
-    useImperativeHandle(ref, () => inputRef.current)
+    useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+      ref,
+      () => inputRef.current
+    )
 
-    const onClickChevronUp = () => {
+    const onNumberIncrement = () => {
       inputRef.current?.stepUp()
       if (onChange) {
         inputRef.current?.dispatchEvent(
@@ -62,7 +61,7 @@ const InputField = React.forwardRef(
       }
     }
 
-    const onClickChevronDown = () => {
+    const onNumberDecrement = () => {
       inputRef.current?.stepDown()
       if (onChange) {
         inputRef.current?.dispatchEvent(
@@ -76,28 +75,27 @@ const InputField = React.forwardRef(
     }
 
     return (
-      <InputContainer
-        className={className}
-        key={name}
+      <div
+        className={clsx("w-full", className)}
         onClick={() => !fieldProps.disabled && inputRef?.current?.focus()}
         {...props}
       >
         {label && (
-          <InputHeader {...{ label, required, tooltipContent, tooltip }} />
+          <InputHeader
+            {...{ label, required, tooltipContent, tooltip }}
+            className="mb-xsmall"
+          />
         )}
-        <div className="w-full flex items-center mt-1">
-          {startAdornment ? (
-            <div className="text-grey-40 mr-1.5">{startAdornment}</div>
-          ) : prefix ? (
+        <div className="w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded h-10 focus-within:shadow-input focus-within:border-violet-60">
+          {prefix ? (
             <span className="text-grey-40 mr-2xsmall">{prefix}</span>
           ) : null}
           <input
-            className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
+            className="bg-transparent outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
             ref={inputRef}
             autoComplete="off"
             name={name}
-            key={key || name}
-            placeholder={placeholder || "Placeholder"}
+            placeholder={placeholder || label || "Placeholder"}
             onChange={onChange}
             onFocus={onFocus}
             required={required}
@@ -105,31 +103,37 @@ const InputField = React.forwardRef(
           />
 
           {deletable && (
-            <span onClick={onDelete} className="cursor-pointer ml-2">
+            <button
+              onClick={onDelete}
+              className="text-grey-50 w-4 h-4 hover:bg-grey-10 focus:bg-grey-20 rounded-soft cursor-pointer outline-none ml-2 flex items-center justify-center pb-px"
+              type="button"
+            >
               &times;
-            </span>
+            </button>
           )}
 
           {fieldProps.type === "number" && (
-            <div className="flex self-end">
-              <span
-                onClick={onClickChevronDown}
+            <div className="flex h-full items-center self-end">
+              <button
+                onClick={onNumberDecrement}
                 onMouseDown={(e) => e.preventDefault()}
-                className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
+                className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 focus:bg-grey-20 rounded-soft cursor-pointer outline-none"
+                type="button"
               >
                 <MinusIcon size={16} />
-              </span>
-              <span
+              </button>
+              <button
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={onClickChevronUp}
-                className="text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
+                onClick={onNumberIncrement}
+                className="text-grey-50 w-4 h-4 hover:bg-grey-10 focus:bg-grey-20 rounded-soft cursor-pointer outline-none"
+                type="button"
               >
                 <PlusIcon size={16} />
-              </span>
+              </button>
             </div>
           )}
         </div>
-      </InputContainer>
+      </div>
     )
   }
 )

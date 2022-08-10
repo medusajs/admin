@@ -333,7 +333,7 @@ export const SimpleEditForm = ({ onDismiss, taxRate }: SimpleEditFormProps) => {
           <Input
             disabled
             readOnly
-            startAdornment={<LockIcon size={16} />}
+            prefix={<LockIcon size={16} />}
             tabIndex={-1}
             label="Name"
             placeholder="Default"
