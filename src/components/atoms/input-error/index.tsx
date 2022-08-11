@@ -17,15 +17,24 @@ const InputError = ({ errors, name, className }: InputErrorProps) => {
     <ErrorMessage
       name={name}
       errors={errors}
-      render={({ messages }) =>
-        messages && (
-          <div className={clsx(className)}>
-            {Object.entries(messages).map(([type, message]) => (
-              <p key={type}>{message}</p>
-            ))}
+      render={({ message, messages }) => {
+        console.log(message, messages, errors)
+        return (
+          <div className="text-rose-50 inter-small-regular mt-2">
+            {messages ? (
+              <ul className={clsx(className)}>
+                {Object.entries(messages).map(([type, message]) => (
+                  <li key={type}>
+                    <p>– {message}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>{message}</p>
+            )}
           </div>
         )
-      }
+      }}
     />
   )
 }

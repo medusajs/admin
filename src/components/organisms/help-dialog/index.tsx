@@ -27,7 +27,7 @@ const MailDialog = ({ open, onClose }: MailDialogProps) => {
   return (
     <Dialog.Root open={open} onOpenChange={onClose}>
       <Dialog.Overlay className="fixed z-50 grid top-0 left-0 right-0 bottom-0 place-items-end overflow-y-auto">
-        <Dialog.Content className="bg-grey-0 w-[400px] shadow-dropdown rounded-rounded p-8 top-[64px] bottom-2 right-3 overflow-x-hidden fixed flex flex-col justify-between">
+        <Dialog.Content className="bg-grey-0 w-[400px] shadow-dropdown rounded-rounded p-8 top-[64px] bottom-2 right-3 fixed flex flex-col justify-between">
           <div>
             <Dialog.Title className="inter-xlarge-semibold mb-1">
               How can we help?

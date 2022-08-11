@@ -26,7 +26,12 @@ import { PRODUCT_VIEW } from "../utils/constants"
 
 const General = ({ showViewOptions = true, isEdit = false, product }) => {
   const {
-    form: { register, control, setValue },
+    form: {
+      register,
+      control,
+      setValue,
+      formState: { errors },
+    },
     setViewType,
     viewType,
   } = useProductForm()
@@ -76,6 +81,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             label="Name"
             placeholder="Jacket, Sunglasses..."
             required
+            errors={errors}
             {...register("title", {
               required: "Name is required",
               minLength: 1,

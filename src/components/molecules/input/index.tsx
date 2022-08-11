@@ -131,8 +131,8 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
               </button>
             </div>
           )}
-          <InputError name={name} errors={errors} />
         </div>
+        <InputError name={name} errors={errors} />
       </div>
     )
   }
