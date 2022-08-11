@@ -6,17 +6,19 @@ import React, {
   useImperativeHandle,
   useRef,
 } from "react"
+import InputError from "../../atoms/input-error"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
 
-export type InputProps = Omit<React.ComponentProps<"input">, "prefix"> &
+export type InputProps = Omit<React.ComponentPropsWithRef<"input">, "prefix"> &
   InputHeaderProps & {
     label?: string
     deletable?: boolean
     onDelete?: MouseEventHandler<HTMLSpanElement>
     onChange?: ChangeEventHandler<HTMLInputElement>
     onFocus?: FocusEventHandler<HTMLInputElement>
+    errors?: { [x: string]: unknown }
     prefix?: React.ReactNode
     props?: React.HTMLAttributes<HTMLDivElement>
   }
@@ -35,6 +37,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
       tooltipContent,
       tooltip,
       prefix,
+      errors,
       props,
       className,
       ...fieldProps
@@ -128,6 +131,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
               </button>
             </div>
           )}
+          <InputError name={name} errors={errors} />
         </div>
       </div>
     )

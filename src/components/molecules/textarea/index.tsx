@@ -1,19 +1,20 @@
 import clsx from "clsx"
 import React, { useImperativeHandle, useRef } from "react"
 import InputHeader from "../../fundamentals/input-header"
+import EmojiPicker from "../emoji-picker"
 
-type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+type TextareaProps = React.ComponentPropsWithRef<"textarea"> & {
   label: string
   key?: string
   enableEmoji?: boolean
   withTooltip?: boolean
   tooltipText?: string
   tooltipProps?: any
-  children?: any
+  children?: React.ReactNode
   containerProps?: React.HTMLAttributes<HTMLDivElement>
 }
 
-const TextArea = React.forwardRef(
+const TextArea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
       placeholder,
@@ -33,14 +34,32 @@ const TextArea = React.forwardRef(
     }: TextareaProps,
     ref
   ) => {
-    const inputRef = useRef<HTMLTextAreaElement>(null)
+    const inputRef = useRef<HTMLTextAreaElement | null>(null)
 
-    useImperativeHandle(ref, () => inputRef.current)
+    useImperativeHandle<HTMLTextAreaElement | null, HTMLTextAreaElement | null>(
+      ref,
+      () => inputRef.current
+    )
 
     const scrollToTop = () => {
       if (inputRef.current) {
         inputRef.current.scrollTop = 0
       }
+    }
+
+    const handleAddEmoji = (emoji: string) => {
+      if (!inputRef.current) {
+        return
+      }
+
+      const position = inputRef.current.selectionStart || 0
+
+      const newValue = `${inputRef.current?.value.substring(
+        0,
+        position
+      )}${emoji}${inputRef.current?.value.substring(position)}`
+
+      inputRef.current.value = newValue
     }
 
     return (
@@ -51,7 +70,7 @@ const TextArea = React.forwardRef(
             className="mb-xsmall"
           />
         )}
-        <div className="w-full flex focus-within:shadow-input focus-within:border-violet-60 px-small py-xsmall bg-grey-5 border border-grey-20 rounded-rounded">
+        <div className="w-full flex flex-col focus-within:shadow-input focus-within:border-violet-60 px-small py-xsmall bg-grey-5 border border-grey-20 rounded-rounded">
           <textarea
             className={clsx(
               "relative text-justify overflow-hidden focus:overflow-auto resize-none bg-inherit outline-none outline-0",
@@ -69,11 +88,12 @@ const TextArea = React.forwardRef(
             key={key || name}
             placeholder={placeholder || "Placeholder"}
             onBlur={scrollToTop}
+            onSelect={(e) => {}}
             rows={rows}
             {...props}
           />
+          {enableEmoji && <EmojiPicker onEmojiClick={handleAddEmoji} />}
         </div>
-        {children}
       </div>
     )
   }

@@ -60,12 +60,6 @@ const Content: React.FC = ({ children }) => {
   )
 }
 
-const addProp = (children, prop) => {
-  return React.Children.map(children, (child) =>
-    React.cloneElement(child, prop)
-  )
-}
-
 const Modal: ModalType = ({
   open = true,
   handleClose,

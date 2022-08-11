@@ -91,7 +91,10 @@ const Topbar: React.FC = () => {
         </div>
       </div>
       {showSupportform && (
-        <MailDialog onDismiss={() => setShowSupportForm(false)} />
+        <MailDialog
+          open={showSupportform}
+          onClose={() => setShowSupportForm(false)}
+        />
       )}
       {activityDrawerState && (
         <ActivityDrawer onDismiss={activityDrawerClose} />
