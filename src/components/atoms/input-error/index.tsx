@@ -67,23 +67,4 @@ const MultipleMessages = ({ messages }: { messages: MultipleFieldErrors }) => {
   )
 }
 
-const getErrorMessage = (type: string, message?: string) => {
-  if (message) {
-    return message
-  }
-
-  switch (type) {
-    case "required":
-      return "This field is required"
-    case "minLength":
-      return "Input is too short"
-    case "maxLength":
-      return "Input is too long"
-    case "pattern":
-      return "Input is invalid"
-    default:
-      return "Input is invalid"
-  }
-}
-
 export default InputError
