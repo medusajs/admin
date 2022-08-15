@@ -93,7 +93,10 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             label="Handle"
             placeholder="bathrobe"
             prefix="/"
-            {...register("handle")}
+            errors={errors}
+            {...register("handle", {
+              required: "You can't leave this blank on an existing product",
+            })}
           />
         </div>
         <label

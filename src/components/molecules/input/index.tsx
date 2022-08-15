@@ -85,7 +85,14 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
             className="mb-xsmall"
           />
         )}
-        <div className="w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded h-10 focus-within:shadow-input focus-within:border-violet-60">
+        <div
+          className={clsx(
+            "w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded h-10 focus-within:shadow-input focus-within:border-violet-60",
+            {
+              "border-rose-50": errors && name && errors[name],
+            }
+          )}
+        >
           {prefix ? (
             <span className="text-grey-40 mr-2xsmall">{prefix}</span>
           ) : null}
