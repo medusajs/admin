@@ -20,11 +20,12 @@ import PercentIcon from "./percent-icon"
 import PlusIcon from "./plus-icon"
 import PublishIcon from "./publish-icon"
 import SearchIcon from "./search-icon"
+import SidedMouthFaceIcon from "./sided-mouth-face"
 import TagIcon from "./tag-icon"
 import TruckIcon from "./truck-icon"
+import IconProps from "./types/icon-type"
 import UnpublishIcon from "./unpublish-icon"
 import UsersIcon from "./users-icon"
-import SidedMouthFaceIcon from "./sided-mouth-face"
 
 export default {
   title: "Fundamentals/Icons/Overview",
@@ -64,10 +65,10 @@ const icons = [
   <EditIcon />,
   <UnpublishIcon />,
   <PublishIcon />,
-  <SidedMouthFaceIcon />
+  <SidedMouthFaceIcon />,
 ]
 
-const Template = args => (
+const Template = (args: IconProps) => (
   <div className="grid grid-cols-6 gap-base">
     {icons.map((icon, key) => {
       return (
@@ -83,6 +84,7 @@ const Template = args => (
 )
 
 export const Overview = Template.bind({})
+// @ts-ignore
 Overview.args = {
   size: "24",
   color: "currentColor",

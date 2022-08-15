@@ -17,7 +17,6 @@ import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import SearchIcon from "../../fundamentals/icons/search-icon"
 import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
-import InputContainer from "../../fundamentals/input-container"
 import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
 import { ModalContext } from "../modal"
 
@@ -304,12 +303,8 @@ const SSelect = React.forwardRef(
           "w-full": fullWidth,
         })}
       >
-        <InputContainer
+        <div
           key={name}
-          onFocusLost={() => {
-            setIsFocussed(false)
-            selectRef.current?.blur()
-          }}
           onClick={onClick}
           className={clsx(className, {
             "bg-white rounded-t-rounded": isFocussed,
@@ -318,7 +313,7 @@ const SSelect = React.forwardRef(
           {isFocussed && enableSearch ? (
             <></>
           ) : (
-            <div className="w-full flex text-grey-50 pr-0.5 justify-between pointer-events-none cursor-pointer">
+            <div className="w-full flex text-grey-50 pr-0.5 justify-between pointer-events-none cursor-pointer mb-2">
               <InputHeader {...{ label, required, tooltip, tooltipContent }} />
               <ArrowDownIcon size={16} />
             </div>
@@ -381,7 +376,7 @@ const SSelect = React.forwardRef(
             />
           }
           {isFocussed && enableSearch && <div className="w-full h-5" />}
-        </InputContainer>
+        </div>
       </div>
     )
   }
