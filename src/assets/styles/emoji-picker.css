@@ -94,3 +94,14 @@
 .emoji-picker-react .active-category-indicator-wrapper .active-category-indicator {
     display: none !important;
 }
+
+.emoji-scroll-wrapper {
+    overflow-x: hidden !important;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.emoji-scroll-wrapper::-webkit-scrollbar {
+    /* chrome */
+    display: none;
+}

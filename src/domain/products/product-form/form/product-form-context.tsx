@@ -49,6 +49,7 @@ export const ProductFormProvider = ({
       ...product,
       images: product?.images || [],
     },
+    criteriaMode: "all",
   })
 
   const resetForm = () => {
