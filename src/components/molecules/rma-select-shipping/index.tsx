@@ -29,7 +29,7 @@ const RMAShippingPrice: React.FC<RMAShippingPriceProps> = ({
         className="w-full"
       >
         <CurrencyInput.Amount
-          label={"Amount (excl. tax)"}
+          label={`Amount (${inclTax ? "incl." : "excl."} tax)`}
           amount={shippingPrice}
           onChange={updateShippingPrice}
         />

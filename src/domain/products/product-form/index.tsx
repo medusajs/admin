@@ -53,7 +53,7 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
           <div className="bg-grey-0">Media</div>
         </div>
       </div>
-    </div>
+    </divdiv>
   )
 }
 

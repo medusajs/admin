@@ -109,6 +109,10 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
         return acc + curr.rate / 100
       }, 0)
 
+      const taxRate = shippingMethod.tax_rates.reduce((acc, curr) => {
+        return acc + curr.rate / 100
+      }, 0)
+
       data.return_shipping = {
         option_id: shippingMethod.value,
         price: shippingPrice ? Math.round(shippingPrice / (1 + taxRate)) : 0,
@@ -198,6 +202,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
             )}
             {shippingMethod && (
               <RMAShippingPrice
+                inclTax
                 inclTax
                 useCustomShippingPrice={useCustomShippingPrice}
                 shippingPrice={shippingPrice}

@@ -13,6 +13,7 @@ import Oauth from "../domain/oauth"
 import Orders from "../domain/orders"
 import DraftOrders from "../domain/orders/draft-orders"
 import Pricing from "../domain/pricing"
+import SalesChannels from "../domain/sales-channels"
 import Products from "../domain/products"
 import Settings from "../domain/settings"
 
@@ -33,6 +34,7 @@ const IndexPage = () => {
         <PrivateRoute path="customers/*" component={Customers} />
         <PrivateRoute path="pricing/*" component={Pricing} />
         <PrivateRoute path="settings/*" component={Settings} />
+        <PrivateRoute path="sales-channels/*" component={SalesChannels} />
       </Router>
     </Layout>
   )

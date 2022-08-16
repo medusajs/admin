@@ -4,7 +4,7 @@ import {
   useAdminCollections,
   useAdminDeleteProduct,
   useAdminProductTypes,
-  useAdminUpdateProduct,
+  useAdminUpdateProduct
 } from "medusa-react"
 import React from "react"
 import { Controller } from "react-hook-form"
@@ -75,7 +75,7 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
           Give your product a short and clear name. 50-60 characters is the
           recommended length for search engines.
         </label>
-        <div className="flex gap-8 mb-base">
+        <div className="grid grid-rows-3 grid-cols-2 gap-x-8 gap-y-4 mb-large">
           <Input
             id="name"
             label="Name"
@@ -97,6 +97,12 @@ const General = ({ showViewOptions = true, isEdit = false, product }) => {
             {...register("handle", {
               required: "You can't leave this blank on an existing product",
             })}
+          />
+          <Input
+            id="subtitle"
+            label="Subtitle"
+            placeholder="Jacket, Sunglasses..."
+            {...register("subtitle")}
           />
         </div>
         <label
