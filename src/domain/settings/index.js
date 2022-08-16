@@ -10,6 +10,7 @@ import MapPinIcon from "../../components/fundamentals/icons/map-pin-icon"
 import TaxesIcon from "../../components/fundamentals/icons/taxes-icon"
 import TruckIcon from "../../components/fundamentals/icons/truck-icon"
 import UsersIcon from "../../components/fundamentals/icons/users-icon"
+import ChannelsIcon from "../../components/fundamentals/icons/channels-icon"
 import SettingsOverview from "../../components/templates/settings-overview"
 import Currencies from "./currencies"
 import Details from "./details"
@@ -20,6 +21,7 @@ import NewRegion from "./regions/new"
 import ReturnReasons from "./return-reasons"
 import Taxes from "./taxes"
 import Users from "./users"
+import FeatureToggle from "../../components/fundamentals/feature-toggle"
 
 const SettingsIndex = () => {
   return (
@@ -79,6 +81,14 @@ const SettingsIndex = () => {
         icon={<TaxesIcon />}
         to={`/a/settings/taxes`}
       />
+      <FeatureToggle featureFlag="sales_channels">
+        <SettingsCard
+          heading={"Sales channels"}
+          description={"Control which products are available in which channels"}
+          icon={<ChannelsIcon />}
+          to={`/a/sales-channels`}
+        />
+      </FeatureToggle>
     </SettingsOverview>
   )
 }

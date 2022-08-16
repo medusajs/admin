@@ -54,7 +54,7 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
 
         <RawJSON data={product} title="Raw product" />
       </div>
-    </div>
+    </divdiv>
   )
 }
 

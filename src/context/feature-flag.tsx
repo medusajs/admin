@@ -24,7 +24,12 @@ export const FeatureFlagProvider = ({ children }) => {
   const { store, isFetching } = useAdminStore()
 
   useEffect(() => {
-    if (isFetching || !store || !isLoggedIn) {
+    if (
+      isFetching ||
+      !store ||
+      !isLoggedIn ||
+      !store["feature_flags"]?.length
+    ) {
       return
     }
 

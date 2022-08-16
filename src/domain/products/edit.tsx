@@ -58,7 +58,7 @@ const TOAST_ID = "edit-product-dirty"
 
 const UpdateNotification = ({ isLoading = false }) => {
   const {
-    form: { formState, handleSubmit },
+    form: { formState },
     resetForm,
     additionalDirtyState,
     onUpdate,

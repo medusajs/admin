@@ -42,6 +42,7 @@ type SortingHeadCellProps = {
 
 export type TableProps = {
   filteringOptions?: FilteringOptionProps[] | React.ReactNode
+  tableActions?: React.ReactNode
   enableSearch?: boolean
   immediateSearchFocus?: boolean
   searchPlaceholder?: string
@@ -71,6 +72,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
     {
       className,
       children,
+      tableActions,
       enableSearch,
       immediateSearchFocus,
       searchPlaceholder,
@@ -88,7 +90,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
     }
 
     return (
-      <div className="flex flex-col">
+      <div className={`flex flex-col ${containerClassName}`}>
         <div className="w-full flex justify-between mb-2">
           {filteringOptions ? (
             <div className="flex mb-2 self-end">
@@ -99,7 +101,8 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
           ) : (
             <span aria-hidden />
           )}
-          <div className="flex">
+          <div className="flex items-center">
+            {tableActions && <div className="mr-small">{tableActions}</div>}
             {enableSearch && (
               <TableSearch
                 autoFocus={immediateSearchFocus}
