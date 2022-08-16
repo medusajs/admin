@@ -1,6 +1,6 @@
-import React from "react"
 import { Product, SalesChannel } from "@medusajs/medusa"
 import { useAdminSalesChannels } from "medusa-react"
+import React from "react"
 import Badge from "../../../../components/fundamentals/badge"
 import Button from "../../../../components/fundamentals/button"
 import ChannelsIcon from "../../../../components/fundamentals/icons/channels-icon"
@@ -53,7 +53,12 @@ const SalesChannels: React.FC<SalesChannelsProps> = ({
       </span>
 
       <div>
-        <Button variant="ghost" size="small" className="border border-grey-20">
+        <Button
+          variant="ghost"
+          size="small"
+          type="button"
+          className="border border-grey-20"
+        >
           <ChannelsIcon size={20} />
           Change availability
         </Button>

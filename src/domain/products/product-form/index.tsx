@@ -1,14 +1,12 @@
 import { Product } from "@medusajs/medusa"
 import { useAdminStore } from "medusa-react"
 import * as React from "react"
-import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import RawJSON from "../../../components/organisms/raw-json"
 import { useProductForm } from "./form/product-form-context"
-import General from "./sections/general"
+import GeneralSection from "./sections/general/index"
 import Images from "./sections/images"
 import Prices from "./sections/prices"
-import SalesChannels from "./sections/sales-channels"
 import StockAndInventory from "./sections/stock-inventory"
 import Variants from "./sections/variants"
 
@@ -29,30 +27,31 @@ const ProductForm = ({ product, isEdit = false }: ProductFormProps) => {
         previousBreadcrumb={"Products"}
         previousRoute="/a/products"
       />
-      <div className="flex flex-col space-y-base">
-        <General isEdit={isEdit} product={product} showViewOptions={!isEdit} />
+      <div className="grid grid-cols-3 gap-x-4">
+        <div className="flex flex-col space-y-base col-start-1 col-span-2">
+          {product && <GeneralSection product={product} />}
+          {(isVariantsView || isEdit) && (
+            <Variants isEdit={isEdit} product={product} />
+          )}
 
-        <FeatureToggle featureFlag="sales_channels">
-          <SalesChannels isEdit={isEdit} product={product} />
-        </FeatureToggle>
+          {!isVariantsView && !isEdit && (
+            <Prices
+              currencyCodes={currencyCodes}
+              defaultCurrencyCode={store?.default_currency_code}
+              defaultAmount={1000}
+            />
+          )}
 
-        {(isVariantsView || isEdit) && (
-          <Variants isEdit={isEdit} product={product} />
-        )}
+          <Images />
 
-        {!isVariantsView && !isEdit && (
-          <Prices
-            currencyCodes={currencyCodes}
-            defaultCurrencyCode={store?.default_currency_code}
-            defaultAmount={1000}
-          />
-        )}
+          <StockAndInventory />
 
-        <Images />
-
-        <StockAndInventory />
-
-        <RawJSON data={product} title="Raw product" />
+          <RawJSON data={product} title="Raw product" />
+        </div>
+        <div className="col-span-1 flex flex-col gap-y-4">
+          <div className="bg-grey-0">Thumbnail</div>
+          <div className="bg-grey-0">Media</div>
+        </div>
       </div>
     </div>
   )

@@ -1,9 +1,11 @@
 import clsx from "clsx"
 import React, { useImperativeHandle, useRef } from "react"
+import InputError from "../../atoms/input-error"
 import InputHeader from "../../fundamentals/input-header"
 import EmojiPicker from "../emoji-picker"
 
 type TextareaProps = React.ComponentPropsWithRef<"textarea"> & {
+  errors?: { [x: string]: unknown }
   label: string
   key?: string
   enableEmoji?: boolean
@@ -30,6 +32,7 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       enableEmoji = false,
       rows = 2,
       children,
+      errors,
       ...props
     }: TextareaProps,
     ref
@@ -94,6 +97,7 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           />
           {enableEmoji && <EmojiPicker onEmojiClick={handleAddEmoji} />}
         </div>
+        <InputError name={name} errors={errors} />
       </div>
     )
   }
