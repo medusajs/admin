@@ -12,16 +12,16 @@ import StatusSelector from "../../../../../components/molecules/status-selector"
 import Section from "../../../../../components/organisms/section"
 import { useFeatureFlag } from "../../../../../context/feature-flag"
 import useToggleState from "../../../../../hooks/use-toggle-state"
+import useEditProductActions from "../../hooks/use-edit-product-actions"
 import ChannelsModal from "./channels-modal"
 import GeneralModal from "./general-modal"
-import useGeneralActions from "./use-general-actions"
 
 type Props = {
   product: Product
 }
 
 const GeneralSection = ({ product }: Props) => {
-  const { onDelete, onStatusChange } = useGeneralActions(product.id)
+  const { onDelete, onStatusChange } = useEditProductActions(product.id)
   const {
     state: infoState,
     close: closeInfo,

@@ -1,11 +1,11 @@
 import { AdminPostProductsProductReq } from "@medusajs/medusa"
 import { navigate } from "gatsby"
 import { useAdminDeleteProduct, useAdminUpdateProduct } from "medusa-react"
-import useImperativeDialog from "../../../../../hooks/use-imperative-dialog"
-import useNotification from "../../../../../hooks/use-notification"
-import { getErrorMessage } from "../../../../../utils/error-messages"
+import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
+import useNotification from "../../../../hooks/use-notification"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
-const useGeneralActions = (productId: string) => {
+const useEditProductActions = (productId: string) => {
   const dialog = useImperativeDialog()
   const notification = useNotification()
   const updateProduct = useAdminUpdateProduct(productId)
@@ -38,11 +38,7 @@ const useGeneralActions = (productId: string) => {
       payload,
       {
         onSuccess: () => {
-          notification(
-            "Success",
-            "General information updated successfully",
-            "success"
-          )
+          notification("Success", "Product was successfully updated", "success")
           onSuccess()
         },
         onError: (err) => {
@@ -84,4 +80,4 @@ const useGeneralActions = (productId: string) => {
   }
 }
 
-export default useGeneralActions
+export default useEditProductActions
