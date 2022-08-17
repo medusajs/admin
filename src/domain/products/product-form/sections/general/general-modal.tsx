@@ -74,12 +74,14 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
 
   return (
     <Modal open={open} handleClose={onReset} isLargeModal>
-      <Modal.Header handleClose={onReset}>
-        <h1 className="inter-xlarge-semibold m-0">Edit General Information</h1>
-      </Modal.Header>
-      <form onSubmit={onSubmit}>
-        <Modal.Content>
-          <Modal.Body>
+      <Modal.Body>
+        <Modal.Header handleClose={onReset}>
+          <h1 className="inter-xlarge-semibold m-0">
+            Edit General Information
+          </h1>
+        </Modal.Header>
+        <form onSubmit={onSubmit}>
+          <Modal.Content>
             <div className="mb-xlarge">
               <h2 className="inter-large-semibold mb-base">Details</h2>
               <div className="grid grid-cols-2 gap-x-large mb-small">
@@ -171,30 +173,30 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
                 }}
               />
             </div>
-          </Modal.Body>
-        </Modal.Content>
-        <Modal.Footer>
-          <div className="flex gap-x-2 justify-end w-full">
-            <Button
-              size="small"
-              variant="secondary"
-              type="button"
-              onClick={onReset}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="small"
-              variant="primary"
-              type="submit"
-              disabled={!isDirty}
-              loading={updating}
-            >
-              Save
-            </Button>
-          </div>
-        </Modal.Footer>
-      </form>
+          </Modal.Content>
+          <Modal.Footer>
+            <div className="flex gap-x-2 justify-end w-full">
+              <Button
+                size="small"
+                variant="secondary"
+                type="button"
+                onClick={onReset}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="small"
+                variant="primary"
+                type="submit"
+                disabled={!isDirty}
+                loading={updating}
+              >
+                Save
+              </Button>
+            </div>
+          </Modal.Footer>
+        </form>
+      </Modal.Body>
     </Modal>
   )
 }

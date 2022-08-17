@@ -20,21 +20,13 @@ type ProductTableProps = {}
 
 const defaultQueryProps = {
   fields: "id,title,type,thumbnail,status,handle",
-  expand: "variants,options,variants.prices,variants.options,collection,tags",
+  expand:
+    "variants,options,variants.prices,variants.options,collection,tags,sales_channels",
   is_giftcard: false,
 }
 
 const ProductTable: React.FC<ProductTableProps> = () => {
   const location = useLocation()
-
-  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
-
-  let hiddenColumns = ["sales_channel"]
-  if (isFeatureEnabled("sales_channels")) {
-    defaultQueryProps.expand =
-      "variants,options,variants.prices,variants.options,collection,tags,sales_channels"
-    hiddenColumns = []
-  }
 
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
 
@@ -140,7 +132,6 @@ const ProductTable: React.FC<ProductTableProps> = () => {
       initialState: {
         pageIndex: Math.floor(offs / limit),
         pageSize: limit,
-        hiddenColumns,
         hiddenColumns,
       },
       pageCount: numPages,

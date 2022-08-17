@@ -82,6 +82,7 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
   context,
   children,
   handleClose,
+  open,
   isLargeModal = true,
 }) => {
   const emptyScreensAndClose = () => {
@@ -91,7 +92,11 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
 
   const screen = context.screens[context.screens.length - 1]
   return (
-    <Modal isLargeModal={isLargeModal} handleClose={emptyScreensAndClose}>
+    <Modal
+      open={open}
+      isLargeModal={isLargeModal}
+      handleClose={emptyScreensAndClose}
+    >
       <Modal.Body
         className={clsx(
           "transition-transform translate-x-full flex flex-col justify-between duration-200",

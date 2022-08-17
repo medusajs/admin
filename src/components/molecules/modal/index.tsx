@@ -53,7 +53,7 @@ const Content: React.FC = ({ children }) => {
   return (
     <Dialog.Content
       style={style}
-      className="bg-grey-0 min-w-modal rounded overflow-x-hidden"
+      className="bg-grey-0 min-w-modal rounded-rounded overflow-x-hidden"
     >
       {children}
     </Dialog.Content>
