@@ -14,7 +14,7 @@ import ProductTable from "../../components/templates/product-table"
 import useNotification from "../../hooks/use-notification"
 import useToggleState from "../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../utils/error-messages"
-import EditProductPage from "./edit"
+import Edit from "./edit"
 import NewProductPage from "./new"
 
 const VIEWS = ["products", "collections"]
@@ -176,7 +176,7 @@ const Products = () => {
   return (
     <Router>
       <ProductIndex path="/" />
-      <EditProductPage path=":id" />
+      <Edit path="/:id" />
       <NewProductPage path="new" />
     </Router>
   )
