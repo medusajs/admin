@@ -9,7 +9,7 @@ import TagInput from "../../../../../components/molecules/tag-input"
 import TextArea from "../../../../../components/molecules/textarea"
 import { Option } from "../../../../../types/shared"
 import FormValidator from "../../../../../utils/form-validator"
-import useGeneralActions from "./use-general-actions"
+import useEditProductActions from "../../hooks/use-edit-product-actions"
 import useGeneralData from "./use-general-data"
 
 type Props = {
@@ -29,7 +29,7 @@ type GeneralForm = {
 
 const GeneralModal = ({ product, open, onClose }: Props) => {
   const { productTypeOptions, collectionOptions } = useGeneralData()
-  const { onUpdate, updating } = useGeneralActions(product.id)
+  const { onUpdate, updating } = useEditProductActions(product.id)
   const {
     register,
     control,
