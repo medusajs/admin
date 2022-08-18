@@ -69,10 +69,8 @@ const AvailableScreen = () => {
         tableAction={
           <SalesChannelTableActions
             numberOfSelectedRows={selectedRowIds.length}
-            availableChannelIds={source.map((sc) => sc.id)}
             onRemove={onRemove}
             onDeselect={onDeselect}
-            onAddSalesChannelsToAvailableChannels={() => {}}
           />
         }
         salesChannels={source}

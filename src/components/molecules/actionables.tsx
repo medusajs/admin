@@ -23,11 +23,11 @@ const Actionables: React.FC<ActionablesProps> = ({
   customTrigger,
   forceDropdown = false,
 }) => {
-  if (!actions?.length && !customTrigger) {
+  if ((!actions || !actions.length) && !customTrigger) {
     return null
   }
 
-  return actions?.length > 1 || forceDropdown ? (
+  return (actions && actions.length > 1) || (forceDropdown && actions) ? (
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -76,12 +76,23 @@ const Actionables: React.FC<ActionablesProps> = ({
     <div>
       {customTrigger ? (
         <div>{customTrigger}</div>
-      ) : (
-        <Button variant="ghost" size="small" onClick={actions[0].onClick}>
-          {actions[0].icon}
-          {actions[0].label}
+      ) : actions ? (
+        <Button
+          variant="secondary"
+          size="small"
+          type="button"
+          onClick={actions[0].onClick}
+        >
+          {actions[0].icon ? (
+            <>
+              {actions[0].icon}
+              {actions[0].label}
+            </>
+          ) : (
+            <>{actions[0].label}</>
+          )}
         </Button>
-      )}
+      ) : null}
     </div>
   )
 }
