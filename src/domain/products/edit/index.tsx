@@ -3,6 +3,7 @@ import { useAdminProduct } from "medusa-react"
 import React from "react"
 import AttributesSection from "./sections/attributes"
 import GeneralSection from "./sections/general"
+import VariantsSection from "./sections/variants"
 
 interface EditProps extends RouteComponentProps {
   id?: string
@@ -30,6 +31,7 @@ const Edit = ({ id }: EditProps) => {
       <div className="grid grid-col-12 gap-x-base">
         <div className="col-span-8 flex flex-col gap-y-xsmall">
           <GeneralSection product={product} />
+          <VariantsSection product={product} />
           <AttributesSection product={product} />
         </div>
         <div className="col-span-4"></div>
