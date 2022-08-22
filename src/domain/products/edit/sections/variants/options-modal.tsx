@@ -2,18 +2,17 @@ import { Product } from "@medusajs/medusa"
 import {
   useAdminCreateProductOption,
   useAdminDeleteProductOption,
-  useAdminProduct,
   useAdminUpdateProductOption,
 } from "medusa-react"
 import React, { useEffect, useMemo } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
+import { useQueryClient } from "react-query"
 import Button from "../../../../../components/fundamentals/button"
 import PlusIcon from "../../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import InputField from "../../../../../components/molecules/input"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { queryClient } from "../../../../../services/config"
 import FormValidator from "../../../../../utils/form-validator"
 
 type Props = {
@@ -41,7 +40,7 @@ const OptionsModal = ({ product, open, onClose }: Props) => {
   const { mutate: del, isLoading: deleting } = useAdminDeleteProductOption(
     product.id
   )
-  const { refetch } = useAdminProduct(product.id)
+  const queryClient = useQueryClient()
 
   const {
     control,
@@ -143,7 +142,9 @@ const OptionsModal = ({ product, open, onClose }: Props) => {
       )
     }
 
-    queryClient.invalidateQueries("productOptions")
+    console.log("Invalidate", `${product.id}_options`)
+
+    queryClient.invalidateQueries(`${product.id}_options`)
     notification("Success", "Successfully updated product options", "success")
     handleClose()
   })

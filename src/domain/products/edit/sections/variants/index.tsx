@@ -1,12 +1,14 @@
-import { Product } from "@medusajs/medusa"
-import { useAdminProducts } from "medusa-react"
+import { Product, ProductOption } from "@medusajs/medusa"
+import axios from "axios"
 import React from "react"
+import { useQuery } from "react-query"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import GearIcon from "../../../../../components/fundamentals/icons/gear-icon"
 import PlusIcon from "../../../../../components/fundamentals/icons/plus-icon"
 import { ActionType } from "../../../../../components/molecules/actionables"
 import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
+import { medusaUrl } from "../../../../../services/config"
 import OptionsModal from "./options-modal"
 import VariantsTable from "./table"
 
@@ -62,19 +64,46 @@ const VariantsSection = ({ product }: Props) => {
   )
 }
 
-const ProductOptions = ({ product }: Props) => {
-  const { products, status } = useAdminProducts({
-    id: product.id,
-    expand: "options,options.values",
-  })
+const fetchProductOptions = async (
+  productId: string
+): Promise<ProductOption[]> => {
+  const response = await axios
+    .get("/admin/products", {
+      baseURL: medusaUrl,
+      params: {
+        id: productId,
+        expand: "options,options.values",
+      },
+      withCredentials: true,
+    })
+    .then(({ data }) => {
+      const options = data.products?.[0].options
 
-  const source = products?.[0] as Product | undefined
+      return options
+    })
+
+  return response
+}
+
+const ProductOptions = ({ product }: Props) => {
+  // const { products, status } = useAdminProducts({
+  //   id: product.id,
+  //   expand: "options,options.values",
+  // })
+
+  const { data: options, status } = useQuery(
+    `${product.id}_options`,
+    () => fetchProductOptions(product.id),
+    {
+      keepPreviousData: false,
+    }
+  )
 
   if (status === "error") {
     return null
   }
 
-  if (status === "loading" || !source) {
+  if (status === "loading" || !options) {
     return (
       <div className="mt-base grid grid-cols-3 gap-x-8">
         {Array.from(Array(2)).map((_, i) => {
@@ -99,7 +128,7 @@ const ProductOptions = ({ product }: Props) => {
 
   return (
     <div className="mt-base grid grid-cols-3 gap-x-8">
-      {source.options.map((option) => {
+      {options.map((option) => {
         return (
           <div key={option.id}>
             <h3 className="inter-base-semibold mb-xsmall">{option.title}</h3>
