@@ -4,6 +4,7 @@ import React from "react"
 import AttributesSection from "./sections/attributes"
 import GeneralSection from "./sections/general"
 import MediaSection from "./sections/media"
+import ThumbnailSection from "./sections/thumbnail"
 
 interface EditProps extends RouteComponentProps {
   id?: string
@@ -33,7 +34,8 @@ const Edit = ({ id }: EditProps) => {
           <GeneralSection product={product} />
           <AttributesSection product={product} />
         </div>
-        <div className="flex flex-col col-span-4">
+        <div className="flex flex-col col-span-4 gap-y-xsmall">
+          <ThumbnailSection product={product} />
           <MediaSection product={product} />
         </div>
       </div>

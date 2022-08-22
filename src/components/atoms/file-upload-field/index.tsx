@@ -7,6 +7,7 @@ type FileUploadFieldProps = {
   errorMessage?: string
   placeholder?: React.ReactElement | string
   className?: string
+  multiple?: boolean
   text?: React.ReactElement | string
 }
 
@@ -24,6 +25,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
   className,
   text = defaultText,
   placeholder = "",
+  multiple = false,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [fileUploadError, setFileUploadError] = useState(false)
@@ -91,7 +93,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
       <input
         ref={inputRef}
         accept={filetypes.join(", ")}
-        multiple
+        multiple={multiple}
         type="file"
         onChange={handleFileUpload}
         className="hidden"
