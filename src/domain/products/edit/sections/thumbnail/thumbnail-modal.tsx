@@ -55,10 +55,10 @@ const ThumbnailModal = ({ product, open, onClose }: Props) => {
   }
 
   const onSubmit = handleSubmit(async (data) => {
-    let prepedImages: FormImage[] = []
+    let preppedImages: FormImage[] = []
 
     try {
-      prepedImages = await prepareImages(data.images)
+      preppedImages = await prepareImages(data.images)
     } catch (error) {
       let errorMessage =
         "Something went wrong while trying to upload the thumbnail."
@@ -74,11 +74,12 @@ const ThumbnailModal = ({ product, open, onClose }: Props) => {
       notification("Error", errorMessage, "error")
       return
     }
-    const url = prepedImages[0].url
+    const url = preppedImages?.[0]?.url
 
     onUpdate(
       {
-        thumbnail: url,
+        // @ts-ignore
+        thumbnail: url || null,
       },
       onReset
     )

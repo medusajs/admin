@@ -9,6 +9,7 @@ import React, {
 } from "react"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import Spinner from "../spinner"
+import Tooltip from "../tooltip"
 
 type Props = {
   onDelete: () => void
@@ -82,7 +83,14 @@ const TwoStepDelete = forwardRef<HTMLButtonElement, Props>(
             hidden: !armed || deleting,
           })}
         >
-          Delete
+          <Tooltip
+            content="Are you sure?"
+            side="top"
+            sideOffset={16}
+            open={true}
+          >
+            Confirm
+          </Tooltip>
         </span>
         <span
           className={clsx("flex items-center justify-center", {
