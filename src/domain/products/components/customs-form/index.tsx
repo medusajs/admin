@@ -19,6 +19,8 @@ type CustomsFormProps = {
 
 /**
  * Re-usable nested form used to submit customs information for products and their variants.
+ * @example
+ * <CustomsForm form={nestedForm(form, "customs")} />
  */
 const CustomsForm = ({ form }: CustomsFormProps) => {
   const {
