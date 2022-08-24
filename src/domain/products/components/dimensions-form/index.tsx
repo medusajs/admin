@@ -14,6 +14,11 @@ type DimensionsFormProps = {
   form: NestedForm<DimensionsPayload>
 }
 
+/**
+ * Re-usable nested form used to submit dimensions information for products and their variants.
+ * @example
+ * <DimensionsForm form={nestedForm(form, "dimensions")} />
+ */
 const DimensionsForm = ({ form }: DimensionsFormProps) => {
   const {
     register,

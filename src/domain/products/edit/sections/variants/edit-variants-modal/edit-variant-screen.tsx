@@ -1,15 +1,15 @@
 import { Product, ProductVariant } from "@medusajs/medusa"
-import { useAdminProduct } from "medusa-react"
 import React, { useContext, useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../../components/fundamentals/button"
 import Modal from "../../../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../../../components/molecules/modal/layered-modal"
-import { countries } from "../../../../../../utils/countries"
 import VariantForm, {
   VariantFormType,
 } from "../../../../components/variant-form"
 import useEditProductActions from "../../../hooks/use-edit-product-actions"
+import { getEditVariantDefaultValues } from "../edit-variant-modal"
+import { useEditVariantsModal } from "./use-edit-variants-modal"
 
 type Props = {
   variant: ProductVariant
@@ -17,51 +17,38 @@ type Props = {
 }
 
 const EditVariantScreen = ({ variant, product }: Props) => {
+  const { onClose } = useEditVariantsModal()
   const form = useForm<VariantFormType>({
-    defaultValues: getDefaultValues(variant, product),
+    defaultValues: getEditVariantDefaultValues(variant, product),
   })
 
-  const { product: altProduct, status } = useAdminProduct(product.id)
-
-  const { pop } = useContext(LayeredModalContext)
+  const { pop, reset } = useContext(LayeredModalContext)
   const { updatingVariant, onUpdateVariant } = useEditProductActions(product.id)
 
   const popAndReset = () => {
-    form.reset(getDefaultValues(variant, product))
+    form.reset(getEditVariantDefaultValues(variant, product))
     pop()
   }
 
-  useEffect(() => {
-    form.reset(getDefaultValues(variant, product))
-  }, [variant, product])
-
-  const createPayload = (data: VariantFormType) => {
-    const { customs, dimensions, prices, options, ...rest } = data
-
-    return {
-      ...rest,
-      ...customs,
-      origin_country: customs.origin_country
-        ? customs.origin_country.value
-        : null,
-      prices: prices.prices.map((price) => ({
-        id: price.id,
-        amount: price.amount,
-      })),
-      options: options.map((option) => ({
-        option_id: option.id,
-        value: option.value,
-      })),
-      ...dimensions,
-    }
+  const closeAndReset = () => {
+    form.reset(getEditVariantDefaultValues(variant, product))
+    reset()
+    onClose()
   }
+
+  useEffect(() => {
+    form.reset(getEditVariantDefaultValues(variant, product))
+  }, [variant, product])
 
   const onSubmitAndBack = form.handleSubmit((data) => {
     // @ts-ignore
-    onUpdateVariant(variant.id, createPayload(data), popAndReset)
+    onUpdateVariant(variant.id, createUpdatePayload(data), popAndReset)
   })
 
-  const onSubmitAndClose = form.handleSubmit((data) => {})
+  const onSubmitAndClose = form.handleSubmit((data) => {
+    // @ts-ignore
+    onUpdateVariant(variant.id, createUpdatePayload(data), closeAndReset)
+  })
 
   return (
     <>
@@ -90,6 +77,7 @@ const EditVariantScreen = ({ variant, product }: Props) => {
               type="button"
               disabled={updatingVariant || !form.formState.isDirty}
               loading={updatingVariant}
+              onClick={onSubmitAndClose}
             >
               Save and close
             </Button>
@@ -100,57 +88,32 @@ const EditVariantScreen = ({ variant, product }: Props) => {
   )
 }
 
-const getDefaultValues = (
-  variant: ProductVariant,
-  product: Product
-): VariantFormType => {
-  const options = product.options.map((option) => ({
-    title: option.title,
-    id: option.id,
-    value:
-      variant.options.find((optionValue) => optionValue.option_id === option.id)
-        ?.value || "",
-  }))
+export const createUpdatePayload = (data: VariantFormType) => {
+  const { customs, dimensions, prices, options, ...rest } = data
 
-  const country = countries.find(
-    (country) =>
-      country.name.toLowerCase() === variant.origin_country?.toLowerCase()
-  )
-
-  const countryOption = country
-    ? { label: country.name, value: country.alpha2 }
-    : null
+  const priceArray = prices.prices
+    .filter((price) => price.amount)
+    .map((price) => {
+      return {
+        amount: price.amount,
+        currency_code: price.region_id ? undefined : price.currency_code,
+        region_id: price.region_id,
+        id: price.id || undefined,
+      }
+    })
 
   return {
-    title: variant.title,
-    sku: variant.sku,
-    ean: variant.ean,
-    inventory_quantity: variant.inventory_quantity,
-    material: variant.material,
-    manage_inventory: variant.manage_inventory,
-    allow_backorder: variant.allow_backorder,
-    barcode: variant.barcode,
-    upc: variant.upc,
-    customs: {
-      hs_code: variant.hs_code,
-      mid_code: variant.mid_code,
-      origin_country: countryOption,
-    },
-    options,
-    prices: {
-      prices: variant.prices.map((price) => ({
-        id: price.id,
-        amount: price.amount,
-        currency_code: price.currency_code,
-        region_id: price.region_id,
-      })),
-    },
-    dimensions: {
-      weight: variant.weight,
-      width: variant.width,
-      height: variant.height,
-      length: variant.length,
-    },
+    ...rest,
+    ...customs,
+    origin_country: customs.origin_country
+      ? customs.origin_country.value
+      : null,
+    prices: priceArray,
+    options: options.map((option) => ({
+      option_id: option.id,
+      value: option.value,
+    })),
+    ...dimensions,
   }
 }
 
@@ -158,7 +121,6 @@ export const useEditVariantScreen = (props: Props) => {
   const { pop } = React.useContext(LayeredModalContext)
 
   const screen = useMemo(() => {
-    console.log("Detected change in useEditVariantScreen")
     return {
       title: "Edit Variant",
       subtitle: props.variant.title,

@@ -1,5 +1,5 @@
 import { Product } from "@medusajs/medusa"
-import React from "react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
@@ -19,7 +19,16 @@ const AddVariantModal = ({ open, onClose, product }: Props) => {
 
   const { onAddVariant, addingVariant } = useEditProductActions(product.id)
 
-  const { handleSubmit } = form
+  const { handleSubmit, reset } = form
+
+  useEffect(() => {
+    reset(getDefaultValues(product))
+  }, [product])
+
+  const resetAndClose = () => {
+    reset(getDefaultValues(product))
+    onClose()
+  }
 
   const onSubmit = handleSubmit((data) => {
     onAddVariant(
@@ -48,23 +57,28 @@ const AddVariantModal = ({ open, onClose, product }: Props) => {
           value: option.value,
         })),
       },
-      () => {}
+      resetAndClose
     )
   })
 
   return (
-    <Modal open={open} handleClose={onClose}>
+    <Modal open={open} handleClose={resetAndClose}>
       <Modal.Body>
-        <Modal.Header handleClose={onClose}>
+        <Modal.Header handleClose={resetAndClose}>
           <h1 className="inter-xlarge-semibold">Add Variant</h1>
         </Modal.Header>
-        <form>
+        <form onSubmit={onSubmit}>
           <Modal.Content>
             <VariantForm form={form} />
           </Modal.Content>
           <Modal.Footer>
             <div className="flex items-center gap-x-xsmall justify-end w-full">
-              <Button variant="secondary" size="small" type="button">
+              <Button
+                variant="secondary"
+                size="small"
+                type="button"
+                onClick={resetAndClose}
+              >
                 Cancel
               </Button>
               <Button variant="primary" size="small" type="submit">
@@ -110,6 +124,34 @@ const getDefaultValues = (product: Product): VariantFormType | undefined => {
       hs_code: null,
       origin_country: null,
     },
+  }
+}
+
+export const createAddPayload = (data: VariantFormType) => {
+  return {
+    sku: data.sku || undefined,
+    upc: data.upc || undefined,
+    barcode: data.barcode || undefined,
+    ean: data.ean || undefined,
+    weight: data.dimensions.weight || undefined,
+    width: data.dimensions.width || undefined,
+    height: data.dimensions.height || undefined,
+    length: data.dimensions.length || undefined,
+    mid_code: data.customs.mid_code || undefined,
+    allow_backorder: data.allow_backorder,
+    manage_inventory: data.manage_inventory,
+    material: data.material || undefined,
+    inventory_quantity: data.inventory_quantity || 0,
+    prices: data.prices.prices.map((p) => ({
+      amount: p.amount || 0,
+      currency_code: p.region_id ? undefined : p.currency_code,
+      region_id: p.region_id || undefined,
+    })),
+    title: data.title || `${data.options?.map((o) => o.value).join(" / ")}`,
+    options: data.options.map((option) => ({
+      option_id: option.id,
+      value: option.value,
+    })),
   }
 }
 

@@ -17,6 +17,9 @@ type CustomsFormProps = {
   form: NestedForm<CustomsPayload>
 }
 
+/**
+ * Re-usable nested form used to submit customs information for products and their variants.
+ */
 const CustomsForm = ({ form }: CustomsFormProps) => {
   const {
     register,

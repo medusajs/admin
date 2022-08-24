@@ -34,6 +34,25 @@ type Props = {
   form: UseFormReturn<VariantFormType, any>
 }
 
+/**
+ * Re-usable Product Variant form used to add and edit product variants.
+ * @example
+ * const MyForm = () => {
+ *   const form = useForm<VariantFormType>()
+ *   const { handleSubmit } = form
+ *
+ *   const onSubmit = handleSubmit((data) => {
+ *     // do something with data
+ *   })
+ *
+ *   return (
+ *     <form onSubmit={onSubmit}>
+ *       <VariantForm form={form} />
+ *       <Button type="submit">Submit</Button>
+ *     </form>
+ *   )
+ * }
+ */
 const VariantForm = ({ form }: Props) => {
   const { fields } = useFieldArray({
     control: form.control,
@@ -158,17 +177,17 @@ const VariantForm = ({ form }: Props) => {
               />
               <InputField
                 label="EAN (Barcode)"
-                placeholder="1 23456 78910 2..."
+                placeholder="123456789102..."
                 {...form.register("ean")}
               />
               <InputField
                 label="UPC (Barcode)"
-                placeholder="0 23456 78910 4..."
+                placeholder="023456789104..."
                 {...form.register("upc")}
               />
               <InputField
                 label="Barcode"
-                placeholder="1 23456 78910 4..."
+                placeholder="123456789104..."
                 {...form.register("barcode")}
               />
             </div>

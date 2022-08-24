@@ -12,6 +12,7 @@ import LayeredModal, {
   LayeredModalContext,
 } from "../../../../../../components/molecules/modal/layered-modal"
 import useEditProductActions from "../../../hooks/use-edit-product-actions"
+import { EditVariantsModalContext } from "./use-edit-variants-modal"
 import { VariantCard } from "./variant-card"
 
 type Props = {
@@ -76,15 +77,16 @@ const EditVariantsModal = ({ open, onClose, product }: Props) => {
         />
       )
     },
-    []
+    [product]
   )
 
   const handleFormReset = () => {
     reset(getDefaultValues(product))
   }
 
-  const closeAndReset = () => {
+  const resetAndClose = () => {
     handleFormReset()
+    context.reset()
     onClose()
   }
 
@@ -104,58 +106,64 @@ const EditVariantsModal = ({ open, onClose, product }: Props) => {
         }),
       },
       () => {
-        closeAndReset()
+        resetAndClose()
       },
       "Variants were successfully updated"
     )
   })
 
   return (
-    <LayeredModal handleClose={closeAndReset} open={open} context={context}>
-      <Modal.Body>
-        <Modal.Header handleClose={closeAndReset}>
-          <h1 className="inter-xlarge-semibold">Edit Variants</h1>
-        </Modal.Header>
-        <FormProvider {...form}>
-          <form onSubmit={onSubmit}>
-            <Modal.Content>
-              <h2 className="inter-base-semibold mb-small">
-                Product variants{" "}
-                <span className="inter-base-regular text-grey-50">
-                  ({product.variants.length})
-                </span>
-              </h2>
-              <div className="grid grid-cols-[1fr_1fr_48px] pr-base inter-small-semibold text-grey-50 mb-small">
-                <p className="col-start-1 col-end-1 text-left">Variant</p>
-                <p className="col-start-2 col-end-2 text-right">Inventory</p>
-              </div>
-              <div>{fields.map((card, i) => renderCard(card, i))}</div>
-            </Modal.Content>
-            <Modal.Footer>
-              <div className="flex items-center gap-x-xsmall justify-end w-full">
-                <Button
-                  variant="secondary"
-                  size="small"
-                  type="button"
-                  onClick={closeAndReset}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  size="small"
-                  type="submit"
-                  loading={updating}
-                  disabled={updating || !isDirty}
-                >
-                  Save and close
-                </Button>
-              </div>
-            </Modal.Footer>
-          </form>
-        </FormProvider>
-      </Modal.Body>
-    </LayeredModal>
+    <EditVariantsModalContext.Provider
+      value={{
+        onClose,
+      }}
+    >
+      <LayeredModal handleClose={resetAndClose} open={open} context={context}>
+        <Modal.Body>
+          <Modal.Header handleClose={resetAndClose}>
+            <h1 className="inter-xlarge-semibold">Edit Variants</h1>
+          </Modal.Header>
+          <FormProvider {...form}>
+            <form onSubmit={onSubmit}>
+              <Modal.Content>
+                <h2 className="inter-base-semibold mb-small">
+                  Product variants{" "}
+                  <span className="inter-base-regular text-grey-50">
+                    ({product.variants.length})
+                  </span>
+                </h2>
+                <div className="grid grid-cols-[1fr_1fr_48px] pr-base inter-small-semibold text-grey-50 mb-small">
+                  <p className="col-start-1 col-end-1 text-left">Variant</p>
+                  <p className="col-start-2 col-end-2 text-right">Inventory</p>
+                </div>
+                <div>{fields.map((card, i) => renderCard(card, i))}</div>
+              </Modal.Content>
+              <Modal.Footer>
+                <div className="flex items-center gap-x-xsmall justify-end w-full">
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    type="button"
+                    onClick={resetAndClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="small"
+                    type="submit"
+                    loading={updating}
+                    disabled={updating || !isDirty}
+                  >
+                    Save and close
+                  </Button>
+                </div>
+              </Modal.Footer>
+            </form>
+          </FormProvider>
+        </Modal.Body>
+      </LayeredModal>
+    </EditVariantsModalContext.Provider>
   )
 }
 

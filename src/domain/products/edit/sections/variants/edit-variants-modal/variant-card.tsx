@@ -47,8 +47,6 @@ export const VariantCard = ({
     formState: { errors },
   } = useFormContext()
 
-  console.log(product.variants.find((v) => v.id === id))
-
   const editVariantScreen = useEditVariantScreen({
     product,
     variant: product.variants.find((v) => v.id === id)!,

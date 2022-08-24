@@ -1,12 +1,14 @@
-import { Product } from "@medusajs/medusa"
-import React from "react"
+import { Product, ProductVariant } from "@medusajs/medusa"
+import React, { useState } from "react"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import GearIcon from "../../../../../components/fundamentals/icons/gear-icon"
 import PlusIcon from "../../../../../components/fundamentals/icons/plus-icon"
 import { ActionType } from "../../../../../components/molecules/actionables"
 import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
+import useEditProductActions from "../../hooks/use-edit-product-actions"
 import AddVariantModal from "./add-variant-modal"
+import EditVariantModal from "./edit-variant-modal"
 import EditVariantsModal from "./edit-variants-modal"
 import OptionsModal from "./options-modal"
 import OptionsProvider, { useOptionsContext } from "./options-provider"
@@ -17,6 +19,10 @@ type Props = {
 }
 
 const VariantsSection = ({ product }: Props) => {
+  const [variantToEdit, setVariantToEdit] = useState<
+    { base: ProductVariant; isDuplicate: boolean } | undefined
+  >(undefined)
+
   const {
     state: optionState,
     close: closeOptions,
@@ -53,6 +59,20 @@ const VariantsSection = ({ product }: Props) => {
     },
   ]
 
+  const { onDeleteVariant } = useEditProductActions(product.id)
+
+  const handleDeleteVariant = (variantId: string) => {
+    onDeleteVariant(variantId)
+  }
+
+  const handleEditVariant = (variant: ProductVariant) => {
+    setVariantToEdit({ base: variant, isDuplicate: false })
+  }
+
+  const handleDuplicateVariant = (variant: ProductVariant) => {
+    setVariantToEdit({ base: variant, isDuplicate: true })
+  }
+
   return (
     <OptionsProvider product={product}>
       <Section title="Variants" actions={actions}>
@@ -64,7 +84,14 @@ const VariantsSection = ({ product }: Props) => {
               ({product.variants.length})
             </span>
           </h2>
-          <VariantsTable variants={product.variants} />
+          <VariantsTable
+            variants={product.variants}
+            actions={{
+              deleteVariant: handleDeleteVariant,
+              updateVariant: handleEditVariant,
+              duplicateVariant: handleDuplicateVariant,
+            }}
+          />
         </div>
       </Section>
       <OptionsModal
@@ -82,6 +109,14 @@ const VariantsSection = ({ product }: Props) => {
         onClose={closeEditVariants}
         product={product}
       />
+      {variantToEdit && (
+        <EditVariantModal
+          variant={variantToEdit.base}
+          isDuplicate={variantToEdit.isDuplicate}
+          product={product}
+          onClose={() => setVariantToEdit(undefined)}
+        />
+      )}
     </OptionsProvider>
   )
 }
@@ -123,13 +158,16 @@ const ProductOptions = () => {
           <div key={option.id}>
             <h3 className="inter-base-semibold mb-xsmall">{option.title}</h3>
             <ul className="flex items-center gap-x-1">
-              {option.values?.map((v) => (
-                <li key={v.id}>
-                  <div className="text-grey-50 bg-grey-10 inter-small-semibold px-3 py-[6px] rounded-rounded">
-                    {v.value}
-                  </div>
-                </li>
-              ))}
+              {option.values
+                ?.map((val) => val.value)
+                .filter((v, index, self) => self.indexOf(v) === index)
+                .map((v, i) => (
+                  <li key={i}>
+                    <div className="text-grey-50 bg-grey-10 inter-small-semibold px-3 py-[6px] rounded-rounded">
+                      {v}
+                    </div>
+                  </li>
+                ))}
             </ul>
           </div>
         )
