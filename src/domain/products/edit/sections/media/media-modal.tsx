@@ -62,10 +62,10 @@ const MediaModal = ({ product, open, onClose }: Props) => {
   }
 
   const onSubmit = handleSubmit(async (data) => {
-    let prepedImages: FormImage[] = []
+    let preppedImages: FormImage[] = []
 
     try {
-      prepedImages = await prepareImages(data.images)
+      preppedImages = await prepareImages(data.images)
     } catch (error) {
       let errorMessage = "Something went wrong while trying to upload images."
       const response = (error as any).response as Response
@@ -80,7 +80,7 @@ const MediaModal = ({ product, open, onClose }: Props) => {
       notification("Error", errorMessage, "error")
       return
     }
-    const urls = prepedImages.map((image) => image.url)
+    const urls = preppedImages.map((image) => image.url)
 
     onUpdate(
       {
@@ -108,12 +108,6 @@ const MediaModal = ({ product, open, onClose }: Props) => {
     control,
     name: "images",
   })
-
-  useEffect(() => {
-    if (images.some((i) => i.selected)) {
-      console.log("selected")
-    }
-  }, [images])
 
   const selected = useMemo(() => {
     const selected: number[] = []
