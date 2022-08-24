@@ -1,0 +1,124 @@
+import { useAdminRegions, useAdminStore } from "medusa-react"
+import React, { useEffect, useMemo } from "react"
+import { FieldArrayWithId, useFieldArray } from "react-hook-form"
+import { NestedForm } from "../../../../utils/nested-form"
+import NestedPrice from "./nested-price"
+
+type PricePayload = {
+  id: string | null
+  amount: number | null
+  currency_code: string
+  region_id: string | null
+}
+
+type PriceObject = FieldArrayWithId<
+  {
+    __nested__: PricesPayload
+  },
+  "__nested__.prices",
+  "id"
+> & { index: number }
+
+export type PricesPayload = {
+  prices: PricePayload[]
+}
+
+export type NestedPriceObject = {
+  currencyPrice: PriceObject
+  regionPrices: (PriceObject & { regionName: string })[]
+}
+
+type Props = {
+  form: NestedForm<PricesPayload>
+}
+
+const PricesForm = ({ form }: Props) => {
+  const { store, status: storeStatus } = useAdminStore()
+  const { regions, status: regionsStatus } = useAdminRegions()
+
+  const { control, path } = form
+
+  const { append, fields } = useFieldArray({
+    control,
+    name: path("prices"),
+  })
+
+  useEffect(() => {
+    if (!regions) {
+      return
+    }
+
+    regions.forEach((reg) => {
+      if (!fields.some((field) => field.region_id === reg.id)) {
+        append({
+          id: null,
+          region_id: reg.id,
+          amount: null,
+          currency_code: reg.currency_code,
+        })
+      }
+    })
+  }, [regions, fields])
+
+  useEffect(() => {
+    if (!store) {
+      return
+    }
+
+    store.currencies.forEach((cur) => {
+      if (!fields.some((field) => field.currency_code === cur.code)) {
+        append({
+          id: null,
+          currency_code: cur.code,
+          amount: null,
+          region_id: null,
+        })
+      }
+    })
+  }, [store, fields])
+
+  const priceObj = useMemo(() => {
+    const obj: Record<string, NestedPriceObject> = {}
+
+    const currencyPrices = fields.filter((field) => field.region_id === null)
+    const regionPrices = fields.filter((field) => field.region_id !== null)
+
+    currencyPrices.forEach((price) => {
+      obj[price.currency_code!] = {
+        currencyPrice: {
+          ...price,
+          index: fields.indexOf(price),
+        },
+        regionPrices: regionPrices
+          .filter(
+            (regionPrice) => regionPrice.currency_code === price.currency_code
+          )
+          .map((rp) => ({
+            ...rp,
+            regionName: regions?.find((r) => r.id === rp.region_id)?.name || "",
+            index: fields.indexOf(rp),
+          })),
+      }
+    })
+
+    return obj
+  }, [fields])
+
+  return (
+    <div>
+      <div>
+        {Object.values(priceObj).map((po) => {
+          return (
+            <NestedPrice
+              form={form}
+              nestedPrice={po}
+              key={po.currencyPrice.id}
+            />
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+export default PricesForm

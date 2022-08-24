@@ -1,15 +1,15 @@
-import { Product, ProductOption } from "@medusajs/medusa"
-import axios from "axios"
+import { Product } from "@medusajs/medusa"
 import React from "react"
-import { useQuery } from "react-query"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import GearIcon from "../../../../../components/fundamentals/icons/gear-icon"
 import PlusIcon from "../../../../../components/fundamentals/icons/plus-icon"
 import { ActionType } from "../../../../../components/molecules/actionables"
 import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
-import { medusaUrl } from "../../../../../services/config"
+import AddVariantModal from "./add-variant-modal"
+import EditVariantsModal from "./edit-variants-modal"
 import OptionsModal from "./options-modal"
+import OptionsProvider, { useOptionsContext } from "./options-provider"
 import VariantsTable from "./table"
 
 type Props = {
@@ -23,15 +23,27 @@ const VariantsSection = ({ product }: Props) => {
     toggle: toggleOptions,
   } = useToggleState()
 
+  const {
+    state: addVariantState,
+    close: closeAddVariant,
+    toggle: toggleAddVariant,
+  } = useToggleState()
+
+  const {
+    state: editVariantsState,
+    close: closeEditVariants,
+    toggle: toggleEditVariants,
+  } = useToggleState()
+
   const actions: ActionType[] = [
     {
       label: "Add Variant",
-      onClick: () => {},
+      onClick: toggleAddVariant,
       icon: <PlusIcon size="20" />,
     },
     {
       label: "Edit Variants",
-      onClick: () => {},
+      onClick: toggleEditVariants,
       icon: <EditIcon size="20" />,
     },
     {
@@ -42,9 +54,9 @@ const VariantsSection = ({ product }: Props) => {
   ]
 
   return (
-    <>
+    <OptionsProvider product={product}>
       <Section title="Variants" actions={actions}>
-        <ProductOptions product={product} />
+        <ProductOptions />
         <div className="mt-xlarge">
           <h2 className="inter-large-semibold mb-base">
             Product variants{" "}
@@ -56,48 +68,26 @@ const VariantsSection = ({ product }: Props) => {
         </div>
       </Section>
       <OptionsModal
-        product={product}
         open={optionState}
         onClose={closeOptions}
+        product={product}
       />
-    </>
+      <AddVariantModal
+        open={addVariantState}
+        onClose={closeAddVariant}
+        product={product}
+      />
+      <EditVariantsModal
+        open={editVariantsState}
+        onClose={closeEditVariants}
+        product={product}
+      />
+    </OptionsProvider>
   )
 }
 
-const fetchProductOptions = async (
-  productId: string
-): Promise<ProductOption[]> => {
-  const response = await axios
-    .get("/admin/products", {
-      baseURL: medusaUrl,
-      params: {
-        id: productId,
-        expand: "options,options.values",
-      },
-      withCredentials: true,
-    })
-    .then(({ data }) => {
-      const options = data.products?.[0].options
-
-      return options
-    })
-
-  return response
-}
-
-const ProductOptions = ({ product }: Props) => {
-  // const { products, status } = useAdminProducts({
-  //   id: product.id,
-  //   expand: "options,options.values",
-  // })
-
-  const { data: options, status } = useQuery(
-    `${product.id}_options`,
-    () => fetchProductOptions(product.id),
-    {
-      keepPreviousData: false,
-    }
-  )
+const ProductOptions = () => {
+  const { options, status } = useOptionsContext()
 
   if (status === "error") {
     return null
@@ -127,7 +117,7 @@ const ProductOptions = ({ product }: Props) => {
   }
 
   return (
-    <div className="mt-base grid grid-cols-3 gap-x-8">
+    <div className="mt-base flex items-center flex-wrap gap-8">
       {options.map((option) => {
         return (
           <div key={option.id}>

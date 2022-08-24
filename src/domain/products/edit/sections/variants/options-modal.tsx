@@ -6,7 +6,6 @@ import {
 } from "medusa-react"
 import React, { useEffect, useMemo } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
-import { useQueryClient } from "react-query"
 import Button from "../../../../../components/fundamentals/button"
 import PlusIcon from "../../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
@@ -14,6 +13,7 @@ import InputField from "../../../../../components/molecules/input"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
 import FormValidator from "../../../../../utils/form-validator"
+import { useOptionsContext } from "./options-provider"
 
 type Props = {
   product: Product
@@ -40,7 +40,8 @@ const OptionsModal = ({ product, open, onClose }: Props) => {
   const { mutate: del, isLoading: deleting } = useAdminDeleteProductOption(
     product.id
   )
-  const queryClient = useQueryClient()
+
+  const { refetch } = useOptionsContext()
 
   const {
     control,
@@ -74,8 +75,8 @@ const OptionsModal = ({ product, open, onClose }: Props) => {
   }
 
   const isSubmitting = useMemo(() => {
-    return updating || creating
-  }, [updating, creating])
+    return updating || creating || deleting
+  }, [updating, creating, deleting])
 
   const onSubmit = handleSubmit((data) => {
     const errors: string[] = []
@@ -103,6 +104,9 @@ const OptionsModal = ({ product, open, onClose }: Props) => {
           onError: () => {
             errors.push(`create ${option.title}`)
           },
+          onSuccess: () => {
+            refetch()
+          },
         }
       )
     })
@@ -117,6 +121,9 @@ const OptionsModal = ({ product, open, onClose }: Props) => {
           onError: () => {
             errors.push(`update ${option.title}`)
           },
+          onSuccess: () => {
+            refetch()
+          },
         }
       )
     })
@@ -125,6 +132,9 @@ const OptionsModal = ({ product, open, onClose }: Props) => {
       del(option.id!, {
         onError: () => {
           errors.push(`delete ${option.title}`)
+        },
+        onSuccess: () => {
+          refetch()
         },
       })
     })
@@ -142,9 +152,7 @@ const OptionsModal = ({ product, open, onClose }: Props) => {
       )
     }
 
-    console.log("Invalidate", `${product.id}_options`)
-
-    queryClient.invalidateQueries(`${product.id}_options`)
+    refetch()
     notification("Success", "Successfully updated product options", "success")
     handleClose()
   })

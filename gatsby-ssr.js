@@ -1,5 +1,7 @@
 import { MedusaProvider } from "medusa-react"
 import React from "react"
+import { DndProvider } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
 import { ToastProvider } from "react-toast-notifications"
 import "./src/assets/styles/global.css"
 import { AccountProvider } from "./src/context/account"
@@ -19,7 +21,7 @@ export const wrapPageElement = ({ element }) => {
         <AccountProvider>
           <InterfaceProvider>
             <ToastProvider autoDismiss={true} placement="bottom-left">
-              {element}
+              <DndProvider context={HTML5Backend}>{element}</DndProvider>
             </ToastProvider>
           </InterfaceProvider>
         </AccountProvider>

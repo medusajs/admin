@@ -2,16 +2,18 @@ import { ProductVariant } from "@medusajs/medusa"
 import React, { useMemo } from "react"
 import { Column, useTable } from "react-table"
 import DuplicateIcon from "../../../../../components/fundamentals/icons/duplicate-icon"
+import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import Actionables from "../../../../../components/molecules/actionables"
 import Table from "../../../../../components/molecules/table"
+import useEditProductActions from "../../hooks/use-edit-product-actions"
 
 type Props = {
   variants: ProductVariant[]
 }
 
 export const useVariantsTableColumns = () => {
-  const columns = useMemo<Column<{ id?: string } & ProductVariant>[]>(
+  const columns = useMemo<Column<ProductVariant>[]>(
     () => [
       {
         Header: "Title",
@@ -63,32 +65,6 @@ export const useVariantsTableColumns = () => {
           )
         },
       },
-      {
-        id: "actions",
-        width: 32,
-        Cell: ({ row }) => {
-          return (
-            <div className="float-right">
-              <Actionables
-                forceDropdown
-                actions={[
-                  {
-                    label: "Duplicate Variant",
-                    onClick: () => {},
-                    icon: <DuplicateIcon size="20" />,
-                  },
-                  {
-                    label: "Delete Variant",
-                    onClick: () => {},
-                    icon: <TrashIcon size="20" />,
-                    variant: "danger",
-                  },
-                ]}
-              />
-            </div>
-          )
-        },
-      },
     ],
     []
   )
@@ -112,6 +88,8 @@ const VariantsTable = ({ variants }: Props) => {
       width: "auto",
     },
   })
+
+  const { onDeleteVariant } = useEditProductActions(variants[0].product_id)
 
   return (
     <Table {...getTableProps()} className="table-fixed">
@@ -138,6 +116,31 @@ const VariantsTable = ({ variants }: Props) => {
                   </Table.Cell>
                 )
               })}
+              <Table.Cell>
+                <div className="float-right">
+                  <Actionables
+                    forceDropdown
+                    actions={[
+                      {
+                        label: "Edit Variant",
+                        icon: <EditIcon size="20" />,
+                        onClick: () => {},
+                      },
+                      {
+                        label: "Duplicate Variant",
+                        onClick: () => {},
+                        icon: <DuplicateIcon size="20" />,
+                      },
+                      {
+                        label: "Delete Variant",
+                        onClick: () => onDeleteVariant(row.original.id),
+                        icon: <TrashIcon size="20" />,
+                        variant: "danger",
+                      },
+                    ]}
+                  />
+                </div>
+              </Table.Cell>
             </Table.Row>
           )
         })}

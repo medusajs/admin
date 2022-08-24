@@ -12,6 +12,7 @@ enum LayeredModalActions {
 
 type LayeredModalScreen = {
   title: string
+  subtitle?: string
   onBack: () => void
   onConfirm: () => void
   view: ReactNode
@@ -117,7 +118,14 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
                 >
                   <ArrowLeftIcon size={20} />
                 </Button>
-                <h2 className="inter-xlarge-semibold ml-5">{screen.title}</h2>
+                <div className="flex items-center gap-x-2xsmall">
+                  <h2 className="inter-xlarge-semibold ml-5">{screen.title}</h2>
+                  {screen.subtitle && (
+                    <span className="inter-xlarge-regular text-grey-50">
+                      ({screen.subtitle})
+                    </span>
+                  )}
+                </div>
               </div>
             </Modal.Header>
             {screen.view}
