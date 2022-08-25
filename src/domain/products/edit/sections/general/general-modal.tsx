@@ -193,7 +193,7 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
                   control={control}
                   name="discountable"
                   render={({ field: { value, onChange } }) => {
-                    return <Switch checked={value} onChange={onChange} />
+                    return <Switch checked={value} onCheckedChange={onChange} />
                   }}
                 />
               </div>
