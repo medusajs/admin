@@ -148,6 +148,7 @@ const MediaModal = ({ product, open, onClose }: Props) => {
                 <FileUploadField
                   onFileChosen={handleFilesChosen}
                   placeholder="1200 x 1600 (3:4) recommended, up to 10MB each"
+                  multiple
                   filetypes={[
                     "image/gif",
                     "image/jpeg",
