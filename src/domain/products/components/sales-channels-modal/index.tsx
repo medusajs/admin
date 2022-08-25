@@ -15,6 +15,9 @@ type Props = {
   onSave: (salesChannels: SalesChannel[]) => void
 }
 
+/**
+ * Re-usable Sales Channels Modal, used for adding and editing sales channels both when creating a new product and editing an existing product.
+ */
 const SalesChannelsModal = ({ open, source = [], onClose, onSave }: Props) => {
   const context = React.useContext(LayeredModalContext)
 

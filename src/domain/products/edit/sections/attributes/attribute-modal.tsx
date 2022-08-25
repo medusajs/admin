@@ -1,13 +1,14 @@
 import { Product } from "@medusajs/medusa"
 import React, { useEffect } from "react"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
-import InputField from "../../../../../components/molecules/input"
 import Modal from "../../../../../components/molecules/modal"
-import Select from "../../../../../components/molecules/select"
-import { Option } from "../../../../../types/shared"
 import { countries } from "../../../../../utils/countries"
-import FormValidator from "../../../../../utils/form-validator"
+import { nestedForm } from "../../../../../utils/nested-form"
+import CustomsForm, { CustomsPayload } from "../../../components/customs-form"
+import DimensionsForm, {
+  DimensionsPayload,
+} from "../../../components/dimensions-form"
 import useEditProductActions from "../../hooks/use-edit-product-actions"
 
 type Props = {
@@ -17,26 +18,22 @@ type Props = {
 }
 
 type AttributesForm = {
-  width: number | null
-  height: number | null
-  length: number | null
-  weight: number | null
-  mid_code: string | null
-  hs_code: string | null
-  origin_country: Option | null
+  dimensions: DimensionsPayload
+  customs: CustomsPayload
 }
 
 const AttributeModal = ({ product, open, onClose }: Props) => {
   const { onUpdate, updating } = useEditProductActions(product.id)
+  const form = useForm<AttributesForm>({
+    defaultValues: getDefaultValues(product),
+  })
   const {
     register,
     control,
     formState: { errors, isDirty },
     handleSubmit,
     reset,
-  } = useForm<AttributesForm>({
-    defaultValues: getDefaultValues(product),
-  })
+  } = form
 
   useEffect(() => {
     reset(getDefaultValues(product))
@@ -51,28 +48,23 @@ const AttributeModal = ({ product, open, onClose }: Props) => {
     onUpdate(
       {
         // @ts-ignore
-        weight: data.weight,
+        weight: data.dimensions.weight,
         // @ts-ignore
-        width: data.width,
+        width: data.dimensions.width,
         // @ts-ignore
-        height: data.height,
+        height: data.dimensions.height,
         // @ts-ignore
-        length: data.length,
+        length: data.dimensions.length,
         // @ts-ignore
-        mid_code: data.mid_code,
+        mid_code: data.customs.mid_code,
         // @ts-ignore
-        hs_code: data.hs_code,
+        hs_code: data.customs.hs_code,
         // @ts-ignore
-        origin_country: data.origin_country,
+        origin_country: data.customs.origin_country,
       },
       onReset
     )
   })
-
-  const countryOptions = countries.map((c) => ({
-    label: c.name,
-    value: c.alpha2,
-  }))
 
   return (
     <Modal open={open} handleClose={onReset} isLargeModal>
@@ -87,85 +79,14 @@ const AttributeModal = ({ product, open, onClose }: Props) => {
               <p className="inter-base-regular text-grey-50 mb-large">
                 Configure to calculate the most accurate shipping rates
               </p>
-              <div className="grid grid-cols-4 gap-x-large">
-                <InputField
-                  label="Width"
-                  placeholder="100"
-                  type="number"
-                  {...register("width", {
-                    min: FormValidator.nonNegativeNumberRule("Width"),
-                    valueAsNumber: true,
-                  })}
-                  errors={errors}
-                />
-                <InputField
-                  label="Length"
-                  placeholder="100"
-                  type="number"
-                  {...register("length", {
-                    min: FormValidator.nonNegativeNumberRule("Length"),
-                    valueAsNumber: true,
-                  })}
-                  errors={errors}
-                />
-                <InputField
-                  label="Height"
-                  placeholder="100"
-                  type="number"
-                  {...register("height", {
-                    min: FormValidator.nonNegativeNumberRule("Height"),
-                    valueAsNumber: true,
-                  })}
-                  errors={errors}
-                />
-                <InputField
-                  label="Weight"
-                  placeholder="100"
-                  type="number"
-                  {...register("weight", {
-                    min: FormValidator.nonNegativeNumberRule("Weight"),
-                    valueAsNumber: true,
-                  })}
-                  errors={errors}
-                />
-              </div>
+              <DimensionsForm form={nestedForm(form, "dimensions")} />
             </div>
             <div>
               <h2 className="inter-large-semibold mb-2xsmall">Customs</h2>
               <p className="inter-base-regular text-grey-50 mb-large">
                 Configure to calculate the most accurate shipping rates
               </p>
-              <div className="grid grid-cols-2 gap-large">
-                <InputField
-                  label="MID Code"
-                  placeholder="XDSKLAD9999"
-                  {...register("mid_code", {
-                    pattern: FormValidator.whiteSpaceRule("MID Code"),
-                  })}
-                  errors={errors}
-                />
-                <InputField
-                  label="HS Code"
-                  placeholder="BDJSK39277W"
-                  {...register("hs_code", {
-                    pattern: FormValidator.whiteSpaceRule("HS Code"),
-                  })}
-                  errors={errors}
-                />
-                <Controller
-                  name="origin_country"
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <Select
-                        label="Country of origin"
-                        options={countryOptions}
-                        {...field}
-                      />
-                    )
-                  }}
-                />
-              </div>
+              <CustomsForm form={nestedForm(form, "customs")} />
             </div>
           </Modal.Content>
           <Modal.Footer>
@@ -204,13 +125,17 @@ const getDefaultValues = (product: Product): AttributesForm => {
     : null
 
   return {
-    weight: product.weight,
-    width: product.width,
-    height: product.height,
-    length: product.length,
-    mid_code: product.mid_code,
-    hs_code: product.hs_code,
-    origin_country: countryOption,
+    dimensions: {
+      weight: product.weight,
+      width: product.width,
+      height: product.height,
+      length: product.length,
+    },
+    customs: {
+      mid_code: product.mid_code,
+      hs_code: product.hs_code,
+      origin_country: countryOption,
+    },
   }
 }
 
