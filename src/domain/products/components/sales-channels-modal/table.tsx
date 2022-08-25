@@ -22,8 +22,6 @@ type SalesChannelsTableProps = {
 
 type SalesChannelTableActionProps = {
   numberOfSelectedRows: number
-  availableChannelIds: string[]
-  onAddSalesChannelsToAvailableChannels: (salesChannels: SalesChannel[]) => void
   onDeselect: () => void
   onRemove: () => void
 }
@@ -165,8 +163,6 @@ const SalesChannelTable = ({
 
 export const SalesChannelTableActions = ({
   numberOfSelectedRows,
-  availableChannelIds,
-  onAddSalesChannelsToAvailableChannels,
   onDeselect,
   onRemove,
 }: SalesChannelTableActionProps) => {

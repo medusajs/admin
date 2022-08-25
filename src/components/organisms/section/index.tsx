@@ -5,6 +5,7 @@ type SectionProps = {
   children?: React.ReactNode
   title: string
   actions?: ActionType[]
+  customActions?: React.ReactNode
   forceDropdown?: boolean
   status?: React.ReactNode
 }
@@ -12,6 +13,7 @@ type SectionProps = {
 const Section = ({
   title,
   actions,
+  customActions,
   forceDropdown = false,
   status,
   children,
@@ -21,6 +23,7 @@ const Section = ({
       <div className="flex items-center justify-between">
         <h1 className="inter-xlarge-semibold text-grey-90">{title}</h1>
         <div className="flex items-center gap-x-2">
+          {customActions && customActions}
           {status && status}
           {actions && (
             <Actionables actions={actions} forceDropdown={forceDropdown} />
