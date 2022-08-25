@@ -58,6 +58,8 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
         title: data.title,
         handle: data.handle,
         // @ts-ignore
+        subtitle: data.subtitle,
+        // @ts-ignore
         description: data.description,
         // @ts-ignore
         type: data.type
@@ -70,6 +72,7 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
         collection_id: data.collection ? data.collection.value : null,
         // @ts-ignore
         tags: data.tags ? data.tags.map((t) => ({ value: t })) : null,
+        discountable: data.discountable,
       },
       onReset
     )
