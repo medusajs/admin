@@ -1,7 +1,7 @@
 import { useAdminCollections, useAdminProductTypes } from "medusa-react"
 import { useMemo } from "react"
 
-const useGeneralData = () => {
+const useOrganizeData = () => {
   const { product_types } = useAdminProductTypes()
   const { collections } = useAdminCollections()
 
@@ -29,4 +29,4 @@ const useGeneralData = () => {
   }
 }
 
-export default useGeneralData
+export default useOrganizeData
