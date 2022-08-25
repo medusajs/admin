@@ -17,6 +17,7 @@ type BodyCardProps = {
   customActionable?: React.ReactNode
   status?: React.ReactNode
   customHeader?: React.ReactNode
+  compact?: boolean
 } & React.HTMLAttributes<HTMLDivElement>
 
 const BodyCard: React.FC<BodyCardProps> = ({
@@ -30,13 +31,15 @@ const BodyCard: React.FC<BodyCardProps> = ({
   customHeader,
   className,
   children,
+  compact = false,
   ...rest
 }) => {
   const { isScrolled, scrollListener } = useScroll({ threshold: 16 })
   return (
     <div
       className={clsx(
-        "rounded-rounded border bg-grey-0 border-grey-20 h-full overflow-hidden flex flex-col min-h-[350px] w-full",
+        "rounded-rounded border bg-grey-0 border-grey-20 overflow-hidden flex flex-col h-full w-full",
+        { "min-h-[350px]": !compact },
         className
       )}
       {...rest}
@@ -74,7 +77,13 @@ const BodyCard: React.FC<BodyCardProps> = ({
           </h3>
         )}
         {children && (
-          <div className="flex flex-col grow my-large">{children}</div>
+          <div
+            className={clsx("flex flex-col", {
+              "my-large grow": !compact,
+            })}
+          >
+            {children}
+          </div>
         )}
       </div>
       {events && events.length > 0 ? (

@@ -12,6 +12,7 @@ enum LayeredModalActions {
 
 type LayeredModalScreen = {
   title: string
+  subtitle?: string
   onBack: () => void
   onConfirm: () => void
   view: ReactNode
@@ -82,6 +83,7 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
   context,
   children,
   handleClose,
+  open,
   isLargeModal = true,
 }) => {
   const emptyScreensAndClose = () => {
@@ -91,7 +93,11 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
 
   const screen = context.screens[context.screens.length - 1]
   return (
-    <Modal isLargeModal={isLargeModal} handleClose={emptyScreensAndClose}>
+    <Modal
+      open={open}
+      isLargeModal={isLargeModal}
+      handleClose={emptyScreensAndClose}
+    >
       <Modal.Body
         className={clsx(
           "transition-transform translate-x-full flex flex-col justify-between duration-200",
@@ -112,7 +118,14 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
                 >
                   <ArrowLeftIcon size={20} />
                 </Button>
-                <h2 className="inter-xlarge-semibold ml-5">{screen.title}</h2>
+                <div className="flex items-center gap-x-2xsmall">
+                  <h2 className="inter-xlarge-semibold ml-5">{screen.title}</h2>
+                  {screen.subtitle && (
+                    <span className="inter-xlarge-regular text-grey-50">
+                      ({screen.subtitle})
+                    </span>
+                  )}
+                </div>
               </div>
             </Modal.Header>
             {screen.view}

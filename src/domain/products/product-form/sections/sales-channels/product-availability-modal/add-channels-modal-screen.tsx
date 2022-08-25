@@ -90,7 +90,7 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
 
   return (
     <>
-      <Modal.Content isLargeModal>
+      <Modal.Content>
         <SalesChannelAvailabilityTable
           salesChannels={salesChannels || []}
           limit={LIMIT}
@@ -100,7 +100,7 @@ const AddChannelsModalScreen: React.FC<AddChannelsModalScreenProps> = ({
           tableState={tableState}
         />
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <div className="flex justify-end w-full space-x-xsmall">
           <Button
             variant="ghost"
