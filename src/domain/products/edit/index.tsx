@@ -5,6 +5,8 @@ import AttributesSection from "./sections/attributes"
 import GeneralSection from "./sections/general"
 import MediaSection from "./sections/media"
 import ThumbnailSection from "./sections/thumbnail"
+import VariantsSection from "./sections/variants"
+
 
 interface EditProps extends RouteComponentProps {
   id?: string
@@ -32,6 +34,7 @@ const Edit = ({ id }: EditProps) => {
       <div className="grid grid-cols-12 gap-x-base">
         <div className="col-span-8 flex flex-col gap-y-xsmall">
           <GeneralSection product={product} />
+          <VariantsSection product={product} />
           <AttributesSection product={product} />
         </div>
         <div className="flex flex-col col-span-4 gap-y-xsmall">
