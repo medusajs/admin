@@ -112,9 +112,14 @@ const ProductDetails = ({ product }: Props) => {
   return (
     <div className="flex flex-col gap-y-3 mt-8">
       <h2 className="inter-base-semibold">Details</h2>
+      <Detail title="Subtitle" value={product.subtitle} />
       <Detail title="Handle" value={product.handle} />
       <Detail title="Type" value={product.type?.value} />
       <Detail title="Collection" value={product.collection?.title} />
+      <Detail
+        title="Discountable"
+        value={product.discountable ? "True" : "False"}
+      />
     </div>
   )
 }

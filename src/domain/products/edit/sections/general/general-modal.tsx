@@ -1,6 +1,7 @@
 import { Product } from "@medusajs/medusa"
 import React, { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
+import Switch from "../../../../../components/atoms/switch"
 import Button from "../../../../../components/fundamentals/button"
 import InputField from "../../../../../components/molecules/input"
 import Modal from "../../../../../components/molecules/modal"
@@ -20,11 +21,13 @@ type Props = {
 
 type GeneralForm = {
   title: string
+  subtitle: string | null
   handle: string
   description: string | null
   type: Option | null
   collection: Option | null
   tags: string[] | null
+  discountable: boolean
 }
 
 const GeneralModal = ({ product, open, onClose }: Props) => {
@@ -55,6 +58,8 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
         title: data.title,
         handle: data.handle,
         // @ts-ignore
+        subtitle: data.subtitle,
+        // @ts-ignore
         description: data.description,
         // @ts-ignore
         type: data.type
@@ -67,6 +72,7 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
         collection_id: data.collection ? data.collection.value : null,
         // @ts-ignore
         tags: data.tags ? data.tags.map((t) => ({ value: t })) : null,
+        discountable: data.discountable,
       },
       onReset
     )
@@ -99,6 +105,21 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
                   errors={errors}
                 />
                 <InputField
+                  label="Subtitle"
+                  placeholder="Warm and cozy..."
+                  {...register("subtitle", {
+                    pattern: FormValidator.whiteSpaceRule("Subtitle"),
+                  })}
+                  errors={errors}
+                />
+              </div>
+              <p className="inter-base-regular text-grey-50 mb-large">
+                Give your product a short and clear title.
+                <br />
+                50-60 characters is the recommended length for search engines.
+              </p>
+              <div className="grid grid-cols-2 gap-x-large mb-large">
+                <InputField
                   label="Handle"
                   required
                   {...register("handle", {
@@ -113,11 +134,6 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
                   errors={errors}
                 />
               </div>
-              <p className="inter-base-regular text-grey-50 mb-large">
-                Give your product a short and clear title.
-                <br />
-                50-60 characters is the recommended length for search engines.
-              </p>
               <TextArea
                 label="Description"
                 rows={3}
@@ -133,8 +149,8 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
                 120-160 characters is the recommended length for search engines.
               </p>
             </div>
-            <div>
-              <h2 className="inter-large-semibold mb-base">Organize Product</h2>
+            <div className="mb-xlarge">
+              <h2 className="inter-base-semibold mb-base">Organize Product</h2>
               <div className="grid grid-cols-2 gap-x-large mb-large">
                 <Controller
                   name="type"
@@ -173,6 +189,21 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
                 }}
               />
             </div>
+            <div>
+              <div className="flex items-center justify-between mb-2xsmall">
+                <h2 className="inter-base-semibold mb-2xsmall">Discountable</h2>
+                <Controller
+                  control={control}
+                  name="discountable"
+                  render={({ field: { value, onChange } }) => {
+                    return <Switch checked={value} onCheckedChange={onChange} />
+                  }}
+                />
+              </div>
+              <p className="inter-base-regular text-grey-50">
+                When unchecked discounts will not be applied to this product.
+              </p>
+            </div>
           </Modal.Content>
           <Modal.Footer>
             <div className="flex gap-x-2 justify-end w-full">
@@ -204,6 +235,7 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
 const getDefaultValues = (product: Product): GeneralForm => {
   return {
     title: product.title,
+    subtitle: product.subtitle,
     handle: product.handle!,
     description: product.description || null,
     collection: product.collection
@@ -213,6 +245,7 @@ const getDefaultValues = (product: Product): GeneralForm => {
       ? { label: product.type.value, value: product.type.id }
       : null,
     tags: product.tags ? product.tags.map((t) => t.value) : null,
+    discountable: product.discountable,
   }
 }
 
