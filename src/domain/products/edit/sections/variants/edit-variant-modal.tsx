@@ -66,7 +66,7 @@ const EditVariantModal = ({
           )}
         </h1>
       </Modal.Header>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} noValidate>
         <Modal.Content>
           <VariantForm form={form} />
         </Modal.Content>

@@ -52,7 +52,7 @@ const EditVariantScreen = ({ variant, product }: Props) => {
 
   return (
     <>
-      <form>
+      <form noValidate>
         <Modal.Content>
           <VariantForm form={form} />
         </Modal.Content>
