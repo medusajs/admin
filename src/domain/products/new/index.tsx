@@ -1,9 +1,13 @@
-import React from "react"
+import { useAdminCreateProduct } from "medusa-react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
+import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../components/organisms/accordion"
+import useNotification from "../../../hooks/use-notification"
+import { getErrorMessage } from "../../../utils/error-messages"
 import { nestedForm } from "../../../utils/nested-form"
 import DiscountableForm, {
   DiscountableFormType,
@@ -12,6 +16,9 @@ import GeneralForm, { GeneralFormType } from "../components/general-form"
 import MediaForm, { MediaFormType } from "../components/media-form"
 import OrganizeForm, { OrganizeFormType } from "../components/organize-form"
 import ThumbnailForm, { ThumbnailFormType } from "../components/thumbnail-form"
+import AddSalesChannelsForm, {
+  AddSalesChannelsFormType,
+} from "./add-sales-channels"
 
 type NewProductForm = {
   general: GeneralFormType
@@ -19,6 +26,7 @@ type NewProductForm = {
   organize: OrganizeFormType
   thumbnail: ThumbnailFormType
   media: MediaFormType
+  salesChannels: AddSalesChannelsFormType
 }
 
 type Props = {
@@ -27,13 +35,45 @@ type Props = {
 
 const NewProduct = ({ onClose }: Props) => {
   const form = useForm<NewProductForm>()
+  const { mutate } = useAdminCreateProduct()
+  const notification = useNotification()
+
   const {
     handleSubmit,
     formState: { isDirty },
+    reset,
   } = form
 
+  const closeAndReset = () => {
+    reset()
+    onClose()
+  }
+
+  useEffect(() => {
+    reset()
+  }, [])
+
+  const onSubmit = handleSubmit((data) => {
+    mutate(
+      {
+        title: data.general.title,
+        handle: data.general.handle,
+        discountable: data.discounted.value,
+        is_giftcard: false,
+        collection_id: data.organize.collection?.value,
+        description: data.general.description || undefined,
+      },
+      {
+        onSuccess: () => {},
+        onError: (err) => {
+          notification("Error", getErrorMessage(err), "error")
+        },
+      }
+    )
+  })
+
   return (
-    <form className="w-full">
+    <form className="w-full" onSubmit={onSubmit}>
       <FocusModal>
         <FocusModal.Header>
           <div className="medium:w-8/12 w-full px-8 flex justify-between">
@@ -41,7 +81,7 @@ const NewProduct = ({ onClose }: Props) => {
               size="small"
               variant="ghost"
               type="button"
-              onClick={onClose}
+              onClick={closeAndReset}
             >
               <CrossIcon size={20} />
             </Button>
@@ -90,6 +130,13 @@ const NewProduct = ({ onClose }: Props) => {
                     Organize Product
                   </h3>
                   <OrganizeForm form={nestedForm(form, "organize")} />
+                  <FeatureToggle featureFlag="sales_channels">
+                    <div className="mt-xlarge">
+                      <AddSalesChannelsForm
+                        form={nestedForm(form, "salesChannels")}
+                      />
+                    </div>
+                  </FeatureToggle>
                 </div>
               </div>
             </Accordion.Item>
