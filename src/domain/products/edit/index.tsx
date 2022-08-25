@@ -1,12 +1,13 @@
 import { RouteComponentProps } from "@reach/router"
 import { useAdminProduct } from "medusa-react"
 import React from "react"
+import BackButton from "../../../components/atoms/back-button"
 import AttributesSection from "./sections/attributes"
 import GeneralSection from "./sections/general"
 import MediaSection from "./sections/media"
+import RawSection from "./sections/raw"
 import ThumbnailSection from "./sections/thumbnail"
 import VariantsSection from "./sections/variants"
-
 
 interface EditProps extends RouteComponentProps {
   id?: string
@@ -30,12 +31,18 @@ const Edit = ({ id }: EditProps) => {
   }
 
   return (
-    <div>
+    <div className="pb-5xlarge">
+      <BackButton
+        path="/a/products"
+        label="Back to Products"
+        className="mb-xsmall"
+      />
       <div className="grid grid-cols-12 gap-x-base">
         <div className="col-span-8 flex flex-col gap-y-xsmall">
           <GeneralSection product={product} />
           <VariantsSection product={product} />
           <AttributesSection product={product} />
+          <RawSection product={product} />
         </div>
         <div className="flex flex-col col-span-4 gap-y-xsmall">
           <ThumbnailSection product={product} />
