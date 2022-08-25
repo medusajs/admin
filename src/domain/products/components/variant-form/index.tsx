@@ -136,7 +136,7 @@ const VariantForm = ({ form }: Props) => {
                   control={form.control}
                   name="manage_inventory"
                   render={({ field: { value, onChange } }) => {
-                    return <Switch checked={value} onChange={onChange} />
+                    return <Switch checked={value} onCheckedChange={onChange} />
                   }}
                 />
               </div>
@@ -154,7 +154,7 @@ const VariantForm = ({ form }: Props) => {
                   control={form.control}
                   name="allow_backorder"
                   render={({ field: { value, onChange } }) => {
-                    return <Switch checked={value} onChange={onChange} />
+                    return <Switch checked={value} onCheckedChange={onChange} />
                   }}
                 />
               </div>

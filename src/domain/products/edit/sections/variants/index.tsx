@@ -70,7 +70,8 @@ const VariantsSection = ({ product }: Props) => {
   }
 
   const handleDuplicateVariant = (variant: ProductVariant) => {
-    setVariantToEdit({ base: variant, isDuplicate: true })
+    // @ts-ignore
+    setVariantToEdit({ base: { ...variant, options: [] }, isDuplicate: true })
   }
 
   return (

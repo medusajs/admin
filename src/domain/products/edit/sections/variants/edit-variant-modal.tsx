@@ -84,7 +84,7 @@ const EditVariantModal = ({
               variant="primary"
               size="small"
               type="submit"
-              disabled={!isDirty}
+              disabled={!isDirty && !isDuplicate}
               loading={addingVariant || updatingVariant}
             >
               Save and close
