@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Controller, useFieldArray, UseFormReturn } from "react-hook-form"
 import Switch from "../../../../components/atoms/switch"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
@@ -9,6 +9,8 @@ import { nestedForm } from "../../../../utils/nested-form"
 import CustomsForm, { CustomsPayload } from "../customs-form"
 import DimensionsForm, { DimensionsPayload } from "../dimensions-form"
 import PricesForm, { PricesPayload } from "../prices-form"
+
+type RequireableFields = "sku" | "prices" | "inventory_quantity"
 
 export type VariantFormType = {
   prices: PricesPayload
@@ -54,14 +56,24 @@ type Props = {
  * }
  */
 const VariantForm = ({ form }: Props) => {
+  const [openItems, setOpenItems] = useState(["general"])
+  const {
+    formState: { errors },
+  } = form
   const { fields } = useFieldArray({
     control: form.control,
     name: "options",
   })
 
+  useEffect(() => {
+    if (errors.inventory_quantity && !openItems?.includes("stock")) {
+      setOpenItems([...openItems, "stock"])
+    }
+  }, [errors.inventory_quantity, errors.options, errors.prices])
+
   return (
-    <Accordion type="multiple" defaultValue={["general"]}>
-      <Accordion.Item title="General" value="general">
+    <Accordion type="multiple" value={openItems} onValueChange={setOpenItems}>
+      <Accordion.Item title="General" value="general" required>
         <div>
           <p className="inter-base-regular text-grey-50">
             To start selling, all you need is a title, price, and image.
@@ -173,6 +185,7 @@ const VariantForm = ({ form }: Props) => {
                 label="Quantity in stock"
                 type="number"
                 placeholder="100..."
+                errors={form.formState.errors}
                 {...form.register("inventory_quantity")}
               />
               <InputField

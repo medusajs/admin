@@ -211,71 +211,51 @@ const VariantValidity = ({ source }: { source: VariantFormType }) => {
     ean,
   } = source
 
-  const validPrices = prices?.prices.some((p) => p.amount !== null)
-  const validOptions = options.every((o) => o.value)
+  const invalidOptions = options.filter((opt) => !opt.value)
 
-  if (!inventory_quantity || !validPrices || !validOptions) {
+  if (invalidOptions?.length) {
     return (
       <IconTooltip
         type="error"
         content={
-          <p className="text-rose-50">
-            {!inventory_quantity && (
-              <>
-                **Inventory quantity is required
-                <br />
-              </>
-            )}
-            {!validPrices && (
-              <>
-                **Prices are required
-                <br />
-              </>
-            )}
-            {!validOptions && (
-              <>
-                **Options are required
-                <br />
-              </>
-            )}
-          </p>
+          <div className="text-rose-50 flex flex-col gap-y-2xsmall">
+            <p>You are missing options values for the following options:</p>
+            <ul className="list-disc list-inside">
+              {invalidOptions.map((io, index) => {
+                return <li key={index}>{io.title || `Option ${index + 1}`}</li>
+              })}
+            </ul>
+          </div>
         }
       />
     )
   }
 
+  const validPrices = prices?.prices.some((p) => p.amount !== null)
   const shippingValidity =
     Object.values(dimensions).every((value) => !!value) &&
     Object.values(customs).map((value) => !!value)
   const barcodeValidity = !!barcode || !!upc || !!ean
 
-  if (!sku || !shippingValidity || !barcodeValidity) {
+  if (!sku || !shippingValidity || !barcodeValidity || !validPrices) {
     return (
       <IconTooltip
         type="warning"
+        side="right"
         content={
-          <p className="text-orange-50">
-            Your variant is valid, but it's missing some important fields:
-            <br />
-            {!sku && (
-              <>
-                - SKU
-                <br />
-              </>
-            )}
-            {!shippingValidity && (
-              <>
-                - Shipping information
-                <br />
-              </>
-            )}
-            {!barcodeValidity && (
-              <>
-                - Barcode
-                <br />
-              </>
-            )}
-          </p>
+          <div className="text-orange-50 flex flex-col gap-y-2xsmall">
+            <p>
+              Your variant is createable, but it's missing some important
+              fields:
+            </p>
+            <ul className="list-disc list-inside">
+              {!validPrices && <li>Pricing</li>}
+              {!shippingValidity && <li>Shipping</li>}
+              {!inventory_quantity && <li>Inventory quantity</li>}
+              {!sku && <li>SKU</li>}
+              {!barcodeValidity && <li>Barcode</li>}
+            </ul>
+          </div>
         }
       />
     )

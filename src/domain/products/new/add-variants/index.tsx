@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import { uniqueId } from "lodash"
 import React, { useCallback, useEffect } from "react"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
@@ -8,12 +9,14 @@ import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import TagInput from "../../../../components/molecules/tag-input"
+import { useDebounce } from "../../../../hooks/use-debounce"
 import useToggleState from "../../../../hooks/use-toggle-state"
 import { NestedForm } from "../../../../utils/nested-form"
 import VariantForm, { VariantFormType } from "../../components/variant-form"
 import NewVariant from "./new-variant"
 
 type ProductOptionType = {
+  id: string
   title: string
   values: string[]
 }
@@ -37,6 +40,7 @@ const AddVariantsForm = ({ form }: Props) => {
   } = useFieldArray({
     control,
     name: path("options"),
+    keyName: "fieldId",
     shouldUnregister: true,
   })
 
@@ -62,13 +66,81 @@ const AddVariantsForm = ({ form }: Props) => {
     name: path("entries"),
   })
 
+  const debouncedOptions = useDebounce(watchedOptions, 500)
+
   useEffect(() => {
-    if (watchedOptions?.length) {
+    if (debouncedOptions?.length) {
+      const optionMap = debouncedOptions.reduce((acc, option) => {
+        acc[option.id] = option
+        return acc
+      }, {} as Record<string, ProductOptionType>)
+
+      console.log("optionMap built", optionMap)
+
+      const indexedVars = watchedEntries?.map((variant, index) => ({
+        variant,
+        index,
+      }))
+
+      if (indexedVars) {
+        indexedVars.forEach((indexedVar) => {
+          const { variant, index } = indexedVar
+
+          const options = variant.options
+          const validOptions = [] as {
+            id: string
+            title: string
+            value: string
+          }[]
+
+          options.forEach((option) => {
+            const { id } = option
+            const optionData = optionMap[id]
+
+            console.log(`Result for lookup of option with ${id}`, optionData)
+
+            if (optionData) {
+              option.title = optionData.title
+
+              if (!optionData.values.includes(option.value)) {
+                option.value = ""
+              }
+
+              validOptions.push(option)
+            }
+          })
+
+          const validIds = validOptions.map((option) => option.id)
+          const missingIds = Object.keys(optionMap).filter(
+            (id) => !validIds.includes(id)
+          )
+
+          missingIds.forEach((id) => {
+            const optionData = optionMap[id]
+            validOptions.push({
+              id,
+              title: optionData.title,
+              value: "",
+            })
+          })
+
+          console.log(
+            `Updating variant ${index} with new options`,
+            validOptions
+          )
+
+          updateVariant(index, {
+            ...variant,
+            options: validOptions,
+          })
+        })
+      }
     }
-  }, [watchedOptions, watchedEntries])
+  }, [debouncedOptions])
 
   const appendNewOption = () => {
     appendOption({
+      id: uniqueId("opt_"),
       title: "",
       values: [],
     })
@@ -118,11 +190,10 @@ const AddVariantsForm = ({ form }: Props) => {
                 {options.map((field, index) => {
                   return (
                     <div
-                      key={field.id}
+                      key={field.fieldId}
                       className="grid grid-cols-[230px_1fr_40px] gap-x-xsmall"
                     >
                       <InputField
-                        key={field.id}
                         placeholder="Color..."
                         {...register(path(`options.${index}.title`))}
                       />
@@ -132,7 +203,6 @@ const AddVariantsForm = ({ form }: Props) => {
                         render={({ field: { value, onChange } }) => {
                           return (
                             <TagInput
-                              key={field.id}
                               onValidate={(newVal) => {
                                 if (value.includes(newVal)) {
                                   return null
@@ -294,7 +364,7 @@ const createEmptyVariant = (options: ProductOptionType[]) => {
     options: options.map((option) => ({
       title: option.title,
       value: "",
-      id: "null",
+      id: option.id,
     })),
   }
 }
