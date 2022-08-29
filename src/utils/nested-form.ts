@@ -63,12 +63,20 @@ export function nestedForm(
     ...form,
     path(field?: string | number) {
       const fullPath = path && field ? `${path}.${field}` : path ? path : field
-      if ("path" in form) return form.path(path as any)
+      
+      if ("path" in form) {
+        return form.path(path as any)
+      }
+
       return (fullPath || "") as any
     },
     get(obj: any, field?: string | number) {
       const fullPath = path && field ? `${path}.${field}` : path ? path : field
-      if ("get" in form) return form.get(path)
+      
+      if ("get" in form) { 
+        return form.get(path) 
+      }
+      
       return fullPath ? get(obj, fullPath) : obj
     },
   }

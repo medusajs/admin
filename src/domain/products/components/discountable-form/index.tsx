@@ -16,7 +16,7 @@ const DiscountableForm = ({ form }: Props) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-2xsmall">
-        <h2 className="inter-base-semibold mb-2xsmall">Discountable</h2>
+        <h2 className="inter-base-semibold">Discountable</h2>
         <Controller
           control={control}
           name={path("value")}

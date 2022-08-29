@@ -20,6 +20,7 @@ type TagInputProps = {
   withTooltip?: boolean
   tooltipContent?: string
   tooltip?: React.ReactNode
+  invalidMessage?: string
 } & React.InputHTMLAttributes<HTMLInputElement>
 
 const TagInput: React.FC<TagInputProps> = ({
@@ -35,6 +36,7 @@ const TagInput: React.FC<TagInputProps> = ({
   withTooltip = false,
   tooltipContent,
   tooltip,
+  invalidMessage = "is not a valid tag",
   ...props
 }) => {
   const [invalid, setInvalid] = useState(false)
@@ -165,9 +167,20 @@ const TagInput: React.FC<TagInputProps> = ({
       <Tooltip
         open={invalid}
         side={"top"}
-        content={`${inputRef?.current?.value} is not a valid tag`}
+        content={
+          <p className="text-rose-50">
+            {inputRef?.current?.value} {invalidMessage}
+          </p>
+        }
       >
-        <div className="h-10 bg-grey-5 border border-grey-20 focus-within:shadow-cta focus-within:border-violet-60 rounded-rounded flex items-center px-3 py-[6px]">
+        <div
+          className={clsx(
+            "h-10 bg-grey-5 border border-grey-20 focus-within:shadow-cta transition-colors focus-within:border-violet-60 rounded-rounded flex items-center px-3 py-[6px]",
+            {
+              "border-rose-50 focus-within:shadow-cta focus-within:shadow-rose-60/10 focus-within:border-rose-50": invalid,
+            }
+          )}
+        >
           <div className="w-full gap-x-2 gap-y-1 flex flex-wrap">
             {values.map((v, index) => (
               <div

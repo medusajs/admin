@@ -14,6 +14,7 @@ import Actionables, {
 } from "../../../../../../components/molecules/actionables"
 import InputField from "../../../../../../components/molecules/input"
 import { LayeredModalContext } from "../../../../../../components/molecules/modal/layered-modal"
+import { DragItem } from "../../../../../../types/shared"
 import FormValidator from "../../../../../../utils/form-validator"
 import { useEditVariantScreen } from "./edit-variant-screen"
 
@@ -26,12 +27,6 @@ export type VariantCardProps = {
   moveCard: (dragIndex: number, hoverIndex: number) => void
   product: Product
 } & VariantItem
-
-interface DragItem {
-  index: number
-  id: string
-  type: string
-}
 
 export const VariantCard = ({
   id,

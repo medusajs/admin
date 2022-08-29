@@ -73,7 +73,15 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             className="mb-xsmall"
           />
         )}
-        <div className="w-full flex flex-col focus-within:shadow-input focus-within:border-violet-60 px-small py-xsmall bg-grey-5 border border-grey-20 rounded-rounded">
+        <div
+          className={clsx(
+            "w-full flex flex-col focus-within:shadow-input focus-within:border-violet-60 px-small py-xsmall bg-grey-5 border border-grey-20 rounded-rounded",
+            {
+              "border-rose-50 focus-within:shadow-cta focus-within:shadow-rose-60/10 focus-within:border-rose-50":
+                errors && name && errors[name],
+            }
+          )}
+        >
           <textarea
             className={clsx(
               "relative text-justify overflow-hidden focus:overflow-auto resize-none bg-inherit outline-none outline-0",
