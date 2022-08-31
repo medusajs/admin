@@ -26,7 +26,6 @@ const OrderLine = ({ item, region }) => {
               amount: item.unit_price,
               currency: region?.currency_code,
               digits: 2,
-              tax: item.tax_lines
             })}
           </div>
           <div className="inter-small-regular text-grey-50">
@@ -37,7 +36,6 @@ const OrderLine = ({ item, region }) => {
               amount: item.unit_price * item.quantity,
               currency: region?.currency_code,
               digits: 2,
-              tax: item.tax_lines
             })}
           </div>
         </div>
