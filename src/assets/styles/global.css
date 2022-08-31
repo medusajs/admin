@@ -432,6 +432,13 @@
   }
 }
 
+.scrolling-touch {
+  -webkit-overflow-scrolling: touch;
+}
+.scrolling-auto {
+  -webkit-overflow-scrolling: auto;
+}
+
 /* Classes to remove number spinners from inputs of type number */
 /* Chrome, Safari, Edge, Opera */
 .remove-number-spinner::-webkit-outer-spin-button,

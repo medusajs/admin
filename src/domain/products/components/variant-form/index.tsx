@@ -1,35 +1,32 @@
-import React, { useEffect, useState } from "react"
-import { Controller, useFieldArray, UseFormReturn } from "react-hook-form"
-import Switch from "../../../../components/atoms/switch"
+import React from "react"
+import { useFieldArray, UseFormReturn } from "react-hook-form"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../components/molecules/input"
 import Accordion from "../../../../components/organisms/accordion"
 import FormValidator from "../../../../utils/form-validator"
 import { nestedForm } from "../../../../utils/nested-form"
-import CustomsForm, { CustomsPayload } from "../customs-form"
-import DimensionsForm, { DimensionsPayload } from "../dimensions-form"
 import PricesForm, { PricesPayload } from "../prices-form"
-
-type RequireableFields = "sku" | "prices" | "inventory_quantity"
+import VariantShippingForm, {
+  VariantShippingFormType,
+} from "./variant-shipping-form"
+import VariantStockForm, { VariantStockFormType } from "./variant-stock-form"
 
 export type VariantFormType = {
-  prices: PricesPayload
-  manage_inventory: boolean
-  allow_backorder: boolean
+  /**
+   * Used to identify the variant during product create flow. Will not be submitted to the backend.
+   */
+  _internal_id?: string
   title: string | null
-  sku: string | null
-  ean: string | null
-  upc: string | null
-  barcode: string | null
+  material: string | null
+  prices: PricesPayload
+  stock: VariantStockFormType
   options: {
-    id: string
+    option_id: string
+    label: string
     value: string
     title: string
   }[]
-  inventory_quantity: number | null
-  material: string | null
-  dimensions: DimensionsPayload
-  customs: CustomsPayload
+  shipping: VariantShippingFormType
 }
 
 type Props = {
@@ -56,23 +53,13 @@ type Props = {
  * }
  */
 const VariantForm = ({ form }: Props) => {
-  const [openItems, setOpenItems] = useState(["general"])
-  const {
-    formState: { errors },
-  } = form
   const { fields } = useFieldArray({
     control: form.control,
     name: "options",
   })
 
-  useEffect(() => {
-    if (errors.inventory_quantity && !openItems?.includes("stock")) {
-      setOpenItems([...openItems, "stock"])
-    }
-  }, [errors.inventory_quantity, errors.options, errors.prices])
-
   return (
-    <Accordion type="multiple" value={openItems} onValueChange={setOpenItems}>
+    <Accordion type="multiple" defaultValue={["general"]}>
       <Accordion.Item title="General" value="general" required>
         <div>
           <p className="inter-base-regular text-grey-50">
@@ -134,97 +121,10 @@ const VariantForm = ({ form }: Props) => {
         </div>
       </Accordion.Item>
       <Accordion.Item title="Stock & Inventory" value="stock">
-        <div>
-          <p className="inter-base-regular text-grey-50">
-            To start selling, all you need is a title, price, and image.
-          </p>
-          <div className="pt-large flex flex-col gap-y-xlarge">
-            <div className="flex flex-col gap-y-2xsmall">
-              <div className="flex items-center justify-between">
-                <h3 className="inter-base-semibold mb-2xsmall">
-                  Manage inventory
-                </h3>
-                <Controller
-                  control={form.control}
-                  name="manage_inventory"
-                  render={({ field: { value, onChange } }) => {
-                    return <Switch checked={value} onCheckedChange={onChange} />
-                  }}
-                />
-              </div>
-              <p className="inter-base-regular text-grey-50">
-                When checked Medusa will regulate the inventory when orders and
-                returns are made.
-              </p>
-            </div>
-            <div className="flex flex-col gap-y-2xsmall">
-              <div className="flex items-center justify-between">
-                <h3 className="inter-base-semibold mb-2xsmall">
-                  Allow backorders
-                </h3>
-                <Controller
-                  control={form.control}
-                  name="allow_backorder"
-                  render={({ field: { value, onChange } }) => {
-                    return <Switch checked={value} onCheckedChange={onChange} />
-                  }}
-                />
-              </div>
-              <p className="inter-base-regular text-grey-50">
-                When checked the product will be available for purchase despite
-                the product being sold out
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-large">
-              <InputField
-                label="Stock keeping unit (SKU)"
-                placeholder="SUN-G, JK1234..."
-                {...form.register("sku")}
-              />
-              <InputField
-                label="Quantity in stock"
-                type="number"
-                placeholder="100..."
-                errors={form.formState.errors}
-                {...form.register("inventory_quantity")}
-              />
-              <InputField
-                label="EAN (Barcode)"
-                placeholder="123456789102..."
-                {...form.register("ean")}
-              />
-              <InputField
-                label="UPC (Barcode)"
-                placeholder="023456789104..."
-                {...form.register("upc")}
-              />
-              <InputField
-                label="Barcode"
-                placeholder="123456789104..."
-                {...form.register("barcode")}
-              />
-            </div>
-          </div>
-        </div>
+        <VariantStockForm form={nestedForm(form, "stock")} />
       </Accordion.Item>
       <Accordion.Item title="Shipping" value="shipping">
-        <p className="inter-base-regular text-grey-50">
-          To start selling, all you need is a title, price, and image.
-        </p>
-        <div className="mt-large">
-          <h3 className="inter-base-semibold mb-2xsmall">Dimensions</h3>
-          <p className="inter-base-regular text-grey-50 mb-large">
-            Configure to calculate the most accurate shipping rates
-          </p>
-          <DimensionsForm form={nestedForm(form, "dimensions")} />
-        </div>
-        <div className="mt-xlarge">
-          <h3 className="inter-base-semibold mb-2xsmall">Customs</h3>
-          <p className="inter-base-regular text-grey-50 mb-large">
-            Configure to calculate the most accurate shipping rates
-          </p>
-          <CustomsForm form={nestedForm(form, "customs")} />
-        </div>
+        <VariantShippingForm form={nestedForm(form, "shipping")} />
       </Accordion.Item>
     </Accordion>
   )

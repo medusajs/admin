@@ -1,7 +1,7 @@
 import clsx from "clsx"
-import { uniqueId } from "lodash"
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, useMemo } from "react"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
 import Button from "../../../../components/fundamentals/button"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
@@ -13,6 +13,7 @@ import { useDebounce } from "../../../../hooks/use-debounce"
 import useToggleState from "../../../../hooks/use-toggle-state"
 import { NestedForm } from "../../../../utils/nested-form"
 import VariantForm, { VariantFormType } from "../../components/variant-form"
+import useCheckOptions from "../../components/variant-form/variant-select-options-form/hooks"
 import NewVariant from "./new-variant"
 
 type ProductOptionType = {
@@ -32,6 +33,8 @@ type Props = {
 
 const AddVariantsForm = ({ form }: Props) => {
   const { control, path, register } = form
+
+  const { checkForDuplicate } = useCheckOptions(form)
 
   const {
     fields: options,
@@ -75,8 +78,6 @@ const AddVariantsForm = ({ form }: Props) => {
         return acc
       }, {} as Record<string, ProductOptionType>)
 
-      console.log("optionMap built", optionMap)
-
       const indexedVars = watchedEntries?.map((variant, index) => ({
         variant,
         index,
@@ -88,16 +89,15 @@ const AddVariantsForm = ({ form }: Props) => {
 
           const options = variant.options
           const validOptions = [] as {
-            id: string
+            option_id: string
             title: string
+            label: string
             value: string
           }[]
 
           options.forEach((option) => {
-            const { id } = option
-            const optionData = optionMap[id]
-
-            console.log(`Result for lookup of option with ${id}`, optionData)
+            const { option_id } = option
+            const optionData = optionMap[option_id]
 
             if (optionData) {
               option.title = optionData.title
@@ -110,7 +110,7 @@ const AddVariantsForm = ({ form }: Props) => {
             }
           })
 
-          const validIds = validOptions.map((option) => option.id)
+          const validIds = validOptions.map((option) => option.option_id)
           const missingIds = Object.keys(optionMap).filter(
             (id) => !validIds.includes(id)
           )
@@ -118,16 +118,12 @@ const AddVariantsForm = ({ form }: Props) => {
           missingIds.forEach((id) => {
             const optionData = optionMap[id]
             validOptions.push({
-              id,
+              option_id: id,
               title: optionData.title,
+              label: "",
               value: "",
             })
           })
-
-          console.log(
-            `Updating variant ${index} with new options`,
-            validOptions
-          )
 
           updateVariant(index, {
             ...variant,
@@ -138,9 +134,27 @@ const AddVariantsForm = ({ form }: Props) => {
     }
   }, [debouncedOptions])
 
+  const onUpdateVariant = (index: number, data: VariantFormType) => {
+    const toCheck = { id: data._internal_id!, options: data.options }
+    const exists = checkForDuplicate(toCheck)
+
+    if (exists) {
+      return false
+    }
+
+    updateVariant(index, data)
+    return true
+  }
+
+  const enableVariants = useMemo(() => {
+    return watchedOptions?.length > 0
+      ? watchedOptions.some((wo) => wo.values.length > 0)
+      : false
+  }, [watchedOptions])
+
   const appendNewOption = () => {
     appendOption({
-      id: uniqueId("opt_"),
+      id: uuidv4(),
       title: "",
       values: [],
     })
@@ -156,6 +170,13 @@ const AddVariantsForm = ({ form }: Props) => {
   }
 
   const onAppendVariant = submitVariant((data) => {
+    const toCheck = { id: data._internal_id!, options: data.options }
+    const exists = checkForDuplicate(toCheck)
+
+    if (exists) {
+      return
+    }
+
     appendVariant({
       ...data,
       title: data.title
@@ -256,10 +277,10 @@ const AddVariantsForm = ({ form }: Props) => {
                   ({variants?.length || 0})
                 </span>
               </h3>
-              {!options?.length && (
+              {!enableVariants && (
                 <IconTooltip
-                  type="warning"
-                  content="Add product options to begin creating variants."
+                  type="info"
+                  content="You must add at least one product option before you can begin adding product variants."
                 />
               )}
             </div>
@@ -279,7 +300,8 @@ const AddVariantsForm = ({ form }: Props) => {
                         id={variant.id}
                         source={variant}
                         index={index}
-                        save={updateVariant}
+                        save={onUpdateVariant}
+                        remove={removeVariant}
                         move={moveCard}
                       />
                     )
@@ -292,7 +314,7 @@ const AddVariantsForm = ({ form }: Props) => {
               size="small"
               className="h-10 w-full mt-base"
               type="button"
-              disabled={!options.length}
+              disabled={!enableVariants}
               onClick={onToggleForm}
             >
               <PlusIcon size={20} />
@@ -336,36 +358,43 @@ const AddVariantsForm = ({ form }: Props) => {
   )
 }
 
-const createEmptyVariant = (options: ProductOptionType[]) => {
+const createEmptyVariant = (options: ProductOptionType[]): VariantFormType => {
   return {
+    _internal_id: uuidv4(),
     title: null,
     prices: {
       prices: [],
     },
-    manage_inventory: true,
-    allow_backorder: false,
-    dimensions: {
-      weight: null,
-      length: null,
-      width: null,
-      height: null,
+    stock: {
+      manage_inventory: true,
+      allow_backorder: false,
+      sku: null,
+      barcode: null,
+      ean: null,
+      upc: null,
+      inventory_quantity: null,
     },
-    sku: null,
-    barcode: null,
-    customs: {
-      hs_code: null,
-      mid_code: null,
-      origin_country: null,
+    shipping: {
+      dimensions: {
+        weight: null,
+        length: null,
+        width: null,
+        height: null,
+      },
+      customs: {
+        hs_code: null,
+        mid_code: null,
+        origin_country: null,
+      },
     },
-    ean: null,
-    upc: null,
-    inventory_quantity: null,
     material: null,
-    options: options.map((option) => ({
-      title: option.title,
-      value: "",
-      id: option.id,
-    })),
+    options:
+      options?.map((option) => ({
+        title: option.title,
+        value: "",
+        label: "",
+        option_id: option.id,
+      })) || [],
   }
 }
 

@@ -11,7 +11,7 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import { nestedForm } from "../../../utils/nested-form"
 import CustomsForm, { CustomsPayload } from "../components/customs-form"
 import DimensionsForm, {
-  DimensionsPayload,
+  DimensionsFormType,
 } from "../components/dimensions-form"
 import DiscountableForm, {
   DiscountableFormType,
@@ -33,7 +33,7 @@ type NewProductForm = {
   variants: AddVariantsFormType
   vars: VariantFormType[]
   customs: CustomsPayload
-  dimensions: DimensionsPayload
+  dimensions: DimensionsFormType
   thumbnail: ThumbnailFormType
   media: MediaFormType
   salesChannels: AddSalesChannelsFormType

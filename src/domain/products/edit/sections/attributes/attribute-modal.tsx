@@ -7,7 +7,7 @@ import { countries } from "../../../../../utils/countries"
 import { nestedForm } from "../../../../../utils/nested-form"
 import CustomsForm, { CustomsPayload } from "../../../components/customs-form"
 import DimensionsForm, {
-  DimensionsPayload,
+  DimensionsFormType,
 } from "../../../components/dimensions-form"
 import useEditProductActions from "../../hooks/use-edit-product-actions"
 
@@ -18,7 +18,7 @@ type Props = {
 }
 
 type AttributesForm = {
-  dimensions: DimensionsPayload
+  dimensions: DimensionsFormType
   customs: CustomsPayload
 }
 

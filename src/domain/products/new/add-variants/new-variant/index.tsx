@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import type { Identifier, XYCoord } from "dnd-core"
 import React, { useEffect, useRef } from "react"
 import { useDrag, useDrop } from "react-dnd"
@@ -8,9 +9,11 @@ import CheckCircleFillIcon from "../../../../../components/fundamentals/icons/ch
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import GripIcon from "../../../../../components/fundamentals/icons/grip-icon"
 import MoreHorizontalIcon from "../../../../../components/fundamentals/icons/more-horizontal-icon"
+import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import Actionables from "../../../../../components/molecules/actionables"
 import IconTooltip from "../../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../../components/molecules/modal"
+import useImperativeDialog from "../../../../../hooks/use-imperative-dialog"
 import useToggleState from "../../../../../hooks/use-toggle-state"
 import { DragItem } from "../../../../../types/shared"
 import VariantForm, { VariantFormType } from "../../../components/variant-form"
@@ -23,11 +26,12 @@ type Props = {
   id: string
   source: VariantFormType
   index: number
-  save: (index: number, variant: VariantFormType) => void
+  save: (index: number, variant: VariantFormType) => boolean
+  remove: (index: number) => void
   move: (dragIndex: number, hoverIndex: number) => void
 }
 
-const NewVariant = ({ id, source, index, save, move }: Props) => {
+const NewVariant = ({ id, source, index, save, remove, move }: Props) => {
   const { state, toggle, close } = useToggleState()
   const localForm = useForm<VariantFormType>({
     defaultValues: source,
@@ -47,9 +51,27 @@ const NewVariant = ({ id, source, index, save, move }: Props) => {
         : data.options.map((option) => option.value).join(" / "),
     }
 
-    save(index, payload)
+    const saved = save(index, payload)
+
+    if (!saved) {
+      return
+    }
+
     close()
   })
+
+  const warning = useImperativeDialog()
+
+  const onDelete = async () => {
+    const confirmed = await warning({
+      text: "Are you sure you want to delete this variant?",
+      heading: "Delete Variant",
+    })
+
+    if (confirmed) {
+      remove(index)
+    }
+  }
 
   const ref = useRef<HTMLDivElement>(null)
   const [{ handlerId }, drop] = useDrop<
@@ -111,7 +133,12 @@ const NewVariant = ({ id, source, index, save, move }: Props) => {
       <div
         ref={preview}
         data-handler-id={handlerId}
-        className="grid grid-cols-[32px_1fr_90px_100px_48px] transition-all rounded-rounded hover:bg-grey-5 focus-within:bg-grey-5 h-16 py-xsmall pl-xsmall pr-base translate-y-0 translate-x-0"
+        className={clsx(
+          "grid grid-cols-[32px_1fr_90px_100px_48px] transition-all rounded-rounded hover:bg-grey-5 focus-within:bg-grey-5 h-16 py-xsmall pl-xsmall pr-base translate-y-0 translate-x-0",
+          {
+            "opacity-50": isDragging,
+          }
+        )}
       >
         <div
           ref={ref}
@@ -122,20 +149,20 @@ const NewVariant = ({ id, source, index, save, move }: Props) => {
         <div className="flex justify-center flex-col ml-base">
           <p className="inter-base-semibold">
             {source.title}
-            {source.sku && (
+            {source.stock.sku && (
               <span className="inter-base-regular text-grey-50 ml-2xsmall">
-                ({source.sku})
+                ({source.stock.sku})
               </span>
             )}
           </p>
-          {source.ean && (
+          {source.stock.ean && (
             <span className="inter-base-regular text-grey-50">
-              {source.ean}
+              {source.stock.ean}
             </span>
           )}
         </div>
         <div className="flex items-center justify-end mr-xlarge">
-          <p>{source.inventory_quantity || "-"}</p>
+          <p>{source.stock.inventory_quantity || "-"}</p>
         </div>
         <div className="flex items-center justify-center">
           <VariantValidity source={source} />
@@ -148,6 +175,12 @@ const NewVariant = ({ id, source, index, save, move }: Props) => {
                 label: "Edit",
                 icon: <EditIcon size={20} />,
                 onClick: toggle,
+              },
+              {
+                label: "Delete",
+                icon: <TrashIcon size={20} />,
+                onClick: onDelete,
+                variant: "danger",
               },
             ]}
             customTrigger={
@@ -200,15 +233,10 @@ const NewVariant = ({ id, source, index, save, move }: Props) => {
 
 const VariantValidity = ({ source }: { source: VariantFormType }) => {
   const {
-    inventory_quantity,
     prices,
     options,
-    sku,
-    customs,
-    dimensions,
-    barcode,
-    upc,
-    ean,
+    shipping: { dimensions, customs },
+    stock: { barcode, upc, ean, sku, inventory_quantity },
   } = source
 
   const invalidOptions = options.filter((opt) => !opt.value)

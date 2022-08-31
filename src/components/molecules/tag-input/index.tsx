@@ -175,50 +175,52 @@ const TagInput: React.FC<TagInputProps> = ({
       >
         <div
           className={clsx(
-            "h-10 bg-grey-5 border border-grey-20 focus-within:shadow-cta transition-colors focus-within:border-violet-60 rounded-rounded flex items-center px-3 py-[6px]",
+            "h-auto min-h-[40px] bg-grey-5 shadow-border focus-within:outline-4 focus-within:outline focus-within:outline-violet-60/10 transition-colors focus-within:shadow-focus-border rounded-rounded flex items-center px-3 box-border",
             {
-              "border-rose-50 focus-within:shadow-cta focus-within:shadow-rose-60/10 focus-within:border-rose-50": invalid,
+              "shadow-error-border focus-within:shadow-error-border focus-within:outline-rose-60/10": invalid,
             }
           )}
         >
-          <div className="w-full gap-x-2 gap-y-1 flex flex-wrap">
-            {values.map((v, index) => (
-              <div
-                key={index}
-                className={clsx(
-                  "flex items-center justify-center whitespace-nowrap w-max bg-grey-20 rounded-rounded px-3 py-1 gap-x-1",
-                  {
-                    ["!bg-grey-90"]: index === highlighted,
-                  }
-                )}
-              >
-                <span
+          <div className="h-full">
+            <div className="w-full gap-xsmall flex flex-wrap box-border h-28px py-1.5">
+              {values.map((v, index) => (
+                <div
+                  key={index}
                   className={clsx(
-                    "inline-block text-grey-50 inter-small-semibold",
+                    "flex items-center justify-center whitespace-nowrap w-max bg-grey-20 rounded-rounded px-3 py-1 gap-x-1",
                     {
-                      ["text-grey-20"]: index === highlighted,
+                      ["!bg-grey-90"]: index === highlighted,
                     }
                   )}
                 >
-                  {v}
-                </span>
-                <CrossIcon
-                  className="inline cursor-pointer text-grey-40"
-                  size="16"
-                  onClick={() => handleRemove(index)}
-                />
-              </div>
-            ))}
-            <input
-              id="tag-input"
-              ref={inputRef}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-              onChange={handleInput}
-              className={clsx("focus:outline-none bg-transparent flex-1")}
-              placeholder={values?.length ? "" : placeholder} // only visible if no tags exist
-              {...props}
-            />
+                  <span
+                    className={clsx(
+                      "inline-block text-grey-50 inter-small-semibold",
+                      {
+                        ["text-grey-20"]: index === highlighted,
+                      }
+                    )}
+                  >
+                    {v}
+                  </span>
+                  <CrossIcon
+                    className="inline cursor-pointer text-grey-40"
+                    size="16"
+                    onClick={() => handleRemove(index)}
+                  />
+                </div>
+              ))}
+              <input
+                id="tag-input"
+                ref={inputRef}
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+                onChange={handleInput}
+                className={clsx("focus:outline-none bg-transparent flex-1")}
+                placeholder={values?.length ? "" : placeholder} // only visible if no tags exist
+                {...props}
+              />
+            </div>
           </div>
         </div>
       </Tooltip>

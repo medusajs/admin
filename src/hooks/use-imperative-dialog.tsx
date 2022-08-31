@@ -13,19 +13,19 @@ const DeleteDialog = ({
   cancelText = "Cancel",
 }) => {
   return (
-    <Modal open={open} handleClose={onCancel}>
+    <Modal open={open} handleClose={onCancel} isLargeModal={false}>
       <Modal.Body>
-        <Modal.Content>
+        <Modal.Content className="!py-large">
           <div className="flex flex-col">
             <span className="inter-large-semibold">{heading}</span>
             <span className="inter-base-regular mt-1 text-grey-50">{text}</span>
           </div>
         </Modal.Content>
-        <Modal.Footer>
-          <div className="flex w-full h-8 justify-end">
+        <Modal.Footer className="border-none !pt-0">
+          <div className="flex w-full justify-end">
             <Button
-              variant="ghost"
-              className="mr-2 w-24 text-small justify-center"
+              variant="secondary"
+              className="mr-2 text-small justify-center"
               size="small"
               onClick={onCancel}
             >
@@ -33,7 +33,7 @@ const DeleteDialog = ({
             </Button>
             <Button
               size="small"
-              className="w-24 text-small justify-center"
+              className="text-small justify-center"
               variant="nuclear"
               onClick={onConfirm}
             >

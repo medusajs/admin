@@ -104,10 +104,14 @@ Modal.Content = ({ children, className }) => {
   return (
     <div
       style={style}
-      className={clsx("px-7 pt-5 overflow-y-auto", className, {
-        ["w-largeModal pb-7"]: isLargeModal,
-        ["pb-5"]: !isLargeModal,
-      })}
+      className={clsx(
+        "px-7 pt-5 overflow-y-auto",
+        {
+          ["w-largeModal pb-7"]: isLargeModal,
+          ["pb-5"]: !isLargeModal,
+        },
+        className
+      )}
     >
       {children}
     </div>
@@ -132,15 +136,19 @@ Modal.Header = ({ handleClose = undefined, children }) => {
   )
 }
 
-Modal.Footer = ({ children }) => {
+Modal.Footer = ({ children, className }) => {
   const { isLargeModal } = React.useContext(ModalContext)
 
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={clsx("px-7 bottom-0 pb-5 flex w-full", {
-        "border-t border-grey-20 pt-4": isLargeModal,
-      })}
+      className={clsx(
+        "px-7 bottom-0 pb-5 flex w-full",
+        {
+          "border-t border-grey-20 pt-4": isLargeModal,
+        },
+        className
+      )}
     >
       {children}
     </div>
