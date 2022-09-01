@@ -28,7 +28,14 @@ const Select = forwardRef(
       | MutableRefObject<SelectInstance<Option, IsMulti, Group> | null>
       | null
   ) => {
-    const { label, required, helperText, ...rest } = useSelectProps(props)
+    const {
+      label,
+      required,
+      helperText,
+      name,
+      errors,
+      ...rest
+    } = useSelectProps(props)
     const { portalRef } = useContext(ModalContext)
 
     return (
@@ -36,9 +43,12 @@ const Select = forwardRef(
         label={label}
         helperText={helperText}
         required={required}
+        name={name}
+        errors={errors}
       >
         <ReactSelect
           ref={ref}
+          name={name}
           {...rest}
           menuPortalTarget={portalRef?.current?.lastChild || null}
         />

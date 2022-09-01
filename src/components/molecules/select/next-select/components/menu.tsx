@@ -30,7 +30,7 @@ const Menu = <
       className={cx(
         { menu: true },
         clsx(
-          "absolute w-full overflow-hidden border-border z-[60] bg-grey-0 rounded-rounded border border-grey-20 shadow-dropdown p-xsmall mb-base",
+          "absolute w-full overflow-hidden border-border z-[60] bg-grey-0 rounded-rounded border border-grey-20 shadow-dropdown mb-base",
           {
             "top-[calc(100%+8px)]": placement === "bottom",
             "bottom-[calc(100%+8px)]": placement === "top",
@@ -68,7 +68,7 @@ export const MenuList = <
           "menu-list": true,
           "menu-list--is-multi": isMulti,
         },
-        clsx("overflow-y-auto flex flex-col gap-y-2xsmall", className)
+        clsx("overflow-y-auto flex flex-col", className)
       )}
       style={{ maxHeight: `${maxHeight}px` }}
     >
@@ -77,11 +77,49 @@ export const MenuList = <
   )
 }
 
-const LoadingMessage = <
+export const LoadingMessage = <
   Option,
   IsMulti extends boolean,
   Group extends GroupBase<Option>
->({}: NoticeProps<Option, IsMulti, Group>) => {}
+>({
+  innerProps,
+  cx,
+  className,
+  selectProps: { size },
+}: NoticeProps<Option, IsMulti, Group>) => {
+  const Skeleton = () => {
+    return (
+      <div
+        className={clsx(
+          "w-full flex items-center px-base transition-colors hover:bg-grey-5",
+          {
+            "h-xlarge": size === "sm",
+            "h-10": size === "md" || !size,
+          }
+        )}
+      >
+        <div className="bg-grey-10 animate-pulse w-1/4 h-xsmall rounded-rounded" />
+      </div>
+    )
+  }
+
+  return (
+    <div
+      {...innerProps}
+      className={cx(
+        {
+          "menu-notice": true,
+          "menu-notice--loading": true,
+        },
+        clsx("flex flex-col", className)
+      )}
+    >
+      <Skeleton />
+      <Skeleton />
+      <Skeleton />
+    </div>
+  )
+}
 
 const NoOptionsMessage = <
   Option,
@@ -114,7 +152,7 @@ export const Option = <
   className,
   innerProps,
   innerRef,
-  selectProps: { hideSelectedOptions, isMulti },
+  selectProps: { hideSelectedOptions, isMulti, size },
 }: OptionProps<Option, IsMulti, Group>) => {
   return (
     <div
@@ -127,12 +165,16 @@ export const Option = <
           "option--is-focused": isFocused,
         },
         clsx(
-          "flex items-center p-xsmall transition-colors rounded-rounded",
+          "flex items-center justify-between py-xsmall px-base transition-colors",
           {
             "hover:bg-grey-10": !isDisabled,
             "bg-grey-5 text-grey-50 cursor-default select-none": isDisabled,
             "bg-grey-10": isFocused && !isDisabled,
             hidden: hideSelectedOptions && isSelected,
+          },
+          {
+            "h-xlarge": size === "sm",
+            "h-10": size === "md" || !size,
           },
           className
         )
@@ -143,23 +185,16 @@ export const Option = <
       tabIndex={isDisabled ? -1 : 0}
       {...innerProps}
     >
-      <span className="mr-small">
-        {isMulti ? (
-          <CheckboxAdornment isSelected={isSelected} />
-        ) : (
-          <RadioAdornment isSelected={isSelected} />
-        )}
-      </span>
-      {children}
+      <div className="flex items-center gap-x-small">
+        {isMulti && <CheckboxAdornment isSelected={isSelected} />}
+        {children}
+      </div>
+      {!isMulti && isSelected && <CheckIcon size={16} />}
     </div>
   )
 }
 
-type AdornmentProps = {
-  isSelected: boolean
-}
-
-const CheckboxAdornment = ({ isSelected }: AdornmentProps) => {
+const CheckboxAdornment = ({ isSelected }: Pick<OptionProps, "isSelected">) => {
   return (
     <div
       className={clsx(
@@ -172,30 +207,6 @@ const CheckboxAdornment = ({ isSelected }: AdornmentProps) => {
       <span className="self-center">
         {isSelected && <CheckIcon size={16} />}
       </span>
-    </div>
-  )
-}
-
-const RadioAdornment = ({ isSelected }: AdornmentProps) => {
-  return (
-    <div
-      className={clsx(
-        "radio-outer-ring outline-0",
-        "shrink-0 w-[20px] h-[20px] rounded-circle",
-        {
-          "shadow-[0_0_0_1px] shadow-[#D1D5DB]": !isSelected,
-          "shadow-[0_0_0_2px] shadow-violet-60": isSelected,
-        }
-      )}
-    >
-      {isSelected && (
-        <div
-          className={clsx(
-            "group flex items-center justify-center w-full h-full relative",
-            "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
-          )}
-        />
-      )}
     </div>
   )
 }

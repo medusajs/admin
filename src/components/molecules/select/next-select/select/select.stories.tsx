@@ -62,15 +62,89 @@ const options: SelectOption[] = [
   },
 ]
 
-storiesOf("Molecules/Select/Next/Select", module).add("Controlled", () => {
+storiesOf("Molecules/Select/Next/Select", module).add(
+  "Controlled Single Select",
+  () => {
+    const form = useForm<{
+      options: SelectOption[]
+    }>({ defaultValues: { options: [] } })
+
+    const liveData = useWatch({
+      control: form.control,
+      name: "options",
+    })
+
+    return (
+      <div>
+        <Controller
+          control={form.control}
+          name="options"
+          render={({ field: { value, onChange } }) => {
+            return (
+              <ExperimentalSelect
+                label="Region"
+                required
+                options={options}
+                value={value}
+                onChange={onChange}
+              />
+            )
+          }}
+        />
+
+        <div className="bg-grey-5 rounded-rounded px-small py-xsmall mt-xlarge mono-small-regular text-grey-50">
+          <h1 className="inter-base-semibold mb-small">Data</h1>
+          <pre>{JSON.stringify(liveData, null, 4)}</pre>
+        </div>
+      </div>
+    )
+  }
+)
+
+storiesOf("Molecules/Select/Next/Select", module).add(
+  "Controlled Multi Select",
+  () => {
+    const form = useForm<{
+      options: SelectOption[]
+    }>({ defaultValues: { options: [] } })
+
+    const liveData = useWatch({
+      control: form.control,
+      name: "options",
+    })
+
+    return (
+      <div>
+        <Controller
+          control={form.control}
+          name="options"
+          render={({ field: { value, onChange } }) => {
+            return (
+              <ExperimentalSelect
+                label="Regions"
+                required
+                options={options}
+                value={value}
+                onChange={onChange}
+                isMulti
+              />
+            )
+          }}
+        />
+
+        <div className="bg-grey-5 rounded-rounded px-small py-xsmall mt-xlarge mono-small-regular text-grey-50">
+          <h1 className="inter-base-semibold mb-small">Data</h1>
+          <pre>{JSON.stringify(liveData, null, 4)}</pre>
+        </div>
+      </div>
+    )
+  }
+)
+
+storiesOf("Molecules/Select/Next/Select", module).add("Loading Select", () => {
   const form = useForm<{
     options: SelectOption[]
   }>({ defaultValues: { options: [] } })
-
-  const liveData = useWatch({
-    control: form.control,
-    name: "options",
-  })
 
   return (
     <div>
@@ -82,19 +156,13 @@ storiesOf("Molecules/Select/Next/Select", module).add("Controlled", () => {
             <ExperimentalSelect
               label="Region"
               required
-              options={options}
               value={value}
               onChange={onChange}
-              isMulti
+              isLoading={true}
             />
           )
         }}
       />
-
-      <div className="bg-grey-5 rounded-rounded px-small py-xsmall mt-xlarge mono-small-regular text-grey-50">
-        <h1 className="inter-base-semibold mb-small">Data</h1>
-        <pre>{JSON.stringify(liveData, null, 4)}</pre>
-      </div>
     </div>
   )
 })
@@ -120,35 +188,6 @@ storiesOf("Molecules/Select/Next/Select", module).add("In Modal", () => {
         <div className="bg-grey-5 rounded-rounded px-small py-xsmall mt-xlarge mono-small-regular text-grey-50">
           <h1 className="inter-base-semibold mb-small">Data</h1>
           <pre>{JSON.stringify(liveData, null, 4)}</pre>
-        </div>
-      </div>
-
-      <div className="min-h-[40px] h-auto shadow-[0px_0px_0px_1px] shadow-grey-20 rounded-rounded px-small box-border max-w-xs">
-        <div className="py-1.5 flex flex-wrap gap-xsmall inter-small-semibold">
-          <div className="h-7 bg-grey-30 px-small rounded-rounded flex items-center justify-center">
-            Tag
-          </div>
-          <div className="h-7 bg-grey-30 px-small rounded-rounded flex items-center justify-center">
-            Tag
-          </div>
-          <div className="h-7 bg-grey-30 px-small rounded-rounded flex items-center justify-center">
-            Tag
-          </div>
-          {/* <div className="h-7 bg-grey-30 px-small rounded-rounded flex items-center justify-center">
-            Tag
-          </div>
-          <div className="h-7 bg-grey-30 px-small rounded-rounded flex items-center justify-center">
-            Tag
-          </div>
-          <div className="h-7 bg-grey-30 px-small rounded-rounded flex items-center justify-center">
-            Tag
-          </div>
-          <div className="h-7 bg-grey-30 px-small rounded-rounded flex items-center justify-center">
-            Tag
-          </div>
-          <div className="h-7 bg-grey-30 px-small rounded-rounded flex items-center justify-center">
-            Tag
-          </div> */}
         </div>
       </div>
 

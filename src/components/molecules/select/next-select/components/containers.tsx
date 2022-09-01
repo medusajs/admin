@@ -11,6 +11,8 @@ type AdjacentContainerProps = {
   label?: string
   helperText?: string
   required?: boolean
+  name?: string
+  errors?: Record<string, unknown>
   children?: React.ReactNode
 }
 

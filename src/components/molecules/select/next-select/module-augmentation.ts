@@ -33,5 +33,11 @@ declare module "react-select/dist/declarations/src/Select" {
      * @defaultValue `undefined`
      */
     helperText?: string
+    /**
+     * Errors provided by a containing form.
+     * 
+     * @defaultValue `undefined`
+     */
+    errors?: Record<string, unknown>
   }
 }

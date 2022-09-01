@@ -24,6 +24,7 @@ const Control = <
   isDisabled,
   isFocused,
   menuIsOpen,
+  selectProps: { size },
 }: ControlProps<Option, IsMulti, Group>) => {
   return (
     <div
@@ -37,7 +38,11 @@ const Control = <
           "control--menu-is-open": menuIsOpen,
         },
         clsx(
-          "flex p-0 overflow-hidden min-h-[40px] h-auto rounded-rounded shadow-border bg-grey-5 focus-within:outline-4 focus-within:outline focus-within:outline-violet-60/10 transition-colors focus-within:shadow-focus-border box-border pl-small",
+          "flex p-0 overflow-hidden rounded-rounded border border-gray-20 bg-grey-5 focus-within:shadow-cta transition-colors focus-within:border-violet-60 box-border pl-small",
+          {
+            "h-large": size === "sm",
+            "h-10": size === "md" || !size,
+          },
           className
         )
       )}

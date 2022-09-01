@@ -1,7 +1,7 @@
 import { AdjacentContainer, IndicatorsContainer, SelectContainer, ValueContainer } from "./containers"
 import Control, { ClearIndicator, DropdownIndicator, LoadingIndicator } from "./control"
 import Input from "./input"
-import Menu, { MenuList, Option } from "./menu"
+import Menu, { LoadingMessage, MenuList, Option } from "./menu"
 import MultiValue, { MultiValueContainer, MultiValueRemove } from "./multi-value"
 import Placeholder from "./placeholder"
 import SingleValue from "./single-value"
@@ -23,6 +23,7 @@ const Components = {
     MultiValueRemove,
     ValueContainer,
     IndicatorsContainer,
+    LoadingMessage,
     IndicatorSeparator: null
 }
 
