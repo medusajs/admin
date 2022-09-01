@@ -1,5 +1,7 @@
 import { GroupBase } from "react-select"
 
+type SelectSize = "sm" | "md"
+
 declare module "react-select/dist/declarations/src/Select" {
   export interface Props<
     Option,
@@ -19,5 +21,17 @@ declare module "react-select/dist/declarations/src/Select" {
      * @defaultValue `false`
      */
     required?: boolean
+    /**
+     * An optional flag to indicate if the size of the select.
+     * 
+     * @defaultValue `"md"`
+     */
+    size?: SelectSize
+    /**
+     * An optinal helper text to display below the select.
+     * 
+     * @defaultValue `undefined`
+     */
+    helperText?: string
   }
 }

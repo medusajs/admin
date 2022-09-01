@@ -16,7 +16,10 @@ import Modal from "../../../../../components/molecules/modal"
 import useImperativeDialog from "../../../../../hooks/use-imperative-dialog"
 import useToggleState from "../../../../../hooks/use-toggle-state"
 import { DragItem } from "../../../../../types/shared"
-import VariantForm, { VariantFormType } from "../../../components/variant-form"
+import CreateFlowVariantForm, {
+  CreateFlowVariantFormType,
+} from "../../../components/variant-form/create-flow-variant-form"
+import { VariantOptionValueType } from "../../../components/variant-form/variant-select-options-form"
 
 const ItemTypes = {
   CARD: "card",
@@ -24,16 +27,27 @@ const ItemTypes = {
 
 type Props = {
   id: string
-  source: VariantFormType
+  source: CreateFlowVariantFormType
   index: number
-  save: (index: number, variant: VariantFormType) => boolean
+  save: (index: number, variant: CreateFlowVariantFormType) => boolean
   remove: (index: number) => void
   move: (dragIndex: number, hoverIndex: number) => void
+  options: VariantOptionValueType[]
+  onCreateOption: (optionId: string, value: string) => void
 }
 
-const NewVariant = ({ id, source, index, save, remove, move }: Props) => {
+const NewVariant = ({
+  id,
+  source,
+  index,
+  save,
+  remove,
+  move,
+  options,
+  onCreateOption,
+}: Props) => {
   const { state, toggle, close } = useToggleState()
-  const localForm = useForm<VariantFormType>({
+  const localForm = useForm<CreateFlowVariantFormType>({
     defaultValues: source,
   })
 
@@ -46,9 +60,9 @@ const NewVariant = ({ id, source, index, save, remove, move }: Props) => {
   const onUpdate = handleSubmit((data) => {
     const payload = {
       ...data,
-      title: data.title
-        ? data.title
-        : data.options.map((option) => option.value).join(" / "),
+      title: data.general.title
+        ? data.general.title
+        : data.options.map((vo) => vo.option?.value).join(" / "),
     }
 
     const saved = save(index, payload)
@@ -148,7 +162,7 @@ const NewVariant = ({ id, source, index, save, remove, move }: Props) => {
         </div>
         <div className="flex justify-center flex-col ml-base">
           <p className="inter-base-semibold">
-            {source.title}
+            {source.general.title}
             {source.stock.sku && (
               <span className="inter-base-regular text-grey-50 ml-2xsmall">
                 ({source.stock.sku})
@@ -200,15 +214,19 @@ const NewVariant = ({ id, source, index, save, remove, move }: Props) => {
           <Modal.Header handleClose={close}>
             <h1 className="inter-xlarge-semibold">
               Edit Variant
-              {source.title && (
+              {source.general.title && (
                 <span className="ml-xsmall inter-xlarge-regular text-grey-50">
-                  ({source.title})
+                  ({source.general.title})
                 </span>
               )}
             </h1>
           </Modal.Header>
           <Modal.Content>
-            <VariantForm form={localForm} />
+            <CreateFlowVariantForm
+              form={localForm}
+              options={options}
+              onCreateOption={onCreateOption}
+            />
           </Modal.Content>
           <Modal.Footer>
             <div className="flex items-center gap-x-xsmall justify-end w-full">
@@ -231,15 +249,16 @@ const NewVariant = ({ id, source, index, save, remove, move }: Props) => {
   )
 }
 
-const VariantValidity = ({ source }: { source: VariantFormType }) => {
+const VariantValidity = ({ source }: { source: CreateFlowVariantFormType }) => {
   const {
     prices,
     options,
     shipping: { dimensions, customs },
     stock: { barcode, upc, ean, sku, inventory_quantity },
+    general: { title },
   } = source
 
-  const invalidOptions = options.filter((opt) => !opt.value)
+  const invalidOptions = options.filter((opt) => !opt.option?.value)
 
   if (invalidOptions?.length) {
     return (
@@ -291,7 +310,7 @@ const VariantValidity = ({ source }: { source: VariantFormType }) => {
 
   return (
     <Tooltip
-      content={source.title ? `${source.title} is valid` : "Variant is valid"}
+      content={title ? `${title} is valid` : "Variant is valid"}
       side="top"
     >
       <CheckCircleFillIcon size={20} className="text-emerald-40" />

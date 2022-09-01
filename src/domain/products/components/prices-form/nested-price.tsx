@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import React from "react"
 import { Controller } from "react-hook-form"
-import { NestedPriceObject, PricesPayload } from "."
+import { NestedPriceObject, PricesFormType } from "."
 import CoinsIcon from "../../../../components/fundamentals/icons/coins-icon"
 import MapPinIcon from "../../../../components/fundamentals/icons/map-pin-icon"
 import TriangleRightIcon from "../../../../components/fundamentals/icons/triangle-right-icon"
@@ -11,7 +11,7 @@ import { NestedForm } from "../../../../utils/nested-form"
 import PriceFormInput from "./price-form-input"
 
 type Props = {
-  form: NestedForm<PricesPayload>
+  form: NestedForm<PricesFormType>
   nestedPrice: NestedPriceObject
 }
 

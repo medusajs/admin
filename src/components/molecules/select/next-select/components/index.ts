@@ -1,4 +1,4 @@
-import { IndicatorsContainer, SelectContainer, ValueContainer } from "./containers"
+import { AdjacentContainer, IndicatorsContainer, SelectContainer, ValueContainer } from "./containers"
 import Control, { ClearIndicator, DropdownIndicator, LoadingIndicator } from "./control"
 import Input from "./input"
 import Menu, { MenuList, Option } from "./menu"
@@ -26,4 +26,5 @@ const Components = {
     IndicatorSeparator: null
 }
 
+export { AdjacentContainer }
 export default Components

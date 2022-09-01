@@ -8,6 +8,7 @@ import React, {
 import type { GroupBase, Props, SelectInstance } from "react-select"
 import ReactSelect from "react-select"
 import { ModalContext } from "../../../modal"
+import { AdjacentContainer } from "../components"
 import { useSelectProps } from "../use-select-props"
 
 export type SelectComponent = <
@@ -27,15 +28,21 @@ const Select = forwardRef(
       | MutableRefObject<SelectInstance<Option, IsMulti, Group> | null>
       | null
   ) => {
-    const customProps = useSelectProps(props)
+    const { label, required, helperText, ...rest } = useSelectProps(props)
     const { portalRef } = useContext(ModalContext)
 
     return (
-      <ReactSelect
-        ref={ref}
-        {...customProps}
-        menuPortalTarget={portalRef?.current?.lastChild || null}
-      />
+      <AdjacentContainer
+        label={label}
+        helperText={helperText}
+        required={required}
+      >
+        <ReactSelect
+          ref={ref}
+          {...rest}
+          menuPortalTarget={portalRef?.current?.lastChild || null}
+        />
+      </AdjacentContainer>
     )
   }
 ) as SelectComponent

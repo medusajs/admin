@@ -13,14 +13,22 @@ const useCheckOptions = (variantForm: NestedForm<AddVariantsFormType>) => {
     name: variantPath("entries"),
   })
 
-  const existingCombinations = useMemo(() => {
-    const arr: { id: string | undefined; options: VariantOptionValueType[] }[] =
-      watchedEntries?.map((we) => ({
-        id: we._internal_id,
-        options: we.options,
-      })) || []
+  const watchedOptions = useWatch({
+    control: variantControl,
+    name: variantPath("options"),
+  })
 
-    return arr
+  const existingCombinations = useMemo(() => {
+    const completedVariants = watchedEntries?.filter((entry) =>
+      entry.options.every((vo) => vo.option !== null)
+    )
+
+    const existingVariants = completedVariants?.map((we) => ({
+      id: we._internal_id,
+      value_combo: we.options.map((vo) => vo.option),
+    }))
+
+    return existingVariants
   }, [watchedEntries])
 
   const checkForDuplicate = ({
@@ -28,9 +36,9 @@ const useCheckOptions = (variantForm: NestedForm<AddVariantsFormType>) => {
     options,
   }: {
     id: string
-    options: VariantOptionValueType[]
+    options: (VariantOptionValueType | null)[]
   }) => {
-    if (!existingCombinations.length) {
+    if (!existingCombinations?.length) {
       return false
     }
 
@@ -40,13 +48,27 @@ const useCheckOptions = (variantForm: NestedForm<AddVariantsFormType>) => {
 
     return existingCombinationsToCheck.some((existingCombination) => {
       return isEqual(
-        existingCombination.options.map((o) => o.value),
-        options.map((o) => o.value)
+        existingCombination.value_combo.map((o) => o?.value),
+        options.map((o) => o?.value)
       )
     })
   }
 
-  return { checkForDuplicate }
+  const getOptions = () => {
+    const options: VariantOptionValueType[] = watchedOptions
+      ?.map((o) => {
+        return o.values.map((v) => ({
+          option_id: o.id,
+          value: v,
+          label: v,
+        }))
+      })
+      .flat()
+
+    return options
+  }
+
+  return { checkForDuplicate, getOptions }
 }
 
 export default useCheckOptions

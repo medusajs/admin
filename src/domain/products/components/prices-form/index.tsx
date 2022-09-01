@@ -13,13 +13,13 @@ type PricePayload = {
 
 type PriceObject = FieldArrayWithId<
   {
-    __nested__: PricesPayload
+    __nested__: PricesFormType
   },
   "__nested__.prices",
   "id"
 > & { index: number }
 
-export type PricesPayload = {
+export type PricesFormType = {
   prices: PricePayload[]
 }
 
@@ -29,7 +29,7 @@ export type NestedPriceObject = {
 }
 
 type Props = {
-  form: NestedForm<PricesPayload>
+  form: NestedForm<PricesFormType>
   required?: boolean
 }
 

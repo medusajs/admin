@@ -1,3 +1,5 @@
+import { AdminPostProductsReq } from "@medusajs/medusa"
+import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -7,7 +9,9 @@ import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../components/organisms/accordion"
 import useNotification from "../../../hooks/use-notification"
+import { FormImage, ProductStatus } from "../../../types/shared"
 import { getErrorMessage } from "../../../utils/error-messages"
+import { prepareImages } from "../../../utils/images"
 import { nestedForm } from "../../../utils/nested-form"
 import CustomsForm, { CustomsPayload } from "../components/customs-form"
 import DimensionsForm, {
@@ -19,8 +23,8 @@ import DiscountableForm, {
 import GeneralForm, { GeneralFormType } from "../components/general-form"
 import MediaForm, { MediaFormType } from "../components/media-form"
 import OrganizeForm, { OrganizeFormType } from "../components/organize-form"
+import { PricesFormType } from "../components/prices-form"
 import ThumbnailForm, { ThumbnailFormType } from "../components/thumbnail-form"
-import { VariantFormType } from "../components/variant-form"
 import AddSalesChannelsForm, {
   AddSalesChannelsFormType,
 } from "./add-sales-channels"
@@ -31,7 +35,6 @@ type NewProductForm = {
   discounted: DiscountableFormType
   organize: OrganizeFormType
   variants: AddVariantsFormType
-  vars: VariantFormType[]
   customs: CustomsPayload
   dimensions: DimensionsFormType
   thumbnail: ThumbnailFormType
@@ -44,7 +47,9 @@ type Props = {
 }
 
 const NewProduct = ({ onClose }: Props) => {
-  const form = useForm<NewProductForm>()
+  const form = useForm<NewProductForm>({
+    defaultValues: createBlank(),
+  })
   const { mutate } = useAdminCreateProduct()
   const notification = useNotification()
 
@@ -55,35 +60,81 @@ const NewProduct = ({ onClose }: Props) => {
   } = form
 
   const closeAndReset = () => {
-    reset()
+    reset(createBlank())
     onClose()
   }
 
   useEffect(() => {
-    reset()
+    reset(createBlank())
   }, [])
 
-  const onSubmit = handleSubmit((data) => {
-    mutate(
-      {
-        title: data.general.title,
-        handle: data.general.handle,
-        discountable: data.discounted.value,
-        is_giftcard: false,
-        collection_id: data.organize.collection?.value,
-        description: data.general.description || undefined,
-      },
-      {
-        onSuccess: () => {},
+  const onSubmit = (publish = true) =>
+    handleSubmit(async (data) => {
+      const payload = createPayload(data, publish)
+
+      if (data.media?.images?.length) {
+        let preppedImages: FormImage[] = []
+
+        try {
+          preppedImages = await prepareImages(data.media.images)
+        } catch (error) {
+          let errorMessage =
+            "Something went wrong while trying to upload images."
+          const response = (error as any).response as Response
+
+          if (response.status === 500) {
+            errorMessage =
+              errorMessage +
+              " " +
+              "You might not have a file service configured. Please contact your administrator"
+          }
+
+          notification("Error", errorMessage, "error")
+          return
+        }
+        const urls = preppedImages.map((image) => image.url)
+
+        payload.images = urls
+      }
+
+      if (data.thumbnail?.images?.length) {
+        let preppedImages: FormImage[] = []
+
+        try {
+          preppedImages = await prepareImages(data.thumbnail.images)
+        } catch (error) {
+          let errorMessage =
+            "Something went wrong while trying to upload the thumbnail."
+          const response = (error as any).response as Response
+
+          if (response.status === 500) {
+            errorMessage =
+              errorMessage +
+              " " +
+              "You might not have a file service configured. Please contact your administrator"
+          }
+
+          notification("Error", errorMessage, "error")
+          return
+        }
+        const urls = preppedImages.map((image) => image.url)
+
+        payload.thumbnail = urls[0]
+      }
+
+      mutate(payload, {
+        onSuccess: ({ product }) => {
+          closeAndReset()
+          navigate(`/a/products/${product.id}`)
+        },
         onError: (err) => {
           notification("Error", getErrorMessage(err), "error")
         },
-      }
-    )
-  })
+      })
+    })
 
   return (
-    <form className="w-full" onSubmit={onSubmit}>
+    <form className="w-full">
       <FocusModal>
         <FocusModal.Header>
           <div className="medium:w-8/12 w-full px-8 flex justify-between">
@@ -101,6 +152,7 @@ const NewProduct = ({ onClose }: Props) => {
                 variant="secondary"
                 type="button"
                 disabled={!isDirty}
+                onClick={onSubmit(false)}
               >
                 Save as draft
               </Button>
@@ -109,6 +161,7 @@ const NewProduct = ({ onClose }: Props) => {
                 variant="primary"
                 type="button"
                 disabled={!isDirty}
+                onClick={onSubmit(true)}
               >
                 Publish product
               </Button>
@@ -135,7 +188,7 @@ const NewProduct = ({ onClose }: Props) => {
                 <p className="inter-base-regular text-grey-50">
                   To start selling, all you need is a name and a price.
                 </p>
-                <div className="mt-xlarge flex flex-col gap-y-xlarge">
+                <div className="mt-xlarge flex flex-col gap-y-xlarge pb-xsmall">
                   <div>
                     <h3 className="inter-base-semibold mb-base">
                       Organize Product
@@ -194,6 +247,126 @@ const NewProduct = ({ onClose }: Props) => {
       </FocusModal>
     </form>
   )
+}
+
+const createPayload = (
+  data: NewProductForm,
+  publish = true
+): AdminPostProductsReq => {
+  return {
+    title: data.general.title,
+    subtitle: data.general.subtitle || undefined,
+    handle: data.general.handle,
+    discountable: data.discounted.value,
+    is_giftcard: false,
+    collection_id: data.organize.collection?.value,
+    description: data.general.description || undefined,
+    height: data.dimensions.height || undefined,
+    length: data.dimensions.length || undefined,
+    weight: data.dimensions.weight || undefined,
+    width: data.dimensions.width || undefined,
+    hs_code: data.customs.hs_code || undefined,
+    mid_code: data.customs.mid_code || undefined,
+    type: data.organize.type
+      ? {
+          value: data.organize.type.label,
+          id: data.organize.type.value,
+        }
+      : undefined,
+    tags: data.organize.tags
+      ? data.organize.tags.map((t) => ({
+          value: t,
+        }))
+      : undefined,
+    sales_channels: data.salesChannels.channels.map((c) => ({
+      id: c.id,
+    })),
+    origin_country: data.customs.origin_country?.value || undefined,
+    options: data.variants.options.map((o) => ({
+      title: o.title,
+    })),
+    variants: data.variants.entries.map((v) => ({
+      title: v.general.title!,
+      material: v.general.material || undefined,
+      inventory_quantity: v.stock.inventory_quantity || 0,
+      prices: getVariantPrices(v.prices),
+      allow_backorder: v.stock.allow_backorder,
+      sku: v.stock.sku || undefined,
+      barcode: v.stock.barcode || undefined,
+      options: v.options.map((o) => ({
+        value: o.option?.value!,
+      })),
+      ean: v.stock.ean || undefined,
+      upc: v.stock.upc || undefined,
+      height: v.shipping.dimensions.height || undefined,
+      length: v.shipping.dimensions.length || undefined,
+      weight: v.shipping.dimensions.weight || undefined,
+      width: v.shipping.dimensions.width || undefined,
+      hs_code: v.shipping.customs.hs_code || undefined,
+      mid_code: v.shipping.customs.mid_code || undefined,
+      origin_country: v.shipping.customs.origin_country?.value || undefined,
+      manage_inventory: v.stock.manage_inventory,
+    })),
+    // @ts-ignore
+    status: publish ? ProductStatus.PUBLISHED : ProductStatus.DRAFT,
+  }
+}
+
+const createBlank = (): NewProductForm => {
+  return {
+    general: {
+      title: "",
+      subtitle: null,
+      description: null,
+      handle: "",
+    },
+    customs: {
+      hs_code: null,
+      mid_code: null,
+      origin_country: null,
+    },
+    dimensions: {
+      height: null,
+      length: null,
+      weight: null,
+      width: null,
+    },
+    discounted: {
+      value: true,
+    },
+    media: {
+      images: [],
+    },
+    organize: {
+      collection: null,
+      tags: null,
+      type: null,
+    },
+    salesChannels: {
+      channels: [],
+    },
+    thumbnail: {
+      images: [],
+    },
+    variants: {
+      entries: [],
+      options: [],
+    },
+  }
+}
+
+const getVariantPrices = (prices: PricesFormType) => {
+  const priceArray = prices.prices
+    .filter((price) => price.amount)
+    .map((price) => {
+      return {
+        amount: price.amount as number,
+        currency_code: price.region_id ? undefined : price.currency_code,
+        region_id: price.region_id || undefined,
+      }
+    })
+
+  return priceArray
 }
 
 export default NewProduct

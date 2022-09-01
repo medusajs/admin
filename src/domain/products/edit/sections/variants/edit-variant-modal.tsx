@@ -4,7 +4,9 @@ import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import { countries } from "../../../../../utils/countries"
-import VariantForm, { VariantFormType } from "../../../components/variant-form"
+import EditFlowVariantForm, {
+  EditFlowVariantFormType,
+} from "../../../components/variant-form/edit-flow-variant-form"
 import useEditProductActions from "../../hooks/use-edit-product-actions"
 import { createAddPayload } from "./add-variant-modal"
 import { createUpdatePayload } from "./edit-variants-modal/edit-variant-screen"
@@ -22,7 +24,7 @@ const EditVariantModal = ({
   variant,
   isDuplicate = false,
 }: Props) => {
-  const form = useForm<VariantFormType>({
+  const form = useForm<EditFlowVariantFormType>({
     defaultValues: getEditVariantDefaultValues(variant, product),
   })
 
@@ -68,7 +70,7 @@ const EditVariantModal = ({
       </Modal.Header>
       <form onSubmit={onSubmit} noValidate>
         <Modal.Content>
-          <VariantForm form={form} />
+          <EditFlowVariantForm form={form} />
         </Modal.Content>
         <Modal.Footer>
           <div className="w-full flex items-center gap-x-xsmall justify-end">
@@ -99,7 +101,7 @@ const EditVariantModal = ({
 export const getEditVariantDefaultValues = (
   variant: ProductVariant,
   product: Product
-): VariantFormType => {
+): EditFlowVariantFormType => {
   const options = product.options.map((option) => ({
     title: option.title,
     id: option.id,
@@ -118,21 +120,32 @@ export const getEditVariantDefaultValues = (
     : null
 
   return {
-    title: variant.title,
-    sku: variant.sku,
-    ean: variant.ean,
-    inventory_quantity: variant.inventory_quantity,
-    material: variant.material,
-    manage_inventory: variant.manage_inventory,
-    allow_backorder: variant.allow_backorder,
-    barcode: variant.barcode,
-    upc: variant.upc,
-    customs: {
-      hs_code: variant.hs_code,
-      mid_code: variant.mid_code,
-      origin_country: countryOption,
+    general: {
+      title: variant.title,
+      material: variant.material,
     },
-    options,
+    stock: {
+      sku: variant.sku,
+      ean: variant.ean,
+      inventory_quantity: variant.inventory_quantity,
+      manage_inventory: variant.manage_inventory,
+      allow_backorder: variant.allow_backorder,
+      barcode: variant.barcode,
+      upc: variant.upc,
+    },
+    shipping: {
+      customs: {
+        hs_code: variant.hs_code,
+        mid_code: variant.mid_code,
+        origin_country: countryOption,
+      },
+      dimensions: {
+        weight: variant.weight,
+        width: variant.width,
+        height: variant.height,
+        length: variant.length,
+      },
+    },
     prices: {
       prices: variant.prices.map((price) => ({
         id: price.id,
@@ -141,12 +154,7 @@ export const getEditVariantDefaultValues = (
         region_id: price.region_id,
       })),
     },
-    dimensions: {
-      weight: variant.weight,
-      width: variant.width,
-      height: variant.height,
-      length: variant.length,
-    },
+    options,
   }
 }
 

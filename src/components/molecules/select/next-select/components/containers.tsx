@@ -7,13 +7,42 @@ import {
   ValueContainerProps,
 } from "react-select"
 
+type AdjacentContainerProps = {
+  label?: string
+  helperText?: string
+  required?: boolean
+  children?: React.ReactNode
+}
+
+export const AdjacentContainer = ({
+  label,
+  helperText,
+  required,
+  children,
+}: AdjacentContainerProps) => {
+  return (
+    <div className="flex flex-col gap-y-xsmall w-full">
+      {label && (
+        <label className="inter-small-semibold text-grey-50">
+          {label}
+          {required && <span className="text-rose-50">*</span>}
+        </label>
+      )}
+      {children}
+      {helperText && (
+        <p className="inter-small-regular text-grey-50">{helperText}</p>
+      )}
+    </div>
+  )
+}
+
 export const SelectContainer = <
   Option,
   IsMulti extends boolean,
   Group extends GroupBase<Option>
 >({
   innerProps,
-  selectProps: { label, required, isDisabled, isRtl },
+  selectProps: { isDisabled, isRtl },
   hasValue,
   cx,
   className,
@@ -28,21 +57,9 @@ export const SelectContainer = <
           "--is-rtl": isRtl,
           "--has-value": hasValue,
         },
-        clsx(
-          "relative pointer-events-auto",
-          {
-            "flex flex-col gap-y-xsmall": label,
-          },
-          className
-        )
+        clsx("relative pointer-events-auto", className)
       )}
     >
-      {label && (
-        <label className="inter-small-semibold text-grey-50">
-          {label}
-          {required && <span className="text-rose-50">*</span>}
-        </label>
-      )}
       {children}
     </div>
   )

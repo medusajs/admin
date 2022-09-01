@@ -4,9 +4,9 @@ import { useForm } from "react-hook-form"
 import Button from "../../../../../../components/fundamentals/button"
 import Modal from "../../../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../../../components/molecules/modal/layered-modal"
-import VariantForm, {
-  VariantFormType,
-} from "../../../../components/variant-form"
+import EditFlowVariantForm, {
+  EditFlowVariantFormType,
+} from "../../../../components/variant-form/edit-flow-variant-form"
 import useEditProductActions from "../../../hooks/use-edit-product-actions"
 import { getEditVariantDefaultValues } from "../edit-variant-modal"
 import { useEditVariantsModal } from "./use-edit-variants-modal"
@@ -18,7 +18,7 @@ type Props = {
 
 const EditVariantScreen = ({ variant, product }: Props) => {
   const { onClose } = useEditVariantsModal()
-  const form = useForm<VariantFormType>({
+  const form = useForm<EditFlowVariantFormType>({
     defaultValues: getEditVariantDefaultValues(variant, product),
   })
 
@@ -54,7 +54,7 @@ const EditVariantScreen = ({ variant, product }: Props) => {
     <>
       <form noValidate>
         <Modal.Content>
-          <VariantForm form={form} />
+          <EditFlowVariantForm form={form} />
         </Modal.Content>
         <Modal.Footer>
           <div className="flex items-center w-full justify-end gap-x-xsmall">
@@ -88,8 +88,13 @@ const EditVariantScreen = ({ variant, product }: Props) => {
   )
 }
 
-export const createUpdatePayload = (data: VariantFormType) => {
-  const { customs, dimensions, prices, options, ...rest } = data
+export const createUpdatePayload = (data: EditFlowVariantFormType) => {
+  const {
+    shipping: { customs, dimensions },
+    prices,
+    options,
+    ...rest
+  } = data
 
   const priceArray = prices.prices
     .filter((price) => price.amount)

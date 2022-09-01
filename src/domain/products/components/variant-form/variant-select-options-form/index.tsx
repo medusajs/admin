@@ -11,27 +11,25 @@ export type VariantOptionValueType = {
 }
 
 export type VariantOptionType = {
-  id: string
+  option_id: string
   title: string
-  value: VariantOptionValueType | null
+  option: VariantOptionValueType | null
 }
 
-export type VariantOptionsFormType = {
-  variant_options: VariantOptionType[]
-}
+export type VariantSelectOptionsFormType = VariantOptionType[]
 
 type Props = {
-  form: NestedForm<VariantOptionsFormType>
+  form: NestedForm<VariantSelectOptionsFormType>
   options: VariantOptionValueType[]
-  onCreateOption: (option: VariantOptionValueType) => void
+  onCreateOption: (optionId: string, value: string) => void
 }
 
-const VariantOptionsForm = ({ form, options, onCreateOption }: Props) => {
+const VariantSelectOptionsForm = ({ form, options, onCreateOption }: Props) => {
   const { control, path } = form
 
   const { fields } = useFieldArray({
     control: form.control,
-    name: path("variant_options"),
+    name: path(),
     keyName: "fieldId",
   })
 
@@ -42,8 +40,9 @@ const VariantOptionsForm = ({ form, options, onCreateOption }: Props) => {
           <Controller
             key={field.fieldId}
             control={control}
-            name={path(`variant_options.${index}.value`)}
+            name={path(`${index}.option`)}
             render={({ field: { value, onChange, onBlur, ref } }) => {
+              console.log(field)
               return (
                 <NextCreateableSelect
                   ref={ref}
@@ -53,16 +52,16 @@ const VariantOptionsForm = ({ form, options, onCreateOption }: Props) => {
                   label={field.title}
                   required
                   options={
-                    options.filter((o) => o.option_id === field.id) || []
+                    options.filter((o) => o.option_id === field.option_id) || []
                   }
                   onCreateOption={(value) => {
                     const newOption = {
-                      option_id: field.id,
+                      option_id: field.option_id,
                       value: value,
                       label: value,
                     }
 
-                    onCreateOption(newOption)
+                    onCreateOption(field.option_id, value)
 
                     onChange(newOption)
                   }}
@@ -76,4 +75,4 @@ const VariantOptionsForm = ({ form, options, onCreateOption }: Props) => {
   )
 }
 
-export default VariantOptionsForm
+export default VariantSelectOptionsForm

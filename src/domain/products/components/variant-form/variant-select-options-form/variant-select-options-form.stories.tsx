@@ -1,9 +1,9 @@
 import { storiesOf } from "@storybook/react"
 import React, { useState } from "react"
 import { useForm, useWatch } from "react-hook-form"
-import VariantOptionsForm, {
-  VariantOptionsFormType,
+import VariantSelectOptionsForm, {
   VariantOptionValueType,
+  VariantSelectOptionsFormType,
 } from "."
 import { nestedForm } from "../../../../../utils/nested-form"
 
@@ -76,25 +76,25 @@ storiesOf(
   }
 
   const form = useForm<{
-    options: VariantOptionsFormType
+    options: VariantSelectOptionsFormType
   }>({
     defaultValues: {
       options: {
         variant_options: [
           {
-            id: "1",
+            option_id: "1",
             title: "Color",
-            value: null,
+            option: null,
           },
           {
-            id: "2",
+            option_id: "2",
             title: "Size",
-            value: null,
+            option: null,
           },
           {
-            id: "3",
+            option_id: "3",
             title: "Material",
-            value: null,
+            option: null,
           },
         ],
       },
@@ -108,7 +108,7 @@ storiesOf(
 
   return (
     <div>
-      <VariantOptionsForm
+      <VariantSelectOptionsForm
         form={nestedForm(form, "options")}
         options={opts}
         onCreateOption={onCreateOption}

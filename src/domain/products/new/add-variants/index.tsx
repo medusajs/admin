@@ -12,7 +12,10 @@ import TagInput from "../../../../components/molecules/tag-input"
 import { useDebounce } from "../../../../hooks/use-debounce"
 import useToggleState from "../../../../hooks/use-toggle-state"
 import { NestedForm } from "../../../../utils/nested-form"
-import VariantForm, { VariantFormType } from "../../components/variant-form"
+import CreateFlowVariantForm, {
+  CreateFlowVariantFormType,
+} from "../../components/variant-form/create-flow-variant-form"
+import { VariantOptionType } from "../../components/variant-form/variant-select-options-form"
 import useCheckOptions from "../../components/variant-form/variant-select-options-form/hooks"
 import NewVariant from "./new-variant"
 
@@ -24,7 +27,7 @@ type ProductOptionType = {
 
 export type AddVariantsFormType = {
   options: ProductOptionType[]
-  entries: VariantFormType[]
+  entries: CreateFlowVariantFormType[]
 }
 
 type Props = {
@@ -34,12 +37,13 @@ type Props = {
 const AddVariantsForm = ({ form }: Props) => {
   const { control, path, register } = form
 
-  const { checkForDuplicate } = useCheckOptions(form)
+  const { checkForDuplicate, getOptions } = useCheckOptions(form)
 
   const {
     fields: options,
     append: appendOption,
     remove: removeOption,
+    update: updateOption,
   } = useFieldArray({
     control,
     name: path("options"),
@@ -88,12 +92,7 @@ const AddVariantsForm = ({ form }: Props) => {
           const { variant, index } = indexedVar
 
           const options = variant.options
-          const validOptions = [] as {
-            option_id: string
-            title: string
-            label: string
-            value: string
-          }[]
+          const validOptions: VariantOptionType[] = []
 
           options.forEach((option) => {
             const { option_id } = option
@@ -102,8 +101,11 @@ const AddVariantsForm = ({ form }: Props) => {
             if (optionData) {
               option.title = optionData.title
 
-              if (!optionData.values.includes(option.value)) {
-                option.value = ""
+              if (
+                !option.option?.value ||
+                !optionData.values.includes(option.option.value)
+              ) {
+                option.option = null
               }
 
               validOptions.push(option)
@@ -120,22 +122,32 @@ const AddVariantsForm = ({ form }: Props) => {
             validOptions.push({
               option_id: id,
               title: optionData.title,
-              label: "",
-              value: "",
+              option: null,
             })
           })
 
           updateVariant(index, {
             ...variant,
-            options: validOptions,
+            options: validOptions.map((va) => {
+              return {
+                id: uuidv4(),
+                option_id: va.option_id,
+                title: va.title,
+                value: va,
+                option: va.option,
+              }
+            }),
           })
         })
       }
     }
   }, [debouncedOptions])
 
-  const onUpdateVariant = (index: number, data: VariantFormType) => {
-    const toCheck = { id: data._internal_id!, options: data.options }
+  const onUpdateVariant = (index: number, data: CreateFlowVariantFormType) => {
+    const toCheck = {
+      id: data._internal_id!,
+      options: data.options.map((vo) => vo.option!),
+    } // We can be sure that the value is set as this point.
     const exists = checkForDuplicate(toCheck)
 
     if (exists) {
@@ -160,7 +172,7 @@ const AddVariantsForm = ({ form }: Props) => {
     })
   }
 
-  const newVariantForm = useForm<VariantFormType>()
+  const newVariantForm = useForm<CreateFlowVariantFormType>()
   const { reset, handleSubmit: submitVariant } = newVariantForm
   const { state, toggle } = useToggleState()
 
@@ -170,7 +182,10 @@ const AddVariantsForm = ({ form }: Props) => {
   }
 
   const onAppendVariant = submitVariant((data) => {
-    const toCheck = { id: data._internal_id!, options: data.options }
+    const toCheck = {
+      id: data._internal_id!,
+      options: data.options.map((da) => da.option).filter((o) => !!o),
+    }
     const exists = checkForDuplicate(toCheck)
 
     if (exists) {
@@ -179,9 +194,13 @@ const AddVariantsForm = ({ form }: Props) => {
 
     appendVariant({
       ...data,
-      title: data.title
-        ? data.title
-        : data.options.map((option) => option.value).join(" / "),
+      options: data.options,
+      general: {
+        ...data.general,
+        title: data.general.title
+          ? data.general.title
+          : data.options.map((vo) => vo.option?.value).join(" / "),
+      },
     })
     onToggleForm()
   })
@@ -189,6 +208,18 @@ const AddVariantsForm = ({ form }: Props) => {
   const moveCard = useCallback((dragIndex: number, hoverIndex: number) => {
     moveVariant(dragIndex, hoverIndex)
   }, [])
+
+  const onAddNewProductOptionValue = (optionId: string, value: string) => {
+    const option = watchedOptions?.find((wo) => wo.id === optionId)
+
+    if (!option) {
+      return
+    }
+
+    const index = watchedOptions?.findIndex((wo) => wo.id === optionId)
+
+    updateOption(index, { ...option, values: [...option.values, value] })
+  }
 
   return (
     <>
@@ -303,6 +334,8 @@ const AddVariantsForm = ({ form }: Props) => {
                         save={onUpdateVariant}
                         remove={removeVariant}
                         move={moveCard}
+                        options={getOptions()}
+                        onCreateOption={onAddNewProductOptionValue}
                       />
                     )
                   })}
@@ -330,7 +363,11 @@ const AddVariantsForm = ({ form }: Props) => {
             <h1 className="inter-xlarge-semibold">Create Variant</h1>
           </Modal.Header>
           <Modal.Content>
-            <VariantForm form={newVariantForm} />
+            <CreateFlowVariantForm
+              form={newVariantForm}
+              options={getOptions()}
+              onCreateOption={onAddNewProductOptionValue}
+            />
           </Modal.Content>
           <Modal.Footer>
             <div className="flex items-center gap-x-xsmall justify-end w-full">
@@ -358,10 +395,15 @@ const AddVariantsForm = ({ form }: Props) => {
   )
 }
 
-const createEmptyVariant = (options: ProductOptionType[]): VariantFormType => {
+const createEmptyVariant = (
+  options: ProductOptionType[]
+): CreateFlowVariantFormType => {
   return {
     _internal_id: uuidv4(),
-    title: null,
+    general: {
+      title: null,
+      material: null,
+    },
     prices: {
       prices: [],
     },
@@ -387,13 +429,11 @@ const createEmptyVariant = (options: ProductOptionType[]): VariantFormType => {
         origin_country: null,
       },
     },
-    material: null,
     options:
       options?.map((option) => ({
         title: option.title,
-        value: "",
-        label: "",
         option_id: option.id,
+        option: null,
       })) || [],
   }
 }
