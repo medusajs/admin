@@ -23,11 +23,11 @@ export const useSelectProps = <
       menuPortal: (base) => ({ ...base, zIndex: 60 }),
     },
     isMulti,
-    closeMenuOnScroll,
-    menuPosition: "fixed",
+    closeMenuOnScroll: true,
     closeMenuOnSelect:
       closeMenuOnSelect !== undefined ? closeMenuOnSelect : isMulti !== true,
     hideSelectedOptions,
+    menuPosition: "fixed",
     maxMenuHeight: size === "sm" ? 154 : 188,
     formatOptionLabel,
     size,

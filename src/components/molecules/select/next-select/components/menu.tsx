@@ -4,8 +4,6 @@ import {
   ActionMeta,
   CX,
   GroupBase,
-  GroupHeadingProps,
-  GroupProps,
   MenuListProps,
   MenuProps,
   NoticeProps,
@@ -18,6 +16,7 @@ import Button from "../../../../fundamentals/button"
 import CheckIcon from "../../../../fundamentals/icons/check-icon"
 import ListArrowIcon from "../../../../fundamentals/icons/list-arrow-icon"
 import { optionIsDisabled } from "../utils"
+import SelectPrimitives from "./select-primitives"
 
 const Menu = <
   Option,
@@ -30,7 +29,22 @@ const Menu = <
   innerProps,
   innerRef,
   placement,
+  selectProps: { onMenuClose, menuIsOpen },
 }: MenuProps<Option, IsMulti, Group>) => {
+  useEffect(() => {
+    const closeOnResize = () => {
+      if (menuIsOpen) {
+        onMenuClose()
+      }
+    }
+
+    window.addEventListener("resize", closeOnResize)
+
+    return () => {
+      window.removeEventListener("resize", closeOnResize)
+    }
+  }, [])
+
   return (
     <div
       {...innerProps}
@@ -41,7 +55,7 @@ const Menu = <
           "absolute w-full overflow-hidden border-border z-[60] bg-grey-0 rounded-rounded border border-grey-20 shadow-dropdown mb-base",
           {
             "top-[calc(100%+8px)]": placement === "bottom",
-            "bottom-[calc(100%+8px)]": placement === "top",
+            "bottom-full": placement === "top",
           },
           className
         )
@@ -151,40 +165,38 @@ export const MenuList = <
   Option,
   IsMulti extends boolean,
   Group extends GroupBase<Option>
->({
-  className,
-  children,
-  cx,
-  innerRef,
-  innerProps,
-  maxHeight,
-  isMulti,
-  selectProps: { selectAll, value, onChange },
-  options,
-}: MenuListProps<Option, IsMulti, Group>) => {
+>(
+  props: MenuListProps<Option, IsMulti, Group>
+) => {
+  const {
+    className,
+    children,
+    cx,
+    isMulti,
+    selectProps: { selectAll, value, onChange },
+    options,
+  } = props
   return (
-    <div
-      {...innerProps}
-      ref={innerRef}
+    <SelectPrimitives.MenuList
+      {...props}
       className={cx(
         {
           "menu-list": true,
           "menu-list--is-multi": isMulti,
         },
-        clsx("overflow-y-auto flex flex-col py-xsmall", className)
+        clsx("overflow-y-auto flex flex-col py-xsmall no-scrollbar", className)
       )}
-      style={{ maxHeight: `${maxHeight}px` }}
     >
       {isMulti && selectAll && (
         <SelectAllOption
           cx={cx}
-          onChange={onChange as any}
-          options={options as any}
+          onChange={onChange}
+          options={options}
           value={value}
         />
       )}
       {children}
-    </div>
+    </SelectPrimitives.MenuList>
   )
 }
 
@@ -231,24 +243,6 @@ export const LoadingMessage = <
     </div>
   )
 }
-
-const NoOptionsMessage = <
-  Option,
-  IsMulti extends boolean,
-  Group extends GroupBase<Option>
->({}: NoticeProps<Option, IsMulti, Group>) => {}
-
-const Group = <
-  Option,
-  IsMulti extends boolean,
-  Group extends GroupBase<Option>
->({}: GroupProps<Option, IsMulti, Group>) => {}
-
-const GroupHeading = <
-  Option,
-  IsMulti extends boolean,
-  Group extends GroupBase<Option>
->({}: GroupHeadingProps<Option, IsMulti, Group>) => {}
 
 export const Option = <
   Option,

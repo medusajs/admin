@@ -4,6 +4,7 @@ import React, {
   ReactElement,
   RefAttributes,
   useContext,
+  useRef,
 } from "react"
 import type { GroupBase, Props, SelectInstance } from "react-select"
 import ReactSelect from "react-select"
@@ -32,8 +33,11 @@ const Select = forwardRef(
     const { label, required, helperText, name, errors } = selectProps
     const { portalRef } = useContext(ModalContext)
 
+    const containerRef = useRef<HTMLDivElement>(null)
+
     return (
       <AdjacentContainer
+        ref={containerRef}
         label={label}
         helperText={helperText}
         required={required}
@@ -41,10 +45,10 @@ const Select = forwardRef(
         errors={errors}
       >
         <ReactSelect
-          ref={ref}
           name={name}
           {...selectProps}
           menuPortalTarget={portalRef?.current?.lastChild || null}
+          menuShouldBlockScroll={true}
         />
       </AdjacentContainer>
     )

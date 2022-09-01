@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React from "react"
+import React, { ComponentPropsWithRef } from "react"
 import {
   ContainerProps,
   GroupBase,
@@ -15,7 +15,7 @@ type AdjacentContainerProps = {
   name?: string
   errors?: Record<string, unknown>
   children?: React.ReactNode
-}
+} & ComponentPropsWithRef<"div">
 
 export const AdjacentContainer = ({
   label,

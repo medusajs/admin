@@ -51,12 +51,22 @@ export const hasLabel = (option: unknown): option is { label: string } => {
   return typeof option === "object" && option !== null && "label" in option
 }
 
+export const isCreateOption = (
+  option: unknown
+): option is { __isNew__: true } => {
+  return typeof option === "object" && option !== null && "__isNew__" in option
+}
+
 export const formatOptionLabel = <Option,>(
   option: Option,
   { inputValue }: FormatOptionLabelMeta<Option>
 ) => {
   if (!hasLabel(option)) {
-    return option
+    return
+  }
+
+  if (isCreateOption(option)) {
+    return option.label
   }
 
   return (
