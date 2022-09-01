@@ -127,6 +127,7 @@ storiesOf("Molecules/Select/Next/Select", module).add(
                 value={value}
                 onChange={onChange}
                 isMulti
+                selectAll
               />
             )
           }}
@@ -140,6 +141,33 @@ storiesOf("Molecules/Select/Next/Select", module).add(
     )
   }
 )
+
+storiesOf("Molecules/Select/Next/Select", module).add("Small Select", () => {
+  const form = useForm<{
+    options: SelectOption[]
+  }>({ defaultValues: { options: [] } })
+
+  return (
+    <div>
+      <Controller
+        control={form.control}
+        name="options"
+        render={({ field: { value, onChange } }) => {
+          return (
+            <ExperimentalSelect
+              label="Region"
+              required
+              options={options}
+              value={value}
+              onChange={onChange}
+              size="sm"
+            />
+          )
+        }}
+      />
+    </div>
+  )
+})
 
 storiesOf("Molecules/Select/Next/Select", module).add("Loading Select", () => {
   const form = useForm<{

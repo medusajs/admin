@@ -1,11 +1,11 @@
 import React from "react"
 import { nestedForm, NestedForm } from "../../../../../utils/nested-form"
-import CustomsForm, { CustomsPayload } from "../../customs-form"
+import CustomsForm, { CustomsFormType } from "../../customs-form"
 import DimensionsForm, { DimensionsFormType } from "../../dimensions-form"
 
 export type VariantShippingFormType = {
   dimensions: DimensionsFormType
-  customs: CustomsPayload
+  customs: CustomsFormType
 }
 
 type Props = {

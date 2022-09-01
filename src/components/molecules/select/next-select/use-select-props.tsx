@@ -1,5 +1,6 @@
-import type { GroupBase, Props } from "react-select"
+import { GroupBase, Props } from "react-select"
 import Components from "./components"
+import { formatOptionLabel } from "./utils"
 
 export const useSelectProps = <
   Option,
@@ -12,6 +13,7 @@ export const useSelectProps = <
   hideSelectedOptions = false,
   closeMenuOnSelect,
   label,
+  size,
   ...props
 }: Props<Option, IsMulti, Group>): Props<Option, IsMulti, Group> => {
   return {
@@ -26,6 +28,9 @@ export const useSelectProps = <
     closeMenuOnSelect:
       closeMenuOnSelect !== undefined ? closeMenuOnSelect : isMulti !== true,
     hideSelectedOptions,
+    maxMenuHeight: size === "sm" ? 154 : 188,
+    formatOptionLabel,
+    size,
     ...props,
   }
 }

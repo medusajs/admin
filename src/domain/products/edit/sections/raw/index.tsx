@@ -10,7 +10,7 @@ type Props = {
 /** Temporary component, should be replaced with <RawJson /> but since the design is different we will use this to not break the existing design across admin. */
 const RawSection = ({ product }: Props) => {
   return (
-    <Section title="JSON">
+    <Section title="Raw Product">
       <div className="mt-base bg-grey-5 rounded-rounded px-base py-xsmall">
         <ReactJson name={false} collapsed={true} src={product} />
       </div>

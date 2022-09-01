@@ -133,18 +133,16 @@ export const getEditVariantDefaultValues = (
       barcode: variant.barcode,
       upc: variant.upc,
     },
-    shipping: {
-      customs: {
-        hs_code: variant.hs_code,
-        mid_code: variant.mid_code,
-        origin_country: countryOption,
-      },
-      dimensions: {
-        weight: variant.weight,
-        width: variant.width,
-        height: variant.height,
-        length: variant.length,
-      },
+    customs: {
+      hs_code: variant.hs_code,
+      mid_code: variant.mid_code,
+      origin_country: countryOption,
+    },
+    dimensions: {
+      weight: variant.weight,
+      width: variant.width,
+      height: variant.height,
+      length: variant.length,
     },
     prices: {
       prices: variant.prices.map((price) => ({

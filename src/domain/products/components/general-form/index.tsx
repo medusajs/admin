@@ -13,9 +13,10 @@ export type GeneralFormType = {
 
 type Props = {
   form: NestedForm<GeneralFormType>
+  requireHandle?: boolean
 }
 
-const GeneralForm = ({ form }: Props) => {
+const GeneralForm = ({ form, requireHandle = true }: Props) => {
   const {
     register,
     path,
@@ -56,10 +57,15 @@ const GeneralForm = ({ form }: Props) => {
       <div className="grid grid-cols-2 gap-x-large mb-large">
         <InputField
           label="Handle"
+          tooltipContent={
+            !requireHandle
+              ? "The handle is the part of the URL that identifies the product. If not specified, it will be generated from the title."
+              : undefined
+          }
           placeholder="winter-jacket"
-          required
+          required={requireHandle}
           {...register(path("handle"), {
-            required: "Handle is required",
+            required: requireHandle ? "Handle is required" : undefined,
             minLength: {
               value: 1,
               message: "Handle must be at least 1 character",

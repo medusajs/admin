@@ -143,6 +143,27 @@ const AddVariantsForm = ({ form }: Props) => {
     }
   }, [debouncedOptions])
 
+  const onDeleteProductOption = (index: number) => {
+    const option = watchedOptions[index]
+
+    removeOption(index)
+
+    if (!option) {
+      return
+    }
+
+    watchedEntries?.forEach((variant, index) => {
+      const options = variant.options
+
+      const validOptions = options.filter((vo) => vo.option_id !== option.id)
+
+      updateVariant(index, {
+        ...variant,
+        options: validOptions,
+      })
+    })
+  }
+
   const onUpdateVariant = (index: number, data: CreateFlowVariantFormType) => {
     const toCheck = {
       id: data._internal_id!,
@@ -276,7 +297,7 @@ const AddVariantsForm = ({ form }: Props) => {
                         size="small"
                         type="button"
                         className="h-10"
-                        onClick={() => removeOption(index)}
+                        onClick={() => onDeleteProductOption(index)}
                       >
                         <TrashIcon size={20} className="text-grey-40" />
                       </Button>
@@ -416,18 +437,16 @@ const createEmptyVariant = (
       upc: null,
       inventory_quantity: null,
     },
-    shipping: {
-      dimensions: {
-        weight: null,
-        length: null,
-        width: null,
-        height: null,
-      },
-      customs: {
-        hs_code: null,
-        mid_code: null,
-        origin_country: null,
-      },
+    dimensions: {
+      weight: null,
+      length: null,
+      width: null,
+      height: null,
+    },
+    customs: {
+      hs_code: null,
+      mid_code: null,
+      origin_country: null,
     },
     options:
       options?.map((option) => ({

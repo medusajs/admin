@@ -13,7 +13,7 @@ import { FormImage, ProductStatus } from "../../../types/shared"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { prepareImages } from "../../../utils/images"
 import { nestedForm } from "../../../utils/nested-form"
-import CustomsForm, { CustomsPayload } from "../components/customs-form"
+import CustomsForm, { CustomsFormType } from "../components/customs-form"
 import DimensionsForm, {
   DimensionsFormType,
 } from "../components/dimensions-form"
@@ -35,7 +35,7 @@ type NewProductForm = {
   discounted: DiscountableFormType
   organize: OrganizeFormType
   variants: AddVariantsFormType
-  customs: CustomsPayload
+  customs: CustomsFormType
   dimensions: DimensionsFormType
   thumbnail: ThumbnailFormType
   media: MediaFormType
@@ -180,7 +180,10 @@ const NewProduct = ({ onClose }: Props) => {
                   To start selling, all you need is a name and a price.
                 </p>
                 <div className="mt-xlarge flex flex-col gap-y-xlarge">
-                  <GeneralForm form={nestedForm(form, "general")} />
+                  <GeneralForm
+                    form={nestedForm(form, "general")}
+                    requireHandle={false}
+                  />
                   <DiscountableForm form={nestedForm(form, "discounted")} />
                 </div>
               </Accordion.Item>
@@ -298,13 +301,13 @@ const createPayload = (
       })),
       ean: v.stock.ean || undefined,
       upc: v.stock.upc || undefined,
-      height: v.shipping.dimensions.height || undefined,
-      length: v.shipping.dimensions.length || undefined,
-      weight: v.shipping.dimensions.weight || undefined,
-      width: v.shipping.dimensions.width || undefined,
-      hs_code: v.shipping.customs.hs_code || undefined,
-      mid_code: v.shipping.customs.mid_code || undefined,
-      origin_country: v.shipping.customs.origin_country?.value || undefined,
+      height: v.dimensions.height || undefined,
+      length: v.dimensions.length || undefined,
+      weight: v.dimensions.weight || undefined,
+      width: v.dimensions.width || undefined,
+      hs_code: v.customs.hs_code || undefined,
+      mid_code: v.customs.mid_code || undefined,
+      origin_country: v.customs.origin_country?.value || undefined,
       manage_inventory: v.stock.manage_inventory,
     })),
     // @ts-ignore

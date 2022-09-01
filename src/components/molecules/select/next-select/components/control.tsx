@@ -40,7 +40,7 @@ const Control = <
         clsx(
           "flex p-0 overflow-hidden rounded-rounded border border-gray-20 bg-grey-5 focus-within:shadow-cta transition-colors focus-within:border-violet-60 box-border pl-small",
           {
-            "h-large": size === "sm",
+            "h-xlarge": size === "sm",
             "h-10": size === "md" || !size,
           },
           className
@@ -119,9 +119,14 @@ export const ClearIndicator = <
 >({
   innerProps,
   className,
+  isMulti,
   cx,
   children,
 }: ClearIndicatorProps<Option, IsMulti, Group>) => {
+  if (isMulti) {
+    return null
+  }
+
   return (
     <div
       {...innerProps}

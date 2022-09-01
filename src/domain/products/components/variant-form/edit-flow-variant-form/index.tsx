@@ -4,14 +4,13 @@ import IconTooltip from "../../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../../components/molecules/input"
 import Accordion from "../../../../../components/organisms/accordion"
 import { nestedForm } from "../../../../../utils/nested-form"
+import CustomsForm, { CustomsFormType } from "../../customs-form"
+import DimensionsForm, { DimensionsFormType } from "../../dimensions-form"
 import { PricesFormType } from "../../prices-form"
 import VariantGeneralForm, {
   VariantGeneralFormType,
 } from "../variant-general-form"
 import VariantPricesForm from "../variant-prices-form"
-import VariantShippingForm, {
-  VariantShippingFormType,
-} from "../variant-shipping-form"
 import VariantStockForm, { VariantStockFormType } from "../variant-stock-form"
 
 export type EditFlowVariantFormType = {
@@ -27,7 +26,8 @@ export type EditFlowVariantFormType = {
     value: string
     id: string
   }[]
-  shipping: VariantShippingFormType
+  customs: CustomsFormType
+  dimensions: DimensionsFormType
 }
 
 type Props = {
@@ -96,7 +96,23 @@ const EditFlowVariantForm = ({ form }: Props) => {
         <VariantStockForm form={nestedForm(form, "stock")} />
       </Accordion.Item>
       <Accordion.Item title="Shipping" value="shipping">
-        <VariantShippingForm form={nestedForm(form, "shipping")} />
+        <p className="inter-base-regular text-grey-50">
+          To start selling, all you need is a title, price, and image.
+        </p>
+        <div className="mt-large">
+          <h3 className="inter-base-semibold mb-2xsmall">Dimensions</h3>
+          <p className="inter-base-regular text-grey-50 mb-large">
+            Configure to calculate the most accurate shipping rates
+          </p>
+          <DimensionsForm form={nestedForm(form, "dimensions")} />
+        </div>
+        <div className="mt-xlarge">
+          <h3 className="inter-base-semibold mb-2xsmall">Customs</h3>
+          <p className="inter-base-regular text-grey-50 mb-large">
+            Configure to calculate the most accurate shipping rates
+          </p>
+          <CustomsForm form={nestedForm(form, "customs")} />
+        </div>
       </Accordion.Item>
     </Accordion>
   )

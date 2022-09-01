@@ -1,6 +1,9 @@
 import React from "react"
 import { Controller } from "react-hook-form"
-import Select from "../../../../components/molecules/select"
+import {
+  NextCreateableSelect,
+  NextSelect,
+} from "../../../../components/molecules/select/next-select"
 import TagInput from "../../../../components/molecules/tag-input"
 import { Option } from "../../../../types/shared"
 import { NestedForm } from "../../../../utils/nested-form"
@@ -17,8 +20,21 @@ type Props = {
 }
 
 const OrganizeForm = ({ form }: Props) => {
-  const { control, path } = form
+  const { control, path, setValue } = form
   const { productTypeOptions, collectionOptions } = useOrganizeData()
+
+  const typeOptions = productTypeOptions
+
+  const onCreateOption = (value: string) => {
+    typeOptions.push({ label: value, value })
+    setValue(
+      path("type"),
+      { label: value, value },
+      {
+        shouldDirty: true,
+      }
+    )
+  }
 
   return (
     <div>
@@ -28,11 +44,13 @@ const OrganizeForm = ({ form }: Props) => {
           control={control}
           render={({ field: { value, onChange } }) => {
             return (
-              <Select
+              <NextCreateableSelect
                 label="Type"
                 onChange={onChange}
                 options={productTypeOptions}
                 value={value || null}
+                placeholder="Choose a type"
+                onCreateOption={onCreateOption}
               />
             )
           }}
@@ -42,11 +60,12 @@ const OrganizeForm = ({ form }: Props) => {
           control={control}
           render={({ field: { value, onChange } }) => {
             return (
-              <Select
+              <NextSelect
                 label="Collection"
                 onChange={onChange}
                 options={collectionOptions}
                 value={value}
+                placeholder="Choose a collection"
               />
             )
           }}

@@ -89,12 +89,7 @@ const EditVariantScreen = ({ variant, product }: Props) => {
 }
 
 export const createUpdatePayload = (data: EditFlowVariantFormType) => {
-  const {
-    shipping: { customs, dimensions },
-    prices,
-    options,
-    ...rest
-  } = data
+  const { customs, dimensions, prices, options, ...rest } = data
 
   const priceArray = prices.prices
     .filter((price) => price.amount)

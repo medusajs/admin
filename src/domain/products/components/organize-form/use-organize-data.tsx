@@ -2,7 +2,10 @@ import { useAdminCollections, useAdminProductTypes } from "medusa-react"
 import { useMemo } from "react"
 
 const useOrganizeData = () => {
-  const { product_types } = useAdminProductTypes()
+  const { product_types } = useAdminProductTypes(undefined, {
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  })
   const { collections } = useAdminCollections()
 
   const productTypeOptions = useMemo(() => {

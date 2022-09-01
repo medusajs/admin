@@ -1,6 +1,6 @@
 import { GroupBase } from "react-select"
 
-type SelectSize = "sm" | "md"
+export type SelectSize = "sm" | "md"
 
 declare module "react-select/dist/declarations/src/Select" {
   export interface Props<
@@ -39,5 +39,11 @@ declare module "react-select/dist/declarations/src/Select" {
      * @defaultValue `undefined`
      */
     errors?: Record<string, unknown>
+    /**
+     * An optional flag to indicate if the select should be able to select all options.
+     * 
+     * @defaultValue `false`
+     */
+    selectAll?: boolean 
   }
 }

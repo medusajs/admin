@@ -50,6 +50,7 @@ const VariantSelectOptionsForm = ({ form, options, onCreateOption }: Props) => {
                   onChange={onChange}
                   onBlur={onBlur}
                   label={field.title}
+                  placeholder="Choose an option"
                   required
                   options={
                     options.filter((o) => o.option_id === field.option_id) || []

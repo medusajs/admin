@@ -253,10 +253,24 @@ const VariantValidity = ({ source }: { source: CreateFlowVariantFormType }) => {
   const {
     prices,
     options,
-    shipping: { dimensions, customs },
+    dimensions,
+    customs,
     stock: { barcode, upc, ean, sku, inventory_quantity },
     general: { title },
   } = source
+
+  if (!options || !options.length) {
+    return (
+      <IconTooltip
+        type="error"
+        content={
+          <div className="text-rose-50 flex flex-col gap-y-2xsmall">
+            <p>This variant has no options.</p>
+          </div>
+        }
+      />
+    )
+  }
 
   const invalidOptions = options.filter((opt) => !opt.option?.value)
 

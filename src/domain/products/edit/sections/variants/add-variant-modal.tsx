@@ -1,4 +1,4 @@
-import { Product } from "@medusajs/medusa"
+import { AdminPostProductsProductVariantsReq, Product } from "@medusajs/medusa"
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
@@ -33,36 +33,7 @@ const AddVariantModal = ({ open, onClose, product }: Props) => {
   }
 
   const onSubmit = handleSubmit((data) => {
-    onAddVariant(
-      {
-        sku: data.stock.sku || undefined,
-        upc: data.stock.upc || undefined,
-        barcode: data.stock.barcode || undefined,
-        ean: data.stock.ean || undefined,
-        weight: data.shipping.dimensions.weight || undefined,
-        width: data.shipping.dimensions.width || undefined,
-        height: data.shipping.dimensions.height || undefined,
-        length: data.shipping.dimensions.length || undefined,
-        mid_code: data.shipping.customs.mid_code || undefined,
-        allow_backorder: data.stock.allow_backorder,
-        manage_inventory: data.stock.manage_inventory,
-        material: data.general.material || undefined,
-        inventory_quantity: data.stock.inventory_quantity || 0,
-        prices: data.prices.prices.map((p) => ({
-          amount: p.amount || 0,
-          currency_code: p.region_id ? undefined : p.currency_code,
-          region_id: p.region_id || undefined,
-        })),
-        title:
-          data.general.title ||
-          `${data.options?.map((o) => o.value).join(" / ")}`,
-        options: data.options.map((option) => ({
-          option_id: option.id,
-          value: option.value,
-        })),
-      },
-      resetAndClose
-    )
+    onAddVariant(createAddPayload(data), resetAndClose)
   })
 
   return (
@@ -101,9 +72,7 @@ const AddVariantModal = ({ open, onClose, product }: Props) => {
   )
 }
 
-const getDefaultValues = (
-  product: Product
-): EditFlowVariantFormType | undefined => {
+const getDefaultValues = (product: Product): EditFlowVariantFormType => {
   const options = product.options.map((option) => ({
     title: option.title,
     id: option.id,
@@ -128,33 +97,34 @@ const getDefaultValues = (
     prices: {
       prices: [],
     },
-    shipping: {
-      dimensions: {
-        weight: null,
-        width: null,
-        height: null,
-        length: null,
-      },
-      customs: {
-        mid_code: null,
-        hs_code: null,
-        origin_country: null,
-      },
+    dimensions: {
+      weight: null,
+      width: null,
+      height: null,
+      length: null,
+    },
+    customs: {
+      mid_code: null,
+      hs_code: null,
+      origin_country: null,
     },
   }
 }
 
-export const createAddPayload = (data: EditFlowVariantFormType) => {
+export const createAddPayload = (
+  data: EditFlowVariantFormType
+): AdminPostProductsProductVariantsReq => {
   return {
     sku: data.stock.sku || undefined,
     upc: data.stock.upc || undefined,
     barcode: data.stock.barcode || undefined,
     ean: data.stock.ean || undefined,
-    weight: data.shipping.dimensions.weight || undefined,
-    width: data.shipping.dimensions.width || undefined,
-    height: data.shipping.dimensions.height || undefined,
-    length: data.shipping.dimensions.length || undefined,
-    mid_code: data.shipping.customs.mid_code || undefined,
+    weight: data.dimensions.weight || undefined,
+    width: data.dimensions.width || undefined,
+    height: data.dimensions.height || undefined,
+    length: data.dimensions.length || undefined,
+    mid_code: data.customs.mid_code || undefined,
+    origin_country: data.customs.origin_country?.value || undefined,
     allow_backorder: data.stock.allow_backorder,
     manage_inventory: data.stock.manage_inventory,
     material: data.general.material || undefined,

@@ -6,6 +6,7 @@ import {
   IndicatorsContainerProps,
   ValueContainerProps,
 } from "react-select"
+import CrossIcon from "../../../../fundamentals/icons/cross-icon"
 
 type AdjacentContainerProps = {
   label?: string
@@ -78,7 +79,48 @@ export const ValueContainer = <
   innerProps,
   isMulti,
   hasValue,
+  selectProps: { value, inputValue, label },
+  clearValue,
 }: ValueContainerProps<Option, IsMulti, Group>) => {
+  if (isMulti && Array.isArray(value)) {
+    return (
+      <div
+        {...innerProps}
+        className={cx(
+          {
+            "value-container": true,
+            "value-container--is-multi": isMulti,
+            "value-container--has-value": hasValue,
+          },
+          clsx(
+            "group flex items-center flex-wrap relative scrolling-touch overflow-hidden flex-1",
+            {
+              "gap-2xsmall": isMulti,
+            },
+            className
+          )
+        )}
+      >
+        {value?.length > 0 && (
+          <div className="h-7 bg-grey-20 text-grey-50 pl-small pr-2.5 inter-small-semibold flex items-center rounded-rounded gap-x-2xsmall focus-within:bg-grey-70 focus-within:text-grey-0 transition-colors">
+            <span>{value.length}</span>
+            <button type="button" onClick={clearValue} className="outline-none">
+              <CrossIcon size={16} className="text-grey-40" />
+            </button>
+          </div>
+        )}
+        <div className="relative">
+          {children}
+          {value?.length > 0 && inputValue === "" && (
+            <span className="absolute top-1/2 -translate-y-1/2 inter-base-regular text-grey-50">
+              {label}
+            </span>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div
       {...innerProps}
