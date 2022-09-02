@@ -8,6 +8,7 @@ export type GeneralFormType = {
   title: string
   subtitle: string | null
   handle: string
+  material: string | null
   description: string | null
 }
 
@@ -66,11 +67,19 @@ const GeneralForm = ({ form, requireHandle = true }: Props) => {
           required={requireHandle}
           {...register(path("handle"), {
             required: requireHandle ? "Handle is required" : undefined,
-            minLength: {
-              value: 1,
-              message: "Handle must be at least 1 character",
-            },
+            minLength: FormValidator.minOneCharRule("Handle"),
             pattern: FormValidator.whiteSpaceRule("Handle"),
+          })}
+          prefix="/"
+          errors={errors}
+        />
+        <InputField
+          label="material"
+          placeholder="100% cotton"
+          required={requireHandle}
+          {...register(path("material"), {
+            minLength: FormValidator.minOneCharRule("Material"),
+            pattern: FormValidator.whiteSpaceRule("Material"),
           })}
           prefix="/"
           errors={errors}

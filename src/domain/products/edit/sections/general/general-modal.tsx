@@ -52,6 +52,8 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
         title: data.general.title,
         handle: data.general.handle,
         // @ts-ignore
+        material: data.general.material,
+        // @ts-ignore
         subtitle: data.general.subtitle,
         // @ts-ignore
         description: data.general.description,
@@ -125,6 +127,7 @@ const getDefaultValues = (product: Product): GeneralForm => {
     general: {
       title: product.title,
       subtitle: product.subtitle,
+      material: product.material,
       handle: product.handle!,
       description: product.description || null,
     },

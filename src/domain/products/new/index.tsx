@@ -259,6 +259,7 @@ const createPayload = (
   return {
     title: data.general.title,
     subtitle: data.general.subtitle || undefined,
+    material: data.general.material || undefined,
     handle: data.general.handle,
     discountable: data.discounted.value,
     is_giftcard: false,
@@ -319,6 +320,7 @@ const createBlank = (): NewProductForm => {
   return {
     general: {
       title: "",
+      material: null,
       subtitle: null,
       description: null,
       handle: "",
