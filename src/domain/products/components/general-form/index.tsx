@@ -74,14 +74,12 @@ const GeneralForm = ({ form, requireHandle = true }: Props) => {
           errors={errors}
         />
         <InputField
-          label="material"
+          label="Material"
           placeholder="100% cotton"
-          required={requireHandle}
           {...register(path("material"), {
             minLength: FormValidator.minOneCharRule("Material"),
             pattern: FormValidator.whiteSpaceRule("Material"),
           })}
-          prefix="/"
           errors={errors}
         />
       </div>

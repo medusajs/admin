@@ -51,6 +51,7 @@ const OrganizeForm = ({ form }: Props) => {
                 value={value || null}
                 placeholder="Choose a type"
                 onCreateOption={onCreateOption}
+                isClearable
               />
             )
           }}
@@ -66,6 +67,7 @@ const OrganizeForm = ({ form }: Props) => {
                 options={collectionOptions}
                 value={value}
                 placeholder="Choose a collection"
+                isClearable
               />
             )
           }}

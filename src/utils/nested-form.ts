@@ -1,9 +1,9 @@
 
 import { get } from "lodash"
-import { FieldPath, UseFormReturn } from "react-hook-form"
+import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form"
 import { Get } from "type-fest"
 
-export type NestedForm<TValues> = UseFormReturn<{ __nested__: TValues }> & {
+export type NestedForm<TValues extends FieldValues> = UseFormReturn<{ __nested__: TValues }> & {
   path(this: void): `__nested__`
   path<TPath extends FieldPath<TValues>>(
     this: void,
@@ -48,10 +48,10 @@ export type NestedForm<TValues> = UseFormReturn<{ __nested__: TValues }> & {
  *   )
  * }
  */
-export function nestedForm<TValues>(
+export function nestedForm<TValues extends FieldValues>(
   form: UseFormReturn<TValues> | NestedForm<TValues>
 ): NestedForm<TValues>
-export function nestedForm<TValues, TPath extends FieldPath<TValues>>(
+export function nestedForm<TValues extends FieldValues, TPath extends FieldPath<TValues>>(
   form: UseFormReturn<TValues> | NestedForm<TValues>,
   path: TPath
 ): NestedForm<Get<TValues, TPath>>

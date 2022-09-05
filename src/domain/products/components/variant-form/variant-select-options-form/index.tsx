@@ -42,7 +42,6 @@ const VariantSelectOptionsForm = ({ form, options, onCreateOption }: Props) => {
             control={control}
             name={path(`${index}.option`)}
             render={({ field: { value, onChange, onBlur, ref } }) => {
-              console.log(field)
               return (
                 <NextCreateableSelect
                   ref={ref}

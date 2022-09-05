@@ -4,10 +4,10 @@ import { useAdminSalesChannels, useAdminStore } from "medusa-react"
 import React, { useEffect, useMemo } from "react"
 import { useFieldArray } from "react-hook-form"
 import Switch from "../../../components/atoms/switch"
-import Tooltip from "../../../components/atoms/tooltip"
 import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
 import ChannelsIcon from "../../../components/fundamentals/icons/channels-icon"
+import SalesChannelsDisplay from "../../../components/molecules/sales-channels-display"
 import useToggleState from "../../../hooks/use-toggle-state"
 import { NestedForm } from "../../../utils/nested-form"
 import SalesChannelsModal from "../components/sales-channels-modal"
@@ -77,42 +77,7 @@ const AddSalesChannelsForm = ({ form }: Props) => {
           })}
         >
           <div className="mt-base">
-            <div className="flex gap-x-1 mb-small mt-xsmall">
-              <div className="flex gap-x-1 max-w-[600px] overflow-clip">
-                {fields?.slice(0, 3).map((sc) => (
-                  <SalesChannelBadge channel={sc} />
-                ))}
-              </div>
-              {remainder > 0 && (
-                <Tooltip
-                  content={
-                    <div className="flex flex-col">
-                      {fields.slice(3).map((sc) => {
-                        return <span key={sc.id}>{sc.name}</span>
-                      })}
-                    </div>
-                  }
-                  side={"right"}
-                >
-                  <Badge variant="ghost">
-                    <div className="flex items-center h-full inter-base-regular text-grey-50">
-                      + {remainder} more
-                    </div>
-                  </Badge>
-                </Tooltip>
-              )}
-            </div>
-            <p className="inter-base-regular text-grey-50">
-              Available in{" "}
-              <span className="inter-base-semibold text-grey-90">
-                {fields?.length ? fields.length : 0}
-              </span>{" "}
-              out of{" "}
-              <span className="inter-base-semibold text-grey-90">
-                {count || 0}
-              </span>{" "}
-              Sales Channels
-            </p>
+            <SalesChannelsDisplay channels={fields} />
           </div>
           <Button
             variant="secondary"

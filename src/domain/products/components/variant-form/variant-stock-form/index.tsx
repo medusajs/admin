@@ -29,7 +29,7 @@ const VariantStockForm = ({ form }: Props) => {
   return (
     <div>
       <p className="inter-base-regular text-grey-50">
-        To start selling, all you need is a title, price, and image.
+        Configure the inventory and stock for this variant.
       </p>
       <div className="pt-large flex flex-col gap-y-xlarge">
         <div className="flex flex-col gap-y-2xsmall">

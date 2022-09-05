@@ -1,13 +1,12 @@
 import { Product, SalesChannel } from "@medusajs/medusa"
-import { useAdminSalesChannels } from "medusa-react"
 import React from "react"
-import Tooltip from "../../../../../components/atoms/tooltip"
 import Badge from "../../../../../components/fundamentals/badge"
 import FeatureToggle from "../../../../../components/fundamentals/feature-toggle"
 import ChannelsIcon from "../../../../../components/fundamentals/icons/channels-icon"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import { ActionType } from "../../../../../components/molecules/actionables"
+import SalesChannelsDisplay from "../../../../../components/molecules/sales-channels-display"
 import StatusSelector from "../../../../../components/molecules/status-selector"
 import Section from "../../../../../components/organisms/section"
 import { useFeatureFlag } from "../../../../../context/feature-flag"
@@ -157,46 +156,11 @@ const SalesChannelBadge: React.FC<SalesChannelBadgeProps> = ({ channel }) => {
 }
 
 const ProductSalesChannels = ({ product }: Props) => {
-  const { count } = useAdminSalesChannels()
-  const remainder = Math.max(product?.sales_channels?.length - 3, 0)
-
   return (
     <FeatureToggle featureFlag="sales_channels">
-      <div className="mt-8">
-        <h2 className="inter-base-semibold">Sales channels</h2>
-        <div className="flex gap-x-1 mb-small mt-xsmall">
-          <div className="flex gap-x-1 max-w-[600px] overflow-clip">
-            {product.sales_channels?.slice(0, 3).map((sc) => (
-              <SalesChannelBadge channel={sc} />
-            ))}
-          </div>
-          {remainder > 0 && (
-            <Tooltip
-              content={
-                <div className="flex flex-col">
-                  {product.sales_channels.slice(3).map((sc) => {
-                    return <span key={sc.id}>{sc.name}</span>
-                  })}
-                </div>
-              }
-            >
-              <Badge variant="ghost">
-                <div className="flex items-center h-full inter-base-regular text-grey-50">
-                  + {remainder} more
-                </div>
-              </Badge>
-            </Tooltip>
-          )}
-        </div>
-        <p className="inter-base-regular text-grey-50">
-          Available in{" "}
-          <span className="inter-base-semibold text-grey-90">
-            {product.sales_channels?.length ? product.sales_channels.length : 0}
-          </span>{" "}
-          out of{" "}
-          <span className="inter-base-semibold text-grey-90">{count || 0}</span>{" "}
-          Sales Channels
-        </p>
+      <div className="mt-xlarge">
+        <h2 className="inter-base-semibold mb-xsmall">Sales channels</h2>
+        <SalesChannelsDisplay channels={product.sales_channels} />
       </div>
     </FeatureToggle>
   )

@@ -170,13 +170,9 @@ const Image = ({ image, index, form, remove }: ImageProps) => {
             </div>
             <div className="flex items-center gap-x-base">
               <span
-                className={clsx(
-                  "hidden",
-                  //   { "group-hover:block text-grey-30": !value },
-                  {
-                    "!block !text-violet-60": value,
-                  }
-                )}
+                className={clsx("hidden", {
+                  "!block !text-violet-60": value,
+                })}
               >
                 <CheckCircleFillIcon size={24} />
               </span>

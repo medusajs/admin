@@ -22,7 +22,7 @@ const VariantGeneralForm = ({ form }: Props) => {
   return (
     <div>
       <p className="inter-base-regular text-grey-50">
-        To start selling, all you need is a title, price, and image.
+        Configure the general information for this variant.
       </p>
       <div className="pt-large">
         <div className="grid grid-cols-2 gap-x-large">

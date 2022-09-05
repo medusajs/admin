@@ -10,7 +10,7 @@ const VariantPricesForm = ({ form }: Props) => {
   return (
     <div>
       <p className="inter-base-regular text-grey-50">
-        To start selling, all you need is a title, price, and image.
+        Configure the pricing for this variant.
       </p>
       <div className="pt-large">
         <PricesForm form={form} />

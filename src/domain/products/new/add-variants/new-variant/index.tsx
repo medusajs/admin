@@ -57,6 +57,11 @@ const NewVariant = ({
     reset(source)
   }, [source])
 
+  const closeAndReset = () => {
+    reset(source)
+    close()
+  }
+
   const onUpdate = handleSubmit((data) => {
     const payload = {
       ...data,
@@ -68,10 +73,14 @@ const NewVariant = ({
     const saved = save(index, payload)
 
     if (!saved) {
+      localForm.setError("options", {
+        type: "deps",
+        message: "A variant with these options already exists.",
+      })
       return
     }
 
-    close()
+    closeAndReset()
   })
 
   const warning = useImperativeDialog()
@@ -209,9 +218,9 @@ const NewVariant = ({
         </div>
       </div>
 
-      <Modal open={state} handleClose={close}>
+      <Modal open={state} handleClose={closeAndReset}>
         <Modal.Body>
-          <Modal.Header handleClose={close}>
+          <Modal.Header handleClose={closeAndReset}>
             <h1 className="inter-xlarge-semibold">
               Edit Variant
               {source.general.title && (
@@ -230,7 +239,12 @@ const NewVariant = ({
           </Modal.Content>
           <Modal.Footer>
             <div className="flex items-center gap-x-xsmall justify-end w-full">
-              <Button variant="secondary" size="small" type="button">
+              <Button
+                variant="secondary"
+                size="small"
+                type="button"
+                onClick={closeAndReset}
+              >
                 Cancel
               </Button>
               <Button

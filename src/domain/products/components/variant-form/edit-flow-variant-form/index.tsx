@@ -97,19 +97,20 @@ const EditFlowVariantForm = ({ form }: Props) => {
       </Accordion.Item>
       <Accordion.Item title="Shipping" value="shipping">
         <p className="inter-base-regular text-grey-50">
-          To start selling, all you need is a title, price, and image.
+          Shipping information can be required depending on your shipping
+          provider, and whether or not you are shipping internationally.
         </p>
         <div className="mt-large">
           <h3 className="inter-base-semibold mb-2xsmall">Dimensions</h3>
           <p className="inter-base-regular text-grey-50 mb-large">
-            Configure to calculate the most accurate shipping rates
+            Configure to calculate the most accurate shipping rates.
           </p>
           <DimensionsForm form={nestedForm(form, "dimensions")} />
         </div>
         <div className="mt-xlarge">
           <h3 className="inter-base-semibold mb-2xsmall">Customs</h3>
           <p className="inter-base-regular text-grey-50 mb-large">
-            Configure to calculate the most accurate shipping rates
+            Configure if you are shipping internationally.
           </p>
           <CustomsForm form={nestedForm(form, "customs")} />
         </div>

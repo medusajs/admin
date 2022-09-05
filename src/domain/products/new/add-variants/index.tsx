@@ -210,6 +210,10 @@ const AddVariantsForm = ({ form }: Props) => {
     const exists = checkForDuplicate(toCheck)
 
     if (exists) {
+      newVariantForm.setError("options", {
+        type: "deps",
+        message: "A variant with these options already exists.",
+      })
       return
     }
 

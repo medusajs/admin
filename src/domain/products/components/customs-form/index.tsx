@@ -28,10 +28,7 @@ const CustomsForm = ({ form }: CustomsFormProps) => {
     path,
     control,
     formState: { errors },
-    getValues,
   } = form
-
-  console.log(getValues())
 
   const countryOptions = countries.map((c) => ({
     label: c.name,
