@@ -12,6 +12,8 @@ import TagInput from "../../../../components/molecules/tag-input"
 import { useDebounce } from "../../../../hooks/use-debounce"
 import useToggleState from "../../../../hooks/use-toggle-state"
 import { NestedForm } from "../../../../utils/nested-form"
+import { CustomsFormType } from "../../components/customs-form"
+import { DimensionsFormType } from "../../components/dimensions-form"
 import CreateFlowVariantForm, {
   CreateFlowVariantFormType,
 } from "../../components/variant-form/create-flow-variant-form"
@@ -32,9 +34,15 @@ export type AddVariantsFormType = {
 
 type Props = {
   form: NestedForm<AddVariantsFormType>
+  productCustoms: CustomsFormType
+  productDimensions: DimensionsFormType
 }
 
-const AddVariantsForm = ({ form }: Props) => {
+const AddVariantsForm = ({
+  form,
+  productCustoms,
+  productDimensions,
+}: Props) => {
   const { control, path, register } = form
 
   const { checkForDuplicate, getOptions } = useCheckOptions(form)
@@ -361,6 +369,8 @@ const AddVariantsForm = ({ form }: Props) => {
                         move={moveCard}
                         options={getOptions()}
                         onCreateOption={onAddNewProductOptionValue}
+                        productDimensions={productDimensions}
+                        productCustoms={productCustoms}
                       />
                     )
                   })}

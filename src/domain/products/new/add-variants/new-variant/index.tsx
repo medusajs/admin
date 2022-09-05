@@ -16,6 +16,8 @@ import Modal from "../../../../../components/molecules/modal"
 import useImperativeDialog from "../../../../../hooks/use-imperative-dialog"
 import useToggleState from "../../../../../hooks/use-toggle-state"
 import { DragItem } from "../../../../../types/shared"
+import { CustomsFormType } from "../../../components/customs-form"
+import { DimensionsFormType } from "../../../components/dimensions-form"
 import CreateFlowVariantForm, {
   CreateFlowVariantFormType,
 } from "../../../components/variant-form/create-flow-variant-form"
@@ -34,6 +36,8 @@ type Props = {
   move: (dragIndex: number, hoverIndex: number) => void
   options: VariantOptionValueType[]
   onCreateOption: (optionId: string, value: string) => void
+  productDimensions: DimensionsFormType
+  productCustoms: CustomsFormType
 }
 
 const NewVariant = ({
@@ -45,6 +49,8 @@ const NewVariant = ({
   move,
   options,
   onCreateOption,
+  productDimensions,
+  productCustoms,
 }: Props) => {
   const { state, toggle, close } = useToggleState()
   const localForm = useForm<CreateFlowVariantFormType>({
@@ -188,7 +194,11 @@ const NewVariant = ({
           <p>{source.stock.inventory_quantity || "-"}</p>
         </div>
         <div className="flex items-center justify-center">
-          <VariantValidity source={source} />
+          <VariantValidity
+            source={source}
+            productCustoms={productCustoms}
+            productDimensions={productDimensions}
+          />
         </div>
         <div className="ml-xlarge flex items-center justify-center pr-base">
           <Actionables
@@ -263,7 +273,11 @@ const NewVariant = ({
   )
 }
 
-const VariantValidity = ({ source }: { source: CreateFlowVariantFormType }) => {
+const VariantValidity = ({
+  source,
+  productCustoms,
+  productDimensions,
+}: Pick<Props, "source" | "productCustoms" | "productDimensions">) => {
   const {
     prices,
     options,
@@ -307,12 +321,23 @@ const VariantValidity = ({ source }: { source: CreateFlowVariantFormType }) => {
   }
 
   const validPrices = prices?.prices.some((p) => p.amount !== null)
-  const shippingValidity =
-    Object.values(dimensions).every((value) => !!value) &&
-    Object.values(customs).map((value) => !!value)
+
+  const validDimensions =
+    Object.values(productDimensions).every((value) => !!value) ||
+    Object.values(dimensions).every((value) => !!value)
+  const validCustoms =
+    Object.values(productCustoms).every((value) => !!value) ||
+    Object.values(customs).every((value) => !!value)
+
   const barcodeValidity = !!barcode || !!upc || !!ean
 
-  if (!sku || !shippingValidity || !barcodeValidity || !validPrices) {
+  if (
+    !sku ||
+    !validCustoms ||
+    !validDimensions ||
+    !barcodeValidity ||
+    !validPrices
+  ) {
     return (
       <IconTooltip
         type="warning"
@@ -325,7 +350,8 @@ const VariantValidity = ({ source }: { source: CreateFlowVariantFormType }) => {
             </p>
             <ul className="list-disc list-inside">
               {!validPrices && <li>Pricing</li>}
-              {!shippingValidity && <li>Shipping</li>}
+              {!validDimensions && <li>Dimensions</li>}
+              {!validCustoms && <li>Customs</li>}
               {!inventory_quantity && <li>Inventory quantity</li>}
               {!sku && <li>SKU</li>}
               {!barcodeValidity && <li>Barcode</li>}

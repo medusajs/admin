@@ -2,7 +2,7 @@ import { AdminPostProductsReq } from "@medusajs/medusa"
 import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
 import React, { useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
@@ -52,6 +52,16 @@ const NewProduct = ({ onClose }: Props) => {
   })
   const { mutate } = useAdminCreateProduct()
   const notification = useNotification()
+
+  const watchedCustoms = useWatch({
+    control: form.control,
+    name: "customs",
+  })
+
+  const watchedDimensions = useWatch({
+    control: form.control,
+    name: "dimensions",
+  })
 
   const {
     handleSubmit,
@@ -215,7 +225,11 @@ const NewProduct = ({ onClose }: Props) => {
                   size, shape, etc.
                 </p>
                 <div className="mt-large">
-                  <AddVariantsForm form={nestedForm(form, "variants")} />
+                  <AddVariantsForm
+                    form={nestedForm(form, "variants")}
+                    productCustoms={watchedCustoms}
+                    productDimensions={watchedDimensions}
+                  />
                 </div>
               </Accordion.Item>
               <Accordion.Item title="Attributes" value="attributes">
