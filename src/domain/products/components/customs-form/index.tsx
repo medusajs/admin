@@ -57,7 +57,6 @@ const CustomsForm = ({ form }: CustomsFormProps) => {
         name={path("origin_country")}
         control={control}
         render={({ field }) => {
-          console.log(field.value)
           return (
             <NextSelect
               label="Country of origin"
