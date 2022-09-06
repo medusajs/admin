@@ -4,6 +4,7 @@ import { BatchJob } from "@medusajs/medusa"
 import {
   useAdminBatchJob,
   useAdminCancelBatchJob,
+  useAdminConfirmBatchJob,
   useAdminCreateBatchJob,
   useAdminDeleteFile,
   useAdminUploadFile,
@@ -45,6 +46,7 @@ function ImportProducts(props: ImportProductsProps) {
 
   const { mutateAsync: createBatchJob } = useAdminCreateBatchJob()
   const { mutateAsync: cancelBathJob } = useAdminCancelBatchJob(batchJobId!)
+  const { mutateAsync: confirmBatchJob } = useAdminConfirmBatchJob(batchJobId!)
 
   const batchJob = useImportBatchJob(batchJobId)
 
@@ -60,7 +62,10 @@ function ImportProducts(props: ImportProductsProps) {
     ? "Preprocessing..."
     : "Uploading..."
 
-  const onSubmit = () => {}
+  const onSubmit = async () => {
+    await confirmBatchJob()
+    handleClose()
+  }
 
   const processUpload = async (file: File) => {
     try {

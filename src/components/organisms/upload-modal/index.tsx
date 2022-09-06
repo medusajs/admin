@@ -229,7 +229,9 @@ function UploadModal(props: UploadModalProps) {
               size={size!}
               name={name!}
               status={status}
-              progress={progress}
+              // progress={progress}
+              // TODO: change this to actual progress once this we can track upload
+              progress={100}
               action={
                 <a className="w-6 h-6 cursor-pointer" onClick={removeFile}>
                   <TrashIcon stroke="#9CA3AF" />
