@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react"
 import React from "react"
-import { TableToasterContainer } from "../molecules/table-toaster"
+import { TableToasterContainer } from "../../molecules/table-toaster"
 import Toaster from "./"
 
 export default {
