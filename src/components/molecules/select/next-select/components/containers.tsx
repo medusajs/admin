@@ -6,6 +6,7 @@ import {
   IndicatorsContainerProps,
   ValueContainerProps,
 } from "react-select"
+import InputError from "../../../../atoms/input-error"
 import CrossIcon from "../../../../fundamentals/icons/cross-icon"
 
 type AdjacentContainerProps = {
@@ -21,6 +22,8 @@ export const AdjacentContainer = ({
   label,
   helperText,
   required,
+  errors,
+  name,
   children,
 }: AdjacentContainerProps) => {
   return (
@@ -32,9 +35,11 @@ export const AdjacentContainer = ({
         </label>
       )}
       {children}
-      {helperText && (
+      {name && errors ? (
+        <InputError errors={errors} name={name} className="-mt-0.5" />
+      ) : helperText ? (
         <p className="inter-small-regular text-grey-50">{helperText}</p>
-      )}
+      ) : null}
     </div>
   )
 }
@@ -155,17 +160,20 @@ export const IndicatorsContainer = <
 >({
   className,
   cx,
-  ...props
+  innerProps,
+  children,
 }: IndicatorsContainerProps<Option, IsMulti, Group>) => {
   return (
     <div
-      {...props}
+      {...innerProps}
       className={cx(
         {
           "indicators-container": true,
         },
         clsx("text-grey-50 flex items-center gap-x-small px-small", className)
       )}
-    />
+    >
+      {children}
+    </div>
   )
 }

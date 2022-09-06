@@ -15,7 +15,11 @@ type Props = {
 }
 
 const RegionProvidersForm = ({ form }: Props) => {
-  const { control, path } = form
+  const {
+    control,
+    path,
+    formState: { errors },
+  } = form
   const { fulfillmentProviderOptions, paymentProviderOptions } = useStoreData()
 
   return (
@@ -25,17 +29,25 @@ const RegionProvidersForm = ({ form }: Props) => {
         name={path("payment_providers")}
         rules={{
           required: "Payment providers are required",
+          minLength: {
+            value: 1,
+            message: "Payment providers are required",
+          },
         }}
-        render={({ field }) => {
+        render={({ field: { value, onBlur, onChange } }) => {
           return (
             <NextSelect
               label="Payment Providers"
-              placeholder="Choose payment providers"
+              placeholder="Choose payment providers..."
               options={paymentProviderOptions}
               isMulti
               isClearable
               selectAll
-              {...field}
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              name={path("payment_providers")}
+              errors={errors}
             />
           )
         }}
@@ -45,17 +57,25 @@ const RegionProvidersForm = ({ form }: Props) => {
         name={path("fulfillment_providers")}
         rules={{
           required: "Fulfillment providers are required",
+          minLength: {
+            value: 1,
+            message: "Fulfillment providers are required",
+          },
         }}
-        render={({ field }) => {
+        render={({ field: { onBlur, onChange, value } }) => {
           return (
             <NextSelect
               label="Fulfillment Providers"
-              placeholder="Choose fulfillment providers"
+              placeholder="Choose fulfillment providers..."
               options={fulfillmentProviderOptions}
               isMulti
               isClearable
               selectAll
-              {...field}
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              name={path("fulfillment_providers")}
+              errors={errors}
             />
           )
         }}

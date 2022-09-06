@@ -38,6 +38,7 @@ const GeneralSection = ({ region }: Props) => {
             replace: true,
           })
           notification("Success", "Region has been deleted", "success")
+          navigate(`/a/settings/regions`, { replace: true })
         },
         onError: (error) => {
           notification("Error", getErrorMessage(error), "error")

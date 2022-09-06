@@ -1,12 +1,15 @@
 import { ShippingOption } from "@medusajs/medusa"
-import React from "react"
+import { useAdminUpdateShippingOption } from "medusa-react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
-import fulfillmentProvidersMapper from "../../../../../utils/fulfillment-providers.mapper"
+import useNotification from "../../../../../hooks/use-notification"
+import { getErrorMessage } from "../../../../../utils/error-messages"
 import ShippingOptionForm, {
   ShippingOptionFormType,
 } from "../shipping-option-form"
+import { useShippingOptionFormData } from "../shipping-option-form/use-shipping-option-form-data"
 
 type Props = {
   open: boolean
@@ -18,49 +21,112 @@ const EditModal = ({ open, onClose, option }: Props) => {
   const form = useForm<ShippingOptionFormType>({
     defaultValues: getDefaultValues(option),
   })
+  const { mutate, isLoading } = useAdminUpdateShippingOption(option.id)
+  const { getRequirementsData } = useShippingOptionFormData(option.region_id)
+  const notification = useNotification()
+
+  const {
+    reset,
+    handleSubmit,
+    formState: { isDirty },
+  } = form
+
+  useEffect(() => {
+    reset(getDefaultValues(option))
+  }, [option])
+
+  const closeAndReset = () => {
+    reset(getDefaultValues(option))
+    onClose()
+  }
+
+  const onSubmit = handleSubmit((data) => {
+    mutate(
+      {
+        name: data.name!,
+        // @ts-ignore
+        requirements: getRequirementsData(data),
+        admin_only: !data.store_option,
+        amount: data.amount!,
+      },
+      {
+        onSuccess: () => {
+          notification("Success", "Shipping option updated", "success")
+          closeAndReset()
+        },
+        onError: (error) => {
+          notification("Error", getErrorMessage(error), "error")
+        },
+      }
+    )
+  })
 
   return (
-    <Modal open={open} handleClose={onClose}>
+    <Modal open={open} handleClose={closeAndReset}>
       <Modal.Body>
-        <Modal.Header handleClose={onClose}>
+        <Modal.Header handleClose={closeAndReset}>
           <h1 className="inter-xlarge-semibold">Edit Shipping Option</h1>
         </Modal.Header>
-        <Modal.Content>
-          <ShippingOptionForm form={form} region={option.region} />
-        </Modal.Content>
-        <Modal.Footer>
-          <div className="flex items-center gap-x-xsmall justify-end w-full">
-            <Button variant="secondary" size="small">
-              Cancel
-            </Button>
-            <Button variant="primary" size="small">
-              Cancel
-            </Button>
-          </div>
-        </Modal.Footer>
+        <form onSubmit={onSubmit}>
+          <Modal.Content>
+            <div>
+              <p className="inter-base-semibold">Fulfillment Method</p>
+              <p className="inter-base-regular text-grey-50">
+                {option.data.id} via {option.provider_id}
+              </p>
+            </div>
+            <div className="w-full h-px bg-grey-20 my-xlarge" />
+            <ShippingOptionForm
+              form={form}
+              region={option.region}
+              isEdit={true}
+            />
+          </Modal.Content>
+          <Modal.Footer>
+            <div className="flex items-center gap-x-xsmall justify-end w-full">
+              <Button variant="secondary" size="small" onClick={closeAndReset}>
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                size="small"
+                type="submit"
+                disabled={isLoading || !isDirty}
+              >
+                Save and close
+              </Button>
+            </div>
+          </Modal.Footer>
+        </form>
       </Modal.Body>
     </Modal>
   )
 }
 
 const getDefaultValues = (option: ShippingOption): ShippingOptionFormType => {
+  const minSubtotal = option.requirements.find((r) => r.type === "min_subtotal")
+  const maxSubtotal = option.requirements.find((r) => r.type === "max_subtotal")
+
   return {
     store_option: option.admin_only ? false : true,
     name: option.name,
-    fulfillment_provider: option.provider_id
-      ? fulfillmentProvidersMapper(option.provider_id)
-      : null,
-    shipping_profile: option.profile
-      ? { value: option.profile.id, label: option.profile.name }
-      : null,
+    fulfillment_provider: null,
+    shipping_profile: null,
     requirements: {
-      min_subtotal:
-        option.requirements.find((r) => r.type === "min_subtotal")?.amount ||
-        null,
-      max_subtotal:
-        option.requirements.find((r) => r.type === "max_subtotal")?.amount ||
-        null,
+      min_subtotal: minSubtotal
+        ? {
+            amount: minSubtotal.amount,
+            id: minSubtotal.id,
+          }
+        : null,
+      max_subtotal: maxSubtotal
+        ? {
+            amount: maxSubtotal.amount,
+            id: maxSubtotal.id,
+          }
+        : null,
     },
+    amount: option.amount,
   }
 }
 

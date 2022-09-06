@@ -21,7 +21,12 @@ type Props = {
 }
 
 const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
-  const { control, register, path } = form
+  const {
+    control,
+    register,
+    path,
+    formState: { errors },
+  } = form
   const { currencyOptions, countryOptions } = useStoreData()
 
   return (
@@ -29,12 +34,14 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
       <div className="grid grid-cols-2 gap-large">
         <InputField
           label="Title"
+          placeholder="Europe..."
           required
           {...register(path("name"), {
             required: "Title is required",
             minLength: FormValidator.minOneCharRule("Title"),
             pattern: FormValidator.whiteSpaceRule("Title"),
           })}
+          errors={errors}
         />
         <Controller
           control={control}
@@ -46,9 +53,12 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
             return (
               <NextSelect
                 label="Currency"
+                placeholder="Choose currency..."
                 required
                 {...field}
                 options={currencyOptions}
+                name={path("currency_code")}
+                errors={errors}
               />
             )
           }}
@@ -58,16 +68,30 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
             <InputField
               label="Tax Rate"
               required
+              placeholder="0.25..."
+              step={0.01}
               type={"number"}
               {...register(path("tax_rate"), {
                 required: isCreate ? "Tax rate is required" : undefined,
                 min: isCreate
                   ? FormValidator.nonNegativeNumberRule("Tax rate")
                   : undefined,
+                max: isCreate
+                  ? {
+                      value: 1,
+                      message: "Tax rate must be equal or less than 1",
+                    }
+                  : undefined,
                 valueAsNumber: true,
               })}
+              errors={errors}
             />
-            <InputField label="Tax Code" {...register(path("tax_code"))} />
+            <InputField
+              label="Tax Code"
+              placeholder="1000..."
+              {...register(path("tax_code"))}
+              errors={errors}
+            />
           </>
         )}
         <Controller
@@ -77,9 +101,12 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
             return (
               <NextSelect
                 label="Countries"
+                placeholder="Choose countries..."
                 isMulti
                 selectAll
                 {...field}
+                name={path("countries")}
+                errors={errors}
                 options={countryOptions}
               />
             )

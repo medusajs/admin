@@ -15,27 +15,27 @@ const RegionCard = ({ region }: Props) => {
       label={region.name}
       sublabel={
         region.countries && region.countries.length
-          ? region.countries.map((c) => c.display_name).join(", ")
+          ? `(${region.countries.map((c) => c.display_name).join(", ")})`
           : undefined
       }
     >
-      <div className="flex flex-col gap-y-2xsmall">
+      <div className="flex flex-col gap-y-2xsmall inter-small-regular text-grey-50">
         <p>
           Payment providers:{" "}
-          <span>
+          <span className="truncate">
             {region.payment_providers?.length
               ? region.payment_providers
-                  .map((pp) => paymentProvidersMapper(pp.id))
+                  .map((pp) => paymentProvidersMapper(pp.id).label)
                   .join(", ")
               : "Not configured"}
           </span>
         </p>
         <p>
           Fulfillment providers:{" "}
-          <span>
+          <span className="truncate">
             {region.payment_providers?.length
               ? region.payment_providers
-                  .map((fp) => fulfillmentProvidersMapper(fp.id))
+                  .map((fp) => fulfillmentProvidersMapper(fp.id).label)
                   .join(", ")
               : "Not configured"}
           </span>

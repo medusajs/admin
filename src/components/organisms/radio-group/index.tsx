@@ -30,6 +30,7 @@ const Item = ({
   className,
   disabled,
   disabledTooltip,
+  children,
   ...rest
 }: RadioGroupItemProps) => {
   return (
@@ -76,7 +77,9 @@ const Item = ({
           <p className="inter-base-semibold truncate">
             {label}{" "}
             {sublabel ? (
-              <span className="inter-small-regular">{sublabel}</span>
+              <span className="inter-base-regular text-grey-50">
+                {sublabel}
+              </span>
             ) : null}
           </p>
         </div>
@@ -92,6 +95,7 @@ const Item = ({
             {description}
           </p>
         )}
+        {children}
       </div>
     </label>
   )

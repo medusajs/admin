@@ -7,34 +7,43 @@ import InputField from "../../../../../components/molecules/input"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
 import { Option } from "../../../../../types/shared"
 import FormValidator from "../../../../../utils/form-validator"
-import fulfillmentProvidersMapper from "../../../../../utils/fulfillment-providers.mapper"
 import PriceFormInput from "../../../../products/components/prices-form/price-form-input"
 import { useShippingOptionFormData } from "./use-shipping-option-form-data"
+
+type Requirement = {
+  amount: number | null
+  id: string | null
+}
 
 export type ShippingOptionFormType = {
   store_option: boolean
   name: string | null
+  amount: number | null
   shipping_profile: Option | null
   fulfillment_provider: Option | null
   requirements: {
-    min_subtotal: number | null
-    max_subtotal: number | null
+    min_subtotal: Requirement | null
+    max_subtotal: Requirement | null
   }
 }
 
 type Props = {
   form: UseFormReturn<ShippingOptionFormType, any>
   region: Region
+  isEdit?: boolean
 }
 
-const ShippingOptionForm = ({ form, region }: Props) => {
+const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
   const {
     register,
     control,
     formState: { errors },
   } = form
 
-  const { shippingProfileOptions } = useShippingOptionFormData()
+  const {
+    shippingProfileOptions,
+    fulfillmentOptions,
+  } = useShippingOptionFormData(region.id)
 
   return (
     <div>
@@ -69,48 +78,63 @@ const ShippingOptionForm = ({ form, region }: Props) => {
             })}
             errors={errors}
           />
-          <InputField
-            label="Title"
-            required
-            {...register("name", {
-              required: "Title is required",
-              pattern: FormValidator.whiteSpaceRule("Title"),
-              minLength: FormValidator.minOneCharRule("Title"),
-            })}
-            errors={errors}
-          />
           <Controller
             control={control}
-            name="shipping_profile"
-            render={({ field }) => {
+            name="amount"
+            rules={{
+              min: FormValidator.nonNegativeNumberRule("Price"),
+            }}
+            render={({ field: { value, onChange } }) => {
               return (
-                <NextSelect
-                  label="Shipping Profile"
-                  required
-                  options={shippingProfileOptions}
-                  {...field}
-                  errors={errors}
-                />
+                <div>
+                  <InputHeader label="Price" className="mb-xsmall" />
+                  <PriceFormInput
+                    amount={value || undefined}
+                    onChange={onChange}
+                    name="amount"
+                    currencyCode={region.currency_code}
+                    errors={errors}
+                  />
+                </div>
               )
             }}
           />
-          <Controller
-            control={control}
-            name="fulfillment_provider"
-            render={({ field }) => {
-              return (
-                <NextSelect
-                  label="Fulfillment Method"
-                  required
-                  options={region.fulfillment_providers.map((provider) =>
-                    fulfillmentProvidersMapper(provider.id)
-                  )}
-                  {...field}
-                  errors={errors}
-                />
-              )
-            }}
-          />
+          {!isEdit && (
+            <>
+              <Controller
+                control={control}
+                name="shipping_profile"
+                render={({ field }) => {
+                  return (
+                    <NextSelect
+                      label="Shipping Profile"
+                      required
+                      options={shippingProfileOptions}
+                      placeholder="Choose a shipping profile"
+                      {...field}
+                      errors={errors}
+                    />
+                  )
+                }}
+              />
+              <Controller
+                control={control}
+                name="fulfillment_provider"
+                render={({ field }) => {
+                  return (
+                    <NextSelect
+                      label="Fulfillment Method"
+                      required
+                      placeholder="Choose a fulfillment method"
+                      options={fulfillmentOptions}
+                      {...field}
+                      errors={errors}
+                    />
+                  )
+                }}
+              />
+            </>
+          )}
         </div>
       </div>
       <div className="h-px w-full bg-grey-20 my-xlarge" />
@@ -119,7 +143,7 @@ const ShippingOptionForm = ({ form, region }: Props) => {
         <div className="grid grid-cols-2 gap-large">
           <Controller
             control={control}
-            name="requirements.min_subtotal"
+            name="requirements.min_subtotal.amount"
             rules={{
               min: FormValidator.nonNegativeNumberRule("Max. subtotal"),
               validate: (value) => {
@@ -127,7 +151,9 @@ const ShippingOptionForm = ({ form, region }: Props) => {
                   return true
                 }
 
-                const maxSubtotal = form.getValues("requirements.max_subtotal")
+                const maxSubtotal = form.getValues(
+                  "requirements.max_subtotal.amount"
+                )
                 if (maxSubtotal && value > maxSubtotal) {
                   return "Min. subtotal must be less than max. subtotal"
                 }
@@ -151,7 +177,7 @@ const ShippingOptionForm = ({ form, region }: Props) => {
           />
           <Controller
             control={control}
-            name="requirements.max_subtotal"
+            name="requirements.max_subtotal.amount"
             rules={{
               min: FormValidator.nonNegativeNumberRule("Max. subtotal"),
               validate: (value) => {
@@ -159,7 +185,9 @@ const ShippingOptionForm = ({ form, region }: Props) => {
                   return true
                 }
 
-                const minSubtotal = form.getValues("requirements.min_subtotal")
+                const minSubtotal = form.getValues(
+                  "requirements.min_subtotal.amount"
+                )
                 if (minSubtotal && value < minSubtotal) {
                   return "Max. subtotal must be greater than min. subtotal"
                 }

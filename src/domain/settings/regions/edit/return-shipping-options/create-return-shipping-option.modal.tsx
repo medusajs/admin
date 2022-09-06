@@ -4,9 +4,12 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
+import useNotification from "../../../../../hooks/use-notification"
+import { getErrorMessage } from "../../../../../utils/error-messages"
 import ShippingOptionForm, {
   ShippingOptionFormType,
 } from "../../components/shipping-option-form"
+import { useShippingOptionFormData } from "../../components/shipping-option-form/use-shipping-option-form-data"
 
 type Props = {
   open: boolean
@@ -21,7 +24,11 @@ const CreateReturnShippingOptionModal = ({ open, onClose, region }: Props) => {
     handleSubmit,
     reset,
   } = form
-  const { mutate } = useAdminCreateShippingOption()
+  const { mutate, isLoading } = useAdminCreateShippingOption()
+  const { getFulfillmentData, getRequirementsData } = useShippingOptionFormData(
+    region.id
+  )
+  const notifcation = useNotification()
 
   const closeAndReset = () => {
     reset()
@@ -29,18 +36,42 @@ const CreateReturnShippingOptionModal = ({ open, onClose, region }: Props) => {
   }
 
   const onSubmit = handleSubmit((data) => {
-    // mutate({
-    //     is_return: true,
-    //     region_id: region.id,
-    //     name: data.name!,
-    // })
+    const { provider_id, data: fData } = getFulfillmentData(
+      data.fulfillment_provider!.value
+    )
+
+    mutate(
+      {
+        is_return: true,
+        region_id: region.id,
+        name: data.name!,
+        profile_id: data.shipping_profile?.value,
+        data: fData,
+        price_type: "flat_rate",
+        provider_id,
+        admin_only: !data.store_option,
+        amount: data.amount!,
+        requirements: getRequirementsData(data),
+      },
+      {
+        onSuccess: () => {
+          notifcation("Success", "Shipping option created", "success")
+          closeAndReset()
+        },
+        onError: (error) => {
+          notifcation("Error", getErrorMessage(error), "error")
+        },
+      }
+    )
   })
 
   return (
     <Modal open={open} handleClose={closeAndReset}>
       <Modal.Body>
-        <Modal.Header handleClose={closeAndReset}></Modal.Header>
-        <form>
+        <Modal.Header handleClose={closeAndReset}>
+          <h1 className="inter-xlarge-semibold">Add Return Shipping Option</h1>
+        </Modal.Header>
+        <form onSubmit={onSubmit}>
           <Modal.Content>
             <ShippingOptionForm form={form} region={region} />
           </Modal.Content>
@@ -54,7 +85,12 @@ const CreateReturnShippingOptionModal = ({ open, onClose, region }: Props) => {
               >
                 Cancel
               </Button>
-              <Button variant="primary" size="small" type="submit">
+              <Button
+                variant="primary"
+                size="small"
+                type="submit"
+                disabled={isLoading || !isDirty}
+              >
                 Save and close
               </Button>
             </div>
