@@ -1,7 +1,7 @@
 import { useAdminPriceLists } from "medusa-react"
 import React from "react"
 import useSetSearchParams from "../../hooks/use-set-search-params"
-import LoadingContainer from "../../components/loading-container"
+import LoadingContainer from "../../components/atoms/loading-container"
 import { usePriceListTableColumns } from "../../components/templates/price-list-table/use-price-list-columns"
 import { usePriceListFilters } from "../../components/templates/price-list-table/use-price-list-filters"
 import { useLocation } from "@reach/router"
