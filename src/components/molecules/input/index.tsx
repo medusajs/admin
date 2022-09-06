@@ -89,7 +89,8 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
           className={clsx(
             "w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded h-10 focus-within:shadow-input focus-within:border-violet-60",
             {
-              "border-rose-50": errors && name && errors[name],
+              "border-rose-50 focus-within:shadow-cta focus-within:shadow-rose-60/10 focus-within:border-rose-50":
+                errors && name && errors[name],
             }
           )}
         >

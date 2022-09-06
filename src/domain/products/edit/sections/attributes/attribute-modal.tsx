@@ -5,9 +5,9 @@ import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import { countries } from "../../../../../utils/countries"
 import { nestedForm } from "../../../../../utils/nested-form"
-import CustomsForm, { CustomsPayload } from "../../../components/customs-form"
+import CustomsForm, { CustomsFormType } from "../../../components/customs-form"
 import DimensionsForm, {
-  DimensionsPayload,
+  DimensionsFormType,
 } from "../../../components/dimensions-form"
 import useEditProductActions from "../../hooks/use-edit-product-actions"
 
@@ -18,8 +18,8 @@ type Props = {
 }
 
 type AttributesForm = {
-  dimensions: DimensionsPayload
-  customs: CustomsPayload
+  dimensions: DimensionsFormType
+  customs: CustomsFormType
 }
 
 const AttributeModal = ({ product, open, onClose }: Props) => {
@@ -28,9 +28,7 @@ const AttributeModal = ({ product, open, onClose }: Props) => {
     defaultValues: getDefaultValues(product),
   })
   const {
-    register,
-    control,
-    formState: { errors, isDirty },
+    formState: { isDirty },
     handleSubmit,
     reset,
   } = form

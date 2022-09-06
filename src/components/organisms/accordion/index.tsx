@@ -61,7 +61,7 @@ const Item: React.FC<AccordionItemProps> = ({
         className
       )}
     >
-      <AccordionPrimitive.Header>
+      <AccordionPrimitive.Header className="px-1">
         <AccordionPrimitive.Trigger className="w-full" asChild>
           <div className="flex flex-col">
             <div className="flex items-center justify-between w-full">
@@ -85,7 +85,7 @@ const Item: React.FC<AccordionItemProps> = ({
       <AccordionPrimitive.Content
         forceMount={forceMountContent}
         className={clsx(
-          "overflow-hidden radix-state-closed:animate-accordion-close radix-state-open:animate-accordion-open px-px"
+          "overflow-hidden radix-state-closed:animate-accordion-close radix-state-open:animate-accordion-open px-1"
         )}
       >
         <div className="inter-base-regular group-radix-state-closed:animate-accordion-close">

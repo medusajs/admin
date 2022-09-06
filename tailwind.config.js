@@ -253,6 +253,9 @@ module.exports = {
         input: "0px 0px 0px 4px #8B5CF61A",
         searchModal: "0px 2px 64px 16px rgba(17, 24, 39, 0.08)",
         toaster: "0px 2px 16px rgba(17, 24, 39, 0.08)",
+        border: "0px 0px 0px 1px #E5E7EB",
+        "focus-border": "0px 0px 0px 1px #7C3AED",
+        "error-border": "0px 0px 0px 1px #F43F5E",
       },
       keyframes: {
         ring: {

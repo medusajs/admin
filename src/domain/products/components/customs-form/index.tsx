@@ -1,20 +1,20 @@
 import React from "react"
 import { Controller } from "react-hook-form"
 import InputField from "../../../../components/molecules/input"
-import Select from "../../../../components/molecules/select"
+import { NextSelect } from "../../../../components/molecules/select/next-select"
 import { Option } from "../../../../types/shared"
 import { countries } from "../../../../utils/countries"
 import FormValidator from "../../../../utils/form-validator"
 import { NestedForm } from "../../../../utils/nested-form"
 
-export type CustomsPayload = {
+export type CustomsFormType = {
   mid_code: string | null
   hs_code: string | null
   origin_country: Option | null
 }
 
 type CustomsFormProps = {
-  form: NestedForm<CustomsPayload>
+  form: NestedForm<CustomsFormType>
 }
 
 /**
@@ -36,7 +36,7 @@ const CustomsForm = ({ form }: CustomsFormProps) => {
   }))
 
   return (
-    <div className="grid grid-cols-2 gap-large">
+    <div className="grid grid-cols-2 gap-large pb-2xsmall">
       <InputField
         label="MID Code"
         placeholder="XDSKLAD9999..."
@@ -58,11 +58,12 @@ const CustomsForm = ({ form }: CustomsFormProps) => {
         control={control}
         render={({ field }) => {
           return (
-            <Select
+            <NextSelect
               label="Country of origin"
-              placeholder="Select country..."
+              placeholder="Choose a country"
               options={countryOptions}
-              enableSearch
+              isSearchable
+              isClearable
               {...field}
             />
           )

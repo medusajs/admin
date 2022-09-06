@@ -13,13 +13,13 @@ type PricePayload = {
 
 type PriceObject = FieldArrayWithId<
   {
-    __nested__: PricesPayload
+    __nested__: PricesFormType
   },
   "__nested__.prices",
   "id"
 > & { index: number }
 
-export type PricesPayload = {
+export type PricesFormType = {
   prices: PricePayload[]
 }
 
@@ -29,7 +29,8 @@ export type NestedPriceObject = {
 }
 
 type Props = {
-  form: NestedForm<PricesPayload>
+  form: NestedForm<PricesFormType>
+  required?: boolean
 }
 
 /**
@@ -40,8 +41,8 @@ type Props = {
  * <Pricing form={nestedForm(form, "prices")} />
  */
 const PricesForm = ({ form }: Props) => {
-  const { store, status: storeStatus } = useAdminStore()
-  const { regions, status: regionsStatus } = useAdminRegions()
+  const { store } = useAdminStore()
+  const { regions } = useAdminRegions()
 
   const { control, path } = form
 

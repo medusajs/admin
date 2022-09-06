@@ -3,7 +3,7 @@ import InputField from "../../../../components/molecules/input"
 import FormValidator from "../../../../utils/form-validator"
 import { NestedForm } from "../../../../utils/nested-form"
 
-export type DimensionsPayload = {
+export type DimensionsFormType = {
   length: number | null
   width: number | null
   height: number | null
@@ -11,7 +11,7 @@ export type DimensionsPayload = {
 }
 
 type DimensionsFormProps = {
-  form: NestedForm<DimensionsPayload>
+  form: NestedForm<DimensionsFormType>
 }
 
 /**

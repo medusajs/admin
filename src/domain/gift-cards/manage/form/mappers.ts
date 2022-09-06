@@ -1,5 +1,5 @@
 import { AdminPostProductsProductReq, Product } from "@medusajs/medusa"
-import { prepareImages } from "../../../products/product-form/utils/helpers"
+import { prepareImages } from "../../../../utils/images"
 import { MangeGiftCardFormData } from "../utils/types"
 
 export const formValuesToUpdateGiftCardMapper = async (

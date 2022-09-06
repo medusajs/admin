@@ -1,7 +1,12 @@
 import { RouteComponentProps } from "@reach/router"
+import { navigate } from "gatsby"
 import { useAdminProduct } from "medusa-react"
 import React from "react"
+import ReactJson from "react-json-view"
 import BackButton from "../../../components/atoms/back-button"
+import Spinner from "../../../components/atoms/spinner"
+import Section from "../../../components/organisms/section"
+import { getErrorStatus } from "../../../utils/get-error-status"
 import AttributesSection from "./sections/attributes"
 import GeneralSection from "./sections/general"
 import MediaSection from "./sections/media"
@@ -16,18 +21,43 @@ interface EditProps extends RouteComponentProps {
 const Edit = ({ id }: EditProps) => {
   const { product, status, error } = useAdminProduct(id || "")
 
-  if (status === "error") {
-    // temp
+  if (error) {
+    let message = "An unknown error occurred"
+
+    const errorStatus = getErrorStatus(error)
+
+    if (errorStatus) {
+      message = errorStatus.message
+
+      if (errorStatus.status === 404) {
+        navigate("/404")
+        return null
+      }
+    }
+
+    // temp needs design
     return (
-      <div>
-        <pre>{JSON.stringify(error, null, 4)}</pre>
-      </div>
+      <Section title="Error">
+        <p className="inter-base-regular">{message}</p>
+
+        <div className="mt-base bg-grey-5 rounded-rounded px-base py-xsmall">
+          <ReactJson
+            name={"Stack Trace"}
+            collapsed={true}
+            src={JSON.parse(JSON.stringify(error))}
+          />
+        </div>
+      </Section>
     )
   }
 
   if (status === "loading" || !product) {
     // temp, perhaps use skeletons?
-    return <div>Loading...</div>
+    return (
+      <div className="w-full h-[calc(100vh-64px)] flex items-center justify-center">
+        <Spinner variant="secondary" />
+      </div>
+    )
   }
 
   return (
