@@ -1,50 +1,34 @@
 import React, { ReactNode, useState } from "react"
+import clsx from "clsx"
 
 import Modal from "../../molecules/modal"
 import Button from "../../fundamentals/button"
-import PlusIcon from "../../fundamentals/icons/plus-icon"
-import clsx from "clsx"
 import FileIcon from "../../fundamentals/icons/file-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import XCircleIcon from "../../fundamentals/icons/x-circle-icon"
 import CheckCircleIcon from "../../fundamentals/icons/check-circle-icon"
 import WarningCircle from "../../fundamentals/icons/warning-circle"
-
-type AddManuallyButtonProps = { text: string }
-
-/**
- * "Add manually" component.
- */
-function AddManuallyButton(props: AddManuallyButtonProps) {
-  return (
-    <div
-      className="flex justify-center items-center gap-2
-        font-semibold
-        text-small
-        rounded-xl border border-1 p-2"
-      role="button"
-    >
-      <PlusIcon size={18} />
-      <span>{props.text}</span>
-    </div>
-  )
-}
+import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 type FileSummaryProps = {
   name: string
   size: number
   action: ReactNode
   progress?: number
+  status?: string
 }
 
 /**
  * Render an upload file summary (& upload progress).
  */
 function FileSummary(props: FileSummaryProps) {
-  const { action, name, progress, size } = props
+  const { action, name, progress, size, status } = props
 
-  const formattedSize = `${(size / 1000000).toFixed(2)} MB`
+  const formattedSize =
+    size / 1024 < 10
+      ? `${(size / 1024).toFixed(2)} KiB`
+      : `${(size / (1024 * 1024)).toFixed(2)} MiB`
 
   return (
     <div className="relative">
@@ -60,7 +44,7 @@ function FileSummary(props: FileSummaryProps) {
         <div className="flex-1 my-6">
           <div className="text-small leading-5 text-grey-90">{name}</div>
           <div className="text-xsmall leading-4 text-grey-50">
-            {progress ? "Uploading..." : formattedSize}
+            {status || formattedSize}
           </div>
         </div>
 
@@ -71,36 +55,37 @@ function FileSummary(props: FileSummaryProps) {
 }
 
 type UploadSummaryProps = {
-  products: number
+  creations: number
   updates: number
-  rejections: number
+  rejections?: number
 }
 
 /**
  * Render a batch update request summary.
  */
 function UploadSummary(props: UploadSummaryProps) {
-  const { products, updates, rejections } = props
+  const { creations, updates, rejections } = props
   return (
     <div className="flex gap-6">
       <div className="flex items-center text-small text-grey-90">
         <CheckCircleIcon color="#9CA3AF" className="mr-2" />
-        <span className="font-semibold"> {products}&nbsp;</span> products
+        <span className="font-semibold"> {creations}&nbsp;</span> new products
       </div>
       <div className="flex items-center text-small text-grey-90">
         <WarningCircle fill="#9CA3AF" className="mr-2" />
         <span className="font-semibold">{updates}&nbsp;</span> updates
       </div>
-      <div className="flex items-center text-small text-grey-90">
-        <XCircleIcon color="#9CA3AF" className="mr-2" />
-        <span className="font-semibold">{rejections}&nbsp;</span> rejections
-      </div>
+      {rejections && (
+        <div className="flex items-center text-small text-grey-90">
+          <XCircleIcon color="#9CA3AF" className="mr-2" />
+          <span className="font-semibold">{rejections}&nbsp;</span> rejections
+        </div>
+      )}
     </div>
   )
 }
 
 type DropAreaProps = {
-  fileTitle: string
   onUpload: (d: DataTransferItem) => void
 }
 
@@ -141,7 +126,7 @@ function DropArea(props: DropAreaProps) {
       )}
     >
       <span className="text-grey-50 text-small">
-        Drop your {props.fileTitle} file here, or
+        Drop your file here, or
         <a className="text-violet-60">
           <label className="cursor-pointer" htmlFor="upload-form-file">
             {" "}
@@ -165,13 +150,18 @@ function DropArea(props: DropAreaProps) {
 }
 
 type UploadModalProps = {
+  status?: string
   fileTitle: string
-  actionButtonText: string
   description1Text: string
   description2Title: string
   description2Text: string
-  onUploadComplete: () => void
+  canImport?: boolean
+  progress?: number
   onClose: () => void
+  onSubmit: () => void
+  onFileRemove: () => void
+  processUpload: (...args: any[]) => Promise<any>
+  summary?: { toCreate: number; toUpdate: number }
 }
 
 /**
@@ -179,38 +169,44 @@ type UploadModalProps = {
  */
 function UploadModal(props: UploadModalProps) {
   const {
-    actionButtonText,
     description1Text,
     description2Text,
     description2Title,
     fileTitle,
-    onUploadComplete,
+    canImport,
+    processUpload,
     onClose,
+    onSubmit,
+    onFileRemove,
+    progress,
+    summary,
+    status,
   } = props
-  // TODO: remove hardcoded progress
-  const [progress, setProgress] = useState<number>(20)
   const [uploadFile, setUploadFile] = useState<File>()
 
   const { name, size } = uploadFile || {}
 
-  const onUpload = (f) => {
-    setUploadFile(f)
-    onUploadComplete()
+  const onUpload = async (file) => {
+    setUploadFile(file)
+    await processUpload(file)
   }
 
   const removeFile = () => {
     setUploadFile(undefined)
-    // TODO: call an endpoint to remove file from the processing queue
+    onFileRemove()
   }
 
   return (
     <Modal open handleClose={onClose}>
       <Modal.Body>
         <Modal.Content>
-          <div className="flex flex-col">
+          <div className="flex justify-between">
             <span className="text-2xl text-grey-90 inter-large-semibold py-4">
               Import {fileTitle}
             </span>
+            <button onClick={onClose} className="text-grey-50 cursor-pointer">
+              <CrossIcon size={20} />
+            </button>
           </div>
 
           <div className="text-grey-90 text-base inter-large-semibold mb-1">
@@ -219,10 +215,11 @@ function UploadModal(props: UploadModalProps) {
 
           <p className="text-grey-50 mb-4 text-base">{description1Text}</p>
 
-          {!uploadFile ? (
-            <AddManuallyButton text={actionButtonText} />
-          ) : (
-            <UploadSummary products={20} updates={1} rejections={4} />
+          {summary && (
+            <UploadSummary
+              creations={summary.toCreate}
+              updates={summary.toUpdate}
+            />
           )}
 
           {!uploadFile ? (
@@ -231,6 +228,7 @@ function UploadModal(props: UploadModalProps) {
             <FileSummary
               size={size!}
               name={name!}
+              status={status}
               progress={progress}
               action={
                 <a className="w-6 h-6 cursor-pointer" onClick={removeFile}>
@@ -250,8 +248,11 @@ function UploadModal(props: UploadModalProps) {
             name="medusa-template-product-list.csv"
             size={624220000}
             action={
-              // TODO: download actual file on click
-              <a className="w-6 h-6 cursor-pointer" onClick={console.log}>
+              // TODO: download actual file on click - implement template creation in core
+              <a
+                className="w-6 h-6 cursor-pointer"
+                onClick={() => alert("todo")}
+              >
                 <DownloadIcon stroke="#9CA3AF" />
               </a>
             }
@@ -260,34 +261,25 @@ function UploadModal(props: UploadModalProps) {
           <div className="h-2" />
         </Modal.Content>
         <Modal.Footer>
-          <div className="flex w-full h-8 justify-between">
-            <Button
-              variant="secondary"
-              className="mr-2 text-small justify-center"
-              size="small"
-              onClick={onClose}
-            >
-              Cancel
-            </Button>
+          <div className="flex w-full h-8 justify-end">
             <div className="flex gap-2">
               <Button
-                size="small"
-                disabled={!uploadFile}
                 variant="secondary"
-                className="text-small text-rose-50"
-                onClick={console.log}
+                className="mr-2 text-small justify-center"
+                size="small"
+                onClick={onClose}
               >
-                Override existing list
+                Cancel
               </Button>
 
               <Button
                 size="small"
-                disabled={!uploadFile}
+                disabled={!canImport}
                 variant="primary"
                 className="text-small"
-                onClick={console.log}
+                onClick={onSubmit}
               >
-                Add to existing list
+                Import List
               </Button>
             </div>
           </div>
