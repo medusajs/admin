@@ -104,12 +104,16 @@ export const ValueContainer = <
         {value?.length > 0 && (
           <div className="h-7 bg-grey-20 text-grey-50 pl-small pr-2.5 inter-small-semibold flex items-center rounded-rounded gap-x-2xsmall focus-within:bg-grey-70 focus-within:text-grey-0 transition-colors">
             <span>{value.length}</span>
-            <button type="button" onClick={clearValue} className="outline-none">
+            <button
+              type="button"
+              onClick={clearValue}
+              className="outline-none z-10"
+            >
               <CrossIcon size={16} className="text-grey-40" />
             </button>
           </div>
         )}
-        <div className="relative">
+        <div className="relative grow">
           {children}
           {value?.length > 0 && inputValue === "" && (
             <span className="absolute top-1/2 -translate-y-1/2 inter-base-regular text-grey-50">

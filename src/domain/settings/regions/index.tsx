@@ -1,8 +1,8 @@
 import { useAdminRegions } from "medusa-react"
 import React, { useEffect, useState } from "react"
+import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import BreadCrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import RadioGroup from "../../../components/organisms/radio-group"
 import TwoSplitPane from "../../../components/templates/two-split-pane"
@@ -57,12 +57,8 @@ const Regions = () => {
   return (
     <>
       <div>
-        <BreadCrumb
-          previousRoute="/a/settings"
-          previousBreadcrumb="Settings"
-          currentPage="Regions"
-        />
-        <TwoSplitPane>
+        <BackButton label="Back to Settings" path="/a/settings" />
+        <TwoSplitPane threeCols>
           <BodyCard
             title="Regions"
             subtitle="Manage the markets that you will operate within"
