@@ -16,7 +16,7 @@ import SettingsOverview from "../../components/templates/settings-overview"
 import Currencies from "./currencies"
 import Details from "./details"
 import PersonalInformation from "./personal-information"
-import RegionsRoute from "./regions"
+import Regions from "./regions"
 import NewRegion from "./regions/new"
 import ReturnReasons from "./return-reasons"
 import Taxes from "./taxes"
@@ -102,7 +102,7 @@ const Settings = () => (
 
     <ReturnReasons path="return-reasons" />
 
-    <RegionsRoute path="regions/*" />
+    <Regions path="regions/*" />
     <NewRegion path="regions/new" />
 
     <Taxes path="taxes" />

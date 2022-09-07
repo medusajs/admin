@@ -42,6 +42,7 @@ const RegionProvidersForm = ({ form }: Props) => {
               options={paymentProviderOptions}
               isMulti
               isClearable
+              required
               selectAll
               value={value}
               onChange={onChange}
@@ -68,6 +69,7 @@ const RegionProvidersForm = ({ form }: Props) => {
               label="Fulfillment Providers"
               placeholder="Choose fulfillment providers..."
               options={fulfillmentProviderOptions}
+              required
               isMulti
               isClearable
               selectAll

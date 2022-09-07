@@ -115,7 +115,12 @@ const NewRegion = ({ onClose }: Props) => {
               onValueChange={setSections}
               type="multiple"
             >
-              <Accordion.Item title="Details" value="details" forceMountContent>
+              <Accordion.Item
+                title="Details"
+                value="details"
+                forceMountContent
+                required
+              >
                 <p className="inter-base-regular text-grey-50 mb-xlarge">
                   Add the region details.
                 </p>
@@ -128,6 +133,7 @@ const NewRegion = ({ onClose }: Props) => {
                 title="Providers"
                 value="providers"
                 forceMountContent
+                required
               >
                 <p className="inter-base-regular text-grey-50 mb-xlarge">
                   Add which fulfillment and payment providers shoulb be

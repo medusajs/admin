@@ -6,7 +6,7 @@ import RegionOverview from "./region-overview"
 
 type Props = RouteComponentProps
 
-const RegionsRoute = (props: Props) => {
+const Regions = (props: Props) => {
   const filepath: string | undefined = props["*"]
 
   return (
@@ -24,4 +24,4 @@ const RegionsRoute = (props: Props) => {
   )
 }
 
-export default RegionsRoute
+export default Regions
