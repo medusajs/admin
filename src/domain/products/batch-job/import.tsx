@@ -13,6 +13,9 @@ import {
 import UploadModal from "../../../components/organisms/upload-modal"
 import useNotification from "../../../hooks/use-notification"
 
+/**
+ * Hook returns a batch job. The endpoint is polled every 2s while the job is processing.
+ */
 function useImportBatchJob(batchJobId?: string) {
   const [batchJob, setBatchJob] = useState<BatchJob>()
 
@@ -31,14 +34,17 @@ function useImportBatchJob(batchJobId?: string) {
   return batchJob
 }
 
+/**
+ * Import products container interface.
+ */
 type ImportProductsProps = {
   handleClose: () => void
-  isModalOpen: boolean
 }
 
+/**
+ * Product import modal container.
+ */
 function ImportProducts(props: ImportProductsProps) {
-  const { isModalOpen, handleClose } = props
-
   const [fileKey, setFileKey] = useState()
   const [batchJobId, setBatchJobId] = useState()
 
@@ -65,6 +71,9 @@ function ImportProducts(props: ImportProductsProps) {
     ? "Preprocessing..."
     : "Uploading..."
 
+  /**
+   * Confirm job on submit.
+   */
   const onSubmit = async () => {
     await confirmBatchJob()
     notification(
@@ -72,12 +81,15 @@ function ImportProducts(props: ImportProductsProps) {
       "Import confirmed for processing. Progress info is available in the activity drawer.",
       "success"
     )
-    handleClose()
+    props.handleClose()
   }
 
+  /**
+   * Upload file and use returned file key to create a batch job.
+   */
   const processUpload = async (file: File) => {
     try {
-      const res = await uploadFile(file)
+      const res = await uploadFile(file as any)
       const _fileKey = res.uploads[0].key
       setFileKey(_fileKey)
 
@@ -89,10 +101,16 @@ function ImportProducts(props: ImportProductsProps) {
 
       setBatchJobId(batchJob.batch_job.id)
     } catch (e) {
-      console.log(e)
+      notification("Error", "Import failed.", "error")
+      if (fileKey) {
+        await deleteFile({ file_key: fileKey })
+      }
     }
   }
 
+  /**
+   * Returns create/update counts from stat descriptor.
+   */
   const getSummary = () => {
     if (!batchJob) {
       return undefined
@@ -110,8 +128,12 @@ function ImportProducts(props: ImportProductsProps) {
     }
   }
 
+  /**
+   * When file upload is removed, delete file from the bucket and cancel batch job.
+   */
   const onFileRemove = async () => {
     try {
+      // TODO: fix this function has uncaught error
       deleteFile(fileKey!)
       cancelBathJob()
     } catch (e) {
@@ -119,19 +141,22 @@ function ImportProducts(props: ImportProductsProps) {
     }
   }
 
-  useEffect(() => {
-    if (!isModalOpen) {
+  /**
+   * Cleanup file if batch job isn't confirmed.
+   */
+  const onClose = () => {
+    if (
+      !["confirmed", "completed", "canceled", "failed"].includes(
+        batchJob?.status
+      )
+    ) {
       if (fileKey) {
-        deleteFile(fileKey)
+        deleteFile({ file_key: fileKey })
       }
       if (batchJobId) {
         cancelBathJob()
       }
     }
-  }, [isModalOpen, fileKey, batchJobId, deleteFile, cancelBathJob])
-
-  if (!isModalOpen) {
-    return null
   }
 
   return (
@@ -140,7 +165,7 @@ function ImportProducts(props: ImportProductsProps) {
       progress={progress}
       canImport={isPreprocessed}
       onSubmit={onSubmit}
-      onClose={handleClose}
+      onClose={onClose}
       summary={getSummary()}
       onFileRemove={onFileRemove}
       processUpload={processUpload}
