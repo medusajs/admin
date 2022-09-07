@@ -9,6 +9,7 @@ import LayeredModal, {
   useLayeredModal,
 } from "../../../../../../components/molecules/modal/layered-modal"
 import PriceOverrides from "../../../../../../components/templates/price-overrides"
+import useNotification from "../../../../../../hooks/use-notification"
 import { mergeExistingWithDefault } from "../../../utils"
 import { mapToPriceList } from "./mappers"
 import ProductVariantLeaf from "./product-variant-leaf"
@@ -31,6 +32,8 @@ const EditPricesOverridesModal = ({
     currency_code: curr.code,
     amount: 0,
   })) as MoneyAmount[]
+
+  const notification = useNotification()
 
   const getOnClick = (variant) => () =>
     context.push({
@@ -57,6 +60,7 @@ const EditPricesOverridesModal = ({
                 onSuccess: () => {
                   context.pop()
                   close()
+                  notification("Success", "Price overrides updated", "success")
                 },
               }
             )
