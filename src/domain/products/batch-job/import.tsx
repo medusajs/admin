@@ -11,6 +11,7 @@ import {
 } from "medusa-react"
 
 import UploadModal from "../../../components/organisms/upload-modal"
+import useNotification from "../../../hooks/use-notification"
 
 function useImportBatchJob(batchJobId?: string) {
   const [batchJob, setBatchJob] = useState<BatchJob>()
@@ -41,6 +42,8 @@ function ImportProducts(props: ImportProductsProps) {
   const [fileKey, setFileKey] = useState()
   const [batchJobId, setBatchJobId] = useState()
 
+  const notification = useNotification()
+
   const { mutateAsync: deleteFile } = useAdminDeleteFile()
   const { mutateAsync: uploadFile } = useAdminUploadFile()
 
@@ -64,6 +67,11 @@ function ImportProducts(props: ImportProductsProps) {
 
   const onSubmit = async () => {
     await confirmBatchJob()
+    notification(
+      "Success",
+      "Import confirmed for processing. Progress info is available in the activity drawer.",
+      "success"
+    )
     handleClose()
   }
 
