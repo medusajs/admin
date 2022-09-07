@@ -1,7 +1,5 @@
 import { MedusaProvider } from "medusa-react"
 import React from "react"
-import { DndProvider } from "react-dnd"
-import { HTML5Backend } from "react-dnd-html5-backend"
 import "./src/assets/styles/emoji-picker.css"
 import "./src/assets/styles/global.css"
 import { LayeredModalProvider } from "./src/components/molecules/modal/layered-modal"
@@ -25,9 +23,7 @@ export const wrapPageElement = ({ element }) => {
           <FeatureFlagProvider>
             <InterfaceProvider>
               <SteppedProvider>
-                <DndProvider backend={HTML5Backend}>
-                  <LayeredModalProvider>{element}</LayeredModalProvider>
-                </DndProvider>
+                <LayeredModalProvider>{element}</LayeredModalProvider>
               </SteppedProvider>
             </InterfaceProvider>
           </FeatureFlagProvider>
