@@ -26,6 +26,7 @@ type PriceOverridesType = {
   isEdit?: boolean
 }
 
+// TODO: Clean up this components typing to avoid circular dependencies
 const PriceOverrides = ({
   onClose,
   prices,

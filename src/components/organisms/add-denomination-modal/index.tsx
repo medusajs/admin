@@ -125,7 +125,10 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
               <Controller
                 control={control}
                 name="default_price"
-                render={({ field: { onChange, value } }) => {
+                rules={{
+                  required: "Default value is required",
+                }}
+                render={({ field: { onChange, value, ref } }) => {
                   return (
                     <CurrencyInput.Root
                       currentCurrency={storeCurrency}
@@ -133,6 +136,7 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                       size="medium"
                     >
                       <CurrencyInput.Amount
+                        ref={ref}
                         label="Amount"
                         amount={value}
                         onChange={onChange}
@@ -147,18 +151,21 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                 <h3 className="inter-base-semibold">Other Values</h3>
                 <IconTooltip content="Here you can add values in other currencies" />
               </div>
-              <div className="flex items-center gap-y-xsmall">
+              <div className="flex flex-col gap-y-xsmall">
                 {fields.map((field, index) => {
                   return (
                     <div
                       key={field.indexId}
-                      className="last:mb-0 mb-xsmall flex items-center"
+                      className="last:mb-0 mb-xsmall flex items-end"
                     >
                       <div className="flex-1">
                         <Controller
                           control={control}
                           key={field.indexId}
                           name={`prices.${index}.price`}
+                          rules={{
+                            required: true,
+                          }}
                           defaultValue={field.price}
                           render={({ field: { onChange, value } }) => {
                             const codes = [
@@ -189,13 +196,18 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                         />
                       </div>
 
-                      <button className="ml-large">
+                      <Button
+                        variant="ghost"
+                        size="small"
+                        className="ml-large w-10 h-10"
+                        type="button"
+                      >
                         <TrashIcon
                           onClick={deletePrice(index)}
                           className="text-grey-40"
                           size="20"
                         />
-                      </button>
+                      </Button>
                     </div>
                   )
                 })}

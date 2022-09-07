@@ -89,6 +89,7 @@ const CreateReturnShippingOptionModal = ({ open, onClose, region }: Props) => {
                 variant="primary"
                 size="small"
                 type="submit"
+                loading={isLoading}
                 disabled={isLoading || !isDirty}
               >
                 Save and close

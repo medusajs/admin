@@ -21,7 +21,7 @@ type CustomerDetailProps = {
 } & RouteComponentProps
 
 const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
-  const { customer, isLoading } = useAdminCustomer(id, {})
+  const { customer, isLoading } = useAdminCustomer(id)
   const [showEdit, setShowEdit] = useState(false)
 
   const customerName = () => {

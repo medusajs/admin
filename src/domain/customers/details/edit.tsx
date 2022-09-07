@@ -3,6 +3,7 @@ import { useAdminUpdateCustomer } from "medusa-react"
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
+import LockIcon from "../../../components/fundamentals/icons/lock-icon"
 import InputField from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import useNotification from "../../../hooks/use-notification"
@@ -14,36 +15,54 @@ type EditCustomerModalProps = {
   handleClose: () => void
 }
 
+type EditCustomerFormType = {
+  first_name: string
+  last_name: string
+  email: string
+  phone: string | null
+}
+
 const EditCustomerModal = ({
   handleClose,
   customer,
 }: EditCustomerModalProps) => {
-  const { register, reset, handleSubmit } = useForm()
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm<EditCustomerFormType>({
+    defaultValues: getDefaultValues(customer),
+  })
 
   const notification = useNotification()
 
   const updateCustomer = useAdminUpdateCustomer(customer.id)
 
-  const submit = (data) => {
-    updateCustomer.mutate(data, {
-      onSuccess: () => {
-        handleClose()
-        notification("Success", "Successfully updated customer", "success")
+  const onSubmit = handleSubmit((data) => {
+    updateCustomer.mutate(
+      {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        // @ts-ignore
+        phone: data.phone,
+        email: data.email,
       },
-      onError: (err) => {
-        handleClose()
-        notification("Error", getErrorMessage(err), "error")
-      },
-    })
-  }
+      {
+        onSuccess: () => {
+          handleClose()
+          notification("Success", "Successfully updated customer", "success")
+        },
+        onError: (err) => {
+          handleClose()
+          notification("Error", getErrorMessage(err), "error")
+        },
+      }
+    )
+  })
 
   useEffect(() => {
-    reset({
-      first_name: customer.first_name || "",
-      last_name: customer.last_name || "",
-      email: customer.email,
-      phone: customer.phone || "",
-    })
+    reset(getDefaultValues(customer))
   }, [customer])
 
   return (
@@ -72,8 +91,14 @@ const EditCustomerModal = ({
               label="Email"
               {...register("email", {
                 validate: (value) => !!validateEmail(value),
+                disabled: customer.has_account,
               })}
-              disabled
+              prefix={
+                customer.has_account && (
+                  <LockIcon size={16} className="text-grey-50" />
+                )
+              }
+              disabled={customer.has_account}
             />
             <InputField
               label="Phone number"
@@ -94,10 +119,11 @@ const EditCustomerModal = ({
             </Button>
             <Button
               loading={updateCustomer.isLoading}
+              disabled={!isDirty || updateCustomer.isLoading}
               variant="primary"
               className="min-w-[100px]"
               size="small"
-              onClick={handleSubmit(submit)}
+              onClick={onSubmit}
             >
               Save
             </Button>
@@ -106,6 +132,15 @@ const EditCustomerModal = ({
       </Modal.Body>
     </Modal>
   )
+}
+
+const getDefaultValues = (customer: Customer): EditCustomerFormType => {
+  return {
+    first_name: customer.first_name,
+    email: customer.email,
+    last_name: customer.last_name,
+    phone: customer.phone,
+  }
 }
 
 export default EditCustomerModal

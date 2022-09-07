@@ -104,6 +104,7 @@ const EditRegionModal = ({ region, onClose, open }: Props) => {
                 variant="primary"
                 size="small"
                 type="submit"
+                loading={isLoading}
                 disabled={isLoading || !isDirty}
               >
                 Save and close

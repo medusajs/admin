@@ -6,7 +6,7 @@ import { currencies } from "../../../../utils/currencies"
 
 type Props = {
   currencyCode: string
-  amount?: number
+  amount?: number | null
   onChange: (amount?: number) => void
   errors?: { [x: string]: unknown }
   name?: string

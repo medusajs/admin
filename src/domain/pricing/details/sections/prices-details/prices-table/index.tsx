@@ -1,7 +1,7 @@
 import { Product } from "@medusajs/medusa"
 import {
-  useAdminPriceListProducts,
   useAdminDeletePriceListProductPrices,
+  useAdminPriceListProducts,
 } from "medusa-react"
 import * as React from "react"
 import { HeaderGroup, Row } from "react-table"
@@ -34,7 +34,7 @@ const PricesTable = ({ id, selectProduct }: PricesTableProps) => {
   const columns = usePricesColumns()
 
   return (
-    <div className="w-full overflow-y-auto flex flex-col justify-between min-h-[300px] h-full ">
+    <div className="w-full overflow-y-auto flex flex-col justify-between h-full">
       <SelectableTable
         columns={columns}
         data={products || []}

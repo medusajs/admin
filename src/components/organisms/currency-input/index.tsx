@@ -11,10 +11,10 @@ import AmountField from "react-currency-input-field"
 import { Option } from "../../../types/shared"
 import { currencies, CurrencyType } from "../../../utils/currencies"
 import { getDecimalDigits, normalizeAmount } from "../../../utils/prices"
+import InputError from "../../atoms/input-error"
 import Tooltip from "../../atoms/tooltip"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
-import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import Input from "../../molecules/input"
 import Select from "../../molecules/select"
@@ -42,6 +42,8 @@ type AmountInputProps = {
   onChange?: (amount: number | undefined) => void
   onValidate?: (amount: number | undefined) => boolean
   invalidMessage?: string
+  errors?: { [x: string]: unknown }
+  name?: string
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">
 
 const CurrencyContext = React.createContext<CurrencyInputState>({
@@ -117,7 +119,7 @@ const Root: React.FC<CurrencyInputProps> = ({
         currencyInfo: selectedCurrency,
       }}
     >
-      <div className={clsx("flex items-center gap-x-2xsmall", className)}>
+      <div className={clsx("flex items-center gap-x-xsmall", className)}>
         {!hideCurrency && (
           <div
             className={clsx(
@@ -163,6 +165,8 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
       onChange,
       onValidate,
       invalidMessage,
+      errors,
+      name,
       ...rest
     }: AmountInputProps,
     ref
@@ -230,9 +234,17 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
     }
 
     return (
-      <InputContainer onClick={() => inputRef.current?.focus()} {...rest}>
-        <InputHeader label={label} required={required} />
-        <div className="flex items-center mt-2xsmall">
+      <div {...rest}>
+        <InputHeader label={label} required={required} className="mb-xsmall" />
+        <div
+          className={clsx(
+            "w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded h-10 focus-within:shadow-input focus-within:border-violet-60",
+            {
+              "border-rose-50 focus-within:shadow-cta focus-within:shadow-rose-60/10 focus-within:border-rose-50":
+                errors && name && errors[name],
+            }
+          )}
+        >
           {currencyInfo?.symbol_native && (
             <Tooltip
               open={invalid}
@@ -245,7 +257,7 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
             </Tooltip>
           )}
           <AmountField
-            className="bg-inherit outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
+            className="bg-transparent outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
             decimalScale={currencyInfo?.decimal_digits}
             value={value}
             onValueChange={handleChange}
@@ -253,8 +265,9 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
             step={step}
             allowNegativeValue={allowNegative}
             placeholder="0.00"
+            name={name}
           />
-          <div className="flex self-end">
+          <div className="flex items-center">
             <button
               className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 rounded-soft cursor-pointer"
               type="button"
@@ -271,7 +284,8 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
             </button>
           </div>
         </div>
-      </InputContainer>
+        <InputError name={name} errors={errors} />
+      </div>
     )
   }
 )

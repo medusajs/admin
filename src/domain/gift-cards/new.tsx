@@ -34,7 +34,7 @@ type NewGiftCardFormData = {
     nativeFile: File
   } | null
   denominations: {
-    amount: number
+    amount: number | null
   }[]
 }
 
@@ -112,7 +112,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
           inventory_quantity: 0,
           manage_inventory: false,
           prices: [
-            { amount: d.amount, currency_code: store?.default_currency_code },
+            { amount: d.amount!, currency_code: store?.default_currency_code },
           ],
           options: [{ value: `${d.amount}` }],
         })),
@@ -207,7 +207,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                   return (
                     <div
                       key={denomination.id}
-                      className="flex items-center gap-x-base last:mb-large"
+                      className="flex items-end gap-x-base last:mb-large"
                     >
                       <CurrencyInput.Root
                         currentCurrency={store?.default_currency_code}
@@ -225,7 +225,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                             return (
                               <CurrencyInput.Amount
                                 label="Amount"
-                                amount={value}
+                                amount={value || undefined}
                                 onChange={onChange}
                                 ref={ref}
                               />
@@ -236,7 +236,7 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                       <Button
                         variant="ghost"
                         size="large"
-                        className="w-xlarge h-xlarge text-grey-40"
+                        className="w-10 h-10 text-grey-40"
                         type="button"
                         onClick={() => remove(index)}
                       >

@@ -54,7 +54,7 @@ const TOAST_ID = "edit-gc-dirty"
 
 const UpdateNotification = ({ isLoading = false }) => {
   const {
-    formState,
+    form: { formState },
     onUpdate,
     resetForm,
     additionalDirtyState,

@@ -39,7 +39,9 @@ const EditTaxRate = ({
     EditTaxRateFormData
   >({
     defaultValues: {
-      ...taxRate,
+      name: taxRate.name,
+      code: taxRate.code || undefined,
+      rate: taxRate.rate || undefined,
       products: taxRate.products.map((p) => p.id),
       product_types: taxRate.product_types.map((p) => p.id),
       shipping_options: taxRate.shipping_options.map((p) => p.id),
@@ -303,8 +305,8 @@ export const SimpleEditForm = ({ onDismiss, taxRate }: SimpleEditFormProps) => {
   const { register, handleSubmit } = useForm<SimpleEditFormData>({
     defaultValues: {
       name: taxRate.name,
-      rate: taxRate.rate,
-      code: taxRate.code,
+      rate: taxRate.rate || undefined,
+      code: taxRate.code || undefined,
     },
   })
   const notification = useNotification()

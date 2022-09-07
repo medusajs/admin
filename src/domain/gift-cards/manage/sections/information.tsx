@@ -13,6 +13,7 @@ import Input from "../../../../components/molecules/input"
 import Select from "../../../../components/molecules/select"
 import StatusSelector from "../../../../components/molecules/status-selector"
 import TagInput from "../../../../components/molecules/tag-input"
+import TextArea from "../../../../components/molecules/textarea"
 import BodyCard from "../../../../components/organisms/body-card"
 import DetailsCollapsible from "../../../../components/organisms/details-collapsible"
 import useNotification from "../../../../hooks/use-notification"
@@ -24,7 +25,9 @@ type InformationProps = {
 }
 
 const Information: React.FC<InformationProps> = ({ giftCard }) => {
-  const { register, setValue, control } = useGiftCardForm()
+  const {
+    form: { register, setValue, control },
+  } = useGiftCardForm()
   const notification = useNotification()
   const { product_types } = useAdminProductTypes(undefined, {
     cacheTime: 0,
@@ -106,26 +109,21 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
       ]}
     >
       <div className="flex flex-col space-y-6">
-        <div className="flex space-x-8">
-          <div className="flex flex-col w-1/2 space-y-4">
-            <Input
-              label="Name"
-              placeholder="Add name"
-              defaultValue={giftCard?.title}
-              {...register("title", { required: true })}
-            />
-            <Input
-              label="Subtitle"
-              placeholder="Add a subtitle"
-              defaultValue={giftCard?.subtitle}
-              {...register("subtitle")}
-            />
-          </div>
+        <div className="grid grid-cols-2 gap-large">
           <Input
+            label="Name"
+            placeholder="Add name"
+            defaultValue={giftCard?.title}
+            {...register("title", { required: true })}
+          />
+          <Input
+            label="Subtitle"
+            placeholder="Add a subtitle"
+            {...register("subtitle")}
+          />
+          <TextArea
             label="Description"
             placeholder="Add a description"
-            defaultValue={giftCard?.description}
-            className="w-1/2"
             {...register("description")}
           />
         </div>
@@ -135,42 +133,40 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
             forceMount: true,
           }}
         >
-          <div className="flex space-x-8 pb-4">
-            <div className="flex flex-col w-1/2 space-y-4">
-              <Input
-                label="Handle"
-                placeholder="Product handle"
-                defaultValue={giftCard?.handle}
-                {...register("handle")}
-                tooltipContent="URL of the product"
-              />
-              <Controller
-                control={control}
-                name="type"
-                render={({ field: { value, onChange } }) => {
-                  return (
-                    <Select
-                      label="Type"
-                      placeholder="Select type..."
-                      options={typeOptions}
-                      onChange={onChange}
-                      value={value}
-                      isCreatable
-                      onCreateOption={(value) => {
-                        return setNewType(value)
-                      }}
-                      clearSelected
-                    />
-                  )
-                }}
-              />
-            </div>
+          <div className="grid grid-cols-2 gap-large">
+            <Input
+              label="Handle"
+              placeholder="Product handle"
+              {...register("handle")}
+              tooltipContent="URL of the product"
+            />
+            <Controller
+              control={control}
+              name="type"
+              render={({ field: { value, onChange } }) => {
+                return (
+                  <Select
+                    label="Type"
+                    placeholder="Select type..."
+                    options={typeOptions}
+                    onChange={onChange}
+                    value={value}
+                    isCreatable
+                    onCreateOption={(value) => {
+                      return setNewType(value)
+                    }}
+                    clearSelected
+                  />
+                )
+              }}
+            />
             <Controller
               name="tags"
               render={({ field: { onChange, value } }) => {
                 return (
                   <TagInput
                     label="Tags (separated by comma)"
+                    className="w-full"
                     placeholder="Spring, Summer..."
                     onChange={onChange}
                     values={value || []}

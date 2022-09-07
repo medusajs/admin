@@ -91,6 +91,7 @@ const EditModal = ({ open, onClose, option }: Props) => {
                 variant="primary"
                 size="small"
                 type="submit"
+                loading={isLoading}
                 disabled={isLoading || !isDirty}
               >
                 Save and close

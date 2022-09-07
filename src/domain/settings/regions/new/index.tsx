@@ -40,7 +40,7 @@ const NewRegion = ({ onClose }: Props) => {
     handleSubmit,
     reset,
   } = form
-  const { mutate } = useAdminCreateRegion()
+  const { mutate, isLoading } = useAdminCreateRegion()
   const notification = useNotification()
 
   const closeAndReset = () => {
@@ -100,7 +100,8 @@ const NewRegion = ({ onClose }: Props) => {
               <Button
                 size="small"
                 variant="primary"
-                disabled={!isDirty}
+                loading={isLoading}
+                disabled={!isDirty || isLoading}
                 type="submit"
               >
                 Create region

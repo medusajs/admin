@@ -121,7 +121,7 @@ export const SelectableTable = <
         {...options}
         {...table.getTableProps()}
         handleSearch={options.enableSearch ? debouncedSearch : undefined}
-        className="min-h-[350px] relative"
+        className="relative"
       >
         {renderHeaderGroup && (
           <Table.Head>
