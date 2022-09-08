@@ -57,8 +57,7 @@ const AttributeModal = ({ product, open, onClose }: Props) => {
         mid_code: data.customs.mid_code,
         // @ts-ignore
         hs_code: data.customs.hs_code,
-        // @ts-ignore
-        origin_country: data.customs.origin_country,
+        origin_country: data.customs.origin_country?.value,
       },
       onReset
     )
