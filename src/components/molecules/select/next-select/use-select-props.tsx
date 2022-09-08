@@ -1,6 +1,7 @@
-import { GroupBase, Props } from "react-select"
+import { useState } from "react"
+import { ActionMeta, GroupBase, OnChangeValue, Props } from "react-select"
 import Components from "./components"
-import { formatOptionLabel } from "./utils"
+import { formatOptionLabel, hasLabel } from "./utils"
 
 export const useSelectProps = <
   Option,
@@ -14,8 +15,39 @@ export const useSelectProps = <
   closeMenuOnSelect,
   label,
   size,
+  options,
+  onChange: changeFn,
   ...props
 }: Props<Option, IsMulti, Group>): Props<Option, IsMulti, Group> => {
+  const [stateOptions, setStateOptions] = useState(options || [])
+
+  const onChange = (
+    newValue: OnChangeValue<Option, IsMulti>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    if (isMulti) {
+      const tmp = newValue as Option[]
+
+      const unselectedOptions = stateOptions.filter(
+        (option) => !tmp.find((op) => op === option)
+      )
+
+      const orderedNewOptions = tmp.sort((a, b) => {
+        if (hasLabel(a) && hasLabel(b)) {
+          return a.label > b.label ? 1 : b.label > a.label ? -1 : 0
+        }
+
+        return 0
+      })
+
+      setStateOptions(orderedNewOptions.concat(unselectedOptions as Option[]))
+    }
+
+    if (changeFn) {
+      changeFn(newValue, actionMeta)
+    }
+  }
+
   return {
     label,
     components: Components,
@@ -31,6 +63,8 @@ export const useSelectProps = <
     maxMenuHeight: size === "sm" ? 154 : 188,
     formatOptionLabel,
     size,
+    options: stateOptions,
+    onChange,
     ...props,
   }
 }

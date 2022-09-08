@@ -2,7 +2,9 @@ import qs from "query-string"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import AddressForm from "../../../../components/templates/address-form"
+import AddressForm, {
+  Type,
+} from "../../../../components/templates/address-form"
 import Medusa from "../../../../services/api"
 
 import { useAdminCustomer } from "medusa-react"
@@ -239,7 +241,7 @@ const ShippingDetails = () => {
           <AddressForm
             form={nestedForm(form, "shipping_address")}
             countryOptions={validCountries}
-            type="shipping"
+            type={Type.SHIPPING}
             required={requiredFields}
           />
         </div>

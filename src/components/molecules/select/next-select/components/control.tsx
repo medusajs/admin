@@ -25,6 +25,7 @@ const Control = <
   isFocused,
   menuIsOpen,
   selectProps: { size },
+  clearValue,
 }: ControlProps<Option, IsMulti, Group>) => {
   return (
     <div
@@ -119,14 +120,9 @@ export const ClearIndicator = <
 >({
   innerProps,
   className,
-  isMulti,
   cx,
   children,
 }: ClearIndicatorProps<Option, IsMulti, Group>) => {
-  if (isMulti) {
-    return null
-  }
-
   return (
     <div
       {...innerProps}

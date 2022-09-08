@@ -2,7 +2,9 @@ import clsx from "clsx"
 import React from "react"
 import { useWatch } from "react-hook-form"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
-import AddressForm from "../../../../components/templates/address-form"
+import AddressForm, {
+  Type,
+} from "../../../../components/templates/address-form"
 import isNullishObject from "../../../../utils/is-nullish-object"
 import { nestedForm } from "../../../../utils/nested-form"
 import { useNewOrderForm } from "../form"
@@ -72,7 +74,7 @@ const Billing = () => {
         <AddressForm
           countryOptions={validCountries}
           form={nestedForm(form, "billing_address")}
-          type="billing"
+          type={Type.BILLING}
         />
       </div>
     </div>

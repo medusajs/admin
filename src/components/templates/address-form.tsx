@@ -21,7 +21,6 @@ export type AddressPayload = {
 export declare enum Type {
   SHIPPING = "shipping",
   BILLING = "billing",
-  ADDRESS = "address",
 }
 
 type AddressFormProps = {

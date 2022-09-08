@@ -7,7 +7,8 @@ import {
   ValueContainerProps,
 } from "react-select"
 import InputError from "../../../../atoms/input-error"
-import CrossIcon from "../../../../fundamentals/icons/cross-icon"
+import Tooltip from "../../../../atoms/tooltip"
+import { hasLabel } from "../utils"
 
 type AdjacentContainerProps = {
   label?: string
@@ -77,16 +78,19 @@ export const ValueContainer = <
   Option,
   IsMulti extends boolean,
   Group extends GroupBase<Option>
->({
-  className,
-  children,
-  cx,
-  innerProps,
-  isMulti,
-  hasValue,
-  selectProps: { value, inputValue, label },
-  clearValue,
-}: ValueContainerProps<Option, IsMulti, Group>) => {
+>(
+  props: ValueContainerProps<Option, IsMulti, Group>
+) => {
+  const {
+    className,
+    children,
+    cx,
+    innerProps,
+    isMulti,
+    hasValue,
+    selectProps: { value, inputValue, label, selectedPlaceholder },
+  } = props
+
   if (isMulti && Array.isArray(value)) {
     return (
       <div
@@ -107,22 +111,27 @@ export const ValueContainer = <
         )}
       >
         {value?.length > 0 && (
-          <div className="h-7 bg-grey-20 text-grey-50 pl-small pr-2.5 inter-small-semibold flex items-center rounded-rounded gap-x-2xsmall focus-within:bg-grey-70 focus-within:text-grey-0 transition-colors">
-            <span>{value.length}</span>
-            <button
-              type="button"
-              onClick={clearValue}
-              className="outline-none z-10"
-            >
-              <CrossIcon size={16} className="text-grey-40" />
-            </button>
-          </div>
+          <Tooltip
+            content={
+              <ul>
+                {value.map((v, index) => {
+                  if (hasLabel(v)) {
+                    return <li key={index}>{v.label}</li>
+                  }
+                })}
+              </ul>
+            }
+          >
+            <div className="h-7 bg-grey-20 text-grey-50 px-small inter-small-semibold flex items-center rounded-rounded gap-x-2xsmall cursor-default">
+              <span>{value.length}</span>
+            </div>
+          </Tooltip>
         )}
         <div className="relative grow">
           {children}
           {value?.length > 0 && inputValue === "" && (
             <span className="absolute top-1/2 -translate-y-1/2 inter-base-regular text-grey-50">
-              {label}
+              {selectedPlaceholder || label || "Selected"}
             </span>
           )}
         </div>

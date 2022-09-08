@@ -46,9 +46,9 @@ const EmailModal: React.FC<EmailModalProps> = ({
   }
 
   return (
-    <Modal handleClose={handleClose}>
+    <Modal handleClose={handleClose} isLargeModal>
       <form onSubmit={handleSubmit(handleUpdateEmail)}>
-        <Modal.Body isLargeModal>
+        <Modal.Body>
           <Modal.Header handleClose={handleClose}>
             <span className="inter-xlarge-semibold">Email Address</span>
           </Modal.Header>

@@ -14,7 +14,7 @@ import { useSelectProps } from "../use-select-props"
 
 export type SelectComponent = <
   Option = unknown,
-  IsMulti extends boolean = false,
+  IsMulti extends boolean = true,
   Group extends GroupBase<Option> = GroupBase<Option>
 >(
   props: Props<Option, IsMulti, Group> &
@@ -30,10 +30,11 @@ const Select = forwardRef(
       | null
   ) => {
     const selectProps = useSelectProps(props)
-    const { label, required, helperText, name, errors } = selectProps
-    const { portalRef } = useContext(ModalContext)
 
+    const { label, required, helperText, name, errors } = selectProps
     const containerRef = useRef<HTMLDivElement>(null)
+
+    const { portalRef } = useContext(ModalContext)
 
     return (
       <AdjacentContainer
@@ -45,6 +46,7 @@ const Select = forwardRef(
         errors={errors}
       >
         <ReactSelect
+          ref={ref}
           name={name}
           {...selectProps}
           menuPortalTarget={portalRef?.current?.lastChild || null}
