@@ -22,7 +22,7 @@ type MarkShippedModalProps = {
 
 type MarkShippedFormData = {
   tracking_numbers: {
-    value: string
+    value: string | undefined
   }[]
 }
 
@@ -162,7 +162,7 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
             <div className="flex w-full justify-end mt-4">
               <Button
                 size="small"
-                onClick={() => appendTracking({ value: "" })}
+                onClick={() => appendTracking({ value: undefined })}
                 variant="secondary"
                 disabled={trackingNumbers.some((tn) => !tn.value)}
               >
