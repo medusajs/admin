@@ -18,7 +18,7 @@ export type AddressPayload = {
   phone: string | null
 }
 
-export declare enum Type {
+export enum Type {
   SHIPPING = "shipping",
   BILLING = "billing",
 }
