@@ -3,6 +3,7 @@ import React from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import ExperimentalSelect from "."
 import useToggleState from "../../../../../hooks/use-toggle-state"
+import { countries } from "../../../../../utils/countries"
 import Button from "../../../../fundamentals/button"
 import Modal from "../../../modal"
 
@@ -61,6 +62,11 @@ const options: SelectOption[] = [
     label: "Middle East",
   },
 ]
+
+const countryOptions = countries.map((c) => ({
+  label: c.name,
+  value: c.alpha2,
+}))
 
 storiesOf("Molecules/Select/Next/Select", module).add(
   "Controlled Single Select",
@@ -123,7 +129,7 @@ storiesOf("Molecules/Select/Next/Select", module).add(
               <ExperimentalSelect
                 label="Regions"
                 required
-                options={options}
+                options={countryOptions}
                 value={value}
                 onChange={onChange}
                 isMulti
