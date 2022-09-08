@@ -1,4 +1,8 @@
-import { Product, ProductVariant } from "@medusajs/medusa"
+import {
+  AdminPostProductsProductVariantsVariantReq,
+  Product,
+  ProductVariant,
+} from "@medusajs/medusa"
 import React, { useContext, useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../../components/fundamentals/button"
@@ -88,8 +92,10 @@ const EditVariantScreen = ({ variant, product }: Props) => {
   )
 }
 
-export const createUpdatePayload = (data: EditFlowVariantFormType) => {
-  const { customs, dimensions, prices, options, ...rest } = data
+export const createUpdatePayload = (
+  data: EditFlowVariantFormType
+): AdminPostProductsProductVariantsVariantReq => {
+  const { customs, dimensions, prices, options, general, stock } = data
 
   const priceArray = prices.prices
     .filter((price) => price.amount)
@@ -103,17 +109,22 @@ export const createUpdatePayload = (data: EditFlowVariantFormType) => {
     })
 
   return {
-    ...rest,
+    // @ts-ignore
+    ...general,
     ...customs,
+    ...stock,
+    ...dimensions,
+    ...customs,
+    // @ts-ignore
     origin_country: customs.origin_country
       ? customs.origin_country.value
       : null,
+    // @ts-ignore
     prices: priceArray,
     options: options.map((option) => ({
       option_id: option.id,
       value: option.value,
     })),
-    ...dimensions,
   }
 }
 
