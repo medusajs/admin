@@ -11,6 +11,7 @@ import Button from "../../../components/fundamentals/button"
 import Modal from "../../../components/molecules/modal"
 import AddressForm, {
   AddressPayload,
+  Type,
 } from "../../../components/templates/address-form"
 import useNotification from "../../../hooks/use-notification"
 import { isoAlpha2Countries } from "../../../utils/countries"
@@ -39,7 +40,7 @@ type AddressModalProps = {
   submitting?: boolean
   allowedCountries?: Country[]
   address?: Address
-  type: "shipping" | "billing"
+  type: Type
 }
 
 const AddressModal = ({
@@ -91,7 +92,7 @@ const AddressModal = ({
         <Modal.Body>
           <Modal.Header handleClose={handleClose}>
             <span className="inter-xlarge-semibold">
-              {type === "billing" ? "Billing" : "Shipping"} Address
+              {type === Type.BILLING ? "Billing" : "Shipping"} Address
             </span>
           </Modal.Header>
           <Modal.Content>

@@ -23,7 +23,6 @@ const EmailModal: React.FC<EmailModalProps> = ({
   email,
   handleClose,
 }) => {
-  // const { refetch } = useAdminOrder(orderId)
   const { mutate: updateEmail, isLoading } = useAdminUpdateOrder(orderId)
   const { register, handleSubmit } = useForm<EmailModalFormData>({
     defaultValues: { email },

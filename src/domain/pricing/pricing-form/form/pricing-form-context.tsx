@@ -1,15 +1,18 @@
 import React, { useState } from "react"
 import {
-  FormProvider, SubmitHandler, useForm,
+  FieldValues,
+  FormProvider,
+  SubmitHandler,
+  useForm,
   useFormContext,
-  useWatch
+  useWatch,
 } from "react-hook-form"
 import { weekFromNow } from "../../../../utils/date-utils"
 import {
   ConfigurationField,
   CreatePriceListPricesFormValues,
   PriceListFormValues,
-  PriceListType
+  PriceListType,
 } from "../types"
 
 const defaultState: PriceListFormValues = {
@@ -23,13 +26,16 @@ const defaultState: PriceListFormValues = {
 }
 
 const PriceListFormContext = React.createContext<{
-  configFields: Pick<PriceListFormValues, "starts_at" | "ends_at" | "customer_groups">
+  configFields: Pick<
+    PriceListFormValues,
+    "starts_at" | "ends_at" | "customer_groups"
+  >
   handleConfigurationSwitch: (values: string[]) => void
   prices: CreatePriceListPricesFormValues | null
   setPrices: React.Dispatch<
     React.SetStateAction<CreatePriceListPricesFormValues | null>
   >
-  handleSubmit: <T>(
+  handleSubmit: <T extends FieldValues>(
     submitHandler: SubmitHandler<T>
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>
 } | null>(null)
@@ -43,7 +49,7 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
   children,
 }) => {
   const [configFields, setConfigFields] = useState<
-    Pick<PriceListFormValues, "starts_at" | "ends_at" | "customer_groups">
+    Pick<PriceListFormValues, "starts_at" | "ends_at" | "customer_groups">
   >({
     customer_groups: priceList.customer_groups,
     ends_at: priceList.ends_at,

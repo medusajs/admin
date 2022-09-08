@@ -18,10 +18,16 @@ export type AddressPayload = {
   phone: string | null
 }
 
+export declare enum Type {
+  SHIPPING = "shipping",
+  BILLING = "billing",
+  ADDRESS = "address",
+}
+
 type AddressFormProps = {
   form: NestedForm<AddressPayload>
   countryOptions: Option[]
-  type: "shipping" | "billing" | "address"
+  type: Type
   required?: boolean
 }
 
@@ -66,9 +72,7 @@ const AddressForm = ({
       </div>
 
       <span className="inter-base-semibold">{`${
-        type !== "address"
-          ? `${type.charAt(0).toUpperCase()}${type.slice(1)} `
-          : ""
+        type === Type.BILLING ? "Billing" : Type.SHIPPING ? "Shipping" : ""
       }Address`}</span>
       <div className="grid grid-cols-1 gap-y-base mt-4">
         <Input

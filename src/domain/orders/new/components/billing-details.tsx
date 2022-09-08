@@ -39,28 +39,6 @@ const Billing = () => {
     form.setValue("same_as_shipping", !sameAsShipping)
   }
 
-  // useEffect(() => {
-  //   if (!useShipping) {
-  //     form.resetField("billing_address")
-  //     form.resetField("billing_address_id")
-  //     form.setValue("same_as_shipping", false)
-  //   } else {
-  //     form.setValue("same_as_shipping", true)
-  //   }
-  // }, [sameAsShipping])
-
-  // const onUseShipping = () => {
-  //   setUseShipping(!useShipping)
-
-  //   if (shippingAddressId) {
-  //     form.setValue("billing_address_id", shippingAddressId)
-  //   }
-
-  //   if (shippingAddress) {
-  //     form.setValue("billing_address", shippingAddress)
-  //   }
-  // }
-
   return (
     <div className="min-h-[705px]">
       <span className="inter-base-semibold">Billing Address</span>

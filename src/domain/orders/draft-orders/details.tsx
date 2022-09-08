@@ -24,6 +24,7 @@ import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import { Type } from "../../../components/templates/address-form"
 import useNotification from "../../../hooks/use-notification"
 import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -52,7 +53,7 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
   )
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
-    type: "billing" | "shipping"
+    type: Type
   }>(null)
 
   const { draft_order, isLoading } = useAdminDraftOrder(id)
@@ -107,34 +108,6 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
     return cancelOrder.mutate(void {}, {
       onSuccess: () =>
         notification("Success", "Successfully canceled order", "success"),
-      onError: (err) => notification("Error", getErrorMessage(err), "error"),
-    })
-  }
-
-  const handleUpdateAddress = async ({ data, type }) => {
-    const { email, ...rest } = data
-
-    const updateObj = {}
-
-    if (type === "shipping") {
-      updateObj["shipping_address"] = {
-        ...rest,
-      }
-    } else {
-      updateObj["billing_address"] = {
-        ...rest,
-      }
-    }
-
-    if (email) {
-      updateObj["email"] = email
-    }
-
-    return updateOrder.mutate(updateObj, {
-      onSuccess: () => {
-        notification("Success", "Successfully updated address", "success")
-        setAddressModal(null)
-      },
       onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
@@ -416,7 +389,7 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
                   onClick: () =>
                     setAddressModal({
                       address: cart?.shipping_address,
-                      type: "shipping",
+                      type: Type.SHIPPING,
                     }),
                 },
                 {
@@ -426,7 +399,7 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
                     if (cart?.billing_address) {
                       setAddressModal({
                         address: cart?.billing_address,
-                        type: "billing",
+                        type: Type.BILLING,
                       })
                     }
                   },
@@ -501,10 +474,10 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
       {addressModal && (
         <AddressModal
           handleClose={() => setAddressModal(null)}
-          handleSave={(obj) => handleUpdateAddress(obj)}
+          submit={updateOrder.mutate}
           address={addressModal.address}
           type={addressModal.type}
-          email={cart?.email}
+          allowedCountries={region?.countries}
         />
       )}
       {/* An attempt to make a reusable delete prompt, so we don't have to hold +10

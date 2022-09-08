@@ -31,11 +31,9 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
   fulfillment,
   handleCancel,
 }) => {
-  const { control, register, watch, handleSubmit } = useForm<
-    MarkShippedFormData
-  >({
+  const { control, watch, handleSubmit } = useForm<MarkShippedFormData>({
     defaultValues: {
-      tracking_numbers: [{ value: "" }, { value: "" }],
+      tracking_numbers: [{ value: "" }],
     },
     shouldUnregister: true,
   })
@@ -121,13 +119,13 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
   }
 
   return (
-    <Modal handleClose={handleCancel}>
+    <Modal handleClose={handleCancel} isLargeModal>
       <form
         onSubmit={handleSubmit(onSubmit, (errors) => {
           console.log(errors)
         })}
       >
-        <Modal.Body isLargeModal>
+        <Modal.Body>
           <Modal.Header handleClose={handleCancel}>
             <span className="inter-xlarge-semibold">
               Mark Fulfillment Shipped
