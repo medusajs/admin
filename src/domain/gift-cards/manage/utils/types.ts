@@ -1,6 +1,6 @@
 import { FormImage, Option } from "../../../../types/shared"
 
-export type MangeGiftCardFormData = {
+export type ManageGiftCardFormData = {
   title: string
   handle?: string
   subtitle?: string | null

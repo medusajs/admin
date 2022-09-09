@@ -18,6 +18,7 @@ import BodyCard from "../../../../components/organisms/body-card"
 import DetailsCollapsible from "../../../../components/organisms/details-collapsible"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import FormValidator from "../../../../utils/form-validator"
 import { useGiftCardForm } from "../form/gift-card-form-context"
 
 type InformationProps = {
@@ -26,7 +27,12 @@ type InformationProps = {
 
 const Information: React.FC<InformationProps> = ({ giftCard }) => {
   const {
-    form: { register, setValue, control },
+    form: {
+      register,
+      setValue,
+      control,
+      formState: { errors },
+    },
   } = useGiftCardForm()
   const notification = useNotification()
   const { product_types } = useAdminProductTypes(undefined, {
@@ -113,18 +119,32 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
           <Input
             label="Name"
             placeholder="Add name"
+            required
             defaultValue={giftCard?.title}
-            {...register("title", { required: true })}
+            {...register("title", {
+              required: FormValidator.required("Name"),
+              pattern: FormValidator.whiteSpaceRule("Name"),
+              minLength: FormValidator.minOneCharRule("Name"),
+            })}
+            errors={errors}
           />
           <Input
             label="Subtitle"
             placeholder="Add a subtitle"
-            {...register("subtitle")}
+            {...register("subtitle", {
+              pattern: FormValidator.whiteSpaceRule("Subtitle"),
+              minLength: FormValidator.minOneCharRule("Subtitle"),
+            })}
+            errors={errors}
           />
           <TextArea
             label="Description"
             placeholder="Add a description"
-            {...register("description")}
+            {...register("description", {
+              pattern: FormValidator.whiteSpaceRule("Description"),
+              minLength: FormValidator.minOneCharRule("Description"),
+            })}
+            errors={errors}
           />
         </div>
         <DetailsCollapsible
@@ -137,8 +157,12 @@ const Information: React.FC<InformationProps> = ({ giftCard }) => {
             <Input
               label="Handle"
               placeholder="Product handle"
-              {...register("handle")}
+              {...register("handle", {
+                pattern: FormValidator.whiteSpaceRule("Handle"),
+                minLength: FormValidator.minOneCharRule("Handle"),
+              })}
               tooltipContent="URL of the product"
+              errors={errors}
             />
             <Controller
               control={control}

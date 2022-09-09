@@ -4,12 +4,12 @@ import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import useNotification from "../../../../hooks/use-notification"
 import { handleFormError } from "../../../../utils/handle-form-error"
 import { trimValues } from "../../../../utils/trim-values"
-import { MangeGiftCardFormData } from "../utils/types"
+import { ManageGiftCardFormData } from "../utils/types"
 import { formValuesToUpdateGiftCardMapper } from "./mappers"
 
 type GiftCardFormProviderProps = {
   giftCardId: string
-  giftCard: MangeGiftCardFormData
+  giftCard: ManageGiftCardFormData
   children: React.ReactNode
 }
 
@@ -20,11 +20,16 @@ export const GiftCardFormProvider = ({
 }: GiftCardFormProviderProps) => {
   const [imageDirtyState, setImageDirtyState] = useState(false)
 
-  const methods = useForm<MangeGiftCardFormData>()
+  const methods = useForm<ManageGiftCardFormData>()
 
   const resetForm = () => {
     methods.reset({
-      ...giftCard,
+      handle: giftCard.handle || undefined,
+      description: giftCard.description || undefined,
+      subtitle: giftCard.subtitle || undefined,
+      tags: giftCard.tags || [],
+      title: giftCard.title || undefined,
+      type: giftCard.type || undefined,
       thumbnail: giftCard.thumbnail || 0,
       images: giftCard.images || [],
     })
@@ -79,7 +84,7 @@ const GiftCardFormContext = React.createContext<{
 
 export const useGiftCardForm = () => {
   const context = React.useContext(GiftCardFormContext)
-  const form = useFormContext<MangeGiftCardFormData>()
+  const form = useFormContext<ManageGiftCardFormData>()
   if (!context) {
     throw new Error("useGiftCardForm must be a child of GiftCardFormContext")
   }

@@ -1,9 +1,9 @@
 import { AdminPostProductsProductReq, Product } from "@medusajs/medusa"
 import { prepareImages } from "../../../../utils/images"
-import { MangeGiftCardFormData } from "../utils/types"
+import { ManageGiftCardFormData } from "../utils/types"
 
 export const formValuesToUpdateGiftCardMapper = async (
-  values: MangeGiftCardFormData
+  values: ManageGiftCardFormData
 ): Promise<AdminPostProductsProductReq> => {
   const imagePayload = {} as Pick<
     AdminPostProductsProductReq,
@@ -25,17 +25,20 @@ export const formValuesToUpdateGiftCardMapper = async (
     title: values.title,
     subtitle: values.subtitle ?? undefined,
     description: values.description ?? undefined,
+    handle: values.handle ?? undefined,
     type: values.type
       ? { id: values.type?.value, value: values.type.label }
       : undefined,
     tags: values.tags?.map((tag) => ({ value: tag })) ?? [],
+    // @ts-ignore
+    sales_channels: undefined,
     ...imagePayload,
   }
 }
 
 export const giftCardToFormValuesMapper = (
   giftCard: Product
-): MangeGiftCardFormData => {
+): ManageGiftCardFormData => {
   let thumbnail = giftCard.images?.length
     ? giftCard.images.findIndex((img) => img.url === giftCard.thumbnail)
     : 0
@@ -45,6 +48,7 @@ export const giftCardToFormValuesMapper = (
     title: giftCard.title,
     subtitle: giftCard.subtitle,
     description: giftCard.description,
+    handle: giftCard.handle || undefined,
     type: giftCard.type
       ? { label: giftCard.type.value, value: giftCard.type.id }
       : null,
