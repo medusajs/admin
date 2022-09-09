@@ -83,7 +83,7 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             name="amount"
             rules={{
               min: FormValidator.nonNegativeNumberRule("Price"),
-              max: FormValidator.maxInteger("Price"),
+              max: FormValidator.maxInteger("Price", region.currency_code),
             }}
             render={({ field: { value, onChange } }) => {
               return (
@@ -147,7 +147,10 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             name="requirements.min_subtotal.amount"
             rules={{
               min: FormValidator.nonNegativeNumberRule("Min. subtotal"),
-              max: FormValidator.maxInteger("Min. subtotal"),
+              max: FormValidator.maxInteger(
+                "Min. subtotal",
+                region.currency_code
+              ),
               validate: (value) => {
                 if (!value) {
                   return true
@@ -182,7 +185,10 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             name="requirements.max_subtotal.amount"
             rules={{
               min: FormValidator.nonNegativeNumberRule("Max. subtotal"),
-              max: FormValidator.maxInteger("Max. subtotal"),
+              max: FormValidator.maxInteger(
+                "Max. subtotal",
+                region.currency_code
+              ),
               validate: (value) => {
                 if (!value) {
                   return true

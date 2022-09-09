@@ -98,7 +98,10 @@ const RefundMenu = ({ order, onDismiss }) => {
                   rules={{
                     required: FormValidator.required("Amount"),
                     min: FormValidator.min("Amount", 1),
-                    max: FormValidator.maxInteger("Amount"),
+                    max: FormValidator.maxInteger(
+                      "Amount",
+                      order.currency_code
+                    ),
                   }}
                   render={({ field: { value, onChange, onBlur } }) => (
                     <CurrencyInput.Amount

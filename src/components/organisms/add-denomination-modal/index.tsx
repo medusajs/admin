@@ -4,6 +4,7 @@ import React from "react"
 import { Controller, useForm } from "react-hook-form"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
+import FormValidator from "../../../utils/form-validator"
 import Button from "../../fundamentals/button"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
@@ -127,6 +128,7 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                 name="default_price"
                 rules={{
                   required: "Default value is required",
+                  max: FormValidator.maxInteger("Default value", storeCurrency),
                 }}
                 render={({ field: { onChange, value, ref } }) => {
                   return (
@@ -164,7 +166,14 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                           key={field.indexId}
                           name={`prices.${index}.price`}
                           rules={{
-                            required: true,
+                            required: FormValidator.required("Price"),
+                            validate: (val) => {
+                              return FormValidator.validateMaxInteger(
+                                "Price",
+                                val.amount,
+                                val.currency_code
+                              )
+                            },
                           }}
                           defaultValue={field.price}
                           render={({ field: { onChange, value } }) => {
