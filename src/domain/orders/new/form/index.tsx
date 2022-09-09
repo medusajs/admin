@@ -127,24 +127,17 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
         const minSubtotal = next.requirements.find(
           (req) => req.type === "min_subtotal"
         )
-
-        if (minSubtotal) {
-          if (total <= minSubtotal.amount) {
-            return acc
-          }
-        }
-
         const maxSubtotal = next.requirements.find(
           (req) => req.type === "max_subtotal"
         )
 
-        if (maxSubtotal) {
-          if (total >= maxSubtotal.amount) {
-            return acc
-          }
+        if (
+          (minSubtotal && total <= minSubtotal.amount) ||
+          (maxSubtotal && total >= maxSubtotal.amount)
+        ) {
+          return acc
         }
       }
-
       acc.push(next)
       return acc
     }, [] as ShippingOption[])

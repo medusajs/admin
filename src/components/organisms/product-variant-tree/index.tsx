@@ -34,7 +34,10 @@ const ProductVariantTree: React.FC<ProductVariantTreeProps> = ({
         actions={getProductActions && getProductActions(product as Product)}
       >
         <div>
-          <img src={product.thumbnail} className="w-4 h-5 rounded-base" />
+          <img
+            src={product.thumbnail || undefined}
+            className="w-4 h-5 rounded-base"
+          />
         </div>
         <span className="inter-small-semibold">{product.title}</span>
       </CollapsibleTree.Parent>

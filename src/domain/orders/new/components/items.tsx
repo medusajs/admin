@@ -206,16 +206,13 @@ const Items = () => {
                                 setEditPrice(-1)
                               }}
                               prefix={getNativeSymbol(region.currency_code)}
-                              onChange={
-                                (e) => {
-                                  handlePriceChange(
-                                    index,
-                                    +e.target.value,
-                                    region.currency_code
-                                  )
-                                }
-                                // handlePriceChange(e.target.value, index)
-                              }
+                              onChange={(e) => {
+                                handlePriceChange(
+                                  index,
+                                  +e.target.value,
+                                  region.currency_code
+                                )
+                              }}
                             />
                           )
                         }}
