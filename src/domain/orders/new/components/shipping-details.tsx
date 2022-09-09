@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
 import AddressForm, {
-  Type,
+  AddressType,
 } from "../../../../components/templates/address-form"
 import Medusa from "../../../../services/api"
 
@@ -241,7 +241,7 @@ const ShippingDetails = () => {
           <AddressForm
             form={nestedForm(form, "shipping_address")}
             countryOptions={validCountries}
-            type={Type.SHIPPING}
+            type={AddressType.SHIPPING}
             required={requiredFields}
           />
         </div>

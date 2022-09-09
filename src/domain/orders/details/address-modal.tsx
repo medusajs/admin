@@ -11,22 +11,22 @@ import Button from "../../../components/fundamentals/button"
 import Modal from "../../../components/molecules/modal"
 import AddressForm, {
   AddressPayload,
-  Type,
+  AddressType,
 } from "../../../components/templates/address-form"
 import useNotification from "../../../hooks/use-notification"
 import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { nestedForm } from "../../../utils/nested-form"
 
-type AddressType =
+type AddressPayloadType =
   | AdminPostOrdersOrderReq["shipping_address"]
   | Partial<AdminPostOrdersOrderReq["shipping_address"]>
   | AdminPostDraftOrdersReq["shipping_address"]
   | Partial<AdminPostDraftOrdersReq["shipping_address"]>
 
 type TVariables = {
-  shipping_address?: AddressType
-  billing_address?: AddressType
+  shipping_address?: AddressPayloadType
+  billing_address?: AddressPayloadType
 }
 
 type MutateAction = <T extends TVariables>(
@@ -40,7 +40,7 @@ type AddressModalProps = {
   submitting?: boolean
   allowedCountries?: Country[]
   address?: Address
-  type: Type
+  type: AddressType
 }
 
 const AddressModal = ({
@@ -54,6 +54,9 @@ const AddressModal = ({
   const form = useForm<AddressPayload>({
     defaultValues: mapAddressToFormData(address),
   })
+  const {
+    formState: { isDirty },
+  } = form
   const notification = useNotification()
 
   const countryOptions = allowedCountries
@@ -92,7 +95,7 @@ const AddressModal = ({
         <Modal.Body>
           <Modal.Header handleClose={handleClose}>
             <span className="inter-xlarge-semibold">
-              {type === Type.BILLING ? "Billing" : "Shipping"} Address
+              {type === AddressType.BILLING ? "Billing" : "Shipping"} Address
             </span>
           </Modal.Header>
           <Modal.Content>
@@ -119,6 +122,7 @@ const AddressModal = ({
                 variant="primary"
                 type="submit"
                 loading={submitting}
+                disabled={submitting || !isDirty}
               >
                 Save
               </Button>

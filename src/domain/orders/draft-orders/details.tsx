@@ -24,7 +24,7 @@ import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import { Type } from "../../../components/templates/address-form"
+import { AddressType } from "../../../components/templates/address-form"
 import useNotification from "../../../hooks/use-notification"
 import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -53,7 +53,7 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
   )
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
-    type: Type
+    type: AddressType
   }>(null)
 
   const { draft_order, isLoading } = useAdminDraftOrder(id)
@@ -389,7 +389,7 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
                   onClick: () =>
                     setAddressModal({
                       address: cart?.shipping_address,
-                      type: Type.SHIPPING,
+                      type: AddressType.SHIPPING,
                     }),
                 },
                 {
@@ -399,7 +399,7 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
                     if (cart?.billing_address) {
                       setAddressModal({
                         address: cart?.billing_address,
-                        type: Type.BILLING,
+                        type: AddressType.BILLING,
                       })
                     }
                   },

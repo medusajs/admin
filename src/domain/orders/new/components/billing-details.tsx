@@ -3,7 +3,7 @@ import React from "react"
 import { useWatch } from "react-hook-form"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import AddressForm, {
-  Type,
+  AddressType,
 } from "../../../../components/templates/address-form"
 import isNullishObject from "../../../../utils/is-nullish-object"
 import { nestedForm } from "../../../../utils/nested-form"
@@ -74,7 +74,7 @@ const Billing = () => {
         <AddressForm
           countryOptions={validCountries}
           form={nestedForm(form, "billing_address")}
-          type={Type.BILLING}
+          type={AddressType.BILLING}
         />
       </div>
     </div>

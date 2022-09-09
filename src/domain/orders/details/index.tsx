@@ -31,7 +31,7 @@ import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
-import { Type } from "../../../components/templates/address-form"
+import { AddressType } from "../../../components/templates/address-form"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
@@ -119,7 +119,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
 
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
-    type: Type
+    type: AddressType
   }>(null)
 
   const [emailModal, setEmailModal] = useState<null | {
@@ -228,7 +228,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
       onClick: () =>
         setAddressModal({
           address: order?.shipping_address,
-          type: Type.SHIPPING,
+          type: AddressType.SHIPPING,
         }),
     })
   }
@@ -241,7 +241,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
         if (order.billing_address) {
           setAddressModal({
             address: order?.billing_address,
-            type: Type.BILLING,
+            type: AddressType.BILLING,
           })
         }
       },
