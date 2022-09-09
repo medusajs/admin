@@ -1,6 +1,8 @@
 import { ValidationRule } from "react-hook-form"
 import { normalizeAmount } from "./prices"
 
+const MAX_INTEGER = 2147483647
+
 const FormValidator = {
   whiteSpaceRule: (name: string) =>
     ({
@@ -32,20 +34,22 @@ const FormValidator = {
     message: `${name} must be at least ${min} characters.`,
   }),
   maxInteger: (name: string, currency?: string) => {
-    const max = 2147483647
-    const normalizedAmount = currency ? normalizeAmount(currency, max) : max
+    const normalizedAmount = currency
+      ? normalizeAmount(currency, MAX_INTEGER)
+      : MAX_INTEGER
 
     return {
-      value: max,
+      value: MAX_INTEGER,
       message: `${name} must be less than or equal to ${normalizedAmount.toLocaleString()}.`,
     }
   },
   validateMaxInteger: (name: string, amount: number, currency?: string) => {
-    const max = 2147483647
-    const normalizedAmount = currency ? normalizeAmount(currency, max) : max
+    const normalizedAmount = currency
+      ? normalizeAmount(currency, MAX_INTEGER)
+      : MAX_INTEGER
 
     return (
-      amount <= max ||
+      amount <= MAX_INTEGER ||
       `${name} must be less than or equal to ${normalizedAmount.toLocaleString()}.`
     )
   },
