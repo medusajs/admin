@@ -83,6 +83,7 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             name="amount"
             rules={{
               min: FormValidator.nonNegativeNumberRule("Price"),
+              max: FormValidator.maxInteger("Price"),
             }}
             render={({ field: { value, onChange } }) => {
               return (
@@ -145,7 +146,8 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             control={control}
             name="requirements.min_subtotal.amount"
             rules={{
-              min: FormValidator.nonNegativeNumberRule("Max. subtotal"),
+              min: FormValidator.nonNegativeNumberRule("Min. subtotal"),
+              max: FormValidator.maxInteger("Min. subtotal"),
               validate: (value) => {
                 if (!value) {
                   return true
@@ -167,7 +169,7 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
                   <PriceFormInput
                     amount={value || undefined}
                     onChange={onChange}
-                    name="requirements.min_subtotal"
+                    name="requirements.min_subtotal.amount"
                     currencyCode={region.currency_code}
                     errors={errors}
                   />
@@ -180,6 +182,7 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             name="requirements.max_subtotal.amount"
             rules={{
               min: FormValidator.nonNegativeNumberRule("Max. subtotal"),
+              max: FormValidator.maxInteger("Max. subtotal"),
               validate: (value) => {
                 if (!value) {
                   return true
@@ -194,14 +197,14 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
                 return true
               },
             }}
-            render={({ field: { value, onChange } }) => {
+            render={({ field: { value, onChange, ref } }) => {
               return (
-                <div>
+                <div ref={ref}>
                   <InputHeader label="Max. subtotal" className="mb-xsmall" />
                   <PriceFormInput
                     amount={value || undefined}
                     onChange={onChange}
-                    name="requirements.max_subtotal"
+                    name="requirements.max_subtotal.amount"
                     currencyCode={region.currency_code}
                     errors={errors}
                   />

@@ -12,6 +12,7 @@ import CurrencyInput from "../../../../components/organisms/currency-input"
 import useNotification from "../../../../hooks/use-notification"
 import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import FormValidator from "../../../../utils/form-validator"
 
 type RefundMenuFormData = {
   amount: number
@@ -94,7 +95,11 @@ const RefundMenu = ({ order, onDismiss }) => {
                 <Controller
                   name="amount"
                   control={control}
-                  rules={{ required: true, min: 1 }}
+                  rules={{
+                    required: FormValidator.required("Amount"),
+                    min: FormValidator.min("Amount", 1),
+                    max: FormValidator.maxInteger("Amount"),
+                  }}
                   render={({ field: { value, onChange, onBlur } }) => (
                     <CurrencyInput.Amount
                       label={"Refund Amount"}

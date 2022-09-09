@@ -30,6 +30,10 @@ const FormValidator = {
     value: min,
     message: `${name} must be at least ${min} characters.`,
   }),
+  maxInteger: (name: string) => ({
+    value: 2147483647,
+    message: `${name} must be an integer less than or equal to 2147483647.`,
+  }),
 }
 
 export default FormValidator
