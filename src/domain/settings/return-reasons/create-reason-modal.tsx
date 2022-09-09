@@ -5,7 +5,9 @@ import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
+import TextArea from "../../../components/molecules/textarea"
 import useNotification from "../../../hooks/use-notification"
+import FormValidator from "../../../utils/form-validator"
 
 type CreateReturnReasonModalProps = {
   handleClose: () => void
@@ -23,7 +25,11 @@ const CreateReturnReasonModal = ({
   handleClose,
   initialReason,
 }: CreateReturnReasonModalProps) => {
-  const { register, handleSubmit } = useForm<CreateReturnReasonFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateReturnReasonFormData>({
     defaultValues: {
       value: initialReason?.value,
       label: initialReason?.label,
@@ -63,24 +69,37 @@ const CreateReturnReasonModal = ({
         </Modal.Header>
         <form onSubmit={handleSubmit(onCreate)}>
           <Modal.Content>
-            <div className="flex">
+            <div className="grid grid-cols-2 gap-large mb-large">
               <Input
-                {...register("value", { required: true })}
+                {...register("value", {
+                  required: "Value is required",
+                  pattern: FormValidator.whiteSpaceRule("Value"),
+                  minLength: FormValidator.minOneCharRule("Value"),
+                })}
                 label="Value"
+                required
                 placeholder="wrong_size"
+                errors={errors}
               />
               <Input
-                className="ml-base"
-                {...register("label", { required: true })}
+                {...register("label", {
+                  required: "Label is required",
+                  pattern: FormValidator.whiteSpaceRule("Label"),
+                  minLength: FormValidator.minOneCharRule("Label"),
+                })}
                 label="Label"
+                required
                 placeholder="Wrong size"
+                errors={errors}
               />
             </div>
-            <Input
+            <TextArea
               className="mt-large"
+              rows={3}
               {...register("description")}
               label="Description"
               placeholder="Customer received the wrong size"
+              errors={errors}
             />
           </Modal.Content>
           <Modal.Footer>

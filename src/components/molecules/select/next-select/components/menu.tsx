@@ -43,7 +43,7 @@ const Menu = <
     return () => {
       window.removeEventListener("resize", closeOnResize)
     }
-  }, [])
+  }, [menuIsOpen, onMenuClose])
 
   return (
     <div
@@ -124,14 +124,9 @@ const SelectAllOption = <
   }, [isAllSelected, options])
 
   useEffect(() => {
-    if (
-      document.activeElement !== null &&
-      document.activeElement === ref.current
-    ) {
-      setIsFocused(true)
-    } else {
-      setIsFocused(false)
-    }
+    setIsFocused(
+      document.activeElement !== null && document.activeElement === ref.current
+    )
 
     return () => {
       setIsFocused(false)

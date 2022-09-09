@@ -8,8 +8,6 @@ import LayeredModal, {
 import EditForm, { SimpleEditForm } from "./edit-form"
 
 const EditTaxRate = ({ taxRate, taxRateId, regionId, onDismiss }) => {
-  console.log(taxRate)
-
   const { isLoading, tax_rate } = useAdminTaxRate(
     taxRateId,
     {

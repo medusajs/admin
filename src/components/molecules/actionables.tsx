@@ -27,7 +27,7 @@ const Actionables: React.FC<ActionablesProps> = ({
     return null
   }
 
-  return (actions && actions.length > 1) || (forceDropdown && actions) ? (
+  return actions && (forceDropdown || actions.length > 1) ? (
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>

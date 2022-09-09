@@ -3,13 +3,16 @@ import { useAdminUpdateRegion, useAdminUpdateTaxRate } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
-import LockIcon from "../../../components/fundamentals/icons/lock-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import { ILayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
+import { nestedForm } from "../../../utils/nested-form"
+import {
+  EditTaxRateDetails,
+  EditTaxRateFormType,
+} from "./edit-tax-rate-details"
 import { TaxRuleItem } from "./tax-rule-item"
 import TaxRuleSelector from "./tax-rule-selector"
 
@@ -35,18 +38,19 @@ const EditTaxRate = ({
   const updateTaxRate = useAdminUpdateTaxRate(taxRate.id)
 
   const [updatedRules, setUpdatedRules] = useState({})
-  const { register, setValue, handleSubmit, watch } = useForm<
-    EditTaxRateFormData
-  >({
+  const form = useForm<EditTaxRateFormData>({
     defaultValues: {
-      name: taxRate.name,
-      code: taxRate.code || undefined,
-      rate: taxRate.rate || undefined,
+      details: {
+        name: taxRate.name,
+        code: taxRate.code || undefined,
+        rate: taxRate.rate || undefined,
+      },
       products: taxRate.products.map((p) => p.id),
       product_types: taxRate.product_types.map((p) => p.id),
       shipping_options: taxRate.shipping_options.map((p) => p.id),
     },
   })
+  const { register, setValue, handleSubmit, watch } = form
   const notification = useNotification()
 
   const onSave = (data) => {
@@ -105,30 +109,8 @@ const EditTaxRate = ({
   return (
     <form onSubmit={handleSubmit(onSave)}>
       <Modal.Content>
-        <div>
-          <p className="inter-base-semibold mb-base">Details</p>
-          <Input
-            label="Name"
-            placeholder="Rate name"
-            {...register("name", { required: true })}
-            className="mb-base min-w-[335px] w-full"
-          />
-          <Input
-            type="number"
-            min={0}
-            max={100}
-            step={0.01}
-            label="Rate"
-            placeholder="12"
-            {...register("rate", { min: 0, max: 100, required: true })}
-            className="mb-base min-w-[335px] w-full"
-          />
-          <Input
-            placeholder="1000"
-            label="Code"
-            {...register("code", { required: true })}
-            className="mb-base min-w-[335px] w-full"
-          />
+        <div className="mb-xlarge">
+          <EditTaxRateDetails form={nestedForm(form, "details")} />
         </div>
         <div>
           <p className="inter-base-semibold mb-base">Overrides</p>
@@ -294,27 +276,28 @@ type SimpleEditFormProps = {
 }
 
 export interface SimpleEditFormData {
-  name: string
-  rate: number
-  code: string
+  details: EditTaxRateFormType
 }
 
 export const SimpleEditForm = ({ onDismiss, taxRate }: SimpleEditFormProps) => {
   const updateRegion = useAdminUpdateRegion(taxRate.id)
 
-  const { register, handleSubmit } = useForm<SimpleEditFormData>({
+  const form = useForm<SimpleEditFormData>({
     defaultValues: {
-      name: taxRate.name,
-      rate: taxRate.rate || undefined,
-      code: taxRate.code || undefined,
+      details: {
+        name: taxRate.name,
+        rate: taxRate.rate || undefined,
+        code: taxRate.code || undefined,
+      },
     },
   })
+  const { handleSubmit } = form
   const notification = useNotification()
 
   const onSave = (data: SimpleEditFormData) => {
     const toSubmit = {
-      tax_rate: data.rate,
-      tax_code: data.code,
+      tax_rate: data.details.rate,
+      tax_code: data.details.code,
     }
     updateRegion.mutate(toSubmit, {
       onSuccess: () => {
@@ -330,42 +313,7 @@ export const SimpleEditForm = ({ onDismiss, taxRate }: SimpleEditFormProps) => {
   return (
     <form onSubmit={handleSubmit(onSave)}>
       <Modal.Content>
-        <div>
-          <p className="inter-base-semibold mb-base">Details</p>
-          <Input
-            disabled
-            readOnly
-            prefix={<LockIcon size={16} />}
-            tabIndex={-1}
-            label="Name"
-            placeholder="Default"
-            value={taxRate.name}
-            className="mb-base min-w-[335px] w-full opacity-50 pointer-events-none"
-          />
-          <Input
-            type="number"
-            min={0}
-            max={100}
-            step={1}
-            label="Rate"
-            placeholder="12"
-            {...register("rate", {
-              min: 0,
-              max: 100,
-              required: true,
-              valueAsNumber: true,
-            })}
-            className="mb-base min-w-[335px] w-full"
-            required
-          />
-          <Input
-            required
-            placeholder="1000"
-            label="Code"
-            {...register("code", { required: true })}
-            className="mb-base min-w-[335px] w-full"
-          />
-        </div>
+        <EditTaxRateDetails form={nestedForm(form, "details")} lockName />
       </Modal.Content>
       <Modal.Footer>
         <div className="flex items-center justify-end w-full">

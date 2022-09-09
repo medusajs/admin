@@ -3,13 +3,17 @@ import React, { useContext } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import Input from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
+import { nestedForm } from "../../../utils/nested-form"
+import {
+  EditTaxRateDetails,
+  EditTaxRateFormType,
+} from "./edit-tax-rate-details"
 import { TaxRuleItem } from "./tax-rule-item"
 import TaxRuleSelector from "./tax-rule-selector"
 
@@ -19,9 +23,7 @@ type NewTaxRateProps = {
 }
 
 type NewTaxRateFormData = {
-  code: string
-  name: string
-  rate: number
+  details: EditTaxRateFormType
   shipping_options: string[]
   product_types: string[]
   products: string[]
@@ -29,15 +31,14 @@ type NewTaxRateFormData = {
 
 const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
   const createTaxRate = useAdminCreateTaxRate()
-  const { register, setValue, handleSubmit, watch } = useForm<
-    NewTaxRateFormData
-  >({
+  const form = useForm<NewTaxRateFormData>({
     defaultValues: {
       products: [],
       product_types: [],
       shipping_options: [],
     },
   })
+  const { setValue, handleSubmit, watch } = form
   const notification = useNotification()
 
   const layeredModalContext = useContext(LayeredModalContext)
@@ -46,6 +47,9 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
     createTaxRate.mutate(
       {
         ...data,
+        name: data.details.name,
+        code: data.details.code,
+        rate: data.details.rate,
         region_id: regionId,
       },
       {
@@ -96,31 +100,7 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
             </div>
           </Modal.Header>
           <Modal.Content>
-            <div>
-              <p className="inter-base-semibold mb-base">Details</p>
-              <Input
-                {...register("name", { required: true })}
-                label="Name"
-                placeholder="Rate name"
-                className="mb-base min-w-[335px] w-full"
-              />
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                step={0.01}
-                {...register("rate", { min: 0, max: 100, required: true })}
-                label="Rate"
-                placeholder="12"
-                className="mb-base min-w-[335px] w-full"
-              />
-              <Input
-                placeholder="1000"
-                {...register("code", { required: true })}
-                label="Code"
-                className="mb-base min-w-[335px] w-full"
-              />
-            </div>
+            <EditTaxRateDetails form={nestedForm(form, "details")} />
             <div>
               <p className="inter-base-semibold mb-base">Overrides</p>
               {(product_types.length > 0 ||
