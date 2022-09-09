@@ -4,6 +4,7 @@ import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
+import FormValidator from "../../../utils/form-validator"
 import Button from "../../fundamentals/button"
 import InputField from "../../molecules/input"
 import Modal from "../../molecules/modal"
@@ -25,7 +26,12 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
   onSuccess,
 }) => {
   const { mutate, isLoading } = useAdminUpdateUser(user.id)
-  const { register, handleSubmit, reset } = useForm<EditUserModalFormData>()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<EditUserModalFormData>()
   const notification = useNotification()
 
   useEffect(() => {
@@ -55,17 +61,28 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
             <span className="inter-xlarge-semibold">Edit User</span>
           </Modal.Header>
           <Modal.Content>
-            <div className="w-full flex gap-x-base mb-base">
+            <div className="w-full grid grid-cols-2 gap-large mb-base">
               <InputField
                 label="First Name"
                 placeholder="First name..."
-                {...register("first_name", { required: true })}
-                className="mr-4"
+                required
+                {...register("first_name", {
+                  required: FormValidator.required("First name"),
+                  pattern: FormValidator.whiteSpaceRule("First name"),
+                  minLength: FormValidator.minOneCharRule("First name"),
+                })}
+                errors={errors}
               />
               <InputField
                 label="Last Name"
                 placeholder="Last name..."
-                {...register("last_name", { required: true })}
+                required
+                {...register("last_name", {
+                  required: FormValidator.required("Last name"),
+                  pattern: FormValidator.whiteSpaceRule("Last name"),
+                  minLength: FormValidator.minOneCharRule("last name"),
+                })}
+                errors={errors}
               />
             </div>
             <InputField label="Email" disabled value={user.email} />
