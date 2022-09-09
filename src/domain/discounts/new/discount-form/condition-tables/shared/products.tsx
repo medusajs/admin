@@ -73,9 +73,7 @@ export const useProductColumns = () => {
                     className="h-full object-cover rounded-soft"
                   />
                 ) : (
-                  <div className="flex items-center justify-center w-full h-full rounded-soft bg-grey-10">
-                    <ImagePlaceholder size={16} />
-                  </div>
+                  <ImagePlaceholder />
                 )}
               </div>
               <div className="flex flex-col">

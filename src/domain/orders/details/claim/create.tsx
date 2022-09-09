@@ -1,4 +1,5 @@
 import {
+  Address,
   AdminPostOrdersOrderClaimsReq,
   Order,
   ProductVariant,
@@ -8,7 +9,6 @@ import clsx from "clsx"
 import {
   useAdminCreateClaim,
   useAdminOrder,
-  useAdminRegion,
   useAdminShippingOptions,
 } from "medusa-react"
 import React, { useContext, useEffect, useState } from "react"
@@ -57,10 +57,11 @@ type CustomPrice = {
   standard: number
 }
 
-type AddressPayload =
+export type AddressPayload =
   | {
       address_1: string
       address_2: string
+      company: string
       city: string
       country_code: string
       first_name: string
@@ -96,7 +97,7 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
   const [shippingAddress, setShippingAddress] = useState<AddressPayload>(
     undefined
   )
-  const [countries, setCountries] = useState<string[]>([])
+
   const [isReplace, toggleReplace] = useState(false)
   const [noNotification, setNoNotification] = useState(order.no_notification)
   const [toReturn, setToReturn] = useState<ReturnRecord>({})
@@ -150,14 +151,6 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
     is_return: true,
     region_id: order.region_id,
   })
-
-  const { region } = useAdminRegion(order.region_id)
-
-  useEffect(() => {
-    if (region) {
-      setCountries(region.countries.map((c) => c.iso_2))
-    }
-  }, [region])
 
   const { shipping_options: shippingOptions } = useAdminShippingOptions({
     region_id: order.region_id,
@@ -500,7 +493,6 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
                               layeredModalContext.pop,
                               shippingAddress,
                               order,
-                              countries,
                               setShippingAddress
                             )
                           )
@@ -524,9 +516,8 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
                           layeredModalContext.push(
                             showEditAddressScreen(
                               layeredModalContext.pop,
-                              order.shipping_address,
+                              mapAddress(order.shipping_address),
                               order,
-                              countries,
                               setShippingAddress
                             )
                           )
@@ -591,13 +582,13 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
                         )}
                         {showCustomPrice.standard && (
                           <div className="flex w-full items-center">
-                            <CurrencyInput
+                            <CurrencyInput.Root
                               readOnly
                               className="mt-4 w-full"
                               size="small"
                               currentCurrency={order.currency_code}
                             >
-                              <CurrencyInput.AmountInput
+                              <CurrencyInput.Amount
                                 label={"Amount"}
                                 amount={customOptionPrice.standard}
                                 onChange={(value) =>
@@ -607,7 +598,7 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
                                   })
                                 }
                               />
-                            </CurrencyInput>
+                            </CurrencyInput.Root>
                             <Button
                               onClick={() =>
                                 setShowCustomPrice({
@@ -701,11 +692,10 @@ const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
 }
 
 const showEditAddressScreen = (
-  pop,
-  address,
-  order,
-  countries,
-  setShippingAddress
+  pop: () => void,
+  address: AddressPayload,
+  order: Omit<Order, "beforeInsert">,
+  setShippingAddress: (address: AddressPayload) => void
 ) => {
   return {
     title: "Edit Address",
@@ -715,9 +705,23 @@ const showEditAddressScreen = (
         onSubmit={setShippingAddress}
         address={address}
         order={order}
-        countries={countries}
       />
     ),
+  }
+}
+
+const mapAddress = (address: Address): AddressPayload => {
+  return {
+    first_name: address.first_name || "",
+    last_name: address.last_name || "",
+    company: address.company || "",
+    address_1: address.address_1 || "",
+    address_2: address.address_2 || "",
+    city: address.city || "",
+    province: address.province || "",
+    postal_code: address.postal_code || "",
+    country_code: address.country_code || "",
+    phone: address.phone || "",
   }
 }
 

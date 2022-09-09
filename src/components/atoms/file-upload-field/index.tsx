@@ -2,11 +2,12 @@ import clsx from "clsx"
 import React, { useRef, useState } from "react"
 
 type FileUploadFieldProps = {
-  onFileChosen: (files: any[]) => void
+  onFileChosen: (files: File[]) => void
   filetypes: string[]
   errorMessage?: string
   placeholder?: React.ReactElement | string
   className?: string
+  multiple?: boolean
   text?: React.ReactElement | string
 }
 
@@ -24,20 +25,25 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
   className,
   text = defaultText,
   placeholder = "",
+  multiple = false,
 }) => {
-  const inputRef = useRef(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [fileUploadError, setFileUploadError] = useState(false)
 
-  const handleFileUpload = (e) => {
-    onFileChosen(Array.from(e.target.files))
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files
+
+    if (fileList) {
+      onFileChosen(Array.from(fileList))
+    }
   }
 
-  const handleFileDrop = (e) => {
+  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
     setFileUploadError(false)
 
     e.preventDefault()
 
-    const files = []
+    const files: File[] = []
 
     if (e.dataTransfer.items) {
       // Use DataTransferItemList interface to access the file(s)
@@ -45,7 +51,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
         // If dropped items aren't files, reject them
         if (e.dataTransfer.items[i].kind === "file") {
           const file = e.dataTransfer.items[i].getAsFile()
-          if (filetypes.indexOf(file.type) > -1) {
+          if (file && filetypes.indexOf(file.type) > -1) {
             files.push(file)
           }
         }
@@ -67,7 +73,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
 
   return (
     <div
-      onClick={() => inputRef?.current.click()}
+      onClick={() => inputRef?.current?.click()}
       onDrop={handleFileDrop}
       onDragOver={(e) => e.preventDefault()}
       className={clsx(
@@ -87,6 +93,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
       <input
         ref={inputRef}
         accept={filetypes.join(", ")}
+        multiple={multiple}
         type="file"
         onChange={handleFileUpload}
         className="hidden"

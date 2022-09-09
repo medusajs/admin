@@ -1,7 +1,22 @@
-import React, { useState } from "react"
+import { AdminPostGiftCardsGiftCardReq, Region } from "@medusajs/medusa"
+import React, { useMemo } from "react"
+import { Controller, useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import Modal from "../../../components/molecules/modal"
 import Select from "../../../components/molecules/select"
+import { Option } from "../../../types/shared"
+
+type EditGiftCardModalProps = {
+  handleClose: () => void
+  handleSave: (update: AdminPostGiftCardsGiftCardReq) => void
+  updating: boolean
+  regions: Region[] | undefined
+  region: Region
+}
+
+type EditGiftCardModalFormData = {
+  region: Option
+}
 
 const EditGiftCardModal = ({
   handleClose,
@@ -9,28 +24,32 @@ const EditGiftCardModal = ({
   updating,
   regions,
   region,
-}) => {
-  // const [code, setCode] = useState(giftCard.code)
-  const [selectedRegion, setSelectedRegion] = useState({
-    value: region.id,
-    label: region.name,
+}: EditGiftCardModalProps) => {
+  const { control, handleSubmit } = useForm<EditGiftCardModalFormData>({
+    defaultValues: {
+      region: {
+        value: region.id,
+        label: region.name,
+      },
+    },
   })
 
-  const onSubmit = (e) => {
-    e.preventDefault()
-    if (handleSave) {
-      handleSave({ region_id: selectedRegion.value })
-    }
+  const onSubmit = (data: EditGiftCardModalFormData) => {
+    handleSave({ region_id: data.region.value })
   }
 
-  const regionOptions = regions.map((r) => ({
-    label: r.name,
-    value: r.id,
-  }))
+  const regionOptions: Option[] = useMemo(() => {
+    return (
+      regions?.map((r) => ({
+        label: r.name,
+        value: r.id,
+      })) || []
+    )
+  }, [regions])
 
   return (
     <Modal handleClose={handleClose} isLargeModal={true}>
-      <form onSubmit={(e) => onSubmit(e)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Modal.Body isLargeModal={true}>
           <Modal.Header handleClose={handleClose}>
             <span className="inter-xlarge-semibold">
@@ -46,11 +65,19 @@ const EditGiftCardModal = ({
               onChange={({ currentTarget }) => setCode(currentTarget.value)}
               className="mb-4"
             /> */}
-            <Select
-              label="Region"
-              options={regionOptions}
-              value={selectedRegion}
-              onChange={setSelectedRegion}
+            <Controller
+              control={control}
+              name="region"
+              render={({ field: { value, onChange } }) => {
+                return (
+                  <Select
+                    label="Region"
+                    options={regionOptions}
+                    value={value}
+                    onChange={onChange}
+                  />
+                )
+              }}
             />
           </Modal.Content>
           <Modal.Footer>

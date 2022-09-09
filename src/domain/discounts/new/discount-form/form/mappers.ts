@@ -2,7 +2,7 @@ import {
   AdminPostDiscountsDiscountReq,
   AdminPostDiscountsReq,
   AdminUpsertCondition,
-  Discount,
+  Discount
 } from "@medusajs/medusa"
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../../types/shared"
@@ -89,7 +89,7 @@ export const formValuesToCreateDiscountMapper = (
     ends_at: values.ends_at ?? undefined,
     regions: values.regions?.map((r) => r.value),
     starts_at: values.starts_at,
-    usage_limit: values.usage_limit ?? undefined,
+    usage_limit: values.usage_limit && values.usage_limit > 0 ? values.usage_limit : undefined,
     valid_duration:
       values.is_dynamic && values.valid_duration?.length
         ? values.valid_duration

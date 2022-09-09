@@ -21,10 +21,10 @@ const Type = () => {
         name="type"
         control={control}
         rules={{ required: true }}
-        render={({ onChange, value }) => {
+        render={({ field: { onChange, value } }) => {
           return (
             <RadioGroup.Root
-              value={value}
+              value={value ?? undefined}
               onValueChange={onChange}
               className="flex items-center gap-base group-radix-state-open:mt-5 accordion-margin-transition"
             >

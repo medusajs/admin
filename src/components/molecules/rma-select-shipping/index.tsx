@@ -21,22 +21,22 @@ const RMAShippingPrice: React.FC<RMAShippingPriceProps> = ({
   setUseCustomShippingPrice,
 }) => {
   return useCustomShippingPrice ? (
-    <div className="flex items-center mt-4">
-      <CurrencyInput
+    <div className="flex items-end mt-4">
+      <CurrencyInput.Root
         readOnly
         size="small"
         currentCurrency={currencyCode}
         className="w-full"
       >
-        <CurrencyInput.AmountInput
+        <CurrencyInput.Amount
           label={`Amount (${inclTax ? "incl." : "excl."} tax)`}
           amount={shippingPrice}
           onChange={updateShippingPrice}
         />
-      </CurrencyInput>
+      </CurrencyInput.Root>
       <Button
         onClick={() => setUseCustomShippingPrice(false)}
-        className="w-8 h-8 ml-8 text-grey-40"
+        className="w-10 h-10 ml-8 text-grey-40"
         variant="ghost"
         size="small"
       >

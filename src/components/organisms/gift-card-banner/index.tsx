@@ -19,8 +19,8 @@ type GiftCardVariant = {
 type GiftCardBannerProps = {
   title: string
   status: string
-  thumbnail?: string
-  description: string
+  thumbnail: string | null
+  description: string | null
   variants: GiftCardVariant[]
   defaultCurrency: string
   onEdit: () => void

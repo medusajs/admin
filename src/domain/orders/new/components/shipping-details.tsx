@@ -1,51 +1,35 @@
-import React, { useContext, useEffect, useState } from "react"
 import qs from "query-string"
-import Medusa from "../../../../services/api"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import Spinner from "../../../../components/atoms/spinner"
 import Button from "../../../../components/fundamentals/button"
-import AddressForm from "../../../../components/templates/address-form"
+import AddressForm, {
+  AddressType,
+} from "../../../../components/templates/address-form"
+import Medusa from "../../../../services/api"
 
+import { useAdminCustomer } from "medusa-react"
+import { Controller, useWatch } from "react-hook-form"
+import LockIcon from "../../../../components/fundamentals/icons/lock-icon"
+import InputField from "../../../../components/molecules/input"
+import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Select from "../../../../components/molecules/select"
 import RadioGroup from "../../../../components/organisms/radio-group"
-import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
+import { Option } from "../../../../types/shared"
+import isNullishObject from "../../../../utils/is-nullish-object"
+import mapAddressToForm from "../../../../utils/map-address-to-form"
+import { nestedForm } from "../../../../utils/nested-form"
+import { useNewOrderForm } from "../form"
 
-const ShippingDetails = ({
-  customerAddresses,
-  region,
-  setCustomerAddresses,
-  form,
-}) => {
+const ShippingDetails = () => {
   const [addNew, setAddNew] = useState(false)
-  const [fetchingAddresses, setFetchingAddresses] = useState(false)
-  const { disableNextPage, enableNextPage, nextStepEnabled } = useContext(
-    SteppedContext
-  )
+  const { disableNextPage, enableNextPage } = useContext(SteppedContext)
 
-  const { shipping, customer: selectedCustomer, requireShipping } = form.watch([
-    "shipping",
-    "customer",
-    "requireShipping",
-  ])
+  const {
+    context: { validCountries },
+    form,
+  } = useNewOrderForm()
 
-  useEffect(() => {
-    if (
-      !shipping?.first_name ||
-      !shipping?.last_name ||
-      !shipping?.address_1 ||
-      !shipping?.city ||
-      !shipping?.country_code ||
-      !shipping?.postal_code
-    ) {
-      if (nextStepEnabled) {
-        disableNextPage()
-      }
-    } else if (!nextStepEnabled) {
-      enableNextPage()
-    }
-  }, [shipping])
-
-  // "region",
-  const debouncedFetch = (filter) => {
+  const debouncedFetch = async (filter: string): Promise<Option[]> => {
     const prepared = qs.stringify(
       {
         q: filter,
@@ -55,7 +39,7 @@ const ShippingDetails = ({
       { skipNull: true, skipEmptyString: true }
     )
 
-    return Medusa.customers
+    return await Medusa.customers
       .list(`?${prepared}`)
       .then(({ data }) =>
         data.customers.map(({ id, first_name, last_name, email }) => ({
@@ -63,107 +47,184 @@ const ShippingDetails = ({
           value: id,
         }))
       )
-      .catch((error) => [])
+      .catch(() => [])
   }
 
-  const onCustomerSelect = async (val) => {
-    const email = /\(([^()]*)\)$/.exec(val?.label)
+  const customerId = useWatch({
+    control: form.control,
+    name: "customer_id",
+  })
 
-    if (!val || !email) {
-      form.setValue("customer", "")
-      form.setValue("customerId", "")
-      setCustomerAddresses([])
-      return
+  const { customer, isLoading } = useAdminCustomer(customerId?.value!, {
+    enabled: !!customerId?.value,
+  })
+
+  const validAddresses = useMemo(() => {
+    if (!customer) {
+      return []
     }
 
-    form.setValue("customer", val)
-    form.setValue("email", email[1])
-    form.setValue("customerId", val.value)
+    const validCountryCodes = validCountries.map(({ value }) => value)
 
-    setFetchingAddresses(true)
-    await Medusa.customers
-      .retrieve(val.value)
-      .then(({ data }) => {
-        form.setValue("shipping.first_name", data.customer.first_name)
-        form.setValue("shipping.last_name", data.customer.last_name)
-        form.setValue("shipping.email", data.customer.email)
-        form.setValue("shipping.phone", data.customer.phone)
-        const countries = region.countries.map(({ iso_2 }) => iso_2)
-        const inRegion = data.customer.shipping_addresses.filter((sa) =>
-          countries.includes(sa.country_code)
-        )
+    return customer.shipping_addresses.filter(
+      ({ country_code }) =>
+        !country_code || validCountryCodes.includes(country_code)
+    )
+  }, [customer])
 
-        if (inRegion) {
-          setAddNew(false)
-        }
-        setCustomerAddresses(inRegion)
-      })
-      .catch((_) => setCustomerAddresses([]))
-    setFetchingAddresses(false)
-  }
+  const onCustomerSelect = (val: Option) => {
+    const email = /\(([^()]*)\)$/.exec(val?.label)
 
-  const onCustomerCreate = (val) => {
-    setCustomerAddresses([])
-    setAddNew(true)
-    form.setValue("email", val)
-    form.setValue("customer", { label: val, value: val })
-    return { label: val, value: val }
+    if (email) {
+      form.setValue("email", email[1])
+    }
   }
 
   const onCreateNew = () => {
-    form.setValue("shipping.address_1", undefined)
-    form.setValue("shipping.postal_code", undefined)
-    form.setValue("shipping.city", undefined)
-    form.setValue("shipping.province", undefined)
-
+    form.setValue("shipping_address_id", undefined)
     setAddNew(true)
   }
 
-  return (
-    <div className="min-h-[705px]">
-      <span className="inter-base-semibold">Customer and shipping details</span>
-      <Select
-        className="mt-4"
-        label="Find or create a customer"
-        value={selectedCustomer}
-        options={[]}
-        enableSearch
-        onChange={(val) => onCustomerSelect(val)}
-        filterOptions={debouncedFetch}
-        isCreatable
-        onCreateOption={(val) => {
-          onCustomerCreate(val)
-        }}
-      />
+  const onSelectExistingAddress = (id: string) => {
+    if (!customer) {
+      return
+    }
 
-      {fetchingAddresses ? (
+    const address = customer.shipping_addresses?.find((a) => a.id === id)
+
+    if (address) {
+      form.setValue("shipping_address", mapAddressToForm(address))
+    }
+  }
+
+  const email = useWatch({
+    control: form.control,
+    name: "email",
+  })
+
+  useEffect(() => {
+    if (!email) {
+      disableNextPage()
+    } else {
+      enableNextPage()
+    }
+  }, [email])
+
+  const shippingAddress = useWatch({
+    control: form.control,
+    name: "shipping_address",
+  })
+
+  const [requiredFields, setRequiredFields] = useState(false)
+
+  useEffect(() => {
+    if (!email) {
+      disableNextPage()
+      return
+    }
+
+    if (shippingAddress && !isNullishObject(shippingAddress)) {
+      if (
+        !shippingAddress.first_name ||
+        !shippingAddress.last_name ||
+        !shippingAddress.address_1 ||
+        !shippingAddress.city ||
+        !shippingAddress.country_code ||
+        !shippingAddress.postal_code
+      ) {
+        disableNextPage()
+        setRequiredFields(true)
+      } else {
+        enableNextPage()
+      }
+    } else {
+      enableNextPage()
+      setRequiredFields(false)
+    }
+  }, [shippingAddress, email])
+
+  return (
+    <div className="min-h-[705px] flex flex-col gap-y-8">
+      <div>
+        <span className="inter-base-semibold">
+          Customer and shipping details
+        </span>
+        <Controller
+          control={form.control}
+          name="customer_id"
+          render={({ field: { value, onChange } }) => {
+            return (
+              <Select
+                className="mt-4"
+                label="Find existing customer"
+                options={[]}
+                enableSearch
+                value={value || null}
+                onChange={(val) => {
+                  onCustomerSelect(val)
+                  onChange(val)
+                }}
+                filterOptions={debouncedFetch as any}
+                clearSelected
+              />
+            )
+          }}
+        />
+      </div>
+
+      <div className="flex flex-col gap-y-4">
+        <span className="inter-base-semibold">Email</span>
+        <InputField
+          {...form.register("email")}
+          label="Email"
+          placeholder="lebron@james.com"
+          disabled={!!customerId}
+          required
+          // @ts-ignore
+          prefix={
+            !!customerId ? (
+              <LockIcon size={16} className="text-grey-40" />
+            ) : undefined
+          }
+          tabIndex={!!customerId ? -1 : 0}
+        />
+      </div>
+
+      {isLoading ? (
         <div>
           <Spinner variant="primary" />
         </div>
-      ) : customerAddresses.length && !addNew ? (
-        <div className="mt-6">
+      ) : validAddresses.length && !addNew ? (
+        <div>
           <span className="inter-base-semibold">Choose existing addresses</span>
-          <RadioGroup.Root
-            className="mt-4"
-            value={shipping.id}
-            onValueChange={(value) => {
-              const address = customerAddresses.find((ca) => ca.id === value)
-              form.setValue("shipping", address)
-              form.setValue("billing", address)
+          <Controller
+            control={form.control}
+            name="shipping_address_id"
+            render={({ field: { value, onChange } }) => {
+              return (
+                <RadioGroup.Root
+                  className="mt-4"
+                  value={value}
+                  onValueChange={(id) => {
+                    onChange(id)
+                    onSelectExistingAddress(id)
+                  }}
+                >
+                  {validAddresses.map((sa, i) => (
+                    <RadioGroup.Item
+                      label={`${sa.first_name} ${sa.last_name}`}
+                      checked={!!value && sa.id === value}
+                      description={`${sa.address_1}, ${sa.address_2} ${
+                        sa.postal_code
+                      } ${sa.city} ${sa.country_code?.toUpperCase()}`}
+                      value={sa.id}
+                      key={i}
+                    ></RadioGroup.Item>
+                  ))}
+                </RadioGroup.Root>
+              )
             }}
-          >
-            {customerAddresses.map((sa, i) => (
-              <RadioGroup.Item
-                label={`${sa.first_name} ${sa.last_name}`}
-                checked={shipping && sa.id === shipping.id}
-                description={`${sa.address_1}, ${sa.address_2} ${
-                  sa.postal_code
-                } ${sa.city} ${sa.country_code.toUpperCase()}`}
-                value={sa.id}
-                key={i}
-              ></RadioGroup.Item>
-            ))}
-          </RadioGroup.Root>
+          />
           <div className="mt-4 flex w-full justify-end">
             <Button
               variant="ghost"
@@ -176,12 +237,12 @@ const ShippingDetails = ({
           </div>
         </div>
       ) : (
-        <div className="mt-4">
+        <div>
           <AddressForm
-            allowedCountries={region.countries?.map((c) => c.iso_2) || []}
-            country={shipping?.country_code}
-            form={form}
-            type="shipping"
+            form={nestedForm(form, "shipping_address")}
+            countryOptions={validCountries}
+            type={AddressType.SHIPPING}
+            required={requiredFields}
           />
         </div>
       )}

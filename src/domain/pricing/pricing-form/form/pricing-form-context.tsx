@@ -1,10 +1,11 @@
 import React, { useState } from "react"
 import {
+  FieldValues,
   FormProvider,
+  SubmitHandler,
   useForm,
   useFormContext,
   useWatch,
-  SubmitHandler,
 } from "react-hook-form"
 import { weekFromNow } from "../../../../utils/date-utils"
 import {
@@ -25,13 +26,16 @@ const defaultState: PriceListFormValues = {
 }
 
 const PriceListFormContext = React.createContext<{
-  configFields: Record<ConfigurationField, unknown>
+  configFields: Pick<
+    PriceListFormValues,
+    "starts_at" | "ends_at" | "customer_groups"
+  >
   handleConfigurationSwitch: (values: string[]) => void
   prices: CreatePriceListPricesFormValues | null
   setPrices: React.Dispatch<
     React.SetStateAction<CreatePriceListPricesFormValues | null>
   >
-  handleSubmit: <T>(
+  handleSubmit: <T extends FieldValues>(
     submitHandler: SubmitHandler<T>
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>
 } | null>(null)
@@ -45,7 +49,7 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
   children,
 }) => {
   const [configFields, setConfigFields] = useState<
-    Record<ConfigurationField, unknown>
+    Pick<PriceListFormValues, "starts_at" | "ends_at" | "customer_groups">
   >({
     customer_groups: priceList.customer_groups,
     ends_at: priceList.ends_at,
@@ -76,13 +80,13 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
     let configToSave: unknown | null = null
 
     switch (configField) {
-      case ConfigurationField.CUSTOMER_GROUPS:
+      case "customer_groups":
         configToSave = currentCustomerGroups
         break
-      case ConfigurationField.STARTS_AT:
+      case "starts_at":
         configToSave = currentStartsAt
         break
-      case ConfigurationField.ENDS_AT:
+      case "ends_at":
         configToSave = currentEndsAt
         break
     }
@@ -104,14 +108,14 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
     } else {
       // if the configuration field value is null, we set a default value
       switch (configField) {
-        case ConfigurationField.STARTS_AT:
-          methods.setValue(configField, new Date())
+        case "starts_at":
+          methods.setValue("starts_at", new Date())
           break
-        case ConfigurationField.ENDS_AT:
-          methods.setValue(configField, weekFromNow())
+        case "ends_at":
+          methods.setValue("ends_at", weekFromNow())
           break
-        case ConfigurationField.CUSTOMER_GROUPS:
-          methods.setValue(configField, [])
+        case "customer_groups":
+          methods.setValue("customer_groups", [])
           break
       }
     }
@@ -152,7 +156,7 @@ export const PriceListFormProvider: React.FC<FormProviderProps> = ({
 
 export const usePriceListForm = () => {
   const context = React.useContext(PriceListFormContext)
-  const form = useFormContext()
+  const form = useFormContext<PriceListFormValues>()
   if (context === null) {
     throw new Error(
       "usePriceListForm must be used within a PriceListFormProvider"

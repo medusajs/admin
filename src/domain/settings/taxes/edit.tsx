@@ -32,10 +32,10 @@ const EditTaxRate = ({ taxRate, taxRateId, regionId, onDismiss }) => {
             <h1 className="inter-xlarge-semibold">Edit Tax Rate</h1>
           </div>
         </Modal.Header>
-        {isLoading ? (
-          <Spinner />
-        ) : taxRate.type === "region" ? (
+        {taxRate.type === "region" ? (
           <SimpleEditForm taxRate={taxRate} onDismiss={onDismiss} />
+        ) : isLoading || !tax_rate ? (
+          <Spinner />
         ) : (
           <EditForm
             regionId={regionId}

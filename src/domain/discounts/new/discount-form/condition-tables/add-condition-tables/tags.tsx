@@ -40,7 +40,7 @@ const AddTagConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
+      <Modal.Content>
         {isLoading ? (
           <Spinner />
         ) : (
@@ -66,7 +66,7 @@ const AddTagConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
           </>
         )}
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <AddConditionFooter
           type="product_tags"
           items={items}

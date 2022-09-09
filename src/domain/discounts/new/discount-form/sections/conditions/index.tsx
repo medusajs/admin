@@ -73,7 +73,6 @@ const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
         <AddConditionsModal
           onClose={() => setShowConditionsModal(false)}
           conditions={conditions}
-          updateCondition={updateCondition}
         />
       )}
     </div>

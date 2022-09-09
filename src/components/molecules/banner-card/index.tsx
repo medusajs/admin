@@ -4,7 +4,7 @@ import Actionables, { ActionType } from "../../molecules/actionables"
 type BannerCardProps = {
   actions?: ActionType[]
   title: string
-  thumbnail?: string
+  thumbnail: string | null
 } & React.RefAttributes<HTMLDivElement>
 
 type BannerCardDescriptionProps = {

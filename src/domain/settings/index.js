@@ -1,6 +1,8 @@
 import { Router } from "@reach/router"
 import React from "react"
 import SettingsCard from "../../components/atoms/settings-card"
+import FeatureToggle from "../../components/fundamentals/feature-toggle"
+import ChannelsIcon from "../../components/fundamentals/icons/channels-icon"
 import CoinsIcon from "../../components/fundamentals/icons/coins-icon"
 import CrosshairIcon from "../../components/fundamentals/icons/crosshair-icon"
 import DollarSignIcon from "../../components/fundamentals/icons/dollar-sign-icon"
@@ -10,18 +12,15 @@ import MapPinIcon from "../../components/fundamentals/icons/map-pin-icon"
 import TaxesIcon from "../../components/fundamentals/icons/taxes-icon"
 import TruckIcon from "../../components/fundamentals/icons/truck-icon"
 import UsersIcon from "../../components/fundamentals/icons/users-icon"
-import ChannelsIcon from "../../components/fundamentals/icons/channels-icon"
 import SettingsOverview from "../../components/templates/settings-overview"
 import Currencies from "./currencies"
 import Details from "./details"
 import PersonalInformation from "./personal-information"
 import Regions from "./regions"
-import RegionDetails from "./regions/details"
 import NewRegion from "./regions/new"
 import ReturnReasons from "./return-reasons"
 import Taxes from "./taxes"
 import Users from "./users"
-import FeatureToggle from "../../components/fundamentals/feature-toggle"
 
 const SettingsIndex = () => {
   return (
@@ -103,8 +102,7 @@ const Settings = () => (
 
     <ReturnReasons path="return-reasons" />
 
-    <Regions path="regions" />
-    <RegionDetails path="regions/:id" />
+    <Regions path="regions/*" />
     <NewRegion path="regions/new" />
 
     <Taxes path="taxes" />

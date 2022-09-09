@@ -24,7 +24,7 @@ import NewGiftCard from "./new"
 
 const Overview: React.FC<RouteComponentProps> = () => {
   const { products, isLoading } = useAdminProducts({
-    is_giftcard: "true",
+    is_giftcard: true,
   })
   const { store } = useAdminStore()
   const { gift_cards: giftCards } = useAdminGiftCards()
@@ -81,7 +81,7 @@ const Overview: React.FC<RouteComponentProps> = () => {
 
   return (
     <>
-      <div className="flex flex-col grow h-full">
+      <div className="flex flex-col grow h-full pb-xlarge">
         <PageDescription
           title="Gift Cards"
           subtitle="Manage the Gift Cards of your Medusa store"
@@ -115,7 +115,7 @@ const Overview: React.FC<RouteComponentProps> = () => {
                 subtitle="See the history of purchased Gift Cards"
                 actionables={actionables}
               >
-                {giftCards && <GiftCardTable giftCards={giftCards} />}
+                <GiftCardTable />
               </BodyCard>
             </div>
           </>

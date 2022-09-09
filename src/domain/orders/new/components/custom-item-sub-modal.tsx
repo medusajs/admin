@@ -1,21 +1,19 @@
 import React, { useContext, useState } from "react"
+import { useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
+import InputField from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
-import { useForm } from "react-hook-form"
-import InputField from "../../../../components/molecules/input"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 
 type CustomItemSubModalProps = {
   onSubmit: (title: string, amount: number, quantity: number) => void
   region: any
-  isLargeModal?: boolean
 }
 
 const CustomItemSubModal: React.FC<CustomItemSubModalProps> = ({
   onSubmit,
   region,
-  isLargeModal = true,
 }) => {
   const [amount, setAmount] = useState(0)
   const { pop } = useContext(LayeredModalContext)
@@ -30,39 +28,37 @@ const CustomItemSubModal: React.FC<CustomItemSubModalProps> = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={isLargeModal}>
+      <Modal.Content>
         <div className="min-h-[705px] gap-y-xsmall">
           <InputField
             placeholder="E.g. Gift wrapping"
             label="Title"
-            name="title"
+            {...register("title", { required: true })}
             className="my-4"
             required
-            ref={register({ required: true })}
           />
-          <CurrencyInput
+          <CurrencyInput.Root
             currentCurrency={region.currency_code}
             size="small"
             readOnly
           >
-            <CurrencyInput.AmountInput
+            <CurrencyInput.Amount
               required
               label="Price"
               amount={amount}
               onChange={(value) => setAmount(value || 0)}
             />
-          </CurrencyInput>
+          </CurrencyInput.Root>
           <InputField
             className="my-4"
             label="Quantity"
-            name="quantity"
+            {...register("quantity", { required: true })}
             type="number"
             required
-            ref={register({ required: true })}
           />
         </div>
       </Modal.Content>
-      <Modal.Footer isLargeModal={isLargeModal}>
+      <Modal.Footer>
         <div className="flex w-full justify-end gap-x-xsmall">
           <Button
             variant="ghost"

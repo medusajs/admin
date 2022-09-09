@@ -1,87 +1,90 @@
 import React from "react"
-import { Controller } from "react-hook-form"
+import { Controller, useFieldArray } from "react-hook-form"
 import FileUploadField from "../../../../components/atoms/file-upload-field"
 import BodyCard from "../../../../components/organisms/body-card"
 import RadioGroup from "../../../../components/organisms/radio-group"
-import DraggableTable from "../../../../components/templates/draggable-table"
+import ImageTable, {
+  ImageTableDataType,
+} from "../../../../components/templates/image-table"
+import { nestedForm } from "../../../../utils/nested-form"
 import { useGiftCardForm } from "../form/gift-card-form-context"
 
-const columns = [
-  {
-    Header: "Image",
-    accessor: "image",
-    Cell: ({ cell }) => {
-      return (
-        <div className="py-base large:w-[176px] xsmall:w-[80px]">
-          <img
-            className="h-[80px] w-[80px] object-cover rounded"
-            src={cell.row.original.url}
-          />
-        </div>
-      )
-    },
-  },
-  {
-    Header: "File Name",
-    accessor: "name",
-    Cell: ({ cell }) => {
-      return (
-        <div className="large:w-[700px] medium:w-[400px] small:w-auto">
-          <p className="inter-small-regular">{cell.row.original?.name}</p>
-          <span className="inter-small-regular text-grey-50">
-            {typeof cell.row.original.size === "number"
-              ? `${(cell.row.original.size / 1024).toFixed(2)} KB`
-              : cell.row.original?.size}
-          </span>
-        </div>
-      )
-    },
-  },
-  {
-    Header: <div className="text-center">Thumbnail</div>,
-    accessor: "thumbnail",
-    Cell: ({ cell }) => {
-      return (
-        <div className="flex justify-center">
-          <RadioGroup.SimpleItem
-            className="justify-center"
-            value={cell.row.index}
-          />
-        </div>
-      )
-    },
-  },
-]
-
 const Images = () => {
-  const {
-    images,
-    setImages,
-    appendImage,
-    removeImage,
-    control,
-  } = useGiftCardForm()
+  const { form, setImageDirtyState } = useGiftCardForm()
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "images",
+  })
+
+  const handleRemove = (index: number) => {
+    setImageDirtyState(true)
+    remove(index)
+  }
+
+  const handleFilesChosen = (files: File[]) => {
+    if (files.length) {
+      const toAppend = files.map((file) => ({
+        url: URL.createObjectURL(file),
+        name: file.name,
+        size: file.size,
+        nativeFile: file,
+      }))
+
+      append(toAppend)
+    }
+  }
 
   return (
-    <BodyCard title="Images" subtitle="Add up to 10 images to your Gift Card">
+    <BodyCard title="Images" subtitle="Add up to 10 images to your product">
       <div className="mt-base">
         <Controller
           name="thumbnail"
-          control={control}
-          render={({ value, onChange }) => {
+          control={form.control}
+          render={({ field: { value, onChange } }) => {
             return (
               <RadioGroup.Root
-                value={value}
+                value={value ? `${value}` : undefined}
                 onValueChange={(value) => {
-                  onChange(value)
+                  onChange(parseInt(value))
                 }}
               >
-                <DraggableTable
-                  onDelete={removeImage}
-                  columns={columns}
-                  entities={images}
-                  setEntities={setImages}
+                <ImageTable
+                  data={fields as ImageTableDataType[]}
+                  form={nestedForm(form, "images")}
+                  onDelete={handleRemove}
                 />
+                {fields.map((field, index) => {
+                  return (
+                    <div key={field.id} className="flex items-center">
+                      <input
+                        className="hidden"
+                        {...form.register(`images.${index}.url`)}
+                        defaultValue={field.url}
+                      />
+                      {field.nativeFile && (
+                        <>
+                          <input
+                            className="hidden"
+                            {...form.register(`images.${index}.name`)}
+                            defaultValue={field.name}
+                          />
+                          <input
+                            className="hidden"
+                            {...form.register(`images.${index}.size`)}
+                            defaultValue={field.size}
+                          />
+                          <Controller
+                            name={`images.${index}.nativeFile`}
+                            control={form.control}
+                            defaultValue={field.nativeFile}
+                            render={() => <></>}
+                          />
+                        </>
+                      )}
+                    </div>
+                  )
+                })}
               </RadioGroup.Root>
             )
           }}
@@ -89,18 +92,9 @@ const Images = () => {
       </div>
       <div className="mt-2xlarge">
         <FileUploadField
-          onFileChosen={(files) => {
-            const file = files[0]
-            const url = URL.createObjectURL(file)
-            appendImage({
-              url,
-              name: file.name,
-              size: file.size,
-              nativeFile: file,
-            })
-          }}
+          onFileChosen={handleFilesChosen}
           placeholder="1200 x 1600 (3:4) recommended, up to 10MB each"
-          filetypes={["png", "jpg", "jpeg"]}
+          filetypes={["image/gif", "image/jpeg", "image/png", "image/webp"]}
           className="py-large"
         />
       </div>

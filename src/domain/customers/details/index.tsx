@@ -7,7 +7,9 @@ import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
-import Actionables from "../../../components/molecules/actionables"
+import Actionables, {
+  ActionType,
+} from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
@@ -19,7 +21,7 @@ type CustomerDetailProps = {
 } & RouteComponentProps
 
 const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
-  const { customer, isLoading } = useAdminCustomer(id, {})
+  const { customer, isLoading } = useAdminCustomer(id)
   const [showEdit, setShowEdit] = useState(false)
 
   const customerName = () => {
@@ -30,7 +32,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
     }
   }
 
-  const actions = [
+  const actions: ActionType[] = [
     {
       label: "Edit",
       onClick: () => setShowEdit(true),
@@ -119,7 +121,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
         <RawJSON data={customer} title="Raw customer" />
       </div>
 
-      {showEdit && (
+      {showEdit && customer && (
         <EditCustomerModal
           customer={customer}
           handleClose={() => setShowEdit(false)}

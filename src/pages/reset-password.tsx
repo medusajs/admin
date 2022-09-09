@@ -19,7 +19,7 @@ type formValues = {
 const ResetPasswordPage = ({ location }) => {
   const parsed = qs.parse(location.search.substring(1))
 
-  let token: Object | null = null
+  let token: { email: string } | null = null
   if (parsed?.token) {
     try {
       token = decodeToken(parsed.token as string)
@@ -31,7 +31,7 @@ const ResetPasswordPage = ({ location }) => {
   const [passwordMismatch, setPasswordMismatch] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [ready, setReady] = useState(false)
-  const email = token?.email || parsed?.email || ""
+  const email = (token?.email || parsed?.email || "") as string
 
   const { register, handleSubmit, formState } = useForm<formValues>({
     defaultValues: {
@@ -114,15 +114,13 @@ const ResetPasswordPage = ({ location }) => {
                 <SigninInput
                   placeholder="Password"
                   type={"password"}
-                  name="password"
-                  ref={register({ required: true })}
+                  {...register("password", { required: true })}
                   autoComplete="new-password"
                 />
                 <SigninInput
                   placeholder="Confirm password"
                   type={"password"}
-                  name="repeat_password"
-                  ref={register({ required: true })}
+                  {...register("repeat_password", { required: true })}
                   autoComplete="new-password"
                   className="mb-0"
                 />

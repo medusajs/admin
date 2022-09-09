@@ -62,19 +62,19 @@ const EditConfigurations: React.FC<EditConfigurationsProps> = ({
   }, [discount])
 
   return (
-    <Modal handleClose={onClose}>
+    <Modal handleClose={onClose} isLargeModal>
       <Modal.Body>
         <Modal.Header handleClose={onClose}>
           <h1 className="inter-xlarge-semibold">Edit configurations</h1>
         </Modal.Header>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Modal.Content isLargeModal>
+          <Modal.Content>
             <div className="flex flex-col gap-y-xlarge">
               <Controller
                 name="starts_at"
                 defaultValue={discount.starts_at}
                 control={control}
-                render={({ onChange, value }) => {
+                render={({ field: { onChange, value } }) => {
                   return (
                     <SwitchableItem
                       open={!!value}
@@ -107,7 +107,7 @@ const EditConfigurations: React.FC<EditConfigurationsProps> = ({
               <Controller
                 name="ends_at"
                 control={control}
-                render={({ value, onChange }) => {
+                render={({ field: { value, onChange } }) => {
                   return (
                     <SwitchableItem
                       open={!!value}
@@ -144,7 +144,7 @@ const EditConfigurations: React.FC<EditConfigurationsProps> = ({
               <Controller
                 name="usage_limit"
                 control={control}
-                render={({ value, onChange }) => {
+                render={({ field: { value, onChange } }) => {
                   return (
                     <SwitchableItem
                       open={!!value}
@@ -176,7 +176,7 @@ const EditConfigurations: React.FC<EditConfigurationsProps> = ({
                 <Controller
                   name="valid_duration"
                   control={control}
-                  render={({ onChange, value }) => {
+                  render={({ field: { onChange, value } }) => {
                     return (
                       <SwitchableItem
                         open={!!value}

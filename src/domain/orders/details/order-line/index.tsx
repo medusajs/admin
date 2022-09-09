@@ -1,20 +1,33 @@
+import { LineItem } from "@medusajs/medusa"
 import React from "react"
+import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 
-const OrderLine = ({ item, currencyCode }) => {
+type OrderLineProps = {
+  item: LineItem
+  currencyCode: string
+}
+
+const OrderLine = ({ item, currencyCode }: OrderLineProps) => {
   return (
     <div className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded">
       <div className="flex space-x-4 justify-center">
-        <div className="flex h-[48px] w-[36px]">
-          <img src={item.thumbnail} className="rounded-rounded object-cover" />
+        <div className="flex h-[48px] w-[36px] rounded-rounded overflow-hidden">
+          {item.thumbnail ? (
+            <img src={item.thumbnail} className="object-cover" />
+          ) : (
+            <ImagePlaceholder />
+          )}
         </div>
-        <div className="flex flex-col justify-center">
-          <span className="inter-small-regular text-grey-90 max-w-[225px] truncate">
+        <div className="flex flex-col justify-center max-w-[185px]">
+          <span className="inter-small-regular text-grey-90 truncate">
             {item.title}
           </span>
           {item?.variant && (
-            <span className="inter-small-regular text-grey-50">
-              {item.variant.sku}
+            <span className="inter-small-regular text-grey-50 truncate">
+              {`${item.variant.title}${
+                item.variant.sku ? ` (${item.variant.sku})` : ""
+              }`}
             </span>
           )}
         </div>
@@ -41,7 +54,9 @@ const OrderLine = ({ item, currencyCode }) => {
             })}
           </div>
         </div>
-        <div className="inter-small-regular text-grey-50">{currencyCode}</div>
+        <div className="inter-small-regular text-grey-50">
+          {currencyCode.toUpperCase()}
+        </div>
       </div>
     </div>
   )

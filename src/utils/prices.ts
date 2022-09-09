@@ -8,6 +8,7 @@ export function normalizeAmount(currency: string, amount: number): number {
 
 export function displayAmount(currency: string, amount: number) {
   const normalizedAmount = normalizeAmount(currency, amount)
+
   return normalizedAmount.toFixed(
     currencies[currency.toUpperCase()].decimal_digits
   )

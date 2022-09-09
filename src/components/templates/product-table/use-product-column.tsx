@@ -9,8 +9,8 @@ import ImagePlaceholder from "../../fundamentals/image-placeholder"
 import StatusIndicator from "../../fundamentals/status-indicator"
 
 const useProductTableColumn = ({ setTileView, setListView, showList }) => {
-  const getProductStatus = (title) => {
-    switch (title) {
+  const getProductStatus = (status) => {
+    switch (status) {
       case "proposed":
         return <StatusIndicator title={"Proposed"} variant={"warning"} />
       case "published":
@@ -20,7 +20,7 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
       case "draft":
         return <StatusIndicator title={"Draft"} variant={"default"} />
       default:
-        return <StatusIndicator title={title} variant={"default"} />
+        return <StatusIndicator title={status} variant={"default"} />
     }
   }
 
@@ -71,9 +71,7 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
                     className="h-full object-cover rounded-soft"
                   />
                 ) : (
-                  <div className="flex items-center justify-center w-full h-full rounded-soft bg-grey-10">
-                    <ImagePlaceholder size={16} />
-                  </div>
+                  <ImagePlaceholder />
                 )}
               </div>
               {original.title}

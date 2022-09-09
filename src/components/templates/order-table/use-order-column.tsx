@@ -50,13 +50,17 @@ const useOrderTableColums = () => {
       },
       {
         Header: "Customer",
-        accessor: "shipping_address",
+        accessor: "customer",
         Cell: ({ row, cell: { value }, index }) => (
           <Table.Cell key={index}>
             <CustomerAvatarItem
               customer={{
-                first_name: value.first_name,
-                last_name: value.last_name,
+                first_name:
+                  value?.first_name ||
+                  row.original.shipping_address?.first_name,
+                last_name:
+                  value?.last_name || row.original.shipping_address?.last_name,
+                email: row.original.email,
               }}
               color={getColor(row.index)}
             />
@@ -117,14 +121,15 @@ const useOrderTableColums = () => {
               <Tooltip
                 content={
                   isoAlpha2Countries[
-                    row.original.shipping_address.country_code.toUpperCase()
-                  ] || row.original.shipping_address.country_code.toUpperCase()
+                    row.original.shipping_address?.country_code?.toUpperCase()
+                  ] ||
+                  row.original.shipping_address?.country_code?.toUpperCase()
                 }
               >
                 <ReactCountryFlag
                   className={"rounded"}
                   svg
-                  countryCode={row.original.shipping_address.country_code}
+                  countryCode={row.original.shipping_address?.country_code}
                 />
               </Tooltip>
             </div>

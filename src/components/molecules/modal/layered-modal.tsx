@@ -1,18 +1,8 @@
-import React, {
-  ReactNode,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react"
-import Modal, { ModalProps } from "../../molecules/modal"
-import Button from "../../fundamentals/button"
-import Medusa from "../../../services/api"
-import useMedusa from "../../../hooks/use-medusa"
-import InputField from "../../molecules/input"
-import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import clsx from "clsx"
+import React, { ReactNode, useContext, useReducer } from "react"
+import Button from "../../fundamentals/button"
+import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
+import Modal, { ModalProps } from "../../molecules/modal"
 
 enum LayeredModalActions {
   PUSH,
@@ -22,6 +12,7 @@ enum LayeredModalActions {
 
 type LayeredModalScreen = {
   title: string
+  subtitle?: string
   onBack: () => void
   onConfirm: () => void
   view: ReactNode
@@ -88,16 +79,11 @@ export const LayeredModalProvider = ({ children }) => {
   )
 }
 
-const addProp = (children, prop) => {
-  return React.Children.map(children, (child) =>
-    React.cloneElement(child, prop)
-  )
-}
-
 const LayeredModal: React.FC<LayeredModalProps> = ({
   context,
   children,
   handleClose,
+  open,
   isLargeModal = true,
 }) => {
   const emptyScreensAndClose = () => {
@@ -107,7 +93,11 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
 
   const screen = context.screens[context.screens.length - 1]
   return (
-    <Modal isLargeModal={isLargeModal} handleClose={emptyScreensAndClose}>
+    <Modal
+      open={open}
+      isLargeModal={isLargeModal}
+      handleClose={emptyScreensAndClose}
+    >
       <Modal.Body
         className={clsx(
           "transition-transform translate-x-full flex flex-col justify-between duration-200",
@@ -115,7 +105,6 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
             "translate-x-0": typeof screen !== "undefined",
           }
         )}
-        isLargeModal={isLargeModal}
       >
         {screen ? (
           <>
@@ -129,7 +118,14 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
                 >
                   <ArrowLeftIcon size={20} />
                 </Button>
-                <h2 className="inter-xlarge-semibold ml-5">{screen.title}</h2>
+                <div className="flex items-center gap-x-2xsmall">
+                  <h2 className="inter-xlarge-semibold ml-5">{screen.title}</h2>
+                  {screen.subtitle && (
+                    <span className="inter-xlarge-regular text-grey-50">
+                      ({screen.subtitle})
+                    </span>
+                  )}
+                </div>
               </div>
             </Modal.Header>
             {screen.view}
@@ -148,7 +144,7 @@ const LayeredModal: React.FC<LayeredModalProps> = ({
             "hidden opacity-0 delay-500": typeof screen !== "undefined",
           })}
         >
-          {addProp(children, { isLargeModal })}
+          {children}
         </div>
       </div>
     </Modal>

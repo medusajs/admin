@@ -6,7 +6,7 @@ import Checkbox from "../../../../../components/atoms/checkbox"
 import IconTooltip from "../../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../../components/molecules/input"
 import Select from "../../../../../components/molecules/select"
-import Textarea from "../../../../../components/molecules/textarea"
+import TextArea from "../../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../../components/organisms/currency-input"
 import { useDiscountForm } from "../form/discount-form-context"
 
@@ -68,7 +68,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
               validate: (value) =>
                 Array.isArray(value) ? value.length > 0 : !!value,
             }}
-            render={({ onChange, value }) => {
+            render={({ field: { onChange, value } }) => {
               return (
                 <Select
                   value={value || null}
@@ -91,15 +91,14 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
               className="flex-1"
               placeholder="SUMMERSALE10"
               required
-              name="code"
-              ref={register({ required: "Code is required" })}
+              {...register("code", { required: "Code is required" })}
             />
 
             {type !== "free_shipping" && (
               <>
                 {type === "fixed" ? (
                   <div className="flex-1">
-                    <CurrencyInput
+                    <CurrencyInput.Root
                       size="small"
                       currentCurrency={fixedRegionCurrency}
                       readOnly
@@ -112,9 +111,9 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
                           required: "Amount is required",
                           min: 1,
                         }}
-                        render={({ value, onChange }) => {
+                        render={({ field: { value, onChange } }) => {
                           return (
-                            <CurrencyInput.AmountInput
+                            <CurrencyInput.Amount
                               label={"Amount"}
                               required
                               amount={value}
@@ -123,7 +122,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
                           )
                         }}
                       />
-                    </CurrencyInput>
+                    </CurrencyInput.Root>
                   </div>
                 ) : (
                   <div className="flex-1">
@@ -134,8 +133,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
                       type="number"
                       placeholder="10"
                       prefix={"%"}
-                      name="rule.value"
-                      ref={register({
+                      {...register("rule.value", {
                         required: true,
                         valueAsNumber: true,
                       })}
@@ -153,13 +151,12 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
             </span>
             <span>Uppercase letters and numbers only.</span>
           </div>
-          <Textarea
+          <TextArea
             label="Description"
             required
             placeholder="Summer Sale 2022"
             rows={1}
-            name="rule.description"
-            ref={register({
+            {...register("rule.description", {
               required: true,
             })}
           />
@@ -167,7 +164,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
             <Controller
               name="is_dynamic"
               control={control}
-              render={({ onChange, value }) => {
+              render={({ field: { onChange, value } }) => {
                 return (
                   <Checkbox
                     label="This is a template discount"

@@ -1,3 +1,4 @@
+import { ReturnReason } from "@medusajs/medusa"
 import {
   useAdminDeleteReturnReason,
   useAdminUpdateReturnReason,
@@ -9,12 +10,21 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Input from "../../../components/molecules/input"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import useToggleState from "../../../hooks/use-toggle-state"
 import useNotification from "../../../hooks/use-notification"
+import useToggleState from "../../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../../utils/error-messages"
 import CreateReturnReasonModal from "./create-reason-modal"
 
-const ReturnReasonDetail = ({ reason }) => {
+type ReturnReasonDetailsProps = {
+  reason: ReturnReason
+}
+
+type ReturnReasonDetailsFormData = {
+  label: string
+  description: string | null
+}
+
+const ReturnReasonDetail = ({ reason }: ReturnReasonDetailsProps) => {
   const {
     state: showDuplicateModal,
     open: handleOpenDuplicateModal,
@@ -25,27 +35,36 @@ const ReturnReasonDetail = ({ reason }) => {
     open: handleClosePrompt,
     close: handleOpenPrompt,
   } = useToggleState()
-  const { register, reset, handleSubmit } = useForm()
+  const { register, reset, handleSubmit } = useForm<
+    ReturnReasonDetailsFormData
+  >()
   const notification = useNotification()
-  const deleteRR = useAdminDeleteReturnReason(reason?.id)
-  const updateRR = useAdminUpdateReturnReason(reason?.id)
+  const { mutate: deleteRR } = useAdminDeleteReturnReason(reason?.id)
+  const { mutate: update } = useAdminUpdateReturnReason(reason?.id)
 
   const handleDeletion = async () => {
-    deleteRR.mutate(undefined)
+    deleteRR(undefined)
   }
 
-  const onSave = (data) => {
-    if (data.label === "") {
-      return
-    }
-    updateRR.mutate(data, {
-      onSuccess: () => {
-        notification("Success", "Successfully updated return reason", "success")
+  const onSave = (data: ReturnReasonDetailsFormData) => {
+    update(
+      {
+        label: data.label,
+        description: data.description || undefined,
       },
-      onError: (error) => {
-        notification("Error", getErrorMessage(error), "error")
-      },
-    })
+      {
+        onSuccess: () => {
+          notification(
+            "Success",
+            "Successfully updated return reason",
+            "success"
+          )
+        },
+        onError: (error) => {
+          notification("Error", getErrorMessage(error), "error")
+        },
+      }
+    )
   }
 
   const handleCancel = () => {
@@ -94,12 +113,12 @@ const ReturnReasonDetail = ({ reason }) => {
         subtitle={reason?.value}
       >
         <form onSubmit={handleSubmit(onSave)}>
-          <Input ref={register} name="label" label="Label" />
+          <Input {...register("label")} label="Label" />
           <Input
-            ref={register}
-            name="description"
+            {...register("description")}
             label="Description"
             className="mt-base"
+            placeholder="Customer received the wrong size"
           />
         </form>
       </BodyCard>

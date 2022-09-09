@@ -1,4 +1,5 @@
 import { Address } from "@medusajs/medusa"
+import { RouteComponentProps } from "@reach/router"
 import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
@@ -17,19 +18,24 @@ import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
-import ImagePlaceholderIcon from "../../../components/fundamentals/icons/image-placeholder-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
+import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import { AddressType } from "../../../components/templates/address-form"
 import useNotification from "../../../hooks/use-notification"
+import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
+import extractCustomerName from "../../../utils/extract-customer-name"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
 import { DisplayTotal, FormattedAddress } from "../details/templates"
 
-const DraftOrderDetails = ({ id }) => {
+type DraftOrderDetailsProps = RouteComponentProps<{ id: string }>
+
+const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
   type DeletePromptData = {
     resource: string
     onDelete: () => any
@@ -47,7 +53,7 @@ const DraftOrderDetails = ({ id }) => {
   )
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
-    type: "billing" | "shipping"
+    type: AddressType
   }>(null)
 
   const { draft_order, isLoading } = useAdminDraftOrder(id)
@@ -102,34 +108,6 @@ const DraftOrderDetails = ({ id }) => {
     return cancelOrder.mutate(void {}, {
       onSuccess: () =>
         notification("Success", "Successfully canceled order", "success"),
-      onError: (err) => notification("Error", getErrorMessage(err), "error"),
-    })
-  }
-
-  const handleUpdateAddress = async ({ data, type }) => {
-    const { email, ...rest } = data
-
-    const updateObj = {}
-
-    if (type === "shipping") {
-      updateObj["shipping_address"] = {
-        ...rest,
-      }
-    } else {
-      updateObj["billing_address"] = {
-        ...rest,
-      }
-    }
-
-    if (email) {
-      updateObj["email"] = email
-    }
-
-    return updateOrder.mutate(updateObj, {
-      onSuccess: () => {
-        notification("Success", "Successfully updated address", "success")
-        setAddressModal(null)
-      },
       onError: (err) => notification("Error", getErrorMessage(err), "error"),
     })
   }
@@ -208,17 +186,19 @@ const DraftOrderDetails = ({ id }) => {
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Phone
                   </div>
-                  <div>{cart?.shipping_address?.phone || ""}</div>
+                  <div>{cart?.shipping_address?.phone || "N/A"}</div>
                 </div>
                 <div className="flex flex-col pl-6">
                   <div className="inter-smaller-regular text-grey-50 mb-1">
                     Amount ({region?.currency_code.toUpperCase()})
                   </div>
                   <div>
-                    {formatAmountWithSymbol({
-                      amount: cart?.total,
-                      currency: region?.currency_code,
-                    })}
+                    {cart?.total && region?.currency_code
+                      ? formatAmountWithSymbol({
+                          amount: cart?.total,
+                          currency: region?.currency_code,
+                        })
+                      : "N/A"}
                   </div>
                 </div>
               </div>
@@ -231,16 +211,14 @@ const DraftOrderDetails = ({ id }) => {
                     className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded"
                   >
                     <div className="flex space-x-4 justify-center">
-                      <div className="flex h-[48px] w-[36px] rounded-rounded bg-grey-10 items-center justify-center">
+                      <div className="flex h-[48px] w-[36px] rounded-rounded items-center justify-center">
                         {item?.thumbnail ? (
                           <img
                             src={item.thumbnail}
                             className="rounded-rounded object-cover"
                           />
                         ) : (
-                          <div className="text-grey-30">
-                            <ImagePlaceholderIcon />
-                          </div>
+                          <ImagePlaceholder />
                         )}
                       </div>
                       <div className="flex flex-col justify-center">
@@ -375,7 +353,7 @@ const DraftOrderDetails = ({ id }) => {
             <BodyCard className={"w-full mb-4 min-h-0 h-auto"} title="Shipping">
               <div className="mt-6">
                 {cart?.shipping_methods.map((method) => (
-                  <div className="flex flex-col">
+                  <div className="flex flex-col" key={method.id}>
                     <span className="inter-small-regular text-grey-50">
                       Shipping Method
                     </span>
@@ -411,7 +389,7 @@ const DraftOrderDetails = ({ id }) => {
                   onClick: () =>
                     setAddressModal({
                       address: cart?.shipping_address,
-                      type: "shipping",
+                      type: AddressType.SHIPPING,
                     }),
                 },
                 {
@@ -421,7 +399,7 @@ const DraftOrderDetails = ({ id }) => {
                     if (cart?.billing_address) {
                       setAddressModal({
                         address: cart?.billing_address,
-                        type: "billing",
+                        type: AddressType.BILLING,
                       })
                     }
                   },
@@ -444,12 +422,18 @@ const DraftOrderDetails = ({ id }) => {
                   </div>
                   <div>
                     <h1 className="inter-large-semibold text-grey-90">
-                      {`${cart?.shipping_address?.first_name} ${cart?.shipping_address?.last_name}`}
+                      {extractCustomerName(cart)}
                     </h1>
-                    <span className="inter-small-regular text-grey-50">
-                      {cart?.shipping_address?.city},{" "}
-                      {cart?.shipping_address?.country_code}
-                    </span>
+                    {cart?.shipping_address && (
+                      <span className="inter-small-regular text-grey-50">
+                        {cart.shipping_address.city},{" "}
+                        {
+                          isoAlpha2Countries[
+                            cart.shipping_address.country_code?.toUpperCase()
+                          ]
+                        }
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex mt-6 space-x-6 divide-x">
@@ -464,11 +448,11 @@ const DraftOrderDetails = ({ id }) => {
                   </div>
                   <FormattedAddress
                     title={"Shipping"}
-                    addr={cart?.shipping_address}
+                    addr={cart?.shipping_address || undefined}
                   />
                   <FormattedAddress
                     title={"Billing"}
-                    addr={cart?.billing_address}
+                    addr={cart?.billing_address || undefined}
                   />
                 </div>
               </div>
@@ -490,10 +474,10 @@ const DraftOrderDetails = ({ id }) => {
       {addressModal && (
         <AddressModal
           handleClose={() => setAddressModal(null)}
-          handleSave={(obj) => handleUpdateAddress(obj)}
+          submit={updateOrder.mutate}
           address={addressModal.address}
           type={addressModal.type}
-          email={cart?.email}
+          allowedCountries={region?.countries}
         />
       )}
       {/* An attempt to make a reusable delete prompt, so we don't have to hold +10

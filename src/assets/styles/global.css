@@ -33,6 +33,12 @@
   font-display: swap;
 }
 
+@layer base {
+  html {
+    @apply overflow-hidden;
+  }
+}
+
 @layer components {
   .inter-5xlarge-regular {
     @apply font-sans text-5xlarge leading-4xlarge font-normal;
@@ -375,6 +381,17 @@
 @tailwind utilities;
 
 @layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
   .vice-city {
     @apply bg-gradient-to-tr from-vice-start to-vice-stop;
   }
@@ -413,6 +430,13 @@
   .col-tree:last-child .bottom-half-dash {
     @apply border-none;
   }
+}
+
+.scrolling-touch {
+  -webkit-overflow-scrolling: touch;
+}
+.scrolling-auto {
+  -webkit-overflow-scrolling: auto;
 }
 
 /* Classes to remove number spinners from inputs of type number */

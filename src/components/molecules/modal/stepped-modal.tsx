@@ -148,7 +148,6 @@ const SteppedModal: React.FC<SteppedProps> = ({
         className={clsx(
           "transition-transform flex flex-col justify-between duration-100 max-h-full"
         )}
-        isLargeModal={isLargeModal}
       >
         <Modal.Header handleClose={resetAndClose}>
           <div className="flex flex-col">
@@ -162,6 +161,7 @@ const SteppedModal: React.FC<SteppedProps> = ({
                     } of ${steps.length}`}</span>
                     {steps.map((_, i) => (
                       <span
+                        key={i}
                         className={clsx(
                           "w-2 h-2 rounded-full mr-3",
                           {

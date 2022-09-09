@@ -27,6 +27,7 @@ const EmojiPicker: React.FC<indexProps> = ({ onEmojiClick }) => {
         <Button
           variant="ghost"
           size="small"
+          type="button"
           className="focus:border-none focus:shadow-none text-grey-40 hover:text-violet-60 p-0 h-5 w-5"
         >
           <HappyIcon size={20} />
@@ -38,13 +39,15 @@ const EmojiPicker: React.FC<indexProps> = ({ onEmojiClick }) => {
         className="border bg-grey-0 border-grey-20 rounded-rounded shadow-dropdown overflow-hidden min-w-[200px] z-30"
       >
         <Picker
-          onEmojiClick={(e, data) => onEmojiClick(data.emoji)}
+          onEmojiClick={(_e, data) => onEmojiClick(data.emoji)}
           disableAutoFocus={true}
           skinTone={SKIN_TONE_NEUTRAL}
           groupNames={{ smileys_people: "PEOPLE" }}
           native
           disableSkinTonePicker={true}
+          // @ts-ignore
           searchPlaceholder={"Search Emoji..."}
+          // @ts-ignore
           groupNames={groupNames}
         />
       </DropdownMenu.Content>

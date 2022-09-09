@@ -12,8 +12,8 @@ import { DiscountFormValues } from "./form/mappers"
 import { useFormActions } from "./form/use-form-actions"
 import Conditions from "./sections/conditions"
 import Configuration from "./sections/configuration"
+import DiscountType from "./sections/discount-type"
 import General from "./sections/general"
-import PromotionType from "./sections/promotion-type"
 
 type DiscountFormProps = {
   discount?: Discount
@@ -118,7 +118,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 tooltip="Select a discount type"
                 value="promotion-type"
               >
-                <PromotionType />
+                <DiscountType />
               </Accordion.Item>
               <Accordion.Item
                 title="General"

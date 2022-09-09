@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import React from "react"
+import Spinner from "../../atoms/spinner"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
@@ -47,6 +48,7 @@ export type TableProps = {
   searchPlaceholder?: string
   searchValue?: string
   containerClassName?: string
+  isLoading?: boolean
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
 
@@ -78,6 +80,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
       handleSearch,
       filteringOptions,
       containerClassName,
+      isLoading,
       ...props
     },
     ref
@@ -110,13 +113,24 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
             )}
           </div>
         </div>
-        <table
-          ref={ref}
-          className={clsx("w-full table-auto", className)}
-          {...props}
+        <div
+          className={clsx("relative", {
+            "min-h-[256px]": isLoading,
+          })}
         >
-          {children}
-        </table>
+          {isLoading && (
+            <div className="flex items-center justify-center absolute inset-0 py-32">
+              <Spinner size={"large"} variant={"secondary"} />
+            </div>
+          )}
+          <table
+            ref={ref}
+            className={clsx("w-full table-auto", className)}
+            {...props}
+          >
+            {children}
+          </table>
+        </div>
       </div>
     )
   }

@@ -37,7 +37,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
           navigate("/a/discounts/")
         },
         onError: (err) => {
-          notification("Ooops", getErrorMessage(err), "error")
+          notification("Error", getErrorMessage(err), "error")
         },
       })
     }

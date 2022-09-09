@@ -61,7 +61,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
     shipping_options: shippingOptions,
   } = useAdminShippingOptions({
     region_id: order.region_id,
-    is_return: "true",
+    is_return: true,
   })
 
   useEffect(() => {
@@ -191,7 +191,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
                   shippingOptions?.map((o) => ({
                     label: o.name,
                     value: o.id,
-                    tax_rates: o.tax_rates
+                    tax_rates: o.tax_rates,
                   })) || []
                 }
               />
@@ -241,18 +241,18 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
                 </div>
               </div>
               {refundEdited && (
-                <CurrencyInput
+                <CurrencyInput.Root
                   className="mt-2"
                   size="small"
                   currentCurrency={order.currency_code}
                   readOnly
                 >
-                  <CurrencyInput.AmountInput
+                  <CurrencyInput.Amount
                     label={"Amount"}
                     amount={refundAmount}
                     onChange={handleRefundUpdated}
                   />
-                </CurrencyInput>
+                </CurrencyInput.Root>
               )}
             </div>
           )}

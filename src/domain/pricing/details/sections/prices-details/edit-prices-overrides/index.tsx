@@ -1,4 +1,5 @@
 import { MoneyAmount, Product } from "@medusajs/medusa"
+import { useParams } from "@reach/router"
 import { useAdminStore, useAdminUpdatePriceList } from "medusa-react"
 import * as React from "react"
 import Button from "../../../../../../components/fundamentals/button"
@@ -8,11 +9,10 @@ import LayeredModal, {
   useLayeredModal,
 } from "../../../../../../components/molecules/modal/layered-modal"
 import PriceOverrides from "../../../../../../components/templates/price-overrides"
-import ProductVariantLeaf from "./product-variant-leaf"
-import { useParams } from "@reach/router"
-import { mapToPriceList } from "./mappers"
-import { mergeExistingWithDefault } from "../../../utils"
 import useNotification from "../../../../../../hooks/use-notification"
+import { mergeExistingWithDefault } from "../../../utils"
+import { mapToPriceList } from "./mappers"
+import ProductVariantLeaf from "./product-variant-leaf"
 
 type EditPricesOverridesModalProps = {
   product: Product
@@ -60,11 +60,7 @@ const EditPricesOverridesModal = ({
                 onSuccess: () => {
                   context.pop()
                   close()
-                  notification(
-                    "Success",
-                    "Price overrides updated",
-                    "success"
-                  )
+                  notification("Success", "Price overrides updated", "success")
                 },
               }
             )
@@ -89,7 +85,10 @@ const EditPricesOverridesModal = ({
           <CollapsibleTree>
             <CollapsibleTree.Parent>
               <div>
-                <img src={product.thumbnail} className="w-4 h-5 rounded-base" />
+                <img
+                  src={product.thumbnail || undefined}
+                  className="w-4 h-5 rounded-base"
+                />
               </div>
               <span className="inter-small-semibold">{product.title}</span>
             </CollapsibleTree.Parent>

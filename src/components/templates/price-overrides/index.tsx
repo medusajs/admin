@@ -26,6 +26,7 @@ type PriceOverridesType = {
   isEdit?: boolean
 }
 
+// TODO: Clean up this components typing to avoid circular dependencies
 const PriceOverrides = ({
   onClose,
   prices,
@@ -77,7 +78,7 @@ const PriceOverrides = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
+      <Modal.Content>
         {!isEdit && (
           <RadioGroup.Root
             value={mode}
@@ -119,9 +120,9 @@ const PriceOverrides = ({
             {prices.map((price, idx) => (
               <Controller
                 control={control}
-                name={`prices[${idx}]`}
+                name={`prices.${idx}`}
                 key={price.id}
-                render={(field) => {
+                render={({ field }) => {
                   return (
                     <PriceAmount
                       value={field.value}
@@ -140,7 +141,7 @@ const PriceOverrides = ({
           </div>
         </div>
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <div className="flex w-full h-8 justify-end">
           <Button
             variant="ghost"
@@ -179,7 +180,7 @@ const ControlledCheckbox = ({
   value,
   ...props
 }: ControlledCheckboxProps) => {
-  const variants = useWatch<string[]>({
+  const variants = useWatch({
     control,
     name,
   })
@@ -188,7 +189,7 @@ const ControlledCheckbox = ({
     <Controller
       control={control}
       name={name}
-      render={(field) => {
+      render={({ field }) => {
         return (
           <Checkbox
             className="shrink-0 inter-small-regular"

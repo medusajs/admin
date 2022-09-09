@@ -50,7 +50,7 @@ const AddProductConditionSelector = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
+      <Modal.Content>
         {isLoading ? (
           <Spinner />
         ) : (
@@ -76,7 +76,7 @@ const AddProductConditionSelector = ({
           </>
         )}
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <AddConditionFooter
           type="products"
           items={items}

@@ -1,55 +1,74 @@
 import { useAdminCreateTaxRate } from "medusa-react"
-import React, { useContext, useEffect } from "react"
+import React, { useContext } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
-import Actionables from "../../../components/molecules/actionables"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import EditIcon from "../../../components/fundamentals/icons/edit-icon"
-import Input from "../../../components/molecules/input"
-import Badge from "../../../components/fundamentals/badge"
 import Modal from "../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
-import TaxRuleSelector from "./tax-rule-selector"
+import { nestedForm } from "../../../utils/nested-form"
+import {
+  EditTaxRateDetails,
+  EditTaxRateFormType,
+} from "./edit-tax-rate-details"
 import { TaxRuleItem } from "./tax-rule-item"
+import TaxRuleSelector from "./tax-rule-selector"
 
-const NewTaxRate = ({ regionId, onDismiss }) => {
+type NewTaxRateProps = {
+  regionId: string
+  onDismiss: () => void
+}
+
+type NewTaxRateFormData = {
+  details: EditTaxRateFormType
+  shipping_options: string[]
+  product_types: string[]
+  products: string[]
+}
+
+const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
   const createTaxRate = useAdminCreateTaxRate()
-  const { register, setValue, handleSubmit, watch } = useForm({
+  const form = useForm<NewTaxRateFormData>({
     defaultValues: {
       products: [],
       product_types: [],
       shipping_options: [],
     },
   })
+  const { setValue, handleSubmit, watch } = form
   const notification = useNotification()
 
   const layeredModalContext = useContext(LayeredModalContext)
 
-  const onSave = (data) => {
-    createTaxRate.mutate(data, {
-      onSuccess: () => {
-        notification("Success", "Successfully created tax rate.", "success")
-        onDismiss()
+  const onSave = (data: NewTaxRateFormData) => {
+    createTaxRate.mutate(
+      {
+        ...data,
+        name: data.details.name,
+        code: data.details.code,
+        rate: data.details.rate,
+        region_id: regionId,
       },
-      onError: (error) => {
-        notification("Error", getErrorMessage(error), "error")
-      },
-    })
+      {
+        onSuccess: () => {
+          notification("Success", "Successfully created tax rate.", "success")
+          onDismiss()
+        },
+        onError: (error) => {
+          notification("Error", getErrorMessage(error), "error")
+        },
+      }
+    )
   }
 
-  useEffect(() => {
-    register("region_id")
-    setValue("region_id", regionId)
-    register("products")
-    register("product_types")
-    register("shipping_options")
-  }, [])
-
-  const rules = watch(["products", "product_types", "shipping_options"])
+  const [products, product_types, shipping_options] = watch([
+    "products",
+    "product_types",
+    "shipping_options",
+  ])
 
   const handleOverridesSelected = (rule) => {
     switch (rule.type) {
@@ -81,41 +100,14 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
             </div>
           </Modal.Header>
           <Modal.Content>
-            <div>
-              <p className="inter-base-semibold mb-base">Details</p>
-              <Input
-                name="name"
-                label="Name"
-                placeholder="Rate name"
-                ref={register({ required: true })}
-                className="mb-base min-w-[335px] w-full"
-              />
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                step={0.01}
-                name="rate"
-                label="Rate"
-                placeholder="12"
-                ref={register({ min: 0, max: 100, required: true })}
-                className="mb-base min-w-[335px] w-full"
-              />
-              <Input
-                placeholder="1000"
-                name="code"
-                label="Code"
-                ref={register({ required: true })}
-                className="mb-base min-w-[335px] w-full"
-              />
-            </div>
+            <EditTaxRateDetails form={nestedForm(form, "details")} />
             <div>
               <p className="inter-base-semibold mb-base">Overrides</p>
-              {(rules.product_types.length > 0 ||
-                rules.products.length > 0 ||
-                rules.shipping_options.length > 0) && (
+              {(product_types.length > 0 ||
+                products.length > 0 ||
+                shipping_options.length > 0) && (
                 <div className="flex flex-col gap-base">
-                  {rules.products.length > 0 && (
+                  {products.length > 0 && (
                     <TaxRuleItem
                       onDelete={() =>
                         handleOverridesSelected({ type: "products", items: [] })
@@ -127,7 +119,7 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
                             regionId,
                             handleOverridesSelected,
                             {
-                              items: rules.products,
+                              items: products,
                               type: "products",
                             }
                           )
@@ -135,12 +127,12 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
                       }}
                       index={1}
                       name="Product Rules"
-                      description={`Applies to ${
-                        rules.products.length
-                      } product${rules.products.length > 1 ? "s" : ""}`}
+                      description={`Applies to ${products.length} product${
+                        products.length > 1 ? "s" : ""
+                      }`}
                     />
                   )}
-                  {rules.product_types.length > 0 && (
+                  {product_types.length > 0 && (
                     <TaxRuleItem
                       onDelete={() =>
                         handleOverridesSelected({
@@ -155,7 +147,7 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
                             regionId,
                             handleOverridesSelected,
                             {
-                              items: rules.product_types,
+                              items: product_types,
                               type: "product_types",
                             }
                           )
@@ -164,13 +156,11 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
                       index={2}
                       name="Product Type Rules"
                       description={`Applies to ${
-                        rules.product_types.length
-                      } product type${
-                        rules.product_types.length > 1 ? "s" : ""
-                      }`}
+                        product_types.length
+                      } product type${product_types.length > 1 ? "s" : ""}`}
                     />
                   )}
-                  {rules.shipping_options.length > 0 && (
+                  {shipping_options.length > 0 && (
                     <TaxRuleItem
                       onDelete={() =>
                         handleOverridesSelected({
@@ -185,7 +175,7 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
                             regionId,
                             handleOverridesSelected,
                             {
-                              items: rules.shipping_options,
+                              items: shipping_options,
                               type: "shipping_options",
                             }
                           )
@@ -194,18 +184,18 @@ const NewTaxRate = ({ regionId, onDismiss }) => {
                       index={3}
                       name="Shipping Option Rules"
                       description={`Applies to ${
-                        rules.shipping_options.length
+                        shipping_options.length
                       } shipping option${
-                        rules.shipping_options.length > 1 ? "s" : ""
+                        shipping_options.length > 1 ? "s" : ""
                       }`}
                     />
                   )}
                 </div>
               )}
               {!(
-                rules.product_types.length > 0 &&
-                rules.products.length > 0 &&
-                rules.shipping_options.length > 0
+                product_types.length > 0 &&
+                products.length > 0 &&
+                shipping_options.length > 0
               ) && (
                 <Button
                   type="button"

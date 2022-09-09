@@ -34,7 +34,7 @@ const AddConditionsModal = ({
 
     for (const [key, value] of Object.entries(conditions)) {
       // If we are in the details view we only want to view the conditions that haven't already been added,
-      // meaning !id. We don't support updatig existing conditions through the admin atm.
+      // meaning !id. We don't support updating existing conditions through the admin atm.
       const filter = isDetails ? value.id : value.items.length
 
       if (filter) {

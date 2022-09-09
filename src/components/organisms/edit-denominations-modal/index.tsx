@@ -104,18 +104,18 @@ const EditDenominationsModal = ({
                   className="first:mt-0 mt-xsmall flex items-center"
                 >
                   <div className="flex-1">
-                    <CurrencyInput
+                    <CurrencyInput.Root
                       currencyCodes={currencyCodes}
                       currentCurrency={field.currency_code}
                       onChange={onCurrencyChange(index)}
                       size="medium"
                     >
-                      <CurrencyInput.AmountInput
+                      <CurrencyInput.Amount
                         label="Amount"
                         onChange={onAmountChange(index)}
                         amount={field.amount}
                       />
-                    </CurrencyInput>
+                    </CurrencyInput.Root>
                   </div>
                   <button className="ml-2xlarge">
                     <TrashIcon

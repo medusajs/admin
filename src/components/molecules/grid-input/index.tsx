@@ -1,8 +1,6 @@
 import React from "react"
 
-type GridInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  value: string | number
-}
+type GridInputProps = React.InputHTMLAttributes<HTMLInputElement>
 
 const GridInput: React.FC<GridInputProps> = ({ value, ...props }) => {
   return (

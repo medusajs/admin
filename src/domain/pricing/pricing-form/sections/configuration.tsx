@@ -8,26 +8,27 @@ import TimePicker from "../../../../components/atoms/date-picker/time-picker"
 import Switch from "../../../../components/atoms/switch"
 import Select from "../../../../components/molecules/select"
 import Accordion from "../../../../components/organisms/accordion"
+import { weekFromNow } from "../../../../utils/date-utils"
 import { usePriceListForm } from "../form/pricing-form-context"
-import { ConfigurationField } from "../types"
+import { ConfigurationFields } from "../types"
 
 type ConfigurationProps = {
   priceList?: PriceList
 }
 
 const checkForEnabledConfigs = (
-  config: Record<ConfigurationField, unknown>
+  config: ConfigurationFields
 ): string[] => {
   const enabledConfigs: string[] = []
 
-  if (config.customer_groups?.length > 0) {
-    enabledConfigs.push(ConfigurationField.CUSTOMER_GROUPS)
+  if (config.customer_groups && config.customer_groups.length > 0) {
+    enabledConfigs.push("customer_groups")
   }
   if (config.starts_at) {
-    enabledConfigs.push(ConfigurationField.STARTS_AT)
+    enabledConfigs.push("starts_at")
   }
   if (config.ends_at) {
-    enabledConfigs.push(ConfigurationField.ENDS_AT)
+    enabledConfigs.push("ends_at")
   }
 
   return enabledConfigs
@@ -83,16 +84,17 @@ const Configuration: React.FC<ConfigurationProps> = () => {
               <Controller
                 name="starts_at"
                 control={control}
-                render={({ value, onChange }) => {
+                render={({ field: { value, onChange } }) => {
+                  const ensuredDate = value || new Date()
                   return (
                     <>
                       <DatePicker
-                        date={value}
+                        date={ensuredDate}
                         label="Start date"
                         onSubmitDate={onChange}
                       />
                       <TimePicker
-                        date={value}
+                        date={ensuredDate}
                         label="Start date"
                         onSubmitDate={onChange}
                       />
@@ -124,16 +126,17 @@ const Configuration: React.FC<ConfigurationProps> = () => {
               <Controller
                 name="ends_at"
                 control={control}
-                render={({ value, onChange }) => {
+                render={({ field: { value, onChange } }) => {
+                  const ensuredDate = value || weekFromNow()
                   return (
                     <>
                       <DatePicker
-                        date={value}
+                        date={ensuredDate}
                         label="End date"
                         onSubmitDate={onChange}
                       />
                       <TimePicker
-                        date={value}
+                        date={ensuredDate}
                         label="End date"
                         onSubmitDate={onChange}
                       />
@@ -157,8 +160,7 @@ const Configuration: React.FC<ConfigurationProps> = () => {
             <Controller
               name="customer_groups"
               control={control}
-              css={{ width: "100%" }}
-              render={({ value, onChange, ref }) => {
+              render={({ field: { value, onChange, ref }}) => {
                 return (
                   <div
                     className={clsx(

@@ -4,6 +4,7 @@ import React from "react"
 import { Controller, useForm } from "react-hook-form"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
+import FormValidator from "../../../utils/form-validator"
 import Button from "../../fundamentals/button"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
@@ -110,9 +111,9 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
   }
 
   return (
-    <Modal handleClose={handleClose}>
+    <Modal handleClose={handleClose} isLargeModal>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Modal.Body isLargeModal>
+        <Modal.Body>
           <Modal.Header handleClose={handleClose}>
             <span className="inter-xlarge-semibold">Add Denomination</span>
           </Modal.Header>
@@ -125,19 +126,24 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
               <Controller
                 control={control}
                 name="default_price"
-                render={({ onChange, value }) => {
+                rules={{
+                  required: "Default value is required",
+                  max: FormValidator.maxInteger("Default value", storeCurrency),
+                }}
+                render={({ field: { onChange, value, ref } }) => {
                   return (
-                    <CurrencyInput
+                    <CurrencyInput.Root
                       currentCurrency={storeCurrency}
                       readOnly
                       size="medium"
                     >
-                      <CurrencyInput.AmountInput
+                      <CurrencyInput.Amount
+                        ref={ref}
                         label="Amount"
                         amount={value}
                         onChange={onChange}
                       />
-                    </CurrencyInput>
+                    </CurrencyInput.Root>
                   )
                 }}
               />
@@ -147,27 +153,37 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                 <h3 className="inter-base-semibold">Other Values</h3>
                 <IconTooltip content="Here you can add values in other currencies" />
               </div>
-              <div className="flex items-center gap-y-xsmall">
+              <div className="flex flex-col gap-y-xsmall">
                 {fields.map((field, index) => {
                   return (
                     <div
                       key={field.indexId}
-                      className="last:mb-0 mb-xsmall flex items-center"
+                      className="last:mb-0 mb-xsmall flex items-end"
                     >
                       <div className="flex-1">
                         <Controller
                           control={control}
                           key={field.indexId}
-                          name={`prices[${index}].price`}
+                          name={`prices.${index}.price`}
+                          rules={{
+                            required: FormValidator.required("Price"),
+                            validate: (val) => {
+                              return FormValidator.validateMaxInteger(
+                                "Price",
+                                val.amount,
+                                val.currency_code
+                              )
+                            },
+                          }}
                           defaultValue={field.price}
-                          render={({ onChange, value }) => {
+                          render={({ field: { onChange, value } }) => {
                             const codes = [
                               value?.currency_code,
                               ...availableCurrencies,
                             ]
                             codes.sort()
                             return (
-                              <CurrencyInput
+                              <CurrencyInput.Root
                                 currencyCodes={codes}
                                 currentCurrency={value?.currency_code}
                                 size="medium"
@@ -176,26 +192,31 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                                   onChange({ ...value, currency_code: code })
                                 }
                               >
-                                <CurrencyInput.AmountInput
+                                <CurrencyInput.Amount
                                   label="Amount"
                                   onChange={(amount) =>
                                     onChange({ ...value, amount })
                                   }
                                   amount={value?.amount}
                                 />
-                              </CurrencyInput>
+                              </CurrencyInput.Root>
                             )
                           }}
                         />
                       </div>
 
-                      <button className="ml-large">
+                      <Button
+                        variant="ghost"
+                        size="small"
+                        className="ml-large w-10 h-10"
+                        type="button"
+                      >
                         <TrashIcon
                           onClick={deletePrice(index)}
                           className="text-grey-40"
                           size="20"
                         />
-                      </button>
+                      </Button>
                     </div>
                   )
                 })}

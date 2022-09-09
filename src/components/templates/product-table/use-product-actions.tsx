@@ -1,3 +1,4 @@
+import { Product } from "@medusajs/medusa"
 import { navigate } from "gatsby"
 import { useAdminDeleteProduct, useAdminUpdateProduct } from "medusa-react"
 import * as React from "react"
@@ -12,7 +13,7 @@ import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import { ActionType } from "../../molecules/actionables"
 import useCopyProduct from "./use-copy-product"
 
-const useProductActions = (product) => {
+const useProductActions = (product: Product) => {
   const notification = useNotification()
   const dialog = useImperativeDialog()
   const copyProduct = useCopyProduct()

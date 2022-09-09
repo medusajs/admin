@@ -2,7 +2,6 @@ import clsx from "clsx"
 import React, { useRef, useState } from "react"
 import Tooltip from "../../atoms/tooltip"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
-import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 
 const ENTER_KEY = 13
@@ -21,6 +20,7 @@ type TagInputProps = {
   withTooltip?: boolean
   tooltipContent?: string
   tooltip?: React.ReactNode
+  invalidMessage?: string
 } & React.InputHTMLAttributes<HTMLInputElement>
 
 const TagInput: React.FC<TagInputProps> = ({
@@ -36,6 +36,7 @@ const TagInput: React.FC<TagInputProps> = ({
   withTooltip = false,
   tooltipContent,
   tooltip,
+  invalidMessage = "is not a valid tag",
   ...props
 }) => {
   const [invalid, setInvalid] = useState(false)
@@ -140,10 +141,6 @@ const TagInput: React.FC<TagInputProps> = ({
     }
   }
 
-  const handleOnContainerFocus = () => {
-    inputRef.current?.focus()
-  }
-
   const handleInput = () => {
     if (!inputRef?.current) {
       return
@@ -158,58 +155,76 @@ const TagInput: React.FC<TagInputProps> = ({
   }
 
   return (
-    <InputContainer
-      className={clsx("flex flex-wrap relative", className)}
-      onFocus={handleOnContainerFocus}
-    >
+    <div className={className}>
       {showLabel && (
         <InputHeader
           label={label || "Tags (comma separated)"}
           {...{ required, tooltipContent, tooltip }}
+          className="mb-2"
         />
       )}
 
       <Tooltip
         open={invalid}
         side={"top"}
-        content={`${inputRef?.current?.value} is not a valid tag`}
+        content={
+          <p className="text-rose-50">
+            {inputRef?.current?.value} {invalidMessage}
+          </p>
+        }
       >
-        <div className="w-full gap-x-2 gap-y-1 flex mt-1 ml-0 flex-wrap">
-          {values.map((v, index) => (
-            <div
-              key={index}
-              className={clsx(
-                "items-center justify-center whitespace-nowrap w-max bg-grey-90 rounded",
-                "px-2 leading-6",
-                {
-                  ["bg-grey-70"]: index === highlighted,
-                }
-              )}
-            >
-              <div className="inline-block text-grey-0 h-full inter-small-semibold mr-1">
-                {v}
-              </div>
-              <CrossIcon
-                className="inline cursor-pointer"
-                size="16"
-                color="#9CA3AF"
-                onClick={() => handleRemove(index)}
+        <div
+          className={clsx(
+            "h-auto min-h-[40px] bg-grey-5 shadow-border focus-within:outline-4 focus-within:outline focus-within:outline-violet-60/10 transition-colors focus-within:shadow-focus-border rounded-rounded flex items-center px-3 box-border",
+            {
+              "shadow-error-border focus-within:shadow-error-border focus-within:outline-rose-60/10": invalid,
+            }
+          )}
+        >
+          <div className="h-full">
+            <div className="w-full gap-xsmall flex flex-wrap box-border h-28px py-1.5">
+              {values.map((v, index) => (
+                <div
+                  key={index}
+                  className={clsx(
+                    "flex items-center justify-center whitespace-nowrap w-max bg-grey-20 rounded-rounded px-3 py-1 gap-x-1",
+                    {
+                      ["!bg-grey-90"]: index === highlighted,
+                    }
+                  )}
+                >
+                  <span
+                    className={clsx(
+                      "inline-block text-grey-50 inter-small-semibold",
+                      {
+                        ["text-grey-20"]: index === highlighted,
+                      }
+                    )}
+                  >
+                    {v}
+                  </span>
+                  <CrossIcon
+                    className="inline cursor-pointer text-grey-40"
+                    size="16"
+                    onClick={() => handleRemove(index)}
+                  />
+                </div>
+              ))}
+              <input
+                id="tag-input"
+                ref={inputRef}
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+                onChange={handleInput}
+                className={clsx("focus:outline-none bg-transparent flex-1")}
+                placeholder={values?.length ? "" : placeholder} // only visible if no tags exist
+                {...props}
               />
             </div>
-          ))}
-          <input
-            id="tag-input"
-            ref={inputRef}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
-            onChange={handleInput}
-            className={clsx("bg-grey-5 focus:outline-none")}
-            placeholder={values?.length ? "" : placeholder} // only visible if no tags exist
-            {...props}
-          />
+          </div>
         </div>
       </Tooltip>
-    </InputContainer>
+    </div>
   )
 }
 

@@ -6,8 +6,8 @@ import { LayeredModalProvider } from "./src/components/molecules/modal/layered-m
 import { SteppedProvider } from "./src/components/molecules/modal/stepped-modal"
 import { AccountProvider } from "./src/context/account"
 import { CacheProvider } from "./src/context/cache"
-import { InterfaceProvider } from "./src/context/interface"
 import { FeatureFlagProvider } from "./src/context/feature-flag"
+import { InterfaceProvider } from "./src/context/interface"
 import { medusaUrl, queryClient } from "./src/services/config"
 
 export const wrapPageElement = ({ element }) => {

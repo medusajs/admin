@@ -19,7 +19,7 @@ const TwoSplitPane: React.FC<TwoSplitPaneProps> = ({
     ? {
         gridTemplateRows: `${height}px`,
       }
-    : null
+    : undefined
 
   if (childrenCount > 2) {
     throw new Error("TwoSplitPane can only have two or less children")
@@ -27,7 +27,7 @@ const TwoSplitPane: React.FC<TwoSplitPaneProps> = ({
 
   return (
     <div
-      className={clsx("grid gap-large grid-cols-1", className, {
+      className={clsx("grid gap-xsmall grid-cols-1", className, {
         "medium:grid-cols-2": !threeCols,
         "medium:grid-cols-3": threeCols,
       })}

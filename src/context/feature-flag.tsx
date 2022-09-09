@@ -51,3 +51,13 @@ export const FeatureFlagProvider = ({ children }) => {
     </FeatureFlagContext.Provider>
   )
 }
+
+export const useFeatureFlag = () => {
+  const context = useContext(FeatureFlagContext)
+
+  if (!context) {
+    throw new Error("useFeatureFlag must be used within a FeatureFlagProvider")
+  }
+
+  return context
+}

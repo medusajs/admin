@@ -7,7 +7,7 @@ import Actionables from "../../../../../../components/molecules/actionables"
 import {
   ConditionMap,
   DiscountConditionOperator,
-  DiscountConditionType,
+  DiscountConditionType
 } from "../../../../types"
 import EditConditionsModal from "../../edit-conditions-modal"
 import { useDiscountForm } from "../../form/discount-form-context"
@@ -208,7 +208,6 @@ const ConditionItem = <Type extends DiscountConditionType>({
                     type,
                     items: [],
                     operator: DiscountConditionOperator.IN,
-                    shouldDelete: true,
                   }),
                 icon: <TrashIcon size={16} />,
                 variant: "danger",

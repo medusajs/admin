@@ -23,11 +23,11 @@ const Actionables: React.FC<ActionablesProps> = ({
   customTrigger,
   forceDropdown = false,
 }) => {
-  if (!actions?.length && !customTrigger) {
+  if ((!actions || !actions.length) && !customTrigger) {
     return null
   }
 
-  return actions?.length > 1 || forceDropdown ? (
+  return actions && (forceDropdown || actions.length > 1) ? (
     <div>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
@@ -55,7 +55,7 @@ const Actionables: React.FC<ActionablesProps> = ({
                   <Button
                     variant="ghost"
                     size="small"
-                    className={clsx("w-full justify-start", {
+                    className={clsx("w-full justify-start flex", {
                       "text-rose-50": action?.variant === "danger",
                       "opacity-50 select-none pointer-events-none":
                         action?.disabled,
@@ -76,12 +76,24 @@ const Actionables: React.FC<ActionablesProps> = ({
     <div>
       {customTrigger ? (
         <div>{customTrigger}</div>
-      ) : (
-        <Button variant="ghost" size="small" onClick={actions[0].onClick}>
-          {actions[0].icon}
-          {actions[0].label}
+      ) : actions ? (
+        <Button
+          variant="secondary"
+          size="small"
+          type="button"
+          className="flex items-center"
+          onClick={actions[0].onClick}
+        >
+          {actions[0].icon ? (
+            <div className="flex items-center gap-x-2xsmall">
+              {actions[0].icon}
+              {actions[0].label}
+            </div>
+          ) : (
+            <>{actions[0].label}</>
+          )}
         </Button>
-      )}
+      ) : null}
     </div>
   )
 }

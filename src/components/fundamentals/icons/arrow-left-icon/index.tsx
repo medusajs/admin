@@ -2,7 +2,7 @@ import React from "react"
 import IconProps from "../types/icon-type"
 
 const ArrowLeftIcon: React.FC<IconProps> = ({
-  size = "16",
+  size = "20",
   color = "currentColor",
   ...attributes
 }) => {
@@ -10,20 +10,19 @@ const ArrowLeftIcon: React.FC<IconProps> = ({
     <svg
       width={size}
       height={size}
-      viewBox="0 0 16 16"
+      viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...attributes}
     >
       <path
-        d="M12.667 8H3.33366"
+        d="M3.75 10H16.875"
         stroke={color}
         strokeWidth="1.5"
         strokeLinecap="round"
-        strokeLinejoin="round"
       />
       <path
-        d="M8 3.33331L3.33333 7.99998L8 12.6666"
+        d="M8.125 5L3.125 10L8.125 15"
         stroke={color}
         strokeWidth="1.5"
         strokeLinecap="round"

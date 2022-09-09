@@ -12,7 +12,7 @@ type AddMetadataProps = {
 
 export type MetadataField = {
   key: string
-  value: any
+  value: string
 }
 
 const Metadata: React.FC<AddMetadataProps> = ({
@@ -129,12 +129,12 @@ const DeletableElement: React.FC<DeletableElementProps> = ({
   children,
 }) => {
   return (
-    <div className="flex items-center gap-x-xlarge">
+    <div className="flex items-end gap-x-xlarge">
       <div className="flex-grow">{children}</div>
       <Button
         variant="ghost"
         size="small"
-        className="text-grey-40 justify-end"
+        className="text-grey-40 w-10 h-10"
         type="button"
         onClick={onDelete}
       >

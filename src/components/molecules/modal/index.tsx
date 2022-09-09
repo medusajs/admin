@@ -7,10 +7,12 @@ import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 type ModalState = {
   portalRef: any
+  isLargeModal?: boolean
 }
 
 export const ModalContext = React.createContext<ModalState>({
   portalRef: undefined,
+  isLargeModal: true,
 })
 
 export type ModalProps = {
@@ -20,7 +22,6 @@ export type ModalProps = {
 }
 
 type ModalChildProps = {
-  isLargeModal?: boolean
   className?: string
   style?: React.CSSProperties
 }
@@ -52,16 +53,10 @@ const Content: React.FC = ({ children }) => {
   return (
     <Dialog.Content
       style={style}
-      className="bg-grey-0 min-w-modal rounded overflow-x-hidden"
+      className="bg-grey-0 min-w-modal rounded-rounded overflow-x-hidden"
     >
       {children}
     </Dialog.Content>
-  )
-}
-
-const addProp = (children, prop) => {
-  return React.Children.map(children, (child) =>
-    React.cloneElement(child, prop)
   )
 }
 
@@ -75,9 +70,9 @@ const Modal: ModalType = ({
   return (
     <Dialog.Root open={open} onOpenChange={handleClose}>
       <Portal.UnstablePortal ref={portalRef}>
-        <ModalContext.Provider value={{ portalRef }}>
+        <ModalContext.Provider value={{ portalRef, isLargeModal }}>
           <Overlay>
-            <Content>{addProp(children, { isLargeModal })}</Content>
+            <Content>{children}</Content>
           </Overlay>
         </ModalContext.Provider>
       </Portal.UnstablePortal>
@@ -85,19 +80,23 @@ const Modal: ModalType = ({
   )
 }
 
-Modal.Body = ({ children, isLargeModal, className, style }) => {
+Modal.Body = ({ children, className, style }) => {
+  const { isLargeModal } = React.useContext(ModalContext)
+
   return (
     <div
       style={style}
       className={clsx("inter-base-regular h-full", className)}
       onClick={(e) => e.stopPropagation()}
     >
-      {addProp(children, { isLargeModal })}
+      {children}
     </div>
   )
 }
 
-Modal.Content = ({ children, className, isLargeModal }) => {
+Modal.Content = ({ children, className }) => {
+  const { isLargeModal } = React.useContext(ModalContext)
+
   const { height } = useWindowDimensions()
   const style = {
     maxHeight: height - 90 - 141,
@@ -105,10 +104,14 @@ Modal.Content = ({ children, className, isLargeModal }) => {
   return (
     <div
       style={style}
-      className={clsx("px-7 pt-5 overflow-y-auto", className, {
-        ["w-largeModal pb-7"]: isLargeModal,
-        ["pb-5"]: !isLargeModal,
-      })}
+      className={clsx(
+        "px-7 pt-5 overflow-y-auto",
+        {
+          ["w-largeModal pb-7"]: isLargeModal,
+          ["pb-5"]: !isLargeModal,
+        },
+        className
+      )}
     >
       {children}
     </div>
@@ -133,13 +136,19 @@ Modal.Header = ({ handleClose = undefined, children }) => {
   )
 }
 
-Modal.Footer = ({ children, isLargeModal }) => {
+Modal.Footer = ({ children, className }) => {
+  const { isLargeModal } = React.useContext(ModalContext)
+
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={clsx("px-7 bottom-0 pb-5 flex w-full", {
-        "border-t border-grey-20 pt-4": isLargeModal,
-      })}
+      className={clsx(
+        "px-7 bottom-0 pb-5 flex w-full",
+        {
+          "border-t border-grey-20 pt-4": isLargeModal,
+        },
+        className
+      )}
     >
       {children}
     </div>
