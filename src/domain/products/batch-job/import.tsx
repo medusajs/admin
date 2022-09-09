@@ -133,8 +133,9 @@ function ImportProducts(props: ImportProductsProps) {
    */
   const onFileRemove = async () => {
     try {
-      // TODO: fix this function has uncaught error
-      deleteFile(fileKey!)
+      if (fileKey) {
+        deleteFile({ file_key: fileKey })
+      }
       cancelBathJob()
     } catch (e) {
       console.log(e)
@@ -145,6 +146,7 @@ function ImportProducts(props: ImportProductsProps) {
    * Cleanup file if batch job isn't confirmed.
    */
   const onClose = () => {
+    props.handleClose()
     if (
       !["confirmed", "completed", "canceled", "failed"].includes(
         batchJob?.status
