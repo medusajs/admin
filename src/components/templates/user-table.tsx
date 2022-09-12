@@ -1,6 +1,10 @@
+import { Invite, User } from "@medusajs/medusa"
+import copy from "copy-to-clipboard"
+import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
+import ClipboardCopyIcon from "../fundamentals/icons/clipboard-copy-icon"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import RefreshIcon from "../fundamentals/icons/refresh-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
@@ -37,6 +41,9 @@ const UserTable: React.FC<UserTableProps> = ({
   const [deleteUser, setDeleteUser] = useState(false)
   const [selectedInvite, setSelectedInvite] = useState(null)
   const notification = useNotification()
+  const { store, isLoading } = useAdminStore()
+
+  console.log(store?.invite_link_template)
 
   useEffect(() => {
     setElements([
@@ -63,7 +70,7 @@ const UserTable: React.FC<UserTableProps> = ({
     setSelectedInvite(null)
   }
 
-  const getUserTableRow = (user, index) => {
+  const getUserTableRow = (user: User, index) => {
     return (
       <Table.Row
         key={`user-${index}`}
@@ -98,7 +105,8 @@ const UserTable: React.FC<UserTableProps> = ({
     )
   }
 
-  const getInviteTableRow = (invite, index) => {
+  const getInviteTableRow = (invite: Invite, index) => {
+    console.log(invite)
     return (
       <Table.Row
         key={`invite-${index}`}
@@ -118,6 +126,26 @@ const UserTable: React.FC<UserTableProps> = ({
                 .then(() => triggerRefetch())
             },
             icon: <RefreshIcon size={20} />,
+          },
+          {
+            label: "Copy invite link",
+            disabled: isLoading,
+            onClick: () => {
+              if (!isLoading && store) {
+                copy(
+                  store?.invite_link_template?.replace(
+                    "{invite_token}",
+                    invite.token
+                  )
+                )
+                notification(
+                  "Success",
+                  "Invite link copied to clipboard",
+                  "success"
+                )
+              }
+            },
+            icon: <ClipboardCopyIcon size={20} />,
           },
           {
             label: "Remove Invitation",
