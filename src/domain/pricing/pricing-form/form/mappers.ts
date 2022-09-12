@@ -77,8 +77,8 @@ export const mapFormValuesToUpdatePriceListDetails = (
     name: values.name || undefined,
     description: values.description || undefined,
     customer_groups: values.customer_groups
-    ? values.customer_groups.map((cg) => ({ id: cg.value }))
-    : [],
+      ? values.customer_groups.map((cg) => ({ id: cg.value }))
+      : [],
     ends_at: values.ends_at,
     starts_at: values.starts_at,
     type: values.type || undefined,
