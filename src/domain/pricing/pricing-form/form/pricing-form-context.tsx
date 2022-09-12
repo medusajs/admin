@@ -23,6 +23,7 @@ const defaultState: PriceListFormValues = {
   starts_at: null,
   prices: null,
   type: PriceListType.SALE,
+  includes_tax: null,
 }
 
 const PriceListFormContext = React.createContext<{
