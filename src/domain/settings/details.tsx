@@ -105,7 +105,7 @@ const AccountDetails = () => {
             className="mt-base"
             label="Invite link template"
             {...register("invite_link_template")}
-            placeholder="https://acme.inc/invite={invite_token}"
+            placeholder="https://acme-admin.inc/invite?token={invite_token}"
           />
         </BodyCard>
       </div>
