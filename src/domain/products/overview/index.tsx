@@ -15,6 +15,8 @@ import useNotification from "../../../hooks/use-notification"
 import useToggleState from "../../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../../utils/error-messages"
 import NewProduct from "../new"
+import ImportProducts from "../batch-job/import"
+import UploadIcon from "../../../components/fundamentals/icons/upload-icon"
 
 const VIEWS = ["products", "collections"]
 
@@ -61,6 +63,14 @@ const Overview = (_props: RouteComponentProps) => {
             <Button
               variant="secondary"
               size="small"
+              onClick={() => openImportModal()}
+            >
+              <UploadIcon size={20} />
+              Import Products
+            </Button>
+            <Button
+              variant="secondary"
+              size="small"
               onClick={() => openExportModal()}
             >
               <ExportIcon size={20} />
@@ -97,6 +107,12 @@ const Overview = (_props: RouteComponentProps) => {
     open: openExportModal,
     close: closeExportModal,
     state: exportModalOpen,
+  } = useToggleState(false)
+
+  const {
+    open: openImportModal,
+    close: closeImportModal,
+    state: importModalOpen,
   } = useToggleState(false)
 
   const handleCreateCollection = async (data, colMetadata) => {
@@ -173,6 +189,9 @@ const Overview = (_props: RouteComponentProps) => {
           onSubmit={handleCreateExport}
           loading={createBatchJob.isLoading}
         />
+      )}
+      {importModalOpen && (
+        <ImportProducts handleClose={() => closeImportModal()} />
       )}
       <Fade isVisible={createProductState} isFullScreen={true}>
         <NewProduct onClose={closeProductCreate} />
