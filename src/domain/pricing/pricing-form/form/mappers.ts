@@ -67,7 +67,6 @@ export const mapFormValuesToCreatePriceList = (
     ends_at: values.ends_at || undefined,
     starts_at: values.starts_at || undefined,
     prices,
-    includes_tax: values.includes_tax || undefined,
   }
 }
 
@@ -83,7 +82,6 @@ export const mapFormValuesToUpdatePriceListDetails = (
     ends_at: values.ends_at,
     starts_at: values.starts_at,
     type: values.type || undefined,
-    includes_tax: values.includes_tax || undefined,
   }
 }
 
