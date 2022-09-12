@@ -26,7 +26,7 @@ type UserTableProps = {
   triggerRefetch: () => void
 }
 
-const getInviteStatus = (invite) => {
+const getInviteStatus = (invite: Invite) => {
   return new Date(invite.expires_at) < new Date() ? "expired" : "pending"
 }
 
@@ -42,8 +42,6 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedInvite, setSelectedInvite] = useState(null)
   const notification = useNotification()
   const { store, isLoading } = useAdminStore()
-
-  console.log(store?.invite_link_template)
 
   useEffect(() => {
     setElements([
@@ -131,19 +129,16 @@ const UserTable: React.FC<UserTableProps> = ({
             label: "Copy invite link",
             disabled: isLoading,
             onClick: () => {
-              if (!isLoading && store) {
-                copy(
-                  store?.invite_link_template?.replace(
-                    "{invite_token}",
-                    invite.token
-                  )
-                )
-                notification(
-                  "Success",
-                  "Invite link copied to clipboard",
-                  "success"
-                )
-              }
+              const link_template =
+                store?.invite_link_template ??
+                `${window.location.origin}/invite?token={invite_token}`
+
+              copy(link_template.replace("{invite_token}", invite.token))
+              notification(
+                "Success",
+                "Invite link copied to clipboard",
+                "success"
+              )
             },
             icon: <ClipboardCopyIcon size={20} />,
           },
