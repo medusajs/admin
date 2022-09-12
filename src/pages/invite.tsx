@@ -23,11 +23,9 @@ type formValues = {
 }
 
 const InvitePage = ({ location }) => {
-  console.log(location)
   const parsed = qs.parse(location.search.substring(1))
   const [signUp, setSignUp] = useState(false)
 
-  console.log(parsed?.token)
   let token: Object | null = null
   if (parsed?.token) {
     try {
