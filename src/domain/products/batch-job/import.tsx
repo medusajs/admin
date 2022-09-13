@@ -61,11 +61,15 @@ function ImportProducts(props: ImportProductsProps) {
 
   const isUploaded = !!fileKey
   const isPreprocessed = !!batchJob?.result
+  const hasError = batchJob?.status === "failed"
+
   const progress = isPreprocessed
     ? batchJob!.result.advancement_count / batchJob!.result.count
     : undefined
 
-  const status = isPreprocessed
+  const status = hasError
+    ? "Error occurred while processing"
+    : isPreprocessed
     ? undefined
     : isUploaded
     ? "Preprocessing..."
