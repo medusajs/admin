@@ -167,6 +167,7 @@ function ImportProducts(props: ImportProductsProps) {
 
   return (
     <UploadModal
+      type="products"
       status={status}
       progress={progress}
       canImport={isPreprocessed}

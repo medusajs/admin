@@ -58,18 +58,19 @@ type UploadSummaryProps = {
   creations: number
   updates: number
   rejections?: number
+  type: string
 }
 
 /**
  * Render a batch update request summary.
  */
 function UploadSummary(props: UploadSummaryProps) {
-  const { creations, updates, rejections } = props
+  const { creations, updates, rejections, type } = props
   return (
     <div className="flex gap-6">
       <div className="flex items-center text-small text-grey-90">
         <CheckCircleIcon color="#9CA3AF" className="mr-2" />
-        <span className="font-semibold"> {creations}&nbsp;</span> new products
+        <span className="font-semibold"> {creations}&nbsp;</span> new {type}
       </div>
       <div className="flex items-center text-small text-grey-90">
         <WarningCircle fill="#9CA3AF" className="mr-2" />
@@ -150,6 +151,7 @@ function DropArea(props: DropAreaProps) {
 }
 
 type UploadModalProps = {
+  type: string
   status?: string
   fileTitle: string
   description1Text: string
@@ -183,6 +185,7 @@ function UploadModal(props: UploadModalProps) {
     progress,
     summary,
     status,
+    type,
   } = props
   const [uploadFile, setUploadFile] = useState<File>()
 
@@ -221,6 +224,7 @@ function UploadModal(props: UploadModalProps) {
             <UploadSummary
               creations={summary.toCreate}
               updates={summary.toUpdate}
+              type={type}
             />
           )}
 
