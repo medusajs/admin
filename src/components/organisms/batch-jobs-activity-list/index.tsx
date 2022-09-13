@@ -48,9 +48,10 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
     to: batchJob.created_at,
   })
 
-  const operation = batchJob.type.includes("import")
-    ? BatchJobOperation.Import
-    : BatchJobOperation.Export
+  const operation = {
+    "product-import": BatchJobOperation.Import,
+    "product-export": BatchJobOperation.Export,
+  }[batchJob.type]
 
   const batchJobActivityDescription = batchJobDescriptionBuilder(
     batchJob,
