@@ -155,6 +155,7 @@ type UploadModalProps = {
   description1Text: string
   description2Title: string
   description2Text: string
+  templateLink: string
   canImport?: boolean
   progress?: number
   onClose: () => void
@@ -178,6 +179,7 @@ function UploadModal(props: UploadModalProps) {
     onClose,
     onSubmit,
     onFileRemove,
+    templateLink,
     progress,
     summary,
     status,
@@ -247,13 +249,13 @@ function UploadModal(props: UploadModalProps) {
           <p className="text-grey-50 mb-2 text-base">{description2Text}</p>
 
           <FileSummary
-            name="medusa-template-product-list.csv"
-            size={624220000}
+            name="medusa-template.csv"
+            size={2967}
             action={
-              // TODO: download actual file on click - implement template creation in core
               <a
                 className="w-6 h-6 cursor-pointer"
-                onClick={() => alert("todo")}
+                href={templateLink}
+                download
               >
                 <DownloadIcon stroke="#9CA3AF" />
               </a>
