@@ -37,9 +37,9 @@ const UserTable: React.FC<UserTableProps> = ({
 }) => {
   const [elements, setElements] = useState<UserListElement[]>([])
   const [shownElements, setShownElements] = useState<UserListElement[]>([])
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [deleteUser, setDeleteUser] = useState(false)
-  const [selectedInvite, setSelectedInvite] = useState(null)
+  const [selectedInvite, setSelectedInvite] = useState<Invite | null>(null)
   const notification = useNotification()
   const { store, isLoading } = useAdminStore()
 
@@ -68,7 +68,7 @@ const UserTable: React.FC<UserTableProps> = ({
     setSelectedInvite(null)
   }
 
-  const getUserTableRow = (user: User, index) => {
+  const getUserTableRow = (user: User, index: number) => {
     return (
       <Table.Row
         key={`user-${index}`}
@@ -103,8 +103,7 @@ const UserTable: React.FC<UserTableProps> = ({
     )
   }
 
-  const getInviteTableRow = (invite: Invite, index) => {
-    console.log(invite)
+  const getInviteTableRow = (invite: Invite, index: number) => {
     return (
       <Table.Row
         key={`invite-${index}`}
