@@ -4,7 +4,7 @@ import Actionables, { ActionType } from "../../molecules/actionables"
 
 type SectionProps = {
   children?: React.ReactNode
-  title: string
+  title?: string
   actions?: ActionType[]
   customActions?: React.ReactNode
   forceDropdown?: boolean
@@ -21,6 +21,8 @@ const Section = ({
   children,
   className,
 }: SectionProps) => {
+  const hasHeader = title || actions || customActions || status
+
   return (
     <div
       className={clsx(
@@ -28,16 +30,20 @@ const Section = ({
         className
       )}
     >
-      <div className="flex items-center justify-between">
-        <h1 className="inter-xlarge-semibold text-grey-90">{title}</h1>
-        <div className="flex items-center gap-x-2">
-          {customActions && customActions}
-          {status && status}
-          {actions && (
-            <Actionables actions={actions} forceDropdown={forceDropdown} />
+      {hasHeader && (
+        <div className="flex items-center justify-between">
+          {title && (
+            <h1 className="text-grey-90 inter-xlarge-semibold">{title}</h1>
           )}
+          <div className="flex items-center gap-x-2">
+            {customActions && customActions}
+            {status && status}
+            {actions && (
+              <Actionables actions={actions} forceDropdown={forceDropdown} />
+            )}
+          </div>
         </div>
-      </div>
+      )}
       <div>{children}</div>
     </div>
   )
