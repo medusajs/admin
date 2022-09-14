@@ -7,8 +7,6 @@ import {
   ValueContainerProps,
 } from "react-select"
 import InputError from "../../../../atoms/input-error"
-import Tooltip from "../../../../atoms/tooltip"
-import { hasLabel } from "../utils"
 
 type AdjacentContainerProps = {
   label?: string
@@ -111,21 +109,9 @@ export const ValueContainer = <
         )}
       >
         {value?.length > 0 && (
-          <Tooltip
-            content={
-              <ul>
-                {value.map((v, index) => {
-                  if (hasLabel(v)) {
-                    return <li key={index}>{v.label}</li>
-                  }
-                })}
-              </ul>
-            }
-          >
-            <div className="h-7 bg-grey-20 text-grey-50 px-small inter-small-semibold flex items-center rounded-rounded gap-x-2xsmall cursor-default">
-              <span>{value.length}</span>
-            </div>
-          </Tooltip>
+          <div className="h-7 bg-grey-20 text-grey-50 px-small inter-small-semibold flex items-center rounded-rounded gap-x-2xsmall cursor-default">
+            <span>{value.length}</span>
+          </div>
         )}
         <div className="relative grow">
           {children}
