@@ -80,6 +80,7 @@ const AddScreen = () => {
       <Modal.Content>
         <SalesChannelTable
           salesChannels={filteredData}
+          count={count || 0}
           limit={LIMIT}
           offset={offset}
           setOffset={setOffset}

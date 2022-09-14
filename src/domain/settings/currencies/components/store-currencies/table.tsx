@@ -1,81 +1,79 @@
-import { AdminGetCurrenciesParams, Currency } from "@medusajs/medusa"
-import { useAdminCurrencies } from "medusa-react"
-import React, { useMemo, useState } from "react"
-import { Column, usePagination, useTable } from "react-table"
-import IndeterminateCheckbox from "../../../../../components/molecules/indeterminate-checkbox"
+import { Currency } from "@medusajs/medusa"
+import React, { useEffect } from "react"
+import { TableInstance } from "react-table"
 import Table, {
   TablePagination,
 } from "../../../../../components/molecules/table"
 
 type Props = {
-  source: Currency[]
   count: number
-  setParams: React.Dispatch<
-    React.SetStateAction<AdminGetCurrenciesParams | undefined>
-  >
-  params: AdminGetCurrenciesParams | undefined
+  limit: number
+  offset: number
+  setOffset: (offset: number) => void
+  setQuery: (query: string) => void
+  setSelectedRowIds: (selectedRowIds: string[]) => void
+  tableAction?: React.ReactNode
+  tableState: TableInstance<Currency>
 }
 
-const CurrenciesTable = ({ source, count }: Props) => {
-  const {} = useAdminCurrencies({})
-
-  const columns = useColumns()
-  const limit = 10
-  const [query, setQuery] = useState("")
-  const [offset, setOffset] = useState(0)
-  const [numPages, setNumPages] = useState(0)
-  const [currentPage, setCurrentPage] = useState(0)
-
+const CurrenciesTable = ({
+  limit,
+  offset,
+  setOffset,
+  setSelectedRowIds,
+  tableState,
+  tableAction,
+  count,
+}: Props) => {
   const {
+    rows,
+    headerGroups,
     getTableProps,
     getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    canPreviousPage,
     canNextPage,
-    pageCount,
-    nextPage,
+    canPreviousPage,
     previousPage,
-    state: { pageIndex, pageSize },
-  } = useTable<Currency>(
-    {
-      columns,
-      data: source,
-      manualPagination: true,
-      initialState: {
-        pageIndex: currentPage,
-        pageSize: limit,
-      },
-      pageCount: numPages,
-    },
-    usePagination
-  )
+    nextPage,
+    prepareRow,
+    state: { pageSize, pageIndex, selectedRowIds },
+    pageCount,
+  } = tableState
 
   const handleNext = () => {
     if (canNextPage) {
-      setOffset((old) => old + pageSize)
-      setCurrentPage((old) => old + 1)
+      setOffset(offset + pageSize)
       nextPage()
     }
   }
 
   const handlePrev = () => {
     if (canPreviousPage) {
-      setOffset((old) => old - pageSize)
-      setCurrentPage((old) => old - 1)
+      setOffset(offset - pageSize)
       previousPage()
     }
   }
 
+  useEffect(() => {
+    if (setSelectedRowIds) {
+      setSelectedRowIds(Object.keys(selectedRowIds))
+    }
+  }, [selectedRowIds])
+
   return (
     <div>
-      <Table {...getTableProps()}>
+      <Table
+        {...getTableProps()}
+        className={"table-fixed"}
+        tableActions={tableAction}
+      >
         <Table.Head>
           {headerGroups?.map((headerGroup) => (
             <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((col) => (
-                <Table.HeadCell {...col.getHeaderProps()}>
+                <Table.HeadCell
+                  {...col.getHeaderProps(col.getSortByToggleProps())}
+                  className={hasClassName(col) ? col.className : undefined}
+                >
                   {col.render("Header")}
                 </Table.HeadCell>
               ))}
@@ -116,46 +114,8 @@ const CurrenciesTable = ({ source, count }: Props) => {
   )
 }
 
-const useColumns = (): Column<Currency>[] => {
-  const columns: Column<Currency>[] = useMemo(() => {
-    return [
-      {
-        width: 30,
-        id: "selection",
-        Header: ({ getToggleAllPageRowsSelectedProps }) => (
-          <span className="flex justify-center w-[30px]">
-            <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
-          </span>
-        ),
-        Cell: ({ row }) => {
-          return (
-            <span
-              onClick={(e) => e.stopPropagation()}
-              className="flex justify-center w-[30px]"
-            >
-              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-            </span>
-          )
-        },
-      },
-      {
-        Header: "Title",
-        accessor: "name",
-        Cell: ({ row, value }) => {
-          return (
-            <div className="flex items-center gap-x-xsmall inter-small-regular">
-              <span className="inter-small-semibold">
-                {row.original.code.toUpperCase()}
-              </span>
-              <p>{value}</p>
-            </div>
-          )
-        },
-      },
-    ]
-  }, [])
-
-  return columns
+const hasClassName = (col: unknown): col is { className: string } => {
+  return (col as { className: string }).className !== undefined
 }
 
 export default CurrenciesTable
