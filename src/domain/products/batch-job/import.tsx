@@ -180,7 +180,7 @@ function ImportProducts(props: ImportProductsProps) {
       templateLink="/temp/product-import-template.csv"
       description2Title="Unsure about how to arrange your list?"
       description2Text="Download the template below to ensure you are following the correct format."
-      description1Text="Through imports you can add or update products. To update existing products you must use the existing handle, to update existing variants you must use the existing SKU. You will be asked for confirmation before we import products."
+      description1Text="Through imports you can add or update products. To update existing products you must use the existing product id, to update existing variants you must use the existing variant id. You will be asked for confirmation before we import products."
     />
   )
 }
