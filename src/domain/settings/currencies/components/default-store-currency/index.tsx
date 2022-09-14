@@ -1,11 +1,6 @@
 import { Store } from "@medusajs/medusa"
 import React from "react"
-import { Option } from "../../../../../types/shared"
 import DefaultCurrencySelector from "./default-currency-selector"
-
-type DefaultStoreCurrencyFormType = {
-  default_currency_code: Option & { prefix: string }
-}
 
 type Props = {
   store: Store
