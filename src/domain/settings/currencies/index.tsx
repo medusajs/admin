@@ -1,26 +1,57 @@
 import { RouteComponentProps } from "@reach/router"
+import { navigate } from "gatsby"
 import { useAdminStore } from "medusa-react"
 import React from "react"
+import ReactJson from "react-json-view"
 import BackButton from "../../../components/atoms/back-button"
+import Spinner from "../../../components/atoms/spinner"
 import Tooltip from "../../../components/atoms/tooltip"
 import Section from "../../../components/organisms/section"
+import { getErrorStatus } from "../../../utils/get-error-status"
 import CurrencyTaxSetting from "./components/currency-tax-setting"
 import DefaultStoreCurrency from "./components/default-store-currency"
 import StoreCurrencies from "./components/store-currencies"
 
 const CurrencySettings = (_props: RouteComponentProps) => {
-  const { store, status } = useAdminStore()
+  const { store, status, error } = useAdminStore()
 
-  if (status === "error") {
-    return <div>Failed to load store</div>
+  if (error) {
+    let message = "An unknown error occurred"
+
+    const errorStatus = getErrorStatus(error)
+
+    if (errorStatus) {
+      message = errorStatus.message
+
+      if (errorStatus.status === 404) {
+        navigate("/404")
+        return null
+      }
+    }
+
+    // temp needs design
+    return (
+      <Section title="Error">
+        <p className="inter-base-regular">{message}</p>
+
+        <div className="mt-base bg-grey-5 rounded-rounded px-base py-xsmall">
+          <ReactJson
+            name={"Stack Trace"}
+            collapsed={true}
+            src={JSON.parse(JSON.stringify(error))}
+          />
+        </div>
+      </Section>
+    )
   }
 
-  if (status === "loading") {
-    return <div>Loading...</div>
-  }
-
-  if (!store) {
-    return <div>Store not found</div>
+  if (status === "loading" || !store) {
+    // temp, perhaps use skeletons?
+    return (
+      <div className="w-full h-[calc(100vh-64px)] flex items-center justify-center">
+        <Spinner variant="secondary" />
+      </div>
+    )
   }
 
   return (
