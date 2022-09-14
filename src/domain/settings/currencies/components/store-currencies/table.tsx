@@ -1,6 +1,8 @@
 import { AdminGetCurrenciesParams, Currency } from "@medusajs/medusa"
-import React, { useState } from "react"
+import { useAdminCurrencies } from "medusa-react"
+import React, { useMemo, useState } from "react"
 import { Column, usePagination, useTable } from "react-table"
+import IndeterminateCheckbox from "../../../../../components/molecules/indeterminate-checkbox"
 import Table, {
   TablePagination,
 } from "../../../../../components/molecules/table"
@@ -15,6 +17,8 @@ type Props = {
 }
 
 const CurrenciesTable = ({ source, count }: Props) => {
+  const {} = useAdminCurrencies({})
+
   const columns = useColumns()
   const limit = 10
   const [query, setQuery] = useState("")
@@ -113,22 +117,45 @@ const CurrenciesTable = ({ source, count }: Props) => {
 }
 
 const useColumns = (): Column<Currency>[] => {
-  return [
-    {
-      Header: "Title",
-      accessor: "name",
-      Cell: ({ row, value }) => {
-        return (
-          <div className="flex items-center gap-x-xsmall inter-small-regular">
-            <span className="inter-small-semibold">
-              {row.original.code.toUpperCase()}
+  const columns: Column<Currency>[] = useMemo(() => {
+    return [
+      {
+        width: 30,
+        id: "selection",
+        Header: ({ getToggleAllPageRowsSelectedProps }) => (
+          <span className="flex justify-center w-[30px]">
+            <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+          </span>
+        ),
+        Cell: ({ row }) => {
+          return (
+            <span
+              onClick={(e) => e.stopPropagation()}
+              className="flex justify-center w-[30px]"
+            >
+              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
             </span>
-            <p>{value}</p>
-          </div>
-        )
+          )
+        },
       },
-    },
-  ]
+      {
+        Header: "Title",
+        accessor: "name",
+        Cell: ({ row, value }) => {
+          return (
+            <div className="flex items-center gap-x-xsmall inter-small-regular">
+              <span className="inter-small-semibold">
+                {row.original.code.toUpperCase()}
+              </span>
+              <p>{value}</p>
+            </div>
+          )
+        },
+      },
+    ]
+  }, [])
+
+  return columns
 }
 
 export default CurrenciesTable
