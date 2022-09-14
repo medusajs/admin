@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import React from "react"
 import { GroupBase, SingleValueProps } from "react-select"
+import { hasPrefix } from "../utils"
 
 const SingleValue = <
   Option,
@@ -12,7 +13,10 @@ const SingleValue = <
   cx,
   className,
   isDisabled,
+  data,
 }: SingleValueProps<Option, IsMulti, Group>) => {
+  const prefix = hasPrefix(data) ? data.prefix : null
+
   return (
     <div
       {...innerProps}
@@ -27,7 +31,10 @@ const SingleValue = <
         )
       )}
     >
-      {children}
+      <div className="flex items-center gap-x-xsmall">
+        {prefix && <span className="inter-base-semibold">{prefix}</span>}
+        {children}
+      </div>
     </div>
   )
 }
