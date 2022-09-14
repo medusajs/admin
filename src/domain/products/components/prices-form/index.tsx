@@ -9,6 +9,7 @@ type PricePayload = {
   amount: number | null
   currency_code: string
   region_id: string | null
+  includes_tax?: boolean
 }
 
 type PriceObject = FieldArrayWithId<
@@ -46,7 +47,7 @@ const PricesForm = ({ form }: Props) => {
 
   const { control, path } = form
 
-  const { append, fields } = useFieldArray({
+  const { append, update, fields } = useFieldArray({
     control,
     name: path("prices"),
   })
@@ -63,6 +64,16 @@ const PricesForm = ({ form }: Props) => {
           region_id: reg.id,
           amount: null,
           currency_code: reg.currency_code,
+          includes_tax: reg.includes_tax,
+        })
+      }
+
+      const index = fields.findIndex((field) => field.region_id === reg.id)
+
+      if (index !== -1 && fields[index].includes_tax !== reg.includes_tax) {
+        update(index, {
+          ...fields[index],
+          includes_tax: reg.includes_tax,
         })
       }
     })
@@ -80,6 +91,18 @@ const PricesForm = ({ form }: Props) => {
           currency_code: cur.code,
           amount: null,
           region_id: null,
+          includes_tax: cur.includes_tax,
+        })
+      }
+
+      const index = fields.findIndex(
+        (field) => field.currency_code === cur.code
+      )
+
+      if (index !== -1 && fields[index].includes_tax !== cur.includes_tax) {
+        update(index, {
+          ...fields[index],
+          includes_tax: cur.includes_tax,
         })
       }
     })
