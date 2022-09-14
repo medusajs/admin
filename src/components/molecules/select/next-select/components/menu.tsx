@@ -15,7 +15,7 @@ import {
 import Button from "../../../../fundamentals/button"
 import CheckIcon from "../../../../fundamentals/icons/check-icon"
 import ListArrowIcon from "../../../../fundamentals/icons/list-arrow-icon"
-import { optionIsDisabled } from "../utils"
+import { hasPrefix, optionIsDisabled } from "../utils"
 import SelectPrimitives from "./select-primitives"
 
 const Menu = <
@@ -243,17 +243,23 @@ export const Option = <
   Option,
   IsMulti extends boolean,
   Group extends GroupBase<Option>
->({
-  isSelected,
-  isDisabled,
-  isFocused,
-  children,
-  cx,
-  className,
-  innerProps,
-  innerRef,
-  selectProps: { hideSelectedOptions, isMulti, size },
-}: OptionProps<Option, IsMulti, Group>) => {
+>(
+  props: OptionProps<Option, IsMulti, Group>
+) => {
+  const {
+    isSelected,
+    isDisabled,
+    isFocused,
+    children,
+    cx,
+    className,
+    innerProps,
+    innerRef,
+    selectProps: { hideSelectedOptions, isMulti, size },
+  } = props
+
+  const prefix = hasPrefix(props.data) ? props.data.prefix : null
+
   return (
     <div
       role="button"
@@ -288,7 +294,10 @@ export const Option = <
         {isMulti && (
           <CheckboxAdornment isSelected={isSelected} isDisabled={isDisabled} />
         )}
-        {children}
+        <div className="flex items-center gap-x-xsmall">
+          {prefix && <span className="inter-base-semibold">{prefix}</span>}
+          {children}
+        </div>
       </div>
       {!isMulti && isSelected && <CheckIcon size={16} />}
     </div>

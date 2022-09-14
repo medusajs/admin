@@ -13,7 +13,7 @@ import TaxesIcon from "../../components/fundamentals/icons/taxes-icon"
 import TruckIcon from "../../components/fundamentals/icons/truck-icon"
 import UsersIcon from "../../components/fundamentals/icons/users-icon"
 import SettingsOverview from "../../components/templates/settings-overview"
-import Currencies from "./currencies"
+import CurrencySettings from "./currencies"
 import Details from "./details"
 import PersonalInformation from "./personal-information"
 import Regions from "./regions"
@@ -98,7 +98,7 @@ const Settings = () => (
 
     <Details path="details" />
 
-    <Currencies path="currencies" />
+    <CurrencySettings path="currencies" />
 
     <ReturnReasons path="return-reasons" />
 
