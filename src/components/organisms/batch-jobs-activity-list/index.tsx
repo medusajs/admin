@@ -17,7 +17,7 @@ import FileIcon from "../../fundamentals/icons/file-icon"
 import MedusaIcon from "../../fundamentals/icons/medusa-icon"
 import { ActivityCard } from "../../molecules/activity-card"
 import BatchJobFileCard from "../../molecules/batch-job-file-card"
-import { batchJobDescriptionBuilder } from "./utils"
+import { batchJobDescriptionBuilder, BatchJobOperation } from "./utils"
 
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return (
@@ -48,8 +48,14 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
     to: batchJob.created_at,
   })
 
+  const operation = {
+    "product-import": BatchJobOperation.Import,
+    "product-export": BatchJobOperation.Export,
+  }[batchJob.type]
+
   const batchJobActivityDescription = batchJobDescriptionBuilder(
     batchJob,
+    operation,
     relativeTimeElapsed.raw
   )
 
@@ -90,7 +96,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
     } catch (e) {
       notification(
         "Error",
-        "Something went wrong while downloading the export file",
+        `Something went wrong while downloading the ${operation.toLowerCase()} file`,
         "error"
       )
     }
@@ -103,11 +109,11 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
 
     try {
       await deleteFile({ file_key: batchJob.result?.file_key })
-      notification("Success", "Export file has been removed", "success")
+      notification("Success", `${operation} file has been removed`, "success")
     } catch (e) {
       notification(
         "Error",
-        "Something went wrong while deleting the export file",
+        `Something went wrong while deleting the ${operation.toLowerCase()} file`,
         "error"
       )
     }
@@ -132,7 +138,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
       batchJob.status !== "canceled"
         ? batchJob.result?.file_key
           ? bytesConverter(batchJob.result?.file_size ?? 0)
-          : "Preparing export..."
+          : `Preparing ${operation.toLowerCase()}...`
         : undefined
 
     return (
