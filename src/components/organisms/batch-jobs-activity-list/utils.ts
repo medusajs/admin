@@ -1,7 +1,13 @@
 import { BatchJob } from "@medusajs/medusa/dist"
 
+export enum BatchJobOperation {
+  Import = "Import",
+  Export = "Export",
+}
+
 export function batchJobDescriptionBuilder(
   batchJob: BatchJob,
+  operation: BatchJobOperation,
   elapsedTime?: number
 ): string {
   let description = ""
@@ -12,30 +18,30 @@ export function batchJobDescriptionBuilder(
 
   switch (batchJob.status) {
     case "failed":
-      description = `Export of ${entityName}s has failed.`
+      description = `${operation} of ${entityName}s has failed.`
       break
     case "canceled":
-      description = `Export of ${entityName}s has been canceled.`
+      description = `${operation} of ${entityName}s has been canceled.`
       break
     case "completed":
       if (elapsedTime && Math.abs(elapsedTime) > twentyfourHoursInMs) {
-        description = `Export file is no longer available. The file will only be stored for 24 hours.`
+        description = `${operation} file is no longer available. The file will only be stored for 24 hours.`
         break
       } else {
-        description = `Export of ${entityName}s is done.`
+        description = `${operation} of ${entityName}s is done.`
         break
       }
     case "processing":
-      description = `Export of ${entityName}s is being processed. You can safely close the activity tab. We will notify you once your export is ready for download.`
+      description = `${operation} of ${entityName}s is being processed. You can safely close the activity tab. We will notify you once your export is ready for download.`
       break
     case "confirmed":
-      description = `Export of ${entityName}s has been confirmed and will start soon.`
+      description = `${operation} of ${entityName}s has been confirmed and will start soon.`
       break
     case "pre_processed":
-      description = `Export of ${entityName}s is being prepared.`
+      description = `${operation} of ${entityName}s is being prepared.`
       break
     default:
-      description = `Export of ${entityName}s has been created and will start soon.`
+      description = `${operation} of ${entityName}s has been created and will start soon.`
   }
 
   return description
