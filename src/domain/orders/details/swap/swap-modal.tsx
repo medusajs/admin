@@ -13,9 +13,12 @@ import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   useLayeredModal,
 } from "../../../../components/molecules/modal/layered-modal"
-import { NextSelect } from "../../../../components/molecules/select/next-select"
 import useNotification from "../../../../hooks/use-notification"
 import { Option } from "../../../../types/shared"
+import { nestedForm } from "../../../../utils/nested-form"
+import ReturnShippingForm, {
+  ReturnShippingFormType,
+} from "../../components/return-shipping-form"
 
 type Props = {
   onClose: () => void
@@ -35,26 +38,22 @@ type AdditionalItem = {
   variant_id: string
 }
 
-type ReturnShipping = {
-  option: Option
-  price?: number
-}
-
 type CreateSwapFormType = {
   send_notifications: boolean
   return_items: ReturnItem[]
   additional_items: AdditionalItem[]
-  return_shipping: ReturnShipping
+  return_shipping: ReturnShippingFormType
 }
 
-const SwapModal = ({ order, onClose, open }: Props) => {
+const CreateSwapModal = ({ order, onClose, open }: Props) => {
   const context = useLayeredModal()
   const notification = useNotification()
 
   const { refetch } = useAdminOrder(order.id)
   const { mutate, isLoading: isMutating } = useAdminCreateSwap(order.id)
 
-  const { control, handleSubmit } = useForm<CreateSwapFormType>()
+  const form = useForm<CreateSwapFormType>()
+  const { control, handleSubmit } = form
 
   const {
     shipping_options: returnOptions,
@@ -94,7 +93,7 @@ const SwapModal = ({ order, onClose, open }: Props) => {
       additional_items: data.additional_items,
       no_notification: !data.send_notifications,
       return_shipping: {
-        option_id: data.return_shipping.option.value,
+        option_id: data.return_shipping.option!.value,
         price: data.return_shipping.price,
       },
     })
@@ -107,24 +106,10 @@ const SwapModal = ({ order, onClose, open }: Props) => {
           <h1 className="inter-xlarge-semibold">Register Exchange</h1>
         </Modal.Header>
         <Modal.Content>
-          <div>
-            <h2>Shipping</h2>
-            <Controller
-              control={control}
-              name="return_shipping.option"
-              render={({ field: { value, onChange, onBlur } }) => {
-                return (
-                  <NextSelect
-                    label="Shipping method"
-                    options={returnShippingOptions}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                  />
-                )
-              }}
-            />
-          </div>
+          <ReturnShippingForm
+            form={nestedForm(form, "return_shipping")}
+            order={order}
+          />
         </Modal.Content>
         <Modal.Footer>
           <div className="w-full flex items-center justify-between">
@@ -147,12 +132,24 @@ const SwapModal = ({ order, onClose, open }: Props) => {
                 )
               }}
             />
-            <Button variant="primary" loading={isMutating}>
-              Complete
-            </Button>
+            <div className="flex items-center gap-x-xsmall">
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={onClose}
+                type="button"
+              >
+                Cancel
+              </Button>
+              <Button variant="primary" size="small" loading={isMutating}>
+                Submit
+              </Button>
+            </div>
           </div>
         </Modal.Footer>
       </Modal.Body>
     </LayeredModal>
   )
 }
+
+export default CreateSwapModal

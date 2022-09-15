@@ -3,7 +3,7 @@ import { useAdminCreateNote, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
 import ClaimMenu from "../../../domain/orders/details/claim/create"
 import ReturnMenu from "../../../domain/orders/details/returns"
-import SwapMenu from "../../../domain/orders/details/swap/create"
+import CreateSwapModal from "../../../domain/orders/details/swap/swap-modal"
 import {
   ClaimEvent,
   ExchangeEvent,
@@ -18,6 +18,7 @@ import {
   useBuildTimelime,
 } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
+import useToggleState from "../../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../../utils/error-messages"
 import Spinner from "../../atoms/spinner"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
@@ -49,6 +50,12 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   const [showCreateSwap, setshowCreateSwap] = useState(false)
   const [showCreateClaim, setshowCreateClaim] = useState(false)
 
+  const {
+    state: swapState,
+    toggle: toggleSwap,
+    close: closeSwap,
+  } = useToggleState()
+
   const actions: ActionType[] = [
     {
       icon: <BackIcon size={20} />,
@@ -58,7 +65,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
     {
       icon: <RefreshIcon size={20} />,
       label: "Register Exchange",
-      onClick: () => setshowCreateSwap(true),
+      onClick: toggleSwap,
     },
     {
       icon: <AlertIcon size={20} />,
@@ -126,8 +133,8 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
           onDismiss={() => setShowRequestReturn(false)}
         />
       )}
-      {showCreateSwap && order && (
-        <SwapMenu order={order} onDismiss={() => setshowCreateSwap(false)} />
+      {order && (
+        <CreateSwapModal order={order} onClose={closeSwap} open={swapState} />
       )}
       {showCreateClaim && order && (
         <ClaimMenu order={order} onDismiss={() => setshowCreateClaim(false)} />
