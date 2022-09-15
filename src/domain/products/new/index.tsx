@@ -8,6 +8,7 @@ import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../components/organisms/accordion"
+import { useFeatureFlag } from "../../../context/feature-flag"
 import useNotification from "../../../hooks/use-notification"
 import { FormImage, ProductStatus } from "../../../types/shared"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -78,9 +79,15 @@ const NewProduct = ({ onClose }: Props) => {
     reset(createBlank())
   }, [])
 
+  const { isFeatureEnabled } = useFeatureFlag()
+
   const onSubmit = (publish = true) =>
     handleSubmit(async (data) => {
-      const payload = createPayload(data, publish)
+      const payload = createPayload(
+        data,
+        publish,
+        isFeatureEnabled("sales_channels")
+      )
 
       if (data.media?.images?.length) {
         let preppedImages: FormImage[] = []
@@ -268,9 +275,10 @@ const NewProduct = ({ onClose }: Props) => {
 
 const createPayload = (
   data: NewProductForm,
-  publish = true
+  publish = true,
+  salesChannelsEnabled = false
 ): AdminPostProductsReq => {
-  return {
+  const payload: AdminPostProductsReq = {
     title: data.general.title,
     subtitle: data.general.subtitle || undefined,
     material: data.general.material || undefined,
@@ -296,9 +304,6 @@ const createPayload = (
           value: t,
         }))
       : undefined,
-    sales_channels: data.salesChannels.channels.map((c) => ({
-      id: c.id,
-    })),
     origin_country: data.customs.origin_country?.value || undefined,
     options: data.variants.options.map((o) => ({
       title: o.title,
@@ -328,6 +333,14 @@ const createPayload = (
     // @ts-ignore
     status: publish ? ProductStatus.PUBLISHED : ProductStatus.DRAFT,
   }
+
+  if (salesChannelsEnabled) {
+    payload.sales_channels = data.salesChannels.channels.map((c) => ({
+      id: c.id,
+    }))
+  }
+
+  return payload
 }
 
 const createBlank = (): NewProductForm => {
