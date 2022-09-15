@@ -3,7 +3,7 @@ import { useAdminCreateNote, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
 import ClaimMenu from "../../../domain/orders/details/claim/create"
 import ReturnMenu from "../../../domain/orders/details/returns"
-import CreateSwapModal from "../../../domain/orders/details/swap/swap-modal"
+import SwapMenu from "../../../domain/orders/details/swap/swap-menu"
 import {
   ClaimEvent,
   ExchangeEvent,
@@ -133,9 +133,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
           onDismiss={() => setShowRequestReturn(false)}
         />
       )}
-      {order && (
-        <CreateSwapModal order={order} onClose={closeSwap} open={swapState} />
-      )}
+      {order && <SwapMenu order={order} onClose={closeSwap} open={swapState} />}
       {showCreateClaim && order && (
         <ClaimMenu order={order} onDismiss={() => setshowCreateClaim(false)} />
       )}

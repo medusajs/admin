@@ -37,7 +37,7 @@ type CreateSwapFormType = {
   return_shipping: ReturnShippingFormType
 }
 
-const CreateSwapModal = ({ order, onClose, open }: Props) => {
+const SwapMenu = ({ order, onClose, open }: Props) => {
   const context = useLayeredModal()
   const notification = useNotification()
 
@@ -165,4 +165,4 @@ const getDefaultValues = (order: Order): CreateSwapFormType => {
   }
 }
 
-export default CreateSwapModal
+export default SwapMenu
