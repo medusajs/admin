@@ -68,11 +68,16 @@ const PricesForm = ({ form }: Props) => {
         })
       }
 
-      const index = fields.findIndex((field) => field.region_id === reg.id)
+      const regionPrice = fields.findIndex(
+        (field) => field.region_id === reg.id
+      )
 
-      if (index !== -1 && fields[index].includes_tax !== reg.includes_tax) {
-        update(index, {
-          ...fields[index],
+      if (
+        regionPrice !== -1 &&
+        fields[regionPrice].includes_tax !== reg.includes_tax
+      ) {
+        update(regionPrice, {
+          ...fields[regionPrice],
           includes_tax: reg.includes_tax,
         })
       }
@@ -95,13 +100,16 @@ const PricesForm = ({ form }: Props) => {
         })
       }
 
-      const index = fields.findIndex(
+      const currencyPrice = fields.findIndex(
         (field) => field.currency_code === cur.code
       )
 
-      if (index !== -1 && fields[index].includes_tax !== cur.includes_tax) {
-        update(index, {
-          ...fields[index],
+      if (
+        currencyPrice !== -1 &&
+        fields[currencyPrice].includes_tax !== cur.includes_tax
+      ) {
+        update(currencyPrice, {
+          ...fields[currencyPrice],
           includes_tax: cur.includes_tax,
         })
       }
