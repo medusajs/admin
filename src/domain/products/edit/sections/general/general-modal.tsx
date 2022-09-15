@@ -65,8 +65,8 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
             }
           : null,
         // @ts-ignore
-        collection_id: data.organize.collection
-          ? data.organize.collection.value
+        collections: data.organize.collections
+          ? data.organize.collections.map((t) => ({ id: t.value}))
           : null,
         // @ts-ignore
         tags: data.organize.tags
@@ -132,9 +132,7 @@ const getDefaultValues = (product: Product): GeneralForm => {
       description: product.description || null,
     },
     organize: {
-      collection: product.collection
-        ? { label: product.collection.title, value: product.collection.id }
-        : null,
+      collections: product.collections.map(c=>({ label: c.title, value: c.id })),
       type: product.type
         ? { label: product.type.value, value: product.type.id }
         : null,

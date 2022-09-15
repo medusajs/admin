@@ -134,7 +134,7 @@ const ProductsFilter = ({
           setFilter={(v) => setSingleFilter("status", v)}
         />
         <FilterDropdownItem
-          filterTitle="Collection"
+          filterTitle="Collections"
           options={
             collections?.map((c) => ({ value: c.id, label: c.title })) || []
           }
@@ -146,9 +146,9 @@ const ProductsFilter = ({
           }
           onShowPrev={() => handlePaginateCollections(-1)}
           onShowNext={() => handlePaginateCollections(1)}
-          filters={tempState.collection.filter}
-          open={tempState.collection.open}
-          setFilter={(v) => setSingleFilter("collection", v)}
+          filters={tempState.collections.filter}
+          open={tempState.collections.open}
+          setFilter={(v) => setSingleFilter("collections", v)}
         />
         <div className="flex flex-col w-full pb-2">
           <div

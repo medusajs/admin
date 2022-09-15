@@ -277,7 +277,7 @@ const createPayload = (
     handle: data.general.handle,
     discountable: data.discounted.value,
     is_giftcard: false,
-    collection_id: data.organize.collection?.value,
+    collections: data.organize.collections.map((c) => ({ id: c.value })),
     description: data.general.description || undefined,
     height: data.dimensions.height || undefined,
     length: data.dimensions.length || undefined,
@@ -357,7 +357,7 @@ const createBlank = (): NewProductForm => {
       images: [],
     },
     organize: {
-      collection: null,
+      collections: null,
       tags: null,
       type: null,
     },

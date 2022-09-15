@@ -11,7 +11,7 @@ import useOrganizeData from "./use-organize-data"
 
 export type OrganizeFormType = {
   type: Option | null
-  collection: Option | null
+  collections: { label?: string; value?: string; id?: string }[] | null
   tags: string[] | null
 }
 
@@ -57,17 +57,18 @@ const OrganizeForm = ({ form }: Props) => {
           }}
         />
         <Controller
-          name={path("collection")}
+          name={path("collections")}
           control={control}
           render={({ field: { value, onChange } }) => {
             return (
               <NextSelect
-                label="Collection"
+                label="Collections"
                 onChange={onChange}
                 options={collectionOptions}
                 value={value}
-                placeholder="Choose a collection"
+                placeholder="Choose a collections"
                 isClearable
+                isMulti
               />
             )
           }}

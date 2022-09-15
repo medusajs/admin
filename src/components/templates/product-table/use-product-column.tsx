@@ -80,13 +80,6 @@ const useProductTableColumn = ({ setTileView, setListView, showList }) => {
         },
       },
       {
-        Header: "Collection",
-        accessor: "collection", // accessor is the "key" in the data
-        Cell: ({ cell: { value } }) => {
-          return <div>{value?.title || "-"}</div>
-        },
-      },
-      {
         Header: "Status",
         accessor: "status",
         Cell: ({ cell: { value } }) => getProductStatus(value),

@@ -26,7 +26,7 @@ interface ProductFilterState {
     open: boolean
     filter: null | string[] | string
   }
-  collection: {
+  collections: {
     open: boolean
     filter: null | string[] | string
   }
@@ -45,7 +45,6 @@ interface ProductFilterState {
 
 const allowedFilters = [
   "status",
-  "collection_id",
   "payment_status",
   "created_at",
   "q",
@@ -88,7 +87,7 @@ const reducer = (
       return {
         ...state,
         status: action.payload.status,
-        collection: action.payload.collection,
+        collections: action.payload.collections,
         tags: action.payload.tags,
         date: action.payload.date,
         query: action?.payload?.query,
@@ -226,7 +225,7 @@ export const useProductFilters = (
           open: false,
           filter: null,
         },
-        collection: {
+        collections: {
           open: false,
           filter: null,
         },
@@ -496,14 +495,14 @@ export const useProductFilters = (
 
 const filterStateMap = {
   status: "status",
-  collection_id: "collection",
+  collections: "collections",
   tags: "tags",
   created_at: "date",
 }
 
 const stateFilterMap = {
   status: "status",
-  collection: "collection_id",
+  collections: "collections",
   tags: "tags",
   date: "created_at",
 }
@@ -517,7 +516,7 @@ const parseQueryString = (
       open: false,
       filter: null,
     },
-    collection: {
+    collections: {
       open: false,
       filter: null,
     },
@@ -560,15 +559,6 @@ const parseQueryString = (
           case "status": {
             if (typeof value === "string" || Array.isArray(value)) {
               defaultVal.status = {
-                open: true,
-                filter: value,
-              }
-            }
-            break
-          }
-          case "collection_id": {
-            if (typeof value === "string" || Array.isArray(value)) {
-              defaultVal.collection = {
                 open: true,
                 filter: value,
               }

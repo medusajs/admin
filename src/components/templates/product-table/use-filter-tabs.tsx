@@ -37,7 +37,7 @@ interface ProductFilterState {
 
 const allowedFilters = [
   "status",
-  "collection_id",
+  "collections",
   "payment_status",
   "created_at",
 ]
@@ -400,14 +400,14 @@ export const useProductFilters = (
 
 const filterStateMap = {
   status: "status",
-  collection_id: "collection",
+  collections: "collections",
   tags: "tags",
   created_at: "date",
 }
 
 const stateFilterMap = {
   status: "status",
-  collection: "collection_id",
+  collections: "collections",
   tags: "tags",
   date: "created_at",
 }
@@ -444,15 +444,6 @@ const parseQueryString = (
           case "status": {
             if (typeof value === "string" || Array.isArray(value)) {
               defaultVal.status = {
-                open: true,
-                filter: value,
-              }
-            }
-            break
-          }
-          case "collection_id": {
-            if (typeof value === "string" || Array.isArray(value)) {
-              defaultVal.collection = {
                 open: true,
                 filter: value,
               }

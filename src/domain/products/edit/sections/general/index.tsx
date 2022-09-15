@@ -114,7 +114,6 @@ const ProductDetails = ({ product }: Props) => {
       <Detail title="Subtitle" value={product.subtitle} />
       <Detail title="Handle" value={product.handle} />
       <Detail title="Type" value={product.type?.value} />
-      <Detail title="Collection" value={product.collection?.title} />
       <Detail
         title="Discountable"
         value={product.discountable ? "True" : "False"}

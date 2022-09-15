@@ -31,7 +31,7 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
 
   const { isLoading, count, products, refetch } = useAdminProducts({
     q: debouncedSearchTerm,
-    collection_id: [collectionId],
+    collections: [collectionId],
     limit: limit,
     offset,
   })
@@ -42,9 +42,9 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
 
   const handleRemoveProduct = () => {
     if (idToDelete) {
-      Medusa.products
-        .update(idToDelete, {
-          collection_id: null,
+      Medusa.collections
+        .removeProducts(collectionId, {
+          product_ids: [idToDelete],
         })
         .then(() => {
           refetch()

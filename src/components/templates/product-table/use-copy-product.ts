@@ -41,8 +41,8 @@ const useCopyProduct = () => {
       }
     }
 
-    if (product.collection_id) {
-      copy.collection_id = product.collection_id
+    if (product.collections) {
+      copy.collections = product.collections.map(c => ({ id: c.id }))
     }
 
     if (product.tags) {
