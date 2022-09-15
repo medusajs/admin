@@ -10,7 +10,6 @@ import LayeredModal, {
   useLayeredModal,
 } from "../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../hooks/use-notification"
-import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { nestedForm } from "../../../../utils/nested-form"
 import ItemsToReturnForm, {
@@ -24,13 +23,6 @@ type Props = {
   onClose: () => void
   open: boolean
   order: Order
-}
-
-type ReturnItem = {
-  item_id: string
-  quantity: number
-  note?: string
-  reason?: Option
 }
 
 type AdditionalItem = {

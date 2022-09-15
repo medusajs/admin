@@ -27,10 +27,7 @@ const ReturnShippingForm = ({ form, order }: Props) => {
     formState: { errors },
   } = form
 
-  const {
-    shipping_options: returnOptions,
-    isLoading: isLoadingReturnOptions,
-  } = useAdminShippingOptions({
+  const { shipping_options: returnOptions } = useAdminShippingOptions({
     region_id: order.region_id,
     is_return: true,
   })
