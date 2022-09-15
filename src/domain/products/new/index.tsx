@@ -8,6 +8,7 @@ import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../components/organisms/accordion"
+import { useFeatureFlag } from "../../../context/feature-flag"
 import useNotification from "../../../hooks/use-notification"
 import { FormImage, ProductStatus } from "../../../types/shared"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -78,9 +79,15 @@ const NewProduct = ({ onClose }: Props) => {
     reset(createBlank())
   }, [])
 
+  const { isFeatureEnabled } = useFeatureFlag()
+
   const onSubmit = (publish = true) =>
     handleSubmit(async (data) => {
-      const payload = createPayload(data, publish)
+      const payload = createPayload(
+        data,
+        publish,
+        isFeatureEnabled("sales_channels")
+      )
 
       if (data.media?.images?.length) {
         let preppedImages: FormImage[] = []
