@@ -1785,48 +1785,10 @@
     tslib "~2.2.0"
     value-or-promise "1.0.6"
 
-"@hapi/address@^2.1.2":
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
-  integrity sha512-QD1PhQk+s31P1ixsX0H0Suoupp3VMXzIVMSwobR3F3MSUO2YCV0B7xqLcUw/Bh8yuvd3LhpyqLQWTNcRmp6IdQ==
-
-"@hapi/formula@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@hapi/formula/-/formula-1.2.0.tgz#994649c7fea1a90b91a0a1e6d983523f680e10cd"
-  integrity sha512-UFbtbGPjstz0eWHb+ga/GM3Z9EzqKXFWIbSOFURU0A/Gku0Bky4bCk9/h//K2Xr3IrCfjFNhMm4jyZ5dbCewGA==
-
-"@hapi/hoek@^8.2.4", "@hapi/hoek@^8.3.0":
-  version "8.5.1"
-  resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-8.5.1.tgz#fde96064ca446dec8c55a8c2f130957b070c6e06"
-  integrity sha512-yN7kbciD87WzLGc5539Tn0sApjyiGHAJgKvG9W8C7O+6c7qmoQMfVs0W4bX17eqz6C78QJqqFrtgdK5EWf6Qow==
-
 "@hapi/hoek@^9.0.0":
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-9.3.0.tgz#8368869dcb735be2e7f5cb7647de78e167a251fb"
   integrity sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==
-
-"@hapi/joi@^16.1.8":
-  version "16.1.8"
-  resolved "https://registry.yarnpkg.com/@hapi/joi/-/joi-16.1.8.tgz#84c1f126269489871ad4e2decc786e0adef06839"
-  integrity sha512-wAsVvTPe+FwSrsAurNt5vkg3zo+TblvC5Bb1zMVK6SJzZqw9UrJnexxR+76cpePmtUZKHAPxcQ2Bf7oVHyahhg==
-  dependencies:
-    "@hapi/address" "^2.1.2"
-    "@hapi/formula" "^1.2.0"
-    "@hapi/hoek" "^8.2.4"
-    "@hapi/pinpoint" "^1.0.2"
-    "@hapi/topo" "^3.1.3"
-
-"@hapi/pinpoint@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@hapi/pinpoint/-/pinpoint-1.0.2.tgz#025b7a36dbbf4d35bf1acd071c26b20ef41e0d13"
-  integrity sha512-dtXC/WkZBfC5vxscazuiJ6iq4j9oNx1SHknmIr8hofarpKUZKmlUVYVIhNVzIEgK5Wrc4GMHL5lZtt1uS2flmQ==
-
-"@hapi/topo@^3.1.3":
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/@hapi/topo/-/topo-3.1.6.tgz#68d935fa3eae7fdd5ab0d7f953f3205d8b2bfc29"
-  integrity sha512-tAag0jEcjwH+P2quUfipd7liWCNX2F8NvYjQp2wtInsZxnMlypdw0FtAOLxtvvkO+GSRRbmNi8m/5y42PQJYCQ==
-  dependencies:
-    "@hapi/hoek" "^8.3.0"
 
 "@hapi/topo@^5.0.0":
   version "5.1.0"
@@ -2389,14 +2351,13 @@
   resolved "https://registry.yarnpkg.com/@mdx-js/util/-/util-1.6.22.tgz#219dfd89ae5b97a8801f015323ffa4b62f45718b"
   integrity sha512-H1rQc1ZOHANWBvPcW+JpGwr+juXSxM8Q8YCkm3GhZd8REu1fHR3z99CErO1p9pkcfcxZnMdIZdIsXkOHY0NilA==
 
-"@medusajs/medusa-cli@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa-cli/-/medusa-cli-1.3.1.tgz#84c1bd2fa34800615c6415cb2d1d54ddfe168b0c"
-  integrity sha512-iuWP6/xIIRcxwuUsTreuxpMCejl09CuLJmA6PtpfTDC02/ZY+d60A+633tEBJIVZ9OywuzH8Ux2hPzMCm6zwxw==
+"@medusajs/medusa-cli@^1.3.3":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-cli/-/medusa-cli-1.3.3.tgz#9c101573f1b7e29cb1171c838c9827788edbaaf1"
+  integrity sha512-BWBhkrNhWR5mYuYev+4pQcjnoLLvc99rc5u0aPjwVebaD5HfYeptNXg2BwD+7SRmQGPoyUNUej44+7SrQNpU8w==
   dependencies:
     "@babel/polyfill" "^7.8.7"
     "@babel/runtime" "^7.9.6"
-    "@hapi/joi" "^16.1.8"
     axios "^0.21.1"
     chalk "^4.0.0"
     configstore "5.0.1"
@@ -2408,10 +2369,9 @@
     hosted-git-info "^4.0.2"
     inquirer "^8.0.0"
     is-valid-path "^0.1.1"
-    joi-objectid "^3.0.1"
     meant "^1.0.1"
-    medusa-core-utils "^0.1.27"
-    medusa-telemetry "^0.0.11"
+    medusa-core-utils "^1.1.31"
+    medusa-telemetry "0.0.13"
     netrc-parser "^3.1.6"
     open "^8.0.6"
     ora "^5.4.1"
@@ -2425,24 +2385,24 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@^1.2.4":
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.2.5.tgz#8bc7d908874b6fd51c6c2f7510a8eaf7164a0540"
-  integrity sha512-/y81s1oiGdh/0puGbihbwHjHKPjLh+RePrXAVPcHVAmZrNeWqNEk8+QTzoWbIf+8pg8kEN+apYzkGomQKrmHig==
+"@medusajs/medusa-js@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.2.6.tgz#77b0994750d7a83f8083e01d3c08cba32ff8a6d0"
+  integrity sha512-ydEWuKKtt8LgwPkak7mCiqmPRHNumZ47s48T9qhA8lwC6/UxmEF5+lUrfHJStxWoEpMRG7iIaDZCBIEsfaf2yg==
   dependencies:
-    "@medusajs/medusa" "^1.3.5"
+    "@medusajs/medusa" "^1.3.6"
     axios "^0.24.0"
     form-data "^4.0.0"
     qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa@^1.3.4", "@medusajs/medusa@^1.3.5":
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.3.5.tgz#f01ee0bccd597022e496b3bd9a78a2abd77ab61f"
-  integrity sha512-jLAdK9DodN3EP5aaMcTAeio3K+IMi990dt3t8SxgveJzzPPL7nY1FsGZ0mIyQgGEyvOWlF+rVDTYznaB2HCbPQ==
+"@medusajs/medusa@^1.3.6", "@medusajs/medusa@^1.3.9":
+  version "1.3.9"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.3.9.tgz#73ad5da37fbe3ec5fe38ba06369733bc72f9705d"
+  integrity sha512-YQwest7LbDLkjrgWmKdWlII4P2HOhJn6c8et7qOzX9q7SywgA7PYwgP8sxOPYx2lOwX84sY7kCaLuMqajsQm1A==
   dependencies:
-    "@hapi/joi" "^16.1.8"
-    "@medusajs/medusa-cli" "^1.3.1"
+    "@medusajs/medusa-cli" "^1.3.3"
+    "@types/ioredis" "^4.28.10"
     "@types/lodash" "^4.14.168"
     awilix "^4.2.3"
     body-parser "^1.19.0"
@@ -2462,8 +2422,6 @@
     ioredis "^4.17.3"
     ioredis-mock "^5.6.0"
     iso8601-duration "^1.3.0"
-    joi "^17.3.0"
-    joi-objectid "^3.0.1"
     jsonwebtoken "^8.5.1"
     medusa-core-utils "^1.1.31"
     medusa-test-utils "^1.1.37"
@@ -4770,6 +4728,13 @@
   version "1.17.9"
   resolved "https://registry.yarnpkg.com/@types/http-proxy/-/http-proxy-1.17.9.tgz#7f0e7931343761efde1e2bf48c40f02f3f75705a"
   integrity sha512-QsbSjA/fSk7xB+UXlCT3wHBy5ai9wOcNDWwZAtud+jXhwOM3l+EYZh8Lng4+/6n8uar0J7xILzqftJdJ/Wdfkw==
+  dependencies:
+    "@types/node" "*"
+
+"@types/ioredis@^4.28.10":
+  version "4.28.10"
+  resolved "https://registry.yarnpkg.com/@types/ioredis/-/ioredis-4.28.10.tgz#40ceb157a4141088d1394bb87c98ed09a75a06ff"
+  integrity sha512-69LyhUgrXdgcNDv7ogs1qXZomnfOEnSmrmMFqKgt1XMJxmoOSG/u3wYy13yACIfKuMJ8IhKgHafDO3sx19zVQQ==
   dependencies:
     "@types/node" "*"
 
@@ -13077,14 +13042,6 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
   integrity sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==
 
-medusa-core-utils@^0.1.27:
-  version "0.1.39"
-  resolved "https://registry.yarnpkg.com/medusa-core-utils/-/medusa-core-utils-0.1.39.tgz#d57816c9bd43f9a92883650c1e66add1665291df"
-  integrity sha512-R8+U1ile7if+nR6Cjh5exunx0ETV0OfkWUUBUpz1KmHSDv0V0CcvQqU9lcZesPFDEbu3Y2iEjsCqidVA4nG2nQ==
-  dependencies:
-    "@hapi/joi" "^16.1.8"
-    joi-objectid "^3.0.1"
-
 medusa-core-utils@^1.1.31:
   version "1.1.31"
   resolved "https://registry.yarnpkg.com/medusa-core-utils/-/medusa-core-utils-1.1.31.tgz#6cfc89566c2107faedf0f9128f2643b34b201455"
@@ -13093,20 +13050,20 @@ medusa-core-utils@^1.1.31:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
-medusa-react@^0.3.5:
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.3.5.tgz#3f9551d32fe32d2a89d7cfab3e515a41938c5501"
-  integrity sha512-4LuhnCCjIPHyLoSfxauX6z/CeigEpWzpW8BLhwge8bGNPrw8+Xqjt3bf+rYfgHf10W3cyMXS3Lrs9FLX6C/n8Q==
+medusa-react@^0.3.6:
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-0.3.6.tgz#daa3c29088c8096f9749bd95495deaea105f1ec5"
+  integrity sha512-n+oF5cpqSA8Ehn0KR30wmxOIB+ahT7VzgFA/o5GHukQ/LuF+/AWCWaRpz8LplMWDcgfwNE0yVHU2Au4NBy0rKA==
   dependencies:
-    "@medusajs/medusa-js" "^1.2.4"
+    "@medusajs/medusa-js" "^1.2.6"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
 
-medusa-telemetry@^0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/medusa-telemetry/-/medusa-telemetry-0.0.11.tgz#1d80b0e3d73b456fae243027c65cd6c212584971"
-  integrity sha512-YZYGeG5SOOuP3lYM4g1yMoHUem1GK5ZfqRTeydDmZUGoA7zJvprqXQER6lcc+/FLv0kKr74K7MmtzBBlBRJl3g==
+medusa-telemetry@0.0.13:
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/medusa-telemetry/-/medusa-telemetry-0.0.13.tgz#48f40051d6c7dadc8eed2898a5b5f43adaab1d3c"
+  integrity sha512-L/FW49t70Kne/4VKmIFTjavG+/5F9SCuUDn2GNtgN8EXVVur19GSE0ZSigI4xzyO82rN0+JAECaJ2STNS3y3yA==
   dependencies:
     axios "^0.21.1"
     axios-retry "^3.1.9"

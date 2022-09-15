@@ -1,6 +1,7 @@
 import { Region } from "@medusajs/medusa"
 import React from "react"
 import { Controller, UseFormReturn } from "react-hook-form"
+import IncludesTaxTooltip from "../../../../../components/atoms/includes-tax-tooltip"
 import Switch from "../../../../../components/atoms/switch"
 import InputHeader from "../../../../../components/fundamentals/input-header"
 import InputField from "../../../../../components/molecules/input"
@@ -88,7 +89,13 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             render={({ field: { value, onChange } }) => {
               return (
                 <div>
-                  <InputHeader label="Price" className="mb-xsmall" />
+                  <InputHeader
+                    label="Price"
+                    className="mb-xsmall"
+                    tooltip={
+                      <IncludesTaxTooltip includesTax={region.includes_tax} />
+                    }
+                  />
                   <PriceFormInput
                     amount={value || undefined}
                     onChange={onChange}
@@ -168,7 +175,13 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             render={({ field: { value, onChange } }) => {
               return (
                 <div>
-                  <InputHeader label="Min. subtotal" className="mb-xsmall" />
+                  <InputHeader
+                    label="Min. subtotal"
+                    className="mb-xsmall"
+                    tooltip={
+                      <IncludesTaxTooltip includesTax={region.includes_tax} />
+                    }
+                  />
                   <PriceFormInput
                     amount={value || undefined}
                     onChange={onChange}
@@ -206,7 +219,13 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             render={({ field: { value, onChange, ref } }) => {
               return (
                 <div ref={ref}>
-                  <InputHeader label="Max. subtotal" className="mb-xsmall" />
+                  <InputHeader
+                    label="Max. subtotal"
+                    className="mb-xsmall"
+                    tooltip={
+                      <IncludesTaxTooltip includesTax={region.includes_tax} />
+                    }
+                  />
                   <PriceFormInput
                     amount={value || undefined}
                     onChange={onChange}

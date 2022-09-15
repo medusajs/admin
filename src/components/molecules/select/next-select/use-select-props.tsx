@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ActionMeta, GroupBase, OnChangeValue, Props } from "react-select"
 import Components from "./components"
 import { formatOptionLabel, hasLabel } from "./utils"
@@ -21,26 +21,36 @@ export const useSelectProps = <
 }: Props<Option, IsMulti, Group>): Props<Option, IsMulti, Group> => {
   const [stateOptions, setStateOptions] = useState(options || [])
 
+  const sortOptions = (values: Option[]) => {
+    const tmp = values || []
+
+    const unselectedOptions = stateOptions.filter(
+      (option) => !tmp.find((op) => op === option)
+    )
+
+    const orderedNewOptions = tmp.sort((a, b) => {
+      if (hasLabel(a) && hasLabel(b)) {
+        return a.label > b.label ? 1 : b.label > a.label ? -1 : 0
+      }
+
+      return 0
+    })
+
+    setStateOptions(orderedNewOptions.concat(unselectedOptions as Option[]))
+  }
+
+  useEffect(() => {
+    if (isMulti && options) {
+      sortOptions(props.value as Option[])
+    }
+  }, [options, props.value, isMulti])
+
   const onChange = (
     newValue: OnChangeValue<Option, IsMulti>,
     actionMeta: ActionMeta<Option>
   ) => {
     if (isMulti) {
-      const tmp = newValue as Option[]
-
-      const unselectedOptions = stateOptions.filter(
-        (option) => !tmp.find((op) => op === option)
-      )
-
-      const orderedNewOptions = tmp.sort((a, b) => {
-        if (hasLabel(a) && hasLabel(b)) {
-          return a.label > b.label ? 1 : b.label > a.label ? -1 : 0
-        }
-
-        return 0
-      })
-
-      setStateOptions(orderedNewOptions.concat(unselectedOptions as Option[]))
+      sortOptions(newValue as Option[])
     }
 
     if (changeFn) {

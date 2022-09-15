@@ -1,5 +1,6 @@
 import React from "react"
 import { Controller } from "react-hook-form"
+import Switch from "../../../../../components/atoms/switch"
 import InputField from "../../../../../components/molecules/input"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
 import { Option } from "../../../../../types/shared"
@@ -13,6 +14,7 @@ export type RegionDetailsFormType = {
   currency_code: Option
   tax_rate: number | null
   tax_code: string | null
+  includes_tax?: boolean
 }
 
 type Props = {
@@ -110,6 +112,21 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
                 options={countryOptions}
               />
             )
+          }}
+        />
+      </div>
+      <div className="flex items-start justify-between mt-xlarge">
+        <div className="flex flex-col gap-y-2xsmall">
+          <h3 className="inter-base-semibold">Tax inclusive prices</h3>
+          <p className="inter-base-regular text-grey-50">
+            When enabled region prices will be tax inclusive.
+          </p>
+        </div>
+        <Controller
+          control={control}
+          name={path("includes_tax")}
+          render={({ field: { value, onChange } }) => {
+            return <Switch checked={value} onCheckedChange={onChange} />
           }}
         />
       </div>
