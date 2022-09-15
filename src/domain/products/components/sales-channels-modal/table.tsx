@@ -11,6 +11,7 @@ import { useAddChannelsModalScreen } from "./add-screen"
 
 type SalesChannelsTableProps = {
   salesChannels: SalesChannel[]
+  count: number
   limit: number
   offset: number
   setOffset: (offset: number) => void
@@ -65,6 +66,7 @@ export const useSalesChannelsTableColumns = () => {
 
 const SalesChannelTable = ({
   salesChannels,
+  count,
   limit,
   offset,
   setOffset,
@@ -145,7 +147,7 @@ const SalesChannelTable = ({
         </Table.Body>
       </Table>
       <TablePagination
-        count={salesChannels.length!}
+        count={count}
         limit={limit}
         offset={offset}
         pageSize={offset + rows.length}

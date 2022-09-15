@@ -1,3 +1,4 @@
+import { AdminPostRegionsReq } from "@medusajs/medusa"
 import { navigate } from "gatsby"
 import { useAdminCreateRegion } from "medusa-react"
 import React, { useState } from "react"
@@ -6,6 +7,7 @@ import Button from "../../../../components/fundamentals/button"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../../components/organisms/accordion"
+import { useFeatureFlag } from "../../../../context/feature-flag"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { nestedForm } from "../../../../utils/nested-form"
@@ -43,6 +45,8 @@ const NewRegion = ({ onClose }: Props) => {
   const { mutate, isLoading } = useAdminCreateRegion()
   const notification = useNotification()
 
+  const { isFeatureEnabled } = useFeatureFlag()
+
   const closeAndReset = () => {
     reset()
     onClose()
@@ -50,31 +54,34 @@ const NewRegion = ({ onClose }: Props) => {
 
   const onSubmit = handleSubmit(
     (data) => {
-      mutate(
-        {
-          name: data.details.name!,
-          countries: data.details.countries.map((c) => c.value),
-          currency_code: data.details.currency_code?.value,
-          fulfillment_providers: data.providers.fulfillment_providers.map(
-            (fp) => fp.value
-          ),
-          payment_providers: data.providers.payment_providers.map(
-            (pp) => pp.value
-          ),
-          tax_rate: data.details.tax_rate!,
-          tax_code: data.details.tax_code || undefined,
+      const payload: AdminPostRegionsReq = {
+        name: data.details.name!,
+        countries: data.details.countries.map((c) => c.value),
+        currency_code: data.details.currency_code?.value,
+        fulfillment_providers: data.providers.fulfillment_providers.map(
+          (fp) => fp.value
+        ),
+        payment_providers: data.providers.payment_providers.map(
+          (pp) => pp.value
+        ),
+        tax_rate: data.details.tax_rate!,
+        tax_code: data.details.tax_code || undefined,
+      }
+
+      if (isFeatureEnabled("tax_inclusive_pricing")) {
+        payload.includes_tax = data.details.includes_tax
+      }
+
+      mutate(payload, {
+        onSuccess: ({ region }) => {
+          notification("Success", "Region created", "success")
+          navigate(`/a/settings/regions/${region.id}`)
+          closeAndReset()
         },
-        {
-          onSuccess: ({ region }) => {
-            notification("Success", "Region created", "success")
-            navigate(`/a/settings/regions/${region.id}`)
-            closeAndReset()
-          },
-          onError: (error) => {
-            notification("Error", getErrorMessage(error), "error")
-          },
-        }
-      )
+        onError: (error) => {
+          notification("Error", getErrorMessage(error), "error")
+        },
+      })
     },
     (errors) => {
       if (errors.providers && !sections.includes("providers")) {

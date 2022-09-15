@@ -42,6 +42,8 @@ export const useSelectProps = <
   useEffect(() => {
     if (isMulti && options) {
       sortOptions(props.value as Option[])
+    } else {
+      setStateOptions(options || [])
     }
   }, [options, props.value, isMulti])
 

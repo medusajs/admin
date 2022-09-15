@@ -66,6 +66,7 @@ const AvailableScreen = () => {
   return (
     <Modal.Content>
       <SalesChannelTable
+        count={source.length}
         tableAction={
           <SalesChannelTableActions
             numberOfSelectedRows={selectedRowIds.length}
