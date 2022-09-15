@@ -5,6 +5,7 @@ import Fade from "../../../components/atoms/fade-wrapper"
 import Button from "../../../components/fundamentals/button"
 import ExportIcon from "../../../components/fundamentals/icons/export-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import UploadIcon from "../../../components/fundamentals/icons/upload-icon"
 import BodyCard from "../../../components/organisms/body-card"
 import TableViewHeader from "../../../components/organisms/custom-table-header"
 import ExportModal from "../../../components/organisms/export-modal"
@@ -14,9 +15,8 @@ import ProductTable from "../../../components/templates/product-table"
 import useNotification from "../../../hooks/use-notification"
 import useToggleState from "../../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../../utils/error-messages"
-import NewProduct from "../new"
 import ImportProducts from "../batch-job/import"
-import UploadIcon from "../../../components/fundamentals/icons/upload-icon"
+import NewProduct from "../new"
 
 const VIEWS = ["products", "collections"]
 
@@ -27,7 +27,6 @@ const Overview = (_props: RouteComponentProps) => {
     state: createProductState,
     close: closeProductCreate,
     open: openProductCreate,
-    toggle: toggleProductCreate,
   } = useToggleState()
 
   const createBatchJob = useAdminCreateBatchJob()

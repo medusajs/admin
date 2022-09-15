@@ -1,10 +1,9 @@
 import { SalesChannel } from "@medusajs/medusa"
 import clsx from "clsx"
-import { useAdminSalesChannels, useAdminStore } from "medusa-react"
-import React, { useEffect, useMemo } from "react"
+import { useAdminStore } from "medusa-react"
+import React, { useEffect } from "react"
 import { useFieldArray } from "react-hook-form"
 import Switch from "../../../components/atoms/switch"
-import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
 import ChannelsIcon from "../../../components/fundamentals/icons/channels-icon"
 import SalesChannelsDisplay from "../../../components/molecules/sales-channels-display"
@@ -36,15 +35,10 @@ const AddSalesChannelsForm = ({ form }: Props) => {
     close: closeModal,
   } = useToggleState()
   const { store } = useAdminStore()
-  const { count } = useAdminSalesChannels()
 
   const onAddChannels = (channels: SalesChannel[]) => {
     replace(channels)
   }
-
-  const remainder = useMemo(() => {
-    return Math.max(fields?.length - 3, 0)
-  }, [fields])
 
   useEffect(() => {
     if (store?.default_sales_channel && fields) {
@@ -97,20 +91,6 @@ const AddSalesChannelsForm = ({ form }: Props) => {
         onSave={onAddChannels}
       />
     </>
-  )
-}
-
-type SalesChannelBadgeProps = {
-  channel: SalesChannel
-}
-
-const SalesChannelBadge: React.FC<SalesChannelBadgeProps> = ({ channel }) => {
-  return (
-    <Badge variant="ghost" className="px-3 py-1.5">
-      <div className="flex items-center">
-        <span className="inter-small-regular text-grey-90">{channel.name}</span>
-      </div>
-    </Badge>
   )
 }
 
