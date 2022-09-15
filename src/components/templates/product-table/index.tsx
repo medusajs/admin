@@ -4,7 +4,7 @@ import { useAdminProducts } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import { FeatureFlagContext } from "../../../context/feature-flag"
+import { useFeatureFlag } from "../../../context/feature-flag"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
@@ -20,15 +20,14 @@ type ProductTableProps = {}
 
 const defaultQueryProps = {
   fields: "id,title,type,thumbnail,status,handle",
-  expand:
-    "variants,options,variants.prices,variants.options,collection,tags,sales_channels",
+  expand: "variants,options,variants.prices,variants.options,collection,tags",
   is_giftcard: false,
 }
 
 const ProductTable: React.FC<ProductTableProps> = () => {
   const location = useLocation()
 
-  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
+  const { isFeatureEnabled } = useFeatureFlag()
 
   let hiddenColumns = ["sales_channel"]
   if (isFeatureEnabled("sales_channels")) {

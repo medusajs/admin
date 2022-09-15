@@ -1,9 +1,10 @@
-import { Region } from "@medusajs/medusa"
+import { AdminPostRegionsRegionReq, Region } from "@medusajs/medusa"
 import { useAdminUpdateRegion } from "medusa-react"
-import React from "react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
+import { useFeatureFlag } from "../../../../../context/feature-flag"
 import useNotification from "../../../../../hooks/use-notification"
 import { currencies } from "../../../../../utils/currencies"
 import { getErrorMessage } from "../../../../../utils/error-messages"
@@ -32,6 +33,7 @@ const EditRegionModal = ({ region, onClose, open }: Props) => {
   const form = useForm<RegionEditFormType>({
     defaultValues: getDefaultValues(region),
   })
+  const { isFeatureEnabled } = useFeatureFlag()
 
   const {
     reset,
@@ -44,32 +46,37 @@ const EditRegionModal = ({ region, onClose, open }: Props) => {
     onClose()
   }
 
+  useEffect(() => {
+    reset(getDefaultValues(region))
+  }, [region])
+
   const { mutate, isLoading } = useAdminUpdateRegion(region.id)
   const notifcation = useNotification()
 
   const onSubmit = handleSubmit((data) => {
-    mutate(
-      {
-        name: data.details.name,
-        currency_code: data.details.currency_code?.value,
-        payment_providers: data.providers.payment_providers.map(
-          (pp) => pp.value
-        ),
-        fulfillment_providers: data.providers.fulfillment_providers.map(
-          (fp) => fp.value
-        ),
-        countries: data.details.countries.map((c) => c.value),
+    const payload: AdminPostRegionsRegionReq = {
+      name: data.details.name,
+      currency_code: data.details.currency_code?.value,
+      payment_providers: data.providers.payment_providers.map((pp) => pp.value),
+      fulfillment_providers: data.providers.fulfillment_providers.map(
+        (fp) => fp.value
+      ),
+      countries: data.details.countries.map((c) => c.value),
+    }
+
+    if (isFeatureEnabled("tax_inclusive_pricing")) {
+      payload.includes_tax = data.details.includes_tax
+    }
+
+    mutate(payload, {
+      onSuccess: () => {
+        notifcation("Success", "Region was successfully updated", "success")
+        closeAndReset()
       },
-      {
-        onSuccess: () => {
-          notifcation("Success", "Region was successfully updated", "success")
-          closeAndReset()
-        },
-        onError: (err) => {
-          notifcation("Error", getErrorMessage(err), "error")
-        },
-      }
-    )
+      onError: (err) => {
+        notifcation("Error", getErrorMessage(err), "error")
+      },
+    })
   })
 
   return (
@@ -133,6 +140,7 @@ const getDefaultValues = (region: Region): RegionEditFormType => {
       name: region.name,
       tax_code: null,
       tax_rate: null,
+      includes_tax: region.includes_tax,
     },
     providers: {
       fulfillment_providers: region.fulfillment_providers

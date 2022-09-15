@@ -51,6 +51,10 @@ export const hasLabel = (option: unknown): option is { label: string } => {
   return typeof option === "object" && option !== null && "label" in option
 }
 
+export const hasPrefix = (option: unknown): option is { prefix: string } => {
+  return typeof option === "object" && option !== null && "prefix" in option
+}
+
 export const isCreateOption = (
   option: unknown
 ): option is { __isNew__: true } => {

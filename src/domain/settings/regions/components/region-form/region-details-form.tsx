@@ -1,5 +1,7 @@
 import React from "react"
 import { Controller } from "react-hook-form"
+import Switch from "../../../../../components/atoms/switch"
+import FeatureToggle from "../../../../../components/fundamentals/feature-toggle"
 import InputField from "../../../../../components/molecules/input"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
 import { Option } from "../../../../../types/shared"
@@ -13,6 +15,7 @@ export type RegionDetailsFormType = {
   currency_code: Option
   tax_rate: number | null
   tax_code: string | null
+  includes_tax?: boolean
 }
 
 type Props = {
@@ -68,20 +71,17 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
             <InputField
               label="Tax Rate"
               required
-              placeholder="0.25..."
-              step={0.01}
+              placeholder="25..."
+              prefix="%"
+              step={1}
               type={"number"}
               {...register(path("tax_rate"), {
                 required: isCreate ? "Tax rate is required" : undefined,
-                min: isCreate
-                  ? FormValidator.nonNegativeNumberRule("Tax rate")
-                  : undefined,
-                max: isCreate
-                  ? {
-                      value: 1,
-                      message: "Tax rate must be equal or less than 1",
-                    }
-                  : undefined,
+                max: {
+                  value: 100,
+                  message: "Tax rate must be equal to or less than 100",
+                },
+                min: FormValidator.nonNegativeNumberRule("Tax rate"),
                 valueAsNumber: true,
               })}
               errors={errors}
@@ -113,6 +113,23 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
           }}
         />
       </div>
+      <FeatureToggle featureFlag="tax_inclusive_pricing">
+        <div className="flex items-start justify-between mt-xlarge">
+          <div className="flex flex-col gap-y-2xsmall">
+            <h3 className="inter-base-semibold">Tax inclusive prices</h3>
+            <p className="inter-base-regular text-grey-50">
+              When enabled region prices will be tax inclusive.
+            </p>
+          </div>
+          <Controller
+            control={control}
+            name={path("includes_tax")}
+            render={({ field: { value, onChange } }) => {
+              return <Switch checked={value} onCheckedChange={onChange} />
+            }}
+          />
+        </div>
+      </FeatureToggle>
     </div>
   )
 }

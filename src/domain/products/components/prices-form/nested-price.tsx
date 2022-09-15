@@ -2,6 +2,7 @@ import clsx from "clsx"
 import React from "react"
 import { Controller } from "react-hook-form"
 import { NestedPriceObject, PricesFormType } from "."
+import IncludesTaxTooltip from "../../../../components/atoms/includes-tax-tooltip"
 import CoinsIcon from "../../../../components/fundamentals/icons/coins-icon"
 import MapPinIcon from "../../../../components/fundamentals/icons/map-pin-icon"
 import TriangleRightIcon from "../../../../components/fundamentals/icons/triangle-right-icon"
@@ -46,6 +47,7 @@ const NestedPrice = ({ form, nestedPrice }: Props) => {
             <span className="inter-base-regular text-grey-50">
               {currencies[currencyPrice.currency_code.toUpperCase()].name}
             </span>
+            <IncludesTaxTooltip />
           </div>
         </div>
         <Controller
@@ -86,6 +88,7 @@ const NestedPrice = ({ form, nestedPrice }: Props) => {
                   <span className="inter-base-regular text-grey-50">
                     {rp.regionName}
                   </span>
+                  <IncludesTaxTooltip includesTax={rp.includes_tax} />
                 </div>
               </div>
               <Controller
