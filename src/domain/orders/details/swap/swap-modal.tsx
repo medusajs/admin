@@ -1,11 +1,7 @@
 import { Order } from "@medusajs/medusa"
-import {
-  useAdminCreateSwap,
-  useAdminOrder,
-  useAdminShippingOptions,
-} from "medusa-react"
-import React, { useMemo } from "react"
-import { Controller, useForm, useWatch } from "react-hook-form"
+import { useAdminCreateSwap, useAdminOrder } from "medusa-react"
+import React, { useEffect } from "react"
+import { Controller, useForm } from "react-hook-form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
@@ -15,6 +11,7 @@ import LayeredModal, {
 } from "../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../hooks/use-notification"
 import { Option } from "../../../../types/shared"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import { nestedForm } from "../../../../utils/nested-form"
 import ReturnShippingForm, {
   ReturnShippingFormType,
@@ -53,50 +50,39 @@ const CreateSwapModal = ({ order, onClose, open }: Props) => {
   const { mutate, isLoading: isMutating } = useAdminCreateSwap(order.id)
 
   const form = useForm<CreateSwapFormType>()
-  const { control, handleSubmit } = form
+  const { control, handleSubmit, reset } = form
 
-  const {
-    shipping_options: returnOptions,
-    isLoading: isLoadingReturnOptions,
-  } = useAdminShippingOptions({
-    region_id: order.region_id,
-    is_return: true,
-  })
-
-  const returnShippingOptions = useMemo(() => {
-    return (
-      returnOptions?.map((o) => ({
-        label: o.name,
-        value: o.id,
-      })) || []
-    )
-  }, [returnOptions])
-
-  const selectedReturnOption = useWatch({
-    control,
-    name: "return_shipping.option",
-  })
-
-  const selectedReturnOptionPrice = useWatch({
-    control,
-    name: "return_shipping.price",
-  })
+  useEffect(() => {
+    reset()
+  }, [open])
 
   const onSubmit = handleSubmit((data) => {
-    mutate({
-      return_items: data.return_items.map((ri) => ({
-        item_id: ri.item_id,
-        quantity: ri.quantity,
-        note: ri.note,
-        reason: ri.reason?.value,
-      })),
-      additional_items: data.additional_items,
-      no_notification: !data.send_notifications,
-      return_shipping: {
-        option_id: data.return_shipping.option!.value,
-        price: data.return_shipping.price,
+    mutate(
+      {
+        return_items: data.return_items.map((ri) => ({
+          item_id: ri.item_id,
+          quantity: ri.quantity,
+          note: ri.note,
+          reason: ri.reason?.value,
+        })),
+        additional_items: data.additional_items,
+        no_notification: !data.send_notifications,
+        return_shipping: {
+          option_id: data.return_shipping.option!.value,
+          price: data.return_shipping.price,
+        },
       },
-    })
+      {
+        onSuccess: () => {
+          notification("Success", "Successfully created exchange", "success")
+          refetch()
+          onClose()
+        },
+        onError: (error) => {
+          notification("Error", getErrorMessage(error), "error")
+        },
+      }
+    )
   })
 
   return (
