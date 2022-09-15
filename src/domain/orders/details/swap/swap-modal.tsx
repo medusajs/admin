@@ -13,6 +13,9 @@ import useNotification from "../../../../hooks/use-notification"
 import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { nestedForm } from "../../../../utils/nested-form"
+import ItemsToReturnForm, {
+  ItemsToReturnFormType,
+} from "../../components/items-to-return-form"
 import ReturnShippingForm, {
   ReturnShippingFormType,
 } from "../../components/return-shipping-form"
@@ -37,7 +40,7 @@ type AdditionalItem = {
 
 type CreateSwapFormType = {
   send_notifications: boolean
-  return_items: ReturnItem[]
+  return_items: ItemsToReturnFormType
   additional_items: AdditionalItem[]
   return_shipping: ReturnShippingFormType
 }
@@ -62,8 +65,8 @@ const CreateSwapModal = ({ order, onClose, open }: Props) => {
         return_items: data.return_items.map((ri) => ({
           item_id: ri.item_id,
           quantity: ri.quantity,
-          note: ri.note,
-          reason: ri.reason?.value,
+          note: ri.return_reason_details.note,
+          reason: ri.return_reason_details.reason?.value,
         })),
         additional_items: data.additional_items,
         no_notification: !data.send_notifications,
@@ -92,6 +95,10 @@ const CreateSwapModal = ({ order, onClose, open }: Props) => {
           <h1 className="inter-xlarge-semibold">Register Exchange</h1>
         </Modal.Header>
         <Modal.Content>
+          <ItemsToReturnForm
+            form={nestedForm(form, "return_items")}
+            order={order}
+          />
           <ReturnShippingForm
             form={nestedForm(form, "return_shipping")}
             order={order}
