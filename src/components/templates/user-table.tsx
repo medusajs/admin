@@ -1,6 +1,10 @@
+import { Invite, User } from "@medusajs/medusa"
+import copy from "copy-to-clipboard"
+import { useAdminStore } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
+import ClipboardCopyIcon from "../fundamentals/icons/clipboard-copy-icon"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import RefreshIcon from "../fundamentals/icons/refresh-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
@@ -22,7 +26,7 @@ type UserTableProps = {
   triggerRefetch: () => void
 }
 
-const getInviteStatus = (invite) => {
+const getInviteStatus = (invite: Invite) => {
   return new Date(invite.expires_at) < new Date() ? "expired" : "pending"
 }
 
@@ -33,10 +37,11 @@ const UserTable: React.FC<UserTableProps> = ({
 }) => {
   const [elements, setElements] = useState<UserListElement[]>([])
   const [shownElements, setShownElements] = useState<UserListElement[]>([])
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [deleteUser, setDeleteUser] = useState(false)
-  const [selectedInvite, setSelectedInvite] = useState(null)
+  const [selectedInvite, setSelectedInvite] = useState<Invite | null>(null)
   const notification = useNotification()
+  const { store, isLoading } = useAdminStore()
 
   useEffect(() => {
     setElements([
@@ -63,7 +68,7 @@ const UserTable: React.FC<UserTableProps> = ({
     setSelectedInvite(null)
   }
 
-  const getUserTableRow = (user, index) => {
+  const getUserTableRow = (user: User, index: number) => {
     return (
       <Table.Row
         key={`user-${index}`}
@@ -98,7 +103,7 @@ const UserTable: React.FC<UserTableProps> = ({
     )
   }
 
-  const getInviteTableRow = (invite, index) => {
+  const getInviteTableRow = (invite: Invite, index: number) => {
     return (
       <Table.Row
         key={`invite-${index}`}
@@ -118,6 +123,23 @@ const UserTable: React.FC<UserTableProps> = ({
                 .then(() => triggerRefetch())
             },
             icon: <RefreshIcon size={20} />,
+          },
+          {
+            label: "Copy invite link",
+            disabled: isLoading,
+            onClick: () => {
+              const link_template =
+                store?.invite_link_template ??
+                `${window.location.origin}/invite?token={invite_token}`
+
+              copy(link_template.replace("{invite_token}", invite.token))
+              notification(
+                "Success",
+                "Invite link copied to clipboard",
+                "success"
+              )
+            },
+            icon: <ClipboardCopyIcon size={20} />,
           },
           {
             label: "Remove Invitation",

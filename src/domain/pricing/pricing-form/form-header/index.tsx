@@ -1,8 +1,9 @@
 import { navigate } from "gatsby"
 import { useAdminCreatePriceList, useAdminUpdatePriceList } from "medusa-react"
-import React from "react"
+import React, { useContext } from "react"
 import Button from "../../../../components/fundamentals/button"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
+import { FeatureFlagContext } from "../../../../context/feature-flag"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import {
@@ -35,37 +36,46 @@ const FormHeader = (props: PriceListFormProps & { onClose?: () => void }) => {
   const createPriceList = useAdminCreatePriceList()
   const updatePriceList = useAdminUpdatePriceList(props.id!)
 
+  const { isFeatureEnabled } = useContext(FeatureFlagContext)
+
   const onPublish = (values: CreatePriceListFormValues) => {
-    createPriceList.mutate(
-      mapFormValuesToCreatePriceList(values, PriceListStatus.ACTIVE),
-      {
-        onSuccess: ({ price_list }) => {
-          navigate(`/a/pricing/${price_list.id}`)
-        },
-        onError: (error) => {
-          notification("Error", getErrorMessage(error), "error")
-        },
-      }
-    )
+    const data = mapFormValuesToCreatePriceList(values, PriceListStatus.ACTIVE)
+    if (isFeatureEnabled("tax_inclusive_pricing")) {
+      data.includes_tax = values.includes_tax
+    }
+    createPriceList.mutate(data, {
+      onSuccess: ({ price_list }) => {
+        navigate(`/a/pricing/${price_list.id}`)
+      },
+      onError: (error) => {
+        notification("Error", getErrorMessage(error), "error")
+      },
+    })
   }
 
   const onSaveAsDraft = (values: CreatePriceListFormValues) => {
-    createPriceList.mutate(
-      mapFormValuesToCreatePriceList(values, PriceListStatus.DRAFT),
-      {
-        onSuccess: ({ price_list }) => {
-          navigate(`/a/pricing/${price_list.id}`)
-        },
-        onError: (error) => {
-          notification("Error", getErrorMessage(error), "error")
-        },
-      }
-    )
+    const data = mapFormValuesToCreatePriceList(values, PriceListStatus.DRAFT)
+    if (isFeatureEnabled("tax_inclusive_pricing")) {
+      data.includes_tax = values.includes_tax
+    }
+    createPriceList.mutate(data, {
+      onSuccess: ({ price_list }) => {
+        navigate(`/a/pricing/${price_list.id}`)
+      },
+      onError: (error) => {
+        notification("Error", getErrorMessage(error), "error")
+      },
+    })
   }
 
   const onUpdateDetails = (values: PriceListFormValues) => {
-    updatePriceList.mutate(mapFormValuesToUpdatePriceListDetails(values), {
+    const data = mapFormValuesToUpdatePriceListDetails(values)
+    if (isFeatureEnabled("tax_inclusive_pricing")) {
+      data.includes_tax = values.includes_tax
+    }
+    updatePriceList.mutate(data, {
       onSuccess: ({ price_list }) => {
+        notification("Success", "Successfully updated price list", "success")
         closeForm()
       },
       onError: (error) => {

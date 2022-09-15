@@ -1,6 +1,6 @@
 import { Region } from "@medusajs/medusa"
 import { useAdminUpdateRegion } from "medusa-react"
-import React from "react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
@@ -44,6 +44,10 @@ const EditRegionModal = ({ region, onClose, open }: Props) => {
     onClose()
   }
 
+  useEffect(() => {
+    reset(getDefaultValues(region))
+  }, [region])
+
   const { mutate, isLoading } = useAdminUpdateRegion(region.id)
   const notifcation = useNotification()
 
@@ -59,6 +63,7 @@ const EditRegionModal = ({ region, onClose, open }: Props) => {
           (fp) => fp.value
         ),
         countries: data.details.countries.map((c) => c.value),
+        includes_tax: data.details.includes_tax,
       },
       {
         onSuccess: () => {
@@ -133,6 +138,7 @@ const getDefaultValues = (region: Region): RegionEditFormType => {
       name: region.name,
       tax_code: null,
       tax_rate: null,
+      includes_tax: region.includes_tax,
     },
     providers: {
       fulfillment_providers: region.fulfillment_providers

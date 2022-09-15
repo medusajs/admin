@@ -33,6 +33,7 @@ export const mapPriceListToFormValues = (
       label: pl.name,
       value: pl.id,
     })),
+    includes_tax: priceList.includes_tax,
   }
 }
 
