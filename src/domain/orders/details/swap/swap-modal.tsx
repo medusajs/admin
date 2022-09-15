@@ -2,9 +2,9 @@ import { Order } from "@medusajs/medusa"
 import { useAdminCreateSwap, useAdminOrder } from "medusa-react"
 import React, { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
-import Checkbox from "../../../../components/atoms/checkbox"
 import Button from "../../../../components/fundamentals/button"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
+import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   useLayeredModal,
@@ -52,17 +52,19 @@ const CreateSwapModal = ({ order, onClose, open }: Props) => {
   const { refetch } = useAdminOrder(order.id)
   const { mutate, isLoading: isMutating } = useAdminCreateSwap(order.id)
 
-  const form = useForm<CreateSwapFormType>()
+  const form = useForm<CreateSwapFormType>({
+    defaultValues: getDefaultValues(order),
+  })
   const { control, handleSubmit, reset } = form
 
   useEffect(() => {
-    reset()
-  }, [open])
+    reset(getDefaultValues(order))
+  }, [open, order])
 
   const onSubmit = handleSubmit((data) => {
     mutate(
       {
-        return_items: data.return_items.map((ri) => ({
+        return_items: data.return_items.items.map((ri) => ({
           item_id: ri.item_id,
           quantity: ri.quantity,
           note: ri.return_reason_details.note,
@@ -111,12 +113,16 @@ const CreateSwapModal = ({ order, onClose, open }: Props) => {
               name="send_notifications"
               render={({ field: { value, onChange } }) => {
                 return (
-                  <div className="flex items-center gap-x-xsmall">
-                    <Checkbox
-                      label="Send notifications"
-                      checked={value}
-                      onChange={onChange}
-                    />
+                  <div className="flex items-center">
+                    <div className="mr-xsmall">
+                      <IndeterminateCheckbox
+                        checked={value}
+                        onChange={onChange}
+                      />
+                    </div>
+                    <p className="inter-small-semibold mr-1.5">
+                      Send notifications
+                    </p>
                     <IconTooltip
                       type="info"
                       content="If unchecked the customer will not receive communication about this exchange."
@@ -143,6 +149,28 @@ const CreateSwapModal = ({ order, onClose, open }: Props) => {
       </Modal.Body>
     </LayeredModal>
   )
+}
+
+const getDefaultValues = (order: Order): CreateSwapFormType => {
+  return {
+    return_items: {
+      items: order.items.map((item) => ({
+        item_id: item.id,
+        quantity: item.quantity,
+        return_reason_details: {
+          note: undefined,
+          reason: undefined,
+        },
+        return: false,
+      })),
+    },
+    additional_items: [],
+    return_shipping: {
+      option: null,
+      price: undefined,
+    },
+    send_notifications: true,
+  }
 }
 
 export default CreateSwapModal
