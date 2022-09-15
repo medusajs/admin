@@ -6,6 +6,7 @@ import ReactJson from "react-json-view"
 import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import Tooltip from "../../../components/atoms/tooltip"
+import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import Section from "../../../components/organisms/section"
 import { getErrorStatus } from "../../../utils/get-error-status"
 import CurrencyTaxSetting from "./components/currency-tax-setting"
@@ -73,34 +74,36 @@ const CurrencySettings = (_props: RouteComponentProps) => {
             <div className="mb-large">
               <StoreCurrencies store={store} />
             </div>
-            <div className="cursor-default">
-              <div className="inter-small-semibold text-grey-50 flex items-center justify-between mb-base">
-                <p>Currency</p>
-                <Tooltip
-                  side="top"
-                  content={
-                    "Decide if you want to include or exclude taxes whenever you define a price in this currency"
-                  }
-                >
-                  <p>Tax Incl. Prices</p>
-                </Tooltip>
+            <FeatureToggle featureFlag="tax_inclusive_pricing">
+              <div className="cursor-default">
+                <div className="inter-small-semibold text-grey-50 flex items-center justify-between mb-base">
+                  <p>Currency</p>
+                  <Tooltip
+                    side="top"
+                    content={
+                      "Decide if you want to include or exclude taxes whenever you define a price in this currency"
+                    }
+                  >
+                    <p>Tax Incl. Prices</p>
+                  </Tooltip>
+                </div>
+                <div className="grid grid-cols-1 gap-base">
+                  {store.currencies
+                    .sort((a, b) => {
+                      return a.code > b.code ? 1 : -1
+                    })
+                    .map((c, index) => {
+                      return (
+                        <CurrencyTaxSetting
+                          currency={c}
+                          isDefault={store.default_currency_code === c.code}
+                          key={index}
+                        />
+                      )
+                    })}
+                </div>
               </div>
-              <div className="grid grid-cols-1 gap-base">
-                {store.currencies
-                  .sort((a, b) => {
-                    return a.code > b.code ? 1 : -1
-                  })
-                  .map((c, index) => {
-                    return (
-                      <CurrencyTaxSetting
-                        currency={c}
-                        isDefault={store.default_currency_code === c.code}
-                        key={index}
-                      />
-                    )
-                  })}
-              </div>
-            </div>
+            </FeatureToggle>
           </Section>
         </div>
         <div>
