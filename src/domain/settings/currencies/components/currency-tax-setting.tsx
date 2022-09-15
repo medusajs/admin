@@ -39,6 +39,9 @@ const CurrencyTaxSetting = ({ currency, isDefault }: Props) => {
       },
       onError: (error) => {
         notification("Error", getErrorMessage(error), "error")
+        reset({
+          includes_tax: currency.includes_tax,
+        })
       },
     })
   })
