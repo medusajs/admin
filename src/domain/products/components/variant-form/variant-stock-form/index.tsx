@@ -75,7 +75,9 @@ const VariantStockForm = ({ form }: Props) => {
             type="number"
             placeholder="100..."
             errors={errors}
-            {...register(path("inventory_quantity"))}
+            {...register(path("inventory_quantity"), {
+              valueAsNumber: true,
+            })}
           />
           <InputField
             label="EAN (Barcode)"
