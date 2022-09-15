@@ -3,6 +3,7 @@ import { useAdminCurrencies, useAdminUpdateStore } from "medusa-react"
 import React, { useContext, useState } from "react"
 import { usePagination, useRowSelect, useSortBy, useTable } from "react-table"
 import Button from "../../../../../components/fundamentals/button"
+import LoadingContainer from "../../../../../components/loading-container"
 import Modal from "../../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../../hooks/use-notification"
@@ -82,26 +83,20 @@ const AddCurrenciesScreen = () => {
     useRowSelect
   )
 
-  if (status === "error") {
-    return <div>Failed to load</div>
-  }
-
-  if (status === "loading" && !currencies) {
-    return <div>Loading...</div>
-  }
-
   return (
     <>
       <Modal.Content>
-        <CurrenciesTable
-          setQuery={() => {}}
-          setSelectedRowIds={setSelectedRowIds}
-          count={count || 0}
-          tableState={tableState}
-          setOffset={setOffset}
-          limit={LIMIT}
-          offset={offset}
-        />
+        <LoadingContainer isLoading={status === "loading"}>
+          <CurrenciesTable
+            setQuery={() => {}}
+            setSelectedRowIds={setSelectedRowIds}
+            count={count || 0}
+            tableState={tableState}
+            setOffset={setOffset}
+            limit={LIMIT}
+            offset={offset}
+          />
+        </LoadingContainer>
       </Modal.Content>
       <Modal.Footer>
         <div className="w-full gap-x-xsmall flex items-center justify-end">

@@ -25,6 +25,7 @@ const LoadingContainer = ({
       </div>
     )
   }
+
   return children as React.ReactElement
 }
 
