@@ -72,10 +72,12 @@ function UploadSummary(props: UploadSummaryProps) {
         <CheckCircleIcon color="#9CA3AF" className="mr-2" />
         <span className="font-semibold"> {creations}&nbsp;</span> new {type}
       </div>
-      <div className="flex items-center text-small text-grey-90">
-        <WarningCircle fill="#9CA3AF" className="mr-2" />
-        <span className="font-semibold">{updates}&nbsp;</span> updates
-      </div>
+      {updates && (
+        <div className="flex items-center text-small text-grey-90">
+          <WarningCircle fill="#9CA3AF" className="mr-2" />
+          <span className="font-semibold">{updates}&nbsp;</span> updates
+        </div>
+      )}
       {rejections && (
         <div className="flex items-center text-small text-grey-90">
           <XCircleIcon color="#9CA3AF" className="mr-2" />
