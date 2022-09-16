@@ -168,10 +168,10 @@ function ImportPrices(props: ImportPricesProps) {
   return (
     <UploadModal
       type="prices"
-      fileTitle="price list"
-      description1Text="You can add to or 'update' a price list. A new import will update products with the same SKU. New products will be implemented as Drafts. Updated products will keep their current status."
+      fileTitle="Price List prices"
+      description1Text="Upload a CSV file with variants and prices to update your price list. Note that any existing prices will be deleted."
       description2Title="Unsure about how to arrange your list?"
-      description2Text="We have created a template file for you. Type in your own information and experience how much time and frustration this functionality can save you. Feel free to reach out if you have any questions."
+      description2Text="Download the template file below and update your prices"
       status={status}
       progress={progress}
       canImport={isPreprocessed}
