@@ -164,7 +164,7 @@ type UploadModalProps = {
   onSubmit: () => void
   onFileRemove: () => void
   processUpload: (...args: any[]) => Promise<any>
-  summary?: { toCreate: number; toUpdate: number }
+  summary?: { toCreate?: number; toUpdate?: number }
 }
 
 /**
