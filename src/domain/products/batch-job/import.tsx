@@ -141,6 +141,7 @@ function ImportProducts(props: ImportProductsProps) {
         deleteFile({ file_key: fileKey })
       }
       cancelBathJob()
+      setBatchJobId(undefined)
     } catch (e) {
       console.log(e)
     }

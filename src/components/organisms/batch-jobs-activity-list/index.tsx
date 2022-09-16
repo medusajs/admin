@@ -134,12 +134,16 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
         <FileIcon fill={iconColor} size={20} />
       )
 
-    const fileSize =
-      batchJob.status !== "canceled"
-        ? batchJob.result?.file_key
-          ? bytesConverter(batchJob.result?.file_size ?? 0)
-          : `Preparing ${operation.toLowerCase()}...`
-        : undefined
+    const fileSize = batchJob.result?.file_key
+      ? bytesConverter(batchJob.result?.file_size ?? 0)
+      : {
+          confirmed: `Preparing ${operation.toLowerCase()}...`,
+          preprocessing: `Preparing ${operation.toLowerCase()}...`,
+          processing: `Processing ${operation.toLowerCase()}...`,
+          completed: `Successful ${operation.toLowerCase()}`,
+          failed: `Failed batch ${operation.toLowerCase()} job`,
+          canceled: `Canceled batch ${operation.toLowerCase()} job`,
+        }[batchJob.status]
 
     return (
       <BatchJobFileCard
