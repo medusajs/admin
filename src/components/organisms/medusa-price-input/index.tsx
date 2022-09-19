@@ -26,11 +26,12 @@ function MedusaPriceInput(props: MedusaPriceInputProps) {
 
   /** ******** HANDLERS **********/
 
-  const onAmountChange: PriceInputProps["onAmountChange"] = (value) => {
-    if (value) {
-      const numericalValue = Math.round(
-        parseFloat(value) * 10 ** decimal_digits
-      )
+  const onAmountChange: PriceInputProps["onAmountChange"] = (
+    value?: string,
+    floatValue?: number | null
+  ) => {
+    if (floatValue) {
+      const numericalValue = Math.round(floatValue * 10 ** decimal_digits)
       onChange(numericalValue)
     } else {
       onChange(0)
