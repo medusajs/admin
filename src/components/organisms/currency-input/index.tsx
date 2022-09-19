@@ -193,36 +193,6 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
       }
     }, [amount])
 
-    // const handleChange = (value?: string, floatValue?: number | null) => {
-    //   let persistedAmount: number | undefined = undefined
-
-    //   if (!value) {
-    //     value = 0
-    //   }
-
-    //   if (currencyInfo) {
-    //     const amount = parseFloat(value)
-    //     const multiplier = getDecimalDigits(currencyInfo.code)
-    //     persistedAmount = multiplier * amount
-    //   }
-
-    //   if (onChange && typeof persistedAmount !== "undefined") {
-    //     const updateAmount = Math.round(persistedAmount)
-    //     let update = true
-    //     if (onValidate) {
-    //       update = onValidate(updateAmount)
-    //     }
-
-    //     if (update) {
-    //       onChange(updateAmount)
-    //       setFormattedValue(`${value}`)
-    //       setInvalid(false)
-    //     } else {
-    //       setInvalid(true)
-    //     }
-    //   }
-    // }
-
     const handleChange = (value?: string, floatValue?: number | null) => {
       let persistedAmount: number | undefined = undefined
 
