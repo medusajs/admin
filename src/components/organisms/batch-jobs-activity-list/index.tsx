@@ -122,16 +122,17 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
   const getBatchJobFileCard = () => {
     const twentyfourHoursInMs = 24 * 60 * 60 * 1000
 
-    const iconColor =
-      Math.abs(relativeTimeElapsed.raw) > twentyfourHoursInMs
-        ? "#9CA3AF"
-        : undefined
-
     const icon =
       batchJob.status !== "completed" && batchJob.status !== "canceled" ? (
         <Spinner size={"medium"} variant={"secondary"} />
       ) : (
-        <FileIcon fill={iconColor} size={20} />
+        <FileIcon
+          className={clsx({
+            "text-grey-40":
+              Math.abs(relativeTimeElapsed.raw) > twentyfourHoursInMs,
+          })}
+          size={20}
+        />
       )
 
     const fileSize = batchJob.result?.file_key
