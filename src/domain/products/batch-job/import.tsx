@@ -142,9 +142,7 @@ function ImportProducts(props: ImportProductsProps) {
       }
       cancelBathJob()
       setBatchJobId(undefined)
-    } catch (e) {
-      console.log(e)
-    }
+    } catch (e) {}
   }
 
   /**
