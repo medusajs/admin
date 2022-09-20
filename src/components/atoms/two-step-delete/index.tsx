@@ -14,10 +14,12 @@ import Tooltip from "../tooltip"
 type Props = {
   onDelete: () => void
   deleting?: boolean
+  className?: string
+  children?: React.ReactNode
 }
 
 const TwoStepDelete = forwardRef<HTMLButtonElement, Props>(
-  ({ onDelete, deleting = false }: Props, ref) => {
+  ({ onDelete, deleting = false, children, className }: Props, ref) => {
     const [armed, setArmed] = useState(false)
     const innerRef = useRef<HTMLButtonElement>(null)
 
@@ -65,19 +67,20 @@ const TwoStepDelete = forwardRef<HTMLButtonElement, Props>(
           },
           {
             "!bg-grey-40 !border-grey-40 !p-1.5": deleting,
-          }
+          },
+          className
         )}
         disabled={deleting}
         onClick={handleTwoStepDelete}
         ref={innerRef}
       >
-        <span
-          className={clsx({
+        <div
+          className={clsx("text-rose-50 inter-small-semibold", {
             hidden: armed || deleting,
           })}
         >
-          <TrashIcon className="text-gray-500" size={20} />
-        </span>
+          {children || <TrashIcon className="text-grey-50" size={20} />}
+        </div>
         <span
           className={clsx("text-white inter-small-semibold", {
             hidden: !armed || deleting,
