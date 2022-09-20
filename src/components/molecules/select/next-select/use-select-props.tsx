@@ -1,3 +1,4 @@
+import isEqual from "lodash/isEqual"
 import { useEffect, useState } from "react"
 import { ActionMeta, GroupBase, OnChangeValue, Props } from "react-select"
 import Components from "./components"
@@ -25,7 +26,7 @@ export const useSelectProps = <
     const tmp = values || []
 
     const unselectedOptions = stateOptions.filter(
-      (option) => !tmp.find((op) => op === option)
+      (option) => !tmp.find((op) => isEqual(op, option))
     )
 
     const orderedNewOptions = tmp.sort((a, b) => {
