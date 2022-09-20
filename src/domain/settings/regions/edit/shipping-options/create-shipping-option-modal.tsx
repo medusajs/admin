@@ -47,7 +47,7 @@ const CreateShippingOptionModal = ({ open, onClose, region }: Props) => {
         profile_id: data.shipping_profile?.value,
         name: data.name!,
         data: fData,
-        price_type: "flat_rate",
+        price_type: data.price_type,
         provider_id,
         admin_only: !data.store_option,
         amount: data.amount!,
@@ -69,7 +69,7 @@ const CreateShippingOptionModal = ({ open, onClose, region }: Props) => {
     <Modal open={open} handleClose={closeAndReset}>
       <Modal.Body>
         <Modal.Header handleClose={closeAndReset}>
-          <h1 className="inter-xlarge-semibold">Add Return Shipping Option</h1>
+          <h1 className="inter-xlarge-semibold">Add Shipping Option</h1>
         </Modal.Header>
         <form onSubmit={onSubmit}>
           <Modal.Content>

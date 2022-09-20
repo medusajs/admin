@@ -1,4 +1,5 @@
-import { Region } from "@medusajs/medusa"
+import { Region } from "@medusajs/medusa" //ShippingOptionPriceType.CALCULATED
+import clsx from "clsx"
 import React from "react"
 import { Controller, UseFormReturn } from "react-hook-form"
 import IncludesTaxTooltip from "../../../../../components/atoms/includes-tax-tooltip"
@@ -6,10 +7,16 @@ import Switch from "../../../../../components/atoms/switch"
 import InputHeader from "../../../../../components/fundamentals/input-header"
 import InputField from "../../../../../components/molecules/input"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
+import RadioGroup from "../../../../../components/organisms/radio-group"
 import { Option } from "../../../../../types/shared"
 import FormValidator from "../../../../../utils/form-validator"
 import PriceFormInput from "../../../../products/components/prices-form/price-form-input"
 import { useShippingOptionFormData } from "./use-shipping-option-form-data"
+
+enum ShippingOptionPriceType {
+  CALCULATED = "calculated",
+  FLAT_RATE = "flat_rate",
+}
 
 type Requirement = {
   amount: number | null
@@ -20,6 +27,7 @@ export type ShippingOptionFormType = {
   store_option: boolean
   name: string | null
   amount: number | null
+  price_type: string
   shipping_profile: Option | null
   fulfillment_provider: Option | null
   requirements: {
@@ -41,6 +49,8 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
     formState: { errors },
   } = form
 
+  const watchPriceType = form.watch("price_type")
+
   const {
     shippingProfileOptions,
     fulfillmentOptions,
@@ -49,6 +59,43 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
   return (
     <div>
       <div>
+        <div
+          className={clsx("flex mt-2", {
+            "flex-col": !isEdit,
+            "justify-between": isEdit,
+          })}
+        >
+          <h3 className="inter-base-semibold mb-base">Price Type</h3>
+          <Controller
+            control={control}
+            defaultValue={ShippingOptionPriceType.FLAT_RATE}
+            name={"price_type"}
+            render={({ field: { value, onChange } }) => {
+              return isEdit ? (
+                <span>{value}</span>
+              ) : (
+                <RadioGroup.Root
+                  value={value}
+                  onValueChange={isEdit ? undefined : onChange}
+                  className={"flex items-center gap-base mb-xlarge"}
+                >
+                  <RadioGroup.Item
+                    value={ShippingOptionPriceType.FLAT_RATE}
+                    className="flex-1"
+                    label="Flat Rate"
+                    description={"Shipping rate is a fixed amount"}
+                  />
+                  <RadioGroup.Item
+                    value={ShippingOptionPriceType.CALCULATED}
+                    className="flex-1"
+                    label="Calculated"
+                    description={"Shipping rate is determined on runtime"}
+                  />
+                </RadioGroup.Root>
+              )
+            }}
+          />
+        </div>
         <div className="flex flex-col gap-y-2xsmall">
           <div className="flex items-center justify-between">
             <h3 className="inter-base-semibold mb-2xsmall">Visible in store</h3>
@@ -97,6 +144,9 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
                     }
                   />
                   <PriceFormInput
+                    disabled={
+                      watchPriceType === ShippingOptionPriceType.CALCULATED
+                    }
                     amount={value || undefined}
                     onChange={onChange}
                     name="amount"

@@ -10,6 +10,7 @@ type Props = {
   onChange: (amount?: number) => void
   errors?: { [x: string]: unknown }
   name?: string
+  disabled?: boolean
 }
 
 const PriceFormInput = ({
@@ -18,6 +19,7 @@ const PriceFormInput = ({
   errors,
   amount,
   onChange,
+  disabled,
 }: Props) => {
   const { symbol_native, decimal_digits } = currencies[
     currencyCode.toUpperCase()
@@ -67,6 +69,7 @@ const PriceFormInput = ({
           onValueChange={(value, _name, values) =>
             onAmountChange(value, values?.float)
           }
+          disabled={!!disabled}
           allowNegativeValue={false}
           placeholder="-"
           decimalScale={decimal_digits}

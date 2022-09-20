@@ -47,7 +47,7 @@ const CreateReturnShippingOptionModal = ({ open, onClose, region }: Props) => {
         name: data.name!,
         profile_id: data.shipping_profile?.value,
         data: fData,
-        price_type: "flat_rate",
+        price_type: data.price_type,
         provider_id,
         admin_only: !data.store_option,
         amount: data.amount!,
