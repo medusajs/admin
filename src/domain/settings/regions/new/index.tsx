@@ -31,6 +31,9 @@ const NewRegion = ({ onClose }: Props) => {
   const [sections, setSections] = useState(["details"])
   const form = useForm<NewRegionFormType>({
     defaultValues: {
+      details: {
+        countries: [],
+      },
       providers: {
         payment_providers: undefined,
         fulfillment_providers: undefined,
