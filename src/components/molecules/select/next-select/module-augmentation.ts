@@ -3,11 +3,10 @@ import { GroupBase } from "react-select"
 
 export type SelectSize = "sm" | "md"
 
-type SelectComponent = "control"
+type SelectComponent = "control" | "menu"
 
-type SelectComponentStyles = Record<
-  SelectComponent,
-  ComponentProps<"div">["className"]
+type SelectComponentStyles = Partial<
+  Record<SelectComponent, ComponentProps<"div">["className"]>
 >
 
 declare module "react-select/dist/declarations/src/Select" {

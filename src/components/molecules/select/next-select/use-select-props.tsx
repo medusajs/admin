@@ -17,6 +17,7 @@ export const useSelectProps = <
   size,
   options,
   onChange: changeFn,
+  styles,
   ...props
 }: Props<Option, IsMulti, Group>): Props<Option, IsMulti, Group> => {
   const [stateOptions, setStateOptions] = useState(options || [])
@@ -65,6 +66,7 @@ export const useSelectProps = <
     components: Components,
     styles: {
       menuPortal: (base) => ({ ...base, zIndex: 60 }),
+      ...styles,
     },
     isMulti,
     closeMenuOnScroll: true,
