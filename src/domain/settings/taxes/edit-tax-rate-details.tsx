@@ -46,7 +46,8 @@ export const EditTaxRateDetails = ({
         type="number"
         min={0}
         max={100}
-        step={1}
+        step={0.01}
+        formNoValidate
         label="Tax Rate"
         prefix="%"
         placeholder="12"
