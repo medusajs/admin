@@ -74,6 +74,7 @@ const ReturnShippingForm = ({ form, order }: Props) => {
         render={({ field: { value, onChange, onBlur } }) => {
           return (
             <NextSelect
+              placeholder="Choose shipping method"
               label="Shipping method"
               options={returnShippingOptions}
               value={value}

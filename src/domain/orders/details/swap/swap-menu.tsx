@@ -1,10 +1,8 @@
 import { Order } from "@medusajs/medusa"
 import { useAdminCreateSwap, useAdminOrder } from "medusa-react"
 import React, { useEffect } from "react"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
-import IconTooltip from "../../../../components/molecules/icon-tooltip"
-import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   useLayeredModal,
@@ -18,6 +16,9 @@ import ItemsToReturnForm, {
 import ReturnShippingForm, {
   ReturnShippingFormType,
 } from "../../components/return-shipping-form"
+import SendNotificationForm, {
+  SendNotificationFormType,
+} from "../../components/send-notification-form"
 
 type Props = {
   onClose: () => void
@@ -31,7 +32,7 @@ type AdditionalItem = {
 }
 
 type CreateSwapFormType = {
-  send_notifications: boolean
+  notification: SendNotificationFormType
   return_items: ItemsToReturnFormType
   additional_items: AdditionalItem[]
   return_shipping: ReturnShippingFormType
@@ -63,7 +64,7 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
           reason: ri.return_reason_details.reason?.value,
         })),
         additional_items: data.additional_items,
-        no_notification: !data.send_notifications,
+        no_notification: !data.notification.send_notification,
         return_shipping: {
           option_id: data.return_shipping.option!.value,
           price: data.return_shipping.price,
@@ -89,40 +90,20 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
           <h1 className="inter-xlarge-semibold">Register Exchange</h1>
         </Modal.Header>
         <Modal.Content>
-          <ItemsToReturnForm
-            form={nestedForm(form, "return_items")}
-            order={order}
-          />
-          <ReturnShippingForm
-            form={nestedForm(form, "return_shipping")}
-            order={order}
-          />
+          <div className="flex flex-col gap-y-xlarge">
+            <ItemsToReturnForm
+              form={nestedForm(form, "return_items")}
+              order={order}
+            />
+            <ReturnShippingForm
+              form={nestedForm(form, "return_shipping")}
+              order={order}
+            />
+          </div>
         </Modal.Content>
         <Modal.Footer>
           <div className="w-full flex items-center justify-between">
-            <Controller
-              control={control}
-              name="send_notifications"
-              render={({ field: { value, onChange } }) => {
-                return (
-                  <div className="flex items-center">
-                    <div className="mr-xsmall">
-                      <IndeterminateCheckbox
-                        checked={value}
-                        onChange={onChange}
-                      />
-                    </div>
-                    <p className="inter-small-semibold mr-1.5">
-                      Send notifications
-                    </p>
-                    <IconTooltip
-                      type="info"
-                      content="If unchecked the customer will not receive communication about this exchange."
-                    />
-                  </div>
-                )
-              }}
-            />
+            <SendNotificationForm form={nestedForm(form, "notification")} />
             <div className="flex items-center gap-x-xsmall">
               <Button
                 variant="secondary"
@@ -133,7 +114,7 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
                 Cancel
               </Button>
               <Button variant="primary" size="small" loading={isMutating}>
-                Submit
+                Submit and close
               </Button>
             </div>
           </div>
@@ -148,6 +129,10 @@ const getDefaultValues = (order: Order): CreateSwapFormType => {
     return_items: {
       items: order.items.map((item) => ({
         item_id: item.id,
+        thumbnail: item.thumbnail,
+        refundable: item.refundable,
+        product_title: item.variant.product.title,
+        variant_title: item.variant.title,
         quantity: item.quantity,
         return_reason_details: {
           note: undefined,
@@ -159,9 +144,10 @@ const getDefaultValues = (order: Order): CreateSwapFormType => {
     additional_items: [],
     return_shipping: {
       option: null,
-      price: undefined,
     },
-    send_notifications: true,
+    notification: {
+      send_notification: true,
+    },
   }
 }
 
