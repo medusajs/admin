@@ -1,7 +1,7 @@
 import { Region } from "@medusajs/medusa" //ShippingOptionPriceType.CALCULATED
 import clsx from "clsx"
 import React from "react"
-import { Controller, UseFormReturn } from "react-hook-form"
+import { Controller, UseFormReturn, useWatch } from "react-hook-form"
 import IncludesTaxTooltip from "../../../../../components/atoms/includes-tax-tooltip"
 import Switch from "../../../../../components/atoms/switch"
 import InputHeader from "../../../../../components/fundamentals/input-header"
@@ -49,7 +49,10 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
     formState: { errors },
   } = form
 
-  const watchPriceType = form.watch("price_type")
+  const watchPriceType = useWatch({
+    control,
+    name: "price_type",
+  })
 
   const {
     shippingProfileOptions,

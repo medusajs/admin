@@ -113,6 +113,7 @@ const getDefaultValues = (option: ShippingOption): ShippingOptionFormType => {
     name: option.name,
     fulfillment_provider: null,
     shipping_profile: null,
+    price_type: option.price_type,
     requirements: {
       min_subtotal: minSubtotal
         ? {
