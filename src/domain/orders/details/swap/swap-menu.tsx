@@ -9,10 +9,14 @@ import LayeredModal, {
 } from "../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import { isLineItemNotReturnable } from "../../../../utils/is-line-item"
 import { nestedForm } from "../../../../utils/nested-form"
 import ItemsToReturnForm, {
   ItemsToReturnFormType,
 } from "../../components/items-to-return-form"
+import ItemsToSendForm, {
+  ItemsToSendFormType,
+} from "../../components/items-to-send-form"
 import ReturnShippingForm, {
   ReturnShippingFormType,
 } from "../../components/return-shipping-form"
@@ -34,7 +38,7 @@ type AdditionalItem = {
 type CreateSwapFormType = {
   notification: SendNotificationFormType
   return_items: ItemsToReturnFormType
-  additional_items: AdditionalItem[]
+  additional_items: ItemsToSendFormType
   return_shipping: ReturnShippingFormType
 }
 
@@ -48,10 +52,11 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
   const form = useForm<CreateSwapFormType>({
     defaultValues: getDefaultValues(order),
   })
-  const { control, handleSubmit, reset } = form
+  const { handleSubmit, reset } = form
 
   useEffect(() => {
     reset(getDefaultValues(order))
+    context.reset()
   }, [open, order])
 
   const onSubmit = handleSubmit((data) => {
@@ -63,7 +68,10 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
           note: ri.return_reason_details.note,
           reason: ri.return_reason_details.reason?.value,
         })),
-        additional_items: data.additional_items,
+        additional_items: data.additional_items.items.map((ai) => ({
+          quantity: ai.quantity,
+          variant_id: ai.variant_id,
+        })),
         no_notification: !data.notification.send_notification,
         return_shipping: {
           option_id: data.return_shipping.option!.value,
@@ -99,6 +107,10 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
               form={nestedForm(form, "return_shipping")}
               order={order}
             />
+            <ItemsToSendForm
+              form={nestedForm(form, "additional_items")}
+              order={order}
+            />
           </div>
         </Modal.Content>
         <Modal.Footer>
@@ -125,23 +137,35 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
 }
 
 const getDefaultValues = (order: Order): CreateSwapFormType => {
+  const returnItems: CreateSwapFormType["return_items"] = {
+    items: [],
+  }
+
+  order.items.forEach((item) => {
+    if (isLineItemNotReturnable(item, order)) {
+      return // If item in not retunable either because it's already returned or the line item has been cancelled, we skip it.
+    }
+
+    returnItems.items.push({
+      item_id: item.id,
+      thumbnail: item.thumbnail,
+      refundable: item.refundable,
+      product_title: item.variant.product.title,
+      variant_title: item.variant.title,
+      quantity: item.quantity - item.returned_quantity,
+      return_reason_details: {
+        note: undefined,
+        reason: undefined,
+      },
+      return: false,
+    })
+  })
+
   return {
-    return_items: {
-      items: order.items.map((item) => ({
-        item_id: item.id,
-        thumbnail: item.thumbnail,
-        refundable: item.refundable,
-        product_title: item.variant.product.title,
-        variant_title: item.variant.title,
-        quantity: item.quantity,
-        return_reason_details: {
-          note: undefined,
-          reason: undefined,
-        },
-        return: false,
-      })),
+    return_items: returnItems,
+    additional_items: {
+      items: [],
     },
-    additional_items: [],
     return_shipping: {
       option: null,
     },

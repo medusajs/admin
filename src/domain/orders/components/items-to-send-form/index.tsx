@@ -1,65 +1,47 @@
 import { Order } from "@medusajs/medusa"
-import React, { useMemo } from "react"
+import React from "react"
 import { FieldArrayWithId, useFieldArray } from "react-hook-form"
-import { Option } from "../../../../types/shared"
+import Button from "../../../../components/fundamentals/button"
 import { NestedForm } from "../../../../utils/nested-form"
-import ReturnItemField from "./return-item"
+import useAddAdditionalItemsScreen from "../add-additional-items-screen"
+import AdditionalItem from "./additional-item"
 
-type ReturnReasonDetails = {
-  note?: string
-  reason?: Option
-}
-
-export type ReturnItem = {
-  item_id: string
+export type AdditionalItem = {
+  variant_id: string
   thumbnail?: string | null
   product_title: string
   variant_title: string
   quantity: number
-  refundable?: number | null
-  return_reason_details: ReturnReasonDetails
-  return: boolean
+  in_stock: number
 }
 
-export type ItemsToReturnFormType = {
-  items: ReturnItem[]
+export type ItemsToSendFormType = {
+  items: AdditionalItem[]
 }
 
-export type ReturnItemObject = FieldArrayWithId<
+export type AdditionalItemObject = FieldArrayWithId<
   {
-    __nested__: ItemsToReturnFormType
+    __nested__: ItemsToSendFormType
   },
   "__nested__.items",
   "fieldId"
-> & { index: number }
+>
 
 type Props = {
-  form: NestedForm<ItemsToReturnFormType>
+  form: NestedForm<ItemsToSendFormType>
   order: Order
 }
 
-const ItemsToReturnForm = ({ form, order }: Props) => {
+const ItemsToSendForm = ({ form, order }: Props) => {
   const { control, path } = form
 
-  const { fields } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: path("items"),
     keyName: "fieldId",
-    shouldUnregister: true,
   })
 
-  const fieldArray = useMemo(() => {
-    const arr: ReturnItemObject[] = []
-
-    fields.forEach((field, index) => {
-      arr.push({
-        ...field,
-        index,
-      })
-    })
-
-    return arr
-  }, [fields])
+  const { pushScreen } = useAddAdditionalItemsScreen()
 
   return (
     <div className="flex flex-col gap-y-base">
@@ -78,20 +60,36 @@ const ItemsToReturnForm = ({ form, order }: Props) => {
           <div className="min-w-[50px]" />
         </div>
         <div className="mt-2.5">
-          {fieldArray.map((field) => {
+          {fields.map((field, index) => {
             return (
-              <ReturnItemField
+              <AdditionalItem
                 form={form}
                 key={field.fieldId}
                 nestedItem={field}
                 order={order}
+                index={index}
               />
             )
           })}
         </div>
       </div>
+      <div className="flex w-full justify-end items-center">
+        <Button
+          variant="secondary"
+          size="small"
+          type="button"
+          onClick={() =>
+            pushScreen({
+              append: append,
+              selectedIds: fields.map((f) => f.variant_id),
+            })
+          }
+        >
+          Add product
+        </Button>
+      </div>
     </div>
   )
 }
 
-export default ItemsToReturnForm
+export default ItemsToSendForm
