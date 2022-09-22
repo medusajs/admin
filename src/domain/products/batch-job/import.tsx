@@ -136,14 +136,21 @@ function ImportProducts(props: ImportProductsProps) {
    * When file upload is removed, delete file from the bucket and cancel batch job.
    */
   const onFileRemove = async () => {
-    try {
-      if (fileKey) {
+    if (fileKey) {
+      try {
         deleteFile({ file_key: fileKey })
+      } catch (e) {
+        notification("Error", "Failed to delete the CSV file", "error")
       }
+    }
+
+    try {
       cancelBathJob()
     } catch (e) {
-      console.log(e)
+      notification("Error", "Failed to cancel the batch job", "error")
     }
+
+    setBatchJobId(undefined)
   }
 
   /**
