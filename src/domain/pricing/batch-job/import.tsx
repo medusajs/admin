@@ -121,7 +121,7 @@ function ImportPrices(props: ImportPricesProps) {
       return undefined
     }
 
-    const res = batchJob.result?.stat_descriptors![0].message.match(/\d+/g)
+    const res = batchJob.result?.stat_descriptors?.[0].message.match(/\d+/g)
 
     if (!res) {
       return undefined
