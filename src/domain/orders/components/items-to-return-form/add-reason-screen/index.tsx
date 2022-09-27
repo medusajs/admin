@@ -1,21 +1,26 @@
 import { useAdminReturnReasons } from "medusa-react"
-import React, { useMemo, useState } from "react"
-import { Controller } from "react-hook-form"
-import { ItemsToReturnFormType } from ".."
+import React, { useMemo } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { ReturnReasonDetails } from ".."
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import { useLayeredModal } from "../../../../../components/molecules/modal/layered-modal"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
 import TextArea from "../../../../../components/molecules/textarea"
-import { NestedForm } from "../../../../../utils/nested-form"
 
 type Props = {
-  form: NestedForm<ItemsToReturnFormType>
+  reasonDetails: ReturnReasonDetails
+  addReasonDetails: (index: number, details: ReturnReasonDetails) => void
   index: number
   isClaim?: boolean
 }
 
-const AddReasonScreen = ({ form, index, isClaim = false }: Props) => {
+const AddReasonScreen = ({
+  reasonDetails,
+  index,
+  isClaim = false,
+  addReasonDetails,
+}: Props) => {
   const { return_reasons } = useAdminReturnReasons()
   const returnReasonOptions = useMemo(() => {
     return (
@@ -26,20 +31,21 @@ const AddReasonScreen = ({ form, index, isClaim = false }: Props) => {
     )
   }, [return_reasons])
 
-  const { control, path, register, resetField, getValues } = form
-
-  const [originalValue] = useState(
-    getValues(path(`items.${index}.return_reason_details`))
-  )
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm<ReturnReasonDetails>({
+    defaultValues: reasonDetails,
+  })
 
   const { pop } = useLayeredModal()
 
-  const cancelAndPop = () => {
-    resetField(path(`items.${index}.return_reason_details`), {
-      defaultValue: originalValue,
-    })
+  const onSubmit = handleSubmit((data) => {
+    addReasonDetails(index, data)
     pop()
-  }
+  })
 
   return (
     <>
@@ -48,7 +54,7 @@ const AddReasonScreen = ({ form, index, isClaim = false }: Props) => {
           <h2 className="inter-base-semibold">Reason for Return</h2>
           <Controller
             control={control}
-            name={path(`items.${index}.return_reason_details.reason`)}
+            name="reason"
             render={({ field }) => {
               return (
                 <NextSelect
@@ -64,16 +70,22 @@ const AddReasonScreen = ({ form, index, isClaim = false }: Props) => {
           <TextArea
             label="Note"
             placeholder="Product was damaged during shipping"
-            {...register(path(`items.${index}.return_reason_details.note`))}
+            {...register("note")}
           />
         </div>
       </Modal.Content>
       <Modal.Footer>
         <div className="w-full flex items-center justify-end gap-x-xsmall">
-          <Button size="small" variant="secondary" onClick={cancelAndPop}>
+          <Button size="small" variant="secondary" onClick={pop} type="button">
             Cancel
           </Button>
-          <Button size="small" variant="primary" onClick={pop}>
+          <Button
+            size="small"
+            variant="primary"
+            onClick={onSubmit}
+            disabled={!isDirty}
+            type="button"
+          >
             Save and go back
           </Button>
         </div>

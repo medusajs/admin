@@ -7,6 +7,8 @@ import { ClaimTypeFormType } from "../../components/claim-type-form"
 import { ItemsToReturnFormType } from "../../components/items-to-return-form"
 import { ItemsToSendFormType } from "../../components/items-to-send-form"
 import { ReceiveNowFormType } from "../../components/receive-now-form"
+import { ReplacementShippingFormType } from "../../components/replacement-shipping-form"
+import { ReturnShippingFormType } from "../../components/return-shipping-form"
 import { SendNotificationFormType } from "../../components/send-notification-form"
 import { CreateClaimFormType } from "../claim/claim-menu"
 import { RequestReturnFormType } from "../returns/request-return-menu"
@@ -121,7 +123,16 @@ const getDefaultClaimTypeValues = (): ClaimTypeFormType => {
   }
 }
 
-const extractReturnableItems = (
+const getDefaultShippingValues = (): Subset<
+  ReplacementShippingFormType | ReturnShippingFormType
+> => {
+  return {
+    option: undefined,
+    price: undefined,
+  }
+}
+
+const getReturnableItemsValues = (
   order: Order,
   isClaim = false
 ): Subset<ItemsToReturnFormType> => {
@@ -129,20 +140,25 @@ const extractReturnableItems = (
     items: [],
   }
 
-  const returnableItems = getAllReturnableItems(order, false)
+  const returnableItems = getAllReturnableItems(order, isClaim)
 
   returnableItems.forEach((item) => {
     if (isLineItemNotReturnable(item, order)) {
       return // If item in not returnable either because it's already returned or the line item has been cancelled, we skip it.
     }
 
+    const returnableQuantity = item.quantity - item.returned_quantity
+
     returnItems.items.push({
       item_id: item.id,
       thumbnail: item.thumbnail,
-      refundable: item.refundable,
+      refundable: item.refundable
+        ? (item.refundable / item.quantity) * returnableQuantity
+        : 0,
       product_title: item.variant.product.title,
       variant_title: item.variant.title,
-      quantity: item.quantity - item.returned_quantity,
+      quantity: returnableQuantity,
+      original_quantity: returnableQuantity,
       return_reason_details: {
         note: undefined,
         reason: undefined,
@@ -158,9 +174,10 @@ export const getDefaultSwapValues = (
   order: Order
 ): Subset<CreateSwapFormType> => {
   return {
-    return_items: extractReturnableItems(order, false),
+    return_items: getReturnableItemsValues(order, false),
     additional_items: getDefaultAdditionalItemsValues(),
     notification: getDefaultSendNotificationValues(),
+    return_shipping: getDefaultShippingValues(),
   }
 }
 
@@ -168,9 +185,10 @@ export const getDefaultRequestReturnValues = (
   order: Order
 ): Subset<RequestReturnFormType> => {
   return {
-    return_items: extractReturnableItems(order, false),
+    return_items: getReturnableItemsValues(order, false),
     notification: getDefaultSendNotificationValues(),
     receive: getDefaultReceiveVaues(),
+    return_shipping: getDefaultShippingValues(),
   }
 }
 
@@ -181,7 +199,9 @@ export const getDefaultClaimValues = (
     claim_type: getDefaultClaimTypeValues(),
     additional_items: getDefaultAdditionalItemsValues(),
     notification: getDefaultSendNotificationValues(),
-    return_items: extractReturnableItems(order, true),
+    return_items: getReturnableItemsValues(order, true),
     shipping_address: getDefaultShippingAddressValues(order),
+    return_shipping: getDefaultShippingValues(),
+    replacement_shipping: getDefaultShippingValues(),
   }
 }

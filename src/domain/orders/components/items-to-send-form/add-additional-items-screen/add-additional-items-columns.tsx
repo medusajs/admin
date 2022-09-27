@@ -145,21 +145,21 @@ const useAddAdditionalItemsColumns = (order: Order) => {
         cell: ({
           getValue,
           row: {
-            original: { original_price },
+            original: { original_price_incl_tax },
           },
         }) => {
           const price = getValue()
 
           return (
             <div className="text-right">
-              {original_price !== price && (
+              {original_price_incl_tax !== price && (
                 <Tooltip
                   content="The price has been overridden in a price list, that is applicable to this order."
                   side="top"
                 >
                   <p className="text-grey-40 line-through cursor-default">
                     {formatAmountWithSymbol({
-                      amount: original_price || 0,
+                      amount: original_price_incl_tax || 0,
                       currency: order.currency_code,
                     })}
                   </p>

@@ -1,12 +1,13 @@
 import { Order } from "@medusajs/medusa"
 import React, { useMemo } from "react"
 import { FieldArrayWithId, useFieldArray, useWatch } from "react-hook-form"
+import InputError from "../../../../components/atoms/input-error"
 import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import { FormImage, Option } from "../../../../types/shared"
 import { NestedForm } from "../../../../utils/nested-form"
 import ReturnItemField from "./return-item"
 
-type ReturnReasonDetails = {
+export type ReturnReasonDetails = {
   note?: string
   reason?: Option
   images?: FormImage[]
@@ -18,6 +19,7 @@ export type ReturnItem = {
   product_title: string
   variant_title: string
   quantity: number
+  original_quantity: number
   refundable?: number | null
   return_reason_details: ReturnReasonDetails
   return: boolean
@@ -42,7 +44,11 @@ type Props = {
 }
 
 const ItemsToReturnForm = ({ form, order, isClaim = false }: Props) => {
-  const { control, path } = form
+  const {
+    control,
+    path,
+    formState: { errors },
+  } = form
 
   const { fields } = useFieldArray({
     control,
@@ -76,40 +82,43 @@ const ItemsToReturnForm = ({ form, order, isClaim = false }: Props) => {
   return (
     <div className="flex flex-col gap-y-base">
       <h2 className="inter-base-semibold">Items to return</h2>
-      <div>
-        <div className="flex items-center inter-small-semibold text-grey-50 border-t border-grey-20 h-10">
-          <div className="pl-base pr-large">
-            <IndeterminateCheckbox
-              checked={areAllSelected}
-              indeterminate={indeterminateAllSelected}
-              onChange={toggleSelectAllRows}
-            />
-          </div>
-          <div className="flex-1">
-            <p>Product</p>
-          </div>
-          <div className="ml-small mr-5xlarge">
-            <p className="text-right">Quantity</p>
-          </div>
-          <div className="mr-small">
-            <p className="text-right">Refundable</p>
-          </div>
-          <div className="min-w-[50px]" />
-        </div>
+      <div className="flex flex-col gap-y-small">
         <div>
-          {fields.map((field, index) => {
-            return (
-              <ReturnItemField
-                form={form}
-                key={field.fieldId}
-                nestedItem={field}
-                order={order}
-                index={index}
-                isClaim={isClaim}
+          <div className="flex items-center inter-small-semibold text-grey-50 border-t border-grey-20 h-10">
+            <div className="pl-base pr-large">
+              <IndeterminateCheckbox
+                checked={areAllSelected}
+                indeterminate={indeterminateAllSelected}
+                onChange={toggleSelectAllRows}
               />
-            )
-          })}
+            </div>
+            <div className="flex-1">
+              <p>Product</p>
+            </div>
+            <div className="ml-small mr-5xlarge">
+              <p className="text-right">Quantity</p>
+            </div>
+            <div className="mr-small">
+              <p className="text-right">Refundable</p>
+            </div>
+            <div className="min-w-[50px]" />
+          </div>
+          <div>
+            {fields.map((field, index) => {
+              return (
+                <ReturnItemField
+                  form={form}
+                  key={field.fieldId}
+                  nestedItem={field}
+                  order={order}
+                  index={index}
+                  isClaim={isClaim}
+                />
+              )
+            })}
+          </div>
         </div>
+        <InputError errors={errors} name="return_items" />
       </div>
     </div>
   )

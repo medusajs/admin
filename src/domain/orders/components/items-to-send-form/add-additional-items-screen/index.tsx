@@ -132,6 +132,8 @@ const AddAdditionalItemsScreen = ({
 
     remove(itemsToRemove)
 
+    console.log(selectedVariants, "selectedVariants")
+
     const toAppend: AdditionalItem[] = selectedVariants.map((variant) => ({
       variant_id: variant.id!,
       quantity: 1,

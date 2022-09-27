@@ -1,7 +1,7 @@
 import { Order } from "@medusajs/medusa"
 import React from "react"
 import { Controller, useWatch } from "react-hook-form"
-import { ItemsToReturnFormType, ReturnItemObject } from "."
+import { ItemsToReturnFormType, ReturnItemObject, ReturnReasonDetails } from "."
 import Thumbnail from "../../../../components/atoms/thumbnail"
 import Button from "../../../../components/fundamentals/button"
 import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
@@ -44,6 +44,15 @@ const ReturnItemField = ({
     control,
     name: path(`items.${index}.quantity`),
   })
+
+  const reasonDetails = useWatch({
+    control,
+    name: path(`items.${index}.return_reason_details`),
+  })
+
+  const addReasonDetails = (index: number, details: ReturnReasonDetails) => {
+    setValue(path(`items.${index}.return_reason_details`), details)
+  }
 
   const [disableDecrease, disableIncrease] = React.useMemo(() => {
     const isMinVal = selectedQuantity === 1
@@ -132,7 +141,9 @@ const ReturnItemField = ({
             variant="secondary"
             size="small"
             type="button"
-            onClick={() => pushScreen({ form, index, isClaim })}
+            onClick={() =>
+              pushScreen({ reasonDetails, index, isClaim, addReasonDetails })
+            }
           >
             Select reason
           </Button>

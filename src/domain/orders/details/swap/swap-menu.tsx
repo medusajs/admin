@@ -48,8 +48,27 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
 
   const form = useForm<CreateSwapFormType>({
     defaultValues: getDefaultSwapValues(order),
+    resolver: (values) => {
+      let errors: Record<string, unknown> = {}
+
+      if (!values.return_items.items.some((i) => i.return)) {
+        errors = {
+          ...errors,
+          return_items: {
+            type: "required",
+            message: "You must select at least one item to return",
+          },
+        }
+      }
+
+      return { values, errors }
+    },
   })
-  const { handleSubmit, reset } = form
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = form
 
   useEffect(() => {
     reset(getDefaultSwapValues(order))
@@ -98,14 +117,18 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
     name: "additional_items.items",
   })
 
-  const returnItemsTotal = watchedReturnItems
-    .filter((ri) => ri.return)
-    .reduce((acc, item) => {
-      const refundableAmount =
-        ((item.refundable || 0) / item.quantity) * item.quantity
+  const returnItemsTotal = useMemo(() => {
+    console.log("return items changed")
+    return watchedReturnItems
+      .filter((ri) => ri.return)
+      .reduce((acc, item) => {
+        const refundableAmount =
+          ((item.refundable || 0) / item.original_quantity) * item.quantity
 
-      return acc + refundableAmount
-    }, 0)
+        console.log(refundableAmount, item.quantity, item.refundable)
+        return acc + refundableAmount
+      }, 0)
+  }, [watchedReturnItems])
 
   const additionalItemsTotal = useMemo(() => {
     return watchedAdditionalItems.reduce((acc, item) => {
@@ -188,8 +211,8 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
                 {formatAmountWithSymbol({
                   currency: order.currency_code,
                   amount:
-                    additionalItemsTotal -
                     returnItemsTotal -
+                    additionalItemsTotal -
                     (watchedShippingPrice || 0),
                 })}
               </span>
@@ -215,6 +238,7 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
                 variant="primary"
                 size="small"
                 loading={isMutating}
+                disabled={!isDirty || isMutating}
                 onClick={onSubmit}
               >
                 Submit and close
