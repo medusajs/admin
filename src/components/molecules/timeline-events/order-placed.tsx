@@ -11,7 +11,7 @@ type OrderPlacedProps = {
 const OrderPlaced: React.FC<OrderPlacedProps> = ({ event }) => {
   const args = {
     icon: <CheckCircleIcon size={20} />,
-    iconColor: EventIconColor.GREEN,
+    // iconColor: EventIconColor.GREEN,
     time: event.time,
     title: "Order Placed",
     topNode: (

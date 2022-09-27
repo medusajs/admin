@@ -12,10 +12,12 @@ import {
   NoteEvent,
   NotificationEvent,
   OrderPlacedEvent,
+  OrderEditEvent,
   RefundEvent,
   ReturnEvent,
   TimelineEvent,
   useBuildTimelime,
+  OrderEditRequestedEvent,
 } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -32,6 +34,11 @@ import ItemsShipped from "../../molecules/timeline-events/items-shipped"
 import Note from "../../molecules/timeline-events/note"
 import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
+import EditCanceled from "../../molecules/timeline-events/order-edit/canceled"
+import EditConfirmed from "../../molecules/timeline-events/order-edit/confirmed"
+import EditCreated from "../../molecules/timeline-events/order-edit/created"
+import EditDeclined from "../../molecules/timeline-events/order-edit/declined"
+import EditRequested from "../../molecules/timeline-events/order-edit/requested"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Refund from "../../molecules/timeline-events/refund"
 import Return from "../../molecules/timeline-events/return"
@@ -158,6 +165,16 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
       return <Notification event={event as NotificationEvent} />
     case "refund":
       return <Refund event={event as RefundEvent} />
+    case "edit-created":
+      return <EditCreated event={event as OrderEditEvent} />
+    case "edit-canceled":
+      return <EditCanceled event={event as OrderEditEvent} />
+    case "edit-declined":
+      return <EditDeclined event={event as OrderEditEvent} />
+    case "edit-confirmed":
+      return <EditConfirmed event={event as OrderEditEvent} />
+    case "edit-requested":
+      return <EditRequested event={event as OrderEditRequestedEvent} />
     default:
       return null
   }

@@ -1,10 +1,11 @@
-import { Return, Swap } from "@medusajs/medusa"
+import { OrderEdit, Return, Swap } from "@medusajs/medusa"
 import {
   useAdminNotes,
   useAdminNotifications,
   useAdminOrder,
 } from "medusa-react"
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
+import { FeatureFlagContext } from "../context/feature-flag"
 
 export interface TimelineEvent {
   id: string
@@ -22,11 +23,24 @@ export interface TimelineEvent {
     | "fulfilled"
     | "canceled"
     | "return"
+    | "refund"
     | "exchange"
     | "exchange_fulfilled"
     | "notification"
     | "claim"
-    | "refund"
+    | "edit-created"
+    | "edit-requested"
+    | "edit-declined"
+    | "edit-canceled"
+    | "edit-confirmed"
+}
+
+export interface OrderEditEvent extends TimelineEvent {
+  edit: OrderEdit
+}
+
+export interface OrderEditRequestedEvent extends TimelineEvent {
+  email: string
 }
 
 interface CancelableEvent {
@@ -140,6 +154,8 @@ export const useBuildTimelime = (orderId: string) => {
   } = useAdminNotifications({ resource_id: orderId })
 
   const events: TimelineEvent[] | undefined = useMemo(() => {
+    const { isFeatureEnabled } = useContext(FeatureFlagContext)
+
     if (!order) {
       return undefined
     }
@@ -159,6 +175,62 @@ export const useBuildTimelime = (orderId: string) => {
     }
 
     const events: TimelineEvent[] = []
+
+    if (isFeatureEnabled("order_editing")) {
+      console.log(order.edits)
+      for (const edit of order.edits || []) {
+        events.push({
+          id: edit.id,
+          time: edit.created_at,
+          orderId: order.id,
+          type: "edit-created",
+          edit: edit,
+        } as OrderEditEvent)
+
+        if (edit.requested_at) {
+          events.push({
+            id: edit.id,
+            time: edit.requested_at,
+            orderId: order.id,
+            type: "edit-requested",
+            email: order.email,
+          } as OrderEditRequestedEvent)
+        }
+
+        // // declined
+        if (edit.declined_at) {
+          events.push({
+            id: edit.id,
+            time: edit.declined_at,
+            orderId: order.id,
+            type: "edit-declined",
+            edit: edit,
+          } as OrderEditEvent)
+        }
+
+        // // canceled
+        if (edit.canceled_at) {
+          events.push({
+            id: edit.id,
+            time: edit.canceled_at,
+            orderId: order.id,
+            type: "edit-canceled",
+            edit: edit,
+          } as OrderEditEvent)
+        }
+
+        //confirmed
+        if (edit.confirmed_at) {
+          events.push({
+            id: edit.id,
+            time: edit.confirmed_at,
+            orderId: order.id,
+            type: "edit-confirmed",
+            edit: edit,
+          } as OrderEditEvent)
+        }
+      }
+    }
 
     events.push({
       id: `${order.id}-placed`,

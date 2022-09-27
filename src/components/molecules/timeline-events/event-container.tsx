@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import moment from "moment"
 import React, { useState } from "react"
 import Tooltip from "../../atoms/tooltip"
 import BellOffIcon from "../../fundamentals/icons/bell-off-icon"
@@ -18,7 +19,7 @@ type EventContainerProps = {
   title: string
   time: Date
   noNotification?: boolean
-  topNode?: React.ReactNode
+  // topNode?: React.ReactNode
   midNode?: React.ReactNode
   isFirst?: boolean
   expandable?: boolean
@@ -28,7 +29,7 @@ const EventContainer: React.FC<EventContainerProps> = ({
   icon,
   iconColor = EventIconColor.DEFAULT,
   title,
-  topNode,
+  // topNode,
   midNode,
   time,
   noNotification = false,
@@ -48,6 +49,7 @@ const EventContainer: React.FC<EventContainerProps> = ({
         <div className="flex items-center gap-x-xsmall">
           <div className={clsx("h-5 w-5", iconColor)}>{icon}</div>
           <div className="inter-small-semibold">{title}</div>
+          <div className="inter-small-regular text-grey-50"></div>
         </div>
         <div className="flex items-center gap-x-xsmall">
           {noNotification && (
@@ -55,7 +57,11 @@ const EventContainer: React.FC<EventContainerProps> = ({
               <BellOffIcon size={20} className="text-grey-40" />
             </Tooltip>
           )}
-          {topNode}
+          <Tooltip content={new Date(time).toUTCString()}>
+            <div className="text-grey-50 inter-small-regular">
+              {moment(time).fromNow()}
+            </div>
+          </Tooltip>
           {expandable && (
             <button onClick={toggleExpand}>
               {isExpanded ? (
@@ -69,13 +75,10 @@ const EventContainer: React.FC<EventContainerProps> = ({
       </div>
       <div className="flex gap-x-xsmall">
         <div className="w-5 flex justify-center pt-base">
-          {!isFirst && <div className="w-px bg-grey-20 min-h-[24px]" />}
+          {!isFirst && <div className="w-px bg-grey-20 min-h-[12px]" />}
         </div>
         <div className="mt-2xsmall w-full inter-small-regular">
-          <div className="flex items-center justify-between">
-            <div className="text-grey-50">{new Date(time).toUTCString()}</div>
-            {midNode}
-          </div>
+          <div className="flex items-center justify-between">{midNode}</div>
           {children && isExpanded && (
             <div className="mt-small w-full pb-base">{children}</div>
           )}

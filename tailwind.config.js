@@ -170,6 +170,7 @@ module.exports = {
         soft: "2px",
         base: "4px",
         rounded: "8px",
+        large: "16px",
         circle: "9999px",
       },
       spacing: {
