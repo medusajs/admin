@@ -1,13 +1,15 @@
 import { Order } from "@medusajs/medusa"
 import React, { useMemo } from "react"
-import { FieldArrayWithId, useFieldArray } from "react-hook-form"
-import { Option } from "../../../../types/shared"
+import { FieldArrayWithId, useFieldArray, useWatch } from "react-hook-form"
+import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
+import { FormImage, Option } from "../../../../types/shared"
 import { NestedForm } from "../../../../utils/nested-form"
 import ReturnItemField from "./return-item"
 
 type ReturnReasonDetails = {
   note?: string
   reason?: Option
+  images?: FormImage[]
 }
 
 export type ReturnItem = {
@@ -31,14 +33,15 @@ export type ReturnItemObject = FieldArrayWithId<
   },
   "__nested__.items",
   "fieldId"
-> & { index: number }
+>
 
 type Props = {
   form: NestedForm<ItemsToReturnFormType>
   order: Order
+  isClaim?: boolean
 }
 
-const ItemsToReturnForm = ({ form, order }: Props) => {
+const ItemsToReturnForm = ({ form, order, isClaim = false }: Props) => {
   const { control, path } = form
 
   const { fields } = useFieldArray({
@@ -48,24 +51,40 @@ const ItemsToReturnForm = ({ form, order }: Props) => {
     shouldUnregister: true,
   })
 
-  const fieldArray = useMemo(() => {
-    const arr: ReturnItemObject[] = []
+  const watchedReturnItems = useWatch({
+    control,
+    name: path("items"),
+  })
 
-    fields.forEach((field, index) => {
-      arr.push({
-        ...field,
-        index,
-      })
+  const areAllSelected = useMemo(() => {
+    return watchedReturnItems.every((item) => item.return)
+  }, [watchedReturnItems])
+
+  const indeterminateAllSelected = useMemo(() => {
+    return (
+      watchedReturnItems.some((item) => item.return) &&
+      !watchedReturnItems.every((item) => item.return)
+    )
+  }, [watchedReturnItems])
+
+  const toggleSelectAllRows = () => {
+    fields.forEach((_item, index) => {
+      form.setValue(path(`items.${index}.return`), !areAllSelected)
     })
-
-    return arr
-  }, [fields])
+  }
 
   return (
     <div className="flex flex-col gap-y-base">
       <h2 className="inter-base-semibold">Items to return</h2>
       <div>
-        <div className="flex items-center inter-small-semibold text-grey-50">
+        <div className="flex items-center inter-small-semibold text-grey-50 border-t border-grey-20 h-10">
+          <div className="pl-base pr-large">
+            <IndeterminateCheckbox
+              checked={areAllSelected}
+              indeterminate={indeterminateAllSelected}
+              onChange={toggleSelectAllRows}
+            />
+          </div>
           <div className="flex-1">
             <p>Product</p>
           </div>
@@ -77,14 +96,16 @@ const ItemsToReturnForm = ({ form, order }: Props) => {
           </div>
           <div className="min-w-[50px]" />
         </div>
-        <div className="mt-2.5">
-          {fieldArray.map((field) => {
+        <div>
+          {fields.map((field, index) => {
             return (
               <ReturnItemField
                 form={form}
                 key={field.fieldId}
                 nestedItem={field}
                 order={order}
+                index={index}
+                isClaim={isClaim}
               />
             )
           })}

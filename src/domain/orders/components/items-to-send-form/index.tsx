@@ -1,18 +1,24 @@
 import { Order } from "@medusajs/medusa"
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import clsx from "clsx"
 import React from "react"
 import { FieldArrayWithId, useFieldArray } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import { NestedForm } from "../../../../utils/nested-form"
-import useAddAdditionalItemsScreen from "../add-additional-items-screen"
-import AdditionalItem from "./additional-item"
+import useAddAdditionalItemsScreen from "./add-additional-items-screen"
+import AdditionalItemsTable from "./additional-items-table"
+import useAdditionalItemsColumns from "./use-additional-items-columns"
 
 export type AdditionalItem = {
   variant_id: string
   thumbnail?: string | null
   product_title: string
+  sku?: string
   variant_title: string
   quantity: number
   in_stock: number
+  price: number
+  original_price: number
 }
 
 export type ItemsToSendFormType = {
@@ -35,44 +41,38 @@ type Props = {
 const ItemsToSendForm = ({ form, order }: Props) => {
   const { control, path } = form
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, replace, append, remove } = useFieldArray({
     control,
     name: path("items"),
     keyName: "fieldId",
   })
 
+  const columns = useAdditionalItemsColumns({
+    orderCurrency: order.currency_code,
+    form,
+    removeItem: remove,
+  })
+
+  const tableInstance = useReactTable<AdditionalItemObject>({
+    data: fields,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  })
+
   const { pushScreen } = useAddAdditionalItemsScreen()
 
   return (
-    <div className="flex flex-col gap-y-base">
-      <h2 className="inter-base-semibold">Items to return</h2>
-      <div>
-        <div className="flex items-center inter-small-semibold text-grey-50">
-          <div className="flex-1">
-            <p>Product</p>
-          </div>
-          <div className="ml-small mr-5xlarge">
-            <p className="text-right">Quantity</p>
-          </div>
-          <div className="mr-small">
-            <p className="text-right">Refundable</p>
-          </div>
-          <div className="min-w-[50px]" />
-        </div>
-        <div className="mt-2.5">
-          {fields.map((field, index) => {
-            return (
-              <AdditionalItem
-                form={form}
-                key={field.fieldId}
-                nestedItem={field}
-                order={order}
-                index={index}
-              />
-            )
-          })}
-        </div>
+    <div
+      className={clsx({
+        "flex flex-col gap-y-base": fields.length > 0,
+        "flex items-center justify-between": !fields.length,
+      })}
+    >
+      <div className="flex w-full items-center">
+        <h2 className="inter-base-semibold">Items to send</h2>
       </div>
+      {fields.length > 0 && <AdditionalItemsTable instance={tableInstance} />}
+
       <div className="flex w-full justify-end items-center">
         <Button
           variant="secondary"
@@ -80,12 +80,14 @@ const ItemsToSendForm = ({ form, order }: Props) => {
           type="button"
           onClick={() =>
             pushScreen({
-              append: append,
+              append,
+              remove,
               selectedIds: fields.map((f) => f.variant_id),
+              order,
             })
           }
         >
-          Add product
+          Add products
         </Button>
       </div>
     </div>

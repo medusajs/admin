@@ -1,6 +1,6 @@
 import { Order } from "@medusajs/medusa"
 import { useAdminShippingOptions } from "medusa-react"
-import React, { useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 import { Controller, useWatch } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
@@ -9,17 +9,17 @@ import { Option } from "../../../types/shared"
 import { NestedForm } from "../../../utils/nested-form"
 import PriceFormInput from "../../products/components/prices-form/price-form-input"
 
-export type ReturnShippingFormType = {
+export type ReplacementShippingFormType = {
   option: Option | null
   price?: number
 }
 
 type Props = {
-  form: NestedForm<ReturnShippingFormType>
+  form: NestedForm<ReplacementShippingFormType>
   order: Order
 }
 
-const ReturnShippingForm = ({ form, order }: Props) => {
+const ReplacementShippingForm = ({ form, order }: Props) => {
   const {
     control,
     path,
@@ -29,7 +29,7 @@ const ReturnShippingForm = ({ form, order }: Props) => {
 
   const { shipping_options: returnOptions } = useAdminShippingOptions({
     region_id: order.region_id,
-    is_return: true,
+    is_return: false,
   })
 
   const returnShippingOptions = useMemo(() => {
@@ -41,23 +41,16 @@ const ReturnShippingForm = ({ form, order }: Props) => {
     )
   }, [returnOptions])
 
+  const changeDefaultPrice = (option: Option | null) => {
+    const price = returnOptions?.find((o) => o.id === option?.value)?.amount
+
+    setValue(path("price"), price || undefined)
+  }
+
   const selectedReturnOption = useWatch({
     control,
     name: path("option"),
   })
-
-  useEffect(() => {
-    if (!selectedReturnOption) {
-      setValue(path("price"), undefined)
-      return
-    }
-
-    const price = returnOptions?.find(
-      (o) => o.id === selectedReturnOption.value
-    )?.amount
-
-    setValue(path("price"), price || undefined)
-  }, [selectedReturnOption])
 
   const selectedReturnOptionPrice = useWatch({
     control,
@@ -80,7 +73,13 @@ const ReturnShippingForm = ({ form, order }: Props) => {
 
   return (
     <div className="flex flex-col gap-y-base">
-      <h2 className="inter-base-semibold">Shipping for return items</h2>
+      <div className="flex flex-col">
+        <h2 className="inter-base-semibold">Shipping for replacement items</h2>
+        <p className="text-grey-50 inter-small-regular">
+          Shipping replacement items is free by default. Add a custom price, if
+          this is not the case.
+        </p>
+      </div>
       <Controller
         control={control}
         name={path("option")}
@@ -145,4 +144,4 @@ const ReturnShippingForm = ({ form, order }: Props) => {
   )
 }
 
-export default ReturnShippingForm
+export default ReplacementShippingForm

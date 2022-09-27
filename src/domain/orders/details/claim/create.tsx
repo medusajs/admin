@@ -30,7 +30,7 @@ import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import RMAEditAddressSubModal from "../rma-sub-modals/address"
 import RMASelectProductSubModal from "../rma-sub-modals/products"
-import { filterItems } from "../utils/create-filtering"
+import { getAllReturnableItems } from "../utils/create-filtering"
 
 type ClaimMenuProps = {
   order: Omit<Order, "beforeInsert">
@@ -143,7 +143,7 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
 
   useEffect(() => {
     if (order) {
-      setAllItems(filterItems(order, true))
+      setAllItems(getAllReturnableItems(order, true))
     }
   }, [order])
 

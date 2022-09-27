@@ -1,8 +1,8 @@
 import clsx from "clsx"
 import { useAdminCreateNote, useAdminOrder } from "medusa-react"
-import React, { useState } from "react"
-import ClaimMenu from "../../../domain/orders/details/claim/create"
-import ReturnMenu from "../../../domain/orders/details/returns"
+import React from "react"
+import ClaimMenu from "../../../domain/orders/details/claim/claim-menu"
+import RequestReturnMenu from "../../../domain/orders/details/returns/request-return-menu"
 import SwapMenu from "../../../domain/orders/details/swap/swap-menu"
 import {
   ClaimEvent,
@@ -46,9 +46,12 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   const notification = useNotification()
   const createNote = useAdminCreateNote()
   const { order } = useAdminOrder(orderId)
-  const [showRequestReturn, setShowRequestReturn] = useState(false)
-  const [showCreateSwap, setshowCreateSwap] = useState(false)
-  const [showCreateClaim, setshowCreateClaim] = useState(false)
+
+  const {
+    state: requestReturnState,
+    toggle: toggleRequestReturn,
+    close: closeRequestReturn,
+  } = useToggleState()
 
   const {
     state: swapState,
@@ -56,11 +59,17 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
     close: closeSwap,
   } = useToggleState()
 
+  const {
+    state: claimState,
+    toggle: toggleClaim,
+    close: closeClaim,
+  } = useToggleState()
+
   const actions: ActionType[] = [
     {
       icon: <BackIcon size={20} />,
       label: "Request Return",
-      onClick: () => setShowRequestReturn(true),
+      onClick: toggleRequestReturn,
     },
     {
       icon: <RefreshIcon size={20} />,
@@ -70,7 +79,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
     {
       icon: <AlertIcon size={20} />,
       label: "Register Claim",
-      onClick: () => setshowCreateClaim(true),
+      onClick: toggleClaim,
     },
   ]
 
@@ -127,15 +136,16 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
           )}
         </div>
       </div>
-      {showRequestReturn && order && (
-        <ReturnMenu
-          order={order}
-          onDismiss={() => setShowRequestReturn(false)}
-        />
-      )}
-      {order && <SwapMenu order={order} onClose={closeSwap} open={swapState} />}
-      {showCreateClaim && order && (
-        <ClaimMenu order={order} onDismiss={() => setshowCreateClaim(false)} />
+      {order && (
+        <>
+          <RequestReturnMenu
+            order={order}
+            open={requestReturnState}
+            onClose={closeRequestReturn}
+          />
+          <SwapMenu order={order} onClose={closeSwap} open={swapState} />
+          <ClaimMenu order={order} open={claimState} onClose={closeClaim} />
+        </>
       )}
     </>
   )

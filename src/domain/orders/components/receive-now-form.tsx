@@ -4,38 +4,31 @@ import IconTooltip from "../../../components/molecules/icon-tooltip"
 import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
 import { NestedForm } from "../../../utils/nested-form"
 
-export type SendNotificationFormType = {
-  send_notification: boolean
+export type ReceiveNowFormType = {
+  receive_now: boolean
 }
 
 type Props = {
-  form: NestedForm<SendNotificationFormType>
-  type: "return" | "swap" | "claim"
+  form: NestedForm<ReceiveNowFormType>
 }
 
-const SendNotificationForm = ({ form, type }: Props) => {
+const ReceiveNowForm = ({ form }: Props) => {
   const { control, path } = form
-
-  const subject = {
-    return: "return",
-    swap: "exchange",
-    claim: "claim",
-  }[type]
 
   return (
     <Controller
       control={control}
-      name={path("send_notification")}
+      name={path("receive_now")}
       render={({ field: { value, onChange } }) => {
         return (
           <div className="flex items-center">
             <div className="mr-xsmall">
               <IndeterminateCheckbox checked={value} onChange={onChange} />
             </div>
-            <p className="inter-small-semibold mr-1.5">Send notifications</p>
+            <p className="inter-small-semibold mr-1.5">Receive now</p>
             <IconTooltip
               type="info"
-              content={`If unchecked the customer will not receive communication about this ${subject}.`}
+              content="If checked the return will be received immediately."
             />
           </div>
         )
@@ -44,4 +37,4 @@ const SendNotificationForm = ({ form, type }: Props) => {
   )
 }
 
-export default SendNotificationForm
+export default ReceiveNowForm

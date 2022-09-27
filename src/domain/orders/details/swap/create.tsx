@@ -27,7 +27,7 @@ import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 import RMASelectProductSubModal from "../rma-sub-modals/products"
-import { filterItems } from "../utils/create-filtering"
+import { getAllReturnableItems } from "../utils/create-filtering"
 
 type SwapMenuProps = {
   order: Omit<Order, "beforeInsert">
@@ -68,7 +68,7 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
   // Includes both order items and swap items
   const allItems = useMemo(() => {
     if (order) {
-      return filterItems(order, false)
+      return getAllReturnableItems(order, false)
     }
     return []
   }, [order])

@@ -12,11 +12,11 @@ const Thumbnail = ({ src, className, size = "small" }: Props) => {
   return (
     <div
       className={clsx(
-        "bg-grey-5 flex items-center justify-center overflow-hidden",
+        "bg-grey-5 flex items-center justify-center overflow-hidden rounded-rounded",
         {
-          "w-[30px] h-10 rounded-base": size === "small",
-          "w-9 h-12 rounded-rounded": size === "medium",
-          "w-[170px] h-[226px] rounded-rounded": size === "large",
+          "w-[30px] h-10": size === "small",
+          "w-9 h-12": size === "medium",
+          "w-[170px] h-[226px]": size === "large",
         },
         className
       )}

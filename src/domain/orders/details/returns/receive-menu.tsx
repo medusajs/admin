@@ -64,8 +64,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
       }
     }
 
-    const withAdjustedQuantity = allItems
-      .filter((i) => idLookUp.includes(i.id))
+    const withAdjustedQuantity = allItems.filter((i) => idLookUp.includes(i.id))
 
     return withAdjustedQuantity
   }, [order, returnRequest])
@@ -78,13 +77,16 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
       if (item && item.quantity - item.returned_quantity > 0) {
         returns[i.item_id] = {
           ...item,
-          quantity: returnRequest.items.find((i) => i.item_id === item.id)?.quantity
+          quantity: returnRequest.items.find((i) => i.item_id === item.id)
+            ?.quantity,
         }
       }
     })
 
     setToReturn(returns)
   }, [allItems])
+
+  console.log(returnRequest)
 
   const shippingTaxRate = useMemo(() => {
     return returnRequest.shipping_method.tax_lines.reduce((acc, curr) => {
@@ -113,8 +115,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
 
     const shippingTotal =
       (returnRequest.shipping_method &&
-        returnRequest.shipping_method.price *
-          (1 + shippingTaxRate / 100)) ||
+        returnRequest.shipping_method.price * (1 + shippingTaxRate / 100)) ||
       0
 
     const total = itemTotal - shippingTotal

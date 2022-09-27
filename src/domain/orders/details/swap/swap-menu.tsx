@@ -1,16 +1,17 @@
 import { Order } from "@medusajs/medusa"
 import { useAdminCreateSwap, useAdminOrder } from "medusa-react"
-import React, { useEffect } from "react"
-import { useForm } from "react-hook-form"
+import React, { useEffect, useMemo } from "react"
+import { useForm, useWatch } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   useLayeredModal,
 } from "../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
-import { isLineItemNotReturnable } from "../../../../utils/is-line-item"
 import { nestedForm } from "../../../../utils/nested-form"
+import { formatAmountWithSymbol } from "../../../../utils/prices"
 import ItemsToReturnForm, {
   ItemsToReturnFormType,
 } from "../../components/items-to-return-form"
@@ -23,6 +24,7 @@ import ReturnShippingForm, {
 import SendNotificationForm, {
   SendNotificationFormType,
 } from "../../components/send-notification-form"
+import { getDefaultSwapValues } from "../utils/get-default-values"
 
 type Props = {
   onClose: () => void
@@ -30,12 +32,7 @@ type Props = {
   order: Order
 }
 
-type AdditionalItem = {
-  quantity: number
-  variant_id: string
-}
-
-type CreateSwapFormType = {
+export type CreateSwapFormType = {
   notification: SendNotificationFormType
   return_items: ItemsToReturnFormType
   additional_items: ItemsToSendFormType
@@ -50,12 +47,12 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
   const { mutate, isLoading: isMutating } = useAdminCreateSwap(order.id)
 
   const form = useForm<CreateSwapFormType>({
-    defaultValues: getDefaultValues(order),
+    defaultValues: getDefaultSwapValues(order),
   })
   const { handleSubmit, reset } = form
 
   useEffect(() => {
-    reset(getDefaultValues(order))
+    reset(getDefaultSwapValues(order))
     context.reset()
   }, [open, order])
 
@@ -66,7 +63,7 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
           item_id: ri.item_id,
           quantity: ri.quantity,
           note: ri.return_reason_details.note,
-          reason: ri.return_reason_details.reason?.value,
+          reason_id: ri.return_reason_details.reason?.value,
         })),
         additional_items: data.additional_items.items.map((ai) => ({
           quantity: ai.quantity,
@@ -91,6 +88,36 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
     )
   })
 
+  const watchedReturnItems = useWatch({
+    control: form.control,
+    name: "return_items.items",
+  })
+
+  const watchedAdditionalItems = useWatch({
+    control: form.control,
+    name: "additional_items.items",
+  })
+
+  const returnItemsTotal = watchedReturnItems
+    .filter((ri) => ri.return)
+    .reduce((acc, item) => {
+      const refundableAmount =
+        ((item.refundable || 0) / item.quantity) * item.quantity
+
+      return acc + refundableAmount
+    }, 0)
+
+  const additionalItemsTotal = useMemo(() => {
+    return watchedAdditionalItems.reduce((acc, item) => {
+      return acc + item.quantity * item.price
+    }, 0)
+  }, [watchedAdditionalItems])
+
+  const watchedShippingPrice = useWatch({
+    control: form.control,
+    name: "return_shipping.price",
+  })
+
   return (
     <LayeredModal context={context} open={open} handleClose={onClose}>
       <Modal.Body>
@@ -112,10 +139,69 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
               order={order}
             />
           </div>
+          <div className="mt-xlarge">
+            <div className="flex text-grey-90 justify-between items-center inter-small-regular">
+              <span>Return total</span>
+              <span>
+                {formatAmountWithSymbol({
+                  currency: order.currency_code,
+                  amount: returnItemsTotal,
+                })}
+              </span>
+            </div>
+            <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-xsmall">
+              <span>Additional total</span>
+              <span>
+                {formatAmountWithSymbol({
+                  currency: order.currency_code,
+                  amount: additionalItemsTotal,
+                })}
+              </span>
+            </div>
+            <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-xsmall">
+              <div className="flex items-center gap-x-xsmall">
+                <p>
+                  Return shipping{" "}
+                  <span className="text-grey-50">(excl. tax)</span>
+                </p>
+                <IconTooltip
+                  size={16}
+                  content={
+                    "Note that applicable taxes will be added at checkout."
+                  }
+                />
+              </div>
+              <p>
+                {formatAmountWithSymbol({
+                  currency: order.currency_code,
+                  amount: watchedShippingPrice || 0,
+                })}
+              </p>
+            </div>
+            <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-xsmall">
+              <span>Outbond shipping</span>
+              <span>Calculated at checkout</span>
+            </div>
+            <div className="flex justify-between items-center inter-base-semibold mt-base">
+              <span>Estimated difference</span>
+              <span className="inter-large-semibold">
+                {formatAmountWithSymbol({
+                  currency: order.currency_code,
+                  amount:
+                    additionalItemsTotal -
+                    returnItemsTotal -
+                    (watchedShippingPrice || 0),
+                })}
+              </span>
+            </div>
+          </div>
         </Modal.Content>
         <Modal.Footer>
           <div className="w-full flex items-center justify-between">
-            <SendNotificationForm form={nestedForm(form, "notification")} />
+            <SendNotificationForm
+              form={nestedForm(form, "notification")}
+              type="swap"
+            />
             <div className="flex items-center gap-x-xsmall">
               <Button
                 variant="secondary"
@@ -125,7 +211,12 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
               >
                 Cancel
               </Button>
-              <Button variant="primary" size="small" loading={isMutating}>
+              <Button
+                variant="primary"
+                size="small"
+                loading={isMutating}
+                onClick={onSubmit}
+              >
                 Submit and close
               </Button>
             </div>
@@ -134,45 +225,6 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
       </Modal.Body>
     </LayeredModal>
   )
-}
-
-const getDefaultValues = (order: Order): CreateSwapFormType => {
-  const returnItems: CreateSwapFormType["return_items"] = {
-    items: [],
-  }
-
-  order.items.forEach((item) => {
-    if (isLineItemNotReturnable(item, order)) {
-      return // If item in not retunable either because it's already returned or the line item has been cancelled, we skip it.
-    }
-
-    returnItems.items.push({
-      item_id: item.id,
-      thumbnail: item.thumbnail,
-      refundable: item.refundable,
-      product_title: item.variant.product.title,
-      variant_title: item.variant.title,
-      quantity: item.quantity - item.returned_quantity,
-      return_reason_details: {
-        note: undefined,
-        reason: undefined,
-      },
-      return: false,
-    })
-  })
-
-  return {
-    return_items: returnItems,
-    additional_items: {
-      items: [],
-    },
-    return_shipping: {
-      option: null,
-    },
-    notification: {
-      send_notification: true,
-    },
-  }
 }
 
 export default SwapMenu

@@ -133,7 +133,7 @@ const SimpleItem: React.FC<RadioGroupSimpleItemProps> = ({
           )}
         />
       </RadioGroupPrimitive.Item>
-      <div className="ml-small inter-base-regular cursor-pointer w-full">
+      <div className="inter-base-regular cursor-pointer w-full">
         <span className="ml-small inter-base-regular cursor-pointer">
           {label && label}
         </span>
