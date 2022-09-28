@@ -192,6 +192,8 @@ export const getDefaultRequestReturnValues = (
   }
 }
 
+export const getDefaultReceiveReturnValues = (): Subset<> => {}
+
 export const getDefaultClaimValues = (
   order: Order
 ): Subset<CreateClaimFormType> => {
