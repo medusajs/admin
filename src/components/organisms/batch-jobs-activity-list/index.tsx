@@ -50,6 +50,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
 
   const operation = {
     "product-import": BatchJobOperation.Import,
+    "price-list-import": BatchJobOperation.Import,
     "product-export": BatchJobOperation.Export,
   }[batchJob.type]
 
