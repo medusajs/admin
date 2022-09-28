@@ -7,7 +7,7 @@ import {
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import CreateFulfillmentModal from "../../../domain/orders/details/create-fulfillment"
-import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
+import ReceiveReturnMenu from "../../../domain/orders/details/returns/receive-return-menu"
 import { ExchangeEvent } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
@@ -259,12 +259,13 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
           successText="Return cancelled"
         />
       )}
-      {showReceiveReturn && order && (
-        <ReceiveMenu
+      {order && (
+        <ReceiveReturnMenu
+          open={showReceiveReturn}
           order={order}
           returnRequest={event.raw.return_order}
-          onReceiveSwap={handleReceiveReturn}
-          onDismiss={() => setShowReceiveReturn(false)}
+          onReceive={handleReceiveReturn}
+          onClose={() => setShowReceiveReturn(false)}
         />
       )}
       {showCreateFulfillment && (

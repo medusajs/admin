@@ -227,6 +227,7 @@ export const useBuildTimelime = (orderId: string) => {
     }
 
     for (const event of order.returns) {
+      console.log("return event raw", event)
       events.push({
         id: event.id,
         items: event.items.map((i) => getReturnItems(allItems, i)),
@@ -236,7 +237,7 @@ export const useBuildTimelime = (orderId: string) => {
         type: "return",
         noNotification: event.no_notification,
         orderId: order.id,
-        raw: (event as unknown) as Return,
+        raw: event,
         refunded: getWasRefundClaim(event.claim_order_id, order),
       } as ReturnEvent)
 

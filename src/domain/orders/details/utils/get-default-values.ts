@@ -1,9 +1,10 @@
-import { ClaimItem, LineItem, Order } from "@medusajs/medusa"
+import { ClaimItem, LineItem, Order, Return } from "@medusajs/medusa"
 import { AddressPayload } from "../../../../components/templates/address-form"
 import { Subset } from "../../../../types/shared"
 import { isoAlpha2Countries } from "../../../../utils/countries"
 import { isLineItemNotReturnable } from "../../../../utils/is-line-item"
 import { ClaimTypeFormType } from "../../components/claim-type-form"
+import { ItemsToReceiveFormType } from "../../components/items-to-receive-form"
 import { ItemsToReturnFormType } from "../../components/items-to-return-form"
 import { ItemsToSendFormType } from "../../components/items-to-send-form"
 import { ReceiveNowFormType } from "../../components/receive-now-form"
@@ -11,6 +12,7 @@ import { ReplacementShippingFormType } from "../../components/replacement-shippi
 import { ReturnShippingFormType } from "../../components/return-shipping-form"
 import { SendNotificationFormType } from "../../components/send-notification-form"
 import { CreateClaimFormType } from "../claim/claim-menu"
+import { ReceiveReturnFormType } from "../returns/receive-return-menu"
 import { RequestReturnFormType } from "../returns/request-return-menu"
 import { CreateSwapFormType } from "../swap/swap-menu"
 
@@ -170,6 +172,42 @@ const getReturnableItemsValues = (
   return returnItems
 }
 
+const getReceiveableItemsValues = (
+  order: Order,
+  returnRequest: Return
+): Subset<ItemsToReceiveFormType> => {
+  const returnableItems = getReturnableItemsValues(order, false)
+  const idLookup = returnRequest.items.map((i) => i.item_id)
+
+  const returnItems = {
+    items: returnableItems?.items?.reduce((acc, item) => {
+      if (!item) {
+        return acc
+      }
+
+      const indexOfRequestedItem = returnRequest.items.findIndex(
+        (i) => i.item_id === item.item_id
+      )
+
+      if (item?.item_id && indexOfRequestedItem > -1) {
+        const requestedItem = returnRequest.items[indexOfRequestedItem]
+
+        const adjustedQuantity =
+          requestedItem.requested_quantity - requestedItem.received_quantity
+
+        acc.push({
+          ...item,
+          quantity: adjustedQuantity,
+          original_quantity: adjustedQuantity,
+        })
+      }
+      return acc
+    }, [] as Subset<ItemsToReceiveFormType["items"]>),
+  }
+
+  return returnItems
+}
+
 export const getDefaultSwapValues = (
   order: Order
 ): Subset<CreateSwapFormType> => {
@@ -192,7 +230,14 @@ export const getDefaultRequestReturnValues = (
   }
 }
 
-export const getDefaultReceiveReturnValues = (): Subset<> => {}
+export const getDefaultReceiveReturnValues = (
+  order: Order,
+  returnRequest: Return
+): Subset<ReceiveReturnFormType> => {
+  return {
+    receive_items: getReceiveableItemsValues(order, returnRequest),
+  }
+}
 
 export const getDefaultClaimValues = (
   order: Order

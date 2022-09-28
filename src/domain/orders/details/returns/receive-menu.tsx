@@ -86,8 +86,6 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
     setToReturn(returns)
   }, [allItems])
 
-  console.log(returnRequest)
-
   const shippingTaxRate = useMemo(() => {
     return returnRequest.shipping_method.tax_lines.reduce((acc, curr) => {
       return acc + curr.rate

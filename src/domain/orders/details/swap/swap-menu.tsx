@@ -120,7 +120,6 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
   })
 
   const returnItemsTotal = useMemo(() => {
-    console.log("return items changed")
     return watchedReturnItems
       .filter((ri) => ri.return)
       .reduce((acc, item) => {
@@ -166,22 +165,22 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
           </div>
           <div className="mt-xlarge">
             <div className="flex text-grey-90 justify-between items-center inter-small-regular">
-              <span>Return total</span>
-              <span>
+              <p>Return total</p>
+              <p>
                 {formatAmountWithSymbol({
                   currency: order.currency_code,
                   amount: returnItemsTotal,
                 })}
-              </span>
+              </p>
             </div>
             <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-xsmall">
-              <span>Additional total</span>
-              <span>
+              <p>Additional total</p>
+              <p>
                 {formatAmountWithSymbol({
                   currency: order.currency_code,
                   amount: additionalItemsTotal,
                 })}
-              </span>
+              </p>
             </div>
             <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-xsmall">
               <div className="flex items-center gap-x-xsmall">
@@ -204,12 +203,12 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
               </p>
             </div>
             <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-xsmall">
-              <span>Outbond shipping</span>
-              <span>Calculated at checkout</span>
+              <p>Outbond shipping</p>
+              <p>Calculated at checkout</p>
             </div>
             <div className="flex justify-between items-center inter-base-semibold mt-base">
-              <span>Estimated difference</span>
-              <span className="inter-large-semibold">
+              <p>Estimated difference</p>
+              <p className="inter-large-semibold">
                 {formatAmountWithSymbol({
                   currency: order.currency_code,
                   amount:
@@ -217,7 +216,7 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
                     additionalItemsTotal -
                     (watchedShippingPrice || 0),
                 })}
-              </span>
+              </p>
             </div>
           </div>
         </Modal.Content>
