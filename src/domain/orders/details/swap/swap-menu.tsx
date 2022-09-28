@@ -76,9 +76,11 @@ const SwapMenu = ({ order, onClose, open }: Props) => {
   }, [open, order])
 
   const onSubmit = handleSubmit((data) => {
+    const itemsToReturn = data.return_items.items.filter((ri) => ri.return)
+
     mutate(
       {
-        return_items: data.return_items.items.map((ri) => ({
+        return_items: itemsToReturn.map((ri) => ({
           item_id: ri.item_id,
           quantity: ri.quantity,
           note: ri.return_reason_details.note,
