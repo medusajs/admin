@@ -88,9 +88,7 @@ const GeneralForm = ({ form, requireHandle = true }: Props) => {
         placeholder="A warm and cozy jacket..."
         rows={3}
         className="mb-small"
-        {...register(path("description"), {
-          pattern: FormValidator.whiteSpaceRule("Description"),
-        })}
+        {...register(path("description"))}
         errors={errors}
       />
       <p className="inter-base-regular text-grey-50">
