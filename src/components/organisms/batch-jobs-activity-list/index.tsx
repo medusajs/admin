@@ -50,6 +50,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
 
   const operation = {
     "product-import": BatchJobOperation.Import,
+    "price-list-import": BatchJobOperation.Import,
     "product-export": BatchJobOperation.Export,
   }[batchJob.type]
 
@@ -122,24 +123,29 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
   const getBatchJobFileCard = () => {
     const twentyfourHoursInMs = 24 * 60 * 60 * 1000
 
-    const iconColor =
-      Math.abs(relativeTimeElapsed.raw) > twentyfourHoursInMs
-        ? "#9CA3AF"
-        : undefined
-
     const icon =
       batchJob.status !== "completed" && batchJob.status !== "canceled" ? (
         <Spinner size={"medium"} variant={"secondary"} />
       ) : (
-        <FileIcon fill={iconColor} size={20} />
+        <FileIcon
+          className={clsx({
+            "text-grey-40":
+              Math.abs(relativeTimeElapsed.raw) > twentyfourHoursInMs,
+          })}
+          size={20}
+        />
       )
 
-    const fileSize =
-      batchJob.status !== "canceled"
-        ? batchJob.result?.file_key
-          ? bytesConverter(batchJob.result?.file_size ?? 0)
-          : `Preparing ${operation.toLowerCase()}...`
-        : undefined
+    const fileSize = batchJob.result?.file_key
+      ? bytesConverter(batchJob.result?.file_size ?? 0)
+      : {
+          confirmed: `Preparing ${operation.toLowerCase()}...`,
+          preprocessing: `Preparing ${operation.toLowerCase()}...`,
+          processing: `Processing ${operation.toLowerCase()}...`,
+          completed: `Successful ${operation.toLowerCase()}`,
+          failed: `Failed batch ${operation.toLowerCase()} job`,
+          canceled: `Canceled batch ${operation.toLowerCase()} job`,
+        }[batchJob.status]
 
     return (
       <BatchJobFileCard

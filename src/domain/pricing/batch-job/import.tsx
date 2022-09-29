@@ -37,16 +37,17 @@ function useImportBatchJob(batchJobId?: string) {
 /**
  * Import products container interface.
  */
-type ImportProductsProps = {
+type ImportPricesProps = {
+  priceListId: string
   handleClose: () => void
 }
 
 /**
  * Product import modal container.
  */
-function ImportProducts(props: ImportProductsProps) {
-  const [fileKey, setFileKey] = useState()
-  const [batchJobId, setBatchJobId] = useState()
+function ImportPrices(props: ImportPricesProps) {
+  const [fileKey, setFileKey] = useState<string | undefined>()
+  const [batchJobId, setBatchJobId] = useState<string | undefined>()
 
   const notification = useNotification()
 
@@ -64,7 +65,7 @@ function ImportProducts(props: ImportProductsProps) {
   const hasError = batchJob?.status === "failed"
 
   const progress = isPreprocessed
-    ? batchJob!.result.advancement_count / batchJob!.result.count
+    ? (batchJob!.result?.advancement_count || 0) / (batchJob!.result?.count || 1)
     : undefined
 
   const status = hasError
@@ -94,13 +95,13 @@ function ImportProducts(props: ImportProductsProps) {
   const processUpload = async (file: File) => {
     try {
       const res = await uploadFile(file as any)
-      const _fileKey = res.uploads[0].key
+      const _fileKey = res.uploads![0].key
       setFileKey(_fileKey)
 
       const batchJob = await createBatchJob({
         dry_run: true,
-        context: { fileKey: _fileKey },
-        type: "product-import",
+        context: { fileKey: _fileKey, price_list_id: props.priceListId },
+        type: "price-list-import",
       })
 
       setBatchJobId(batchJob.batch_job.id)
@@ -115,12 +116,12 @@ function ImportProducts(props: ImportProductsProps) {
   /**
    * Returns create/update counts from stat descriptor.
    */
-  const getSummary = () => {
+  const getSummary = (): { toCreate: number } | undefined => {
     if (!batchJob) {
       return undefined
     }
 
-    const res = batchJob.result?.stat_descriptors[0].message.match(/\d+/g)
+    const res = batchJob.result?.stat_descriptors?.[0].message.match(/\d+/g)
 
     if (!res) {
       return undefined
@@ -128,7 +129,6 @@ function ImportProducts(props: ImportProductsProps) {
 
     return {
       toCreate: Number(res[0]),
-      toUpdate: Number(res[1]),
     }
   }
 
@@ -136,21 +136,14 @@ function ImportProducts(props: ImportProductsProps) {
    * When file upload is removed, delete file from the bucket and cancel batch job.
    */
   const onFileRemove = async () => {
-    if (fileKey) {
-      try {
-        deleteFile({ file_key: fileKey })
-      } catch (e) {
-        notification("Error", "Failed to delete the CSV file", "error")
-      }
-    }
-
     try {
+      if (fileKey) {
+        deleteFile({ file_key: fileKey })
+      }
       cancelBathJob()
     } catch (e) {
-      notification("Error", "Failed to cancel the batch job", "error")
+      console.log(e)
     }
-
-    setBatchJobId(undefined)
   }
 
   /**
@@ -160,7 +153,7 @@ function ImportProducts(props: ImportProductsProps) {
     props.handleClose()
     if (
       !["confirmed", "completed", "canceled", "failed"].includes(
-        batchJob?.status
+        batchJob?.status || ""
       )
     ) {
       if (fileKey) {
@@ -174,7 +167,11 @@ function ImportProducts(props: ImportProductsProps) {
 
   return (
     <UploadModal
-      type="products"
+      type="prices"
+      fileTitle="Price List prices"
+      description1Text="Upload a CSV file with variants and prices to update your price list. Note that any existing prices will be deleted."
+      description2Title="Unsure about how to arrange your list?"
+      description2Text="Download the template file below and update your prices"
       status={status}
       progress={progress}
       canImport={isPreprocessed}
@@ -183,13 +180,10 @@ function ImportProducts(props: ImportProductsProps) {
       summary={getSummary()}
       onFileRemove={onFileRemove}
       processUpload={processUpload}
-      fileTitle={"products list"}
-      templateLink="/temp/product-import-template.csv"
-      description2Title="Unsure about how to arrange your list?"
-      description2Text="Download the template below to ensure you are following the correct format."
-      description1Text="Through imports you can add or update products. To update existing products/variants you must set an existing id in the Product/Variant id columns. If the value is unset a new record will be created. You will be asked for confirmation before we import products."
+      templateLink="/temp/price-list-import-template.csv"
     />
   )
 }
 
-export default ImportProducts
+export default ImportPrices
+

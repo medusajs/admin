@@ -2,7 +2,7 @@ import {
   AdminPostDiscountsDiscountReq,
   AdminPostDiscountsReq,
   AdminUpsertCondition,
-  Discount
+  Discount,
 } from "@medusajs/medusa"
 import { FieldValues } from "react-hook-form"
 import { Option } from "../../../../../types/shared"
@@ -14,6 +14,7 @@ export interface DiscountFormValues extends FieldValues {
     value: number
     description: string
     type: DiscountRuleType
+    allocation: AllocationType
   }
   starts_at?: Date
   ends_at?: Date | null
@@ -40,6 +41,7 @@ export const discountToFormValuesMapper = (
       value: discount.rule.value,
       description: discount.rule.description,
       type: discount.rule.type,
+      allocation: discount.rule.allocation,
     },
     starts_at: discount.starts_at && new Date(discount.starts_at),
     ends_at: discount.ends_at && new Date(discount.ends_at),
@@ -77,8 +79,8 @@ export const formValuesToCreateDiscountMapper = (
     code: values.code!,
     rule: {
       allocation:
-        values.rule.type === "fixed"
-          ? AllocationType.ITEM
+        values.rule.type === DiscountRuleType.FIXED
+          ? values.rule.allocation
           : AllocationType.TOTAL,
       type: values.rule.type,
       value: values.rule.type !== "free_shipping" ? values.rule.value : 0,
@@ -89,7 +91,10 @@ export const formValuesToCreateDiscountMapper = (
     ends_at: values.ends_at ?? undefined,
     regions: values.regions?.map((r) => r.value),
     starts_at: values.starts_at,
-    usage_limit: values.usage_limit && values.usage_limit > 0 ? values.usage_limit : undefined,
+    usage_limit:
+      values.usage_limit && values.usage_limit > 0
+        ? values.usage_limit
+        : undefined,
     valid_duration:
       values.is_dynamic && values.valid_duration?.length
         ? values.valid_duration

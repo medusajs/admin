@@ -1,4 +1,4 @@
-import { TaxRate } from "@medusajs/medusa"
+import { AdminPostTaxRatesTaxRateReq, TaxRate } from "@medusajs/medusa"
 import { useAdminUpdateRegion, useAdminUpdateTaxRate } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -53,8 +53,15 @@ const EditTaxRate = ({
   const { register, setValue, handleSubmit, watch } = form
   const notification = useNotification()
 
-  const onSave = (data) => {
-    const toSubmit = data
+  const onSave = handleSubmit((data) => {
+    const toSubmit: AdminPostTaxRatesTaxRateReq = {
+      name: data.details.name,
+      code: data.details.code,
+      rate: data.details.rate,
+      product_types: data.product_types,
+      products: data.products,
+      shipping_options: data.shipping_options,
+    }
     const conditionalFields = ["products", "product_types", "shipping_options"]
 
     for (const [key, value] of Object.entries(updatedRules)) {
@@ -72,7 +79,7 @@ const EditTaxRate = ({
         notification("Error", getErrorMessage(error), "error")
       },
     })
-  }
+  })
 
   useEffect(() => {
     register("products")
@@ -107,7 +114,7 @@ const EditTaxRate = ({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSave)}>
+    <form onSubmit={onSave}>
       <Modal.Content>
         <div className="mb-xlarge">
           <EditTaxRateDetails form={nestedForm(form, "details")} />
