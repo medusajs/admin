@@ -20,7 +20,7 @@ const EditCanceled: React.FC<EditCanceledProps> = ({ event }) => {
       time={event.time}
       isFirst={event.first}
       midNode={<ByLine user={user} />}
-    ></EventContainer>
+    />
   )
 }
 

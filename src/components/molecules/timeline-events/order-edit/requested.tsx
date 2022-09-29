@@ -17,7 +17,7 @@ const EditRequested: React.FC<RequestedProps> = ({ event }) => {
       midNode={
         <span className="inter-small-regular text-grey-50">{event.email}</span>
       }
-    ></EventContainer>
+    />
   )
 }
 

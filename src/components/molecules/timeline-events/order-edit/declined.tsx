@@ -19,7 +19,7 @@ const EditDeclined: React.FC<EditDeclinedProps> = ({ event }) => {
       time={event.time}
       isFirst={event.first}
       midNode={<ByLine user={customer} />}
-    ></EventContainer>
+    />
   )
 }
 

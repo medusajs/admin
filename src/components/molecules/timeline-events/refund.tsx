@@ -14,10 +14,12 @@ const Refund: React.FC<RefundEventProps> = ({ event }) => {
     icon: <RefundIcon size={20} />,
     title: "Refund",
     time: event.time,
-    // topNode: ,
     midNode: (
       <span className="text-grey-50 inter-small-regular">
-        {getAmount(event)}
+        {formatAmountWithSymbol({
+          amount: event.amount,
+          currency: event.currencyCode,
+        })}
       </span>
     ),
     children: (
@@ -37,15 +39,6 @@ const Refund: React.FC<RefundEventProps> = ({ event }) => {
   }
 
   return <EventContainer {...args} />
-}
-
-function getAmount(event: RefundEvent) {
-  const formattedAmount = formatAmountWithSymbol({
-    amount: event.amount,
-    currency: event.currencyCode,
-  })
-
-  return formattedAmount
 }
 
 export default Refund

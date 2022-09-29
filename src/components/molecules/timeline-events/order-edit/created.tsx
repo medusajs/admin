@@ -19,8 +19,6 @@ type EditCreatedProps = {
   event: OrderEditEvent
 }
 
-// useAdminRequestOrderEditConfirmation,
-
 const getInfo = (edit: OrderEdit): { type: string; user_id: string } => {
   if (edit.requested_at && edit.requested_by) {
     return {
@@ -87,8 +85,6 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
       },
     })
   }
-
-  console.log()
 
   return (
     <>

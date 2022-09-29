@@ -29,7 +29,7 @@ const EditConfirmed: React.FC<ConfirmedProps> = ({ event }) => {
       time={event.time}
       isFirst={event.first}
       midNode={<ByLine user={user} />}
-    ></EventContainer>
+    />
   )
 }
 

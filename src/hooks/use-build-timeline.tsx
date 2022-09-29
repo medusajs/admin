@@ -177,7 +177,6 @@ export const useBuildTimelime = (orderId: string) => {
     const events: TimelineEvent[] = []
 
     if (isFeatureEnabled("order_editing")) {
-      console.log(order.edits)
       for (const edit of order.edits || []) {
         events.push({
           id: edit.id,
