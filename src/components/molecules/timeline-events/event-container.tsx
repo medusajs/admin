@@ -75,7 +75,7 @@ const EventContainer: React.FC<EventContainerProps> = ({
       </div>
       <div className="flex gap-x-xsmall">
         <div className="w-5 flex justify-center pt-base">
-          {!isFirst && <div className="w-px bg-grey-20 min-h-[12px]" />}
+          {!isFirst && <div className="w-px min-h-[24px]" />}
         </div>
         <div className="mt-2xsmall w-full inter-small-regular">
           <div className="flex items-center justify-between">{midNode}</div>
@@ -87,5 +87,20 @@ const EventContainer: React.FC<EventContainerProps> = ({
     </div>
   )
 }
+
+// {/* <div className="flex gap-x-xsmall"> */}
+//       {/* <div className="w-5 flex justify-center pt-base">
+//           {!isFirst && <div className="w-px min-h-[24px]" />}
+//         </div> */}
+//         <div
+//         className={clsx("mt-2xsmall w-full pl-7 inter-small-regular", {
+//           "min-h-[24px]": !isFirst,
+//         })}
+//       >
+//         <div className="flex items-center justify-between">{midNode}</div>
+//         {children && isExpanded && (
+//           <div className="mt-small w-full pb-base">{children}</div>
+//         )}
+//         {/* </div> */}
 
 export default EventContainer
