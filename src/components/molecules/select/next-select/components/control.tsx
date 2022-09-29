@@ -24,8 +24,7 @@ const Control = <
   isDisabled,
   isFocused,
   menuIsOpen,
-  selectProps: { size },
-  clearValue,
+  selectProps: { size, customStyles },
 }: ControlProps<Option, IsMulti, Group>) => {
   return (
     <div
@@ -44,11 +43,19 @@ const Control = <
             "h-xlarge": size === "sm",
             "h-10": size === "md" || !size,
           },
-          className
+          className,
+          customStyles?.control
         )
       )}
     >
-      {children}
+      <div
+        className={clsx(
+          "flex items-center flex-1",
+          customStyles?.inner_control
+        )}
+      >
+        {children}
+      </div>
     </div>
   )
 }

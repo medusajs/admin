@@ -31,7 +31,7 @@ const SingleValue = <
         )
       )}
     >
-      <div className="flex items-center gap-x-xsmall">
+      <div className="flex items-center gap-x-xsmall inter-base-regular">
         {prefix && <span className="inter-base-semibold">{prefix}</span>}
         {children}
       </div>
