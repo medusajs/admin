@@ -7,6 +7,27 @@ import LayeredModal, {
 import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import OrderEditLine from "../details/order-line/edit"
+import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+
+function AddProductVariant() {
+  const { pop } = React.useContext(LayeredModalContext)
+
+  return (
+    <>
+      <Modal.Content>TODO</Modal.Content>
+      <Modal.Footer>
+        <div className="flex justify-end w-full space-x-xsmall">
+          <Button variant="secondary" size="small" onClick={pop}>
+            Back
+          </Button>
+          <Button variant="primary" size="small" onClick={console.log}>
+            Save and go back
+          </Button>
+        </div>
+      </Modal.Footer>
+    </>
+  )
+}
 
 type OrderEditModalProps = {
   orderId: string
@@ -40,6 +61,12 @@ function OrderEditModal(props: OrderEditModalProps) {
     close()
   }
 
+  const addroductVariantScreen = {
+    title: "Add Variant",
+    onBack: layeredModalContext.pop,
+    view: <AddProductVariant />,
+  }
+
   return (
     <LayeredModal
       open
@@ -52,6 +79,15 @@ function OrderEditModal(props: OrderEditModalProps) {
           <h1 className="inter-xlarge-semibold">Edit Order</h1>
         </Modal.Header>
         <Modal.Content>
+          <Button
+            size="small"
+            variant="ghost"
+            className="border border-grey-20"
+            onClick={() => layeredModalContext.push(addroductVariantScreen)}
+          >
+            <PlusIcon size={20} /> Add Channels
+          </Button>
+
           {order?.items.map((oi) => (
             <OrderEditLine
               item={oi}
