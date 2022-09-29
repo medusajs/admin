@@ -1,5 +1,5 @@
-import React from "react"
 import clsx from "clsx"
+import React from "react"
 import { Controller, useWatch } from "react-hook-form"
 import RadioGroup from "../../../../../components/organisms/radio-group"
 import { DiscountRuleType } from "../../../types"
@@ -18,7 +18,7 @@ const DiscountType = () => {
       name="rule.type"
       control={control}
       rules={{ required: true }}
-      render={({ field: { onChange, value } }) => {
+      render={({ field: { onChange, value } }) => {
         return (
           <RadioGroup.Root
             value={value}
