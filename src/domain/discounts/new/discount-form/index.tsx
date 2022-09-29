@@ -1,17 +1,20 @@
 import { Discount } from "@medusajs/medusa"
 import { navigate } from "gatsby"
 import * as React from "react"
+import { useWatch } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../../components/molecules/modal/focus-modal"
 import Accordion from "../../../../components/organisms/accordion"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import { DiscountRuleType } from "../../types"
 import { useDiscountForm } from "./form/discount-form-context"
 import { DiscountFormValues } from "./form/mappers"
 import { useFormActions } from "./form/use-form-actions"
 import Conditions from "./sections/conditions"
 import Configuration from "./sections/configuration"
+import DiscountAllocation from "./sections/discount-allocation"
 import DiscountType from "./sections/discount-type"
 import General from "./sections/general"
 
@@ -29,7 +32,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   isEdit = false,
 }) => {
   const notification = useNotification()
-  const { handleSubmit, handleReset } = useDiscountForm()
+  const { handleSubmit, handleReset, control } = useDiscountForm()
 
   const { onSaveAsActive, onSaveAsInactive } = useFormActions()
 
@@ -68,6 +71,11 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     }
   }
 
+  const discountType = useWatch({
+    control,
+    name: "rule.type",
+  })
+
   return (
     <FocusModal>
       <FocusModal.Header>
@@ -102,7 +110,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
       </FocusModal.Header>
       <FocusModal.Main>
         <div className="flex justify-center mb-[25%]">
-          <div className="medium:w-7/12 large:w-6/12 small:w-4/5 w-full pt-16">
+          <div className="max-w-[700px] w-full pt-16">
             <h1 className="inter-xlarge-semibold">
               {isEdit ? "Edit discount" : "Create new discount"}
             </h1>
@@ -119,6 +127,14 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="promotion-type"
               >
                 <DiscountType />
+                {discountType === DiscountRuleType.FIXED && (
+                  <div className="mt-xlarge">
+                    <h3 className="inter-base-semibold">
+                      Allocation<span className="text-rose-50">*</span>
+                    </h3>
+                    <DiscountAllocation />
+                  </div>
+                )}
               </Accordion.Item>
               <Accordion.Item
                 title="General"

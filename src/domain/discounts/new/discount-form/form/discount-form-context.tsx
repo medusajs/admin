@@ -1,9 +1,12 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import {
+  AllocationType,
   ConditionMap,
   DiscountConditionOperator,
-  DiscountConditionType, DiscountRuleType, UpdateConditionProps
+  DiscountConditionType,
+  DiscountRuleType,
+  UpdateConditionProps,
 } from "../../../types"
 import { DiscountFormValues } from "./mappers"
 
@@ -70,8 +73,9 @@ export const DiscountFormProvider = ({
   const methods = useForm<DiscountFormValues>({
     defaultValues: {
       rule: {
-        type: DiscountRuleType.PERCENTAGE
-      }
+        type: DiscountRuleType.PERCENTAGE,
+        allocation: AllocationType.TOTAL,
+      },
     },
     shouldUnregister: true,
   })
@@ -147,8 +151,9 @@ export const DiscountFormProvider = ({
     setConditions(defaultConditions)
     methods.reset({
       rule: {
-        type: DiscountRuleType.PERCENTAGE
-      }
+        type: DiscountRuleType.PERCENTAGE,
+        allocation: AllocationType.TOTAL,
+      },
     })
   }
 
