@@ -48,7 +48,14 @@ const Control = <
         )
       )}
     >
-      {children}
+      <div
+        className={clsx(
+          "flex items-center flex-1",
+          customStyles?.inner_control
+        )}
+      >
+        {children}
+      </div>
     </div>
   )
 }

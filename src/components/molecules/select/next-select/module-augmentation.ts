@@ -3,7 +3,7 @@ import { GroupBase } from "react-select"
 
 export type SelectSize = "sm" | "md"
 
-type SelectComponent = "control" | "menu"
+type SelectComponent = "control" | "inner_control" | "menu"
 
 type SelectComponentStyles = Partial<
   Record<SelectComponent, ComponentProps<"div">["className"]>

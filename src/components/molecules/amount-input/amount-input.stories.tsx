@@ -9,7 +9,7 @@ export default {
 
 const Template: ComponentStory<typeof AmountInput> = (props) => {
   return (
-    <div>
+    <div className="w-[280px]">
       <AmountInput {...props} />
     </div>
   )
@@ -18,4 +18,11 @@ const Template: ComponentStory<typeof AmountInput> = (props) => {
 export const Default = Template.bind({})
 Default.args = {
   label: "Price",
+  value: {
+    amount: 100,
+    currency: {
+      label: "USD",
+      value: "USD",
+    },
+  },
 }
