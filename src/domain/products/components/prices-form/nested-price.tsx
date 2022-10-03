@@ -47,7 +47,7 @@ const NestedPrice = ({ form, nestedPrice }: Props) => {
             <span className="inter-base-regular text-grey-50">
               {currencies[currencyPrice.currency_code.toUpperCase()].name}
             </span>
-            <IncludesTaxTooltip />
+            <IncludesTaxTooltip includesTax={currencyPrice?.includes_tax}/>
           </div>
         </div>
         <Controller
