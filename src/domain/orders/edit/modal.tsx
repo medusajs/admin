@@ -8,13 +8,22 @@ import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import OrderEditLine from "../details/order-line/edit"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import VariantsTable from "./variants-table"
+import SearchIcon from "../../../components/fundamentals/icons/search-icon"
 
+/**
+ * Add product variant modal screen
+ */
 function AddProductVariant() {
   const { pop } = React.useContext(LayeredModalContext)
 
   return (
     <>
-      <Modal.Content>TODO</Modal.Content>
+      <Modal.Content>
+        <div className="min-h-[680px] flex flex-col justify-between">
+          <VariantsTable selectedItems={[]} onSubmit={console.log} />
+        </div>
+      </Modal.Content>
       <Modal.Footer>
         <div className="flex justify-end w-full space-x-xsmall">
           <Button variant="secondary" size="small" onClick={pop}>
@@ -61,8 +70,8 @@ function OrderEditModal(props: OrderEditModalProps) {
     close()
   }
 
-  const addroductVariantScreen = {
-    title: "Add Variant",
+  const addProductVariantScreen = {
+    title: "Add Product Variants",
     onBack: layeredModalContext.pop,
     view: <AddProductVariant />,
   }
@@ -79,14 +88,24 @@ function OrderEditModal(props: OrderEditModalProps) {
           <h1 className="inter-xlarge-semibold">Edit Order</h1>
         </Modal.Header>
         <Modal.Content>
-          <Button
-            size="small"
-            variant="ghost"
-            className="border border-grey-20"
-            onClick={() => layeredModalContext.push(addroductVariantScreen)}
-          >
-            <PlusIcon size={20} /> Add Channels
-          </Button>
+          <div className="flex justify-between mb-6">
+            <span className="text-gray-900 font-semibold">Items</span>
+            <div className="flex gap-2 items-center">
+              <Button
+                size="small"
+                variant="ghost"
+                className="border border-grey-20 text-gray-900"
+                onClick={() =>
+                  layeredModalContext.push(addProductVariantScreen)
+                }
+              >
+                Add items
+              </Button>
+              <Button variant="secondary" size="small" className="h-full">
+                <SearchIcon size={18} className="text-gray-500" />
+              </Button>
+            </div>
+          </div>
 
           {order?.items.map((oi) => (
             <OrderEditLine

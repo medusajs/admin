@@ -1,8 +1,10 @@
 import clsx from "clsx"
 import React, { ChangeEvent, useImperativeHandle } from "react"
+
 import CheckIcon from "../../fundamentals/icons/check-icon"
 
 type IndeterminateCheckboxProps = {
+  type?: "checkbox" | "radio"
   onChange?: (e: ChangeEvent) => void
   checked?: boolean
   title?: string
@@ -14,6 +16,7 @@ const IndeterminateCheckbox = React.forwardRef<
   HTMLInputElement,
   IndeterminateCheckboxProps
 >(({ indeterminate = false, className, checked, ...rest }, ref) => {
+  const type = rest.type || "checkbox"
   const innerRef = React.useRef<HTMLInputElement | null>(null)
 
   useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
@@ -31,6 +34,14 @@ const IndeterminateCheckbox = React.forwardRef<
     if (innerRef.current) {
       innerRef.current.click()
     }
+  }
+
+  if (type === "radio") {
+    return (
+      <div className="items-center h-full flex">
+        <input type="radio" checked={checked} ref={innerRef} {...rest} />
+      </div>
+    )
   }
 
   return (
