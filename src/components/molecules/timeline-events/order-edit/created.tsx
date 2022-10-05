@@ -23,6 +23,12 @@ type EditCreatedProps = {
   event: OrderEditEvent
 }
 
+enum OrderEditItemChangeType {
+  ITEM_ADD = "item_add",
+  ITEM_REMOVE = "item_remove",
+  ITEM_UPDATE = "item_update",
+}
+
 const getInfo = (edit: OrderEdit): { type: string; user_id: string } => {
   if (edit.requested_at && edit.requested_by) {
     return {
@@ -185,12 +191,6 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
   )
 }
 
-enum OrderEditItemChangeType {
-  ITEM_ADD = "item_add",
-  ITEM_REMOVE = "item_remove",
-  ITEM_UPDATE = "item_update",
-}
-
 const OrderEditChanges = ({ orderEdit }) => {
   if (!orderEdit) {
     return <></>
@@ -214,22 +214,22 @@ const OrderEditChanges = ({ orderEdit }) => {
   )
 
   return (
-    <div>
+    <div className="flex flex-col gap-y-base">
       {added.length > 0 && (
-        <>
+        <div>
           <span className="inter-small-regular text-grey-50">Added</span>
           {added.map((change) => (
             <OrderEditChangeItem change={change} />
           ))}
-        </>
+        </div>
       )}
       {removed.length > 0 && (
-        <>
+        <div>
           <span className="inter-small-regular text-grey-50">Removed</span>
           {removed.map((change) => (
             <OrderEditChangeItem change={change} />
           ))}
-        </>
+        </div>
       )}
     </div>
   )
