@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import ClaimMenu from "../../../domain/orders/details/claim/create"
 import ReturnMenu from "../../../domain/orders/details/returns"
 import SwapMenu from "../../../domain/orders/details/swap/create"
+import useOrdersExpandParam from "../../../domain/orders/details/utils/use-admin-expand-paramter"
 import {
   ClaimEvent,
   ExchangeEvent,
@@ -51,10 +52,14 @@ type TimelineProps = {
 }
 
 const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
+  const { orderRelations } = useOrdersExpandParam()
+
   const { events, refetch } = useBuildTimelime(orderId)
   const notification = useNotification()
   const createNote = useAdminCreateNote()
-  const { order } = useAdminOrder(orderId)
+  const { order } = useAdminOrder(orderId, {
+    expand: orderRelations,
+  })
   const [showRequestReturn, setShowRequestReturn] = useState(false)
   const [showCreateSwap, setshowCreateSwap] = useState(false)
   const [showCreateClaim, setshowCreateClaim] = useState(false)

@@ -7,6 +7,7 @@ import {
 } from "medusa-react"
 import { useContext, useMemo } from "react"
 import { FeatureFlagContext } from "../context/feature-flag"
+import useOrdersExpandParam from "../domain/orders/details/utils/use-admin-expand-paramter"
 
 export interface TimelineEvent {
   id: string
@@ -143,12 +144,16 @@ export interface NotificationEvent extends TimelineEvent {
 }
 
 export const useBuildTimelime = (orderId: string) => {
+  const { orderRelations } = useOrdersExpandParam()
+
   const {
     order,
     isLoading: orderLoading,
     isError: orderError,
     refetch,
-  } = useAdminOrder(orderId)
+  } = useAdminOrder(orderId, {
+    expand: orderRelations,
+  })
 
   const {
     notes,
