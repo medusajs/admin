@@ -11,20 +11,20 @@ type ConfirmedProps = {
 }
 
 const EditConfirmed: React.FC<ConfirmedProps> = ({ event }) => {
-  const confirmedByUser = event.edit.confirmed_by?.startsWith("usr")
+  const confirmedByCustomer = event.edit.confirmed_by?.startsWith("cus")
 
   let user: User | Customer
-  if (confirmedByUser) {
-    const { customer } = useAdminCustomer(event.edit.declined_by as string)
+  if (confirmedByCustomer) {
+    const { customer } = useAdminCustomer(event.edit.confirmed_by as string)
     user = customer as Customer
   } else {
-    const { user: adminUser } = useAdminUser(event.edit.declined_by as string)
+    const { user: adminUser } = useAdminUser(event.edit.confirmed_by as string)
     user = adminUser as User
   }
 
   return (
     <EventContainer
-      title={`Order Edit ${confirmedByUser ? "" : "force"} confirmed`}
+      title={`Order Edit ${confirmedByCustomer ? "" : "force"} confirmed`}
       icon={<FastDeliveryIcon size={20} />}
       time={event.time}
       isFirst={event.first}
