@@ -18,6 +18,7 @@ import {
   TimelineEvent,
   useBuildTimelime,
   OrderEditRequestedEvent,
+  OrderEditDifferenceDueEvent,
 } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -36,9 +37,11 @@ import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
 import EditCanceled from "../../molecules/timeline-events/order-edit/canceled"
 import EditConfirmed from "../../molecules/timeline-events/order-edit/confirmed"
+import EditConfirmedDifferenceDue from "../../molecules/timeline-events/order-edit/confirmed-difference-due"
 import EditCreated from "../../molecules/timeline-events/order-edit/created"
 import EditDeclined from "../../molecules/timeline-events/order-edit/declined"
 import EditRequested from "../../molecules/timeline-events/order-edit/requested"
+import EditRequestedDifferenceDue from "../../molecules/timeline-events/order-edit/requested-difference-due"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Refund from "../../molecules/timeline-events/refund"
 import Return from "../../molecules/timeline-events/return"
@@ -175,6 +178,18 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
       return <EditConfirmed event={event as OrderEditEvent} />
     case "edit-requested":
       return <EditRequested event={event as OrderEditRequestedEvent} />
+    case "edit-confirmed-difference-due":
+      return (
+        <EditConfirmedDifferenceDue
+          event={event as OrderEditDifferenceDueEvent}
+        />
+      )
+    case "edit-requested-difference-due":
+      return (
+        <EditRequestedDifferenceDue
+          event={event as OrderEditDifferenceDueEvent}
+        />
+      )
     default:
       return null
   }

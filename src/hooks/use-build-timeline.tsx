@@ -3,6 +3,7 @@ import {
   useAdminNotes,
   useAdminNotifications,
   useAdminOrder,
+  useAdminOrderEdit,
 } from "medusa-react"
 import { useContext, useMemo } from "react"
 import { FeatureFlagContext } from "../context/feature-flag"
@@ -30,13 +31,19 @@ export interface TimelineEvent {
     | "claim"
     | "edit-created"
     | "edit-requested"
+    | "edit-requested-difference-due"
     | "edit-declined"
     | "edit-canceled"
     | "edit-confirmed"
+    | "edit-confirmed-difference-due"
 }
 
 export interface OrderEditEvent extends TimelineEvent {
   edit: OrderEdit
+}
+
+export interface OrderEditDifferenceDueEvent extends OrderEditEvent {
+  currency_code: string
 }
 
 export interface OrderEditRequestedEvent extends TimelineEvent {
@@ -142,11 +149,13 @@ export const useBuildTimelime = (orderId: string) => {
     isError: orderError,
     refetch,
   } = useAdminOrder(orderId)
+
   const {
     notes,
     isLoading: notesLoading,
     isError: notesError,
   } = useAdminNotes({ resource_id: orderId, limit: 100, offset: 0 })
+
   const {
     notifications,
     isLoading: notificationsLoading,
@@ -194,6 +203,15 @@ export const useBuildTimelime = (orderId: string) => {
             type: "edit-requested",
             email: order.email,
           } as OrderEditRequestedEvent)
+
+          events.push({
+            id: edit.id,
+            time: edit.requested_at,
+            orderId: order.id,
+            type: "edit-requested-difference-due",
+            edit: edit,
+            currency_code: order.currency_code,
+          } as OrderEditDifferenceDueEvent)
         }
 
         // // declined
@@ -227,6 +245,15 @@ export const useBuildTimelime = (orderId: string) => {
             type: "edit-confirmed",
             edit: edit,
           } as OrderEditEvent)
+
+          events.push({
+            id: edit.id,
+            time: edit.requested_at,
+            orderId: order.id,
+            type: "edit-confirmed-difference-due",
+            edit: edit,
+            currency_code: order.currency_code,
+          } as OrderEditDifferenceDueEvent)
         }
       }
     }
