@@ -13,7 +13,7 @@ type RequestedProps = {
 const EditConfirmedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
   const { order_edit: orderEdit } = useAdminOrderEdit(event.edit.id)
 
-  if (!orderEdit || orderEdit.difference_due >= 0) {
+  if (!orderEdit || orderEdit.difference_due > 0) {
     return null
   }
 

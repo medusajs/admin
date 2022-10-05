@@ -272,7 +272,7 @@ const OrderEditChangeItem: React.FC<OrderEditChangeItem> = ({ change }) => {
           )}
         </span>
         <span className="flex inter-small-regular text-grey-50">
-          {/* {change.line_item.variant.options.map((option) => option.value)} */}
+          {change.line_item?.variant.options?.map((option) => option.value)}
         </span>
       </div>
     </div>

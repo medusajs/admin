@@ -45,7 +45,7 @@ const EventContainer: React.FC<EventContainerProps> = ({
   }
 
   return (
-    <div>
+    <div className="mb-base">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-xsmall">
           <div className={clsx("h-5 w-5", iconColor)}>{icon}</div>

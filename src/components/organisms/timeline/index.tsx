@@ -122,7 +122,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
               <Spinner variant="secondary" size="large" />
             </div>
           ) : (
-            <div className="flex flex-col gap-y-base">
+            <div className="flex flex-col">
               {events.map((event, i) => {
                 return <div key={i}>{switchOnType(event, refetch)}</div>
               })}
