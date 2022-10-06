@@ -7,29 +7,49 @@ import LayeredModal, {
 import Modal from "../../../components/molecules/modal"
 import Button from "../../../components/fundamentals/button"
 import OrderEditLine from "../details/order-line/edit"
-import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import VariantsTable from "./variants-table"
 import SearchIcon from "../../../components/fundamentals/icons/search-icon"
+import { ProductVariant } from "@medusajs/medusa"
+
+type AddProductVariantProps = {
+  isReplace?: boolean
+  onSubmit: (variants: ProductVariant[]) => void
+}
 
 /**
  * Add product variant modal screen
  */
-function AddProductVariant() {
+function AddProductVariant(props: AddProductVariantProps) {
   const { pop } = React.useContext(LayeredModalContext)
+
+  const [selectedVariants, setSelectedVariants] = useState<ProductVariant[]>([])
+
+  const onSubmit = () => {
+    props.onSubmit(selectedVariants)
+    pop()
+  }
+
+  const onBack = () => {
+    setSelectedVariants([])
+    pop()
+  }
 
   return (
     <>
       <Modal.Content>
         <div className="min-h-[680px] flex flex-col justify-between">
-          <VariantsTable selectedItems={[]} onSubmit={console.log} />
+          <VariantsTable
+            isReplace={props.isReplace}
+            setSelectedVariants={setSelectedVariants}
+          />
         </div>
       </Modal.Content>
       <Modal.Footer>
         <div className="flex justify-end w-full space-x-xsmall">
-          <Button variant="secondary" size="small" onClick={pop}>
+          <Button variant="secondary" size="small" onClick={onBack}>
             Back
           </Button>
-          <Button variant="primary" size="small" onClick={console.log}>
+          <Button variant="primary" size="small" onClick={onSubmit}>
             Save and go back
           </Button>
         </div>
@@ -70,10 +90,20 @@ function OrderEditModal(props: OrderEditModalProps) {
     close()
   }
 
+  const onAddVariants = (selectedVariants: ProductVariant[]) => {
+    console.log(selectedVariants)
+  }
+
   const addProductVariantScreen = {
     title: "Add Product Variants",
     onBack: layeredModalContext.pop,
-    view: <AddProductVariant />,
+    view: <AddProductVariant onSubmit={onAddVariants} />,
+  }
+
+  const replaceProductVariantScreen = {
+    title: "Replace Product Variants",
+    onBack: layeredModalContext.pop,
+    view: <AddProductVariant onSubmit={onAddVariants} isReplace />,
   }
 
   return (

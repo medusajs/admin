@@ -7,6 +7,8 @@ import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
 import Actionables from "../../../../components/molecules/actionables"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
+import DuplicateIcon from "../../../../components/fundamentals/icons/duplicate-icon"
+import RefreshIcon from "../../../../components/fundamentals/icons/refresh-icon"
 
 type OrderEditLineProps = {
   item: LineItem
@@ -77,7 +79,17 @@ const OrderEditLine = ({
           forceDropdown
           actions={[
             {
-              label: "Delete",
+              label: "Replace wit other item",
+              onClick: () => console.log("TODO"),
+              icon: <RefreshIcon size="20" />,
+            },
+            {
+              label: "Duplicate item",
+              onClick: () => console.log("TODO"),
+              icon: <DuplicateIcon size="20" />,
+            },
+            {
+              label: "Remove item",
               onClick: () => console.log("TODO"),
               variant: "danger",
               icon: <TrashIcon size="20" />,

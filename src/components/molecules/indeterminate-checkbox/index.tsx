@@ -10,6 +10,7 @@ type IndeterminateCheckboxProps = {
   title?: string
   indeterminate?: boolean
   className?: React.HTMLAttributes<HTMLInputElement>["className"]
+  disabled?: boolean // NOTE: only visual, still have to filter disabled ids out
 }
 
 const IndeterminateCheckbox = React.forwardRef<
@@ -31,7 +32,7 @@ const IndeterminateCheckbox = React.forwardRef<
   }, [innerRef, indeterminate])
 
   const handleClick = () => {
-    if (innerRef.current) {
+    if (!rest.disabled && innerRef.current) {
       innerRef.current.click()
     }
   }
@@ -49,7 +50,11 @@ const IndeterminateCheckbox = React.forwardRef<
       <div
         onClick={handleClick}
         className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border cursor-pointer rounded-base ${
-          checked && "bg-violet-60"
+          rest.disabled
+            ? checked
+              ? "bg-gray-300"
+              : ""
+            : checked && "bg-violet-60"
         }`}
       >
         <span className="self-center">

@@ -1,6 +1,7 @@
 import { useAdminVariants } from "medusa-react"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
+import { ProductVariant } from "@medusajs/medusa"
 
 import { useDebounce } from "../../../hooks/use-debounce"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
@@ -11,19 +12,17 @@ import Spinner from "../../../components/atoms/spinner"
 const PAGE_SIZE = 12
 
 type Props = {
-  onSubmit: (selectItems) => void
-  selectedItems?: any
+  isReplace?: boolean
+  setSelectedVariants: (selectedIds: ProductVariant[]) => void
 }
 
 const VariantsTable: React.FC<Props> = (props) => {
-  const { onSubmit, selectedItems } = props
+  const { isReplace, setSelectedVariants } = props
 
   const [query, setQuery] = useState("")
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
-
-  const [selectedVariants, setSelectedVariants] = useState<any[]>([])
 
   const debouncedSearchTerm = useDebounce(query, 500)
 
@@ -98,10 +97,7 @@ const VariantsTable: React.FC<Props> = (props) => {
       initialState: {
         pageIndex: currentPage,
         pageSize: PAGE_SIZE,
-        selectedRowIds: selectedItems.reduce((prev, { id }) => {
-          prev[id] = true
-          return prev
-        }, {}),
+        selectedRowIds: {},
       },
       pageCount: numPages,
       autoResetSelectedRows: false,
@@ -119,7 +115,7 @@ const VariantsTable: React.FC<Props> = (props) => {
               <div>
                 <IndeterminateCheckbox
                   {...getToggleAllRowsSelectedProps()}
-                  type="radio"
+                  type={isReplace ? "radio" : "checkbox"}
                 />
               </div>
             )
@@ -129,7 +125,8 @@ const VariantsTable: React.FC<Props> = (props) => {
               <div>
                 <IndeterminateCheckbox
                   {...row.getToggleRowSelectedProps()}
-                  type="radio"
+                  disabled={row.original.inventory_quantity === 0}
+                  type={isReplace ? "radio" : "checkbox"}
                 />
               </div>
             )
@@ -141,22 +138,16 @@ const VariantsTable: React.FC<Props> = (props) => {
   )
 
   useEffect(() => {
-    setSelectedVariants((selectedVariants) => [
-      ...selectedVariants.filter(
-        (sv) =>
-          Object.keys(table.state.selectedRowIds).findIndex(
-            (id) => id === sv.id
-          ) > -1
-      ),
-      ...(variants?.filter(
-        (v) =>
-          selectedVariants.findIndex((sv) => sv.id === v.id) < 0 &&
-          Object.keys(table.state.selectedRowIds).findIndex(
-            (id) => id === v.id
-          ) > -1
-      ) || []),
-    ])
-  }, [table.state.selectedRowIds])
+    if (!variants) {
+      return
+    }
+
+    const selected = variants.filter(
+      (v) => table.state.selectedRowIds[v.id] && v.inventory_quantity > 0
+    )
+
+    setSelectedVariants(selected)
+  }, [table.state.selectedRowIds, variants])
 
   const handleNext = () => {
     if (table.canNextPage) {
