@@ -39,8 +39,8 @@ const DEFAULT_PAGE_SIZE = 12
  */
 const defaultQueryProps = {
   additionalFilters: {
-    expand: "collection,sales_channels",
-    fields: "id,title,type,thumbnail,status",
+    expand: "collection,type,sales_channels",
+    fields: "id,title,thumbnail,status",
   },
   limit: DEFAULT_PAGE_SIZE,
   offset: 0,
