@@ -4,7 +4,7 @@ import {
   useAdminCancelBatchJob,
   useAdminCreatePresignedDownloadUrl,
   useAdminDeleteFile,
-  useAdminStore,
+  useAdminStore
 } from "medusa-react"
 import React, { useEffect, useRef } from "react"
 import useNotification from "../../../hooks/use-notification"
@@ -52,6 +52,7 @@ const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
     "product-import": BatchJobOperation.Import,
     "price-list-import": BatchJobOperation.Import,
     "product-export": BatchJobOperation.Export,
+    "order-export": BatchJobOperation.Export,
   }[batchJob.type]
 
   const batchJobActivityDescription = batchJobDescriptionBuilder(
