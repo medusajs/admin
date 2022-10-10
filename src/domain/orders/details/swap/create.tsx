@@ -151,8 +151,10 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
   }
 
   const handleUpdateShippingPrice = (value: number | undefined) => {
-    if (value && value >= 0) {
+    if (value !== undefined && value >= 0) {
       setShippingPrice(value)
+    } else {
+      setShippingPrice(0)
     }
   }
 
@@ -253,6 +255,7 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
             )}
             {shippingMethod && (
               <RMAShippingPrice
+                inclTax={false}
                 useCustomShippingPrice={useCustomShippingPrice}
                 shippingPrice={shippingPrice}
                 currencyCode={order.currency_code}
@@ -333,6 +336,10 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
                 tax: order.tax_rate ?? undefined,
               })}
             </span>
+          </div>
+          <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-2">
+            <span>Return Shipping</span>
+            <span>{shippingPrice}</span>
           </div>
           <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-2">
             <span>Outbond Shipping</span>
