@@ -106,21 +106,29 @@ const VariantsTable: React.FC<Props> = (props) => {
           </div>
         ),
         accessor: "amount",
-        Cell: ({ row: { original } }) => (
-          <div className="text-right">
-            {original.prices[0] &&
-              formatAmountWithSymbol({
-                amount: original.prices[0].amount,
-                currency: original.prices[0].currency_code,
+        Cell: ({ row: { original } }) => {
+          // TODO: which price to select ?
+          // also if we want to display comparison between prices how do we compare them since
+          // a variant could have for example a price of 100USD and 100EUR
+          const price = original.prices[0]
+          if (!price) {
+            return null
+          }
+
+          return (
+            <div className="text-right">
+              {formatAmountWithSymbol({
+                amount: price.amount,
+                currency: price.currency_code,
               })}
-            {original.prices[0] && (
+
               <span className="text-gray-400">
                 {" "}
-                {original.prices[0].currency_code.toUpperCase()}
+                {price.currency_code.toUpperCase()}
               </span>
-            )}
-          </div>
-        ),
+            </div>
+          )
+        },
       },
     ]
   }, [])
