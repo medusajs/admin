@@ -144,6 +144,8 @@ function OrderEditModal(props: OrderEditModalProps) {
 
   const notification = useNotification()
   const [note, setNote] = useState<string | undefined>()
+  const [showFilter, setShowFilter] = useState(false)
+  const [filterTerm, setFilterTerm] = useState<string>("")
 
   const showTotals = currentSubtotal !== orderEdit.subtotal
 
@@ -195,10 +197,23 @@ function OrderEditModal(props: OrderEditModalProps) {
     }
   }
 
-  const displayItems = orderEdit.items.sort(
+  const toggleFilter = () => {
+    if (showFilter) {
+      setFilterTerm("")
+    }
+    setShowFilter((s) => !s)
+  }
+
+  let displayItems = orderEdit.items.sort(
     // @ts-ignore
     (a, b) => new Date(a.created_at) - new Date(b.created_at)
   )
+
+  if (filterTerm) {
+    displayItems = displayItems.filter((i) =>
+      i.title.toLowerCase().includes(filterTerm)
+    )
+  }
 
   const addProductVariantScreen = {
     title: "Add Product Variants",
@@ -220,18 +235,33 @@ function OrderEditModal(props: OrderEditModalProps) {
         <Modal.Content>
           <div className="flex justify-between mb-6">
             <span className="text-gray-900 font-semibold">Items</span>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center justify-between">
               <Button
                 size="small"
                 variant="ghost"
-                className="border border-grey-20 text-gray-900"
+                className="border border-grey-20 text-gray-900 flex-shrink-0"
                 onClick={() =>
                   layeredModalContext.push(addProductVariantScreen)
                 }
               >
                 Add items
               </Button>
-              <Button variant="secondary" size="small" className="h-full">
+              {/*TODO: check if this si desired behaviour since ti's not defined in the design*/}
+              {showFilter && (
+                <InputField
+                  value={filterTerm}
+                  placeholder="Filter items..."
+                  onChange={(e) => setFilterTerm(e.target.value)}
+                />
+              )}
+              <Button
+                size="small"
+                variant="secondary"
+                className={clsx("h-full flex-shrink-0", {
+                  "bg-gray-100": showFilter,
+                })}
+                onClick={toggleFilter}
+              >
                 <SearchIcon size={18} className="text-gray-500" />
               </Button>
             </div>
