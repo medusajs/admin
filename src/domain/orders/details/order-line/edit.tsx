@@ -6,6 +6,7 @@ import {
   useAdminOrderEditDeleteLineItem,
   useAdminOrderEditUpdateLineItem,
 } from "medusa-react"
+import clsx from "clsx"
 
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
@@ -18,6 +19,7 @@ import RefreshIcon from "../../../../components/fundamentals/icons/refresh-icon"
 import useNotification from "../../../../hooks/use-notification"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import { AddProductVariant } from "../../edit/modal"
+import Tooltip from "../../../../components/atoms/tooltip"
 
 type OrderEditLineProps = {
   item: LineItem
@@ -30,7 +32,8 @@ const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
   const { pop, push } = React.useContext(LayeredModalContext)
 
   const isNew = change?.type === "item_add"
-  const isLocked = item.fulfilled_quantity === item.quantity
+  const isModified = change?.type === "item_update"
+  const isLocked = !!item.fulfilled_quantity
 
   const { mutateAsync: addLineItem } = useAdminOrderEditAddLineItem(
     item.order_edit_id!
@@ -56,6 +59,15 @@ const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
   }
 
   const onDuplicate = async () => {
+    if (!item.variant) {
+      notification(
+        "Warning",
+        "Cannot duplicate an item without a variant",
+        "warning"
+      )
+      return
+    }
+
     try {
       await addLineItem({
         variant_id: item.variant_id,
@@ -102,94 +114,135 @@ const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
     view: <AddProductVariant onSubmit={onReplace} isReplace />,
   }
 
+  const actions = [
+    !isLocked && {
+      label: "Replace with other item",
+      onClick: () => push(replaceProductVariantScreen),
+      icon: <RefreshIcon size="20" />,
+    },
+    {
+      label: "Duplicate item",
+      onClick: onDuplicate,
+      icon: <DuplicateIcon size="20" />,
+    },
+    !isLocked && {
+      label: "Remove item",
+      onClick: onRemove,
+      variant: "danger",
+      icon: <TrashIcon size="20" />,
+    },
+  ].filter(Boolean)
+
   return (
-    <div className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded">
-      <div className="flex space-x-4 justify-center flex-grow-1">
-        <div className="flex h-[48px] w-[36px] rounded-rounded overflow-hidden">
-          {item.thumbnail ? (
-            <img src={item.thumbnail} className="object-cover" />
-          ) : (
-            <ImagePlaceholder />
-          )}
-        </div>
-        <div className="flex flex-col justify-center max-w-[185px]">
-          <div>
-            <span className="inter-small-regular text-grey-90 truncate">
-              {item.title}
-            </span>
+    <Tooltip
+      side="top"
+      open={isLocked ? undefined : false}
+      content="This item is locked because it is part of an active order edit request"
+    >
+      <div className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded">
+        <div className="flex space-x-4 justify-center flex-grow-1">
+          <div className="flex h-[48px] w-[36px] rounded-rounded overflow-hidden">
+            {item.thumbnail ? (
+              <img src={item.thumbnail} className="object-cover" />
+            ) : (
+              <ImagePlaceholder />
+            )}
           </div>
-          {item?.variant && (
+          <div className="flex flex-col justify-center max-w-[185px]">
+            <div>
+              <span
+                className={clsx("inter-small-regular text-grey-900 truncate", {
+                  "text-gray-400": isLocked,
+                })}
+              >
+                {item.title}
+              </span>
+            </div>
             <div className="flex items-center">
               {isNew && (
                 <div className="text-small text-blue-500 bg-blue-10 h-[24px] w-[42px] mr-2 flex items-center justify-center rounded-rounded">
                   New
                 </div>
               )}
-              <span className="inter-small-regular text-grey-50 truncate">
-                {`${item.variant.title}${
-                  item.variant.sku ? ` (${item.variant.sku})` : ""
-                }`}
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="flex items-center justify-between min-w-[312px]">
-        <div className="flex items-center flex-grow-0 text-gray-400">
-          <MinusIcon
-            className="cursor-pointer"
-            onClick={() =>
-              item.quantity > 1 &&
-              // TODO: check if this is OK
-              item.quantity > (item.fulfilled_quantity || 0) &&
-              onQuantityUpdate(item.quantity - 1)
-            }
-          />
-          <span className="px-8 text-center text-gray-900 min-w-[74px]">
-            {item.quantity}
-          </span>
-          <PlusIcon
-            className="cursor-pointer text-gray-400"
-            onClick={() => onQuantityUpdate(item.quantity + 1)}
-          />
-        </div>
 
-        <div className="flex small:space-x-2 medium:space-x-4 large:space-x-6 ">
-          <div className="inter-small-regular text-gray-900">
-            {formatAmountWithSymbol({
-              amount: item.unit_price * item.quantity,
-              currency: currencyCode,
-              tax: item.tax_lines,
-              digits: 2,
-            })}
+              {isModified && (
+                <div className="text-small text-orange-500 bg-orange-10 h-[24px] w-[68px] mr-2 flex items-center justify-center rounded-rounded">
+                  Modified
+                </div>
+              )}
+
+              {item?.variant && (
+                <span
+                  className={clsx(
+                    "inter-small-regular text-gray-500 truncate",
+                    {
+                      "text-gray-400": isLocked,
+                    }
+                  )}
+                >
+                  {`${item.variant.title}${
+                    item.variant.sku ? ` (${item.variant.sku})` : ""
+                  }`}
+                </span>
+              )}
+            </div>
           </div>
         </div>
-        <div className="inter-small-regular text-gray-400">
-          {currencyCode.toUpperCase()}
+        <div className="flex items-center justify-between min-w-[312px]">
+          <div
+            className={clsx("flex items-center flex-grow-0 text-gray-400", {
+              "pointer-events-none": isLocked,
+            })}
+          >
+            <Tooltip content="tooltip text">
+              <MinusIcon
+                className="cursor-pointer"
+                onClick={() =>
+                  item.quantity > 1 &&
+                  !isLocked &&
+                  onQuantityUpdate(item.quantity - 1)
+                }
+              />
+            </Tooltip>
+            <span
+              className={clsx("px-8 text-center text-gray-900 min-w-[74px]", {
+                "!text-gray-400": isLocked,
+              })}
+            >
+              {item.quantity}
+            </span>
+            <PlusIcon
+              className="cursor-pointer text-gray-400"
+              onClick={() => onQuantityUpdate(item.quantity + 1)}
+            />
+          </div>
+
+          <div
+            className={clsx(
+              "flex small:space-x-2 medium:space-x-4 large:space-x-6",
+              { "!text-gray-400 pointer-events-none": isLocked }
+            )}
+          >
+            <div
+              className={clsx("inter-small-regular text-gray-900", {
+                "!text-gray-400 pointer-events-none": isLocked,
+              })}
+            >
+              {formatAmountWithSymbol({
+                amount: item.unit_price * item.quantity,
+                currency: currencyCode,
+                tax: item.tax_lines,
+                digits: 2,
+              })}
+            </div>
+          </div>
+          <div className="inter-small-regular text-gray-400">
+            {currencyCode.toUpperCase()}
+          </div>
+          <Actionables forceDropdown actions={actions} />
         </div>
-        <Actionables
-          forceDropdown
-          actions={[
-            {
-              label: "Replace with other item",
-              onClick: () => push(replaceProductVariantScreen),
-              icon: <RefreshIcon size="20" />,
-            },
-            {
-              label: "Duplicate item",
-              onClick: onDuplicate,
-              icon: <DuplicateIcon size="20" />,
-            },
-            {
-              label: "Remove item",
-              onClick: onRemove,
-              variant: "danger",
-              icon: <TrashIcon size="20" />,
-            },
-          ]}
-        />
       </div>
-    </div>
+    </Tooltip>
   )
 }
 

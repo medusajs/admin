@@ -10,7 +10,7 @@ import {
   useAdminUpdateOrder,
 } from "medusa-react"
 import moment from "moment"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import ReactJson from "react-json-view"
 import Avatar from "../../../components/atoms/avatar"
@@ -32,7 +32,6 @@ import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
 import { AddressType } from "../../../components/templates/address-form"
-import { FeatureFlagContext } from "../../../context/feature-flag"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
@@ -133,6 +132,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
   const [showRefund, setShowRefund] = useState(false)
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
+  // TODO: use `useOrdersExpandParam` after relations are aligned with BD
   const { order, isLoading } = useAdminOrder(id!, {
     expand: "edits,fulfillments,payments",
   })
