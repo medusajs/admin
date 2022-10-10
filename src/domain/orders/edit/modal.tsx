@@ -246,7 +246,7 @@ function OrderEditModal(props: OrderEditModalProps) {
               >
                 Add items
               </Button>
-              {/*TODO: check if this si desired behaviour since ti's not defined in the design*/}
+              {/*TODO: check if this is desired behaviour since it's not defined in the design*/}
               {showFilter && (
                 <InputField
                   value={filterTerm}
