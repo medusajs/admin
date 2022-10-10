@@ -29,6 +29,7 @@ const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
   const notification = useNotification()
   const { pop, push } = React.useContext(LayeredModalContext)
 
+  const isNew = change?.type === "item_add"
   const isLocked = item.fulfilled_quantity === item.quantity
 
   const { mutateAsync: addLineItem } = useAdminOrderEditAddLineItem(
@@ -112,37 +113,49 @@ const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
           )}
         </div>
         <div className="flex flex-col justify-center max-w-[185px]">
-          <span className="inter-small-regular text-grey-90 truncate">
-            {item.title}
-          </span>
-          {item?.variant && (
-            <span className="inter-small-regular text-grey-50 truncate">
-              {`${item.variant.title}${
-                item.variant.sku ? ` (${item.variant.sku})` : ""
-              }`}
+          <div>
+            <span className="inter-small-regular text-grey-90 truncate">
+              {item.title}
             </span>
+          </div>
+          {item?.variant && (
+            <div className="flex items-center">
+              {isNew && (
+                <div className="text-small text-blue-500 bg-blue-10 h-[24px] w-[42px] mr-2 flex items-center justify-center rounded-rounded">
+                  New
+                </div>
+              )}
+              <span className="inter-small-regular text-grey-50 truncate">
+                {`${item.variant.title}${
+                  item.variant.sku ? ` (${item.variant.sku})` : ""
+                }`}
+              </span>
+            </div>
           )}
         </div>
       </div>
-      <div className="flex items-center gap-9">
-        <div className="flex items-center flex-grow-0 text-gray-500">
+      <div className="flex items-center justify-between min-w-[312px]">
+        <div className="flex items-center flex-grow-0 text-gray-400">
           <MinusIcon
             className="cursor-pointer"
             onClick={() =>
-              item.quantity > 1 && onQuantityUpdate(item.quantity - 1)
+              item.quantity > 1 &&
+              // TODO: check if this is OK
+              item.quantity > (item.fulfilled_quantity || 0) &&
+              onQuantityUpdate(item.quantity - 1)
             }
           />
-          <span className="px-8 text-center text-gray-900">
+          <span className="px-8 text-center text-gray-900 min-w-[74px]">
             {item.quantity}
           </span>
           <PlusIcon
-            className="cursor-pointer text-gray-40"
+            className="cursor-pointer text-gray-400"
             onClick={() => onQuantityUpdate(item.quantity + 1)}
           />
         </div>
 
         <div className="flex small:space-x-2 medium:space-x-4 large:space-x-6 ">
-          <div className="inter-small-regular text-grey-50">
+          <div className="inter-small-regular text-gray-900">
             {formatAmountWithSymbol({
               amount: item.unit_price * item.quantity,
               currency: currencyCode,
@@ -151,7 +164,7 @@ const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
             })}
           </div>
         </div>
-        <div className="inter-small-regular text-grey-50">
+        <div className="inter-small-regular text-gray-400">
           {currencyCode.toUpperCase()}
         </div>
         <Actionables

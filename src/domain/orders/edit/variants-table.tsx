@@ -111,7 +111,10 @@ const VariantsTable: React.FC<Props> = (props) => {
         {
           id: "selection",
           Header: ({ getToggleAllRowsSelectedProps }) => {
-            if (isReplace) return null
+            if (isReplace) {
+              return null
+            }
+
             return (
               <div>
                 <IndeterminateCheckbox
@@ -123,11 +126,12 @@ const VariantsTable: React.FC<Props> = (props) => {
           },
           Cell: ({ row, toggleAllRowsSelected, toggleRowSelected }) => {
             const currentState = row.getToggleRowSelectedProps()
+            const selectProps = row.getToggleRowSelectedProps()
 
             return (
               <div>
                 <IndeterminateCheckbox
-                  {...row.getToggleRowSelectedProps()}
+                  {...selectProps}
                   disabled={row.original.inventory_quantity === 0}
                   type={isReplace ? "radio" : "checkbox"}
                   onChange={
@@ -136,7 +140,7 @@ const VariantsTable: React.FC<Props> = (props) => {
                           toggleAllRowsSelected(false)
                           toggleRowSelected(row.id, !currentState.checked)
                         }
-                      : row.getToggleRowSelectedProps().onChange
+                      : selectProps.onChange
                   }
                 />
               </div>

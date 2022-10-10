@@ -2,8 +2,11 @@ import React, { useContext, useEffect, useState } from "react"
 import { Order, OrderEdit, ProductVariant } from "@medusajs/medusa"
 import {
   useAdminCreateOrderEdit,
+  useAdminDeleteOrderEdit,
   useAdminOrderEdit,
   useAdminOrderEditAddLineItem,
+  useAdminRequestOrderEditConfirmation,
+  useAdminUpdateOrderEdit,
 } from "medusa-react"
 import clsx from "clsx"
 
@@ -144,14 +147,38 @@ function OrderEditModal(props: OrderEditModalProps) {
 
   const showTotals = currentSubtotal !== orderEdit.subtotal
 
+  const {
+    mutateAsync: requestConfirmation,
+  } = useAdminRequestOrderEditConfirmation(orderEdit.id)
+
+  const { mutateAsync: updateOrderEdit } = useAdminUpdateOrderEdit(orderEdit.id)
+
+  const { mutateAsync: deleteOrderEdit } = useAdminDeleteOrderEdit(orderEdit.id)
+
   const { mutateAsync: addLineItem } = useAdminOrderEditAddLineItem(
     orderEdit.id
   )
 
   const layeredModalContext = useContext(LayeredModalContext)
 
-  const onClose = () => {
+  const onSave = async () => {
+    try {
+      if (note) {
+        await updateOrderEdit({ internal_note: note })
+      }
+      await requestConfirmation()
+      notification("Success", "Order edit set as requested", "success")
+    } catch (e) {
+      notification("Error", "Failed to request confirmation", "success")
+    }
     close()
+  }
+
+  const onCancel = async () => {
+    // TODO: on click outside delete the edit
+    close()
+    // TODO: BD issue - cannot delete order edit with change item
+    deleteOrderEdit()
   }
 
   const onAddVariants = async (selectedVariants: ProductVariant[]) => {
@@ -168,27 +195,26 @@ function OrderEditModal(props: OrderEditModalProps) {
     }
   }
 
+  const displayItems = orderEdit.items.sort(
+    // @ts-ignore
+    (a, b) => new Date(a.created_at) - new Date(b.created_at)
+  )
+
   const addProductVariantScreen = {
     title: "Add Product Variants",
     onBack: layeredModalContext.pop,
     view: <AddProductVariant onSubmit={onAddVariants} />,
   }
 
-  const replaceProductVariantScreen = {
-    title: "Replace Product Variants",
-    onBack: layeredModalContext.pop,
-    view: <AddProductVariant onSubmit={onAddVariants} isReplace />,
-  }
-
   return (
     <LayeredModal
       open
       isLargeModal
-      handleClose={onClose}
+      handleClose={close}
       context={layeredModalContext}
     >
       <Modal.Body>
-        <Modal.Header handleClose={onClose}>
+        <Modal.Header handleClose={close}>
           <h1 className="inter-xlarge-semibold">Edit Order</h1>
         </Modal.Header>
         <Modal.Content>
@@ -212,20 +238,18 @@ function OrderEditModal(props: OrderEditModalProps) {
           </div>
 
           {/* ITEMS */}
-          {orderEdit.items
-            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-            .map((oi) => (
-              <OrderEditLine
-                key={oi.id}
-                item={oi}
-                currencyCode={currencyCode}
-                change={orderEdit.changes.find(
-                  (change) =>
-                    change.line_item_id === oi.id ||
-                    change.original_line_item_id
-                )}
-              />
-            ))}
+          {displayItems.map((oi) => (
+            <OrderEditLine
+              key={oi.id}
+              item={oi}
+              currencyCode={currencyCode}
+              change={orderEdit.changes.find(
+                (change) =>
+                  change.line_item_id === oi.id ||
+                  change.original_line_item_id === oi.id
+              )}
+            />
+          ))}
 
           <div className="mt-8" />
 
@@ -255,7 +279,7 @@ function OrderEditModal(props: OrderEditModalProps) {
               variant="ghost"
               size="small"
               type="button"
-              onClick={onClose}
+              onClick={onCancel}
             >
               Cancel
             </Button>
@@ -263,7 +287,7 @@ function OrderEditModal(props: OrderEditModalProps) {
               variant="primary"
               size="small"
               type="button"
-              onClick={onClose}
+              onClick={onSave}
             >
               Save and close
             </Button>
@@ -280,9 +304,12 @@ type OrderEditModalContainerProps = {
 }
 
 function OrderEditModalContainer(props: OrderEditModalContainerProps) {
+  const notification = useNotification()
+
   const [activeOrderEditId, setActiveOrderEditId] = useState<
     string | undefined
   >()
+
   const { mutate: createOrderEdit } = useAdminCreateOrderEdit()
 
   const { order_edit: orderEdit } = useAdminOrderEdit(
@@ -292,21 +319,31 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
     }
   )
 
+  // find an existing edit or create one if active order edit doesn't exist on the order
   useEffect(() => {
-    if (!props.order) {
+    if (!props.order || activeOrderEditId) {
       return
     }
 
-    const edit = props.order.edits?.find((oe) => oe.status === "created")
+    const edit = props.order.edits.find((oe) => oe.status === "created")
+
     if (!edit) {
       createOrderEdit(
         { order_id: props.order.id },
-        { onSuccess: ({ order_edit }) => setActiveOrderEditId(order_edit.id) }
+        {
+          onSuccess: ({ order_edit }) => setActiveOrderEditId(order_edit.id),
+          onError: () =>
+            notification(
+              "Error",
+              "There is already active order edit on this order",
+              "error"
+            ),
+        }
       )
     } else {
       setActiveOrderEditId(edit.id)
     }
-  }, [props.order?.edits])
+  }, [props.order, activeOrderEditId])
 
   if (!orderEdit) {
     return null
