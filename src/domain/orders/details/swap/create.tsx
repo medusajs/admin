@@ -338,10 +338,6 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
             </span>
           </div>
           <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-2">
-            <span>Return Shipping</span>
-            <span>{shippingPrice}</span>
-          </div>
-          <div className="flex text-grey-90 justify-between items-center inter-small-regular mt-2">
             <span>Outbond Shipping</span>
             <span>Calculated at checkout</span>
           </div>
