@@ -1,29 +1,106 @@
-import { LineItem } from "@medusajs/medusa"
+import React from "react"
+import { LineItem, OrderItemChange, ProductVariant } from "@medusajs/medusa"
+import {
+  useAdminDeleteOrderEditItemChange,
+  useAdminOrderEditAddLineItem,
+  useAdminOrderEditDeleteLineItem,
+  useAdminOrderEditUpdateLineItem,
+} from "medusa-react"
 
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
-import React from "react"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
 import Actionables from "../../../../components/molecules/actionables"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import DuplicateIcon from "../../../../components/fundamentals/icons/duplicate-icon"
 import RefreshIcon from "../../../../components/fundamentals/icons/refresh-icon"
+import useNotification from "../../../../hooks/use-notification"
+import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
+import { AddProductVariant } from "../../edit/modal"
 
 type OrderEditLineProps = {
   item: LineItem
   currencyCode: string
-  isNew?: boolean
-  quantity: number
-  onQuantityChange: (itemId: string, quantity: number) => void
+  change?: OrderItemChange
 }
 
-const OrderEditLine = ({
-  quantity,
-  item,
-  currencyCode,
-  onQuantityChange,
-}: OrderEditLineProps) => {
+const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
+  const notification = useNotification()
+  const { pop, push } = React.useContext(LayeredModalContext)
+
+  const isLocked = item.fulfilled_quantity === item.quantity
+
+  const { mutateAsync: addLineItem } = useAdminOrderEditAddLineItem(
+    item.order_edit_id!
+  )
+
+  const { mutateAsync: removeItem } = useAdminOrderEditDeleteLineItem(
+    item.order_edit_id!,
+    item.id
+  )
+
+  const { mutateAsync: updateItem } = useAdminOrderEditUpdateLineItem(
+    item.order_edit_id!,
+    item.id
+  )
+
+  const { mutateAsync: undoChange } = useAdminDeleteOrderEditItemChange(
+    item.order_edit_id!,
+    change?.id as string
+  )
+
+  const onQuantityUpdate = async (newQuantity: number) => {
+    await updateItem({ quantity: newQuantity })
+  }
+
+  const onDuplicate = async () => {
+    try {
+      await addLineItem({
+        variant_id: item.variant_id,
+        quantity: item.quantity,
+      })
+    } catch (e) {
+      notification("Error", "Failed to duplicate item", "error")
+    }
+  }
+
+  const onRemove = async () => {
+    try {
+      if (change) {
+        if (change.type === "item_add") {
+          await undoChange()
+        }
+        if (change.type === "item_update") {
+          await undoChange()
+          await removeItem()
+        }
+      } else {
+        await removeItem()
+      }
+      notification("Success", "Item removed", "success")
+    } catch (e) {
+      notification("Error", "Failed to remove item", "error")
+    }
+  }
+
+  const onReplace = async (selected: ProductVariant[]) => {
+    const newVariantId = selected[0].id
+    try {
+      await onRemove()
+      await addLineItem({ variant_id: newVariantId, quantity: item.quantity })
+      notification("Success", "Item added", "success")
+    } catch (e) {
+      notification("Error", "Failed to replace the item", "error")
+    }
+  }
+
+  const replaceProductVariantScreen = {
+    title: "Replace Product Variants",
+    onBack: pop,
+    view: <AddProductVariant onSubmit={onReplace} isReplace />,
+  }
+
   return (
     <div className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded">
       <div className="flex space-x-4 justify-center flex-grow-1">
@@ -52,20 +129,22 @@ const OrderEditLine = ({
           <MinusIcon
             className="cursor-pointer"
             onClick={() =>
-              quantity > 1 && onQuantityChange(item.id, quantity - 1)
+              item.quantity > 1 && onQuantityUpdate(item.quantity - 1)
             }
           />
-          <span className="px-8 text-center text-gray-900">{quantity}</span>
+          <span className="px-8 text-center text-gray-900">
+            {item.quantity}
+          </span>
           <PlusIcon
             className="cursor-pointer text-gray-40"
-            onClick={() => onQuantityChange(item.id, quantity + 1)}
+            onClick={() => onQuantityUpdate(item.quantity + 1)}
           />
         </div>
 
         <div className="flex small:space-x-2 medium:space-x-4 large:space-x-6 ">
           <div className="inter-small-regular text-grey-50">
             {formatAmountWithSymbol({
-              amount: item.unit_price * quantity,
+              amount: item.unit_price * item.quantity,
               currency: currencyCode,
               tax: item.tax_lines,
               digits: 2,
@@ -79,18 +158,18 @@ const OrderEditLine = ({
           forceDropdown
           actions={[
             {
-              label: "Replace wit other item",
-              onClick: () => console.log("TODO"),
+              label: "Replace with other item",
+              onClick: () => push(replaceProductVariantScreen),
               icon: <RefreshIcon size="20" />,
             },
             {
               label: "Duplicate item",
-              onClick: () => console.log("TODO"),
+              onClick: onDuplicate,
               icon: <DuplicateIcon size="20" />,
             },
             {
               label: "Remove item",
-              onClick: () => console.log("TODO"),
+              onClick: onRemove,
               variant: "danger",
               icon: <TrashIcon size="20" />,
             },

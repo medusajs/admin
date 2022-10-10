@@ -1,5 +1,11 @@
 import React, { useContext, useEffect, useState } from "react"
-import { useAdminCreateOrderEdit } from "medusa-react"
+import { Order, OrderEdit, ProductVariant } from "@medusajs/medusa"
+import {
+  useAdminCreateOrderEdit,
+  useAdminOrderEdit,
+  useAdminOrderEditAddLineItem,
+} from "medusa-react"
+import clsx from "clsx"
 
 import LayeredModal, {
   LayeredModalContext,
@@ -9,7 +15,68 @@ import Button from "../../../components/fundamentals/button"
 import OrderEditLine from "../details/order-line/edit"
 import VariantsTable from "./variants-table"
 import SearchIcon from "../../../components/fundamentals/icons/search-icon"
-import { Order, OrderEdit, ProductVariant } from "@medusajs/medusa"
+import { formatAmountWithSymbol } from "../../../utils/prices"
+import InputField from "../../../components/molecules/input"
+import useNotification from "../../../hooks/use-notification"
+
+type TotalsSectionProps = {
+  currentSubtotal: number
+  currencyCode: string
+  newSubtotal: number
+}
+
+/**
+ * Totals section displaying order and order edit subtotals.
+ */
+function TotalsSection(props: TotalsSectionProps) {
+  const { currencyCode, newSubtotal, currentSubtotal } = props
+
+  const differenceDue = currentSubtotal - newSubtotal
+
+  return (
+    <>
+      <div className="h-px w-full bg-grey-20 mb-6" />
+      <div className="flex justify-between h-[40px] mb-2">
+        <span className="text-gray-500">Current Subtotal</span>
+        <span className="text-gray-900">
+          {formatAmountWithSymbol({
+            amount: currentSubtotal,
+            currency: currencyCode,
+          })}
+          <span className="text-gray-400"> {currencyCode.toUpperCase()}</span>
+        </span>
+      </div>
+
+      <div className="flex justify-between h-[40px] mb-2">
+        <span className="text-gray-900 font-semibold">New Subtotal</span>
+        <span className="text-2xl font-semibold">
+          {formatAmountWithSymbol({
+            amount: newSubtotal,
+            currency: currencyCode,
+          })}
+        </span>
+      </div>
+
+      <div className="flex justify-between">
+        <span className="text-gray-500">Difference Due</span>
+        <span
+          className={clsx("text-gray-900", {
+            "text-rose-500": differenceDue < 0,
+            "text-emerald-500": differenceDue >= 0,
+          })}
+        >
+          {formatAmountWithSymbol({
+            amount: differenceDue,
+            currency: currencyCode,
+          })}
+          <span className="text-gray-400"> {currencyCode.toUpperCase()}</span>
+        </span>
+      </div>
+
+      <div className="h-px w-full bg-grey-20 mt-8 mb-6" />
+    </>
+  )
+}
 
 type AddProductVariantProps = {
   isReplace?: boolean
@@ -19,13 +86,14 @@ type AddProductVariantProps = {
 /**
  * Add product variant modal screen
  */
-function AddProductVariant(props: AddProductVariantProps) {
+export function AddProductVariant(props: AddProductVariantProps) {
   const { pop } = React.useContext(LayeredModalContext)
 
   const [selectedVariants, setSelectedVariants] = useState<ProductVariant[]>([])
 
-  const onSubmit = () => {
-    props.onSubmit(selectedVariants)
+  const onSubmit = async () => {
+    // wait until onSubmit is done to reduce list jumping
+    await props.onSubmit(selectedVariants)
     pop()
   }
 
@@ -62,26 +130,42 @@ type OrderEditModalProps = {
   close: () => void
   orderEdit: OrderEdit
   currencyCode: string
+  currentSubtotal: number
 }
 
 /**
  * Displays layered modal for order editing.
  */
 function OrderEditModal(props: OrderEditModalProps) {
-  const { close, orderEdit, currencyCode } = props
+  const { close, currentSubtotal, orderEdit, currencyCode } = props
+
+  const notification = useNotification()
+  const [note, setNote] = useState<string | undefined>()
+
+  const showTotals = currentSubtotal !== orderEdit.subtotal
+
+  const { mutateAsync: addLineItem } = useAdminOrderEditAddLineItem(
+    orderEdit.id
+  )
 
   const layeredModalContext = useContext(LayeredModalContext)
-
-  const onQuantityChange = () => {
-    console.log("TODO")
-  }
 
   const onClose = () => {
     close()
   }
 
-  const onAddVariants = (selectedVariants: ProductVariant[]) => {
-    console.log(selectedVariants)
+  const onAddVariants = async (selectedVariants: ProductVariant[]) => {
+    try {
+      const promises = selectedVariants.map((v) =>
+        addLineItem({ variant_id: v.id, quantity: 1 })
+      )
+
+      await Promise.all(promises)
+
+      notification("Success", "Added successfully", "success")
+    } catch (e) {
+      notification("Error", "Error occurred", "error")
+    }
   }
 
   const addProductVariantScreen = {
@@ -127,14 +211,43 @@ function OrderEditModal(props: OrderEditModalProps) {
             </div>
           </div>
 
-          {orderEdit.items.map((oi) => (
-            <OrderEditLine
-              item={oi}
+          {/* ITEMS */}
+          {orderEdit.items
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+            .map((oi) => (
+              <OrderEditLine
+                key={oi.id}
+                item={oi}
+                currencyCode={currencyCode}
+                change={orderEdit.changes.find(
+                  (change) =>
+                    change.line_item_id === oi.id ||
+                    change.original_line_item_id
+                )}
+              />
+            ))}
+
+          <div className="mt-8" />
+
+          {/* TOTALS */}
+          {showTotals && (
+            <TotalsSection
               currencyCode={currencyCode}
-              onQuantityChange={onQuantityChange}
-              quantity={oi.quantity}
+              currentSubtotal={currentSubtotal}
+              newSubtotal={orderEdit.subtotal}
             />
-          ))}
+          )}
+
+          {/* NOTE */}
+          <div className="flex items-center justify-between">
+            <span className="text-gray-500">Note</span>
+            <InputField
+              className="max-w-[455px]"
+              placeholder="Add a note..."
+              onChange={(e) => setNote(e.target.value)}
+              value={note}
+            />
+          </div>
         </Modal.Content>
         <Modal.Footer>
           <div className="flex items-center justify-end w-full">
@@ -167,29 +280,43 @@ type OrderEditModalContainerProps = {
 }
 
 function OrderEditModalContainer(props: OrderEditModalContainerProps) {
-  const [activeOrderEdit, setActiveOrderEdit] = useState<OrderEdit>()
+  const [activeOrderEditId, setActiveOrderEditId] = useState<
+    string | undefined
+  >()
   const { mutate: createOrderEdit } = useAdminCreateOrderEdit()
 
+  const { order_edit: orderEdit } = useAdminOrderEdit(
+    activeOrderEditId as string,
+    {
+      enabled: typeof activeOrderEditId === "string",
+    }
+  )
+
   useEffect(() => {
-    console.log(props.order)
     if (!props.order) {
       return
     }
 
     const edit = props.order.edits?.find((oe) => oe.status === "created")
     if (!edit) {
-      createOrderEdit({ order_id: props.order.id }, { onSuccess: console.log })
+      createOrderEdit(
+        { order_id: props.order.id },
+        { onSuccess: ({ order_edit }) => setActiveOrderEditId(order_edit.id) }
+      )
+    } else {
+      setActiveOrderEditId(edit.id)
     }
   }, [props.order?.edits])
 
-  if (!activeOrderEdit) {
+  if (!orderEdit) {
     return null
   }
 
   return (
     <OrderEditModal
-      orderEdit={activeOrderEdit}
       close={props.close}
+      orderEdit={orderEdit}
+      currentSubtotal={props.order.subtotal}
       currencyCode={props.order.currency_code}
     />
   )

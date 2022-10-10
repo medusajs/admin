@@ -133,7 +133,9 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
   const [showRefund, setShowRefund] = useState(false)
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
-  const { order, isLoading } = useAdminOrder(id!, { expand: "edits" })
+  const { order, isLoading } = useAdminOrder(id!, {
+    expand: "edits,fulfillments,payments",
+  })
 
   const capturePayment = useAdminCapturePayment(id!)
   const cancelOrder = useAdminCancelOrder(id!)
