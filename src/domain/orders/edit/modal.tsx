@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import { useAdminOrder } from "medusa-react"
+import { useAdminCreateOrderEdit } from "medusa-react"
 
 import LayeredModal, {
   LayeredModalContext,
@@ -9,7 +9,7 @@ import Button from "../../../components/fundamentals/button"
 import OrderEditLine from "../details/order-line/edit"
 import VariantsTable from "./variants-table"
 import SearchIcon from "../../../components/fundamentals/icons/search-icon"
-import { ProductVariant } from "@medusajs/medusa"
+import { Order, OrderEdit, ProductVariant } from "@medusajs/medusa"
 
 type AddProductVariantProps = {
   isReplace?: boolean
@@ -59,31 +59,21 @@ function AddProductVariant(props: AddProductVariantProps) {
 }
 
 type OrderEditModalProps = {
-  orderId: string
   close: () => void
+  orderEdit: OrderEdit
+  currencyCode: string
 }
 
 /**
  * Displays layered modal for order editing.
  */
 function OrderEditModal(props: OrderEditModalProps) {
-  const { close, orderId } = props
+  const { close, orderEdit, currencyCode } = props
 
-  const [quantities, setQuantities] = useState<Record<string, number>>({})
   const layeredModalContext = useContext(LayeredModalContext)
 
-  const { order } = useAdminOrder(orderId)
-
-  useEffect(() => {
-    const nextState = {}
-
-    order?.items.map((oi) => (nextState[oi.id] = oi.quantity))
-
-    setQuantities(nextState)
-  }, [order?.items])
-
-  const onQuantityChange = (itemId: string, quantity: number) => {
-    setQuantities({ ...quantities, [itemId]: quantity })
+  const onQuantityChange = () => {
+    console.log("TODO")
   }
 
   const onClose = () => {
@@ -137,12 +127,12 @@ function OrderEditModal(props: OrderEditModalProps) {
             </div>
           </div>
 
-          {order?.items.map((oi) => (
+          {orderEdit.items.map((oi) => (
             <OrderEditLine
               item={oi}
-              currencyCode={order.currency_code}
+              currencyCode={currencyCode}
               onQuantityChange={onQuantityChange}
-              quantity={quantities[oi.id]}
+              quantity={oi.quantity}
             />
           ))}
         </Modal.Content>
@@ -171,4 +161,38 @@ function OrderEditModal(props: OrderEditModalProps) {
   )
 }
 
-export default OrderEditModal
+type OrderEditModalContainerProps = {
+  order: Order
+  close: () => void
+}
+
+function OrderEditModalContainer(props: OrderEditModalContainerProps) {
+  const [activeOrderEdit, setActiveOrderEdit] = useState<OrderEdit>()
+  const { mutate: createOrderEdit } = useAdminCreateOrderEdit()
+
+  useEffect(() => {
+    console.log(props.order)
+    if (!props.order) {
+      return
+    }
+
+    const edit = props.order.edits?.find((oe) => oe.status === "created")
+    if (!edit) {
+      createOrderEdit({ order_id: props.order.id }, { onSuccess: console.log })
+    }
+  }, [props.order?.edits])
+
+  if (!activeOrderEdit) {
+    return null
+  }
+
+  return (
+    <OrderEditModal
+      orderEdit={activeOrderEdit}
+      close={props.close}
+      currencyCode={props.order.currency_code}
+    />
+  )
+}
+
+export default OrderEditModalContainer

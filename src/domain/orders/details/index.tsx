@@ -133,14 +133,12 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
   const [showRefund, setShowRefund] = useState(false)
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
-  const { order, isLoading } = useAdminOrder(id!)
+  const { order, isLoading } = useAdminOrder(id!, { expand: "edits" })
 
   const capturePayment = useAdminCapturePayment(id!)
   const cancelOrder = useAdminCancelOrder(id!)
 
-  const { mutate: updateOrder, isLoading: submitting } = useAdminUpdateOrder(
-    id!
-  )
+  const { mutate: updateOrder } = useAdminUpdateOrder(id!)
 
   const { region } = useAdminRegion(order?.region_id!, {
     enabled: !!order?.region_id,
@@ -646,7 +644,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
           )}
           {showOrderEdit && (
             <OrderEditModal
-              orderId={order.id}
+              order={order}
               close={() => setShowOrderEdit(false)}
             />
           )}
