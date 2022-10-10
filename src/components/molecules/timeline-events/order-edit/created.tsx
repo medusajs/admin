@@ -136,7 +136,7 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
             {event.edit.internal_note}
           </div>
         )}
-        <div className="">
+        <div>
           <OrderEditChanges orderEdit={orderEdit} />
         </div>
         {(event.edit.status === "created" ||
@@ -219,7 +219,7 @@ const OrderEditChanges = ({ orderEdit }) => {
         <div>
           <span className="inter-small-regular text-grey-50">Added</span>
           {added.map((change) => (
-            <OrderEditChangeItem change={change} />
+            <OrderEditChangeItem change={change} key={change.id} />
           ))}
         </div>
       )}
@@ -227,7 +227,7 @@ const OrderEditChanges = ({ orderEdit }) => {
         <div>
           <span className="inter-small-regular text-grey-50">Removed</span>
           {removed.map((change) => (
-            <OrderEditChangeItem change={change} />
+            <OrderEditChangeItem change={change} key={change.id} />
           ))}
         </div>
       )}

@@ -17,6 +17,14 @@ const EditRequestedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
     return null
   }
 
+  const onCopyPaymentLinkClicked = () => {
+    console.log("TODO")
+  }
+
+  const onMarkAsPaidClicked = () => {
+    console.log("TODO")
+  }
+
   const isRequested = orderEdit.status === "requested"
   return (
     <EventContainer
@@ -40,6 +48,7 @@ const EditRequestedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
             size="small"
             className="w-full border border-grey-20 mb-xsmall"
             variant="ghost"
+            onClick={onCopyPaymentLinkClicked}
           >
             Copy Payment Link
           </Button>
@@ -47,6 +56,7 @@ const EditRequestedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
             size="small"
             className="w-full border border-grey-20"
             variant="ghost"
+            onClick={onMarkAsPaidClicked}
           >
             Mark as Paid
           </Button>

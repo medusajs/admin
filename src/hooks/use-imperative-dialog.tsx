@@ -46,7 +46,7 @@ const DeleteDialog = ({
   )
 }
 
-type imperativeDialogProps = {
+type ImperativeDialogProps = {
   heading: string
   text: string
   confirmText?: string
@@ -58,7 +58,7 @@ const useImperativeDialog = () => {
     text,
     confirmText,
     cancelText,
-  }: imperativeDialogProps) => {
+  }: ImperativeDialogProps) => {
     // We want a promise here so we can "await" the user's action (either confirm or cancel)
     return new Promise((resolve) => {
       const mountNode = document.createElement("div")
