@@ -8,6 +8,8 @@ import ImagePlaceholder from "../../../components/fundamentals/image-placeholder
 import Table, { TablePagination } from "../../../components/molecules/table"
 import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
 import Spinner from "../../../components/atoms/spinner"
+import { formatAmountWithSymbol } from "../../../utils/prices"
+import Tooltip from "../../../components/atoms/tooltip"
 
 const PAGE_SIZE = 12
 
@@ -68,11 +70,22 @@ const VariantsTable: React.FC<Props> = (props) => {
       },
       {
         Header: (
+          <div className="text-gray-500 text-small font-semibold">SKU</div>
+        ),
+        accessor: "sku",
+        Cell: ({ row: { original } }) => <div>{original.sku}</div>,
+      },
+      {
+        Header: (
           <div className="text-gray-500 text-small font-semibold">Options</div>
         ),
         accessor: "options",
         Cell: ({ row: { original } }) => (
-          <span>{original.options?.map(({ value }) => value + " ")}</span>
+          <div className="truncate max-w-[160px]">
+            <span>
+              {original.options?.map(({ value }) => value).join(", ")}
+            </span>
+          </div>
         ),
       },
       {
@@ -84,6 +97,29 @@ const VariantsTable: React.FC<Props> = (props) => {
         accessor: "inventory_quantity",
         Cell: ({ row: { original } }) => (
           <div className="text-right">{original.inventory_quantity}</div>
+        ),
+      },
+      {
+        Header: (
+          <div className="text-right text-gray-500 text-small font-semibold">
+            Price
+          </div>
+        ),
+        accessor: "amount",
+        Cell: ({ row: { original } }) => (
+          <div className="text-right">
+            {original.prices[0] &&
+              formatAmountWithSymbol({
+                amount: original.prices[0].amount,
+                currency: original.prices[0].currency_code,
+              })}
+            {original.prices[0] && (
+              <span className="text-gray-400">
+                {" "}
+                {original.prices[0].currency_code.toUpperCase()}
+              </span>
+            )}
+          </div>
         ),
       },
     ]
@@ -218,6 +254,12 @@ const VariantsTable: React.FC<Props> = (props) => {
                   {...row.getRowProps()}
                   className={isDisabled && "opacity-50 pointer-events-none"}
                 >
+                  {/*TODO: TOOLTIP CSS doesn't work with table layout*/}
+                  {/*<Tooltip*/}
+                  {/*  side="top"*/}
+                  {/*  open={isDisabled ? undefined : false}*/}
+                  {/*  content="This variant is out of stock, and does not allow backorders"*/}
+                  {/*>*/}
                   {row.cells.map((cell) => {
                     return (
                       <Table.Cell {...cell.getCellProps()}>
@@ -225,6 +267,7 @@ const VariantsTable: React.FC<Props> = (props) => {
                       </Table.Cell>
                     )
                   })}
+                  {/*</Tooltip>*/}
                 </Table.Row>
               )
             })
