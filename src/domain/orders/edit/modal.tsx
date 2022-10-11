@@ -34,7 +34,7 @@ type TotalsSectionProps = {
 function TotalsSection(props: TotalsSectionProps) {
   const { currencyCode, newSubtotal, currentSubtotal } = props
 
-  const differenceDue = currentSubtotal - newSubtotal
+  const differenceDue = newSubtotal - currentSubtotal
 
   return (
     <>
