@@ -23,27 +23,30 @@ const PriceFormInput = ({
     currencyCode.toUpperCase()
   ]
 
-  const [rawValue, setRawValue] = useState<string | undefined>(
-    amount ? `${amount}` : undefined
+  const getFormattedValue = (value: number) => {
+    return `${value / 10 ** decimal_digits}`
+  }
+
+  const [formattedValue, setFormattedValue] = useState<string | undefined>(
+    amount !== null && amount !== undefined
+      ? getFormattedValue(amount)
+      : undefined
   )
 
   useEffect(() => {
     if (amount) {
-      const value = amount / 10 ** decimal_digits
-      setRawValue(`${value}`)
+      setFormattedValue(getFormattedValue(amount))
     }
   }, [amount, decimal_digits])
 
-  const onAmountChange = (value) => {
-    if (value) {
-      const numericalValue = Math.round(
-        parseFloat(value) * 10 ** decimal_digits
-      )
+  const onAmountChange = (value?: string, floatValue?: number | null) => {
+    if (typeof floatValue === "number") {
+      const numericalValue = Math.round(floatValue * 10 ** decimal_digits)
       onChange(numericalValue)
     } else {
-      onChange(0)
+      onChange(undefined)
     }
-    setRawValue(value)
+    setFormattedValue(value)
   }
 
   const step = 10 ** -decimal_digits
@@ -62,8 +65,10 @@ const PriceFormInput = ({
 
         <AmountField
           step={step}
-          value={rawValue}
-          onValueChange={onAmountChange}
+          value={formattedValue}
+          onValueChange={(value, _name, values) =>
+            onAmountChange(value, values?.float)
+          }
           allowNegativeValue={false}
           placeholder="-"
           decimalScale={decimal_digits}

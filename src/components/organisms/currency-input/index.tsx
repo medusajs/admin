@@ -10,7 +10,7 @@ import React, {
 import AmountField from "react-currency-input-field"
 import { Option } from "../../../types/shared"
 import { currencies, CurrencyType } from "../../../utils/currencies"
-import { getDecimalDigits, normalizeAmount } from "../../../utils/prices"
+import { normalizeAmount, persistedPrice } from "../../../utils/prices"
 import InputError from "../../atoms/input-error"
 import Tooltip from "../../atoms/tooltip"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
@@ -173,7 +173,7 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
   ) => {
     const { currencyInfo } = useContext(CurrencyContext)
     const [invalid, setInvalid] = useState<boolean>(false)
-    const [value, setValue] = useState<string | undefined>(
+    const [formattedValue, setFormattedValue] = useState<string | undefined>(
       amount ? `${normalizeAmount(currencyInfo?.code!, amount)}` : undefined
     )
     const inputRef = useRef<HTMLInputElement | null>(null)
@@ -189,48 +189,48 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
 
     useEffect(() => {
       if (currencyInfo && amount) {
-        setValue(`${normalizeAmount(currencyInfo?.code, amount)}`)
+        setFormattedValue(`${normalizeAmount(currencyInfo?.code, amount)}`)
       }
     }, [amount])
 
-    const handleChange = (value) => {
+    const handleChange = (value?: string, floatValue?: number | null) => {
       let persistedAmount: number | undefined = undefined
 
-      if (!value) {
-        value = 0
+      if (typeof floatValue === "number" && currencyInfo) {
+        persistedAmount = Math.round(
+          persistedPrice(currencyInfo.code, floatValue)
+        )
+      } else {
+        persistedAmount = undefined
       }
 
-      if (currencyInfo) {
-        const amount = parseFloat(value)
-        const multiplier = getDecimalDigits(currencyInfo.code)
-        persistedAmount = multiplier * amount
-      }
-
-      if (onChange && typeof persistedAmount !== "undefined") {
-        const updateAmount = Math.round(persistedAmount)
+      if (onChange) {
         let update = true
+
         if (onValidate) {
-          update = onValidate(updateAmount)
+          update = onValidate(persistedAmount)
         }
 
         if (update) {
-          onChange(updateAmount)
-          setValue(`${value}`)
+          onChange(persistedAmount)
           setInvalid(false)
         } else {
           setInvalid(true)
+          return // Don't update the value if it's invalid
         }
       }
+
+      setFormattedValue(value)
     }
 
     const handleManualValueChange = (val: number) => {
-      const newValue = parseFloat(value ?? "0") + val
+      const newValue = parseFloat(formattedValue ?? "0") + val
 
       if (!allowNegative && newValue < 0) {
         return
       }
 
-      handleChange(`${newValue}`)
+      handleChange(`${newValue}`, newValue)
     }
 
     return (
@@ -259,8 +259,10 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
           <AmountField
             className="bg-transparent outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
             decimalScale={currencyInfo?.decimal_digits}
-            value={value}
-            onValueChange={handleChange}
+            value={formattedValue}
+            onValueChange={(value, _name, values) =>
+              handleChange(value, values?.float)
+            }
             ref={inputRef}
             step={step}
             allowNegativeValue={allowNegative}

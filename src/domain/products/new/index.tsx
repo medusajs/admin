@@ -389,7 +389,7 @@ const createBlank = (): NewProductForm => {
 
 const getVariantPrices = (prices: PricesFormType) => {
   const priceArray = prices.prices
-    .filter((price) => price.amount)
+    .filter((price) => typeof price.amount === "number")
     .map((price) => {
       return {
         amount: price.amount as number,

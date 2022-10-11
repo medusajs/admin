@@ -77,6 +77,7 @@ const EditFlowVariantForm = ({ form }: Props) => {
                 return (
                   <InputField
                     required
+                    key={field.id}
                     label={field.title}
                     {...form.register(`options.${index}.value`, {
                       required: `Option value for ${field.title} is required`,

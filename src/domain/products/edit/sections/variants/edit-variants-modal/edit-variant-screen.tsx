@@ -98,7 +98,7 @@ export const createUpdatePayload = (
   const { customs, dimensions, prices, options, general, stock } = data
 
   const priceArray = prices.prices
-    .filter((price) => price.amount)
+    .filter((price) => typeof price.amount === "number")
     .map((price) => {
       return {
         amount: price.amount,
