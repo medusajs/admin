@@ -1,12 +1,14 @@
 import { Store, User } from "@medusajs/medusa"
-import { AnalyticsBrowser, Traits } from "@segment/analytics-next"
+import { Traits } from "@segment/analytics-next"
 import { useAdminGetSession, useAdminStore, useAdminUsers } from "medusa-react"
 import React, { createContext, useContext, useEffect, useMemo } from "react"
 import { useQuery } from "react-query"
+import Fade from "../components/atoms/fade-wrapper"
+import AnalyticsPreferences from "../components/organisms/analytics-preferences"
+import { analytics } from "../services/analytics"
 
 type Props = {
   children?: React.ReactNode
-  writeKey?: string
 }
 
 type Event =
@@ -27,25 +29,24 @@ type AnalyticsContext = {
 
 const AnalyticsContext = createContext<AnalyticsContext | null>(null)
 
-const AnalyticsProvider = ({ children, writeKey }: Props) => {
+const AnalyticsProvider = ({ children }: Props) => {
   const { user } = useAdminGetSession()
   const { users: users } = useAdminUsers()
   const { store } = useAdminStore()
+  const { anonymized, isLoading } = useAdminAnalyticsPreference(user?.id)
 
-  const analytics = useMemo(() => {
-    if (!writeKey) {
-      return null
-    }
-
-    return AnalyticsBrowser.load({ writeKey })
-  }, [writeKey])
+  const askPermission = useMemo(() => {
+    return anonymized === null && !isLoading
+  }, [anonymized, isLoading])
 
   useEffect(() => {
-    if (!analytics || !store || !user) {
+    if (!store || !user) {
       return
     }
 
     analytics.identify(user.id, getUserTraits(user, store, false))
+
+    analytics.off
   }, [analytics, user, users, store])
 
   const track = (event: Event, properties?: Record<string, unknown>) => {
@@ -66,10 +67,6 @@ const AnalyticsProvider = ({ children, writeKey }: Props) => {
 
   const trackNumberOfUsers = (properties?: Record<string, unknown>) => {
     track("num_users", properties)
-  }
-
-  const trackError = (properties?: Record<string, unknown>) => {
-    track("error", properties)
   }
 
   const trackStoreName = (properties?: Record<string, unknown>) => {
@@ -94,6 +91,14 @@ const AnalyticsProvider = ({ children, writeKey }: Props) => {
 
   return (
     <AnalyticsContext.Provider value={{ track }}>
+      {false && (
+        <Fade isVisible={true} isFullScreen={true}>
+          <AnalyticsPreferences
+            isSubmitting={false}
+            updatePreferences={(c) => console.log(c)}
+          />
+        </Fade>
+      )}
       {children}
     </AnalyticsContext.Provider>
   )
@@ -115,8 +120,14 @@ const getUserTraits = (
 
 const fetchAnalyticsPreference = async (
   identfier: string
-): Promise<{ anonymized: boolean }> => {
-  return fetch(`/preferences/${identfier}`).then(() => ({ anonymized: false }))
+): Promise<{ anonymized: boolean | null }> => {
+  let preferences = { anonymized: null }
+
+  setTimeout(() => {
+    preferences = { anonymized: null }
+  }, 2000)
+
+  return preferences
 }
 
 const useAdminAnalyticsPreference = (identifier?: string) => {

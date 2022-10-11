@@ -26,6 +26,8 @@ const Edit = ({ id }: EditProps) => {
 
     const errorStatus = getErrorStatus(error)
 
+    throw error
+
     if (errorStatus) {
       message = errorStatus.message
 

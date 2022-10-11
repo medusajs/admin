@@ -4,7 +4,9 @@ import "./src/assets/styles/emoji-picker.css"
 import "./src/assets/styles/global.css"
 import { LayeredModalProvider } from "./src/components/molecules/modal/layered-modal"
 import { SteppedProvider } from "./src/components/molecules/modal/stepped-modal"
+import ErrorBoundary from "./src/components/organisms/error-boundary"
 import { AccountProvider } from "./src/context/account"
+import AnalyticsProvider from "./src/context/analytics"
 import { CacheProvider } from "./src/context/cache"
 import { FeatureFlagProvider } from "./src/context/feature-flag"
 import { InterfaceProvider } from "./src/context/interface"
@@ -21,11 +23,15 @@ export const wrapPageElement = ({ element }) => {
       <CacheProvider>
         <AccountProvider>
           <FeatureFlagProvider>
-            <InterfaceProvider>
-              <SteppedProvider>
-                <LayeredModalProvider>{element}</LayeredModalProvider>
-              </SteppedProvider>
-            </InterfaceProvider>
+            <AnalyticsProvider>
+              <InterfaceProvider>
+                <SteppedProvider>
+                  <LayeredModalProvider>
+                    <ErrorBoundary>{element}</ErrorBoundary>
+                  </LayeredModalProvider>
+                </SteppedProvider>
+              </InterfaceProvider>
+            </AnalyticsProvider>
           </FeatureFlagProvider>
         </AccountProvider>
       </CacheProvider>
