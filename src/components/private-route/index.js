@@ -18,7 +18,7 @@ const PrivateRoute = ({ component: Component, location, ...rest }) => {
       })
   }, [])
 
-  if (account.isLoggedIn) {
+  if (account.isLoggedIn && !loading) {
     return <Component {...rest} />
   }
 
