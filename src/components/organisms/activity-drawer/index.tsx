@@ -9,6 +9,8 @@ import BatchJobActivityList from "../batch-jobs-activity-list"
 const ActivityDrawer = ({ onDismiss }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const { batchJobs, hasPollingError } = useContext(PollingContext)
+  // TODO: check ref is null untill next rerender which could be in couple of seconds
+  // also check in the hook, `.contains` isn't behaving correctly
   useOutsideClick(onDismiss, ref)
 
   return (

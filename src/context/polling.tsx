@@ -35,6 +35,10 @@ const creeateDedupingTimer = (start: number) => {
     isEnabled() {
       return Date.now() >= deadline
     },
+    reset() {
+      deadline = Date.now()
+      this.current = INTERVALS[0]
+    },
   }
 }
 
@@ -61,10 +65,15 @@ export const PollingProvider = ({ children }) => {
     }
   )
 
+  const refetchJobs = () => {
+    refetch()
+    Timer.reset()
+  }
+
   const value = {
     batchJobs,
     hasPollingError,
-    refetchJobs: refetch,
+    refetchJobs,
   }
 
   return (

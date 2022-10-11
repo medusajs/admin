@@ -1,12 +1,13 @@
 import { BatchJob } from "@medusajs/medusa/dist"
 import clsx from "clsx"
 import {
+  useAdminBatchJob,
   useAdminCancelBatchJob,
   useAdminCreatePresignedDownloadUrl,
   useAdminDeleteFile,
-  useAdminStore
+  useAdminStore,
 } from "medusa-react"
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import useNotification from "../../../hooks/use-notification"
 import { bytesConverter } from "../../../utils/bytes-converter"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -19,6 +20,36 @@ import { ActivityCard } from "../../molecules/activity-card"
 import BatchJobFileCard from "../../molecules/batch-job-file-card"
 import { batchJobDescriptionBuilder, BatchJobOperation } from "./utils"
 
+/**
+ * Retrieve a batch job and refresh the data depending on the last batch job status
+ */
+function useBatchJob(initialData: BatchJob): BatchJob {
+  const [batchJob, setBatchJob] = useState<BatchJob>(initialData)
+
+  const status = batchJob?.status || initialData.status
+
+  const refetchInterval = {
+    ["created"]: 2000,
+    ["pre_processed"]: 2000,
+    ["confirmed"]: 2000,
+    ["processing"]: 5000,
+    ["completed"]: false,
+    ["canceled"]: false,
+    ["failed"]: false,
+  }[status]
+
+  const { batch_job } = useAdminBatchJob(initialData.id, {
+    refetchInterval,
+    initialData: { batch_job: initialData },
+  })
+
+  useEffect(() => {
+    setBatchJob(batch_job)
+  }, [batch_job])
+
+  return useMemo(() => batchJob!, [batchJob?.status, batchJob?.result])
+}
+
 const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   return (
     <div>
@@ -29,10 +60,13 @@ const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
   )
 }
 
-const BatchJobActivityCard = ({ batchJob }: { batchJob: BatchJob }) => {
+const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
   const activityCardRef = useRef<HTMLDivElement>(null)
   const notification = useNotification()
   const { store } = useAdminStore()
+
+  const batchJob = useBatchJob(props.batchJob)
+
   const {
     mutate: cancelBatchJob,
     error: cancelBatchJobError,
