@@ -47,7 +47,7 @@ const NestedPrice = ({ form, nestedPrice }: Props) => {
             <span className="inter-base-regular text-grey-50">
               {currencies[currencyPrice.currency_code.toUpperCase()].name}
             </span>
-            <IncludesTaxTooltip includesTax={currencyPrice?.includes_tax}/>
+            <IncludesTaxTooltip includesTax={currencyPrice?.includes_tax} />
           </div>
         </div>
         <Controller
@@ -57,7 +57,7 @@ const NestedPrice = ({ form, nestedPrice }: Props) => {
             return (
               <PriceFormInput
                 onChange={onChange}
-                amount={value || undefined}
+                amount={value !== null ? value : undefined}
                 currencyCode={currencyPrice.currency_code}
                 errors={errors}
               />
@@ -101,7 +101,7 @@ const NestedPrice = ({ form, nestedPrice }: Props) => {
                   return (
                     <PriceFormInput
                       onChange={onChange}
-                      amount={value || undefined}
+                      amount={value !== null ? value : undefined}
                       currencyCode={currencyPrice.currency_code}
                       errors={errors}
                     />
