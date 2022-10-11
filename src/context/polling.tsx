@@ -1,8 +1,7 @@
-import { AdminGetBatchParams } from "@medusajs/medusa"
-import { BatchJob } from "@medusajs/medusa/dist"
+import React from "react"
+
+import { AdminGetBatchParams, BatchJob } from "@medusajs/medusa"
 import { useAdminBatchJobs } from "medusa-react"
-import React, { useContext, useEffect, useState } from "react"
-import { AccountContext } from "./account"
 
 export const defaultPollingContext: {
   batchJobs?: BatchJob[]
@@ -11,63 +10,61 @@ export const defaultPollingContext: {
 
 export const PollingContext = React.createContext(defaultPollingContext)
 
+const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1))
+oneMonthAgo.setHours(0, 0, 0, 0)
+
+/**
+ * Intervals for refetching batch jobs in seconds.
+ */
+const INTERVALS = [1, 2, 5, 10, 15, 30, 60]
+
+/**
+ * Function factory for creating deduplicating timer object.
+ * @param start - Initial starting point in the intervals array.
+ */
+const creeateDedupingTimer = (start: number) => {
+  let deadline = Date.now()
+  return {
+    current: start,
+    register() {
+      deadline = Date.now()
+
+      const currentInd = INTERVALS.findIndex((s) => s === this.current)
+      this.current = INTERVALS[Math.min(INTERVALS.length - 1, currentInd + 1)]
+    },
+    isEnabled() {
+      return Date.now() >= deadline
+    },
+  }
+}
+
+const Timer = creeateDedupingTimer(INTERVALS[0])
+
+/**
+ * Batch job polling context provides batch jobs to the context.
+ * Jobs are refreshed with nonlinear intervals.
+ */
 export const PollingProvider = ({ children }) => {
-  const { isLoggedIn } = useContext(AccountContext)
-
-  const [shouldPollBatchJobs, setShouldPollBatchJobs] = useState(false)
-  const [polledBatchJobs, setPolledBatchJobs] = useState<
-    BatchJob[] | undefined
-  >()
-  const [hasPollingError, setHasPollingError] = useState<boolean | undefined>()
-
-  const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1))
-  oneMonthAgo.setHours(0, 0, 0, 0)
-
   const {
     batch_jobs: batchJobs,
-    isError: isBathJobPollingError,
-    isFetching,
+    isError: hasPollingError,
+    refetch,
   } = useAdminBatchJobs(
     {
       created_at: { gte: oneMonthAgo },
       failed_at: null,
     } as AdminGetBatchParams,
     {
-      refetchInterval: shouldPollBatchJobs ? 5000 : false,
-      refetchOnWindowFocus: shouldPollBatchJobs,
-    } as any
+      refetchInterval: Timer.current * 1000,
+      enabled: Timer.isEnabled(),
+      onSettled: Timer.register.bind(Timer),
+    }
   )
 
-  useEffect(() => {
-    if (isFetching) {
-      return
-    }
-
-    if (!isLoggedIn) {
-      setShouldPollBatchJobs(false)
-      return
-    }
-
-    setPolledBatchJobs(batchJobs)
-
-    const shouldPoll =
-      !polledBatchJobs?.length ||
-      polledBatchJobs.some((batch: any): boolean => {
-        return (
-          (!!batch.pre_processed_at || !!batch.processing_at) &&
-          !batch.completed &&
-          !batch.failed_at &&
-          !batch.canceled_at
-        )
-      })
-
-    setShouldPollBatchJobs(shouldPoll)
-    setHasPollingError(isBathJobPollingError)
-  }, [batchJobs, isFetching, isBathJobPollingError, isLoggedIn])
-
   const value = {
-    batchJobs: polledBatchJobs,
+    batchJobs,
     hasPollingError,
+    refetchJobs: refetch,
   }
 
   return (
