@@ -177,7 +177,6 @@ function OrderEditModal(props: OrderEditModalProps) {
   }
 
   const onCancel = async () => {
-    // TODO: on click outside delete the edit
     close()
     // TODO: BD issue - cannot delete order edit with change item
     deleteOrderEdit()

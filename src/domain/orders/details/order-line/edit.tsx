@@ -194,16 +194,14 @@ const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
               "pointer-events-none": isLocked,
             })}
           >
-            <Tooltip content="tooltip text">
-              <MinusIcon
-                className="cursor-pointer"
-                onClick={() =>
-                  item.quantity > 1 &&
-                  !isLocked &&
-                  onQuantityUpdate(item.quantity - 1)
-                }
-              />
-            </Tooltip>
+            <MinusIcon
+              className="cursor-pointer"
+              onClick={() =>
+                item.quantity > 1 &&
+                !isLocked &&
+                onQuantityUpdate(item.quantity - 1)
+              }
+            />
             <span
               className={clsx("px-8 text-center text-gray-900 min-w-[74px]", {
                 "!text-gray-400": isLocked,
