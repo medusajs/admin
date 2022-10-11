@@ -225,11 +225,11 @@ function OrderEditModal(props: OrderEditModalProps) {
     <LayeredModal
       open
       isLargeModal
-      handleClose={close}
+      handleClose={onCancel}
       context={layeredModalContext}
     >
       <Modal.Body>
-        <Modal.Header handleClose={close}>
+        <Modal.Header handleClose={onCancel}>
           <h1 className="inter-xlarge-semibold">Edit Order</h1>
         </Modal.Header>
         <Modal.Content>
