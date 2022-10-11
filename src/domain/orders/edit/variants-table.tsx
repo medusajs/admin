@@ -2,6 +2,7 @@ import { useAdminVariants } from "medusa-react"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
 import { ProductVariant } from "@medusajs/medusa"
+import clsx from "clsx"
 
 import { useDebounce } from "../../../hooks/use-debounce"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
@@ -173,7 +174,7 @@ const VariantsTable: React.FC<Props> = (props) => {
             const selectProps = row.getToggleRowSelectedProps()
 
             return (
-              <div>
+              <div className={clsx({ "mr-2": isReplace })}>
                 <IndeterminateCheckbox
                   {...selectProps}
                   disabled={row.original.inventory_quantity === 0}

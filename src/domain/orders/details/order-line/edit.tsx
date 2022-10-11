@@ -160,13 +160,13 @@ const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
             </div>
             <div className="flex items-center">
               {isNew && (
-                <div className="text-small text-blue-500 bg-blue-10 h-[24px] w-[42px] mr-2 flex items-center justify-center rounded-rounded">
+                <div className="text-small text-blue-500 bg-blue-10 h-[24px] w-[42px] mr-2 flex-shrink-0 flex items-center justify-center rounded-rounded">
                   New
                 </div>
               )}
 
               {isModified && (
-                <div className="text-small text-orange-500 bg-orange-10 h-[24px] w-[84px] mr-2 flex items-center justify-center rounded-rounded">
+                <div className="text-small text-orange-500 bg-orange-10 h-[24px] w-[68px] mr-2 flex-shrink-0 flex items-center justify-center rounded-rounded">
                   Modified
                 </div>
               )}
