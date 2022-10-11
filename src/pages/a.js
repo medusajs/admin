@@ -22,6 +22,11 @@ import Settings from "../domain/settings"
 const IndexPage = () => {
   useHotkeys("g + o", () => navigate("/a/orders"))
   useHotkeys("g + p", () => navigate("/a/products"))
+
+  return <PrivateRoute component={Routes} />
+}
+
+const Routes = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <Layout>
