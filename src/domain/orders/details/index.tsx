@@ -137,9 +137,10 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
   const { order, isLoading } = useAdminOrder(
-    id!
+    id!,
     // TODO: uncomment this - to use expand only valid expand relations can be listed, in that case some of currently fetched relations such as order.swaps.fullfilemnts wont be loaded
     // { expand: orderRelations }
+    { expand: "edits,fulfillments,payments" }
   )
 
   const capturePayment = useAdminCapturePayment(id!)

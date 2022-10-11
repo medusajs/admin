@@ -178,8 +178,7 @@ function OrderEditModal(props: OrderEditModalProps) {
 
   const onCancel = async () => {
     close()
-    // TODO: BD issue - cannot delete order edit with change item
-    deleteOrderEdit()
+    await deleteOrderEdit()
   }
 
   const onAddVariants = async (selectedVariants: ProductVariant[]) => {
