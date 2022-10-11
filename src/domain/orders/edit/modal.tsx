@@ -209,8 +209,10 @@ function OrderEditModal(props: OrderEditModalProps) {
   )
 
   if (filterTerm) {
-    displayItems = displayItems.filter((i) =>
-      i.title.toLowerCase().includes(filterTerm)
+    displayItems = displayItems.filter(
+      (i) =>
+        i.title.toLowerCase().includes(filterTerm) ||
+        i.variant?.sku.toLowerCase().includes(filterTerm)
     )
   }
 
