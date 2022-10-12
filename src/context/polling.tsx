@@ -66,8 +66,8 @@ export const PollingProvider = ({ children }) => {
   )
 
   const refetchJobs = () => {
-    refetch()
     Timer.reset()
+    refetch()
   }
 
   const value = {
