@@ -16,12 +16,19 @@ const PAGE_SIZE = 12
 type Props = {
   isReplace?: boolean
   regionId: string
+  customerId: string
   currencyCode: string
   setSelectedVariants: (selectedIds: ProductVariant[]) => void
 }
 
 const VariantsTable: React.FC<Props> = (props) => {
-  const { isReplace, regionId, currencyCode, setSelectedVariants } = props
+  const {
+    isReplace,
+    regionId,
+    currencyCode,
+    customerId,
+    setSelectedVariants,
+  } = props
 
   const [query, setQuery] = useState("")
   const [offset, setOffset] = useState(0)
@@ -34,6 +41,9 @@ const VariantsTable: React.FC<Props> = (props) => {
     q: debouncedSearchTerm,
     limit: PAGE_SIZE,
     offset,
+    // @ts-ignore DEPENDS ON core:pull#2270
+    region_id: regionId,
+    customer_id: customerId,
   })
 
   useEffect(() => {
@@ -111,32 +121,33 @@ const VariantsTable: React.FC<Props> = (props) => {
         ),
         accessor: "amount",
         Cell: ({ row: { original } }) => {
-          // show only applicable prices
-          const prices = original.prices
-            .filter(
-              (price) =>
-                price.currency_code === currencyCode ||
-                price.region_id === regionId
-            )
-            .sort((p1, p2) => p1.amount - p2.amount)
-
-          if (!prices.length) {
+          if (!original.original_price) {
             return null
           }
 
-          // TODO: also not correct
-          const price = prices[0]
+          const showOriginal = original.calculated_price_type !== "default"
 
           return (
-            <div className="text-right">
-              {formatAmountWithSymbol({
-                amount: price.amount,
-                currency: price.currency_code,
-              })}
-
+            <div className="flex justify-end items-center gap-2">
+              <div className="flex flex-col items-end">
+                {showOriginal && (
+                  <span className="text-gray-400 line-through">
+                    {formatAmountWithSymbol({
+                      amount: original.original_price,
+                      currency: currencyCode,
+                    })}
+                  </span>
+                )}
+                <span>
+                  {formatAmountWithSymbol({
+                    amount: original.calculated_price,
+                    currency: currencyCode,
+                  })}
+                </span>
+              </div>
               <span className="text-gray-400">
                 {" "}
-                {price.currency_code.toUpperCase()}
+                {currencyCode.toUpperCase()}
               </span>
             </div>
           )

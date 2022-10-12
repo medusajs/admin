@@ -23,11 +23,19 @@ import Tooltip from "../../../../components/atoms/tooltip"
 
 type OrderEditLineProps = {
   item: LineItem
+  customerId: string
+  regionId: string
   currencyCode: string
   change?: OrderItemChange
 }
 
-const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
+const OrderEditLine = ({
+  item,
+  currencyCode,
+  change,
+  customerId,
+  regionId,
+}: OrderEditLineProps) => {
   const notification = useNotification()
   const { pop, push } = React.useContext(LayeredModalContext)
 
@@ -111,7 +119,15 @@ const OrderEditLine = ({ item, currencyCode, change }: OrderEditLineProps) => {
   const replaceProductVariantScreen = {
     title: "Replace Product Variants",
     onBack: pop,
-    view: <AddProductVariant onSubmit={onReplace} isReplace />,
+    view: (
+      <AddProductVariant
+        onSubmit={onReplace}
+        customerId={customerId}
+        regionId={regionId}
+        currencyCode={currencyCode}
+        isReplace
+      />
+    ),
   }
 
   const actions = [

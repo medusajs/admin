@@ -84,6 +84,7 @@ function TotalsSection(props: TotalsSectionProps) {
 type AddProductVariantProps = {
   regionId: string
   currencyCode: string
+  customerId: string
   isReplace?: boolean
   onSubmit: (variants: ProductVariant[]) => void
 }
@@ -113,6 +114,7 @@ export function AddProductVariant(props: AddProductVariantProps) {
         <div className="min-h-[680px] flex flex-col justify-between">
           <VariantsTable
             regionId={props.regionId}
+            customerId={props.customerId}
             currencyCode={props.currencyCode}
             isReplace={props.isReplace}
             setSelectedVariants={setSelectedVariants}
@@ -138,6 +140,7 @@ type OrderEditModalProps = {
   orderEdit: OrderEdit
   currencyCode: string
   regionId: string
+  customerId: string
   currentSubtotal: number
 }
 
@@ -145,7 +148,14 @@ type OrderEditModalProps = {
  * Displays layered modal for order editing.
  */
 function OrderEditModal(props: OrderEditModalProps) {
-  const { close, currentSubtotal, orderEdit, currencyCode, regionId } = props
+  const {
+    close,
+    currentSubtotal,
+    orderEdit,
+    currencyCode,
+    regionId,
+    customerId,
+  } = props
 
   const notification = useNotification()
   const [note, setNote] = useState<string | undefined>()
@@ -226,6 +236,7 @@ function OrderEditModal(props: OrderEditModalProps) {
     view: (
       <AddProductVariant
         onSubmit={onAddVariants}
+        customerId={customerId}
         regionId={regionId}
         currencyCode={currencyCode}
       />
@@ -282,6 +293,8 @@ function OrderEditModal(props: OrderEditModalProps) {
             <OrderEditLine
               key={oi.id}
               item={oi}
+              customerId={customerId}
+              regionId={regionId}
               currencyCode={currencyCode}
               change={orderEdit.changes.find(
                 (change) =>
@@ -395,6 +408,7 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
       orderEdit={orderEdit}
       currentSubtotal={props.order.subtotal}
       regionId={props.order.region_id}
+      customerId={props.order.customer_id}
       currencyCode={props.order.currency_code}
     />
   )
