@@ -82,13 +82,15 @@ const VariantsTable: React.FC<Props> = (props) => {
           <div className="text-gray-500 text-small font-semibold">Options</div>
         ),
         accessor: "options",
-        Cell: ({ row: { original } }) => (
-          <div className="truncate max-w-[160px]">
-            <span>
-              {original.options?.map(({ value }) => value).join(", ")}
-            </span>
-          </div>
-        ),
+        Cell: ({ row: { original } }) => {
+          const options = original.options?.map(({ value }) => value).join(", ")
+
+          return (
+            <div title={options} className="truncate max-w-[160px]">
+              <span>{options}</span>
+            </div>
+          )
+        },
       },
       {
         Header: (
@@ -116,7 +118,7 @@ const VariantsTable: React.FC<Props> = (props) => {
                 price.currency_code === currencyCode ||
                 price.region_id === regionId
             )
-            .sort((p1, p2) => p2.amount - p1.amount)
+            .sort((p1, p2) => p1.amount - p2.amount)
 
           if (!prices.length) {
             return null
