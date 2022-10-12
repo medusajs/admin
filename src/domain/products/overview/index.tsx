@@ -1,6 +1,6 @@
 import { navigate, RouteComponentProps, useLocation } from "@reach/router"
 import { useAdminCreateBatchJob, useAdminCreateCollection } from "medusa-react"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Button from "../../../components/fundamentals/button"
 import ExportIcon from "../../../components/fundamentals/icons/export-icon"
@@ -22,7 +22,10 @@ const VIEWS = ["products", "collections"]
 
 const Overview = (_props: RouteComponentProps) => {
   const location = useLocation()
-  const [view, setView] = useState("products")
+  const searchParams = new URLSearchParams(location.search)
+  const [view, setView] = useState(
+    searchParams.get("view") === "collections" ? "collections" : "products"
+  )
   const {
     state: createProductState,
     close: closeProductCreate,
@@ -34,16 +37,6 @@ const Overview = (_props: RouteComponentProps) => {
   const notification = useNotification()
 
   const createCollection = useAdminCreateCollection()
-
-  useEffect(() => {
-    if (location.search.includes("?view=collections")) {
-      setView("collections")
-    }
-  }, [location])
-
-  useEffect(() => {
-    location.search = ""
-  }, [view])
 
   const CurrentView = () => {
     switch (view) {
