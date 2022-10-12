@@ -3,6 +3,7 @@ import { Order, OrderEdit, ProductVariant } from "@medusajs/medusa"
 import {
   useAdminCreateOrderEdit,
   useAdminDeleteOrderEdit,
+  useAdminOrder,
   useAdminOrderEdit,
   useAdminOrderEditAddLineItem,
   useAdminRequestOrderEditConfirmation,
@@ -21,6 +22,7 @@ import SearchIcon from "../../../components/fundamentals/icons/search-icon"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import InputField from "../../../components/molecules/input"
 import useNotification from "../../../hooks/use-notification"
+import useToggleState from "../../../hooks/use-toggle-state"
 
 type TotalsSectionProps = {
   currentSubtotal: number
@@ -352,12 +354,15 @@ function OrderEditModal(props: OrderEditModalProps) {
 }
 
 type OrderEditModalContainerProps = {
-  order: Order
+  orderId: string
   close: () => void
 }
 
 function OrderEditModalContainer(props: OrderEditModalContainerProps) {
   const notification = useNotification()
+
+  // TODO: replace with the list endpoint
+  const { order } = useAdminOrder(props.orderId, { expand: "edits" })
 
   const [activeOrderEditId, setActiveOrderEditId] = useState<
     string | undefined
@@ -374,15 +379,15 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
 
   // find an existing edit or create one if active order edit doesn't exist on the order
   useEffect(() => {
-    if (!props.order || activeOrderEditId) {
+    if (!order || activeOrderEditId) {
       return
     }
 
-    const edit = props.order.edits.find((oe) => oe.status === "created")
+    const edit = order.edits.find((oe) => oe.status === "created")
 
     if (!edit) {
       createOrderEdit(
-        { order_id: props.order.id },
+        { order_id: order.id },
         {
           onSuccess: ({ order_edit }) => setActiveOrderEditId(order_edit.id),
           onError: () =>
@@ -396,20 +401,20 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
     } else {
       setActiveOrderEditId(edit.id)
     }
-  }, [props.order, activeOrderEditId])
+  }, [order, activeOrderEditId])
 
-  if (!orderEdit) {
+  if (!orderEdit || !order) {
     return null
   }
 
   return (
     <OrderEditModal
-      close={props.close}
+      close={close}
       orderEdit={orderEdit}
-      currentSubtotal={props.order.subtotal}
-      regionId={props.order.region_id}
-      customerId={props.order.customer_id}
-      currencyCode={props.order.currency_code}
+      currentSubtotal={order.subtotal}
+      regionId={order.region_id}
+      customerId={order.customer_id}
+      currencyCode={order.currency_code}
     />
   )
 }
