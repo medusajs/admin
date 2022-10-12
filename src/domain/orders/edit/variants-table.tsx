@@ -10,17 +10,18 @@ import Table, { TablePagination } from "../../../components/molecules/table"
 import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
 import Spinner from "../../../components/atoms/spinner"
 import { formatAmountWithSymbol } from "../../../utils/prices"
-import Tooltip from "../../../components/atoms/tooltip"
 
 const PAGE_SIZE = 12
 
 type Props = {
   isReplace?: boolean
+  regionId: string
+  currencyCode: string
   setSelectedVariants: (selectedIds: ProductVariant[]) => void
 }
 
 const VariantsTable: React.FC<Props> = (props) => {
-  const { isReplace, setSelectedVariants } = props
+  const { isReplace, regionId, currencyCode, setSelectedVariants } = props
 
   const [query, setQuery] = useState("")
   const [offset, setOffset] = useState(0)
@@ -108,13 +109,21 @@ const VariantsTable: React.FC<Props> = (props) => {
         ),
         accessor: "amount",
         Cell: ({ row: { original } }) => {
-          // TODO: which price to select ?
-          // also if we want to display comparison between prices how do we compare them since
-          // a variant could have for example a price of 100USD and 100EUR
-          const price = original.prices[0]
-          if (!price) {
+          // show only applicable prices
+          const prices = original.prices
+            .filter(
+              (price) =>
+                price.currency_code === currencyCode ||
+                price.region_id === regionId
+            )
+            .sort((p1, p2) => p2.amount - p1.amount)
+
+          if (!prices.length) {
             return null
           }
+
+          // TODO: also not correct
+          const price = prices[0]
 
           return (
             <div className="text-right">

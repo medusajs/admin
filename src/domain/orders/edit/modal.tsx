@@ -82,6 +82,8 @@ function TotalsSection(props: TotalsSectionProps) {
 }
 
 type AddProductVariantProps = {
+  regionId: string
+  currencyCode: string
   isReplace?: boolean
   onSubmit: (variants: ProductVariant[]) => void
 }
@@ -110,6 +112,8 @@ export function AddProductVariant(props: AddProductVariantProps) {
       <Modal.Content>
         <div className="min-h-[680px] flex flex-col justify-between">
           <VariantsTable
+            regionId={props.regionId}
+            currencyCode={props.currencyCode}
             isReplace={props.isReplace}
             setSelectedVariants={setSelectedVariants}
           />
@@ -133,6 +137,7 @@ type OrderEditModalProps = {
   close: () => void
   orderEdit: OrderEdit
   currencyCode: string
+  regionId: string
   currentSubtotal: number
 }
 
@@ -140,7 +145,7 @@ type OrderEditModalProps = {
  * Displays layered modal for order editing.
  */
 function OrderEditModal(props: OrderEditModalProps) {
-  const { close, currentSubtotal, orderEdit, currencyCode } = props
+  const { close, currentSubtotal, orderEdit, currencyCode, regionId } = props
 
   const notification = useNotification()
   const [note, setNote] = useState<string | undefined>()
@@ -218,7 +223,13 @@ function OrderEditModal(props: OrderEditModalProps) {
   const addProductVariantScreen = {
     title: "Add Product Variants",
     onBack: layeredModalContext.pop,
-    view: <AddProductVariant onSubmit={onAddVariants} />,
+    view: (
+      <AddProductVariant
+        onSubmit={onAddVariants}
+        regionId={regionId}
+        currencyCode={currencyCode}
+      />
+    ),
   }
 
   return (
@@ -246,7 +257,6 @@ function OrderEditModal(props: OrderEditModalProps) {
               >
                 Add items
               </Button>
-              {/*TODO: check if this is desired behaviour since it's not defined in the design*/}
               {showFilter && (
                 <InputField
                   value={filterTerm}
@@ -384,6 +394,7 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
       close={props.close}
       orderEdit={orderEdit}
       currentSubtotal={props.order.subtotal}
+      regionId={props.order.region_id}
       currencyCode={props.order.currency_code}
     />
   )
