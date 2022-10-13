@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import { Order, OrderEdit, ProductVariant } from "@medusajs/medusa"
+import { OrderEdit, ProductVariant } from "@medusajs/medusa"
 import {
   useAdminCreateOrderEdit,
   useAdminDeleteOrderEdit,
@@ -22,7 +22,6 @@ import SearchIcon from "../../../components/fundamentals/icons/search-icon"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import InputField from "../../../components/molecules/input"
 import useNotification from "../../../hooks/use-notification"
-import useToggleState from "../../../hooks/use-toggle-state"
 
 type TotalsSectionProps = {
   currentSubtotal: number
@@ -194,8 +193,9 @@ function OrderEditModal(props: OrderEditModalProps) {
   }
 
   const onCancel = async () => {
-    close()
+    // NOTE: has to be this order of ops
     await deleteOrderEdit()
+    close()
   }
 
   const onAddVariants = async (selectedVariants: ProductVariant[]) => {
@@ -409,7 +409,7 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
 
   return (
     <OrderEditModal
-      close={close}
+      close={props.close}
       orderEdit={orderEdit}
       currentSubtotal={order.subtotal}
       regionId={order.region_id}
