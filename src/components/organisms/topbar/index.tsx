@@ -99,9 +99,6 @@ const Topbar: React.FC = () => {
       {activityDrawerState && (
         <ActivityDrawer onDismiss={activityDrawerClose} />
       )}
-      {activityDrawerState && (
-        <ActivityDrawer onDismiss={activityDrawerClose} />
-      )}
     </div>
   )
 }

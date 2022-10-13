@@ -3,13 +3,14 @@ import React from "react"
 import { AdminGetBatchParams, BatchJob } from "@medusajs/medusa"
 import { useAdminBatchJobs } from "medusa-react"
 
-export const defaultPollingContext: {
+type IPollingContext = {
   batchJobs?: BatchJob[]
   hasPollingError?: boolean
-  refetchJobs?: () => Promise<void>
-} = {}
+  refetchJobs: () => Promise<void>
+}
 
-export const PollingContext = React.createContext(defaultPollingContext)
+// @ts-ignore
+export const PollingContext = React.createContext<IPollingContext>({})
 
 const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1))
 oneMonthAgo.setHours(0, 0, 0, 0)
