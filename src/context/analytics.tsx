@@ -5,7 +5,9 @@ import React, { createContext, useContext, useEffect, useMemo } from "react"
 import { useQuery } from "react-query"
 import Fade from "../components/atoms/fade-wrapper"
 import AnalyticsPreferences from "../components/organisms/analytics-preferences"
-import { analytics } from "../services/analytics"
+import { useDebounce } from "../hooks/use-debounce"
+import { analytics, getAnalyticsConfig } from "../services/analytics"
+import { useFeatureFlag } from "./feature-flag"
 
 type Props = {
   children?: React.ReactNode
@@ -33,11 +35,22 @@ const AnalyticsProvider = ({ children }: Props) => {
   const { user } = useAdminGetSession()
   const { users: users } = useAdminUsers()
   const { store } = useAdminStore()
-  const { anonymized, isLoading } = useAdminAnalyticsPreference(user?.id)
+  const { analytics_config, isLoading } = useAdminAnalyticsPreference(user?.id)
+
+  const { isFeatureEnabled } = useFeatureFlag()
 
   const askPermission = useMemo(() => {
-    return anonymized === null && !isLoading
-  }, [anonymized, isLoading])
+    if (!isFeatureEnabled("analytics")) {
+      return false
+    }
+
+    return !analytics_config && !isLoading
+  }, [analytics_config, isLoading])
+
+  /**
+   * Used to ensure that the focus modal is animated smoothly.
+   */
+  const animateIn = useDebounce(askPermission, 1000)
 
   useEffect(() => {
     if (!store || !user) {
@@ -92,7 +105,7 @@ const AnalyticsProvider = ({ children }: Props) => {
   return (
     <AnalyticsContext.Provider value={{ track }}>
       {false && (
-        <Fade isVisible={true} isFullScreen={true}>
+        <Fade isVisible={animateIn} isFullScreen={true}>
           <AnalyticsPreferences
             isSubmitting={false}
             updatePreferences={(c) => console.log(c)}
@@ -118,22 +131,10 @@ const getUserTraits = (
   }
 }
 
-const fetchAnalyticsPreference = async (
-  identfier: string
-): Promise<{ anonymized: boolean | null }> => {
-  let preferences = { anonymized: null }
-
-  setTimeout(() => {
-    preferences = { anonymized: null }
-  }, 2000)
-
-  return preferences
-}
-
 const useAdminAnalyticsPreference = (identifier?: string) => {
   const { data, ...rest } = useQuery(
     ["analytics", identifier],
-    () => fetchAnalyticsPreference(identifier!),
+    () => getAnalyticsConfig(),
     {
       enabled: !!identifier,
       retryDelay: 5000,
