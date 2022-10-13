@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
+  useState
 } from "react"
 import AmountField from "react-currency-input-field"
 import { Option } from "../../../types/shared"
@@ -196,7 +196,7 @@ const Amount = forwardRef<HTMLInputElement, AmountInputProps>(
     const handleChange = (value?: string, floatValue?: number | null) => {
       let persistedAmount: number | undefined = undefined
 
-      if (floatValue && currencyInfo) {
+      if (typeof floatValue === "number" && currencyInfo) {
         persistedAmount = Math.round(
           persistedPrice(currencyInfo.code, floatValue)
         )
