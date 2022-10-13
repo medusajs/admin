@@ -7,7 +7,7 @@ import {
   useAdminConfirmBatchJob,
   useAdminCreateBatchJob,
   useAdminDeleteFile,
-  useAdminUploadFile,
+  useAdminUploadProtectedFile,
 } from "medusa-react"
 
 import UploadModal from "../../../components/organisms/upload-modal"
@@ -51,7 +51,7 @@ function ImportProducts(props: ImportProductsProps) {
   const notification = useNotification()
 
   const { mutateAsync: deleteFile } = useAdminDeleteFile()
-  const { mutateAsync: uploadFile } = useAdminUploadFile()
+  const { mutateAsync: uploadFile } = useAdminUploadProtectedFile()
 
   const { mutateAsync: createBatchJob } = useAdminCreateBatchJob()
   const { mutateAsync: cancelBathJob } = useAdminCancelBatchJob(batchJobId!)
