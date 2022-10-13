@@ -390,12 +390,14 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
         { order_id: order.id },
         {
           onSuccess: ({ order_edit }) => setActiveOrderEditId(order_edit.id),
-          onError: () =>
+          onError: () => {
             notification(
               "Error",
               "There is already active order edit on this order",
               "error"
-            ),
+            )
+            props.close()
+          },
         }
       )
     } else {
