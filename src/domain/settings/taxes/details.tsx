@@ -111,11 +111,17 @@ const TaxDetails = ({ id }) => {
             ))}
           </Table.Head>
           {regionIsLoading || taxRatesLoading ? (
-            <div className="flex w-full h-full absolute items-center justify-center mt-10">
-              <div className="">
-                <Spinner size={"large"} variant={"secondary"} />
-              </div>
-            </div>
+            <Table.Body>
+              <Table.Row>
+                <Table.Cell>
+                  <div className="flex w-full h-full absolute items-center justify-center mt-10">
+                    <div className="">
+                      <Spinner size={"large"} variant={"secondary"} />
+                    </div>
+                  </div>
+                </Table.Cell>
+              </Table.Row>
+            </Table.Body>
           ) : (
             <Table.Body {...getTableBodyProps()}>
               {rows.map((row) => {

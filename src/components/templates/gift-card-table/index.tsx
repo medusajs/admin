@@ -153,11 +153,17 @@ const GiftCardTable: React.FC<RouteComponentProps> = () => {
           ))}
         </Table.Head>
         {isLoading || !gift_cards ? (
-          <div className="flex w-full h-full absolute items-center justify-center mt-10">
-            <div className="">
-              <Spinner size={"large"} variant={"secondary"} />
-            </div>
-          </div>
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell>
+                <div className="flex w-full h-full absolute items-center justify-center mt-10">
+                  <div className="">
+                    <Spinner size={"large"} variant={"secondary"} />
+                  </div>
+                </div>
+              </Table.Cell>
+            </Table.Row>
+          </Table.Body>
         ) : (
           <Table.Body {...getTableBodyProps()}>
             {rows.map((row) => {
@@ -169,8 +175,14 @@ const GiftCardTable: React.FC<RouteComponentProps> = () => {
                   {...row.getRowProps()}
                   className="group"
                 >
-                  {row.cells.map((cell, index) => {
-                    return cell.render("Cell", { index })
+                  {row.cells.map((cell) => {
+                    return (
+                      <Table.Cell
+                        {...cell.getCellProps()}
+                      >
+                        {cell.render("Cell")}
+                      </Table.Cell>
+                    )
                   })}
                 </Table.Row>
               )

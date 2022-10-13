@@ -298,6 +298,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
                     icon: <CancelIcon size={"20"} />,
                     variant: "danger",
                     onClick: () => handleDeleteOrder(),
+                    disabled: false,
                   },
                 ]}
               >

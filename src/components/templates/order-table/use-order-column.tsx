@@ -28,7 +28,7 @@ const useOrderTableColums = () => {
   const columns = useMemo(
     () => [
       {
-        Header: <Table.HeadCell className="pl-2">Order</Table.HeadCell>,
+        Header: <span className="pl-2">Order</span>,
         accessor: "display_id",
         Cell: ({ cell: { value }, index }) => (
           <Table.Cell
@@ -40,20 +40,17 @@ const useOrderTableColums = () => {
       {
         Header: "Date added",
         accessor: "created_at",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>
-            <Tooltip content={moment(value).format("DD MMM YYYY hh:mm a")}>
-              {moment(value).format("DD MMM YYYY")}
-            </Tooltip>
-          </Table.Cell>
+        Cell: ({ cell: { value } }) => (
+          <Tooltip content={moment(value).format("DD MMM YYYY hh:mm a")}>
+            {moment(value).format("DD MMM YYYY")}
+          </Tooltip>
         ),
       },
       {
         Header: "Customer",
         accessor: "customer",
-        Cell: ({ row, cell: { value }, index }) => (
-          <Table.Cell key={index}>
-            <CustomerAvatarItem
+        Cell: ({ row, cell: { value } }) => (
+          <CustomerAvatarItem
               customer={{
                 first_name:
                   value?.first_name ||
@@ -64,59 +61,56 @@ const useOrderTableColums = () => {
               }}
               color={getColor(row.index)}
             />
-          </Table.Cell>
         ),
       },
       {
         Header: "Fulfillment",
         accessor: "fulfillment_status",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{value}</Table.Cell>
+        Cell: ({ cell: { value } }) => (
+          {value}
         ),
       },
       {
         Header: "Payment status",
         accessor: "payment_status",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{decideStatus(value)}</Table.Cell>
+        Cell: ({ cell: { value }  }) => (
+          {value}
         ),
       },
       {
         Header: "Sales Channel",
         accessor: "sales_channel",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{value?.name ?? "N/A"}</Table.Cell>
+        Cell: ({ cell: { value } }) => (
+          `${value?.name ?? "N/A"}`
         ),
       },
       {
         Header: () => <div className="text-right">Total</div>,
         accessor: "total",
-        Cell: ({ row, cell: { value }, index }) => (
-          <Table.Cell key={index}>
-            <div className="text-right">
-              {formatAmountWithSymbol({
-                amount: value,
-                currency: row.original.currency_code,
-                digits: 2,
-              })}
-            </div>
-          </Table.Cell>
+        Cell: ({ row, cell: { value } }) => (
+          <div className="text-right">
+            {formatAmountWithSymbol({
+              amount: value,
+              currency: row.original.currency_code,
+              digits: 2,
+            })}
+          </div>
         ),
       },
       {
         Header: "",
         accessor: "currency_code",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index} className="w-[5%]">
-            <div className="text-right text-grey-40">{value.toUpperCase()}</div>
-          </Table.Cell>
+        Cell: ({ cell: { value } }) => (
+          <span className="w-[5%]">
+            <div className="text-right text-grey-40">{value.toUpperCase()}</div>  
+          </span>
         ),
       },
       {
         Header: "",
         accessor: "country_code",
-        Cell: ({ row, index }) => (
-          <Table.Cell className="w-[5%] pr-2" key={index}>
+        Cell: ({ row }) => (
+          <span className="w-[5%] pr-2">
             <div className="flex rounded-rounded w-full justify-end">
               <Tooltip
                 content={
@@ -133,7 +127,7 @@ const useOrderTableColums = () => {
                 />
               </Tooltip>
             </div>
-          </Table.Cell>
+          </span>
         ),
       },
     ],
