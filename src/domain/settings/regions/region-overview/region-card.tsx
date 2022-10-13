@@ -33,8 +33,8 @@ const RegionCard = ({ region }: Props) => {
         <p>
           Fulfillment providers:{" "}
           <span className="truncate">
-            {region.payment_providers?.length
-              ? region.payment_providers
+            {region.fulfillment_providers?.length
+              ? region.fulfillment_providers
                   .map((fp) => fulfillmentProvidersMapper(fp.id).label)
                   .join(", ")
               : "Not configured"}
