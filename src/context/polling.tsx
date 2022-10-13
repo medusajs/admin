@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React from "react"
 
 import { AdminGetBatchParams, BatchJob } from "@medusajs/medusa"
 import { useAdminBatchJobs } from "medusa-react"
@@ -6,7 +6,7 @@ import { useAdminBatchJobs } from "medusa-react"
 export const defaultPollingContext: {
   batchJobs?: BatchJob[]
   hasPollingError?: boolean
-  refetchJobs: () => Promise<void>
+  refetchJobs?: () => Promise<void>
 } = {}
 
 export const PollingContext = React.createContext(defaultPollingContext)
@@ -23,27 +23,27 @@ const INTERVALS = [1, 2, 5, 10, 15, 30, 60]
  * Function factory for creating deduplicating timer object.
  * @param start - Initial starting point in the intervals array.
  */
-const creeateDedupingTimer = (start: number) => {
-  let deadline = Date.now()
+const createDedupingTimer = (start: number) => {
+  let deduplicationThreshold = Date.now()
   return {
     current: start,
     register() {
-      deadline = Date.now()
+      deduplicationThreshold = Date.now()
 
       const currentInd = INTERVALS.findIndex((s) => s === this.current)
       this.current = INTERVALS[Math.min(INTERVALS.length - 1, currentInd + 1)]
     },
     isEnabled() {
-      return Date.now() >= deadline
+      return Date.now() >= deduplicationThreshold
     },
     reset() {
-      deadline = Date.now()
+      deduplicationThreshold = Date.now()
       this.current = INTERVALS[0]
     },
   }
 }
 
-const Timer = creeateDedupingTimer(INTERVALS[0])
+const Timer = createDedupingTimer(INTERVALS[0])
 
 /**
  * Batch job polling context provides batch jobs to the context.
@@ -60,8 +60,9 @@ export const PollingProvider = ({ children }) => {
       failed_at: null,
     } as AdminGetBatchParams,
     {
-      refetchInterval: Timer.current * 1000,
-      enabled: Timer.isEnabled(),
+      refetchOnWindowFocus: true,
+      refetchInterval: Timer.current * 1000, // this is scheduling refetches
+      enabled: Timer.isEnabled(), // this is only preventing refetches in between scheduled deadlines
       onSettled: Timer.register.bind(Timer),
     }
   )
