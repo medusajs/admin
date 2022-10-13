@@ -69,7 +69,7 @@ const CreateShippingOptionModal = ({ open, onClose, region }: Props) => {
     <Modal open={open} handleClose={closeAndReset}>
       <Modal.Body>
         <Modal.Header handleClose={closeAndReset}>
-          <h1 className="inter-xlarge-semibold">Add Return Shipping Option</h1>
+          <h1 className="inter-xlarge-semibold">Add Shipping Option</h1>
         </Modal.Header>
         <form onSubmit={onSubmit}>
           <Modal.Content>
