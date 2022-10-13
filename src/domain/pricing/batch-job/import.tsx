@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 
 import { BatchJob } from "@medusajs/medusa"
 import {
@@ -12,6 +12,7 @@ import {
 
 import UploadModal from "../../../components/organisms/upload-modal"
 import useNotification from "../../../hooks/use-notification"
+import { PollingContext } from "../../../context/polling"
 
 /**
  * Hook returns a batch job. The endpoint is polled every 2s while the job is processing.
@@ -51,6 +52,8 @@ function ImportPrices(props: ImportPricesProps) {
 
   const notification = useNotification()
 
+  const { refetchJobs } = useContext(PollingContext)
+
   const { mutateAsync: deleteFile } = useAdminDeleteFile()
   const { mutateAsync: uploadFile } = useAdminUploadFile()
 
@@ -65,7 +68,8 @@ function ImportPrices(props: ImportPricesProps) {
   const hasError = batchJob?.status === "failed"
 
   const progress = isPreprocessed
-    ? (batchJob!.result?.advancement_count || 0) / (batchJob!.result?.count || 1)
+    ? (batchJob!.result?.advancement_count || 0) /
+      (batchJob!.result?.count || 1)
     : undefined
 
   const status = hasError
@@ -103,6 +107,8 @@ function ImportPrices(props: ImportPricesProps) {
         context: { fileKey: _fileKey, price_list_id: props.priceListId },
         type: "price-list-import",
       })
+
+      refetchJobs()
 
       setBatchJobId(batchJob.batch_job.id)
     } catch (e) {
@@ -186,4 +192,3 @@ function ImportPrices(props: ImportPricesProps) {
 }
 
 export default ImportPrices
-

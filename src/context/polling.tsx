@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 
 import { AdminGetBatchParams, BatchJob } from "@medusajs/medusa"
 import { useAdminBatchJobs } from "medusa-react"
@@ -6,6 +6,7 @@ import { useAdminBatchJobs } from "medusa-react"
 export const defaultPollingContext: {
   batchJobs?: BatchJob[]
   hasPollingError?: boolean
+  refetchJobs: () => Promise<void>
 } = {}
 
 export const PollingContext = React.createContext(defaultPollingContext)
@@ -65,9 +66,9 @@ export const PollingProvider = ({ children }) => {
     }
   )
 
-  const refetchJobs = () => {
+  const refetchJobs = async () => {
     Timer.reset()
-    refetch()
+    await refetch()
   }
 
   const value = {
