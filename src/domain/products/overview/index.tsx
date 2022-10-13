@@ -1,6 +1,6 @@
 import { navigate, RouteComponentProps, useLocation } from "@reach/router"
 import { useAdminCreateBatchJob, useAdminCreateCollection } from "medusa-react"
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Button from "../../../components/fundamentals/button"
 import ExportIcon from "../../../components/fundamentals/icons/export-icon"
@@ -17,6 +17,7 @@ import useToggleState from "../../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../../utils/error-messages"
 import ImportProducts from "../batch-job/import"
 import NewProduct from "../new"
+import { PollingContext } from "../../../context/polling"
 
 const VIEWS = ["products", "collections"]
 
@@ -29,6 +30,7 @@ const Overview = (_props: RouteComponentProps) => {
     open: openProductCreate,
   } = useToggleState()
 
+  const { resetInterval } = useContext(PollingContext)
   const createBatchJob = useAdminCreateBatchJob()
 
   const notification = useNotification()
@@ -146,6 +148,7 @@ const Overview = (_props: RouteComponentProps) => {
 
     createBatchJob.mutate(reqObj, {
       onSuccess: () => {
+        resetInterval()
         notification("Success", "Successfully initiated export", "success")
       },
       onError: (err) => {

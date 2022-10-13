@@ -1,7 +1,7 @@
 import { RouteComponentProps, Router } from "@reach/router"
 import { navigate } from "gatsby"
 import { useAdminCreateBatchJob } from "medusa-react"
-import React, { useMemo } from "react"
+import React, { useContext, useMemo } from "react"
 import Button from "../../components/fundamentals/button"
 import ExportIcon from "../../components/fundamentals/icons/export-icon"
 import BodyCard from "../../components/organisms/body-card"
@@ -12,12 +12,14 @@ import useNotification from "../../hooks/use-notification"
 import useToggleState from "../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./details"
+import { PollingContext } from "../../context/polling"
 
 const VIEWS = ["orders", "drafts"]
 
 const OrderIndex: React.FC<RouteComponentProps> = () => {
   const view = "orders"
 
+  const { resetInterval } = useContext(PollingContext)
   const createBatchJob = useAdminCreateBatchJob()
   const notification = useNotification()
 
@@ -49,6 +51,7 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
 
     createBatchJob.mutate(reqObj, {
       onSuccess: () => {
+        resetInterval()
         notification("Success", "Successfully initiated export", "success")
       },
       onError: (err) => {

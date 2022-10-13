@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect } from "react"
 import { PollingContext } from "../../../context/polling"
 import useOutsideClick from "../../../hooks/use-outside-click"
 import Spinner from "../../atoms/spinner"
@@ -8,8 +8,12 @@ import BatchJobActivityList from "../batch-jobs-activity-list"
 
 const ActivityDrawer = ({ onDismiss }) => {
   const ref = React.useRef<HTMLDivElement>(null)
-  const { batchJobs, hasPollingError } = useContext(PollingContext)
+  const { batchJobs, hasPollingError, refetch } = useContext(PollingContext)
   useOutsideClick(onDismiss, ref)
+
+  useEffect(() => {
+    refetch()
+  }, [])
 
   return (
     <div
