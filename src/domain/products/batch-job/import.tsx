@@ -51,7 +51,7 @@ function ImportProducts(props: ImportProductsProps) {
 
   const notification = useNotification()
 
-  const { refetchJobs } = useContext(PollingContext)
+  const { resetInterval } = useContext(PollingContext)
 
   const { mutateAsync: deleteFile } = useAdminDeleteFile()
   const { mutateAsync: uploadFile } = useAdminUploadFile()
@@ -106,7 +106,7 @@ function ImportProducts(props: ImportProductsProps) {
         type: "product-import",
       })
 
-      refetchJobs()
+      resetInterval()
 
       setBatchJobId(batchJob.batch_job.id)
     } catch (e) {

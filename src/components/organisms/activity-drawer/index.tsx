@@ -8,11 +8,11 @@ import BatchJobActivityList from "../batch-jobs-activity-list"
 
 const ActivityDrawer = ({ onDismiss }) => {
   const ref = React.useRef<HTMLDivElement>(null)
-  const { batchJobs, hasPollingError, refetchJobs } = useContext(PollingContext)
+  const { batchJobs, hasPollingError, refetch } = useContext(PollingContext)
   useOutsideClick(onDismiss, ref)
 
   useEffect(() => {
-    refetchJobs()
+    refetch()
   }, [])
 
   return (

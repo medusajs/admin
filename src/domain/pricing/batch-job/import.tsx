@@ -52,7 +52,7 @@ function ImportPrices(props: ImportPricesProps) {
 
   const notification = useNotification()
 
-  const { refetchJobs } = useContext(PollingContext)
+  const { resetInterval } = useContext(PollingContext)
 
   const { mutateAsync: deleteFile } = useAdminDeleteFile()
   const { mutateAsync: uploadFile } = useAdminUploadFile()
@@ -108,7 +108,7 @@ function ImportPrices(props: ImportPricesProps) {
         type: "price-list-import",
       })
 
-      refetchJobs()
+      resetInterval()
 
       setBatchJobId(batchJob.batch_job.id)
     } catch (e) {

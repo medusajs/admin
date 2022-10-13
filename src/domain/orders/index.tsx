@@ -19,7 +19,7 @@ const VIEWS = ["orders", "drafts"]
 const OrderIndex: React.FC<RouteComponentProps> = () => {
   const view = "orders"
 
-  const { refetchJobs } = useContext(PollingContext)
+  const { resetInterval } = useContext(PollingContext)
   const createBatchJob = useAdminCreateBatchJob()
   const notification = useNotification()
 
@@ -51,7 +51,7 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
 
     createBatchJob.mutate(reqObj, {
       onSuccess: () => {
-        refetchJobs()
+        resetInterval()
         notification("Success", "Successfully initiated export", "success")
       },
       onError: (err) => {

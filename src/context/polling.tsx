@@ -6,7 +6,8 @@ import { useAdminBatchJobs } from "medusa-react"
 type IPollingContext = {
   batchJobs?: BatchJob[]
   hasPollingError?: boolean
-  refetchJobs: () => Promise<void>
+  resetInterval: () => Promise<void>
+  refetch: () => Promise<void>
 }
 
 // @ts-ignore
@@ -18,7 +19,7 @@ oneMonthAgo.setHours(0, 0, 0, 0)
 /**
  * Intervals for refetching batch jobs in seconds.
  */
-const INTERVALS = [1, 2, 5, 10, 15, 30, 60]
+const INTERVALS = [2, 5, 10, 15, 30, 60]
 
 /**
  * Function factory for creating deduplicating timer object.
@@ -68,7 +69,7 @@ export const PollingProvider = ({ children }) => {
     }
   )
 
-  const refetchJobs = async () => {
+  const resetInterval = async () => {
     Timer.reset()
     await refetch()
   }
@@ -76,7 +77,8 @@ export const PollingProvider = ({ children }) => {
   const value = {
     batchJobs,
     hasPollingError,
-    refetchJobs,
+    resetInterval,
+    refetch,
   }
 
   return (

@@ -30,7 +30,7 @@ const Overview = (_props: RouteComponentProps) => {
     open: openProductCreate,
   } = useToggleState()
 
-  const { refetchJobs } = useContext(PollingContext)
+  const { resetInterval } = useContext(PollingContext)
   const createBatchJob = useAdminCreateBatchJob()
 
   const notification = useNotification()
@@ -148,7 +148,7 @@ const Overview = (_props: RouteComponentProps) => {
 
     createBatchJob.mutate(reqObj, {
       onSuccess: () => {
-        refetchJobs()
+        resetInterval()
         notification("Success", "Successfully initiated export", "success")
       },
       onError: (err) => {
