@@ -2,7 +2,14 @@ import clsx from "clsx"
 import React from "react"
 
 type BadgeProps = {
-  variant: "primary" | "danger" | "success" | "warning" | "ghost" | "default"
+  variant:
+    | "primary"
+    | "danger"
+    | "success"
+    | "warning"
+    | "ghost"
+    | "default"
+    | "disabled"
 } & React.HTMLAttributes<HTMLDivElement>
 
 const Badge: React.FC<BadgeProps> = ({
@@ -19,6 +26,7 @@ const Badge: React.FC<BadgeProps> = ({
     ["badge-warning"]: variant === "warning",
     ["badge-ghost"]: variant === "ghost",
     ["badge-default"]: variant === "default",
+    ["badge-disabled"]: variant === "disabled",
   })
 
   return (

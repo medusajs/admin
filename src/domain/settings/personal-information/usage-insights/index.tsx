@@ -9,17 +9,23 @@ type Props = {
 }
 
 const UsageInsights = ({ user }: Props) => {
-  const { analytics_config } = useAdminAnalyticsConfig(user?.id)
+  const { analytics_config, isLoading } = useAdminAnalyticsConfig(user?.id)
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-col gap-y-2xsmall">
         <div className="flex items-center gap-x-xsmall">
           <h2 className="inter-base-semibold">Usage insights</h2>
-          <Badge variant="success">Active</Badge>
+          {isLoading ? (
+            <div className="badge bg-grey-10 animate-pulse w-12 h-large" />
+          ) : !analytics_config || analytics_config?.opt_out ? (
+            <Badge variant="disabled">Disabled</Badge>
+          ) : (
+            <Badge variant="success">Active</Badge>
+          )}
         </div>
         <p className="inter-base-regular text-grey-50">
-          Share interaction insights and help us improve Medusa
+          Share usage insights and help us improve Medusa
         </p>
       </div>
       <Button variant="secondary" size="small">

@@ -72,14 +72,14 @@ export const useAdminAnalyticsConfig = (identifier?: string) => {
     () => getAnalyticsConfig(),
     {
       enabled: !!identifier,
-      retryDelay: 5000,
+      retry: false,
     }
   )
 
   return { ...data, ...rest }
 }
 
-export const useAdminUpdateAnalyticsPreference = (identifier?: string) => {
+export const useAdminUpdateAnalyticsConfig = (identifier?: string) => {
   const mutation = useMutation(
     ["analytics", identifier],
     (payload: UpdateConfigPayload) => updateAnalyticsConfig(payload)
