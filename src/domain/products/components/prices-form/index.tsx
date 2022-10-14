@@ -52,6 +52,8 @@ const PricesForm = ({ form }: Props) => {
     name: path("prices"),
   })
 
+  const watchedPrices = form.watch(path("prices"))
+
   useEffect(() => {
     if (!regions) {
       return
