@@ -75,7 +75,11 @@ const Actionables: React.FC<ActionablesProps> = ({
   ) : (
     <div>
       {customTrigger ? (
-        <div>{customTrigger}</div>
+        Array.isArray(customTrigger) ? (
+          customTrigger.map((ct, i) => <div key={i}>{ct}</div>)
+        ) : (
+          <div>{customTrigger}</div>
+        )
       ) : actions ? (
         <Button
           variant="secondary"
