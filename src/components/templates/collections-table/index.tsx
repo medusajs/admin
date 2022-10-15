@@ -122,9 +122,15 @@ const CollectionsTable: React.FC = () => {
           ))}
         </Table.Head>
         {isLoading || isRefetching || !collections ? (
-          <div className="w-full pt-2xlarge flex items-center justify-center">
-            <Spinner size={"large"} variant={"secondary"} />
-          </div>
+          <Table.Body {...getTableBodyProps()}>
+            <Table.Row>
+              <Table.Cell colSpan={columns.length}>
+                <div className="w-full pt-2xlarge flex items-center justify-center">
+                  <Spinner size={"large"} variant={"secondary"} />
+                </div>
+              </Table.Cell>
+            </Table.Row>
+          </Table.Body>
         ) : (
           <Table.Body {...getTableBodyProps()}>
             {rows.map((row) => {
