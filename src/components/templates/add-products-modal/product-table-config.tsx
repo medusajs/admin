@@ -8,7 +8,7 @@ import { decideStatus } from "../collection-product-table/utils"
 
 export const columns: Column<Product>[] = [
   {
-    Header: <Table.HeadCell className="pl-4">Product Details</Table.HeadCell>,
+    Header: <div className="pl-4">Product Details</div>,
     accessor: "title",
     Cell: ({ row: { original } }) => (
       <div className="pl-4 flex items-center w-[400px]">
@@ -34,7 +34,7 @@ export const columns: Column<Product>[] = [
     ),
   },
   {
-    Header: <Table.HeadCell>Status</Table.HeadCell>,
+    Header: <div>Status</div>,
     accessor: "status",
     Cell: ({ cell: { value } }) => (
       <Table.Cell className="w-[10%] pr-base">
@@ -43,11 +43,7 @@ export const columns: Column<Product>[] = [
     ),
   },
   {
-    Header: (
-      <Table.HeadCell className="flex justify-end items-center pr-4">
-        Variants
-      </Table.HeadCell>
-    ),
+    Header: <div className="flex justify-end items-center pr-4">Variants</div>,
     accessor: "variants",
     Cell: ({ row: { original } }) => (
       <Table.Cell className="flex justify-end items-center pr-4">
