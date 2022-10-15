@@ -16,7 +16,7 @@ const FilterDropdownContainer: React.FC<FilterDropdownContainerProps> = ({
   children,
 }) => {
   const { height } = useWindowDimensions()
-  const ref = useRef(null)
+  const ref = useRef<HTMLButtonElement>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [heightStyle, setHeightStyle] = useState({
     maxHeight: height,
@@ -24,7 +24,7 @@ const FilterDropdownContainer: React.FC<FilterDropdownContainerProps> = ({
 
   useEffect(() => {
     setHeightStyle({
-      maxHeight: height - ref?.current?.getBoundingClientRect().y - 50,
+      maxHeight: height - (ref?.current?.getBoundingClientRect().y ?? 0) - 50,
     })
   }, [ref])
 
