@@ -117,6 +117,7 @@ const FilterDropdownItem = ({
               id={filterTitle}
               className="hidden"
               checked={open}
+              readOnly
               type="checkbox"
             />
             <span className="ml-2">{filterTitle}</span>
@@ -191,6 +192,7 @@ const FilterDropdownItem = ({
                     name={label}
                     value={value}
                     checked={checked[value] === true}
+                    readOnly
                     style={{ marginRight: "5px" }}
                   />
                   {label}
