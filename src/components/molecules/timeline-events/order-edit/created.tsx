@@ -265,14 +265,14 @@ const OrderEditChangeItem: React.FC<OrderEditChangeItem> = ({ change }) => {
       <div className="flex flex-col">
         <span className="inter-small-semibold text-grey-90">
           {quantity > 1 && <>{quantity}x</>} {change.line_item?.title}
-          {change.line_item?.variant.sku && (
+          {change.line_item?.variant?.sku && (
             <span className="inter-small-regular text-grey-50">
-              ({change.line_item.variant.sku})
+              ({change.line_item.variant?.sku})
             </span>
           )}
         </span>
         <span className="flex inter-small-regular text-grey-50">
-          {change.line_item?.variant.options?.map((option) => option.value)}
+          {change.line_item?.variant?.options?.map((option) => option.value)}
         </span>
       </div>
     </div>
