@@ -1,5 +1,6 @@
-import React, { FC } from "react"
-import ReactDOM from "react-dom"
+import React from "react"
+import type { PropsWithChildren } from "react"
+import { createRoot } from "react-dom/client"
 import { MedusaProvider } from "medusa-react"
 import { ToastProvider } from "react-toast-notifications"
 import "./assets/styles/global.css"
@@ -12,7 +13,7 @@ import { FeatureFlagProvider } from "./context/feature-flag"
 import { SteppedProvider } from "./components/molecules/modal/stepped-modal"
 import { LayeredModalProvider } from "./components/molecules/modal/layered-modal"
 
-const Page: FC = ({ children }) => {
+const Page = ({ children }: PropsWithChildren) => {
   return (
     <MedusaProvider
       baseUrl={medusaUrl}
@@ -37,11 +38,11 @@ const Page: FC = ({ children }) => {
   )
 }
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("root")!)
+root.render(
   <React.StrictMode>
     <Page>
       <App />
     </Page>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 )
