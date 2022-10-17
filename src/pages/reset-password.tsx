@@ -4,6 +4,7 @@ import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { decodeToken } from "react-jwt"
+import { useLocation } from "react-router-dom"
 import Button from "../components/fundamentals/button"
 import MedusaIcon from "../components/fundamentals/icons/medusa-icon"
 import SigninInput from "../components/molecules/input-signin"
@@ -16,7 +17,8 @@ type formValues = {
   repeat_password: string
 }
 
-const ResetPasswordPage = ({ location }) => {
+const ResetPasswordPage = () => {
+  const location = useLocation()
   const parsed = qs.parse(location.search.substring(1))
 
   let token: { email: string } | null = null

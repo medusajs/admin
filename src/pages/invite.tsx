@@ -5,6 +5,7 @@ import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { decodeToken } from "react-jwt"
+import { useLocation } from "react-router-dom"
 import Button from "../components/fundamentals/button"
 import LongArrowRightIcon from "../components/fundamentals/icons/long-arrow-right-icon"
 import MedusaIcon from "../components/fundamentals/icons/medusa-icon"
@@ -22,7 +23,8 @@ type formValues = {
   last_name: string
 }
 
-const InvitePage = ({ location }) => {
+const InvitePage = () => {
+  const location = useLocation()
   const parsed = qs.parse(location.search.substring(1))
   const [signUp, setSignUp] = useState(false)
 

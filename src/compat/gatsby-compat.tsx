@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react"
-import { Link as ReachLink, useLocation } from "@reach/router"
+import { Link as RouterLink, useMatch } from "react-router-dom"
 
 export function navigate(path: string | number) {
   if (typeof path === "number") {
@@ -32,11 +32,8 @@ export function Link(props: LinkProps) {
     ...attr
   } = props
 
-  const location = useLocation()
-
-  const isPartiallyActive =
-    typeof to === "string" && location.pathname.startsWith(to)
-  const isActive = isPartiallyActive && location.pathname === to
+  const isActive = useMatch(to ?? "")
+  const isPartiallyActive = useMatch({ path: to ?? "", end: false })
 
   let cls = className ?? ""
   if (activeClassName && (isActive || (partiallyActive && isPartiallyActive))) {
@@ -46,9 +43,9 @@ export function Link(props: LinkProps) {
   const hidden = typeof to !== "string"
 
   return (
-    <ReachLink to={to ?? ""} hidden={hidden} {...attr} className={cls}>
+    <RouterLink to={to ?? ""} hidden={hidden} {...attr} className={cls}>
       {children}
-    </ReachLink>
+    </RouterLink>
   )
 }
 

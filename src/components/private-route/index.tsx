@@ -1,25 +1,30 @@
-import { navigate } from "gatsby"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState, ReactNode } from "react"
+import { useNavigate } from "react-router-dom"
 import { AccountContext } from "../../context/account"
 import Spinner from "../atoms/spinner"
 
-const PrivateRoute = ({ component: Component, location, ...rest }) => {
+type PrivateRouteProps = {
+  children: ReactNode
+}
+
+const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const account = useContext(AccountContext)
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
-  React.useEffect(() => {
+  useEffect(() => {
     account
       .session()
-      .then((data) => {
+      .then(() => {
         setLoading(false)
       })
-      .catch((err) => {
+      .catch(() => {
         navigate("/login")
       })
   }, [])
 
   if (account.isLoggedIn && !loading) {
-    return <Component {...rest} />
+    return <>{children}</>
   }
 
   return (

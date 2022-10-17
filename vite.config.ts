@@ -17,6 +17,10 @@ export default defineConfig({
   resolve: {
     alias: {
       gatsby: path.resolve(__dirname, "src/compat/gatsby-compat.tsx"),
+      "@reach/router": path.resolve(
+        __dirname,
+        "src/compat/reach-router-compat.tsx"
+      ),
     },
   },
   define: {
