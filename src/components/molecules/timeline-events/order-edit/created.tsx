@@ -7,7 +7,7 @@ import {
   useAdminRequestOrderEditConfirmation,
   useAdminUser,
 } from "medusa-react"
-import React from "react"
+import React, { useContext } from "react"
 import { ByLine } from "."
 import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
 import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
@@ -18,6 +18,7 @@ import Button from "../../../fundamentals/button"
 import EditIcon from "../../../fundamentals/icons/edit-icon"
 import ImagePlaceholder from "../../../fundamentals/image-placeholder"
 import EventContainer from "../event-container"
+import { OrderEditContext } from "../../../../domain/orders/edit/context"
 
 type EditCreatedProps = {
   event: OrderEditEvent
@@ -43,6 +44,9 @@ const getInfo = (edit: OrderEdit): { type: string; user_id: string } => {
 }
 
 const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
+  const { isModalVisible, showModal, setActiveOrderEdit } = useContext(
+    OrderEditContext
+  )
   const { type, user_id } = getInfo(event.edit)
 
   const { order_edit: orderEdit } = useAdminOrderEdit(event.edit.id)
@@ -57,7 +61,6 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
 
   const deleteOrderEdit = useAdminDeleteOrderEdit(event.edit.id)
   const cancelOrderEdit = useAdminCancelOrderEdit(event.edit.id)
-  const requestOrderEdit = useAdminRequestOrderEditConfirmation(event.edit.id)
   const confirmOrderEdit = useAdminConfirmOrderEdit(event.edit.id)
 
   const onDeleteOrderEditClicked = () => {
@@ -107,19 +110,17 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
     }
   }
 
+  const onContinueEdit = () => {
+    setActiveOrderEdit(orderEdit.id)
+    showModal()
+  }
+
   const onCopyConfirmationLinkClicked = () => {
     console.log("TODO")
   }
 
-  const onRequestOrderEditClicked = () => {
-    requestOrderEdit.mutate(undefined, {
-      onSuccess: () => {
-        notification("Success", `Successfully requested Order Edit`, "success")
-      },
-      onError: (err) => {
-        notification("Error", getErrorMessage(err), "error")
-      },
-    })
+  if (isModalVisible) {
+    return null
   }
 
   return (
@@ -142,40 +143,25 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
         {(event.edit.status === "created" ||
           event.edit.status === "requested") && (
           <div className="space-y-xsmall mt-large">
-            {type === "created" && (
-              <Button
-                className="w-full border border-grey-20"
-                size="small"
-                variant="ghost"
-                onClick={onRequestOrderEditClicked}
-              >
-                Send Confirmation-Request
-              </Button>
-            )}
-            <Button
-              className="w-full border border-grey-20"
-              size="small"
-              variant="ghost"
-              onClick={onCopyConfirmationLinkClicked}
-            >
-              Copy Confirmation-Request Link
-            </Button>
-            <Button
-              className="w-full border border-grey-20"
-              size="small"
-              variant="ghost"
-              onClick={onConfirmEditClicked}
-            >
-              Force Confirm
-            </Button>
-
             {type === "created" ? (
-              <TwoStepDelete
-                onDelete={onDeleteOrderEditClicked}
-                className="w-full border border-grey-20"
-              >
-                Delete Order Edit
-              </TwoStepDelete>
+              <>
+                <Button
+                  className="w-full border border-grey-20"
+                  size="small"
+                  variant="ghost"
+                  onClick={onContinueEdit}
+                >
+                  Continue order edit
+                </Button>
+                <Button
+                  className="w-full border border-grey-20"
+                  size="small"
+                  variant="danger"
+                  onClick={onDeleteOrderEditClicked}
+                >
+                  Delete the order edit
+                </Button>
+              </>
             ) : (
               <TwoStepDelete
                 onDelete={onCancelOrderEditClicked}

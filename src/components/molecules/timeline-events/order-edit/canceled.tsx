@@ -2,7 +2,6 @@ import { useAdminUser } from "medusa-react"
 import React from "react"
 import { ByLine } from "."
 import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
-import Avatar from "../../../atoms/avatar"
 import XCircleIcon from "../../../fundamentals/icons/x-circle-icon"
 import EventContainer from "../event-container"
 

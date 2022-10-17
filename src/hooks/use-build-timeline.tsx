@@ -3,10 +3,10 @@ import {
   useAdminNotes,
   useAdminNotifications,
   useAdminOrder,
+  useAdminOrderEdits,
 } from "medusa-react"
 import { useContext, useMemo } from "react"
 import { FeatureFlagContext } from "../context/feature-flag"
-import useOrdersExpandParam from "../domain/orders/details/utils/use-admin-expand-paramter"
 
 export interface TimelineEvent {
   id: string
@@ -143,16 +143,14 @@ export interface NotificationEvent extends TimelineEvent {
 }
 
 export const useBuildTimelime = (orderId: string) => {
-  const { orderRelations } = useOrdersExpandParam()
-
   const {
     order,
     isLoading: orderLoading,
     isError: orderError,
     refetch,
-  } = useAdminOrder(orderId, {
-    expand: orderRelations,
-  })
+  } = useAdminOrder(orderId, {})
+
+  const { order_edits: edits } = useAdminOrderEdits({ order_id: orderId })
 
   const {
     notes,
@@ -190,7 +188,7 @@ export const useBuildTimelime = (orderId: string) => {
     const events: TimelineEvent[] = []
 
     if (isFeatureEnabled("order_editing")) {
-      for (const edit of order.edits || []) {
+      for (const edit of edits || []) {
         events.push({
           id: edit.id,
           time: edit.created_at,
@@ -515,6 +513,7 @@ export const useBuildTimelime = (orderId: string) => {
     return events
   }, [
     order,
+    edits,
     orderLoading,
     orderError,
     notes,

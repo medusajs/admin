@@ -1,5 +1,5 @@
-import { OrderEdit, ProductVariant } from "@medusajs/medusa"
-import clsx from "clsx"
+import React, { useContext, useEffect, useState } from "react"
+import { Order, OrderEdit, ProductVariant } from "@medusajs/medusa"
 import {
   useAdminCreateOrderEdit,
   useAdminDeleteOrderEdit,
@@ -9,19 +9,20 @@ import {
   useAdminRequestOrderEditConfirmation,
   useAdminUpdateOrderEdit,
 } from "medusa-react"
-import React, { useContext, useEffect, useState } from "react"
+import clsx from "clsx"
 
-import Button from "../../../components/fundamentals/button"
-import SearchIcon from "../../../components/fundamentals/icons/search-icon"
-import InputField from "../../../components/molecules/input"
-import Modal from "../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
-import useNotification from "../../../hooks/use-notification"
-import { formatAmountWithSymbol } from "../../../utils/prices"
+import Modal from "../../../components/molecules/modal"
+import Button from "../../../components/fundamentals/button"
 import OrderEditLine from "../details/order-line/edit"
 import VariantsTable from "./variants-table"
+import SearchIcon from "../../../components/fundamentals/icons/search-icon"
+import { formatAmountWithSymbol } from "../../../utils/prices"
+import InputField from "../../../components/molecules/input"
+import useNotification from "../../../hooks/use-notification"
+import { OrderEditContext } from "./context"
 
 type TotalsSectionProps = {
   currentSubtotal: number
@@ -360,64 +361,61 @@ function OrderEditModal(props: OrderEditModalProps) {
 }
 
 type OrderEditModalContainerProps = {
-  orderId: string
-  close: () => void
+  order: Order
 }
 
 function OrderEditModalContainer(props: OrderEditModalContainerProps) {
+  const { order } = props
   const notification = useNotification()
 
-  // TODO: replace with the list endpoint
-  const { order } = useAdminOrder(props.orderId, { expand: "edits" })
-
-  const [activeOrderEditId, setActiveOrderEditId] = useState<
-    string | undefined
-  >()
+  const {
+    hideModal,
+    orderEdits,
+    activeOrderEditId,
+    setActiveOrderEdit,
+  } = useContext(OrderEditContext)
 
   const { mutate: createOrderEdit } = useAdminCreateOrderEdit()
 
-  const { order_edit: orderEdit } = useAdminOrderEdit(
-    activeOrderEditId as string,
-    {
-      enabled: typeof activeOrderEditId === "string",
-    }
-  )
+  const orderEdit = orderEdits?.find((oe) => oe.id === activeOrderEditId)
 
-  // find an existing edit or create one if active order edit doesn't exist on the order
   useEffect(() => {
-    if (!order || activeOrderEditId) {
+    if (activeOrderEditId) {
       return
     }
 
-    const edit = order.edits.find((oe) => oe.status === "created")
-
-    if (!edit) {
+    if (typeof orderEdits !== "undefined") {
       createOrderEdit(
         { order_id: order.id },
         {
-          onSuccess: ({ order_edit }) => setActiveOrderEditId(order_edit.id),
+          onSuccess: ({ order_edit }) => {
+            setActiveOrderEdit(order_edit.id)
+          },
           onError: () => {
             notification(
               "Error",
               "There is already active order edit on this order",
               "error"
             )
-            props.close()
+            hideModal()
           },
         }
       )
-    } else {
-      setActiveOrderEditId(edit.id)
     }
-  }, [order, activeOrderEditId])
+  }, [activeOrderEditId, orderEdits])
 
-  if (!orderEdit || !order) {
+  const onClose = () => {
+    setActiveOrderEdit(undefined)
+    hideModal()
+  }
+
+  if (!orderEdit) {
     return null
   }
 
   return (
     <OrderEditModal
-      close={props.close}
+      close={onClose}
       orderEdit={orderEdit}
       currentSubtotal={order.subtotal}
       regionId={order.region_id}
