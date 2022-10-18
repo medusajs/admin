@@ -48,6 +48,7 @@ export interface OrderEditDifferenceDueEvent extends OrderEditEvent {
 
 export interface OrderEditRequestedEvent extends TimelineEvent {
   email: string
+  edit: OrderEdit
 }
 
 interface CancelableEvent {
@@ -204,6 +205,7 @@ export const useBuildTimelime = (orderId: string) => {
             orderId: order.id,
             type: "edit-requested",
             email: order.email,
+            edit: edit,
           } as OrderEditRequestedEvent)
 
           events.push({
