@@ -27,7 +27,7 @@ const RefundMenu = ({ order, onDismiss }) => {
   const [noNotification, setNoNotification] = useState(order.no_notification)
 
   const notification = useNotification()
-  const createRefund = useAdminRefundPayment(order.id)
+  const { mutate, isLoading } = useAdminRefundPayment(order.id)
 
   const refundable = useMemo(() => {
     return order.paid_total - order.refunded_total
@@ -43,7 +43,7 @@ const RefundMenu = ({ order, onDismiss }) => {
   }
 
   const onSubmit = (data: RefundMenuFormData) => {
-    createRefund.mutate(
+    mutate(
       {
         amount: data.amount,
         reason: data.reason.value,
@@ -178,6 +178,8 @@ const RefundMenu = ({ order, onDismiss }) => {
                   size="small"
                   className="w-[112px]"
                   variant="primary"
+                  loading={isLoading}
+                  disabled={isLoading}
                 >
                   Complete
                 </Button>

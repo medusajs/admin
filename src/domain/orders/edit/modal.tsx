@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react"
 import { OrderEdit, ProductVariant } from "@medusajs/medusa"
+import clsx from "clsx"
 import {
   useAdminCreateOrderEdit,
   useAdminDeleteOrderEdit,
@@ -9,19 +9,19 @@ import {
   useAdminRequestOrderEditConfirmation,
   useAdminUpdateOrderEdit,
 } from "medusa-react"
-import clsx from "clsx"
+import React, { useContext, useEffect, useState } from "react"
 
+import Button from "../../../components/fundamentals/button"
+import SearchIcon from "../../../components/fundamentals/icons/search-icon"
+import InputField from "../../../components/molecules/input"
+import Modal from "../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../components/molecules/modal/layered-modal"
-import Modal from "../../../components/molecules/modal"
-import Button from "../../../components/fundamentals/button"
+import useNotification from "../../../hooks/use-notification"
+import { formatAmountWithSymbol } from "../../../utils/prices"
 import OrderEditLine from "../details/order-line/edit"
 import VariantsTable from "./variants-table"
-import SearchIcon from "../../../components/fundamentals/icons/search-icon"
-import { formatAmountWithSymbol } from "../../../utils/prices"
-import InputField from "../../../components/molecules/input"
-import useNotification from "../../../hooks/use-notification"
 
 type TotalsSectionProps = {
   currentSubtotal: number
@@ -167,9 +167,13 @@ function OrderEditModal(props: OrderEditModalProps) {
 
   const {
     mutateAsync: requestConfirmation,
+    isLoading: isRequestingConfirmation,
   } = useAdminRequestOrderEditConfirmation(orderEdit.id)
 
-  const { mutateAsync: updateOrderEdit } = useAdminUpdateOrderEdit(orderEdit.id)
+  const {
+    mutateAsync: updateOrderEdit,
+    isLoading: isUpdating,
+  } = useAdminUpdateOrderEdit(orderEdit.id)
 
   const { mutateAsync: deleteOrderEdit } = useAdminDeleteOrderEdit(orderEdit.id)
 
@@ -342,6 +346,8 @@ function OrderEditModal(props: OrderEditModalProps) {
               variant="primary"
               size="small"
               type="button"
+              disabled={isUpdating || isRequestingConfirmation}
+              loading={isUpdating || isRequestingConfirmation}
               onClick={onSave}
             >
               Save and close

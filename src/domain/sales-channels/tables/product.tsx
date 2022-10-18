@@ -1,3 +1,4 @@
+import { Product, SalesChannel } from "@medusajs/medusa"
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import {
@@ -13,20 +14,19 @@ import React, {
   useState,
 } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
-import { Product, SalesChannel } from "@medusajs/medusa"
 
-import Placeholder from "./placeholder"
 import Button from "../../../components/fundamentals/button"
-import ProductsFilter from "../../../domain/products/filter-dropdown"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import Table, { TablePagination } from "../../../components/molecules/table"
-import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
-import useQueryFilters from "../../../hooks/use-query-filters"
-import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
-import useNotification from "../../../hooks/use-notification"
 import Modal from "../../../components/molecules/modal"
+import Table, { TablePagination } from "../../../components/molecules/table"
+import { useProductFilters } from "../../../components/templates/product-table/use-filter-tabs"
+import ProductsFilter from "../../../domain/products/filter-dropdown"
+import useNotification from "../../../hooks/use-notification"
+import useQueryFilters from "../../../hooks/use-query-filters"
+import { SALES_CHANNEL_PRODUCTS_TABLE_COLUMNS } from "./config"
+import Placeholder from "./placeholder"
 
 /* ****************************************** */
 /* ************** TABLE CONFIG ************** */
@@ -461,9 +461,10 @@ function SalesChannelProductsSelectModal(
     expand: "sales_channels",
   })
 
-  const { mutate: addProductsBatch } = useAdminAddProductsToSalesChannel(
-    salesChannel.id
-  )
+  const {
+    mutate: addProductsBatch,
+    isLoading,
+  } = useAdminAddProductsToSalesChannel(salesChannel.id)
 
   const handleSubmit = () => {
     addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
@@ -507,6 +508,8 @@ function SalesChannelProductsSelectModal(
               className="min-w-[100px]"
               size="small"
               onClick={handleSubmit}
+              loading={isLoading}
+              disabled={isLoading}
             >
               Save
             </Button>

@@ -16,13 +16,13 @@ type Props = {
   onClose: () => void
 }
 
-type MediaForm = {
+type MediaFormWrapper = {
   media: MediaFormType
 }
 
 const MediaModal = ({ product, open, onClose }: Props) => {
   const { onUpdate, updating } = useEditProductActions(product.id)
-  const form = useForm<MediaForm>({
+  const form = useForm<MediaFormWrapper>({
     defaultValues: getDefaultValues(product),
   })
 
@@ -117,7 +117,7 @@ const MediaModal = ({ product, open, onClose }: Props) => {
   )
 }
 
-const getDefaultValues = (product: Product): MediaForm => {
+const getDefaultValues = (product: Product): MediaFormWrapper => {
   return {
     media: {
       images:

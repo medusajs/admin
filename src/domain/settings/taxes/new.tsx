@@ -30,7 +30,7 @@ type NewTaxRateFormData = {
 }
 
 const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
-  const createTaxRate = useAdminCreateTaxRate()
+  const { mutate, isLoading } = useAdminCreateTaxRate()
   const form = useForm<NewTaxRateFormData>({
     defaultValues: {
       products: [],
@@ -44,7 +44,7 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
   const layeredModalContext = useContext(LayeredModalContext)
 
   const onSave = handleSubmit((data) => {
-    createTaxRate.mutate(
+    mutate(
       {
         product_types: data.product_types,
         products: data.products,
@@ -235,6 +235,8 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
                 variant="primary"
                 size="small"
                 className="w-eventButton justify-center"
+                loading={isLoading}
+                disabled={isLoading}
               >
                 Create
               </Button>

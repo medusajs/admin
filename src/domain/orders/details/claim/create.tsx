@@ -660,7 +660,7 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
               </Button>
               <Button
                 onClick={onSubmit}
-                disabled={!ready}
+                disabled={!ready || isLoading}
                 loading={isLoading}
                 className="w-[112px]"
                 size="small"

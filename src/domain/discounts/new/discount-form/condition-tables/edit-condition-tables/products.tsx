@@ -43,7 +43,7 @@ const EditProductConditionSelector = ({ onClose }) => {
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
+      <Modal.Content>
         {isLoading ? (
           <Spinner />
         ) : (
@@ -69,7 +69,7 @@ const EditProductConditionSelector = ({ onClose }) => {
           </>
         )}
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <EditConditionFooter
           type="products"
           items={items}
