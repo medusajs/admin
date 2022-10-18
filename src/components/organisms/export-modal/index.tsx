@@ -45,6 +45,7 @@ const ExportModal: React.FC<ExportModalProps> = ({
             </Button>
             <Button
               loading={loading}
+              disabled={loading}
               variant="primary"
               size="small"
               onClick={onSubmit}

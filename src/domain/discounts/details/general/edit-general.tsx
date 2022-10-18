@@ -211,6 +211,7 @@ const EditGeneral: React.FC<EditGeneralProps> = ({ discount, onClose }) => {
                 size="small"
                 className="min-w-[128px]"
                 type="submit"
+                disabled={isLoading}
                 loading={isLoading}
               >
                 Save

@@ -26,7 +26,6 @@ const RMAReturnReasonSubModal: React.FC<RMAReturnReasonSubModalProps> = ({
   customReturnOptions = undefined,
   addImage,
   images,
-  isLargeModal = true,
 }) => {
   const { pop } = useContext(LayeredModalContext)
   const { return_reasons } = useAdminReturnReasons()

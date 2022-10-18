@@ -38,7 +38,7 @@ const EditTypeConditionSelector = ({ onClose }) => {
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
+      <Modal.Content>
         {isLoading ? (
           <Spinner />
         ) : (
@@ -64,7 +64,7 @@ const EditTypeConditionSelector = ({ onClose }) => {
           </>
         )}
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <EditConditionFooter
           type="product_types"
           items={items}

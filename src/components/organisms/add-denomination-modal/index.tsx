@@ -36,7 +36,7 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
     }[]
   }>()
   const notification = useNotification()
-  const createVariant = useAdminCreateVariant(giftCard.id)
+  const { mutate, isLoading } = useAdminCreateVariant(giftCard.id)
 
   // passed to useValuesFieldArray so new prices are intialized with the currenct default price
   const defaultValue = watch("default_price", 10000)
@@ -76,7 +76,7 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
       })
     }
 
-    createVariant.mutate(
+    mutate(
       {
         title: `${giftCard.variants.length}`,
         options: [
@@ -250,6 +250,8 @@ const AddDenominationModal: React.FC<AddDenominationModalProps> = ({
                 size="small"
                 className="mr-2 min-w-[130px] justify-center"
                 type="submit"
+                loading={isLoading}
+                disabled={isLoading}
               >
                 Save
               </Button>

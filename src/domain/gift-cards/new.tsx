@@ -41,7 +41,7 @@ type NewGiftCardFormData = {
 const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
   const { store } = useAdminStore()
   const { refetch } = useAdminProducts()
-  const { mutate } = useAdminCreateProduct()
+  const { mutate, isLoading } = useAdminCreateProduct()
   const notification = useNotification()
 
   const { register, setValue, handleSubmit, control } = useForm<
@@ -278,6 +278,8 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
                 variant="primary"
                 size="small"
                 className="w-eventButton"
+                loading={isLoading}
+                disabled={isLoading}
               >
                 Create & Publish
               </Button>
