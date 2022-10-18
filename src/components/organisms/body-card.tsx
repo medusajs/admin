@@ -64,11 +64,15 @@ const BodyCard: React.FC<BodyCardProps> = ({
 
           <div className="flex items-center space-x-2">
             {status && status}
-            <Actionables
-              actions={actionables}
-              forceDropdown={forceDropdown}
-              customTrigger={customActionable}
-            />
+            {
+              actionables ? (
+                <Actionables
+                  actions={actionables}
+                  forceDropdown={forceDropdown}
+                  customTrigger={customActionable}
+                />
+              ) : null
+            }
           </div>
         </div>
         {subtitle && (

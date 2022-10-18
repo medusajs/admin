@@ -166,8 +166,14 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
                   {...row.getRowProps()}
                   className="px-base"
                 >
-                  {row.cells.map((cell, index) => {
-                    return cell.render("Cell", { index })
+                  {row.cells.map((cell) => {
+                    return (
+                      <Table.Cell
+                        {...cell.getCellProps()}
+                      >
+                        {cell.render("Cell")}
+                      </Table.Cell>
+                    )
                   })}
                 </Table.Row>
               )

@@ -175,8 +175,14 @@ const GiftCardTable: React.FC<RouteComponentProps> = () => {
                   {...row.getRowProps()}
                   className="group"
                 >
-                  {row.cells.map((cell, index) => {
-                    return cell.render("Cell", { index })
+                  {row.cells.map((cell) => {
+                    return (
+                      <Table.Cell
+                        {...cell.getCellProps()}
+                      >
+                        {cell.render("Cell")}
+                      </Table.Cell>
+                    )
                   })}
                 </Table.Row>
               )

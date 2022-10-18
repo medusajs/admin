@@ -3,7 +3,6 @@ import React, { useMemo } from "react"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import Badge from "../../fundamentals/badge"
 import StatusDot from "../../fundamentals/status-indicator"
-import Table from "../../molecules/table"
 
 enum PromotionStatus {
   SCHEDULED = "SCHEDULED",
@@ -84,62 +83,60 @@ export const usePromotionTableColumns = () => {
   const columns = useMemo(
     () => [
       {
-        Header: <div className="pl-2">Code</div>,
+        Header: <span className="pl-2">Code</span>,
         accessor: "code",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>
-            <div className="overflow-hidden">
-              <Badge className="rounded-rounded" variant="default">
-                <span className="inter-small-regular">{value}</span>
-              </Badge>
-            </div>
-          </Table.Cell>
+        Cell: ({ cell: { value } }) => (
+          <div className="overflow-hidden">
+            <Badge className="rounded-rounded" variant="default">
+              <span className="inter-small-regular">{value}</span>
+            </Badge>
+          </div>
         ),
       },
       {
         Header: "Description",
         accessor: "rule.description",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{value}</Table.Cell>
+        Cell: ({ cell: { value } }) => (
+          `#${value}`
         ),
       },
       {
         Header: <div className="text-right">Amount</div>,
         id: "amount",
-        Cell: ({ row: { original }, index }) => {
+        Cell: ({ row: { original } }) => {
           return (
-            <Table.Cell className="text-right" key={index}>
+            <span className="text-right">
               {getPromotionAmount(original)}
-            </Table.Cell>
+            </span>
           )
         },
       },
       {
         Header: <div className="w-[60px]" />,
         id: "currency",
-        Cell: ({ row: { original }, index }) => (
-          <Table.Cell className="px-2 text-grey-40" key={index}>
+        Cell: ({ row: { original } }) => (
+          <span className="px-2 text-grey-40">
             {getCurrencySymbol(original)}
-          </Table.Cell>
+          </span>
         ),
       },
       {
         Header: "Status",
         accessor: "ends_at",
-        Cell: ({ row: { original }, index }) => (
-          <Table.Cell key={index}>{getPromotionStatusDot(original)}</Table.Cell>
+        Cell: ({ row: { original } }) => (
+          <span>{getPromotionStatusDot(original)}</span>
         ),
       },
       {
         Header: () => <div className="text-right">Redemptions</div>,
         accessor: "usage_count",
-        Cell: ({ row: { original }, index }) => {
+        Cell: ({ row: { original } }) => {
           return (
-            <Table.Cell className="text-right" key={index}>
+            <span className="text-right">
               {original.usage_limit > 0
                 ? getUsageCount(original.usage_count)
                 : "-"}
-            </Table.Cell>
+            </span>
           )
         },
       },

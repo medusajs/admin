@@ -170,22 +170,22 @@ const DiscountTable: React.FC = () => {
           ))}
         </Table.Head>
         {isLoading || !discounts ? (
-          <Table.Body {...getTableBodyProps()}>
-            <Table.Row>
-              <Table.Cell colSpan={columns.length}>
-                <div className="flex w-full h-full absolute items-center justify-center mt-10">
-                  <div className="">
-                    <Spinner size={"large"} variant={"secondary"} />
-                  </div>
+         <Table.Body>
+          <Table.Row>
+            <Table.Cell>
+              <div className="flex w-full h-full absolute items-center justify-center mt-10">
+                <div className="">
+                  <Spinner size={"large"} variant={"secondary"} />
                 </div>
-              </Table.Cell>
-            </Table.Row>
-          </Table.Body>
+              </div>
+            </Table.Cell>
+          </Table.Row>
+         </Table.Body>
         ) : (
           <Table.Body {...getTableBodyProps()}>
             {rows.map((row) => {
               prepareRow(row)
-              return <PromotionRow row={row} />
+              return <PromotionRow row={row} {...row.getRowProps()} />
             })}
           </Table.Body>
         )}
@@ -220,8 +220,14 @@ const PromotionRow = ({ row }) => {
       actions={getRowActions()}
       className="group"
     >
-      {row.cells.map((cell, index) => {
-        return cell.render("Cell", { index })
+      {row.cells.map((cell) => {
+        return (
+          <Table.Cell
+            {...cell.getCellProps()}
+          >
+            {cell.render("Cell")}
+          </Table.Cell>
+        )
       })}
     </Table.Row>
   )

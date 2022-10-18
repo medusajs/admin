@@ -201,7 +201,9 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
                   className="group"
                 >
                   {row.cells.map((cell, index) => {
-                    return cell.render("Cell", { index })
+                    <Table.Cell key={index}>
+                      {cell.render("Cell")}
+                    </Table.Cell>
                   })}
                 </Table.Row>
               )

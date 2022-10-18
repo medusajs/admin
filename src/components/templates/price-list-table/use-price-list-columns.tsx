@@ -3,7 +3,6 @@ import { isArray } from "lodash"
 import React, { useMemo } from "react"
 import { Column } from "react-table"
 import Actionables from "../../molecules/actionables"
-import Table from "../../molecules/table"
 import usePriceListActions from "./use-price-list-actions"
 import { formatPriceListGroups, getPriceListStatus } from "./utils"
 
@@ -11,24 +10,22 @@ export const usePriceListTableColumns = () => {
   const columns = useMemo<Column<PriceList>[]>(
     () => [
       {
-        Header: "Name",
+        Header: (<span>Name</span>),
         accessor: "name",
         Cell: ({ cell: { value } }) => (
-          <Table.Cell>
-            <span className="inter-small-regular">{value}</span>
-          </Table.Cell>
+          <span className="inter-small-regular">{value}</span>
         ),
       },
       {
         Header: "Description",
         accessor: "description",
-        Cell: ({ cell: { value } }) => <Table.Cell>{value}</Table.Cell>,
+        Cell: ({ cell: { value } }) => <>{value}</>,
       },
       {
         Header: "Status",
         accessor: "status",
         Cell: ({ row: { original } }) => (
-          <Table.Cell>{getPriceListStatus(original)}</Table.Cell>
+          <>{getPriceListStatus(original)}</>
         ),
       },
       {
@@ -40,10 +37,10 @@ export const usePriceListTableColumns = () => {
             : []
           const [group, other] = formatPriceListGroups(groups)
           return (
-            <Table.Cell>
+            <>
               {group}
               {other && <span className="text-grey-40"> + {other} more</span>}
-            </Table.Cell>
+            </>
           )
         },
       },
@@ -52,14 +49,14 @@ export const usePriceListTableColumns = () => {
         Cell: ({ row: { original: priceList } }) => {
           const { getActions } = usePriceListActions(priceList)
           return (
-            <Table.Cell
+            <div
               onClick={(e) => e.stopPropagation()}
               className="w-full flex justify-end"
             >
               <div className="justify-end">
                 <Actionables forceDropdown actions={getActions()} />
               </div>
-            </Table.Cell>
+            </div>
           )
         },
       },
