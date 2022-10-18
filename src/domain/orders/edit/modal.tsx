@@ -384,24 +384,22 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
       return
     }
 
-    if (typeof orderEdits !== "undefined") {
-      createOrderEdit(
-        { order_id: order.id },
-        {
-          onSuccess: ({ order_edit }) => {
-            setActiveOrderEdit(order_edit.id)
-          },
-          onError: () => {
-            notification(
-              "Error",
-              "There is already active order edit on this order",
-              "error"
-            )
-            hideModal()
-          },
-        }
-      )
-    }
+    createOrderEdit(
+      { order_id: order.id },
+      {
+        onSuccess: ({ order_edit }) => {
+          setActiveOrderEdit(order_edit.id)
+        },
+        onError: () => {
+          notification(
+            "Error",
+            "There is already active order edit on this order",
+            "error"
+          )
+          hideModal()
+        },
+      }
+    )
   }, [activeOrderEditId, orderEdits])
 
   const onClose = () => {

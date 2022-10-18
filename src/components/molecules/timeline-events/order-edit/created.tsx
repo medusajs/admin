@@ -153,14 +153,12 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
                 >
                   Continue order edit
                 </Button>
-                <Button
+                <TwoStepDelete
+                  onDelete={onDeleteOrderEditClicked}
                   className="w-full border border-grey-20"
-                  size="small"
-                  variant="danger"
-                  onClick={onDeleteOrderEditClicked}
                 >
                   Delete the order edit
-                </Button>
+                </TwoStepDelete>
               </>
             ) : (
               <TwoStepDelete

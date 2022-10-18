@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  PropsWithChildren,
-  useEffect,
-  useState,
-} from "react"
+import React, { createContext, PropsWithChildren } from "react"
 import { useAdminOrderEdits } from "medusa-react"
 import { OrderEdit } from "@medusajs/medusa"
 
@@ -21,6 +16,8 @@ export type IOrderEditContext = {
   orderEdits?: OrderEdit[]
 }
 
+let activeId = undefined
+
 // @ts-ignore
 export const OrderEditContext = createContext<IOrderEditContext>({})
 
@@ -29,28 +26,20 @@ type OrderEditProviderProps = PropsWithChildren<{ orderId: string }>
 function OrderEditProvider(props: OrderEditProviderProps) {
   const { orderId } = props
   const [isModalVisible, showModal, hideModal] = useToggleState(false)
-  const [activeOrderEditId, setActiveOrderEdit] = useState<string>()
 
-  var { order_edits, count } = useAdminOrderEdits({
+  // TODO: sort by created_at
+  const { order_edits, count } = useAdminOrderEdits({
     order_id: orderId,
-    limit: count,
+    //limit: count, // TODO
   })
-
-  useEffect(() => {
-    const activeOrderEdit = order_edits?.find((oe) => oe.status === "created")
-
-    if (activeOrderEdit) {
-      setActiveOrderEdit(activeOrderEdit.id)
-    }
-  }, [order_edits])
 
   const value = {
     isModalVisible,
     showModal,
     hideModal,
     orderEdits: order_edits,
-    activeOrderEditId,
-    setActiveOrderEdit,
+    activeOrderEditId: activeId,
+    setActiveOrderEdit: (id: string | undefined) => (activeId = id),
   }
 
   return <OrderEditContext.Provider value={value} children={props.children} />
