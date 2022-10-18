@@ -1,13 +1,15 @@
 import { LineItem, OrderEdit, OrderItemChange } from "@medusajs/medusa"
 import {
   useAdminCancelOrderEdit,
+  useAdminConfirmOrderEdit,
   useAdminDeleteOrderEdit,
   useAdminOrderEdit,
   useAdminUser,
 } from "medusa-react"
 import React, { useContext } from "react"
-import { ByLine } from "."
+
 import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
+import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import TwoStepDelete from "../../../atoms/two-step-delete"
@@ -17,6 +19,7 @@ import ImagePlaceholder from "../../../fundamentals/image-placeholder"
 import EventContainer from "../event-container"
 import { OrderEditContext } from "../../../../domain/orders/edit/context"
 import CopyToClipboard from "../../../atoms/copy-to-clipboard"
+import { ByLine } from "."
 
 type EditCreatedProps = {
   event: OrderEditEvent
@@ -55,8 +58,11 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
 
   const { user } = useAdminUser(user_id)
 
+  const forceConfirmDialog = useImperativeDialog()
+
   const deleteOrderEdit = useAdminDeleteOrderEdit(event.edit.id)
   const cancelOrderEdit = useAdminCancelOrderEdit(event.edit.id)
+  const confirmOrderEdit = useAdminConfirmOrderEdit(event.edit.id)
 
   const onDeleteOrderEditClicked = () => {
     deleteOrderEdit.mutate(undefined, {
@@ -78,6 +84,35 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
         notification("Error", getErrorMessage(err), "error")
       },
     })
+  }
+
+  const onConfirmEditClicked = async () => {
+    const shouldDelete = await forceConfirmDialog({
+      heading: "Delete Confirm",
+      text:
+        "By force confirming you allow the order edit to be fulfilled. You will still have to reconcile payments manually after confirming.",
+      confirmText: "Yes, Force Confirm",
+      cancelText: "No, Cancel",
+    })
+
+    if (shouldDelete) {
+      confirmOrderEdit.mutate(undefined, {
+        onSuccess: () => {
+          notification(
+            "Success",
+            `Successfully confirmed Order Edit`,
+            "success"
+          )
+        },
+        onError: (err) => {
+          notification("Error", getErrorMessage(err), "error")
+        },
+      })
+    }
+  }
+
+  const onCopyConfirmationLinkClicked = () => {
+    console.log("TODO")
   }
 
   const onContinueEdit = () => {
@@ -128,12 +163,31 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
                 </TwoStepDelete>
               </>
             ) : (
-              <TwoStepDelete
-                onDelete={onCancelOrderEditClicked}
-                className="w-full border border-grey-20"
-              >
-                Cancel Order Edit
-              </TwoStepDelete>
+              <>
+                <Button
+                  className="w-full border border-grey-20"
+                  size="small"
+                  variant="ghost"
+                  onClick={onCopyConfirmationLinkClicked}
+                >
+                  Copy Confirmation-Request Link
+                </Button>
+                <Button
+                  className="w-full border border-grey-20"
+                  size="small"
+                  variant="ghost"
+                  onClick={onConfirmEditClicked}
+                >
+                  Force Confirm
+                </Button>
+
+                <TwoStepDelete
+                  onDelete={onCancelOrderEditClicked}
+                  className="w-full border border-grey-20"
+                >
+                  Cancel Order Edit
+                </TwoStepDelete>
+              </>
             )}
           </div>
         )}
