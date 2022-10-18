@@ -6,6 +6,7 @@ import LayeredModal, {
   LayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
 import AvailableScreen from "./available-screen"
+import { SalesChannelsModalContext } from "./use-sales-channels-modal"
 
 type Props = {
   open: boolean
