@@ -242,9 +242,12 @@ const OrderEditLine = ({
             )}
           >
             <div
-              className={clsx("inter-small-regular text-gray-900", {
-                "!text-gray-400 pointer-events-none": isLocked,
-              })}
+              className={clsx(
+                "inter-small-regular text-gray-900 min-w-[60px] text-right",
+                {
+                  "!text-gray-400 pointer-events-none": isLocked,
+                }
+              )}
             >
               {formatAmountWithSymbol({
                 amount: item.unit_price * item.quantity,
