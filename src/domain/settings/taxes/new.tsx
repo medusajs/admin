@@ -43,10 +43,12 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
 
   const layeredModalContext = useContext(LayeredModalContext)
 
-  const onSave = (data: NewTaxRateFormData) => {
+  const onSave = handleSubmit((data) => {
     createTaxRate.mutate(
       {
-        ...data,
+        product_types: data.product_types,
+        products: data.products,
+        shipping_options: data.shipping_options,
         name: data.details.name,
         code: data.details.code,
         rate: data.details.rate,
@@ -62,7 +64,7 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
         },
       }
     )
-  }
+  })
 
   const [products, product_types, shipping_options] = watch([
     "products",
@@ -92,7 +94,7 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
       context={layeredModalContext}
       handleClose={onDismiss}
     >
-      <form onSubmit={handleSubmit(onSave)}>
+      <form onSubmit={onSave}>
         <Modal.Body>
           <Modal.Header handleClose={onDismiss}>
             <div>

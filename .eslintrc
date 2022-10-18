@@ -24,7 +24,7 @@
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-implicit-any": "off",
-    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-unused-vars": "error"
   },
   "settings": {
     "react": {
@@ -41,8 +41,8 @@
       "files": ["*.js"],
       "rules": {
         "@typescript-eslint/no-var-requires": "off",
-        "react/jsx-uses-react": "on",
-        "react/react-in-jsx-scope": "on"
+        "react/jsx-uses-react": 1,
+        "react/react-in-jsx-scope": 1
       }
     }
   ]

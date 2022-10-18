@@ -29,7 +29,7 @@ const Menu = <
   innerProps,
   innerRef,
   placement,
-  selectProps: { onMenuClose, menuIsOpen },
+  selectProps: { onMenuClose, menuIsOpen, customStyles, styles },
 }: MenuProps<Option, IsMulti, Group>) => {
   useEffect(() => {
     const closeOnResize = () => {
@@ -49,6 +49,7 @@ const Menu = <
     <div
       {...innerProps}
       ref={innerRef}
+      style={{ ...styles?.menu }}
       className={cx(
         { menu: true },
         clsx(
@@ -57,7 +58,8 @@ const Menu = <
             "top-[calc(100%+8px)]": placement === "bottom",
             "bottom-full": placement === "top",
           },
-          className
+          className,
+          customStyles?.menu
         )
       )}
     >
@@ -294,7 +296,7 @@ export const Option = <
         {isMulti && (
           <CheckboxAdornment isSelected={isSelected} isDisabled={isDisabled} />
         )}
-        <div className="flex items-center gap-x-xsmall">
+        <div className="flex items-center gap-x-xsmall inter-base-regular">
           {prefix && <span className="inter-base-semibold">{prefix}</span>}
           {children}
         </div>

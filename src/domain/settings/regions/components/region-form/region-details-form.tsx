@@ -37,7 +37,7 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
       <div className="grid grid-cols-2 gap-large">
         <InputField
           label="Title"
-          placeholder="Europe..."
+          placeholder="Europe"
           required
           {...register(path("name"), {
             required: "Title is required",
@@ -56,7 +56,7 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
             return (
               <NextSelect
                 label="Currency"
-                placeholder="Choose currency..."
+                placeholder="Choose currency"
                 required
                 {...field}
                 options={currencyOptions}
@@ -69,11 +69,11 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
         {isCreate && (
           <>
             <InputField
-              label="Tax Rate"
+              label="Default Tax Rate"
               required
-              placeholder="25..."
+              placeholder="25"
               prefix="%"
-              step={1}
+              step={0.01}
               type={"number"}
               {...register(path("tax_rate"), {
                 required: isCreate ? "Tax rate is required" : undefined,
@@ -87,8 +87,8 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
               errors={errors}
             />
             <InputField
-              label="Tax Code"
-              placeholder="1000..."
+              label="Default Tax Code"
+              placeholder="1000"
               {...register(path("tax_code"))}
               errors={errors}
             />
@@ -101,7 +101,7 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
             return (
               <NextSelect
                 label="Countries"
-                placeholder="Choose countries..."
+                placeholder="Choose countries"
                 isMulti
                 selectAll
                 {...field}

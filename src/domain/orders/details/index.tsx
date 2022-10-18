@@ -55,6 +55,9 @@ import {
   PaymentDetails,
   PaymentStatusComponent,
 } from "./templates"
+import OrderEditModal from "../edit/modal"
+import { FeatureFlagContext } from "../../../context/feature-flag"
+import useOrdersExpandParam from "./utils/use-admin-expand-paramter"
 
 type OrderDetailFulfillment = {
   title: string
@@ -115,6 +118,8 @@ const gatherAllFulfillments = (order) => {
 type OrderDetailProps = RouteComponentProps<{ id: string }>
 
 const OrderDetails = ({ id }: OrderDetailProps) => {
+  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
+  const { orderRelations } = useOrdersExpandParam()
   const dialog = useImperativeDialog()
 
   const [addressModal, setAddressModal] = useState<null | {
@@ -127,6 +132,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
   }>(null)
 
   const [showFulfillment, setShowFulfillment] = useState(false)
+  const [showOrderEdit, setShowOrderEdit] = useState(false)
   const [showRefund, setShowRefund] = useState(false)
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
 
@@ -135,9 +141,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
   const capturePayment = useAdminCapturePayment(id!)
   const cancelOrder = useAdminCancelOrder(id!)
 
-  const { mutate: updateOrder, isLoading: submitting } = useAdminUpdateOrder(
-    id!
-  )
+  const { mutate: updateOrder } = useAdminUpdateOrder(id!)
 
   const { region } = useAdminRegion(order?.region_id!, {
     enabled: !!order?.region_id,
@@ -336,6 +340,16 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
               <BodyCard
                 className={"w-full mb-4 min-h-0 h-auto"}
                 title="Summary"
+                actionables={
+                  isFeatureEnabled("order_editing")
+                    ? [
+                        {
+                          label: "Edit Order",
+                          onClick: () => setShowOrderEdit(true),
+                        },
+                      ]
+                    : undefined
+                }
               >
                 <div className="mt-6">
                   {order.items?.map((item, i) => (
@@ -634,6 +648,12 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
               handleCancel={() => setFullfilmentToShip(null)}
               fulfillment={fullfilmentToShip}
               orderId={order.id}
+            />
+          )}
+          {showOrderEdit && (
+            <OrderEditModal
+              orderId={order.id}
+              close={() => setShowOrderEdit(false)}
             />
           )}
         </>

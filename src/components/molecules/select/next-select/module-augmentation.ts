@@ -1,6 +1,13 @@
+import { ComponentProps } from "react"
 import { GroupBase } from "react-select"
 
 export type SelectSize = "sm" | "md"
+
+type SelectComponent = "control" | "inner_control" | "menu"
+
+type SelectComponentStyles = Partial<
+  Record<SelectComponent, ComponentProps<"div">["className"]>
+>
 
 declare module "react-select/dist/declarations/src/Select" {
   export interface Props<
@@ -51,5 +58,11 @@ declare module "react-select/dist/declarations/src/Select" {
      * @defaultValue `false`
      */
     selectAll?: boolean
+    /**
+     * An optinal object that can be used to override the default styles of the select components.
+     *
+     * @defaultValue `undefined`
+     */
+    customStyles?: SelectComponentStyles
   }
 }

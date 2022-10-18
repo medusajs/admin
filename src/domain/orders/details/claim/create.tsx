@@ -193,8 +193,6 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
     })
   }, [shippingMethod, showCustomPrice])
 
-  useEffect(() => console.log(shippingAddress), [shippingAddress])
-
   const onSubmit = () => {
     const claim_items = Object.entries(toReturn).map(([key, value]) => {
       return {

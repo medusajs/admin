@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { ComponentPropsWithRef } from "react"
+import React, { ComponentPropsWithRef, forwardRef } from "react"
 import {
   ContainerProps,
   GroupBase,
@@ -17,31 +17,39 @@ type AdjacentContainerProps = {
   children?: React.ReactNode
 } & ComponentPropsWithRef<"div">
 
-export const AdjacentContainer = ({
-  label,
-  helperText,
-  required,
-  errors,
-  name,
-  children,
-}: AdjacentContainerProps) => {
-  return (
-    <div className="flex flex-col gap-y-xsmall w-full">
-      {label && (
-        <label className="inter-small-semibold text-grey-50">
-          {label}
-          {required && <span className="text-rose-50">*</span>}
-        </label>
-      )}
-      {children}
-      {name && errors ? (
-        <InputError errors={errors} name={name} className="-mt-0.5" />
-      ) : helperText ? (
-        <p className="inter-small-regular text-grey-50">{helperText}</p>
-      ) : null}
-    </div>
-  )
-}
+export const AdjacentContainer = forwardRef<
+  HTMLDivElement,
+  AdjacentContainerProps
+>(
+  (
+    {
+      label,
+      helperText,
+      required,
+      errors,
+      name,
+      children,
+    }: AdjacentContainerProps,
+    ref
+  ) => {
+    return (
+      <div className="flex flex-col gap-y-xsmall w-full" ref={ref}>
+        {label && (
+          <label className="inter-small-semibold text-grey-50">
+            {label}
+            {required && <span className="text-rose-50">*</span>}
+          </label>
+        )}
+        {children}
+        {name && errors ? (
+          <InputError errors={errors} name={name} className="-mt-0.5" />
+        ) : helperText ? (
+          <p className="inter-small-regular text-grey-50">{helperText}</p>
+        ) : null}
+      </div>
+    )
+  }
+)
 
 export const SelectContainer = <
   Option,

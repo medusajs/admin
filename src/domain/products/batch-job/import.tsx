@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 
 import { BatchJob } from "@medusajs/medusa"
 import {
@@ -12,6 +12,7 @@ import {
 
 import UploadModal from "../../../components/organisms/upload-modal"
 import useNotification from "../../../hooks/use-notification"
+import { PollingContext } from "../../../context/polling"
 
 /**
  * Hook returns a batch job. The endpoint is polled every 2s while the job is processing.
@@ -49,6 +50,8 @@ function ImportProducts(props: ImportProductsProps) {
   const [batchJobId, setBatchJobId] = useState()
 
   const notification = useNotification()
+
+  const { resetInterval } = useContext(PollingContext)
 
   const { mutateAsync: deleteFile } = useAdminDeleteFile()
   const { mutateAsync: uploadFile } = useAdminUploadFile()
@@ -103,6 +106,8 @@ function ImportProducts(props: ImportProductsProps) {
         type: "product-import",
       })
 
+      resetInterval()
+
       setBatchJobId(batchJob.batch_job.id)
     } catch (e) {
       notification("Error", "Import failed.", "error")
@@ -136,14 +141,21 @@ function ImportProducts(props: ImportProductsProps) {
    * When file upload is removed, delete file from the bucket and cancel batch job.
    */
   const onFileRemove = async () => {
-    try {
-      if (fileKey) {
+    if (fileKey) {
+      try {
         deleteFile({ file_key: fileKey })
+      } catch (e) {
+        notification("Error", "Failed to delete the CSV file", "error")
       }
+    }
+
+    try {
       cancelBathJob()
     } catch (e) {
-      console.log(e)
+      notification("Error", "Failed to cancel the batch job", "error")
     }
+
+    setBatchJobId(undefined)
   }
 
   /**

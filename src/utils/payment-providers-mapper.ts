@@ -17,6 +17,14 @@ const providerDescriptors: { [providerKey: string]: Option } = {
     label: "Stripe Bancontact",
     value: "stripe-bancontact",
   },
+  "stripe-przelewy24": {
+    label: "Stripe Przelewy24",
+    value: "stripe-przelewy24",
+  },
+  "stripe-blik": {
+    label: "Stripe Blik",
+    value: "stripe-blik",
+  },
   "mobilepay-adyen": {
     label: "MobilePay via Adyen",
     value: "mobilepay-adyen",

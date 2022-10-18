@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import moment from "moment"
 import React, { useState } from "react"
 import Tooltip from "../../atoms/tooltip"
 import BellOffIcon from "../../fundamentals/icons/bell-off-icon"
@@ -9,6 +10,7 @@ export enum EventIconColor {
   GREEN = "text-emerald-40",
   RED = "text-rose-50",
   ORANGE = "text-orange-40",
+  VIOLET = "text-violet-60",
   DEFAULT = "text-grey-50",
 }
 
@@ -43,11 +45,12 @@ const EventContainer: React.FC<EventContainerProps> = ({
   }
 
   return (
-    <div>
+    <div className="mb-base">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-xsmall">
           <div className={clsx("h-5 w-5", iconColor)}>{icon}</div>
           <div className="inter-small-semibold">{title}</div>
+          <div className="inter-small-regular text-grey-50"></div>
         </div>
         <div className="flex items-center gap-x-xsmall">
           {noNotification && (
@@ -69,11 +72,20 @@ const EventContainer: React.FC<EventContainerProps> = ({
       </div>
       <div className="flex gap-x-xsmall">
         <div className="w-5 flex justify-center pt-base">
-          {!isFirst && <div className="w-px bg-grey-20 min-h-[24px]" />}
+          {!isFirst && <div className="w-px min-h-[24px]" />}
         </div>
         <div className="mt-2xsmall w-full inter-small-regular">
-          <div className="flex items-center justify-between">
-            <div className="text-grey-50">{new Date(time).toUTCString()}</div>
+          <div className="flex items-center">
+            <Tooltip content={new Date(time).toUTCString()}>
+              <div className="text-grey-50 inter-small-regular">
+                {moment(time).fromNow()}
+              </div>
+            </Tooltip>
+            {midNode && (
+              <span className="mx-2xsmall ">
+                <Dot />
+              </span>
+            )}
             {midNode}
           </div>
           {children && isExpanded && (
@@ -83,6 +95,10 @@ const EventContainer: React.FC<EventContainerProps> = ({
       </div>
     </div>
   )
+}
+
+const Dot = ({ size = "2px", bg = "bg-grey-50" }) => {
+  return <div className={`w-[2px] h-[2px] aspect-square ${bg} rounded-full`} />
 }
 
 export default EventContainer
