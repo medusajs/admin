@@ -1,7 +1,6 @@
 import { LineItem, OrderEdit, OrderItemChange } from "@medusajs/medusa"
 import {
   useAdminCancelOrderEdit,
-  useAdminConfirmOrderEdit,
   useAdminDeleteOrderEdit,
   useAdminOrderEdit,
   useAdminUser,
@@ -9,7 +8,6 @@ import {
 import React, { useContext } from "react"
 import { ByLine } from "."
 import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
-import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import TwoStepDelete from "../../../atoms/two-step-delete"
@@ -18,6 +16,7 @@ import EditIcon from "../../../fundamentals/icons/edit-icon"
 import ImagePlaceholder from "../../../fundamentals/image-placeholder"
 import EventContainer from "../event-container"
 import { OrderEditContext } from "../../../../domain/orders/edit/context"
+import CopyToClipboard from "../../../atoms/copy-to-clipboard"
 
 type EditCreatedProps = {
   event: OrderEditEvent
@@ -224,9 +223,7 @@ const OrderEditChangeItem: React.FC<OrderEditChangeItemProps> = ({
         <span className="inter-small-semibold text-grey-90">
           {quantity > 1 && <>{quantity}x</>} {lineItem?.title} &nbsp;
           {lineItem?.variant?.sku && (
-            <span className="inter-small-regular text-grey-50">
-              ({lineItem.variant?.sku})
-            </span>
+            <CopyToClipboard value={lineItem?.variant?.sku} iconSize={14} />
           )}
         </span>
         <span className="flex inter-small-regular text-grey-50">

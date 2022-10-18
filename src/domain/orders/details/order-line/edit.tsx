@@ -20,6 +20,7 @@ import useNotification from "../../../../hooks/use-notification"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import { AddProductVariant } from "../../edit/modal"
 import Tooltip from "../../../../components/atoms/tooltip"
+import CopyToClipboard from "../../../../components/atoms/copy-to-clipboard"
 
 type OrderEditLineProps = {
   item: LineItem
@@ -164,10 +165,10 @@ const OrderEditLine = ({
               <ImagePlaceholder />
             )}
           </div>
-          <div className="flex flex-col justify-center max-w-[185px]">
+          <div className="flex flex-col justify-center">
             <div>
               <span
-                className={clsx("inter-small-regular text-grey-900 truncate", {
+                className={clsx("inter-small-regular text-grey-900", {
                   "text-gray-400": isLocked,
                 })}
               >
@@ -187,20 +188,23 @@ const OrderEditLine = ({
                 </div>
               )}
 
-              {item?.variant && (
-                <span
-                  className={clsx(
-                    "inter-small-regular text-gray-500 truncate",
-                    {
-                      "text-gray-400": isLocked,
-                    }
-                  )}
-                >
-                  {`${item.variant.title}${
-                    item.variant.sku ? ` (${item.variant.sku})` : ""
-                  }`}
-                </span>
-              )}
+              <div className="min-h-[20px]">
+                {item?.variant && (
+                  <span
+                    className={clsx(
+                      "inter-small-regular text-gray-500 flex gap-3",
+                      {
+                        "text-gray-400": isLocked,
+                      }
+                    )}
+                  >
+                    {item.variant.title}
+                    {item.variant.sku && (
+                      <CopyToClipboard value={item.variant.sku} iconSize={14} />
+                    )}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
