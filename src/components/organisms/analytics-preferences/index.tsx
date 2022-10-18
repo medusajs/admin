@@ -1,5 +1,9 @@
+import { User } from "@medusajs/medusa"
 import React, { useEffect } from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
+import useNotification from "../../../hooks/use-notification"
+import { useAdminCreateAnalyticsConfig } from "../../../services/analytics"
+import { getErrorMessage } from "../../../utils/error-messages"
 import Switch from "../../atoms/switch"
 import Button from "../../fundamentals/button"
 import InputField from "../../molecules/input"
@@ -13,11 +17,12 @@ type AnalyticsPreferencesFormType = {
 }
 
 type Props = {
-  updatePreferences: (preferences: AnalyticsPreferencesFormType) => void
-  isSubmitting?: boolean
+  user: Omit<User, "password_hash">
 }
 
-const AnalyticsPreferences = ({ updatePreferences, isSubmitting }: Props) => {
+const AnalyticsPreferencesModal = ({ user }: Props) => {
+  const notification = useNotification()
+  const { mutate, isLoading } = useAdminCreateAnalyticsConfig(user.id)
   const { control, register, setValue, handleSubmit } = useForm<
     AnalyticsPreferencesFormType
   >({
@@ -45,8 +50,28 @@ const AnalyticsPreferences = ({ updatePreferences, isSubmitting }: Props) => {
     }
   }, [emailSubscriber])
 
-  const onSubmit = handleSubmit((data: AnalyticsPreferencesFormType) => {
-    updatePreferences(data)
+  const onSubmit = handleSubmit((data) => {
+    const payload = !data.email
+      ? {
+          opt_out: true,
+        }
+      : {
+          opt_out: false,
+          anonymize: data.anonymize,
+        }
+
+    mutate(payload, {
+      onSuccess: () => {
+        notification(
+          "Success",
+          "Your preferences was successfully updated",
+          "success"
+        )
+      },
+      onError: (err) => {
+        notification("Error", getErrorMessage(err), "error")
+      },
+    })
   })
 
   return (
@@ -150,7 +175,7 @@ const AnalyticsPreferences = ({ updatePreferences, isSubmitting }: Props) => {
               <Button
                 variant="primary"
                 size="small"
-                loading={isSubmitting}
+                loading={isLoading}
                 onClick={onSubmit}
               >
                 Continue
@@ -163,4 +188,4 @@ const AnalyticsPreferences = ({ updatePreferences, isSubmitting }: Props) => {
   )
 }
 
-export default AnalyticsPreferences
+export default AnalyticsPreferencesModal

@@ -87,3 +87,12 @@ export const useAdminUpdateAnalyticsConfig = (identifier?: string) => {
 
   return mutation
 }
+
+export const useAdminCreateAnalyticsConfig = (identifier?: string) => {
+  const mutation = useMutation(
+    ["analytics", identifier],
+    (payload: CreateConfigPayload) => createAnalyticsConfig(payload)
+  )
+
+  return mutation
+}

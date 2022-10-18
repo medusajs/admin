@@ -1,5 +1,5 @@
 import { User } from "@medusajs/medusa"
-import React from "react"
+import React, { useMemo } from "react"
 import Avatar from "../../../../components/atoms/avatar"
 import Button from "../../../../components/fundamentals/button"
 import useToggleState from "../../../../hooks/use-toggle-state"
@@ -11,6 +11,12 @@ type Props = {
 
 const EditUserInformation = ({ user }: Props) => {
   const { state, toggle, close } = useToggleState()
+
+  const name = useMemo(() => {
+    const names = [user?.first_name, user?.last_name]
+
+    return names.filter((n) => n).join(" ")
+  }, [user])
 
   return (
     <>
@@ -30,10 +36,14 @@ const EditUserInformation = ({ user }: Props) => {
             )}
           </div>
           <div className="flex flex-col">
-            <p className="inter-base-semibold">{`${
-              user?.first_name ? `${user?.first_name} ` : ""
-            }${user?.last_name}`}</p>
-            <p className="inter-base-regular text-grey-50">{user?.email}</p>
+            {!!name ? (
+              <>
+                <p className="inter-base-semibold">{name}</p>
+                <p className="inter-base-regular text-grey-50">{user?.email}</p>
+              </>
+            ) : (
+              <p className="inter-base-semibold">{user?.email}</p>
+            )}
           </div>
         </div>
         <Button
