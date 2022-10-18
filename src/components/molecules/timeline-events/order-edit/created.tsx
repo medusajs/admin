@@ -47,7 +47,7 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
   )
   const { type, user_id } = getInfo(event.edit)
 
-  const { order_edit: orderEdit } = useAdminOrderEdit(event.edit.id)
+  const { order_edit: orderEdit, isFetching } = useAdminOrderEdit(event.edit.id)
 
   const notification = useNotification()
 
@@ -85,8 +85,8 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
     showModal()
   }
 
-  // hide last created edit while editing
-  if (isModalVisible && orderEdit?.status === "created") {
+  // hide last created edit while editing and prevent content flashing while loading
+  if ((isModalVisible && orderEdit?.status === "created") || isFetching) {
     return null
   }
 
