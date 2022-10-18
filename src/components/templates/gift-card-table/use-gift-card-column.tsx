@@ -9,7 +9,7 @@ const useGiftCardTableColums = () => {
   const columns = useMemo(
     () => [
       {
-        Header: <Table.HeadCell className="pl-2">Code</Table.HeadCell>,
+        Header: <div className="pl-2">Code</div>,
         accessor: "code",
         Cell: ({ cell: { value }, index }) => (
           <Table.Cell
@@ -29,7 +29,7 @@ const useGiftCardTableColums = () => {
             className="text-grey-90 group-hover:text-violet-60 w-[10%] pl-2"
           >
             {value ? (
-             row.original.order?.display_id
+              row.original.order?.display_id
             ) : (
               <span className="text-grey-90">-</span>
             )}

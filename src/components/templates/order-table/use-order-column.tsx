@@ -28,7 +28,7 @@ const useOrderTableColums = () => {
   const columns = useMemo(
     () => [
       {
-        Header: <Table.HeadCell className="pl-2">Order</Table.HeadCell>,
+        Header: <div className="pl-2">Order</div>,
         accessor: "display_id",
         Cell: ({ cell: { value }, index }) => (
           <Table.Cell
@@ -121,7 +121,7 @@ const useOrderTableColums = () => {
               <Tooltip
                 content={
                   isoAlpha2Countries[
-                    row.original.shipping_address?.country_code?.toUpperCase()
+                  row.original.shipping_address?.country_code?.toUpperCase()
                   ] ||
                   row.original.shipping_address?.country_code?.toUpperCase()
                 }

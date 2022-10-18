@@ -8,7 +8,7 @@ const usePricesColumns = () => {
   const columns = React.useMemo<Column<Product>[]>(
     () => [
       {
-        Header: <Table.HeadCell className="pl-4">Name</Table.HeadCell>,
+        Header: <div className="pl-4">Name</div>,
         accessor: "title",
         Cell: ({ row: { original } }) => (
           <div className="pl-4 flex items-center">
@@ -29,9 +29,7 @@ const usePricesColumns = () => {
         ),
       },
       {
-        Header: (
-          <Table.HeadCell className="w-[400px]">Collection</Table.HeadCell>
-        ),
+        Header: <div className="w-[400px]">Collection</div>,
         accessor: "collection",
         Cell: ({ cell: { value } }) => (
           <Table.Cell>

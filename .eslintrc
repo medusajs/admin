@@ -41,8 +41,8 @@
       "files": ["*.js"],
       "rules": {
         "@typescript-eslint/no-var-requires": "off",
-        "react/jsx-uses-react": 1,
-        "react/react-in-jsx-scope": 1
+        "react/jsx-uses-react": "warn",
+        "react/react-in-jsx-scope": "warn"
       }
     }
   ]
