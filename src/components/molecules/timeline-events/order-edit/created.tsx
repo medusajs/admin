@@ -56,11 +56,8 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
 
   const { user } = useAdminUser(user_id)
 
-  const forceConfirmDialog = useImperativeDialog()
-
   const deleteOrderEdit = useAdminDeleteOrderEdit(event.edit.id)
   const cancelOrderEdit = useAdminCancelOrderEdit(event.edit.id)
-  const confirmOrderEdit = useAdminConfirmOrderEdit(event.edit.id)
 
   const onDeleteOrderEditClicked = () => {
     deleteOrderEdit.mutate(undefined, {
@@ -89,7 +86,8 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
     showModal()
   }
 
-  if (isModalVisible) {
+  // hide last created edit while editing
+  if (isModalVisible && orderEdit?.status === "created") {
     return null
   }
 
@@ -224,7 +222,7 @@ const OrderEditChangeItem: React.FC<OrderEditChangeItemProps> = ({
       </div>
       <div className="flex flex-col">
         <span className="inter-small-semibold text-grey-90">
-          {quantity > 1 && <>{quantity}x</>} {lineItem?.title}
+          {quantity > 1 && <>{quantity}x</>} {lineItem?.title} &nbsp;
           {lineItem?.variant?.sku && (
             <span className="inter-small-regular text-grey-50">
               ({lineItem.variant?.sku})
