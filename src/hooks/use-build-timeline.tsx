@@ -46,9 +46,8 @@ export interface OrderEditDifferenceDueEvent extends OrderEditEvent {
   currency_code: string
 }
 
-export interface OrderEditRequestedEvent extends TimelineEvent {
+export interface OrderEditRequestedEvent extends OrderEditEvent {
   email: string
-  edit: OrderEdit
 }
 
 interface CancelableEvent {

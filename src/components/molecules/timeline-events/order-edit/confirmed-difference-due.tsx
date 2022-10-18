@@ -19,7 +19,7 @@ const EditConfirmedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
 
   return (
     <EventContainer
-      title={"Refund reqired"}
+      title={"Refund required"}
       icon={<AlertIcon size={20} />}
       iconColor={EventIconColor.RED}
       time={event.time}

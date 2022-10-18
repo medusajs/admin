@@ -31,18 +31,15 @@ const EditRequested: React.FC<RequestedProps> = ({ event }) => {
   }
 
   return (
-    <>
-      <EventContainer
-        title={"Order Edit confirmation-request sent"}
-        icon={<MailIcon size={20} />}
-        time={event.time}
-        isFirst={event.first}
-        midNode={
-          <span className="inter-small-regular text-grey-50">
-            {event.email}
-          </span>
-        }
-      />
+    <EventContainer
+      title={"Order Edit confirmation-request sent"}
+      icon={<MailIcon size={20} />}
+      time={event.time}
+      isFirst={event.first}
+      midNode={
+        <span className="inter-small-regular text-grey-50">{event.email}</span>
+      }
+    >
       {isRequested && (
         <Button
           className="w-full border border-grey-20 mb-5"
@@ -53,7 +50,7 @@ const EditRequested: React.FC<RequestedProps> = ({ event }) => {
           Resend Confirmation-Request
         </Button>
       )}
-    </>
+    </EventContainer>
   )
 }
 
