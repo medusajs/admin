@@ -3,8 +3,6 @@ import { Order, OrderEdit, ProductVariant } from "@medusajs/medusa"
 import {
   useAdminCreateOrderEdit,
   useAdminDeleteOrderEdit,
-  useAdminOrder,
-  useAdminOrderEdit,
   useAdminOrderEditAddLineItem,
   useAdminRequestOrderEditConfirmation,
   useAdminUpdateOrderEdit,
@@ -118,7 +116,7 @@ export function AddProductVariant(props: AddProductVariantProps) {
             regionId={props.regionId}
             customerId={props.customerId}
             currencyCode={props.currencyCode}
-            isReplace={props.isReplace}
+            isReplace={!!props.isReplace}
             setSelectedVariants={setSelectedVariants}
           />
         </div>
