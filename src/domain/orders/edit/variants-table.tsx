@@ -121,7 +121,7 @@ const VariantsTable: React.FC<Props> = (props) => {
         ),
         accessor: "amount",
         Cell: ({ row: { original } }) => {
-          if (!original.original_price) {
+          if (!original.original_price_incl_tax) {
             return null
           }
 
@@ -133,14 +133,14 @@ const VariantsTable: React.FC<Props> = (props) => {
                 {showOriginal && (
                   <span className="text-gray-400 line-through">
                     {formatAmountWithSymbol({
-                      amount: original.original_price,
+                      amount: original.original_price_incl_tax,
                       currency: currencyCode,
                     })}
                   </span>
                 )}
                 <span>
                   {formatAmountWithSymbol({
-                    amount: original.calculated_price,
+                    amount: original.calculated_price_incl_tax,
                     currency: currencyCode,
                   })}
                 </span>
