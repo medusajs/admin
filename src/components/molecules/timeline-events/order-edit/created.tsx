@@ -4,7 +4,6 @@ import {
   useAdminConfirmOrderEdit,
   useAdminDeleteOrderEdit,
   useAdminOrderEdit,
-  useAdminRequestOrderEditConfirmation,
   useAdminUser,
 } from "medusa-react"
 import React, { useContext } from "react"
@@ -85,38 +84,9 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
     })
   }
 
-  const onConfirmEditClicked = async () => {
-    const shouldDelete = await forceConfirmDialog({
-      heading: "Delete Confirm",
-      text:
-        "By force confirming you allow the order edit to be fulfilled. You will still have to reconcile payments manually after confirming.",
-      confirmText: "Yes, Force Confirm",
-      cancelText: "No, Cancel",
-    })
-
-    if (shouldDelete) {
-      confirmOrderEdit.mutate(undefined, {
-        onSuccess: () => {
-          notification(
-            "Success",
-            `Successfully confirmed Order Edit`,
-            "success"
-          )
-        },
-        onError: (err) => {
-          notification("Error", getErrorMessage(err), "error")
-        },
-      })
-    }
-  }
-
   const onContinueEdit = () => {
     setActiveOrderEdit(orderEdit.id)
     showModal()
-  }
-
-  const onCopyConfirmationLinkClicked = () => {
-    console.log("TODO")
   }
 
   if (isModalVisible) {
@@ -219,13 +189,17 @@ const OrderEditChanges = ({ orderEdit }) => {
   )
 }
 
-type OrderEditChangeItem = {
+type OrderEditChangeItemProps = {
   change: OrderItemChange
 }
 
-const OrderEditChangeItem: React.FC<OrderEditChangeItem> = ({ change }) => {
+const OrderEditChangeItem: React.FC<OrderEditChangeItemProps> = ({
+  change,
+}) => {
   let quantity
-  if (change.type === OrderEditItemChangeType.ITEM_ADD) {
+  const isAdd = change.type === OrderEditItemChangeType.ITEM_ADD
+
+  if (isAdd) {
     quantity = (change.line_item as LineItem).quantity
   } else {
     quantity =
@@ -235,12 +209,14 @@ const OrderEditChangeItem: React.FC<OrderEditChangeItem> = ({ change }) => {
 
   quantity = Math.abs(quantity)
 
+  const lineItem = isAdd ? change.line_item : change.original_line_item
+
   return (
     <div className="flex gap-x-base mt-xsmall">
       <div>
         <div className="flex h-[40px] w-[30px] rounded-rounded overflow-hidden">
-          {change.line_item?.thumbnail ? (
-            <img src={change.line_item.thumbnail} className="object-cover" />
+          {lineItem?.thumbnail ? (
+            <img src={lineItem.thumbnail} className="object-cover" />
           ) : (
             <ImagePlaceholder />
           )}
@@ -248,15 +224,15 @@ const OrderEditChangeItem: React.FC<OrderEditChangeItem> = ({ change }) => {
       </div>
       <div className="flex flex-col">
         <span className="inter-small-semibold text-grey-90">
-          {quantity > 1 && <>{quantity}x</>} {change.line_item?.title}
-          {change.line_item?.variant?.sku && (
+          {quantity > 1 && <>{quantity}x</>} {lineItem?.title}
+          {lineItem?.variant?.sku && (
             <span className="inter-small-regular text-grey-50">
-              ({change.line_item.variant?.sku})
+              ({lineItem.variant?.sku})
             </span>
           )}
         </span>
         <span className="flex inter-small-regular text-grey-50">
-          {change.line_item?.variant?.options?.map((option) => option.value)}
+          {lineItem?.variant?.options?.map((option) => option.value)}
         </span>
       </div>
     </div>
