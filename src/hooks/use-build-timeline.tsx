@@ -504,8 +504,6 @@ export const useBuildTimeline = (orderId: string) => {
       }
     }
 
-    console.log(notifications)
-
     events.sort((a, b) => {
       if (a.time > b.time) {
         return -1
