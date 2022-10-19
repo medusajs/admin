@@ -255,6 +255,7 @@ const VariantsTable: React.FC<Props> = (props) => {
         immediateSearchFocus
         enableSearch
         searchPlaceholder="Search Product Variants..."
+        searchValue={query}
         handleSearch={handleSearch}
         {...table.getTableProps()}
       >
