@@ -18,13 +18,16 @@ const EditConfirmedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
   })
 
   const [showRefundModal, setShowRefundModal] = useState(false)
+
   if (
     !event.isLastConfirmed ||
     !order ||
-    (order && order.total >= order.paid_total)
+    (order && order.paid_total - order.refunded_total - order.total > 0)
   ) {
     return null
   }
+
+  const refundableAmount = order.paid_total - order.refunded_total - order.total
 
   return (
     <>
@@ -34,14 +37,6 @@ const EditConfirmedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
         iconColor={EventIconColor.RED}
         time={event.time}
         isFirst={event.first}
-        // midNode={
-        //   <span className="inter-small-regular text-grey-50">
-        //     {formatAmountWithSymbol({
-        //       amount: orderEdit.difference_due,
-        //       currency: event.currency_code,
-        //     })}
-        //   </span>
-        // }
       >
         <Button
           onClick={() => setShowRefundModal(true)}
@@ -51,7 +46,7 @@ const EditConfirmedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
         >
           Refund
           {formatAmountWithSymbol({
-            amount: Math.abs(order?.total - order?.paid_total),
+            amount: refundableAmount,
             currency: event.currency_code,
           })}
         </Button>
@@ -59,7 +54,7 @@ const EditConfirmedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
       {showRefundModal && (
         <CreateRefundModal
           order={order}
-          initialAmount={order.paid_total - order.total}
+          initialAmount={refundableAmount}
           initialReason="other"
           onDismiss={() => setShowRefundModal(false)}
         />
