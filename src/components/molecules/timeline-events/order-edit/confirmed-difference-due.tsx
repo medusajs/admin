@@ -1,10 +1,11 @@
-import { useAdminOrderEdit } from "medusa-react"
-import React from "react"
+import { useAdminOrder, useAdminOrderEdit } from "medusa-react"
+import React, { useState } from "react"
 import { OrderEditDifferenceDueEvent } from "../../../../hooks/use-build-timeline"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 import Button from "../../../fundamentals/button"
 import AlertIcon from "../../../fundamentals/icons/alert-icon"
 import EventContainer, { EventIconColor } from "../event-container"
+import CreateRefundModal from "../../../../domain/orders/details/refund"
 
 type RequestedProps = {
   event: OrderEditDifferenceDueEvent
@@ -12,39 +13,58 @@ type RequestedProps = {
 
 const EditConfirmedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
   const { order_edit: orderEdit } = useAdminOrderEdit(event.edit.id)
+  const { order } = useAdminOrder(orderEdit?.order_id!, undefined, {
+    enabled: !!orderEdit?.order_id,
+  })
 
-  if (!orderEdit || orderEdit.difference_due >= 0) {
+  const [showRefundModal, setShowRefundModal] = useState(false)
+  if (
+    !event.isLastConfirmed ||
+    !order ||
+    (order && order.total >= order.paid_total)
+  ) {
     return null
   }
 
   return (
-    <EventContainer
-      title={"Refund required"}
-      icon={<AlertIcon size={20} />}
-      iconColor={EventIconColor.RED}
-      time={event.time}
-      isFirst={event.first}
-      midNode={
-        <span className="inter-small-regular text-grey-50">
+    <>
+      <EventContainer
+        title={"Refund required"}
+        icon={<AlertIcon size={20} />}
+        iconColor={EventIconColor.RED}
+        time={event.time}
+        isFirst={event.first}
+        // midNode={
+        //   <span className="inter-small-regular text-grey-50">
+        //     {formatAmountWithSymbol({
+        //       amount: orderEdit.difference_due,
+        //       currency: event.currency_code,
+        //     })}
+        //   </span>
+        // }
+      >
+        <Button
+          onClick={() => setShowRefundModal(true)}
+          variant="ghost"
+          size="small"
+          className="w-full border border-grey-20 mb-xsmall text-rose-50"
+        >
+          Refund
           {formatAmountWithSymbol({
-            amount: orderEdit.difference_due,
+            amount: Math.abs(order?.total - order?.paid_total),
             currency: event.currency_code,
           })}
-        </span>
-      }
-    >
-      <Button
-        variant="ghost"
-        size="small"
-        className="w-full border border-grey-20 mb-xsmall text-rose-50"
-      >
-        Refund
-        {formatAmountWithSymbol({
-          amount: Math.abs(orderEdit.difference_due),
-          currency: event.currency_code,
-        })}
-      </Button>
-    </EventContainer>
+        </Button>
+      </EventContainer>
+      {showRefundModal && (
+        <CreateRefundModal
+          order={order}
+          initialAmount={order.paid_total - order.total}
+          initialReason="other"
+          onDismiss={() => setShowRefundModal(false)}
+        />
+      )}
+    </>
   )
 }
 

@@ -27,7 +27,6 @@ export interface TimelineEvent {
     | "refund"
     | "exchange"
     | "exchange_fulfilled"
-    | "notification"
     | "claim"
     | "edit-created"
     | "edit-requested"
@@ -44,6 +43,7 @@ export interface OrderEditEvent extends TimelineEvent {
 
 export interface OrderEditDifferenceDueEvent extends OrderEditEvent {
   currency_code: string
+  isLastConfirmed: boolean
 }
 
 export interface OrderEditRequestedEvent extends OrderEditEvent {
@@ -142,7 +142,7 @@ export interface NotificationEvent extends TimelineEvent {
   title: string
 }
 
-export const useBuildTimelime = (orderId: string) => {
+export const useBuildTimeline = (orderId: string) => {
   const {
     order,
     isLoading: orderLoading,
@@ -188,6 +188,11 @@ export const useBuildTimelime = (orderId: string) => {
     const events: TimelineEvent[] = []
 
     if (isFeatureEnabled("order_editing")) {
+      const latestConfirmedEditId = edits
+        ?.filter((e) => !!e.confirmed_at)
+        .sort((a, b) => new Date(b.confirmed_at) - new Date(a.confirmed_at))[0]
+        ?.id
+
       for (const edit of edits || []) {
         events.push({
           id: edit.id,
@@ -239,8 +244,19 @@ export const useBuildTimelime = (orderId: string) => {
           } as OrderEditEvent)
         }
 
-        //confirmed
+        // confirmed
         if (edit.confirmed_at) {
+          // push this first so it's on top of the list
+          events.push({
+            id: edit.id,
+            time: edit.confirmed_at,
+            orderId: order.id,
+            type: "edit-confirmed-difference-due",
+            isLastConfirmed: edit.id === latestConfirmedEditId,
+            edit: edit,
+            currency_code: order.currency_code,
+          } as OrderEditDifferenceDueEvent)
+
           events.push({
             id: edit.id,
             time: edit.confirmed_at,
@@ -248,15 +264,6 @@ export const useBuildTimelime = (orderId: string) => {
             type: "edit-confirmed",
             edit: edit,
           } as OrderEditEvent)
-
-          events.push({
-            id: edit.id,
-            time: edit.requested_at,
-            orderId: order.id,
-            type: "edit-confirmed-difference-due",
-            edit: edit,
-            currency_code: order.currency_code,
-          } as OrderEditDifferenceDueEvent)
         }
       }
     }
@@ -496,6 +503,8 @@ export const useBuildTimelime = (orderId: string) => {
         } as NotificationEvent)
       }
     }
+
+    console.log(notifications)
 
     events.sort((a, b) => {
       if (a.time > b.time) {

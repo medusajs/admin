@@ -17,7 +17,7 @@ import {
   RefundEvent,
   ReturnEvent,
   TimelineEvent,
-  useBuildTimelime,
+  useBuildTimeline,
   OrderEditRequestedEvent,
   OrderEditDifferenceDueEvent,
 } from "../../../hooks/use-build-timeline"
@@ -54,7 +54,7 @@ type TimelineProps = {
 const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   const { orderRelations } = useOrdersExpandParam()
 
-  const { events, refetch } = useBuildTimelime(orderId)
+  const { events, refetch } = useBuildTimeline(orderId)
   const notification = useNotification()
   const createNote = useAdminCreateNote()
   const { order } = useAdminOrder(orderId, {
