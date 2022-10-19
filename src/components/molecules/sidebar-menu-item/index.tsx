@@ -33,7 +33,6 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
           className={`py-1.5 px-3 my-0.5 rounded-base flex text-grey-90 hover:bg-grey-10 items-center`}
           activeClassName={activeStyles}
           to={pageLink}
-          partiallyActive
         >
           <span className="items-start">{icon}</span>
           <span className="ml-3">{text}</span>
@@ -55,7 +54,6 @@ const SubItem = ({ pageLink, text }: SidebarMenuSubitemProps) => {
       className={`py-0.5 px-1 my-0.5 rounded-base flex hover:bg-grey-10`}
       activeClassName={activeStyles}
       to={pageLink}
-      partiallyActive
     >
       <span className="text-grey-90 text-small ml-3">{text}</span>
     </Link>
