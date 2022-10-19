@@ -1,6 +1,7 @@
 import { useAdminGetSession } from "medusa-react"
 import React from "react"
 import BackButton from "../../../components/atoms/back-button"
+import Button from "../../../components/fundamentals/button"
 import { useFeatureFlag } from "../../../context/feature-flag"
 import EditUserInformation from "./edit-user-information"
 import UsageInsights from "./usage-insights"
@@ -8,6 +9,10 @@ import UsageInsights from "./usage-insights"
 const PersonalInformation = () => {
   const { isFeatureEnabled } = useFeatureFlag()
   const { user } = useAdminGetSession()
+
+  const toggleError = () => {
+    throw Error()
+  }
 
   return (
     <div>
@@ -23,10 +28,19 @@ const PersonalInformation = () => {
             Manage your Medusa profile
           </p>
         </div>
-        <div className="border-y border-grey-20 py-xlarge">
-          <EditUserInformation user={user} />
+        <div className="flex flex-col">
+          <div className="border-t border-grey-20 py-xlarge">
+            <EditUserInformation user={user} />
+          </div>
+          {isFeatureEnabled("analytics") && (
+            <div className="border-t border-grey-20 py-xlarge">
+              <UsageInsights user={user} />
+            </div>
+          )}
+          <Button size="small" variant="primary" onClick={toggleError}>
+            Throw Error
+          </Button>
         </div>
-        {isFeatureEnabled("analytics") && <UsageInsights user={user} />}
       </div>
     </div>
   )

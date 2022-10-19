@@ -1,5 +1,5 @@
 import React, { ErrorInfo } from "react"
-import { analytics } from "../../../services/analytics"
+import { getAnalyticsConfig } from "../../../services/analytics"
 import ErrorComponent from "../error-component"
 
 type State = {
@@ -19,15 +19,20 @@ class ErrorBoundary extends React.Component<Props, State> {
     return { hasError: true }
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public async componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
       return // Don't track errors in development
     }
 
-    analytics.track("error", {
-      stack: error,
-      info: errorInfo,
-    })
+    const res = await getAnalyticsConfig().catch(() => undefined)
+
+    if (!res) {
+      return
+    }
+
+    if (!res.analytics_config.opt_out) {
+      console.log("track error")
+    }
   }
 
   public render() {

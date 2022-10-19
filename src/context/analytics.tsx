@@ -43,10 +43,8 @@ const AnalyticsProvider = ({ children }: Props) => {
   const { user } = useAdminGetSession()
   const { users: users } = useAdminUsers()
   const { store } = useAdminStore()
-  const { analytics_config, isLoading } = useAdminAnalyticsConfig(user?.id)
-  const { mutate, isLoading: isSubmitting } = useAdminCreateAnalyticsConfig(
-    user?.id
-  )
+  const { analytics_config, isLoading } = useAdminAnalyticsConfig()
+  const { mutate, isLoading: isSubmitting } = useAdminCreateAnalyticsConfig()
 
   const { isFeatureEnabled } = useFeatureFlag()
 

@@ -1,5 +1,4 @@
 import { AnalyticsConfig, User } from "@medusajs/medusa"
-import { useAdminGetSession } from "medusa-react"
 import React, { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import Switch from "../../../../components/atoms/switch"
@@ -7,6 +6,7 @@ import Button from "../../../../components/fundamentals/button"
 import Modal from "../../../../components/molecules/modal"
 import useNotification from "../../../../hooks/use-notification"
 import { useAdminUpdateAnalyticsConfig } from "../../../../services/analytics"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 type Props = {
   user: Omit<User, "password_hash">
@@ -21,13 +21,9 @@ type UsageInsightsFormType = {
 }
 
 const UsageInsightsModal = ({ user, config, open, onClose }: Props) => {
-  const { mutate, isLoading: isSubmitting } = useAdminUpdateAnalyticsConfig(
-    user.id
-  )
-  const { refetch } = useAdminGetSession()
+  const { mutate, isLoading: isSubmitting } = useAdminUpdateAnalyticsConfig()
 
   const {
-    register,
     control,
     handleSubmit,
     formState: { errors },
@@ -49,22 +45,19 @@ const UsageInsightsModal = ({ user, config, open, onClose }: Props) => {
   const notification = useNotification()
 
   const onSubmit = handleSubmit((data) => {
-    mutate(
-      // @ts-ignore
-      data,
-      {
-        onSuccess: () => {
-          notification(
-            "Success",
-            "Your information was successfully updated",
-            "success"
-          )
-          refetch()
-          onClose()
-        },
-        onError: () => {},
-      }
-    )
+    mutate(data, {
+      onSuccess: () => {
+        notification(
+          "Success",
+          "Your information was successfully updated",
+          "success"
+        )
+        onClose()
+      },
+      onError: (err) => {
+        notification("Error", getErrorMessage(err), "error")
+      },
+    })
   })
 
   return (
@@ -93,7 +86,7 @@ const UsageInsightsModal = ({ user, config, open, onClose }: Props) => {
                 </p>
               </div>
               <Controller
-                name="opt_out"
+                name="anonymize"
                 control={control}
                 render={({ field: { value, onChange } }) => {
                   return <Switch checked={value} onCheckedChange={onChange} />
@@ -110,7 +103,7 @@ const UsageInsightsModal = ({ user, config, open, onClose }: Props) => {
                 </p>
               </div>
               <Controller
-                name="anonymize"
+                name="opt_out"
                 control={control}
                 render={({ field: { value, onChange } }) => {
                   return <Switch checked={value} onCheckedChange={onChange} />

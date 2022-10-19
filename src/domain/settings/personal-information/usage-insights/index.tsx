@@ -11,7 +11,7 @@ type Props = {
 }
 
 const UsageInsights = ({ user }: Props) => {
-  const { analytics_config, isLoading } = useAdminAnalyticsConfig(user?.id)
+  const { analytics_config, isLoading } = useAdminAnalyticsConfig()
   const { state, toggle, close } = useToggleState()
 
   return (

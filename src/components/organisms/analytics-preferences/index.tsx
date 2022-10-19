@@ -1,19 +1,18 @@
 import { User } from "@medusajs/medusa"
+import clsx from "clsx"
 import React, { useEffect } from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
+import { useQueryClient } from "react-query"
 import useNotification from "../../../hooks/use-notification"
 import { useAdminCreateAnalyticsConfig } from "../../../services/analytics"
 import { getErrorMessage } from "../../../utils/error-messages"
 import Switch from "../../atoms/switch"
 import Button from "../../fundamentals/button"
-import InputField from "../../molecules/input"
 import FocusModal from "../../molecules/modal/focus-modal"
 
 type AnalyticsPreferencesFormType = {
-  email: string | undefined
   anonymize: boolean
-  news_updates: boolean
-  security_updates: boolean
+  opt_out: boolean
 }
 
 type Props = {
@@ -22,51 +21,36 @@ type Props = {
 
 const AnalyticsPreferencesModal = ({ user }: Props) => {
   const notification = useNotification()
-  const { mutate, isLoading } = useAdminCreateAnalyticsConfig(user.id)
-  const { control, register, setValue, handleSubmit } = useForm<
+  const { mutate, isLoading } = useAdminCreateAnalyticsConfig()
+  const { control, setValue, handleSubmit } = useForm<
     AnalyticsPreferencesFormType
   >({
     defaultValues: {
       anonymize: false,
-      news_updates: false,
-      security_updates: false,
+      opt_out: false,
     },
   })
 
-  const emailSubscriber = useWatch({
+  const watchOptOut = useWatch({
     control,
-    name: "email",
+    name: "opt_out",
   })
 
   useEffect(() => {
-    if (!emailSubscriber) {
-      ;([
-        "news_updates",
-        "security_updates",
-        "anonymize",
-      ] as (keyof AnalyticsPreferencesFormType)[]).forEach((field) => {
-        setValue(field, false)
-      })
-    }
-  }, [emailSubscriber])
+    setValue("anonymize", false)
+  }, [watchOptOut])
+
+  const queryClient = useQueryClient()
 
   const onSubmit = handleSubmit((data) => {
-    const payload = !data.email
-      ? {
-          opt_out: true,
-        }
-      : {
-          opt_out: false,
-          anonymize: data.anonymize,
-        }
-
-    mutate(payload, {
+    mutate(data, {
       onSuccess: () => {
         notification(
           "Success",
           "Your preferences was successfully updated",
           "success"
         )
+        queryClient.invalidateQueries("analytics")
       },
       onError: (err) => {
         notification("Error", getErrorMessage(err), "error")
@@ -79,36 +63,40 @@ const AnalyticsPreferencesModal = ({ user }: Props) => {
       <FocusModal.Header></FocusModal.Header>
       <FocusModal.Main>
         <div className="flex flex-col items-center">
-          <div className="mt-5xlarge flex flex-col max-w-[700px] w-full">
+          <div className="mt-5xlarge flex flex-col max-w-[664px] w-full">
             <h1 className="inter-xlarge-semibold mb-large">
-              Specify your preferences
+              Help us get better
             </h1>
-            <div className="mb-xlarge">
-              <InputField
-                {...register("email")}
-                label="Your email"
-                placeholder="you@company.com"
-                className="max-w-[338px]"
-              />
-            </div>
-            <div className="flex flex-col gap-y-xlarge">
-              <div className="flex items-start">
+            <p className="text-grey-50">
+              To create the most compelling e-commerce experience we would like
+              to gain insights in how you use Medusa. User insights allow us to
+              build a better, more engaging, and more usable products. We only
+              collect data for product improvements. Read what data we gather in
+              our{" "}
+              <a
+                href="https://docs.medusajs.com/usage"
+                rel="noreferrer noopener"
+                target="_blank"
+                className="text-violet-60"
+              >
+                documentation
+              </a>
+              .
+            </p>
+            <div className="flex flex-col gap-y-xlarge mt-xlarge">
+              <div
+                className={clsx("flex items-start transition-opacity", {
+                  "opacity-50": watchOptOut,
+                })}
+              >
                 <div className="flex flex-col flex-1 gap-y-2xsmall">
                   <h2 className="inter-base-semibold">
                     Anonymize my usage data
                   </h2>
                   <p className="inter-base-regular text-grey-50">
-                    We collect data only for product improvements. Read how we
-                    do it in the{" "}
-                    <a
-                      href="https://docs.medusajs.com/usage"
-                      rel="noreferrer noopener"
-                      target="_blank"
-                      className="text-violet-60"
-                    >
-                      docs
-                    </a>
-                    .
+                    You can choose to anonymize your usage data. If this option
+                    is selected, we will not collect your personal information,
+                    including your name and email address.
                   </p>
                 </div>
                 <Controller
@@ -119,7 +107,7 @@ const AnalyticsPreferencesModal = ({ user }: Props) => {
                       <Switch
                         checked={value}
                         onCheckedChange={onChange}
-                        disabled={!emailSubscriber}
+                        disabled={watchOptOut}
                       />
                     )
                   }}
@@ -128,45 +116,18 @@ const AnalyticsPreferencesModal = ({ user }: Props) => {
               <div className="flex items-start">
                 <div className="flex flex-col flex-1 gap-y-2xsmall">
                   <h2 className="inter-base-semibold">
-                    News and feature updates
+                    Opt out of sharing my usage data
                   </h2>
                   <p className="inter-base-regular text-grey-50">
-                    Receive emails about feature updates. You can unsubscribe
-                    any time.
+                    You can always opt out of sharing your usage data at any
+                    time.
                   </p>
                 </div>
                 <Controller
-                  name="news_updates"
+                  name="opt_out"
                   control={control}
                   render={({ field: { value, onChange } }) => {
-                    return (
-                      <Switch
-                        checked={value}
-                        onCheckedChange={onChange}
-                        disabled={!emailSubscriber}
-                      />
-                    )
-                  }}
-                />
-              </div>
-              <div className="flex items-start">
-                <div className="flex flex-col flex-1 gap-y-2xsmall">
-                  <h2 className="inter-base-semibold">Security updates</h2>
-                  <p className="inter-base-regular text-grey-50">
-                    Receive emails security updates.
-                  </p>
-                </div>
-                <Controller
-                  name="security_updates"
-                  control={control}
-                  render={({ field: { value, onChange } }) => {
-                    return (
-                      <Switch
-                        checked={value}
-                        onCheckedChange={onChange}
-                        disabled={!emailSubscriber}
-                      />
-                    )
+                    return <Switch checked={value} onCheckedChange={onChange} />
                   }}
                 />
               </div>

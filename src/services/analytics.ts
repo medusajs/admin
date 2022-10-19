@@ -1,7 +1,8 @@
 import { AdminAnalyticsConfigRes } from "@medusajs/medusa"
 import { AnalyticsBrowser } from "@segment/analytics-next"
 import axios from "axios"
-import { useMutation, useQuery } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useFeatureFlag } from "../context/feature-flag"
 
 export const analytics = AnalyticsBrowser.load({ writeKey: "YOUR_WRITE_KEY" })
 
@@ -66,32 +67,51 @@ export const updateAnalyticsConfig = async (
 
 // Hooks
 
-export const useAdminAnalyticsConfig = (identifier?: string) => {
+const ANALYTICS_CONFIG_KEY = ["analytics-config"]
+
+const useInvalidateAnalyticsConfig = () => {
+  const queryClient = useQueryClient()
+  return () => {
+    queryClient.invalidateQueries(ANALYTICS_CONFIG_KEY)
+  }
+}
+
+export const useAdminAnalyticsConfig = () => {
+  const { isFeatureEnabled } = useFeatureFlag()
+
   const { data, ...rest } = useQuery(
-    ["analytics", identifier],
+    ANALYTICS_CONFIG_KEY,
     () => getAnalyticsConfig(),
     {
-      enabled: !!identifier,
       retry: false,
+      enabled: isFeatureEnabled("analytics"),
     }
   )
 
   return { ...data, ...rest }
 }
 
-export const useAdminUpdateAnalyticsConfig = (identifier?: string) => {
+export const useAdminUpdateAnalyticsConfig = () => {
+  const invalidateAnalyticsConfig = useInvalidateAnalyticsConfig()
+
   const mutation = useMutation(
-    ["analytics", identifier],
-    (payload: UpdateConfigPayload) => updateAnalyticsConfig(payload)
+    (payload: UpdateConfigPayload) => updateAnalyticsConfig(payload),
+    {
+      onSuccess: invalidateAnalyticsConfig,
+    }
   )
 
   return mutation
 }
 
-export const useAdminCreateAnalyticsConfig = (identifier?: string) => {
+export const useAdminCreateAnalyticsConfig = () => {
+  const invalidateAnalyticsConfig = useInvalidateAnalyticsConfig()
+
   const mutation = useMutation(
-    ["analytics", identifier],
-    (payload: CreateConfigPayload) => createAnalyticsConfig(payload)
+    (payload: CreateConfigPayload) => createAnalyticsConfig(payload),
+    {
+      onSuccess: invalidateAnalyticsConfig,
+    }
   )
 
   return mutation
