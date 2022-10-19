@@ -1,6 +1,8 @@
+import { Order } from "@medusajs/medusa"
 import { useAdminRefundPayment } from "medusa-react"
 import React, { useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
+
 import Button from "../../../../components/fundamentals/button"
 import AlertIcon from "../../../../components/fundamentals/icons/alert-icon"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
@@ -21,8 +23,30 @@ type RefundMenuFormData = {
   note?: string
 }
 
-const RefundMenu = ({ order, onDismiss }) => {
-  const { register, handleSubmit, control } = useForm<RefundMenuFormData>()
+const reasonOptions = [
+  { label: "Discount", value: "discount" },
+  { label: "Other", value: "other" },
+]
+
+type RefundMenuProps = {
+  order: Order
+  onDismiss: () => void
+  initialAmount?: number
+  initialReason: "other" | "discount"
+}
+
+const RefundMenu = ({
+  order,
+  onDismiss,
+  initialAmount,
+  initialReason,
+}: RefundMenuProps) => {
+  const { register, handleSubmit, control } = useForm<RefundMenuFormData>({
+    defaultValues: {
+      amount: initialAmount,
+      reason: reasonOptions[initialReason === "other" ? 1 : 0],
+    },
+  })
 
   const [noNotification, setNoNotification] = useState(order.no_notification)
 
@@ -32,11 +56,6 @@ const RefundMenu = ({ order, onDismiss }) => {
   const refundable = useMemo(() => {
     return order.paid_total - order.refunded_total
   }, [order])
-
-  const reasonOptions = [
-    { label: "Discount", value: "discount" },
-    { label: "Other", value: "other" },
-  ]
 
   const handleValidateRefundAmount = (value) => {
     return value <= refundable

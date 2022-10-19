@@ -121,7 +121,7 @@ const VariantsTable: React.FC<Props> = (props) => {
         ),
         accessor: "amount",
         Cell: ({ row: { original } }) => {
-          if (!original.original_price) {
+          if (!original.original_price_incl_tax) {
             return null
           }
 
@@ -133,14 +133,14 @@ const VariantsTable: React.FC<Props> = (props) => {
                 {showOriginal && (
                   <span className="text-gray-400 line-through">
                     {formatAmountWithSymbol({
-                      amount: original.original_price,
+                      amount: original.original_price_incl_tax,
                       currency: currencyCode,
                     })}
                   </span>
                 )}
                 <span>
                   {formatAmountWithSymbol({
-                    amount: original.calculated_price,
+                    amount: original.calculated_price_incl_tax,
                     currency: currencyCode,
                   })}
                 </span>
@@ -199,7 +199,6 @@ const VariantsTable: React.FC<Props> = (props) => {
               <div className={clsx({ "mr-2": isReplace })}>
                 <IndeterminateCheckbox
                   {...selectProps}
-                  disabled={row.original.inventory_quantity === 0}
                   type={isReplace ? "radio" : "checkbox"}
                   onChange={
                     isReplace
@@ -224,10 +223,7 @@ const VariantsTable: React.FC<Props> = (props) => {
       return
     }
 
-    const selected = variants.filter(
-      (v) => table.state.selectedRowIds[v.id] && v.inventory_quantity > 0
-    )
-
+    const selected = variants.filter((v) => table.state.selectedRowIds[v.id])
     setSelectedVariants(selected)
   }, [table.state.selectedRowIds, variants])
 
@@ -259,6 +255,7 @@ const VariantsTable: React.FC<Props> = (props) => {
         immediateSearchFocus
         enableSearch
         searchPlaceholder="Search Product Variants..."
+        searchValue={query}
         handleSearch={handleSearch}
         {...table.getTableProps()}
       >
@@ -277,20 +274,9 @@ const VariantsTable: React.FC<Props> = (props) => {
             <Spinner size="large" />
           ) : (
             table.rows.map((row) => {
-              const isDisabled = row.original.inventory_quantity === 0
-
               table.prepareRow(row)
               return (
-                <Table.Row
-                  {...row.getRowProps()}
-                  className={isDisabled && "opacity-50 pointer-events-none"}
-                >
-                  {/*TODO: TOOLTIP CSS doesn't work with table layout*/}
-                  {/*<Tooltip*/}
-                  {/*  side="top"*/}
-                  {/*  open={isDisabled ? undefined : false}*/}
-                  {/*  content="This variant is out of stock, and does not allow backorders"*/}
-                  {/*>*/}
+                <Table.Row {...row.getRowProps()}>
                   {row.cells.map((cell) => {
                     return (
                       <Table.Cell {...cell.getCellProps()}>
@@ -298,7 +284,6 @@ const VariantsTable: React.FC<Props> = (props) => {
                       </Table.Cell>
                     )
                   })}
-                  {/*</Tooltip>*/}
                 </Table.Row>
               )
             })

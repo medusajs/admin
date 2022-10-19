@@ -20,6 +20,7 @@ import useNotification from "../../../../hooks/use-notification"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import { AddProductVariant } from "../../edit/modal"
 import Tooltip from "../../../../components/atoms/tooltip"
+import CopyToClipboard from "../../../../components/atoms/copy-to-clipboard"
 
 type OrderEditLineProps = {
   item: LineItem
@@ -28,6 +29,8 @@ type OrderEditLineProps = {
   currencyCode: string
   change?: OrderItemChange
 }
+
+let isLoading = false
 
 const OrderEditLine = ({
   item,
@@ -63,7 +66,16 @@ const OrderEditLine = ({
   )
 
   const onQuantityUpdate = async (newQuantity: number) => {
-    await updateItem({ quantity: newQuantity })
+    if (isLoading) {
+      return
+    }
+
+    isLoading = true
+    try {
+      await updateItem({ quantity: newQuantity })
+    } finally {
+      isLoading = false
+    }
   }
 
   const onDuplicate = async () => {
@@ -153,7 +165,7 @@ const OrderEditLine = ({
     <Tooltip
       side="top"
       open={isLocked ? undefined : false}
-      content="This item is locked because it is part of an active order edit request"
+      content="This line item is part of a fulfillment and cannot be edited. Cancel the fulfillment to edit the line item."
     >
       <div className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded">
         <div className="flex space-x-4 justify-center flex-grow-1">
@@ -164,10 +176,10 @@ const OrderEditLine = ({
               <ImagePlaceholder />
             )}
           </div>
-          <div className="flex flex-col justify-center max-w-[185px]">
+          <div className="flex flex-col justify-center">
             <div>
               <span
-                className={clsx("inter-small-regular text-grey-900 truncate", {
+                className={clsx("inter-small-regular text-grey-900", {
                   "text-gray-400": isLocked,
                 })}
               >
@@ -187,20 +199,23 @@ const OrderEditLine = ({
                 </div>
               )}
 
-              {item?.variant && (
-                <span
-                  className={clsx(
-                    "inter-small-regular text-gray-500 truncate",
-                    {
-                      "text-gray-400": isLocked,
-                    }
-                  )}
-                >
-                  {`${item.variant.title}${
-                    item.variant.sku ? ` (${item.variant.sku})` : ""
-                  }`}
-                </span>
-              )}
+              <div className="min-h-[20px]">
+                {item?.variant && (
+                  <span
+                    className={clsx(
+                      "inter-small-regular text-gray-500 flex gap-3",
+                      {
+                        "text-gray-400": isLocked,
+                      }
+                    )}
+                  >
+                    {item.variant.title}
+                    {item.variant.sku && (
+                      <CopyToClipboard value={item.variant.sku} iconSize={14} />
+                    )}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -211,7 +226,9 @@ const OrderEditLine = ({
             })}
           >
             <MinusIcon
-              className="cursor-pointer"
+              className={clsx("cursor-pointer text-gray-400", {
+                "pointer-events-none": isLoading,
+              })}
               onClick={() =>
                 item.quantity > 1 &&
                 !isLocked &&
@@ -226,7 +243,9 @@ const OrderEditLine = ({
               {item.quantity}
             </span>
             <PlusIcon
-              className="cursor-pointer text-gray-400"
+              className={clsx("cursor-pointer text-gray-400", {
+                "pointer-events-none": isLoading,
+              })}
               onClick={() => onQuantityUpdate(item.quantity + 1)}
             />
           </div>
@@ -238,9 +257,12 @@ const OrderEditLine = ({
             )}
           >
             <div
-              className={clsx("inter-small-regular text-gray-900", {
-                "!text-gray-400 pointer-events-none": isLocked,
-              })}
+              className={clsx(
+                "inter-small-regular text-gray-900 min-w-[60px] text-right",
+                {
+                  "!text-gray-400 pointer-events-none": isLocked,
+                }
+              )}
             >
               {formatAmountWithSymbol({
                 amount: item.unit_price * item.quantity,
