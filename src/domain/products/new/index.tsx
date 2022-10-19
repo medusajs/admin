@@ -1,8 +1,8 @@
 import { AdminPostProductsReq } from "@medusajs/medusa"
-import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
 import React, { useEffect } from "react"
 import { useForm, useWatch } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import Button from "../../../components/fundamentals/button"
 import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
@@ -52,6 +52,7 @@ const NewProduct = ({ onClose }: Props) => {
     defaultValues: createBlank(),
   })
   const { mutate } = useAdminCreateProduct()
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const watchedCustoms = useWatch({
@@ -295,14 +296,14 @@ const createPayload = (
     mid_code: data.customs.mid_code || undefined,
     type: data.organize.type
       ? {
-          value: data.organize.type.label,
-          id: data.organize.type.value,
-        }
+        value: data.organize.type.label,
+        id: data.organize.type.value,
+      }
       : undefined,
     tags: data.organize.tags
       ? data.organize.tags.map((t) => ({
-          value: t,
-        }))
+        value: t,
+      }))
       : undefined,
     origin_country: data.customs.origin_country?.value || undefined,
     options: data.variants.options.map((o) => ({

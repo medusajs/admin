@@ -1,9 +1,9 @@
 import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import { isEmpty } from "lodash"
 import { useAdminCustomers } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { usePagination, useTable } from "react-table"
 import Spinner from "../../atoms/spinner"
 import DetailsIcon from "../../fundamentals/details-icon"
@@ -19,6 +19,8 @@ const defaultQueryProps = {
 }
 
 const CustomerTable: React.FC<RouteComponentProps> = () => {
+  const navigate = useNavigate()
+
   const {
     reset,
     paginate,

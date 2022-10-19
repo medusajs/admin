@@ -1,7 +1,7 @@
 import clsx from "clsx"
-import { navigate } from "gatsby"
 import React, { useContext, useState } from "react"
 import { useForm } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import Avatar from "../../components/atoms/avatar"
 import Spinner from "../../components/atoms/spinner"
 import BreadCrumb from "../../components/molecules/breadcrumb"
@@ -18,6 +18,7 @@ const PersonalInformation = () => {
   const [isLoadingProfilePicture, setIsLoadingProfilePicture] = useState(false)
   const { register, setValue, handleSubmit } = useForm()
   const { handleUpdateUser, ...user } = useContext(AccountContext)
+  const navigate = useNavigate()
   const notification = useNotification()
 
   register("first_name")

@@ -1,5 +1,4 @@
 import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import {
   useAdminDeleteProduct,
   useAdminGiftCards,
@@ -8,6 +7,7 @@ import {
   useAdminUpdateProduct,
 } from "medusa-react"
 import React, { useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import PageDescription from "../../components/atoms/page-description"
 import Spinner from "../../components/atoms/spinner"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
@@ -34,6 +34,7 @@ const Overview: React.FC<RouteComponentProps> = () => {
 
   const giftCard = products?.[0]
 
+  const navigate = useNavigate()
   const notification = useNotification()
   const updateGiftCard = useAdminUpdateProduct(giftCard?.id!)
   const deleteGiftCard = useAdminDeleteProduct(giftCard?.id!)

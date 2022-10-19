@@ -1,6 +1,5 @@
 import { Address } from "@medusajs/medusa"
 import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
   useAdminDraftOrder,
@@ -11,6 +10,7 @@ import {
 import moment from "moment"
 import React, { useEffect, useState } from "react"
 import ReactJson from "react-json-view"
+import { useNavigate } from "react-router-dom"
 import Avatar from "../../../components/atoms/avatar"
 import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import Spinner from "../../../components/atoms/spinner"
@@ -48,9 +48,8 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
     show: false,
   }
 
-  const [deletePromptData, setDeletePromptData] = useState<DeletePromptData>(
-    initDeleteState
-  )
+  const [deletePromptData, setDeletePromptData] =
+    useState<DeletePromptData>(initDeleteState)
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
     type: AddressType
@@ -73,6 +72,7 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
   const cancelOrder = useAdminDeleteDraftOrder(id)
   const updateOrder = useAdminUpdateDraftOrder(id)
 
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const OrderStatusComponent = () => {
@@ -153,26 +153,26 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
               actionables={
                 draft_order?.status === "completed"
                   ? [
-                      {
-                        label: "Go to Order",
-                        icon: null,
-                        onClick: () => console.log("Should not be here"),
-                      },
-                    ]
+                    {
+                      label: "Go to Order",
+                      icon: null,
+                      onClick: () => console.log("Should not be here"),
+                    },
+                  ]
                   : [
-                      {
-                        label: "Cancel Draft Order",
-                        icon: null,
-                        // icon: <CancelIcon size={"20"} />,
-                        variant: "danger",
-                        onClick: () =>
-                          setDeletePromptData({
-                            resource: "Draft Order",
-                            onDelete: () => handleDeleteOrder(),
-                            show: true,
-                          }),
-                      },
-                    ]
+                    {
+                      label: "Cancel Draft Order",
+                      icon: null,
+                      // icon: <CancelIcon size={"20"} />,
+                      variant: "danger",
+                      onClick: () =>
+                        setDeletePromptData({
+                          resource: "Draft Order",
+                          onDelete: () => handleDeleteOrder(),
+                          show: true,
+                        }),
+                    },
+                  ]
               }
             >
               <div className="flex mt-6 space-x-6 divide-x">
@@ -195,9 +195,9 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
                   <div>
                     {cart?.total && region?.currency_code
                       ? formatAmountWithSymbol({
-                          amount: cart?.total,
-                          currency: region?.currency_code,
-                        })
+                        amount: cart?.total,
+                        currency: region?.currency_code,
+                      })
                       : "N/A"}
                   </div>
                 </div>
@@ -429,7 +429,7 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
                         {cart.shipping_address.city},{" "}
                         {
                           isoAlpha2Countries[
-                            cart.shipping_address.country_code?.toUpperCase()
+                          cart.shipping_address.country_code?.toUpperCase()
                           ]
                         }
                       </span>
@@ -486,9 +486,8 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
         <DeletePrompt
           text={"Are you sure?"}
           heading={`Remove ${deletePromptData?.resource}`}
-          successText={`${
-            deletePromptData?.resource || "Resource"
-          } has been removed`}
+          successText={`${deletePromptData?.resource || "Resource"
+            } has been removed`}
           onDelete={() => deletePromptData.onDelete()}
           handleClose={() => setDeletePromptData(initDeleteState)}
         />

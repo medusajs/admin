@@ -1,11 +1,11 @@
 import ConfettiGenerator from "confetti-js"
-import { Link, navigate } from "gatsby"
+import { Link } from "gatsby"
 import { useAdminAcceptInvite } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { decodeToken } from "react-jwt"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import Button from "../components/fundamentals/button"
 import LongArrowRightIcon from "../components/fundamentals/icons/long-arrow-right-icon"
 import MedusaIcon from "../components/fundamentals/icons/medusa-icon"
@@ -73,6 +73,7 @@ const InvitePage = () => {
   })
 
   const accept = useAdminAcceptInvite()
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const handleAcceptInvite = (data: formValues) => {

@@ -1,10 +1,11 @@
 import { AdminPostProductsReq, Product } from "@medusajs/medusa"
-import { navigate } from "gatsby"
 import { useAdminCreateProduct } from "medusa-react"
+import { useNavigate } from "react-router-dom"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const useCopyProduct = () => {
+  const navigate = useNavigate()
   const notification = useNotification()
   const { mutate } = useAdminCreateProduct()
 

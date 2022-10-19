@@ -1,8 +1,7 @@
 import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import { useAdminCreateBatchJob } from "medusa-react"
 import React, { useContext, useMemo } from "react"
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useNavigate } from "react-router-dom"
 import Button from "../../components/fundamentals/button"
 import ExportIcon from "../../components/fundamentals/icons/export-icon"
 import BodyCard from "../../components/organisms/body-card"
@@ -21,6 +20,7 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
   const view = "orders"
 
   const { resetInterval } = useContext(PollingContext)
+  const navigate = useNavigate()
   const createBatchJob = useAdminCreateBatchJob()
   const notification = useNotification()
 

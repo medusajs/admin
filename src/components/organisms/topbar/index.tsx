@@ -1,6 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import { navigate } from "gatsby"
 import React, { useContext, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { AccountContext } from "../../../context/account"
 import { PollingContext } from "../../../context/polling"
 import useToggleState from "../../../hooks/use-toggle-state"
@@ -15,15 +15,16 @@ import ActivityDrawer from "../activity-drawer"
 import MailDialog from "../help-dialog"
 
 const Topbar: React.FC = () => {
+  const navigate = useNavigate()
+
   const {
     state: activityDrawerState,
     toggle: toggleActivityDrawer,
     close: activityDrawerClose,
   } = useToggleState(false)
 
-  const { first_name, last_name, email, handleLogout } = useContext(
-    AccountContext
-  )
+  const { first_name, last_name, email, handleLogout } =
+    useContext(AccountContext)
   const { batchJobs } = useContext(PollingContext)
 
   const [showSupportform, setShowSupportForm] = useState(false)
