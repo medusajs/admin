@@ -119,7 +119,7 @@ export interface ExchangeEvent extends TimelineEvent, CancelableEvent {
   fulfillmentStatus: string
   returnStatus: string
   returnId: string
-  returnItems: ReturnItem[]
+  returnItems: (ReturnItem | undefined)[]
   newItems: OrderItem[]
   exchangeCartId?: string
   raw: Swap
