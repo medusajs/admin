@@ -166,3 +166,4 @@ Licensed under the [MIT License](https://github.com/medusajs/medusa/blob/master/
     Docs
   </a>
 </p>
+# admin-render
