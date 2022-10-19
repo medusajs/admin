@@ -154,7 +154,7 @@ const OrderEditLine = ({
     <Tooltip
       side="top"
       open={isLocked ? undefined : false}
-      content="This item is locked because it is part of an active order edit request"
+      content="This line item is part of a fulfillment and cannot be edited. Cancel the fulfillment to edit the line item."
     >
       <div className="flex justify-between mb-1 h-[64px] py-2 mx-[-5px] px-[5px] hover:bg-grey-5 rounded-rounded">
         <div className="flex space-x-4 justify-center flex-grow-1">
