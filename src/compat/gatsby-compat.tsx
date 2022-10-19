@@ -1,6 +1,9 @@
 import { ReactNode, useCallback } from "react"
 import { NavLink, NavLinkProps } from "react-router-dom"
 
+/**
+ * @deprecated
+ */
 export function navigate(path: string | number) {
   if (typeof path === "number") {
     return history.go(path)
@@ -12,6 +15,10 @@ export function navigate(path: string | number) {
     }
   }
 }
+
+/**
+ * @deprecated
+ */
 export type LinkProps = NavLinkProps & {
   to: string | null
   className?: string
@@ -19,6 +26,9 @@ export type LinkProps = NavLinkProps & {
   children?: ReactNode
 }
 
+/**
+ * @deprecated
+ */
 export function Link(props: LinkProps) {
   const { to, children, className = "", activeClassName = "", ...attr } = props
 
@@ -38,7 +48,14 @@ export function Link(props: LinkProps) {
   )
 }
 
+/**
+ * @deprecated
+ */
 export const graphql = () => ""
+
+/**
+ * @deprecated
+ */
 export const useStaticQuery = () => ({
   site: {
     siteMetadata: {

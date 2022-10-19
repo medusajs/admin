@@ -7,6 +7,10 @@ export type { PathRouteProps as RouteComponentProps } from "react-router-dom"
 type RouterProps = {
   children: ReactNode
 }
+
+/**
+ * @deprecated
+ */
 export const Router = ({ children }: RouterProps) => {
   const routes = Array.isArray(children) ? children : [children]
   return (
