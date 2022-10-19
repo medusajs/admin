@@ -42,12 +42,9 @@ const EmojiPicker: React.FC<indexProps> = ({ onEmojiClick }) => {
           onEmojiClick={(_e, data) => onEmojiClick(data.emoji)}
           disableAutoFocus={true}
           skinTone={SKIN_TONE_NEUTRAL}
-          groupNames={{ smileys_people: "PEOPLE" }}
           native
           disableSkinTonePicker={true}
-          // @ts-ignore
           searchPlaceholder={"Search Emoji..."}
-          // @ts-ignore
           groupNames={groupNames}
         />
       </DropdownMenu.Content>
