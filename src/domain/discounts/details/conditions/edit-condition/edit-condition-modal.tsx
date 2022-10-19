@@ -4,8 +4,13 @@ import Modal from "../../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../../components/molecules/modal/layered-modal"
+import { getTitle } from "../../../new/discount-form/edit-conditions-modal"
 import { EditConditionProvider } from "./edit-condition-provider"
-import ExistingConditions from "./existing-condition-resources"
+import ProductConditionsTable from "./add-condition-resources/products/product-conditions-table"
+import ProductCollectionsConditionsTable from "./add-condition-resources/collections/collections-conditions-table"
+import ProductTypesConditionsTable from "./add-condition-resources/types/type-conditions-table"
+import ProductTagsConditionsTable from "./add-condition-resources/tags/tags-conditions-table"
+import CustomerGroupsConditionsTable from "./add-condition-resources/customer-groups/customer-groups-conditions-table"
 // import AvailableScreen from "./available-screen"
 
 type Props = {
@@ -22,16 +27,31 @@ type Props = {
 const EditConditionsModal = ({ open, condition, discount, onClose }: Props) => {
   const context = React.useContext(LayeredModalContext)
 
+  const renderModalContext = () => {
+    switch (condition.type) {
+      case "products":
+        return <ProductConditionsTable />
+      case "product_collections":
+        return <ProductCollectionsConditionsTable />
+      case "product_types":
+        return <ProductTypesConditionsTable />
+      case "product_tags":
+        return <ProductTagsConditionsTable />
+      case "customer_groups":
+        return <CustomerGroupsConditionsTable />
+    }
+  }
+
   return (
     <EditConditionProvider condition={condition} discount={discount}>
       <LayeredModal open={open} handleClose={onClose} context={context}>
         <Modal.Body>
           <Modal.Header handleClose={onClose}>
             <h1 className="inter-xlarge-semibold">
-              Existing {condition?.type} in Condition
+              Existing {getTitle(condition?.type)} in Condition
             </h1>
           </Modal.Header>
-          <ExistingConditions />
+          {renderModalContext()}
           <Modal.Footer>
             <div className="flex items-center justify-end w-full">
               <Button

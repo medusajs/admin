@@ -1,21 +1,18 @@
-import {
-  useAdminDeleteDiscountConditionResourceBatch,
-  useAdminProducts,
-} from "medusa-react"
+import { useAdminProducts } from "medusa-react"
 import React, { useState } from "react"
-import Modal from "../../../../../components/molecules/modal"
-import { SelectableTable } from "../../../../../components/templates/selectable-table"
-import useQueryFilters from "../../../../../hooks/use-query-filters"
-import { defaultQueryProps } from "../../../new/discount-form/condition-tables/shared/common"
+import Modal from "../../../../../../../components/molecules/modal"
+import { SelectableTable } from "../../../../../../../components/templates/selectable-table"
+import useQueryFilters from "../../../../../../../hooks/use-query-filters"
+import { defaultQueryProps } from "../../../../../new/discount-form/condition-tables/shared/common"
 import {
   ProductRow,
   ProductsHeader,
   useProductColumns,
-} from "../../../new/discount-form/condition-tables/shared/products"
-import { useEditConditionContext } from "./edit-condition-provider"
-import ExistingConditionTableActions from "./existing-condition-resources-table-actions"
+} from "../../../../../new/discount-form/condition-tables/shared/products"
+import { useEditConditionContext } from "../../edit-condition-provider"
+import ExistingConditionTableActions from "../../existing-condition-resources-table-actions"
 
-const ExistingConditions = () => {
+const ProductConditionsTable = () => {
   const params = useQueryFilters(defaultQueryProps)
 
   const {
@@ -72,4 +69,4 @@ const ExistingConditions = () => {
   )
 }
 
-export default ExistingConditions
+export default ProductConditionsTable

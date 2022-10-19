@@ -21,18 +21,15 @@ const AddConditionsScreen = () => {
   const params = useQueryFilters(defaultQueryProps)
   const { addConditionResources } = useEditConditionContext()
 
-  const [query, setQuery] = useState<string | undefined>(undefined)
-  const [offset, setOffset] = useState(0)
+  // const [query, setQuery] = useState<string | undefined>(undefined)
 
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
   const columns = useProductColumns()
 
-  const deboucedQuery = useDebounce(query, 500)
+  // const deboucedQuery = useDebounce(query, 500)
 
-  const { isLoading, count, products } = useAdminProducts({
-    q: deboucedQuery,
-    limit: LIMIT,
-    offset,
+  const { isLoading, count, products } = useAdminProducts(params.queryObject, {
+    keepPreviousData: true,
   })
 
   const { pop, reset } = useContext(LayeredModalContext)
@@ -54,6 +51,7 @@ const AddConditionsScreen = () => {
         <SelectableTable
           options={{
             enableSearch: true,
+            immediateSearchFocus: true,
             searchPlaceholder: "Search...",
           }}
           totalCount={count!}

@@ -28,7 +28,7 @@ const EditConditionsModal: React.FC<EditConditionsModalProps> = ({
   )
 }
 
-const getTitle = (view: DiscountConditionType) => {
+export const getTitle = (view: DiscountConditionType) => {
   switch (view) {
     case DiscountConditionType.PRODUCTS:
       return "products"
