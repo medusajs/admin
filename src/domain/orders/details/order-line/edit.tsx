@@ -30,6 +30,8 @@ type OrderEditLineProps = {
   change?: OrderItemChange
 }
 
+let isLoading = false
+
 const OrderEditLine = ({
   item,
   currencyCode,
@@ -64,7 +66,16 @@ const OrderEditLine = ({
   )
 
   const onQuantityUpdate = async (newQuantity: number) => {
-    await updateItem({ quantity: newQuantity })
+    if (isLoading) {
+      return
+    }
+
+    isLoading = true
+    try {
+      await updateItem({ quantity: newQuantity })
+    } finally {
+      isLoading = false
+    }
   }
 
   const onDuplicate = async () => {
@@ -215,7 +226,9 @@ const OrderEditLine = ({
             })}
           >
             <MinusIcon
-              className="cursor-pointer"
+              className={clsx("cursor-pointer text-gray-400", {
+                "pointer-events-none": isLoading,
+              })}
               onClick={() =>
                 item.quantity > 1 &&
                 !isLocked &&
@@ -230,7 +243,9 @@ const OrderEditLine = ({
               {item.quantity}
             </span>
             <PlusIcon
-              className="cursor-pointer text-gray-400"
+              className={clsx("cursor-pointer text-gray-400", {
+                "pointer-events-none": isLoading,
+              })}
               onClick={() => onQuantityUpdate(item.quantity + 1)}
             />
           </div>
