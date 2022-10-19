@@ -34,17 +34,18 @@ export interface TimelineEvent {
     | "edit-declined"
     | "edit-canceled"
     | "edit-confirmed"
-    | "edit-confirmed-difference-due"
+    | "refund-difference-due"
+}
+
+export interface RefundDifferenceDueEvent extends TimelineEvent {
+  currency_code: string
 }
 
 export interface OrderEditEvent extends TimelineEvent {
   edit: OrderEdit
 }
 
-export interface OrderEditDifferenceDueEvent extends OrderEditEvent {
-  currency_code: string
-  isLastConfirmed: boolean
-}
+export interface OrderEditDifferenceDueEvent extends OrderEditEvent {}
 
 export interface OrderEditRequestedEvent extends OrderEditEvent {
   email: string
@@ -187,12 +188,15 @@ export const useBuildTimeline = (orderId: string) => {
 
     const events: TimelineEvent[] = []
 
-    if (isFeatureEnabled("order_editing")) {
-      const latestConfirmedEditId = edits
-        ?.filter((e) => !!e.confirmed_at)
-        .sort((a, b) => new Date(b.confirmed_at) - new Date(a.confirmed_at))[0]
-        ?.id
+    events.push({
+      id: "refund-event",
+      time: new Date(),
+      orderId: order.id,
+      type: "refund-difference-due",
+      currency_code: order.currency_code,
+    } as RefundDifferenceDueEvent)
 
+    if (isFeatureEnabled("order_editing")) {
       for (const edit of edits || []) {
         events.push({
           id: edit.id,
@@ -246,17 +250,6 @@ export const useBuildTimeline = (orderId: string) => {
 
         // confirmed
         if (edit.confirmed_at) {
-          // push this first so it's on top of the list
-          events.push({
-            id: edit.id,
-            time: edit.confirmed_at,
-            orderId: order.id,
-            type: "edit-confirmed-difference-due",
-            isLastConfirmed: edit.id === latestConfirmedEditId,
-            edit: edit,
-            currency_code: order.currency_code,
-          } as OrderEditDifferenceDueEvent)
-
           events.push({
             id: edit.id,
             time: edit.confirmed_at,
