@@ -1,4 +1,4 @@
-import { TaxRate } from "@medusajs/medusa"
+import { AdminPostTaxRatesTaxRateReq, TaxRate } from "@medusajs/medusa"
 import { useAdminUpdateRegion, useAdminUpdateTaxRate } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -35,7 +35,7 @@ const EditTaxRate = ({
   taxRate,
   onDismiss,
 }: EditTaxRateProps) => {
-  const updateTaxRate = useAdminUpdateTaxRate(taxRate.id)
+  const { mutate, isLoading } = useAdminUpdateTaxRate(taxRate.id)
 
   const [updatedRules, setUpdatedRules] = useState({})
   const form = useForm<EditTaxRateFormData>({
@@ -53,8 +53,15 @@ const EditTaxRate = ({
   const { register, setValue, handleSubmit, watch } = form
   const notification = useNotification()
 
-  const onSave = (data) => {
-    const toSubmit = data
+  const onSave = handleSubmit((data) => {
+    const toSubmit: AdminPostTaxRatesTaxRateReq = {
+      name: data.details.name,
+      code: data.details.code,
+      rate: data.details.rate,
+      product_types: data.product_types,
+      products: data.products,
+      shipping_options: data.shipping_options,
+    }
     const conditionalFields = ["products", "product_types", "shipping_options"]
 
     for (const [key, value] of Object.entries(updatedRules)) {
@@ -63,7 +70,7 @@ const EditTaxRate = ({
       }
     }
 
-    updateTaxRate.mutate(toSubmit, {
+    mutate(toSubmit, {
       onSuccess: () => {
         notification("Success", "Successfully updated Tax Rate.", "success")
         onDismiss()
@@ -72,7 +79,7 @@ const EditTaxRate = ({
         notification("Error", getErrorMessage(error), "error")
       },
     })
-  }
+  })
 
   useEffect(() => {
     register("products")
@@ -107,7 +114,7 @@ const EditTaxRate = ({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSave)}>
+    <form onSubmit={onSave}>
       <Modal.Content>
         <div className="mb-xlarge">
           <EditTaxRateDetails form={nestedForm(form, "details")} />
@@ -242,6 +249,8 @@ const EditTaxRate = ({
             variant="primary"
             size="small"
             className="w-eventButton justify-center"
+            loading={isLoading}
+            disabled={isLoading}
           >
             Save
           </Button>
@@ -280,7 +289,7 @@ export interface SimpleEditFormData {
 }
 
 export const SimpleEditForm = ({ onDismiss, taxRate }: SimpleEditFormProps) => {
-  const updateRegion = useAdminUpdateRegion(taxRate.id)
+  const { mutate, isLoading } = useAdminUpdateRegion(taxRate.id)
 
   const form = useForm<SimpleEditFormData>({
     defaultValues: {
@@ -299,7 +308,7 @@ export const SimpleEditForm = ({ onDismiss, taxRate }: SimpleEditFormProps) => {
       tax_rate: data.details.rate,
       tax_code: data.details.code,
     }
-    updateRegion.mutate(toSubmit, {
+    mutate(toSubmit, {
       onSuccess: () => {
         notification("Success", "Successfully updated default rate.", "success")
         onDismiss()
@@ -331,6 +340,7 @@ export const SimpleEditForm = ({ onDismiss, taxRate }: SimpleEditFormProps) => {
             variant="primary"
             size="small"
             className="w-eventButton justify-center"
+            loading={isLoading}
           >
             Save
           </Button>

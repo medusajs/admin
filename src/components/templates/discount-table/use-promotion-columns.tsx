@@ -21,10 +21,10 @@ const getPromotionStatus = (promotion) => {
       (promotion.ends_at && new Date(promotion.ends_at) < date) ||
       (promotion.valid_duration &&
         date >
-          end(
-            parse(promotion.valid_duration),
-            new Date(promotion.starts_at)
-          )) ||
+        end(
+          parse(promotion.valid_duration),
+          new Date(promotion.starts_at)
+        )) ||
       promotion.usage_count === promotion.usage_limit
     ) {
       return PromotionStatus.EXPIRED
@@ -84,7 +84,7 @@ export const usePromotionTableColumns = () => {
   const columns = useMemo(
     () => [
       {
-        Header: <Table.HeadCell className="pl-2">Code</Table.HeadCell>,
+        Header: <div className="pl-2">Code</div>,
         accessor: "code",
         Cell: ({ cell: { value }, index }) => (
           <Table.Cell key={index}>

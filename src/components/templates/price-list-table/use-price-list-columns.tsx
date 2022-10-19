@@ -11,7 +11,7 @@ export const usePriceListTableColumns = () => {
   const columns = useMemo<Column<PriceList>[]>(
     () => [
       {
-        Header: <Table.HeadCell>Name</Table.HeadCell>,
+        Header: "Name",
         accessor: "name",
         Cell: ({ cell: { value } }) => (
           <Table.Cell>
@@ -32,7 +32,7 @@ export const usePriceListTableColumns = () => {
         ),
       },
       {
-        Header: () => <div className="">Groups</div>,
+        Header: "Groups",
         accessor: "customer_groups",
         Cell: ({ cell: { value } }) => {
           const groups: string[] = isArray(value)

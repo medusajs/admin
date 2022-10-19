@@ -18,18 +18,17 @@ type Props = {
   onClose: () => void
 }
 
-type ThumbnailForm = {
+type ThumbnailFormWrapper = {
   thumbnail: ThumbnailFormType
 }
 
 const ThumbnailModal = ({ product, open, onClose }: Props) => {
   const { onUpdate, updating } = useEditProductActions(product.id)
-  const form = useForm<ThumbnailForm>({
+  const form = useForm<ThumbnailFormWrapper>({
     defaultValues: getDefaultValues(product),
   })
 
   const {
-    control,
     formState: { isDirty },
     handleSubmit,
     reset,
@@ -119,7 +118,7 @@ const ThumbnailModal = ({ product, open, onClose }: Props) => {
   )
 }
 
-const getDefaultValues = (product: Product): ThumbnailForm => {
+const getDefaultValues = (product: Product): ThumbnailFormWrapper => {
   return {
     thumbnail: {
       images: product.thumbnail

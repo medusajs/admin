@@ -11,11 +11,10 @@ type OrderPlacedProps = {
 const OrderPlaced: React.FC<OrderPlacedProps> = ({ event }) => {
   const args = {
     icon: <CheckCircleIcon size={20} />,
-    iconColor: EventIconColor.GREEN,
     time: event.time,
     title: "Order Placed",
-    topNode: (
-      <div className="inter-small-semibold">
+    midNode: (
+      <div className="inter-small-regular text-grey-50">
         {formatAmountWithSymbol({
           amount: event.amount,
           currency: event.currency_code,

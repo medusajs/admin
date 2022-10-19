@@ -1,5 +1,5 @@
 import React from "react"
-import IconProps from "../types/icon-type"
+import IconProps from "../icons/types/icon-type"
 
 const DetailsIcon: React.FC<IconProps> = ({
   size = "16",

@@ -159,9 +159,9 @@ const DiscountTable: React.FC = () => {
         className={clsx({ ["relative"]: isLoading })}
       >
         <Table.Head>
-          {headerGroups?.map((headerGroup, index) => (
+          {headerGroups?.map((headerGroup) => (
             <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((col, headerIndex) => (
+              {headerGroup.headers.map((col) => (
                 <Table.HeadCell {...col.getHeaderProps()}>
                   {col.render("Header")}
                 </Table.HeadCell>
@@ -170,14 +170,20 @@ const DiscountTable: React.FC = () => {
           ))}
         </Table.Head>
         {isLoading || !discounts ? (
-          <div className="flex w-full h-full absolute items-center justify-center mt-10">
-            <div className="">
-              <Spinner size={"large"} variant={"secondary"} />
-            </div>
-          </div>
+          <Table.Body {...getTableBodyProps()}>
+            <Table.Row>
+              <Table.Cell colSpan={columns.length}>
+                <div className="flex w-full h-full absolute items-center justify-center mt-10">
+                  <div className="">
+                    <Spinner size={"large"} variant={"secondary"} />
+                  </div>
+                </div>
+              </Table.Cell>
+            </Table.Row>
+          </Table.Body>
         ) : (
           <Table.Body {...getTableBodyProps()}>
-            {rows.map((row, rowIndex) => {
+            {rows.map((row) => {
               prepareRow(row)
               return <PromotionRow row={row} />
             })}

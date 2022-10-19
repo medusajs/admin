@@ -60,6 +60,11 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
   const markSwapShipped = useAdminCreateSwapShipment(orderId)
   const markClaimShipped = useAdminCreateClaimShipment(orderId)
 
+  const isSubmitting =
+    markOrderShipped.isLoading ||
+    markSwapShipped.isLoading ||
+    markClaimShipped.isLoading
+
   const notification = useNotification()
 
   const onSubmit = (data: MarkShippedFormData) => {
@@ -212,6 +217,8 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
                   className="w-32 text-small justify-center"
                   variant="primary"
                   type="submit"
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
                 >
                   Complete
                 </Button>

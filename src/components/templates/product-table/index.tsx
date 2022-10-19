@@ -19,7 +19,7 @@ const DEFAULT_PAGE_SIZE_TILE_VIEW = 18
 type ProductTableProps = {}
 
 const defaultQueryProps = {
-  fields: "id,title,thumbnail,status,handle",
+  fields: "id,title,thumbnail,status,handle,collection_id",
   expand:
     "variants,options,variants.prices,variants.options,collection,tags,type",
   is_giftcard: false,

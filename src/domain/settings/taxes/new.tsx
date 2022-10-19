@@ -30,7 +30,7 @@ type NewTaxRateFormData = {
 }
 
 const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
-  const createTaxRate = useAdminCreateTaxRate()
+  const { mutate, isLoading } = useAdminCreateTaxRate()
   const form = useForm<NewTaxRateFormData>({
     defaultValues: {
       products: [],
@@ -43,10 +43,12 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
 
   const layeredModalContext = useContext(LayeredModalContext)
 
-  const onSave = (data: NewTaxRateFormData) => {
-    createTaxRate.mutate(
+  const onSave = handleSubmit((data) => {
+    mutate(
       {
-        ...data,
+        product_types: data.product_types,
+        products: data.products,
+        shipping_options: data.shipping_options,
         name: data.details.name,
         code: data.details.code,
         rate: data.details.rate,
@@ -62,7 +64,7 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
         },
       }
     )
-  }
+  })
 
   const [products, product_types, shipping_options] = watch([
     "products",
@@ -92,7 +94,7 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
       context={layeredModalContext}
       handleClose={onDismiss}
     >
-      <form onSubmit={handleSubmit(onSave)}>
+      <form onSubmit={onSave}>
         <Modal.Body>
           <Modal.Header handleClose={onDismiss}>
             <div>
@@ -233,6 +235,8 @@ const NewTaxRate = ({ regionId, onDismiss }: NewTaxRateProps) => {
                 variant="primary"
                 size="small"
                 className="w-eventButton justify-center"
+                loading={isLoading}
+                disabled={isLoading}
               >
                 Create
               </Button>

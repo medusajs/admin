@@ -31,7 +31,7 @@ const AddCurrenciesScreen = () => {
     }
   )
 
-  const { mutate } = useAdminUpdateStore()
+  const { mutate, isLoading } = useAdminUpdateStore()
   const notification = useNotification()
 
   const onSubmit = (next: () => void) => {
@@ -117,6 +117,8 @@ const AddCurrenciesScreen = () => {
           <Button
             variant="primary"
             size="small"
+            loading={isLoading}
+            disabled={isLoading}
             onClick={() =>
               onSubmit(() => {
                 reset()

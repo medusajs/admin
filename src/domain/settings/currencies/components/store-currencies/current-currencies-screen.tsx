@@ -1,12 +1,11 @@
 import { Currency } from "@medusajs/medusa"
 import clsx from "clsx"
 import { useAdminUpdateStore } from "medusa-react"
-import React, { useContext, useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { usePagination, useRowSelect, useSortBy, useTable } from "react-table"
 import Button from "../../../../../components/fundamentals/button"
 import PlusIcon from "../../../../../components/fundamentals/icons/plus-icon"
 import Modal from "../../../../../components/molecules/modal"
-import { LayeredModalContext } from "../../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../../utils/error-messages"
 import { useAddCurrenciesModalScreen } from "./add-currencies-screen"
@@ -19,7 +18,6 @@ const LIMIT = 15
 const CurrentCurrenciesScreen = () => {
   const [offset, setOffset] = useState(0)
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
-  const { push } = useContext(LayeredModalContext)
   const { onClose, store } = useEditCurrenciesModal()
 
   const { mutate } = useAdminUpdateStore()

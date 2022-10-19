@@ -115,6 +115,7 @@ const CreateReturnReasonModal = ({
               </Button>
               <Button
                 loading={isLoading}
+                disabled={isLoading}
                 size="large"
                 className="w-32 text-small justify-center"
                 variant="primary"

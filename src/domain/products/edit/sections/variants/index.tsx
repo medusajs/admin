@@ -136,7 +136,7 @@ const ProductOptions = () => {
           return (
             <div key={i}>
               <div className="bg-grey-30 h-6 w-9 animate-pulse mb-xsmall"></div>
-              <ul className="flex items-center gap-x-1">
+              <ul className="flex flex-wrap items-center gap-1">
                 {Array.from(Array(3)).map((_, j) => (
                   <li key={j}>
                     <div className="text-grey-50 bg-grey-10 h-8 w-12 animate-pulse rounded-rounded">
@@ -158,13 +158,13 @@ const ProductOptions = () => {
         return (
           <div key={option.id}>
             <h3 className="inter-base-semibold mb-xsmall">{option.title}</h3>
-            <ul className="flex items-center gap-x-1">
+            <ul className="flex flex-wrap items-center gap-1">
               {option.values
                 ?.map((val) => val.value)
                 .filter((v, index, self) => self.indexOf(v) === index)
                 .map((v, i) => (
                   <li key={i}>
-                    <div className="text-grey-50 bg-grey-10 inter-small-semibold px-3 py-[6px] rounded-rounded">
+                    <div className="text-grey-50 bg-grey-10 inter-small-semibold px-3 py-[6px] rounded-rounded whitespace-nowrap">
                       {v}
                     </div>
                   </li>

@@ -1,10 +1,10 @@
+import { CustomerGroup } from "@medusajs/medusa"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
-import { CustomerGroup } from "@medusajs/medusa"
 
-import Modal from "../../../components/molecules/modal"
-import Input from "../../../components/molecules/input"
 import Button from "../../../components/fundamentals/button"
+import Input from "../../../components/molecules/input"
+import Modal from "../../../components/molecules/modal"
 import Metadata, { MetadataField } from "../../../components/organisms/metadata"
 
 type CustomerGroupModalProps = {
@@ -66,9 +66,10 @@ function CustomerGroupModal(props: CustomerGroupModalProps) {
             <div className="flex space-x-4">
               <Input
                 label="Title"
-                {...register('name')}
+                {...register("name")}
                 placeholder="Customer group name"
-                required />
+                required
+              />
             </div>
           </div>
 
@@ -99,7 +100,7 @@ function CustomerGroupModal(props: CustomerGroupModalProps) {
         </Modal.Footer>
       </Modal.Body>
     </Modal>
-  );
+  )
 }
 
 export default CustomerGroupModal

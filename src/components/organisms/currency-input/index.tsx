@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
+  useState
 } from "react"
 import AmountField from "react-currency-input-field"
 import { Option } from "../../../types/shared"

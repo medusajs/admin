@@ -5,7 +5,9 @@ import {
   useAdminReceiveReturn,
   useAdminStore,
 } from "medusa-react"
+import { ReturnItem } from "@medusajs/medusa"
 import React, { useEffect, useState } from "react"
+
 import CreateFulfillmentModal from "../../../domain/orders/details/create-fulfillment"
 import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
 import { ExchangeEvent } from "../../../hooks/use-build-timeline"
@@ -318,9 +320,13 @@ function getReturnItems(event: ExchangeEvent) {
     <div className="flex flex-col gap-y-small">
       <span className="inter-small-regular text-grey-50">Return Items</span>
       <div>
-        {event.returnItems.map((i) => (
-          <EventItemContainer item={{ ...i, quantity: i.requestedQuantity }} />
-        ))}
+        {event.returnItems
+          .filter((i) => !!i)
+          .map((i: ReturnItem) => (
+            <EventItemContainer
+              item={{ ...i, quantity: i.requestedQuantity }}
+            />
+          ))}
       </div>
     </div>
   )
