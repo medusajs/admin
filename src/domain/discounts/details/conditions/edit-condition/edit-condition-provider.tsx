@@ -2,23 +2,10 @@ import { Discount, DiscountCondition } from "@medusajs/medusa"
 import {
   useAdminAddDiscountConditionResourceBatch,
   useAdminDeleteDiscountConditionResourceBatch,
-  useAdminUpdateDiscount,
 } from "medusa-react"
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react"
+import React, { createContext, ReactNode, useContext } from "react"
+import { LayeredModalContext } from "../../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { getErrorMessage } from "../../../../../utils/error-messages"
-import {
-  ConditionMap,
-  DiscountConditionOperator,
-  DiscountConditionType,
-  UpdateConditionProps,
-} from "../../../types"
 
 type ConditionsProviderProps = {
   condition: DiscountCondition
@@ -30,7 +17,8 @@ type EditConditionContextType = {
   condition: DiscountCondition
   discount: Discount
   isLoading: boolean
-  addConditionResources: (resources: string[]) => void
+  saveAndClose: (resources: string[]) => void
+  saveAndGoBack: (resources: string[]) => void
   removeConditionResources: (resources: string[]) => void
 }
 
@@ -44,6 +32,8 @@ export const EditConditionProvider = ({
   children,
 }: ConditionsProviderProps) => {
   const notification = useNotification()
+
+  const { pop, reset } = useContext(LayeredModalContext)
 
   const addConditionResourceBatch = useAdminAddDiscountConditionResourceBatch(
     discount.id,
@@ -65,7 +55,6 @@ export const EditConditionProvider = ({
             "The resources were successfully added",
             "success"
           )
-          // onClose()
         },
         onError: () =>
           notification("Error", "Failed to add resources", "error"),
@@ -83,7 +72,6 @@ export const EditConditionProvider = ({
             "The resources were successfully removed",
             "success"
           )
-          // onClose()
         },
         onError: () =>
           notification("Error", "Failed to remove resources", "error"),
@@ -91,13 +79,24 @@ export const EditConditionProvider = ({
     )
   }
 
+  function saveAndClose(resourcesToAdd: string[]) {
+    addConditionResources(resourcesToAdd)
+    reset()
+  }
+
+  function saveAndGoBack(resourcesToRemove: string[]) {
+    addConditionResources(resourcesToRemove)
+    pop()
+  }
+
   return (
     <EditConditionContext.Provider
       value={{
         condition,
         discount,
-        addConditionResources,
         removeConditionResources,
+        saveAndClose,
+        saveAndGoBack,
         isLoading:
           addConditionResourceBatch.isLoading ||
           removeConditionResourceBatch.isLoading,

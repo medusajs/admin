@@ -10,7 +10,7 @@ import {
   useTypesColumns,
 } from "../../../../../new/discount-form/condition-tables/shared/types"
 import { useEditConditionContext } from "../../edit-condition-provider"
-import ExistingConditionTableActions from "../../existing-condition-resources-table-actions"
+import ExistingConditionTableActions from "../../condition-table-actions"
 
 const ProductTypesConditionsTable = () => {
   const params = useQueryFilters(defaultQueryProps)

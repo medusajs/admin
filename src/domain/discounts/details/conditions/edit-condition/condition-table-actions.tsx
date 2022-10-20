@@ -4,14 +4,17 @@ import { useContext } from "react"
 import Button from "../../../../../components/fundamentals/button"
 import PlusIcon from "../../../../../components/fundamentals/icons/plus-icon"
 import { LayeredModalContext } from "../../../../../components/molecules/modal/layered-modal"
-import { useAddConditionsModalScreen } from "./batch-add-condition-resources-modal"
+import { useAddConditionsModalScreen } from "./add-conditions-screens"
+import { useEditConditionContext } from "./edit-condition-provider"
 
 const ExistingConditionTableActions = ({
   numberOfSelectedRows,
   onDeselect,
   onRemove,
 }: any) => {
-  const addConditionsModalScreen = useAddConditionsModalScreen()
+  const { condition } = useEditConditionContext()
+
+  const addConditionsModalScreen = useAddConditionsModalScreen(condition)
 
   const showAddConditions = !!numberOfSelectedRows
 
@@ -55,7 +58,7 @@ const ExistingConditionTableActions = ({
             className="border border-grey-20"
             onClick={() => push(addConditionsModalScreen)}
           >
-            <PlusIcon size={20} /> Add Products
+            <PlusIcon size={20} /> Add
           </Button>
         </div>
       </div>

@@ -8,10 +8,9 @@ import { getTitle } from "../../../new/discount-form/edit-conditions-modal"
 import { EditConditionProvider } from "./edit-condition-provider"
 import ProductConditionsTable from "./add-condition-resources/products/product-conditions-table"
 import ProductCollectionsConditionsTable from "./add-condition-resources/collections/collections-conditions-table"
-import ProductTypesConditionsTable from "./add-condition-resources/types/type-conditions-table"
+import ProductTypesConditionsTable from "./add-condition-resources/product-types/type-conditions-table"
 import ProductTagsConditionsTable from "./add-condition-resources/tags/tags-conditions-table"
 import CustomerGroupsConditionsTable from "./add-condition-resources/customer-groups/customer-groups-conditions-table"
-// import AvailableScreen from "./available-screen"
 
 type Props = {
   open: boolean

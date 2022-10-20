@@ -10,7 +10,7 @@ import {
   useGroupColumns,
 } from "../../../../../new/discount-form/condition-tables/shared/groups"
 import { useEditConditionContext } from "../../edit-condition-provider"
-import ExistingConditionTableActions from "../../existing-condition-resources-table-actions"
+import ExistingConditionTableActions from "../../condition-table-actions"
 
 const CustomerGroupsConditionsTable = () => {
   const params = useQueryFilters(defaultQueryProps)

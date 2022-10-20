@@ -10,10 +10,12 @@ import {
 } from "../../../../../new/discount-form/condition-tables/shared/collection"
 import { defaultQueryProps } from "../../../../../new/discount-form/condition-tables/shared/common"
 import { useEditConditionContext } from "../../edit-condition-provider"
-import ExistingConditionTableActions from "../../existing-condition-resources-table-actions"
+import ExistingConditionTableActions from "../../condition-table-actions"
 
 const ProductCollectionsConditionsTable = () => {
   const params = useQueryFilters(defaultQueryProps)
+
+  const [selectedResources, setSelectedResources] = useState<string[]>([])
 
   const {
     condition,
@@ -34,14 +36,12 @@ const ProductCollectionsConditionsTable = () => {
 
   const columns = useCollectionColumns()
 
-  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
-
   const onDeselect = () => {
-    setSelectedRowIds([])
+    setSelectedResources([])
   }
 
   const onRemove = () => {
-    removeConditionResources(selectedRowIds)
+    removeConditionResources(selectedResources)
     onDeselect()
   }
 
@@ -52,7 +52,7 @@ const ProductCollectionsConditionsTable = () => {
           enableSearch: false,
           tableActions: (
             <ExistingConditionTableActions
-              numberOfSelectedRows={selectedRowIds.length}
+              numberOfSelectedRows={selectedResources.length}
               onDeselect={onDeselect}
               onRemove={onRemove}
               deleting={isLoading}
@@ -61,11 +61,11 @@ const ProductCollectionsConditionsTable = () => {
         }}
         resourceName="product_collections"
         totalCount={count!}
-        selectedIds={selectedRowIds}
+        selectedIds={selectedResources}
         data={collections || []}
         columns={columns}
         isLoading={isLoadingCollections}
-        onChange={(ids) => setSelectedRowIds(ids)}
+        onChange={(ids) => setSelectedResources(ids)}
         renderRow={CollectionRow}
         renderHeaderGroup={CollectionsHeader}
         {...params}
