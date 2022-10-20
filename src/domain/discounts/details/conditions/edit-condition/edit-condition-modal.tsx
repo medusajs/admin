@@ -17,7 +17,6 @@ type Props = {
   condition?: any
   discount?: any
   onClose: () => void
-  onSave: (conditions: any[]) => void
 }
 
 /**
@@ -25,6 +24,10 @@ type Props = {
  */
 const EditConditionsModal = ({ open, condition, discount, onClose }: Props) => {
   const context = useContext(LayeredModalContext)
+
+  if (!condition) {
+    return null
+  }
 
   const renderModalContext = () => {
     switch (condition.type) {
@@ -42,7 +45,11 @@ const EditConditionsModal = ({ open, condition, discount, onClose }: Props) => {
   }
 
   return (
-    <EditConditionProvider condition={condition} discount={discount}>
+    <EditConditionProvider
+      condition={condition}
+      discount={discount}
+      onClose={onClose}
+    >
       <LayeredModal open={open} handleClose={onClose} context={context}>
         <Modal.Body>
           <Modal.Header handleClose={onClose}>
@@ -50,7 +57,7 @@ const EditConditionsModal = ({ open, condition, discount, onClose }: Props) => {
               Existing {getTitle(condition?.type)} in Condition
             </h1>
           </Modal.Header>
-          {renderModalContext()}
+          {condition && renderModalContext()}
           <Modal.Footer>
             <div className="flex items-center justify-end w-full">
               <Button

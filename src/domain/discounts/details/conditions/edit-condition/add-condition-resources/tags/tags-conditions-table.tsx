@@ -47,6 +47,7 @@ const ProductTagsConditionsTable = () => {
   useEffect(() => {
     if (!isLoading) {
       refetch() // if loading is flipped, we've either added or removed resources -> refetch
+      onDeselect()
     }
   }, [isLoading])
 

@@ -6,11 +6,11 @@ import {
 import React, { createContext, ReactNode, useContext } from "react"
 import { LayeredModalContext } from "../../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { useDiscountConditions } from "../use-discount-conditions"
 
 type ConditionsProviderProps = {
   condition: DiscountCondition
   discount: Discount
+  onClose: () => void
   children: ReactNode
 }
 
@@ -30,13 +30,12 @@ const EditConditionContext = createContext<EditConditionContextType | null>(
 export const EditConditionProvider = ({
   condition,
   discount,
+  onClose,
   children,
 }: ConditionsProviderProps) => {
   const notification = useNotification()
 
   const { pop, reset } = useContext(LayeredModalContext)
-
-  const { deSelectCondition } = useDiscountConditions(discount)
 
   const addConditionResourceBatch = useAdminAddDiscountConditionResourceBatch(
     discount.id,
@@ -48,7 +47,10 @@ export const EditConditionProvider = ({
     condition.id
   )
 
-  const addConditionResources = (resourcesToAdd: string[]) => {
+  const addConditionResources = (
+    resourcesToAdd: string[],
+    onSuccessCallback?: () => void
+  ) => {
     addConditionResourceBatch.mutate(
       { resources: resourcesToAdd.map((r) => ({ id: r })) },
       {
@@ -58,6 +60,7 @@ export const EditConditionProvider = ({
             "The resources were successfully added",
             "success"
           )
+          onSuccessCallback && onSuccessCallback()
         },
         onError: () =>
           notification("Error", "Failed to add resources", "error"),
@@ -83,7 +86,7 @@ export const EditConditionProvider = ({
   }
 
   function saveAndClose(resourcesToAdd: string[]) {
-    addConditionResources(resourcesToAdd)
+    addConditionResources(resourcesToAdd, () => onClose())
     reset()
   }
 

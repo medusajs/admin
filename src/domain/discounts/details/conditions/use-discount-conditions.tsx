@@ -28,6 +28,7 @@ export const useDiscountConditions = (discount: Discount) => {
     { enabled: !!selectedCondition, cacheTime: 0 }
   )
   const { mutate } = useAdminDiscountRemoveCondition(discount.id)
+
   const notification = useNotification()
 
   const removeCondition = (conditionId: string) => {
@@ -62,10 +63,14 @@ export const useDiscountConditions = (discount: Discount) => {
     ] as ActionType[],
   }))
 
+  function deSelectCondition() {
+    setSelectedCondition(null)
+  }
+
   return {
     conditions: itemized,
     selectedCondition: discount_condition,
-    deSelectCondition: () => setSelectedCondition(null),
+    deSelectCondition,
   }
 }
 
