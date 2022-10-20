@@ -1,5 +1,5 @@
 import { useAdminProductTags } from "medusa-react"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Modal from "../../../../../../../components/molecules/modal"
 import { SelectableTable } from "../../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../../hooks/use-query-filters"
@@ -21,7 +21,12 @@ const ProductTagsConditionsTable = () => {
     isLoading,
   } = useEditConditionContext()
 
-  const { isLoading: isLoadingTags, count, product_tags } = useAdminProductTags(
+  const {
+    isLoading: isLoadingTags,
+    count,
+    product_tags,
+    refetch,
+  } = useAdminProductTags(
     { discount_condition_id: condition.id, ...params.queryObject },
     {
       keepPreviousData: true,
@@ -38,6 +43,12 @@ const ProductTagsConditionsTable = () => {
     removeConditionResources(selectedRowIds)
     onDeselect()
   }
+
+  useEffect(() => {
+    if (!isLoading) {
+      refetch() // if loading is flipped, we've either added or removed resources -> refetch
+    }
+  }, [isLoading])
 
   return (
     <Modal.Content>

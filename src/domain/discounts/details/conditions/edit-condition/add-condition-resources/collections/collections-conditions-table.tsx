@@ -1,5 +1,5 @@
 import { useAdminCollections } from "medusa-react"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Modal from "../../../../../../../components/molecules/modal"
 import { SelectableTable } from "../../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../../hooks/use-query-filters"
@@ -27,6 +27,7 @@ const ProductCollectionsConditionsTable = () => {
     isLoading: isLoadingCollections,
     count,
     collections,
+    refetch,
   } = useAdminCollections(
     { discount_condition_id: condition.id, ...params.queryObject },
     {
@@ -44,6 +45,12 @@ const ProductCollectionsConditionsTable = () => {
     removeConditionResources(selectedResources)
     onDeselect()
   }
+
+  useEffect(() => {
+    if (!isLoading) {
+      refetch() // if loading is flipped, we've either added or removed resources -> refetch
+    }
+  }, [isLoading])
 
   return (
     <Modal.Content>

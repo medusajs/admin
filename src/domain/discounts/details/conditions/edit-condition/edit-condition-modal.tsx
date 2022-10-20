@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import LayeredModal, {
@@ -24,7 +24,7 @@ type Props = {
  * Re-usable Sales Channels Modal, used for adding and editing sales channels both when creating a new product and editing an existing product.
  */
 const EditConditionsModal = ({ open, condition, discount, onClose }: Props) => {
-  const context = React.useContext(LayeredModalContext)
+  const context = useContext(LayeredModalContext)
 
   const renderModalContext = () => {
     switch (condition.type) {

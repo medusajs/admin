@@ -70,7 +70,6 @@ const DiscountDetailsConditions: React.FC<DiscountDetailsConditionsProps> = ({
           condition={selectedCondition}
           discount={discount}
           onClose={() => deSelectCondition()}
-          onSave={(data) => console.log(data)}
         />
       )}
     </ConditionsProvider>

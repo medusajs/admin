@@ -6,6 +6,7 @@ import {
 import React, { createContext, ReactNode, useContext } from "react"
 import { LayeredModalContext } from "../../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../../hooks/use-notification"
+import { useDiscountConditions } from "../use-discount-conditions"
 
 type ConditionsProviderProps = {
   condition: DiscountCondition
@@ -34,6 +35,8 @@ export const EditConditionProvider = ({
   const notification = useNotification()
 
   const { pop, reset } = useContext(LayeredModalContext)
+
+  const { deSelectCondition } = useDiscountConditions(discount)
 
   const addConditionResourceBatch = useAdminAddDiscountConditionResourceBatch(
     discount.id,

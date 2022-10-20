@@ -22,7 +22,7 @@ const AddCustomerGroupsConditionsScreen = () => {
 
   const columns = useGroupColumns()
 
-  const { isLoading, count, customer_groups } = useAdminCustomerGroups(
+  const { isLoading, count, customer_groups, refetch } = useAdminCustomerGroups(
     params.queryObject,
     {
       keepPreviousData: true,
@@ -60,7 +60,7 @@ const AddCustomerGroupsConditionsScreen = () => {
           <Button
             variant="primary"
             size="small"
-            onClick={() => saveAndGoBack(selectedResources)}
+            onClick={() => saveAndGoBack(selectedResources, () => refetch())}
           >
             Save and go back
           </Button>

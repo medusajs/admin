@@ -22,7 +22,7 @@ const AddCollectionConditionsScreen = () => {
 
   const columns = useCollectionColumns()
 
-  const { isLoading, count, collections } = useAdminCollections(
+  const { isLoading, count, collections, refetch } = useAdminCollections(
     params.queryObject,
     {
       keepPreviousData: true,
@@ -59,7 +59,7 @@ const AddCollectionConditionsScreen = () => {
           <Button
             variant="primary"
             size="small"
-            onClick={() => saveAndGoBack(selectedResources)}
+            onClick={() => saveAndGoBack(selectedResources, () => refetch())}
           >
             Save and go back
           </Button>

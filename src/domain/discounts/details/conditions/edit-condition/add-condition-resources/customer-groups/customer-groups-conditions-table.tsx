@@ -1,5 +1,5 @@
 import { useAdminCustomerGroups } from "medusa-react"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Modal from "../../../../../../../components/molecules/modal"
 import { SelectableTable } from "../../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../../hooks/use-query-filters"
@@ -25,6 +25,7 @@ const CustomerGroupsConditionsTable = () => {
     isLoading: isLoadingCustomerGroups,
     count,
     customer_groups,
+    refetch,
   } = useAdminCustomerGroups(
     { discount_condition_id: condition.id, ...params.queryObject },
     {
@@ -44,6 +45,12 @@ const CustomerGroupsConditionsTable = () => {
     removeConditionResources(selectedRowIds)
     onDeselect()
   }
+
+  useEffect(() => {
+    if (!isLoading) {
+      refetch() // if loading is flipped, we've either added or removed resources -> refetch
+    }
+  }, [isLoading])
 
   return (
     <Modal.Content>

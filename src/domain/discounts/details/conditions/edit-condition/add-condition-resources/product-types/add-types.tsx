@@ -26,6 +26,7 @@ const AddTypesConditionsScreen = () => {
     isLoading: isLoadingTypes,
     count,
     product_types,
+    refetch,
   } = useAdminProductTypes(params.queryObject, {
     keepPreviousData: true,
   })
@@ -61,7 +62,7 @@ const AddTypesConditionsScreen = () => {
           <Button
             variant="primary"
             size="small"
-            onClick={() => saveAndGoBack(selectedResources)}
+            onClick={() => saveAndGoBack(selectedResources, () => refetch())}
           >
             Save and go back
           </Button>
