@@ -7,7 +7,7 @@ const useTaxRateColumns = () => {
   const columns = useMemo(
     () => [
       {
-        Header: <Table.HeadCell className="pl-2">Name</Table.HeadCell>,
+        Header: <div className="pl-2">Name</div>,
         accessor: "name",
         Cell: ({ row, cell: { value }, index }) => {
           return (
@@ -19,7 +19,9 @@ const useTaxRateColumns = () => {
                 <div className="flex gap-x-xsmall text-grey-40 items-center">
                   <LockIcon size={"12"} /> {value}
                 </div>
-              ) : value}
+              ) : (
+                value
+              )}
             </Table.Cell>
           )
         },
@@ -29,8 +31,7 @@ const useTaxRateColumns = () => {
         accessor: "code",
         Cell: ({ cell: { value }, index }) => (
           <Table.Cell key={index}>
-            <Badge variant="default">
-            {value}</Badge>
+            <Badge variant="default">{value}</Badge>
           </Table.Cell>
         ),
       },

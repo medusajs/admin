@@ -218,6 +218,7 @@ const EditConfigurations: React.FC<EditConfigurationsProps> = ({
                 className="min-w-[128px]"
                 type="submit"
                 loading={isLoading}
+                disabled={isLoading}
               >
                 Save
               </Button>

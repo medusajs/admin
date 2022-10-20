@@ -28,7 +28,9 @@ const PriceFormInput = ({
   }
 
   const [formattedValue, setFormattedValue] = useState<string | undefined>(
-    amount ? getFormattedValue(amount) : undefined
+    amount !== null && amount !== undefined
+      ? getFormattedValue(amount)
+      : undefined
   )
 
   useEffect(() => {
@@ -38,11 +40,11 @@ const PriceFormInput = ({
   }, [amount, decimal_digits])
 
   const onAmountChange = (value?: string, floatValue?: number | null) => {
-    if (floatValue) {
+    if (typeof floatValue === "number") {
       const numericalValue = Math.round(floatValue * 10 ** decimal_digits)
       onChange(numericalValue)
     } else {
-      onChange(0)
+      onChange(undefined)
     }
     setFormattedValue(value)
   }

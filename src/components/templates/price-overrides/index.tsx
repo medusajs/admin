@@ -36,7 +36,12 @@ const PriceOverrides = ({
   isEdit = false,
 }: PriceOverridesType) => {
   const [mode, setMode] = React.useState(MODES.SELECTED_ONLY)
-  const { handleSubmit, control, reset } = useForm<PriceOverridesFormValues>({
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<PriceOverridesFormValues>({
     defaultValues: {
       variants: [],
       prices: prices,
@@ -156,6 +161,7 @@ const PriceOverrides = ({
             className="text-small justify-center rounded-rounded"
             variant="primary"
             onClick={onClick}
+            loading={isSubmitting}
           >
             Save and close
           </Button>

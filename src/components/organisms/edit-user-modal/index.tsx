@@ -97,7 +97,12 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
               >
                 Cancel
               </Button>
-              <Button loading={isLoading} variant="primary" size="small">
+              <Button
+                loading={isLoading}
+                disabled={isLoading}
+                variant="primary"
+                size="small"
+              >
                 Save
               </Button>
             </div>

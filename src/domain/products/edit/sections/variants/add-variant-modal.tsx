@@ -114,29 +114,35 @@ const getDefaultValues = (product: Product): EditFlowVariantFormType => {
 export const createAddPayload = (
   data: EditFlowVariantFormType
 ): AdminPostProductsProductVariantsReq => {
+  const { general, stock, options, prices, dimensions, customs } = data
+
+  const priceArray = prices.prices
+    .filter((price) => typeof price.amount === "number")
+    .map((price) => {
+      return {
+        amount: price.amount,
+        currency_code: price.region_id ? undefined : price.currency_code,
+        region_id: price.region_id,
+        id: price.id || undefined,
+      }
+    })
+
   return {
-    sku: data.stock.sku || undefined,
-    upc: data.stock.upc || undefined,
-    barcode: data.stock.barcode || undefined,
-    ean: data.stock.ean || undefined,
-    weight: data.dimensions.weight || undefined,
-    width: data.dimensions.width || undefined,
-    height: data.dimensions.height || undefined,
-    length: data.dimensions.length || undefined,
-    mid_code: data.customs.mid_code || undefined,
-    origin_country: data.customs.origin_country?.value || undefined,
-    allow_backorder: data.stock.allow_backorder,
-    manage_inventory: data.stock.manage_inventory,
-    material: data.general.material || undefined,
-    inventory_quantity: data.stock.inventory_quantity || 0,
-    prices: data.prices.prices.map((p) => ({
-      amount: p.amount || 0,
-      currency_code: p.region_id ? undefined : p.currency_code,
-      region_id: p.region_id || undefined,
-    })),
-    title:
-      data.general.title || `${data.options?.map((o) => o.value).join(" / ")}`,
-    options: data.options.map((option) => ({
+    // @ts-ignore
+    ...general,
+    ...customs,
+    ...stock,
+    inventory_quantity: stock.inventory_quantity || 0,
+    ...dimensions,
+    ...customs,
+    // @ts-ignore
+    origin_country: customs.origin_country
+      ? customs.origin_country.value
+      : null,
+    // @ts-ignore
+    prices: priceArray,
+    title: data.general.title || `${options?.map((o) => o.value).join(" / ")}`,
+    options: options.map((option) => ({
       option_id: option.id,
       value: option.value,
     })),

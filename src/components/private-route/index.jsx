@@ -1,14 +1,13 @@
 import { navigate } from "gatsby"
 import React, { useContext, useState } from "react"
 import { AccountContext } from "../../context/account"
+import Spinner from "../atoms/spinner"
 
 const PrivateRoute = ({ component: Component, location, ...rest }) => {
-  const [loading, setLoading] = useState(false)
   const account = useContext(AccountContext)
+  const [loading, setLoading] = useState(true)
 
-  if (account.isLoggedIn) {
-    return <Component {...rest} />
-  } else if (!loading) {
+  React.useEffect(() => {
     account
       .session()
       .then((data) => {
@@ -17,8 +16,17 @@ const PrivateRoute = ({ component: Component, location, ...rest }) => {
       .catch((err) => {
         navigate("/login")
       })
+  }, [])
+
+  if (account.isLoggedIn && !loading) {
+    return <Component {...rest} />
   }
-  return "Loading..."
+
+  return (
+    <div className="h-screen w-full flex items-center justify-center">
+      <Spinner variant="secondary" />
+    </div>
+  )
 }
 
 export default PrivateRoute

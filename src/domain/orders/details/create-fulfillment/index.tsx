@@ -52,6 +52,11 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
   const createSwapFulfillment = useAdminFulfillSwap(orderId)
   const createClaimFulfillment = useAdminFulfillClaim(orderId)
 
+  const isSubmitting =
+    createOrderFulfillment.isLoading ||
+    createSwapFulfillment.isLoading ||
+    createClaimFulfillment.isLoading
+
   const notification = useNotification()
 
   const createFulfillment = () => {
@@ -179,8 +184,9 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
                 size="large"
                 className="w-32 text-small justify-center"
                 variant="primary"
-                disabled={!toFulfill?.length}
+                disabled={!toFulfill?.length || isSubmitting}
                 onClick={createFulfillment}
+                loading={isSubmitting}
               >
                 Complete
               </Button>

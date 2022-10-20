@@ -13,7 +13,7 @@ const TableSearch: React.FC<TableSearchProps> = ({
   autoFocus,
   onSearch,
   placeholder = "Search",
-  searchValue,
+  searchValue = "",
   className,
   ...props
 }) => {

@@ -30,11 +30,11 @@ function MedusaPriceInput(props: MedusaPriceInputProps) {
     value?: string,
     floatValue?: number | null
   ) => {
-    if (floatValue) {
+    if (typeof floatValue === "number") {
       const numericalValue = Math.round(floatValue * 10 ** decimal_digits)
       onChange(numericalValue)
     } else {
-      onChange(0)
+      onChange(undefined)
     }
     setRawValue(value)
   }

@@ -22,22 +22,27 @@ import Settings from "../domain/settings"
 const IndexPage = () => {
   useHotkeys("g + o", () => navigate("/a/orders"))
   useHotkeys("g + p", () => navigate("/a/products"))
+
+  return <PrivateRoute component={Routes} />
+}
+
+const Routes = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <Layout>
         <SEO title="Medusa" />
         <Router basepath="a" className="h-full">
-          <PrivateRoute path="oauth/:app_name" component={Oauth} />
-          <PrivateRoute path="products/*" component={ProductsRoute} />
-          <PrivateRoute path="collections/*" component={Collections} />
-          <PrivateRoute path="gift-cards/*" component={GiftCards} />
-          <PrivateRoute path="orders/*" component={Orders} />
-          <PrivateRoute path="draft-orders/*" component={DraftOrders} />
-          <PrivateRoute path="discounts/*" component={Discounts} />
-          <PrivateRoute path="customers/*" component={Customers} />
-          <PrivateRoute path="pricing/*" component={Pricing} />
-          <PrivateRoute path="settings/*" component={Settings} />
-          <PrivateRoute path="sales-channels/*" component={SalesChannels} />
+          <Oauth path="oauth/:app_name"/>
+          <ProductsRoute path="products/*"/>
+          <Collections path="collections/*"/>
+          <GiftCards path="gift-cards/*" />
+          <Orders path="orders/*" />
+          <DraftOrders path="draft-orders/*" />
+          <Discounts path="discounts/*"/>
+          <Customers path="customers/*"/>
+          <Pricing path="pricing/*"/>
+          <Settings path="settings/*"/>
+          <SalesChannels path="sales-channels/*" />
         </Router>
       </Layout>
     </DndProvider>

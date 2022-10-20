@@ -93,6 +93,7 @@ const EditGiftCardModal = ({
               </Button>
               <Button
                 loading={updating}
+                disabled={updating}
                 variant="primary"
                 className="min-w-[100px]"
                 size="small"

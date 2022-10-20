@@ -72,7 +72,7 @@ const GeneralSection = ({ product }: Props) => {
           />
         }
       >
-        <p className="inter-base-regular text-grey-50 mt-2">
+        <p className="inter-base-regular text-grey-50 mt-2 whitespace-pre-wrap">
           {product.description}
         </p>
         <ProductTags product={product} />

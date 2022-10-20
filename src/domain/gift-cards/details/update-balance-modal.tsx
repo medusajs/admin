@@ -1,6 +1,6 @@
 import { AdminPostGiftCardsGiftCardReq, GiftCard } from "@medusajs/medusa"
-import React from "react"
 import clsx from "clsx"
+import React from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import Tooltip from "../../../components/atoms/tooltip"
 import Button from "../../../components/fundamentals/button"
@@ -96,7 +96,7 @@ const UpdateBalanceModal = ({
                 className="min-w-[100px]"
                 size="small"
                 type="submit"
-                disabled={balance > giftCard.value}
+                disabled={balance > giftCard.value || updating}
               >
                 {balance > giftCard.value ? (
                   <Tooltip content="Balance is above original value">

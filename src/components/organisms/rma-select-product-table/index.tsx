@@ -5,13 +5,13 @@ import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-moda
 import Medusa from "../../../services/api"
 import { isLineItemCanceled } from "../../../utils/is-line-item"
 import { formatAmountWithSymbol } from "../../../utils/prices"
+import CopyToClipboard from "../../atoms/copy-to-clipboard"
 import Button from "../../fundamentals/button"
 import CheckIcon from "../../fundamentals/icons/check-icon"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import { LayeredModalContext } from "../../molecules/modal/layered-modal"
 import Table from "../../molecules/table"
-import CopyToClipboard from "../../atoms/copy-to-clipboard"
 
 type RMASelectProductTableProps = {
   order: Omit<Order, "beforeInsert">
@@ -171,10 +171,10 @@ const RMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                           <span>{item.variant.title}</span>
                         )}
                         {item?.variant?.sku && (
-                            <CopyToClipboard
-                              value={item.variant.sku}
-                              iconSize={14}
-                            />
+                          <CopyToClipboard
+                            value={item.variant.sku}
+                            iconSize={14}
+                          />
                         )}
                       </div>
                     </div>

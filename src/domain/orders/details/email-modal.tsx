@@ -79,6 +79,7 @@ const EmailModal: React.FC<EmailModalProps> = ({
                 className="w-32 text-small justify-center"
                 variant="primary"
                 loading={isLoading}
+                disabled={isLoading}
                 type="submit"
               >
                 Save

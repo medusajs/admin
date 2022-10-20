@@ -19,7 +19,7 @@ type Props = {
   onClose: () => void
 }
 
-type GeneralForm = {
+type GeneralFormWrapper = {
   general: GeneralFormType
   organize: OrganizeFormType
   discountable: DiscountableFormType
@@ -27,7 +27,7 @@ type GeneralForm = {
 
 const GeneralModal = ({ product, open, onClose }: Props) => {
   const { onUpdate, updating } = useEditProductActions(product.id)
-  const form = useForm<GeneralForm>({
+  const form = useForm<GeneralFormWrapper>({
     defaultValues: getDefaultValues(product),
   })
 
@@ -122,7 +122,7 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
   )
 }
 
-const getDefaultValues = (product: Product): GeneralForm => {
+const getDefaultValues = (product: Product): GeneralFormWrapper => {
   return {
     general: {
       title: product.title,

@@ -25,7 +25,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
 
   const notification = useNotification()
 
-  const createGiftCard = useAdminCreateGiftCard()
+  const { mutate, isLoading: isSubmitting } = useAdminCreateGiftCard()
 
   useEffect(() => {
     if (!isLoading) {
@@ -57,7 +57,7 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
       ...data,
     }
 
-    createGiftCard.mutate(update, {
+    mutate(update, {
       onSuccess: () => {
         notification("Success", "Created Custom Gift Card", "success")
         onDismiss()
@@ -149,6 +149,8 @@ const CustomGiftcard: React.FC<CustomGiftcardProps> = ({ onDismiss }) => {
               onClick={handleSubmit(onSubmit)}
               size="small"
               className="w-[112px]"
+              disabled={isSubmitting}
+              loading={isSubmitting}
             >
               Create & Send
             </Button>

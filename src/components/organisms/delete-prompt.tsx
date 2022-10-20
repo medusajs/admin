@@ -64,6 +64,7 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
               className="w-24 text-small justify-center"
               variant="nuclear"
               onClick={handleSubmit}
+              disabled={isLoading}
             >
               {confirmText}
             </Button>

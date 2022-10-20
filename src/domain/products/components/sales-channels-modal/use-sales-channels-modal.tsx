@@ -1,13 +1,13 @@
 import { SalesChannel } from "@medusajs/medusa"
 import React, { useContext } from "react"
 
-type SalesChannelsModalContext = {
+type SalesChannelsModalContextType = {
   source: SalesChannel[]
   onClose: () => void
   onSave: (channels: SalesChannel[]) => void
 }
 
-export const SalesChannelsModalContext = React.createContext<SalesChannelsModalContext | null>(
+export const SalesChannelsModalContext = React.createContext<SalesChannelsModalContextType | null>(
   null
 )
 

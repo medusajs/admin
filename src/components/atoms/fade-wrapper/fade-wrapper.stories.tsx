@@ -60,7 +60,9 @@ FullScreenFade.args = {
       </FocusModal.Header>
       <FocusModal.Main>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-          <span className="inter-base-regular">{i}</span>
+          <span className="inter-base-regular" key={i}>
+            {i}
+          </span>
         ))}
       </FocusModal.Main>
     </FocusModal>
