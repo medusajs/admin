@@ -20,8 +20,8 @@ import {
   TimelineEvent,
   useBuildTimeline,
   OrderEditRequestedEvent,
-  RefundDifferenceDueEvent,
-  OrderEditDifferenceDueEvent,
+  RefundRequiredEvent,
+  PaymentRequiredEvent,
 } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -43,11 +43,11 @@ import EditConfirmed from "../../molecules/timeline-events/order-edit/confirmed"
 import EditCreated from "../../molecules/timeline-events/order-edit/created"
 import EditDeclined from "../../molecules/timeline-events/order-edit/declined"
 import EditRequested from "../../molecules/timeline-events/order-edit/requested"
-import EditRequestedDifferenceDue from "../../molecules/timeline-events/order-edit/requested-difference-due"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Refund from "../../molecules/timeline-events/refund"
 import Return from "../../molecules/timeline-events/return"
-import RefundDifferenceDue from "../../molecules/timeline-events/order-edit/refund-difference-due"
+import PaymentRequired from "../../molecules/timeline-events/order-edit/payment-required"
+import RefundRequired from "../../molecules/timeline-events/order-edit/refund-required"
 
 type TimelineProps = {
   orderId: string
@@ -185,14 +185,10 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
       return <EditConfirmed event={event as OrderEditEvent} />
     case "edit-requested":
       return <EditRequested event={event as OrderEditRequestedEvent} />
-    case "refund-difference-due":
-      return <RefundDifferenceDue event={event as RefundDifferenceDueEvent} />
-    case "edit-requested-difference-due":
-      return (
-        <EditRequestedDifferenceDue
-          event={event as OrderEditDifferenceDueEvent}
-        />
-      )
+    case "refund-required":
+      return <RefundRequired event={event as RefundRequiredEvent} />
+    case "payment-required":
+      return <PaymentRequired event={event as PaymentRequiredEvent} />
     default:
       return null
   }
