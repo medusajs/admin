@@ -1,169 +1,167 @@
-import { Store, User } from "@medusajs/medusa"
-import { useLocation } from "@reach/router"
-import { Traits } from "@segment/analytics-next"
+import { globalHistory } from "@reach/router"
+import { AnalyticsBrowser } from "@segment/analytics-next"
 import { useAdminGetSession, useAdminStore, useAdminUsers } from "medusa-react"
-import React, { createContext, useContext, useEffect, useMemo } from "react"
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react"
 import Fade from "../components/atoms/fade-wrapper"
+import { IS_PROD } from "../components/constants/is-prod"
 import AnalyticsPreferencesModal from "../components/organisms/analytics-preferences"
 import { useDebounce } from "../hooks/use-debounce"
-import {
-  analytics,
-  useAdminAnalyticsConfig,
-  useAdminCreateAnalyticsConfig,
-} from "../services/analytics"
+import { useAdminAnalyticsConfig } from "../services/analytics"
 import { useFeatureFlag } from "./feature-flag"
 
 type Props = {
   children?: React.ReactNode
+  writeKey: string
 }
 
 type Event =
-  | "page_visited"
-  | "num_products"
-  | "num_orders"
-  | "store_name"
-  | "num_discounts"
-  | "num_users"
-  | "user_email"
+  | "numProducts"
+  | "numOrders"
+  | "numDiscounts"
+  | "numUsers"
   | "regions"
   | "currencies"
-  | "error"
+  | "storeName"
 
-type AnalyticsContext = {
-  trackCurrencies: (properties: CurrenciesProperties) => void
-  trackNumberOfOrders: (properties: OrdersProperties) => void
-  trackNumberOfDiscounts: (properties: DiscountsProperties) => void
-  trackNumberOfProducts: (properties: ProductsProperties) => void
-  trackRegions: (properties: RegionsProperties) => void
+type AnalyticsContextType = {
+  trackCurrencies: (properties: TrackCurrenciesPayload) => void
+  trackNumberOfOrders: (properties: TrackCountPayload) => void
+  trackNumberOfDiscounts: (properties: TrackCountPayload) => void
+  trackNumberOfProducts: (properties: TrackCountPayload) => void
+  trackRegions: (properties: TrackRegionsPayload) => void
 }
 
-const AnalyticsContext = createContext<AnalyticsContext | null>(null)
+const AnalyticsContext = createContext<AnalyticsContextType | null>(null)
 
-const AnalyticsProvider = ({ children }: Props) => {
+const AnalyticsProvider = ({ writeKey, children }: Props) => {
+  const { analytics_config: config, isLoading } = useAdminAnalyticsConfig()
+
   const { user } = useAdminGetSession()
   const { users: users } = useAdminUsers()
   const { store } = useAdminStore()
-  const { analytics_config, isLoading } = useAdminAnalyticsConfig()
-  const { mutate, isLoading: isSubmitting } = useAdminCreateAnalyticsConfig()
 
   const { isFeatureEnabled } = useFeatureFlag()
+  const isEnabled = useMemo(() => {
+    return isFeatureEnabled("analytics")
+  }, [isFeatureEnabled])
 
-  const askPermission = useMemo(() => {
-    if (!isFeatureEnabled("analytics")) {
-      return false
+  const analytics = useMemo(() => {
+    if (!config || !isEnabled || !IS_PROD) {
+      return null // Don't initialize analytics if not enabled or the user's preferences are not loaded yet
     }
 
-    return !analytics_config && !isLoading
-  }, [analytics_config, isLoading])
+    if (config.opt_out) {
+      return null // Don't initialize if user has opted out
+    }
+
+    return AnalyticsBrowser.load({ writeKey })
+  }, [config, writeKey, isEnabled])
+
+  useEffect(() => {
+    if (!analytics || !config) {
+      return
+    }
+
+    if (user) {
+      analytics.identify(user.id, {
+        email: config.anonymize ? "anonymized" : user.email,
+      })
+    }
+  }, [config, analytics, user])
+
+  const askPermission = useMemo(() => {
+    if (!isEnabled) {
+      return false // Don't ask for permission if feature is not enabled
+    }
+
+    return !config && !isLoading
+  }, [config, isLoading, isEnabled])
 
   /**
-   * Used to ensure that the focus modal is animated smoothly.
+   * Ensure that the focus modal is animated smoothly.
    */
   const animateIn = useDebounce(askPermission, 1000)
 
-  useEffect(() => {
-    if (!store || !user) {
-      return
-    }
+  const track = useCallback(
+    (event: Event, properties?: Record<string, unknown>) => {
+      if (!analytics) {
+        // If analytics is not initialized, then we return early
+        return
+      }
 
-    analytics.identify(user.id, getUserTraits(user, store, false))
-  }, [analytics, user, store])
+      analytics.track(event, properties)
+    },
+    [analytics]
+  )
 
-  useEffect(() => {
-    if (!analytics_config) {
-      return
-    }
+  const trackNumberOfUsers = useCallback(
+    (properties: TrackCountPayload) => {
+      track("numUsers", properties)
+    },
+    [track]
+  )
 
-    if (users) {
-      trackNumberOfUsers({
-        num_users: users.length,
-      })
-    }
+  const trackStoreName = useCallback(
+    (properties: TrackStoreNamePayload) => {
+      track("storeName", properties)
+    },
+    [track]
+  )
 
-    if (store) {
-      trackStoreName({
-        store_name: store.name,
-      })
-    }
-  }, [users, analytics_config, store])
-
-  const wasTrackedToday = (event: Event) => {
-    const today = new Date()
-    const todayString = today.toDateString()
-
-    const eventKey = `${event}_tracked_at`
-
-    const lastTracked = localStorage.getItem(eventKey)
-
-    if (lastTracked === todayString) {
-      return true
-    }
-
-    localStorage.setItem(eventKey, todayString)
-
-    return false
+  const trackNumberOfProducts = (properties: TrackCountPayload) => {
+    track("numProducts", properties)
   }
 
-  const track = (event: Event, properties?: Record<string, unknown>) => {
-    if (!user || !analytics_config || analytics_config.opt_out) {
-      return
-    }
-
-    if (wasTrackedToday(event) && event !== "page_visited") {
-      return
-    }
-
-    console.log(event, properties, "tracked")
-    // analytics.track(event, properties)
+  const trackNumberOfOrders = (properties: TrackCountPayload) => {
+    track("numOrders", properties)
   }
 
-  const trackPageVisited = (properties: PageProperties) => {
-    track("page_visited", properties)
-  }
-
-  const trackNumberOfProducts = (properties: ProductsProperties) => {
-    track("num_products", properties)
-  }
-
-  const trackNumberOfOrders = (properties: OrdersProperties) => {
-    track("num_orders", properties)
-  }
-
-  const trackNumberOfUsers = (properties: UsersProperties) => {
-    track("num_users", properties)
-  }
-
-  const trackStoreName = (properties: StoreNameProperties) => {
-    track("store_name", properties)
-  }
-
-  const trackUserEmail = (properties: EmailProperties) => {
-    track("user_email", properties)
-  }
-
-  const trackRegions = (properties: RegionsProperties) => {
+  const trackRegions = (properties: TrackRegionsPayload) => {
     track("regions", properties)
   }
 
-  const trackCurrencies = (properties: CurrenciesProperties) => {
+  const trackCurrencies = (properties: TrackCurrenciesPayload) => {
     track("currencies", properties)
   }
 
-  const trackNumberOfDiscounts = (properties: DiscountsProperties) => {
-    track("num_discounts", properties)
+  const trackNumberOfDiscounts = (properties: TrackCountPayload) => {
+    track("numDiscounts", properties)
   }
 
-  // Track pages visited when location changes
-
-  const { pathname } = useLocation()
-
+  // Track number of users
   useEffect(() => {
-    if (!pathname) {
-      return
+    if (users) {
+      trackNumberOfUsers({ count: users.length })
     }
+  }, [users, trackNumberOfUsers])
 
-    trackPageVisited({ url: pathname })
-  }, [pathname])
+  // Track store name
+  useEffect(() => {
+    if (store) {
+      trackStoreName({ name: store.name })
+    }
+  }, [store, trackStoreName])
+
+  // Track pages visited when location changes
+  useEffect(() => {
+    const unlisten = globalHistory.listen(() => {
+      if (!analytics) {
+        return
+      }
+
+      analytics.page()
+    })
+
+    return () => {
+      unlisten()
+    }
+  }, [analytics])
 
   return (
     <AnalyticsContext.Provider
@@ -177,7 +175,7 @@ const AnalyticsProvider = ({ children }: Props) => {
     >
       {user && askPermission && (
         <Fade isVisible={animateIn} isFullScreen={true}>
-          <AnalyticsPreferencesModal user={user} />
+          <AnalyticsPreferencesModal />
         </Fade>
       )}
       {children}
@@ -185,55 +183,21 @@ const AnalyticsProvider = ({ children }: Props) => {
   )
 }
 
-type CurrenciesProperties = {
+type TrackCurrenciesPayload = {
   used_currencies: string[]
 }
 
-type OrdersProperties = {
-  num_orders: number
+type TrackStoreNamePayload = {
+  name: string
 }
 
-type ProductsProperties = {
-  num_products: number
+type TrackCountPayload = {
+  count: number
 }
 
-type UsersProperties = {
-  num_users: number
-}
-
-type RegionsProperties = {
+type TrackRegionsPayload = {
   regions: string[]
-  num_regions: number
-}
-
-type DiscountsProperties = {
-  num_discounts: number
-}
-
-type EmailProperties = {
-  email: string
-}
-
-type StoreNameProperties = {
-  store_name: string
-}
-
-type PageProperties = {
-  url: string
-}
-
-const getUserTraits = (
-  user: Omit<User, "password_hash">,
-  store: Store,
-  anonymized: boolean
-): Traits => {
-  return {
-    email: anonymized ? `anonymized@${store.name}.com` : user.email,
-    createdAt: user.created_at,
-    company: {
-      name: store.name,
-    },
-  }
+  count: number
 }
 
 export const useAnalytics = () => {

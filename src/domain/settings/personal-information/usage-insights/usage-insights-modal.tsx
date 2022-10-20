@@ -1,46 +1,40 @@
-import { AnalyticsConfig, User } from "@medusajs/medusa"
+import { AnalyticsConfig } from "@medusajs/medusa"
 import React, { useEffect } from "react"
-import { Controller, useForm } from "react-hook-form"
-import Switch from "../../../../components/atoms/switch"
+import { useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
 import Modal from "../../../../components/molecules/modal"
+import AnalyticsConfigForm, {
+  AnalyticsConfigFormType,
+} from "../../../../components/organisms/analytics-config-form"
 import useNotification from "../../../../hooks/use-notification"
 import { useAdminUpdateAnalyticsConfig } from "../../../../services/analytics"
 import { getErrorMessage } from "../../../../utils/error-messages"
 
 type Props = {
-  user: Omit<User, "password_hash">
   config: AnalyticsConfig
   open: boolean
   onClose: () => void
 }
 
-type UsageInsightsFormType = {
-  opt_out: boolean
-  anonymize: boolean
-}
-
-const UsageInsightsModal = ({ user, config, open, onClose }: Props) => {
+const UsageInsightsModal = ({ config, open, onClose }: Props) => {
   const { mutate, isLoading: isSubmitting } = useAdminUpdateAnalyticsConfig()
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<UsageInsightsFormType>({
+  const form = useForm<AnalyticsConfigFormType>({
     defaultValues: {
       opt_out: config.opt_out,
       anonymize: config.anonymize,
     },
   })
 
+  const { handleSubmit, reset } = form
+
   useEffect(() => {
     reset({
       opt_out: config.opt_out,
       anonymize: config.anonymize,
     })
-  }, [open, user])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, config])
 
   const notification = useNotification()
 
@@ -67,50 +61,7 @@ const UsageInsightsModal = ({ user, config, open, onClose }: Props) => {
       </Modal.Header>
       <Modal.Body>
         <Modal.Content>
-          <div className="flex flex-col gap-y-xlarge">
-            <div className="flex items-start">
-              <div className="flex flex-col flex-1 gap-y-2xsmall">
-                <h2 className="inter-base-semibold">Anonymize my usage data</h2>
-                <p className="inter-base-regular text-grey-50">
-                  We collect data only for product improvements. Read how we do
-                  it in the{" "}
-                  <a
-                    href="https://docs.medusajs.com/usage"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    className="text-violet-60"
-                  >
-                    docs
-                  </a>
-                  .
-                </p>
-              </div>
-              <Controller
-                name="anonymize"
-                control={control}
-                render={({ field: { value, onChange } }) => {
-                  return <Switch checked={value} onCheckedChange={onChange} />
-                }}
-              />
-            </div>
-            <div className="flex items-start">
-              <div className="flex flex-col flex-1 gap-y-2xsmall">
-                <h2 className="inter-base-semibold">
-                  Opt out of sharing usage data
-                </h2>
-                <p className="inter-base-regular text-grey-50">
-                  You can opt out of usage data collection at any time.
-                </p>
-              </div>
-              <Controller
-                name="opt_out"
-                control={control}
-                render={({ field: { value, onChange } }) => {
-                  return <Switch checked={value} onCheckedChange={onChange} />
-                }}
-              />
-            </div>
-          </div>
+          <AnalyticsConfigForm form={form} />
         </Modal.Content>
         <Modal.Footer className="border-t border-grey-20 pt-base">
           <div className="flex items-center justify-end gap-x-xsmall w-full">

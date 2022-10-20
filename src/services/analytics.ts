@@ -1,10 +1,7 @@
 import { AdminAnalyticsConfigRes } from "@medusajs/medusa"
-import { AnalyticsBrowser } from "@segment/analytics-next"
 import axios from "axios"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useFeatureFlag } from "../context/feature-flag"
-
-export const analytics = AnalyticsBrowser.load({ writeKey: "YOUR_WRITE_KEY" })
 
 let baseURL = "http://localhost:9000"
 

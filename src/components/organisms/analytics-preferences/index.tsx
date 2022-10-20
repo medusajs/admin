@@ -1,48 +1,25 @@
-import { User } from "@medusajs/medusa"
-import clsx from "clsx"
-import React, { useEffect } from "react"
-import { Controller, useForm, useWatch } from "react-hook-form"
-import { useQueryClient } from "react-query"
+import React from "react"
+import { useForm } from "react-hook-form"
 import useNotification from "../../../hooks/use-notification"
 import { useAdminCreateAnalyticsConfig } from "../../../services/analytics"
 import { getErrorMessage } from "../../../utils/error-messages"
-import Switch from "../../atoms/switch"
 import Button from "../../fundamentals/button"
 import FocusModal from "../../molecules/modal/focus-modal"
+import AnalyticsConfigForm, {
+  AnalyticsConfigFormType,
+} from "../analytics-config-form"
 
-type AnalyticsPreferencesFormType = {
-  anonymize: boolean
-  opt_out: boolean
-}
-
-type Props = {
-  user: Omit<User, "password_hash">
-}
-
-const AnalyticsPreferencesModal = ({ user }: Props) => {
+const AnalyticsPreferencesModal = () => {
   const notification = useNotification()
   const { mutate, isLoading } = useAdminCreateAnalyticsConfig()
-  const { control, setValue, handleSubmit } = useForm<
-    AnalyticsPreferencesFormType
-  >({
+  const form = useForm<AnalyticsConfigFormType>({
     defaultValues: {
       anonymize: false,
       opt_out: false,
     },
   })
 
-  const watchOptOut = useWatch({
-    control,
-    name: "opt_out",
-  })
-
-  useEffect(() => {
-    setValue("anonymize", false)
-  }, [watchOptOut])
-
-  const queryClient = useQueryClient()
-
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = form.handleSubmit((data) => {
     mutate(data, {
       onSuccess: () => {
         notification(
@@ -50,7 +27,6 @@ const AnalyticsPreferencesModal = ({ user }: Props) => {
           "Your preferences was successfully updated",
           "success"
         )
-        queryClient.invalidateQueries("analytics")
       },
       onError: (err) => {
         notification("Error", getErrorMessage(err), "error")
@@ -83,54 +59,8 @@ const AnalyticsPreferencesModal = ({ user }: Props) => {
               </a>
               .
             </p>
-            <div className="flex flex-col gap-y-xlarge mt-xlarge">
-              <div
-                className={clsx("flex items-start transition-opacity", {
-                  "opacity-50": watchOptOut,
-                })}
-              >
-                <div className="flex flex-col flex-1 gap-y-2xsmall">
-                  <h2 className="inter-base-semibold">
-                    Anonymize my usage data
-                  </h2>
-                  <p className="inter-base-regular text-grey-50">
-                    You can choose to anonymize your usage data. If this option
-                    is selected, we will not collect your personal information,
-                    including your name and email address.
-                  </p>
-                </div>
-                <Controller
-                  name="anonymize"
-                  control={control}
-                  render={({ field: { value, onChange } }) => {
-                    return (
-                      <Switch
-                        checked={value}
-                        onCheckedChange={onChange}
-                        disabled={watchOptOut}
-                      />
-                    )
-                  }}
-                />
-              </div>
-              <div className="flex items-start">
-                <div className="flex flex-col flex-1 gap-y-2xsmall">
-                  <h2 className="inter-base-semibold">
-                    Opt out of sharing my usage data
-                  </h2>
-                  <p className="inter-base-regular text-grey-50">
-                    You can always opt out of sharing your usage data at any
-                    time.
-                  </p>
-                </div>
-                <Controller
-                  name="opt_out"
-                  control={control}
-                  render={({ field: { value, onChange } }) => {
-                    return <Switch checked={value} onCheckedChange={onChange} />
-                  }}
-                />
-              </div>
+            <div className="mt-xlarge">
+              <AnalyticsConfigForm form={form} />
             </div>
             <div className="flex items-center justify-end mt-5xlarge">
               <Button

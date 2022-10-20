@@ -45,7 +45,6 @@ const UsageInsights = ({ user }: Props) => {
         <UsageInsightsModal
           open={state}
           onClose={close}
-          user={user}
           config={analytics_config}
         />
       )}

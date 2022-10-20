@@ -23,7 +23,7 @@ export const wrapPageElement = ({ element }) => {
       <CacheProvider>
         <AccountProvider>
           <FeatureFlagProvider>
-            <AnalyticsProvider>
+            <AnalyticsProvider writeKey="CgSOOuDMovQRSSTytDLqbhVs9xP0wb4U">
               <InterfaceProvider>
                 <SteppedProvider>
                   <LayeredModalProvider>

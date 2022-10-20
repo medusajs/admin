@@ -46,7 +46,7 @@ const DiscountTable: React.FC = () => {
     {
       onSuccess: ({ count }) => {
         trackNumberOfDiscounts({
-          num_discounts: count,
+          count,
         })
       },
     }

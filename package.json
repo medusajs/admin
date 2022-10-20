@@ -99,6 +99,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "gatsby-plugin-postcss": "^5.4.0",
     "postcss": "^8.4.5",
     "prettier": "2.0.5",

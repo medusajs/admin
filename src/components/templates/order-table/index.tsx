@@ -58,7 +58,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const { orders, isLoading, count } = useAdminOrders(queryObject, {
     onSuccess: ({ count }) => {
       trackNumberOfOrders({
-        num_orders: count,
+        count,
       })
     },
   })

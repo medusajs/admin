@@ -19,7 +19,7 @@ const RegionOverview = ({ id }: Props) => {
   const { trackRegions } = useAnalytics()
   const { regions, isLoading } = useAdminRegions(undefined, {
     onSuccess: ({ regions, count }) => {
-      trackRegions({ regions: regions.map((r) => r.name), num_regions: count })
+      trackRegions({ regions: regions.map((r) => r.name), count })
     },
   })
   const [selectedRegion, setSelectedRegion] = React.useState<
