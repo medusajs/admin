@@ -41,7 +41,7 @@
     "react-collapsible": "^2.8.3",
     "react-country-flag": "^3.0.2",
     "react-currency-input-field": "^3.6.4",
-    "react-datepicker": "^3.6.0",
+    "react-datepicker": "^4.8.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
