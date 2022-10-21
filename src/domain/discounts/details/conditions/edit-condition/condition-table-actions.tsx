@@ -7,11 +7,17 @@ import { LayeredModalContext } from "../../../../../components/molecules/modal/l
 import { useAddConditionsModalScreen } from "./add-conditions-screens"
 import { useEditConditionContext } from "./edit-condition-provider"
 
+type Props = {
+  numberOfSelectedRows: number
+  onDeselect: () => void
+  onRemove: () => void
+}
+
 const ExistingConditionTableActions = ({
   numberOfSelectedRows,
   onDeselect,
   onRemove,
-}: any) => {
+}: Props) => {
   const { condition } = useEditConditionContext()
 
   const addConditionsModalScreen = useAddConditionsModalScreen(condition)

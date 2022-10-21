@@ -80,8 +80,6 @@ export const SelectableTable = <
     useSelectionColumn
   )
 
-  console.log(selectedIds)
-
   useEffect(() => {
     if (onChange) {
       onChange(Object.keys(table.state.selectedRowIds))

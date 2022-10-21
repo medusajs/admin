@@ -117,7 +117,7 @@ export const useEditConditionContext = () => {
   const context = useContext(EditConditionContext)
   if (context === null) {
     throw new Error(
-      "useEditConditionContext must be used within a EditConditionProvider"
+      "useEditConditionContext must be used within an EditConditionProvider"
     )
   }
   return context

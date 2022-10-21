@@ -4,30 +4,25 @@ import Modal from "../../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
 } from "../../../../../components/molecules/modal/layered-modal"
-import { getTitle } from "../../../new/discount-form/edit-conditions-modal"
 import { EditConditionProvider } from "./edit-condition-provider"
 import ProductConditionsTable from "./add-condition-resources/products/product-conditions-table"
 import ProductCollectionsConditionsTable from "./add-condition-resources/collections/collections-conditions-table"
 import ProductTypesConditionsTable from "./add-condition-resources/product-types/type-conditions-table"
 import ProductTagsConditionsTable from "./add-condition-resources/tags/tags-conditions-table"
 import CustomerGroupsConditionsTable from "./add-condition-resources/customer-groups/customer-groups-conditions-table"
+import { Discount, DiscountCondition } from "@medusajs/medusa"
+import { capitalize } from "lodash"
+import { getTitle } from "../../../utils"
 
 type Props = {
   open: boolean
-  condition?: any
-  discount?: any
+  condition: DiscountCondition
+  discount: Discount
   onClose: () => void
 }
 
-/**
- * Re-usable Sales Channels Modal, used for adding and editing sales channels both when creating a new product and editing an existing product.
- */
 const EditConditionsModal = ({ open, condition, discount, onClose }: Props) => {
   const context = useContext(LayeredModalContext)
-
-  if (!condition) {
-    return null
-  }
 
   const renderModalContext = () => {
     switch (condition.type) {
@@ -54,10 +49,10 @@ const EditConditionsModal = ({ open, condition, discount, onClose }: Props) => {
         <Modal.Body>
           <Modal.Header handleClose={onClose}>
             <h1 className="inter-xlarge-semibold">
-              Existing {getTitle(condition?.type)} in Condition
+              Edit {capitalize(getTitle(condition?.type))} in Discount Condition
             </h1>
           </Modal.Header>
-          {condition && renderModalContext()}
+          {renderModalContext()}
           <Modal.Footer>
             <div className="flex items-center justify-end w-full">
               <Button
