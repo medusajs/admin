@@ -39,7 +39,7 @@
     "randomatic": "^3.1.1",
     "react": "^18.2.0",
     "react-collapsible": "^2.8.3",
-    "react-country-flag": "^2.3.0",
+    "react-country-flag": "^3.0.2",
     "react-currency-input-field": "^3.6.4",
     "react-datepicker": "^3.6.0",
     "react-dnd": "^16.0.1",
