@@ -22,13 +22,8 @@ type Props = {
 }
 
 const VariantsTable: React.FC<Props> = (props) => {
-  const {
-    isReplace,
-    regionId,
-    currencyCode,
-    customerId,
-    setSelectedVariants,
-  } = props
+  const { isReplace, regionId, currencyCode, customerId, setSelectedVariants } =
+    props
 
   const [query, setQuery] = useState("")
   const [offset, setOffset] = useState(0)
@@ -203,9 +198,9 @@ const VariantsTable: React.FC<Props> = (props) => {
                   onChange={
                     isReplace
                       ? () => {
-                          toggleAllRowsSelected(false)
-                          toggleRowSelected(row.id, !currentState.checked)
-                        }
+                        toggleAllRowsSelected(false)
+                        toggleRowSelected(row.id, !currentState.checked)
+                      }
                       : selectProps.onChange
                   }
                 />
@@ -271,7 +266,14 @@ const VariantsTable: React.FC<Props> = (props) => {
 
         <Table.Body {...table.getTableBodyProps()}>
           {isLoading ? (
-            <Spinner size="large" />
+            <Table.Row>
+              <Table.Cell
+                colSpan={columns.length}
+                className="flex items-center justify-center"
+              >
+                <Spinner size="large" />
+              </Table.Cell>
+            </Table.Row>
           ) : (
             table.rows.map((row) => {
               table.prepareRow(row)

@@ -155,7 +155,14 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({
       >
         <Table.Body {...getTableBodyProps()}>
           {isLoading ? (
-            <Spinner size="large" />
+            <Table.Row>
+              <Table.Cell
+                colSpan={columns.length}
+                className="flex items-center justify-center"
+              >
+                <Spinner size="large" />
+              </Table.Cell>
+            </Table.Row>
           ) : (
             rows.map((row, i) => {
               prepareRow(row)

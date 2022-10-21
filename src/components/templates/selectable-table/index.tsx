@@ -133,9 +133,14 @@ export const SelectableTable = <
 
         <Table.Body {...table.getTableBodyProps()}>
           {isLoading ? (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-              <Spinner size="large" variant="secondary" />
-            </div>
+            <Table.Row>
+              <Table.Cell
+                colSpan={columns.length}
+                className="flex items-center justify-center"
+              >
+                <Spinner size="large" variant="secondary" />
+              </Table.Cell>
+            </Table.Row>
           ) : (
             table.rows.map((row) => {
               table.prepareRow(row)
