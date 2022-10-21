@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import ChevronRightIcon from "../../fundamentals/icons/chevron-right-icon"
 
 type SettingsCardProps = {
-  icon: React.FC
+  icon: React.ReactNode
   heading: string
   description: string
   to?: string

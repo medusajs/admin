@@ -4,7 +4,7 @@ import Sidebar from "../organisms/sidebar"
 import Topbar from "../organisms/topbar"
 import { PollingProvider } from "../../context/polling"
 
-const Layout: React.FC = ({ children }) => {
+const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <div className="flex w-full h-screen inter-base-regular text-grey-90">
       <Toaster

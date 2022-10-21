@@ -122,6 +122,7 @@ const Field: React.FC<FieldProps> = ({ field, updateKey, updateValue }) => {
 
 type DeletableElementProps = {
   onDelete: () => void
+  children?: React.ReactNode
 }
 
 const DeletableElement: React.FC<DeletableElementProps> = ({
