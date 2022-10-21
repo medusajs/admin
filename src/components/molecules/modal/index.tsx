@@ -69,13 +69,13 @@ const Modal: ModalType = ({
   const portalRef = React.useRef(null)
   return (
     <Dialog.Root open={open} onOpenChange={handleClose}>
-      <Portal.UnstablePortal ref={portalRef}>
+      <Portal.Portal ref={portalRef}>
         <ModalContext.Provider value={{ portalRef, isLargeModal }}>
           <Overlay>
             <Content>{children}</Content>
           </Overlay>
         </ModalContext.Provider>
-      </Portal.UnstablePortal>
+      </Portal.Portal>
     </Dialog.Root>
   )
 }
