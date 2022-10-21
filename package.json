@@ -48,7 +48,7 @@
     "react-helmet": "^6.0.0",
     "react-highlight-words": "^0.18.0",
     "react-hook-form": "^7.31.3",
-    "react-hot-toast": "^2.2.0",
+    "react-hot-toast": "^2.4.0",
     "react-hotkeys-hook": "^2.4.0",
     "react-json-view": "^1.19.1",
     "react-jwt": "^1.1.4",
