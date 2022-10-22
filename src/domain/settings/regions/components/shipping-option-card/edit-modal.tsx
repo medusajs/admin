@@ -111,6 +111,11 @@ const getDefaultValues = (option: ShippingOption): ShippingOptionFormType => {
   return {
     store_option: option.admin_only ? false : true,
     name: option.name,
+    price_type: {
+      label:
+        option.price_type === "flat_rate" ? "Flat rate" : "Calculated Price",
+      value: option.price_type,
+    },
     fulfillment_provider: null,
     shipping_profile: null,
     requirements: {

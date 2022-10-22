@@ -6,7 +6,7 @@ import Switch from "../../../../../components/atoms/switch"
 import InputHeader from "../../../../../components/fundamentals/input-header"
 import InputField from "../../../../../components/molecules/input"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
-import { Option } from "../../../../../types/shared"
+import { Option, ShippingOptionPriceType } from "../../../../../types/shared"
 import FormValidator from "../../../../../utils/form-validator"
 import PriceFormInput from "../../../../products/components/prices-form/price-form-input"
 import { useShippingOptionFormData } from "./use-shipping-option-form-data"
@@ -19,6 +19,7 @@ type Requirement = {
 export type ShippingOptionFormType = {
   store_option: boolean
   name: string | null
+  price_type: ShippingOptionPriceType | null
   amount: number | null
   shipping_profile: Option | null
   fulfillment_provider: Option | null
@@ -37,6 +38,7 @@ type Props = {
 const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
   const {
     register,
+    watch,
     control,
     formState: { errors },
   } = form
@@ -79,34 +81,66 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
             })}
             errors={errors}
           />
-          <Controller
-            control={control}
-            name="amount"
-            rules={{
-              min: FormValidator.nonNegativeNumberRule("Price"),
-              max: FormValidator.maxInteger("Price", region.currency_code),
-            }}
-            render={({ field: { value, onChange } }) => {
-              return (
-                <div>
-                  <InputHeader
-                    label="Price"
-                    className="mb-xsmall"
-                    tooltip={
-                      <IncludesTaxTooltip includesTax={region.includes_tax} />
-                    }
-                  />
-                  <PriceFormInput
-                    amount={value || undefined}
-                    onChange={onChange}
-                    name="amount"
-                    currencyCode={region.currency_code}
+          <div className="flex items-center gap-large">
+            <Controller
+              control={control}
+              name="price_type"
+              render={({ field }) => {
+                return (
+                  <NextSelect
+                    label="Price Type"
+                    required
+                    options={[
+                      {
+                        label: "Flat Rate",
+                        value: "flat_rate",
+                      },
+                      {
+                        label: "Calculated",
+                        value: "calculated",
+                      },
+                    ]}
+                    placeholder="Choose a price type"
+                    {...field}
                     errors={errors}
                   />
-                </div>
-              )
-            }}
-          />
+                )
+              }}
+            />
+            {watch("price_type")?.value === "flat_rate" && (
+              <Controller
+                control={control}
+                name="amount"
+                rules={{
+                  min: FormValidator.nonNegativeNumberRule("Price"),
+                  max: FormValidator.maxInteger("Price", region.currency_code),
+                }}
+                render={({ field: { value, onChange } }) => {
+                  return (
+                    <div>
+                      <InputHeader
+                        label="Price"
+                        className="mb-2xsmall"
+                        tooltip={
+                          <IncludesTaxTooltip
+                            includesTax={region.includes_tax}
+                          />
+                        }
+                      />
+                      <PriceFormInput
+                        amount={value || undefined}
+                        onChange={onChange}
+                        name="amount"
+                        currencyCode={region.currency_code}
+                        errors={errors}
+                      />
+                    </div>
+                  )
+                }}
+              />
+            )}
+          </div>
+
           {!isEdit && (
             <>
               <Controller

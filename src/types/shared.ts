@@ -32,6 +32,11 @@ export type Role = {
   label: string
 }
 
+export type ShippingOptionPriceType = {
+  value: "flat_rate" | "calculated"
+  label: string
+}
+
 export type FormImage = {
   url: string
   name?: string
