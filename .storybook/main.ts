@@ -1,22 +1,10 @@
-import { type StorybookViteConfig } from '@storybook/builder-vite';
+import { type StorybookViteConfig } from "@storybook/builder-vite"
 import { mergeConfig, type UserConfig } from "vite"
-import viteConfig from '../vite.config'
+import viteConfig from "../vite.config"
 
 const config: StorybookViteConfig = {
   stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  addons: [
-    "@storybook/addon-docs",
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
-    {
-      name: "@storybook/addon-postcss",
-      options: {
-        postcssLoaderOptions: {
-          implementation: require("postcss"),
-        },
-      },
-    },
-  ],
+  addons: ["@storybook/addon-essentials"],
   framework: "@storybook/react",
   core: {
     builder: "@storybook/builder-vite",
