@@ -1,4 +1,5 @@
 import { Toaster } from "react-hot-toast"
+import { MemoryRouter } from "react-router"
 import "../src/assets/styles/global.css"
 
 export const parameters = {
@@ -14,7 +15,7 @@ export const parameters = {
 export const decorators = [
   (Story) => {
     return (
-      <>
+      <MemoryRouter>
         <Story />
         <Toaster
           containerStyle={{
@@ -24,7 +25,7 @@ export const decorators = [
             right: 24,
           }}
         />
-      </>
+      </MemoryRouter>
     )
   },
 ]
