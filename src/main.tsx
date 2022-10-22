@@ -2,7 +2,6 @@ import React from "react"
 import type { PropsWithChildren } from "react"
 import { createRoot } from "react-dom/client"
 import { MedusaProvider } from "medusa-react"
-import { ToastProvider } from "react-toast-notifications"
 import "./assets/styles/global.css"
 import { AccountProvider } from "./context/account"
 import { CacheProvider } from "./context/cache"
@@ -26,11 +25,9 @@ const Page = ({ children }: PropsWithChildren) => {
         <AccountProvider>
           <FeatureFlagProvider>
             <InterfaceProvider>
-              <ToastProvider autoDismiss={true} placement="bottom-left">
-                <SteppedProvider>
-                  <LayeredModalProvider>{children}</LayeredModalProvider>
-                </SteppedProvider>
-              </ToastProvider>
+              <SteppedProvider>
+                <LayeredModalProvider>{children}</LayeredModalProvider>
+              </SteppedProvider>
             </InterfaceProvider>
           </FeatureFlagProvider>
         </AccountProvider>
