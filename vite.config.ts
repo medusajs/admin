@@ -1,4 +1,5 @@
 import path from "path"
+import { env } from "process"
 import dns from "dns"
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
@@ -6,6 +7,13 @@ import react from "@vitejs/plugin-react"
 // Resolve localhost for Node v16 and older.
 // @see https://vitejs.dev/config/server-options.html#server-host.
 dns.setDefaultResultOrder("verbatim")
+
+// Expose Medusa URL to client.
+env.VITE_MEDUSA_BACKEND_URL = env.MEDUSA_BACKEND_URL ?? ""
+
+// Backwards-compat with Gatsby.
+env.VITE_MEDUSA_BACKEND_URL ||=
+  env.GATSBY_MEDUSA_BACKEND_URL ?? env.GATSBY_STORE_URL ?? ""
 
 export default defineConfig({
   plugins: [react()],
