@@ -1,5 +1,10 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import React, { useContext, useState } from "react"
+import React, {
+  type MouseEvent,
+  useCallback,
+  useContext,
+  useState,
+} from "react"
 import { useNavigate } from "react-router-dom"
 import { AccountContext } from "../../../context/account"
 import { PollingContext } from "../../../context/polling"
@@ -34,6 +39,14 @@ const Topbar: React.FC = () => {
     navigate("/login")
   }
 
+  const onNotificationBellClick = useCallback(
+    (event: MouseEvent) => {
+      event.stopPropagation()
+      toggleActivityDrawer()
+    },
+    [toggleActivityDrawer]
+  )
+
   return (
     <div className="w-full min-h-topbar max-h-topbar pr-xlarge pl-base bg-grey-0 border-b border-grey-20 sticky top-0 flex items-center justify-between z-40">
       <SearchBar />
@@ -48,7 +61,7 @@ const Topbar: React.FC = () => {
         </Button>
 
         <NotificationBell
-          onClick={toggleActivityDrawer}
+          onClick={onNotificationBellClick}
           variant={"ghost"}
           hasNotifications={!!batchJobs?.length}
         />
