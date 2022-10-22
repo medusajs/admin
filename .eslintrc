@@ -23,6 +23,7 @@
     "camelcase": "off",
     "no-invalid-this": "off",
     "no-unused-vars": "off",
+    "spaced-comment": ["error", "always", { "markers": ["/"] }],
     "react/prop-types": "off", // Disable prop-types as we use TypeScript for type checking
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
