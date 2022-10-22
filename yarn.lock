@@ -2279,7 +2279,7 @@
   resolved "https://registry.yarnpkg.com/@sideway/pinpoint/-/pinpoint-2.0.0.tgz#cff8ffadc372ad29fd3f78277aeb29e632cc70df"
   integrity sha512-RNiOoTPkptFtSVzQevY/yWtZwf/RxyVnPy/OcA9HBM3MlGDnBEYL5B41H0MTn0Uec8Hi+2qUtTfG2WWZBmMejQ==
 
-"@storybook/addon-actions@6.5.12", "@storybook/addon-actions@^6.5.5":
+"@storybook/addon-actions@6.5.12":
   version "6.5.12"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-6.5.12.tgz#9d2bf3bffa41cf4f92c7220c8f6e3a3f5da55019"
   integrity sha512-yEbyKjBsSRUr61SlS+SOTqQwdumO8Wa3GoHO3AfmvoKfzdGrM7w8G5Zs9Iev16khWg/7bQvoH3KZsg/hQuKnNg==
