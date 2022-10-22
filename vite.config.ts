@@ -8,13 +8,6 @@ import react from "@vitejs/plugin-react"
 // @see https://vitejs.dev/config/server-options.html#server-host.
 dns.setDefaultResultOrder("verbatim")
 
-// Expose Medusa URL to client.
-env.VITE_MEDUSA_BACKEND_URL = env.MEDUSA_BACKEND_URL ?? ""
-
-// Backwards-compat with Gatsby.
-env.VITE_MEDUSA_BACKEND_URL ||=
-  env.GATSBY_MEDUSA_BACKEND_URL ?? env.GATSBY_STORE_URL ?? ""
-
 export default defineConfig({
   plugins: [react()],
   // Backwards-compat with Gatsby.
@@ -34,6 +27,13 @@ export default defineConfig({
   define: {
     "process.env": process.env,
     "window.global": typeof window !== "undefined" ? window : {},
+    __MEDUSA_BACKEND_URL__: JSON.stringify(
+      env.MEDUSA_BACKEND_URL ||
+        // Backwards-compat with Gatsby.
+        env.GATSBY_MEDUSA_BACKEND_URL ||
+        env.GATSBY_STORE_URL ||
+        ""
+    ),
   },
   optimizeDeps: {
     exclude: ["typeorm", "medusa-interfaces"],
