@@ -25,8 +25,6 @@ export default defineConfig({
     },
   },
   define: {
-    "process.env": process.env,
-    "window.global": typeof window !== "undefined" ? window : {},
     __MEDUSA_BACKEND_URL__: JSON.stringify(
       env.MEDUSA_BACKEND_URL ||
         // Backwards-compat with Gatsby.
