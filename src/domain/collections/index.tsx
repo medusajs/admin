@@ -1,6 +1,6 @@
 import { Router } from "@reach/router"
 import React from "react"
-import CollectionDetails from "./details"
+import CollectionDetails from "./edit"
 
 const Collections = () => {
   return (
