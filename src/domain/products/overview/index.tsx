@@ -1,4 +1,4 @@
-import { navigate, RouteComponentProps, useLocation } from "@reach/router"
+import { RouteComponentProps, useLocation } from "@reach/router"
 import { useAdminCreateBatchJob, useAdminCreateCollection } from "medusa-react"
 import React, { useContext, useEffect, useState } from "react"
 import Fade from "../../../components/atoms/fade-wrapper"
@@ -18,6 +18,7 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import ImportProducts from "../batch-job/import"
 import NewProduct from "../new"
 import { PollingContext } from "../../../context/polling"
+import { navigate } from "gatsby"
 
 const VIEWS = ["products", "collections"]
 

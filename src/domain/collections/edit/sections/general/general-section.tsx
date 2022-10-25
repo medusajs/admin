@@ -24,7 +24,7 @@ const GeneralSection = ({ location }) => {
 
   const handleDelete = () => {
     deleteCollection.mutate(undefined, {
-      onSuccess: () => navigate(`/a/collections`),
+      onSuccess: () => navigate(`/a/products?view=collections`),
     })
   }
 
