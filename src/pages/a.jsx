@@ -16,6 +16,7 @@ import Orders from "../domain/orders"
 import DraftOrders from "../domain/orders/draft-orders"
 import Pricing from "../domain/pricing"
 import ProductsRoute from "../domain/products"
+import InventoryRoute from "../domain/inventory"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
 
@@ -32,16 +33,17 @@ const Routes = () => {
       <Layout>
         <SEO title="Medusa" />
         <Router basepath="a" className="h-full">
-          <Oauth path="oauth/:app_name"/>
-          <ProductsRoute path="products/*"/>
-          <Collections path="collections/*"/>
+          <Oauth path="oauth/:app_name" />
+          <ProductsRoute path="products/*" />
+          <InventoryRoute path="inventory/*" />
+          <Collections path="collections/*" />
           <GiftCards path="gift-cards/*" />
           <Orders path="orders/*" />
           <DraftOrders path="draft-orders/*" />
-          <Discounts path="discounts/*"/>
-          <Customers path="customers/*"/>
-          <Pricing path="pricing/*"/>
-          <Settings path="settings/*"/>
+          <Discounts path="discounts/*" />
+          <Customers path="customers/*" />
+          <Pricing path="pricing/*" />
+          <Settings path="settings/*" />
           <SalesChannels path="sales-channels/*" />
         </Router>
       </Layout>

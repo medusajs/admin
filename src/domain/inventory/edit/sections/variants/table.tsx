@@ -3,7 +3,6 @@ import React, { useMemo } from "react"
 import { Column, useTable } from "react-table"
 import DuplicateIcon from "../../../../../components/fundamentals/icons/duplicate-icon"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
-import BuildingsIcon from "../../../../../components/fundamentals/icons/buildings-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
 import Actionables from "../../../../../components/molecules/actionables"
 import Table from "../../../../../components/molecules/table"
@@ -14,7 +13,6 @@ type Props = {
     deleteVariant: (variantId: string) => void
     duplicateVariant: (variant: ProductVariant) => void
     updateVariant: (variant: ProductVariant) => void
-    updateVariantInventory: (variant: ProductVariant) => void
   }
 }
 
@@ -95,12 +93,7 @@ const VariantsTable = ({ variants, actions }: Props) => {
     },
   })
 
-  const {
-    deleteVariant,
-    updateVariantInventory,
-    updateVariant,
-    duplicateVariant,
-  } = actions
+  const { deleteVariant, updateVariant, duplicateVariant } = actions
 
   return (
     <Table {...getTableProps()} className="table-fixed">
@@ -136,11 +129,6 @@ const VariantsTable = ({ variants, actions }: Props) => {
                         label: "Edit Variant",
                         icon: <EditIcon size="20" />,
                         onClick: () => updateVariant(row.original),
-                      },
-                      {
-                        label: "Manage inventory",
-                        icon: <BuildingsIcon size="20" />,
-                        onClick: () => updateVariantInventory(row.original),
                       },
                       {
                         label: "Duplicate Variant",

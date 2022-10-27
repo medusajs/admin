@@ -9,7 +9,6 @@ import useToggleState from "../../../../../hooks/use-toggle-state"
 import useEditProductActions from "../../hooks/use-edit-product-actions"
 import AddVariantModal from "./add-variant-modal"
 import EditVariantModal from "./edit-variant-modal"
-import EditVariantInventoryModal from "./edit-variant-inventory-modal"
 import EditVariantsModal from "./edit-variants-modal"
 import OptionsModal from "./options-modal"
 import OptionsProvider, { useOptionsContext } from "./options-provider"
@@ -22,10 +21,6 @@ type Props = {
 const VariantsSection = ({ product }: Props) => {
   const [variantToEdit, setVariantToEdit] = useState<
     { base: ProductVariant; isDuplicate: boolean } | undefined
-  >(undefined)
-
-  const [variantInventoryToEdit, setVariantInventoryToEdit] = useState<
-    { base: ProductVariant } | undefined
   >(undefined)
 
   const {
@@ -74,10 +69,6 @@ const VariantsSection = ({ product }: Props) => {
     setVariantToEdit({ base: variant, isDuplicate: false })
   }
 
-  const handleEditVariantInventory = (variant: ProductVariant) => {
-    setVariantInventoryToEdit({ base: variant })
-  }
-
   const handleDuplicateVariant = (variant: ProductVariant) => {
     // @ts-ignore
     setVariantToEdit({ base: { ...variant, options: [] }, isDuplicate: true })
@@ -99,7 +90,6 @@ const VariantsSection = ({ product }: Props) => {
             actions={{
               deleteVariant: handleDeleteVariant,
               updateVariant: handleEditVariant,
-              updateVariantInventory: handleEditVariantInventory,
               duplicateVariant: handleDuplicateVariant,
             }}
           />
@@ -126,13 +116,6 @@ const VariantsSection = ({ product }: Props) => {
           isDuplicate={variantToEdit.isDuplicate}
           product={product}
           onClose={() => setVariantToEdit(undefined)}
-        />
-      )}
-      {variantInventoryToEdit && (
-        <EditVariantInventoryModal
-          variant={variantInventoryToEdit.base}
-          product={product}
-          onClose={() => setVariantInventoryToEdit(undefined)}
         />
       )}
     </OptionsProvider>
