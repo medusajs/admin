@@ -32,6 +32,7 @@ import extractCustomerName from "../../../utils/extract-customer-name"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
 import { DisplayTotal, FormattedAddress } from "../details/templates"
+import ConfirmationPrompt from "../../../components/organisms/confirmation-prompt"
 
 type DraftOrderDetailsProps = RouteComponentProps<{ id: string }>
 
@@ -55,6 +56,10 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
     address: Address
     type: AddressType
   }>(null)
+
+  const [showMarkAsPaidConfirmation, setShowAsPaidConfirmation] = useState(
+    false
+  )
 
   const { draft_order, isLoading } = useAdminDraftOrder(id)
   const { store, isLoading: isLoadingStore } = useAdminStore()
@@ -89,19 +94,24 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
   const PaymentActionables = () => {
     // Default label and action
     const label = "Mark as paid"
-    const action = () => {
-      markPaid.mutate(void {}, {
-        onSuccess: () =>
-          notification("Success", "Successfully mark as paid", "success"),
-        onError: (err) => notification("Error", getErrorMessage(err), "error"),
-      })
-    }
+    const action = () => setShowAsPaidConfirmation(true)
 
     return (
       <Button variant="secondary" size="small" onClick={action}>
         {label}
       </Button>
     )
+  }
+
+  const onMarkAsPaidConfirm = async () => {
+    try {
+      await markPaid.mutateAsync()
+      notification("Success", "Successfully mark as paid", "success")
+    } catch (err) {
+      notification("Error", getErrorMessage(err), "error")
+    } finally {
+      setShowAsPaidConfirmation(false)
+    }
   }
 
   const handleDeleteOrder = async () => {
@@ -491,6 +501,17 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
           } has been removed`}
           onDelete={() => deletePromptData.onDelete()}
           handleClose={() => setDeletePromptData(initDeleteState)}
+        />
+      )}
+
+      {showMarkAsPaidConfirmation && (
+        <ConfirmationPrompt
+          heading="Mark as paid"
+          text="This will create an order. Mark this as paid if you received the payment."
+          confirmText="Mark paid"
+          cancelText="Cancel"
+          handleClose={() => setShowAsPaidConfirmation(false)}
+          onConfirm={onMarkAsPaidConfirm}
         />
       )}
     </div>
