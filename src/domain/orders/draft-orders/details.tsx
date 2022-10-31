@@ -104,7 +104,6 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
   }
 
   const onMarkAsPaidConfirm = async () => {
-    setShowAsPaidConfirmation(true)
     try {
       await markPaid.mutateAsync()
       notification("Success", "Successfully mark as paid", "success")
