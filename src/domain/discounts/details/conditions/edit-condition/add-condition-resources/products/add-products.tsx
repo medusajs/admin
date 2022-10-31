@@ -37,7 +37,7 @@ const AddProductConditionsScreen = () => {
             immediateSearchFocus: true,
             searchPlaceholder: "Search...",
           }}
-          totalCount={count!}
+          totalCount={count ?? 0}
           selectedIds={selectedResources}
           data={products || []}
           columns={columns}

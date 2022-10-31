@@ -43,7 +43,7 @@ const AddTypesConditionsScreen = () => {
             searchPlaceholder: "Search...",
           }}
           resourceName="product_types"
-          totalCount={count!}
+          totalCount={count ?? 0}
           selectedIds={selectedResources}
           data={product_types || []}
           columns={columns}

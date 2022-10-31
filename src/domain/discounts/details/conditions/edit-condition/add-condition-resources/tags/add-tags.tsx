@@ -39,7 +39,7 @@ const AddTagsConditionsScreen = () => {
             searchPlaceholder: "Search...",
           }}
           resourceName="product_tags"
-          totalCount={count!}
+          totalCount={count ?? 0}
           selectedIds={selectedResources}
           data={product_tags || []}
           columns={TagColumns}

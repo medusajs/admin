@@ -66,7 +66,7 @@ const ProductTagsConditionsTable = () => {
           ),
         }}
         resourceName="product_tags"
-        totalCount={count!}
+        totalCount={count ?? 0}
         selectedIds={selectedRowIds}
         data={product_tags || []}
         columns={TagColumns}

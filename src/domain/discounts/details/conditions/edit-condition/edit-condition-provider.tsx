@@ -60,7 +60,7 @@ export const EditConditionProvider = ({
             "The resources were successfully added",
             "success"
           )
-          onSuccessCallback && onSuccessCallback()
+          onSuccessCallback?.()
         },
         onError: () =>
           notification("Error", "Failed to add resources", "error"),
