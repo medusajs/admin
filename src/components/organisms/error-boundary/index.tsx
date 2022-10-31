@@ -127,31 +127,42 @@ const shouldTrackEvent = async (error: Error) => {
 }
 
 const errorMessage = (status?: number) => {
+  const defaultMessage = "An unknown error occured"
+
   if (!status) {
-    return "An unknown error occured"
+    return defaultMessage
   }
 
-  return {
+  const message = {
+    400: "Bad request",
     401: "You are not logged in",
     403: "You do not have permission perform this action",
     404: "Page was not found",
     500: "An unknown server error occured",
     503: "Server is currently unavailable",
   }[status]
+
+  return message || defaultMessage
 }
 
 const errorDescription = (status?: number) => {
+  const defaultDescription =
+    "An error occurred with unspecified causes, this is most likely due to a techinical issue on our end. Please try refreshing the page. If the issue keeps happening, contact your administrator."
+
   if (!status) {
-    return "An error occurred with unspecified causes, this is most likely due to a techinical issue on our end. Please try refreshing the page. If the issue keeps happening, contact your administrator."
+    return defaultDescription
   }
 
-  return {
+  const description = {
+    400: "The request was malformed, fix your request and please try again.",
     401: "You are not logged in, please log in to proceed.",
     403: "You do not have permission perform this action, if you think this is a mistake, contact your administrator.",
     404: "The page you have requested was not found, please check the URL and try again.",
     500: "The server was not able to handle your request, this is mostly likely due to a techinical issue on our end. Please try again. If the issue keeps happening, contact your administrator.",
     503: "The server is temporarily unavailable, and your request could not be processed. Please try again later. If the issue keeps happening, contact your administrator.",
   }[status]
+
+  return description || defaultDescription
 }
 
 const getTrackingInfo = (error: Error, errorInfo: ErrorInfo) => {
