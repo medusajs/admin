@@ -3,10 +3,10 @@ import {
   useAdminNotes,
   useAdminNotifications,
   useAdminOrder,
+  useAdminOrderEdits,
 } from "medusa-react"
 import { useContext, useMemo } from "react"
 import { FeatureFlagContext } from "../context/feature-flag"
-import useOrdersExpandParam from "../domain/orders/details/utils/use-admin-expand-paramter"
 
 export interface TimelineEvent {
   id: string
@@ -27,7 +27,6 @@ export interface TimelineEvent {
     | "refund"
     | "exchange"
     | "exchange_fulfilled"
-    | "notification"
     | "claim"
     | "edit-created"
     | "edit-requested"
@@ -35,18 +34,20 @@ export interface TimelineEvent {
     | "edit-declined"
     | "edit-canceled"
     | "edit-confirmed"
-    | "edit-confirmed-difference-due"
+    | "refund-difference-due"
+}
+
+export interface RefundDifferenceDueEvent extends TimelineEvent {
+  currency_code: string
 }
 
 export interface OrderEditEvent extends TimelineEvent {
   edit: OrderEdit
 }
 
-export interface OrderEditDifferenceDueEvent extends OrderEditEvent {
-  currency_code: string
-}
+export interface OrderEditDifferenceDueEvent extends OrderEditEvent {}
 
-export interface OrderEditRequestedEvent extends TimelineEvent {
+export interface OrderEditRequestedEvent extends OrderEditEvent {
   email: string
 }
 
@@ -119,7 +120,7 @@ export interface ExchangeEvent extends TimelineEvent, CancelableEvent {
   fulfillmentStatus: string
   returnStatus: string
   returnId: string
-  returnItems: ReturnItem[]
+  returnItems: (ReturnItem | undefined)[]
   newItems: OrderItem[]
   exchangeCartId?: string
   raw: Swap
@@ -142,17 +143,15 @@ export interface NotificationEvent extends TimelineEvent {
   title: string
 }
 
-export const useBuildTimelime = (orderId: string) => {
-  const { orderRelations } = useOrdersExpandParam()
-
+export const useBuildTimeline = (orderId: string) => {
   const {
     order,
     isLoading: orderLoading,
     isError: orderError,
     refetch,
-  } = useAdminOrder(orderId, {
-    expand: orderRelations,
-  })
+  } = useAdminOrder(orderId, {})
+
+  const { order_edits: edits } = useAdminOrderEdits({ order_id: orderId })
 
   const {
     notes,
@@ -189,8 +188,16 @@ export const useBuildTimelime = (orderId: string) => {
 
     const events: TimelineEvent[] = []
 
+    events.push({
+      id: "refund-event",
+      time: new Date(),
+      orderId: order.id,
+      type: "refund-difference-due",
+      currency_code: order.currency_code,
+    } as RefundDifferenceDueEvent)
+
     if (isFeatureEnabled("order_editing")) {
-      for (const edit of order.edits || []) {
+      for (const edit of edits || []) {
         events.push({
           id: edit.id,
           time: edit.created_at,
@@ -206,6 +213,7 @@ export const useBuildTimelime = (orderId: string) => {
             orderId: order.id,
             type: "edit-requested",
             email: order.email,
+            edit: edit,
           } as OrderEditRequestedEvent)
 
           events.push({
@@ -240,7 +248,7 @@ export const useBuildTimelime = (orderId: string) => {
           } as OrderEditEvent)
         }
 
-        //confirmed
+        // confirmed
         if (edit.confirmed_at) {
           events.push({
             id: edit.id,
@@ -249,15 +257,6 @@ export const useBuildTimelime = (orderId: string) => {
             type: "edit-confirmed",
             edit: edit,
           } as OrderEditEvent)
-
-          events.push({
-            id: edit.id,
-            time: edit.requested_at,
-            orderId: order.id,
-            type: "edit-confirmed-difference-due",
-            edit: edit,
-            currency_code: order.currency_code,
-          } as OrderEditDifferenceDueEvent)
         }
       }
     }
@@ -515,6 +514,7 @@ export const useBuildTimelime = (orderId: string) => {
     return events
   }, [
     order,
+    edits,
     orderLoading,
     orderError,
     notes,

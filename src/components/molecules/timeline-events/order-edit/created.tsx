@@ -4,11 +4,10 @@ import {
   useAdminConfirmOrderEdit,
   useAdminDeleteOrderEdit,
   useAdminOrderEdit,
-  useAdminRequestOrderEditConfirmation,
   useAdminUser,
 } from "medusa-react"
-import React from "react"
-import { ByLine } from "."
+import React, { useContext } from "react"
+
 import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
 import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
@@ -18,6 +17,9 @@ import Button from "../../../fundamentals/button"
 import EditIcon from "../../../fundamentals/icons/edit-icon"
 import ImagePlaceholder from "../../../fundamentals/image-placeholder"
 import EventContainer from "../event-container"
+import { OrderEditContext } from "../../../../domain/orders/edit/context"
+import CopyToClipboard from "../../../atoms/copy-to-clipboard"
+import { ByLine } from "."
 
 type EditCreatedProps = {
   event: OrderEditEvent
@@ -43,9 +45,12 @@ const getInfo = (edit: OrderEdit): { type: string; user_id: string } => {
 }
 
 const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
+  const { isModalVisible, showModal, setActiveOrderEdit } = useContext(
+    OrderEditContext
+  )
   const { type, user_id } = getInfo(event.edit)
 
-  const { order_edit: orderEdit } = useAdminOrderEdit(event.edit.id)
+  const { order_edit: orderEdit, isFetching } = useAdminOrderEdit(event.edit.id)
 
   const notification = useNotification()
 
@@ -57,7 +62,6 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
 
   const deleteOrderEdit = useAdminDeleteOrderEdit(event.edit.id)
   const cancelOrderEdit = useAdminCancelOrderEdit(event.edit.id)
-  const requestOrderEdit = useAdminRequestOrderEditConfirmation(event.edit.id)
   const confirmOrderEdit = useAdminConfirmOrderEdit(event.edit.id)
 
   const onDeleteOrderEditClicked = () => {
@@ -111,15 +115,14 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
     console.log("TODO")
   }
 
-  const onRequestOrderEditClicked = () => {
-    requestOrderEdit.mutate(undefined, {
-      onSuccess: () => {
-        notification("Success", `Successfully requested Order Edit`, "success")
-      },
-      onError: (err) => {
-        notification("Error", getErrorMessage(err), "error")
-      },
-    })
+  const onContinueEdit = () => {
+    setActiveOrderEdit(orderEdit.id)
+    showModal()
+  }
+
+  // hide last created edit while editing and prevent content flashing while loading
+  if ((isModalVisible && orderEdit?.status === "created") || isFetching) {
+    return null
   }
 
   return (
@@ -142,47 +145,49 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
         {(event.edit.status === "created" ||
           event.edit.status === "requested") && (
           <div className="space-y-xsmall mt-large">
-            {type === "created" && (
-              <Button
-                className="w-full border border-grey-20"
-                size="small"
-                variant="ghost"
-                onClick={onRequestOrderEditClicked}
-              >
-                Send Confirmation-Request
-              </Button>
-            )}
-            <Button
-              className="w-full border border-grey-20"
-              size="small"
-              variant="ghost"
-              onClick={onCopyConfirmationLinkClicked}
-            >
-              Copy Confirmation-Request Link
-            </Button>
-            <Button
-              className="w-full border border-grey-20"
-              size="small"
-              variant="ghost"
-              onClick={onConfirmEditClicked}
-            >
-              Force Confirm
-            </Button>
-
             {type === "created" ? (
-              <TwoStepDelete
-                onDelete={onDeleteOrderEditClicked}
-                className="w-full border border-grey-20"
-              >
-                Delete Order Edit
-              </TwoStepDelete>
+              <>
+                <Button
+                  className="w-full border border-grey-20"
+                  size="small"
+                  variant="ghost"
+                  onClick={onContinueEdit}
+                >
+                  Continue order edit
+                </Button>
+                <TwoStepDelete
+                  onDelete={onDeleteOrderEditClicked}
+                  className="w-full border border-grey-20"
+                >
+                  Delete the order edit
+                </TwoStepDelete>
+              </>
             ) : (
-              <TwoStepDelete
-                onDelete={onCancelOrderEditClicked}
-                className="w-full border border-grey-20"
-              >
-                Cancel Order Edit
-              </TwoStepDelete>
+              <>
+                <Button
+                  className="w-full border border-grey-20"
+                  size="small"
+                  variant="ghost"
+                  onClick={onCopyConfirmationLinkClicked}
+                >
+                  Copy Confirmation-Request Link
+                </Button>
+                <Button
+                  className="w-full border border-grey-20"
+                  size="small"
+                  variant="ghost"
+                  onClick={onConfirmEditClicked}
+                >
+                  Force Confirm
+                </Button>
+
+                <TwoStepDelete
+                  onDelete={onCancelOrderEditClicked}
+                  className="w-full border border-grey-20"
+                >
+                  Cancel Order Edit
+                </TwoStepDelete>
+              </>
             )}
           </div>
         )}
@@ -235,13 +240,17 @@ const OrderEditChanges = ({ orderEdit }) => {
   )
 }
 
-type OrderEditChangeItem = {
+type OrderEditChangeItemProps = {
   change: OrderItemChange
 }
 
-const OrderEditChangeItem: React.FC<OrderEditChangeItem> = ({ change }) => {
+const OrderEditChangeItem: React.FC<OrderEditChangeItemProps> = ({
+  change,
+}) => {
   let quantity
-  if (change.type === OrderEditItemChangeType.ITEM_ADD) {
+  const isAdd = change.type === OrderEditItemChangeType.ITEM_ADD
+
+  if (isAdd) {
     quantity = (change.line_item as LineItem).quantity
   } else {
     quantity =
@@ -251,12 +260,14 @@ const OrderEditChangeItem: React.FC<OrderEditChangeItem> = ({ change }) => {
 
   quantity = Math.abs(quantity)
 
+  const lineItem = isAdd ? change.line_item : change.original_line_item
+
   return (
     <div className="flex gap-x-base mt-xsmall">
       <div>
         <div className="flex h-[40px] w-[30px] rounded-rounded overflow-hidden">
-          {change.line_item?.thumbnail ? (
-            <img src={change.line_item.thumbnail} className="object-cover" />
+          {lineItem?.thumbnail ? (
+            <img src={lineItem.thumbnail} className="object-cover" />
           ) : (
             <ImagePlaceholder />
           )}
@@ -264,15 +275,13 @@ const OrderEditChangeItem: React.FC<OrderEditChangeItem> = ({ change }) => {
       </div>
       <div className="flex flex-col">
         <span className="inter-small-semibold text-grey-90">
-          {quantity > 1 && <>{quantity}x</>} {change.line_item?.title}
-          {change.line_item?.variant?.sku && (
-            <span className="inter-small-regular text-grey-50">
-              ({change.line_item.variant?.sku})
-            </span>
+          {quantity > 1 && <>{quantity}x</>} {lineItem?.title} &nbsp;
+          {lineItem?.variant?.sku && (
+            <CopyToClipboard value={lineItem?.variant?.sku} iconSize={14} />
           )}
         </span>
         <span className="flex inter-small-regular text-grey-50">
-          {change.line_item?.variant?.options?.map((option) => option.value)}
+          {lineItem?.variant?.options?.map((option) => option.value)}
         </span>
       </div>
     </div>

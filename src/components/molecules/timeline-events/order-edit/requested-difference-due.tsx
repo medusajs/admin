@@ -1,5 +1,6 @@
 import { useAdminOrderEdit } from "medusa-react"
 import React from "react"
+
 import { OrderEditDifferenceDueEvent } from "../../../../hooks/use-build-timeline"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 import Button from "../../../fundamentals/button"
@@ -13,7 +14,7 @@ type RequestedProps = {
 const EditRequestedDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
   const { order_edit: orderEdit } = useAdminOrderEdit(event.edit.id)
 
-  if (!orderEdit || orderEdit.difference_due < 0) {
+  if (!orderEdit || orderEdit.difference_due <= 0) {
     return null
   }
 

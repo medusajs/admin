@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import { useAdminCreateNote, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
+
 import ClaimMenu from "../../../domain/orders/details/claim/create"
 import ReturnMenu from "../../../domain/orders/details/returns"
 import SwapMenu from "../../../domain/orders/details/swap/create"
@@ -17,8 +18,9 @@ import {
   RefundEvent,
   ReturnEvent,
   TimelineEvent,
-  useBuildTimelime,
+  useBuildTimeline,
   OrderEditRequestedEvent,
+  RefundDifferenceDueEvent,
   OrderEditDifferenceDueEvent,
 } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
@@ -38,7 +40,6 @@ import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
 import EditCanceled from "../../molecules/timeline-events/order-edit/canceled"
 import EditConfirmed from "../../molecules/timeline-events/order-edit/confirmed"
-import EditConfirmedDifferenceDue from "../../molecules/timeline-events/order-edit/confirmed-difference-due"
 import EditCreated from "../../molecules/timeline-events/order-edit/created"
 import EditDeclined from "../../molecules/timeline-events/order-edit/declined"
 import EditRequested from "../../molecules/timeline-events/order-edit/requested"
@@ -46,6 +47,7 @@ import EditRequestedDifferenceDue from "../../molecules/timeline-events/order-ed
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Refund from "../../molecules/timeline-events/refund"
 import Return from "../../molecules/timeline-events/return"
+import RefundDifferenceDue from "../../molecules/timeline-events/order-edit/refund-difference-due"
 
 type TimelineProps = {
   orderId: string
@@ -54,7 +56,7 @@ type TimelineProps = {
 const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   const { orderRelations } = useOrdersExpandParam()
 
-  const { events, refetch } = useBuildTimelime(orderId)
+  const { events, refetch } = useBuildTimeline(orderId)
   const notification = useNotification()
   const createNote = useAdminCreateNote()
   const { order } = useAdminOrder(orderId, {
@@ -183,12 +185,8 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
       return <EditConfirmed event={event as OrderEditEvent} />
     case "edit-requested":
       return <EditRequested event={event as OrderEditRequestedEvent} />
-    case "edit-confirmed-difference-due":
-      return (
-        <EditConfirmedDifferenceDue
-          event={event as OrderEditDifferenceDueEvent}
-        />
-      )
+    case "refund-difference-due":
+      return <RefundDifferenceDue event={event as RefundDifferenceDueEvent} />
     case "edit-requested-difference-due":
       return (
         <EditRequestedDifferenceDue
