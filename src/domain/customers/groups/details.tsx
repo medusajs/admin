@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
 import { difference } from "lodash"
-import { navigate } from "gatsby"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
   useAdminAddCustomersToCustomerGroup,
@@ -22,6 +21,7 @@ import CustomerGroupContext, {
 } from "./context/customer-group-context"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
+import { useNavigate } from "react-router-dom"
 
 /**
  * Default filtering config for querying customer group customers list endpoint.
@@ -56,19 +56,18 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   // toggle to show/hide "edit customers" modal
   const [showCustomersModal, setShowCustomersModal] = useState(false)
 
-  const { q, queryObject, paginate, setQuery } = useQueryFilters(
-    defaultQueryProps
-  )
+  const { q, queryObject, paginate, setQuery } =
+    useQueryFilters(defaultQueryProps)
 
-  const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
-    groupId,
-    queryObject
-  )
+  const {
+    customers = [],
+    isLoading,
+    count,
+  } = useAdminCustomerGroupCustomers(groupId, queryObject)
 
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
-  const { mutate: removeCustomers } = useAdminRemoveCustomersFromCustomerGroup(
-    groupId
-  )
+  const { mutate: removeCustomers } =
+    useAdminRemoveCustomersFromCustomerGroup(groupId)
 
   // list of currently selected customers of a group
   const [selectedCustomerIds, setSelectedCustomerIds] = useState(
@@ -165,6 +164,8 @@ type CustomerGroupDetailsHeaderProps = {
 function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
   const { showModal } = useContext(CustomerGroupContext)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+
+  const navigate = useNavigate()
 
   const { mutate: deleteGroup } = useAdminDeleteCustomerGroup(
     props.customerGroup.id

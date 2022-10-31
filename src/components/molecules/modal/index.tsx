@@ -19,15 +19,18 @@ export type ModalProps = {
   isLargeModal?: boolean
   handleClose: () => void
   open?: boolean
+  children?: React.ReactNode
 }
 
 type ModalChildProps = {
   className?: string
   style?: React.CSSProperties
+  children?: React.ReactNode
 }
 
 type ModalHeaderProps = {
   handleClose: () => void
+  children?: React.ReactNode
 }
 
 type ModalType = React.FC<ModalProps> & {
@@ -37,7 +40,7 @@ type ModalType = React.FC<ModalProps> & {
   Content: React.FC<ModalChildProps>
 }
 
-const Overlay: React.FC = ({ children }) => {
+const Overlay: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <Dialog.Overlay className="fixed bg-grey-90/40 z-50 grid top-0 left-0 right-0 bottom-0 place-items-center overflow-y-auto">
       {children}
@@ -45,7 +48,7 @@ const Overlay: React.FC = ({ children }) => {
   )
 }
 
-const Content: React.FC = ({ children }) => {
+const Content: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { height } = useWindowDimensions()
   const style = {
     maxHeight: height - 64,
@@ -69,13 +72,13 @@ const Modal: ModalType = ({
   const portalRef = React.useRef(null)
   return (
     <Dialog.Root open={open} onOpenChange={handleClose}>
-      <Portal.UnstablePortal ref={portalRef}>
+      <Portal.Portal ref={portalRef}>
         <ModalContext.Provider value={{ portalRef, isLargeModal }}>
           <Overlay>
             <Content>{children}</Content>
           </Overlay>
         </ModalContext.Provider>
-      </Portal.UnstablePortal>
+      </Portal.Portal>
     </Dialog.Root>
   )
 }

@@ -1,5 +1,5 @@
-import { action } from "@storybook/addon-actions"
 import { Toaster } from "react-hot-toast"
+import { MemoryRouter } from "react-router"
 import "../src/assets/styles/global.css"
 
 export const parameters = {
@@ -12,23 +12,10 @@ export const parameters = {
   },
 }
 
-global.___loader = {
-  enqueue: () => {},
-  hovering: () => {},
-}
-// Gatsby internal mocking to prevent unnecessary errors in storybook testing environment
-global.__PATH_PREFIX__ = ""
-global.__BASE_PATH__ = "/"
-
-// This is to utilized to override the window.___navigate method Gatsby defines and uses to report what path a Link would be taking us to if it wasn't inside a storybook
-window.___navigate = (pathname) => {
-  action("NavigateTo:")(pathname)
-}
-
 export const decorators = [
   (Story) => {
     return (
-      <>
+      <MemoryRouter>
         <Story />
         <Toaster
           containerStyle={{
@@ -38,7 +25,7 @@ export const decorators = [
             right: 24,
           }}
         />
-      </>
+      </MemoryRouter>
     )
   },
 ]

@@ -44,11 +44,11 @@ type SelectableTableProps<T extends object> = {
 
 export const SelectableTable = <
   T extends
-    | Product
-    | CustomerGroup
-    | ProductCollection
-    | ProductTag
-    | ProductType
+  | Product
+  | CustomerGroup
+  | ProductCollection
+  | ProductTag
+  | ProductType
 >({
   label,
   resourceName = "",
@@ -139,7 +139,14 @@ export const SelectableTable = <
 
         <Table.Body {...table.getTableBodyProps()}>
           {isLoading ? (
-            <Spinner size="large" />
+            <Table.Row>
+              <Table.Cell
+                colSpan={columns.length}
+                className="flex items-center justify-center"
+              >
+                <Spinner size="large" />
+              </Table.Cell>
+            </Table.Row>
           ) : (
             table.rows.map((row) => {
               table.prepareRow(row)

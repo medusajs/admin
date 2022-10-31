@@ -1,7 +1,7 @@
 import React from "react"
-import { navigate } from "gatsby"
 
 import TableViewHeader from "../../components/organisms/custom-table-header"
+import { useNavigate } from "react-router-dom"
 
 type P = {
   activeView: "customers" | "groups"
@@ -11,6 +11,7 @@ type P = {
  * Shared header component for "customers" and "customer groups" page
  */
 function CustomersPageTableHeader(props: P) {
+  const navigate = useNavigate()
   return (
     <TableViewHeader
       setActiveView={(v) => {

@@ -9,6 +9,9 @@
   },
   "plugins": ["eslint-plugin-prettier", "react", "@typescript-eslint"],
   "extends": ["eslint:recommended", "google", "eslint-config-prettier"],
+  "globals": {
+    "__MEDUSA_BACKEND_URL__": true
+  },
   "rules": {
     "prettier/prettier": "error",
     "curly": [2, "all"],
@@ -20,6 +23,7 @@
     "camelcase": "off",
     "no-invalid-this": "off",
     "no-unused-vars": "off",
+    "spaced-comment": ["error", "always", { "markers": ["/"] }],
     "react/prop-types": "off", // Disable prop-types as we use TypeScript for type checking
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",

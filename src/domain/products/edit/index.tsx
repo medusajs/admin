@@ -1,8 +1,8 @@
 import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import { useAdminProduct } from "medusa-react"
 import React from "react"
 import ReactJson from "react-json-view"
+import { useNavigate } from "react-router-dom"
 import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import Section from "../../../components/organisms/section"
@@ -19,6 +19,7 @@ interface EditProps extends RouteComponentProps {
 }
 
 const Edit = ({ id }: EditProps) => {
+  const navigate = useNavigate()
   const { product, status, error } = useAdminProduct(id || "")
 
   if (error) {

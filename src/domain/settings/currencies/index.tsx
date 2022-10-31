@@ -1,8 +1,8 @@
 import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import { useAdminStore } from "medusa-react"
 import React from "react"
 import ReactJson from "react-json-view"
+import { useNavigate } from "react-router-dom"
 import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import Tooltip from "../../../components/atoms/tooltip"
@@ -14,6 +14,7 @@ import DefaultStoreCurrency from "./components/default-store-currency"
 import StoreCurrencies from "./components/store-currencies"
 
 const CurrencySettings = (_props: RouteComponentProps) => {
+  const navigate = useNavigate()
   const { store, status, error } = useAdminStore()
 
   if (error) {

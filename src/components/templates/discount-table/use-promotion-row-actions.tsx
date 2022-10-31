@@ -1,5 +1,4 @@
 import React from "react"
-import { navigate } from "gatsby"
 import { useAdminDeleteDiscount, useAdminUpdateDiscount } from "medusa-react"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
@@ -10,8 +9,10 @@ import TrashIcon from "../../fundamentals/icons/trash-icon"
 import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
 import useCopyPromotion from "./use-copy-promotion"
+import { useNavigate } from "react-router-dom"
 
 const usePromotionActions = (promotion) => {
+  const navigate = useNavigate()
   const notification = useNotification()
   const dialog = useImperativeDialog()
 
@@ -54,8 +55,7 @@ const usePromotionActions = (promotion) => {
               onSuccess: () => {
                 notification(
                   "Success",
-                  `Successfully ${
-                    promotion.is_disabled ? "published" : "unpublished"
+                  `Successfully ${promotion.is_disabled ? "published" : "unpublished"
                   } discount`,
                   "success"
                 )

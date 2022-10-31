@@ -1,6 +1,6 @@
 import React from "react"
 import type { Toast } from "react-hot-toast"
-import { toast as global } from "react-hot-toast"
+import { toast as globalToast } from "react-hot-toast"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
 import CheckCircleIcon from "../../fundamentals/icons/check-circle-icon"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
@@ -24,7 +24,7 @@ const Notification: React.FC<NotificationProps> = ({
   message,
 }) => {
   const onDismiss = () => {
-    global.dismiss(toast.id)
+    globalToast.dismiss(toast.id)
   }
 
   return (

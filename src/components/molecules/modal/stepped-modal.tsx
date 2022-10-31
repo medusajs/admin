@@ -29,13 +29,13 @@ type ISteppedContext = {
 const defaultContext: ISteppedContext = {
   currentStep: 0,
   nextStepEnabled: true,
-  enableNextPage: () => {},
-  disableNextPage: () => {},
-  goToNextPage: () => {},
-  goToPreviousPage: () => {},
-  submit: () => {},
-  reset: () => {},
-  setPage: (page) => {},
+  enableNextPage: () => { },
+  disableNextPage: () => { },
+  goToNextPage: () => { },
+  goToPreviousPage: () => { },
+  submit: () => { },
+  reset: () => { },
+  setPage: (page) => { },
 }
 
 export const SteppedContext = React.createContext(defaultContext)
@@ -43,28 +43,22 @@ export const SteppedContext = React.createContext(defaultContext)
 const reducer = (state, action) => {
   switch (action.type) {
     case SteppedActions.ENABLENEXTPAGE: {
-      state.nextStepEnabled = true
-      return { ...state }
+      return { ...state, nextStepEnabled: true }
     }
     case SteppedActions.DISABLENEXTPAGE: {
-      state.nextStepEnabled = false
-      return { ...state }
+      return { ...state, nextStepEnabled: false }
     }
     case SteppedActions.GOTONEXTPAGE: {
-      state.currentStep = state.currentStep + 1
-      return { ...state }
+      return { ...state, currentStep: state.currentStep + 1 }
     }
     case SteppedActions.GOTOPREVIOUSPAGE: {
-      if (state.currentStep !== 0) {
-        state.currentStep = state.currentStep - 1
-      }
-      return { ...state }
+      return { ...state, currentStep: Math.max(0, state.currentStep - 1) }
     }
     case SteppedActions.SETPAGE: {
-      if (action.payload > 0) {
-        state.currentStep = action.payload
+      return {
+        ...state,
+        currentStep: action.payload > 0 ? action.payload : state.currentStep,
       }
-      return { ...state }
     }
     case SteppedActions.SUBMIT: {
       return { ...state }
@@ -156,9 +150,8 @@ const SteppedModal: React.FC<SteppedProps> = ({
               (lastScreenIsSummary &&
                 context.currentStep !== steps.length - 1 && (
                   <div className="flex items-center">
-                    <span className="text-grey-50 inter-small-regular w-[70px] mr-4">{`Step ${
-                      context.currentStep + 1
-                    } of ${steps.length}`}</span>
+                    <span className="text-grey-50 inter-small-regular w-[70px] mr-4">{`Step ${context.currentStep + 1
+                      } of ${steps.length}`}</span>
                     {steps.map((_, i) => (
                       <span
                         key={i}

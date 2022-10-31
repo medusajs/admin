@@ -1,7 +1,7 @@
 import { Region } from "@medusajs/medusa"
-import { navigate } from "gatsby"
 import { useAdminDeleteRegion } from "medusa-react"
 import React from "react"
+import { useNavigate } from "react-router-dom"
 import Tooltip from "../../../../../components/atoms/tooltip"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon"
@@ -22,6 +22,7 @@ type Props = {
 const GeneralSection = ({ region }: Props) => {
   const { state, toggle, close } = useToggleState()
   const { mutate } = useAdminDeleteRegion(region.id)
+  const navigate = useNavigate()
   const notification = useNotification()
   const dialog = useImperativeDialog()
 

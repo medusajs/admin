@@ -1,11 +1,11 @@
 import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import {
   useAdminCollection,
   useAdminDeleteCollection,
   useAdminUpdateCollection,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
@@ -30,6 +30,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showAddProducts, setShowAddProducts] = useState(false)
+  const navigate = useNavigate()
   const notification = useNotification()
   const [updates, setUpdates] = useState(0)
 

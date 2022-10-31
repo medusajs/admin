@@ -1,6 +1,6 @@
-import { navigate } from "gatsby"
 import { useAdminRegions } from "medusa-react"
 import React, { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import Fade from "../../../../components/atoms/fade-wrapper"
 import Button from "../../../../components/fundamentals/button"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
@@ -15,6 +15,7 @@ type Props = {
 }
 
 const RegionOverview = ({ id }: Props) => {
+  const navigate = useNavigate()
   const { regions, isLoading } = useAdminRegions()
   const [selectedRegion, setSelectedRegion] = React.useState<
     string | undefined

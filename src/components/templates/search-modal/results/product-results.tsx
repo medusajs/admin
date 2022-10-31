@@ -1,9 +1,9 @@
 import clsx from "clsx"
-import { Link } from "gatsby"
 import React from "react"
 import SectionCollapsible from "../section-collapsible"
 import { useAdminProducts } from "medusa-react"
 import useKeyboardNavigationList from "../use-keyboard-navigation-list"
+import { Link } from "react-router-dom"
 
 type ProductResultsProps = {
   products: ReturnType<typeof useAdminProducts>["products"]

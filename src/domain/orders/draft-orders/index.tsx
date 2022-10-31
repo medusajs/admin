@@ -1,6 +1,6 @@
 import { RouteComponentProps, Router } from "@reach/router"
-import { navigate } from "gatsby"
 import React, { useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../../components/organisms/body-card"
@@ -13,6 +13,8 @@ import DraftOrderDetails from "./details"
 const VIEWS = ["orders", "drafts"]
 
 const DraftOrderIndex: React.FC<RouteComponentProps> = () => {
+  const navigate = useNavigate()
+
   const view = "drafts"
   const [showNewOrder, setShowNewOrder] = useState(false)
 

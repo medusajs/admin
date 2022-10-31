@@ -1,23 +1,11 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import Picker, { SKIN_TONE_NEUTRAL } from "emoji-picker-react"
+import Picker, { EmojiStyle, SkinTones } from "emoji-picker-react"
 import React from "react"
 import Button from "../../fundamentals/button"
 import HappyIcon from "../../fundamentals/icons/happy-icon"
 
 type indexProps = {
   onEmojiClick: (emoji: string) => void
-}
-
-const groupNames = {
-  smileys_people: "Smileys & People",
-  animals_nature: "Animals & Nature",
-  food_drink: "Food & Drink",
-  travel_places: "Travel & Places",
-  activities: "Activities",
-  objects: "Objects",
-  symbols: "Symbols",
-  flags: "Flags",
-  recently_used: "Recently Used",
 }
 
 const EmojiPicker: React.FC<indexProps> = ({ onEmojiClick }) => {
@@ -39,16 +27,11 @@ const EmojiPicker: React.FC<indexProps> = ({ onEmojiClick }) => {
         className="border bg-grey-0 border-grey-20 rounded-rounded shadow-dropdown overflow-hidden min-w-[200px] z-30"
       >
         <Picker
-          onEmojiClick={(_e, data) => onEmojiClick(data.emoji)}
-          disableAutoFocus={true}
-          skinTone={SKIN_TONE_NEUTRAL}
-          groupNames={{ smileys_people: "PEOPLE" }}
-          native
-          disableSkinTonePicker={true}
-          // @ts-ignore
-          searchPlaceholder={"Search Emoji..."}
-          // @ts-ignore
-          groupNames={groupNames}
+          onEmojiClick={(emojiData) => onEmojiClick(emojiData.emoji)}
+          defaultSkinTone={SkinTones.NEUTRAL}
+          emojiStyle={EmojiStyle.NATIVE}
+          skinTonesDisabled
+          searchPlaceHolder={"Search Emoji..."}
         />
       </DropdownMenu.Content>
     </DropdownMenu.Root>

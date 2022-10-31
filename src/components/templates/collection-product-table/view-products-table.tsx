@@ -148,7 +148,11 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
           {!products?.length ? (
             <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
               {isLoading ? (
-                <Spinner size="large" variant="secondary" />
+                <Table.Row>
+                  <Table.Cell>
+                    <Spinner size="large" variant="secondary" />
+                  </Table.Cell>
+                </Table.Row>
               ) : (
                 "No products yet"
               )}
