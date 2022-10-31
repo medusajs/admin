@@ -12,7 +12,7 @@ import { DiscountRuleType } from "../../types"
 import { useDiscountForm } from "./form/discount-form-context"
 import { DiscountFormValues } from "./form/mappers"
 import { useFormActions } from "./form/use-form-actions"
-import Conditions from "./sections/conditions"
+import DiscountNewConditions from "./sections/conditions"
 import Configuration from "./sections/configuration"
 import DiscountAllocation from "./sections/discount-allocation"
 import DiscountType from "./sections/discount-type"
@@ -159,7 +159,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
                 value="conditions"
                 tooltip="Add conditions to your Discount"
               >
-                <Conditions discount={discount} />
+                <DiscountNewConditions discount={discount} />
               </Accordion.Item>
             </Accordion>
           </div>
