@@ -15,8 +15,8 @@ type ConfirmationPromptProps = {
 const ConfirmationPrompt: React.FC<ConfirmationPromptProps> = ({
   heading,
   text,
-  cancelText = "No, cancel",
-  confirmText = "Yes, remove",
+  cancelText,
+  confirmText,
   handleClose,
   onConfirm,
 }) => {
