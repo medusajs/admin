@@ -67,7 +67,7 @@ const ProductConditionsTable = () => {
             />
           ),
         }}
-        resourceName="products"
+        resourceName="Products"
         totalCount={count ?? 0}
         selectedIds={selectedResources}
         data={products || []}

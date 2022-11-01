@@ -67,7 +67,7 @@ const CustomerGroupsConditionsTable = () => {
             />
           ),
         }}
-        resourceName="customer_groups"
+        resourceName="Groups"
         totalCount={count ?? 0}
         selectedIds={selectedRowIds}
         data={customer_groups || []}
