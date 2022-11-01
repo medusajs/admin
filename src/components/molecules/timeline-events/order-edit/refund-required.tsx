@@ -1,7 +1,7 @@
-import { useAdminOrder } from "medusa-react"
+import { useAdminOrder, useAdminOrderEdits } from "medusa-react"
 import React, { useState } from "react"
 
-import { RefundDifferenceDueEvent } from "../../../../hooks/use-build-timeline"
+import { RefundRequiredEvent } from "../../../../hooks/use-build-timeline"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 import Button from "../../../fundamentals/button"
 import AlertIcon from "../../../fundamentals/icons/alert-icon"
@@ -9,22 +9,32 @@ import EventContainer, { EventIconColor } from "../event-container"
 import CreateRefundModal from "../../../../domain/orders/details/refund"
 
 type RequestedProps = {
-  event: RefundDifferenceDueEvent
+  event: RefundRequiredEvent
 }
 
-const RefundDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
+const RefundRequired: React.FC<RequestedProps> = ({ event }) => {
   const { order } = useAdminOrder(event.orderId)
+
+  const { order_edits: edits } = useAdminOrderEdits({ order_id: event.orderId })
+
+  const requestedEditDifferenceDue =
+    edits?.find((e) => e.status === "requested")?.difference_due || 0
 
   const [showRefundModal, setShowRefundModal] = useState(false)
 
-  if (
-    !order ||
-    (order && order.paid_total - order.refunded_total - order.total <= 0)
-  ) {
+  if (!order || !edits) {
     return null
   }
 
-  const refundableAmount = order.paid_total - order.refunded_total - order.total
+  const refundableAmount =
+    order.paid_total -
+    order.refunded_total -
+    order.total -
+    requestedEditDifferenceDue
+
+  if (refundableAmount <= 0) {
+    return null
+  }
 
   return (
     <>
@@ -60,4 +70,4 @@ const RefundDifferenceDue: React.FC<RequestedProps> = ({ event }) => {
   )
 }
 
-export default RefundDifferenceDue
+export default RefundRequired

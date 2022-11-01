@@ -30,22 +30,24 @@ export interface TimelineEvent {
     | "claim"
     | "edit-created"
     | "edit-requested"
-    | "edit-requested-difference-due"
     | "edit-declined"
     | "edit-canceled"
     | "edit-confirmed"
-    | "refund-difference-due"
+    | "payment-required"
+    | "refund-required"
 }
 
-export interface RefundDifferenceDueEvent extends TimelineEvent {
+export interface RefundRequiredEvent extends TimelineEvent {
+  currency_code: string
+}
+
+export interface PaymentRequiredEvent extends TimelineEvent {
   currency_code: string
 }
 
 export interface OrderEditEvent extends TimelineEvent {
   edit: OrderEdit
 }
-
-export interface OrderEditDifferenceDueEvent extends OrderEditEvent {}
 
 export interface OrderEditRequestedEvent extends OrderEditEvent {
   email: string
@@ -192,9 +194,17 @@ export const useBuildTimeline = (orderId: string) => {
       id: "refund-event",
       time: new Date(),
       orderId: order.id,
-      type: "refund-difference-due",
+      type: "refund-required",
       currency_code: order.currency_code,
-    } as RefundDifferenceDueEvent)
+    } as RefundRequiredEvent)
+
+    events.push({
+      id: "payment-required",
+      time: new Date(),
+      orderId: order.id,
+      type: "payment-required",
+      currency_code: order.currency_code,
+    } as PaymentRequiredEvent)
 
     if (isFeatureEnabled("order_editing")) {
       for (const edit of edits || []) {
@@ -215,15 +225,6 @@ export const useBuildTimeline = (orderId: string) => {
             email: order.email,
             edit: edit,
           } as OrderEditRequestedEvent)
-
-          events.push({
-            id: edit.id,
-            time: edit.requested_at,
-            orderId: order.id,
-            type: "edit-requested-difference-due",
-            edit: edit,
-            currency_code: order.currency_code,
-          } as OrderEditDifferenceDueEvent)
         }
 
         // // declined
