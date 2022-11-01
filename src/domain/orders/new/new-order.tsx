@@ -104,6 +104,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
           notification("Success", "Order created", "success")
           reset()
           onDismiss()
+          steppedContext.reset()
           navigate(`/a/draft-orders/${draft_order.id}`)
         },
         onError: (error) => {
