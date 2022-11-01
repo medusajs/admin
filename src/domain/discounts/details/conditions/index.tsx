@@ -65,12 +65,14 @@ const DiscountDetailsConditions: React.FC<DiscountDetailsConditionsProps> = ({
         )}
       </BodyCard>
       <AddCondition show={show} onClose={() => setShow(false)} />
-      <EditConditionsModal
-        open={!!selectedCondition}
-        condition={selectedCondition}
-        discount={discount}
-        onClose={() => deSelectCondition()}
-      />
+      {selectedCondition && (
+        <EditConditionsModal
+          open={!!selectedCondition}
+          condition={selectedCondition}
+          discount={discount}
+          onClose={() => deSelectCondition()}
+        />
+      )}
     </ConditionsProvider>
   )
 }

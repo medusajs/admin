@@ -40,6 +40,7 @@ const AddCollectionConditionsScreen = () => {
             immediateSearchFocus: true,
             searchPlaceholder: "Search...",
           }}
+          resourceName="Collections"
           totalCount={count ?? 0}
           selectedIds={selectedResources}
           data={collections || []}

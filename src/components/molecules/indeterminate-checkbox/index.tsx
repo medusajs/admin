@@ -40,7 +40,13 @@ const IndeterminateCheckbox = React.forwardRef<
   if (type === "radio") {
     return (
       <div className="items-center h-full flex">
-        <input type="radio" checked={checked} ref={innerRef} {...rest} />
+        <input
+          className={clsx({ "accent-violet-60": checked })}
+          type="radio"
+          checked={checked}
+          ref={innerRef}
+          {...rest}
+        />
       </div>
     )
   }

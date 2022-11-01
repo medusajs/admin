@@ -40,7 +40,7 @@ const AddCustomerGroupsConditionsScreen = () => {
             immediateSearchFocus: true,
             searchPlaceholder: "Search...",
           }}
-          resourceName="customer_groups"
+          resourceName="Groups"
           totalCount={count ?? 0}
           selectedIds={selectedResources}
           data={customer_groups || []}
