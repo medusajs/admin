@@ -184,13 +184,14 @@ function OrderEditModal(props: OrderEditModalProps) {
 
   const onSave = async () => {
     try {
+      await requestConfirmation()
       if (note) {
         await updateOrderEdit({ internal_note: note })
       }
-      await requestConfirmation()
+
       notification("Success", "Order edit set as requested", "success")
     } catch (e) {
-      notification("Error", "Failed to request confirmation", "success")
+      notification("Error", "Failed to request confirmation", "error")
     }
     close()
   }
