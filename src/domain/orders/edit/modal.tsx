@@ -23,27 +23,26 @@ import useNotification from "../../../hooks/use-notification"
 import { OrderEditContext } from "./context"
 
 type TotalsSectionProps = {
-  currentSubtotal: number
+  amountPaid: number
+  newTotal: number
+  differenceDue: number
   currencyCode: string
-  newSubtotal: number
 }
 
 /**
  * Totals section displaying order and order edit subtotals.
  */
 function TotalsSection(props: TotalsSectionProps) {
-  const { currencyCode, newSubtotal, currentSubtotal } = props
-
-  const differenceDue = newSubtotal - currentSubtotal
+  const { currencyCode, amountPaid, newTotal, differenceDue } = props
 
   return (
     <>
       <div className="h-px w-full bg-grey-20 mb-6" />
       <div className="flex justify-between h-[40px] mb-2">
-        <span className="text-gray-500">Current Subtotal</span>
+        <span className="text-gray-500">Amount Paid</span>
         <span className="text-gray-900">
           {formatAmountWithSymbol({
-            amount: currentSubtotal,
+            amount: amountPaid,
             currency: currencyCode,
           })}
           <span className="text-gray-400"> {currencyCode.toUpperCase()}</span>
@@ -51,10 +50,10 @@ function TotalsSection(props: TotalsSectionProps) {
       </div>
 
       <div className="flex justify-between h-[40px] mb-2">
-        <span className="text-gray-900 font-semibold">New Subtotal</span>
+        <span className="text-gray-900 font-semibold">New Total</span>
         <span className="text-2xl font-semibold">
           {formatAmountWithSymbol({
-            amount: newSubtotal,
+            amount: newTotal,
             currency: currencyCode,
           })}
         </span>
@@ -142,6 +141,8 @@ type OrderEditModalProps = {
   regionId: string
   customerId: string
   currentSubtotal: number
+  paidTotal: number
+  refundedTotal: number
 }
 
 /**
@@ -155,6 +156,8 @@ function OrderEditModal(props: OrderEditModalProps) {
     currencyCode,
     regionId,
     customerId,
+    paidTotal,
+    refundedTotal,
   } = props
 
   const notification = useNotification()
@@ -316,8 +319,9 @@ function OrderEditModal(props: OrderEditModalProps) {
           {showTotals && (
             <TotalsSection
               currencyCode={currencyCode}
-              currentSubtotal={currentSubtotal}
-              newSubtotal={orderEdit.subtotal}
+              amountPaid={paidTotal - refundedTotal}
+              newTotal={orderEdit.total}
+              differenceDue={orderEdit.total - paidTotal + refundedTotal}
             />
           )}
 
@@ -418,6 +422,8 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
       regionId={order.region_id}
       customerId={order.customer_id}
       currencyCode={order.currency_code}
+      paidTotal={order.paid_total}
+      refundedTotal={order.refunded_total}
     />
   )
 }
