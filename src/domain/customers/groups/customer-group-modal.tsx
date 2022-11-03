@@ -1,4 +1,8 @@
-import { CustomerGroup } from "@medusajs/medusa"
+import {
+  AdminPostCustomerGroupsGroupReq,
+  AdminPostCustomerGroupsReq,
+  CustomerGroup,
+} from "@medusajs/medusa"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 
@@ -10,7 +14,9 @@ import Metadata, { MetadataField } from "../../../components/organisms/metadata"
 type CustomerGroupModalProps = {
   handleClose: () => void
   initialData?: CustomerGroup
-  handleSubmit: (data: CustomerGroup) => void
+  handleSubmit: (
+    data: AdminPostCustomerGroupsReq | AdminPostCustomerGroupsGroupReq
+  ) => void
 }
 
 /*
@@ -46,9 +52,11 @@ function CustomerGroupModal(props: CustomerGroupModalProps) {
       }
     }
 
-    data.metadata = meta
-
-    handleSubmit(data)
+    const toSubmit = {
+      name: data.name,
+      metadata: meta,
+    }
+    handleSubmit(toSubmit)
   }
 
   return (
