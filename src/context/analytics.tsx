@@ -66,14 +66,14 @@ const AnalyticsProvider = ({ writeKey, children }: Props) => {
   }, [config, writeKey, isEnabled])
 
   useEffect(() => {
-    if (!analytics || !config) {
+    if (!analytics || !config || !user || !store) {
       return
     }
 
-    if (user) {
-      analytics.identify(user.id)
-    }
-  }, [config, analytics, user])
+    analytics.identify(user.id, {
+      store: store.name,
+    })
+  }, [config, analytics, user, store])
 
   const askPermission = useMemo(() => {
     if (submittingConfig) {
