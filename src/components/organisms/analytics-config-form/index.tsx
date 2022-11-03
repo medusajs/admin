@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import React, { useEffect } from "react"
-import { Controller, UseFormReturn, useWatch } from "react-hook-form"
+import { Controller, useWatch } from "react-hook-form"
+import { NestedForm } from "../../../utils/nested-form"
 import Switch from "../../atoms/switch"
 
 export type AnalyticsConfigFormType = {
@@ -9,20 +10,20 @@ export type AnalyticsConfigFormType = {
 }
 
 type Props = {
-  form: UseFormReturn<AnalyticsConfigFormType>
+  form: NestedForm<AnalyticsConfigFormType>
 }
 
 const AnalyticsConfigForm = ({ form }: Props) => {
-  const { control, setValue } = form
+  const { control, setValue, path } = form
 
   const watchOptOut = useWatch({
     control,
-    name: "opt_out",
+    name: path("opt_out"),
   })
 
   useEffect(() => {
     if (watchOptOut) {
-      setValue("anonymize", false)
+      setValue(path("anonymize"), false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchOptOut])
@@ -38,12 +39,12 @@ const AnalyticsConfigForm = ({ form }: Props) => {
           <h2 className="inter-base-semibold">Anonymize my usage data</h2>
           <p className="inter-base-regular text-grey-50">
             You can choose to anonymize your usage data. If this option is
-            selected, we will not collect your personal information, including
+            selected, we will not collect your personal information, such as
             your name and email address.
           </p>
         </div>
         <Controller
-          name="anonymize"
+          name={path("anonymize")}
           control={control}
           render={({ field: { value, onChange } }) => {
             return (
@@ -66,7 +67,7 @@ const AnalyticsConfigForm = ({ form }: Props) => {
           </p>
         </div>
         <Controller
-          name="opt_out"
+          name={path("opt_out")}
           control={control}
           render={({ field: { value, onChange } }) => {
             return <Switch checked={value} onCheckedChange={onChange} />

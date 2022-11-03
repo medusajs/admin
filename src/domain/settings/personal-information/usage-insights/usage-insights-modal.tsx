@@ -9,6 +9,7 @@ import AnalyticsConfigForm, {
 import useNotification from "../../../../hooks/use-notification"
 import { useAdminUpdateAnalyticsConfig } from "../../../../services/analytics"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import { nestedForm } from "../../../../utils/nested-form"
 
 type Props = {
   config: AnalyticsConfig
@@ -61,7 +62,7 @@ const UsageInsightsModal = ({ config, open, onClose }: Props) => {
       </Modal.Header>
       <Modal.Body>
         <Modal.Content>
-          <AnalyticsConfigForm form={form} />
+          <AnalyticsConfigForm form={nestedForm(form)} />
         </Modal.Content>
         <Modal.Footer className="border-t border-grey-20 pt-base">
           <div className="flex items-center justify-end gap-x-xsmall w-full">

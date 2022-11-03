@@ -1,9 +1,7 @@
-import { AnalyticsBrowser } from "@segment/analytics-next"
 import { AxiosError } from "axios"
 import { navigate } from "gatsby"
 import React, { ErrorInfo } from "react"
-import { getAnalyticsConfig } from "../../../services/analytics"
-import { WRITE_KEY } from "../../constants/analytics"
+import { analytics, getAnalyticsConfig } from "../../../services/analytics"
 import { IS_PROD } from "../../constants/is-prod"
 import Button from "../../fundamentals/button"
 
@@ -16,10 +14,6 @@ type State = {
 type Props = {
   children?: React.ReactNode
 }
-
-export const analytics = AnalyticsBrowser.load({
-  writeKey: WRITE_KEY,
-})
 
 class ErrorBoundary extends React.Component<Props, State> {
   public state: State = {

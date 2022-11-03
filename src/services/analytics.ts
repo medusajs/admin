@@ -1,6 +1,8 @@
 import { AdminAnalyticsConfigRes } from "@medusajs/medusa"
+import { AnalyticsBrowser } from "@segment/analytics-next"
 import axios from "axios"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { WRITE_KEY } from "../components/constants/analytics"
 import { useFeatureFlag } from "../context/feature-flag"
 
 let baseURL = "http://localhost:9000"
@@ -22,15 +24,19 @@ const client = axios.create({
   withCredentials: true,
 })
 
+// Analytics instance used for tracking one-off events, such as errors and the initial permission request
+export const analytics = AnalyticsBrowser.load({
+  writeKey: WRITE_KEY,
+})
+
 /**
  * Fetches the analytics config for the current user.
  */
-export const getAnalyticsConfig = async (): Promise<
-  AdminAnalyticsConfigRes
-> => {
-  const { data } = await client.get("/")
-  return data
-}
+export const getAnalyticsConfig =
+  async (): Promise<AdminAnalyticsConfigRes> => {
+    const { data } = await client.get("/")
+    return data
+  }
 
 type CreateConfigPayload = {
   opt_out: boolean
