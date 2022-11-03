@@ -2,10 +2,8 @@ import { RouteComponentProps } from "@reach/router"
 import { navigate } from "gatsby"
 import { useAdminProduct } from "medusa-react"
 import React from "react"
-import ReactJson from "react-json-view"
 import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
-import Section from "../../../components/organisms/section"
 import { getErrorStatus } from "../../../utils/get-error-status"
 import AttributesSection from "./sections/attributes"
 import GeneralSection from "./sections/general"
@@ -29,26 +27,15 @@ const Edit = ({ id }: EditProps) => {
     if (errorStatus) {
       message = errorStatus.message
 
+      // If the product is not found, redirect to the 404 page
       if (errorStatus.status === 404) {
         navigate("/404")
         return null
       }
     }
 
-    // temp needs design
-    return (
-      <Section title="Error">
-        <p className="inter-base-regular">{message}</p>
-
-        <div className="mt-base bg-grey-5 rounded-rounded px-base py-xsmall">
-          <ReactJson
-            name={"Stack Trace"}
-            collapsed={true}
-            src={JSON.parse(JSON.stringify(error))}
-          />
-        </div>
-      </Section>
-    )
+    // Let the error boundary handle the error
+    throw error
   }
 
   if (status === "loading" || !product) {

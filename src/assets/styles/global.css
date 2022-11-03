@@ -233,6 +233,10 @@
     @apply w-min py-0.5 px-2 rounded-rounded inter-small-semibold;
   }
 
+  .badge-disabled {
+    @apply bg-grey-50 bg-opacity-10 text-grey-50;
+  }
+
   .badge-primary {
     @apply bg-violet-60 bg-opacity-10 text-violet-60;
   }

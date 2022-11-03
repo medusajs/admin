@@ -5,6 +5,7 @@ import { useAdminOrders } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
+import { useAnalytics } from "../../../context/analytics"
 import { FeatureFlagContext } from "../../../context/feature-flag"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
@@ -24,6 +25,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const location = useLocation()
 
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
+  const { trackNumberOfOrders } = useAnalytics()
 
   let hiddenColumns = ["sales_channel"]
   if (isFeatureEnabled("sales_channels")) {
@@ -53,7 +55,13 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const [query, setQuery] = useState(filtersOnLoad?.query)
   const [numPages, setNumPages] = useState(0)
 
-  const { orders, isLoading, count } = useAdminOrders(queryObject)
+  const { orders, isLoading, count } = useAdminOrders(queryObject, {
+    onSuccess: ({ count }) => {
+      trackNumberOfOrders({
+        count,
+      })
+    },
+  })
 
   useEffect(() => {
     const controlledPageCount = Math.ceil(count! / queryObject.limit)

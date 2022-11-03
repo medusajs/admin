@@ -4,6 +4,7 @@ import { useAdminDiscounts } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
+import { useAnalytics } from "../../../context/analytics"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
 import DiscountFilters from "../discount-filter-dropdown"
@@ -31,14 +32,25 @@ const DiscountTable: React.FC = () => {
     representationObject,
   } = usePromotionFilters(location.search, defaultQueryProps)
 
+  const { trackNumberOfDiscounts } = useAnalytics()
+
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const { discounts, isLoading, count } = useAdminDiscounts({
-    is_dynamic: false,
-    expand: "rule,rule.conditions,rule.conditions.products",
-    ...queryObject,
-  })
+  const { discounts, isLoading, count } = useAdminDiscounts(
+    {
+      is_dynamic: false,
+      expand: "rule,rule.conditions,rule.conditions.products",
+      ...queryObject,
+    },
+    {
+      onSuccess: ({ count }) => {
+        trackNumberOfDiscounts({
+          count,
+        })
+      },
+    }
+  )
 
   const [query, setQuery] = useState("")
   const [numPages, setNumPages] = useState(0)

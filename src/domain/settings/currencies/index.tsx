@@ -8,13 +8,21 @@ import Spinner from "../../../components/atoms/spinner"
 import Tooltip from "../../../components/atoms/tooltip"
 import FeatureToggle from "../../../components/fundamentals/feature-toggle"
 import Section from "../../../components/organisms/section"
+import { useAnalytics } from "../../../context/analytics"
 import { getErrorStatus } from "../../../utils/get-error-status"
 import CurrencyTaxSetting from "./components/currency-tax-setting"
 import DefaultStoreCurrency from "./components/default-store-currency"
 import StoreCurrencies from "./components/store-currencies"
 
 const CurrencySettings = (_props: RouteComponentProps) => {
-  const { store, status, error } = useAdminStore()
+  const { trackCurrencies } = useAnalytics()
+  const { store, status, error } = useAdminStore({
+    onSuccess: (data) => {
+      trackCurrencies({
+        used_currencies: data.store.currencies.map((c) => c.code),
+      })
+    },
+  })
 
   if (error) {
     let message = "An unknown error occurred"
