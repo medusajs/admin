@@ -80,6 +80,8 @@ const PricesForm = ({ form }: Props) => {
         })
       }
     })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [regions, store, fields])
 
   // Ensure that prices are up to date with their respective tax inclusion setting
@@ -120,6 +122,8 @@ const PricesForm = ({ form }: Props) => {
         })
       }
     })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [regions, store])
 
   const priceObj = useMemo(() => {
@@ -147,7 +151,7 @@ const PricesForm = ({ form }: Props) => {
     })
 
     return obj
-  }, [fields])
+  }, [fields, regions])
 
   return (
     <div>
