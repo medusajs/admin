@@ -48,9 +48,10 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
   const { isModalVisible, showModal, setActiveOrderEdit } = useContext(
     OrderEditContext
   )
-  const { type, user_id } = getInfo(event.edit)
 
   const { order_edit: orderEdit, isFetching } = useAdminOrderEdit(event.edit.id)
+
+  const { type, user_id } = getInfo(orderEdit || event.edit)
 
   const notification = useNotification()
 
@@ -134,16 +135,16 @@ const EditCreated: React.FC<EditCreatedProps> = ({ event }) => {
         isFirst={event.first}
         midNode={<ByLine user={user} />}
       >
-        {event.edit.internal_note && (
+        {orderEdit.internal_note && (
           <div className="px-base py-small mt-base mb-large rounded-large bg-grey-10 inter-base-regular text-grey-90">
-            {event.edit.internal_note}
+            {orderEdit.internal_note}
           </div>
         )}
         <div>
           <OrderEditChanges orderEdit={orderEdit} />
         </div>
-        {(event.edit.status === "created" ||
-          event.edit.status === "requested") && (
+        {(orderEdit.status === "created" ||
+          orderEdit.status === "requested") && (
           <div className="space-y-xsmall mt-large">
             {type === "created" ? (
               <>
