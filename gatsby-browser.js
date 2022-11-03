@@ -2,6 +2,7 @@ import { MedusaProvider } from "medusa-react"
 import React from "react"
 import "./src/assets/styles/emoji-picker.css"
 import "./src/assets/styles/global.css"
+import { WRITE_KEY } from "./src/components/constants/analytics"
 import { LayeredModalProvider } from "./src/components/molecules/modal/layered-modal"
 import { SteppedProvider } from "./src/components/molecules/modal/stepped-modal"
 import ErrorBoundary from "./src/components/organisms/error-boundary"
@@ -23,7 +24,7 @@ export const wrapPageElement = ({ element }) => {
       <CacheProvider>
         <AccountProvider>
           <FeatureFlagProvider>
-            <AnalyticsProvider writeKey="CgSOOuDMovQRSSTytDLqbhVs9xP0wb4U">
+            <AnalyticsProvider writeKey={WRITE_KEY}>
               <InterfaceProvider>
                 <SteppedProvider>
                   <LayeredModalProvider>

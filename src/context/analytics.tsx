@@ -43,7 +43,7 @@ const AnalyticsProvider = ({ writeKey, children }: Props) => {
   const { analytics_config: config, isLoading } = useAdminAnalyticsConfig()
 
   const { user } = useAdminGetSession()
-  const { users: users } = useAdminUsers()
+  const { users } = useAdminUsers()
   const { store } = useAdminStore()
 
   const { isFeatureEnabled } = useFeatureFlag()
@@ -91,6 +91,7 @@ const AnalyticsProvider = ({ writeKey, children }: Props) => {
   const track = useCallback(
     (event: Event, properties?: Record<string, unknown>) => {
       if (!analytics) {
+        console.log("not tacking")
         // If analytics is not initialized, then we return early
         return
       }
