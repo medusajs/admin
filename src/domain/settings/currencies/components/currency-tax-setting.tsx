@@ -1,7 +1,8 @@
 import { Currency } from "@medusajs/medusa"
-import { useAdminUpdateCurrency } from "medusa-react"
+import { useAdminUpdateCurrency, adminStoreKeys } from "medusa-react"
 import React, { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
+import { useQueryClient } from "react-query"
 import Switch from "../../../../components/atoms/switch"
 import CoinsIcon from "../../../../components/fundamentals/icons/coins-icon"
 import useNotification from "../../../../hooks/use-notification"
@@ -17,6 +18,7 @@ type Props = {
 }
 
 const CurrencyTaxSetting = ({ currency, isDefault }: Props) => {
+  const queryClient = useQueryClient()
   const { mutate } = useAdminUpdateCurrency(currency.code)
   const { handleSubmit, control, reset } = useForm<CurrencyTaxSettingFormType>({
     defaultValues: {
@@ -36,6 +38,9 @@ const CurrencyTaxSetting = ({ currency, isDefault }: Props) => {
     mutate(data, {
       onSuccess: () => {
         notification("Success", "Successfully updated currency", "success")
+
+        // When we update a currency, we need to invalidate the store in order for this change to be reflected across admin
+        queryClient.invalidateQueries(adminStoreKeys.all)
       },
       onError: (error) => {
         notification("Error", getErrorMessage(error), "error")
