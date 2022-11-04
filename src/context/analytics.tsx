@@ -7,9 +7,9 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useState,
 } from "react"
 import Fade from "../components/atoms/fade-wrapper"
-import { IS_PROD } from "../components/constants/is-prod"
 import AnalyticsPreferencesModal from "../components/organisms/analytics-preferences"
 import { useDebounce } from "../hooks/use-debounce"
 import { useAdminAnalyticsConfig } from "../services/analytics"
@@ -35,11 +35,13 @@ type AnalyticsContextType = {
   trackNumberOfDiscounts: (properties: TrackCountPayload) => void
   trackNumberOfProducts: (properties: TrackCountPayload) => void
   trackRegions: (properties: TrackRegionsPayload) => void
+  setSubmittingConfig: (status: boolean) => void
 }
 
 const AnalyticsContext = createContext<AnalyticsContextType | null>(null)
 
 const AnalyticsProvider = ({ writeKey, children }: Props) => {
+  const [submittingConfig, setSubmittingConfig] = useState(false)
   const { analytics_config: config, isLoading } = useAdminAnalyticsConfig()
 
   const { user } = useAdminGetSession()
@@ -52,7 +54,7 @@ const AnalyticsProvider = ({ writeKey, children }: Props) => {
   }, [isFeatureEnabled])
 
   const analytics = useMemo(() => {
-    if (!config || !isEnabled || !IS_PROD) {
+    if (!config || !isEnabled) {
       return null // Don't initialize analytics if not enabled or the user's preferences are not loaded yet
     }
 
@@ -64,24 +66,26 @@ const AnalyticsProvider = ({ writeKey, children }: Props) => {
   }, [config, writeKey, isEnabled])
 
   useEffect(() => {
-    if (!analytics || !config) {
+    if (!analytics || !config || !user || !store) {
       return
     }
 
-    if (user) {
-      analytics.identify(user.id, {
-        email: config.anonymize ? "anonymized" : user.email,
-      })
-    }
-  }, [config, analytics, user])
+    analytics.identify(user.id, {
+      store: store.name,
+    })
+  }, [config, analytics, user, store])
 
   const askPermission = useMemo(() => {
-    if (!isEnabled) {
+    if (submittingConfig) {
+      return true
+    }
+
+    if (!isEnabled || !user) {
       return false // Don't ask for permission if feature is not enabled
     }
 
     return !config && !isLoading
-  }, [config, isLoading, isEnabled])
+  }, [config, isLoading, isEnabled, user, submittingConfig])
 
   /**
    * Ensure that the focus modal is animated smoothly.
@@ -91,7 +95,6 @@ const AnalyticsProvider = ({ writeKey, children }: Props) => {
   const track = useCallback(
     (event: Event, properties?: Record<string, unknown>) => {
       if (!analytics) {
-        console.log("not tacking")
         // If analytics is not initialized, then we return early
         return
       }
@@ -172,9 +175,10 @@ const AnalyticsProvider = ({ writeKey, children }: Props) => {
         trackNumberOfOrders,
         trackNumberOfProducts,
         trackNumberOfDiscounts,
+        setSubmittingConfig,
       }}
     >
-      {user && askPermission && (
+      {askPermission && (
         <Fade isVisible={animateIn} isFullScreen={true}>
           <AnalyticsPreferencesModal />
         </Fade>
