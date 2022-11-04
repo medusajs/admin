@@ -1,11 +1,10 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 
 import { SalesChannel } from "@medusajs/medusa"
 import {
   useAdminDeleteSalesChannel,
-  useAdminProducts,
   useAdminSalesChannels,
   useAdminStore,
   useAdminUpdateSalesChannel,
@@ -13,7 +12,9 @@ import {
 
 import EditSalesChannel from "../form/edit-sales-channel"
 import AddSalesChannelModal from "../form/add-sales-channel"
-import Actionables from "../../../components/molecules/actionables"
+import Actionables, {
+  ActionType,
+} from "../../../components/molecules/actionables"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
@@ -234,13 +235,20 @@ type SalesChannelDetailsHeaderProps = {
   openUpdateModal: () => void
   resetDetails: () => void
   showProductsAdd: () => void
+  isDefault: boolean
 }
 
 /**
  * Sales channels details header.
  */
 function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
-  const { salesChannel, openUpdateModal, resetDetails, showProductsAdd } = props
+  const {
+    isDefault,
+    salesChannel,
+    openUpdateModal,
+    resetDetails,
+    showProductsAdd,
+  } = props
 
   const { mutate: deleteSalesChannel } = useAdminDeleteSalesChannel(
     salesChannel.id
@@ -252,24 +260,31 @@ function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
 
   const [showDelete, setShowDelete] = useState(false)
 
-  const actions = [
-    {
-      label: "Edit general info",
-      icon: <EditIcon size="20" />,
-      onClick: openUpdateModal,
-    },
-    {
-      label: "Add products",
-      icon: <PlusIcon />,
-      onClick: () => showProductsAdd(),
-    },
-    {
-      label: "Delete channel",
-      icon: <TrashIcon size={20} />,
-      variant: "danger",
-      onClick: () => setShowDelete(true),
-    },
-  ]
+  const actions = useMemo(() => {
+    const _actions: ActionType[] = [
+      {
+        label: "Edit general info",
+        icon: <EditIcon size="20" />,
+        onClick: openUpdateModal,
+      },
+      {
+        label: "Add products",
+        icon: <PlusIcon />,
+        onClick: () => showProductsAdd(),
+      },
+    ]
+
+    if (!isDefault) {
+      _actions.push({
+        label: "Delete channel",
+        icon: <TrashIcon size={20} />,
+        variant: "danger",
+        onClick: () => setShowDelete(true),
+      })
+    }
+
+    return _actions
+  }, [openUpdateModal])
 
   return (
     <div className="flex justify-between items-center">
@@ -308,13 +323,14 @@ function SalesChannelDetailsHeader(props: SalesChannelDetailsHeaderProps) {
 type SalesChannelDetailsProps = {
   salesChannel: SalesChannel
   resetDetails: () => void
+  isDefault: boolean
 }
 
 /**
  * Sales channels details container.
  */
 function SalesChannelDetails(props: SalesChannelDetailsProps) {
-  const { resetDetails, salesChannel } = props
+  const { resetDetails, salesChannel, isDefault } = props
 
   const [showUpdateModal, openUpdateModal, closeUpdateModal] = useToggleState(
     false
@@ -326,6 +342,7 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
   return (
     <div className="col-span-2 rounded-rounded border bg-grey-0 border-grey-20 px-8 py-6 h-[968px]">
       <SalesChannelDetailsHeader
+        isDefault={isDefault}
         resetDetails={resetDetails}
         salesChannel={salesChannel}
         openUpdateModal={openUpdateModal}
@@ -455,6 +472,9 @@ function Details(props: DetailsProps) {
         />
         {activeSalesChannel && (
           <SalesChannelDetails
+            isDefault={
+              activeSalesChannel.id === store?.default_sales_channel_id
+            }
             salesChannel={
               sales_channels.find((sc) => sc.id === activeSalesChannel.id)!
             }
