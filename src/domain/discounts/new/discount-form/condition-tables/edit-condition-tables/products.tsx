@@ -41,8 +41,6 @@ const EditProductConditionSelector = ({ onClose }) => {
 
   const columns = useProductColumns()
 
-  useEffect(() => console.log(params.queryObject), [params.queryObject])
-
   return (
     <>
       <Modal.Content>

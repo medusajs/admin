@@ -46,8 +46,6 @@ const DetailsProductConditionSelector = ({
     )
   }
 
-  useEffect(() => console.log(params.queryObject), [params.queryObject])
-
   const columns = useProductColumns()
 
   return (

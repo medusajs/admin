@@ -127,12 +127,6 @@ const Template: ComponentStory<typeof TableContainer> = (args) => {
     }
   }
 
-  useEffect(() => console.log(canNextPage, canPreviousPage, nextPage), [
-    canNextPage,
-    canPreviousPage,
-    nextPage,
-  ])
-
   return (
     <div>
       <div>
