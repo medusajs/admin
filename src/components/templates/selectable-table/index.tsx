@@ -3,9 +3,9 @@ import {
   Product,
   ProductCollection,
   ProductTag,
+  ProductType,
 } from "@medusajs/medusa"
-import { debounce } from "lodash"
-import React, { useEffect } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import {
   Column,
   HeaderGroup,
@@ -15,6 +15,7 @@ import {
   useSortBy,
   useTable,
 } from "react-table"
+import { useDebounce } from "../../../hooks/use-debounce"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import Table, { TableProps } from "../../molecules/table"
@@ -25,7 +26,10 @@ type SelectableTableProps<T extends object> = {
   label?: string
   isLoading?: boolean
   totalCount: number
-  options: Omit<TableProps, "filteringOptions"> & {
+  options: Omit<
+    TableProps,
+    "filteringOptions" | "searchValue" | "handleSearch"
+  > & {
     filters?: Pick<TableProps, "filteringOptions">
   }
   data?: T[]
@@ -38,8 +42,17 @@ type SelectableTableProps<T extends object> = {
   }) => React.ReactElement
 } & ReturnType<typeof useQueryFilters>
 
+let a: Omit<TableProps, "filteringOptions"> & {
+  filters?: Pick<TableProps, "filteringOptions">
+}
+
 export const SelectableTable = <
-  T extends Product | CustomerGroup | ProductCollection | ProductTag
+  T extends
+    | Product
+    | CustomerGroup
+    | ProductCollection
+    | ProductTag
+    | ProductType
 >({
   label,
   resourceName = "",
@@ -56,10 +69,12 @@ export const SelectableTable = <
   queryObject,
   paginate,
 }: SelectableTableProps<T>) => {
+  const memoizedData = useMemo(() => data || [], [data])
+
   const table = useTable<T>(
     {
       columns,
-      data: data || [],
+      data: memoizedData,
       manualPagination: true,
       initialState: {
         pageIndex: queryObject.offset / queryObject.limit,
@@ -104,15 +119,24 @@ export const SelectableTable = <
     table.previousPage()
   }
 
-  const handleSearch = (text: string) => {
-    setQuery(text)
+  const handleSearch = useCallback(
+    (text: string) => {
+      setQuery(text)
 
-    if (text) {
-      table.gotoPage(0)
-    }
-  }
+      if (text) {
+        table.gotoPage(0)
+      }
+    },
+    [setQuery, table]
+  )
 
-  const debouncedSearch = React.useMemo(() => debounce(handleSearch, 300), [])
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const debouncedSearch = useDebounce(searchQuery, 500)
+
+  useEffect(() => {
+    handleSearch(debouncedSearch)
+  }, [debouncedSearch])
 
   return (
     <div>
@@ -137,8 +161,8 @@ export const SelectableTable = <
         <Table
           {...options}
           {...table.getTableProps()}
-          handleSearch={options.enableSearch ? debouncedSearch : undefined}
-          searchValue={options.searchValue}
+          handleSearch={options.enableSearch ? setSearchQuery : undefined}
+          searchValue={searchQuery}
           className="relative"
         >
           {renderHeaderGroup && (

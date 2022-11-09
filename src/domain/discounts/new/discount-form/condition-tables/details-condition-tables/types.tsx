@@ -1,7 +1,7 @@
 import { useAdminProductTypes } from "medusa-react"
 import React, { useState } from "react"
-import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
+import { SelectableTable } from "../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import { useConditions } from "../../../../details/conditions/add-condition/conditions-provider"
 import {
@@ -10,7 +10,6 @@ import {
 } from "../../../../types"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
-import { SelectableTable } from "../shared/selectable-table"
 import { TypeRow, TypesHeader, useTypesColumns } from "../shared/types"
 import DetailsConditionFooter from "./details-condition-footer"
 
@@ -50,8 +49,6 @@ const DetailsTypeConditionSelector = ({
         <SelectableTable
           options={{
             enableSearch: true,
-            handleSearch: params.setQuery,
-            searchValue: params.queryObject.q,
             immediateSearchFocus: true,
             searchPlaceholder: "Search by type...",
           }}

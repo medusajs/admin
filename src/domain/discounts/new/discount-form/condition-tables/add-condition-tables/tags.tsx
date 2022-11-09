@@ -2,6 +2,7 @@ import { useAdminProductTags } from "medusa-react"
 import React, { useState } from "react"
 import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
+import { SelectableTable } from "../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import {
   AddConditionSelectorProps,
@@ -10,7 +11,6 @@ import {
 import { useDiscountForm } from "../../form/discount-form-context"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
-import { SelectableTable } from "../shared/selectable-table"
 import { TagColumns, TagHeader, TagRow } from "../shared/tags"
 import AddConditionFooter from "./add-condition-footer"
 
@@ -41,30 +41,24 @@ const AddTagConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
   return (
     <>
       <Modal.Content>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <ConditionOperator value={operator} onChange={setOperator} />
-            <SelectableTable
-              options={{
-                enableSearch: true,
-                immediateSearchFocus: true,
-                searchPlaceholder: "Search by tag...",
-              }}
-              resourceName="Tags"
-              totalCount={count || 0}
-              selectedIds={items.map((i) => i.id)}
-              data={product_tags}
-              columns={TagColumns}
-              isLoading={isLoading}
-              onChange={changed}
-              renderRow={TagRow}
-              renderHeaderGroup={TagHeader}
-              {...params}
-            />
-          </>
-        )}
+        <ConditionOperator value={operator} onChange={setOperator} />
+        <SelectableTable
+          options={{
+            enableSearch: true,
+            immediateSearchFocus: true,
+            searchPlaceholder: "Search by tag...",
+          }}
+          resourceName="Tags"
+          totalCount={count || 0}
+          selectedIds={items.map((i) => i.id)}
+          data={product_tags}
+          columns={TagColumns}
+          isLoading={isLoading}
+          onChange={changed}
+          renderRow={TagRow}
+          renderHeaderGroup={TagHeader}
+          {...params}
+        />
       </Modal.Content>
       <Modal.Footer>
         <AddConditionFooter

@@ -2,6 +2,7 @@ import { useAdminProducts } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
+import { SelectableTable } from "../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import { useConditions } from "../../../../details/conditions/add-condition/conditions-provider"
 import {
@@ -15,7 +16,6 @@ import {
   ProductsHeader,
   useProductColumns,
 } from "../shared/products"
-import { SelectableTable } from "../shared/selectable-table"
 import DetailsConditionFooter from "./details-condition-footer"
 
 const DetailsProductConditionSelector = ({
@@ -57,8 +57,6 @@ const DetailsProductConditionSelector = ({
             enableSearch: true,
             immediateSearchFocus: true,
             searchPlaceholder: "Search products...",
-            handleSearch: params.setQuery,
-            searchValue: params.queryObject.q,
           }}
           resourceName="Products"
           totalCount={count || 0}

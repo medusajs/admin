@@ -2,6 +2,7 @@ import { useAdminProductTypes } from "medusa-react"
 import React, { useState } from "react"
 import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
+import { SelectableTable } from "../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import {
   AddConditionSelectorProps,
@@ -10,7 +11,6 @@ import {
 import { useDiscountForm } from "../../form/discount-form-context"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
-import { SelectableTable } from "../shared/selectable-table"
 import { TypeRow, TypesHeader, useTypesColumns } from "../shared/types"
 import AddConditionFooter from "./add-condition-footer"
 
@@ -44,30 +44,24 @@ const AddTypeConditionSelector = ({ onClose }: AddConditionSelectorProps) => {
   return (
     <>
       <Modal.Content>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <ConditionOperator value={operator} onChange={setOperator} />
-            <SelectableTable
-              options={{
-                enableSearch: true,
-                immediateSearchFocus: true,
-                searchPlaceholder: "Search by type...",
-              }}
-              resourceName="Types"
-              totalCount={count || 0}
-              selectedIds={items?.map((c) => c.id)}
-              data={product_types}
-              columns={columns}
-              isLoading={isLoading}
-              onChange={changed}
-              renderRow={TypeRow}
-              renderHeaderGroup={TypesHeader}
-              {...params}
-            />
-          </>
-        )}
+        <ConditionOperator value={operator} onChange={setOperator} />
+        <SelectableTable
+          options={{
+            enableSearch: true,
+            immediateSearchFocus: true,
+            searchPlaceholder: "Search by type...",
+          }}
+          resourceName="Types"
+          totalCount={count || 0}
+          selectedIds={items?.map((c) => c.id)}
+          data={product_types}
+          columns={columns}
+          isLoading={isLoading}
+          onChange={changed}
+          renderRow={TypeRow}
+          renderHeaderGroup={TypesHeader}
+          {...params}
+        />
       </Modal.Content>
       <Modal.Footer>
         <AddConditionFooter
