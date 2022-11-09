@@ -23,13 +23,18 @@ const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
     customer_id: customerId,
     offset: 0,
     limit: 14,
-    expand: "items",
+    // commented-out until "items" is supported as an expandable field
+    // expand: "items",
   })
 
   const containerRef = useRef(null)
   const width = useObserveWidth(containerRef)
 
   const calcImages = (order) => {
+    if (!order.items) {
+      return { visibleImages: [], remainder: 0 }
+    }
+
     const columns = Math.max(Math.floor(width / 20) - 1, 1)
     const visibleImages = order.items.slice(0, columns)
     const remainder = order.items.length - columns
