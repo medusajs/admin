@@ -2457,6 +2457,55 @@
     uuid "^8.3.1"
     winston "^3.2.1"
 
+"@medusajs/medusa@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.6.1.tgz#d9bf25ee4d34ce54b2d587f2d8331ac800d0ed84"
+  integrity sha512-hy5A1Lv/dy0G7jTLmH3WXZBy7aP0qxLHBL8Kohjh2gAdVHnr4pjkBgQ/W1sjXes+FhicQc/reOjyoaFgdXhqgQ==
+  dependencies:
+    "@medusajs/medusa-cli" "^1.3.3"
+    "@types/ioredis" "^4.28.10"
+    "@types/lodash" "^4.14.168"
+    awilix "^4.2.3"
+    body-parser "^1.19.0"
+    bull "^3.12.1"
+    chokidar "^3.4.2"
+    class-transformer "^0.5.1"
+    class-validator "^0.13.1"
+    connect-redis "^5.0.0"
+    cookie-parser "^1.4.4"
+    core-js "^3.6.5"
+    cors "^2.8.5"
+    cross-spawn "^7.0.3"
+    express "^4.17.1"
+    express-session "^1.17.1"
+    fs-exists-cached "^1.0.0"
+    glob "^7.1.6"
+    ioredis "^4.17.3"
+    ioredis-mock "^5.6.0"
+    iso8601-duration "^1.3.0"
+    jsonwebtoken "^8.5.1"
+    medusa-core-utils "^1.1.34"
+    medusa-test-utils "^1.1.37"
+    morgan "^1.9.1"
+    multer "^1.4.2"
+    node-schedule "^2.1.0"
+    papaparse "^5.3.2"
+    passport "^0.4.0"
+    passport-http-bearer "^1.0.1"
+    passport-jwt "^4.0.0"
+    passport-local "^1.0.0"
+    pg "^8.5.1"
+    randomatic "^3.1.1"
+    redis "^3.0.2"
+    reflect-metadata "^0.1.13"
+    request-ip "^2.1.3"
+    resolve-cwd "^3.0.0"
+    scrypt-kdf "^2.0.1"
+    sqlite3 "^5.0.2"
+    ulid "^2.3.0"
+    uuid "^8.3.1"
+    winston "^3.2.1"
+
 "@microsoft/fetch-event-source@2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@microsoft/fetch-event-source/-/fetch-event-source-2.0.1.tgz#9ceecc94b49fbaa15666e38ae8587f64acce007d"
@@ -13953,6 +14002,14 @@ medusa-core-utils@^1.1.32:
   version "1.1.33"
   resolved "https://registry.yarnpkg.com/medusa-core-utils/-/medusa-core-utils-1.1.33.tgz#9db2b1133a74a9d8e80dbb13237ce834bd3c2005"
   integrity sha512-4n7KO/YFeHsj7YfpExCNaWZvuNXkIaQR4I6deqnGJrecVCr7+WNyWjF0hFJrP2CpxhXM3Po4uKZZ4LrcyY2p5w==
+  dependencies:
+    joi "^17.3.0"
+    joi-objectid "^3.0.1"
+
+medusa-core-utils@^1.1.34:
+  version "1.1.34"
+  resolved "https://registry.yarnpkg.com/medusa-core-utils/-/medusa-core-utils-1.1.34.tgz#b6b7228ba3612e559ed8a0a968c001f9c7a22e14"
+  integrity sha512-Ys/vq3POqyjVgmjinEs6SA5kxhOkI14LSUAsVr5s4RXaZxQdcyV5ON1wM5fon0QW5kAiCdjWZ0e5pOjmpyXGWg==
   dependencies:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
