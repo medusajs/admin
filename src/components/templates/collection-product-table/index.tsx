@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react"
 import { Column, usePagination, useRowSelect, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
-import Table, { TablePagination } from "../../molecules/table"
+import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
+import TableContainer from "../../organisms/table-container"
 import useCollectionProductColumns from "./use-collection-product-columns"
 
 type CollectionProductTableProps = {
@@ -142,12 +143,24 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
     setQuery(q)
   }
 
-  useEffect(() => {
-    console.log("products", selectedProducts)
-  }, [selectedProducts])
-
   return (
-    <div className="w-full h-full flex flex-col justify-between overflow-y-auto">
+    <TableContainer
+      isLoading={isLoading}
+      numberOfRows={pageSize}
+      hasPagination
+      pagingState={{
+        count: count!,
+        offset: offset,
+        pageSize: offset + rows.length,
+        title: "Products",
+        currentPage: pageIndex + 1,
+        pageCount: pageCount,
+        nextPage: handleNext,
+        prevPage: handlePrev,
+        hasNext: canNextPage,
+        hasPrev: canPreviousPage,
+      }}
+    >
       <Table
         enableSearch
         handleSearch={handleSearch}
@@ -156,39 +169,24 @@ const CollectionProductTable: React.FC<CollectionProductTableProps> = ({
         {...getTableProps()}
         className="h-full"
       >
-        {isLoading || !products ? null : (
-          <Table.Body {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row)
-              return (
-                <Table.Row
-                  color={"inherit"}
-                  {...row.getRowProps()}
-                  className="px-base"
-                >
-                  {row.cells.map((cell, index) => {
-                    return cell.render("Cell", { index })
-                  })}
-                </Table.Row>
-              )
-            })}
-          </Table.Body>
-        )}
+        <Table.Body {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row)
+            return (
+              <Table.Row
+                color={"inherit"}
+                {...row.getRowProps()}
+                className="px-base"
+              >
+                {row.cells.map((cell, index) => {
+                  return cell.render("Cell", { index })
+                })}
+              </Table.Row>
+            )
+          })}
+        </Table.Body>
       </Table>
-      <TablePagination
-        count={count!}
-        limit={limit}
-        offset={offset}
-        pageSize={offset + rows.length}
-        title="Products"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
-    </div>
+    </TableContainer>
   )
 }
 

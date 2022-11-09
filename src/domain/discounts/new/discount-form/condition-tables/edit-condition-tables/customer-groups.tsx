@@ -2,6 +2,7 @@ import { useAdminCustomerGroups } from "medusa-react"
 import React, { useState } from "react"
 import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
+import { SelectableTable } from "../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import { DiscountConditionOperator } from "../../../../types"
 import { useDiscountForm } from "../../form/discount-form-context"
@@ -12,7 +13,6 @@ import {
   CustomerGroupsRow,
   useGroupColumns,
 } from "../shared/groups"
-import { SelectableTable } from "../shared/selectable-table"
 import EditConditionFooter from "./edit-condition-footer"
 
 const EditCustomerGroupConditionSelector = ({ onClose }) => {
@@ -47,33 +47,27 @@ const EditCustomerGroupConditionSelector = ({ onClose }) => {
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <ConditionOperator value={operator} onChange={setOperator} />
-            <SelectableTable
-              options={{
-                enableSearch: true,
-                immediateSearchFocus: true,
-                searchPlaceholder: "Search groups...",
-              }}
-              resourceName="Customer groups"
-              totalCount={count || 0}
-              selectedIds={items.map((i) => i.id)}
-              data={customer_groups}
-              columns={columns}
-              isLoading={isLoading}
-              onChange={changed}
-              renderRow={CustomerGroupsRow}
-              renderHeaderGroup={CustomerGroupsHeader}
-              {...params}
-            />
-          </>
-        )}
+      <Modal.Content>
+        <ConditionOperator value={operator} onChange={setOperator} />
+        <SelectableTable
+          options={{
+            enableSearch: true,
+            immediateSearchFocus: true,
+            searchPlaceholder: "Search groups...",
+          }}
+          resourceName="Customer groups"
+          totalCount={count || 0}
+          selectedIds={items.map((i) => i.id)}
+          data={customer_groups}
+          columns={columns}
+          isLoading={isLoading}
+          onChange={changed}
+          renderRow={CustomerGroupsRow}
+          renderHeaderGroup={CustomerGroupsHeader}
+          {...params}
+        />
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <EditConditionFooter
           type="customer_groups"
           items={items}

@@ -6,15 +6,16 @@ import {
   useAdminUpdateCollection,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
+import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Actionables from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import ViewRaw from "../../../components/molecules/view-raw"
-import BodyCard from "../../../components/organisms/body-card"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { MetadataField } from "../../../components/organisms/metadata"
+import Section from "../../../components/organisms/section"
 import CollectionModal from "../../../components/templates/collection-modal"
 import AddProductsTable from "../../../components/templates/collection-product-table/add-product-table"
 import ViewProductsTable from "../../../components/templates/collection-product-table/view-products-table"
@@ -106,11 +107,11 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
 
   return (
     <>
-      <div className="flex flex-col h-full">
-        <Breadcrumb
-          currentPage="Edit Collection"
-          previousBreadcrumb="Collections"
-          previousRoute="/a/products?view=collections"
+      <div className="flex flex-col !pb-xlarge">
+        <BackButton
+          className="mb-xsmall"
+          path="/a/products?view=collections"
+          label="Back to Collections"
         />
         <div className="rounded-rounded py-large px-xlarge border border-grey-20 bg-grey-0 mb-large">
           {isLoading || !collection ? (
@@ -156,11 +157,9 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
             </div>
           )}
         </div>
-        <BodyCard
+        <Section
           title="Products"
-          subtitle="To start selling, all you need is a name, price, and image."
-          className="h-full"
-          actionables={[
+          actions={[
             {
               label: "Edit Products",
               icon: <EditIcon size="20" />,
@@ -168,20 +167,17 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
             },
           ]}
         >
-          <div className="mt-large h-full">
-            {isLoading || !collection ? (
-              <div className="flex items-center w-full h-12">
-                <Spinner variant="secondary" size="large" />
-              </div>
-            ) : (
-              <ViewProductsTable
-                key={updates} // force re-render when collection is updated
-                collectionId={collection.id}
-                refetchCollection={refetch}
-              />
-            )}
-          </div>
-        </BodyCard>
+          <p className="text-grey-50 inter-base-regular mt-xsmall mb-base">
+            To start selling, all you need is a name, price, and image.
+          </p>
+          {collection && (
+            <ViewProductsTable
+              key={updates} // force re-render when collection is updated
+              collectionId={collection.id}
+              refetchCollection={refetch}
+            />
+          )}
+        </Section>
       </div>
       {showEdit && (
         <CollectionModal

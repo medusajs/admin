@@ -11,7 +11,8 @@ import {
 import useQueryFilters from "../../../hooks/use-query-filters"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
-import Table, { TablePagination } from "../../molecules/table"
+import Table from "../../molecules/table"
+import TableContainer from "../../organisms/table-container"
 import { CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS } from "./config"
 
 /**
@@ -92,7 +93,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
   const [activeGroupId, setActiveGroupId] = useState()
 
   const { customer_groups } = useAdminCustomerGroups({ expand: "customers" })
-  const { customers = [], count = 0 } = useAdminCustomers({
+  const { customers = [], count = 0, isLoading } = useAdminCustomers({
     ...queryObject,
     groups: activeGroupId ? [activeGroupId] : null,
   })
@@ -184,7 +185,23 @@ function EditCustomersTable(props: EditCustomersTableProps) {
         </Modal.Header>
 
         <Modal.Content>
-          <div className="w-full flex flex-col justify-between h-[650px]">
+          <TableContainer
+            isLoading={isLoading}
+            hasPagination
+            numberOfRows={queryObject.limit}
+            pagingState={{
+              count: count!,
+              offset: queryObject.offset,
+              pageSize: queryObject.offset + table.rows.length,
+              title: "Customers",
+              currentPage: table.state.pageIndex + 1,
+              pageCount: table.pageCount,
+              nextPage: handleNext,
+              prevPage: handlePrev,
+              hasNext: table.canNextPage,
+              hasPrev: table.canPreviousPage,
+            }}
+          >
             <Table
               filteringOptions={filteringOptions}
               enableSearch
@@ -205,21 +222,7 @@ function EditCustomersTable(props: EditCustomersTableProps) {
                 })}
               </Table.Body>
             </Table>
-
-            <TablePagination
-              count={count!}
-              limit={queryObject.limit}
-              offset={queryObject.offset}
-              pageSize={queryObject.offset + table.rows.length}
-              title="Customers"
-              currentPage={table.state.pageIndex + 1}
-              pageCount={table.pageCount}
-              nextPage={handleNext}
-              prevPage={handlePrev}
-              hasNext={table.canNextPage}
-              hasPrev={table.canPreviousPage}
-            />
-          </div>
+          </TableContainer>
         </Modal.Content>
 
         <Modal.Footer>

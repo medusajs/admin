@@ -7,8 +7,8 @@ import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import { useAnalytics } from "../../../context/analytics"
 import { FeatureFlagContext } from "../../../context/feature-flag"
-import Spinner from "../../atoms/spinner"
-import Table, { TablePagination } from "../../molecules/table"
+import Table from "../../molecules/table"
+import TableContainer from "../../organisms/table-container"
 import OrderFilters from "../order-filter-dropdown"
 import useOrderTableColums from "./use-order-column"
 import { useOrderFilters } from "./use-order-filters"
@@ -56,6 +56,7 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   const [numPages, setNumPages] = useState(0)
 
   const { orders, isLoading, count } = useAdminOrders(queryObject, {
+    keepPreviousData: true,
     onSuccess: ({ count }) => {
       trackNumberOfOrders({
         count,
@@ -154,50 +155,54 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
   }, [representationObject])
 
   return (
-    <div className="w-full overflow-y-auto flex flex-col justify-between min-h-[300px] h-full ">
-      <Table
-        filteringOptions={
-          <OrderFilters
-            filters={filters}
-            submitFilters={setFilters}
-            clearFilters={clearFilters}
-            tabs={filterTabs}
-            onTabClick={setTab}
-            activeTab={activeFilterTab}
-            onRemoveTab={removeTab}
-            onSaveTab={saveTab}
-          />
-        }
-        enableSearch
-        handleSearch={setQuery}
-        searchValue={query}
-        {...getTableProps()}
-        className={clsx({ ["relative"]: isLoading })}
+    <div>
+      <TableContainer
+        isLoading={isLoading}
+        hasPagination
+        numberOfRows={lim}
+        pagingState={{
+          count: count!,
+          offset: queryObject.offset,
+          pageSize: queryObject.offset + rows.length,
+          title: "Orders",
+          currentPage: pageIndex + 1,
+          pageCount: pageCount,
+          nextPage: handleNext,
+          prevPage: handlePrev,
+          hasNext: canNextPage,
+          hasPrev: canPreviousPage,
+        }}
       >
-        <Table.Head>
-          {headerGroups?.map((headerGroup, index) => (
-            <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((col, headerIndex) => (
-                <Table.HeadCell {...col.getHeaderProps()}>
-                  {col.render("Header")}
-                </Table.HeadCell>
-              ))}
-            </Table.HeadRow>
-          ))}
-        </Table.Head>
-        {isLoading || !orders ? (
-          <Table.Body {...getTableBodyProps()}>
-            <Table.Row>
-              <Table.Cell colSpan={columns.length}>
-                <div className="flex w-full h-full absolute items-center justify-center mt-10">
-                  <div className="">
-                    <Spinner size={"large"} variant={"secondary"} />
-                  </div>
-                </div>
-              </Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        ) : (
+        <Table
+          filteringOptions={
+            <OrderFilters
+              filters={filters}
+              submitFilters={setFilters}
+              clearFilters={clearFilters}
+              tabs={filterTabs}
+              onTabClick={setTab}
+              activeTab={activeFilterTab}
+              onRemoveTab={removeTab}
+              onSaveTab={saveTab}
+            />
+          }
+          enableSearch
+          handleSearch={setQuery}
+          searchValue={query}
+          {...getTableProps()}
+          className={clsx({ ["relative"]: isLoading })}
+        >
+          <Table.Head>
+            {headerGroups?.map((headerGroup) => (
+              <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((col) => (
+                  <Table.HeadCell {...col.getHeaderProps()}>
+                    {col.render("Header")}
+                  </Table.HeadCell>
+                ))}
+              </Table.HeadRow>
+            ))}
+          </Table.Head>
           <Table.Body {...getTableBodyProps()}>
             {rows.map((row) => {
               prepareRow(row)
@@ -208,28 +213,19 @@ const OrderTable: React.FC<RouteComponentProps> = () => {
                   {...row.getRowProps()}
                   className="group"
                 >
-                  {row.cells.map((cell, index) => {
-                    return cell.render("Cell", { index })
+                  {row.cells.map((cell) => {
+                    return (
+                      <Table.Cell {...cell.getCellProps()}>
+                        {cell.render("Cell")}
+                      </Table.Cell>
+                    )
                   })}
                 </Table.Row>
               )
             })}
           </Table.Body>
-        )}
-      </Table>
-      <TablePagination
-        count={count!}
-        limit={queryObject.limit}
-        offset={queryObject.offset}
-        pageSize={queryObject.offset + rows.length}
-        title="Orders"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
+        </Table>
+      </TableContainer>
     </div>
   )
 }

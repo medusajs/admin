@@ -8,7 +8,8 @@ import StatusIndicator from "../../../../components/fundamentals/status-indicato
 import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
-import Table, { TablePagination } from "../../../../components/molecules/table"
+import Table from "../../../../components/molecules/table"
+import TableContainer from "../../../../components/organisms/table-container"
 import { useDebounce } from "../../../../hooks/use-debounce"
 
 const getProductStatusVariant = (status) => {
@@ -209,7 +210,23 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   return (
     <>
       <Modal.Content>
-        <div className="min-h-[680px]">
+        <TableContainer
+          isLoading={isLoading}
+          numberOfRows={PAGE_SIZE}
+          hasPagination
+          pagingState={{
+            count: count!,
+            offset: offset,
+            pageSize: offset + rows.length,
+            title: "Products",
+            currentPage: pageIndex + 1,
+            pageCount: pageCount,
+            nextPage: handleNext,
+            prevPage: handlePrev,
+            hasNext: canNextPage,
+            hasPrev: canPreviousPage,
+          }}
+        >
           <Table
             immediateSearchFocus
             enableSearch
@@ -238,20 +255,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
               )}
             </Table.Body>
           </Table>
-          <TablePagination
-            count={count!}
-            limit={PAGE_SIZE}
-            offset={offset}
-            pageSize={offset + rows.length}
-            title="Products"
-            currentPage={pageIndex + 1}
-            pageCount={pageCount}
-            nextPage={handleNext}
-            prevPage={handlePrev}
-            hasNext={canNextPage}
-            hasPrev={canPreviousPage}
-          />
-        </div>
+        </TableContainer>
       </Modal.Content>
       <Modal.Footer>
         <div className="flex w-full justify-end gap-x-xsmall">

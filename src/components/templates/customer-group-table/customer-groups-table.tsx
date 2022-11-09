@@ -18,7 +18,8 @@ import useQueryFilters from "../../../hooks/use-query-filters"
 import useSetSearchParams from "../../../hooks/use-set-search-params"
 import DetailsIcon from "../../fundamentals/details-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
-import Table, { TablePagination } from "../../molecules/table"
+import Table from "../../molecules/table"
+import TableContainer from "../../organisms/table-container"
 import { CUSTOMER_GROUPS_TABLE_COLUMNS } from "./config"
 
 /**
@@ -127,13 +128,21 @@ function CustomerGroupsTableRow(props: CustomerGroupsTableRowProps) {
 type CustomerGroupsTableProps = ReturnType<typeof useQueryFilters> & {
   customerGroups: CustomerGroup[]
   count: number
+  isLoading?: boolean
 }
 
 /*
  * Root component of the customer groups table.
  */
 function CustomerGroupsTable(props: CustomerGroupsTableProps) {
-  const { customerGroups, queryObject, count, paginate, setQuery } = props
+  const {
+    customerGroups,
+    queryObject,
+    count,
+    paginate,
+    setQuery,
+    isLoading,
+  } = props
 
   const tableConfig: TableOptions<CustomerGroup> = {
     columns: CUSTOMER_GROUPS_TABLE_COLUMNS,
@@ -184,7 +193,23 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
   // ********* RENDER *********
 
   return (
-    <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
+    <TableContainer
+      isLoading={isLoading}
+      hasPagination
+      numberOfRows={queryObject.limit}
+      pagingState={{
+        count: count,
+        offset: queryObject.offset,
+        pageSize: queryObject.offset + table.rows.length,
+        title: "Customer groups",
+        currentPage: table.state.pageIndex + 1,
+        pageCount: table.pageCount,
+        nextPage: handleNext,
+        prevPage: handlePrev,
+        hasNext: table.canNextPage,
+        hasPrev: table.canPreviousPage,
+      }}
+    >
       <Table
         enableSearch
         handleSearch={handleSearch}
@@ -210,22 +235,7 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
           })}
         </Table.Body>
       </Table>
-
-      {/* PAGINATION */}
-      <TablePagination
-        count={count}
-        limit={queryObject.limit}
-        offset={queryObject.offset}
-        pageSize={queryObject.offset + table.rows.length}
-        title="Customers"
-        currentPage={table.state.pageIndex + 1}
-        pageCount={table.pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={table.canNextPage}
-        hasPrev={table.canPreviousPage}
-      />
-    </div>
+    </TableContainer>
   )
 }
 
@@ -256,6 +266,7 @@ function CustomerGroupsTableContainer() {
     <CustomerGroupsTable
       count={count}
       customerGroups={customer_groups || []}
+      isLoading={isLoading}
       {...params}
     />
   )

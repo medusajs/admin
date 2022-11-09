@@ -20,7 +20,7 @@ const AddTagsConditionsScreen = () => {
 
   const [selectedResources, setSelectedResources] = useState<string[]>([])
 
-  const { isLoading, count, product_tags, refetch } = useAdminProductTags(
+  const { isLoading, count, product_tags } = useAdminProductTags(
     params.queryObject,
     {
       keepPreviousData: true,
@@ -58,7 +58,7 @@ const AddTagsConditionsScreen = () => {
           <Button
             variant="primary"
             size="small"
-            onClick={() => saveAndGoBack(selectedResources, () => refetch())}
+            onClick={() => saveAndGoBack(selectedResources)}
           >
             Save and go back
           </Button>
