@@ -1,13 +1,12 @@
 import { Currency } from "@medusajs/medusa"
 import React, { useEffect } from "react"
 import { TableInstance } from "react-table"
-import Table, {
-  TablePagination,
-} from "../../../../../components/molecules/table"
+import Table from "../../../../../components/molecules/table"
+import TableContainer from "../../../../../components/organisms/table-container"
 
 type Props = {
+  isLoading?: boolean
   count: number
-  limit: number
   offset: number
   setOffset: (offset: number) => void
   setQuery: (query: string) => void
@@ -17,7 +16,7 @@ type Props = {
 }
 
 const CurrenciesTable = ({
-  limit,
+  isLoading,
   offset,
   setOffset,
   setSelectedRowIds,
@@ -60,7 +59,23 @@ const CurrenciesTable = ({
   }, [selectedRowIds])
 
   return (
-    <div>
+    <TableContainer
+      isLoading={isLoading}
+      hasPagination
+      numberOfRows={pageSize}
+      pagingState={{
+        count: count,
+        offset: offset,
+        pageSize: offset + rows.length,
+        title: "Currencies",
+        currentPage: pageIndex + 1,
+        pageCount: pageCount,
+        nextPage: handleNext,
+        prevPage: handlePrev,
+        hasNext: canNextPage,
+        hasPrev: canPreviousPage,
+      }}
+    >
       <Table
         {...getTableProps()}
         className={"table-fixed"}
@@ -97,20 +112,7 @@ const CurrenciesTable = ({
           })}
         </Table.Body>
       </Table>
-      <TablePagination
-        count={count}
-        limit={limit}
-        offset={offset}
-        pageSize={offset + rows.length}
-        title="Currencies"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
-    </div>
+    </TableContainer>
   )
 }
 

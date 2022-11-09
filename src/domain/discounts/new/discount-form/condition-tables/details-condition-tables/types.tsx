@@ -45,33 +45,29 @@ const DetailsTypeConditionSelector = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <ConditionOperator value={operator} onChange={setOperator} />
-            <SelectableTable
-              options={{
-                enableSearch: true,
-                immediateSearchFocus: true,
-                searchPlaceholder: "Search by type...",
-              }}
-              resourceName="Types"
-              totalCount={count || 0}
-              selectedIds={items?.map((c) => c.id)}
-              data={product_types}
-              columns={columns}
-              isLoading={isLoading}
-              onChange={changed}
-              renderRow={TypeRow}
-              renderHeaderGroup={TypesHeader}
-              {...params}
-            />
-          </>
-        )}
+      <Modal.Content>
+        <ConditionOperator value={operator} onChange={setOperator} />
+        <SelectableTable
+          options={{
+            enableSearch: true,
+            handleSearch: params.setQuery,
+            searchValue: params.queryObject.q,
+            immediateSearchFocus: true,
+            searchPlaceholder: "Search by type...",
+          }}
+          resourceName="Types"
+          totalCount={count || 0}
+          selectedIds={items?.map((c) => c.id)}
+          data={product_types}
+          columns={columns}
+          isLoading={isLoading}
+          onChange={changed}
+          renderRow={TypeRow}
+          renderHeaderGroup={TypesHeader}
+          {...params}
+        />
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <DetailsConditionFooter
           type="product_types"
           items={items}

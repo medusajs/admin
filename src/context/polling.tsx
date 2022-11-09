@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback, useMemo } from "react"
 
 import { AdminGetBatchParams, BatchJob } from "@medusajs/medusa"
 import { useAdminBatchJobs } from "medusa-react"
@@ -7,7 +7,7 @@ type IPollingContext = {
   batchJobs?: BatchJob[]
   hasPollingError?: boolean
   resetInterval: () => Promise<void>
-  refetch: () => Promise<void>
+  refetch: () => void
 }
 
 // @ts-ignore
@@ -69,17 +69,20 @@ export const PollingProvider = ({ children }) => {
     }
   )
 
-  const resetInterval = async () => {
+  const resetInterval = useCallback(async () => {
     Timer.reset()
     await refetch()
-  }
+  }, [refetch])
 
-  const value = {
-    batchJobs,
-    hasPollingError,
-    resetInterval,
-    refetch,
-  }
+  const value = useMemo(
+    () => ({
+      batchJobs,
+      hasPollingError,
+      resetInterval,
+      refetch,
+    }),
+    [refetch, batchJobs, hasPollingError, resetInterval]
+  )
 
   return (
     <PollingContext.Provider value={value}>{children}</PollingContext.Provider>

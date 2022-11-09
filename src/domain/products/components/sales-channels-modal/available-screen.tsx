@@ -74,7 +74,6 @@ const AvailableScreen = () => {
             onDeselect={onDeselect}
           />
         }
-        salesChannels={source}
         setSelectedRowIds={setSelectedRowIds}
         limit={15}
         offset={offset}

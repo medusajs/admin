@@ -6,10 +6,10 @@ import clsx from "clsx"
 
 import { useDebounce } from "../../../hooks/use-debounce"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
-import Table, { TablePagination } from "../../../components/molecules/table"
+import Table from "../../../components/molecules/table"
 import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
-import Spinner from "../../../components/atoms/spinner"
 import { formatAmountWithSymbol } from "../../../utils/prices"
+import TableContainer from "../../../components/organisms/table-container"
 
 const PAGE_SIZE = 12
 
@@ -250,7 +250,23 @@ const VariantsTable: React.FC<Props> = (props) => {
   }
 
   return (
-    <>
+    <TableContainer
+      hasPagination
+      isLoading={isLoading}
+      numberOfRows={PAGE_SIZE}
+      pagingState={{
+        count: count!,
+        offset: offset,
+        pageSize: offset + table.rows.length,
+        title: "Products",
+        currentPage: table.state.pageIndex + 1,
+        pageCount: table.pageCount,
+        nextPage: handleNext,
+        prevPage: handlePrev,
+        hasNext: table.canNextPage,
+        hasPrev: table.canPreviousPage,
+      }}
+    >
       <Table
         immediateSearchFocus
         enableSearch
@@ -270,40 +286,23 @@ const VariantsTable: React.FC<Props> = (props) => {
         ))}
 
         <Table.Body {...table.getTableBodyProps()}>
-          {isLoading ? (
-            <Spinner size="large" />
-          ) : (
-            table.rows.map((row) => {
-              table.prepareRow(row)
-              return (
-                <Table.Row {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <Table.Cell {...cell.getCellProps()}>
-                        {cell.render("Cell")}
-                      </Table.Cell>
-                    )
-                  })}
-                </Table.Row>
-              )
-            })
-          )}
+          {table.rows.map((row) => {
+            table.prepareRow(row)
+            return (
+              <Table.Row {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <Table.Cell {...cell.getCellProps()}>
+                      {cell.render("Cell")}
+                    </Table.Cell>
+                  )
+                })}
+              </Table.Row>
+            )
+          })}
         </Table.Body>
       </Table>
-      <TablePagination
-        count={count!}
-        limit={PAGE_SIZE}
-        offset={offset}
-        pageSize={offset + table.rows.length}
-        title="Products"
-        currentPage={table.state.pageIndex + 1}
-        pageCount={table.pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={table.canNextPage}
-        hasPrev={table.canPreviousPage}
-      />
-    </>
+    </TableContainer>
   )
 }
 

@@ -1,5 +1,5 @@
 import { useAdminProducts } from "medusa-react"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
@@ -41,33 +41,31 @@ const EditProductConditionSelector = ({ onClose }) => {
 
   const columns = useProductColumns()
 
+  useEffect(() => console.log(params.queryObject), [params.queryObject])
+
   return (
     <>
       <Modal.Content>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <ConditionOperator value={operator} onChange={setOperator} />
-            <SelectableTable
-              options={{
-                enableSearch: true,
-                immediateSearchFocus: true,
-                searchPlaceholder: "Search products...",
-              }}
-              resourceName="Products"
-              totalCount={count || 0}
-              selectedIds={items.map((i) => i.id)}
-              data={products}
-              columns={columns}
-              isLoading={isLoading}
-              onChange={changed}
-              renderRow={ProductRow}
-              renderHeaderGroup={ProductsHeader}
-              {...params}
-            />
-          </>
-        )}
+        <ConditionOperator value={operator} onChange={setOperator} />
+        <SelectableTable
+          options={{
+            enableSearch: true,
+            immediateSearchFocus: true,
+            searchPlaceholder: "Search products...",
+            handleSearch: params.setQuery,
+            searchValue: params.queryObject.q,
+          }}
+          resourceName="Products"
+          totalCount={count || 0}
+          selectedIds={items.map((i) => i.id)}
+          data={products}
+          columns={columns}
+          isLoading={isLoading}
+          onChange={changed}
+          renderRow={ProductRow}
+          renderHeaderGroup={ProductsHeader}
+          {...params}
+        />
       </Modal.Content>
       <Modal.Footer>
         <EditConditionFooter

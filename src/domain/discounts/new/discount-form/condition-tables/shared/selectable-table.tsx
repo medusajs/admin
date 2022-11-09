@@ -16,12 +16,9 @@ import {
   useSortBy,
   useTable,
 } from "react-table"
-import Spinner from "../../../../../../components/atoms/spinner"
 import IndeterminateCheckbox from "../../../../../../components/molecules/indeterminate-checkbox"
-import Table, {
-  TablePagination,
-  TableProps,
-} from "../../../../../../components/molecules/table"
+import Table, { TableProps } from "../../../../../../components/molecules/table"
+import TableContainer from "../../../../../../components/organisms/table-container"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
 
 type SelectableTableProps<T extends object> = {
@@ -124,44 +121,44 @@ export const SelectableTable = <
   return (
     <div>
       <div className="inter-base-semibold my-large">{label}</div>
-      <Table
-        {...options}
-        {...table.getTableProps()}
-        handleSearch={options.enableSearch ? debouncedSearch : undefined}
+      <TableContainer
+        isLoading={isLoading}
+        hasPagination
+        numberOfRows={queryObject.limit}
+        pagingState={{
+          count: totalCount!,
+          offset: queryObject.offset,
+          pageSize: queryObject.offset + table.rows.length,
+          title: resourceName,
+          currentPage: table.state.pageIndex + 1,
+          pageCount: table.pageCount,
+          nextPage: handleNext,
+          prevPage: handlePrev,
+          hasNext: table.canNextPage,
+          hasPrev: table.canPreviousPage,
+        }}
       >
-        {renderHeaderGroup && (
-          <Table.Head>
-            {table.headerGroups?.map((headerGroup) =>
-              renderHeaderGroup({ headerGroup })
-            )}
-          </Table.Head>
-        )}
+        <Table
+          {...options}
+          {...table.getTableProps()}
+          handleSearch={options.enableSearch ? debouncedSearch : undefined}
+        >
+          {renderHeaderGroup && (
+            <Table.Head>
+              {table.headerGroups?.map((headerGroup) =>
+                renderHeaderGroup({ headerGroup })
+              )}
+            </Table.Head>
+          )}
 
-        <Table.Body {...table.getTableBodyProps()}>
-          {isLoading ? (
-            <Spinner size="large" />
-          ) : (
-            table.rows.map((row) => {
+          <Table.Body {...table.getTableBodyProps()}>
+            {table.rows.map((row) => {
               table.prepareRow(row)
               return renderRow({ row })
-            })
-          )}
-        </Table.Body>
-      </Table>
-
-      <TablePagination
-        count={totalCount!}
-        limit={queryObject.limit}
-        offset={queryObject.offset}
-        pageSize={queryObject.offset + table.rows.length}
-        title={resourceName}
-        currentPage={table.state.pageIndex + 1}
-        pageCount={table.pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={table.canNextPage}
-        hasPrev={table.canPreviousPage}
-      />
+            })}
+          </Table.Body>
+        </Table>
+      </TableContainer>
     </div>
   )
 }

@@ -63,7 +63,6 @@ const ProductConditionsTable = () => {
               numberOfSelectedRows={selectedResources.length}
               onDeselect={onDeselect}
               onRemove={onRemove}
-              deleting={isLoading}
             />
           ),
         }}

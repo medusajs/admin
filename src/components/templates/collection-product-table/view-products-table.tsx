@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
 import Medusa from "../../../services/api"
-import Spinner from "../../atoms/spinner"
 import Button from "../../fundamentals/button"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
-import Table, { TablePagination } from "../../molecules/table"
+import Table from "../../molecules/table"
 import DeletePrompt from "../../organisms/delete-prompt"
+import TableContainer from "../../organisms/table-container"
 import useViewProductColumns from "./use-view-product-columns"
 
 type ViewProductsTableProps = {
@@ -137,7 +137,23 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
 
   return (
     <>
-      <div className="w-full h-full flex flex-col justify-between overflow-y-auto">
+      <TableContainer
+        isLoading={isLoading}
+        hasPagination
+        numberOfRows={pageSize}
+        pagingState={{
+          count: count!,
+          offset: offset,
+          pageSize: offset + rows.length,
+          title: "Products",
+          currentPage: pageIndex + 1,
+          pageCount: pageCount,
+          nextPage: handleNext,
+          prevPage: handlePrev,
+          hasNext: canNextPage,
+          hasPrev: canPreviousPage,
+        }}
+      >
         <Table
           enableSearch
           handleSearch={handleSearch}
@@ -145,47 +161,24 @@ const ViewProductsTable: React.FC<ViewProductsTableProps> = ({
           {...getTableProps()}
           className="h-full"
         >
-          {!products?.length ? (
-            <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
-              {isLoading ? (
-                <Spinner size="large" variant="secondary" />
-              ) : (
-                "No products yet"
-              )}
-            </div>
-          ) : (
-            <Table.Body {...getTableBodyProps()}>
-              {rows.map((row) => {
-                prepareRow(row)
-                return (
-                  <Table.Row
-                    color={"inherit"}
-                    {...row.getRowProps()}
-                    className="px-base"
-                  >
-                    {row.cells.map((cell, index) => {
-                      return cell.render("Cell", { index })
-                    })}
-                  </Table.Row>
-                )
-              })}
-            </Table.Body>
-          )}
+          <Table.Body {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row)
+              return (
+                <Table.Row
+                  color={"inherit"}
+                  {...row.getRowProps()}
+                  className="px-base"
+                >
+                  {row.cells.map((cell, index) => {
+                    return cell.render("Cell", { index })
+                  })}
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
         </Table>
-        <TablePagination
-          count={count!}
-          limit={limit}
-          offset={offset}
-          pageSize={offset + rows.length}
-          title="Products"
-          currentPage={pageIndex + 1}
-          pageCount={pageCount}
-          nextPage={handleNext}
-          prevPage={handlePrev}
-          hasNext={canNextPage}
-          hasPrev={canPreviousPage}
-        />
-      </div>
+      </TableContainer>
       {showDelete && (
         <DeletePrompt
           onDelete={async () => handleRemoveProduct()}

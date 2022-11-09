@@ -5,10 +5,10 @@ import { useAdminCustomers } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
-import Spinner from "../../atoms/spinner"
 import DetailsIcon from "../../fundamentals/details-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
-import Table, { TablePagination } from "../../molecules/table"
+import Table from "../../molecules/table"
+import TableContainer from "../../organisms/table-container"
 import { useCustomerColumns } from "./use-customer-columns"
 import { useCustomerFilters } from "./use-customer-filters"
 
@@ -30,9 +30,14 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
   const offs = parseInt(queryObject.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const { customers, isLoading, count } = useAdminCustomers({
-    ...queryObject,
-  })
+  const { customers, isLoading, count } = useAdminCustomers(
+    {
+      ...queryObject,
+    },
+    {
+      keepPreviousData: true,
+    }
+  )
 
   const [query, setQuery] = useState(queryObject.query)
   const [numPages, setNumPages] = useState(0)
@@ -126,8 +131,29 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
   }, [representationObject])
 
   return (
-    <div className="w-full h-full overflow-y-auto flex flex-col justify-between">
-      <Table enableSearch handleSearch={setQuery} {...getTableProps()}>
+    <TableContainer
+      hasPagination
+      numberOfRows={queryObject.limit}
+      pagingState={{
+        count: count!,
+        offset: queryObject.offset,
+        pageSize: queryObject.offset + rows.length,
+        title: "Customers",
+        currentPage: pageIndex + 1,
+        pageCount: pageCount,
+        nextPage: handleNext,
+        prevPage: handlePrev,
+        hasNext: canNextPage,
+        hasPrev: canPreviousPage,
+      }}
+      isLoading={isLoading}
+    >
+      <Table
+        enableSearch
+        handleSearch={setQuery}
+        searchValue={query}
+        {...getTableProps()}
+      >
         <Table.Head>
           {headerGroups?.map((headerGroup) => (
             <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
@@ -139,67 +165,40 @@ const CustomerTable: React.FC<RouteComponentProps> = () => {
             </Table.HeadRow>
           ))}
         </Table.Head>
-        {isLoading || !customers ? (
-          <Table.Body {...getTableBodyProps()}>
-            <Table.Row>
-              <Table.Cell colSpan={columns.length}>
-                <div className="flex w-full h-full absolute items-center justify-center mt-10">
-                  <div className="">
-                    <Spinner size={"large"} variant={"secondary"} />
-                  </div>
-                </div>
-              </Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        ) : (
-          <Table.Body {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row)
-              return (
-                <Table.Row
-                  color={"inherit"}
-                  actions={[
-                    {
-                      label: "Edit",
-                      onClick: () => navigate(row.original.id),
-                      icon: <EditIcon size={20} />,
-                    },
-                    {
-                      label: "Details",
-                      onClick: () => navigate(row.original.id),
-                      icon: <DetailsIcon size={20} />,
-                    },
-                  ]}
-                  linkTo={row.original.id}
-                  {...row.getRowProps()}
-                >
-                  {row.cells.map((cell, index) => {
-                    return (
-                      <Table.Cell {...cell.getCellProps()}>
-                        {cell.render("Cell", { index })}
-                      </Table.Cell>
-                    )
-                  })}
-                </Table.Row>
-              )
-            })}
-          </Table.Body>
-        )}
+        <Table.Body {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row)
+            return (
+              <Table.Row
+                color={"inherit"}
+                actions={[
+                  {
+                    label: "Edit",
+                    onClick: () => navigate(row.original.id),
+                    icon: <EditIcon size={20} />,
+                  },
+                  {
+                    label: "Details",
+                    onClick: () => navigate(row.original.id),
+                    icon: <DetailsIcon size={20} />,
+                  },
+                ]}
+                linkTo={row.original.id}
+                {...row.getRowProps()}
+              >
+                {row.cells.map((cell, index) => {
+                  return (
+                    <Table.Cell {...cell.getCellProps()}>
+                      {cell.render("Cell", { index })}
+                    </Table.Cell>
+                  )
+                })}
+              </Table.Row>
+            )
+          })}
+        </Table.Body>
       </Table>
-      <TablePagination
-        count={count!}
-        limit={queryObject.limit}
-        offset={queryObject.offset}
-        pageSize={queryObject.offset + rows.length}
-        title="Customers"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
-    </div>
+    </TableContainer>
   )
 }
 
