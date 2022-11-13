@@ -1,17 +1,17 @@
-import { useAdminCollections } from "medusa-react"
+import { useAdminProductTypes } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
 import Spinner from "../../atoms/spinner"
 import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
+import useTypeActions from "./use-type-actions"
+import useTypeTableColumn from "./use-type-column"
 import TableContainer from "../../organisms/table-container"
-import useCollectionActions from "./use-collection-actions"
-import useCollectionTableColumn from "./use-collection-column"
 
 const DEFAULT_PAGE_SIZE = 15
 
-const CollectionsTable: React.FC = () => {
+const TypesTable: React.FC = () => {
   const [filteringOptions, setFilteringOptions] = useState<
     FilteringOptionProps[]
   >([])
@@ -21,17 +21,17 @@ const CollectionsTable: React.FC = () => {
   const [query, setQuery] = useState("")
   const [numPages, setNumPages] = useState(0)
 
-  const debouncedSearchTerm = useDebounce(query, 300)
-  const { collections, isLoading, isRefetching, count } = useAdminCollections(
-    {
-      q: debouncedSearchTerm,
-      offset: offset,
-      limit,
-    },
-    {
-      keepPreviousData: true,
-    }
-  )
+  const debouncedSearchTerm = useDebounce(query, 500)
+  const {
+    product_types,
+    isLoading,
+    isRefetching,
+    count,
+  } = useAdminProductTypes({
+    q: debouncedSearchTerm,
+    offset: offset,
+    limit,
+  })
 
   useEffect(() => {
     if (typeof count !== "undefined") {
@@ -40,7 +40,7 @@ const CollectionsTable: React.FC = () => {
     }
   }, [count])
 
-  const [columns] = useCollectionTableColumn()
+  const [columns] = useTypeTableColumn()
 
   const {
     getTableProps,
@@ -53,12 +53,12 @@ const CollectionsTable: React.FC = () => {
     pageCount,
     nextPage,
     previousPage,
-    // Get the state from the instance
     state: { pageIndex },
   } = useTable(
     {
+      // @ts-ignore
       columns,
-      data: collections || [],
+      data: product_types || [],
       manualPagination: true,
       initialState: {
         pageIndex: Math.floor(offset / limit),
@@ -77,7 +77,7 @@ const CollectionsTable: React.FC = () => {
     }
   }
 
-  const handleSearch = (q: string) => {
+  const handleSearch = (q) => {
     setOffset(0)
     setQuery(q)
   }
@@ -96,13 +96,13 @@ const CollectionsTable: React.FC = () => {
         options: [
           {
             title: "All",
-            count: collections?.length || 0,
+            count: product_types?.length || 0,
             onClick: () => console.log("Not implemented yet"),
           },
         ],
       },
     ])
-  }, [collections])
+  }, [product_types])
 
   return (
     <TableContainer
@@ -113,7 +113,7 @@ const CollectionsTable: React.FC = () => {
         count: count!,
         offset,
         pageSize: offset + rows.length,
-        title: "Collections",
+        title: "Types",
         currentPage: pageIndex + 1,
         pageCount: pageCount,
         nextPage: handleNext,
@@ -125,18 +125,19 @@ const CollectionsTable: React.FC = () => {
       <Table
         enableSearch
         handleSearch={handleSearch}
-        searchValue={query}
-        searchPlaceholder="Search Collections"
+        searchPlaceholder="Search Types"
         filteringOptions={filteringOptions}
+        searchValue={query}
         {...getTableProps()}
       >
         <Table.Head>
-          {headerGroups?.map((headerGroup, index) => (
-            <Table.HeadRow {...headerGroup.getHeaderGroupProps()} key={index}>
-              {headerGroup.headers.map((col) => (
+          {headerGroups?.map((headerGroup) => (
+            <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((col, index) => (
                 <Table.HeadCell
                   className="min-w-[100px]"
                   {...col.getHeaderProps()}
+                  key={index}
                 >
                   {col.render("Header")}
                 </Table.HeadCell>
@@ -144,7 +145,7 @@ const CollectionsTable: React.FC = () => {
             </Table.HeadRow>
           ))}
         </Table.Head>
-        {isLoading || isRefetching || !collections ? (
+        {isLoading || isRefetching || !product_types ? (
           <Table.Body {...getTableBodyProps()}>
             <Table.Row>
               <Table.Cell colSpan={columns.length}>
@@ -158,7 +159,7 @@ const CollectionsTable: React.FC = () => {
           <Table.Body {...getTableBodyProps()}>
             {rows.map((row, index) => {
               prepareRow(row)
-              return <CollectionRow row={row} key={index} />
+              return <TypeRow row={row} key={index} />
             })}
           </Table.Body>
         )}
@@ -167,20 +168,21 @@ const CollectionsTable: React.FC = () => {
   )
 }
 
-const CollectionRow = ({ row }) => {
-  const collection = row.original
-  const { getActions } = useCollectionActions(collection)
+const TypeRow = ({ row }) => {
+  const type = row.original
+  const { getActions } = useTypeActions(type)
 
   return (
     <Table.Row
       color={"inherit"}
-      linkTo={`/a/collections/${collection.id}`}
-      actions={getActions(collection)}
+      linkTo={`/a/types/${type.id}`}
+      actions={getActions(type)}
+      key={type.id}
       {...row.getRowProps()}
     >
       {row.cells.map((cell, index) => {
         return (
-          <Table.Cell {...cell.getCellProps()} key={index}>
+          <Table.Cell key={index} {...cell.getCellProps()}>
             {cell.render("Cell", { index })}
           </Table.Cell>
         )
@@ -188,4 +190,4 @@ const CollectionRow = ({ row }) => {
     </Table.Row>
   )
 }
-export default CollectionsTable
+export default TypesTable
