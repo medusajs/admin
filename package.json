@@ -113,9 +113,9 @@
   },
   "scripts": {
     "build": "gatsby build",
-    "develop": "gatsby develop -p 7000",
+    "develop": "gatsby develop -p 7000 --host 0.0.0.0 --https",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "start": "npm run develop -p 7000 --host 0.0.0.0 --https",
+    "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
