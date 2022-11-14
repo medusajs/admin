@@ -123,7 +123,6 @@ export const createAddPayload = (
         amount: price.amount,
         currency_code: price.region_id ? undefined : price.currency_code,
         region_id: price.region_id,
-        id: price.id || undefined,
       }
     })
 
