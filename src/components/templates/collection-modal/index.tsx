@@ -23,6 +23,7 @@ type CollectionModalProps = {
 type CollectionModalFormData = {
   title: string
   handle: string | undefined
+  description: string | null
 }
 
 const CollectionModal: React.FC<CollectionModalProps> = ({
@@ -54,6 +55,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
       reset({
         title: collection.title,
         handle: collection.handle,
+        description: collection.description,
       })
 
       if (collection.metadata) {
@@ -74,6 +76,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
         {
           title: data.title,
           handle: data.handle,
+          description: data.description ? data.description : undefined,
           metadata: metadata.reduce((acc, next) => {
             return {
               ...acc,
@@ -100,6 +103,7 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
         {
           title: data.title,
           handle: data.handle,
+          description: data.description ? data.description : undefined,
           metadata: metadata.reduce((acc, next) => {
             return {
               ...acc,
@@ -156,6 +160,13 @@ const CollectionModal: React.FC<CollectionModalProps> = ({
                   tooltip={
                     <IconTooltip content="URL Slug for the collection. Will be auto generated if left blank." />
                   }
+                />
+              </div>
+              <div className="flex items-center gap-x-base mt-2">
+                <InputField
+                  label="Description"
+                  placeholder="Women's collection"
+                  {...register("description")}
                 />
               </div>
             </div>
