@@ -1,9 +1,6 @@
 import clsx from "clsx"
 import { navigate } from "gatsby"
 import React from "react"
-import Spinner from "../../atoms/spinner"
-import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
-import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
@@ -77,7 +74,9 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
           {filteringOptions ? (
             <div className="flex mb-2 self-end">
               {Array.isArray(filteringOptions)
-                ? filteringOptions.map((fo) => <FilteringOptions {...fo} />)
+                ? filteringOptions.map((fo, index) => (
+                    <FilteringOptions {...fo} key={index} />
+                  ))
                 : filteringOptions}
             </div>
           ) : (

@@ -1,5 +1,9 @@
 import { navigate, RouteComponentProps, useLocation } from "@reach/router"
-import { useAdminCreateBatchJob, useAdminCreateCollection } from "medusa-react"
+import {
+  useAdminCreateBatchJob,
+  useAdminCreateCollection,
+  useAdminCreateProductType,
+} from "medusa-react"
 import React, { useContext, useEffect, useState } from "react"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Button from "../../../components/fundamentals/button"
@@ -10,6 +14,7 @@ import BodyCard from "../../../components/organisms/body-card"
 import TableViewHeader from "../../../components/organisms/custom-table-header"
 import ExportModal from "../../../components/organisms/export-modal"
 import AddCollectionModal from "../../../components/templates/collection-modal"
+import AddTypeModal from "../../../components/templates/type-modal"
 import CollectionsTable from "../../../components/templates/collections-table"
 import ProductTable from "../../../components/templates/product-table"
 import useNotification from "../../../hooks/use-notification"
@@ -18,8 +23,9 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import ImportProducts from "../batch-job/import"
 import NewProduct from "../new"
 import { PollingContext } from "../../../context/polling"
+import TypesTable from "../../../components/templates/types-table"
 
-const VIEWS = ["products", "collections"]
+const VIEWS = ["products", "collections", "types"]
 
 const Overview = (_props: RouteComponentProps) => {
   const location = useLocation()
@@ -36,10 +42,14 @@ const Overview = (_props: RouteComponentProps) => {
   const notification = useNotification()
 
   const createCollection = useAdminCreateCollection()
+  const createProductType = useAdminCreateProductType()
 
   useEffect(() => {
     if (location.search.includes("?view=collections")) {
       setView("collections")
+    }
+    if (location.search.includes("?view=types")) {
+      setView("types")
     }
   }, [location])
 
@@ -51,6 +61,8 @@ const Overview = (_props: RouteComponentProps) => {
     switch (view) {
       case "products":
         return <ProductTable />
+      case "types":
+        return <TypesTable />
       default:
         return <CollectionsTable />
     }
@@ -67,7 +79,7 @@ const Overview = (_props: RouteComponentProps) => {
               onClick={() => openImportModal()}
             >
               <UploadIcon size={20} />
-              Import Products
+              Import
             </Button>
             <Button
               variant="secondary"
@@ -75,7 +87,7 @@ const Overview = (_props: RouteComponentProps) => {
               onClick={() => openExportModal()}
             >
               <ExportIcon size={20} />
-              Export Products
+              Export
             </Button>
             <Button
               variant="secondary"
@@ -83,7 +95,20 @@ const Overview = (_props: RouteComponentProps) => {
               onClick={openProductCreate}
             >
               <PlusIcon size={20} />
-              New Product
+              New
+            </Button>
+          </div>
+        )
+      case "types":
+        return (
+          <div className="flex space-x-2">
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => setShowNewType(!showNewType)}
+            >
+              <PlusIcon size={20} />
+              New
             </Button>
           </div>
         )
@@ -96,7 +121,7 @@ const Overview = (_props: RouteComponentProps) => {
               onClick={() => setShowNewCollection(!showNewCollection)}
             >
               <PlusIcon size={20} />
-              New Collection
+              New
             </Button>
           </div>
         )
@@ -104,6 +129,7 @@ const Overview = (_props: RouteComponentProps) => {
   }
 
   const [showNewCollection, setShowNewCollection] = useState(false)
+  const [showNewType, setShowNewType] = useState(false)
   const {
     open: openExportModal,
     close: closeExportModal,
@@ -133,6 +159,29 @@ const Overview = (_props: RouteComponentProps) => {
           notification("Success", "Successfully created collection", "success")
           navigate(`/a/collections/${collection.id}`)
           setShowNewCollection(false)
+        },
+        onError: (err) => notification("Error", getErrorMessage(err), "error"),
+      }
+    )
+  }
+
+  const handleCreateProductType = async (data, colMetadata) => {
+    const metadata = colMetadata
+      .filter((m) => m.key && m.value)
+      .reduce((acc, next) => {
+        return {
+          ...acc,
+          [next.key]: next.value,
+        }
+      }, {})
+
+    await createProductType.mutateAsync(
+      { ...data, metadata },
+      {
+        onSuccess: ({ product_type }) => {
+          notification("Success", "Successfully created type", "success")
+          navigate(`/a/types/${product_type.id}`)
+          setShowNewType(false)
         },
         onError: (err) => notification("Error", getErrorMessage(err), "error"),
       }
@@ -182,6 +231,12 @@ const Overview = (_props: RouteComponentProps) => {
         <AddCollectionModal
           onClose={() => setShowNewCollection(!showNewCollection)}
           onSubmit={handleCreateCollection}
+        />
+      )}
+      {showNewType && (
+        <AddTypeModal
+          onClose={() => setShowNewType(!showNewType)}
+          onSubmit={handleCreateProductType}
         />
       )}
       {exportModalOpen && (

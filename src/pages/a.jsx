@@ -18,6 +18,7 @@ import Pricing from "../domain/pricing"
 import ProductsRoute from "../domain/products"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
+import Types from "../domain/types"
 
 const IndexPage = () => {
   useHotkeys("g + o", () => navigate("/a/orders"))
@@ -32,17 +33,18 @@ const Routes = () => {
       <Layout>
         <SEO title="Medusa" />
         <Router basepath="a" className="h-full">
-          <Oauth path="oauth/:app_name"/>
-          <ProductsRoute path="products/*"/>
-          <Collections path="collections/*"/>
+          <Oauth path="oauth/:app_name" />
+          <ProductsRoute path="products/*" />
+          <Collections path="collections/*" />
           <GiftCards path="gift-cards/*" />
           <Orders path="orders/*" />
           <DraftOrders path="draft-orders/*" />
-          <Discounts path="discounts/*"/>
-          <Customers path="customers/*"/>
-          <Pricing path="pricing/*"/>
-          <Settings path="settings/*"/>
+          <Discounts path="discounts/*" />
+          <Customers path="customers/*" />
+          <Pricing path="pricing/*" />
+          <Settings path="settings/*" />
           <SalesChannels path="sales-channels/*" />
+          <Types path="types/*" />
         </Router>
       </Layout>
     </DndProvider>
