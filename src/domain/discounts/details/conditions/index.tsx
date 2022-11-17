@@ -5,15 +5,23 @@ import NumberedItem from "../../../../components/molecules/numbered-item"
 import BodyCard from "../../../../components/organisms/body-card"
 import AddCondition from "./add-condition"
 import { ConditionsProvider } from "./add-condition/conditions-provider"
+import EditConditionsModal from "./edit-condition/edit-condition-modal"
 import { useDiscountConditions } from "./use-discount-conditions"
 
-type ConditionsProps = {
+type DiscountDetailsConditionsProps = {
   discount: Discount
 }
 
-const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
+const DiscountDetailsConditions: React.FC<DiscountDetailsConditionsProps> = ({
+  discount,
+}) => {
   const [show, setShow] = useState(false)
-  const conditions = useDiscountConditions(discount)
+
+  const {
+    conditions,
+    selectedCondition,
+    deSelectCondition,
+  } = useDiscountConditions(discount)
 
   return (
     <ConditionsProvider discount={discount}>
@@ -57,8 +65,16 @@ const Conditions: React.FC<ConditionsProps> = ({ discount }) => {
         )}
       </BodyCard>
       <AddCondition show={show} onClose={() => setShow(false)} />
+      {selectedCondition && (
+        <EditConditionsModal
+          open={!!selectedCondition}
+          condition={selectedCondition}
+          discount={discount}
+          onClose={() => deSelectCondition()}
+        />
+      )}
     </ConditionsProvider>
   )
 }
 
-export default Conditions
+export default DiscountDetailsConditions

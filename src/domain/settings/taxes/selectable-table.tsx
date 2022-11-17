@@ -1,17 +1,15 @@
 import React, { useMemo, useEffect } from "react"
-import clsx from "clsx"
 import { Product, ProductType, ShippingOption } from "@medusajs/medusa"
-import CheckIcon from "../../../components/fundamentals/icons/check-icon"
 import {
   ColumnInstance,
   usePagination,
   useRowSelect,
   useTable,
 } from "react-table"
-import Table, { TablePagination } from "../../../components/molecules/table"
+import Table from "../../../components/molecules/table"
 import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
-import Spinner from "../../../components/atoms/spinner"
 import { PaginationProps } from "../../../types/shared"
+import TableContainer from "../../../components/organisms/table-container"
 
 type SelectableTableProps = {
   showSearch?: boolean
@@ -146,18 +144,32 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({
   return (
     <div>
       <div className="inter-base-semibold my-large">{label}</div>
-      <Table
-        immediateSearchFocus={showSearch}
-        enableSearch={showSearch}
-        searchPlaceholder="Search Products.."
-        handleSearch={onSearch}
-        {...getTableProps()}
+      <TableContainer
+        isLoading={isLoading}
+        hasPagination
+        pagingState={{
+          count: totalCount!,
+          offset: pagination.offset,
+          pageSize: pagination.offset + rows.length,
+          title: objectName!,
+          currentPage: pageIndex + 1,
+          pageCount: pageCount,
+          nextPage: handleNext,
+          prevPage: handlePrev,
+          hasNext: canNextPage,
+          hasPrev: canPreviousPage,
+        }}
+        numberOfRows={pageSize}
       >
-        <Table.Body {...getTableBodyProps()}>
-          {isLoading ? (
-            <Spinner size="large" />
-          ) : (
-            rows.map((row, i) => {
+        <Table
+          immediateSearchFocus={showSearch}
+          enableSearch={showSearch}
+          searchPlaceholder="Search Products.."
+          handleSearch={onSearch}
+          {...getTableProps()}
+        >
+          <Table.Body {...getTableBodyProps()}>
+            {rows.map((row) => {
               prepareRow(row)
               return (
                 <Table.Row {...row.getRowProps()}>
@@ -170,23 +182,10 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({
                   })}
                 </Table.Row>
               )
-            })
-          )}
-        </Table.Body>
-      </Table>
-      <TablePagination
-        count={totalCount!}
-        limit={pagination.limit}
-        offset={pagination.offset}
-        pageSize={pagination.offset + rows.length}
-        title={objectName}
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
+            })}
+          </Table.Body>
+        </Table>
+      </TableContainer>
     </div>
   )
 }

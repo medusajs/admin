@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React, { ReactNode, useReducer } from "react"
+import useToggleState from "../../../hooks/use-toggle-state"
 import Button from "../../fundamentals/button"
 import Modal, { ModalProps } from "../../molecules/modal"
 import LayeredModal, { ILayeredModalContext } from "./layered-modal"
@@ -136,7 +137,6 @@ const SteppedModal: React.FC<SteppedProps> = ({
 
   const resetAndSubmit = () => {
     onSubmit()
-    context.reset()
   }
   return (
     <ModalElement

@@ -49,7 +49,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_TABLE_COLUMNS: Column<Customer>[] = [
         Name <SortingIcon size={16} />
       </div>
     ),
-    accessor: "customer",
+    id: "avatar",
     Cell: ({ row }) => (
       <CustomerAvatarItem customer={row.original} color={getColor(row.index)} />
     ),
@@ -78,7 +78,7 @@ export const CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS: Column<
         Name <SortingIcon size={16} />
       </div>
     ),
-    accessor: "customer",
+    id: "avatar",
     Cell: ({ row }) => (
       <CustomerAvatarItem customer={row.original} color={getColor(row.index)} />
     ),

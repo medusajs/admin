@@ -1,9 +1,8 @@
 import { Currency } from "@medusajs/medusa"
 import { useAdminCurrencies, useAdminUpdateStore } from "medusa-react"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { usePagination, useRowSelect, useSortBy, useTable } from "react-table"
 import Button from "../../../../../components/fundamentals/button"
-import LoadingContainer from "../../../../../components/loading-container"
 import Modal from "../../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../../components/molecules/modal/layered-modal"
 import useNotification from "../../../../../hooks/use-notification"
@@ -21,7 +20,7 @@ const AddCurrenciesScreen = () => {
   const { onClose, store } = useEditCurrenciesModal()
   const { reset, pop } = useContext(LayeredModalContext)
 
-  const { currencies, count, status } = useAdminCurrencies(
+  const { currencies, count, isLoading } = useAdminCurrencies(
     {
       limit: LIMIT,
       offset,
@@ -31,7 +30,7 @@ const AddCurrenciesScreen = () => {
     }
   )
 
-  const { mutate, isLoading } = useAdminUpdateStore()
+  const { mutate, isLoading: isMutating } = useAdminUpdateStore()
   const notification = useNotification()
 
   const onSubmit = (next: () => void) => {
@@ -54,16 +53,15 @@ const AddCurrenciesScreen = () => {
     )
   }
 
-  const filteredData = React.useMemo(() => {
-    const codes = store.currencies.map((curr) => curr.code) || []
-    return currencies?.filter(({ code }) => !codes.includes(code)) || []
-  }, [currencies, store])
+  const data = React.useMemo(() => {
+    return currencies || []
+  }, [currencies])
 
   const columns = useCurrencyColumns()
 
   const tableState = useTable<Currency>(
     {
-      data: filteredData || [],
+      data: data,
       columns,
       manualPagination: true,
       initialState: {
@@ -86,17 +84,15 @@ const AddCurrenciesScreen = () => {
   return (
     <>
       <Modal.Content>
-        <LoadingContainer isLoading={status === "loading"}>
-          <CurrenciesTable
-            setQuery={() => {}}
-            setSelectedRowIds={setSelectedRowIds}
-            count={count || 0}
-            tableState={tableState}
-            setOffset={setOffset}
-            limit={LIMIT}
-            offset={offset}
-          />
-        </LoadingContainer>
+        <CurrenciesTable
+          isLoading={isLoading}
+          setQuery={() => {}}
+          setSelectedRowIds={setSelectedRowIds}
+          count={count || 0}
+          tableState={tableState}
+          setOffset={setOffset}
+          offset={offset}
+        />
       </Modal.Content>
       <Modal.Footer>
         <div className="w-full gap-x-xsmall flex items-center justify-end">
@@ -117,8 +113,8 @@ const AddCurrenciesScreen = () => {
           <Button
             variant="primary"
             size="small"
-            loading={isLoading}
-            disabled={isLoading}
+            loading={isMutating}
+            disabled={isMutating}
             onClick={() =>
               onSubmit(() => {
                 reset()

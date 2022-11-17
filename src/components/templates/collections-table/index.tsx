@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
 import Spinner from "../../atoms/spinner"
-import Table, { TablePagination } from "../../molecules/table"
+import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
+import TableContainer from "../../organisms/table-container"
 import useCollectionActions from "./use-collection-actions"
 import useCollectionTableColumn from "./use-collection-column"
 
@@ -20,12 +21,17 @@ const CollectionsTable: React.FC = () => {
   const [query, setQuery] = useState("")
   const [numPages, setNumPages] = useState(0)
 
-  const debouncedSearchTerm = useDebounce(query, 500)
-  const { collections, isLoading, isRefetching, count } = useAdminCollections({
-    q: debouncedSearchTerm,
-    offset: offset,
-    limit,
-  })
+  const debouncedSearchTerm = useDebounce(query, 300)
+  const { collections, isLoading, isRefetching, count } = useAdminCollections(
+    {
+      q: debouncedSearchTerm,
+      offset: offset,
+      limit,
+    },
+    {
+      keepPreviousData: true,
+    }
+  )
 
   useEffect(() => {
     if (typeof count !== "undefined") {
@@ -71,7 +77,7 @@ const CollectionsTable: React.FC = () => {
     }
   }
 
-  const handleSearch = (q) => {
+  const handleSearch = (q: string) => {
     setOffset(0)
     setQuery(q)
   }
@@ -99,10 +105,27 @@ const CollectionsTable: React.FC = () => {
   }, [collections])
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <TableContainer
+      isLoading={isLoading || isRefetching}
+      hasPagination
+      numberOfRows={limit}
+      pagingState={{
+        count: count!,
+        offset,
+        pageSize: offset + rows.length,
+        title: "Collections",
+        currentPage: pageIndex + 1,
+        pageCount: pageCount,
+        nextPage: handleNext,
+        prevPage: handlePrev,
+        hasNext: canNextPage,
+        hasPrev: canPreviousPage,
+      }}
+    >
       <Table
         enableSearch
         handleSearch={handleSearch}
+        searchValue={query}
         searchPlaceholder="Search Collections"
         filteringOptions={filteringOptions}
         {...getTableProps()}
@@ -140,20 +163,7 @@ const CollectionsTable: React.FC = () => {
           </Table.Body>
         )}
       </Table>
-      <TablePagination
-        count={count!}
-        limit={limit}
-        offset={offset}
-        pageSize={offset + rows.length}
-        title="Collections"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
-    </div>
+    </TableContainer>
   )
 }
 
@@ -168,15 +178,13 @@ const CollectionRow = ({ row }) => {
       actions={getActions(collection)}
       {...row.getRowProps()}
     >
-      {" "}
       {row.cells.map((cell, index) => {
         return (
           <Table.Cell {...cell.getCellProps()}>
-            {" "}
-            {cell.render("Cell", { index })}{" "}
+            {cell.render("Cell", { index })}
           </Table.Cell>
         )
-      })}{" "}
+      })}
     </Table.Row>
   )
 }

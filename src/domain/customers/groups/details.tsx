@@ -62,7 +62,10 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
 
   const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
     groupId,
-    queryObject
+    queryObject,
+    {
+      keepPreviousData: true,
+    }
   )
 
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
@@ -126,7 +129,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     <BodyCard
       title="Customers"
       actionables={actions}
-      className="min-h-0 w-full my-4 min-h-[756px]"
+      className="w-full my-4 min-h-[756px]"
     >
       {showCustomersModal && (
         <EditCustomersTable

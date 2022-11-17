@@ -29,10 +29,14 @@ const NestedPrice = ({ form, nestedPrice }: Props) => {
             "absolute top-1/2 -translate-y-1/2 left-xsmall text-grey-40 transition-all",
             {
               "rotate-90": state,
+            },
+            {
+              hidden: regionPrices.length === 0,
             }
           )}
           type="button"
           onClick={toggle}
+          disabled={regionPrices.length === 0}
         >
           <TriangleRightIcon />
         </button>

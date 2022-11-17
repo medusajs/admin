@@ -1,6 +1,7 @@
 import React from "react"
 import Modal from "../../../../components/molecules/modal"
 import { DiscountConditionType } from "../../types"
+import { getTitle } from "../../utils"
 import EditCollectionConditionSelector from "./condition-tables/edit-condition-tables/collections"
 import EditCustomerGroupConditionSelector from "./condition-tables/edit-condition-tables/customer-groups"
 import EditProductConditionSelector from "./condition-tables/edit-condition-tables/products"
@@ -26,21 +27,6 @@ const EditConditionsModal: React.FC<EditConditionsModalProps> = ({
       </Modal.Body>
     </Modal>
   )
-}
-
-const getTitle = (view: DiscountConditionType) => {
-  switch (view) {
-    case DiscountConditionType.PRODUCTS:
-      return "products"
-    case DiscountConditionType.CUSTOMER_GROUPS:
-      return "groups"
-    case DiscountConditionType.PRODUCT_TAGS:
-      return "tags"
-    case DiscountConditionType.PRODUCT_COLLECTIONS:
-      return "collections"
-    case DiscountConditionType.PRODUCT_TYPES:
-      return "types"
-  }
 }
 
 const Content = ({ view, onClose }: EditConditionsModalProps) => {

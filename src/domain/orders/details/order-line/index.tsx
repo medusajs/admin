@@ -36,10 +36,10 @@ const OrderLine = ({ item, currencyCode }: OrderLineProps) => {
         <div className="flex small:space-x-2 medium:space-x-4 large:space-x-6 mr-3">
           <div className="inter-small-regular text-grey-50">
             {formatAmountWithSymbol({
-              amount: item.unit_price,
+              amount: (item?.total ?? 0) / item.quantity,
               currency: currencyCode,
               digits: 2,
-              tax: item.tax_lines,
+              tax: [],
             })}
           </div>
           <div className="inter-small-regular text-grey-50">
@@ -47,10 +47,10 @@ const OrderLine = ({ item, currencyCode }: OrderLineProps) => {
           </div>
           <div className="inter-small-regular text-grey-90">
             {formatAmountWithSymbol({
-              amount: item.unit_price * item.quantity,
+              amount: item.total ?? 0,
               currency: currencyCode,
               digits: 2,
-              tax: item.tax_lines,
+              tax: [],
             })}
           </div>
         </div>

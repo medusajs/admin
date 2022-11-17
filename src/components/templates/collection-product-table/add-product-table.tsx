@@ -2,11 +2,11 @@ import { useAdminProducts } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { usePagination, useRowSelect, useTable } from "react-table"
 import { useDebounce } from "../../../hooks/use-debounce"
-import Spinner from "../../atoms/spinner"
 import Button from "../../fundamentals/button"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
 import Modal from "../../molecules/modal"
-import Table, { TablePagination } from "../../molecules/table"
+import Table from "../../molecules/table"
+import TableContainer from "../../organisms/table-container"
 import useCollectionProductColumns from "./use-collection-product-columns"
 
 type AddProductsTableProps = {
@@ -160,7 +160,23 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
           <h3 className="inter-xlarge-semibold">Add Products</h3>
         </Modal.Header>
         <Modal.Content>
-          <div className="w-full flex flex-col justify-between h-[650px]">
+          <TableContainer
+            hasPagination
+            numberOfRows={PAGE_SIZE}
+            isLoading={isLoading}
+            pagingState={{
+              count: count!,
+              offset: offset,
+              pageSize: offset + rows.length,
+              title: "Products",
+              currentPage: pageIndex + 1,
+              pageCount: pageCount,
+              nextPage: handleNext,
+              prevPage: handlePrev,
+              hasNext: canNextPage,
+              hasPrev: canPreviousPage,
+            }}
+          >
             <Table
               enableSearch
               handleSearch={handleSearch}
@@ -168,43 +184,24 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
               {...getTableProps()}
               className="flex-grow"
             >
-              {isLoading || !products ? (
-                <div className="inter-small-regular text-grey-40 flex flex-grow justify-center items-center">
-                  <Spinner size="large" variant="secondary" />
-                </div>
-              ) : (
-                <Table.Body {...getTableBodyProps()}>
-                  {rows.map((row) => {
-                    prepareRow(row)
-                    return (
-                      <Table.Row
-                        color={"inherit"}
-                        {...row.getRowProps()}
-                        className="px-base"
-                      >
-                        {row.cells.map((cell, index) => {
-                          return cell.render("Cell", { index })
-                        })}
-                      </Table.Row>
-                    )
-                  })}
-                </Table.Body>
-              )}
+              <Table.Body {...getTableBodyProps()}>
+                {rows.map((row) => {
+                  prepareRow(row)
+                  return (
+                    <Table.Row
+                      color={"inherit"}
+                      {...row.getRowProps()}
+                      className="px-base"
+                    >
+                      {row.cells.map((cell, index) => {
+                        return cell.render("Cell", { index })
+                      })}
+                    </Table.Row>
+                  )
+                })}
+              </Table.Body>
             </Table>
-            <TablePagination
-              count={count!}
-              limit={PAGE_SIZE}
-              offset={offset}
-              pageSize={offset + rows.length}
-              title="Products"
-              currentPage={pageIndex + 1}
-              pageCount={pageCount}
-              nextPage={handleNext}
-              prevPage={handlePrev}
-              hasNext={canNextPage}
-              hasPrev={canPreviousPage}
-            />
-          </div>
+          </TableContainer>
         </Modal.Content>
         <Modal.Footer>
           <div className="flex items-center justify-end gap-x-xsmall w-full">

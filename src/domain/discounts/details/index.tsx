@@ -7,14 +7,19 @@ import DeletePrompt from "../../../components/organisms/delete-prompt"
 import RawJSON from "../../../components/organisms/raw-json"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
-import Conditions from "./conditions"
+import { DiscountFormProvider } from "../new/discount-form/form/discount-form-context"
+import DiscountDetailsConditions from "./conditions"
 import Configurations from "./configurations"
 import General from "./general"
 
 const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
-  const { discount, isLoading } = useAdminDiscount(id!, undefined, {
-    enabled: !!id,
-  })
+  const { discount, isLoading } = useAdminDiscount(
+    id!,
+    { expand: "rule,rule.conditions" },
+    {
+      enabled: !!id,
+    }
+  )
   const [showDelete, setShowDelete] = useState(false)
   const deleteDiscount = useAdminDeleteDiscount(id!)
   const notification = useNotification()
@@ -54,10 +59,12 @@ const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
         </div>
       ) : (
         <div className="flex flex-col gap-y-4">
-          <General discount={discount} />
-          <Configurations discount={discount} />
-          <Conditions discount={discount} />
-          <RawJSON data={discount} title="Raw discount" />
+          <DiscountFormProvider>
+            <General discount={discount} />
+            <Configurations discount={discount} />
+            <DiscountDetailsConditions discount={discount} />
+            <RawJSON data={discount} title="Raw discount" />
+          </DiscountFormProvider>
         </div>
       )}
     </div>

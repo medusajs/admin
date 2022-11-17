@@ -7,7 +7,7 @@ import Actionables from "../../../../../../components/molecules/actionables"
 import {
   ConditionMap,
   DiscountConditionOperator,
-  DiscountConditionType
+  DiscountConditionType,
 } from "../../../../types"
 import EditConditionsModal from "../../edit-conditions-modal"
 import { useDiscountForm } from "../../form/discount-form-context"

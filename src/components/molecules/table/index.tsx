@@ -15,20 +15,6 @@ type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   linkTo?: string
 }
 
-type TablePaginationProps = React.HTMLAttributes<HTMLDivElement> & {
-  title: string
-  currentPage: number
-  pageSize: number
-  count: number
-  offset: number
-  limit: number
-  pageCount: number
-  nextPage: () => void
-  prevPage: () => void
-  hasNext: boolean
-  hasPrev: boolean
-}
-
 type TableCellProps = React.TdHTMLAttributes<HTMLTableCellElement> & {
   linkTo?: string
   name?: string
@@ -48,7 +34,6 @@ export type TableProps = {
   searchPlaceholder?: string
   searchValue?: string
   containerClassName?: string
-  isLoading?: boolean
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
 
@@ -63,8 +48,6 @@ type TableType = {
   Body: TableElement<React.HTMLAttributes<HTMLTableSectionElement>>
   Row: TableElement<TableRowProps>
   Cell: TableElement<TableCellProps>
-  Pagination: React.ForwardRefExoticComponent<TablePaginationProps> &
-    React.RefAttributes<unknown>
 } & TableElement<TableProps>
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
@@ -80,7 +63,6 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
       handleSearch,
       filteringOptions,
       containerClassName,
-      isLoading,
       ...props
     },
     ref
@@ -113,16 +95,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
             )}
           </div>
         </div>
-        <div
-          className={clsx("relative", {
-            "min-h-[256px]": isLoading,
-          })}
-        >
-          {isLoading && (
-            <div className="flex items-center justify-center absolute inset-0 py-32">
-              <Spinner size={"large"} variant={"secondary"} />
-            </div>
-          )}
+        <div className="relative">
           <table
             ref={ref}
             className={clsx("w-full table-auto", className)}
@@ -267,56 +240,5 @@ Table.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
     </tr>
   )
 )
-
-export const TablePagination = ({
-  className,
-  title = "Elements",
-  currentPage,
-  pageCount,
-  pageSize,
-  count,
-  offset,
-  nextPage,
-  prevPage,
-  hasNext,
-  hasPrev,
-}: TablePaginationProps) => {
-  const soothedOffset = count > 0 ? offset + 1 : 0
-  const soothedPageCount = Math.max(1, pageCount)
-
-  return (
-    <div
-      className={clsx(
-        "flex w-full justify-between inter-small-regular text-grey-50 mt-14",
-        className
-      )}
-    >
-      <div>{`${soothedOffset} - ${pageSize} of ${count} ${title}`}</div>
-      <div className="flex space-x-4">
-        <div>{`${currentPage} of ${soothedPageCount}`}</div>
-        <div className="flex space-x-4 items-center">
-          <div
-            className={clsx(
-              { ["text-grey-30"]: !hasPrev },
-              { ["cursor-pointer"]: hasPrev }
-            )}
-            onClick={() => prevPage()}
-          >
-            <ArrowLeftIcon />
-          </div>
-          <div
-            className={clsx(
-              { ["text-grey-30"]: !hasNext },
-              { ["cursor-pointer"]: hasNext }
-            )}
-            onClick={() => nextPage()}
-          >
-            <ArrowRightIcon />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export default Table

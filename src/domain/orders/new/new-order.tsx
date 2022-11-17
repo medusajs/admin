@@ -55,10 +55,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
           {
             option_id: data.shipping_option.value,
             price: data.custom_shipping_price
-              ? persistedPrice(
-                  region?.currency_code!,
-                  data.custom_shipping_price
-                )
+              ? data.custom_shipping_price
               : undefined,
           },
         ],
@@ -104,6 +101,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
           notification("Success", "Order created", "success")
           reset()
           onDismiss()
+          steppedContext.reset()
           navigate(`/a/draft-orders/${draft_order.id}`)
         },
         onError: (error) => {
