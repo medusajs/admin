@@ -1,5 +1,4 @@
 import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
-import { RouteComponentProps } from "@reach/router"
 import { capitalize, sum } from "lodash"
 import {
   useAdminCancelOrder,
@@ -56,9 +55,8 @@ import {
 } from "./templates"
 import OrderEditModal from "../edit/modal"
 import { FeatureFlagContext } from "../../../context/feature-flag"
-import useOrdersExpandParam from "./utils/use-admin-expand-paramter"
 import OrderEditProvider, { OrderEditContext } from "../edit/context"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 type OrderDetailFulfillment = {
   title: string
@@ -116,9 +114,9 @@ const gatherAllFulfillments = (order) => {
   return all
 }
 
-type OrderDetailProps = RouteComponentProps<{ id: string }>
+const OrderDetails = () => {
+  const { id } = useParams()
 
-const OrderDetails = ({ id }: OrderDetailProps) => {
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
   const dialog = useImperativeDialog()
 
@@ -341,11 +339,11 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
                       actionables={
                         isFeatureEnabled("order_editing")
                           ? [
-                            {
-                              label: "Edit Order",
-                              onClick: showModal,
-                            },
-                          ]
+                              {
+                                label: "Edit Order",
+                                onClick: showModal,
+                              },
+                            ]
                           : undefined
                       }
                     >
@@ -581,7 +579,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
                             {order.shipping_address.city},{" "}
                             {
                               isoAlpha2Countries[
-                              order.shipping_address.country_code?.toUpperCase()
+                                order.shipping_address.country_code?.toUpperCase()
                               ]
                             }
                           </span>

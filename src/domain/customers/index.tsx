@@ -6,6 +6,7 @@ import CustomerTable from "../../components/templates/customer-table"
 import CustomerGroups from "./groups"
 import Details from "./details"
 import CustomersPageTableHeader from "./header"
+import { Route, Routes } from "react-router-dom"
 
 const CustomerIndex: React.FC<RouteComponentProps> = () => {
   return (
@@ -23,11 +24,11 @@ const CustomerIndex: React.FC<RouteComponentProps> = () => {
 
 const Customers = () => {
   return (
-    <Router>
-      <CustomerIndex path="/" />
-      <CustomerGroups path="/groups/*" />
-      <Details path=":id" />
-    </Router>
+    <Routes>
+      <Route index element={<CustomerIndex />} />
+      <Route path="/groups/*" element={<CustomerGroups />} />
+      <Route path="/:id" element={<Details />} />
+    </Routes>
   )
 }
 

@@ -23,12 +23,13 @@ const PricingTable = () => {
   const params = usePriceListFilters(location.search, defaultQueryProps)
   const [columns] = usePriceListTableColumns()
 
-  const { price_lists, isLoading, count = 0 } = useAdminPriceLists(
-    params.queryObject,
-    {
-      keepPreviousData: true,
-    }
-  )
+  const {
+    price_lists,
+    isLoading,
+    count = 0,
+  } = useAdminPriceLists(params.queryObject, {
+    keepPreviousData: true,
+  })
 
   useSetSearchParams(params.representationObject)
 

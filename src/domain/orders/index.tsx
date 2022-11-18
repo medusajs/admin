@@ -100,8 +100,8 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
 const Orders = () => {
   return (
     <Routes>
-      <Route path="/" element={<OrderIndex />} />
-      <Route path=":id" element={<Details />} />
+      <Route index element={<OrderIndex />} />
+      <Route path="/:id" element={<Details />} />
     </Routes>
   )
 }

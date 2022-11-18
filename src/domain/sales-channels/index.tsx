@@ -1,14 +1,12 @@
-import React from "react"
-import { Router } from "@reach/router"
-
 import Details from "./pages/details"
+import { Route, Routes } from "react-router-dom"
 
 const SalesChannels = () => {
   return (
-    <Router>
-      <Details path="/" />
-      <Details path="/:id" />
-    </Router>
+    <Routes>
+      <Route index element={<Details />} />
+      <Route path="/:id" element={<Details />} />
+    </Routes>
   )
 }
 

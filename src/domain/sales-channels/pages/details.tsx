@@ -29,7 +29,7 @@ import TwoSplitPane from "../../../components/templates/two-split-pane"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import useToggleState from "../../../hooks/use-toggle-state"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 type ListIndicatorProps = { isActive: boolean }
 
@@ -369,13 +369,12 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
   )
 }
 
-type DetailsProps = { id: string }
-
 /**
  * Sales channels details page container.
  */
-function Details(props: DetailsProps) {
-  const { id: routeSalesChannelId } = props
+function Details() {
+  const { id: routeSalesChannelId } = useParams()
+
   const [filterText, setFilterText] = useState<string>()
   const [showCreateModal, setShowCreateModal] = useState(false)
 

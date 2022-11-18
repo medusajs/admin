@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { difference } from "lodash"
 import { CustomerGroup } from "@medusajs/medusa"
 import {
@@ -21,7 +21,8 @@ import CustomerGroupContext, {
 } from "./context/customer-group-context"
 import useQueryFilters from "../../../hooks/use-query-filters"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import BackButton from "../../../components/atoms/back-button"
 
 /**
  * Default filtering config for querying customer group customers list endpoint.
@@ -59,13 +60,13 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const { q, queryObject, paginate, setQuery } =
     useQueryFilters(defaultQueryProps)
 
-  const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
-    groupId,
-    queryObject,
-    {
-      keepPreviousData: true,
-    }
-  )
+  const {
+    customers = [],
+    isLoading,
+    count,
+  } = useAdminCustomerGroupCustomers(groupId, queryObject, {
+    keepPreviousData: true,
+  })
 
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
   const { mutate: removeCustomers } =
@@ -218,13 +219,13 @@ function CustomerGroupDetailsHeader(props: CustomerGroupDetailsHeaderProps) {
   )
 }
 
-type CustomerGroupDetailsProps = { id: string }
-
 /*
  * Customer groups details page
  */
-function CustomerGroupDetails(p: CustomerGroupDetailsProps) {
-  const { customer_group } = useAdminCustomerGroup(p.id)
+function CustomerGroupDetails() {
+  const { id } = useParams()
+
+  const { customer_group } = useAdminCustomerGroup(id!)
 
   if (!customer_group) {
     return null
@@ -233,10 +234,10 @@ function CustomerGroupDetails(p: CustomerGroupDetailsProps) {
   return (
     <CustomerGroupContextContainer group={customer_group}>
       <div className="-mt-4 pb-4">
-        <Breadcrumb
-          currentPage={customer_group ? customer_group.name : "Customer Group"}
-          previousBreadcrumb="Groups"
-          previousRoute="/a/customers/groups"
+        <BackButton
+          path="/a/customers/groups"
+          label="Back to customer groups"
+          className="mb-4"
         />
         <CustomerGroupDetailsHeader customerGroup={customer_group} />
         <CustomerGroupCustomersList group={customer_group} />

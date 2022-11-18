@@ -1,7 +1,7 @@
-import { RouteComponentProps } from "@reach/router"
 import { useAdminCustomer } from "medusa-react"
 import moment from "moment"
-import React, { useState } from "react"
+import { useState } from "react"
+import { useParams } from "react-router-dom"
 import Avatar from "../../../components/atoms/avatar"
 import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
@@ -16,12 +16,10 @@ import RawJSON from "../../../components/organisms/raw-json"
 import CustomerOrdersTable from "../../../components/templates/customer-orders-table"
 import EditCustomerModal from "./edit"
 
-type CustomerDetailProps = {
-  id: string
-} & RouteComponentProps
+const CustomerDetail = () => {
+  const { id } = useParams()
 
-const CustomerDetail: React.FC<CustomerDetailProps> = ({ id }) => {
-  const { customer, isLoading } = useAdminCustomer(id)
+  const { customer, isLoading } = useAdminCustomer(id!)
   const [showEdit, setShowEdit] = useState(false)
 
   const customerName = () => {

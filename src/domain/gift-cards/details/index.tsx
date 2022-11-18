@@ -1,5 +1,4 @@
 import { AdminPostGiftCardsGiftCardReq } from "@medusajs/medusa"
-import { RouteComponentProps } from "@reach/router"
 import {
   useAdminGiftCard,
   useAdminRegions,
@@ -7,6 +6,7 @@ import {
 } from "medusa-react"
 import moment from "moment"
 import React, { useState } from "react"
+import { useParams } from "react-router-dom"
 import Spinner from "../../../components/atoms/spinner"
 import Badge from "../../../components/fundamentals/badge"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
@@ -23,9 +23,9 @@ import { formatAmountWithSymbol } from "../../../utils/prices"
 import EditGiftCardModal from "./edit-gift-card-modal"
 import UpdateBalanceModal from "./update-balance-modal"
 
-const GiftCardDetails: React.FC<RouteComponentProps<{ id: string }>> = ({
-  id,
-}) => {
+const GiftCardDetails = () => {
+  const { id } = useParams()
+
   const { gift_card: giftCard, isLoading } = useAdminGiftCard(id!, {
     enabled: !!id,
   })

@@ -1,11 +1,10 @@
-import { RouteComponentProps } from "@reach/router"
 import {
   useAdminCollection,
   useAdminDeleteCollection,
   useAdminUpdateCollection,
 } from "medusa-react"
-import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
@@ -22,11 +21,12 @@ import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import { getErrorMessage } from "../../../utils/error-messages"
 
-const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
-  const ensuredPath = location!.pathname.replace("/a/collections/", ``)
-  const { collection, isLoading, refetch } = useAdminCollection(ensuredPath)
-  const deleteCollection = useAdminDeleteCollection(ensuredPath)
-  const updateCollection = useAdminUpdateCollection(ensuredPath)
+const CollectionDetails = () => {
+  const { id } = useParams()
+
+  const { collection, isLoading, refetch } = useAdminCollection(id!)
+  const deleteCollection = useAdminDeleteCollection(id!)
+  const updateCollection = useAdminUpdateCollection(id!)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showAddProducts, setShowAddProducts] = useState(false)
