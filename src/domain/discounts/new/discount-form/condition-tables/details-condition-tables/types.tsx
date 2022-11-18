@@ -1,7 +1,7 @@
 import { useAdminProductTypes } from "medusa-react"
 import React, { useState } from "react"
-import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
+import { SelectableTable } from "../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import { useConditions } from "../../../../details/conditions/add-condition/conditions-provider"
 import {
@@ -10,7 +10,6 @@ import {
 } from "../../../../types"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
-import { SelectableTable } from "../shared/selectable-table"
 import { TypeRow, TypesHeader, useTypesColumns } from "../shared/types"
 import DetailsConditionFooter from "./details-condition-footer"
 
@@ -45,33 +44,27 @@ const DetailsTypeConditionSelector = ({
 
   return (
     <>
-      <Modal.Content isLargeModal={true}>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <ConditionOperator value={operator} onChange={setOperator} />
-            <SelectableTable
-              options={{
-                enableSearch: true,
-                immediateSearchFocus: true,
-                searchPlaceholder: "Search by type...",
-              }}
-              resourceName="Types"
-              totalCount={count || 0}
-              selectedIds={items?.map((c) => c.id)}
-              data={product_types}
-              columns={columns}
-              isLoading={isLoading}
-              onChange={changed}
-              renderRow={TypeRow}
-              renderHeaderGroup={TypesHeader}
-              {...params}
-            />
-          </>
-        )}
+      <Modal.Content>
+        <ConditionOperator value={operator} onChange={setOperator} />
+        <SelectableTable
+          options={{
+            enableSearch: true,
+            immediateSearchFocus: true,
+            searchPlaceholder: "Search by type...",
+          }}
+          resourceName="Types"
+          totalCount={count || 0}
+          selectedIds={items?.map((c) => c.id)}
+          data={product_types}
+          columns={columns}
+          isLoading={isLoading}
+          onChange={changed}
+          renderRow={TypeRow}
+          renderHeaderGroup={TypesHeader}
+          {...params}
+        />
       </Modal.Content>
-      <Modal.Footer isLargeModal>
+      <Modal.Footer>
         <DetailsConditionFooter
           type="product_types"
           items={items}

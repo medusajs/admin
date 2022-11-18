@@ -47,7 +47,7 @@ const CreateShippingOptionModal = ({ open, onClose, region }: Props) => {
         profile_id: data.shipping_profile?.value,
         name: data.name!,
         data: fData,
-        price_type: "flat_rate",
+        price_type: data.price_type!.value,
         provider_id,
         admin_only: !data.store_option,
         amount: data.amount!,

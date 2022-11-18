@@ -53,7 +53,7 @@ const PricesForm = ({ form }: Props) => {
   })
 
   useEffect(() => {
-    if (!regions) {
+    if (!regions || !store || !fields) {
       return
     }
 
@@ -67,9 +67,32 @@ const PricesForm = ({ form }: Props) => {
           includes_tax: reg.includes_tax,
         })
       }
+    })
 
+    store.currencies.forEach((cur) => {
+      if (!fields.some((field) => field.currency_code === cur.code)) {
+        append({
+          id: null,
+          currency_code: cur.code,
+          amount: null,
+          region_id: null,
+          includes_tax: cur.includes_tax,
+        })
+      }
+    })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [regions, store, fields])
+
+  // Ensure that prices are up to date with their respective tax inclusion setting
+  useEffect(() => {
+    if (!regions || !fields || !store) {
+      return
+    }
+
+    regions.forEach((reg) => {
       const regionPrice = fields.findIndex(
-        (field) => field.region_id === reg.id
+        (field) => !!field && field.region_id === reg.id
       )
 
       if (
@@ -82,26 +105,11 @@ const PricesForm = ({ form }: Props) => {
         })
       }
     })
-  }, [regions, fields])
-
-  useEffect(() => {
-    if (!store) {
-      return
-    }
 
     store.currencies.forEach((cur) => {
-      if (!fields.some((field) => field.currency_code === cur.code)) {
-        append({
-          id: null,
-          currency_code: cur.code,
-          amount: null,
-          region_id: null,
-          includes_tax: cur.includes_tax,
-        })
-      }
-
       const currencyPrice = fields.findIndex(
-        (field) => field.currency_code === cur.code
+        (field) =>
+          !!field && !field.region_id && field.currency_code === cur.code
       )
 
       if (
@@ -114,7 +122,9 @@ const PricesForm = ({ form }: Props) => {
         })
       }
     })
-  }, [store, fields])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [regions, store])
 
   const priceObj = useMemo(() => {
     const obj: Record<string, NestedPriceObject> = {}
@@ -141,7 +151,7 @@ const PricesForm = ({ form }: Props) => {
     })
 
     return obj
-  }, [fields])
+  }, [fields, regions])
 
   return (
     <div>

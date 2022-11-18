@@ -38,30 +38,29 @@ const PricingTable = () => {
   }
 
   return (
-    <div className="w-full overflow-y-auto flex flex-col justify-between min-h-[300px] h-full ">
-      <LoadingContainer isLoading={isLoading}>
-        <PriceListTable
-          columns={columns}
-          count={count}
-          priceLists={price_lists || []}
-          options={{
-            enableSearch: true,
-            filter: (
-              <PriceListsFilter
-                filters={params.filters}
-                submitFilters={params.setFilters}
-                clearFilters={resetFilters}
-                tabs={params.availableTabs}
-                onTabClick={params.setTab}
-                activeTab={params.activeFilterTab}
-                onRemoveTab={params.removeTab}
-                onSaveTab={params.saveTab}
-              />
-            ),
-          }}
-          {...params}
-        />
-      </LoadingContainer>
+    <div>
+      <PriceListTable
+        isLoading={isLoading}
+        columns={columns}
+        count={count}
+        priceLists={price_lists || []}
+        options={{
+          enableSearch: true,
+          filter: (
+            <PriceListsFilter
+              filters={params.filters}
+              submitFilters={params.setFilters}
+              clearFilters={resetFilters}
+              tabs={params.availableTabs}
+              onTabClick={params.setTab}
+              activeTab={params.activeFilterTab}
+              onRemoveTab={params.removeTab}
+              onSaveTab={params.saveTab}
+            />
+          ),
+        }}
+        {...params}
+      />
     </div>
   )
 }

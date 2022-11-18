@@ -84,12 +84,12 @@ const CurrentCurrenciesScreen = () => {
       </Modal.Header>
       <Modal.Content>
         <CurrenciesTable
+          isLoading={false}
           setQuery={() => {}}
           setSelectedRowIds={setSelectedRowIds}
           count={store.currencies?.length || 0}
           tableState={tableState}
           setOffset={setOffset}
-          limit={LIMIT}
           offset={offset}
           tableAction={
             <TableActions

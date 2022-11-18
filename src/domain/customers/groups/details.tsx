@@ -59,11 +59,13 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
   const { q, queryObject, paginate, setQuery } =
     useQueryFilters(defaultQueryProps)
 
-  const {
-    customers = [],
-    isLoading,
-    count,
-  } = useAdminCustomerGroupCustomers(groupId, queryObject)
+  const { customers = [], isLoading, count } = useAdminCustomerGroupCustomers(
+    groupId,
+    queryObject,
+    {
+      keepPreviousData: true,
+    }
+  )
 
   const { mutate: addCustomers } = useAdminAddCustomersToCustomerGroup(groupId)
   const { mutate: removeCustomers } =
@@ -125,7 +127,7 @@ function CustomerGroupCustomersList(props: CustomerGroupCustomersListProps) {
     <BodyCard
       title="Customers"
       actionables={actions}
-      className="min-h-0 w-full my-4 min-h-[756px]"
+      className="w-full my-4 min-h-[756px]"
     >
       {showCustomersModal && (
         <EditCustomersTable

@@ -246,10 +246,10 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
                       <div className="flex small:space-x-2 medium:space-x-4 large:space-x-6 mr-3">
                         <div className="inter-small-regular text-grey-50">
                           {formatAmountWithSymbol({
-                            amount: item.unit_price,
-                            currency: region?.currency_code,
+                            amount: (item?.total ?? 0) / item.quantity,
+                            currency: region?.currency_code ?? "",
                             digits: 2,
-                            tax: region?.tax_rate,
+                            tax: [],
                           })}
                         </div>
                         <div className="inter-small-regular text-grey-50">
@@ -257,10 +257,10 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
                         </div>
                         <div className="inter-small-regular text-grey-90">
                           {formatAmountWithSymbol({
-                            amount: item.unit_price * item.quantity,
-                            currency: region?.currency_code,
+                            amount: item.total ?? 0,
+                            currency: region?.currency_code ?? "",
                             digits: 2,
-                            tax: region?.tax_rate,
+                            tax: [],
                           })}
                         </div>
                       </div>

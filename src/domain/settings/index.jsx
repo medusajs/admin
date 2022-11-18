@@ -64,7 +64,7 @@ const SettingsIndex = () => {
       />
       <SettingsCard
         heading={"Personal Information"}
-        description={"Mange your Medusa profile"}
+        description={"Manage your Medusa profile"}
         icon={<HappyIcon />}
         to={`/a/settings/personal-information`}
       />
