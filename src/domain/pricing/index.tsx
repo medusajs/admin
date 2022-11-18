@@ -1,5 +1,3 @@
-import { RouteComponentProps, Router } from "@reach/router"
-import React from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
@@ -8,7 +6,7 @@ import PricingDetails from "./details"
 import New from "./new"
 import PricingTable from "./pricing-table"
 
-const PricingIndex: React.FC<RouteComponentProps> = () => {
+const PricingIndex = () => {
   const navigate = useNavigate()
 
   const actionables = [

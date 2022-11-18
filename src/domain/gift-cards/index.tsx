@@ -1,4 +1,3 @@
-import { Router } from "@reach/router"
 import { Route, Routes } from "react-router-dom"
 import GiftCardDetails from "./details"
 import ManageGiftCard from "./manage"

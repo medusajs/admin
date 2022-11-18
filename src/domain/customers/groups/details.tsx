@@ -9,7 +9,6 @@ import {
   useAdminRemoveCustomersFromCustomerGroup,
 } from "medusa-react"
 
-import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
