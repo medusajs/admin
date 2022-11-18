@@ -1,6 +1,6 @@
 import { PriceList } from "@medusajs/medusa"
 import { debounce } from "lodash"
-import React from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import {
   Column,
   HeaderGroup,
@@ -12,7 +12,9 @@ import {
   UseSortByColumnProps,
   useTable,
 } from "react-table"
-import Table, { TablePagination, TableProps } from "../../molecules/table"
+import { useDebounce } from "../../../hooks/use-debounce"
+import Table, { TableProps } from "../../molecules/table"
+import TableContainer from "../../organisms/table-container"
 import { usePriceListFilters } from "./use-price-list-filters"
 
 /* ******************************************** */
@@ -82,6 +84,7 @@ function PriceListTableRow(props: PriceListTableRowProps) {
 /* ******************************************** */
 
 type PriceListTableProps = ReturnType<typeof usePriceListFilters> & {
+  isLoading?: boolean
   priceLists: PriceList[]
   columns: Array<Column<PriceList>>
   count: number
@@ -94,14 +97,17 @@ type PriceListTableProps = ReturnType<typeof usePriceListFilters> & {
  * Root component of the price lists table.
  */
 export function PriceListTable(props: PriceListTableProps) {
+  const [query, setQuery] = useState("")
+
   const {
     priceLists,
     queryObject,
     count,
     paginate,
-    setQuery,
+    setQuery: setFreeText,
     columns,
     options,
+    isLoading,
   } = props
 
   const tableConfig: TableOptions<PriceList> = {
@@ -138,25 +144,42 @@ export function PriceListTable(props: PriceListTableProps) {
     table.previousPage()
   }
 
-  const handleSearch = (text: string) => {
-    setQuery(text)
+  const debouncedSearchTerm = useDebounce(query, 500)
 
-    if (text) {
-      table.gotoPage(0)
-    }
-  }
+  useEffect(() => {
+    setFreeText(debouncedSearchTerm)
+    table.gotoPage(0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchTerm])
 
-  const debouncedSearch = React.useMemo(() => debounce(handleSearch, 300), [])
+  // const debouncedSearch = React.useMemo(() => debounce(handleSearch, 300), [])
 
   // ********* RENDER *********
 
   return (
-    <>
+    <TableContainer
+      isLoading={isLoading}
+      numberOfRows={queryObject.limit}
+      hasPagination
+      pagingState={{
+        count: count!,
+        offset: queryObject.offset,
+        pageSize: queryObject.offset + table.rows.length,
+        title: "Price Lists",
+        currentPage: table.state.pageIndex + 1,
+        pageCount: table.pageCount,
+        nextPage: handleNext,
+        prevPage: handlePrev,
+        hasNext: table.canNextPage,
+        hasPrev: table.canPreviousPage,
+      }}
+    >
       <Table
         {...table.getTableProps()}
         {...options}
         enableSearch={options.enableSearch}
-        handleSearch={options.enableSearch ? debouncedSearch : undefined}
+        searchValue={query}
+        handleSearch={options.enableSearch ? setQuery : undefined}
         filteringOptions={options.filter}
       >
         {/* HEAD */}
@@ -174,21 +197,6 @@ export function PriceListTable(props: PriceListTableProps) {
           })}
         </Table.Body>
       </Table>
-
-      {/* PAGINATION */}
-      <TablePagination
-        count={count}
-        limit={queryObject.limit}
-        offset={queryObject.offset}
-        pageSize={queryObject.offset + table.rows.length}
-        title="Price Lists"
-        currentPage={table.state.pageIndex + 1}
-        pageCount={table.pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={table.canNextPage}
-        hasPrev={table.canPreviousPage}
-      />
-    </>
+    </TableContainer>
   )
 }

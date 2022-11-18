@@ -11,12 +11,12 @@ type Props = {
   onClose: () => void
 }
 
-type EditCurrenciesModalContext = {
+type EditCurrenciesModalContextType = {
   onClose: () => void
   store: Store
 }
 
-const EditCurrenciesModalContext = createContext<EditCurrenciesModalContext | null>(
+const EditCurrenciesModalContext = createContext<EditCurrenciesModalContextType | null>(
   null
 )
 

@@ -1,7 +1,7 @@
 import { useAdminCustomerGroups } from "medusa-react"
 import React, { useState } from "react"
-import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
+import { SelectableTable } from "../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import {
   AddConditionSelectorProps,
@@ -15,7 +15,6 @@ import {
   CustomerGroupsRow,
   useGroupColumns,
 } from "../shared/groups"
-import { SelectableTable } from "../shared/selectable-table"
 import AddConditionFooter from "./add-condition-footer"
 
 const AddCustomerGroupConditionSelector = ({
@@ -55,30 +54,24 @@ const AddCustomerGroupConditionSelector = ({
   return (
     <>
       <Modal.Content>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <ConditionOperator value={operator} onChange={setOperator} />
-            <SelectableTable
-              options={{
-                enableSearch: true,
-                immediateSearchFocus: true,
-                searchPlaceholder: "Search groups...",
-              }}
-              resourceName="Customer groups"
-              totalCount={count || 0}
-              selectedIds={items.map((i) => i.id)}
-              data={customer_groups}
-              columns={columns}
-              isLoading={isLoading}
-              onChange={changed}
-              renderRow={CustomerGroupsRow}
-              renderHeaderGroup={CustomerGroupsHeader}
-              {...params}
-            />
-          </>
-        )}
+        <ConditionOperator value={operator} onChange={setOperator} />
+        <SelectableTable
+          options={{
+            enableSearch: true,
+            immediateSearchFocus: true,
+            searchPlaceholder: "Search groups...",
+          }}
+          resourceName="Customer groups"
+          totalCount={count || 0}
+          selectedIds={items.map((i) => i.id)}
+          data={customer_groups}
+          columns={columns}
+          isLoading={isLoading}
+          onChange={changed}
+          renderRow={CustomerGroupsRow}
+          renderHeaderGroup={CustomerGroupsHeader}
+          {...params}
+        />
       </Modal.Content>
       <Modal.Footer>
         <AddConditionFooter

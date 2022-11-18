@@ -17,7 +17,11 @@ const AddScreen = () => {
 
   const deboucedQuery = useDebounce(query, 500)
 
-  const { sales_channels: salesChannels, count } = useAdminSalesChannels({
+  const {
+    sales_channels: salesChannels,
+    count,
+    isLoading,
+  } = useAdminSalesChannels({
     q: deboucedQuery,
     limit: LIMIT,
     offset,
@@ -79,7 +83,7 @@ const AddScreen = () => {
     <>
       <Modal.Content>
         <SalesChannelTable
-          salesChannels={filteredData}
+          isLoading={isLoading}
           count={count || 0}
           limit={LIMIT}
           offset={offset}

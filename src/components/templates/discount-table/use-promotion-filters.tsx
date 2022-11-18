@@ -74,6 +74,7 @@ const reducer = (
     case "setQuery": {
       return {
         ...state,
+        offset: 0, // reset offset when query changes
         query: action.payload,
       }
     }

@@ -21,10 +21,10 @@ const getPromotionStatus = (promotion) => {
       (promotion.ends_at && new Date(promotion.ends_at) < date) ||
       (promotion.valid_duration &&
         date >
-        end(
-          parse(promotion.valid_duration),
-          new Date(promotion.starts_at)
-        )) ||
+          end(
+            parse(promotion.valid_duration),
+            new Date(promotion.starts_at)
+          )) ||
       promotion.usage_count === promotion.usage_limit
     ) {
       return PromotionStatus.EXPIRED
@@ -86,60 +86,52 @@ export const usePromotionTableColumns = () => {
       {
         Header: <div className="pl-2">Code</div>,
         accessor: "code",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>
-            <div className="overflow-hidden">
-              <Badge className="rounded-rounded" variant="default">
-                <span className="inter-small-regular">{value}</span>
-              </Badge>
-            </div>
-          </Table.Cell>
+        Cell: ({ cell: { value } }) => (
+          <div className="overflow-hidden">
+            <Badge className="rounded-rounded" variant="default">
+              <span className="inter-small-regular">{value}</span>
+            </Badge>
+          </div>
         ),
       },
       {
         Header: "Description",
         accessor: "rule.description",
-        Cell: ({ cell: { value }, index }) => (
-          <Table.Cell key={index}>{value}</Table.Cell>
-        ),
+        Cell: ({ cell: { value } }) => value,
       },
       {
         Header: <div className="text-right">Amount</div>,
         id: "amount",
-        Cell: ({ row: { original }, index }) => {
+        Cell: ({ row: { original } }) => {
           return (
-            <Table.Cell className="text-right" key={index}>
-              {getPromotionAmount(original)}
-            </Table.Cell>
+            <div className="text-right">{getPromotionAmount(original)}</div>
           )
         },
       },
       {
         Header: <div className="w-[60px]" />,
         id: "currency",
-        Cell: ({ row: { original }, index }) => (
-          <Table.Cell className="px-2 text-grey-40" key={index}>
-            {getCurrencySymbol(original)}
-          </Table.Cell>
+        Cell: ({ row: { original } }) => (
+          <div className="px-2 text-grey-40">{getCurrencySymbol(original)}</div>
         ),
       },
       {
         Header: "Status",
         accessor: "ends_at",
-        Cell: ({ row: { original }, index }) => (
-          <Table.Cell key={index}>{getPromotionStatusDot(original)}</Table.Cell>
+        Cell: ({ row: { original } }) => (
+          <div>{getPromotionStatusDot(original)}</div>
         ),
       },
       {
         Header: () => <div className="text-right">Redemptions</div>,
         accessor: "usage_count",
-        Cell: ({ row: { original }, index }) => {
+        Cell: ({ row: { original } }) => {
           return (
-            <Table.Cell className="text-right" key={index}>
+            <div className="text-right">
               {original.usage_limit > 0
                 ? getUsageCount(original.usage_count)
                 : "-"}
-            </Table.Cell>
+            </div>
           )
         },
       },

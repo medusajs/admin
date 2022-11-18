@@ -1,7 +1,7 @@
 import { useAdminCollections } from "medusa-react"
 import React, { useState } from "react"
-import Spinner from "../../../../../../components/atoms/spinner"
 import Modal from "../../../../../../components/molecules/modal"
+import { SelectableTable } from "../../../../../../components/templates/selectable-table"
 import useQueryFilters from "../../../../../../hooks/use-query-filters"
 import {
   AddConditionSelectorProps,
@@ -15,7 +15,6 @@ import {
 } from "../shared/collection"
 import { defaultQueryProps } from "../shared/common"
 import ConditionOperator from "../shared/condition-operator"
-import { SelectableTable } from "../shared/selectable-table"
 import AddConditionFooter from "./add-condition-footer"
 
 const AddCollectionConditionSelector = ({
@@ -58,30 +57,24 @@ const AddCollectionConditionSelector = ({
   return (
     <>
       <Modal.Content>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <ConditionOperator value={operator} onChange={setOperator} />
-            <SelectableTable
-              options={{
-                enableSearch: true,
-                immediateSearchFocus: true,
-                searchPlaceholder: "Search by title...",
-              }}
-              resourceName="Collections"
-              totalCount={count || 0}
-              selectedIds={items?.map((c) => c.id)}
-              data={collections}
-              columns={columns}
-              isLoading={isLoading}
-              onChange={changed}
-              renderRow={CollectionRow}
-              renderHeaderGroup={CollectionsHeader}
-              {...params}
-            />
-          </>
-        )}
+        <ConditionOperator value={operator} onChange={setOperator} />
+        <SelectableTable
+          options={{
+            enableSearch: true,
+            immediateSearchFocus: true,
+            searchPlaceholder: "Search by title...",
+          }}
+          resourceName="Collections"
+          totalCount={count || 0}
+          selectedIds={items?.map((c) => c.id)}
+          data={collections}
+          columns={columns}
+          isLoading={isLoading}
+          onChange={changed}
+          renderRow={CollectionRow}
+          renderHeaderGroup={CollectionsHeader}
+          {...params}
+        />
       </Modal.Content>
       <Modal.Footer>
         <AddConditionFooter
