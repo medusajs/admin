@@ -1,8 +1,7 @@
 import { AxiosError } from "axios"
-import { navigate } from "gatsby"
+import { useNavigate } from "react-router-dom"
 import React, { ErrorInfo } from "react"
 import { analytics, getAnalyticsConfig } from "../../../services/analytics"
-import { IS_PROD } from "../../constants/is-prod"
 import Button from "../../fundamentals/button"
 
 type State = {
@@ -46,7 +45,7 @@ class ErrorBoundary extends React.Component<Props, State> {
   }
 
   public dismissError = () => {
-    navigate(-1)
+    history.back()
     this.setState({ hasError: false })
   }
 
