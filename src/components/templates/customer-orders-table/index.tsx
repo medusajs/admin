@@ -1,4 +1,3 @@
-import { RouteComponentProps } from "@reach/router"
 import { useAdminOrders } from "medusa-react"
 import moment from "moment"
 import React, { useRef } from "react"
@@ -9,11 +8,9 @@ import Table from "../../molecules/table"
 
 type CustomerOrdersTableProps = {
   customerId: string
-} & RouteComponentProps
+}
 
-const CustomerOrdersTable: React.FC<CustomerOrdersTableProps> = ({
-  customerId,
-}) => {
+const CustomerOrdersTable = ({ customerId }: CustomerOrdersTableProps) => {
   // TODO: Use react-table
   // I've hard coded the limit to 14 for now, since it's quite rare
   // to have customers putting in that many orders. This is only until

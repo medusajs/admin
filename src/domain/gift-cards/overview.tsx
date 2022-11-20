@@ -1,4 +1,3 @@
-import { RouteComponentProps } from "@reach/router"
 import {
   useAdminDeleteProduct,
   useAdminGiftCards,
@@ -22,7 +21,7 @@ import { getErrorMessage } from "../../utils/error-messages"
 import CustomGiftcard from "./custom-giftcard"
 import NewGiftCard from "./new"
 
-const Overview: React.FC<RouteComponentProps> = () => {
+const Overview = () => {
   const { products, isLoading } = useAdminProducts({
     is_giftcard: true,
   })
