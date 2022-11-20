@@ -199,8 +199,9 @@ const DiscountTable: React.FC = () => {
         </Table.Head>
         <Table.Body {...getTableBodyProps()}>
           {rows.map((row) => {
+            const promotion = row.original
             prepareRow(row)
-            return <PromotionRow row={row} />
+            return <PromotionRow row={row} key={promotion.id} />
           })}
         </Table.Body>
       </Table>
