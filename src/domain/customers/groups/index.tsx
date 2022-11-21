@@ -1,6 +1,4 @@
-import React, { useContext } from "react"
-import { RouteComponentProps, Router } from "@reach/router"
-
+import { useContext } from "react"
 import BodyCard from "../../../components/organisms/body-card"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import CustomersPageTableHeader from "../header"
@@ -9,11 +7,12 @@ import CustomerGroupContext, {
   CustomerGroupContextContainer,
 } from "./context/customer-group-context"
 import CustomerGroupsTable from "../../../components/templates/customer-group-table/customer-groups-table"
+import { Route, Routes } from "react-router-dom"
 
 /*
  * Customer groups index page
  */
-function Index(_: RouteComponentProps) {
+function Index() {
   const { showModal } = useContext(CustomerGroupContext)
 
   const actions = [
@@ -45,13 +44,13 @@ function Index(_: RouteComponentProps) {
 /*
  * Customer groups routes
  */
-function CustomerGroups(_: RouteComponentProps) {
+function CustomerGroups() {
   return (
     <CustomerGroupContextContainer>
-      <Router basepath="/a/customers/groups">
-        <Index path="/" />
-        <Details path=":id" />
-      </Router>
+      <Routes>
+        <Route index element={<Index />} />
+        <Route path="/:id" element={<Details />} />
+      </Routes>
     </CustomerGroupContextContainer>
   )
 }

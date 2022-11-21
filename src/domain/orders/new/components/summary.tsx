@@ -64,8 +64,6 @@ const Summary = () => {
     name: "custom_shipping_price",
   })
 
-  console.log(shipping, billing)
-
   const { discount, status } = useAdminGetDiscountByCode(discountCode!, {
     enabled: !!discountCode,
   })
@@ -259,8 +257,8 @@ const Summary = () => {
                 <span>
                   {discount.rule.type !== "free_shipping"
                     ? `${discount.rule.type
-                        .charAt(0)
-                        .toUpperCase()}${discount.rule.type.slice(1)}`
+                      .charAt(0)
+                      .toUpperCase()}${discount.rule.type.slice(1)}`
                     : "Free Shipping"}
                 </span>
               </div>
@@ -270,9 +268,9 @@ const Summary = () => {
                   <span>
                     {discount.rule.type === "fixed"
                       ? `${displayAmount(
-                          regionObj.currency_code,
-                          discount.rule.value
-                        )} ${regionObj.currency_code.toUpperCase()}`
+                        regionObj.currency_code,
+                        discount.rule.value
+                      )} ${regionObj.currency_code.toUpperCase()}`
                       : `${discount.rule.value} %`}
                   </span>
                 </div>

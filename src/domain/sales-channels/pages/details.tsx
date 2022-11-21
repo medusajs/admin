@@ -1,6 +1,5 @@
 import clsx from "clsx"
-import { navigate } from "gatsby"
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState, useMemo } from "react"
 
 import { SalesChannel } from "@medusajs/medusa"
 import {
@@ -30,6 +29,7 @@ import TwoSplitPane from "../../../components/templates/two-split-pane"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import useToggleState from "../../../hooks/use-toggle-state"
+import { useNavigate, useParams } from "react-router-dom"
 
 type ListIndicatorProps = { isActive: boolean }
 
@@ -332,12 +332,10 @@ type SalesChannelDetailsProps = {
 function SalesChannelDetails(props: SalesChannelDetailsProps) {
   const { resetDetails, salesChannel, isDefault } = props
 
-  const [showUpdateModal, openUpdateModal, closeUpdateModal] = useToggleState(
-    false
-  )
-  const [showAddProducts, showProductsAdd, hideProductsAdd] = useToggleState(
-    false
-  )
+  const [showUpdateModal, openUpdateModal, closeUpdateModal] =
+    useToggleState(false)
+  const [showAddProducts, showProductsAdd, hideProductsAdd] =
+    useToggleState(false)
 
   return (
     <div className="col-span-2 rounded-rounded border bg-grey-0 border-grey-20 px-8 py-6 h-[968px]">
@@ -371,21 +369,19 @@ function SalesChannelDetails(props: SalesChannelDetailsProps) {
   )
 }
 
-type DetailsProps = { id: string }
-
 /**
  * Sales channels details page container.
  */
-function Details(props: DetailsProps) {
-  const { id: routeSalesChannelId } = props
+function Details() {
+  const { id: routeSalesChannelId } = useParams()
+
   const [filterText, setFilterText] = useState<string>()
   const [showCreateModal, setShowCreateModal] = useState(false)
 
-  const [
-    activeSalesChannel,
-    setActiveSalesChannel,
-  ] = useState<SalesChannel | null>()
+  const [activeSalesChannel, setActiveSalesChannel] =
+    useState<SalesChannel | null>()
 
+  const navigate = useNavigate()
   const { store } = useAdminStore()
   const { sales_channels } = useAdminSalesChannels()
 

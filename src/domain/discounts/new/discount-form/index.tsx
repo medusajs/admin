@@ -1,7 +1,7 @@
 import { Discount } from "@medusajs/medusa"
-import { navigate } from "gatsby"
 import * as React from "react"
 import { useWatch } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import Button from "../../../../components/fundamentals/button"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../../components/molecules/modal/focus-modal"
@@ -31,6 +31,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   additionalOpen = [],
   isEdit = false,
 }) => {
+  const navigate = useNavigate()
   const notification = useNotification()
   const { handleSubmit, handleReset, control } = useDiscountForm()
 

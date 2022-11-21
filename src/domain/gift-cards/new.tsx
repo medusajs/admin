@@ -1,4 +1,3 @@
-import { navigate } from "gatsby"
 import {
   useAdminCreateProduct,
   useAdminProducts,
@@ -6,6 +5,7 @@ import {
 } from "medusa-react"
 import React from "react"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import FileUploadField from "../../components/atoms/file-upload-field"
 import Button from "../../components/fundamentals/button"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
@@ -42,13 +42,13 @@ const NewGiftCard = ({ onClose }: NewGiftCardProps) => {
   const { store } = useAdminStore()
   const { refetch } = useAdminProducts()
   const { mutate, isLoading } = useAdminCreateProduct()
+  const navigate = useNavigate()
   const notification = useNotification()
 
-  const { register, setValue, handleSubmit, control } = useForm<
-    NewGiftCardFormData
-  >({
-    shouldUnregister: true,
-  })
+  const { register, setValue, handleSubmit, control } =
+    useForm<NewGiftCardFormData>({
+      shouldUnregister: true,
+    })
 
   const { fields, append, remove } = useFieldArray({
     control,

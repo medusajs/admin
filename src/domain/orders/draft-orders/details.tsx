@@ -1,6 +1,4 @@
 import { Address } from "@medusajs/medusa"
-import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
   useAdminDraftOrder,
@@ -9,8 +7,9 @@ import {
   useAdminUpdateDraftOrder,
 } from "medusa-react"
 import moment from "moment"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import ReactJson from "react-json-view"
+import { useNavigate, useParams } from "react-router-dom"
 import Avatar from "../../../components/atoms/avatar"
 import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import Spinner from "../../../components/atoms/spinner"
@@ -34,14 +33,14 @@ import AddressModal from "../details/address-modal"
 import { DisplayTotal, FormattedAddress } from "../details/templates"
 import ConfirmationPrompt from "../../../components/organisms/confirmation-prompt"
 
-type DraftOrderDetailsProps = RouteComponentProps<{ id: string }>
+type DeletePromptData = {
+  resource: string
+  onDelete: () => any
+  show: boolean
+}
 
-const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
-  type DeletePromptData = {
-    resource: string
-    onDelete: () => any
-    show: boolean
-  }
+const DraftOrderDetails = () => {
+  const { id } = useParams()
 
   const initDeleteState: DeletePromptData = {
     resource: "",
@@ -49,19 +48,17 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
     show: false,
   }
 
-  const [deletePromptData, setDeletePromptData] = useState<DeletePromptData>(
-    initDeleteState
-  )
+  const [deletePromptData, setDeletePromptData] =
+    useState<DeletePromptData>(initDeleteState)
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
     type: AddressType
   }>(null)
 
-  const [showMarkAsPaidConfirmation, setShowAsPaidConfirmation] = useState(
-    false
-  )
+  const [showMarkAsPaidConfirmation, setShowAsPaidConfirmation] =
+    useState(false)
 
-  const { draft_order, isLoading } = useAdminDraftOrder(id)
+  const { draft_order, isLoading } = useAdminDraftOrder(id!)
   const { store, isLoading: isLoadingStore } = useAdminStore()
 
   const [paymentLink, setPaymentLink] = useState("")
@@ -74,10 +71,11 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
     }
   }, [isLoading, isLoadingStore])
 
-  const markPaid = useAdminDraftOrderRegisterPayment(id)
-  const cancelOrder = useAdminDeleteDraftOrder(id)
-  const updateOrder = useAdminUpdateDraftOrder(id)
+  const markPaid = useAdminDraftOrderRegisterPayment(id!)
+  const cancelOrder = useAdminDeleteDraftOrder(id!)
+  const updateOrder = useAdminUpdateDraftOrder(id!)
 
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const OrderStatusComponent = () => {

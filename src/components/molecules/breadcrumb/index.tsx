@@ -1,6 +1,6 @@
 import clsx from "clsx"
-import { navigate } from "gatsby"
 import React from "react"
+import { useNavigate } from "react-router-dom"
 import ChevronRightIcon from "../../fundamentals/icons/chevron-right-icon"
 
 type BreadcrumbProps = React.HtmlHTMLAttributes<HTMLDivElement> & {
@@ -16,6 +16,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
   className,
   ...props
 }) => {
+  const navigate = useNavigate()
   return (
     <div
       className={clsx(

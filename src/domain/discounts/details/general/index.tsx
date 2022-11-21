@@ -1,7 +1,7 @@
 import { Discount } from "@medusajs/medusa"
-import { navigate } from "gatsby"
 import { useAdminDeleteDiscount, useAdminUpdateDiscount } from "medusa-react"
 import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import Badge from "../../../../components/fundamentals/badge"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
@@ -20,6 +20,7 @@ type GeneralProps = {
 
 const General: React.FC<GeneralProps> = ({ discount }) => {
   const dialog = useImperativeDialog()
+  const navigate = useNavigate()
   const notification = useNotification()
   const updateDiscount = useAdminUpdateDiscount(discount.id)
   const deletediscount = useAdminDeleteDiscount(discount.id)

@@ -1,7 +1,7 @@
 import { CustomerGroup } from "@medusajs/medusa"
-import { navigate } from "gatsby"
 import { useAdminCustomerGroups } from "medusa-react"
 import React, { useContext } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   HeaderGroup,
   Row,
@@ -90,6 +90,8 @@ type CustomerGroupsTableRowProps = {
  */
 function CustomerGroupsTableRow(props: CustomerGroupsTableRowProps) {
   const { row } = props
+
+  const navigate = useNavigate()
   const { showModal } = useContext(CustomerGroupContext)
 
   const actions = [
@@ -246,9 +248,11 @@ function CustomerGroupsTable(props: CustomerGroupsTableProps) {
 function CustomerGroupsTableContainer() {
   const params = useQueryFilters(defaultQueryProps)
 
-  const { customer_groups, isLoading, count = 0 } = useAdminCustomerGroups(
-    params.queryObject
-  )
+  const {
+    customer_groups,
+    isLoading,
+    count = 0,
+  } = useAdminCustomerGroups(params.queryObject)
 
   useSetSearchParams(params.representationObject)
 

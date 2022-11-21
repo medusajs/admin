@@ -1,7 +1,7 @@
-import { navigate } from "gatsby"
 import { useAdminDeletePriceList } from "medusa-react"
 import moment from "moment"
 import * as React from "react"
+import { useNavigate } from "react-router-dom"
 import Fade from "../../../../components/atoms/fade-wrapper"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
@@ -73,6 +73,7 @@ const PriceListCustomerGroupsFormatter = ({ groups }) => {
 
 const HeadingBodyCard = ({ priceList, setIsOpen, ...props }) => {
   const dialog = useImperativeDialog()
+  const navigate = useNavigate()
   const notification = useNotification()
   const deletePriceList = useAdminDeletePriceList(priceList?.id)
 

@@ -1,12 +1,13 @@
-import { Router } from "@reach/router"
-import { navigate } from "gatsby"
 import React from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { useHotkeys } from "react-hotkeys-hook"
+import { Route, Routes, useNavigate } from "react-router-dom"
+import { WRITE_KEY } from "../components/constants/analytics"
 import PrivateRoute from "../components/private-route"
 import SEO from "../components/seo"
 import Layout from "../components/templates/layout"
+import AnalyticsProvider from "../context/analytics"
 import Collections from "../domain/collections"
 import Customers from "../domain/customers"
 import Discounts from "../domain/discounts"
@@ -20,32 +21,39 @@ import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
 
 const IndexPage = () => {
+  const navigate = useNavigate()
   useHotkeys("g + o", () => navigate("/a/orders"))
   useHotkeys("g + p", () => navigate("/a/products"))
 
-  return <PrivateRoute component={Routes} />
+  return (
+    <PrivateRoute>
+      <DashboardRoutes />
+    </PrivateRoute>
+  )
 }
 
-const Routes = () => {
+const DashboardRoutes = () => {
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Layout>
-        <SEO title="Medusa" />
-        <Router basepath="a" className="h-full">
-          <Oauth path="oauth/:app_name"/>
-          <ProductsRoute path="products/*"/>
-          <Collections path="collections/*"/>
-          <GiftCards path="gift-cards/*" />
-          <Orders path="orders/*" />
-          <DraftOrders path="draft-orders/*" />
-          <Discounts path="discounts/*"/>
-          <Customers path="customers/*"/>
-          <Pricing path="pricing/*"/>
-          <Settings path="settings/*"/>
-          <SalesChannels path="sales-channels/*" />
-        </Router>
-      </Layout>
-    </DndProvider>
+    <AnalyticsProvider writeKey={WRITE_KEY}>
+      <DndProvider backend={HTML5Backend}>
+        <Layout>
+          <SEO title="Medusa" />
+          <Routes className="h-full">
+            <Route path="oauth/:app_name" element={<Oauth />} />
+            <Route path="products/*" element={<ProductsRoute />} />
+            <Route path="collections/*" element={<Collections />} />
+            <Route path="gift-cards/*" element={<GiftCards />} />
+            <Route path="orders/*" element={<Orders />} />
+            <Route path="draft-orders/*" element={<DraftOrders />} />
+            <Route path="discounts/*" element={<Discounts />} />
+            <Route path="customers/*" element={<Customers />} />
+            <Route path="pricing/*" element={<Pricing />} />
+            <Route path="settings/*" element={<Settings />} />
+            <Route path="sales-channels/*" element={<SalesChannels />} />
+          </Routes>
+        </Layout>
+      </DndProvider>
+    </AnalyticsProvider>
   )
 }
 

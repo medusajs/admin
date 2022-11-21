@@ -1,6 +1,5 @@
 import clsx from "clsx"
 import React, { ReactNode, useReducer } from "react"
-import useToggleState from "../../../hooks/use-toggle-state"
 import Button from "../../fundamentals/button"
 import Modal, { ModalProps } from "../../molecules/modal"
 import LayeredModal, { ILayeredModalContext } from "./layered-modal"
@@ -44,28 +43,22 @@ export const SteppedContext = React.createContext(defaultContext)
 const reducer = (state, action) => {
   switch (action.type) {
     case SteppedActions.ENABLENEXTPAGE: {
-      state.nextStepEnabled = true
-      return { ...state }
+      return { ...state, nextStepEnabled: true }
     }
     case SteppedActions.DISABLENEXTPAGE: {
-      state.nextStepEnabled = false
-      return { ...state }
+      return { ...state, nextStepEnabled: false }
     }
     case SteppedActions.GOTONEXTPAGE: {
-      state.currentStep = state.currentStep + 1
-      return { ...state }
+      return { ...state, currentStep: state.currentStep + 1 }
     }
     case SteppedActions.GOTOPREVIOUSPAGE: {
-      if (state.currentStep !== 0) {
-        state.currentStep = state.currentStep - 1
-      }
-      return { ...state }
+      return { ...state, currentStep: Math.max(0, state.currentStep - 1) }
     }
     case SteppedActions.SETPAGE: {
-      if (action.payload > 0) {
-        state.currentStep = action.payload
+      return {
+        ...state,
+        currentStep: action.payload > 0 ? action.payload : state.currentStep,
       }
-      return { ...state }
     }
     case SteppedActions.SUBMIT: {
       return { ...state }
