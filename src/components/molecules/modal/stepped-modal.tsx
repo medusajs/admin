@@ -1,6 +1,5 @@
 import clsx from "clsx"
 import React, { ReactNode, useReducer } from "react"
-import useToggleState from "../../../hooks/use-toggle-state"
 import Button from "../../fundamentals/button"
 import Modal, { ModalProps } from "../../molecules/modal"
 import LayeredModal, { ILayeredModalContext } from "./layered-modal"
@@ -30,13 +29,13 @@ type ISteppedContext = {
 const defaultContext: ISteppedContext = {
   currentStep: 0,
   nextStepEnabled: true,
-  enableNextPage: () => { },
-  disableNextPage: () => { },
-  goToNextPage: () => { },
-  goToPreviousPage: () => { },
-  submit: () => { },
-  reset: () => { },
-  setPage: (page) => { },
+  enableNextPage: () => {},
+  disableNextPage: () => {},
+  goToNextPage: () => {},
+  goToPreviousPage: () => {},
+  submit: () => {},
+  reset: () => {},
+  setPage: (page) => {},
 }
 
 export const SteppedContext = React.createContext(defaultContext)
@@ -150,8 +149,9 @@ const SteppedModal: React.FC<SteppedProps> = ({
               (lastScreenIsSummary &&
                 context.currentStep !== steps.length - 1 && (
                   <div className="flex items-center">
-                    <span className="text-grey-50 inter-small-regular w-[70px] mr-4">{`Step ${context.currentStep + 1
-                      } of ${steps.length}`}</span>
+                    <span className="text-grey-50 inter-small-regular w-[70px] mr-4">{`Step ${
+                      context.currentStep + 1
+                    } of ${steps.length}`}</span>
                     {steps.map((_, i) => (
                       <span
                         key={i}

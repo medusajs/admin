@@ -27,9 +27,9 @@ export type ILayeredModalContext = {
 
 const defaultContext: ILayeredModalContext = {
   screens: [],
-  push: (screen) => { },
-  pop: () => { },
-  reset: () => { },
+  push: (screen) => {},
+  pop: () => {},
+  reset: () => {},
 }
 
 export const LayeredModalContext = React.createContext(defaultContext)

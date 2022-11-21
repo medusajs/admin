@@ -1,12 +1,13 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
-import { useNavigation } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import OSShortcut from "../atoms/os-shortcut"
 import SearchIcon from "../fundamentals/icons/search-icon"
 import SearchModal from "../templates/search-modal"
 
 const SearchBar: React.FC = () => {
   const [showSearchModal, setShowSearchModal] = useState(false)
+  const location = useLocation()
 
   const toggleSearch = (e) => {
     e.preventDefault()
@@ -22,12 +23,9 @@ const SearchBar: React.FC = () => {
   useHotkeys("ctrl+k", toggleSearch, {}, [])
   useHotkeys("/", toggleSearch, {}, [])
 
-  const navigation = useNavigation()
-  React.useEffect(() => {
-    if (navigation.state === "submitting") {
-      closeModal()
-    }
-  }, [navigation.state])
+  useEffect(() => {
+    closeModal()
+  }, [location])
 
   return (
     <>
