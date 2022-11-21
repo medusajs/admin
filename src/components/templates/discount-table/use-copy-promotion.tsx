@@ -10,6 +10,8 @@ const useCopyPromotion = () => {
   const createPromotion = useAdminCreateDiscount()
 
   const handleCopyPromotion = async (promotion) => {
+    console.log(promotion)
+
     const copy: any = {
       code: `${promotion.code}_COPY`,
       is_disabled: promotion.is_disabled,
