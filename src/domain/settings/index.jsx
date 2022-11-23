@@ -16,10 +16,10 @@ import CurrencySettings from "./currencies"
 import Details from "./details"
 import PersonalInformation from "./personal-information"
 import Regions from "./regions"
-import NewRegion from "./regions/new"
 import ReturnReasons from "./return-reasons"
 import Taxes from "./taxes"
 import Users from "./users"
+import KeyIcon from "../../components/fundamentals/icons/key-icon"
 
 const SettingsIndex = () => {
   return (
@@ -85,6 +85,14 @@ const SettingsIndex = () => {
           description={"Control which products are available in which channels"}
           icon={<ChannelsIcon />}
           to={`/a/sales-channels`}
+        />
+      </FeatureToggle>
+      <FeatureToggle featureFlag="publishable_api_keys">
+        <SettingsCard
+          heading={"API key management"}
+          description={"Create and manage API keys"}
+          icon={<KeyIcon />}
+          to={`/a/publishable-api-keys`}
         />
       </FeatureToggle>
     </SettingsOverview>
