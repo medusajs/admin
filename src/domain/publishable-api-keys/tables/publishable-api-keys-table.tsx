@@ -1,24 +1,61 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useTable } from "react-table"
+import moment from "moment"
+
 import { useAdminPublishableApiKeys } from "medusa-react"
+
 import TableContainer from "../../../components/organisms/table-container"
 import Table from "../../../components/molecules/table"
+import { ActionType } from "../../../components/molecules/actionables"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
+import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
+import EditIcon from "../../../components/fundamentals/icons/edit-icon"
+import StatusIndicator from "../../../components/fundamentals/status-indicator"
+import StopIcon from "../../../components/fundamentals/icons/stop-icon"
+import Tooltip from "../../../components/atoms/tooltip"
+import CheckIcon from "../../../components/fundamentals/icons/check-icon"
+import { debounce } from "lodash"
 
 const PAGE_SIZE = 12
 
-const columns = [
+const COLUMNS = [
   {
     accessor: "title",
     Header: <div className="text-gray-500 text-small font-semibold">Name</div>,
     Cell: ({ row: { original } }) => {
-      return <span>{original.title}</span>
+      return <span className="text-gray-900">{original.title}</span>
     },
   },
   {
     accessor: "id",
     Header: <div className="text-gray-500 text-small font-semibold">Token</div>,
     Cell: ({ row: { original } }) => {
-      return <span>{original.id}</span>
+      const [copied, setCopied] = useState(false)
+
+      const onClick = () => {
+        setCopied(true)
+        navigator.clipboard.writeText(original.id)
+      }
+
+      return (
+        <Tooltip
+          delayDuration={300}
+          onMouseLeave={debounce(() => setCopied(false), 1000)}
+          content={
+            copied ? (
+              <span className="flex flex-row gap-1 justify-between items-center">
+                <CheckIcon size={16} className="text-green-700" /> done
+              </span>
+            ) : (
+              <span onClick={onClick} className="cursor-pointer">
+                Copy to clipboard
+              </span>
+            )
+          }
+        >
+          <span className="text-gray-500">{original.id}</span>
+        </Tooltip>
+      )
     },
   },
   {
@@ -27,7 +64,11 @@ const columns = [
       <div className="text-gray-500 text-small font-semibold">Created</div>
     ),
     Cell: ({ row: { original } }) => {
-      return <span>{original.created_at}</span>
+      return (
+        <span className="text-gray-900">
+          {moment(original.created_at).format("MMM Do YYYY, h:mm:ss")}
+        </span>
+      )
     },
   },
   {
@@ -36,7 +77,15 @@ const columns = [
       <div className="text-gray-500 text-small font-semibold">Status</div>
     ),
     Cell: ({ row: { original } }) => {
-      return <span>{original.revoked_at ? "Live" : "Revoked"}</span>
+      return (
+        <span className="text-gray-900">
+          {original.revoked_at ? (
+            <StatusIndicator title="Revoked" variant="danger" />
+          ) : (
+            <StatusIndicator title="Live" variant="success" />
+          )}
+        </span>
+      )
     },
   },
 ]
@@ -45,7 +94,6 @@ const columns = [
  * Container component that displays paginated publishable api keys table.
  */
 function PublishableApiKeysTable() {
-  const [query, setQuery] = useState("")
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
@@ -57,7 +105,7 @@ function PublishableApiKeysTable() {
   } = useAdminPublishableApiKeys()
 
   const table = useTable({
-    columns,
+    columns: COLUMNS,
     data: keys || [],
     manualPagination: true,
     initialState: {
@@ -70,6 +118,38 @@ function PublishableApiKeysTable() {
     autoResetPage: false,
     getRowId: (row) => row.id,
   })
+
+  useEffect(() => {
+    if (typeof count !== "undefined") {
+      setNumPages(Math.ceil(count / PAGE_SIZE))
+    }
+  }, [count])
+
+  const getRowActions = (pubKeyId: string): ActionType[] => {
+    return [
+      {
+        label: "Edit API key details",
+        onClick: () => {},
+        icon: <EditIcon size={16} />,
+      },
+      {
+        label: "Copy token",
+        onClick: () => {},
+        icon: <ClipboardCopyIcon size={16} />,
+      },
+      {
+        label: "Revoke token",
+        onClick: () => {},
+        icon: <StopIcon size={16} />,
+      },
+      {
+        label: "Delete API key",
+        onClick: () => {},
+        icon: <TrashIcon size={16} />,
+        variant: "danger",
+      },
+    ]
+  }
 
   const handleNext = () => {
     if (table.canNextPage) {
@@ -122,7 +202,10 @@ function PublishableApiKeysTable() {
           {table.rows.map((row) => {
             table.prepareRow(row)
             return (
-              <Table.Row {...row.getRowProps()}>
+              <Table.Row
+                {...row.getRowProps()}
+                actions={getRowActions(row.original.id)}
+              >
                 {row.cells.map((cell) => (
                   <Table.Cell {...cell.getCellProps()}>
                     {cell.render("Cell")}
