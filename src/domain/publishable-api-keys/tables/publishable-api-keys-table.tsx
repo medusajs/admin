@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react"
-import { useTable } from "react-table"
+import { Row, useTable } from "react-table"
 import moment from "moment"
+import { debounce } from "lodash"
+import { PublishableApiKey } from "@medusajs/medusa"
 
-import { useAdminPublishableApiKeys } from "medusa-react"
+import {
+  useAdminDeletePublishableApiKey,
+  useAdminPublishableApiKeys,
+  useAdminRevokePublishableApiKey,
+} from "medusa-react"
 
 import TableContainer from "../../../components/organisms/table-container"
 import Table from "../../../components/molecules/table"
@@ -14,7 +20,6 @@ import StatusIndicator from "../../../components/fundamentals/status-indicator"
 import StopIcon from "../../../components/fundamentals/icons/stop-icon"
 import Tooltip from "../../../components/atoms/tooltip"
 import CheckIcon from "../../../components/fundamentals/icons/check-icon"
-import { debounce } from "lodash"
 
 const PAGE_SIZE = 12
 
@@ -78,7 +83,7 @@ const COLUMNS = [
     ),
     Cell: ({ row: { original } }) => {
       return (
-        <span className="text-gray-900">
+        <span className="text-gray-900 min-w-[50px]">
           {original.revoked_at ? (
             <StatusIndicator title="Revoked" variant="danger" />
           ) : (
@@ -89,6 +94,55 @@ const COLUMNS = [
     },
   },
 ]
+
+type PublishableKeyTableRowProps = {
+  row: Row<PublishableApiKey>
+  isRevoked: boolean
+}
+
+function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
+  const { row, isRevoked } = props
+  const pubKeyId = row.original.id
+
+  const { mutateAsync: revokePublicKey } =
+    useAdminRevokePublishableApiKey(pubKeyId)
+
+  const { mutateAsync: deletePublicKey } =
+    useAdminDeletePublishableApiKey(pubKeyId)
+
+  const actions: ActionType[] = [
+    {
+      label: "Edit API key details",
+      onClick: () => {},
+      icon: <EditIcon size={16} />,
+    },
+    {
+      label: "Copy token",
+      onClick: () => navigator.clipboard.writeText(pubKeyId),
+      icon: <ClipboardCopyIcon size={16} />,
+    },
+    {
+      label: "Revoke token",
+      onClick: () => revokePublicKey(),
+      icon: <StopIcon size={16} />,
+      disabled: isRevoked,
+    },
+    {
+      label: "Delete API key",
+      onClick: () => deletePublicKey(),
+      icon: <TrashIcon size={16} />,
+      variant: "danger",
+    },
+  ]
+
+  return (
+    <Table.Row {...props.row.getRowProps()} actions={actions}>
+      {props.row.cells.map((cell) => (
+        <Table.Cell {...cell.getCellProps()}>{cell.render("Cell")}</Table.Cell>
+      ))}
+    </Table.Row>
+  )
+}
 
 /**
  * Container component that displays paginated publishable api keys table.
@@ -124,32 +178,6 @@ function PublishableApiKeysTable() {
       setNumPages(Math.ceil(count / PAGE_SIZE))
     }
   }, [count])
-
-  const getRowActions = (pubKeyId: string): ActionType[] => {
-    return [
-      {
-        label: "Edit API key details",
-        onClick: () => {},
-        icon: <EditIcon size={16} />,
-      },
-      {
-        label: "Copy token",
-        onClick: () => {},
-        icon: <ClipboardCopyIcon size={16} />,
-      },
-      {
-        label: "Revoke token",
-        onClick: () => {},
-        icon: <StopIcon size={16} />,
-      },
-      {
-        label: "Delete API key",
-        onClick: () => {},
-        icon: <TrashIcon size={16} />,
-        variant: "danger",
-      },
-    ]
-  }
 
   const handleNext = () => {
     if (table.canNextPage) {
@@ -202,16 +230,10 @@ function PublishableApiKeysTable() {
           {table.rows.map((row) => {
             table.prepareRow(row)
             return (
-              <Table.Row
-                {...row.getRowProps()}
-                actions={getRowActions(row.original.id)}
-              >
-                {row.cells.map((cell) => (
-                  <Table.Cell {...cell.getCellProps()}>
-                    {cell.render("Cell")}
-                  </Table.Cell>
-                ))}
-              </Table.Row>
+              <PublishableKeyTableRow
+                row={row}
+                isRevoked={!!row.original.revoked_at}
+              />
             )
           })}
         </Table.Body>
