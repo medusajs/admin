@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { Row, useTable } from "react-table"
-import moment from "moment"
-import { debounce } from "lodash"
+import { Row, usePagination, useTable } from "react-table"
 import { PublishableApiKey } from "@medusajs/medusa"
+import { debounce } from "lodash"
+import moment from "moment"
 
 import {
   useAdminDeletePublishableApiKey,
@@ -101,6 +101,9 @@ type PublishableKeyTableRowProps = {
   isRevoked: boolean
 }
 
+/**
+ * Component rendering a single PK table row.
+ */
 function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
   const { row, isRevoked } = props
   const pubKeyId = row.original.id
@@ -192,20 +195,23 @@ function PublishableApiKeysTable(props: PublishableApiKeysTableProps) {
     isLoading,
   } = useAdminPublishableApiKeys({ offset, limit: PAGE_SIZE })
 
-  const table = useTable({
-    columns: COLUMNS,
-    data: keys || [],
-    manualPagination: true,
-    initialState: {
-      pageIndex: currentPage,
-      pageSize: PAGE_SIZE,
-      selectedRowIds: {},
+  const table = useTable(
+    {
+      columns: COLUMNS,
+      data: keys || [],
+      manualPagination: true,
+      initialState: {
+        pageIndex: currentPage,
+        pageSize: PAGE_SIZE,
+        selectedRowIds: {},
+      },
+      pageCount: numPages,
+      autoResetSelectedRows: false,
+      autoResetPage: false,
+      getRowId: (row) => row.id,
     },
-    pageCount: numPages,
-    autoResetSelectedRows: false,
-    autoResetPage: false,
-    getRowId: (row) => row.id,
-  })
+    usePagination
+  )
 
   useEffect(() => {
     if (typeof count !== "undefined") {
