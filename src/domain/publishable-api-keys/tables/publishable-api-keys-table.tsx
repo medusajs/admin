@@ -20,8 +20,9 @@ import StatusIndicator from "../../../components/fundamentals/status-indicator"
 import StopIcon from "../../../components/fundamentals/icons/stop-icon"
 import Tooltip from "../../../components/atoms/tooltip"
 import CheckIcon from "../../../components/fundamentals/icons/check-icon"
+import DeletePrompt from "../../../components/organisms/delete-prompt"
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 2
 
 const COLUMNS = [
   {
@@ -104,6 +105,9 @@ function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
   const { row, isRevoked } = props
   const pubKeyId = row.original.id
 
+  const [showDelete, setShowDelete] = useState(false)
+  const [showRevoke, setShowRevoke] = useState(false)
+
   const { mutateAsync: revokePublicKey } =
     useAdminRevokePublishableApiKey(pubKeyId)
 
@@ -123,31 +127,61 @@ function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
     },
     {
       label: "Revoke token",
-      onClick: () => revokePublicKey(),
+      onClick: () => setShowRevoke(true),
       icon: <StopIcon size={16} />,
       disabled: isRevoked,
     },
     {
       label: "Delete API key",
-      onClick: () => deletePublicKey(),
+      onClick: () => setShowDelete(true),
       icon: <TrashIcon size={16} />,
       variant: "danger",
     },
   ]
 
   return (
-    <Table.Row {...props.row.getRowProps()} actions={actions}>
-      {props.row.cells.map((cell) => (
-        <Table.Cell {...cell.getCellProps()}>{cell.render("Cell")}</Table.Cell>
-      ))}
-    </Table.Row>
+    <>
+      <Table.Row {...props.row.getRowProps()} actions={actions}>
+        {props.row.cells.map((cell) => (
+          <Table.Cell {...cell.getCellProps()}>
+            {cell.render("Cell")}
+          </Table.Cell>
+        ))}
+      </Table.Row>
+
+      {showDelete && (
+        <DeletePrompt
+          handleClose={() => setShowDelete(false)}
+          onDelete={async () => deletePublicKey()}
+          confirmText="Yes, delete"
+          successText="API key deleted"
+          text={`Are you sure you want to delete this public key?`}
+          heading="Delete key"
+        />
+      )}
+
+      {showRevoke && (
+        <DeletePrompt
+          handleClose={() => setShowRevoke(false)}
+          onDelete={async () => revokePublicKey()}
+          confirmText="Yes, revoke"
+          successText="API key revoked"
+          text={`Are you sure you want to revoke this public key?`}
+          heading="Revoke key"
+        />
+      )}
+    </>
   )
+}
+
+type PublishableApiKeysTableProps = {
+  showDetailsModal: () => void
 }
 
 /**
  * Container component that displays paginated publishable api keys table.
  */
-function PublishableApiKeysTable() {
+function PublishableApiKeysTable(props: PublishableApiKeysTableProps) {
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
@@ -156,7 +190,7 @@ function PublishableApiKeysTable() {
     publishable_api_keys: keys,
     count,
     isLoading,
-  } = useAdminPublishableApiKeys()
+  } = useAdminPublishableApiKeys({ offset, limit: PAGE_SIZE })
 
   const table = useTable({
     columns: COLUMNS,
@@ -201,12 +235,12 @@ function PublishableApiKeysTable() {
       isLoading={isLoading}
       numberOfRows={PAGE_SIZE}
       pagingState={{
-        count: count!,
-        offset: offset,
-        pageSize: offset + table.rows.length,
+        count,
+        offset,
         title: "API Keys",
-        currentPage: table.state.pageIndex + 1,
         pageCount: table.pageCount,
+        pageSize: offset + table.rows.length,
+        currentPage: table.state.pageIndex + 1,
         nextPage: handleNext,
         prevPage: handlePrev,
         hasNext: table.canNextPage,

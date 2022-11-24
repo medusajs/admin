@@ -91,12 +91,15 @@ function CreatePublishableKey(props: CreatePublishableKeyProps) {
  * Index page container for the "Publishable API keys" page
  */
 function Index() {
-  const [isModalVisible, openModal, closeModal] = useToggleState(false)
+  const [isCreateModalVisible, openCreateModal, closeCreateModal] =
+    useToggleState(false)
+  const [isDetailsModalVisible, openDetailsModal, closeDetailsModal] =
+    useToggleState(false)
 
   const actions = [
     {
       label: "Create API key",
-      onClick: openModal,
+      onClick: openCreateModal,
     },
   ]
 
@@ -112,9 +115,9 @@ function Index() {
         subtitle="These publishable keys will allow you to authenticate API requests."
         actionables={actions}
       >
-        <PublishableApiKeysTable />
-        <Fade isVisible={isModalVisible} isFullScreen>
-          <CreatePublishableKey closeModal={closeModal} />
+        <PublishableApiKeysTable showDetailsModal={openDetailsModal} />
+        <Fade isVisible={isCreateModalVisible} isFullScreen>
+          <CreatePublishableKey closeModal={closeCreateModal} />
         </Fade>
       </BodyCard>
     </div>

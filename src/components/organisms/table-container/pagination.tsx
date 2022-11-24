@@ -1,5 +1,5 @@
-import clsx from "clsx"
 import React from "react"
+
 import SkeletonProvider from "../../../context/skeleton"
 import Skeleton from "../../atoms/skeleton"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"

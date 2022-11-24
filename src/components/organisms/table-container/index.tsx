@@ -14,6 +14,7 @@ type Props<T extends boolean> = PropsWithChildren<{
 
 const TableContainer = <T extends boolean>({
   children,
+  // TODO: remove (redundant)
   hasPagination,
   pagingState,
   isLoading,
