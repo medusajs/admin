@@ -28,7 +28,7 @@ const useCopyProduct = () => {
       prices: pv.prices.map((p) => {
         return {
           amount: p.amount,
-          currency_code: p.currency_code,
+          currency_code: !p.region_id ? p.currency_code : undefined,
           region_id: p.region_id,
         }
       }),
