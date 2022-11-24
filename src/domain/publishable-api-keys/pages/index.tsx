@@ -12,6 +12,7 @@ import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import InputField from "../../../components/molecules/input"
 import useNotification from "../../../hooks/use-notification"
 import PublishableApiKeysTable from "../tables/publishable-api-keys-table"
+import DetailsModal from "../modals/details"
 
 type CreatePublishableKeyProps = {
   closeModal: () => void
@@ -116,6 +117,10 @@ function Index() {
         actionables={actions}
       >
         <PublishableApiKeysTable showDetailsModal={openDetailsModal} />
+        <DetailsModal
+          isVisible={isDetailsModalVisible}
+          close={closeDetailsModal}
+        />
         <Fade isVisible={isCreateModalVisible} isFullScreen>
           <CreatePublishableKey closeModal={closeCreateModal} />
         </Fade>

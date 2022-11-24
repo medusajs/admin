@@ -99,13 +99,14 @@ const COLUMNS = [
 type PublishableKeyTableRowProps = {
   row: Row<PublishableApiKey>
   isRevoked: boolean
+  showDetails: () => void
 }
 
 /**
  * Component rendering a single PK table row.
  */
 function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
-  const { row, isRevoked } = props
+  const { row, isRevoked, showDetails } = props
   const pubKeyId = row.original.id
 
   const [showDelete, setShowDelete] = useState(false)
@@ -120,7 +121,7 @@ function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
   const actions: ActionType[] = [
     {
       label: "Edit API key details",
-      onClick: () => {},
+      onClick: showDetails,
       icon: <EditIcon size={16} />,
     },
     {
@@ -272,6 +273,7 @@ function PublishableApiKeysTable(props: PublishableApiKeysTableProps) {
             return (
               <PublishableKeyTableRow
                 row={row}
+                showDetails={props.showDetailsModal}
                 isRevoked={!!row.original.revoked_at}
               />
             )
