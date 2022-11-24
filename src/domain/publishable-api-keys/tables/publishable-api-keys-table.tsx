@@ -22,7 +22,7 @@ import Tooltip from "../../../components/atoms/tooltip"
 import CheckIcon from "../../../components/fundamentals/icons/check-icon"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 
-const PAGE_SIZE = 2
+const PAGE_SIZE = 12
 
 const COLUMNS = [
   {
@@ -272,6 +272,16 @@ function PublishableApiKeysTable(props: PublishableApiKeysTableProps) {
           })}
         </Table.Body>
       </Table>
+
+      {/* === PLACEHOLDER === */}
+      {!keys?.length && !isLoading && (
+        <div className="flex justify-center items-center h-[480px] w-[100%]">
+          <span className="text-gray-400">
+            No keys yet, use the above button to create your first publishable
+            key
+          </span>
+        </div>
+      )}
     </TableContainer>
   )
 }
