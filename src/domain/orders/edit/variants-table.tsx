@@ -36,7 +36,6 @@ const VariantsTable: React.FC<Props> = (props) => {
     q: debouncedSearchTerm,
     limit: PAGE_SIZE,
     offset,
-    // @ts-ignore DEPENDS ON core:pull#2270
     region_id: regionId,
     customer_id: customerId,
   })
@@ -198,9 +197,9 @@ const VariantsTable: React.FC<Props> = (props) => {
                   onChange={
                     isReplace
                       ? () => {
-                        toggleAllRowsSelected(false)
-                        toggleRowSelected(row.id, !currentState.checked)
-                      }
+                          toggleAllRowsSelected(false)
+                          toggleRowSelected(row.id, !currentState.checked)
+                        }
                       : selectProps.onChange
                   }
                 />

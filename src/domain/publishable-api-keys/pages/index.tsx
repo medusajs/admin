@@ -11,6 +11,7 @@ import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import InputField from "../../../components/molecules/input"
 import useNotification from "../../../hooks/use-notification"
+import PublishableApiKeysTable from "../tables/publishable-api-keys-table"
 
 type CreatePublishableKeyProps = {
   closeModal: () => void
@@ -111,6 +112,7 @@ function Index() {
         subtitle="These publishable keys will allow you to authenticate API requests."
         actionables={actions}
       >
+        <PublishableApiKeysTable />
         <Fade isVisible={isModalVisible} isFullScreen>
           <CreatePublishableKey closeModal={closeModal} />
         </Fade>
