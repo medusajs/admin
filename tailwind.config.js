@@ -163,7 +163,7 @@ module.exports = {
         },
       },
       heigth: {
-        "18": "4.5rem",
+        18: "4.5rem",
       },
       borderRadius: {
         none: "0px",
@@ -188,8 +188,8 @@ module.exports = {
       },
       width: {
         largeModal: "750px",
-        "18": "4.5rem",
-        "29": "7.25rem",
+        18: "4.5rem",
+        29: "7.25rem",
         inherit: "inherit",
         eventButton: "127px",
       },

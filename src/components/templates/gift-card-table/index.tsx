@@ -1,9 +1,9 @@
-import { RouteComponentProps, useLocation } from "@reach/router"
 import clsx from "clsx"
 import { isEmpty } from "lodash"
 import { useAdminGiftCards } from "medusa-react"
 import qs from "qs"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
 import { usePagination, useTable } from "react-table"
 import Spinner from "../../atoms/spinner"
 import Table from "../../molecules/table"
@@ -15,7 +15,7 @@ const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {}
 
-const GiftCardTable: React.FC<RouteComponentProps> = () => {
+const GiftCardTable = () => {
   const location = useLocation()
 
   const {

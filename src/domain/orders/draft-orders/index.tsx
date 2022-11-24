@@ -43,6 +43,7 @@ const DraftOrderIndex = () => {
             />
           }
           actionables={actions}
+          className="h-fit"
         >
           <DraftOrderTable />
         </BodyCard>

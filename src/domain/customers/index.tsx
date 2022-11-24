@@ -11,6 +11,7 @@ const CustomerIndex = () => {
       <div className="w-full flex flex-col grow">
         <BodyCard
           customHeader={<CustomersPageTableHeader activeView="customers" />}
+          className="h-fit"
         >
           <CustomerTable />
         </BodyCard>

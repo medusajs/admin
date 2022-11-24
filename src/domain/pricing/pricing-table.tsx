@@ -1,12 +1,10 @@
 import { useAdminPriceLists } from "medusa-react"
-import React from "react"
 import useSetSearchParams from "../../hooks/use-set-search-params"
-import LoadingContainer from "../../components/loading-container"
 import { usePriceListTableColumns } from "../../components/templates/price-list-table/use-price-list-columns"
 import { usePriceListFilters } from "../../components/templates/price-list-table/use-price-list-filters"
-import { useLocation } from "@reach/router"
 import { PriceListTable } from "../../components/templates/price-list-table/price-list-table"
 import PriceListsFilter from "../../components/templates/price-list-table/price-list-filters"
+import { useLocation } from "react-router-dom"
 
 /**
  * Default filtering config for querying price lists endpoint.

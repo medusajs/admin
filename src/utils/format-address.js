@@ -5,7 +5,7 @@ import { countryLookup } from "./countries"
  * @param shippingOrBillingAddress
  * @returns {string} Returns a formatted string of the address
  */
-const formatAddress = shippingOrBillingAddress => {
+const formatAddress = (shippingOrBillingAddress) => {
   const postalCode = shippingOrBillingAddress.postal_code || ""
   const city = shippingOrBillingAddress.city || ""
   const province = shippingOrBillingAddress.province || ""
