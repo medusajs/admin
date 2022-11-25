@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 
+import { PublishableApiKey } from "@medusajs/medusa"
 import { useAdminCreatePublishableApiKey } from "medusa-react"
 
 import Breadcrumb from "../../../components/molecules/breadcrumb"
@@ -92,9 +93,9 @@ function CreatePublishableKey(props: CreatePublishableKeyProps) {
  * Index page container for the "Publishable API keys" page
  */
 function Index() {
+  const [selectedKey, setSelectedKey] = useState<PublishableApiKey>()
+
   const [isCreateModalVisible, openCreateModal, closeCreateModal] =
-    useToggleState(false)
-  const [isDetailsModalVisible, openDetailsModal, closeDetailsModal] =
     useToggleState(false)
 
   const actions = [
@@ -116,10 +117,10 @@ function Index() {
         subtitle="These publishable keys will allow you to authenticate API requests."
         actionables={actions}
       >
-        <PublishableApiKeysTable showDetailsModal={openDetailsModal} />
+        <PublishableApiKeysTable showDetailsModal={setSelectedKey} />
         <DetailsModal
-          isVisible={isDetailsModalVisible}
-          close={closeDetailsModal}
+          selectedKey={selectedKey}
+          close={() => setSelectedKey(undefined)}
         />
         <Fade isVisible={isCreateModalVisible} isFullScreen>
           <CreatePublishableKey closeModal={closeCreateModal} />

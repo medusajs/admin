@@ -1,93 +1,98 @@
-import React, { PropsWithChildren, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import React, { useEffect, useState } from "react"
+import { PublishableApiKey } from "@medusajs/medusa"
 
-import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import Button from "../../../components/fundamentals/button"
 import InputField from "../../../components/molecules/input"
-
-type SideModalProps = PropsWithChildren<{
-  close: () => void
-  isVisible: boolean
-}>
-
-/**
- * TODO: extract as a component
- */
-function SideModal(props: SideModalProps) {
-  return (
-    <AnimatePresence>
-      {props.isVisible && (
-        <>
-          <motion.div
-            onClick={props.close}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              zIndex: 99,
-              background: "rgba(0,0,0,.3)",
-            }}
-          ></motion.div>
-          <motion.div
-            initial={{ right: -560 }}
-            style={{
-              position: "fixed",
-              height: "100%",
-              width: 560,
-              background: "white",
-              right: 0,
-              top: 0,
-              zIndex: 9999,
-            }}
-            className="rounded border "
-            animate={{ right: 0 }}
-            exit={{ right: -560 }}
-          >
-            {props.children}
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  )
-}
+import SideModal from "../../../components/molecules/modal/SideModal"
+import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
+import { useAdminUpdatePublishableApiKey } from "medusa-react"
+import useNotification from "../../../hooks/use-notification"
 
 type DetailsModalProps = {
   close: () => void
-  isVisible: boolean
-  name: string
+  selectedKey?: PublishableApiKey
 }
 
 /**
  * Publishable Key details container.
  */
 function DetailsModal(props: DetailsModalProps) {
-  const [name, setName] = useState(props.name)
+  const { close, selectedKey } = props
+  const notification = useNotification()
+
+  const [name, setName] = useState(selectedKey?.title)
+
+  const { mutateAsync: updateKey } = useAdminUpdatePublishableApiKey(
+    selectedKey?.id as string
+  )
+
+  useEffect(() => {
+    if (selectedKey) {
+      setName(selectedKey.title)
+    }
+  }, [selectedKey])
+
+  const onSave = async () => {
+    try {
+      await updateKey({ title: name })
+      close()
+      notification("Success", "Updated the API key", "success")
+    } catch (e) {
+      notification("Error", "Failed to update the API key", "error")
+    }
+  }
+
   return (
-    <SideModal close={props.close} isVisible={props.isVisible}>
-      <div className="p-6">
+    <SideModal close={close} isVisible={!!selectedKey}>
+      <div className="flex flex-col justify-between h-[100%] p-6">
+        {/* === HEADER === */}
+
         <div className="flex items-center justify-between">
           <h3 className="inter-large-semibold text-xl text-gray-900">
             Edit API key details
           </h3>
-          <Button variant="ghost" onClick={props.close}>
+          <Button variant="ghost" onClick={close}>
             <CrossIcon size={20} className="text-grey-40" />
           </Button>
         </div>
-        <div className="h-[1px] bg-gray-200" style={{ margin: "24px -24px" }} />
-        <div>
+        {/* === DIVIDER === */}
+
+        <div
+          className="h-[1px] bg-gray-200 block"
+          style={{ margin: "24px -24px" }}
+        />
+        {/* === BODY === */}
+
+        <div className="flex-grow">
           <InputField
             label="Title"
             type="string"
             name="name"
             value={name}
             placeholder="Name your key"
-            onChange={(ev) => setName(ev.target.value)}
+            onChange={({ target: { value } }) => setName(value)}
           />
+        </div>
+        {/* === DIVIDER === */}
+
+        <div
+          className="h-[1px] bg-gray-200 block"
+          style={{ margin: "24px -24px" }}
+        />
+        {/* === FOOTER === */}
+
+        <div className="flex justify-end gap-2">
+          <Button size="small" variant="ghost" onClick={close}>
+            Cancel
+          </Button>
+          <Button
+            size="small"
+            variant="primary"
+            onClick={onSave}
+            disabled={name === props.selectedKey?.title}
+          >
+            Save and close
+          </Button>
         </div>
       </div>
     </SideModal>

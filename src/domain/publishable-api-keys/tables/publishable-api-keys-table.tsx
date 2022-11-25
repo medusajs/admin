@@ -179,7 +179,7 @@ function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
 }
 
 type PublishableApiKeysTableProps = {
-  showDetailsModal: () => void
+  showDetailsModal: (pubKey: PublishableApiKey) => void
 }
 
 /**
@@ -273,7 +273,7 @@ function PublishableApiKeysTable(props: PublishableApiKeysTableProps) {
             return (
               <PublishableKeyTableRow
                 row={row}
-                showDetails={props.showDetailsModal}
+                showDetails={() => props.showDetailsModal(row.original)}
                 isRevoked={!!row.original.revoked_at}
               />
             )
