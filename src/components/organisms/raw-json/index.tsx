@@ -1,5 +1,4 @@
-import React from "react"
-import ReactJson from "react-json-view"
+import { JsonViewer } from "@textea/json-viewer"
 
 import BodyCard from "../body-card"
 
@@ -12,6 +11,10 @@ type RawJSONProps = {
    * Body card title.
    */
   title: string
+  /**
+   * Root name of the object.
+   */
+  rootName?: string
 }
 
 /**
@@ -21,7 +24,7 @@ type RawJSONProps = {
  * @return {Object} - React element
  */
 function RawJSON(props: RawJSONProps) {
-  const { title, data } = props
+  const { title, data, rootName } = props
 
   if (!data) {
     return null
@@ -39,7 +42,11 @@ function RawJSON(props: RawJSONProps) {
           </span>
         </span>
         <div className="flex flex-grow items-center mt-4">
-          <ReactJson name={false} collapsed={true} src={data} />
+          <JsonViewer
+            defaultInspectDepth={0}
+            rootName={rootName}
+            value={data}
+          />
         </div>
       </div>
     </BodyCard>

@@ -116,7 +116,7 @@ const CustomerDetail = () => {
         )}
       </BodyCard>
       <div className="mt-large">
-        <RawJSON data={customer} title="Raw customer" />
+        <RawJSON data={customer} title="Raw customer" rootName="customer" />
       </div>
 
       {showEdit && customer && (

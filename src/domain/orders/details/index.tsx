@@ -1,4 +1,5 @@
 import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
+import { JsonViewer } from "@textea/json-viewer"
 import { capitalize, sum } from "lodash"
 import {
   useAdminCancelOrder,
@@ -10,7 +11,7 @@ import {
 import moment from "moment"
 import React, { useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
-import ReactJson from "react-json-view"
+import { useNavigate, useParams } from "react-router-dom"
 import Avatar from "../../../components/atoms/avatar"
 import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import Spinner from "../../../components/atoms/spinner"
@@ -30,6 +31,7 @@ import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
 import { AddressType } from "../../../components/templates/address-form"
+import { FeatureFlagContext } from "../../../context/feature-flag"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
@@ -37,6 +39,8 @@ import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
 import extractCustomerName from "../../../utils/extract-customer-name"
 import { formatAmountWithSymbol } from "../../../utils/prices"
+import OrderEditProvider, { OrderEditContext } from "../edit/context"
+import OrderEditModal from "../edit/modal"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
 import EmailModal from "./email-modal"
@@ -53,10 +57,6 @@ import {
   PaymentDetails,
   PaymentStatusComponent,
 } from "./templates"
-import OrderEditModal from "../edit/modal"
-import { FeatureFlagContext } from "../../../context/feature-flag"
-import OrderEditProvider, { OrderEditContext } from "../edit/context"
-import { useNavigate, useParams } from "react-router-dom"
 
 type OrderDetailFulfillment = {
   title: string
@@ -535,10 +535,10 @@ const OrderDetails = () => {
                             </span>
                           </span>
                           <div className="flex flex-grow items-center mt-4">
-                            <ReactJson
-                              name={false}
-                              collapsed={true}
-                              src={method?.data}
+                            <JsonViewer
+                              defaultInspectDepth={0}
+                              value={method?.data}
+                              rootName="method"
                             />
                           </div>
                         </div>
@@ -608,7 +608,7 @@ const OrderDetails = () => {
                   </div>
                 </BodyCard>
                 <div className="mt-large">
-                  <RawJSON data={order} title="Raw order" />
+                  <RawJSON data={order} title="Raw order" rootName="order" />
                 </div>
               </div>
               <Timeline orderId={order.id} />

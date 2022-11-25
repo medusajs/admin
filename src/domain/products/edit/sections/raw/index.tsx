@@ -1,6 +1,5 @@
 import { Product } from "@medusajs/medusa"
-import React from "react"
-import ReactJson from "react-json-view"
+import { JsonViewer } from "@textea/json-viewer"
 import Section from "../../../../../components/organisms/section"
 
 type Props = {
@@ -12,7 +11,11 @@ const RawSection = ({ product }: Props) => {
   return (
     <Section title="Raw Product">
       <div className="mt-base bg-grey-5 rounded-rounded px-base py-xsmall">
-        <ReactJson name={false} collapsed={true} src={product} />
+        <JsonViewer
+          value={product}
+          rootName="product"
+          defaultInspectDepth={0}
+        />
       </div>
     </Section>
   )

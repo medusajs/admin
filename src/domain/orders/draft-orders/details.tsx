@@ -1,4 +1,5 @@
 import { Address } from "@medusajs/medusa"
+import { JsonViewer } from "@textea/json-viewer"
 import {
   useAdminDeleteDraftOrder,
   useAdminDraftOrder,
@@ -8,7 +9,6 @@ import {
 } from "medusa-react"
 import moment from "moment"
 import { useEffect, useState } from "react"
-import ReactJson from "react-json-view"
 import { useNavigate, useParams } from "react-router-dom"
 import Avatar from "../../../components/atoms/avatar"
 import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
@@ -22,6 +22,7 @@ import ImagePlaceholder from "../../../components/fundamentals/image-placeholder
 import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
+import ConfirmationPrompt from "../../../components/organisms/confirmation-prompt"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { AddressType } from "../../../components/templates/address-form"
 import useNotification from "../../../hooks/use-notification"
@@ -31,7 +32,6 @@ import extractCustomerName from "../../../utils/extract-customer-name"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
 import { DisplayTotal, FormattedAddress } from "../details/templates"
-import ConfirmationPrompt from "../../../components/organisms/confirmation-prompt"
 
 type DeletePromptData = {
   resource: string
@@ -469,11 +469,10 @@ const DraftOrderDetails = () => {
               className={"w-full mb-4 min-h-0 h-auto"}
               title="Raw Draft Order"
             >
-              <ReactJson
+              <JsonViewer
                 style={{ marginTop: "15px" }}
-                name={false}
-                collapsed={true}
-                src={draft_order!}
+                rootName={"draft_order"}
+                value={draft_order!}
               />
             </BodyCard>
           </div>
