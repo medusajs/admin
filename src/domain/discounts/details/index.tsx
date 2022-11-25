@@ -65,7 +65,7 @@ const Edit = () => {
             <General discount={discount} />
             <Configurations discount={discount} />
             <DiscountDetailsConditions discount={discount} />
-            <RawJSON data={discount} title="Raw discount" />
+            <RawJSON data={discount} title="Raw discount" rootName="discount" />
           </DiscountFormProvider>
         </div>
       )}

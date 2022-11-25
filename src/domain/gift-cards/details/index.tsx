@@ -5,7 +5,7 @@ import {
   useAdminUpdateGiftCard,
 } from "medusa-react"
 import moment from "moment"
-import React, { useState } from "react"
+import { useState } from "react"
 import { useParams } from "react-router-dom"
 import Spinner from "../../../components/atoms/spinner"
 import Badge from "../../../components/fundamentals/badge"
@@ -142,7 +142,7 @@ const GiftCardDetails = () => {
             </div>
           </BodyCard>
           <div className="mt-large">
-            <RawJSON data={giftCard} title="Raw gift card" />
+            <RawJSON data={giftCard} title="Raw gift card" rootName="product" />
           </div>
         </>
       )}

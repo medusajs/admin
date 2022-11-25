@@ -27,7 +27,11 @@ const PricingDetails = () => {
             <PricesDetails id={price_list?.id} />
           </div>
           <div className="mt-xlarge">
-            <RawJSON data={price_list} title="Raw price list" />
+            <RawJSON
+              data={price_list}
+              title="Raw price list"
+              rootName="price_list"
+            />
           </div>
         </PriceListFormProvider>
       ) : null}
