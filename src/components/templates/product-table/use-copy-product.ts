@@ -2,10 +2,36 @@ import { AdminPostProductsReq, Product } from "@medusajs/medusa"
 import { omit } from "lodash"
 import { useAdminCreateProduct } from "medusa-react"
 import { useNavigate } from "react-router-dom"
-import { v4 } from "uuid"
 import useNotification from "../../../hooks/use-notification"
 import { ProductStatus } from "../../../types/shared"
 import { getErrorMessage } from "../../../utils/error-messages"
+
+/**
+ * Utility function to create a new title and handle for a copied product.
+ * This allows the user to duplicate a product multiple times in a row,
+ * without having to manually change the title and handle of the previous copies.
+ */
+const createCopyTitleAndHandle = (title: string, handle: string) => {
+  const timestamp = new Date().toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  })
+
+  // If the product has already been copied, we want to remove the previous copy title
+  const newTitle = `${title.replace(
+    / \(\d{1,}:\d{1,}:\d{1,}\)$/,
+    ""
+  )} (${timestamp})`
+
+  // If the handle already contains a timestamp, we replace it with the new one
+  const newHandle = `${handle.replace(
+    /-copy(-\d{1,}){3}(-am|pm])*/g,
+    ""
+  )}-copy-${timestamp.replace(/:/g, "-").toLowerCase()}`
+
+  return { newTitle, newHandle }
+}
 
 const useCopyProduct = () => {
   const navigate = useNavigate()
@@ -125,11 +151,13 @@ const useCopyProduct = () => {
 
     base.status = ProductStatus.DRAFT
 
-    // Allows the user to duplicate the same product multiple times without having to rename and change the handle of the copies
-    const uuid = v4().slice(-5)
+    const { newTitle, newHandle } = createCopyTitleAndHandle(
+      title,
+      handle || ""
+    )
 
-    base.title = `${title} (COPY-${uuid})`
-    base.handle = `${handle}-${uuid}`
+    base.title = newTitle
+    base.handle = newHandle
 
     mutate(base as AdminPostProductsReq, {
       onSuccess: ({ product: copiedProduct }) => {
