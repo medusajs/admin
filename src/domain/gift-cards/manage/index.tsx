@@ -1,4 +1,3 @@
-import { RouteComponentProps } from "@reach/router"
 import { useAdminProducts } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import toast from "react-hot-toast"
@@ -15,7 +14,7 @@ import Denominations from "./sections/denominations"
 import Images from "./sections/images"
 import Information from "./sections/information"
 
-const ManageGiftCard: React.FC<RouteComponentProps> = () => {
+const ManageGiftCard = () => {
   const { products } = useAdminProducts(
     {
       is_giftcard: true,

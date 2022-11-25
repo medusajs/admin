@@ -1,4 +1,3 @@
-import { RouteComponentProps } from "@reach/router"
 import { useAdminProduct } from "medusa-react"
 import { useNavigate, useParams } from "react-router-dom"
 import BackButton from "../../../components/atoms/back-button"

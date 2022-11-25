@@ -1,4 +1,3 @@
-import { RouteComponentProps } from "@reach/router"
 import { useAdminCreateBatchJob } from "medusa-react"
 import React, { useContext, useMemo } from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
@@ -16,7 +15,7 @@ import { PollingContext } from "../../context/polling"
 
 const VIEWS = ["orders", "drafts"]
 
-const OrderIndex: React.FC<RouteComponentProps> = () => {
+const OrderIndex = () => {
   const view = "orders"
 
   const { resetInterval } = useContext(PollingContext)
@@ -79,6 +78,7 @@ const OrderIndex: React.FC<RouteComponentProps> = () => {
                 activeView={view}
               />
             }
+            className="h-fit"
             customActionable={actions}
           >
             <OrderTable />

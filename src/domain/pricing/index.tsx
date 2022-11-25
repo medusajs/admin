@@ -23,6 +23,7 @@ const PricingIndex = () => {
         <BodyCard
           actionables={actionables}
           customHeader={<TableViewHeader views={["Price lists"]} />}
+          className="h-fit"
         >
           <PricingTable />
         </BodyCard>
