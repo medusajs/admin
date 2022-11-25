@@ -1,9 +1,9 @@
-import { RouteComponentProps, useLocation } from "@reach/router"
 import clsx from "clsx"
 import { isEmpty } from "lodash"
 import { useAdminOrders } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
 import { usePagination, useTable } from "react-table"
 import { useAnalytics } from "../../../context/analytics"
 import { FeatureFlagContext } from "../../../context/feature-flag"
@@ -21,7 +21,7 @@ const defaultQueryProps = {
     "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
 }
 
-const OrderTable: React.FC<RouteComponentProps> = () => {
+const OrderTable = () => {
   const location = useLocation()
 
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)

@@ -1,4 +1,3 @@
-import { RouteComponentProps } from "@reach/router"
 import { useAdminStore } from "medusa-react"
 import ReactJson from "react-json-view"
 import { useNavigate } from "react-router-dom"
@@ -13,7 +12,7 @@ import CurrencyTaxSetting from "./components/currency-tax-setting"
 import DefaultStoreCurrency from "./components/default-store-currency"
 import StoreCurrencies from "./components/store-currencies"
 
-const CurrencySettings = (_props: RouteComponentProps) => {
+const CurrencySettings = () => {
   const navigate = useNavigate()
   const { trackCurrencies } = useAnalytics()
   const { store, status, error } = useAdminStore({

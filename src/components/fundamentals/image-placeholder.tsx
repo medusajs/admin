@@ -1,4 +1,3 @@
-import React from "react"
 import ImagePlaceholderIcon from "./icons/image-placeholder-icon"
 
 const ImagePlaceholder = () => {

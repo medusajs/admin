@@ -9,6 +9,7 @@
   },
   "plugins": [
     "eslint-plugin-prettier",
+    "unused-imports",
     "react",
     "@typescript-eslint",
     "react-hooks"
@@ -27,7 +28,6 @@
     "no-unused-expressions": "off",
     "camelcase": "off",
     "no-invalid-this": "off",
-    "no-unused-vars": "off",
     "spaced-comment": ["error", "always", { "markers": ["/"] }],
     "react/prop-types": "off", // Disable prop-types as we use TypeScript for type checking
     "react-hooks/rules-of-hooks": 1, // Checks rules of Hooks
@@ -35,7 +35,17 @@
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-implicit-any": 0,
-    "@typescript-eslint/no-unused-vars": 0
+    "@typescript-eslint/no-unused-vars": 0,
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ]
   },
   "settings": {
     "react": {

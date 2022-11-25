@@ -27,6 +27,7 @@ const DiscountIndex = () => {
         <BodyCard
           actionables={actionables}
           customHeader={<TableViewHeader views={["discounts"]} />}
+          className="h-fit"
         >
           <DiscountTable />
         </BodyCard>

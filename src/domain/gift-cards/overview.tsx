@@ -1,7 +1,5 @@
-import { RouteComponentProps } from "@reach/router"
 import {
   useAdminDeleteProduct,
-  useAdminGiftCards,
   useAdminProducts,
   useAdminStore,
   useAdminUpdateProduct,
@@ -22,12 +20,11 @@ import { getErrorMessage } from "../../utils/error-messages"
 import CustomGiftcard from "./custom-giftcard"
 import NewGiftCard from "./new"
 
-const Overview: React.FC<RouteComponentProps> = () => {
+const Overview = () => {
   const { products, isLoading } = useAdminProducts({
     is_giftcard: true,
   })
   const { store } = useAdminStore()
-  const { gift_cards: giftCards } = useAdminGiftCards()
   const [showCreate, setShowCreate] = useState(false)
   const [showCreateCustom, setShowCreateCustom] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
@@ -115,6 +112,7 @@ const Overview: React.FC<RouteComponentProps> = () => {
                 title="History"
                 subtitle="See the history of purchased Gift Cards"
                 actionables={actionables}
+                className="h-fit"
               >
                 <GiftCardTable />
               </BodyCard>

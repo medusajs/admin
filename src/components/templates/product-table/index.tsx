@@ -1,13 +1,12 @@
-import { useLocation } from "@reach/router"
 import { isEmpty } from "lodash"
 import { useAdminProducts } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
 import { usePagination, useTable } from "react-table"
 import { useAnalytics } from "../../../context/analytics"
 import { useFeatureFlag } from "../../../context/feature-flag"
 import ProductsFilter from "../../../domain/products/filter-dropdown"
-import Spinner from "../../atoms/spinner"
 import Table from "../../molecules/table"
 import TableContainer from "../../organisms/table-container"
 import ProductOverview from "./overview"
@@ -18,8 +17,6 @@ import { useProductFilters } from "./use-product-filters"
 const DEFAULT_PAGE_SIZE = 15
 const DEFAULT_PAGE_SIZE_TILE_VIEW = 18
 
-type ProductTableProps = {}
-
 const defaultQueryProps = {
   fields: "id,title,thumbnail,status,handle,collection_id",
   expand:
@@ -27,7 +24,7 @@ const defaultQueryProps = {
   is_giftcard: false,
 }
 
-const ProductTable: React.FC<ProductTableProps> = () => {
+const ProductTable = () => {
   const location = useLocation()
 
   const { isFeatureEnabled } = useFeatureFlag()
@@ -132,7 +129,7 @@ const ProductTable: React.FC<ProductTableProps> = () => {
     nextPage,
     previousPage,
     // Get the state from the instance
-    state: { pageIndex, pageSize },
+    state: { pageIndex },
   } = useTable(
     {
       columns,

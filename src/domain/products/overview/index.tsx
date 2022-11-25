@@ -174,6 +174,7 @@ const Overview = () => {
                 activeView={view}
               />
             }
+            className="h-fit"
           >
             <CurrentView />
           </BodyCard>
