@@ -146,30 +146,21 @@ export interface NotificationEvent extends TimelineEvent {
 }
 
 export const useBuildTimeline = (orderId: string) => {
-  const {
-    order,
-    isLoading: orderLoading,
-    isError: orderError,
-    refetch,
-  } = useAdminOrder(orderId, {})
+  const { order, refetch } = useAdminOrder(orderId, {})
 
   const { order_edits: edits } = useAdminOrderEdits({ order_id: orderId })
 
-  const {
-    notes,
-    isLoading: notesLoading,
-    isError: notesError,
-  } = useAdminNotes({ resource_id: orderId, limit: 100, offset: 0 })
+  const { isFeatureEnabled } = useContext(FeatureFlagContext)
 
-  const {
-    notifications,
-    isLoading: notificationsLoading,
-    isError: notificationsError,
-  } = useAdminNotifications({ resource_id: orderId })
+  const { notes } = useAdminNotes({
+    resource_id: orderId,
+    limit: 100,
+    offset: 0,
+  })
+
+  const { notifications } = useAdminNotifications({ resource_id: orderId })
 
   const events: TimelineEvent[] | undefined = useMemo(() => {
-    const { isFeatureEnabled } = useContext(FeatureFlagContext)
-
     if (!order) {
       return undefined
     }
@@ -338,7 +329,7 @@ export const useBuildTimeline = (orderId: string) => {
         type: "return",
         noNotification: event.no_notification,
         orderId: order.id,
-        raw: (event as unknown) as Return,
+        raw: event as unknown as Return,
         refunded: getWasRefundClaim(event.claim_order_id, order),
       } as ReturnEvent)
 
@@ -374,7 +365,7 @@ export const useBuildTimeline = (orderId: string) => {
           event.payment_status !== "captured" ? event.cart_id : undefined,
         canceledAt: event.canceled_at,
         orderId: event.order_id,
-        raw: (event as unknown) as Swap,
+        raw: event as unknown as Swap,
       } as ExchangeEvent)
 
       if (
@@ -513,18 +504,7 @@ export const useBuildTimeline = (orderId: string) => {
     events[events.length - 1].first = true
 
     return events
-  }, [
-    order,
-    edits,
-    orderLoading,
-    orderError,
-    notes,
-    notesLoading,
-    notesError,
-    notifications,
-    notificationsLoading,
-    notificationsError,
-  ])
+  }, [order, edits, notes, notifications, isFeatureEnabled])
 
   return { events, refetch }
 }
