@@ -1,10 +1,9 @@
 import { Discount } from "@medusajs/medusa"
-import { useLocation } from "@reach/router"
-import React from "react"
+import { useLocation } from "react-router-dom"
 import DiscountForm from "./discount-form"
 import { DiscountFormProvider } from "./discount-form/form/discount-form-context"
 
-const New: React.FC = () => {
+const New = () => {
   const location = useLocation()
   const toDuplicate = location?.state?.discount as Discount | undefined
 
