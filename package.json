@@ -9,6 +9,9 @@
     "postcss": "^8.4.5",
     "@types/react": "^18.0.21"
   },
+  "engines" : { 
+    "node" : ">=16.0.0"
+  },
   "dependencies": {
     "@hookform/error-message": "^2.0.0",
     "@medusajs/medusa": "^1.6.1",
