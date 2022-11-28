@@ -379,6 +379,7 @@ const DraftOrderDetails = () => {
                         <JsonViewer
                           rootName={"shipping_method"}
                           value={method?.data}
+                          defaultInspectDepth={0}
                         />
                       </div>
                     </div>
