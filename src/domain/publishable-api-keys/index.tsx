@@ -6,7 +6,6 @@ const PublishableApiKeysRoute = () => {
   return (
     <Routes>
       <Route index element={<Index />} />
-      {/*<Route path="/:id" element={} />*/}
     </Routes>
   )
 }

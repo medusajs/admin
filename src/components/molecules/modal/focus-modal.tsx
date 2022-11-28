@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React from "react"
+
 import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import { ReactFCWithChildren } from "../../../types/utils"

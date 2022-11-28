@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react"
 import { PublishableApiKey } from "@medusajs/medusa"
 
 import Button from "../../../components/fundamentals/button"
 import InputField from "../../../components/molecules/input"
-import SideModal from "../../../components/molecules/modal/SideModal"
+import SideModal from "../../../components/molecules/modal/side-modal"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import { useAdminUpdatePublishableApiKey } from "medusa-react"
 import useNotification from "../../../hooks/use-notification"

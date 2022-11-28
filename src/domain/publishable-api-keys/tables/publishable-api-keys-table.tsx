@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react"
-import { Row, usePagination, useTable } from "react-table"
-import { PublishableApiKey } from "@medusajs/medusa"
-import { debounce } from "lodash"
 import moment from "moment"
+import { debounce } from "lodash"
+import { Column, Row, usePagination, useTable } from "react-table"
 
 import {
   useAdminDeletePublishableApiKey,
   useAdminPublishableApiKeys,
   useAdminRevokePublishableApiKey,
 } from "medusa-react"
+import { PublishableApiKey } from "@medusajs/medusa"
 
 import TableContainer from "../../../components/organisms/table-container"
 import Table from "../../../components/molecules/table"
@@ -24,7 +23,7 @@ import DeletePrompt from "../../../components/organisms/delete-prompt"
 
 const PAGE_SIZE = 12
 
-const COLUMNS = [
+const COLUMNS: Column<PublishableApiKey>[] = [
   {
     accessor: "title",
     Header: <div className="text-gray-500 text-small font-semibold">Name</div>,
