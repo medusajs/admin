@@ -3,7 +3,6 @@ import React, { useMemo } from "react"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import Badge from "../../fundamentals/badge"
 import StatusDot from "../../fundamentals/status-indicator"
-import Table from "../../molecules/table"
 
 enum PromotionStatus {
   SCHEDULED = "SCHEDULED",
@@ -127,7 +126,9 @@ export const usePromotionTableColumns = () => {
         accessor: "usage_count",
         Cell: ({ row: { original } }) => {
           return (
-            <div className="text-right">{getUsageCount(original.usage_count)}</div>
+            <div className="text-right">
+              {getUsageCount(original.usage_count)}
+            </div>
           )
         },
       },
