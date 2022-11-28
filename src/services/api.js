@@ -1,4 +1,4 @@
-import medusaRequest, { multipartRequest } from "./request"
+import medusaRequest from "./request"
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -615,7 +615,7 @@ export default {
         formData.append("files", f)
       }
 
-      return multipartRequest("/admin/uploads", formData)
+      return medusaRequest("POST", "/admin/uploads", formData)
     },
   },
 
