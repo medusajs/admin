@@ -21,10 +21,10 @@ const getPromotionStatus = (promotion) => {
       (promotion.ends_at && new Date(promotion.ends_at) < date) ||
       (promotion.valid_duration &&
         date >
-          end(
-            parse(promotion.valid_duration),
-            new Date(promotion.starts_at)
-          )) ||
+        end(
+          parse(promotion.valid_duration),
+          new Date(promotion.starts_at)
+        )) ||
       promotion.usage_count === promotion.usage_limit
     ) {
       return PromotionStatus.EXPIRED
@@ -127,11 +127,7 @@ export const usePromotionTableColumns = () => {
         accessor: "usage_count",
         Cell: ({ row: { original } }) => {
           return (
-            <div className="text-right">
-              {original.usage_limit > 0
-                ? getUsageCount(original.usage_count)
-                : "-"}
-            </div>
+            <div className="text-right">{getUsageCount(original.usage_count)}</div>
           )
         },
       },
