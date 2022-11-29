@@ -376,10 +376,10 @@ const DraftOrderDetails = () => {
                         </span>
                       </span>
                       <div className="flex flex-grow items-center mt-4">
-                        <ReactJson
-                          name={false}
-                          collapsed={true}
-                          src={method?.data}
+                        <JsonViewer
+                          style={{ marginTop: "15px" }}
+                          rootName={"data"}
+                          value={method?.data}
                         />
                       </div>
                     </div>
