@@ -5,6 +5,7 @@ import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 type FocusModalElementProps = {
   className?: string
+  children?: React.ReactNode
 }
 
 type FocusModalProps = React.FC<FocusModalElementProps> & {
@@ -18,6 +19,7 @@ type BasicFocusModalProps = {
   onSubmit: (e) => void
   cancelText?: string
   submitText?: string
+  children?: React.ReactNode
 }
 
 const FocusModal: FocusModalProps = ({ className, children }) => (
