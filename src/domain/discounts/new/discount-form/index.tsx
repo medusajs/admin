@@ -28,7 +28,6 @@ type DiscountFormProps = {
 const DiscountForm: React.FC<DiscountFormProps> = ({
   discount,
   closeForm,
-  additionalOpen = [],
   isEdit = false,
 }) => {
   const navigate = useNavigate()
@@ -117,7 +116,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
             </h1>
             <Accordion
               className="pt-7 text-grey-90"
-              defaultValue={["discount-type", ...additionalOpen]}
+              defaultValue={["promotion-type"]}
               type="multiple"
             >
               <Accordion.Item
