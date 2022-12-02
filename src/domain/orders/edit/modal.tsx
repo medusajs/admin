@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import { Order, OrderEdit, ProductVariant } from "@medusajs/medusa"
 import {
   useAdminCreateOrderEdit,
@@ -172,10 +172,8 @@ function OrderEditModal(props: OrderEditModalProps) {
     isLoading: isRequestingConfirmation,
   } = useAdminRequestOrderEditConfirmation(orderEdit.id)
 
-  const {
-    mutateAsync: updateOrderEdit,
-    isLoading: isUpdating,
-  } = useAdminUpdateOrderEdit(orderEdit.id)
+  const { mutateAsync: updateOrderEdit, isLoading: isUpdating } =
+    useAdminUpdateOrderEdit(orderEdit.id)
 
   const { mutateAsync: deleteOrderEdit } = useAdminDeleteOrderEdit(orderEdit.id)
 
@@ -371,21 +369,26 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
   const { order } = props
   const notification = useNotification()
 
-  const {
-    hideModal,
-    orderEdits,
-    activeOrderEditId,
-    setActiveOrderEdit,
-  } = useContext(OrderEditContext)
+  const isFirstRun = useRef(true)
+
+  const { hideModal, orderEdits, activeOrderEditId, setActiveOrderEdit } =
+    useContext(OrderEditContext)
 
   const { mutate: createOrderEdit } = useAdminCreateOrderEdit()
 
   const orderEdit = orderEdits?.find((oe) => oe.id === activeOrderEditId)
 
   useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false
+      return
+    }
+
     if (activeOrderEditId) {
       return
     }
+
+    isFirstRun.current = false
 
     createOrderEdit(
       { order_id: order.id },
@@ -403,12 +406,14 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
         },
       }
     )
-  }, [activeOrderEditId, orderEdits])
+  }, [activeOrderEditId])
 
   const onClose = () => {
     setActiveOrderEdit(undefined)
     hideModal()
   }
+
+  console.log("rendered")
 
   if (!orderEdit) {
     return null
