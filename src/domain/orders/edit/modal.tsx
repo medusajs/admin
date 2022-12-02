@@ -413,8 +413,6 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
     hideModal()
   }
 
-  console.log("rendered")
-
   if (!orderEdit) {
     return null
   }
