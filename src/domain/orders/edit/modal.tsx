@@ -365,47 +365,40 @@ type OrderEditModalContainerProps = {
   order: Order
 }
 
+let isRequestRunningFlag = false
+
 function OrderEditModalContainer(props: OrderEditModalContainerProps) {
   const { order } = props
   const notification = useNotification()
 
-  const isFirstRun = useRef(true)
-
   const { hideModal, orderEdits, activeOrderEditId, setActiveOrderEdit } =
     useContext(OrderEditContext)
 
-  const { mutate: createOrderEdit } = useAdminCreateOrderEdit()
+  const { mutateAsync: createOrderEdit } = useAdminCreateOrderEdit()
 
   const orderEdit = orderEdits?.find((oe) => oe.id === activeOrderEditId)
 
   useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false
+    if (activeOrderEditId || isRequestRunningFlag) {
       return
     }
 
-    if (activeOrderEditId) {
-      return
-    }
-
-    isFirstRun.current = false
-
-    createOrderEdit(
-      { order_id: order.id },
-      {
-        onSuccess: ({ order_edit }) => {
-          setActiveOrderEdit(order_edit.id)
-        },
-        onError: () => {
-          notification(
-            "Error",
-            "There is already active order edit on this order",
-            "error"
-          )
-          hideModal()
-        },
+    isRequestRunningFlag = true
+    ;(async function () {
+      try {
+        const { order_edit } = await createOrderEdit({ order_id: order.id })
+        setActiveOrderEdit(order_edit.id)
+      } catch (e) {
+        notification(
+          "Error",
+          "There is already active order edit on this order",
+          "error"
+        )
+        hideModal()
+      } finally {
+        isRequestRunningFlag = false
       }
-    )
+    })()
   }, [activeOrderEditId])
 
   const onClose = () => {
