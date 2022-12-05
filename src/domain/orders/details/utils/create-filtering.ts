@@ -15,18 +15,19 @@ export const filterItems = (
   let claimedItems: ClaimItem[] = []
 
   if (order.claims && order.claims.length) {
-    for (const s of order.claims) {
-      claimedItems = [...claimedItems, ...s.claim_items]
+    for (const claim of order.claims) {
+      claim.claim_items = claim.claim_items ?? []
+      claimedItems = [...claimedItems, ...claim.claim_items]
 
       if (
-        s.fulfillment_status === "not_fulfilled" &&
-        s.payment_status === "na"
+        claim.fulfillment_status === "not_fulfilled" &&
+        claim.payment_status === "na"
       ) {
         continue
       }
 
-      if (s.additional_items && s.additional_items.length) {
-        orderItems = s.additional_items
+      if (claim.additional_items && claim.additional_items.length) {
+        orderItems = claim.additional_items
           .filter(
             (it) =>
               it.shipped_quantity ||
@@ -39,8 +40,8 @@ export const filterItems = (
 
   if (!isClaim) {
     if (order.swaps && order.swaps.length) {
-      for (const s of order.swaps) {
-        orderItems = s.additional_items.reduce(
+      for (const swap of order.swaps) {
+        orderItems = swap.additional_items.reduce(
           (map, obj) =>
             map.set(obj.id, {
               ...obj,
