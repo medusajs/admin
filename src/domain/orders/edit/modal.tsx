@@ -384,21 +384,18 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
     }
 
     isRequestRunningFlag = true
-    ;(async function () {
-      try {
-        const { order_edit } = await createOrderEdit({ order_id: order.id })
-        setActiveOrderEdit(order_edit.id)
-      } catch (e) {
+
+    createOrderEdit({ order_id: order.id })
+      .then(({ order_edit }) => setActiveOrderEdit(order_edit.id))
+      .catch(() => {
         notification(
           "Error",
-          "There is already active order edit on this order",
+          "There is already an active order edit on this order",
           "error"
         )
         hideModal()
-      } finally {
-        isRequestRunningFlag = false
-      }
-    })()
+      })
+      .finally(() => (isRequestRunningFlag = false))
   }, [activeOrderEditId])
 
   const onClose = () => {
