@@ -24,7 +24,7 @@ type AddSalesChannelsSectionProps = {}
 function AddSalesChannelsSection(props: AddSalesChannelsSectionProps) {
   const [selectedChannels, setSelectedChannels] = useState<SalesChannel[]>([])
 
-  const [isModalVisible, showModal, hideModal, pubKeyId] = useToggleState(false)
+  const [isModalVisible, showModal, hideModal] = useToggleState(false)
 
   const areChannelsSelected = selectedChannels.length
 

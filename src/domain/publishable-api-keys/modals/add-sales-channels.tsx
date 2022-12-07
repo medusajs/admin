@@ -8,10 +8,10 @@ import SideModal from "../../../components/molecules/modal/side-modal"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import useNotification from "../../../hooks/use-notification"
 import InputField from "../../../components/molecules/input"
-import SearchIcon from "../../../components/fundamentals/icons/search-icon"
 import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
 import TableContainer from "../../../components/organisms/table-container"
 import Table from "../../../components/molecules/table"
+import SearchIcon from "../../../components/fundamentals/icons/search-icon"
 
 /* ************************************* */
 /* *************** TABLE *************** */
@@ -60,7 +60,6 @@ const SalesChannelTable = ({
     count,
   } = useAdminSalesChannels()
 
-  const [query, setQuery] = useState<string | undefined>(undefined)
   const [offset, setOffset] = useState(0)
 
   const state = useTable(
@@ -124,7 +123,7 @@ const SalesChannelTable = ({
       numberOfRows={12}
       isLoading={isLoading}
     >
-      <Table {...state.getTableProps()} enableSearch handleSearch={setQuery}>
+      <Table {...state.getTableProps()}>
         <Table.Head>
           {state.headerGroups?.map((headerGroup) => (
             <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
@@ -194,21 +193,17 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
         </div>
         {/* === DIVIDER === */}
 
-        <div
-          className="h-[1px] bg-gray-200 block"
-          style={{ margin: "24px -24px" }}
-        />
-        {/* === BODY === */}
-
         <div className="flex-grow">
           <InputField
-            type="string"
             name="name"
+            type="string"
             value={search}
+            className="my-4"
             placeholder="Find channels"
             prefix={<SearchIcon size={16} />}
             onChange={({ target: { value } }) => setSearch(value)}
           />
+
           <SalesChannelTable
             selectedRowIds={selectedRowIds}
             setSelectedRowIds={setSelectedRowIds}
