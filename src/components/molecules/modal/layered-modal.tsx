@@ -37,12 +37,10 @@ export const LayeredModalContext = React.createContext(defaultContext)
 const reducer = (state, action) => {
   switch (action.type) {
     case LayeredModalActions.PUSH: {
-      state.screens.push(action.payload)
-      return { ...state }
+      return { ...state, screens: [...state.screens, action.payload] }
     }
     case LayeredModalActions.POP: {
-      state.screens.pop()
-      return { ...state }
+      return { ...state, screens: state.screens.slice(0, -1) }
     }
     case LayeredModalActions.RESET: {
       return { ...state, screens: [] }

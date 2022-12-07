@@ -1,5 +1,5 @@
 import * as React from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
 import Button from "../components/fundamentals/button"
 import Modal from "../components/molecules/modal"
 
@@ -61,7 +61,7 @@ const useImperativeDialog = () => {
   }: ImperativeDialogProps) => {
     // We want a promise here so we can "await" the user's action (either confirm or cancel)
     return new Promise((resolve) => {
-      const mountNode = document.createElement("div")
+      const mountRoot = createRoot(document.createElement("div"))
       let open = true
 
       const onConfirm = () => {
@@ -80,7 +80,7 @@ const useImperativeDialog = () => {
 
       // attach the dialog in the mount node
       const render = () => {
-        ReactDOM.render(
+        mountRoot.render(
           <DeleteDialog
             heading={heading}
             text={text}
@@ -89,8 +89,7 @@ const useImperativeDialog = () => {
             onConfirm={onConfirm}
             confirmText={confirmText}
             cancelText={cancelText}
-          />,
-          mountNode
+          />
         )
       }
 

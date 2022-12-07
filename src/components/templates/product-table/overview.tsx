@@ -1,7 +1,7 @@
 import { Product } from "@medusajs/medusa"
 import clsx from "clsx"
-import { Link } from "gatsby"
 import * as React from "react"
+import { Link } from "react-router-dom"
 import { getProductStatusVariant } from "../../../utils/product-status-variant"
 import Button from "../../fundamentals/button"
 import ListIcon from "../../fundamentals/icons/list-icon"

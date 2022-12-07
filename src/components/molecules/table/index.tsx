@@ -1,6 +1,6 @@
 import clsx from "clsx"
-import { navigate } from "gatsby"
 import React from "react"
+import { useNavigate } from "react-router-dom"
 import Spinner from "../../atoms/spinner"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
@@ -198,47 +198,53 @@ Table.Body = React.forwardRef<
 ))
 
 Table.Cell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
-  ({ className, linkTo, children, ...props }, ref) => (
-    <td
-      ref={ref}
-      className={clsx("inter-small-regular h-[40px]", className)}
-      {...props}
-      {...(linkTo && {
-        onClick: (e) => {
-          navigate(linkTo)
-          e.stopPropagation()
-        },
-      })}
-    >
-      {children}
-    </td>
-  )
+  ({ className, linkTo, children, ...props }, ref) => {
+    const navigate = useNavigate()
+    return (
+      <td
+        ref={ref}
+        className={clsx("inter-small-regular h-[40px]", className)}
+        {...props}
+        {...(linkTo && {
+          onClick: (e) => {
+            navigate(linkTo)
+            e.stopPropagation()
+          },
+        })}
+      >
+        {children}
+      </td>
+    )
+  }
 )
 
 Table.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
-  ({ className, actions, children, linkTo, forceDropdown, ...props }, ref) => (
-    <tr
-      ref={ref}
-      className={clsx(
-        "inter-small-regular border-t border-b border-grey-20 text-grey-90",
-        className,
-        { "cursor-pointer hover:bg-grey-5": linkTo !== undefined }
-      )}
-      {...props}
-      {...(linkTo && {
-        onClick: () => {
-          navigate(linkTo)
-        },
-      })}
-    >
-      {children}
-      {actions && (
-        <Table.Cell onClick={(e) => e.stopPropagation()} className="w-[32px]">
-          <Actionables forceDropdown={forceDropdown} actions={actions} />
-        </Table.Cell>
-      )}
-    </tr>
-  )
+  ({ className, actions, children, linkTo, forceDropdown, ...props }, ref) => {
+    const navigate = useNavigate()
+    return (
+      <tr
+        ref={ref}
+        className={clsx(
+          "inter-small-regular border-t border-b border-grey-20 text-grey-90",
+          className,
+          { "cursor-pointer hover:bg-grey-5": linkTo !== undefined }
+        )}
+        {...props}
+        {...(linkTo && {
+          onClick: () => {
+            navigate(linkTo)
+          },
+        })}
+      >
+        {children}
+        {actions && (
+          <Table.Cell onClick={(e) => e.stopPropagation()} className="w-[32px]">
+            <Actionables forceDropdown={forceDropdown} actions={actions} />
+          </Table.Cell>
+        )}
+      </tr>
+    )
+  }
 )
 
 export default Table

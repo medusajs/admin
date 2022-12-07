@@ -1,6 +1,4 @@
-import { RouteComponentProps, Router } from "@reach/router"
-import { navigate } from "gatsby"
-import React from "react"
+import { Route, Routes, useNavigate } from "react-router-dom"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
@@ -8,7 +6,9 @@ import PricingDetails from "./details"
 import New from "./new"
 import PricingTable from "./pricing-table"
 
-const PricingIndex: React.FC<RouteComponentProps> = () => {
+const PricingIndex = () => {
+  const navigate = useNavigate()
+
   const actionables = [
     {
       label: "Add price list",
@@ -23,6 +23,7 @@ const PricingIndex: React.FC<RouteComponentProps> = () => {
         <BodyCard
           actionables={actionables}
           customHeader={<TableViewHeader views={["Price lists"]} />}
+          className="h-fit"
         >
           <PricingTable />
         </BodyCard>
@@ -33,11 +34,11 @@ const PricingIndex: React.FC<RouteComponentProps> = () => {
 
 const Pricing = () => {
   return (
-    <Router>
-      <PricingIndex path="/" />
-      <PricingDetails path="/:id" />
-      <New path="/new" />
-    </Router>
+    <Routes>
+      <Route index element={<PricingIndex />} />
+      <Route path="/new" element={<New />} />
+      <Route path="/:id" element={<PricingDetails />} />
+    </Routes>
   )
 }
 

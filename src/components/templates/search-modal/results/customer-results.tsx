@@ -1,10 +1,10 @@
 import clsx from "clsx"
-import { Link } from "gatsby"
 import React from "react"
 import SectionCollapsible from "../section-collapsible"
 import { useAdminCustomers } from "medusa-react"
 import useKeyboardNavigationList from "../use-keyboard-navigation-list"
 import Avatar from "../../../atoms/avatar"
+import { Link } from "react-router-dom"
 
 type CustomerResultsProps = {
   customers: ReturnType<typeof useAdminCustomers>["customers"]

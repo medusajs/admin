@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState
+  useState,
 } from "react"
 import AmountField from "react-currency-input-field"
 import { Option } from "../../../types/shared"
@@ -27,6 +27,7 @@ type CurrencyInputProps = {
   hideCurrency?: boolean
   onChange?: (currencyCode: string) => void
   className?: React.HTMLAttributes<HTMLDivElement>["className"]
+  children?: React.ReactNode
 }
 
 type CurrencyInputState = {
@@ -81,9 +82,9 @@ const Root: React.FC<CurrencyInputProps> = ({
   const [value, setValue] = useState<Option | null>(
     currentCurrency
       ? {
-          label: currentCurrency.toUpperCase(),
-          value: currentCurrency,
-        }
+        label: currentCurrency.toUpperCase(),
+        value: currentCurrency,
+      }
       : null
   )
 

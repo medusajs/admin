@@ -5,7 +5,7 @@ import { Controller, useWatch } from "react-hook-form"
 import Checkbox from "../../../../../components/atoms/checkbox"
 import IconTooltip from "../../../../../components/molecules/icon-tooltip"
 import InputField from "../../../../../components/molecules/input"
-import Select from "../../../../../components/molecules/select"
+import { NextSelect } from "../../../../../components/molecules/select/next-select"
 import TextArea from "../../../../../components/molecules/textarea"
 import CurrencyInput from "../../../../../components/organisms/currency-input"
 import { useDiscountForm } from "../form/discount-form-context"
@@ -36,7 +36,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
       if (Array.isArray(regions) && regions.length) {
         id = regions[0].value
       } else {
-        id = ((regions as unknown) as { label: string; value: string }).value // if you change from fixed to percentage, unselect and select a region, and then change back to fixed it is possible to make useForm set regions to an object instead of an array
+        id = (regions as unknown as { label: string; value: string }).value // if you change from fixed to percentage, unselect and select a region, and then change back to fixed it is possible to make useForm set regions to an object instead of an array
       }
 
       const reg = opts?.find((r) => r.id === id)
@@ -70,15 +70,15 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
             }}
             render={({ field: { onChange, value } }) => {
               return (
-                <Select
+                <NextSelect
                   value={value || null}
                   onChange={(value) => {
                     onChange(type === "fixed" ? [value] : value)
                   }}
                   label="Choose valid regions"
-                  isMultiSelect={type !== "fixed"}
-                  hasSelectAll={type !== "fixed"}
-                  enableSearch
+                  isMulti={type !== "fixed"}
+                  selectAll={type !== "fixed"}
+                  isSearchable
                   required
                   options={regionOptions}
                 />

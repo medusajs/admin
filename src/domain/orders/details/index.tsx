@@ -1,6 +1,5 @@
 import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
-import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
+import { JsonViewer } from "@textea/json-viewer"
 import { capitalize, sum } from "lodash"
 import {
   useAdminCancelOrder,
@@ -12,7 +11,7 @@ import {
 import moment from "moment"
 import React, { useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
-import ReactJson from "react-json-view"
+import { useNavigate, useParams } from "react-router-dom"
 import Avatar from "../../../components/atoms/avatar"
 import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import Spinner from "../../../components/atoms/spinner"
@@ -32,6 +31,7 @@ import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
 import { AddressType } from "../../../components/templates/address-form"
+import { FeatureFlagContext } from "../../../context/feature-flag"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
@@ -39,6 +39,8 @@ import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
 import extractCustomerName from "../../../utils/extract-customer-name"
 import { formatAmountWithSymbol } from "../../../utils/prices"
+import OrderEditProvider, { OrderEditContext } from "../edit/context"
+import OrderEditModal from "../edit/modal"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
 import EmailModal from "./email-modal"
@@ -55,10 +57,6 @@ import {
   PaymentDetails,
   PaymentStatusComponent,
 } from "./templates"
-import OrderEditModal from "../edit/modal"
-import { FeatureFlagContext } from "../../../context/feature-flag"
-import useOrdersExpandParam from "./utils/use-admin-expand-paramter"
-import OrderEditProvider, { OrderEditContext } from "../edit/context"
 
 type OrderDetailFulfillment = {
   title: string
@@ -116,9 +114,9 @@ const gatherAllFulfillments = (order) => {
   return all
 }
 
-type OrderDetailProps = RouteComponentProps<{ id: string }>
+const OrderDetails = () => {
+  const { id } = useParams()
 
-const OrderDetails = ({ id }: OrderDetailProps) => {
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
   const dialog = useImperativeDialog()
 
@@ -146,6 +144,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
     enabled: !!order?.region_id,
   })
 
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const [, handleCopy] = useClipboard(`${order?.display_id!}`, {
@@ -162,40 +161,36 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
   useHotkeys("esc", () => navigate("/a/orders"))
   useHotkeys("command+i", handleCopy)
 
-  const {
-    hasMovements,
-    swapAmount,
-    manualRefund,
-    swapRefund,
-    returnRefund,
-  } = useMemo(() => {
-    let manualRefund = 0
-    let swapRefund = 0
-    let returnRefund = 0
+  const { hasMovements, swapAmount, manualRefund, swapRefund, returnRefund } =
+    useMemo(() => {
+      let manualRefund = 0
+      let swapRefund = 0
+      let returnRefund = 0
 
-    const swapAmount = sum(order?.swaps.map((s) => s.difference_due) || [0])
+      const swapAmount = sum(order?.swaps.map((s) => s.difference_due) || [0])
 
-    if (order?.refunds?.length) {
-      order.refunds.forEach((ref) => {
-        if (ref.reason === "other" || ref.reason === "discount") {
-          manualRefund += ref.amount
-        }
-        if (ref.reason === "return") {
-          returnRefund += ref.amount
-        }
-        if (ref.reason === "swap") {
-          swapRefund += ref.amount
-        }
-      })
-    }
-    return {
-      hasMovements: swapAmount + manualRefund + swapRefund + returnRefund !== 0,
-      swapAmount,
-      manualRefund,
-      swapRefund,
-      returnRefund,
-    }
-  }, [order])
+      if (order?.refunds?.length) {
+        order.refunds.forEach((ref) => {
+          if (ref.reason === "other" || ref.reason === "discount") {
+            manualRefund += ref.amount
+          }
+          if (ref.reason === "return") {
+            returnRefund += ref.amount
+          }
+          if (ref.reason === "swap") {
+            swapRefund += ref.amount
+          }
+        })
+      }
+      return {
+        hasMovements:
+          swapAmount + manualRefund + swapRefund + returnRefund !== 0,
+        swapAmount,
+        manualRefund,
+        swapRefund,
+        returnRefund,
+      }
+    }, [order])
 
   const handleDeleteOrder = async () => {
     const shouldDelete = await dialog({
@@ -540,10 +535,10 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
                             </span>
                           </span>
                           <div className="flex flex-grow items-center mt-4">
-                            <ReactJson
-                              name={false}
-                              collapsed={true}
-                              src={method?.data}
+                            <JsonViewer
+                              defaultInspectDepth={0}
+                              value={method?.data}
+                              rootName="method"
                             />
                           </div>
                         </div>
@@ -613,7 +608,7 @@ const OrderDetails = ({ id }: OrderDetailProps) => {
                   </div>
                 </BodyCard>
                 <div className="mt-large">
-                  <RawJSON data={order} title="Raw order" />
+                  <RawJSON data={order} title="Raw order" rootName="order" />
                 </div>
               </div>
               <Timeline orderId={order.id} />

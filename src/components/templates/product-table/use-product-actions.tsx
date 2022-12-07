@@ -1,7 +1,7 @@
 import { Product } from "@medusajs/medusa"
-import { navigate } from "gatsby"
 import { useAdminDeleteProduct, useAdminUpdateProduct } from "medusa-react"
 import * as React from "react"
+import { useNavigate } from "react-router-dom"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -14,6 +14,7 @@ import { ActionType } from "../../molecules/actionables"
 import useCopyProduct from "./use-copy-product"
 
 const useProductActions = (product: Product) => {
+  const navigate = useNavigate()
   const notification = useNotification()
   const dialog = useImperativeDialog()
   const copyProduct = useCopyProduct()
@@ -49,8 +50,7 @@ const useProductActions = (product: Product) => {
             onSuccess: () => {
               notification(
                 "Success",
-                `Successfully ${
-                  product.status === "published" ? "unpublished" : "published"
+                `Successfully ${product.status === "published" ? "unpublished" : "published"
                 } product`,
                 "success"
               )

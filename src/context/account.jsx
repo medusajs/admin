@@ -1,7 +1,7 @@
 import { adminUserKeys } from "medusa-react"
 import React, { useReducer } from "react"
 import Medusa from "../services/api"
-import { queryClient } from "../services/config"
+import queryClient from "../services/queryClient"
 
 export const defaultAccountContext = {
   isLoggedIn: false,

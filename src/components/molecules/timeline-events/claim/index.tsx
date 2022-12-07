@@ -28,7 +28,7 @@ const Claim: React.FC<ClaimProps> = ({ event, refetch }) => {
   const [showFulfillment, setShowFulfillment] = useState(false)
 
   const handleCancel = () => {
-    cancelClaim.mutate(event.id)
+    return cancelClaim.mutateAsync(event.id)
   }
 
   const handleCloseFulfillmentModal = () => {

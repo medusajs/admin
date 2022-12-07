@@ -9,11 +9,15 @@
   },
   "plugins": [
     "eslint-plugin-prettier",
+    "unused-imports",
     "react",
     "@typescript-eslint",
     "react-hooks"
   ],
   "extends": ["eslint:recommended", "google", "eslint-config-prettier"],
+  "globals": {
+    "__MEDUSA_BACKEND_URL__": true
+  },
   "rules": {
     "prettier/prettier": "error",
     "curly": [2, "all"],
@@ -24,14 +28,24 @@
     "no-unused-expressions": "off",
     "camelcase": "off",
     "no-invalid-this": "off",
-    "no-unused-vars": "off",
+    "spaced-comment": ["error", "always", { "markers": ["/"] }],
     "react/prop-types": "off", // Disable prop-types as we use TypeScript for type checking
     "react-hooks/rules-of-hooks": 1, // Checks rules of Hooks
     "react-hooks/exhaustive-deps": 1, // Checks effect dependencies
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-implicit-any": 0,
-    "@typescript-eslint/no-unused-vars": 0
+    "@typescript-eslint/no-unused-vars": 0,
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ]
   },
   "settings": {
     "react": {

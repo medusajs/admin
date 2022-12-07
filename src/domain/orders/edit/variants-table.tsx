@@ -22,13 +22,8 @@ type Props = {
 }
 
 const VariantsTable: React.FC<Props> = (props) => {
-  const {
-    isReplace,
-    regionId,
-    currencyCode,
-    customerId,
-    setSelectedVariants,
-  } = props
+  const { isReplace, regionId, currencyCode, customerId, setSelectedVariants } =
+    props
 
   const [query, setQuery] = useState("")
   const [offset, setOffset] = useState(0)
@@ -41,7 +36,6 @@ const VariantsTable: React.FC<Props> = (props) => {
     q: debouncedSearchTerm,
     limit: PAGE_SIZE,
     offset,
-    // @ts-ignore DEPENDS ON core:pull#2270
     region_id: regionId,
     customer_id: customerId,
   })

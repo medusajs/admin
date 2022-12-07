@@ -1,8 +1,8 @@
 import { AdminPostRegionsReq } from "@medusajs/medusa"
-import { navigate } from "gatsby"
 import { useAdminCreateRegion } from "medusa-react"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import Button from "../../../../components/fundamentals/button"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import FocusModal from "../../../../components/molecules/modal/focus-modal"
@@ -46,6 +46,7 @@ const NewRegion = ({ onClose }: Props) => {
     reset,
   } = form
   const { mutate, isLoading } = useAdminCreateRegion()
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const { isFeatureEnabled } = useFeatureFlag()

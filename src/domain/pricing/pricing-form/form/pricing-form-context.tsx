@@ -43,6 +43,7 @@ const PriceListFormContext = React.createContext<{
 
 type FormProviderProps = {
   priceList?: PriceListFormValues
+  children?: React.ReactNode
 }
 
 export const PriceListFormProvider: React.FC<FormProviderProps> = ({

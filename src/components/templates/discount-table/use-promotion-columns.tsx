@@ -3,7 +3,6 @@ import React, { useMemo } from "react"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import Badge from "../../fundamentals/badge"
 import StatusDot from "../../fundamentals/status-indicator"
-import Table from "../../molecules/table"
 
 enum PromotionStatus {
   SCHEDULED = "SCHEDULED",
@@ -21,10 +20,10 @@ const getPromotionStatus = (promotion) => {
       (promotion.ends_at && new Date(promotion.ends_at) < date) ||
       (promotion.valid_duration &&
         date >
-          end(
-            parse(promotion.valid_duration),
-            new Date(promotion.starts_at)
-          )) ||
+        end(
+          parse(promotion.valid_duration),
+          new Date(promotion.starts_at)
+        )) ||
       promotion.usage_count === promotion.usage_limit
     ) {
       return PromotionStatus.EXPIRED
@@ -128,9 +127,7 @@ export const usePromotionTableColumns = () => {
         Cell: ({ row: { original } }) => {
           return (
             <div className="text-right">
-              {original.usage_limit > 0
-                ? getUsageCount(original.usage_count)
-                : "-"}
+              {getUsageCount(original.usage_count)}
             </div>
           )
         },

@@ -1,4 +1,4 @@
-import { useAdminStore, useAdminUsers } from "medusa-react"
+import { useAdminStore } from "medusa-react"
 import React, { useState } from "react"
 import CashIcon from "../../fundamentals/icons/cash-icon"
 import CustomerIcon from "../../fundamentals/icons/customer-icon"
@@ -10,7 +10,6 @@ import SaleIcon from "../../fundamentals/icons/sale-icon"
 import TagIcon from "../../fundamentals/icons/tag-icon"
 import SidebarCompanyLogo from "../../molecules/sidebar-company-logo"
 import SidebarMenuItem from "../../molecules/sidebar-menu-item"
-import SidebarTeam from "../sidebar-team"
 
 const ICON_SIZE = 18
 
@@ -84,10 +83,6 @@ const Sidebar: React.FC = () => {
             triggerHandler={triggerHandler}
             text={"Settings"}
           />
-        </div>
-
-        <div className="font-semibold mt-5 flex flex-col text-small">
-          <SidebarTeam />
         </div>
       </div>
     </div>

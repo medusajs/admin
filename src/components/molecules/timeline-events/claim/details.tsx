@@ -44,7 +44,7 @@ const ClaimDetails = ({ claim, order, onDismiss }) => {
                 <Table.HeadCell></Table.HeadCell>
               </Table.HeadRow>
               <Table.Body>
-                {claim.claim_items.map((claimItem) => {
+                {claim.claim_items?.map((claimItem) => {
                   const { item } = claimItem
                   return (
                     <>

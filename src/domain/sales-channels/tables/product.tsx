@@ -1,6 +1,5 @@
 import { Product, SalesChannel } from "@medusajs/medusa"
 import clsx from "clsx"
-import { navigate } from "gatsby"
 import {
   useAdminAddProductsToSalesChannel,
   useAdminDeleteProductsFromSalesChannel,
@@ -13,6 +12,7 @@ import React, {
   useRef,
   useState,
 } from "react"
+import { useNavigate } from "react-router-dom"
 import { usePagination, useRowSelect, useTable } from "react-table"
 
 import Button from "../../../components/fundamentals/button"
@@ -96,6 +96,8 @@ export const ProductTable = forwardRef(
 
     const offs = parseInt(queryObject.offset) || 0
     const limit = parseInt(queryObject.limit)
+
+    const navigate = useNavigate()
 
     const [query, setQuery] = useState(queryObject.query)
     const [numPages, setNumPages] = useState(0)
@@ -373,9 +375,8 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
   const params = useQueryFilters(defaultQueryProps)
   const filters = useProductFilters()
 
-  const {
-    mutate: deleteProductsFromSalesChannel,
-  } = useAdminDeleteProductsFromSalesChannel(salesChannelId)
+  const { mutate: deleteProductsFromSalesChannel } =
+    useAdminDeleteProductsFromSalesChannel(salesChannelId)
 
   const { products, count, isLoading } = useAdminProducts({
     ...params.queryObject,

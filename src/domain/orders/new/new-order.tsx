@@ -1,6 +1,6 @@
-import { navigate } from "gatsby"
 import { useAdminCreateDraftOrder } from "medusa-react"
 import React from "react"
+import { useNavigate } from "react-router-dom"
 import { LayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import SteppedModal, {
   SteppedContext,
@@ -24,6 +24,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
   const steppedContext = React.useContext(SteppedContext)
   const layeredContext = React.useContext(LayeredModalContext)
 
+  const navigate = useNavigate()
   const notification = useNotification()
   const { mutate } = useAdminCreateDraftOrder()
 
@@ -62,7 +63,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
         shipping_address: data.shipping_address_id
           ? data.shipping_address_id
           : !isNullishObject(data.shipping_address)
-          ? {
+            ? {
               address_1: data.shipping_address?.address_1,
               address_2: data.shipping_address?.address_2 || undefined,
               city: data.shipping_address?.city,
@@ -74,11 +75,11 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
               postal_code: data.shipping_address?.postal_code,
               province: data.shipping_address?.province || undefined,
             }
-          : undefined,
+            : undefined,
         billing_address: data.billing_address_id
           ? data.billing_address_id
           : data.billing_address
-          ? {
+            ? {
               address_1: data.billing_address?.address_1,
               address_2: data.billing_address?.address_2 || undefined,
               city: data.billing_address?.city,
@@ -90,7 +91,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
               postal_code: data.billing_address?.postal_code,
               province: data.billing_address?.province || undefined,
             }
-          : undefined,
+            : undefined,
         customer_id: data.customer_id?.value,
         discounts: data.discount_code
           ? [{ code: data.discount_code }]

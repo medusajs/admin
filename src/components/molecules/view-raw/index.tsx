@@ -1,7 +1,7 @@
 import * as Collapsible from "@radix-ui/react-collapsible"
+import { JsonViewer } from "@textea/json-viewer"
 import clsx from "clsx"
 import React, { useState } from "react"
-import ReactJson from "react-json-view"
 import useClipboard from "../../../hooks/use-clipboard"
 import Button from "../../fundamentals/button"
 import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
@@ -47,15 +47,14 @@ const ViewRaw: React.FC<ViewRawProps> = ({ raw, title = "Data", name }) => {
         </Collapsible.Trigger>
         <Collapsible.Content>
           <div className="mt-xsmall">
-            <ReactJson
-              src={raw}
-              enableClipboard={false}
+            <JsonViewer
+              value={raw}
+              rootName={name}
               style={{
                 fontFamily: "Roboto Mono",
                 fontSize: "12px",
               }}
-              shouldCollapse={false}
-              name={name}
+              enableClipboard={false}
             />
           </div>
           <div className="flex items-center justify-end w-full gap-x-xsmall text-grey-50 inter-small-regular">

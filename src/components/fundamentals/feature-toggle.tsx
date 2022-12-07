@@ -4,6 +4,7 @@ import { FeatureFlagContext } from "../../context/feature-flag"
 export type FeatureToggleProps = {
   featureFlag: string
   showOnlyWhenDisabled?: boolean
+  children?: React.ReactNode
 }
 
 const FeatureToggle: React.FC<FeatureToggleProps> = ({

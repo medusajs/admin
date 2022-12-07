@@ -1,6 +1,6 @@
-import { navigate } from "gatsby"
 import { useAdminCreatePriceList, useAdminUpdatePriceList } from "medusa-react"
 import React, { useContext } from "react"
+import { useNavigate } from "react-router-dom"
 import Button from "../../../../components/fundamentals/button"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import { FeatureFlagContext } from "../../../../context/feature-flag"
@@ -23,6 +23,7 @@ import {
 
 const FormHeader = (props: PriceListFormProps & { onClose?: () => void }) => {
   const { handleSubmit } = usePriceListForm()
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const closeForm = () => {

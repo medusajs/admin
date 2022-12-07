@@ -64,14 +64,10 @@ const SearchModal = ({ handleClose }) => {
 
   const totalLength = getTotal(products, discounts, customers, orders)
 
-  const {
-    getInputProps,
-    getLIProps,
-    getULProps,
-    selected,
-  } = useKeyboardNavigationList({
-    length: totalLength,
-  })
+  const { getInputProps, getLIProps, getULProps, selected } =
+    useKeyboardNavigationList({
+      length: totalLength,
+    })
 
   return (
     <RadixDialog.Root open onOpenChange={handleClose}>

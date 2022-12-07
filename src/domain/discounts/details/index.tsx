@@ -1,6 +1,6 @@
-import { RouteComponentProps } from "@reach/router"
 import { useAdminDeleteDiscount, useAdminDiscount } from "medusa-react"
-import React, { useState } from "react"
+import { useState } from "react"
+import { useParams } from "react-router-dom"
 import Spinner from "../../../components/atoms/spinner"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
@@ -12,7 +12,9 @@ import DiscountDetailsConditions from "./conditions"
 import Configurations from "./configurations"
 import General from "./general"
 
-const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
+const Edit = () => {
+  const { id } = useParams()
+
   const { discount, isLoading } = useAdminDiscount(
     id!,
     { expand: "rule,rule.conditions" },
@@ -63,7 +65,7 @@ const Edit: React.FC<RouteComponentProps<{ id: string }>> = ({ id }) => {
             <General discount={discount} />
             <Configurations discount={discount} />
             <DiscountDetailsConditions discount={discount} />
-            <RawJSON data={discount} title="Raw discount" />
+            <RawJSON data={discount} title="Raw discount" rootName="discount" />
           </DiscountFormProvider>
         </div>
       )}

@@ -1,7 +1,6 @@
 import { MoneyAmount, Product } from "@medusajs/medusa"
-import { useParams } from "@reach/router"
 import { useAdminStore, useAdminUpdatePriceList } from "medusa-react"
-import * as React from "react"
+import { useParams } from "react-router-dom"
 import Button from "../../../../../../components/fundamentals/button"
 import { CollapsibleTree } from "../../../../../../components/molecules/collapsible-tree"
 import Modal from "../../../../../../components/molecules/modal"
@@ -25,7 +24,7 @@ const EditPricesOverridesModal = ({
 }: EditPricesOverridesModalProps) => {
   const context = useLayeredModal()
   const { id: priceListId } = useParams()
-  const updatePriceList = useAdminUpdatePriceList(priceListId)
+  const updatePriceList = useAdminUpdatePriceList(priceListId || "")
   const { store } = useAdminStore()
 
   const defaultPrices = store?.currencies.map((curr) => ({

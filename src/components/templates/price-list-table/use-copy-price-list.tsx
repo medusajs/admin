@@ -1,9 +1,10 @@
-import { navigate } from "gatsby"
 import { useAdminCreatePriceList } from "medusa-react"
+import { useNavigate } from "react-router-dom"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 
 const useCopyPriceList = () => {
+  const navigate = useNavigate()
   const notification = useNotification()
   const createPriceList = useAdminCreatePriceList()
 

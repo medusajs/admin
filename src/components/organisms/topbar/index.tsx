@@ -1,6 +1,11 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import { navigate } from "gatsby"
-import React, { useContext, useState } from "react"
+import React, {
+  type MouseEvent,
+  useCallback,
+  useContext,
+  useState,
+} from "react"
+import { useNavigate } from "react-router-dom"
 import { AccountContext } from "../../../context/account"
 import { PollingContext } from "../../../context/polling"
 import useToggleState from "../../../hooks/use-toggle-state"
@@ -15,15 +20,16 @@ import ActivityDrawer from "../activity-drawer"
 import MailDialog from "../help-dialog"
 
 const Topbar: React.FC = () => {
+  const navigate = useNavigate()
+
   const {
     state: activityDrawerState,
     toggle: toggleActivityDrawer,
     close: activityDrawerClose,
   } = useToggleState(false)
 
-  const { first_name, last_name, email, handleLogout } = useContext(
-    AccountContext
-  )
+  const { first_name, last_name, email, handleLogout } =
+    useContext(AccountContext)
   const { batchJobs } = useContext(PollingContext)
 
   const [showSupportform, setShowSupportForm] = useState(false)
@@ -32,6 +38,14 @@ const Topbar: React.FC = () => {
     handleLogout()
     navigate("/login")
   }
+
+  const onNotificationBellClick = useCallback(
+    (event: MouseEvent) => {
+      event.stopPropagation()
+      toggleActivityDrawer()
+    },
+    [toggleActivityDrawer]
+  )
 
   return (
     <div className="w-full min-h-topbar max-h-topbar pr-xlarge pl-base bg-grey-0 border-b border-grey-20 sticky top-0 flex items-center justify-between z-40">
@@ -47,7 +61,7 @@ const Topbar: React.FC = () => {
         </Button>
 
         <NotificationBell
-          onClick={toggleActivityDrawer}
+          onClick={onNotificationBellClick}
           variant={"ghost"}
           hasNotifications={!!batchJobs?.length}
         />

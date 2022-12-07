@@ -1,6 +1,5 @@
-import { RouteComponentProps } from "@reach/router"
 import { useAdminPriceList } from "medusa-react"
-import * as React from "react"
+import { useParams } from "react-router-dom"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import RawJSON from "../../../components/organisms/raw-json"
 import { mapPriceListToFormValues } from "../pricing-form/form/mappers"
@@ -8,9 +7,9 @@ import { PriceListFormProvider } from "../pricing-form/form/pricing-form-context
 import Header from "./sections/header"
 import PricesDetails from "./sections/prices-details"
 
-type PricingDetailsProps = RouteComponentProps & { id?: string }
+const PricingDetails = () => {
+  const { id } = useParams()
 
-const PricingDetails = ({ id }: PricingDetailsProps) => {
   const { price_list, isLoading } = useAdminPriceList(id!)
 
   return (
@@ -28,7 +27,11 @@ const PricingDetails = ({ id }: PricingDetailsProps) => {
             <PricesDetails id={price_list?.id} />
           </div>
           <div className="mt-xlarge">
-            <RawJSON data={price_list} title="Raw price list" />
+            <RawJSON
+              data={price_list}
+              title="Raw price list"
+              rootName="price_list"
+            />
           </div>
         </PriceListFormProvider>
       ) : null}

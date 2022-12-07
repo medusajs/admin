@@ -1,4 +1,4 @@
-import { globalHistory } from "@reach/router"
+import { useLocation } from "react-router-dom"
 import { AnalyticsBrowser } from "@segment/analytics-next"
 import { useAdminGetSession, useAdminStore, useAdminUsers } from "medusa-react"
 import React, {
@@ -43,6 +43,8 @@ const AnalyticsContext = createContext<AnalyticsContextType | null>(null)
 const AnalyticsProvider = ({ writeKey, children }: Props) => {
   const [submittingConfig, setSubmittingConfig] = useState(false)
   const { analytics_config: config, isLoading } = useAdminAnalyticsConfig()
+
+  const location = useLocation()
 
   const { user } = useAdminGetSession()
   const { users } = useAdminUsers()
@@ -154,18 +156,12 @@ const AnalyticsProvider = ({ writeKey, children }: Props) => {
 
   // Track pages visited when location changes
   useEffect(() => {
-    const unlisten = globalHistory.listen(() => {
-      if (!analytics) {
-        return
-      }
-
-      analytics.page()
-    })
-
-    return () => {
-      unlisten()
+    if (!analytics) {
+      return
     }
-  }, [analytics])
+
+    analytics.page()
+  }, [location])
 
   return (
     <AnalyticsContext.Provider
