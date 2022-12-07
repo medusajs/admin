@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { PublishableApiKey } from "@medusajs/medusa"
+import { PublishableApiKey, SalesChannel } from "@medusajs/medusa"
 import { useAdminCreatePublishableApiKey } from "medusa-react"
 
 import Breadcrumb from "../../../components/molecules/breadcrumb"
@@ -14,6 +14,46 @@ import InputField from "../../../components/molecules/input"
 import useNotification from "../../../hooks/use-notification"
 import PublishableApiKeysTable from "../tables/publishable-api-keys-table"
 import DetailsModal from "../modals/details"
+import AddSalesChannelsSideModal from "../modals/add-sales-channels"
+
+type AddSalesChannelsSectionProps = {}
+
+/**
+ * Container for adding sales channels to PK scope.
+ */
+function AddSalesChannelsSection(props: AddSalesChannelsSectionProps) {
+  const [selectedChannels, setSelectedChannels] = useState<SalesChannel[]>([])
+
+  const [isModalVisible, showModal, hideModal, pubKeyId] = useToggleState(false)
+
+  const areChannelsSelected = selectedChannels.length
+
+  return (
+    <div>
+      <div className="flex justify-between items-center">
+        <div>
+          <h5 className="inter-base-semibold text-grey-90 pb-1">
+            Sales channels
+          </h5>
+          <p className="text-grey-50">
+            Connect as many sales channels to your API key as you need.
+          </p>
+        </div>
+        {!areChannelsSelected && (
+          <Button
+            size="small"
+            variant="secondary"
+            className="h-[40px]"
+            onClick={showModal}
+          >
+            Add sales channels
+          </Button>
+        )}
+      </div>
+      <AddSalesChannelsSideModal close={hideModal} isVisible={isModalVisible} />
+    </div>
+  )
+}
 
 type CreatePublishableKeyProps = {
   closeModal: () => void
@@ -83,6 +123,10 @@ function CreatePublishableKey(props: CreatePublishableKeyProps) {
             placeholder="Name your key"
             onChange={(ev) => setName(ev.target.value)}
           />
+
+          <div className="w-[100%] h-[1px] bg-gray-200 mt-16 mb-8" />
+
+          <AddSalesChannelsSection />
         </div>
       </FocusModal.Main>
     </FocusModal>
