@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   TableOptions,
   usePagination,
@@ -18,6 +18,7 @@ import IndeterminateCheckbox from "../../../components/molecules/indeterminate-c
 import TableContainer from "../../../components/organisms/table-container"
 import Table from "../../../components/molecules/table"
 import SearchIcon from "../../../components/fundamentals/icons/search-icon"
+import { TablePagination } from "../../../components/organisms/table-container/pagination"
 
 /* ************************************* */
 /* *************** TABLE *************** */
@@ -120,53 +121,56 @@ function SalesChannelTable(props: SalesChannelTableProps) {
   }
 
   return (
-    <TableContainer
-      hasPagination
-      pagingState={{
-        count,
-        offset,
-        title: "Sales Channels",
-        pageSize: offset + table.rows.length,
-        currentPage: table.state.pageIndex + 1,
-        pageCount: table.pageCount,
-        nextPage: handleNext,
-        prevPage: handlePrev,
-        hasNext: table.canNextPage,
-        hasPrev: table.canPreviousPage,
-      }}
-      numberOfRows={LIMIT}
-      isLoading={isLoading}
-    >
-      <Table {...table.getTableProps()}>
-        <Table.Head>
-          {table.headerGroups?.map((headerGroup) => (
-            <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((col) => (
-                <Table.HeadCell {...col.getHeaderProps()}>
-                  {col.render("Header")}
-                </Table.HeadCell>
-              ))}
-            </Table.HeadRow>
-          ))}
-        </Table.Head>
-        <Table.Body {...table.getTableBodyProps()}>
-          {table.rows.map((row) => {
-            table.prepareRow(row)
-            return (
-              <Table.Row color={"inherit"} {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <Table.Cell {...cell.getCellProps()}>
-                      {cell.render("Cell")}
-                    </Table.Cell>
-                  )
-                })}
-              </Table.Row>
-            )
-          })}
-        </Table.Body>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer hasPagination numberOfRows={LIMIT} isLoading={isLoading}>
+        <Table {...table.getTableProps()}>
+          <Table.Head>
+            {table.headerGroups?.map((headerGroup) => (
+              <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((col) => (
+                  <Table.HeadCell {...col.getHeaderProps()}>
+                    {col.render("Header")}
+                  </Table.HeadCell>
+                ))}
+              </Table.HeadRow>
+            ))}
+          </Table.Head>
+          <Table.Body {...table.getTableBodyProps()}>
+            {table.rows.map((row) => {
+              table.prepareRow(row)
+              return (
+                <Table.Row color={"inherit"} {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <Table.Cell {...cell.getCellProps()}>
+                        {cell.render("Cell")}
+                      </Table.Cell>
+                    )
+                  })}
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table>
+      </TableContainer>
+      <div className="absolute w-[506px]" style={{ bottom: 100 }}>
+        <TablePagination
+          pagingState={{
+            count,
+            offset,
+            title: "Sales Channels",
+            pageSize: offset + table.rows.length,
+            currentPage: table.state.pageIndex + 1,
+            pageCount: table.pageCount,
+            nextPage: handleNext,
+            prevPage: handlePrev,
+            hasNext: table.canNextPage,
+            hasPrev: table.canPreviousPage,
+          }}
+          isLoading={isLoading}
+        />
+      </div>
+    </>
   )
 }
 
