@@ -272,6 +272,7 @@ function PublishableApiKeysTable(props: PublishableApiKeysTableProps) {
             table.prepareRow(row)
             return (
               <PublishableKeyTableRow
+                key={row.id}
                 row={row}
                 showDetails={() => props.showDetailsModal(row.original)}
                 isRevoked={!!row.original.revoked_at}

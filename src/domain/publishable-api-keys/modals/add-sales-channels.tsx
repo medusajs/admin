@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react"
-import { usePagination, useRowSelect, useTable } from "react-table"
+import {
+  TableOptions,
+  usePagination,
+  useRowSelect,
+  useTable,
+} from "react-table"
 
+import { SalesChannel } from "@medusajs/medusa"
 import { useAdminSalesChannels } from "medusa-react"
 
 import Button from "../../../components/fundamentals/button"
@@ -16,6 +22,8 @@ import SearchIcon from "../../../components/fundamentals/icons/search-icon"
 /* ************************************* */
 /* *************** TABLE *************** */
 /* ************************************* */
+
+const LIMIT = 12
 
 const COLUMNS = [
   {
@@ -47,85 +55,91 @@ const COLUMNS = [
   },
 ]
 
-const SalesChannelTable = ({
-  selectedRowIds,
-  setSelectedRowIds,
-}: {
-  selectedRowIds: string[]
+type SalesChannelTableProps = {
+  query: string
   setSelectedRowIds: (ids: string[]) => {}
-}) => {
+  offset: number
+  setOffset: (offset: number) => void
+  data: SalesChannel[]
+  isLoading: boolean
+  count: number
+}
+
+/**
+ * Sales channels select table.
+ */
+function SalesChannelTable(props: SalesChannelTableProps) {
   const {
-    sales_channels: data = [],
+    query,
+    offset,
+    data,
     isLoading,
     count,
-  } = useAdminSalesChannels()
+    setOffset,
+    setSelectedRowIds,
+  } = props
 
-  const [offset, setOffset] = useState(0)
-
-  const state = useTable(
-    {
-      // @ts-ignore
-      columns: COLUMNS,
-      data: data,
-      manualPagination: true,
-      initialState: {
-        pageIndex: Math.floor(offset / 12),
-        pageSize: 12,
-      },
-      autoResetPage: false,
-      autoResetSelectedRows: false,
-      getRowId: (row) => row.id,
-      pageCount: Math.ceil(data.length / 12),
+  const tableConfig: TableOptions<SalesChannel> = {
+    data,
+    // @ts-ignore
+    columns: COLUMNS,
+    autoResetPage: false,
+    manualPagination: true,
+    autoResetSelectedRows: false,
+    initialState: {
+      pageIndex: Math.floor(offset / LIMIT),
+      pageSize: LIMIT,
     },
-    usePagination,
-    useRowSelect
-  )
+    pageCount: Math.ceil(count / LIMIT),
+    getRowId: (row) => row.id,
+  }
+
+  const table = useTable(tableConfig, usePagination, useRowSelect)
 
   useEffect(() => {
-    if (setSelectedRowIds) {
-      setSelectedRowIds(Object.keys(selectedRowIds))
-    }
-  }, [selectedRowIds])
+    setSelectedRowIds(Object.keys(table.state.selectedRowIds))
+  }, [table.state.selectedRowIds])
+
+  useEffect(() => {
+    setOffset(0)
+    table.gotoPage(0)
+  }, [query])
 
   const handleNext = () => {
-    if (state.canNextPage) {
-      setOffset(offset + 12)
-      state.nextPage()
+    if (table.canNextPage) {
+      setOffset(offset + LIMIT)
+      table.nextPage()
     }
   }
 
   const handlePrev = () => {
-    if (state.canPreviousPage) {
-      setOffset(Math.max(offset - 12, 0))
-      state.previousPage()
+    if (table.canPreviousPage) {
+      setOffset(Math.max(offset - LIMIT, 0))
+      table.previousPage()
     }
-  }
-
-  if (!data) {
-    return null
   }
 
   return (
     <TableContainer
       hasPagination
       pagingState={{
-        count: count,
-        offset: offset,
-        pageSize: offset + state.rows.length,
+        count,
+        offset,
         title: "Sales Channels",
-        currentPage: state.pageIndex + 1,
-        pageCount: state.pageCount,
+        pageSize: offset + table.rows.length,
+        currentPage: table.state.pageIndex + 1,
+        pageCount: table.pageCount,
         nextPage: handleNext,
         prevPage: handlePrev,
-        hasNext: state.canNextPage,
-        hasPrev: state.canPreviousPage,
+        hasNext: table.canNextPage,
+        hasPrev: table.canPreviousPage,
       }}
-      numberOfRows={12}
+      numberOfRows={LIMIT}
       isLoading={isLoading}
     >
-      <Table {...state.getTableProps()}>
+      <Table {...table.getTableProps()}>
         <Table.Head>
-          {state.headerGroups?.map((headerGroup) => (
+          {table.headerGroups?.map((headerGroup) => (
             <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((col) => (
                 <Table.HeadCell {...col.getHeaderProps()}>
@@ -135,9 +149,9 @@ const SalesChannelTable = ({
             </Table.HeadRow>
           ))}
         </Table.Head>
-        <Table.Body {...state.getTableBodyProps()}>
-          {state.rows.map((row) => {
-            state.prepareRow(row)
+        <Table.Body {...table.getTableBodyProps()}>
+          {table.rows.map((row) => {
+            table.prepareRow(row)
             return (
               <Table.Row color={"inherit"} {...row.getRowProps()}>
                 {row.cells.map((cell) => {
@@ -172,9 +186,26 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
   const { close, isVisible } = props
 
   const notification = useNotification()
-  const [search, setSearch] = useState("")
 
-  const [selectedRowIds, setSelectedRowIds] = useState([])
+  const [offset, setOffset] = useState(0)
+  const [search, setSearch] = useState("")
+  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
+
+  const {
+    sales_channels: data = [],
+    isLoading,
+    count,
+  } = useAdminSalesChannels(
+    { q: search, limit: LIMIT, offset },
+    { keepPreviousData: true }
+  )
+
+  useEffect(() => {
+    if (!isVisible) {
+      setOffset(0)
+      setSearch("")
+    }
+  }, [isVisible])
 
   const onSave = async () => {}
 
@@ -205,6 +236,12 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
           />
 
           <SalesChannelTable
+            query={search}
+            data={data}
+            offset={offset}
+            count={count || 0}
+            setOffset={setOffset}
+            isLoading={isLoading}
             selectedRowIds={selectedRowIds}
             setSelectedRowIds={setSelectedRowIds}
           />
