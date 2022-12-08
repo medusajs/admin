@@ -80,6 +80,7 @@ function SalesChannelTable(props: SalesChannelTableProps) {
     isLoading,
     count,
     setOffset,
+    selectedChannels,
     setSelectedChannels,
   } = props
 
@@ -93,6 +94,10 @@ function SalesChannelTable(props: SalesChannelTableProps) {
     initialState: {
       pageIndex: Math.floor(offset / LIMIT),
       pageSize: LIMIT,
+      selectedRowIds: Object.keys(selectedChannels).reduce((prev, k) => {
+        prev[k] = true
+        return prev
+      }, {}),
     },
     pageCount: Math.ceil(count / LIMIT),
     getRowId: (row) => row.id,
@@ -193,13 +198,15 @@ type AddSalesChannelsSideModalProps = {
   isVisible: boolean
   setSelectedChannels: (arg: any) => void
   selectedChannels: Map<string, SalesChannel>
+  isEdit?: boolean
 }
 
 /**
  * Publishable Key details container.
  */
 function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
-  const { close, isVisible, selectedChannels, setSelectedChannels } = props
+  const { isEdit, isVisible, close, selectedChannels, setSelectedChannels } =
+    props
 
   const notification = useNotification()
 
