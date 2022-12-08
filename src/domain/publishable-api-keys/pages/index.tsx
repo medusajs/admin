@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { PublishableApiKey, SalesChannel } from "@medusajs/medusa"
 import {
@@ -102,22 +102,48 @@ function CreatePublishableKey(props: CreatePublishableKeyProps) {
   const { closeModal } = props
   const notification = useNotification()
 
+  const [name, setName] = useState("")
+  const [keyId, setKeyId] = useState("")
   const [selectedChannels, setSelectedChannels] = useState({})
 
   const { mutateAsync: createPublishableApiKey } =
     useAdminCreatePublishableApiKey()
 
+  const { mutateAsync: addSalesChannelsToKeyScope } =
+    useAdminAddPublishableKeySalesChannelsBatch(keyId)
+
   const onSubmit = async () => {
     try {
-      await createPublishableApiKey({ title: name })
-      closeModal()
+      const res = await createPublishableApiKey({ title: name })
+      setKeyId(res.publishable_api_key.id)
       notification("Success", "Created a new API key", "success")
     } catch (e) {
       notification("Error", "Failed to create a new API key", "error")
     }
   }
 
-  const [name, setName] = useState("")
+  useEffect(() => {
+    if (keyId) {
+      addSalesChannelsToKeyScope({
+        sales_channel_ids: Object.keys(selectedChannels).map((id) => ({ id })),
+      })
+        .then(() => {
+          notification(
+            "Success",
+            "Sales channels added to the scope",
+            "success"
+          )
+        })
+        .catch(() => {
+          notification(
+            "Error",
+            "Error occurred while adding sales channels to the scope of the key",
+            "success"
+          )
+        })
+        .finally(closeModal)
+    }
+  }, [keyId, selectedChannels])
 
   return (
     <FocusModal>
