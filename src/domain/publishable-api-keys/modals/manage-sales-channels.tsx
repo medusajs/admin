@@ -193,7 +193,7 @@ function SalesChannelTable(props: SalesChannelTableProps) {
 /* *************** SIDE MODAL *************** */
 /* ****************************************** */
 
-type AddSalesChannelsSideModalProps = {
+type ManageSalesChannelsSideModalProps = {
   close: () => void
   isVisible: boolean
   setSelectedChannels: (arg: any) => void
@@ -204,7 +204,9 @@ type AddSalesChannelsSideModalProps = {
 /**
  * Publishable Key details container.
  */
-function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
+function ManageSalesChannelsSideModal(
+  props: ManageSalesChannelsSideModalProps
+) {
   const { isEdit, isVisible, close, selectedChannels, setSelectedChannels } =
     props
 
@@ -289,4 +291,4 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
   )
 }
 
-export default AddSalesChannelsSideModal
+export default ManageSalesChannelsSideModal

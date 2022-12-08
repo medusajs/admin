@@ -4,6 +4,7 @@ import { PublishableApiKey, SalesChannel } from "@medusajs/medusa"
 import {
   useAdminAddPublishableKeySalesChannelsBatch,
   useAdminCreatePublishableApiKey,
+  useAdminPublishableApiKeySalesChannels,
 } from "medusa-react"
 
 import Breadcrumb from "../../../components/molecules/breadcrumb"
@@ -17,7 +18,7 @@ import InputField from "../../../components/molecules/input"
 import useNotification from "../../../hooks/use-notification"
 import PublishableApiKeysTable from "../tables/publishable-api-keys-table"
 import DetailsModal from "../modals/details"
-import AddSalesChannelsSideModal from "../modals/add-sales-channels"
+import ManageSalesChannelsSideModal from "../modals/manage-sales-channels"
 import ChannelsIcon from "../../../components/fundamentals/icons/channels-icon"
 import SalesChannelsSummary from "../../../components/molecules/sales-channels-summary"
 
@@ -81,7 +82,7 @@ function AddSalesChannelsSection(props: AddSalesChannelsSectionProps) {
           </Button>
         </div>
       )}
-      <AddSalesChannelsSideModal
+      <ManageSalesChannelsSideModal
         close={hideModal}
         isVisible={isModalVisible}
         selectedChannels={selectedChannels}
@@ -204,10 +205,22 @@ function CreatePublishableKey(props: CreatePublishableKeyProps) {
  * Index page container for the "Publishable API keys" page
  */
 function Index() {
+  const [selectedChannels, setSelectedChannels] = useState({})
   const [selectedKey, setSelectedKey] = useState<PublishableApiKey>()
+  const [editKey, setEditKey] = useState<PublishableApiKey>()
 
   const [isCreateModalVisible, openCreateModal, closeCreateModal] =
     useToggleState(false)
+
+  const [isEditChannelsModalVisible, openChannelsModal, closeChannelsModal] =
+    useToggleState(false)
+
+  const { sales_channels: salesChannels } =
+    useAdminPublishableApiKeySalesChannels(
+      editKey?.id,
+      {},
+      { enabled: !!editKey }
+    )
 
   const actions = [
     {
@@ -215,6 +228,27 @@ function Index() {
       onClick: openCreateModal,
     },
   ]
+
+  const _openChannelsModal = (pubKey: PublishableApiKey) => {
+    setEditKey(pubKey)
+    openChannelsModal()
+  }
+
+  const _closeChannelsModal = () => {
+    setEditKey(null)
+    closeChannelsModal()
+  }
+
+  useEffect(() => {
+    if (editKey && salesChannels?.length && isEditChannelsModalVisible) {
+      setSelectedChannels(
+        salesChannels.reduce((prev, sc) => {
+          prev[sc.id] = sc
+          return prev
+        })
+      )
+    }
+  }, [salesChannels, editKey, isEditChannelsModalVisible])
 
   return (
     <div>
@@ -228,7 +262,10 @@ function Index() {
         subtitle="These publishable keys will allow you to authenticate API requests."
         actionables={actions}
       >
-        <PublishableApiKeysTable showDetailsModal={setSelectedKey} />
+        <PublishableApiKeysTable
+          showDetailsModal={setSelectedKey}
+          showChannelsModal={_openChannelsModal}
+        />
         <DetailsModal
           selectedKey={selectedKey}
           close={() => setSelectedKey(undefined)}
@@ -236,6 +273,14 @@ function Index() {
         <Fade isVisible={isCreateModalVisible} isFullScreen>
           <CreatePublishableKey closeModal={closeCreateModal} />
         </Fade>
+
+        <ManageSalesChannelsSideModal
+          isEdit
+          close={_closeChannelsModal}
+          isVisible={isEditChannelsModalVisible}
+          selectedChannels={selectedChannels}
+          setSelectedChannels={setSelectedChannels}
+        />
       </BodyCard>
     </div>
   )
