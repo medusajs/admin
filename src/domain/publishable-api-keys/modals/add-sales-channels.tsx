@@ -58,7 +58,10 @@ const COLUMNS = [
 
 type SalesChannelTableProps = {
   query: string
-  setSelectedRowIds: (ids: string[]) => {}
+  selectedChannels: Map<string, SalesChannel>
+  setSelectedChannels: (
+    setter: (oldState: Map<string, SalesChannel>) => void
+  ) => {}
   offset: number
   setOffset: (offset: number) => void
   data: SalesChannel[]
@@ -77,7 +80,7 @@ function SalesChannelTable(props: SalesChannelTableProps) {
     isLoading,
     count,
     setOffset,
-    setSelectedRowIds,
+    setSelectedChannels,
   } = props
 
   const tableConfig: TableOptions<SalesChannel> = {
@@ -98,8 +101,15 @@ function SalesChannelTable(props: SalesChannelTableProps) {
   const table = useTable(tableConfig, usePagination, useRowSelect)
 
   useEffect(() => {
-    setSelectedRowIds(Object.keys(table.state.selectedRowIds))
-  }, [table.state.selectedRowIds])
+    setSelectedChannels((oldState) => {
+      const newState = {}
+
+      Object.keys(table.state.selectedRowIds).forEach((k) => {
+        newState[k] = oldState[k] || data.find((d) => d.id === k)
+      })
+      return newState
+    })
+  }, [table.state.selectedRowIds, data])
 
   useEffect(() => {
     setOffset(0)
@@ -181,19 +191,20 @@ function SalesChannelTable(props: SalesChannelTableProps) {
 type AddSalesChannelsSideModalProps = {
   close: () => void
   isVisible: boolean
+  setSelectedChannels: (arg: any) => void
+  selectedChannels: Map<string, SalesChannel>
 }
 
 /**
  * Publishable Key details container.
  */
 function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
-  const { close, isVisible } = props
+  const { close, isVisible, selectedChannels, setSelectedChannels } = props
 
   const notification = useNotification()
 
   const [offset, setOffset] = useState(0)
   const [search, setSearch] = useState("")
-  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
 
   const {
     sales_channels: data = [],
@@ -246,8 +257,8 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
             count={count || 0}
             setOffset={setOffset}
             isLoading={isLoading}
-            selectedRowIds={selectedRowIds}
-            setSelectedRowIds={setSelectedRowIds}
+            selectedChannels={selectedChannels}
+            setSelectedChannels={setSelectedChannels}
           />
         </div>
         {/* === DIVIDER === */}

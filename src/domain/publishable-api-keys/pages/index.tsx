@@ -1,7 +1,10 @@
 import { useState } from "react"
 
 import { PublishableApiKey, SalesChannel } from "@medusajs/medusa"
-import { useAdminCreatePublishableApiKey } from "medusa-react"
+import {
+  useAdminAddPublishableKeySalesChannelsBatch,
+  useAdminCreatePublishableApiKey,
+} from "medusa-react"
 
 import Breadcrumb from "../../../components/molecules/breadcrumb"
 import BodyCard from "../../../components/organisms/body-card"
@@ -15,18 +18,23 @@ import useNotification from "../../../hooks/use-notification"
 import PublishableApiKeysTable from "../tables/publishable-api-keys-table"
 import DetailsModal from "../modals/details"
 import AddSalesChannelsSideModal from "../modals/add-sales-channels"
+import ChannelsIcon from "../../../components/fundamentals/icons/channels-icon"
+import SalesChannelsSummary from "../../../components/molecules/sales-channels-summary"
 
-type AddSalesChannelsSectionProps = {}
+type AddSalesChannelsSectionProps = {
+  setSelectedChannels: (arg: any) => void
+  selectedChannels: Map<string, SalesChannel>
+}
 
 /**
  * Container for adding sales channels to PK scope.
  */
 function AddSalesChannelsSection(props: AddSalesChannelsSectionProps) {
-  const [selectedChannels, setSelectedChannels] = useState<SalesChannel[]>([])
+  const { setSelectedChannels, selectedChannels } = props
 
   const [isModalVisible, showModal, hideModal] = useToggleState(false)
 
-  const areChannelsSelected = selectedChannels.length
+  const hasSelectedChannels = !!Object.keys(selectedChannels).length
 
   return (
     <div>
@@ -39,7 +47,7 @@ function AddSalesChannelsSection(props: AddSalesChannelsSectionProps) {
             Connect as many sales channels to your API key as you need.
           </p>
         </div>
-        {!areChannelsSelected && (
+        {!hasSelectedChannels && (
           <Button
             size="small"
             variant="secondary"
@@ -50,7 +58,35 @@ function AddSalesChannelsSection(props: AddSalesChannelsSectionProps) {
           </Button>
         )}
       </div>
-      <AddSalesChannelsSideModal close={hideModal} isVisible={isModalVisible} />
+      {hasSelectedChannels && (
+        <div className="mt-10 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="rounded p-1 border">
+              <div className="bg-gray-100 p-2 rounded">
+                <ChannelsIcon />
+              </div>
+            </div>
+            <SalesChannelsSummary
+              channels={Object.values(selectedChannels)}
+              showCount={2}
+            />
+          </div>
+          <Button
+            size="small"
+            variant="secondary"
+            className="h-[40px]"
+            onClick={showModal}
+          >
+            Edit sales channels
+          </Button>
+        </div>
+      )}
+      <AddSalesChannelsSideModal
+        close={hideModal}
+        isVisible={isModalVisible}
+        selectedChannels={selectedChannels}
+        setSelectedChannels={setSelectedChannels}
+      />
     </div>
   )
 }
@@ -65,6 +101,8 @@ type CreatePublishableKeyProps = {
 function CreatePublishableKey(props: CreatePublishableKeyProps) {
   const { closeModal } = props
   const notification = useNotification()
+
+  const [selectedChannels, setSelectedChannels] = useState({})
 
   const { mutateAsync: createPublishableApiKey } =
     useAdminCreatePublishableApiKey()
@@ -126,7 +164,10 @@ function CreatePublishableKey(props: CreatePublishableKeyProps) {
 
           <div className="w-[100%] h-[1px] bg-gray-200 mt-16 mb-8" />
 
-          <AddSalesChannelsSection />
+          <AddSalesChannelsSection
+            selectedChannels={selectedChannels}
+            setSelectedChannels={setSelectedChannels}
+          />
         </div>
       </FocusModal.Main>
     </FocusModal>
